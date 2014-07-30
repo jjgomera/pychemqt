@@ -1,0 +1,129 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from lib.meos import MEoS
+from lib import unidades
+
+class Propylene(MEoS):
+    """Ecuación de estado de multiparametros para el propileno
+
+    >>> propileno=Propylene(T=400, P=0.1)
+    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
+    300.0 1.71087 -58.20 0.248 0.00620 1.3446 1.5544 258.09
+    """
+    name="propylene"
+    CASNumber="115-07-1"
+    formula="CH2=CH-CH3"
+    synonym="R-1270"
+    rhoc=unidades.Density(230.08)
+    Tc=unidades.Temperature(364.211)
+    Pc=unidades.Pressure(4555.0, "kPa")
+    M=42.07974      #g/mol
+    Tt=unidades.Temperature(87.953)
+    Tb=unidades.Temperature(225.53)
+    f_acent=0.146
+    momentoDipolar=unidades.DipoleMoment(0.366, "Debye")
+    id=23
+
+    CP0={  "ao": 4.,
+                "an": [], "pow": [],
+                "ao_exp": [1.544, 4.013, 8.923, 6.020],
+                "exp": [324.0, 973.0, 1932.0, 4317.0],
+                "ao_hyp": [],"hyp": []}
+ 
+    CP1={  "ao": 4.07317535,
+                "an": [], "pow": [],
+                "ao_exp": [1.7018443, 3.61342025, 8.83689058, 6.27183616],
+                "exp": [1.01164134251849*Tc, 2.75278088800174*Tc, 5.16557061703243*Tc, 11.68984352477*Tc],
+                "ao_hyp": [],"hyp": []}
+
+    CP2={  "ao": 0.65591381,
+                "an": [0.44359641e-1, -.36650786e-4, 0.16822223e-7, -.32651013e-11, 0.33747826e4],
+                "pow": [1, 2, 3, 4, -2],
+                "ao_exp": [-4.7032420],
+                "exp": [615.8],
+                "ao_hyp": [],"hyp": []}
+
+    helmholtz1={
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for propylene of Lemmon et al. (2010).",
+        "__doc__":  u"""Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W. to be submitted to J. Phys. Chem. Ref. Data, 2010.""",
+        "R": 8.314472,
+        "cp": CP0,
+
+        "nr1":  [0.4341002e-1, 0.1136592e1, -0.8528611, 0.5216669, -0.1382953e1, 0.1214347],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1.0, 0.205, 0.56, 0.676, 1.0, 0.5],
+
+        "nr2": [-0.5984662, -0.1391883e1, -0.1008434e1, 0.1961249, -0.3606930, -0.2407175e-2],
+        "d2": [1, 1, 3, 2, 2, 8],
+        "t2": [1.0, 1.94, 2.0, 1.0, 2.66, 0.83],
+        "c2": [1, 2, 2, 1, 2, 1],
+        "gamma2": [1]*6,
+
+        "nr3": [0.7432121, 0.1475162, -0.2503391e-1, -0.2734409, 0.6378889e-2, 0.1502940e-1, -0.3162971e-1, -0.4107194e-1, -0.1190241e1],
+        "d3": [1, 1, 2, 3, 3, 2, 1, 2, 3],
+        "t3": [1.6, 2.5, 3.0, 2.5, 2.72, 4.0, 4.0, 1.0, 4.0],
+        "alfa3": [1.07, 0.66, 1.2, 1.12, 1.47, 1.93, 3.3, 15.4, 6],
+        "beta3": [0.77, 0.83, 0.607, 0.4, 0.66, 0.07, 3.1, 387, 41],
+        "gamma3": [1.21, 1.08, 0.83, 0.56, 1.22, 1.81, 1.54, 1.12, 1.4],
+        "epsilon3": [0.78, 0.82, 1.94, 0.69, 1.96, 1.3, 0.38, 0.91, 0.7]}
+
+    helmholtz2={
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for propylene of Overhoff (2006).",
+        "__doc__":  u"""Overhoff, U. Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.""",
+        "R": 8.314472,
+        "cp": CP1,
+
+        "nr1":  [0.11167427541961e1, -0.76114879497376, -0.18654354344883e1, 0.41500701892893e-1, 0.10706545719025e-1, 0.17481482892991e-1],
+        "d1": [1, 1, 1, 3, 4, 4],
+        "t1": [0.125, 0.625, 1.25, 0, 0.25, 1.25],
+
+        "nr2": [0.56509607629258, 0.99156795771235, -0.16341922173416, -0.37037920319844e-1, -0.80058345775777e-1, 0.17004662808796, 0.81351262137108e-1, -0.23817885171378, 0.12962562859214e-1, 0.22577442976798e2, -0.43611886043491e2, 0.21944325628071e2, -0.66234078215924, -0.22258580712469e1, 0.29538388307646e1, -0.10257185828694e1, 0.20521625234481e-1, -0.36462809205891e-1, 0.17625833164005e-1],
+        "d2": [2, 3, 3, 3, 4, 4, 5, 5, 6, 1, 1, 1, 1, 2, 2, 2, 5, 6, 1],
+        "t2": [2.25, 1.25, 2.125, 2.75, 0.125, 2, 1.125, 1.5, 1.375, 3.5, 3.75, 4, 5, 3, 3.5, 4.5, 4.75, 3.25, 3, ],
+        "c2": [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3],
+        "gamma2": [1]*19,
+
+        "nr3": [0.31819374579431, -0.32648950998998, -0.37684374593786e2, 0.72265437094447e2, -0.34814669335983e2, -0.39854778355193e1, 0.37313453915501],
+        "d3": [2, 2, 1, 1, 1, 2, 2],
+        "t3": [3, 4, 2, 3, 4, 1, 1],
+        "alfa3": [10, 10, 11, 11, 11, 25, 30],
+        "beta3": [150, 150, 225, 225, 225, 300, 350],
+        "gamma3": [1.13, 1.13, 1.19, 1.19, 1.19, 1.19, 1.19],
+        "epsilon3": [0.85, 0.85, 1, 1, 1, 1, 1]}
+
+    helmholtz3={
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for propylene of Angus et al. (1980)",
+        "__doc__":  u"""Angus, S., Armstrong, B., and de Reuck, K.M., "International Thermodynamic Tables of the Fluid State-7 Propylene," International Union of Pure and Applied Chemistry, Pergamon Press, Oxford, 1980.""",
+        "R": 8.31434,
+        "cp": CP2,
+
+        "nr1": [0.631922681460, 0.102655250604, -0.70798923e-2, 0.18624829, -0.1292611017e1, -0.5410160974e-1, 0.5069017035, -0.10606146125e1, 0.763136083, -0.850733053e-1, 0.438262575, 0.2316495716e-1, 0.25503741325e-1, -0.57327581, -0.1141334722e-1, 0.2502895522, -0.468392547833e-1, 0.325228355714e-2],
+        "d1": [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 6, 7],
+        "t1": [3, 4, 5, 1, 2, 3, 0, 1, 2, 2, 3, 0, 1, 3, -1, 3, 3, 3],
+
+        "nr2": [-0.63192268146, -0.102655250604, 0.70798923e-2, -0.63192268146, -0.102655250604, -0.11049992895, -0.31596134073, -0.51327625302e-1, -0.4918627871e-1, -0.17109208434e-1, -0.1492467645e-1, -0.42773021085e-2, -0.8554604217e-3, -0.14257673695e-3],
+        "d2": [0, 0, 0, 2, 2, 2, 4, 4, 6, 6, 8, 8, 10, 12],
+        "t2": [3, 4, 5, 3, 4, 5, 3, 4, 3, 4, 3, 4, 4, 4],
+        "c2": [2]*14,
+        "gamma2": [1]*14}
+
+    eq=helmholtz1, helmholtz2, helmholtz3
+
+    _surface={"sigma": [0.0562], "exp": [1.26]}
+    _melting={"eq": 1, "Tref": Tt, "Pref": 0.48475e-4, "a1": [-6593000000, 6593000001], "exp1": [0, 2.821], "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _vapor_Pressure={ "eq": 5, "ao": [-6.75625, 2.02700, -1.35883, -2.74671, -0.936445], "exp": [1.0, 1.5, 1.9, 4.3, 15.0]}
+    _liquid_Density={ "eq": 1, "ao": [0.405430, 2.02481, 0.304022, 0.179159], "exp": [0.195, 0.47, 2.25, 8.0]}
+    _vapor_Density={ "eq": 3, "ao": [-1.59841, -4.73840, -10.8886, -31.0312, -56.9431, -143.544], "exp": [0.309, 0.853, 2.37, 5.2, 10., 20.]}
+
+
+if __name__ == "__main__":
+    propileno=Propylene(T=400, P=0.1)
+    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
+    propileno=Propylene(T=400, P=0.1, eq=1)
+    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
+    propileno=Propylene(T=400, P=0.1, eq=2)
+    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
