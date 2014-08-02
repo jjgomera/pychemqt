@@ -1542,7 +1542,7 @@ class Corriente(config.Entity):
 #                self.Gas.rhoSd=unidades.Density(1./R_atml/298.15*self.M, "gl")
 
             if self.x>0:
-                self.Gas.Q=unidades.MassFlow(self.Q*(1-self.x))
+                self.Gas.Q=unidades.VolFlow(self.Q*(1-self.x))
                 self.Gas.caudalmasico=unidades.MassFlow(self.caudalmasico*self.x)
                 self.Gas.caudalmolar=unidades.MolarFlow(self.caudalmolar*self.x)
                 self.Gas.fraccion=[unidades.Dimensionless(1)]
@@ -1551,7 +1551,7 @@ class Corriente(config.Entity):
                 self.Gas.caudalunitariomolar=[self.Gas.caudalmolar]
 
             if self.x<1:
-                self.Liquido.Q=unidades.MassFlow(self.Q*(1-self.x))
+                self.Liquido.Q=unidades.VolFlow(self.Q*(1-self.x))
                 self.Liquido.caudalmasico=unidades.MassFlow(self.caudalmasico*(1-self.x))
                 self.Liquido.caudalmolar=unidades.MolarFlow(self.caudalmolar*(1-self.x))
                 self.Liquido.fraccion=[unidades.Dimensionless(1)]

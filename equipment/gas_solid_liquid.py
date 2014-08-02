@@ -8,8 +8,9 @@
 #######################################################################
 
 from PyQt4.QtGui import QApplication
+from scipy import pi
 
-from lib.unidades import Pressure, Power
+from lib import unidades
 from lib.corriente import Corriente
 from lib.psycrometry import Punto_Psicrometrico
 from parents import equipment
@@ -73,8 +74,8 @@ class Dryer(equipment):
     def calculo(self):
         #TODO: De momento, no se implementan las cuestiones de cinetica de intercambio de calor y materia que definirían las dimensiones necesarias del equipo
         HR=self.kwargs.get("HR", 100)
-        self.Heat=Power(self.kwargs["Heat"])
-        self.deltaP=Pressure(self.kwargs["deltaP"])
+        self.Heat=unidades.Power(self.kwargs["Heat"])
+        self.deltaP=unidades.Pressure(self.kwargs["deltaP"])
         self.entradaAire=self.kwargs["entradaAire"]
 
         Pout=min(self.kwargs["entradaSolido"].P.atm, self.kwargs["entradaAire"].P.atm)-self.deltaP.atm
@@ -109,7 +110,7 @@ class Scrubber(equipment):
         entradaGas: Instancia de clase corriente que define el gas que fluye por el equipo
         entradaLiquido: Instancia de clase corriente que define el líquido lavador
         tipo_calculo:
-            0   -   Evaluación del funcionamiento de un venturi de dimensiones conocidas (diametro, forma, número de ciclones)
+            0   -   Evaluación del funcionamiento de un venturi de dimensiones conocidas
             1   -   Diseño de un venturi a partir del rendimiento o perdida de carga admisibles
         diametro: diametro del venturi
         rendimiento: Rendimiento admisible
@@ -129,54 +130,125 @@ class Scrubber(equipment):
               "rendimiento": 0.0,
               "k": 0.0,
               "modelo_rendimiento": 0,
-              "modelo_DeltaP": 0}
+              "modelo_DeltaP": 0, 
+              "Lt": 0.0}
     kwargsInput = ("entradaGas", "entradaLiquido")
-    kwargsValue = ("diametro", "rendimiento", "k")
+    kwargsValue = ("diametro", "rendimiento", "k", "Lt")
     kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP")
-    #    calculateValue = ("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc", "Bc", "Jc", "Lc", "Zc", "De", "Sc")
+    calculateValue = ("deltaP", "rendimientoCalc")
 
     TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
                  QApplication.translate("pychemqt", "Design: Calculate diameter")]
     TEXT_MODEL = ["Johnstone (1954)", "Calvert (1972)"]
-    TEXT_MODEL_DELTAP = ["Young (1977)"]
+    TEXT_MODEL_DELTAP = ["Young (1977)", 
+                                            "Hesketh (1974)",
+                                            "Gleason (1971)",
+                                            "Volgin (1968)"]
 
     @property
     def isCalculable(self):
-        pass
+        self.status = 1
+        self.msg = ""
+        
+        self.statusDeltaP=1
+        if self.kwargs["modelo_DeltaP"] == 3 and not self.kwargs["Lt"]:
+            self.statusDeltaP=0
+            
 
-    def calculo(self, **kwargs):
-        self.entradaGas=kwargs.get("entrada", None)
-        self.entradaLiquido=kwargs.get("entradaLiquido", 0)
-        self.D=unidades.Length(kwargs.get("diametro", 0))
-        self.k=kwargs.get("k", 707)
 
-        R=self.entradaLiquido.caudal_volumetrico/self.entradaGas.caudal_volumetrico
-        V=entradaGas.caudal_volumetrico/(pi/4*self.D**2)
+        if not self.kwargs["entradaGas"]:
+            self.msg = QApplication.translate("pychemqt", "undefined gas stream")
+            self.status = 0
+            return
+        if not self.kwargs["entradaLiquido"]:
+            self.msg = QApplication.translate("pychemqt", "undefined liquid stream")
+            self.status = 0
+            return
 
-        rendimiento_fraccional=[]
-        rendimiento_global=0
-        for i in self.entradaGas.distribucion_solidos:
-            l=1e-7
-            d0=0.585*(self.entradaLiquido.tension_superficial/self.entradaLiquido.RhoL/V**2)**0.5+53.*(self.entradaLiquido.viscosidad**2/self.entradaLiquido.tension_superficial/liquido.RhoL)**0.225*R**1.5
-            A=1.257+0.4*exp(-1.1*i[0]/2/l)
-            C=1+2*A*l/i[0]
-            fi=C*self.entradaGas.densidad_solido*V*i[0]**2/(9*d0*self.entradaGas.viscosidad)
-            rendimiento=1-exp(-k*R*fi**0.5)
-            rendimiento_fraccional.append(rendimiento)
-            print i[1]
-            rendimiento_global+=rendimiento*i[1]
+        if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
+            self.msg = QApplication.translate("pychemqt", "undefined diameter")
+            self.status = 0
+            return
+        elif self.kwargs["tipo_calculo"] == 1 and not self.kwargs["rendimiento"]:
+            self.msg = QApplication.translate("pychemqt", "undefined efficiency")
+            self.status = 0
+            return
 
-        self.rendimiento=rendimiento_global
+        if not self.kwargs["k"]:
+            self.msg = QApplication.translate("pychemqt", "undefined venturi constant")
+            self.status = 3
 
-        DeltaP=Pressure(1.002*V**2*R, "kPa")
+        return True
 
-        self.DeltaP=DeltaP
-
-        print V, DeltaP
+    def calculo(self):
+        self.entradaGas=self.kwargs["entradaGas"]
+        self.entradaLiquido=self.kwargs["entradaLiquido"]
+        self.Dt=unidades.Length(self.kwargs["diametro"])
+        self.k=self.kwargs.get("k", 1000)
+        
+        self.At=unidades.Area(pi/4*self.Dt**2)
+        self.Vg=unidades.Speed(self.entradaGas.Q/self.At)
+        self.R=self.entradaLiquido.Q/self.entradaGas.Q
+        
+        self.rendimientoCalc=0
+        
+        if self.statusDeltaP:
+            self.deltaP=self._deltaP()
+        else:
+            self.deltaP=unidades.DeltaP(0)
+        
+        self.salida=[self.entradaGas, self.entradaLiquido]
+#        rendimiento_fraccional=[]
+#        rendimiento_global=0
+#        for i in self.entradaGas.distribucion_solidos:
+#            l=1e-7
+#            d0=0.585*(self.entradaLiquido.tension_superficial/self.entradaLiquido.RhoL/V**2)**0.5+53.*(self.entradaLiquido.viscosidad**2/self.entradaLiquido.tension_superficial/liquido.RhoL)**0.225*R**1.5
+#            A=1.257+0.4*exp(-1.1*i[0]/2/l)
+#            C=1+2*A*l/i[0]
+#            fi=C*self.entradaGas.densidad_solido*V*i[0]**2/(9*d0*self.entradaGas.viscosidad)
+#            rendimiento=1-exp(-k*R*fi**0.5)
+#            rendimiento_fraccional.append(rendimiento)
+#            print i[1]
+#            rendimiento_global+=rendimiento*i[1]
+#
+#        self.rendimiento=rendimiento_global
+#
+#        DeltaP=Pressure(1.002*V**2*R, "kPa")
+#
+#        self.DeltaP=DeltaP
+#
+#        print V, DeltaP
         """        1. Calvert: 'dp = 5.4e-04 * (v^2) * rho_gas * (L/G)'
         2a. Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * (0.56 + 0.125*L/G + 0.0023*(L/G)^2) / 507'
         2b. Simplified Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * ((L/G)^0.78) / 1270'
                 """
+    def _deltaP(self):
+        if self.kwargs["modelo_DeltaP"] == 0: #Young (1977)
+            deltaP=0
+        elif self.kwargs["modelo_DeltaP"] == 1: #Hesketh (1974)
+            deltaP=1.36e-4*self.Vg.cms**2*self.entradaGas.Gas.rho.gcc*self.At.cm2**0.133*(0.56+935*self.R+1.29e-2*self.R**2)
+        elif self.kwargs["modelo_DeltaP"] == 2: #Gleason (1971)
+            deltaP=2.08e-5*self.Vg.cms**2*(0.264*self.entradaLiquido.Liquido.Q.ccs+73.8)
+        elif self.kwargs["modelo_DeltaP"] == 3: #Volgin (1968)
+            deltaP=3.32e-6*self.Vg.cms**2*self.R*0.26*l**1.43
+
+#        elif self.kwargs["modelo_rendimiento"] == 0: #Matrozov (1953)
+#            deltaP=dPd+1.38e-3*self.Vg.cms**1.08*self.R**0.63
+#        elif self.kwargs["modelo_rendimiento"] == 1: #Yoshida (1960)
+#            pass
+#        elif self.kwargs["modelo_rendimiento"] == 3: #Tohata (1964)
+#            pass
+#        elif self.kwargs["modelo_rendimiento"] == 4: #Geiseke (1968)
+#            pass
+#        elif self.kwargs["modelo_rendimiento"] == 6: #Calvert (1968)
+#            deltaP=1.03e-3*self.Vg.cms**2*self.R
+#        elif self.kwargs["modelo_rendimiento"] == 8: #Boll (1973)
+#            pass
+#        elif self.kwargs["modelo_rendimiento"] == 9: #Behie & Beeckman (1973)
+#            pass
+        
+        return unidades.DeltaP(deltaP, "cmH2O")
+
 
 
 
@@ -184,13 +256,12 @@ if __name__ == '__main__':
 #    import doctest
 #    doctest.testmod()
 
-
-    from lib.corriente import Solid
-    from lib.psycrometry import Punto_Psicrometrico
-    diametros=[96.5, 105, 110, 118, 125, 130, 140, 150, 170]
-    fraccion=[0.02, 0.05, 0.1, 0.15, 0.25, 0.2, 0.15, 0.05, 0.03]
-    solido=Solid(caudalSolido=[5000], distribucion_fraccion=fraccion, distribucion_diametro=diametros)
-    Solido=Corriente(T=300, P=101325., caudalMasico=50, fraccionMolar=[1, 0], solido=solido)
-    aire=Punto_Psicrometrico(caudal=100, tdb=300, HR=50)
-    secador=Dryer(entradaSolido=Solido, entradaAire=aire)
-
+    from lib.corriente import Corriente, Solid
+    diametros=[17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
+    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
+    solido=Solid(caudalSolido=[0.1], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
+    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475], fraccionMolar=[1.], solido=solido)
+    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.])
+    secador=Scrubber(entradaGas=aire, entradaLiquido=agua, diametro=0.05, modelo_rendimiento=10)
+    print secador.status, secador.msg
+    print secador.DeltaP.bar

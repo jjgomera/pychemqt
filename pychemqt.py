@@ -49,26 +49,30 @@ for module, use in optional_modules:
 class SplashScreen(QtGui.QSplashScreen):
     """Clase que crea una ventana de splash"""
     def __init__(self):
-        QtGui.QSplashScreen.__init__(self, QtGui.QPixmap(os.environ["pychemqt"]
-                                                         +"/images/splash.jpg"))
+        QtGui.QSplashScreen.__init__(self,
+              QtGui.QPixmap(os.environ["pychemqt"] + "/images/splash.jpg"))
         self.show()
         QtGui.QApplication.flush()
 
     def showMessage(self, msg):
-        """Método para mostrar mensajes en la parte inferior de la ventana de splash"""
+        """Método para mostrar mensajes en la parte inferior de la ventana de
+        splash"""
         labelAlignment = QtCore.Qt.Alignment(QtCore.Qt.AlignBottom |
-                                             QtCore.Qt.AlignRight | QtCore.Qt.AlignAbsolute)
-        QtGui.QSplashScreen.showMessage(self, msg, labelAlignment, QtGui.QColor(QtCore.Qt.white))
+                                             QtCore.Qt.AlignRight |
+                                             QtCore.Qt.AlignAbsolute)
+        QtGui.QSplashScreen.showMessage(self, msg, labelAlignment,
+                                        QtGui.QColor(QtCore.Qt.white))
         QtGui.QApplication.processEvents()
 
     def clearMessage(self):
         QtGui.QSplashScreen.clearMessage(self)
         QtGui.QApplication.processEvents()
 
-splash=SplashScreen()
+splash = SplashScreen()
 
-#Check config files
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Checking config files..."))
+# Check config files
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Checking config files..."))
 from lib import firstrun
 if not os.path.isdir(conf_dir):
     os.mkdir(conf_dir)
@@ -77,12 +81,13 @@ if not os.path.isfile(conf_dir + "pychemqtrc"):
     Preferences = firstrun.Preferences()
     Preferences.write(open(conf_dir + "pychemqtrc", "w"))
 
-#FIXME: Hasta que no sepa como prescindir de este archivo sera necesario
+# FIXME: Hasta que no sepa como prescindir de este archivo sera necesario
 if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
-    Config=firstrun.config()
+    Config = firstrun.config()
     Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
 
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Checking cost index..."))
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
         with open(os.environ["pychemqt"] + "dat/costindex.dat") as cost_index:
             lista = cost_index.readlines()[-1][:-1].split(" ")
@@ -90,23 +95,25 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
                 for data in lista:
                     archivo.write(data + os.linesep)
 
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Checking currency data"))
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Checking currency data"))
 if not os.path.isfile(conf_dir+"moneda.dat"):
-    #Add default currency from system without internet connection
-    #Check internet connection
-    #Copy file to pychemqt config dir if no connection available
     from lib.firstrun import getdata
     try:
         getdata(conf_dir+"moneda.dat")
     except urllib2.URLError:
-        shutil.copy(os.environ["pychemqt"]+"dat"+os.sep+"moneda.dat", conf_dir+"moneda.dat")
-        print(QtGui.QApplication.translate("pychemqt", "Internet connection error, using archived currency rates"))
+        origen = os.environ["pychemqt"]+"dat"+os.sep+"moneda.dat"
+        shutil.copy(origen, conf_dir+"moneda.dat")
+        print(QtGui.QApplication.translate("pychemqt",
+              "Internet connection error, using archived currency rates"))
 
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Checking custom database..."))
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Checking custom database..."))
 from lib.sql import createDatabase
 
-#Import internal libraries
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Importing libraries..."))
+# Import internal libraries
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Importing libraries..."))
 from UI import texteditor, newComponent, flujo, charts, plots, viewComponents
 from UI.widgets import createAction, ClickableLabel, TreeEquipment
 from lib.config import conf_dir, getComponents

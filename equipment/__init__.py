@@ -40,7 +40,7 @@ import UI_grinder
 import UI_screen
 import UI_solidWasher
 import UI_vacuum
-import UI_venturi
+import UI_scrubber
 import UI_tank
 import UI_tower
 import UI_reactor

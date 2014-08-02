@@ -1351,7 +1351,7 @@ class VolFlow(unidad):
     * liters per second (ls)
     * liters per minute (lmin)
     * liters per hour (lh)
-    * cubic centimeters per second (ccs)
+    * cubic centimeters per second (ccs, cm3s)
     * cubic centimeters per minute (ccmin)
     * cubic centimeters per hour (cch)
     * cubic foot per second (ft3s)
@@ -1375,7 +1375,7 @@ class VolFlow(unidad):
     0.06 0.0353146667215 16.6666666667
     """
     __title__ = QApplication.translate("pychemqt", "Volumetric Flow")
-    rates = {"m3s": 1., "m3min": 1./k.minute, "m3h": 1./k.hour, "ls": k.liter, "lmin": k.liter/k.minute, "lh": k.liter/k.hour, "ccs": k.micro, "ccmin": k.micro/k.minute, "cch": k.micro/k.hour, "ft3s": k.foot**3, "ft3min": k.foot**3/k.minute, "kft3min": k.foot**3*k.kilo/k.minute, "ft3h": k.foot**3/k.hour, "mft3day": k.foot**3*k.mega/k.day, "galUKh": k.gallon_imp/k.hour, "galUSh": k.gallon/k.hour, "galUKmin": k.gallon_imp/k.minute, "galUSmin": k.gallon/k.minute, "galUKs": k.gallon_imp, "galUSs": k.gallon, "bbls": k.bbl, "bblmin": k.bbl/k.minute, "bblh": k.bbl/k.hour, "bblday": k.bbl/k.day}
+    rates = {"m3s": 1., "m3min": 1./k.minute, "m3h": 1./k.hour, "ls": k.liter, "lmin": k.liter/k.minute, "lh": k.liter/k.hour, "ccs": k.micro, "cm3s": k.micro, "ccmin": k.micro/k.minute, "cch": k.micro/k.hour, "ft3s": k.foot**3, "ft3min": k.foot**3/k.minute, "kft3min": k.foot**3*k.kilo/k.minute, "ft3h": k.foot**3/k.hour, "mft3day": k.foot**3*k.mega/k.day, "galUKh": k.gallon_imp/k.hour, "galUSh": k.gallon/k.hour, "galUKmin": k.gallon_imp/k.minute, "galUSmin": k.gallon/k.minute, "galUKs": k.gallon_imp, "galUSs": k.gallon, "bbls": k.bbl, "bblmin": k.bbl/k.minute, "bblh": k.bbl/k.hour, "bblday": k.bbl/k.day}
     __text__ = [u'm³/s', u'm³/min', u'm³/h', 'l/s', 'l/min', 'l/h', u'cm³/s', u'cm³/min', u'cm³/h', u'ft³/s', u'ft³/min', u'kft³/min',  u'ft³/h', u'Mft³/day', 'galon UK/h', 'galon US/h', 'galon UK/min', 'galon US/min', 'galon UK/s', 'galon US/s', 'barril/s', 'barril/min', 'barril/h', 'barril/day']
     __units__ = ['m3s', 'm3min', 'm3h', 'ls', 'lmin', 'lh', 'ccs', 'ccmin', 'cch', 'ft3s', 'ft3min', 'kft3min',  'ft3h', 'mft3day', 'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs', 'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
     _magnitudes=[("VolFlow", QApplication.translate("pychemqt", "Volumetric Flow")),
