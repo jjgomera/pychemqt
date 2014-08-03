@@ -105,25 +105,25 @@ class MEoS(object):
     _critical=None
     _PR=0.
     id=None
-    
+
     _Tr=None
     _rhor=None
     _w=None
 
     kwargs={"T": 0.0,
                     "P": 0.0,
-                    "rho": 0.0, 
-                    "v": 0.0, 
-                    "h": 0.0, 
-                    "s": 0.0, 
-                    "u": 0.0, 
-                    "x": None, 
-                    "v": 0.0, 
-                    
-                    "eq": 0, 
-                    "visco": 0, 
-                    "thermal": 0, 
-                    "ref": None, 
+                    "rho": 0.0,
+                    "v": 0.0,
+                    "h": 0.0,
+                    "s": 0.0,
+                    "u": 0.0,
+                    "x": None,
+                    "v": 0.0,
+
+                    "eq": 0,
+                    "visco": 0,
+                    "thermal": 0,
+                    "ref": None,
                     "recursion": True
                     }
 
@@ -200,17 +200,17 @@ class MEoS(object):
         self.Zc=self.Pc/self.rhoc/self.R/self.Tc
         self.kwargs=MEoS.kwargs.copy()
         self.__call__(**kwargs)
-        
+
     def __call__(self, **kwargs):
         self.kwargs.update(kwargs)
-            
+
         if self.calculable:
             self.status=1
             self.calculo()
             self.msg=""
 
     @property
-    def calculable(self):            
+    def calculable(self):
         self._mode=""
         if self.kwargs["T"] and self.kwargs["P"]:
             self._mode="TP"
@@ -227,7 +227,7 @@ class MEoS(object):
         elif self.kwargs["T"] and self.kwargs["x"]!=None:
             self._mode="Tx"
         return bool(self._mode)
-        
+
 
     def calculo(self):
 
@@ -258,9 +258,9 @@ class MEoS(object):
 
         if self.id:
             self.componente=compuestos.Componente(self.id)
-            
+
         #Opcion de aceptar el nombre interno de la ecuacion
-        if isinstance(eq, str) and eq in self.__class__.__dict__:    
+        if isinstance(eq, str) and eq in self.__class__.__dict__:
             eq=self.eq.index(self.__class__.__dict__[eq])
 
         if eq=="PR":
@@ -277,7 +277,7 @@ class MEoS(object):
             if self._constants["__type__"]=="Helmholtz":
                 self._eq=self._Helmholtz
             else:
-                self._eq=self._MBWR            
+                self._eq=self._MBWR
         elif self.eq[eq]["__type__"]=="Helmholtz":
             self._eq=self._Helmholtz
             self._constants=self.eq[eq]
@@ -347,7 +347,8 @@ class MEoS(object):
 #                    rhoo=2.
 #                    rhoo=self.componente.RhoG_Lee_Kesler(T, P/0.101325)
                 rho=fsolve(lambda rho: self._eq(rho, T)["P"]-P*1e6, rhoo)
-                propiedades=self._eq(rho[0], T)
+                #propiedades=self._eq(rho[0], T)
+                propiedades=self._eq(rho, T)
             elif T and rho:
                 propiedades=self._eq(rho, T)
             elif T and h!=None:
@@ -486,12 +487,12 @@ class MEoS(object):
                         self.x=unidades.Dimensionless(1)
                     else:
                         self.x=unidades.Dimensionless((self.s-liquido["s"])/(vapor["s"]-liquido["s"]))
-                    
+
                     if self.x<1:
                         self.Liquido=self.__class__(T=T, rho=rhol, recursion=False)
                     if self.x>0:
                         self.Gas=self.__class__(T=T, rho=rhov, recursion=False)
-                            
+
                 else:
                     self.Gas=self.__class__(T=self.T, rho=self.rho, recursion=False)
                     self.Liquido=fluid()
@@ -610,14 +611,14 @@ class MEoS(object):
         ref=self._constants["ref"](eq=self._constants["eq"])
         Tr=T/Tc
         rhor=rho/rhoc
-        
+
         psi=1+(self.f_acent-ref.f_acent)*(self._constants["ft"][0]+self._constants["ft"][1]*log(Tr))
         for n, m in zip(self._constants["ft_add"], self._constants["ft_add_exp"]):
             psi+=n*Tr**m
         for n, m in zip(self._constants["fd"], self._constants["fd_exp"]):
             psi+=n*rhor**m
         T0=T*ref.Tc/self.Tc/psi
-        
+
         phi=ref.Zc/self.Zc*(1+(self.f_acent-ref.f_acent)*(self._constants["ht"][0]+self._constants["ht"][1]*log(Tr)))
         for n, m in zip(self._constants["ht_add"], self._constants["ht_add_exp"]):
             phi+=n*Tr**m
@@ -630,7 +631,7 @@ class MEoS(object):
         deltaref=rho0/ref_rhoc
         tauref=ref_Tc/T0
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=ref._phir(tauref, deltaref)
-        
+
         propiedades={}
         propiedades["fir"]=fir
         propiedades["fird"]=fird
@@ -655,8 +656,8 @@ class MEoS(object):
 
         return propiedades
 
-        
-        
+
+
     def _MBWR(self, rho, T):
         """Implementación general de la ecuación de estado de multiparámetros de Benedict-Webb-Rubin"""
         rho=rho/self.M
@@ -1070,7 +1071,7 @@ class MEoS(object):
             F_virial=exp(-self._constants["C"][i]*(delta_0-1)**2-self._constants["D"][i]*(tau-1)**2)
             Fd_virial=-2*self._constants["C"][i]*F_virial*(delta_0-1)
             Fdd_virial=2*self._constants["C"][i]*F_virial*(2*self._constants["C"][i]*(delta_0-1)**2-1)
-            
+
             B+=self._constants["nr4"][i]*(Delta_Virial**self._constants["b"][i]*(F_virial+delta_0*Fd_virial)+DeltaBd_Virial*delta_0*F_virial)
             C+=self._constants["nr4"][i]*(Delta_Virial**self._constants["b"][i]*(2*Fd_virial+delta_0*Fdd_virial)+2*DeltaBd_Virial*(F_virial+delta_0*Fd_virial)+DeltaBdd_Virial*delta_0*F_virial)
 
@@ -1120,7 +1121,7 @@ class MEoS(object):
                 cpo+=cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
             for i in [1, 3]:
                 cpo+=cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
-                
+
         return unidades.SpecificHeat(cpo/self.M*1000)
 
     def _dCp(self, cp, T, Tref):
@@ -1594,7 +1595,7 @@ class MEoS(object):
                 A=[None]
                 for i in range(10):
                     A.append(a0[i]+a1[i]*self._viscosity["w"]+a2[i]*self._viscosity["mur"]**4+a3[i]*self._viscosity["k"])
-                
+
                 muo=self._Visco0()
                 Y=self.rho/self.rhoc/6
                 T_ =self.T/self._viscosity.get("ek", self.Tc/1.2593)
@@ -1603,7 +1604,7 @@ class MEoS(object):
                 muk=muo*(1/G2+A[6]*Y)
                 mup=36.344e-6*(self.M*self.Tc)**0.5*self.rhoc**(2./3.)*A[7]*Y**2*G2*exp(A[8]+A[9]/T_+A[10]/T_**2)
                 mu=muk+mup
-  
+
             elif self._viscosity["eq"]=="ecs":
 #                rhoc=self._constants.get("rhoref", self.rhoc)
 #                Tc=self._constants.get("Tref", self.Tc)
@@ -1615,14 +1616,14 @@ class MEoS(object):
 #                ref=self._constants["ref"](eq=self._constants["eq"])
 #                Tr=T/Tc
 #                rhor=rho/rhoc
-#                
+#
 #                psi=1+(self.f_acent-ref.f_acent)*(self._constants["ft"][0]+self._constants["ft"][1]*log(Tr))
 #                for n, m in zip(self._constants["ft_add"], self._constants["ft_add_exp"]):
 #                    psi+=n*Tr**m
 #                for n, m in zip(self._constants["fd"], self._constants["fd_exp"]):
 #                    psi+=n*rhor**m
 #                T0=T*ref.Tc/self.Tc/psi
-#                
+#
 #                phi=ref.Zc/self.Zc*(1+(self.f_acent-ref.f_acent)*(self._constants["ht"][0]+self._constants["ht"][1]*log(Tr)))
 #                for n, m in zip(self._constants["ht_add"], self._constants["ht_add_exp"]):
 #                    phi+=n*Tr**m
@@ -1642,13 +1643,13 @@ class MEoS(object):
                 fint=0
                 for n, m in zip(self._viscosity["fint"], self._viscosity["fint_t"]):
                     fint+=n*self.T**m
-                    
+
                 psi=0
                 for n, t, d in zip(self._viscosity["psi"], self._viscosity["psi_t"], self._viscosity["psi_d"]):
                     psi+=n*Tr**t*rhor**d
-                    
+
                 mu=None
-                
+
         else:
             mu=None
         return unidades.Viscosity(mu, "muPas")
@@ -2206,4 +2207,4 @@ if __name__ == "__main__":
     print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (dme.T, dme.rho, dme.h.kJkg, dme.s.kJkgK, dme.cv.kJkgK, dme.cp.kJkgK, dme.w)
 
 #300,00	0,10000	1,6025	0,31238	0,52152	0,52033	3,6153	-0,00038001	0,00000066198	17,837	22,741
-										
+

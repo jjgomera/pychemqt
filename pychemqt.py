@@ -122,7 +122,8 @@ from lib.EoS import K, H
 from lib import unidades
 
 
-splash.showMessage(QtGui.QApplication.translate("pychemqt", "Importing equipments..."))
+splash.showMessage(QtGui.QApplication.translate("pychemqt",
+                                                "Importing equipments..."))
 from equipment import *
 
 splash.showMessage(QtGui.QApplication.translate("pychemqt", "Importing tools..."))

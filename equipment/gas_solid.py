@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-############################################
+###############################################################################
 # Librería de definición de equipos de separación gas-sólido:
 #     -Ciclones
 #     -Cámaras de sedimentación
 #     -Filtros de mangas (fabric filters, baghouse)
 #     -Precipitadores electrostáticos
-#############################################
+###############################################################################
 
 import os
 
@@ -17,7 +17,7 @@ from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
 
 from lib.unidades import Length, Pressure, DeltaP, Speed, Time, Area, PotencialElectric, Currency, Dimensionless, MassFlow
-#from lib.datasheet import pdf
+# from lib.datasheet import pdf
 from lib.corriente import Corriente, Solid
 from parents import equipment, UI_equip
 
@@ -33,15 +33,16 @@ class UI_equipment_Solid(UI_equip):
             self.SalidaSolido.setCorriente(self.Equipment.salida[1])
 
 
-class Separador_SolidGas(equipment):
+class Separador_Solid(equipment):
     """Clase generica con la funcionalidad comun de los equipos de separacion gas-solido"""
 
     def calcularRendimiento(self, rendimientos):
-        rendimiento_global=0
+        rendimiento_global = 0
         for i, fraccion in enumerate(self.entrada.solido.fracciones):
-            rendimiento_global+=rendimientos[i]*fraccion
+            rendimiento_global += rendimientos[i]*fraccion
         return Dimensionless(rendimiento_global)
 
+class Separador_SolidGas(Separador_Solid):
     def CalcularSalidas(self):
         Solido_NoCapturado, Solido_Capturado=self.entrada.solido.Separar(self.rendimiento_parcial)
         self.salida=[]
@@ -111,92 +112,91 @@ class Ciclon(Separador_SolidGas):
     >>> print ciclon.C_instTotal, ciclon.C_adqTotal
     2260.1946585 1614.42475607
     """
-    title=QApplication.translate("pychemqt", "Cyclone")
-    help=os.environ["pychemqt"] + "doc/Ciclones.htm"
-    kwargs={"entrada": None,
-                    "tipo_calculo": 0,
-                    "modelo_rendimiento": 0,
-                    "modelo_DeltaP": 0,
-                    "modelo_ciclon": 0,
-                    "Dc": 0.0,
-                    "num_ciclones": 0,
-                    "dimensiones": [],
-                    "rendimientoAdmisible": 0.0,
-                    "DeltaPAdmisible": 0.0,
-                    "velocidadAdmisible": 0.0,
+    title = QApplication.translate("pychemqt", "Cyclone")
+    help = os.environ["pychemqt"] + "doc/Ciclones.htm"
+    kwargs = {"entrada": None,
+              "tipo_calculo": 0,
+              "modelo_rendimiento": 0,
+              "modelo_DeltaP": 0,
+              "modelo_ciclon": 0,
+              "Dc": 0.0,
+              "num_ciclones": 0,
+              "dimensiones": [],
+              "rendimientoAdmisible": 0.0,
+              "DeltaPAdmisible": 0.0,
+              "velocidadAdmisible": 0.0,
 
-                    "f_install": 1.4,
-                    "Base_index": 0.0,
-                    "Current_index": 0.0,
-                    "tipo_costo": 0}
-    kwargsInput=("entrada", )
-    kwargsValue=("Dc", "num_ciclones", "rendimientoAdmisible", "velocidadAdmisible", "DeltaPAdmisible")
-    kwargsList=("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP", "modelo_ciclon", "tipo_costo")
-    calculateValue=("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc", "Bc", "Jc", "Lc", "Zc", "De", "Sc")
-    calculateCostos=("C_adq", "C_inst", "num_ciclonesCoste", "Q")
-    indiceCostos=2
+              "f_install": 1.4,
+              "Base_index": 0.0,
+              "Current_index": 0.0,
+              "tipo_costo": 0}
+    kwargsInput = ("entrada", )
+    kwargsValue = ("Dc", "num_ciclones", "rendimientoAdmisible", "velocidadAdmisible", "DeltaPAdmisible")
+    kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP", "modelo_ciclon", "tipo_costo")
+    calculateValue = ("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc", "Bc", "Jc", "Lc", "Zc", "De", "Sc")
+    calculateCostos = ("C_adq", "C_inst", "num_ciclonesCoste", "Q")
+    indiceCostos = 2
 
-    TEXT_TIPO=[QApplication.translate("pychemqt", "Rating: Calculate ΔP and efficiency", None, QApplication.UnicodeUTF8),
-                        QApplication.translate("pychemqt", "Design: Calculate cyclone dimensions")]
-    TEXT_MODEL=["Rossin, Rammler & Intelmann", "Leith & Licht"]
-    TEXT_MODEL_DELTAP=[QApplication.translate("pychemqt", "Standart"),
-                                    "Casal & Martinez-Benet", "Leith & Licht", "Sheferd, Lapple & Ter Linden"]
-    TEXT_MODEL_CICLON=["Stairmand ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
-                                        "Swift ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
-                                         "Lapple ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
-                                         "Swift ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
-                                         "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
-                                         "Lorenz I", "Lorenz II", "Lorenz III",
-                                          QApplication.translate("pychemqt", "Custom")]
-    TEXT_COST=[QApplication.translate("pychemqt", "Heavy duty"),
-                        QApplication.translate("pychemqt", "Standard dury"),
-                        QApplication.translate("pychemqt", "Multicyclone")]
+    TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate ΔP and efficiency", None, QApplication.UnicodeUTF8),
+                 QApplication.translate("pychemqt", "Design: Calculate cyclone dimensions")]
+    TEXT_MODEL = ["Rossin, Rammler & Intelmann", "Leith & Licht"]
+    TEXT_MODEL_DELTAP = [QApplication.translate("pychemqt", "Standart"),
+                         "Casal & Martinez-Benet", "Leith & Licht", "Sheferd, Lapple & Ter Linden"]
+    TEXT_MODEL_CICLON = ["Stairmand ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
+                         "Swift ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
+                         "Lapple ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
+                         "Swift ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
+                         "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
+                         "Lorenz I", "Lorenz II", "Lorenz III",
+                         QApplication.translate("pychemqt", "Custom")]
+    TEXT_COST = [QApplication.translate("pychemqt", "Heavy duty"),
+                 QApplication.translate("pychemqt", "Standard dury"),
+                 QApplication.translate("pychemqt", "Multicyclone")]
 
     @property
     def isCalculable(self):
         if self.kwargs["f_install"] and self.kwargs["Base_index"] and self.kwargs["Current_index"]:
-            self.statusCoste=True
+            self.statusCoste = True
         else:
-            self.statusCoste=False
+            self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
             return
 
         if self.kwargs["tipo_calculo"]:
-            if self.kwargs["modelo_ciclon"]==8:
+            if self.kwargs["modelo_ciclon"] == 8:
                 if self.kwargs["Dc"] and self.kwargs["Hc"] and self.kwargs["Bc"] and self.kwargs["De"]:
-                    self.msg=""
-                    self.status=1
+                    self.msg = ""
+                    self.status = 1
                     return True
                 else:
-                    self.msg=QApplication.translate("pychemqt", "undefined cyclone dimension")
-                    self.status=0
+                    self.msg = QApplication.translate("pychemqt", "undefined cyclone dimension")
+                    self.status = 0
             else:
                 if (self.kwargs["DeltaPAdmisible"] or self.kwargs["velocidadAdmisible"]) and self.kwargs["rendimientoAdmisible"]:
-                    self.msg=""
-                    self.status=1
+                    self.msg = ""
+                    self.status = 1
                     return True
                 elif self.kwargs["rendimientoAdmisible"]:
-                    self.msg=QApplication.translate("pychemqt", "undefined efficiency")
-                    self.status=0
+                    self.msg = QApplication.translate("pychemqt", "undefined efficiency")
+                    self.status = 0
                 else:
-                    self.msg=QApplication.translate("pychemqt", "undefined loss pressure specification")
-                    self.status=0
+                    self.msg = QApplication.translate("pychemqt", "undefined loss pressure specification")
+                    self.status = 0
 
         else:
             if self.kwargs["Dc"] and self.kwargs["num_ciclones"]:
-                self.msg=""
-                self.status=1
+                self.msg = ""
+                self.status = 1
                 return True
             elif self.kwargs["Dc"]:
-                self.msg=QApplication.translate("pychemqt", "undefined cyclone number")
-                self.status=0
+                self.msg = QApplication.translate("pychemqt", "undefined cyclone number")
+                self.status = 0
             else:
-                self.msg=QApplication.translate("pychemqt", "undefined cyclone diameter")
-                self.status=0
-
+                self.msg = QApplication.translate("pychemqt", "undefined cyclone diameter")
+                self.status = 0
 
     def calculo(self):
         self.entrada=self.kwargs["entrada"]

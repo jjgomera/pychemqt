@@ -11,18 +11,18 @@ from UI.delegate import CellEditor
 class UI_conversorUnidades(QtGui.QDialog):
     def __init__(self, unidad, valor=None, parent=None):
         super(UI_conversorUnidades, self).__init__(parent)
-        self.unidad=unidad
-        self.magnitud=unidad.__name__
-        self.texto=unidad.__text__
-        self.unit=unidad.__units__
+        self.unidad = unidad
+        self.magnitud = unidad.__name__
+        self.texto = unidad.__text__
+        self.unit = unidad.__units__
         if unidad.__tooltip__:
-            self.tooltip=unidad.__tooltip__
+            self.tooltip = unidad.__tooltip__
         else:
-            self.tooltip=unidad.__text__
-        self.value=self.unidad(valor)
+            self.tooltip = unidad.__text__
+        self.value = self.unidad(valor)
         self.setWindowTitle(unidad.__title__)
         self.gridLayout = QtGui.QGridLayout(self)
-        self.tabla=QtGui.QTableWidget()
+        self.tabla = QtGui.QTableWidget()
         self.tabla.setRowCount(len(self.texto))
         self.tabla.setColumnCount(1)
         self.tabla.setItemDelegateForColumn(0, CellEditor(self))
@@ -30,18 +30,19 @@ class UI_conversorUnidades(QtGui.QDialog):
         self.tabla.horizontalHeader().setStretchLastSection(True)
         if self.magnitud in ["SpecificVolume", "Density", "MassFlow", "VolFlow", "ThermalConductivity", "HeatTransfCoef"]:
             self.resize(215, self.minimumHeight())
-        elif self.magnitud=="Currency":
+        elif self.magnitud == "Currency":
             self.resize(250, 500)
         else:
             self.resize(self.minimumSize())
 
         if self.magnitud in ["Temperature", "Area", "Volume",  "Length", "Angle", "Time"]:
-            x=15
+            x = 15
         elif self.magnitud in["ThermalConductivity"]:
-            x=10
+            x = 10
         elif self.magnitud in ["Speed", "Mass", "Acceleration", "Energy", "Enthalpy", "MassFlow", "Diffusivity", "Tension", "Solubility_parameter", "HeatTransfCoef"]:
-            x=5
-        else: x=0
+            x = 5
+        else:
+            x = 0
         self.gridLayout.addItem(QtGui.QSpacerItem(x,15,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,0)
         self.gridLayout.addItem(QtGui.QSpacerItem(x,15,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,2)
 

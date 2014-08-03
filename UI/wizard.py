@@ -4,42 +4,43 @@
 from ConfigParser import ConfigParser
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 
 from lib.config import conf_dir
 from lib.unidades import Temperature, Pressure
-from tools import UI_confComponents, UI_Preferences, UI_confTransport, UI_confThermo, UI_confUnits, UI_confResolution
+from tools import UI_confComponents, UI_confTransport, UI_confThermo, UI_confUnits, UI_confResolution
 from UI.widgets import Entrada_con_unidades
 
 
 def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
-    #funcion que calcula los métodos termodinámicos más adecuados para el proyecto
-    #TODO
+    # funcion que calcula los métodos termodinámicos más adecuados para el proyecto
+    # TODO
     pass
+
 
 class AutoDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(AutoDialog, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
-        
+
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T<sub>min</sub>")),1,1)
-        self.Tmin=Entrada_con_unidades(Temperature)
+        self.Tmin = Entrada_con_unidades(Temperature)
         layout.addWidget(self.Tmin,1,2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T<sub>max</sub>")),2,1)
-        self.Tmax=Entrada_con_unidades(Temperature)
+        self.Tmax = Entrada_con_unidades(Temperature)
         layout.addWidget(self.Tmax,2,2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "P<sub>min</sub>")),3,1)
-        self.Pmin=Entrada_con_unidades(Pressure)
+        self.Pmin = Entrada_con_unidades(Pressure)
         layout.addWidget(self.Pmin,3,2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "P<sub>max</sub>")),4,1)
-        self.Pmax=Entrada_con_unidades(Pressure)
+        self.Pmax = Entrada_con_unidades(Pressure)
         layout.addWidget(self.Pmax,4,2)
 
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox,5,1,1,2)
-    
+
 
 class Wizard(QtGui.QWizard):
     def __init__(self, config=None, parent=None):
@@ -47,7 +48,7 @@ class Wizard(QtGui.QWizard):
         self.config=config
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Configuration wizard..."))
         self.setOptions(QtGui.QWizard.ExtendedWatermarkPixmap|QtGui.QWizard.IndependentPages|QtGui.QWizard.HaveCustomButton1)
-        
+
         botonAuto=QtGui.QPushButton(QtGui.QApplication.translate("pychemqt", "Auto"))
         botonAuto.setToolTip(QtGui.QApplication.translate("pychemqt", "Choose good values from project components and conditions"))
         self.setButton(QtGui.QWizard.CustomButton1, botonAuto)
@@ -55,7 +56,7 @@ class Wizard(QtGui.QWizard):
 #        layout << QtGui.QWizard.CustomButton1 << QtGui.QWizard.Stretch << QtGui.QWizard.BackButton << QtGui.QWizard.NextButton << QtGui.QWizard.FinishButton
 #        self.setButtonLayout(layout)
         self.customButtonClicked.connect(self.auto)
-        
+
         page1_welcome=QtGui.QWizardPage()
         page1_welcome.setTitle(QtGui.QApplication.translate("pychemqt", "Welcome"))
         page1_welcome.setSubTitle(QtGui.QApplication.translate("pychemqt", "That's the configuration wizard of a new project from pychemqt"))
@@ -67,7 +68,7 @@ This wizard let's you configure all parameters necessary in a pychemqt's project
 All options will be changed later using the options in menu Edit, and this wizard<br>
 can be run at any time later.<br>
 These are the options you must expecific next:<br>
-    
+
 <ul>
  <li>Component list</li>
  <li>Thermodinamic properties</li>
@@ -105,7 +106,7 @@ These are the options you must expecific next:<br>
         self.transport=UI_confTransport.UI_confTransport_widget(config)
         lyt.addWidget(self.transport)
         self.addPage(page4_transport)
-        
+
         page5_units=QtGui.QWizardPage()
         page5_units.setTitle(QtGui.QApplication.translate("pychemqt", "Define preferred units"))
         page5_units.setSubTitle(QtGui.QApplication.translate("pychemqt", "The preferred units are not necessary for the simulation, but a good election let you only focus in simulation"))
@@ -115,13 +116,13 @@ These are the options you must expecific next:<br>
         lyt.addWidget(self.units)
         self.addPage(page5_units)
         self.currentIdChanged.connect(self.checkComponents)
-        
-        
+
+
     def checkComponents(self, id):
         if id==1:
             self.button(QtGui.QWizard.NextButton).setEnabled(len(self.componentes.indices)!=0)
         self.button(QtGui.QWizard.CustomButton1).setVisible(id==2)
-    
+
     def auto(self):
         dialogo=AutoDialog()
         if dialogo.exec_():
@@ -130,8 +131,8 @@ These are the options you must expecific next:<br>
             pmin=dialogo.Pmin.value
             tmax=dialogo.Pmax.value
             auto(tmin, tmax, pmin, pmax, self.componentes.indices)
-            
-        
+
+
     @property
     def value(self):
         config=self.componentes.value(self.config)
@@ -155,7 +156,7 @@ These are the options you must expecific next:<br>
         config=UI_confUnits.UI_confUnits_widget.default(config)
         config=UI_confResolution.UI_confResolution_widget.default(config)
         return config
-        
+
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)

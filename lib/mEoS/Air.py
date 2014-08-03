@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -152,3 +153,9 @@ class Air(MEoS):
     _thermal=thermo0, thermo1
 
 
+if __name__ == "__main__":
+#    import doctest
+#    doctest.testmod()
+
+    aire=Air(T=300., P=0.1)
+    print aire.rho
