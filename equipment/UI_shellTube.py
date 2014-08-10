@@ -12,7 +12,8 @@ from PyQt4 import QtCore, QtGui
 from lib import unidades
 from UI import UI_corriente
 from UI.widgets import Entrada_con_unidades
-from equipment.parents import UI_equip, FoulingWidget, Dialog_Finned
+from equipment.parents import UI_equip
+from equipment.widget import FoulingWidget, Dialog_Finned
 from equipment.UI_pipe import Catalogo_Materiales_Dialog
 from equipment.heatExchanger import Shell_Tube
 from tools.costIndex import CostData
@@ -61,7 +62,7 @@ class Dialog_Methods(QtGui.QDialog):
         return kwargs
 
 
-        
+
 
 class UI_equipment(UI_equip):
     """Diálogo de definición de cambiadores de calor de carcasa y tubos"""
@@ -71,7 +72,7 @@ class UI_equipment(UI_equip):
         equipment: instancia de equipo inicial
         """
         super(UI_equipment, self).__init__(Shell_Tube, parent=parent)
-        
+
         #Pestaña entrada
         self.EntradaTubo= UI_corriente.Ui_corriente()
         self.EntradaTubo.Changed.connect(partial(self.changeParams, "entradaTubo"))
@@ -79,7 +80,7 @@ class UI_equipment(UI_equip):
         self.EntradaCarcasa= UI_corriente.Ui_corriente()
         self.EntradaCarcasa.Changed.connect(partial(self.changeParams, "entradaCarcasa"))
         self.entrada.addTab(self.EntradaCarcasa, QtGui.QApplication.translate("pychemqt", "Shell"))
-        
+
         #Pestaña modelo
         self.tabModelo = QtGui.QWidget()
         self.tabWidget.insertTab(1, self.tabModelo,QtGui.QApplication.translate("pychemqt", "Model"))
@@ -106,7 +107,7 @@ class UI_equipment(UI_equip):
         self.rearHead=QtGui.QComboBox()
         for txt in self.Equipment.TEXT_REARHEAD:
             self.rearHead.addItem(txt)
-        
+
         self.rearHead.currentIndexChanged.connect(partial(self.changeParams, "rearHead"))
         gridLayout_Modelo.addWidget(self.rearHead,5,2,1,2)
         gridLayout_Modelo.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,1,1,6)
@@ -116,13 +117,13 @@ class UI_equipment(UI_equip):
             self.orientacion.addItem(txt)
         self.orientacion.currentIndexChanged.connect(partial(self.changeParams, "orientation"))
         gridLayout_Modelo.addWidget(self.orientacion,7,2)
-        
+
         botonMetodos=QtGui.QPushButton(QtGui.QApplication.translate("pychemqt", "Calculation methods"))
         botonMetodos.clicked.connect(self.selectMethods)
         gridLayout_Modelo.addWidget(botonMetodos,9,1)
         gridLayout_Modelo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1,1,6)
-        
-        
+
+
         #Pestaña Tubos
         self.tabTube = QtGui.QWidget()
         self.tabWidget.insertTab(2, self.tabTube,QtGui.QApplication.translate("pychemqt", "Tubes"))
@@ -215,14 +216,14 @@ class UI_equipment(UI_equip):
         self.shellFouling=FoulingWidget()
         self.shellFouling.valueChanged.connect(partial(self.changeParams, "shellFouling"))
         gridLayout_Shell.addWidget(self.shellFouling,8,2,1,2)
-        gridLayout_Shell.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),9,1,1,6)    
+        gridLayout_Shell.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),9,1,1,6)
         gridLayout_Shell.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Sealing Strips")),10,1)
         self.sealingStrips=Entrada_con_unidades(float)
         self.sealingStrips.valueChanged.connect(partial(self.changeParams, "sealingStrips"))
         gridLayout_Shell.addWidget(self.sealingStrips,10,2)
-        
+
         group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Clearances"))
-        gridLayout_Shell.addWidget(group,11,1,1,6)    
+        gridLayout_Shell.addWidget(group,11,1,1,6)
         lyt=QtGui.QGridLayout(group)
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Tube to baffle hole")),1,1)
         self.ClearanceTubeBaffle=Entrada_con_unidades(unidades.Length, "Thickness")
@@ -252,7 +253,7 @@ class UI_equipment(UI_equip):
         self.baffleType.addItem(QtGui.QApplication.translate("pychemqt", "Disk & donut"))
         self.baffleType.addItem(QtGui.QApplication.translate("pychemqt", "Rod"))
         self.baffleType.currentIndexChanged.connect(partial(self.changeParams, "typeBaffle"))
-        gridLayout_Fitting.addWidget(self.baffleType,1,2)     
+        gridLayout_Fitting.addWidget(self.baffleType,1,2)
         gridLayout_Fitting.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,1,1,6)
         gridLayout_Fitting.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Inlet spacing")),3,1)
         self.baffleSpacingIn=Entrada_con_unidades(unidades.Length)
@@ -290,7 +291,7 @@ class UI_equipment(UI_equip):
         gridLayout_Fitting.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),8,1,1,6)
 
         group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Nozzles"))
-        gridLayout_Fitting.addWidget(group,9,1,1,6)    
+        gridLayout_Fitting.addWidget(group,9,1,1,6)
         lyt=QtGui.QGridLayout(group)
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Shellside")),0,2)
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Tubeside")),0,3)
@@ -311,7 +312,7 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed),1,4,2,1)
 
         gridLayout_Fitting.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),15,1,1,6)
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Calculation Mode")),1,1)
@@ -374,7 +375,7 @@ class UI_equipment(UI_equip):
         self.Salida.addTab(self.SalidaTubo, QtGui.QApplication.translate("pychemqt", "Tubes"))
         self.SalidaCarcasa= UI_corriente.Ui_corriente(readOnly=True)
         self.Salida.addTab(self.SalidaCarcasa, QtGui.QApplication.translate("pychemqt", "Shell"))
-        
+
         if equipment:
             self.setEquipment(equipment)
 
@@ -383,7 +384,7 @@ class UI_equipment(UI_equip):
         dialogo=Dialog_Methods(self.Equipment)
         if dialogo.exec_():
             self.Equipment(**dialogo.kwargs)
-        
+
     def showMaterial(self):
         dialogo=Catalogo_Materiales_Dialog()
         if dialogo.exec_():
@@ -396,9 +397,9 @@ class UI_equipment(UI_equip):
             widget.setValue(Fouling_Factor_Shell_Tube_Exchanger[str(txt)])
         else:
             widget.setReadOnly(False)
-            
 
-        
+
+
     def finnedChanged(self, ind):
         self.buttonFin.setEnabled(ind)
         self.changeParams("finned", ind)
@@ -408,11 +409,11 @@ class UI_equipment(UI_equip):
         dialogo=Dialog_Finned()
         if dialogo.exec_():
             pass
-        
-        
+
+
     def rellenar(self):
-        pass    
-        
+        pass
+
     def calcularCostos(self):
         if self.todos_datos():
             self.Equipment.Coste(self.factorInstalacion.value(), 0, self.tipo.currentIndex(), self.material.currentIndex())
@@ -421,7 +422,7 @@ class UI_equipment(UI_equip):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Mezcla
     app = QtGui.QApplication(sys.argv)
 #    aguaFria=Corriente(300, 1, 100, Mezcla([62], [1]))

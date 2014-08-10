@@ -98,9 +98,9 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
 splash.showMessage(QtGui.QApplication.translate("pychemqt",
                                                 "Checking currency data"))
 if not os.path.isfile(conf_dir+"moneda.dat"):
-    from lib.firstrun import getdata
+    from lib.firstrun import getrates
     try:
-        getdata(conf_dir+"moneda.dat")
+        getrates(conf_dir+"moneda.dat")
     except urllib2.URLError:
         origen = os.environ["pychemqt"]+"dat"+os.sep+"moneda.dat"
         shutil.copy(origen, conf_dir+"moneda.dat")

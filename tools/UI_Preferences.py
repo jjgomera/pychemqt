@@ -1,7 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os, sys
+###############################################################################
+# Library to show/configure pychemqt general preferences
+#
+#   - Preferences: Preferences main dialog
+###############################################################################
+
+import os
+import sys
 from functools import partial
 from math import pi
 from ConfigParser import ConfigParser
@@ -16,7 +23,9 @@ from equipment import equipments
 from lib.firstrun import calculator, editor, shell
 from lib.config import representacion
 
+
 def format2txt(formato):
+    """Function to convert dict format config in a string equivalent"""
     if formato["signo"]:
         txt="+"
     else:
@@ -44,7 +53,7 @@ class ConfLine(QtGui.QWidget):
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Width:")),1,1)
         self.width=Entrada_con_unidades(float, width=50, decimales=1, spinbox=True, step=0.1, textounidad="px")
         lyt.addWidget(self.width,1,2,1,4)
-        
+
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Join:")),2,1)
         toolJoinMitter=QtGui.QToolButton()
         toolJoinMitter.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-join-miter.png")))
@@ -55,16 +64,16 @@ class ConfLine(QtGui.QWidget):
         toolJoinBevel=QtGui.QToolButton()
         toolJoinBevel.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-join-bevel.png")))
         toolJoinBevel.setIconSize(QtCore.QSize(24, 24))
-        toolJoinBevel.setCheckable(True)        
+        toolJoinBevel.setCheckable(True)
         toolJoinBevel.setToolTip(QtGui.QApplication.translate("pychemqt", "Join bevel: The triangular notch between the two lines is filled"))
         lyt.addWidget(toolJoinBevel,2,3)
         toolJoinRound=QtGui.QToolButton()
         toolJoinRound.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-join-round.png")))
         toolJoinRound.setIconSize(QtCore.QSize(24, 24))
-        toolJoinRound.setCheckable(True)        
+        toolJoinRound.setCheckable(True)
         toolJoinRound.setToolTip(QtGui.QApplication.translate("pychemqt", "Join round: A circular arc between the two lines is filled"))
         lyt.addWidget(toolJoinRound,2,4)
-        
+
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Mitter Limit:")),3,1)
         self.mitterLimit=Entrada_con_unidades(float, width=50, decimales=1, spinbox=True, step=0.1)
         lyt.addWidget(self.mitterLimit,3,2,1,4)
@@ -74,7 +83,7 @@ class ConfLine(QtGui.QWidget):
         self.groupJoint.addButton(toolJoinBevel)
         self.groupJoint.addButton(toolJoinRound)
         self.groupJoint.buttonClicked["int"].connect(self.mitterlimitEnabled)
-        
+
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Cap:")),5,1)
         toolCapFlat=QtGui.QToolButton()
         toolCapFlat.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-cap-butt.png")))
@@ -85,13 +94,13 @@ class ConfLine(QtGui.QWidget):
         toolCapRound=QtGui.QToolButton()
         toolCapRound.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-cap-round.png")))
         toolCapRound.setIconSize(QtCore.QSize(24, 24))
-        toolCapRound.setCheckable(True)        
+        toolCapRound.setCheckable(True)
         toolCapRound.setToolTip(QtGui.QApplication.translate("pychemqt", "Round Cap: A rounded line end"))
         lyt.addWidget(toolCapRound,5,3)
         toolCapSquare=QtGui.QToolButton()
         toolCapSquare.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/stroke-cap-square.png")))
         toolCapSquare.setIconSize(QtCore.QSize(24, 24))
-        toolCapSquare.setCheckable(True)        
+        toolCapSquare.setCheckable(True)
         toolCapSquare.setToolTip(QtGui.QApplication.translate("pychemqt", "Square Cap: A square line end that covers the end point and extends beyond it by half the line width"))
         lyt.addWidget(toolCapSquare,5,4)
         self.groupCap=QtGui.QButtonGroup()
@@ -99,7 +108,7 @@ class ConfLine(QtGui.QWidget):
         self.groupCap.addButton(toolCapRound)
         self.groupCap.addButton(toolCapSquare)
         lyt.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,1,1,4)
-        
+
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Dashes:")),7,1)
         self.guion=comboLine()
         lyt.addWidget(self.guion,7,2,1,3)
@@ -117,10 +126,10 @@ class ConfLine(QtGui.QWidget):
             self.dashOffset.setValue(pen.dashOffset())
             self.width.setValue(pen.widthF())
 
-    
+
     def mitterlimitEnabled(self, id):
         self.mitterLimit.setEnabled(id==-2)
-        
+
     def pen(self):
         """Return a QPen with the live configuration"""
         pen=QtGui.QPen(QtGui.QColor(self.ColorButtonLine.color.name()))
@@ -139,7 +148,7 @@ class ConfGeneral(QtGui.QDialog):
     def __init__(self, config=None, parent=None):
         super(ConfGeneral, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
-        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 0, 1, 1, 4)        
+        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 0, 1, 1, 4)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Highlight color:")), 1, 1, 1, 1)
         self.ColorButtonResaltado = ColorSelector()
         layout.addWidget(self.ColorButtonResaltado, 1, 2, 1, 1)
@@ -161,7 +170,7 @@ class ConfGeneral(QtGui.QDialog):
         layout.addWidget(self.showTrayIcon,6,1)
 
         layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding), 14, 1, 1, 4)
-        
+
         if config and config.has_section("General"):
             self.ColorButtonResaltado.setColor(config.get("General", 'Color_Resaltado'))
             self.ColorButtonReadOnly.setColor(config.get("General", 'Color_ReadOnly'))
@@ -179,7 +188,7 @@ class ConfGeneral(QtGui.QDialog):
         config.set("General", "Load_Last_Project", str(self.loadLastProject.isChecked()))
         config.set("General", "Tray", str(self.showTrayIcon.isChecked()))
         return config
-    
+
     @classmethod
     def default(cls, config):
         config.add_section("General")
@@ -196,28 +205,28 @@ class ConfPFD(QtGui.QDialog):
     def __init__(self, config=None, parent=None):
         super(ConfPFD, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
-        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 0, 1, 1, 4)        
+        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 0, 1, 1, 4)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Input color:")),1,1)
         self.ColorButtonEntrada = ColorSelector()
         layout.addWidget(self.ColorButtonEntrada,1,2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output color:")),2,1)
         self.ColorButtonSalida = ColorSelector()
         layout.addWidget(self.ColorButtonSalida,2,2)
-        
+
         group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Line format"))
         layout.addWidget(group,3,1,1,3)
         lyt = QtGui.QHBoxLayout(group)
         self.lineFormat=ConfLine()
         lyt.addWidget(self.lineFormat)
-        
+
         group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "PFD resolution"))
         layout.addWidget(group,4,1,1,3)
         lyt = QtGui.QHBoxLayout(group)
         self.resolution=UI_confResolution.UI_confResolution_widget(config)
         lyt.addWidget(self.resolution)
-        
+
         layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding), 14, 1, 1, 4)
-        
+
         if config and config.has_section("PFD"):
             self.ColorButtonEntrada.setColor(config.get("PFD", 'Color_Entrada'))
             self.ColorButtonSalida.setColor(config.get("PFD", 'Color_Salida'))
@@ -244,7 +253,7 @@ class ConfPFD(QtGui.QDialog):
         config.set("PFD", "Guion", str(self.lineFormat.guion.currentIndex()))
         config.set("PFD", "Dash_offset", str(self.lineFormat.dashOffset.value))
         return config
-        
+
     @classmethod
     def default(cls, config):
         config.add_section("PFD")
@@ -270,7 +279,7 @@ class ConfTooltipUnit(QtGui.QDialog):
         self.checkShow.toggled.connect(self.checkShow_Toggled)
         layout.addWidget(self.checkShow,1,1)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,1)
-        
+
         self.groupsystems = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Systems of measurement"))
         self.groupsystems.setFixedHeight(50)
         layout.addWidget(self.groupsystems,3,1)
@@ -291,13 +300,13 @@ class ConfTooltipUnit(QtGui.QDialog):
         self.stacked = QtGui.QStackedWidget()
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         layout.addWidget(self.stacked,9,1)
-        
+
         self.tabla=[]
         for i, magnitud in enumerate(unidades._magnitudes[:-1]):
             textos=magnitud[2].__text__
             self.tabla.append(QtGui.QTableWidget())
             self.stacked.addWidget(self.tabla[i])
-            
+
             self.tabla[i].setRowCount(len(textos))
             self.tabla[i].setColumnCount(1)
             self.tabla[i].setColumnWidth(0, 16)
@@ -311,11 +320,11 @@ class ConfTooltipUnit(QtGui.QDialog):
                 self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
             self.rellenar(magnitud[0], i, config)
             self.eleccion.addItem(magnitud[1])
-            
+
         if config.has_section("Tooltip"):
             self.checkShow.setChecked(config.getboolean("Tooltip", "Show"))
-            
-            
+
+
     def rellenar(self, magnitud, tabla, config):
         if config.has_section("Tooltip"):
             lista=eval(config.get("Tooltip",magnitud))
@@ -333,8 +342,8 @@ class ConfTooltipUnit(QtGui.QDialog):
         else: txt="false"
         for tabla, value in enumerate(unidades.units_set[set][:-1]):
             self.tabla[tabla].item(value, 0).setText(txt)
-        
-        
+
+
     def value(self, config):
         if not config.has_section("Tooltip"):
             config.add_section("Tooltip")
@@ -367,14 +376,14 @@ class ConfTooltipEntity(QtGui.QDialog):
     def __init__(self, config, parent=None):
         super(ConfTooltipEntity, self).__init__(parent)
         layout = QtGui.QVBoxLayout(self)
-        
+
         self.eleccion=QtGui.QComboBox()
         layout.addWidget(self.eleccion)
         self.stacked = QtGui.QStackedWidget()
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         layout.addWidget(self.stacked)
-        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Preferred))   
-        
+        layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Preferred))
+
 
         self.tabla=[QtGui.QTableWidget()]
         self.tabla[0].setRowCount(len(corriente.Corriente.propertiesNames()))
@@ -430,7 +439,7 @@ class ConfTooltipEntity(QtGui.QDialog):
             if self.tabla[0].item(j, 0).text()=="true":
                 lista.append(j)
         config.set("TooltipEntity", "Corriente", str(lista))
-        
+
         for i, tabla in enumerate(self.tabla[1:]):
             lista=[]
             for j in range(tabla.rowCount()):
@@ -484,7 +493,7 @@ class NumericFactor(QtGui.QDialog):
         layout.addWidget(self.checkSign,11,1,1,3)
         self.checkThousand=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Show thousand separator"))
         layout.addWidget(self.checkThousand,12,1,1,3)
-        
+
         self.checkFixed.toggled.connect(self.TotalDigits.setNotReadOnly)
         self.checkFixed.toggled.connect(self.DecimalDigits.setNotReadOnly)
         self.checkSignificant.toggled.connect(self.FiguresSignificatives.setNotReadOnly)
@@ -492,17 +501,17 @@ class NumericFactor(QtGui.QDialog):
         self.checkExp.toggled.connect(self.FiguresExponential.setNotReadOnly)
         self.checkExpVariable.toggled.connect(self.Tolerance.setNotReadOnly)
         self.checkExpVariable.toggled.connect(self.labelTolerancia.setEnabled)
-        
+
         layout.addItem(QtGui.QSpacerItem(20,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),13,1)
         self.muestra=QtGui.QLabel()
         layout.addWidget(self.muestra,14,1,1,3)
-        
+
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox,15,1,1,3)
-        
+
         self.checkFixed.setChecked(config["format"]==0)
         self.TotalDigits.setNotReadOnly(config["format"]==0)
         self.DecimalDigits.setNotReadOnly(config["format"]==0)
@@ -527,7 +536,7 @@ class NumericFactor(QtGui.QDialog):
             self.checkSign.setChecked(config["signo"])
         if config.has_key("thousand"):
             self.checkThousand.setChecked(config["thousand"])
-        
+
         self.updateMuestra()
         self.checkFixed.toggled.connect(self.updateMuestra)
         self.checkSignificant.toggled.connect(self.updateMuestra)
@@ -548,12 +557,12 @@ class NumericFactor(QtGui.QDialog):
         if self.checkExpVariable.isChecked():
             self.labelTolerancia.setDisabled(False)
             self.Tolerance.setReadOnly(True)
-    
+
     def updateMuestra(self):
         kwargs=self.args()
         txt=QtGui.QApplication.translate("pychemqt", "Sample")+": "+representacion(pi*1e4, **kwargs)
         self.muestra.setText(txt)
-        
+
     def args(self):
         kwarg={}
         if self.checkFixed.isChecked():
@@ -569,9 +578,9 @@ class NumericFactor(QtGui.QDialog):
         kwarg["exp"]=self.checkExpVariable.isEnabled() and self.checkExpVariable.isChecked()
         kwarg["tol"]=self.Tolerance.value
         kwarg["signo"]=self.checkSign.isChecked()
-        kwarg["thousand"]=self.checkThousand.isChecked()        
+        kwarg["thousand"]=self.checkThousand.isChecked()
         return kwarg
-        
+
 
 class ConfFormat(QtGui.QTableWidget):
     """Clase con el widget de las características generales"""
@@ -588,7 +597,7 @@ class ConfFormat(QtGui.QTableWidget):
             self.item(i, 0).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
             self.setItem(i, 1, QtGui.QTableWidgetItem(""))
             self.item(i, 1).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-            
+
         if config.has_section("NumericFormat"):
             for i, magnitud in enumerate(unidades._magnitudes):
                 formato=eval(config.get("NumericFormat", magnitud[0]))
@@ -598,7 +607,7 @@ class ConfFormat(QtGui.QTableWidget):
 
         self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.cellDoubleClicked.connect(self.showConfDialog)
-        
+
     def showConfDialog(self, fila, columna):
         dialog=NumericFactor(self.config[fila], self)
         if dialog.exec_():
@@ -621,15 +630,15 @@ class ConfFormat(QtGui.QTableWidget):
         if formato.get("exp", False):
             txt+=" ({tol} exp)".format(**formato)
         return txt
-        
-        
+
+
     def value(self, config):
         if not config.has_section("NumericFormat"):
             config.add_section("NumericFormat")
         for i, magnitud in enumerate(unidades._magnitudes):
             config.set("NumericFormat", magnitud[0], str(self.config[i]))
         return config
-    
+
     @classmethod
     def default(cls, config):
         config.add_section("NumericFormat")
@@ -654,7 +663,7 @@ class ConfPetro(QtGui.QDialog):
         self.Peso_molecular.addItem("Goossens")
         self.Peso_molecular.addItem("TWu")
         layout.addWidget(self.Peso_molecular, 1, 2, 1, 1)
-        
+
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Critics properties:")), 2, 1, 1, 1)
         self.critical = QtGui.QComboBox()
         self.critical.addItem("Riazi Daubert")
@@ -713,7 +722,7 @@ class ConfPetro(QtGui.QDialog):
         self.Curvas.addItem("Riazi")
         self.Curvas.addItem("Daubert")
         layout.addWidget(self.Curvas, 12, 2, 1, 1)
-        
+
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "% Hydrogen:")), 13, 1, 1, 1)
         self.Hidrogeno = QtGui.QComboBox()
         self.Hidrogeno.addItem("Riazi")
@@ -722,7 +731,7 @@ class ConfPetro(QtGui.QDialog):
         self.Hidrogeno.addItem("Jenkins Walsh")
         layout.addWidget(self.Hidrogeno, 13, 2, 1, 1)
         layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding), 15, 0, 1, 3)
-        
+
         if config.has_section("petro"):
             self.Peso_molecular.setCurrentIndex(config.getint("petro","molecular_weight"))
             self.critical.setCurrentIndex(config.getint("petro","critical"))
@@ -770,12 +779,12 @@ class ConfApplications(QtGui.QDialog):
         label=QtGui.QApplication.translate("pychemqt", "External Calculator")+":"
         msg=QtGui.QApplication.translate("pychemqt", "Select External Calculator")
         self.calculadora=PathConfig(label, msg=msg, patron="exe")
-        layout.addWidget(self.calculadora,1,1) 
+        layout.addWidget(self.calculadora,1,1)
         label=QtGui.QApplication.translate("pychemqt", "Text viewer")+":"
         msg=QtGui.QApplication.translate("pychemqt", "Select External Text Viewer")
         self.textViewer=PathConfig(label, msg=msg, patron="exe")
         layout.addWidget(self.textViewer,2,1)
-        
+
         terminal=QtGui.QGroupBox()
         layout.addWidget(terminal,3,1)
         layoutTerminal=QtGui.QGridLayout(terminal)
@@ -794,14 +803,14 @@ class ConfApplications(QtGui.QDialog):
         layoutTerminal.addWidget(self.maximized,5,1,1,3)
 
         layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1)
-        
+
         terminalTitle=QtGui.QApplication.translate("pychemqt", "Shell")
         if sys.platform=="win32":
             terminal.setEnabled(False)
             terminal.setTitle(terminalTitle+" ("+QtGui.QApplication.translate("pychemqt", "Only Available on linux")+")")
         else:
             terminal.setTitle(terminalTitle)
-            
+
         if config.has_section("Applications"):
             self.calculadora.setText(config.get("Applications", 'Calculator'))
             self.textViewer.setText(config.get("Applications", 'TextViewer'))
@@ -836,7 +845,7 @@ class ConfApplications(QtGui.QDialog):
         config.set("Applications", "maximized", False)
         config.set("Applications", "foregroundColor", "#ffffff")
         config.set("Applications", "backgroundColor", "#000000")
-        
+
         return config
 
 
@@ -871,15 +880,15 @@ class Isolinea(QtGui.QDialog):
         self.Personalizar.toggled.connect(self.fin.setDisabled)
         self.Personalizar.toggled.connect(self.intervalo.setDisabled)
         self.Personalizar.toggled.connect(self.Lista.setEnabled)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,1,1,4) 
+        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,1,1,4)
         if unidad.__name__!="float":
             self.Critica = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Include critic point line"))
             layout.addWidget(self.Critica,7,1,1,4)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),8,1,1,4)
-        
+
         self.lineconfig = LineConfig(ConfSection, QtGui.QApplication.translate("pychemqt", "Line Style"))
         layout.addWidget(self.lineconfig,9,1,1,4)
-        
+
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),10,1)
         self.label=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Label"))
         layout.addWidget(self.label,11,1)
@@ -893,7 +902,7 @@ class Isolinea(QtGui.QDialog):
         self.Posicion.valueChanged.connect(self.label5.setValue)
         layout.addWidget(self.Posicion,13,3,1,2)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),14,4)
-        
+
         if config.has_section("MEOS"):
             self.inicio.setValue(config.getfloat("MEOS", ConfSection+'Start'))
             self.fin.setValue(config.getfloat("MEOS", ConfSection+'End'))
@@ -917,8 +926,8 @@ class Isolinea(QtGui.QDialog):
             self.unit.setChecked(config.getboolean("MEOS", ConfSection+'Units'))
             self.Posicion.setValue(config.getint("MEOS", ConfSection+'Position'))
             self.lineconfig.setConfig(config)
-        
-        
+
+
     def value(self, config):
         config.set("MEOS", self.ConfSection+"Start", self.inicio.value)
         config.set("MEOS", self.ConfSection+"End", self.fin.value)
@@ -941,7 +950,7 @@ class Isolinea(QtGui.QDialog):
         config.set("MEOS", self.ConfSection+"Units", self.unit.isChecked())
         config.set("MEOS", self.ConfSection+"Position", self.Posicion.value())
         return config
-        
+
     @classmethod
     def default(cls, config, ConfSection):
         config.set("MEOS", ConfSection+"Start", "0")
@@ -960,18 +969,18 @@ class Isolinea(QtGui.QDialog):
 
 class ConfmEoS(QtGui.QDialog):
     """Clase que define el widget de configuración de la herramienta de ecuaciones multiparametro"""
-    
-    lineas=[("Isotherm", QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature), 
-                ("Isobar", QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure), 
-                ("Isoenthalpic", QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy), 
-                ("Isoentropic", QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat), 
-                ("Isochor", QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume), 
+
+    lineas=[("Isotherm", QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature),
+                ("Isobar", QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure),
+                ("Isoenthalpic", QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy),
+                ("Isoentropic", QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat),
+                ("Isochor", QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume),
                 ("Isoquality", QtGui.QApplication.translate("pychemqt", "Isoquality"), float)]
-                
+
     def __init__(self, config, parent=None):
         super(ConfmEoS, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
-        
+
         self.iapws = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use iapws97 for water"))
         layout.addWidget(self.iapws,1,1,1,2)
         self.freesteam = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use freesteam library (faster)"))
@@ -1003,19 +1012,19 @@ class ConfmEoS(QtGui.QDialog):
         layout.addWidget(self.grid,9,1,1,2)
 
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,2)
-        
+
         if os.environ["freesteam"]:
             self.iapws.toggled.connect(self.freesteam.setEnabled)
         if os.environ["CoolProp"]:
             self.coolProp.setEnabled(True)
         if os.environ["refprop"]:
             self.refprop.setEnabled(True)
-        
+
         if config.has_section("MEOS"):
             self.iapws.setChecked(config.getboolean("MEOS",'iapws'))
             self.freesteam.setChecked(config.getboolean("MEOS",'freesteam'))
             self.coolProp.setChecked(config.getboolean("MEOS",'coolprop'))
-            self.refprop.setChecked(config.getboolean("MEOS",'refprop'))            
+            self.refprop.setChecked(config.getboolean("MEOS",'refprop'))
             self.surface.setChecked(config.getboolean("MEOS",'surface'))
             self.grid.setChecked(config.getboolean("MEOS",'grid'))
             self.lineconfig.setConfig(config)
@@ -1024,11 +1033,11 @@ class ConfmEoS(QtGui.QDialog):
     def value(self, config):
         if not config.has_section("MEOS"):
             config.add_section("MEOS")
-            
+
         config.set("MEOS", "iapws", self.iapws.isChecked())
         config.set("MEOS", "freesteam", self.freesteam.isChecked())
         config.set("MEOS", "coolprop", self.coolProp.isChecked())
-        config.set("MEOS", "refprop", self.refprop.isChecked())        
+        config.set("MEOS", "refprop", self.refprop.isChecked())
         config=self.lineconfig.value(config)
         config.set("MEOS", "surface", self.surface.isChecked())
         config.set("MEOS", "grid", self.grid.isChecked())
@@ -1036,7 +1045,7 @@ class ConfmEoS(QtGui.QDialog):
         for indice in range(self.Isolineas.count()):
             config=self.Isolineas.widget(indice).value(config)
         return config
-        
+
     @classmethod
     def default(cls, config):
         config.add_section("MEOS")
@@ -1053,22 +1062,31 @@ class ConfmEoS(QtGui.QDialog):
 
 
 class Preferences(QtGui.QDialog):
-    """Dialogo de configuracion de preferencias del programa principal"""
-    
-    classes=[(os.environ["pychemqt"]+"/images/pychemqt.png", QtGui.QApplication.translate("pychemqt", "General"), ConfGeneral), 
-                      (os.environ["pychemqt"]+"/images/button/PFD.png", QtGui.QApplication.translate("pychemqt", "PFD"), ConfPFD), 
-                      (os.environ["pychemqt"]+"/images/button/tooltip.png", QtGui.QApplication.translate("pychemqt", "Tooltips in units"), ConfTooltipUnit), 
-                      (os.environ["pychemqt"]+"/images/button/format_numeric.png", QtGui.QApplication.translate("pychemqt", "Numeric format"), ConfFormat), 
-                      (os.environ["pychemqt"]+"/images/button/oil.png", QtGui.QApplication.translate("pychemqt", "Pseudocomponents"), ConfPetro), 
-                      (os.environ["pychemqt"]+"/images/button/applications.png", QtGui.QApplication.translate("pychemqt", "Applications"), ConfApplications), 
-                      (os.environ["pychemqt"]+"/images/button/tooltip.png", QtGui.QApplication.translate("pychemqt", "Tooltips in PFD"), ConfTooltipEntity), 
-                      (os.environ["pychemqt"]+"/images/button/steamTables.png", QtGui.QApplication.translate("pychemqt", "mEoS"), ConfmEoS)]
+    """Preferences main dialog"""
+
+    classes = [
+        (os.environ["pychemqt"]+"/images/pychemqt.png",
+         QtGui.QApplication.translate("pychemqt", "General"), ConfGeneral),
+        (os.environ["pychemqt"]+"/images/button/PFD.png",
+         QtGui.QApplication.translate("pychemqt", "PFD"), ConfPFD),
+        (os.environ["pychemqt"]+"/images/button/tooltip.png",
+         QtGui.QApplication.translate("pychemqt", "Tooltips in units"), ConfTooltipUnit),
+        (os.environ["pychemqt"]+"/images/button/format_numeric.png",
+         QtGui.QApplication.translate("pychemqt", "Numeric format"), ConfFormat),
+        (os.environ["pychemqt"]+"/images/button/oil.png",
+         QtGui.QApplication.translate("pychemqt", "Pseudocomponents"), ConfPetro),
+        (os.environ["pychemqt"]+"/images/button/applications.png",
+         QtGui.QApplication.translate("pychemqt", "Applications"), ConfApplications),
+        (os.environ["pychemqt"]+"/images/button/tooltip.png",
+         QtGui.QApplication.translate("pychemqt", "Tooltips in PFD"), ConfTooltipEntity),
+        (os.environ["pychemqt"]+"/images/button/steamTables.png",
+         QtGui.QApplication.translate("pychemqt", "mEoS"), ConfmEoS)]
 
     def __init__(self, config=None, parent=None):
         super(Preferences, self).__init__(parent)
         if not config:
-            config=self.default()
-        self.config=config
+            config = self.default()
+        self.config = config
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Preferences"))
         layout = QtGui.QGridLayout(self)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),1, 1, 1, 1)
@@ -1081,13 +1099,13 @@ class Preferences(QtGui.QDialog):
         for icon, title, dialog in self.classes:
             self.stacked.addWidget(dialog(config))
             self.lista.addItem(QtGui.QListWidgetItem(QtGui.QIcon(QtGui.QPixmap(icon)), title))
-        
+
         self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 0, 1, 3)
-        
+
     def value(self):
         config=self.config
         for indice in range(self.stacked.count()):
@@ -1109,7 +1127,7 @@ if __name__ == "__main__":
     conf_dir = os.path.expanduser('~') + "/.pychemqt/"
     pychemqt_dir = os.environ["PWD"] + "/"
     app = QtGui.QApplication(sys.argv)
-    
+
 #    config={"format": 0, "decimales": 4, "signo": False}
 #    dialogo=NumericFactor(config)
 

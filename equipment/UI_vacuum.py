@@ -15,7 +15,7 @@ from UI.delegate import CellEditor
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(parents.UI_equipment):
+class UI_equipment(parents.UI_equip):
     """Diálogo de definición de filtros de mangas"""
     def __init__(self, entrada=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada"""
@@ -38,7 +38,7 @@ class UI_equipment(parents.UI_equipment):
         self.rendimientos=[]
         self.Rendimientos.cellChanged.connect(self.cambiarRendimientos)
         self.tabWidget.insertTab(1, self.Rendimientos,QtGui.QApplication.translate("equipment", "Rendimientos", None, QtGui.QApplication.UnicodeUTF8))
-        
+
         #Cálculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo de cálculo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1, 1, 1)
@@ -65,29 +65,29 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Membranas por filtro:", None, QtGui.QApplication.UnicodeUTF8)), 7, 1, 1, 1)
         self.MembranaCelda=Entrada_con_unidades(int, spinbox=True, step=1, width=70, value=78, min=1)
         self.MembranaCelda.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.MembranaCelda,7,2,1,1) 
+        gridLayout_Calculo.addWidget(self.MembranaCelda,7,2,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Diametro de membrana:", None, QtGui.QApplication.UnicodeUTF8)), 8, 1, 1, 1)
         self.Diametro=Entrada_con_unidades(unidades.Length, value=unidades.Length(0.5, "ft"))
         self.Diametro.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.Diametro,8,2,1,1) 
+        gridLayout_Calculo.addWidget(self.Diametro,8,2,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Area por membrana:", None, QtGui.QApplication.UnicodeUTF8)), 9, 1, 1, 1)
         self.Area=Entrada_con_unidades(unidades.Area, value=unidades.Area(16, "ft2"))
         self.Area.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.Area,9,2,1,1) 
+        gridLayout_Calculo.addWidget(self.Area,9,2,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Resistencia filtro:", None, QtGui.QApplication.UnicodeUTF8)), 7, 4, 1, 1)
         self.resistenciaFiltro=Entrada_con_unidades(float, spinbox=True, step=0.01, width=70, value=0.84, min=0)
         self.resistenciaFiltro.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.resistenciaFiltro,7,5,1,1) 
+        gridLayout_Calculo.addWidget(self.resistenciaFiltro,7,5,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Resistencia torta:", None, QtGui.QApplication.UnicodeUTF8)), 8, 4, 1, 1)
         self.resistenciaTorta=Entrada_con_unidades(float, spinbox=True, step=0.01, width=70, value=0.1, min=0)
         self.resistenciaTorta.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.resistenciaTorta,8,5,1,1) 
+        gridLayout_Calculo.addWidget(self.resistenciaTorta,8,5,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Filtros en limpieza:", None, QtGui.QApplication.UnicodeUTF8)), 9, 4, 1, 1)
         self.Limpieza=Entrada_con_unidades(int, spinbox=True, step=1, width=70, value=1, min=0)
         self.Limpieza.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.Limpieza,9,5,1,1)  
+        gridLayout_Calculo.addWidget(self.Limpieza,9,5,1,1)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1,1,6)
-        
+
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Datos calculados", None, QtGui.QApplication.UnicodeUTF8))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,11,1,1,5)
         self.gridLayout_1 = QtGui.QGridLayout(self.groupBox_Calculo)
@@ -99,7 +99,7 @@ class UI_equipment(parents.UI_equipment):
         self.gridLayout_1.addWidget(self.rendimientoCalculado,1,2,1,1)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Superficie:", None, QtGui.QApplication.UnicodeUTF8)),2,1,1,1)
         self.superficie=Entrada_con_unidades(unidades.Area, readOnly=True)
-        self.gridLayout_1.addWidget(self.superficie,2,2,1,1)        
+        self.gridLayout_1.addWidget(self.superficie,2,2,1,1)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),12,1,1,6)
 
         #Salidas
@@ -107,7 +107,7 @@ class UI_equipment(parents.UI_equipment):
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
         self.Salida.addTab(self.SalidaGas,QtGui.QApplication.translate("equipment", "Gas filtrado", None, QtGui.QApplication.UnicodeUTF8))
         self.Salida.addTab(self.SalidaSolido,QtGui.QApplication.translate("equipment", "Sólidos recogidos", None, QtGui.QApplication.UnicodeUTF8))
-        
+
         self.tabWidget.setCurrentIndex(0)
 
 
@@ -115,7 +115,7 @@ class UI_equipment(parents.UI_equipment):
         self.entrada=corriente
         self.rellenarTablaRendimientos()
         self.calculo()
-        
+
     def rellenarTablaRendimientos(self):
         self.Rendimientos.clearContents()
         self.Rendimientos.setRowCount(len(self.entrada.solido.distribucion))
@@ -136,7 +136,7 @@ class UI_equipment(parents.UI_equipment):
             if self.rendimientos==[]:
                 self.rendimientos=[0]*self.Rendimientos.rowCount()
             self.rendimientos[fila]=numero
-        
+
     def todos_datos(self):
         if self.TipoCalculo.currentIndex()==0:
             todos_datos=self.numFiltros.value and self.tiempo.value
@@ -158,7 +158,7 @@ class UI_equipment(parents.UI_equipment):
                     self.status.setState(3, QtGui.QApplication.translate("equipment", "Usando rendimiento por defecto", None, QtGui.QApplication.UnicodeUTF8))
                 else:
                     self.status.setState(1)
-    
+
     def rellenoSalida(self):
         if self.TipoCalculo.currentIndex()==0:
             self.deltaP.setValue(self.Equipment.deltaP)
@@ -172,8 +172,8 @@ class UI_equipment(parents.UI_equipment):
         self.superficie.setValue(self.Equipment.floorArea)
         self.SalidaGas.rellenar(self.Equipment.SalidaAire)
         self.SalidaSolido.rellenar(self.Equipment.SalidaSolido)
-        
-        
+
+
     def tipoCalculoCambiado(self, tipo_calculo):
         if tipo_calculo==0:
             self.numFiltros.setReadOnly(False)
@@ -207,24 +207,24 @@ class UI_equipment(parents.UI_equipment):
             self.deltaP.setResaltado(True)
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Mezcla, Corriente, Solid
     app = QtGui.QApplication(sys.argv)
     distribucion=[[17.5, 0.02],
-                                [22.4, 0.03], 
-                                [26.2,  0.05], 
-                                [31.8,  0.1],  
+                                [22.4, 0.03],
+                                [26.2,  0.05],
+                                [31.8,  0.1],
                                 [37, 0.1],
-                                [42.4, 0.1], 
-                                [48, 0.1], 
-                                [54, 0.1], 
-                                [60, 0.1], 
-                                [69, 0.1], 
-                                [81.3, 0.1], 
-                                [96.5, 0.05], 
-                                [109, 0.03], 
+                                [42.4, 0.1],
+                                [48, 0.1],
+                                [54, 0.1],
+                                [60, 0.1],
+                                [69, 0.1],
+                                [81.3, 0.1],
+                                [96.5, 0.05],
+                                [109, 0.03],
                                 [127, 0.02]]
-                        
+
     solido=Solid([64], [138718], distribucion)
     entrada=Corriente(423.15, 3, 11784,  Mezcla([475], [1]), solido)
     dialogo = UI_equipment(entrada)

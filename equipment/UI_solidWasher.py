@@ -15,7 +15,7 @@ from UI.widgets import Entrada_con_unidades
 from tools import costIndex
 
 
-class UI_equipment(parents.UI_equipment):
+class UI_equipment(parents.UI_equip):
     """Dialogo de definición de unidades de secado de sólidos"""
     def __init__(self, entradaSolido=None, entradaAire=None,  parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada"""
@@ -31,7 +31,7 @@ class UI_equipment(parents.UI_equipment):
         self.EntradaAire= UI_corriente.Ui_psychrometry(self.entradaAire)
         self.EntradaAire.Changed.connect(self.cambiar_aire)
         self.Entrada.addTab(self.EntradaAire,QtGui.QApplication.translate("equipment", "Aire", None, QtGui.QApplication.UnicodeUTF8))
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo de cálculo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1)
@@ -56,12 +56,12 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Intercambio de calor:", None, QtGui.QApplication.UnicodeUTF8)), 6, 1, 1, 1)
         self.Heat=Entrada_con_unidades(unidades.Power)
         self.Heat.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.Heat,6,2,1,1) 
+        gridLayout_Calculo.addWidget(self.Heat,6,2,1,1)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Pérdida de presión:", None, QtGui.QApplication.UnicodeUTF8)), 7, 1, 1, 1)
         self.DeltaP=Entrada_con_unidades(unidades.Pressure)
         self.DeltaP.valueChanged.connect(self.calculo)
-        gridLayout_Calculo.addWidget(self.DeltaP,7,2,1,1) 
-  
+        gridLayout_Calculo.addWidget(self.DeltaP,7,2,1,1)
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),8,1,1,6)
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Datos calculados", None, QtGui.QApplication.UnicodeUTF8))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,9,1,1,5)
@@ -75,7 +75,7 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Humedad del aire:", None, QtGui.QApplication.UnicodeUTF8)), 3, 1)
         self.HumedadCalculada=Entrada_con_unidades(float, readOnly=True, textounidad="%")
         gridLayout_1.addWidget(self.HumedadCalculada,3,2,1,1)
-        
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,1,1,6)
 
         #Pestaña salida
@@ -83,21 +83,21 @@ class UI_equipment(parents.UI_equipment):
         self.Salida.addTab(self.SalidaSolido,QtGui.QApplication.translate("equipment", "Sólido secado", None, QtGui.QApplication.UnicodeUTF8))
         self.SalidaAire= UI_corriente.Ui_psychrometry(readOnly=True)
         self.Salida.addTab(self.SalidaAire,QtGui.QApplication.translate("equipment", "Aire", None, QtGui.QApplication.UnicodeUTF8))
-        
+
 
     def cambiar_entrada(self, corriente):
         self.entradaSolido=corriente
         self.calculo()
-        
+
     def cambiar_aire(self, punto):
         self.entradaAire=punto
         self.calculo()
-    
+
     def calculo(self):
         if self.todos_datos():
             self.Equipment(entrada=self.entrada, calculo=0, modelo=self.Modelo.currentIndex(), anchura=self.anchura.value, altura=self.altura.value, longitud=self.longitud.value)
             self.rellenoSalida(1)
-    
+
     def rellenoSalida(self, estado=1, texto=""):
         self.caudalVolumetrico.setValue(self.entrada.caudal_volumetrico)
         self.velocidadGasCalculada.setValue(self.Equipment.Vgas)
@@ -108,23 +108,23 @@ class UI_equipment(parents.UI_equipment):
         self.SalidaGas.rellenar(self.Equipment.SalidaAire)
         self.SalidaSolido.rellenar(self.Equipment.SalidaSolido)
         self.status.setState(estado, texto)
-        
+
     def todos_datos(self):
         return self.EntradaSolido.todos_datos() and self.EntradaAire.todos_datos()
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Mezcla, Punto_Psicrometrico, Corriente, Solid
     app = QtGui.QApplication(sys.argv)
     distribucion=[[96.5, 0.02],
-                        [105, 0.05], 
-                        [110,  0.1],  
+                        [105, 0.05],
+                        [110,  0.1],
                         [118, 0.15],
-                        [125, 0.25], 
-                        [130, 0.2], 
-                        [140, 0.15], 
-                        [150, 0.05], 
+                        [125, 0.25],
+                        [130, 0.2],
+                        [140, 0.15],
+                        [150, 0.05],
                         [170, 0.03]]
 
     solido=Solid([638], [100], distribucion)

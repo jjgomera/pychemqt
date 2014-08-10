@@ -1,19 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#-------------------------------------------------------------------------
+###############################################################################
 # qsci_simple_pythoneditor.pyw
 #
 # QScintilla sample with PyQt
 #
 # Eli Bendersky (eliben@gmail.com)
 # This code is in the public domain
-#-------------------------------------------------------------------------
+#
+# For now no integrated in pychemqt
+# Possible use to let user define custom functionality, define custom
+# equipment, units, mEoS...
+###############################################################################
 
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4 import QtGui
 from PyQt4.Qsci import QsciScintilla, QsciLexerPython
+
 
 class SimplePythonEditor(QsciScintilla):
     ARROW_MARKER_NUM = 8
@@ -22,7 +26,7 @@ class SimplePythonEditor(QsciScintilla):
         super(SimplePythonEditor, self).__init__(parent)
 
         # Set the default font
-        font = QFont()
+        font = QtGui.QFont()
         font.setFamily('Courier')
         font.setFixedPitch(True)
         font.setPointSize(10)
@@ -30,21 +34,18 @@ class SimplePythonEditor(QsciScintilla):
         self.setMarginsFont(font)
 
         # Margin 0 is used for line numbers
-        fontmetrics = QFontMetrics(font)
+        fontmetrics = QtGui.QFontMetrics(font)
         self.setMarginsFont(font)
         self.setMarginWidth(0, fontmetrics.width("000") + 6)
         self.setMarginLineNumbers(0, True)
-        self.setMarginsBackgroundColor(QColor("#cccccc"))
+        self.setMarginsBackgroundColor(QtGui.QColor("#cccccc"))
 
         # Clickable margin 1 for showing markers
         self.setMarginSensitivity(1, True)
-        self.connect(self,
-            SIGNAL('marginClicked(int, int, Qt::KeyboardModifiers)'),
-            self.on_margin_clicked)
-        self.markerDefine(QsciScintilla.RightArrow,
-            self.ARROW_MARKER_NUM)
-        self.setMarkerBackgroundColor(QColor("#ee1111"),
-            self.ARROW_MARKER_NUM)
+        self.marginClicked.connect(self.on_margin_clicked)
+        self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
+        self.setMarkerBackgroundColor(
+            QtGui.QColor("#ee1111"), self.ARROW_MARKER_NUM)
 
         # Brace matching: enable for a brace immediately before or after
         # the current position
@@ -53,7 +54,7 @@ class SimplePythonEditor(QsciScintilla):
 
         # Current line visible with special background color
         self.setCaretLineVisible(True)
-        self.setCaretLineBackgroundColor(QColor("#ffe4e4"))
+        self.setCaretLineBackgroundColor(QtGui.QColor("#ffe4e4"))
 
         # Set Python lexer
         # Set style for Python comments (style number 1) to a fixed-width
@@ -80,7 +81,7 @@ class SimplePythonEditor(QsciScintilla):
             self.markerAdd(nline, self.ARROW_MARKER_NUM)
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     editor = SimplePythonEditor()
     editor.show()
     editor.setText(open(sys.argv[0]).read())

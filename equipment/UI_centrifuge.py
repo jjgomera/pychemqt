@@ -16,13 +16,13 @@ from tools import costIndex
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(parents.UI_equipment):
+class UI_equipment(parents.UI_equip):
     """Diálogo de definición de tamices de sólidos"""
     def __init__(self, entrada=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en kla tubería"""
         super(UI_equipment, self).__init__(Centrifuge, entrada=False, parent=parent)
         self.entrada=entrada
-        
+
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
@@ -30,7 +30,7 @@ class UI_equipment(parents.UI_equipment):
 
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
-        
+
         #Pestaña costos
         gridLayout_Costos = QtGui.QGridLayout(self.tabCostos)
         gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1, 1, 1)
@@ -69,7 +69,7 @@ class UI_equipment(parents.UI_equipment):
         self.Costos=costIndex.CostData(1.3, 2)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,7,1,2,2)
-        
+
         gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),9,0,1,6)
         gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,0,1,6)
         self.groupBox_Costos = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Costos calculados", None, QtGui.QApplication.UnicodeUTF8))
@@ -84,26 +84,26 @@ class UI_equipment(parents.UI_equipment):
 
         self.tabWidget.setCurrentIndex(0)
         self.mostrarSubclasificacion(0)
-        
+
     def mostrarSubclasificacion(self, ind):
         self.materialInorganico.setVisible(not ind)
         self.materialOrganico.setVisible(ind)
-        
+
     def cambiar_entrada(self, corriente):
         selfentrada=corriente
         self.calculo()
 
     def calculo(self):
         if self.todos_datos():
-            
+
             self.rellenoSalida()
-    
+
     def rellenoSalida(self):
-        pass    
-        
+        pass
+
     def todos_datos(self):
         pass
-        
+
     def calcularCostos(self):
         if self.todos_datos():
             if self.tipo.currentIndex()==0:
@@ -114,7 +114,7 @@ class UI_equipment(parents.UI_equipment):
             self.C_inst.setValue(self.FireHeater.C_inst.config())
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Mezcla
     app = QtGui.QApplication(sys.argv)
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))

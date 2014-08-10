@@ -1,19 +1,47 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+###############################################################################
+# Library to define functions necessary to run at first pychemqt run, so don't
+# let import other pychemqt library to avoid import error when no config
+# files availables.
+###############################################################################
+
 import sys
 from ConfigParser import ConfigParser
 import urllib2
 import cPickle
 
-magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter', 'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq', 'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass', 'Mol', 'SpecificVolume', 'MolarVolume', 'Density', 'DenLiq', 'DenGas', 'MolarDensity', 'Force', 'Pressure', 'DeltaP', 'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy', 'Entropy', 'SpecificHeat', 'EnergyFlow', 'Power', 'MassFlow', 'MolarFlow', 'VolFlow', 'QLiq', 'QGas', 'Diffusivity', 'KViscosity', 'HeatFlux', 'ThermalConductivity', 'UA', 'HeatTransfCoef', 'Fouling', 'Tension', 'Viscosity', 'SolubilityParameter', 'PotencialElectric', 'DipoleMoment', 'CakeResistance', 'PackingDP', 'V2V', 'InvTemperature', 'InvPressure', 'EnthalpyPressure', 'TemperaturePressure', 'PressureTemperature', 'Currency', 'Dimensionless']
-equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine', 'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube', 'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse', 'ElectricPrecipitator', 'Dryer', 'Hairpin', 'Spreadsheet']
+# It must be defined previously to avoid to early import of libraries
+# See end of lib/unidades.py to know how to get this list, check when new
+# magnitude are added
+magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter',
+              'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq',
+              'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass',
+              'Mol', 'SpecificVolume', 'MolarVolume', 'Density', 'DenLiq',
+              'DenGas', 'MolarDensity', 'Force', 'Pressure', 'DeltaP',
+              'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy', 'Entropy',
+              'SpecificHeat', 'EnergyFlow', 'Power', 'MassFlow', 'MolarFlow',
+              'VolFlow', 'QLiq', 'QGas', 'Diffusivity', 'KViscosity',
+              'HeatFlux', 'ThermalConductivity', 'UA', 'HeatTransfCoef',
+              'Fouling', 'Tension', 'Viscosity', 'SolubilityParameter',
+              'PotencialElectric', 'DipoleMoment', 'CakeResistance',
+              'PackingDP', 'V2V', 'InvTemperature', 'InvPressure',
+              'EnthalpyPressure', 'TemperaturePressure', 'PressureTemperature',
+              'Currency', 'Dimensionless']
+# See end of equipment.__init__.py to know how to get this list, check when new
+# fully functional are added
+equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
+           'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
+           'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
+           'ElectricPrecipitator', 'Dryer', 'Hairpin', 'Spreadsheet']
 
 
 def Preferences():
-    config=ConfigParser()
+    """Function to define a first preferences file"""
+    config = ConfigParser()
 
-    #General
+    # General
     config.add_section("General")
     config.set("General", "Color_Resaltado", "#ffff00")
     config.set("General", "Color_ReadOnly", "#eaeaea")
@@ -21,7 +49,7 @@ def Preferences():
     config.set("General", "Load_Last_Project", "True")
     config.set("General", "Tray", "False")
 
-    #PFD
+    # PFD
     config.add_section("PFD")
     config.set("PFD", "x", "800")
     config.set("PFD", "y", "600")
@@ -35,25 +63,25 @@ def Preferences():
     config.set("PFD", "Guion", "0")
     config.set("PFD", "Dash_offset", "0.0")
 
-    #Tooltip
+    # Tooltip
     config.add_section("Tooltip")
     config.set("Tooltip", "Show", "True")
     for i, magnitud in enumerate(magnitudes[:-1]):
         config.set("Tooltip", magnitud, "[0,1]")
 
-    #TooltipEntity
+    # TooltipEntity
     config.add_section("TooltipEntity")
     config.set("TooltipEntity", "Corriente", "[0,1]")
     for equipo in equipos:
         config.set("TooltipEntity", equipo, "[0,1]")
 
-    #NumericFactor
+    # NumericFactor
     config.add_section("NumericFormat")
     for magnitud in magnitudes:
-        kwarg={'total': 0, 'signo': False, 'decimales': 4, 'format': 0}
+        kwarg = {'total': 0, 'signo': False, 'decimales': 4, 'format': 0}
         config.set("NumericFormat", magnitud, str(kwarg))
 
-    #Petro
+    # Petro
     config.add_section("petro")
     config.set("petro", "molecular_weight", "0")
     config.set("petro", "critical", "0")
@@ -65,7 +93,7 @@ def Preferences():
     config.set("petro", "H", "0")
     config.set("petro", "curva", "0")
 
-    #Applications
+    # Applications
     config.add_section("Applications")
     config.set("Applications", "Calculator", calculator)
     config.set("Applications", "TextViewer", editor)
@@ -75,7 +103,7 @@ def Preferences():
     config.set("Applications", "foregroundColor", "#ffffff")
     config.set("Applications", "backgroundColor", "#000000")
 
-    #mEoS
+    # mEoS
     config.add_section("MEOS")
     config.set("MEOS", "iapws", "False")
     config.set("MEOS", "freesteam", "False")
@@ -93,7 +121,7 @@ def Preferences():
         config.set("MEOS", linea+"Step", "0")
         config.set("MEOS", linea+"Custom", "True")
         config.set("MEOS", linea+"List", "")
-        if linea!="Isoquality":
+        if linea != "Isoquality":
             config.set("MEOS", linea+"Critic", "True")
         config.set("MEOS", linea+"Color", "#000000")
         config.set("MEOS", linea+"lineWidth", "0.5")
@@ -106,15 +134,17 @@ def Preferences():
 
     return config
 
-def config():
-    config=ConfigParser()
 
-    #Components
+def config():
+    """Function to define a first project config file"""
+    config = ConfigParser()
+
+    # Components
     config.add_section("Components")
     config.set("Components", "Components", "[]")
     config.set("Components", "Solids", "[]")
 
-    #Thermodynamics
+    # Thermodynamics
     config.add_section("Thermo")
     config.set("Thermo", "K", "0")
     config.set("Thermo", "Alfa", "0")
@@ -128,7 +158,7 @@ def config():
     config.set("Thermo", "coolProp", "False")
     config.set("Thermo", "refprop", "False")
 
-    #Transport
+    # Transport
     config.add_section("Transport")
     config.set("Transport", "RhoL", "0")
     config.set("Transport", "Corr_RhoL", "0")
@@ -141,21 +171,24 @@ def config():
     config.set("Transport", "ThCondG", "0")
     config.set("Transport", "Pv", "0")
 
-    #Units
+    # Units
     config.add_section("Units")
     config.set("Units", "System", "0")
     for magnitud in magnitudes[:-1]:
         config.set("Units", magnitud, "0")
 
-    #Resolution
+    # Resolution
     config.add_section("PFD")
     config.set("PFD", "x", "600")
     config.set("PFD", "y", "480")
 
     return config
 
+
 def which(program):
+    """Function to detect program availability in systemi and return path"""
     import os
+
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -169,32 +202,31 @@ def which(program):
             exe_file = os.path.join(path, program)
             if is_exe(exe_file):
                 return exe_file
-
     return None
 
-if sys.platform=="win32":
-    calculator="calc.exe"
+if sys.platform == "win32":
+    calculator = "calc.exe"
 else:
     for programa in ["qalculate", "gcalctool", "kcalc"]:
-        ejecutable=which(programa)
+        ejecutable = which(programa)
         if ejecutable:
-            calculator=ejecutable
+            calculator = ejecutable
             break
 
-if sys.platform=="win32":
-    editor="notepad.exe"
+if sys.platform == "win32":
+    editor = "notepad.exe"
 else:
     for programa in ["gedit", "leafpad", "geany", "kate"]:
-        ejecutable=which(programa)
+        ejecutable = which(programa)
         if ejecutable:
-            editor=ejecutable
+            editor = ejecutable
             break
 
-if sys.platform=="win32":
-    shell=""
+if sys.platform == "win32":
+    shell = ""
 else:
-    shell=which("xterm")
-#TODO: De momento solo soporta xterm
+    shell = which("xterm")
+# TODO: De momento solo soporta xterm
 #    for programa in ["xterm", "gnome-terminal", "kterminal", "lxterminal", "xfce4-terminal", "terminator"]:
 #        ejecutable=which(programa)
 #        if ejecutable:
@@ -202,8 +234,7 @@ else:
 #            break
 
 
-
-def getdata(archivo):  # From Python Cookbook
+def getrates(archivo):  # From Python Cookbook
     """Procedure to update change rates"""
     rates = {}
     url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
@@ -227,4 +258,3 @@ def getdata(archivo):  # From Python Cookbook
         rates[rate] = rates[rate] / rates["usd"]
     rates["date"] = date
     cPickle.dump(rates, open(archivo, "w"))
-

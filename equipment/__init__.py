@@ -51,4 +51,6 @@ UI_equipments=[UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor, UI_turbin
 
 equipments=[ui.UI_equipment.Equipment.__class__ for ui in UI_equipments]
 
-
+# To get a list of equipment available to add to lib/firstrun.py file:
+# equipos=[equipment.__name__ for equipment in equipments]
+# print equipos

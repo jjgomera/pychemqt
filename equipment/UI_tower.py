@@ -15,21 +15,21 @@ from tools import costIndex
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(parents.UI_equipment):
+class UI_equipment(parents.UI_equip):
     """Diálogo de definición de tuberías"""
     def __init__(self, entrada=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en kla tubería"""
         super(UI_equipment, self).__init__(Tower, parent=parent)
         self.entrada=entrada
-        
+
 #        #Pestaña entrada
 #        self.Entrada= UI_corriente.Ui_corriente(entrada)
 #        self.Entrada.Changed.connect(self.cambiar_entrada)
 #        self.tabWidget.addTab(self.Entrada, QtGui.QApplication.translate("equipment", "Entrada", None, QtGui.QApplication.UnicodeUTF8))
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
-        
+
         #Pestaña costos
         gridLayout_Costos = QtGui.QGridLayout(self.tabCostos)
         gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Proceso:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1, 1, 1)
@@ -104,7 +104,7 @@ class UI_equipment(parents.UI_equipment):
         self.C_unit_relleno=Entrada_con_unidades(unidades.Currency, retornar=False, textounidad="%s / %s" % (unidades.Currency(None).text(), unidades.Volume(None).text("VolLiq")))
         gridLayout_2.addWidget(self.C_unit_relleno,2,2,1,1)
         gridLayout_2.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),3,1,1,2)
-        
+
         gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Diametro:", None, QtGui.QApplication.UnicodeUTF8)),5,1,1,1)
         self.Dc=Entrada_con_unidades(unidades.Length)
         gridLayout_Costos.addWidget(self.Dc,5,2,1,2)
@@ -120,13 +120,13 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Densidad:", None, QtGui.QApplication.UnicodeUTF8)), 9, 1, 1, 1)
         self.EspesorInferior=Entrada_con_unidades(unidades.Density, "DenLiq")
         gridLayout_Costos.addWidget(self.EspesorInferior,9,2,1,2)
-        
+
         self.Costos=costIndex.CostData(3, 3)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,10,1,2,4)
 
         gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),12,1,1,6)
-        
+
         self.groupBox_Costos = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Costos calculados", None, QtGui.QApplication.UnicodeUTF8))
         gridLayout_Costos.addWidget(self.groupBox_Costos,13,1,1,5)
         gridLayout_5 = QtGui.QGridLayout(self.groupBox_Costos)
@@ -148,7 +148,7 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Instalación:", None, QtGui.QApplication.UnicodeUTF8)),2,4,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,2,5,1,1)
-        
+
 
 #        #Pestaña salida
 #        self.pSalida = QtGui.QTabWidget()
@@ -157,26 +157,26 @@ class UI_equipment(parents.UI_equipment):
 
         self.mostrarSubclasificacion(0)
 
-        
+
     def mostrarSubclasificacion(self, ind):
         self.groupBox_Pisos.setVisible(not ind)
         self.groupBox_relleno.setVisible(ind)
-        
+
     def cambiar_entrada(self, corriente):
         selfentrada=corriente
         self.calculo()
 
     def calculo(self):
         if self.todos_datos():
-            
+
             self.rellenoSalida()
-    
+
     def rellenoSalida(self):
-        pass    
-        
+        pass
+
     def todos_datos(self):
         pass
-        
+
     def calcularCostos(self):
         if self.todos_datos():
             self.ShellTube.Coste(self.factorInstalacion.value(), 0, self.tipo.currentIndex(), self.material.currentIndex())
@@ -184,7 +184,7 @@ class UI_equipment(parents.UI_equipment):
             self.C_inst.setValue(self.ShellTube.C_inst.config())
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Mezcla
     app = QtGui.QApplication(sys.argv)
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))
