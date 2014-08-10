@@ -33,7 +33,7 @@ class UI_equipment_Solid(UI_equip):
             self.SalidaSolido.setCorriente(self.Equipment.salida[1])
 
 
-class Separador_Solid(equipment):
+class Separador_SolidGas(equipment):
     """Clase generica con la funcionalidad comun de los equipos de separacion gas-solido"""
 
     def calcularRendimiento(self, rendimientos):
@@ -41,8 +41,7 @@ class Separador_Solid(equipment):
         for i, fraccion in enumerate(self.entrada.solido.fracciones):
             rendimiento_global += rendimientos[i]*fraccion
         return Dimensionless(rendimiento_global)
-
-class Separador_SolidGas(Separador_Solid):
+        
     def CalcularSalidas(self):
         Solido_NoCapturado, Solido_Capturado=self.entrada.solido.Separar(self.rendimiento_parcial)
         self.salida=[]

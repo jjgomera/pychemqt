@@ -347,8 +347,7 @@ class MEoS(object):
 #                    rhoo=2.
 #                    rhoo=self.componente.RhoG_Lee_Kesler(T, P/0.101325)
                 rho=fsolve(lambda rho: self._eq(rho, T)["P"]-P*1e6, rhoo)
-                #propiedades=self._eq(rho[0], T)
-                propiedades=self._eq(rho, T)
+                propiedades=self._eq(rho[0], T)
             elif T and rho:
                 propiedades=self._eq(rho, T)
             elif T and h!=None:

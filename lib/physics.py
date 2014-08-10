@@ -386,7 +386,7 @@ def weibull(escala, start, forma):
 
 
 #########################################################################
-####                                                Distribuciones de partículas                                                                         ####
+####                                                Factores de friccion                                                                         ####
 #########################################################################
 
 """Crane, Flow-of-Fluids-Through-Valve Pag 107"""
@@ -510,8 +510,30 @@ def root_poly3(a1, a2, a3):
     return z
     
     
+########################################################
+### Other
+########################################################
 
-
+def Cunningham(l, Kn, method=0):
+    """Cunningham slip correction factor for air
+        l: Mean free path
+        kn: Knudsen dimensionless number
+        method: reference procedure
+            0 - Jennings (1987)
+            1 - Allen & Raabe (1982)
+            2 - Fuchs (1964)
+            3 - Davies (1945)
+    """
+    if method == 3:
+        C=1+Kn*(1.257+0.4*exp(-1.1/Kn))
+    elif method == 2:
+        C=1+Kn*(1.246+0.418*exp(-0.867/Kn))
+    elif method == 1:
+        C=1+Kn*(1.155+0.471*exp(-0.596/Kn))
+    else:
+        C=1+Kn*(1.252+0.399*exp(-1.1/Kn))
+    return C
+    
 if __name__ == "__main__":
     print f_colebrook(1e7, 0.0002)
     print f_chen(1e7, 0.0002)
