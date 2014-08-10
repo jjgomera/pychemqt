@@ -15,21 +15,21 @@ from tools import costIndex
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(parents.UI_equipment):
+class UI_equipment(parents.UI_equip):
     """Diálogo de definición de cristalizadores"""
     def __init__(self, entrada=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en el equipo"""
         super(UI_equipment, self).__init__(Crystallizer, entrada=False, parent=parent)
         self.entrada=entrada
-        
+
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
         self.tabWidget.insertTab(0, self.Entrada,QtGui.QApplication.translate("equipment", "Entrada", None, QtGui.QApplication.UnicodeUTF8))
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
-        
+
         #Pestaña costos
         gridLayout_Costos = QtGui.QGridLayout(self.tabCostos)
         gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1)
@@ -65,11 +65,11 @@ class UI_equipment(parents.UI_equipment):
         self.caudaldiseno=Entrada_con_unidades(unidades.MassFlow)
         gridLayout_Costos.addWidget(self.caudaldiseno,5,2,1,1)
         gridLayout_Costos.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,0,1,6)
-        
+
         self.Costos=costIndex.CostData(1.9, 2)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,7,1,2,5)
-        
+
         gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,0,1,6)
         gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),9,0,1,6)
         self.groupBox_Costos = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Costos calculados", None, QtGui.QApplication.UnicodeUTF8))
@@ -81,7 +81,7 @@ class UI_equipment(parents.UI_equipment):
         gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Instalación:", None, QtGui.QApplication.UnicodeUTF8)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
-        
+
         self.tabWidget.setCurrentIndex(0)
         self.mostrarSubclasificacion(0)
 
@@ -95,22 +95,22 @@ class UI_equipment(parents.UI_equipment):
             self.materialvacio.setVisible(True)
             self.materialotros.setVisible(False)
             self.Volumen.setReadOnly(False)
-        
+
     def cambiar_entrada(self, corriente):
         selfentrada=corriente
         self.calculo()
 
     def calculo(self):
         if self.todos_datos():
-            
+
             self.rellenoSalida()
-    
+
     def rellenoSalida(self):
-        pass    
-        
+        pass
+
     def todos_datos(self):
         pass
-    
+
     def calcularCostos(self):
         if self.todos_datos():
             if self.tipo.currentIndex()==0:
@@ -128,7 +128,7 @@ class UI_equipment(parents.UI_equipment):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Mezcla, Solid
     app = QtGui.QApplication(sys.argv)
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))

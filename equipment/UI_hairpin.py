@@ -7,14 +7,15 @@
 
 from functools import partial
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui
 
-from lib.unidades import  Temperature, DeltaT, Pressure, DeltaP, Power, Length, Area, ThermalConductivity, HeatTransfCoef, Currency
+from lib.unidades import Temperature, Pressure, DeltaP, Power, Length, Area, ThermalConductivity, HeatTransfCoef, Currency
 from UI.widgets import Entrada_con_unidades
 from UI import UI_corriente
 from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import Catalogo_Materiales_Dialog
-from equipment.parents import UI_equip, FoulingWidget, Dialog_Finned
+from equipment.parents import UI_equip
+from equipment.widget import FoulingWidget, Dialog_Finned
 from tools.costIndex import CostData
 
 
@@ -29,7 +30,7 @@ class UI_equipment(UI_equip):
         equipment: instancia de equipo inicial
         """
         super(UI_equipment, self).__init__(Hairpin, parent=parent)
-        
+
         #Pestaña entrada
         self.entradaTubo= UI_corriente.Ui_corriente()
         self.entradaTubo.Changed.connect(partial(self.changeParams, "entradaTubo"))
@@ -98,7 +99,7 @@ class UI_equipment(UI_equip):
         self.annulliFouling.valueChanged.connect(partial(self.changeParams, "annulliFouling"))
         gridLayout_Catalogo.addWidget(self.annulliFouling,17,2,1,5)
         gridLayout_Catalogo.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),20,1,1,6)
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Mode")),1,1)
@@ -119,10 +120,10 @@ class UI_equipment(UI_equip):
             self.orientacion.addItem(txt)
         self.orientacion.currentIndexChanged.connect(partial(self.changeParams, "orientacion"))
         gridLayout_Calculo.addWidget(self.orientacion,3,2)
-        
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),4,1)
 
-        
+
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output inside temperature")),5,1)
         self.tubeTout=Entrada_con_unidades(Temperature)
         self.tubeTout.valueChanged.connect(partial(self.changeParams, "tubeTout"))
@@ -141,7 +142,7 @@ class UI_equipment(UI_equip):
         gridLayout_Calculo.addWidget(self.annulliXout,6,5)
 
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),15,1,1,6)
-        
+
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,16,1,1,6)
         gridLayout_1 = QtGui.QGridLayout(self.groupBox_Calculo)
@@ -232,16 +233,16 @@ class UI_equipment(UI_equip):
         if dialogo.exec_():
             kwarg=dialogo.kwarg()
             self.calculo(**kwarg)
-    
-    
+
+
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente
     app = QtGui.QApplication(sys.argv)
     caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
     fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
-    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,  
-                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3, 
+    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
+                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
                       annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
     dialogo = UI_equipment(Cambiador)
     dialogo.show()

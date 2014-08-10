@@ -8,6 +8,7 @@ from PyQt4.QtGui import QApplication
 import scipy.constants as k
 
 from config import conf_dir, getMainWindowConfig, representacion
+from firstrun import getrates
 
 # Defining conversion factor not available in scipy
 k.tonUS = 2000 * k.lb
@@ -34,32 +35,6 @@ k.ozf = k.oz * k.g
 k.TonfUK = k.g * k.tonUK
 k.TonfUS = k.g * k.tonUS
 k.statV = 300
-
-
-def getdata():  # From Python Cookbook
-    """Procedure to update change rates"""
-    rates = {}
-    url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
-    fh = urllib2.urlopen(url)
-    for line in fh:
-        line = line.rstrip()
-        if not line or line.startswith(("#", "Closing ")):
-            continue
-        fields = line.split(",")
-        if line.startswith("Date "):
-            date = fields[-1]
-        elif line.startswith("U.S. dollar (close)"):
-            pass
-        else:
-            value = float(fields[-1])
-            rates[fields[1][1:].lower()] = value
-    del rates["iexe0124"]
-    del rates["iexe0125"]
-    rates["cad"] = 1.
-    for rate in rates:
-        rates[rate] = rates[rate] / rates["usd"]
-    rates["date"] = date
-    cPickle.dump(rates, open(conf_dir + "moneda.dat", "w"))
 
 
 def C2K(C):
@@ -103,9 +78,26 @@ def K2Re(K):
 
 
 class unidad(float):
-    """Generic class to model units"""
+    """
+    Generic class to model units
+    Each child class must define the following parameters:
+        __title__: Title or name of class
+        rates: Dict with conversion rates
+        __text__: List with units title
+        __units__: List with units properties names
+        __tooltip__: List with help string for units
+        _magnitudes: Opcional to units with several magnituds
+            Each magnitud is a tuple with format (Name, title)
+        __units_set__: Dict with standart unit for units system,
+            altsi, si, metric, cgs, english
+    """
+    __title__ = ""
+    rates = {}
+    __text__ = []
+    __units__ = []
+    __tooltip__ = []
     _magnitudes = []
-    __tooltip__ = None
+    __units_set__ = []
 
     def __init__(self, data, unit="", magnitud=""):
         """Non proportional magnitudes (Temperature, Pressure)
@@ -126,8 +118,8 @@ class unidad(float):
         try:
             conversion = self.__class__.rates[unit]
         except:
-            raise ValueError(QApplication.translate("pychemqt",
-                                                    "Wrong input code"))
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
 
         self._data *= conversion
         for key in self.__class__.rates:
@@ -154,7 +146,7 @@ class unidad(float):
         return float.__new__(cls, data * cls.rates[unit])
 
     def config(self, magnitud=""):
-        """Using config file return the configurated unit"""
+        """Using config file return the value in the configurated unit"""
         if not magnitud:
             magnitud = self.__class__.__name__
         value = self.Config.getint('Units', magnitud)
@@ -196,11 +188,13 @@ if a unit define several magnitudes, must be fill the _magnitudes variable"""
         return representacion(value, **kwargs)
 
     @property
-    def str(self):
+    def str(self, conf=None):
+        """Return a string representation of class"""
         if self.code:
             return self.code
         else:
-            conf = self.func(self.magnitud)
+            if not conf:
+                conf = self.func(self.magnitud)
             num = self.format(conf, self.magnitud)
             txt = self.text(self.magnitud)
             return num+" "+txt
@@ -208,7 +202,7 @@ if a unit define several magnitudes, must be fill the _magnitudes variable"""
 
 class Dimensionless(float):
     """Dummy class to integrate dimensionless magnitudes
-with support for class unidad operation: txt, config. func."""
+with support for class unidad operations: txt, config. func."""
     __title__ = QApplication.translate("pychemqt", "Dimensionless")
     __text__ = [""]
     _magnitudes = []
@@ -249,7 +243,7 @@ with support for class unidad operation: txt, config. func."""
 
 
 class Temperature(unidad):
-    """Class that models a temperature measure with conversion utilities
+    """Class that models a temperature measure
     Supported units:
 
     * Kelvin (K) default
@@ -296,8 +290,8 @@ class Temperature(unidad):
         elif unit == "Re":
             self._data = Re2K(data)
         else:
-            raise ValueError(QApplication.translate("pychemqt",
-                                                    "Wrong input code"))
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
 
         self.K = self._data
         self.C = K2C(self._data)
@@ -332,14 +326,14 @@ class Temperature(unidad):
         elif unit == "Re":
             cls._data = Re2K(data)
         else:
-            raise ValueError(QApplication.translate("pychemqt",
-                                                    "Wrong input code"))
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
 
         return float.__new__(cls, cls._data)
 
 
 class DeltaT(unidad):
-    """Class that models a delta temperature measure with conversion utilities
+    """Class that models a delta temperature measure
     Supported units:
 
     * Kelvin (default)
@@ -353,8 +347,10 @@ class DeltaT(unidad):
     25.0 45.0
     """
     __title__ = QApplication.translate("pychemqt", "Temperature increase")
-    rates = {"K": 1., "C": 1.,
-             "F": k.Rankine, "R": k.Rankine,
+    rates = {"K": 1.,
+             "C": 1.,
+             "F": k.Rankine,
+             "R": k.Rankine,
              "Re": k.Reaumur}
     __text__ = ['K', u'ºC', u'ºR', u'ºF', u'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
@@ -367,7 +363,7 @@ class DeltaT(unidad):
 
 
 class Angle(unidad):
-    """Class that models a angle measure with conversion utilities
+    """Class that models a angle measure
     Supported units:
 
     * radian (rad) default
@@ -401,7 +397,7 @@ class Angle(unidad):
 
 
 class Length(unidad):
-    """Class that models a length measure with conversion utilities
+    """Class that models a length measure
     Supported units:
 
     * meter (m) default
@@ -448,31 +444,31 @@ class Length(unidad):
                    QApplication.translate("pychemqt", "mile"),
                    QApplication.translate("pychemqt", "nautical mile"),
                    QApplication.translate("pychemqt", "icometer"), u"Ångström"]
-    _magnitudes = [("Length", QApplication.translate("pychemqt", "Length")),
-                   ("ParticleDiameter",
-                    QApplication.translate("pychemqt", "Particle Diameter")),
-                   ("Thickness", QApplication.translate("pychemqt",
-                                                        "Thickness")),
-                   ("PipeDiameter", QApplication.translate("pychemqt",
-                                                           "Pipe Diameter")),
-                   ("Head", QApplication.translate("pychemqt", "Head"))]
-    __units_set__ = {"Length": {"altsi": "m", "si": "m", "metric": "m",
-                                "cgs": "cm", "english": "ft"},
-                     "ParticleDiameter": {"altsi": "mm", "si": "mm",
-                         "metric": "mm", "cgs": "cm", "english": "inch"},
-                     "Thickness": {"altsi": "mm", "si": "mm", "metric": "mm",
-                                   "cgs": "cm", "english": "inch"},
-                     "PipeDiameter": {"altsi": "mm", "si": "mm", "metric": "cm",
-                                      "cgs": "cm", "english": "inch"},
-                     "Head": {"altsi": "m", "si": "m", "metric": "m",
-                              "cgs": "cm", "english": "ft"}}
+    _magnitudes = [
+        ("Length", QApplication.translate("pychemqt", "Length")),
+        ("ParticleDiameter", QApplication.translate("pychemqt",
+                                                    "Particle Diameter")),
+        ("Thickness", QApplication.translate("pychemqt", "Thickness")),
+        ("PipeDiameter", QApplication.translate("pychemqt", "Pipe Diameter")),
+        ("Head", QApplication.translate("pychemqt", "Head"))]
+    __units_set__ = {
+        "Length": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
+                   "english": "ft"},
+        "ParticleDiameter": {"altsi": "mm", "si": "mm", "metric": "mm",
+                             "cgs": "cm", "english": "inch"},
+        "Thickness": {"altsi": "mm", "si": "mm", "metric": "mm", "cgs": "cm",
+                      "english": "inch"},
+        "PipeDiameter": {"altsi": "mm", "si": "mm", "metric": "cm",
+                         "cgs": "cm", "english": "inch"},
+        "Head": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
+                 "english": "ft"}}
 
     def __init__(self, data, unit="m", magnitud=""):
         super(Length, self).__init__(data, unit, magnitud)
 
 
 class Area(unidad):
-    """Class that models a area measure with conversion utilities
+    """Class that models a area measure
     Supported units:
 
     * square meter (m2) default
@@ -489,9 +485,15 @@ class Area(unidad):
     0.09290304 144.0
     """
     __title__ = QApplication.translate("pychemqt", "Area")
-    rates = {"m2": 1., "cm2": k.centi**2, "mm2": k.milli**2, "km2": k.kilo**2,
-             "inch2": k.inch**2, "ft2": k.foot**2, "yd2": k.yard**2,
-             "ha": k.hecto**2, "acre": k.acre}
+    rates = {"m2": 1.,
+             "cm2": k.centi**2,
+             "mm2": k.milli**2,
+             "km2": k.kilo**2,
+             "inch2": k.inch**2,
+             "ft2": k.foot**2,
+             "yd2": k.yard**2,
+             "ha": k.hecto**2,
+             "acre": k.acre}
     __text__ = [u'm²', u'cm²', u'mm²', u"km2", u'inch²', u'ft²', u'yd²',
                 'ha', u'acre']
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha', "acre"]
@@ -503,7 +505,7 @@ class Area(unidad):
 
 
 class Volume(unidad):
-    """Class that models a volume measure with conversion utilities
+    """Class that models a volume measure
     Supported units:
 
     * cubic meter (m3) default
@@ -527,12 +529,24 @@ class Volume(unidad):
     158.987294928 5.61458333333 42.0
     """
     __title__ = QApplication.translate("pychemqt", "Volume")
-    rates = {"m3": 1., "cc": k.centi**3, "l": k.deci**3, "ml": k.deci**3*k.milli,
-             "km3": k.kilo**3, "inch3": k.inch**3, "ft3": k.foot**3,
-             "yd3": k.yard**3, "galUS": k.gallon, "galUK": k.gallon_imp,
-             "qtUSliq": k.qtUSliq, "qtUSdr": k.qtUSdry, "qtUK": k.qtUK,
-             "bbl": k.bbl, "onz": k.fluid_ounce, "onzUK": k.fluid_ounce_imp,
-             "bblUK": 36*k.gallon_imp, "bblUS": 31.5*k.gallon}
+    rates = {"m3": 1.,
+             "cc": k.centi**3,
+             "l": k.deci**3,
+             "ml": k.deci**3*k.milli,
+             "km3": k.kilo**3,
+             "inch3": k.inch**3,
+             "ft3": k.foot**3,
+             "yd3": k.yard**3,
+             "galUS": k.gallon,
+             "galUK": k.gallon_imp,
+             "qtUSliq": k.qtUSliq,
+             "qtUSdr": k.qtUSdry,
+             "qtUK": k.qtUK,
+             "bbl": k.bbl,
+             "onz": k.fluid_ounce,
+             "onzUK": k.fluid_ounce_imp,
+             "bblUK": 36*k.gallon_imp,
+             "bblUS": 31.5*k.gallon}
     __text__ = [u'm³', u'cm³', 'liter', u'yd³', u'ft³', u'inch³', 'galon US',
                 'galon UK', 'oil', 'bbl', 'bblUK', 'onza', 'onza UK']
     __units__ = ['m3', 'cc', 'l', 'yd3', 'ft3', 'inch3', 'galUS', 'galUK',
@@ -547,22 +561,24 @@ class Volume(unidad):
                    QApplication.translate("pychemqt", "Oil barrel"),
                    QApplication.translate("pychemqt", "US customary fluid ounce"),
                    QApplication.translate("pychemqt", "Imperial fluid ounce")]
-    _magnitudes = [("Volume", QApplication.translate("pychemqt", "Volume")),
-                   ("VolLiq", QApplication.translate("pychemqt", "Liquid Volume")),
-                   ("VolGas", QApplication.translate("pychemqt", "Gas Volume"))]
-    __units_set__ = {"Volume": {"altsi": "m3", "si": "m3", "metric": "m3",
-                                "cgs": "cc", "english": "ft3"},
-                     "VolLiq": {"altsi": "m3", "si": "m3", "metric": "m3",
-                                "cgs": "cc", "english": "ft3"},
-                     "VolGas": {"altsi": "m3", "si": "m3", "metric": "m3",
-                                "cgs": "cc", "english": "ft3"}}
+    _magnitudes = [
+        ("Volume", QApplication.translate("pychemqt", "Volume")),
+        ("VolLiq", QApplication.translate("pychemqt", "Liquid Volume")),
+        ("VolGas", QApplication.translate("pychemqt", "Gas Volume"))]
+    __units_set__ = {
+        "Volume": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
+                   "english": "ft3"},
+        "VolLiq": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
+                   "english": "ft3"},
+        "VolGas": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
+                   "english": "ft3"}}
 
     def __init__(self, data, unit="m3", magnitud=""):
         super(Volume, self).__init__(data, unit, magnitud)
 
 
 class Time(unidad):
-    """Class that models a time measure with conversion utilities
+    """Class that models a time measure
     Supported units:
 
     * second (s) default
@@ -576,7 +592,11 @@ class Time(unidad):
     1440.0 24.0
     """
     __title__ = QApplication.translate("pychemqt", "Time")
-    rates = {"s": 1., "min": k.minute, "h": k.hour, "day": k.day, "year": k.year}
+    rates = {"s": 1.,
+             "min": k.minute,
+             "h": k.hour,
+             "day": k.day,
+             "year": k.year}
     __text__ = ['s', 'min', 'h', 'day', 'year']
     __units__ = ['s', 'min', 'h', 'day', 'year']
     __tooltip__ = [QApplication.translate("pychemqt", "second"),
@@ -592,7 +612,7 @@ class Time(unidad):
 
 
 class Frequency(unidad):
-    """Class that models a frequency measure with conversion utilities
+    """Class that models a frequency measure
     Supported units:
 
     * rpm default
@@ -608,8 +628,13 @@ class Frequency(unidad):
     9.54929658551
     """
     __title__ = QApplication.translate("pychemqt", "Frequency")
-    rates = {"rpm": 1., "rph": 1./60, "rps": 60., "Hz": 60., "rads": 30./k.pi,
-             "radmin": 30*60./k.pi, "radh": 30*3600./k.pi}
+    rates = {"rpm": 1.,
+             "rph": 1./60,
+             "rps": 60.,
+             "Hz": 60.,
+             "rads": 30./k.pi,
+             "radmin": 30*60./k.pi,
+             "radh": 30*3600./k.pi}
     __text__ = ['rpm', 'rps', 'rph', 'Hz', 'rad/s', 'rad/min', 'rad/hr']
     __units__ = ['rpm', 'rps', 'rph', 'Hz', 'rads', 'radmin', "radh"]
     __units_set__ = {"altsi": "rpm", "si": "Hz", "metric": "Hz", "cgs": "Hz",
@@ -620,7 +645,7 @@ class Frequency(unidad):
 
 
 class Speed(unidad):
-    """Class that models a speed measure with conversion utilities
+    """Class that models a speed measure
     Supported units:
 
     * meter per second (ms) default
@@ -634,6 +659,10 @@ class Speed(unidad):
     * kilometer per day (kmday)
     * foot per second (fts)
     * foot per minute (ftmin)
+    * foot per hour (fth)
+    * foot per day (ftday)
+    * inch per second (inchs)
+    * inch per minute (inchmin)
     * mille per hour (mph)
     * knot (kt)
 
@@ -642,12 +671,23 @@ class Speed(unidad):
     60.0 3.6 3.28083989501
     """
     __title__ = QApplication.translate("pychemqt", "Speed")
-    rates = {"ms": 1., "cms": k.centi, "mms": k.milli, "kms": k.kilo,
-             "mmin": 1./k.minute, "kmmin": k.kilo/k.minute, "kmh": k.kilo/k.hour,
-             "mday": 1./k.day, "kmday": k.kilo/k.day, "fts": k.foot,
-             "ftmin": k.foot/k.minute, "fth": k.foot/k.hour,
-             "ftday": k.foot/k.day, "inchs": k.inch, "inchmin": k.inch/k.minute,
-             "mph": k.mile/k.hour, "kt": k.nautical_mile/k.hour}
+    rates = {"ms": 1.,
+             "cms": k.centi,
+             "mms": k.milli,
+             "kms": k.kilo,
+             "mmin": 1./k.minute,
+             "kmmin": k.kilo/k.minute,
+             "kmh": k.kilo/k.hour,
+             "mday": 1./k.day,
+             "kmday": k.kilo/k.day,
+             "fts": k.foot,
+             "ftmin": k.foot/k.minute,
+             "fth": k.foot/k.hour,
+             "ftday": k.foot/k.day,
+             "inchs": k.inch,
+             "inchmin": k.inch/k.minute,
+             "mph": k.mile/k.hour,
+             "kt": k.nautical_mile/k.hour}
     __text__ = ['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min', 'm/min',
                 'km/min', 'km/h',  'km/day', 'mph', 'nudo']
     __units__ = ['ms', 'cms', 'mms', 'kms', 'fts', 'ftmin',  'mmin', 'kmmin',
@@ -663,7 +703,7 @@ class Speed(unidad):
 
 
 class Acceleration(unidad):
-    """Class that models a acceleration measure with conversion utilities
+    """Class that models a acceleration measure
     Supported units:
 
     * meter per square second (ms2) default
@@ -676,9 +716,15 @@ class Acceleration(unidad):
     32.1850393701
     """
     __title__ = QApplication.translate("pychemqt", "Acceleration")
-    rates = {"ms2": 1., "cms2": k.centi, "fts2": k.foot, "inchs2": k.inch,
-             "yds2": k.yard, "mmin2": 1./k.minute**2, "cmmin2": k.centi/k.minute**2,
-             "ftmin2": k.foot/k.minute**2, "inchmin2": k.inch/k.minute**2,
+    rates = {"ms2": 1.,
+             "cms2": k.centi,
+             "fts2": k.foot,
+             "inchs2": k.inch,
+             "yds2": k.yard,
+             "mmin2": 1./k.minute**2,
+             "cmmin2": k.centi/k.minute**2,
+             "ftmin2": k.foot/k.minute**2,
+             "inchmin2": k.inch/k.minute**2,
              "ydmin2": k.yard/k.minute**2}
     __text__ = [u"m/s²", u"cm/s²", u"ft/s²", u"inch/s²", u"yd/s²", u"m/min²",
                 u"cm/min²", u"ft/min²", u"inch/min²"]
@@ -692,7 +738,7 @@ class Acceleration(unidad):
 
 
 class Mass(unidad):
-    """Class that models a mass measure with conversion utilities
+    """Class that models a mass measure
     Supported units:
 
     * kilogram (kg) default
@@ -713,11 +759,22 @@ class Mass(unidad):
     0.45359237 453.59237 16.0
     """
     __title__ = QApplication.translate("pychemqt", "Mass")
-    rates = {"kg": 1., "g": 1./k.kilo, "mg": 1./k.mega, "Ton": k.kilo,
-             "lb": k.pound, "grain": k.grain, "oz": k.oz, "slug": k.slug,
-             "cwtUK": k.cwtUK, "cwtUS": k.cwtUS, "TonUK": k.tonUK, "TonUS": k.tonUS}
-    __text__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grano', 'onza', 'slug', 'TonUK', 'TonUS']
-    __units__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grain', 'oz', 'slug', 'TonUK', 'TonUS']
+    rates = {"kg": 1.,
+             "g": 1./k.kilo,
+             "mg": 1./k.mega,
+             "Ton": k.kilo,
+             "lb": k.pound,
+             "grain": k.grain,
+             "oz": k.oz,
+             "slug": k.slug,
+             "cwtUK": k.cwtUK,
+             "cwtUS": k.cwtUS,
+             "TonUK": k.tonUK,
+             "TonUS": k.tonUS}
+    __text__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grano', 'onza', 'slug', 'TonUK',
+                'TonUS']
+    __units__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grain', 'oz', 'slug', 'TonUK',
+                 'TonUS']
     __tooltip__ = [QApplication.translate("pychemqt", "kilogram"),
                    QApplication.translate("pychemqt", "gram"),
                    QApplication.translate("pychemqt", "miligram"),
@@ -736,7 +793,7 @@ class Mass(unidad):
 
 
 class Mol(unidad):
-    """Class that models a mass measure with conversion utilities
+    """Class that models a mol measure
     Supported units:
 
     * kilomol (kmol) default
@@ -748,7 +805,10 @@ class Mol(unidad):
     1000.0 2.20462262185
     """
     __title__ = QApplication.translate("pychemqt", "Mol")
-    rates = {"kmol": 1., "mol": 1./k.kilo, "milimol": 1./k.mega, "lbmol": k.pound}
+    rates = {"kmol": 1.,
+             "mol": 1./k.kilo,
+             "milimol": 1./k.mega,
+             "lbmol": k.pound}
     __text__ = ['kmol', 'mol', 'mmol', "lbmol"]
     __units__ = ['kmol', 'mol', 'mmol', "lbmol"]
     __units_set__ = {"altsi": "kmol", "si": "kmol", "metric": "kmol",
@@ -759,7 +819,7 @@ class Mol(unidad):
 
 
 class SpecificVolume(unidad):
-    """Class that models a specific volume measure with conversion utilities
+    """Class that models a specific volume measure
     Supported units:
 
     * cubic meter per kilogram (m3kg) default
@@ -782,23 +842,42 @@ class SpecificVolume(unidad):
     0.05 0.800923168698
     """
     __title__ = QApplication.translate("pychemqt", "Specific Volume")
-    rates = {"m3kg": 1., "lg": 1., "lkg": k.liter, "ccg": k.liter, "mlg": k.liter,
-             "m3g": k.gram, "cckg": k.micro, "ft3lb": k.foot**3/k.pound,
-             "inch3lb": k.inch**3/k.pound, "galUKlb": k.gallon_imp/k.pound,
-             "galUSlb": k.gallon/k.pound, "bbllb": k.bbl/k.pound,
-             "ft3tonUK": k.foot**3/k.tonUK, "ft3tonUS": k.foot**3/k.tonUS,
-             "ft3slug": k.foot**3/k.slug, "ft3oz": k.foot**3/k.oz,
-             "in3oz": k.inch**3/k.oz, "galUKoz": k.gallon_imp/k.oz,
+    rates = {"m3kg": 1.,
+             "lg": 1.,
+             "lkg": k.liter,
+             "ccg": k.liter,
+             "mlg": k.liter,
+             "m3g": k.gram,
+             "cckg": k.micro,
+             "ft3lb": k.foot**3/k.pound,
+             "inch3lb": k.inch**3/k.pound,
+             "galUKlb": k.gallon_imp/k.pound,
+             "galUSlb": k.gallon/k.pound,
+             "bbllb": k.bbl/k.pound,
+             "ft3tonUK": k.foot**3/k.tonUK,
+             "ft3tonUS": k.foot**3/k.tonUS,
+             "ft3slug": k.foot**3/k.slug,
+             "ft3oz": k.foot**3/k.oz,
+             "in3oz": k.inch**3/k.oz,
+             "galUKoz": k.gallon_imp/k.oz,
              "galUSoz": k.gallon/k.oz}
-    __text__ = [u'm³/kg',u'cm³/g' , u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb', u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza', u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
-    __units__ = ['m3kg','lkg' , 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
-    __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg", "cgs": "ccg", "english": "ft3lb"}
+    __text__ = [u'm³/kg', u'cm³/g', u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb',
+                u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
+                u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
+                u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
+    __units__ = ['m3kg', 'lkg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
+                 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
+                 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+    __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
+                     "cgs": "ccg", "english": "ft3lb"}
 
     def __init__(self, data, unit="m3kg", magnitud=""):
         super(SpecificVolume, self).__init__(data, unit, magnitud)
 
+
 class SpecificVolume_square(unidad):
-    """Class that models a specific volume squarre measure with conversion utilities, third virial coefficient
+    """Class that models a specific volume squarre measure (useful too for
+    third virial coefficient
     Supported units:
 
     * cubic meter per kilogram (m3kg) default
@@ -818,20 +897,44 @@ class SpecificVolume_square(unidad):
 
     >>> R=SpecificVolume_square(50, "lkg")
     >>> print  R.m3kg, R.ft3lb
-    0.05 0.800923168698
+    5e-05 0.0128295584431
     """
     __title__ = QApplication.translate("pychemqt", "Specific Volume")
-    rates = {"m3kg": 1., "lg": 1., "lkg": k.liter**2, "ccg": k.liter**2, "mlg": k.liter**2, "m3g": k.gram**2, "cckg": k.micro**2, "ft3lb": k.foot**6/k.pound**2, "inch3lb": k.inch**6/k.pound**2, "galUKlb": k.gallon_imp**2/k.pound**2, "galUSlb": k.gallon**2/k.pound**2, "bbllb": k.bbl**2/k.pound**2, "ft3tonUK": k.foot**6/k.tonUK**2, "ft3tonUS": k.foot**6/k.tonUS**2, "ft3slug": k.foot**6/k.slug**2, "ft3oz": k.foot**6/k.oz**2, "in3oz": k.inch**6/k.oz**2, "galUKoz": k.gallon_imp**2/k.oz**2, "galUSoz": k.gallon**2/k.oz**2}
-    __text__ = [u'm³/kg',u'cm³/g' , u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb', u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza', u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
-    __units__ = ['m3kg','lkg' , 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
-    __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg", "cgs": "ccg", "english": "ft3lb"}
+    rates = {"m3kg": 1.,
+             "lg": 1.,
+             "lkg": k.liter**2,
+             "ccg": k.liter**2,
+             "mlg": k.liter**2,
+             "m3g": k.gram**2,
+             "cckg": k.micro**2,
+             "ft3lb": k.foot**6/k.pound**2,
+             "inch3lb": k.inch**6/k.pound**2,
+             "galUKlb": k.gallon_imp**2/k.pound**2,
+             "galUSlb": k.gallon**2/k.pound**2,
+             "bbllb": k.bbl**2/k.pound**2,
+             "ft3tonUK": k.foot**6/k.tonUK**2,
+             "ft3tonUS": k.foot**6/k.tonUS**2,
+             "ft3slug": k.foot**6/k.slug**2,
+             "ft3oz": k.foot**6/k.oz**2,
+             "in3oz": k.inch**6/k.oz**2,
+             "galUKoz": k.gallon_imp**2/k.oz**2,
+             "galUSoz": k.gallon**2/k.oz**2}
+    __text__ = [u'm³/kg', u'cm³/g', u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb',
+                u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
+                u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
+                u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
+    __units__ = ['m3kg', 'lkg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
+                 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
+                 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+    __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
+                     "cgs": "ccg", "english": "ft3lb"}
 
     def __init__(self, data, unit="m3kg", magnitud=""):
         super(SpecificVolume_square, self).__init__(data, unit, magnitud)
 
 
 class MolarVolume(unidad):
-    """Class that models a specific molar volume measure with conversion utilities
+    """Class that models a specific molar volume measure
     Supported units:
 
     * cubic meter per kilomol (m3kmol) default
@@ -846,17 +949,28 @@ class MolarVolume(unidad):
     0.05 0.800923168698
     """
     __title__ = QApplication.translate("pychemqt", "Molar Volume")
-    rates = {"m3kmol": 1., "lmol": 1., "lkmol": k.liter, "ccmol": k.liter, "mlmol": k.liter, "m3mol": k.gram, "cckmol": k.micro, "ft3lbmol": k.foot**3/k.pound, "inch3lbmol": k.inch**3/k.pound}
-    __text__ = [u'm³/kmol', u'l/mol', u'l/kmol', u'cm³/mol', u'ml/mol', u'm³/mol', u'cm³/kmol', u'ft³/lbmol', u'in³/lbmol']
-    __units__ = ['m3kmol', 'lmol', 'lkmol' , 'ccmol', 'mlmol', 'm3mol', 'cckmol', 'ft3lbmol', 'inch3lbmol']
-    __units_set__ = {"altsi": "m3kmol", "si": "m3kmol", "metric": "m3kmol", "cgs": "ccmol", "english": "ft3lbmol"}
+    rates = {"m3kmol": 1.,
+             "lmol": 1.,
+             "lkmol": k.liter,
+             "ccmol": k.liter,
+             "mlmol": k.liter,
+             "m3mol": k.gram,
+             "cckmol": k.micro,
+             "ft3lbmol": k.foot**3/k.pound,
+             "inch3lbmol": k.inch**3/k.pound}
+    __text__ = [u'm³/kmol', u'l/mol', u'l/kmol', u'cm³/mol', u'ml/mol',
+                u'm³/mol', u'cm³/kmol', u'ft³/lbmol', u'in³/lbmol']
+    __units__ = ['m3kmol', 'lmol', 'lkmol', 'ccmol', 'mlmol', 'm3mol',
+                 'cckmol', 'ft3lbmol', 'inch3lbmol']
+    __units_set__ = {"altsi": "m3kmol", "si": "m3kmol", "metric": "m3kmol",
+                     "cgs": "ccmol", "english": "ft3lbmol"}
 
     def __init__(self, data, unit="m3kmol", magnitud=""):
         super(MolarVolume, self).__init__(data, unit, magnitud)
 
 
 class Density(unidad):
-    """Class that models a density measure with conversion utilities
+    """Class that models a density measure
     Supported units:
 
     * kilogram per cubic foot (kgm3) default (same as gr/l)
@@ -881,22 +995,50 @@ class Density(unidad):
     1000.0 62.4279605761
     """
     __title__ = QApplication.translate("pychemqt", "Density")
-    rates = {"kgm3": 1., "gl": 1., "kgl": 1./k.liter, "gcc": 1./k.liter, "gml": 1./k.liter, "gm3": 1./k.gram, "kgcc": 1./k.micro, "lbft3": k.pound/k.foot**3, "lbin3": k.pound/k.inch**3, "lbgalUK": k.pound/k.gallon_imp, "lbgalUS": k.pound/k.gallon, "lbbbl": k.pound/k.bbl, "tonUKft3": k.tonUK/k.foot**3, "tonUSft3": k.tonUS/k.foot**3, "slugft3": k.slug/k.foot**3, "ozft3": k.oz/k.foot**3, "ozin3": k.oz/k.inch**3, "ozgalUK": k.oz/k.gallon_imp, "ozgalUS": k.oz/k.gallon}
-    __text__ = [u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galon UK', 'lb/galon US', 'lb/barril', u'ton UK/ft³', u'ton US/ft³',u'slug/ft³',u'onza/ft³' , u'onza/inch³', 'onza/galon UK', 'onza/galon US']
-    __units__ = ['kgm3', 'gcc', 'gm3', 'kgcc', 'lbft3','lbin3' , 'lbgalUK', 'lbgalUS', 'lbbbl', 'tonUKft3', 'tonUSft3','slugft3','ozft3' , 'ozin3', 'ozgalUK', 'ozgalUS']
-    _magnitudes=[("Density", QApplication.translate("pychemqt", "Density")),
-                            ("DenLiq", QApplication.translate("pychemqt", "Liquid Density")),
-                            ("DenGas", QApplication.translate("pychemqt", "Gas Density"))]
-    __units_set__ = {"Density": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3", "cgs": "gcc", "english": "lbft3"},
-                             "DenLiq": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3", "cgs": "gcc", "english": "lbft3"},
-                             "DenGas": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3", "cgs": "gcc", "english": "lbft3"}}
+    rates = {"kgm3": 1.,
+             "gl": 1.,
+             "kgl": 1./k.liter,
+             "gcc": 1./k.liter,
+             "gml": 1./k.liter,
+             "gm3": 1./k.gram,
+             "kgcc": 1./k.micro,
+             "lbft3": k.pound/k.foot**3,
+             "lbin3": k.pound/k.inch**3,
+             "lbgalUK": k.pound/k.gallon_imp,
+             "lbgalUS": k.pound/k.gallon,
+             "lbbbl": k.pound/k.bbl,
+             "tonUKft3": k.tonUK/k.foot**3,
+             "tonUSft3": k.tonUS/k.foot**3,
+             "slugft3": k.slug/k.foot**3,
+             "ozft3": k.oz/k.foot**3,
+             "ozin3": k.oz/k.inch**3,
+             "ozgalUK": k.oz/k.gallon_imp,
+             "ozgalUS": k.oz/k.gallon}
+    __text__ = [u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³', u'lb/inch³',
+                'lb/galon UK', 'lb/galon US', 'lb/barril', u'ton UK/ft³',
+                u'ton US/ft³', u'slug/ft³', u'onza/ft³', u'onza/inch³',
+                'onza/galon UK', 'onza/galon US']
+    __units__ = ['kgm3', 'gcc', 'gm3', 'kgcc', 'lbft3', 'lbin3', 'lbgalUK',
+                 'lbgalUS', 'lbbbl', 'tonUKft3', 'tonUSft3', 'slugft3',
+                 'ozft3', 'ozin3', 'ozgalUK', 'ozgalUS']
+    _magnitudes = [
+        ("Density", QApplication.translate("pychemqt", "Density")),
+        ("DenLiq", QApplication.translate("pychemqt", "Liquid Density")),
+        ("DenGas", QApplication.translate("pychemqt", "Gas Density"))]
+    __units_set__ = {
+        "Density": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
+                    "cgs": "gcc", "english": "lbft3"},
+        "DenLiq": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
+                   "cgs": "gcc", "english": "lbft3"},
+        "DenGas": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
+                   "cgs": "gcc", "english": "lbft3"}}
 
     def __init__(self, data, unit="kgm3", magnitud=""):
         super(Density, self).__init__(data, unit, magnitud)
 
 
 class MolarDensity(unidad):
-    """Class that models a molar density measure with conversion utilities
+    """Class that models a molar density measure
     Supported units:
 
     * kilomol per cubic foot (kmolm3) default (same as mol/l)
@@ -911,17 +1053,25 @@ class MolarDensity(unidad):
     1.0 0.0624279605761
     """
     __title__ = QApplication.translate("pychemqt", "Molar Density")
-    rates = {"kmolm3": 1., "molcc": 1., "kmoll": 1./k.liter, "molm3": 1./k.gram, "kmolcc": 1./k.micro, "lbmolft3": k.pound/k.foot**3, "lbmolin3": k.pound/k.inch**3}
-    __text__ = [u'kmol/m³', u'mol/cm³', u'mol/m³', u'kmol/cm³', u'lbmol/ft³',u'lbmol/inch³']
-    __units__ = ['kmolm3', 'molcc', 'molm3', 'kmolcc', 'lbmolft3','lbmolin3']
-    __units_set__ = {"altsi": "kmolm3", "si": "kmolm3", "metric": "kmolm3", "cgs": "molcc", "english": "lbmolft3"}
+    rates = {"kmolm3": 1.,
+             "molcc": 1.,
+             "kmoll": 1./k.liter,
+             "molm3": 1./k.gram,
+             "kmolcc": 1./k.micro,
+             "lbmolft3": k.pound/k.foot**3,
+             "lbmolin3": k.pound/k.inch**3}
+    __text__ = [u'kmol/m³', u'mol/cm³', u'mol/m³', u'kmol/cm³', u'lbmol/ft³',
+                u'lbmol/inch³']
+    __units__ = ['kmolm3', 'molcc', 'molm3', 'kmolcc', 'lbmolft3', 'lbmolin3']
+    __units_set__ = {"altsi": "kmolm3", "si": "kmolm3", "metric": "kmolm3",
+                     "cgs": "molcc", "english": "lbmolft3"}
 
     def __init__(self, data, unit="kmolm3", magnitud=""):
         super(MolarDensity, self).__init__(data, unit, magnitud)
 
 
 class Force(unidad):
-    """Class that models a force measure with conversion utilities
+    """Class that models a force measure
     Supported units:
 
     * Newton (N) default
@@ -940,17 +1090,29 @@ class Force(unidad):
     0.138254954376 0.0140980818502 13825.4954376
     """
     __title__ = QApplication.translate("pychemqt", "Force")
-    rates = {"N": 1., "kN": k.kilo, "dyn": k.dyn, "kgf": k.kgf, "gf": k.kgf/k.kilo, "lbf": k.lbf, "ozf": k.ozf, "pdl": k.pdl, "TonfUK": k.TonfUK, "TonfUS": k.TonfUS}
-    __text__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "Poundal", "TonfUK", "TonfUS"]
-    __units__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "pdl", "TonfUK", "TonfUS"]
-    __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn", "english": "lbf"}
+    rates = {"N": 1.,
+             "kN": k.kilo,
+             "dyn": k.dyn,
+             "kgf": k.kgf,
+             "gf": k.kgf/k.kilo,
+             "lbf": k.lbf,
+             "ozf": k.ozf,
+             "pdl": k.pdl,
+             "TonfUK": k.TonfUK,
+             "TonfUS": k.TonfUS}
+    __text__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "Poundal",
+                "TonfUK", "TonfUS"]
+    __units__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "pdl", "TonfUK",
+                 "TonfUS"]
+    __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn",
+                     "english": "lbf"}
 
     def __init__(self, data, unit="N", magnitud=""):
         super(Force, self).__init__(data, unit, magnitud)
 
 
 class Pressure(unidad):
-    """Class that models a pressure measure with conversion utilities
+    """Class that models a pressure measure
     Supported units:
 
     * Pascal (Pa) default
@@ -984,53 +1146,82 @@ class Pressure(unidad):
     1.01325 1.0 14.6959487755 0.0
     """
     __title__ = QApplication.translate("pychemqt", "Pressure")
-    rates = {"Pa": 1., "MPa": k.mega, "hPa": k.hecto, "kPa": k.kilo, "bar": k.bar, "baria": 0.1, "mbar": k.bar/k.kilo, "psi": k.psi, "atm": k.atm, "kgcm2": k.g/k.centi**2, "mmH2O": k.g, "mH2O": k.g*k.kilo, "cmH2O": k.g*10, "inH2O": k.g*k.kilo*k.inch, "ftH2O": k.g*k.kilo*k.foot, "mmHg": k.torr, "cmHg": k.torr*10, "inHg": k.torr*k.inch*k.kilo, "ftHg": k.torr*k.foot*k.kilo, "torr": k.torr, "lbcm2": k.g*k.pound/k.centi**2, "lbft2": k.g*k.pound/k.foot**2, "dyncm2": k.dyn/k.centi**2}
-    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi', 'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ]
-    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi', 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ]
-    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa", "cgs": "dyncm2", "english": "psi"}
+    rates = {"Pa": 1.,
+             "MPa": k.mega,
+             "hPa": k.hecto,
+             "kPa": k.kilo,
+             "bar": k.bar,
+             "baria": 0.1,
+             "mbar": k.bar/k.kilo,
+             "psi": k.psi,
+             "atm": k.atm,
+             "kgcm2": k.g/k.centi**2,
+             "mmH2O": k.g,
+             "mH2O": k.g*k.kilo,
+             "cmH2O": k.g*10,
+             "inH2O": k.g*k.kilo*k.inch,
+             "ftH2O": k.g*k.kilo*k.foot,
+             "mmHg": k.torr,
+             "cmHg": k.torr*10,
+             "inHg": k.torr*k.inch*k.kilo,
+             "ftHg": k.torr*k.foot*k.kilo,
+             "torr": k.torr,
+             "lbcm2": k.g*k.pound/k.centi**2,
+             "lbft2": k.g*k.pound/k.foot**2,
+             "dyncm2": k.dyn/k.centi**2}
+    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi',
+                'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O',
+                'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
+                u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
+                 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
+                 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
+                 'lbft2', 'dyncm2']
+    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
+                     "cgs": "dyncm2", "english": "psi"}
 
     def __init__(self, data, unit="Pa", magnitud=""):
         if not magnitud:
-            magnitud=self.__class__.__name__
-        self.magnitud=magnitud
+            magnitud = self.__class__.__name__
+        self.magnitud = magnitud
 
-        if unit=="conf":
-            unit=self.__units__[self.Config.getint('Units',magnitud)]
+        if unit == "conf":
+            unit = self.__units__[self.Config.getint('Units', magnitud)]
 
         for key in self.__class__.rates:
             self.__setattr__(key, self._data/self.__class__.rates[key])
 
-        self.barg=(self.Pa-k.atm)/k.bar
-        self.psig=(self.Pa-k.atm)/k.psi
-        self.kgcm2g=(self.Pa-k.atm)*k.centi**2/k.g
+        self.barg = (self.Pa-k.atm)/k.bar
+        self.psig = (self.Pa-k.atm)/k.psi
+        self.kgcm2g = (self.Pa-k.atm)*k.centi**2/k.g
 
     def __new__(cls, data, unit="Pa", magnitud=""):
-        cls.Config=getMainWindowConfig()
+        cls.Config = getMainWindowConfig()
 
-        if data==None:
-            data=0
-            cls.code="n/a"
+        if data is None:
+            data = 0
+            cls.code = "n/a"
         else:
-            cls.code=""
-            data=float(data)
+            cls.code = ""
+            data = float(data)
 
-        if unit=="conf":
-            unit=cls.__units__[cls.Config.getint('Units','Pressure')]
+        if unit == "conf":
+            unit = cls.__units__[cls.Config.getint('Units', 'Pressure')]
 
-        if unit =="barg":
-            cls._data=data*k.bar+k.atm
-        elif unit =="psig":
-            cls._data=data*k.psi+k.atm
-        elif unit =="kgcm2g":
-            cls._data=data*k.g/k.centi**2+k.atm
+        if unit == "barg":
+            cls._data = data*k.bar+k.atm
+        elif unit == "psig":
+            cls._data = data*k.psi+k.atm
+        elif unit == "kgcm2g":
+            cls._data = data*k.g/k.centi**2+k.atm
         else:
-            cls._data=data * cls.rates[unit]
+            cls._data = data * cls.rates[unit]
 
         return float.__new__(cls, cls._data)
 
 
 class DeltaP(unidad):
-    """Class that models a delta pressure measure with conversion utilities
+    """Class that models a delta pressure measure
     Supported units:
 
     * Pascal (Pa) default
@@ -1064,17 +1255,49 @@ class DeltaP(unidad):
     1.01325 1.0 14.6959487755 0.0
     """
     __title__ = QApplication.translate("pychemqt", "Pressure increase")
-    rates = {"Pa": 1., "MPa": k.mega, "hPa": k.hecto, "kPa": k.kilo, "bar": k.bar, "barg": k.bar, "baria": 0.1, "mbar": k.bar/k.kilo, "psi": k.psi, "psig": k.psi, "atm": k.atm, "kgcm2": k.g/k.centi**2, "kgcm2g": k.g/k.centi**2, "mmH2O": k.g, "mH2O": k.g*k.kilo, "cmH2O": k.g*10, "inH2O": k.g*k.kilo*k.inch, "ftH2O": k.g*k.kilo*k.foot, "mmHg": k.torr, "cmHg": k.torr*10, "inHg": k.torr*k.inch*k.kilo, "ftHg": k.torr*k.foot*k.kilo, "torr": k.torr, "lbcm2": k.g*k.pound/k.centi**2, "lbft2": k.g*k.pound/k.foot**2, "dyncm2": k.dyn/k.centi**2}
-    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi', 'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ]
-    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi', 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ]
-    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa", "cgs": "dyncm2", "english": "psi"}
+    rates = {"Pa": 1.,
+             "MPa": k.mega,
+             "hPa": k.hecto,
+             "kPa": k.kilo,
+             "bar": k.bar,
+             "barg": k.bar,
+             "baria": 0.1,
+             "mbar": k.bar/k.kilo,
+             "psi": k.psi,
+             "psig": k.psi,
+             "atm": k.atm,
+             "kgcm2": k.g/k.centi**2,
+             "kgcm2g": k.g/k.centi**2,
+             "mmH2O": k.g,
+             "mH2O": k.g*k.kilo,
+             "cmH2O": k.g*10,
+             "inH2O": k.g*k.kilo*k.inch,
+             "ftH2O": k.g*k.kilo*k.foot,
+             "mmHg": k.torr,
+             "cmHg": k.torr*10,
+             "inHg": k.torr*k.inch*k.kilo,
+             "ftHg": k.torr*k.foot*k.kilo,
+             "torr": k.torr,
+             "lbcm2": k.g*k.pound/k.centi**2,
+             "lbft2": k.g*k.pound/k.foot**2,
+             "dyncm2": k.dyn/k.centi**2}
+    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi',
+                'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O',
+                'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
+                u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
+                 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
+                 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
+                 'lbft2', 'dyncm2']
+    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
+                     "cgs": "dyncm2", "english": "psi"}
 
     def __init__(self, data, unit="Pa", magnitud=""):
         super(DeltaP, self).__init__(data, unit, magnitud)
 
 
 class Energy(unidad):
-    """Class that models a energy measure with conversion utilities
+    """Class that models a energy measure
     Supported units:
 
     * Joule (J) default
@@ -1105,20 +1328,49 @@ class Energy(unidad):
     4184.0 3.96566683139 1.16222222222
     """
     __title__ = QApplication.translate("pychemqt", "Energy")
-    rates = {"J": 1., "kJ": k.kilo, "MJ": k.mega, "cal": k.calorie, "kcal": k.calorie*k.kilo, "cal_i": k.calorie_IT, "erg": k.erg, "Btu": k.Btu, "kBtu": k.Btu*k.kilo, "MBtu": k.Btu*k.mega, "Wh": k.hour, "kWh": k.hour*k.kilo, "MWh": k.hour*k.mega, "TNT": k.TNT, "HPh": k.hp*k.hour, "CVh": k.CV*k.hour, "kgfm": k.kgf, "lbfft": k.lbf*k.foot, "GeV": k.eV*k.giga, "oil": k.BarrilOil, "toe": k.TmOil, "tce": k.TmCoal}
-    __text__ = ['J', 'kJ', 'MJ', 'cal','kcal', 'cal int', 'erg', 'Btu', 'kBtu', 'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgf/m', 'lbf/ft']
-    __units__ = ['J', 'kJ', 'MJ', 'cal','kcal', 'cal_i', 'erg', 'Btu', 'kBtu', 'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgfm', 'lbfft']
-    _magnitudes=[("Energy", QApplication.translate("pychemqt", "Energy")),
-                            ("Work", QApplication.translate("pychemqt", "Work"))]
-    __units_set__ = {"Energy": {"altsi": "MJ", "si": "MJ", "metric": "J", "cgs": "erg", "english": "MBtu"},
-                             "Work": {"altsi": "MJ", "si": "kWh", "metric": "J", "cgs": "erg", "english": "HPh"}}
+    rates = {"J": 1.,
+             "kJ": k.kilo,
+             "MJ": k.mega,
+             "cal": k.calorie,
+             "kcal": k.calorie*k.kilo,
+             "cal_i": k.calorie_IT,
+             "erg": k.erg,
+             "Btu": k.Btu,
+             "kBtu": k.Btu*k.kilo,
+             "MBtu": k.Btu*k.mega,
+             "Wh": k.hour,
+             "kWh": k.hour*k.kilo,
+             "MWh": k.hour*k.mega,
+             "TNT": k.TNT,
+             "HPh": k.hp*k.hour,
+             "CVh": k.CV*k.hour,
+             "kgfm": k.kgf,
+             "lbfft": k.lbf*k.foot,
+             "GeV": k.eV*k.giga,
+             "oil": k.BarrilOil,
+             "toe": k.TmOil,
+             "tce": k.TmCoal}
+    __text__ = ['J', 'kJ', 'MJ', 'cal', 'kcal', 'cal int', 'erg', 'Btu',
+                'kBtu', 'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgf/m', 'lbf/ft',
+                'TNT', 'CVh', 'GeV', 'oil', 'toe', 'tce']
+    __units__ = ['J', 'kJ', 'MJ', 'cal', 'kcal', 'cal_i', 'erg', 'Btu', 'kBtu',
+                 'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgfm', 'lbfft',
+                 'TNT', 'CVh', 'GeV', 'oil', 'toe', 'tce']
+    _magnitudes = [
+        ("Energy", QApplication.translate("pychemqt", "Energy")),
+        ("Work", QApplication.translate("pychemqt", "Work"))]
+    __units_set__ = {
+        "Energy": {"altsi": "MJ", "si": "MJ", "metric": "J", "cgs": "erg",
+                   "english": "MBtu"},
+        "Work": {"altsi": "MJ", "si": "kWh", "metric": "J", "cgs": "erg",
+                 "english": "HPh"}}
 
     def __init__(self, data, unit="J", magnitud=""):
         super(Energy, self).__init__(data, unit, magnitud)
 
 
 class Enthalpy(unidad):
-    """Class that models a enthalpy measure with conversion utilities
+    """Class that models a enthalpy measure
     Supported units:
 
     * Joule per kilogram (Jkg) default
@@ -1137,17 +1389,31 @@ class Enthalpy(unidad):
     -11.63 -2.77963671128
     """
     __title__ = QApplication.translate("pychemqt", "Enthalpy")
-    rates = {"Jkg": 1., "kJkg": k.kilo, "Jg": k.kilo, "MJkg": k.mega, "kJg": k.mega, "kWhkg": k.hour*k.kilo, "calkg": k.calorie, "kcalkg": k.calorie*k.kilo, "calg": k.calorie*k.kilo, "callb": k.calorie/k.lb, "kcalg": k.calorie*k.mega, "Btulb": k.Btu/k.lb}
-    __text__ = ['J/kg', 'kJ/kg', 'MJ/kg','cal/kg' , 'kcal/kg', 'calg', 'cal/lb', 'Btu/lb']
-    __units__ = ['Jkg', 'kJkg', 'MJkg','calkg' , 'kcalkg', 'calg', 'callb', 'Btulb']
-    __units_set__ = {"altsi": "kJkg", "si": "Jkg", "metric": "Jkg", "cgs": "calg", "english": "Btulb"}
+    rates = {"Jkg": 1.,
+             "kJkg": k.kilo,
+             "Jg": k.kilo,
+             "MJkg": k.mega,
+             "kJg": k.mega,
+             "kWhkg": k.hour*k.kilo,
+             "calkg": k.calorie,
+             "kcalkg": k.calorie*k.kilo,
+             "calg": k.calorie*k.kilo,
+             "callb": k.calorie/k.lb,
+             "kcalg": k.calorie*k.mega,
+             "Btulb": k.Btu/k.lb}
+    __text__ = ['J/kg', 'kJ/kg', 'MJ/kg', 'cal/kg', 'kcal/kg', 'calg',
+                'cal/lb', 'Btu/lb']
+    __units__ = ['Jkg', 'kJkg', 'MJkg', 'calkg', 'kcalkg', 'calg', 'callb',
+                 'Btulb']
+    __units_set__ = {"altsi": "kJkg", "si": "Jkg", "metric": "Jkg",
+                     "cgs": "calg", "english": "Btulb"}
 
     def __init__(self, data, unit="Jkg", magnitud=""):
         super(Enthalpy, self).__init__(data, unit, magnitud)
 
 
 class MolarEnthalpy(unidad):
-    """Class that models a enthalpy measure in molar base with conversion utilities
+    """Class that models a enthalpy measure in molar base
     Supported units:
 
     * Joule per kilogram (Jkmol) default
@@ -1166,17 +1432,31 @@ class MolarEnthalpy(unidad):
     -11.63 -2.77963671128
     """
     __title__ = QApplication.translate("pychemqt", "Molar Enthalpy")
-    rates = {"Jkmol": 1., "kJkmol": k.kilo, "Jmol": k.kilo, "MJkmol": k.mega, "kJmol": k.mega, "kWhkmol": k.hour*k.kilo, "calkmol": k.calorie, "kcalkmol": k.calorie*k.kilo, "calmol": k.calorie*k.kilo, "callbmol": k.calorie/k.lb, "kcalmol": k.calorie*k.mega, "Btulbmol": k.Btu/k.lb}
-    __text__ = ['J/kmol', 'kJ/kmol', 'MJ/kmol','cal/kmol' , 'kcal/kmol', 'calmol', 'cal/lbmol', 'Btu/lbmol']
-    __units__ = ['Jkmol', 'kJkmol', 'MJkmol','calkmol' , 'kcalkmol', 'calmol', 'callbmol', 'Btulbmol']
-    __units_set__ = {"altsi": "kJkmol", "si": "Jkmol", "metric": "Jkmol", "cgs": "calmol", "english": "Btulbmol"}
+    rates = {"Jkmol": 1.,
+             "kJkmol": k.kilo,
+             "Jmol": k.kilo,
+             "MJkmol": k.mega,
+             "kJmol": k.mega,
+             "kWhkmol": k.hour*k.kilo,
+             "calkmol": k.calorie,
+             "kcalkmol": k.calorie*k.kilo,
+             "calmol": k.calorie*k.kilo,
+             "callbmol": k.calorie/k.lb,
+             "kcalmol": k.calorie*k.mega,
+             "Btulbmol": k.Btu/k.lb}
+    __text__ = ['J/kmol', 'kJ/kmol', 'MJ/kmol', 'cal/kmol', 'kcal/kmol',
+                'calmol', 'cal/lbmol', 'Btu/lbmol']
+    __units__ = ['Jkmol', 'kJkmol', 'MJkmol', 'calkmol', 'kcalkmol', 'calmol',
+                 'callbmol', 'Btulbmol']
+    __units_set__ = {"altsi": "kJkmol", "si": "Jkmol", "metric": "Jkmol",
+                     "cgs": "calmol", "english": "Btulbmol"}
 
     def __init__(self, data, unit="Jkmol", magnitud=""):
         super(MolarEnthalpy, self).__init__(data, unit, magnitud)
 
 
 class Entropy(unidad):
-    """Class that models a entropy measure with conversion utilities
+    """Class that models a entropy measure
     Supported units:
 
     * Joule per kelvin (JK) default
@@ -1198,17 +1478,32 @@ class Entropy(unidad):
     56.9730160415 13.616877639
     """
     __title__ = QApplication.translate("pychemqt", "Entropy")
-    rates = {"JK": 1., "kJK": k.kilo, "MJK": k.mega, "calK": k.calorie, "kcalK": k.calorie*k.kilo, "McalK": k.calorie*k.mega, "WhK": k.hour, "kWhK": k.hour*k.kilo, "MWhK": k.hour/k.mega, "hphF": k.hour*k.hp/k.Rankine, "BtuF": k.Btu/k.Rankine, "kBtuF": k.Btu*k.kilo/k.Rankine, "MBtuF": k.Btu*k.mega/k.Rankine}
-    __text__ = ['J/K', 'kJ/K', 'MJ/K', 'cal/K', 'kcal/K', 'Mcal/K', 'Wh/K', 'kWh/K', 'MWh/K', 'hph/F', 'Btu/F', 'kBtu/F', 'MBtu/F']
-    __units__ = ['JK', 'kJK', 'MJK', 'calK', 'kcalK', 'McalK', 'WhK', 'kWhK', 'MWhK', 'hphF', 'BtuF', 'kBtuF', 'MBtuF']
-    __units_set__ = {"altsi": "kJK", "si": "JK", "metric": "JK", "cgs": "calK", "english": "MBtuF"}
+    rates = {"JK": 1.,
+             "kJK": k.kilo,
+             "MJK": k.mega,
+             "calK": k.calorie,
+             "kcalK": k.calorie*k.kilo,
+             "McalK": k.calorie*k.mega,
+             "WhK": k.hour,
+             "kWhK": k.hour*k.kilo,
+             "MWhK": k.hour/k.mega,
+             "hphF": k.hour*k.hp/k.Rankine,
+             "BtuF": k.Btu/k.Rankine,
+             "kBtuF": k.Btu*k.kilo/k.Rankine,
+             "MBtuF": k.Btu*k.mega/k.Rankine}
+    __text__ = ['J/K', 'kJ/K', 'MJ/K', 'cal/K', 'kcal/K', 'Mcal/K', 'Wh/K',
+                'kWh/K', 'MWh/K', 'hph/F', 'Btu/F', 'kBtu/F', 'MBtu/F']
+    __units__ = ['JK', 'kJK', 'MJK', 'calK', 'kcalK', 'McalK', 'WhK', 'kWhK',
+                 'MWhK', 'hphF', 'BtuF', 'kBtuF', 'MBtuF']
+    __units_set__ = {"altsi": "kJK", "si": "JK", "metric": "JK",
+                     "cgs": "calK", "english": "MBtuF"}
 
     def __init__(self, data, unit="JK", magnitud=""):
         super(Entropy, self).__init__(data, unit, magnitud)
 
 
 class SpecificHeat(unidad):
-    """Class that models a specific heat measure with conversion utilities
+    """Class that models a specific heat measure
     Supported units:
 
     * Joule per kilogram kelvin (JkgK) default
@@ -1225,17 +1520,27 @@ class SpecificHeat(unidad):
     4.1868 1.00066921606
     """
     __title__ = QApplication.translate("pychemqt", "Specific Heat")
-    rates = {"JkgK": 1., "kJkgK": k.kilo, "JgK": k.kilo, "kcalkgK": k.calorie*k.kilo, "calgK": k.calorie*k.kilo, "kcalgK": k.calorie*k.kilo**2, "kWhkgK": k.kilo*k.hour, "BtulbF": k.Btu/k.lb/k.Rankine}
-    __text__ = [u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'cal/g·K', u'kcal/g·K', u'kWh/kg·K', u'Btu/lb·F']
-    __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK', 'BtulbF']
-    __units_set__ = {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK", "cgs": "calgK", "english": "BtulbF"}
+    rates = {"JkgK": 1.,
+             "kJkgK": k.kilo,
+             "JgK": k.kilo,
+             "kcalkgK": k.calorie*k.kilo,
+             "calgK": k.calorie*k.kilo,
+             "kcalgK": k.calorie*k.kilo**2,
+             "kWhkgK": k.kilo*k.hour,
+             "BtulbF": k.Btu/k.lb/k.Rankine}
+    __text__ = [u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'cal/g·K', u'kcal/g·K',
+                u'kWh/kg·K', u'Btu/lb·F']
+    __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK',
+                 'BtulbF']
+    __units_set__ = {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
+                     "cgs": "calgK", "english": "BtulbF"}
 
     def __init__(self, data, unit="JkgK", magnitud=""):
         super(SpecificHeat, self).__init__(data, unit, magnitud)
 
 
 class Power(unidad):
-    """Class that models a power measure with conversion utilities
+    """Class that models a power measure
     Supported units:
 
     * Watt (W) default
@@ -1260,20 +1565,45 @@ class Power(unidad):
     0.00146535535086 0.00196507389461 1.26082200361
     """
     __title__ = QApplication.translate("pychemqt", "Power")
-    rates = {"W": 1., "kW": k.kilo, "MW": k.mega, "hp": k.hp, "CV": k.CV, "cals": k.calorie, "kcalh": k.calorie*k.kilo/k.hour, "Jh": 1/k.hour, "kJh": k.kilo/k.hour, "MJh": k.mega/k.hour, "ergs": k.erg, "Btus": k.Btu, "Btumin": k.Btu/k.minute, "Btuh": k.Btu/k.hour, "MBtuh": k.Btu/k.hour*k.mega, "ftlbfs": k.foot*k.lb*k.g, "ftlbfmin": k.foot*k.lb*k.g/k.minute, "ftlbfh": k.foot*k.lb*k.g/k.hour}
-    __text__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cal/s', 'kcal/h', 'J/h', 'kJ/h', 'MJ/h', 'erg/s', 'Btu/s', 'Btu/min', 'Btu/h', 'MBtu/h', u'ft/lbf·s', u'ft/lbf·min', u'ft/lbf·h']
-    __units__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cals', 'kcalh', 'Jh', 'kJh', 'MJh','ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs', 'ftlbfmin', 'ftlbfh']
-    _magnitudes=[("EnergyFlow", QApplication.translate("pychemqt", "Energy Flow")),
-                            ("Power", QApplication.translate("pychemqt", "Power"))]
-    __units_set__ = {"EnergyFlow": {"altsi": "MJh", "si": "kJh", "metric": "Jh", "cgs": "ergs", "english": "MBtuh"},
-                             "Power": {"altsi": "hp", "si": "kW", "metric": "Jh", "cgs": "ergs", "english": "hp"}}
+    rates = {"W": 1.,
+             "kW": k.kilo,
+             "MW": k.mega,
+             "hp": k.hp,
+             "CV": k.CV,
+             "cals": k.calorie,
+             "kcalh": k.calorie*k.kilo/k.hour,
+             "Jh": 1/k.hour,
+             "kJh": k.kilo/k.hour,
+             "MJh": k.mega/k.hour,
+             "ergs": k.erg,
+             "Btus": k.Btu,
+             "Btumin": k.Btu/k.minute,
+             "Btuh": k.Btu/k.hour,
+             "MBtuh": k.Btu/k.hour*k.mega,
+             "ftlbfs": k.foot*k.lb*k.g,
+             "ftlbfmin": k.foot*k.lb*k.g/k.minute,
+             "ftlbfh": k.foot*k.lb*k.g/k.hour}
+    __text__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cal/s', 'kcal/h', 'J/h', 'kJ/h',
+                'MJ/h', 'erg/s', 'Btu/s', 'Btu/min', 'Btu/h', 'MBtu/h',
+                u'ft/lbf·s', u'ft/lbf·min', u'ft/lbf·h']
+    __units__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cals', 'kcalh', 'Jh', 'kJh',
+                 'MJh', 'ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs',
+                 'ftlbfmin', 'ftlbfh']
+    _magnitudes = [
+        ("EnergyFlow", QApplication.translate("pychemqt", "Energy Flow")),
+        ("Power", QApplication.translate("pychemqt", "Power"))]
+    __units_set__ = {
+        "EnergyFlow": {"altsi": "MJh", "si": "kJh", "metric": "Jh",
+                       "cgs": "ergs", "english": "MBtuh"},
+        "Power": {"altsi": "hp", "si": "kW", "metric": "Jh", "cgs": "ergs",
+                  "english": "hp"}}
 
     def __init__(self, data, unit="W", magnitud=""):
         super(Power, self).__init__(data, unit, magnitud)
 
 
 class MassFlow(unidad):
-    """Class that models a mass flow measure with conversion utilities
+    """Class that models a mass flow measure
     Supported units:
 
     * kg per second (kgs) default
@@ -1304,17 +1634,41 @@ class MassFlow(unidad):
     3.6 7.93664143866 60.0
     """
     __title__ = QApplication.translate("pychemqt", "Mass Flow")
-    rates = {"kgs": 1., "kgmin": 1./k.minute, "kgh": 1./k.hour, "gs": k.milli, "gmin": k.milli/k.minute, "gh": k.milli/k.hour, "Tons": k.kilo, "Tonmin": k.kilo/k.minute, "Tonh": k.kilo/k.hour, "lbs": k.lb, "lbmin": k.lb/k.minute, "lbh": k.lb/k.hour, "TonUKs": k.tonUK, "TonUSs": k.tonUS, "TonUKmin": k.tonUK/k.minute, "TonUSmin": k.tonUS/k.minute, "TonUKh": k.tonUK/k.hour, "TonUSh": k.tonUS/k.hour, "TonUKday": k.tonUK/k.day, "TonUSday": k.tonUS/k.day}
-    __text__ = ['kg/s', 'kg/min', 'kg/h', 'g/s', 'g/min', 'g/h', 'Ton/s', 'Ton/min', 'Ton/h', 'lb/s', 'lb/min', 'lb/h', 'TonUK/min', 'TonUS/min','TonUK/h', 'TonUS/h', 'TonUK/day', 'TonUS/day']
-    __units__ = ['kgs', 'kgmin', 'kgh', 'gs', 'gmin', 'gh', 'Tons', 'Tonmin', 'Tonh', 'lbs', 'lbmin', 'lbh', 'TonUKmin', 'TonUSmin','TonUKh', 'TonUSh', 'TonUKday', 'TonUSday']
-    __units_set__ = {"altsi": "kgh", "si": "kgh", "metric": "kgs", "cgs": "gs", "english": "lbh"}
+    rates = {"kgs": 1.,
+             "kgmin": 1./k.minute,
+             "kgh": 1./k.hour,
+             "gs": k.milli,
+             "gmin": k.milli/k.minute,
+             "gh": k.milli/k.hour,
+             "Tons": k.kilo,
+             "Tonmin": k.kilo/k.minute,
+             "Tonh": k.kilo/k.hour,
+             "lbs": k.lb,
+             "lbmin": k.lb/k.minute,
+             "lbh": k.lb/k.hour,
+             "TonUKs": k.tonUK,
+             "TonUSs": k.tonUS,
+             "TonUKmin": k.tonUK/k.minute,
+             "TonUSmin": k.tonUS/k.minute,
+             "TonUKh": k.tonUK/k.hour,
+             "TonUSh": k.tonUS/k.hour,
+             "TonUKday": k.tonUK/k.day,
+             "TonUSday": k.tonUS/k.day}
+    __text__ = ['kg/s', 'kg/min', 'kg/h', 'g/s', 'g/min', 'g/h', 'Ton/s',
+                'Ton/min', 'Ton/h', 'lb/s', 'lb/min', 'lb/h', 'TonUK/min',
+                'TonUS/min', 'TonUK/h', 'TonUS/h', 'TonUK/day', 'TonUS/day']
+    __units__ = ['kgs', 'kgmin', 'kgh', 'gs', 'gmin', 'gh', 'Tons', 'Tonmin',
+                 'Tonh', 'lbs', 'lbmin', 'lbh', 'TonUKmin', 'TonUSmin',
+                 'TonUKh', 'TonUSh', 'TonUKday', 'TonUSday']
+    __units_set__ = {"altsi": "kgh", "si": "kgh", "metric": "kgs", "cgs": "gs",
+                     "english": "lbh"}
 
     def __init__(self, data, unit="kgs", magnitud=""):
         super(MassFlow, self).__init__(data, unit, magnitud)
 
 
 class MolarFlow(unidad):
-    """Class that models a molar flow measure with conversion utilities
+    """Class that models a molar flow measure
     Supported units:
 
     * kmol per second (kmols) default
@@ -1332,17 +1686,28 @@ class MolarFlow(unidad):
     3.6 7.93664143866 60.0
     """
     __title__ = QApplication.translate("pychemqt", "Molar Flow")
-    rates = {"kmols": 1., "kmolmin": 1./k.minute, "kmolh": 1./k.hour, "mols": k.milli, "molmin": k.milli/k.minute, "molh": k.milli/k.hour, "lbmols": k.lb, "lbmolmin": k.lb/k.minute, "lbmolh": k.lb/k.hour}
-    __text__ = ['kmol/s', 'kmol/min', 'kmol/h', 'mol/s', 'mol/min', 'mol/h', 'lbmol/s', 'lbmol/min', 'lbmol/h']
-    __units__ = ['kmols', 'kmolmin', 'kmolh', 'mols', 'molmin', 'molh', 'lbmols', 'lbmolmin', 'lbmolh']
-    __units_set__ = {"altsi": "kmolh", "si": "kmolh", "metric": "kmols", "cgs": "mols", "english": "lbmolh"}
+    rates = {"kmols": 1.,
+             "kmolmin": 1./k.minute,
+             "kmolh": 1./k.hour,
+             "mols": k.milli,
+             "molmin": k.milli/k.minute,
+             "molh": k.milli/k.hour,
+             "lbmols": k.lb,
+             "lbmolmin": k.lb/k.minute,
+             "lbmolh": k.lb/k.hour}
+    __text__ = ['kmol/s', 'kmol/min', 'kmol/h', 'mol/s', 'mol/min', 'mol/h',
+                'lbmol/s', 'lbmol/min', 'lbmol/h']
+    __units__ = ['kmols', 'kmolmin', 'kmolh', 'mols', 'molmin', 'molh',
+                 'lbmols', 'lbmolmin', 'lbmolh']
+    __units_set__ = {"altsi": "kmolh", "si": "kmolh", "metric": "kmols",
+                     "cgs": "mols", "english": "lbmolh"}
 
     def __init__(self, data, unit="kmols", magnitud=""):
         super(MolarFlow, self).__init__(data, unit, magnitud)
 
 
 class VolFlow(unidad):
-    """Class that models a volumetric flow measure with conversion utilities
+    """Class that models a volumetric flow measure
     Supported units:
 
     * cubic meters per second (m3s) default
@@ -1375,22 +1740,58 @@ class VolFlow(unidad):
     0.06 0.0353146667215 16.6666666667
     """
     __title__ = QApplication.translate("pychemqt", "Volumetric Flow")
-    rates = {"m3s": 1., "m3min": 1./k.minute, "m3h": 1./k.hour, "ls": k.liter, "lmin": k.liter/k.minute, "lh": k.liter/k.hour, "ccs": k.micro, "cm3s": k.micro, "ccmin": k.micro/k.minute, "cch": k.micro/k.hour, "ft3s": k.foot**3, "ft3min": k.foot**3/k.minute, "kft3min": k.foot**3*k.kilo/k.minute, "ft3h": k.foot**3/k.hour, "mft3day": k.foot**3*k.mega/k.day, "galUKh": k.gallon_imp/k.hour, "galUSh": k.gallon/k.hour, "galUKmin": k.gallon_imp/k.minute, "galUSmin": k.gallon/k.minute, "galUKs": k.gallon_imp, "galUSs": k.gallon, "bbls": k.bbl, "bblmin": k.bbl/k.minute, "bblh": k.bbl/k.hour, "bblday": k.bbl/k.day}
-    __text__ = [u'm³/s', u'm³/min', u'm³/h', 'l/s', 'l/min', 'l/h', u'cm³/s', u'cm³/min', u'cm³/h', u'ft³/s', u'ft³/min', u'kft³/min',  u'ft³/h', u'Mft³/day', 'galon UK/h', 'galon US/h', 'galon UK/min', 'galon US/min', 'galon UK/s', 'galon US/s', 'barril/s', 'barril/min', 'barril/h', 'barril/day']
-    __units__ = ['m3s', 'm3min', 'm3h', 'ls', 'lmin', 'lh', 'ccs', 'ccmin', 'cch', 'ft3s', 'ft3min', 'kft3min',  'ft3h', 'mft3day', 'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs', 'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
-    _magnitudes=[("VolFlow", QApplication.translate("pychemqt", "Volumetric Flow")),
-                            ("QLiq", QApplication.translate("pychemqt", "Liquid Flow")),
-                            ("QGas", QApplication.translate("pychemqt", "Gas Flow"))]
-    __units_set__ = {"VolFlow": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs", "english": "ft3h"},
-                             "QLiq": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs", "english": "ft3h"},
-                             "QGas": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs", "english": "ft3h"}}
+    rates = {"m3s": 1.,
+             "m3min": 1./k.minute,
+             "m3h": 1./k.hour,
+             "ls": k.liter,
+             "lmin": k.liter/k.minute,
+             "lh": k.liter/k.hour,
+             "ccs": k.micro,
+             "cm3s": k.micro,
+             "ccmin": k.micro/k.minute,
+             "cch": k.micro/k.hour,
+             "ft3s": k.foot**3,
+             "ft3min": k.foot**3/k.minute,
+             "kft3min": k.foot**3*k.kilo/k.minute,
+             "ft3h": k.foot**3/k.hour,
+             "mft3day": k.foot**3*k.mega/k.day,
+             "galUKh": k.gallon_imp/k.hour,
+             "galUSh": k.gallon/k.hour,
+             "galUKmin": k.gallon_imp/k.minute,
+             "galUSmin": k.gallon/k.minute,
+             "galUKs": k.gallon_imp,
+             "galUSs": k.gallon,
+             "bbls": k.bbl,
+             "bblmin": k.bbl/k.minute,
+             "bblh": k.bbl/k.hour,
+             "bblday": k.bbl/k.day}
+    __text__ = [u'm³/s', u'm³/min', u'm³/h', 'l/s', 'l/min', 'l/h', u'cm³/s',
+                u'cm³/min', u'cm³/h', u'ft³/s', u'ft³/min', u'kft³/min',
+                u'ft³/h', u'Mft³/day', 'galon UK/h', 'galon US/h',
+                'galon UK/min', 'galon US/min', 'galon UK/s', 'galon US/s',
+                'barril/s', 'barril/min', 'barril/h', 'barril/day']
+    __units__ = ['m3s', 'm3min', 'm3h', 'ls', 'lmin', 'lh', 'ccs', 'ccmin',
+                 'cch', 'ft3s', 'ft3min', 'kft3min',  'ft3h', 'mft3day',
+                 'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs',
+                 'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
+    _magnitudes = [
+        ("VolFlow", QApplication.translate("pychemqt", "Volumetric Flow")),
+        ("QLiq", QApplication.translate("pychemqt", "Liquid Flow")),
+        ("QGas", QApplication.translate("pychemqt", "Gas Flow"))]
+    __units_set__ = {
+        "VolFlow": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
+                    "english": "ft3h"},
+        "QLiq": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
+                 "english": "ft3h"},
+        "QGas": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
+                 "english": "ft3h"}}
 
     def __init__(self, data, unit="m3s", magnitud=""):
         super(VolFlow, self).__init__(data, unit, magnitud)
 
 
 class Diffusivity(unidad):
-    """Class that models a diffusivity measure with conversion utilities (util too for kinematic viscosity)
+    """Class that models a diffusivity measure (useful for kinematic viscosity)
     Supported units:
 
     * Square meter per second (m2s) default
@@ -1409,20 +1810,35 @@ class Diffusivity(unidad):
     0.0005 0.00538195520835
     """
     __title__ = QApplication.translate("pychemqt", "Diffusivity")
-    rates = {"m2s": 1., "cm2s": k.centi**2, "mm2s": k.milli**2, "ft2s": k.foot**2, "inch2s": k.inch**2, "m2h": 1./k.hour, "ft2h": k.foot**2/k.hour, "inch2h": k.inch**2/k.hour, "St": k.centi**2, "cSt": k.milli**2}
-    __text__ = [u"m²/s", u"cm²/s", u"mm²/s", u"ft²/s", u"inch²/s", u"m²/h", u"ft²/h", u"inch²/h", "St", "cSt"]
-    __units__ = ["m2s", "cm2s", "mm2s", "ft2s", "inch2s", "m2h", "ft2h", "inch2h", "St", "cSt"]
-    _magnitudes=[("Diffusivity", QApplication.translate("pychemqt", "Diffusivity")),
-                            ("KViscosity", QApplication.translate("pychemqt", "Kinematic viscosity"))]
-    __units_set__ = {"Diffusivity": {"altsi": "m2s", "si": "m2s", "metric": "m2s", "cgs": "cm2s", "english": "ft2s"},
-                             "KViscosity": {"altsi": "m2s", "si": "m2s", "metric": "m2s", "cgs": "cm2s", "english": "ft2s"}}
+    rates = {"m2s": 1.,
+             "cm2s": k.centi**2,
+             "mm2s": k.milli**2,
+             "ft2s": k.foot**2,
+             "inch2s": k.inch**2,
+             "m2h": 1./k.hour,
+             "ft2h": k.foot**2/k.hour,
+             "inch2h": k.inch**2/k.hour,
+             "St": k.centi**2,
+             "cSt": k.milli**2}
+    __text__ = [u"m²/s", u"cm²/s", u"mm²/s", u"ft²/s", u"inch²/s", u"m²/h",
+                u"ft²/h", u"inch²/h", "St", "cSt"]
+    __units__ = ["m2s", "cm2s", "mm2s", "ft2s", "inch2s", "m2h", "ft2h",
+                 "inch2h", "St", "cSt"]
+    _magnitudes = [
+        ("Diffusivity", QApplication.translate("pychemqt", "Diffusivity")),
+        ("KViscosity", QApplication.translate("pychemqt", "Kinematic viscosity"))]
+    __units_set__ = {
+        "Diffusivity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
+                        "cgs": "cm2s", "english": "ft2s"},
+        "KViscosity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
+                       "cgs": "cm2s", "english": "ft2s"}}
 
     def __init__(self, data, unit="m2s", magnitud=""):
         super(Diffusivity, self).__init__(data, unit, magnitud)
 
 
 class HeatFlux(unidad):
-    """Class that models a heat flux measure with conversion utilities
+    """Class that models a heat flux measure
     Supported units:
 
     * W/m2 (Wm2) default
@@ -1439,17 +1855,26 @@ class HeatFlux(unidad):
     3.15459074506 2.71427501965
     """
     __title__ = QApplication.translate("pychemqt", "Heat Flux")
-    rates = {"Wm2": 1., "kWm2": k.kilo, "calhm2": k.calorie/k.hour, "calsm2": k.calorie, "calscm2": k.calorie/k.centi**2, "kcalhm2": k.kilo*k.calorie/k.hour, "Btuhft2": k.Btu/k.hour/k.foot**2, "Btusft2": k.Btu/k.foot**2}
-    __text__ = [u"W/m²", u"kW/m²", u"cal/hm²", u"cal/sm²", u"cal/scm²", u"kcal/hm²", u"Btu/hft²", u"Btu/sft²"]
-    __units__ = ["Wm2", "kWm2", "calhm2", "calsm2", "calscm2", "kcalhm2", "Btuhft2", "Btusft2"]
-    __units_set__ = {"altsi": "Wm2", "si": "Wm2", "metric": "Wm2", "cgs": "calscm2", "english": "Btuhft2"}
+    rates = {"Wm2": 1.,
+             "kWm2": k.kilo,
+             "calhm2": k.calorie/k.hour,
+             "calsm2": k.calorie,
+             "calscm2": k.calorie/k.centi**2,
+             "kcalhm2": k.kilo*k.calorie/k.hour,
+             "Btuhft2": k.Btu/k.hour/k.foot**2, "Btusft2": k.Btu/k.foot**2}
+    __text__ = [u"W/m²", u"kW/m²", u"cal/hm²", u"cal/sm²", u"cal/scm²",
+                u"kcal/hm²", u"Btu/hft²", u"Btu/sft²"]
+    __units__ = ["Wm2", "kWm2", "calhm2", "calsm2", "calscm2", "kcalhm2",
+                 "Btuhft2", "Btusft2"]
+    __units_set__ = {"altsi": "Wm2", "si": "Wm2", "metric": "Wm2",
+                     "cgs": "calscm2", "english": "Btuhft2"}
 
     def __init__(self, data, unit="Wm2", magnitud=""):
         super(HeatFlux, self).__init__(data, unit, magnitud)
 
 
 class ThermalConductivity(unidad):
-    """Class that models a thermal conductivity measure with conversion utilities
+    """Class that models a thermal conductivity measure
     Supported units:
 
     * Watt per meter Kelvin (WmK) default
@@ -1468,17 +1893,32 @@ class ThermalConductivity(unidad):
     50.0 28.8894658271 43.0210325048
     """
     __title__ = QApplication.translate("pychemqt", "Thermal Conductivity")
-    rates = {"WmK": 1., "mWmK": 1./k.kilo, "kWmK": k.kilo, "JhmK":1./k.hour, "kJhmK": k.kilo/k.hour, "calscmK": k.calorie/k.centi, "calhcmK": k.calorie/k.centi/k.hour, "calhmmK": k.calorie/k.milli/k.hour, "kcalhmK": k.calorie*k.kilo/k.hour, "lbfsF": k.lbf/k.Rankine, "lbfts3F": k.lb*k.foot/k.Rankine, "BtuhftF": k.Btu/k.hour/k.foot/k.Rankine}
-    __text__ = [u'W/m·K', u'mW/m·K', u"kW/m·K", u'J/h·m·K', u'cal/s·cm·K', u'cal/h·cm·K',u'kcal/h·m·K' , u'lbf/s·F', u'lb/ft·s³·F',u'Btu/h·ft·F']
-    __units__ = ['WmK', 'mWmK', "kWmK", 'JhmK', 'calscmK', 'calhcmK','kcalhmK' , 'lbfsF', 'lbfts3F','BtuhftF']
-    __units_set__ = {"altsi": "mWmK", "si": "WmK", "metric": "WmK", "cgs": "calscmK", "english": "lbfts3F"}
+    rates = {"WmK": 1.,
+             "mWmK": 1./k.kilo,
+             "kWmK": k.kilo,
+             "JhmK": 1./k.hour,
+             "kJhmK": k.kilo/k.hour,
+             "calscmK": k.calorie/k.centi,
+             "calhcmK": k.calorie/k.centi/k.hour,
+             "calhmmK": k.calorie/k.milli/k.hour,
+             "kcalhmK": k.calorie*k.kilo/k.hour,
+             "lbfsF": k.lbf/k.Rankine,
+             "lbfts3F": k.lb*k.foot/k.Rankine,
+             "BtuhftF": k.Btu/k.hour/k.foot/k.Rankine}
+    __text__ = [u'W/m·K', u'mW/m·K', u"kW/m·K", u'J/h·m·K', u'cal/s·cm·K',
+                u'cal/h·cm·K', u'kcal/h·m·K', u'lbf/s·F', u'lb/ft·s³·F',
+                u'Btu/h·ft·F']
+    __units__ = ['WmK', 'mWmK', "kWmK", 'JhmK', 'calscmK', 'calhcmK',
+                 'kcalhmK', 'lbfsF', 'lbfts3F', 'BtuhftF']
+    __units_set__ = {"altsi": "mWmK", "si": "WmK", "metric": "WmK",
+                     "cgs": "calscmK", "english": "lbfts3F"}
 
     def __init__(self, data, unit="WmK", magnitud=""):
         super(ThermalConductivity, self).__init__(data, unit, magnitud)
 
 
 class UA(unidad):
-    """Class that models a UA measure with conversion utilities
+    """Class that models a UA measure
     Supported units:
 
     * Watt per Kelvin (WK) default
@@ -1498,17 +1938,30 @@ class UA(unidad):
     5.67826334111 4.88569503537
     """
     __title__ = QApplication.translate("pychemqt", "UA")
-    rates = {"WK": 1., "kWK": k.kilo, "mWK": k.milli, "JhK":1./k.hour, "kJhK": k.kilo/k.hour, "calhK": k.calorie/k.hour, "kcalhK": k.calorie*k.kilo/k.hour, "calsK": k.calorie, "kcalsK": k.calorie*k.kilo, "BtuhF": k.Btu/k.hour/k.foot**2/k.Rankine, "BtusF": k.Btu/k.foot**2/k.Rankine}
-    __text__ = [u'W/K', u'kW/K', u'mW/K', u'J/h·K', u'kJ/h·K', u'cal/h·K', u'kcal/h·K', u'cal/s·K', u'kcal/s·K', u'Btu/h·F',u'Btu/s·F']
-    __units__ = ['WK', 'kWK', 'mWK', 'JhK', 'kJhK', 'calhK', 'kcalhK', 'calsK', 'kcalsK', 'BtuhF','BtusF']
-    __units_set__ = {"altsi": "mWK", "si": "WK", "metric": "WK", "cgs": "calsK", "english": "BtuhF"}
+    rates = {"WK": 1.,
+             "kWK": k.kilo,
+             "mWK": k.milli,
+             "JhK": 1./k.hour,
+             "kJhK": k.kilo/k.hour,
+             "calhK": k.calorie/k.hour,
+             "kcalhK": k.calorie*k.kilo/k.hour,
+             "calsK": k.calorie,
+             "kcalsK": k.calorie*k.kilo,
+             "BtuhF": k.Btu/k.hour/k.foot**2/k.Rankine,
+             "BtusF": k.Btu/k.foot**2/k.Rankine}
+    __text__ = [u'W/K', u'kW/K', u'mW/K', u'J/h·K', u'kJ/h·K', u'cal/h·K',
+                u'kcal/h·K', u'cal/s·K', u'kcal/s·K', u'Btu/h·F', u'Btu/s·F']
+    __units__ = ['WK', 'kWK', 'mWK', 'JhK', 'kJhK', 'calhK', 'kcalhK',
+                 'calsK', 'kcalsK', 'BtuhF', 'BtusF']
+    __units_set__ = {"altsi": "mWK", "si": "WK", "metric": "WK",
+                     "cgs": "calsK", "english": "BtuhF"}
 
     def __init__(self, data, unit="WK", magnitud=""):
         super(UA, self).__init__(data, unit, magnitud)
 
 
 class HeatTransfCoef(unidad):
-    """Class that models a heat transfer coefficient measure with conversion utilities
+    """Class that models a heat transfer coefficient measure
     Supported units:
 
     * Watt per m2 Kelvin (Wm2K) default
@@ -1529,17 +1982,34 @@ class HeatTransfCoef(unidad):
     5.67826334111 4.88569503537
     """
     __title__ = QApplication.translate("pychemqt", "Heat Transfer Coefficient")
-    rates = {"Wm2K": 1., "kWm2K": k.kilo, "Jhm2K":1./k.hour, "kJhm2K": k.kilo/k.hour, "calhm2K": k.calorie/k.hour, "kcalhm2K": k.calorie*k.kilo/k.hour, "calsm2K": k.calorie, "kcalsm2K": k.calorie*k.kilo, "calscm2K": k.lbf/k.Rankine, "kcalscm2K": k.calorie*k.kilo/k.centi**2, "Btuhft2F": k.Btu/k.hour/k.foot**2/k.Rankine, "Btusft2F": k.Btu/k.foot**2/k.Rankine}
-    __text__ = [u'W/m²·K', u'kW/m²·K', u'J/h·m²·K', u'kJ/h·m²·K', u'cal/h·m³·K', u'kcal/h·m²·K', u'cal/s·m²·K', u'kcal/s·m²·K', u'cal/s·cm²·K',u'kcal/s·cm²·K' , u'Btu/h·ft²·F',u'Btu/s·ft²·F']
-    __units__ = ['Wm2K', 'kWm2K', 'Jhm2K', 'kJhm2K', 'calhm2K', 'kcalhm2K', 'calsm2K', 'kcalsm2K', 'calscm2K','kcalscm2K' , 'Btuhft2F','Btusft2F']
-    __units_set__ = {"altsi": "Wm2K", "si": "Wm2K", "metric": "Wm2K", "cgs": "calscm2K", "english": "Btuhft2F"}
+    rates = {"Wm2K": 1.,
+             "kWm2K": k.kilo,
+             "Jhm2K": 1./k.hour,
+             "kJhm2K": k.kilo/k.hour,
+             "calhm2K": k.calorie/k.hour,
+             "kcalhm2K": k.calorie*k.kilo/k.hour,
+             "calsm2K": k.calorie,
+             "kcalsm2K": k.calorie*k.kilo,
+             "calscm2K": k.lbf/k.Rankine,
+             "kcalscm2K": k.calorie*k.kilo/k.centi**2,
+             "Btuhft2F": k.Btu/k.hour/k.foot**2/k.Rankine,
+             "Btusft2F": k.Btu/k.foot**2/k.Rankine}
+    __text__ = [u'W/m²·K', u'kW/m²·K', u'J/h·m²·K', u'kJ/h·m²·K', u'cal/h·m³·K',
+                u'kcal/h·m²·K', u'cal/s·m²·K', u'kcal/s·m²·K', u'cal/s·cm²·K',
+                u'kcal/s·cm²·K' , u'Btu/h·ft²·F',u'Btu/s·ft²·F']
+    __units__ = ['Wm2K', 'kWm2K', 'Jhm2K', 'kJhm2K', 'calhm2K', 'kcalhm2K',
+                 'calsm2K', 'kcalsm2K', 'calscm2K', 'kcalscm2K' , 'Btuhft2F',
+                 'Btusft2F']
+    __units_set__ = {"altsi": "Wm2K", "si": "Wm2K", "metric": "Wm2K",
+                     "cgs": "calscm2K", "english": "Btuhft2F"}
 
     def __init__(self, data, unit="Wm2K", magnitud=""):
         super(HeatTransfCoef, self).__init__(data, unit, magnitud)
 
 
 class Fouling(unidad):
-    """Class that models a fouling factor resistence, inverse of heat transmision coefficient
+    """Class that models a fouling factor resistence, inverse of heat
+    transmision coefficient
     Supported units:
 
     * m2 Kelvin per Watt (m2KW) default
@@ -1560,17 +2030,33 @@ class Fouling(unidad):
     0.176110183682 0.204679169035
     """
     __title__ = QApplication.translate("pychemqt", "Fouling Factor")
-    rates = {"m2KW": 1., "m2KkW": 1./k.kilo, "hm2KJ":k.hour, "hm2KkJ": k.hour/k.kilo, "hm2Kcal": k.hour/k.calorie, "hm2Kkcal": k.hour/k.kilo/k.calorie, "sm2Kcal": 1./k.calorie, "sm2Kkcal": 1./k.calorie/k.kilo, "scm2Kcal": k.Rankine/k.lbf, "scm2Kkcal": k.centi**2/k.calorie/k.kilo, "hft2FBtu": k.hour*k.foot**2*k.Rankine/k.Btu, "sft2FBtu": k.foot**2*k.Rankine/k.Btu}
-    __text__ = [u'm²·K/W', u'm²·K/kW', u'h·m²·K/J', u'h·m²·K/kJ', u'h·m³·K/cal', u'h·m²·K/kcal', u's·m²·K/cal', u's·m²·K/kcal', u's·cm²·K/cal',u's·cm²·K/kcal' , u'h·ft²·F/Btu',u's·ft²·F/Btu']
-    __units__ = ['m2KW', 'm2KkW', 'hm2KJ', 'hm2KkJ', 'hm2Kcal', 'hm2Kkcal', 'sm2Kcal', 'sm2Kkcal', 'scm2Kcal','scm2Kkcal' , 'hft2FBtu','sft2FBtu']
-    __units_set__ = {"altsi": "m2KW", "si": "m2KW", "metric": "m2KW", "cgs": "scm2Kkcal", "english": "hft2FBtu"}
+    rates = {"m2KW": 1.,
+             "m2KkW": 1./k.kilo,
+             "hm2KJ": k.hour,
+             "hm2KkJ": k.hour/k.kilo,
+             "hm2Kcal": k.hour/k.calorie,
+             "hm2Kkcal": k.hour/k.kilo/k.calorie,
+             "sm2Kcal": 1./k.calorie,
+             "sm2Kkcal": 1./k.calorie/k.kilo,
+             "scm2Kcal": k.Rankine/k.lbf,
+             "scm2Kkcal": k.centi**2/k.calorie/k.kilo,
+             "hft2FBtu": k.hour*k.foot**2*k.Rankine/k.Btu,
+             "sft2FBtu": k.foot**2*k.Rankine/k.Btu}
+    __text__ = [u'm²·K/W', u'm²·K/kW', u'h·m²·K/J', u'h·m²·K/kJ',
+                u'h·m³·K/cal', u'h·m²·K/kcal', u's·m²·K/cal', u's·m²·K/kcal',
+                u's·cm²·K/cal', u's·cm²·K/kcal', u'h·ft²·F/Btu', u's·ft²·F/Btu']
+    __units__ = ['m2KW', 'm2KkW', 'hm2KJ', 'hm2KkJ', 'hm2Kcal', 'hm2Kkcal',
+                 'sm2Kcal', 'sm2Kkcal', 'scm2Kcal', 'scm2Kkcal', 'hft2FBtu',
+                 'sft2FBtu']
+    __units_set__ = {"altsi": "m2KW", "si": "m2KW", "metric": "m2KW",
+                     "cgs": "scm2Kkcal", "english": "hft2FBtu"}
 
     def __init__(self, data, unit="m2KW", magnitud=""):
         super(Fouling, self).__init__(data, unit, magnitud)
 
 
 class Tension(unidad):
-    """Class that models a surface tension measure with conversion utilities
+    """Class that models a surface tension measure
     Supported units:
 
     * Newton per meter (Nm) default
@@ -1582,17 +2068,21 @@ class Tension(unidad):
     14.5939029372 14593.9029372
     """
     __title__ = QApplication.translate("pychemqt", "Surface Tension")
-    rates = {"Nm": 1., "mNm": k.milli, "dyncm":k.dyn/k.centi, "lbfft": k.lbf/k.foot}
+    rates = {"Nm": 1.,
+             "mNm": k.milli,
+             "dyncm": k.dyn/k.centi,
+             "lbfft": k.lbf/k.foot}
     __text__ = ['N/m', 'mN/m', 'dyn/cm', 'lbf/ft']
     __units__ = ['Nm', 'mNm', 'dyncm', 'lbfft']
-    __units_set__ = {"altsi": "mNm", "si": "Nm", "metric": "Nm", "cgs": "dyncm", "english": "lbfft"}
+    __units_set__ = {"altsi": "mNm", "si": "Nm", "metric": "Nm",
+                     "cgs": "dyncm", "english": "lbfft"}
 
     def __init__(self, data, unit="Nm", magnitud=""):
         super(Tension, self).__init__(data, unit, magnitud)
 
 
 class Viscosity(unidad):
-    """Class that models a viscosity measure with conversion utilities
+    """Class that models a viscosity measure
     Supported units:
 
     * Pascal per second (Pas) default
@@ -1612,17 +2102,31 @@ class Viscosity(unidad):
     100.0 0.1 241.90883105
     """
     __title__ = QApplication.translate("pychemqt", "Viscosity")
-    rates = {"Pas": 1., "mPas": k.milli, "muPas": k.micro, "P": 0.1, "cP": k.milli, "microP": 0.1*k.micro, "dynscm2": k.milli, "reyn": k.g*k.pound/k.inch**2, "lbfts": k.lbf, "lbfft2": k.pound/k.foot, "lbfinch2": k.g*k.pound/k.inch**2, "lbfth": k.pound/k.foot/k.hour}
-    __text__ = [u'Pa·s', u'mPa·s', u'µPa·s', 'P', 'cP', u'dyn/s·cm²', u'µP', 'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h']
-    __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP', 'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
-    __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas", "cgs": "dynscm2", "english": "cP"}
+    rates = {"Pas": 1.,
+             "mPas": k.milli,
+             "muPas": k.micro,
+             "P": 0.1,
+             "cP": k.milli,
+             "microP": 0.1*k.micro,
+             "dynscm2": k.milli,
+             "reyn": k.g*k.pound/k.inch**2,
+             "lbfts": k.lbf,
+             "lbfft2": k.pound/k.foot,
+             "lbfinch2": k.g*k.pound/k.inch**2,
+             "lbfth": k.pound/k.foot/k.hour}
+    __text__ = [u'Pa·s', u'mPa·s', u'µPa·s', 'P', 'cP', u'dyn/s·cm²', u'µP',
+                'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h']
+    __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP',
+                 'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
+    __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas",
+                     "cgs": "dynscm2", "english": "cP"}
 
     def __init__(self, data, unit="Pas", magnitud=""):
         super(Viscosity, self).__init__(data, unit, magnitud)
 
 
 class SolubilityParameter(unidad):
-    """Class that models a solubility parameter measure with conversion utilities
+    """Class that models a solubility parameter measure
     Supported units:
 
     * raiz(J/m3) (Jm3) default
@@ -1634,17 +2138,20 @@ class SolubilityParameter(unidad):
     193.025764622 0.0943668467764
     """
     __title__ = QApplication.translate("pychemqt", "Solubility Parameter")
-    rates = {"Jm3": 1., "calcc": (k.calorie*k.mega)**0.5, "Btuft3": (k.Btu*k.foot**-3)**0.5}
+    rates = {"Jm3": 1.,
+             "calcc": (k.calorie*k.mega)**0.5,
+             "Btuft3": (k.Btu*k.foot**-3)**0.5}
     __text__ = [u"(J/m³)^0.5", u"(cal/cm³)^0.5", u"(Btu/ft³)^0.5"]
     __units__ = ["Jm3", "calcc", "Btuft3"]
-    __units_set__ = {"altsi": "Jm3", "si": "Jm3", "metric": "Jm3", "cgs": "calcc", "english": "Btuft3"}
+    __units_set__ = {"altsi": "Jm3", "si": "Jm3", "metric": "Jm3",
+                     "cgs": "calcc", "english": "Btuft3"}
 
     def __init__(self, data, unit="Jm3", magnitud=""):
         super(SolubilityParameter, self).__init__(data, unit, magnitud)
 
 
 class PotencialElectric(unidad):
-    """Class that models a potencia electric measure with conversion utilities
+    """Class that models a potencia electric measure
     Supported units:
     * Volt per meter (Vm) default
     * Kilovolt per meter (kVm)
@@ -1660,17 +2167,26 @@ class PotencialElectric(unidad):
     90000.0
     """
     __title__ = QApplication.translate("pychemqt", "Electric Potencial")
-    rates = {"Vm": 1., "kVm": k.kilo, "MVm": k.mega, "Vcm": k.centi, "kVcm": k.kilo/k.centi, "MVcm": k.mega/k.centi, "statVm": k.statV, "statVcm": k.statV/k.centi}
-    __text__ = ["V/m", "kV/m", "MV/m", "V/cm", "kV/cm", "MV/cm", "statV/m", "statV/cm"]
+    rates = {"Vm": 1.,
+             "kVm": k.kilo,
+             "MVm": k.mega,
+             "Vcm": k.centi,
+             "kVcm": k.kilo/k.centi,
+             "MVcm": k.mega/k.centi,
+             "statVm": k.statV,
+             "statVcm": k.statV/k.centi}
+    __text__ = ["V/m", "kV/m", "MV/m", "V/cm", "kV/cm", "MV/cm", "statV/m",
+                "statV/cm"]
     __units__ = ["Vm", "kVm", "MVm", "Vcm", "kVcm", "MVcm", "statVm", "statVcm"]
-    __units_set__ = {"altsi": "Vm", "si": "Vm", "metric": "Vm", "cgs": "Vcm", "english": "statVm"}
+    __units_set__ = {"altsi": "Vm", "si": "Vm", "metric": "Vm", "cgs": "Vcm",
+                     "english": "statVm"}
 
     def __init__(self, data, unit="Vm", magnitud=""):
         super(PotencialElectric, self).__init__(data, unit, magnitud)
 
 
 class DipoleMoment(unidad):
-    """Class that models a solubility parameter measure with conversion utilities
+    """Class that models a solubility parameter measure
     Supported units:
     * Coulomb per meter (Cm) default
     * debyes (Debye)
@@ -1680,17 +2196,19 @@ class DipoleMoment(unidad):
     3.33564095198e-30 1.0
     """
     __title__ = QApplication.translate("pychemqt", "Dipole Moment")
-    rates = {"Cm": 1., "Debye": k.debye}
+    rates = {"Cm": 1.,
+             "Debye": k.debye}
     __text__ = [u'C·m', 'Debye']
     __units__ = ['Cm', 'Debye']
-    __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm", "english": "Debye"}
+    __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
+                     "english": "Debye"}
 
     def __init__(self, data, unit="Cm", magnitud=""):
         super(DipoleMoment, self).__init__(data, unit, magnitud)
 
 
 class CakeResistance(unidad):
-    """Class that models a a cake resistence measure with conversion utilities
+    """Class that models a a cake resistence measure
     Supported units:
     * meter per kilogram (mkg) default
     * cm per gram (cmg)
@@ -1701,17 +2219,20 @@ class CakeResistance(unidad):
     0.67196897514
     """
     __title__ = QApplication.translate("pychemqt", "Cake Resistance")
-    rates = {"mkg": 1., "cmg": k.centi/k.kilo, "ftlb": k.foot/k.pound}
+    rates = {"mkg": 1.,
+             "cmg": k.centi/k.kilo,
+             "ftlb": k.foot/k.pound}
     __text__ = ['m/kg', 'c/gr', "ft/lb"]
     __units__ = ['mkg', 'cmg', "ftlb"]
-    __units_set__ = {"altsi": "mkg", "si": "mkg", "metric": "mkg", "cgs": "cmg", "english": "ftlb"}
+    __units_set__ = {"altsi": "mkg", "si": "mkg", "metric": "mkg",
+                     "cgs": "cmg", "english": "ftlb"}
 
     def __init__(self, data, unit="mkg", magnitud=""):
         super(CakeResistance, self).__init__(data, unit, magnitud)
 
 
 class PackingDP(unidad):
-    """Class that models a packing drop pressure measure with conversion utilities
+    """Class that models a packing drop pressure measure
     Supported units:
     * mmH2O per meter (mmH2Om) default
     * inH2O per foot (inH2Oft)
@@ -1721,17 +2242,19 @@ class PackingDP(unidad):
     83.3333333333
     """
     __title__ = QApplication.translate("pychemqt", "Packing Pressure drop")
-    rates = {"mmH2Om": 1., "inH2Oft": k.inch/k.milli/k.foot}
+    rates = {"mmH2Om": 1.,
+             "inH2Oft": k.inch/k.milli/k.foot}
     __text__ = ['mmH2O/m', 'inH2O/ft']
     __units__ = ['mmH2Om', 'inH2Oft']
-    __units_set__ = {"altsi": "mmH2Om", "si": "mmH2Om", "metric": "mmH2Om", "cgs": "mmH2Om", "english": "inH2Oft"}
+    __units_set__ = {"altsi": "mmH2Om", "si": "mmH2Om", "metric": "mmH2Om",
+                     "cgs": "mmH2Om", "english": "inH2Oft"}
 
     def __init__(self, data, unit="mmH2Om", magnitud=""):
         super(PackingDP, self).__init__(data, unit, magnitud)
 
 
 class V2V(unidad):
-    """Class that models a volume ratio with conversion utilities (Ratio gas-oil)
+    """Class that models a volume ratio (Ratio gas-oil)
     Supported units:
 
     * cubic meter/cubic meter (m3m3) default
@@ -1744,17 +2267,21 @@ class V2V(unidad):
     0.178107606679
     """
     __title__ = QApplication.translate("pychemqt", "Gas-Oil ratio")
-    rates = {"m3m3": 1., "ft3ft3": 1., "ll": 1., "ft3bbl": k.foot**3/k.bbl}
+    rates = {"m3m3": 1.,
+             "ft3ft3": 1.,
+             "ll": 1.,
+             "ft3bbl": k.foot**3/k.bbl}
     __text__ = [u"m³m³", u"ft/bbl"]
     __units__ = ["m3m3", "ft3bbl"]
-    __units_set__ = {"altsi": "m3m3", "si": "m3m3", "metric": "m3m3", "cgs": "m3m3", "english": "ft3bbl"}
+    __units_set__ = {"altsi": "m3m3", "si": "m3m3", "metric": "m3m3",
+                     "cgs": "m3m3", "english": "ft3bbl"}
 
     def __init__(self, data, unit="m3m3", magnitud=""):
         super(V2V, self).__init__(data, unit, magnitud)
 
 
 class InvTemperature(unidad):
-    """Class that models a  inverse temperature measure with conversion utilities
+    """Class that models a  inverse temperature measure
     Supported units:
 
     * Kelvin (default)
@@ -1768,17 +2295,22 @@ class InvTemperature(unidad):
     25.0 13.8888888889
     """
     __title__ = QApplication.translate("pychemqt", "Temperature inverse")
-    rates = {"K": 1., "C": 1., "F": 1./k.Rankine, "R": 1./k.Rankine, "Re": 1./k.Reaumur}
-    __text__ = ['1/K',u'1/ºC',u'1/ºR',u'1/ºF',u'1/ºRe']
-    __units__ = ['K','C','R','F','Re']
-    __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C", "english": "F"}
+    rates = {"K": 1.,
+             "C": 1.,
+             "F": 1./k.Rankine,
+             "R": 1./k.Rankine,
+             "Re": 1./k.Reaumur}
+    __text__ = ['1/K', u'1/ºC', u'1/ºR', u'1/ºF', u'1/ºRe']
+    __units__ = ['K', 'C', 'R', 'F', 'Re']
+    __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
+                     "english": "F"}
 
     def __init__(self, data, unit="K", magnitud=""):
         super(InvTemperature, self).__init__(data, unit, magnitud)
 
 
 class InvPressure(unidad):
-    """Class that models a inverse pressure measure with conversion utilities
+    """Class that models a inverse pressure measure
     Supported units:
 
     * Pascal (Pa) default
@@ -1812,19 +2344,49 @@ class InvPressure(unidad):
     1.01325 1.0 14.6959487755 0.0
     """
     __title__ = QApplication.translate("pychemqt", "Pressure inverse")
-    rates = {"Pa": 1., "MPa": 1./k.mega, "hPa": 1./k.hecto, "kPa": 1./k.kilo, "bar": 1./k.bar, "barg": 1./k.bar, "baria": 10., "mbar": k.kilo/k.bar, "psi": 1./k.psi, "psig": 1./k.psi, "atm": 1./k.atm, "kgcm2": 1./k.g*k.centi**2, "kgcm2g": 1./k.g*k.centi**2, "mmH2O": 1./k.g, "mH2O": 1./k.g/k.kilo, "cmH2O": 1./k.g/10, "inH2O": 1./k.g/k.kilo/k.inch, "ftH2O": 1/k.g/k.kilo/k.foot, "mmHg": 1./k.torr, "cmHg": 1./k.torr/10, "inHg": 1./k.torr/k.inch/k.kilo, "ftHg": 1./k.torr/k.foot/k.kilo, "torr": 1./k.torr, "lbcm2": 1./k.g/k.pound*k.centi**2, "lbft2": k.foot**2/k.g/k.pound, "dyncm2": k.centi**2/k.dyn}
-    __text__ = ['1/Pa', '1/hPa', '1/kPa', '1/MPa', '1/bar', '1/bar g', '1/mbar', '1/psi', '1/psi g', '1/atm', u'1/kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ]
-    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi', 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ]
-    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa", "cgs": "dyncm2", "english": "psi"}
+    rates = {"Pa": 1.,
+             "MPa": 1./k.mega,
+             "hPa": 1./k.hecto,
+             "kPa": 1./k.kilo,
+             "bar": 1./k.bar,
+             "barg": 1./k.bar,
+             "baria": 10.,
+             "mbar": k.kilo/k.bar,
+             "psi": 1./k.psi,
+             "psig": 1./k.psi,
+             "atm": 1./k.atm,
+             "kgcm2": 1./k.g*k.centi**2,
+             "kgcm2g": 1./k.g*k.centi**2,
+             "mmH2O": 1./k.g,
+             "mH2O": 1./k.g/k.kilo,
+             "cmH2O": 1./k.g/10,
+             "inH2O": 1./k.g/k.kilo/k.inch,
+             "ftH2O": 1/k.g/k.kilo/k.foot,
+             "mmHg": 1./k.torr,
+             "cmHg": 1./k.torr/10,
+             "inHg": 1./k.torr/k.inch/k.kilo,
+             "ftHg": 1./k.torr/k.foot/k.kilo,
+             "torr": 1./k.torr,
+             "lbcm2": 1./k.g/k.pound*k.centi**2,
+             "lbft2": k.foot**2/k.g/k.pound,
+             "dyncm2": k.centi**2/k.dyn}
+    __text__ = ['1/Pa', '1/hPa', '1/kPa', '1/MPa', '1/bar', '1/bar g',
+                '1/mbar', '1/psi', '1/psi g', '1/atm', u'1/kg/cm²',
+                u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O',
+                'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
+                 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
+                 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
+                 'lbft2', 'dyncm2']
+    __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
+                     "cgs": "dyncm2", "english": "psi"}
 
     def __init__(self, data, unit="Pa", magnitud=""):
         super(InvPressure, self).__init__(data, unit, magnitud)
 
 
-
-
 class EnthalpyPressure(unidad):
-    """Class that models a enthalpy per pressure measure with conversion utilities
+    """Class that models a enthalpy per pressure measure
     Supported units:
 
     * Joule per kilogram pascal(JkgPa) default
@@ -1836,17 +2398,20 @@ class EnthalpyPressure(unidad):
     5.0 5000.0
     """
     __title__ = QApplication.translate("pychemqt", "Enthalpy per pressure")
-    rates = {"JkgPa": 1., "kJkgkPa": 1, "kJkgMPa": k.milli, }
+    rates = {"JkgPa": 1.,
+             "kJkgkPa": 1.,
+             "kJkgMPa": k.milli}
     __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa']
     __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa']
-    __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa", "cgs": "kJkgkPa", "english": "kJkgkPa"}
+    __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
+                     "cgs": "kJkgkPa", "english": "kJkgkPa"}
 
     def __init__(self, data, unit="JkgPa", magnitud=""):
         super(EnthalpyPressure, self).__init__(data, unit, magnitud)
 
 
 class TemperaturePressure(unidad):
-    """Class that models a Temperature/Pressure measure with conversion utilities
+    """Class that models a Temperature/Pressure measure
     Supported units:
 
     * Kelvin per pascal(KPa) default
@@ -1858,16 +2423,20 @@ class TemperaturePressure(unidad):
     1.0 1000.0
     """
     __title__ = QApplication.translate("pychemqt", "Temperature per pressure")
-    rates = {"KPa": 1., "KkPa": k.milli, "KMPa": k.micro, }
+    rates = {"KPa": 1.,
+             "KkPa": k.milli,
+             "KMPa": k.micro}
     __text__ = ['K/Pa', 'K/kPa', 'K/MPa']
     __units__ = ['KPa', 'KkPa', 'KMPa']
-    __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa", "cgs": "KPa", "english": "KPa"}
+    __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa",
+                     "cgs": "KPa", "english": "KPa"}
 
     def __init__(self, data, unit="KPa", magnitud=""):
         super(TemperaturePressure, self).__init__(data, unit, magnitud)
 
+
 class PressureTemperature(unidad):
-    """Class that models a Pressure/Temperature measure with conversion utilities
+    """Class that models a Pressure/Temperature measure
     Supported units:
 
     * pascal per Kelvin (PaK) default
@@ -1879,10 +2448,15 @@ class PressureTemperature(unidad):
     1000.0 0.00101325
     """
     __title__ = QApplication.translate("pychemqt", "Pressure per Temperature")
-    rates = {"PaK": 1., "kPaK": k.kilo, "barK": 1e5, "MPaK": k.mega, "atmK": 1e6/1.01325}
+    rates = {"PaK": 1.,
+             "kPaK": k.kilo,
+             "barK": 1e5,
+             "MPaK": k.mega,
+             "atmK": 1e6/1.01325}
     __text__ = ['Pa/K', 'kPa/K', 'bar/K', 'MPa/K', "atm/K"]
     __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK"]
-    __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK", "cgs": "PaK", "english": "PaK"}
+    __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK",
+                     "cgs": "PaK", "english": "PaK"}
 
     def __init__(self, data, unit="PaK", magnitud=""):
         super(PressureTemperature, self).__init__(data, unit, magnitud)
@@ -1890,80 +2464,98 @@ class PressureTemperature(unidad):
 
 class Currency(unidad):
     """Class that models a currency rate
-    Supported currency codes from ISO 4217: 'pkr', 'ars', 'xcd', 'myr', 'inr', 'hnl', 'jpy', 'czk', 'brl', 'lkr', 'sek', 'sgd', 'ttd', 'isk', 'usd', 'aud', 'chf', 'zar', 'xpf', 'cny', 'vef', 'gtq', 'pen', 'hkd', 'hrk', 'ang', 'xaf', 'eur', 'huf', 'vnd', 'nok', 'rub', 'pab', 'mxn', 'mad', 'mmk', 'pln', 'php', 'jmd', 'rsd', 'cop', 'ils', 'twd', 'ghs', 'clp', 'idr', 'krw', 'fjd', 'try', 'tnd', 'dkk', 'bsd', 'aed', 'gbp', 'nzd', 'ron', 'thb', 'cad'
+    Supported currency codes from ISO 4217: 'pkr', 'ars', 'xcd', 'myr', 'inr',
+    'hnl', 'jpy', 'czk', 'brl', 'lkr', 'sek', 'sgd', 'ttd', 'isk', 'usd',
+    'aud', 'chf', 'zar', 'xpf', 'cny', 'vef', 'gtq', 'pen', 'hkd', 'hrk',
+    'ang', 'xaf', 'eur', 'huf', 'vnd', 'nok', 'rub', 'pab', 'mxn', 'mad',
+    'mmk', 'pln', 'php', 'jmd', 'rsd', 'cop', 'ils', 'twd', 'ghs', 'clp',
+    'idr', 'krw', 'fjd', 'try', 'tnd', 'dkk', 'bsd', 'aed', 'gbp', 'nzd',
+    'ron', 'thb', 'cad'
 
     >>> S=Currency(5, "eur")
     """
     try:
-        archivo=open(conf_dir+"moneda.dat", "r")
+        archivo = open(conf_dir+"moneda.dat", "r")
     except:
-        getdata()
-        archivo=open(conf_dir+"moneda.dat", "r")
-    rates=cPickle.load(archivo)
+        getrates()
+        archivo = open(conf_dir+"moneda.dat", "r")
+    rates = cPickle.load(archivo)
     archivo.close
-    fecha=rates.pop("date")
+    fecha = rates.pop("date")
     __title__ = QApplication.translate("pychemqt", "Currency")
-    __text__ = ['$', u'€', u'£', u'¥' , u'¥', u'руб', 'A$', 'R$', 'C$', 'Fr.', 'kr', 'HK$', u'₨', u'₩', u'₨', 'RM', 'NZ$', 'S$', 'NT$', 'R', u'฿', 'kr', 'kr', '$', u'Kč', u'Ft', u'zł', 'RON', u'Íkr', 'kn',  'TL', 'PhP.', '$', '$', '$', u'د.ت', u'درهم', '$', 'L', u'฿', 'S/.', 'Rs', 'EC$', 'Dhs',  u'NAƒ', '$', 'F', 'Bs.', 'Q', 'FCFA', u'₫',  'K', 'B$', u'дин.', u'GH₵', 'Rp', 'FJ$', u'₪']
-    __units__ = ['usd','eur', 'gbp', 'jpy' , 'cny', 'rub', 'aud', 'brl', 'cad', 'chf', 'dkk', 'hkd', 'inr', 'krw', 'lkr', 'myr', 'nzd', 'sgd', 'twd', 'zar', 'thb', 'sek', 'nok', 'mxn', 'czk', 'huf', 'pln', 'ron', 'isk', 'hrk',  'try', 'php', 'cop', 'ars', 'clp', 'tnd', 'mad', 'jmd', 'hnl', 'pab', 'pen', 'pkr', 'xcd', 'aed',  'ang', 'ttd', 'xpf', 'vef', 'gtq', 'xaf', 'vnd',  'mmk', 'bsd', 'rsd', 'ghs', 'idr', 'fjd', 'ils']
+    __text__ = ['$', u'€', u'£', u'¥', u'¥', u'руб', 'A$', 'R$', 'C$', 'Fr.',
+                'kr', 'HK$', u'₨', u'₩', u'₨', 'RM', 'NZ$', 'S$', 'NT$',
+                'R', u'฿', 'kr', 'kr', '$', u'Kč', u'Ft', u'zł', 'RON', u'Íkr',
+                'kn',  'TL', 'PhP.', '$', '$', '$', u'د.ت', u'درهم', '$', 'L',
+                u'฿', 'S/.', 'Rs', 'EC$', 'Dhs',  u'NAƒ', '$', 'F', 'Bs.', 'Q',
+                'FCFA', u'₫',  'K', 'B$', u'дин.', u'GH₵', 'Rp', 'FJ$', u'₪']
+    __units__ = ['usd', 'eur', 'gbp', 'jpy', 'cny', 'rub', 'aud', 'brl', 'cad',
+                 'chf', 'dkk', 'hkd', 'inr', 'krw', 'lkr', 'myr', 'nzd', 'sgd',
+                 'twd', 'zar', 'thb', 'sek', 'nok', 'mxn', 'czk', 'huf', 'pln',
+                 'ron', 'isk', 'hrk', 'try', 'php', 'cop', 'ars', 'clp', 'tnd',
+                 'mad', 'jmd', 'hnl', 'pab', 'pen', 'pkr', 'xcd', 'aed', 'ang',
+                 'ttd', 'xpf', 'vef', 'gtq', 'xaf', 'vnd', 'mmk', 'bsd', 'rsd',
+                 'ghs', 'idr', 'fjd', 'ils']
     __tooltip__ = [QApplication.translate("pychemqt", "United States dollar"),
-                        QApplication.translate("pychemqt", "Euro"),
-                        QApplication.translate("pychemqt", "Pound sterling"),
-                        QApplication.translate("pychemqt", "Japanese yen"),
-                        QApplication.translate("pychemqt", "Chinese yuan"),
-                        QApplication.translate("pychemqt", "Russian rouble"),
-                        QApplication.translate("pychemqt", "Australian dollar"),
-                        QApplication.translate("pychemqt", "Brazilian real"),
-                        QApplication.translate("pychemqt", "Canadian dollar"),
-                        QApplication.translate("pychemqt", "Swiss franc"),
-                        QApplication.translate("pychemqt", "Danish krone"),
-                        QApplication.translate("pychemqt", "Hong Kong dollar"),
-                        QApplication.translate("pychemqt", "Indian rupee"),
-                        QApplication.translate("pychemqt", "South Korean won"),
-                        QApplication.translate("pychemqt", "Sri Lankan rupee"),
-                        QApplication.translate("pychemqt", "Malaysian ringgit"),
-                        QApplication.translate("pychemqt", "New Zealand dollar"),
-                        QApplication.translate("pychemqt", "Singapore dollar"),
-                        QApplication.translate("pychemqt", "New Taiwan dollar"),
-                        QApplication.translate("pychemqt", "South African rand"),
-                        QApplication.translate("pychemqt", "Thai baht"),
-                        QApplication.translate("pychemqt", "Swedish krona"),
-                        QApplication.translate("pychemqt", "Norwegian krone"),
-                        QApplication.translate("pychemqt", "Mexican peso"),
-                        QApplication.translate("pychemqt", "Czech koruna"),
-                        QApplication.translate("pychemqt", "Hungarian forint"),
-                        QApplication.translate("pychemqt", "Polish złoty"),
-                        QApplication.translate("pychemqt", "Romanian new leu"),
-                        QApplication.translate("pychemqt", "Icelandic króna"),
-                        QApplication.translate("pychemqt", "Croatian kuna"),
-                        QApplication.translate("pychemqt", "Turkish lira"),
-                        QApplication.translate("pychemqt", "Philippine peso"),
-                        QApplication.translate("pychemqt", "Colombian peso"),
-                        QApplication.translate("pychemqt", "Argentine peso"),
-                        QApplication.translate("pychemqt", "Chilean peso"),
-                        QApplication.translate("pychemqt", "Tunisian dinar"),
-                        QApplication.translate("pychemqt", "Moroccan dirham"),
-                        QApplication.translate("pychemqt", "Jamaican dollar"),
-                        QApplication.translate("pychemqt", "Honduran lempira"),
-                        QApplication.translate("pychemqt", "Panamanian balboa"),
-                        QApplication.translate("pychemqt", "Peruvian nuevo sol"),
-                        QApplication.translate("pychemqt", "Pakistani rupee"),
-                        QApplication.translate("pychemqt", "East Caribbean dollar"),
-                        QApplication.translate("pychemqt", "United Arab Emirates dirham"),
-                        QApplication.translate("pychemqt", "Netherlands Antillean guilder"),
-                        QApplication.translate("pychemqt", "Trinidad and Tobago dollar"),
-                        QApplication.translate("pychemqt", "CFP franc"),
-                        QApplication.translate("pychemqt", "Venezuelan bolívar fuerte"),
-                        QApplication.translate("pychemqt", "Guatemalan quetzal"),
-                        QApplication.translate("pychemqt", "CFA franc"),
-                        QApplication.translate("pychemqt", "Vietnamese dong"),
-                        QApplication.translate("pychemqt", "Myanma kyat"),
-                        QApplication.translate("pychemqt", "Bahamian dollar"),
-                        QApplication.translate("pychemqt", "Serbian dinar"),
-                        QApplication.translate("pychemqt", "Ghanaian cedi"),
-                        QApplication.translate("pychemqt", "Indonesian rupiah"),
-                        QApplication.translate("pychemqt", "Fiji dollar"),
-                        QApplication.translate("pychemqt", "Israeli new shekel")]
-    __units_set__ = {"altsi": "usd", "si": "usd", "metric": "usd", "cgs": "usd", "english": "usd"}
+                   QApplication.translate("pychemqt", "Euro"),
+                   QApplication.translate("pychemqt", "Pound sterling"),
+                   QApplication.translate("pychemqt", "Japanese yen"),
+                   QApplication.translate("pychemqt", "Chinese yuan"),
+                   QApplication.translate("pychemqt", "Russian rouble"),
+                   QApplication.translate("pychemqt", "Australian dollar"),
+                   QApplication.translate("pychemqt", "Brazilian real"),
+                   QApplication.translate("pychemqt", "Canadian dollar"),
+                   QApplication.translate("pychemqt", "Swiss franc"),
+                   QApplication.translate("pychemqt", "Danish krone"),
+                   QApplication.translate("pychemqt", "Hong Kong dollar"),
+                   QApplication.translate("pychemqt", "Indian rupee"),
+                   QApplication.translate("pychemqt", "South Korean won"),
+                   QApplication.translate("pychemqt", "Sri Lankan rupee"),
+                   QApplication.translate("pychemqt", "Malaysian ringgit"),
+                   QApplication.translate("pychemqt", "New Zealand dollar"),
+                   QApplication.translate("pychemqt", "Singapore dollar"),
+                   QApplication.translate("pychemqt", "New Taiwan dollar"),
+                   QApplication.translate("pychemqt", "South African rand"),
+                   QApplication.translate("pychemqt", "Thai baht"),
+                   QApplication.translate("pychemqt", "Swedish krona"),
+                   QApplication.translate("pychemqt", "Norwegian krone"),
+                   QApplication.translate("pychemqt", "Mexican peso"),
+                   QApplication.translate("pychemqt", "Czech koruna"),
+                   QApplication.translate("pychemqt", "Hungarian forint"),
+                   QApplication.translate("pychemqt", "Polish złoty"),
+                   QApplication.translate("pychemqt", "Romanian new leu"),
+                   QApplication.translate("pychemqt", "Icelandic króna"),
+                   QApplication.translate("pychemqt", "Croatian kuna"),
+                   QApplication.translate("pychemqt", "Turkish lira"),
+                   QApplication.translate("pychemqt", "Philippine peso"),
+                   QApplication.translate("pychemqt", "Colombian peso"),
+                   QApplication.translate("pychemqt", "Argentine peso"),
+                   QApplication.translate("pychemqt", "Chilean peso"),
+                   QApplication.translate("pychemqt", "Tunisian dinar"),
+                   QApplication.translate("pychemqt", "Moroccan dirham"),
+                   QApplication.translate("pychemqt", "Jamaican dollar"),
+                   QApplication.translate("pychemqt", "Honduran lempira"),
+                   QApplication.translate("pychemqt", "Panamanian balboa"),
+                   QApplication.translate("pychemqt", "Peruvian nuevo sol"),
+                   QApplication.translate("pychemqt", "Pakistani rupee"),
+                   QApplication.translate("pychemqt", "East Caribbean dollar"),
+                   QApplication.translate("pychemqt", "United Arab Emirates dirham"),
+                   QApplication.translate("pychemqt", "Netherlands Antillean guilder"),
+                   QApplication.translate("pychemqt", "Trinidad and Tobago dollar"),
+                   QApplication.translate("pychemqt", "CFP franc"),
+                   QApplication.translate("pychemqt", "Venezuelan bolívar fuerte"),
+                   QApplication.translate("pychemqt", "Guatemalan quetzal"),
+                   QApplication.translate("pychemqt", "CFA franc"),
+                   QApplication.translate("pychemqt", "Vietnamese dong"),
+                   QApplication.translate("pychemqt", "Myanma kyat"),
+                   QApplication.translate("pychemqt", "Bahamian dollar"),
+                   QApplication.translate("pychemqt", "Serbian dinar"),
+                   QApplication.translate("pychemqt", "Ghanaian cedi"),
+                   QApplication.translate("pychemqt", "Indonesian rupiah"),
+                   QApplication.translate("pychemqt", "Fiji dollar"),
+                   QApplication.translate("pychemqt", "Israeli new shekel")]
+    __units_set__ = {"altsi": "usd", "si": "usd", "metric": "usd",
+                     "cgs": "usd", "english": "usd"}
 
     def __init__(self, data=None, unit='usd', magnitud=""):
         super(Currency, self).__init__(data, unit, magnitud)
@@ -1973,46 +2565,59 @@ class Currency(unidad):
         if self.code:
             return self.code
         else:
-            conf=self.func(self.magnitud)
-            num=self.format(conf, self.magnitud)
-            txt=self.text(self.magnitud)
+            conf = self.func(self.magnitud)
+            num = self.format(conf, self.magnitud)
+            txt = self.text(self.magnitud)
             return " "+txt+num
 
 
-_all=unidad.__subclasses__()
+_all = unidad.__subclasses__()
 
-_magnitudes=[]
+_magnitudes = []
 for unit in _all:
     for magnitud in unit.magnitudes():
         _magnitudes.append(magnitud+(unit, ))
-_magnitudes.append(("Dimensionless", QApplication.translate("pychemqt", "Dimensionless"), Dimensionless))
+_magnitudes.append(("Dimensionless",
+                    QApplication.translate("pychemqt", "Dimensionless"),
+                    Dimensionless))
 
-#Run this when add some new magnitude to rebuild units_set
-#unit_set={}
-#for unidad in _all:
-#    if unidad._magnitudes:
-#        unit_set.update(unidad.__units_set__)
-#    else:
-#        unit_set[unidad.__name__]=unidad.__units_set__
+# For get a fresh new list of magnitudes when we add some new, the list can be
+# add start of lib/firstrun.py file:
+# magnitudes=[]
+# for magnitud, title, unit in _magnitudes:
+#     magnitudes.append(magnitud)
+# print magnitudes
+
+
+# Run this when add some new magnitude to rebuild units_set
+# unit_set={}
+# for unidad in _all:
+#     if unidad._magnitudes:
+#         unit_set.update(unidad.__units_set__)
+#     else:
+#         unit_set[unidad.__name__]=unidad.__units_set__
 #
-#sets={}
-#for set in ("altsi", "si", "metric", "cgs", "english"):
-#    sets[set]=[]
-#    for magnitud, titulo, unidad in _magnitudes:
-#        sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
-#print sets
+# sets={}
+# for set in ("altsi", "si", "metric", "cgs", "english"):
+#     sets[set]=[]
+#     for magnitud, titulo, unidad in _magnitudes:
+#         sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
+# print sets
 
-units_set= {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 3, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 0, 0, 0],
-                    'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 0],
-                    'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                    'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 6, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 7, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 1, 0, 0, 0]}
+units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 3, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 0, 0, 0],
+             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 0],
+             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 6, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 7, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 1, 0, 0, 0]}
 
 
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
+    import doctest
+    doctest.testmod()
 
-    T=Temperature(5, "C")
-    print T.str.encode("utf-8")
+#    T=Temperature(5, "C")
+#    print T.str.encode("utf-8")
 
+    l=Length(5, "ft")
+    print l.m, l.inch
+    print l.str("A")

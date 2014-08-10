@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+###############################################################################
+# Tools to create a python shell with pychemqt libraries imported
+# For now only work in linux with xterm as terminal
+###############################################################################
+
 import atexit
 
 from PyQt4 import QtCore, QtGui
@@ -9,9 +14,11 @@ from lib.firstrun import which
 
 
 class XTerm(QtGui.QX11EmbedContainer):
+    """Gui container for terminal widget, QX11... name show only work in
+    gnu/linux, it would great find any app equivalent for windows or mac"""
     def __init__(self, config, parent=None):
         super(XTerm, self).__init__(parent)
-        self.config=config
+        self.config = config
         self.process = QtCore.QProcess(self)
         atexit.register(self.kill)
         self.show_term()
@@ -27,7 +34,7 @@ class XTerm(QtGui.QX11EmbedContainer):
         return size.expandedTo(QtGui.QApplication.globalStrut())
 
     def show_term(self):
-        term=self.config.get("Applications", 'Shell')
+        term = self.config.get("Applications", 'Shell')
 
         args = [
             "-into", str(self.winId()),
@@ -36,7 +43,8 @@ class XTerm(QtGui.QX11EmbedContainer):
             # blink cursor
             "-bc"]
 
-        if self.config.getboolean("Applications", 'ipython') and which("ipython"):
+        if self.config.getboolean("Applications", 'ipython') and \
+                which("ipython"):
             args.append("ipython")
         else:
             args.append("python")
@@ -53,7 +61,7 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     conf_dir = os.path.expanduser('~') + "/.pychemqt/"
     pychemqt_dir = os.environ["PWD"] + "/"
-    preferences=ConfigParser()
+    preferences = ConfigParser()
     preferences.read(conf_dir+"pychemqtrc")
 
     terminal = XTerm(preferences)

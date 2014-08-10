@@ -24,7 +24,7 @@ class UI_equipment(UI_equip):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(Scrubber, costos=False, parent=parent)
+        super(UI_equipment, self).__init__(Scrubber, parent=parent)
 
         # Pestaña entrada
         self.entradaGas = UI_corriente.Ui_corriente()

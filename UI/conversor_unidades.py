@@ -4,7 +4,7 @@
 import os
 from PyQt4 import QtCore, QtGui
 
-from lib.unidades import Currency, getdata
+from lib.unidades import Currency, getrates
 from UI.delegate import CellEditor
 
 
@@ -87,14 +87,14 @@ class moneda(UI_conversorUnidades):
         self.fecha=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Date::")+self.value.fecha)
         self.gridLayout.addWidget(self.fecha, 0, 1)
         self.botonActualizar=QtGui.QPushButton(QtGui.QApplication.translate("pychemqt", "Update"))
-        self.botonActualizar.clicked.connect(self.getdata)
+        self.botonActualizar.clicked.connect(self.getrates)
         self.gridLayout.addWidget(self.botonActualizar, 1, 1)
 
         for i in range(len(Currency.__units__)):
             self.tabla.verticalHeaderItem(i).setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/flag/%s.gif" % Currency.__units__[i])))
 
-    def getdata(self):
-        getdata()
+    def getrates(self):
+        getrates()
         self.value=self.unidad(self.value)
         self.fecha.setText(QtGui.QApplication.translate("pychemqt", "Date:")+self.value.fecha)
         if self.value!=0:
