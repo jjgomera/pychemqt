@@ -469,9 +469,9 @@ class ElementDialog(QtGui.QDialog):
         self.lados = QtGui.QLabel()
         if elemento.lattice_edges.has_value:
             self.lados.setText(
-                unidades.Length(elemento.lattice_edges.values[0], "pm").str("A") +
-                unidades.Length(elemento.lattice_edges.values[1], "pm").str("A") +
-                unidades.Length(elemento.lattice_edges.values[2], "pm").str("A"))
+                unidades.Length(elemento.lattice_edges.values[0], "pm").get_str("A") +
+                unidades.Length(elemento.lattice_edges.values[1], "pm").get_str("A") +
+                unidades.Length(elemento.lattice_edges.values[2], "pm").get_str("A"))
         else:
             self.lados.setText(elemento.lattice_edges.get_string())
         layout_Cristalografia.addWidget(self.lados, 3, 2)

@@ -187,17 +187,19 @@ if a unit define several magnitudes, must be fill the _magnitudes variable"""
         value = self.__getattribute__(unit)
         return representacion(value, **kwargs)
 
-    @property
-    def str(self, conf=None):
+    def get_str(self, conf=None):
         """Return a string representation of class"""
         if self.code:
             return self.code
         else:
             if not conf:
                 conf = self.func(self.magnitud)
+                txt = self.text(self.magnitud)
+            else:
+                txt=self.__text__[self.__units__.index(conf)]
             num = self.format(conf, self.magnitud)
-            txt = self.text(self.magnitud)
             return num+" "+txt
+    str = property(get_str)
 
 
 class Dimensionless(float):
