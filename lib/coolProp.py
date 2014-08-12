@@ -1,18 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-########################################
-###    Librería de calculo de propiedades usando coolProp    ###
-###            http://coolprop.sourceforge.net/index.html          ###
-########################################
+###############################################################################
+# Library to multiparameter equation of state calculation using coolprop
+# http://coolprop.sourceforge.net/index.html
+# optional method to meos tools calculations and to unicomponent streams
+###############################################################################
 
 from PyQt4.QtGui import QApplication
 from scipy.constants import R
 
 try:
-    from CoolProp.State import State
-    from CoolProp.CoolProp import FluidsList, Props, get_CAS_code, DerivTerms, get_aliases
     from CoolProp import phase_constants, param_constants
+    from CoolProp.State import State
+    from CoolProp.CoolProp import FluidsList, get_CAS_code, DerivTerms, get_aliases
 except:
     pass
 
