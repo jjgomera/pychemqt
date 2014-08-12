@@ -1,13 +1,16 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from lib.meos import MEoS
 
-#Noble Gases
+# Noble Gases
 import He
 import Ne
 import Ar
 import Kr
 import Xe
 
-#Gases
+# Gases
 import H2
 import D2
 import pH2
@@ -25,7 +28,7 @@ import COS
 import NH3
 import H2S
 
-#Alkanes
+# Alkanes
 import CH4
 import C2
 import C3
@@ -42,14 +45,14 @@ import nC9
 import nC10
 import nC12
 
-#Naphthenes
+# Naphthenes
 import Cyclopropane
 import Cyclopentane
 import Cyclohexane
 import C1Cyclohexane
 import C3Cyclohexane
 
-#Alkenes
+# Alkenes
 import Benzene
 import Toluene
 import Ethylene
@@ -65,7 +68,7 @@ import C1Linoleate
 import C1Palmitate
 import C1Stearate
 
-#Hetero
+# Heteroatom
 import Methanol
 import Ethanol
 import Acetone
@@ -74,7 +77,7 @@ import DMC
 import NF3
 import SF6
 
-#CFC
+# CFCs
 import CF3I
 import C4F10
 import C5F12
@@ -111,14 +114,14 @@ import RC318
 import R1234yf
 import R1234ze
 
-#PseudoCompound
+# PseudoCompound
 import Air
 import R404a
 import R407c
 import R410a
 import R507a
 
-#Silicio
+# Silicio
 import OctaC1Cyc4Siloxane
 import DecaC1Cyc5Siloxane
 import DodecaC1Cyc6Siloxane
@@ -129,8 +132,8 @@ import DecaC1_4Siloxane
 import HexaC1_2Siloxane
 
 
-__all__=MEoS.__subclasses__()
-id_mEoS=[i.id for i in __all__]
+__all__ = MEoS.__subclasses__()
+id_mEoS = [i.id for i in __all__]
 
 
 if __name__ == "__main__":

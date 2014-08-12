@@ -4,7 +4,18 @@
 ###############################################################################
 # Library to show/configure pychemqt general preferences
 #
-#   - Preferences: Preferences main dialog
+#   Preferences: Preferences main dialog
+#   - ConfGeneral
+#   - ConfPFD
+#   - ConfTooltipUnit
+#   - ConfFormat
+#   - ConfPetro
+#   - ConfApplications
+#   - ConfTooltipEntity
+#   - ConfmEoS: mEoS parameter configuration dialog
+#       Isolinea: widget to configure isolines for mEoS
+
+#   - format2txt: function to convert dict format config in a string value
 ###############################################################################
 
 import os
@@ -27,22 +38,22 @@ from lib.config import representacion
 def format2txt(formato):
     """Function to convert dict format config in a string equivalent"""
     if formato["signo"]:
-        txt="+"
+        txt = "+"
     else:
-        txt=""
-    if formato["format"]==0:
-        txt+="{total}.{decimales} fixed".format(**formato)
-    elif formato["format"]==1:
-        txt+="{decimales} sign".format(**formato)
-    elif formato["format"]==2:
-        txt+="{decimales} exp".format(**formato)
+        txt = ""
+    if formato["format"] == 0:
+        txt += "{total}.{decimales} fixed".format(**formato)
+    elif formato["format"] == 1:
+        txt += "{decimales} sign".format(**formato)
+    elif formato["format"] == 2:
+        txt += "{decimales} exp".format(**formato)
     if formato.get("exp", False):
-        txt+=" ({tol} exp)".format(**formato)
+        txt += " ({tol} exp)".format(**formato)
     return txt
 
 
 class ConfLine(QtGui.QWidget):
-    """Composite widget con las herramientas de definición del formato de líneas"""
+    """Composite widget with line format configuration tools"""
     def __init__(self, pen=None, parent=None):
         super(ConfLine, self).__init__(parent)
         lyt = QtGui.QGridLayout(self)
@@ -807,7 +818,7 @@ class ConfApplications(QtGui.QDialog):
         terminalTitle=QtGui.QApplication.translate("pychemqt", "Shell")
         if sys.platform=="win32":
             terminal.setEnabled(False)
-            terminal.setTitle(terminalTitle+" ("+QtGui.QApplication.translate("pychemqt", "Only Available on linux")+")")
+            terminal.setTitle(terminalTitle + " (" + QtGui.QApplication.translate("pychemqt", "Only Available on linux")+")")
         else:
             terminal.setTitle(terminalTitle)
 
@@ -820,10 +831,11 @@ class ConfApplications(QtGui.QDialog):
             self.ForegroundColor.setColor(config.get("Applications", 'foregroundColor'))
             self.BackgroundColor.setColor(config.get("Applications", 'backgroundColor'))
 
-        #Habilitar cuando añada soporte para otras terminales
+        # Habilitar cuando añada soporte para otras terminales
         self.terminal.setEnabled(False)
 
     def value(self, config):
+        """Return value for main dialog"""
         if not config.has_section("Applications"):
             config.add_section("Applications")
         config.set("Applications", "Calculator", self.calculadora.text())
@@ -850,73 +862,90 @@ class ConfApplications(QtGui.QDialog):
 
 
 class Isolinea(QtGui.QDialog):
-    """Clase generica de widget con la configuración de isolineas"""
+    """Widget for isoline configuration for mEoS plot tools"""
     def __init__(self, unidad, ConfSection, config, parent=None):
-        """unidad: la clase unidad que define la magnitud de las variables"""
+        """Constructor
+            unidad: subclass of unidad to define the isoline type
+            ConfSection: title of isoline
+            config: config of pychemqt project"""
         super(Isolinea, self).__init__(parent)
-        self.ConfSection=ConfSection
-        self.magnitud=unidad.__name__
-        self.unidad=unidad
+        self.ConfSection = ConfSection
+        self.magnitud = unidad.__name__
+        self.unidad = unidad
         layout = QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Start")),1,1)
-        self.inicio =Entrada_con_unidades(unidad)
-        layout.addWidget(self.inicio,1,2,1,3)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Fin")),2,1)
-        self.fin =Entrada_con_unidades(unidad)
-        layout.addWidget(self.fin,2,2,1,3)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Intervalo")),3,1)
-        if unidad.__name__=="Temperature":
-            self.intervalo =Entrada_con_unidades(unidades.DeltaT)
-        elif unidad.__name__=="Pressure":
-            self.intervalo =Entrada_con_unidades(unidades.DeltaP)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Start")), 1, 1)
+        self.inicio = Entrada_con_unidades(unidad)
+        layout.addWidget(self.inicio, 1, 2, 1, 3)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Fin")), 2, 1)
+        self.fin = Entrada_con_unidades(unidad)
+        layout.addWidget(self.fin, 2, 2, 1, 3)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Intervalo")), 3, 1)
+        if unidad.__name__ == "Temperature":
+            self.intervalo = Entrada_con_unidades(unidades.DeltaT)
+        elif unidad.__name__ == "Pressure":
+            self.intervalo = Entrada_con_unidades(unidades.DeltaP)
         else:
-            self.intervalo =Entrada_con_unidades(unidad)
-        layout.addWidget(self.intervalo,3,2,1,3)
-        self.Personalizar = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Customize"))
-        layout.addWidget(self.Personalizar,4,1,1,4)
+            self.intervalo = Entrada_con_unidades(unidad)
+        layout.addWidget(self.intervalo, 3, 2, 1, 3)
+        self.Personalizar = QtGui.QCheckBox(
+            QtGui.QApplication.translate("pychemqt", "Customize"))
+        layout.addWidget(self.Personalizar, 4, 1, 1, 4)
         self.Lista = QtGui.QLineEdit()
-        layout.addWidget(self.Lista,5,1,1,4)
+        layout.addWidget(self.Lista, 5, 1, 1, 4)
         self.Personalizar.toggled.connect(self.inicio.setDisabled)
         self.Personalizar.toggled.connect(self.fin.setDisabled)
         self.Personalizar.toggled.connect(self.intervalo.setDisabled)
         self.Personalizar.toggled.connect(self.Lista.setEnabled)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,1,1,4)
-        if unidad.__name__!="float":
-            self.Critica = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Include critic point line"))
-            layout.addWidget(self.Critica,7,1,1,4)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),8,1,1,4)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 6, 1, 1, 4)
+        if unidad.__name__ != "float":
+            self.Critica = QtGui.QCheckBox(QtGui.QApplication.translate(
+                "pychemqt", "Include critic point line"))
+            layout.addWidget(self.Critica, 7, 1, 1, 4)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 8, 1, 1, 4)
 
-        self.lineconfig = LineConfig(ConfSection, QtGui.QApplication.translate("pychemqt", "Line Style"))
-        layout.addWidget(self.lineconfig,9,1,1,4)
+        self.lineconfig = LineConfig(ConfSection, QtGui.QApplication.translate(
+            "pychemqt", "Line Style"))
+        layout.addWidget(self.lineconfig, 9, 1, 1, 4)
 
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),10,1)
-        self.label=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Label"))
-        layout.addWidget(self.label,11,1)
-        self.unit=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Units in Label"))
-        layout.addWidget(self.unit,12,1,1,3)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Position")),13,1)
-        self.label5=Entrada_con_unidades(int, value=0, width=25, frame=False, readOnly=True)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 10, 1)
+        self.label = QtGui.QCheckBox(
+            QtGui.QApplication.translate("pychemqt", "Label"))
+        layout.addWidget(self.label, 11, 1)
+        self.unit = QtGui.QCheckBox(
+            QtGui.QApplication.translate("pychemqt", "Units in Label"))
+        layout.addWidget(self.unit, 12, 1, 1, 3)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Position")), 13, 1)
+        self.label5 = Entrada_con_unidades(int, value=0, width=25, frame=False,
+                                           readOnly=True)
         self.label5.setFixedWidth(30)
-        layout.addWidget(self.label5,13,2)
-        self.Posicion=QtGui.QSlider(QtCore.Qt.Horizontal)
+        layout.addWidget(self.label5, 13, 2)
+        self.Posicion = QtGui.QSlider(QtCore.Qt.Horizontal)
         self.Posicion.valueChanged.connect(self.label5.setValue)
-        layout.addWidget(self.Posicion,13,3,1,2)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),14,4)
+        layout.addWidget(self.Posicion, 13, 3, 1, 2)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding), 14, 4)
 
         if config.has_section("MEOS"):
             self.inicio.setValue(config.getfloat("MEOS", ConfSection+'Start'))
             self.fin.setValue(config.getfloat("MEOS", ConfSection+'End'))
             self.intervalo.setValue(config.getfloat("MEOS", ConfSection+'Step'))
             self.Personalizar.setChecked(config.getboolean("MEOS", ConfSection+'Custom'))
-            if config.get("MEOS", ConfSection+'List')<>"":
-                T=[]
+            if config.get("MEOS", ConfSection+'List') != "":
+                T = []
                 for i in config.get("MEOS", ConfSection+'List').split(','):
-                    if unidad.__name__=="float":
+                    if unidad.__name__ == "float":
                         T.append(representacion(float(i)))
                     else:
                         T.append(representacion(unidad(float(i)).config()))
                 self.Lista.setText(",".join(T))
-            if self.unidad.__name__!="float":
+            if self.unidad.__name__ != "float":
                 self.Critica.setChecked(config.getboolean("MEOS", ConfSection+'Critic'))
             self.inicio.setDisabled(self.Personalizar.isChecked())
             self.fin.setDisabled(self.Personalizar.isChecked())
@@ -927,24 +956,24 @@ class Isolinea(QtGui.QDialog):
             self.Posicion.setValue(config.getint("MEOS", ConfSection+'Position'))
             self.lineconfig.setConfig(config)
 
-
     def value(self, config):
         config.set("MEOS", self.ConfSection+"Start", self.inicio.value)
         config.set("MEOS", self.ConfSection+"End", self.fin.value)
         config.set("MEOS", self.ConfSection+"Step", self.intervalo.value)
         config.set("MEOS", self.ConfSection+"Custom", self.Personalizar.isChecked())
-        T=[]
+        T = []
         if not self.Lista.text().isEmpty():
-            T1=self.Lista.text().split(',')
+            T1 = self.Lista.text().split(',')
             for i in T1:
-                if self.unidad.__name__=="float":
+                if self.unidad.__name__ == "float":
                     T.append(str(float(i)))
                 else:
                     T.append(str(self.unidad(float(i), "conf")))
         config.set("MEOS", self.ConfSection+"List", ", ".join(T))
-        if self.unidad.__name__!="float":
-            config.set("MEOS", self.ConfSection+"Critic", self.Critica.isChecked())
-        config=self.lineconfig.value(config)
+        if self.unidad.__name__ != "float":
+            config.set("MEOS", self.ConfSection+"Critic",
+                       self.Critica.isChecked())
+        config = self.lineconfig.value(config)
 
         config.set("MEOS", self.ConfSection+"Label", self.label.isChecked())
         config.set("MEOS", self.ConfSection+"Units", self.unit.isChecked())
@@ -958,9 +987,9 @@ class Isolinea(QtGui.QDialog):
         config.set("MEOS", ConfSection+"Step", "0")
         config.set("MEOS", ConfSection+"Custom", "True")
         config.set("MEOS", ConfSection+"List", "")
-        if ConfSection!="Isoquality":
+        if ConfSection != "Isoquality":
             config.set("MEOS", ConfSection+"Critic", "True")
-        config=LineConfig.default(config, ConfSection)
+        config = LineConfig.default(config, ConfSection)
         config.set("MEOS", ConfSection+"Label", "False")
         config.set("MEOS", ConfSection+"Units", "False")
         config.set("MEOS", ConfSection+"Position", "50")
@@ -968,50 +997,68 @@ class Isolinea(QtGui.QDialog):
 
 
 class ConfmEoS(QtGui.QDialog):
-    """Clase que define el widget de configuración de la herramienta de ecuaciones multiparametro"""
-
-    lineas=[("Isotherm", QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature),
-                ("Isobar", QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure),
-                ("Isoenthalpic", QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy),
-                ("Isoentropic", QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat),
-                ("Isochor", QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume),
-                ("Isoquality", QtGui.QApplication.translate("pychemqt", "Isoquality"), float)]
+    """Config mEoS parameter dialog"""
+    lineas = [
+        ("Isotherm", unidades.Temperature,
+         QtGui.QApplication.translate("pychemqt", "Isotherm")),
+        ("Isobar", unidades.Pressure,
+         QtGui.QApplication.translate("pychemqt", "Isobar")),
+        ("Isoenthalpic", unidades.Enthalpy,
+         QtGui.QApplication.translate("pychemqt", "Isoenthalpic")),
+        ("Isoentropic", unidades.SpecificHeat,
+         QtGui.QApplication.translate("pychemqt", "Isoentropic")),
+        ("Isochor", unidades.SpecificVolume,
+         QtGui.QApplication.translate("pychemqt", "Isochor")),
+        ("Isoquality", float,
+         QtGui.QApplication.translate("pychemqt", "Isoquality"))]
 
     def __init__(self, config, parent=None):
+        """constructor, config optional parameter to input project config"""
         super(ConfmEoS, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
 
-        self.iapws = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use iapws97 for water"))
-        layout.addWidget(self.iapws,1,1,1,2)
-        self.freesteam = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use freesteam library (faster)"))
+        self.iapws = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use iapws97 for water"))
+        layout.addWidget(self.iapws, 1, 1, 1, 2)
+        self.freesteam = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
-        layout.addWidget(self.freesteam,2,2)
-        self.coolProp = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use external library coolProp (faster)"))
+        layout.addWidget(self.freesteam, 2, 2)
+        self.coolProp = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
-        layout.addWidget(self.coolProp,3,1,1,2)
-        self.refprop = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use external library refprop (fastest)"))
+        layout.addWidget(self.coolProp, 3, 1, 1, 2)
+        self.refprop = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
-        layout.addWidget(self.refprop,4,1,1,2)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),4,1)
-        self.lineconfig = LineConfig("saturation", QtGui.QApplication.translate("pychemqt", "Saturation Line Style"))
-        layout.addWidget(self.lineconfig,5,1,1,2)
-        group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Isolines"))
-        layout.addWidget(group,7,1,1,2)
-        layoutgroup=QtGui.QGridLayout(group)
-        self.comboIsolineas=QtGui.QComboBox()
-        layoutgroup.addWidget(self.comboIsolineas,1,1)
+        layout.addWidget(self.refprop, 4, 1, 1, 2)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 4, 1)
+        self.lineconfig = LineConfig("saturation", QtGui.QApplication.translate(
+            "pychemqt", "Saturation Line Style"))
+        layout.addWidget(self.lineconfig, 5, 1, 1, 2)
+        group = QtGui.QGroupBox(
+            QtGui.QApplication.translate("pychemqt", "Isolines"))
+        layout.addWidget(group, 7, 1, 1, 2)
+        layoutgroup = QtGui.QGridLayout(group)
+        self.comboIsolineas = QtGui.QComboBox()
+        layoutgroup.addWidget(self.comboIsolineas, 1, 1)
         self.Isolineas = QtGui.QStackedWidget()
-        self.comboIsolineas.currentIndexChanged.connect(self.Isolineas.setCurrentIndex)
-        layoutgroup.addWidget(self.Isolineas,2,1)
-        for nombre, texto, unidad in self.lineas:
-            self.comboIsolineas.addItem(texto)
+        self.comboIsolineas.currentIndexChanged.connect(
+            self.Isolineas.setCurrentIndex)
+        layoutgroup.addWidget(self.Isolineas, 2, 1)
+        for nombre, unidad, text in self.lineas:
+            self.comboIsolineas.addItem(text)
             self.Isolineas.addWidget(Isolinea(unidad, nombre, config))
-        self.surface = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Use surface in plot (slower)"))
-        layout.addWidget(self.surface,8,1,1,2)
-        self.grid = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Draw grid"))
-        layout.addWidget(self.grid,9,1,1,2)
+        self.surface = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use surface in plot (slower)"))
+        layout.addWidget(self.surface, 8, 1, 1, 2)
+        self.grid = QtGui.QCheckBox(
+            QtGui.QApplication.translate("pychemqt", "Draw grid"))
+        layout.addWidget(self.grid, 9, 1, 1, 2)
 
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,2)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding), 10, 2)
 
         if os.environ["freesteam"]:
             self.iapws.toggled.connect(self.freesteam.setEnabled)
@@ -1021,16 +1068,16 @@ class ConfmEoS(QtGui.QDialog):
             self.refprop.setEnabled(True)
 
         if config.has_section("MEOS"):
-            self.iapws.setChecked(config.getboolean("MEOS",'iapws'))
-            self.freesteam.setChecked(config.getboolean("MEOS",'freesteam'))
-            self.coolProp.setChecked(config.getboolean("MEOS",'coolprop'))
-            self.refprop.setChecked(config.getboolean("MEOS",'refprop'))
-            self.surface.setChecked(config.getboolean("MEOS",'surface'))
-            self.grid.setChecked(config.getboolean("MEOS",'grid'))
+            self.iapws.setChecked(config.getboolean("MEOS", 'iapws'))
+            self.freesteam.setChecked(config.getboolean("MEOS", 'freesteam'))
+            self.coolProp.setChecked(config.getboolean("MEOS", 'coolprop'))
+            self.refprop.setChecked(config.getboolean("MEOS", 'refprop'))
+            self.surface.setChecked(config.getboolean("MEOS", 'surface'))
+            self.grid.setChecked(config.getboolean("MEOS", 'grid'))
             self.lineconfig.setConfig(config)
 
-
     def value(self, config):
+        """Return value for main dialog"""
         if not config.has_section("MEOS"):
             config.add_section("MEOS")
 
@@ -1038,12 +1085,12 @@ class ConfmEoS(QtGui.QDialog):
         config.set("MEOS", "freesteam", self.freesteam.isChecked())
         config.set("MEOS", "coolprop", self.coolProp.isChecked())
         config.set("MEOS", "refprop", self.refprop.isChecked())
-        config=self.lineconfig.value(config)
+        config = self.lineconfig.value(config)
         config.set("MEOS", "surface", self.surface.isChecked())
         config.set("MEOS", "grid", self.grid.isChecked())
 
         for indice in range(self.Isolineas.count()):
-            config=self.Isolineas.widget(indice).value(config)
+            config = self.Isolineas.widget(indice).value(config)
         return config
 
     @classmethod
@@ -1053,70 +1100,75 @@ class ConfmEoS(QtGui.QDialog):
         config.set("MEOS", "freesteam", "False")
         config.set("MEOS", "coolprop", "False")
         config.set("MEOS", "refprop", "False")
-        config=LineConfig.default(config, "saturation")
+        config = LineConfig.default(config, "saturation")
         config.set("MEOS", "surface", "False")
         config.set("MEOS", "grid", "False")
         for nombre, texto, unidad in cls.lineas:
-            config=Isolinea.default(config, nombre)
+            config = Isolinea.default(config, nombre)
         return config
 
 
 class Preferences(QtGui.QDialog):
     """Preferences main dialog"""
-
     classes = [
-        (os.environ["pychemqt"]+"/images/pychemqt.png",
-         QtGui.QApplication.translate("pychemqt", "General"), ConfGeneral),
-        (os.environ["pychemqt"]+"/images/button/PFD.png",
-         QtGui.QApplication.translate("pychemqt", "PFD"), ConfPFD),
-        (os.environ["pychemqt"]+"/images/button/tooltip.png",
-         QtGui.QApplication.translate("pychemqt", "Tooltips in units"), ConfTooltipUnit),
-        (os.environ["pychemqt"]+"/images/button/format_numeric.png",
-         QtGui.QApplication.translate("pychemqt", "Numeric format"), ConfFormat),
-        (os.environ["pychemqt"]+"/images/button/oil.png",
-         QtGui.QApplication.translate("pychemqt", "Pseudocomponents"), ConfPetro),
-        (os.environ["pychemqt"]+"/images/button/applications.png",
-         QtGui.QApplication.translate("pychemqt", "Applications"), ConfApplications),
-        (os.environ["pychemqt"]+"/images/button/tooltip.png",
-         QtGui.QApplication.translate("pychemqt", "Tooltips in PFD"), ConfTooltipEntity),
-        (os.environ["pychemqt"]+"/images/button/steamTables.png",
-         QtGui.QApplication.translate("pychemqt", "mEoS"), ConfmEoS)]
+        ("pychemqt.png", ConfGeneral,
+         QtGui.QApplication.translate("pychemqt", "General")),
+        ("button/PFD.png", ConfPFD,
+         QtGui.QApplication.translate("pychemqt", "PFD")),
+        ("button/tooltip.png", ConfTooltipUnit,
+         QtGui.QApplication.translate("pychemqt", "Tooltips in units")),
+        ("button/format_numeric.png", ConfFormat,
+         QtGui.QApplication.translate("pychemqt", "Numeric format")),
+        ("button/oil.png", ConfPetro,
+         QtGui.QApplication.translate("pychemqt", "Pseudocomponents")),
+        ("button/applications.png", ConfApplications,
+         QtGui.QApplication.translate("pychemqt", "Applications")),
+        ("button/tooltip.png", ConfTooltipEntity,
+         QtGui.QApplication.translate("pychemqt", "Tooltips in PFD")),
+        ("button/steamTables.png", ConfmEoS,
+         QtGui.QApplication.translate("pychemqt", "mEoS"))]
 
     def __init__(self, config=None, parent=None):
+        """Constructor, opcional config parameter to input project config"""
         super(Preferences, self).__init__(parent)
         if not config:
             config = self.default()
         self.config = config
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Preferences"))
         layout = QtGui.QGridLayout(self)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),1, 1, 1, 1)
+        layout.addItem(QtGui.QSpacerItem(
+            10, 10, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed), 1, 1, 1, 1)
         self.stacked = QtGui.QStackedWidget()
         layout.addWidget(self.stacked, 1, 2, 1, 1)
-        self.lista=QtGui.QListWidget()
+        self.lista = QtGui.QListWidget()
         self.lista.setFixedWidth(175)
         self.lista.setIconSize(QtCore.QSize(30, 30))
         layout.addWidget(self.lista, 1, 0, 1, 1)
-        for icon, title, dialog in self.classes:
+        for icon, dialog, title in self.classes:
             self.stacked.addWidget(dialog(config))
-            self.lista.addItem(QtGui.QListWidgetItem(QtGui.QIcon(QtGui.QPixmap(icon)), title))
+            icon = QtGui.QIcon(QtGui.QPixmap(
+                os.enfiron["pychemqt"]+"/images/%s.png" % icon))
+            self.lista.addItem(QtGui.QListWidgetItem(icon, title))
 
         self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel |
+                                                QtGui.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 0, 1, 3)
 
     def value(self):
-        config=self.config
+        """Return value for wizard"""
+        config = self.config
         for indice in range(self.stacked.count()):
-            config=self.stacked.widget(indice).value(config)
+            config = self.stacked.widget(indice).value(config)
         return config
 
     @classmethod
     def default(cls):
-        config=ConfigParser()
+        config = ConfigParser()
         for icon, title, dialog in cls.classes:
-            config=dialog.default(config)
+            config = dialog.default(config)
         return config
 
 

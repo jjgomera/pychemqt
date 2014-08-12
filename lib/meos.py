@@ -8,83 +8,82 @@
 #   o   Ecuación Peng-Robinson con translación de Peneloux
 #############################################################################
 
-import cPickle, os
+import cPickle
+import os
 
 from PyQt4.QtGui import QApplication
 from scipy import exp, log, log10, sin, sinh, cosh, tanh, arctan, __version__
-if int(__version__.split(".")[1])<10:
+if int(__version__.split(".")[1]) < 10:
     from scipy.constants import Bolzmann as Boltzmann
 else:
-    from scipy.constants import  Boltzmann
+    from scipy.constants import Boltzmann
 from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
-from lib import  unidades, compuestos
+from lib import unidades, compuestos
 from physics import R_atml
 from config import fluid
 
 
-Tref=298.15
-Pref=101325.
-#so=0
-#ho=0
+Tref = 298.15
+Pref = 101325.
+# so=0
+# ho=0
 
-data=[(QApplication.translate("pychemqt", "Temperature"), "T"),
-            (QApplication.translate("pychemqt", "Pressure"), "P"),
-            (QApplication.translate("pychemqt", "Density"), "rho"),
-            (QApplication.translate("pychemqt", "Volume"), "v"),
-            (QApplication.translate("pychemqt", "Internal Energy"), "u"),
-            (QApplication.translate("pychemqt", "Enthalpy"), "h"),
-            (QApplication.translate("pychemqt", "Entropy"), "s"),
-            ("Cv", "cv"),
-            ("Cp", "cp"),
-            ("Cp0", "cp0"),
-            ("Cp/Cv", "cp_cv"),
-            ("Cp0/Cv", "cp0_cv"),
-            (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g"),
-            (QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a"),
-            ("Hvapor", "Hvap"),
-            (QApplication.translate("pychemqt", "Fugacity"), "f"),
-            (QApplication.translate("pychemqt", "Fugacity coef."), "fi"),
-            (QApplication.translate("pychemqt", "Speed sound"), "w"),
-            (QApplication.translate("pychemqt", "Compresibility"), "Z"),
-            (QApplication.translate("pychemqt", "Quality"), "x"),
-            ("Tr", "Tr"),
-            ("Pr", "Pr"),
-            (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule"),
-            (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB"),
-            (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC"),
+data = [(QApplication.translate("pychemqt", "Temperature"), "T"),
+        (QApplication.translate("pychemqt", "Pressure"), "P"),
+        (QApplication.translate("pychemqt", "Density"), "rho"),
+        (QApplication.translate("pychemqt", "Volume"), "v"),
+        (QApplication.translate("pychemqt", "Internal Energy"), "u"),
+        (QApplication.translate("pychemqt", "Enthalpy"), "h"),
+        (QApplication.translate("pychemqt", "Entropy"), "s"),
+        ("Cv", "cv"),
+        ("Cp", "cp"),
+        ("Cp0", "cp0"),
+        ("Cp/Cv", "cp_cv"),
+        ("Cp0/Cv", "cp0_cv"),
+        (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g"),
+        (QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a"),
+        ("Hvapor", "Hvap"),
+        (QApplication.translate("pychemqt", "Fugacity"), "f"),
+        (QApplication.translate("pychemqt", "Fugacity coef."), "fi"),
+        (QApplication.translate("pychemqt", "Speed sound"), "w"),
+        (QApplication.translate("pychemqt", "Compresibility"), "Z"),
+        (QApplication.translate("pychemqt", "Quality"), "x"),
+        ("Tr", "Tr"),
+        ("Pr", "Pr"),
+        (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule"),
+        (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB"),
+        (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC"),
+        (QApplication.translate("pychemqt", "Viscosity"), "mu"),
+        (QApplication.translate("pychemqt", "Thermal conductivity"), "k"),
+        (QApplication.translate("pychemqt", "Kinematic viscosity"), "nu"),
+        (QApplication.translate("pychemqt", "Surface tension"), "sigma"),
+        (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon"),
+        (QApplication.translate("pychemqt", "Prandtl number"), "Pr"),
+        (QApplication.translate("pychemqt", "Thermal diffusivity"), "alfa"),
+        (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma"),
+        (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav"), #Thermal expansion coefficient
+        (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa"),
+        (QApplication.translate("pychemqt", "Relative pressure coefficient"), "alfap"),  #dPdT_rho
+        (QApplication.translate("pychemqt", "Isothermal stress"), "betap"),
+        (QApplication.translate("pychemqt", "Isentropic coefficient"), "betas"),
+        (QApplication.translate("pychemqt", "Isothermal throttle coefficient"), "deltat"),
+        (QApplication.translate("pychemqt", "Isentropic expansion"), "n"),
+        (QApplication.translate("pychemqt", "Isothermal expansion"), "kt"),
+        (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks"),
+        (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks"),
+        (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt"),
+        ("Gruneisen", "Gruneisen"),
+        (QApplication.translate("pychemqt", "Internal pressure"), "InternalPressure"),
+        ("dhdp_rho", "dhdp_rho"),
+        ("dhdT_rho", "dhdT_rho"),
+        ("dhdT_P", "dhdT_P"),
+        ("dhdP_T", "dhdP_T")]    #Isothermal throttle coefficient
 
-            (QApplication.translate("pychemqt", "Viscosity"), "mu"),
-            (QApplication.translate("pychemqt", "Thermal conductivity"), "k"),
-            (QApplication.translate("pychemqt", "Kinematic viscosity"), "nu"),
-            (QApplication.translate("pychemqt", "Surface tension"), "sigma"),
-            (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon"),
-            (QApplication.translate("pychemqt", "Prandtl number"), "Pr"),
-            (QApplication.translate("pychemqt", "Thermal diffusivity"), "alfa"),
-
-            (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma"),
-            (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav"), #Thermal expansion coefficient
-            (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa"),
-            (QApplication.translate("pychemqt", "Relative pressure coefficient"), "alfap"),  #dPdT_rho
-            (QApplication.translate("pychemqt", "Isothermal stress"), "betap"),
-            (QApplication.translate("pychemqt", "Isentropic coefficient"), "betas"),
-            (QApplication.translate("pychemqt", "Isothermal throttle coefficient"), "deltat"),
-            (QApplication.translate("pychemqt", "Isentropic expansion"), "n"),
-            (QApplication.translate("pychemqt", "Isothermal expansion"), "kt"),
-            (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks"),
-            (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks"),
-            (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt"),
-            ("Gruneisen", "Gruneisen"),
-            (QApplication.translate("pychemqt", "Internal pressure"), "InternalPressure"),
-            ("dhdp_rho", "dhdp_rho"),
-            ("dhdT_rho", "dhdT_rho"),
-            ("dhdT_P", "dhdT_P"),
-            ("dhdP_T", "dhdP_T")]    #Isothermal throttle coefficient
-
-propiedades=[p[0] for p in data]
-keys=[p[1] for p in data]
-properties=dict(zip(keys, propiedades))
+propiedades = [p[0] for p in data]
+keys = [p[1] for p in data]
+properties = dict(zip(keys, propiedades))
 
 
 class MEoS(object):

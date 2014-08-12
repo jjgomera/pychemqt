@@ -5,75 +5,86 @@ from lib.meos import MEoS
 from lib import unidades
 from R113 import R113
 
+
 class C4F10(MEoS):
-    """Ecuación de estado de multiparametros para el perfluorobutano
+    """Multiparameter equation of state for perfluorobutane
 
     >>> c4f10=C4F10(T=300, P=0.1)
     >>> print "%0.1f %0.5f %0.3f %0.5f %0.4f %0.4f %0.2f" % (c4f10.T, c4f10.rho, c4f10.h.kJkg, c4f10.s.kJkgK, c4f10.cv.kJkgK, c4f10.cp.kJkgK, c4f10.w)
     300.0 0.08077 27.469 0.14617 10.7187 14.8450 1309.82
     """
-    name="perfluorobutane"
-    CASNumber="355-25-9"
-    formula="C4F10"
-    synonym=""
-    rhoc=unidades.Density(599.8356)
-    Tc=unidades.Temperature(386.326)
-    Pc=unidades.Pressure(2323.4, "kPa")
-    M=238.03      #g/mol
-    Tt=unidades.Temperature(145.0)
-    Tb=unidades.Temperature(271.061)
-    f_acent=0.374
-    momentoDipolar=unidades.DipoleMoment(0.0, "Debye")
-    id=693
+    name = "perfluorobutane"
+    CASNumber = "355-25-9"
+    formula = "C4F10"
+    synonym = ""
+    rhoc = unidades.Density(599.8356)
+    Tc = unidades.Temperature(386.326)
+    Pc = unidades.Pressure(2323.4, "kPa")
+    M = 238.03  # g/mol
+    Tt = unidades.Temperature(145.0)
+    Tb = unidades.Temperature(271.061)
+    f_acent = 0.374
+    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
+    id = 693
 
-    CP1={"ao": 2.0150709, 
-        "R": 8.31451, 
-        "an": [0.96863193e-1, -0.99797537e-4, 0.37348060e-7], "pow": [1, 2, 3], 
-        "ao_exp": [], "exp": [], 
-        "ao_hyp": [], "hyp": []}
+    CP1 = {"ao": 2.0150709,
+           "R": 8.31451,
+           "an": [0.96863193e-1, -0.99797537e-4, 0.37348060e-7],
+           "pow": [1, 2, 3],
+           "ao_exp": [], "exp": [],
+           "ao_hyp": [], "hyp": []}
 
-    ecs={
+    ecs = {
         "__type__": "ECS",
         "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
         "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
         "cp": CP1,
-        "ref": R113, 
-        "eq": "helmholtz1", 
-        "R": 8.314471, 
-        
+        "ref": R113,
+        "eq": "helmholtz1",
+        "R": 8.314471,
+
         "ft": [0.776042865e-2, -0.641975631],
-        "ft_add": [], "ft_add_exp": [], 
-        "fd": [], "fd_exp": [], 
-        "ht": [0.278313281e-2, -0.593657910], 
-        "ht_add": [], "ht_add_exp": [], 
+        "ft_add": [], "ft_add_exp": [],
+        "fd": [], "fd_exp": [],
+        "ht": [0.278313281e-2, -0.593657910],
+        "ht_add": [], "ht_add_exp": [],
         "hd": [-0.236093735e-2], "hd_exp": [1]}
 
-    eq=ecs, 
+    eq = ecs,
 
-    _surface={"sigma": [0.04297], "exp": [1.21]}
-    _vapor_Pressure={ "eq": 5, "ao": [-0.72217e1, -0.18886e2, 0.47288e2, -0.29794e2, -0.50457e1], "exp": [1.0, 1.5, 1.65, 1.8, 4.8]}
-    _liquid_Density={ "eq": 1, "ao": [0.36787e1, -0.20581e1, 0.98945, 0.60478e-1], "exp": [0.4, 0.6, 0.8, 2.0]}
-    _vapor_Density={ "eq": 3, "ao": [-0.42967e1, -0.10715e2, -0.33457e2, -0.72206e2], "exp": [0.486, 1.7, 4.2, 8.0]}
+    _surface = {"sigma": [0.04297], "exp": [1.21]}
+    _vapor_Pressure = {
+        "eq": 5,
+        "ao": [-0.72217e1, -0.18886e2, 0.47288e2, -0.29794e2, -0.50457e1],
+        "exp": [1.0, 1.5, 1.65, 1.8, 4.8]}
+    _liquid_Density = {
+        "eq": 1,
+        "ao": [0.36787e1, -0.20581e1, 0.98945, 0.60478e-1],
+        "exp": [0.4, 0.6, 0.8, 2.0]}
+    _vapor_Density = {
+        "eq": 3,
+        "ao": [-0.42967e1, -0.10715e2, -0.33457e2, -0.72206e2],
+        "exp": [0.486, 1.7, 4.2, 8.0]}
 
-    trnECS={"eq": "ecs",
-                "__name__": "Extended Corresponding States model",
-                "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
+    trnECS = {"eq": "ecs",
+              "__name__": "Extended Corresponding States model",
+              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
 
-                "ref": R113, 
-                "ref_eq": "helmholtz1", 
-                "eq_visco": "visco0", 
-                "eq_thermo": "thermo0", 
-                
-                "f_int": [1.32e-3], 
-                "psi": [1.0], 
-                "phi": [1.0], 
-                
-                "critical": 3,
-                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.5e-9, "Tcref": 579.49}
+              "ref": R113,
+              "ref_eq": "helmholtz1",
+              "eq_visco": "visco0",
+              "eq_thermo": "thermo0",
+
+              "f_int": [1.32e-3],
+              "psi": [1.0],
+              "phi": [1.0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.5e-9, "Tcref": 579.49}
 
 #    _viscosity=trnECS,
-#    _thermal=trnECS, 
+#    _thermal=trnECS,
 
 if __name__ == "__main__":
 #    import doctest
