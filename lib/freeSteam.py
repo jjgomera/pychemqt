@@ -1,10 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#######################################
-### Librería de calculo de propiedades usando freesteam  ###
-###                http://freesteam.sourceforge.net/                  ###
-#######################################
+###############################################################################
+# Library to use freesteam library to calculate water properties with IAPWS-IF97
+# to meos calculation or in stream calculations.
+# http://freesteam.sourceforge.net/
+# This library is optional, pychemqt has a python implementation for IAPWS-IF97
+# in file lib/iapws.py, but if freesteam is available in your system this in c++
+# is faster
+
+#   - Freesteam: Class with properties calculations
+###############################################################################
 
 from math import exp
 
@@ -20,42 +26,49 @@ from config import fluid
 
 
 class Freesteam(object):
-    """Clase que define una corriente de agua mediante freesteam"""
+    """Class to define a water stream
+    It can be defined by the pair:
+        P,T
+        P,h
+        P,s
+        P,v
+        T,s
+        T,x
+
+    where:
+        -T: Temperature, Kelvin
+        -P: Pressure, Pa
+        -x: Quality, [-]
+        -s: entropy, kJ/kgK
+        -h: enthalpy, kJ/kg
+        -v: specific volume, m³/kg
+
+
+    """
     kwargs={"T": 0.0,
-                    "P": 0.0,
-                    "x": None, 
-                    "h": 0.0, 
-                    "s": 0.0, 
-                    "v": 0.0}
-                    
+            "P": 0.0,
+            "x": None,
+            "h": 0.0,
+            "s": 0.0,
+            "v": 0.0}
+
     status=0
     msg="Unknown variables"
 
     def __init__(self, **kwargs):
-        """Los parámetros necesarios para definirla son:
-        
-        -ref: estado referencia
-        -fluido: nombre del fluido
-        -fraccion: fraccion molar 
-        
-        -T: temperatura de la corriente en kelvin
-        -P: presión de la corriente en atm
-        -x: fracción de vapor
-
-        """
         self.kwargs=Freesteam.kwargs.copy()
         self.__call__(**kwargs)
 
     def __call__(self, **kwargs):
         self.kwargs.update(kwargs)
-            
+
         if self.calculable:
             self.status=1
             self.calculo()
             self.msg=""
 
     @property
-    def calculable(self):            
+    def calculable(self):
         self._thermo=""
         if self.kwargs["T"] and self.kwargs["P"]:
             self._thermo=0
@@ -97,13 +110,13 @@ class Freesteam(object):
         self.Tb=mEoS.H2O.Tb
         self.f_accent=unidades.Dimensionless(mEoS.H2O.f_acent)
         self.momentoDipolar=mEoS.H2O.momentoDipolar
-        
+
         self.phase=self.getphase(fluido)
         self.x=unidades.Dimensionless(fluido.x)
         self.name=mEoS.H2O.name
         self.synonim=mEoS.H2O.synonym
         self.CAS=mEoS.H2O.CASNumber
-        
+
         self.T=unidades.Temperature(fluido.T)
         self.P=unidades.Pressure(fluido.p)
         self.rho=unidades.Density(fluido.rho)
@@ -127,7 +140,7 @@ class Freesteam(object):
             self.u=unidades.SpecificHeat(self.x*self.Vapor.u+(1-self.x)*self.Liquido.u)
             self.a=unidades.Enthalpy(self.x*self.Vapor.a+(1-self.x)*self.Liquido.a)
             self.g=unidades.Enthalpy(self.x*self.Vapor.g+(1-self.x)*self.Liquido.g)
-            
+
             self.cv=unidades.SpecificHeat(None)
             self.cp=unidades.SpecificHeat(None)
             self.cp_cv=unidades.Dimensionless(None)
@@ -137,14 +150,14 @@ class Freesteam(object):
         fase.M=self.M
         fase.rho=unidades.Density(estado.rho)
         fase.v=unidades.SpecificVolume(estado.v)
-        fase.Z=unidades.Dimensionless(self.P*estado.v/R/1000*self.M/self.T)        
+        fase.Z=unidades.Dimensionless(self.P*estado.v/R/1000*self.M/self.T)
 
         fase.h=unidades.Enthalpy(estado.h)
         fase.s=unidades.SpecificHeat(estado.s)
         fase.u=unidades.Enthalpy(estado.u)
         fase.a=unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g=unidades.Enthalpy(fase.h-self.T*fase.s)
-        
+
         fase.cv=unidades.SpecificHeat(estado.cv)
         fase.cp=unidades.SpecificHeat(estado.cp)
         fase.cp_cv=unidades.Dimensionless(fase.cp/fase.cv)
@@ -200,7 +213,7 @@ class Freesteam(object):
                 return QApplication.translate("pychemqt", "Saturated liquid")
             else:
                 return QApplication.translate("pychemqt", "Liquid")
-            
+
 
 
 if __name__ == '__main__':
