@@ -83,6 +83,7 @@ def volume_Correction_Peneloux(compuesto):
 
 def Z_Virial(T, P, B, C):
     return 1+B*(P/R_atml/T)+(C-B**2)*(P/R/T)**2
+
     
 def virial_B_Tsonopoulos(componente, T):
     #TODO: Tras añadir características quimicas a la base de datos poder calcular a y b

@@ -546,10 +546,9 @@ class ElementDialog(QtGui.QDialog):
         self.lados = QtGui.QLabel()
         if elemento.lattice_edges.has_value:
             self.lados.setText(
-                elemento.lattice_edges.values[0]*10 + u" Å" +
-                elemento.lattice_edges.values[1]*10 + u" Å" +
-                elemento.lattice_edges.values[2]*10 + u" Å")
->>>>>>> 2cb35b55fea4d75ccc63b20384768295d6473a8c
+                str(elemento.lattice_edges.values[0]*10) + u" Å - " +
+                str(elemento.lattice_edges.values[1]*10) + u" Å - " +
+                str(elemento.lattice_edges.values[2]*10) + u" Å")
         else:
             self.lados.setText(elemento.lattice_edges.get_string())
         layout_Cristalografia.addWidget(self.lados, 3, 2)
