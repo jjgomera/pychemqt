@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-####################################
-### Implementación de la IAPWS-IF97 Steam Tables   ###
-####################################
+###############################################################################
+# IAPWS-IF97 pure python implementation
+###############################################################################
 
 from __future__ import division
 from math import sqrt, log, exp, tan, atan, acos
@@ -14,69 +14,72 @@ from PyQt4.QtGui import QApplication
 from lib import unidades, mEoS
 from config import fluid
 
-properties={"P": QApplication.translate("pychemqt", "Pressure"),
-               "T": QApplication.translate("pychemqt", "Temperature"),
-               "g": QApplication.translate("pychemqt", "Gibbs free energy"),
-               "a": QApplication.translate("pychemqt", "Helmholtz free energy"),
-               "v": QApplication.translate("pychemqt", "Specific Volume"),
-               "rho": QApplication.translate("pychemqt", "Density"),
-               "h": QApplication.translate("pychemqt", "Enghalpy"),
-               "u": QApplication.translate("pychemqt", "Internal Energy"),
-               "s": QApplication.translate("pychemqt", "Entropy"),
-               "cp": QApplication.translate("pychemqt", "Cp"),
-               "cv": QApplication.translate("pychemqt", "Cv"),
-               "Z": QApplication.translate("pychemqt", "Compression factor"),
-               "f": QApplication.translate("pychemqt", "Fugacity"),
-               "x": QApplication.translate("pychemqt", "Quality"),
-               "gamma": QApplication.translate("pychemqt", "Isoentropic exponent"),
-               "alfav": QApplication.translate("pychemqt", "Isobaric cubic expansion coefficient"),
-               "kt": QApplication.translate("pychemqt", "Isothermal compressibility"),
-               "alfap": QApplication.translate("pychemqt", "Relative pressure coefficient"),
-               "betap": QApplication.translate("pychemqt", "Isothermal stress coefficient"),
-               "joule": QApplication.translate("pychemqt", "Joule-Thomson coefficient"),
-               "deltat": QApplication.translate("pychemqt", "Isothermal throttling coefficient"),
-               "k": QApplication.translate("pychemqt", "Thermal Conductivity"),
-               "mu": QApplication.translate("pychemqt", "Viscosity"),
-               "nu": QApplication.translate("pychemqt", "Kinematic viscosity"),
-               "alfa": QApplication.translate("pychemqt", "Thermal diffusivity"),
-               "sigma": QApplication.translate("pychemqt", "Surface tension"),
-               "epsilon": QApplication.translate("pychemqt", "Dielectric constant"),
-               "n": QApplication.translate("pychemqt", "Refractive index"),
-               "Pr": QApplication.translate("pychemqt", "Prandtl number"),
-               "w": QApplication.translate("pychemqt", "Speed of sound")}
+properties = {
+    "P": QApplication.translate("pychemqt", "Pressure"),
+    "T": QApplication.translate("pychemqt", "Temperature"),
+    "g": QApplication.translate("pychemqt", "Gibbs free energy"),
+    "a": QApplication.translate("pychemqt", "Helmholtz free energy"),
+    "v": QApplication.translate("pychemqt", "Specific Volume"),
+    "rho": QApplication.translate("pychemqt", "Density"),
+    "h": QApplication.translate("pychemqt", "Enghalpy"),
+    "u": QApplication.translate("pychemqt", "Internal Energy"),
+    "s": QApplication.translate("pychemqt", "Entropy"),
+    "cp": QApplication.translate("pychemqt", "Cp"),
+    "cv": QApplication.translate("pychemqt", "Cv"),
+    "Z": QApplication.translate("pychemqt", "Compression factor"),
+    "f": QApplication.translate("pychemqt", "Fugacity"),
+    "x": QApplication.translate("pychemqt", "Quality"),
+    "gamma": QApplication.translate("pychemqt", "Isoentropic exponent"),
+    "alfav": QApplication.translate("pychemqt", "Isobaric cubic expansion coefficient"),
+    "kt": QApplication.translate("pychemqt", "Isothermal compressibility"),
+    "alfap": QApplication.translate("pychemqt", "Relative pressure coefficient"),
+    "betap": QApplication.translate("pychemqt", "Isothermal stress coefficient"),
+    "joule": QApplication.translate("pychemqt", "Joule-Thomson coefficient"),
+    "deltat": QApplication.translate("pychemqt", "Isothermal throttling coefficient"),
+    "k": QApplication.translate("pychemqt", "Thermal Conductivity"),
+    "mu": QApplication.translate("pychemqt", "Viscosity"),
+    "nu": QApplication.translate("pychemqt", "Kinematic viscosity"),
+    "alfa": QApplication.translate("pychemqt", "Thermal diffusivity"),
+    "sigma": QApplication.translate("pychemqt", "Surface tension"),
+    "epsilon": QApplication.translate("pychemqt", "Dielectric constant"),
+    "n": QApplication.translate("pychemqt", "Refractive index"),
+    "Pr": QApplication.translate("pychemqt", "Prandtl number"),
+    "w": QApplication.translate("pychemqt", "Speed of sound")}
 
-units=[("P", unidades.Pressure, None),
-            ("T", unidades.Temperature, None),
-            ("g", unidades.Enthalpy, None),
-            ("a", unidades.Enthalpy, None),
-            ("v", unidades.SpecificVolume, None),
-            ("rho", unidades.Density, None),
-            ("h", unidades.Enthalpy, None),
-            ("u", unidades.Enthalpy, None),
-            ("s", unidades.SpecificHeat, "Entropy"),
-            ("cp", unidades.SpecificHeat, None),
-            ("cv", unidades.SpecificHeat, None),
-            ("Z", float, None),
-            ("f", unidades.Pressure, None),
-            ("x", float, None),
-            ("gamma", float, None),
-            ("alfav", unidades.InvTemperature, None),
-            ("kt", unidades.InvPressure, None),
-            ("alfap", unidades.InvTemperature, None),
-            ("betap", unidades.Density, None),
-            ("joule", unidades.TemperaturePressure, None),
-            ("deltat", unidades.EnthalpyPressure, None),
-            ("k", unidades.ThermalConductivity, None),
-            ("mu", unidades.Viscosity, None),
-            ("nu", unidades.Diffusivity, None),
-            ("alfa", unidades.Diffusivity, None),
-            ("sigma", unidades.Tension, None),
-            ("epsilon", float, None),
-            ("n", float, None),
-            ("Pr", float, None),
-            ("w", unidades.Speed, None)]
+units = [
+    ("P", unidades.Pressure, None),
+    ("T", unidades.Temperature, None),
+    ("g", unidades.Enthalpy, None),
+    ("a", unidades.Enthalpy, None),
+    ("v", unidades.SpecificVolume, None),
+    ("rho", unidades.Density, None),
+    ("h", unidades.Enthalpy, None),
+    ("u", unidades.Enthalpy, None),
+    ("s", unidades.SpecificHeat, "Entropy"),
+    ("cp", unidades.SpecificHeat, None),
+    ("cv", unidades.SpecificHeat, None),
+    ("Z", float, None),
+    ("f", unidades.Pressure, None),
+    ("x", float, None),
+    ("gamma", float, None),
+    ("alfav", unidades.InvTemperature, None),
+    ("kt", unidades.InvPressure, None),
+    ("alfap", unidades.InvTemperature, None),
+    ("betap", unidades.Density, None),
+    ("joule", unidades.TemperaturePressure, None),
+    ("deltat", unidades.EnthalpyPressure, None),
+    ("k", unidades.ThermalConductivity, None),
+    ("mu", unidades.Viscosity, None),
+    ("nu", unidades.Diffusivity, None),
+    ("alfa", unidades.Diffusivity, None),
+    ("sigma", unidades.Tension, None),
+    ("epsilon", float, None),
+    ("n", float, None),
+    ("Pr", float, None),
+    ("w", unidades.Speed, None)]
 
-#Boundary Region1-Region2
+
+# Boundary Region1-Region2
 def _h13_s(s):
     """Define the boundary between Region 1 and 3,  h=f(s)
 
@@ -85,25 +88,28 @@ def _h13_s(s):
     >>> "%.6f" % _h13_s(3.5)
     '1566.104611'
     """
-    sigma=s/3.8
-    I=[0, 1, 1, 3, 5, 6]
-    J=[0, -2, 2, -12, -4, -3]
-    n=[0.913965547600543, -0.430944856041991e-4, 0.603235694765419e2, 0.117518273082168e-17, 0.220000904781292, -0.690815545851641e2]
+    sigma = s/3.8
+    I = [0, 1, 1, 3, 5, 6]
+    J = [0, -2, 2, -12, -4, -3]
+    n = [0.913965547600543, -0.430944856041991e-4, 0.603235694765419e2,
+         0.117518273082168e-17, 0.220000904781292, -0.690815545851641e2]
 
-    suma=0
+    suma = 0
     for i in range(6):
-        suma+=n[i]*(sigma-0.884)**I[i]*(sigma-0.864)**J[i]
+        suma += n[i]*(sigma-0.884)**I[i]*(sigma-0.864)**J[i]
     return 1700*suma
 
-#Boundary Region2-Region3
+
+# Boundary Region2-Region3
 def _P23_T(T):
     """Define the boundary between Region 2 and 3, P=f(T)
 
     >>> "%.8f" % _P23_T(623.15)
     '16.52916425'
     """
-    n=[0.34805185628969e3, -0.11671859879975e1, 0.10192970039326e-2]
+    n = [0.34805185628969e3, -0.11671859879975e1, 0.10192970039326e-2]
     return n[0]+n[1]*T+n[2]*T**2
+
 
 def _t_P(P):
     """Define the boundary between Region 2 and 3, T=f(P)
@@ -111,8 +117,9 @@ def _t_P(P):
     >>> "%.2f" % _t_P(16.52916425)
     '623.15'
     """
-    n=[0.10192970039326e-2,0.57254459862746e3, 0.1391883977870e2]
+    n = [0.10192970039326e-2,0.57254459862746e3, 0.1391883977870e2]
     return n[1]+((P-n[2])/n[0])**0.5
+
 
 def _t_hs(h, s):
     """Define the boundary between Region 2 and 3, T=f(h,s)
@@ -122,15 +129,25 @@ def _t_hs(h, s):
     >>> "%.7f" % _t_hs(2800, 5.2)
     '817.6202120'
     """
-    nu=h/3000
-    sigma=s/5.3
-    I=[-12, -10, -8, -4, -3, -2, -2, -2, -2, 0, 1, 1, 1, 3, 3, 5, 6, 6, 8, 8, 8, 12, 12, 14, 14]
-    J=[10, 8, 3, 4, 3, -6, 2, 3, 4, 0, -3, -2, 10, -2, -1, -5, -6, -3, -8, -2, -1, -12, -1, -12, 1]
-    n=[0.629096260829810e-3, -0.823453502583165e-3, 0.515446951519474e-7, -0.117565945784945e1, 0.348519684726192e1, -0.507837382408313e-11, -0.284637670005479e1, -0.236092263939673e1, 0.601492324973779e1, 0.148039650824546e1, 0.360075182221907e-3, -0.126700045009952e-1, -0.122184332521413e7, 0.149276502463272, 0.698733471798484, -0.252207040114321e-1, 0.147151930985213e-1, -0.108618917681849e1, -0.936875039816322e-3, 0.819877897570217e2, -0.182041861521835e3, 0.261907376402688e-5, -0.291626417025961e5, 0.140660774926165e-4, 0.783237062349385e7]
+    nu = h/3000
+    sigma = s/5.3
+    I = [-12, -10, -8, -4, -3, -2, -2, -2, -2, 0, 1, 1, 1, 3, 3, 5, 6, 6, 8, 8,
+         8, 12, 12, 14, 14]
+    J = [10, 8, 3, 4, 3, -6, 2, 3, 4, 0, -3, -2, 10, -2, -1, -5, -6, -3, -8,
+         -2, -1, -12, -1, -12, 1]
+    n = [0.629096260829810e-3, -0.823453502583165e-3, 0.515446951519474e-7,
+         -0.117565945784945e1, 0.348519684726192e1, -0.507837382408313e-11,
+         -0.284637670005479e1, -0.236092263939673e1, 0.601492324973779e1,
+         0.148039650824546e1, 0.360075182221907e-3, -0.126700045009952e-1,
+         -0.122184332521413e7, 0.149276502463272, 0.698733471798484,
+         -0.252207040114321e-1, 0.147151930985213e-1, -0.108618917681849e1,
+         -0.936875039816322e-3, 0.819877897570217e2, -0.182041861521835e3,
+         0.261907376402688e-5, -0.291626417025961e5, 0.140660774926165e-4,
+         0.783237062349385e7]
 
-    suma=0
+    suma = 0
     for i in range(25):
-        suma+=n[i]*(nu-0.727)**I[i]*(sigma-0.864)**J[i]
+        suma += n[i]*(nu-0.727)**I[i]*(sigma-0.864)**J[i]
     return 900*suma
 
 
@@ -1445,7 +1462,7 @@ def _Backward3x_v_PT(T, P, x):
         "y": [-3, 1, 5, 8, 8, -4, -1, 4, 5, -8, 4, 8, -6, 6, -2, 1, -8, -2, -5, -8],
         "z": [3, 6, 6, 8, 5, 6, 8, -2, 5, 6, 2, -6, 3, 1, 6, -6, -2, -6, -5, -4, -1, -8, -4]}
 
-    n={
+    n = {
         "a": [0.110879558823853e-2, 0.572616740810616e3, -0.767051948380852e5, -0.253321069529674e-1, 0.628008049345689e4, 0.234105654131876e6, 0.216867826045856, -0.156237904341963e3, -0.269893956176613e5, -0.180407100085505e-3, 0.116732227668261e-2, 0.266987040856040e2, 0.282776617243286e5, -0.242431520029523e4, 0.435217323022733e-3, -0.122494831387441e-1, 0.179357604019989e1, 0.442729521058314e2, -0.593223489018342e-2, 0.453186261685774, 0.135825703129140e1, 0.408748415856745e-1, 0.474686397863312, 0.118646814997915e1, 0.546987265727549, 0.195266770452643, -0.502268790869663e-1, -0.369645308193377, 0.633828037528420e-2, 0.797441793901017e-1],
         "b": [-0.827670470003621e-1, 0.416887126010565e2, 0.483651982197059e-1, -0.291032084950276e5, -0.111422582236948e3, -0.202300083904014e-1, 0.294002509338515e3, 0.140244997609658e3, -0.344384158811459e3, 0.361182452612149e3, -0.140699677420738e4, -0.202023902676481e-2, 0.171346792457471e3, -0.425597804058632e1, 0.691346085000334e-5, 0.151140509678925e-2, -0.416375290166236e-1, -0.413754957011042e2, -0.506673295721637e2, -0.572212965569023e-3, 0.608817368401785e1, 0.239600660256161e2, 0.122261479925384e-1, 0.216356057692938e1, 0.398198903368642, -0.116892827834085, -0.102845919373532, -0.492676637589284, 0.655540456406790e-1, -0.240462535078530, -0.269798180310075e-1, 0.128369435967012],
         "c": [0.311967788763030e1, 0.276713458847564e5, 0.322583103403269e8, -0.342416065095363e3, -0.899732529907377e6, -0.793892049821251e8, 0.953193003217388e2, 0.229784742345072e4, 0.175336675322499e6, 0.791214365222792e7, 0.319933345844209e-4, -0.659508863555767e2, -0.833426563212851e6, 0.645734680583292e-1, -0.382031020570813e7, 0.406398848470079e-4, 0.310327498492008e2, -0.892996718483724e-3, 0.234604891591616e3, 0.377515668966951e4, 0.158646812591361e-1, 0.707906336241843, 0.126016225146570e2, 0.736143655772152, 0.676544268999101, -0.178100588189137e2, -0.156531975531713, 0.117707430048158e2, 0.840143653860447e-1, -0.186442467471949, -0.440170203949645e2, 0.123290423502494e7, -0.240650039730845e-1, -0.107077716660869e7, 0.438319858566475e-1],
@@ -1525,19 +1542,32 @@ def _Backward4_T_hs(h, s):
     >>> "%.7f" % _Backward4_T_hs(2500,5.5)
     '522.5579013'
     """
-    I=[0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5, 6, 6, 6, 8, 10, 10, 12, 14, 14, 16, 16, 18, 18, 18, 20, 28]
-    J=[0, 3, 12, 0, 1, 2, 5, 0, 5, 8, 0, 2, 3, 4, 0, 1, 1, 2, 4, 16, 6, 8, 22, 1, 20, 36, 24, 1, 28, 12, 32, 14, 22, 36, 24, 36]
-    n=[0.179882673606601, -0.267507455199603, 0.116276722612600e1, 0.147545428713616, -0.512871635973248, 0.421333567697984, 0.563749522189870, 0.429274443819153, -0.335704552142140e1, 0.108890916499278e2, -0.248483390456012, 0.304153221906390, -0.494819763939905, 0.107551674933261e1, 0.733888415457688e-1, 0.140170545411085e-1, -0.106110975998808, 0.168324361811875e-1, 0.125028363714877e1, 0.101316840309509e4, -0.151791558000712e1, 0.524277865990866e2, 0.230495545563912e5, 0.249459806365456e-1, 0.210796467412137e7, 0.366836848613065e9, -0.144814105365163e9, -0.179276373003590e-2, 0.489955602100459e10, 0.471262212070518e3, -0.829294390198652e11, -0.171545662263191e4, 0.355777682973575e7, 0.586062760258436e12, -0.129887635078195e8, 0.317247449371057e11]
+    I = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5, 6, 6, 6,
+         8, 10, 10, 12, 14, 14, 16, 16, 18, 18, 18, 20, 28]
+    J = [0, 3, 12, 0, 1, 2, 5, 0, 5, 8, 0, 2, 3, 4, 0, 1, 1, 2, 4, 16, 6, 8,
+         22, 1, 20, 36, 24, 1, 28, 12, 32, 14, 22, 36, 24, 36]
+    n = [0.179882673606601, -0.267507455199603, 0.116276722612600e1,
+         0.147545428713616, -0.512871635973248, 0.421333567697984,
+         0.563749522189870, 0.429274443819153, -0.335704552142140e1,
+         0.108890916499278e2, -0.248483390456012, 0.304153221906390,
+         -0.494819763939905, 0.107551674933261e1, 0.733888415457688e-1,
+         0.140170545411085e-1, -0.106110975998808, 0.168324361811875e-1,
+         0.125028363714877e1, 0.101316840309509e4, -0.151791558000712e1,
+         0.524277865990866e2, 0.230495545563912e5, 0.249459806365456e-1,
+         0.210796467412137e7, 0.366836848613065e9, -0.144814105365163e9,
+         -0.179276373003590e-2, 0.489955602100459e10, 0.471262212070518e3,
+         -0.829294390198652e11, -0.171545662263191e4, 0.355777682973575e7,
+         0.586062760258436e12, -0.129887635078195e8, 0.317247449371057e11]
 
-    nu=h/2800
-    sigma=s/9.2
-    suma=0
+    nu = h/2800
+    sigma = s/9.2
+    suma = 0
     for i in range(36):
-        suma+=n[i]*(nu-0.119)**I[i]*(sigma-1.07)**J[i]
+        suma += n[i]*(nu-0.119)**I[i]*(sigma-1.07)**J[i]
     return 550*suma
 
 
-#Region 5
+# Region 5
 def _Region5(T, P):
     """Basic equation for region 5
 
@@ -1560,56 +1590,58 @@ def _Region5(T, P):
     >>> "%.10f" % _Region5(2000,30)["kt"]
     '0.0329193892'
     """
-    Tr=1000/T
-    Pr=P/1
+    Tr = 1000/T
+    Pr = P/1
 
-    go, gop, gopp, got, gott, gopt=Region5_cp0(Tr, Pr)
+    go, gop, gopp, got, gott, gopt = Region5_cp0(Tr, Pr)
 
-    Ir=[1, 1, 1, 2, 2, 3]
-    Jr=[1, 2, 3, 3, 9, 7]
-    nr=[0.15736404855259e-2, 0.90153761673944e-3, -0.50270077677648e-2, 0.22440037409485e-5, -0.41163275453471e-5, 0.37919454822955e-7]
-    gr=grp=grpp=grt=grtt=grpt=0
+    Ir = [1, 1, 1, 2, 2, 3]
+    Jr = [1, 2, 3, 3, 9, 7]
+    nr = [0.15736404855259e-2, 0.90153761673944e-3, -0.50270077677648e-2,
+          0.22440037409485e-5, -0.41163275453471e-5, 0.37919454822955e-7]
+    gr = grp = grpp = grt = grtt = grpt = 0
     for i in range(6):
-        gr+=nr[i]*Pr**Ir[i]*Tr**Jr[i]
-        grp+=nr[i]*Ir[i]*Pr**(Ir[i]-1)*Tr**Jr[i]
-        grpp+=nr[i]*Ir[i]*(Ir[i]-1)*Pr**(Ir[i]-2)*Tr**Jr[i]
-        grt+=nr[i]*Pr**Ir[i]*Jr[i]*Tr**(Jr[i]-1)
-        grtt+=nr[i]*Pr**Ir[i]*Jr[i]*(Jr[i]-1)*Tr**(Jr[i]-2)
-        grpt+=nr[i]*Ir[i]*Pr**(Ir[i]-1)*Jr[i]*Tr**(Jr[i]-1)
+        gr += nr[i]*Pr**Ir[i]*Tr**Jr[i]
+        grp += nr[i]*Ir[i]*Pr**(Ir[i]-1)*Tr**Jr[i]
+        grpp += nr[i]*Ir[i]*(Ir[i]-1)*Pr**(Ir[i]-2)*Tr**Jr[i]
+        grt += nr[i]*Pr**Ir[i]*Jr[i]*Tr**(Jr[i]-1)
+        grtt += nr[i]*Pr**Ir[i]*Jr[i]*(Jr[i]-1)*Tr**(Jr[i]-2)
+        grpt += nr[i]*Ir[i]*Pr**(Ir[i]-1)*Jr[i]*Tr**(Jr[i]-1)
 
-    propiedades={}
-    propiedades["T"]=T
-    propiedades["P"]=P
-    propiedades["v"]=Pr*(gop+grp)*R*T/P/1000
-    propiedades["h"]=Tr*(got+grt)*R*T
-    propiedades["s"]=R*(Tr*(got+grt)-(go+gr))
-    propiedades["cp"]=-R*Tr**2*(gott+grtt)
-    propiedades["cv"]=R*(-Tr**2*(gott+grtt)+((gop+grp)-Tr*(gopt+grpt))**2/(gopp+grpp))
-    propiedades["w"]=(R*T*1000*(1+2*Pr*grp+Pr**2*grp**2)/(1-Pr**2*grpp+(1+Pr*grp-Tr*Pr*grpt)**2/Tr**2/(gott+grtt)))**0.5
-    propiedades["alfav"]=(1+Pr*grp-Tr*Pr*grpt)/(1+Pr*grp)/T
-    propiedades["kt"]=(1-Pr**2*grpp)/(1+Pr*grp)/P
-    propiedades["region"]=5
-    propiedades["x"]=1
+    propiedades = {}
+    propiedades["T"] = T
+    propiedades["P"] = P
+    propiedades["v"] = Pr*(gop+grp)*R*T/P/1000
+    propiedades["h"] = Tr*(got+grt)*R*T
+    propiedades["s"] = R*(Tr*(got+grt)-(go+gr))
+    propiedades["cp"] = -R*Tr**2*(gott+grtt)
+    propiedades["cv"] = R*(-Tr**2*(gott+grtt)+((gop+grp)-Tr*(gopt+grpt))**2/(gopp+grpp))
+    propiedades["w"] = (R*T*1000*(1+2*Pr*grp+Pr**2*grp**2)/(1-Pr**2*grpp+(1+Pr*grp-Tr*Pr*grpt)**2/Tr**2/(gott+grtt)))**0.5
+    propiedades["alfav"] = (1+Pr*grp-Tr*Pr*grpt)/(1+Pr*grp)/T
+    propiedades["kt"] = (1-Pr**2*grpp)/(1+Pr*grp)/P
+    propiedades["region"] = 5
+    propiedades["x"] = 1
     return propiedades
 
 
 def Region5_cp0(Tr, Pr):
     """Ideal properties for Region 5"""
-    Jo=[0, 1, -3, -2, -1, 2]
-    no=[-0.13179983674201e2, 0.68540841634434e1, -0.24805148933466e-1, 0.36901534980333, -0.31161318213925e1, -0.32961626538917]
-    go=log(Pr)
-    gop=Pr**-1
-    gopp=-Pr**-2
-    got=gott=gopt=0
+    Jo = [0, 1, -3, -2, -1, 2]
+    no = [-0.13179983674201e2, 0.68540841634434e1, -0.24805148933466e-1,
+          0.36901534980333, -0.31161318213925e1, -0.32961626538917]
+    go = log(Pr)
+    gop = Pr**-1
+    gopp = -Pr**-2
+    got = gott = gopt = 0
     for i in range(6):
-        go+=no[i]*Tr**Jo[i]
-        got+=no[i]*Jo[i]*Tr**(Jo[i]-1)
-        gott+=no[i]*Jo[i]*(Jo[i]-1)*Tr**(Jo[i]-2)
+        go += no[i]*Tr**Jo[i]
+        got += no[i]*Jo[i]*Tr**(Jo[i]-1)
+        gott += no[i]*Jo[i]*(Jo[i]-1)*Tr**(Jo[i]-2)
 
     return go, gop, gopp, got, gott, gopt
 
 
-#Transport properties
+# Transport properties
 def _Viscosity(rho, T):
     """Equation for the Viscosity
 
@@ -1619,48 +1651,51 @@ def _Viscosity(rho, T):
     '0.0000339743835'
 
     """
-    Tr=T/Tc
-    Dr=rho/rhoc
+    Tr = T/Tc
+    Dr = rho/rhoc
 
-    no=[1.67752, 2.20462, 0.6366564, -0.241605]
-    suma=0
+    no = [1.67752, 2.20462, 0.6366564, -0.241605]
+    suma = 0
     for i in range(4):
-        suma+=no[i]/Tr**i
-    fi0=100*Tr**0.5/suma
+        suma += no[i]/Tr**i
+    fi0 = 100*Tr**0.5/suma
 
-    I=[0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 5, 6, 6]
-    J=[0, 1, 2, 3, 0, 1, 2, 3, 5, 0, 1, 2, 3, 4, 0, 1, 0, 3, 4, 3, 5]
-    nr=[0.520094, 0.850895e-1, -0.108374e1, -0.289555, 0.222531, 0.999115, 0.188797e1, 0.126613e1, 0.120573, -0.281378, -0.906851, -0.772479, -0.489837, -0.257040, 0.161913, 0.257399, -0.325372e-1, 0.698452e-1, 0.872102e-2, -0.435673e-2, -0.593264e-3]
-    suma=0
+    I = [0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 5, 6, 6]
+    J = [0, 1, 2, 3, 0, 1, 2, 3, 5, 0, 1, 2, 3, 4, 0, 1, 0, 3, 4, 3, 5]
+    nr = [0.520094, 0.850895e-1, -0.108374e1, -0.289555, 0.222531, 0.999115,
+        0.188797e1, 0.126613e1, 0.120573, -0.281378, -0.906851, -0.772479,
+        -0.489837, -0.257040, 0.161913, 0.257399, -0.325372e-1, 0.698452e-1,
+        0.872102e-2, -0.435673e-2, -0.593264e-3]
+    suma = 0
     for i in range(21):
-        suma+=nr[i]*(Dr-1)**I[i]*(1/Tr-1)**J[i]
-    fi1=exp(Dr*suma)
-    if 645.91<T<650.77 and 245.8<rho<405.3:
-        xu=0.068
-        qc=1.9
-        qd=1.1
-        v=0.63
-        g=1.239
-        Xo=0.13
-        Go=0.06
-        Tr2=1.5
+        suma += nr[i]*(Dr-1)**I[i]*(1/Tr-1)**J[i]
+    fi1 = exp(Dr*suma)
+    if 645.91 < T < 650.77 and 245.8 < rho < 405.3:
+        xu = 0.068
+        qc = 1.9
+        qd = 1.1
+        v = 0.63
+        g = 1.239
+        Xo = 0.13
+        Go = 0.06
+        Tr2 = 1.5
         #TODO: Implement critical enhancement
-        a, b=0, 0
-        DeltaX=Dr*(a-b*Tr2/Tr)
-        X=Xo*(DeltaX/Go)**(v/g)
-        if X<=0.3817016416:
-            Y=qc/5*X*(qd*X)**5*(1-qc*X+(qc*X)**2-765/504*(qd*X)**2)
+        a, b = 0, 0
+        DeltaX = Dr*(a-b*Tr2/Tr)
+        X = Xo*(DeltaX/Go)**(v/g)
+        if X <= 0.3817016416:
+            Y = qc/5*X*(qd*X)**5*(1-qc*X+(qc*X)**2-765/504*(qd*X)**2)
         else:
-            Fid=acos((1+qd**2*X**2)**-0.5)
-            w=((qc*X-1)/(qc*X+1))**0.5*tan(Fid/2)
-            if qc*X>1:
-                Lw=log((1+w)/(1-w))
+            Fid = acos((1+qd**2*X**2)**-0.5)
+            w = ((qc*X-1)/(qc*X+1))**0.5*tan(Fid/2)
+            if qc*X > 1:
+                Lw = log((1+w)/(1-w))
             else:
-                Lw=2*atan(abs(w))
-            Y=sin(3*Fid)/12-sin(2*Fid)/4/qc/X+(1-5/4*(qc*X)**2)/(qc*X)**2*sin(Fid)-((1-3/2*(qc*X)**2)*Fid-abs((qc*X)**2-1)**1.5*Lw)/(qc*X)**3
-        fi2=exp(xu*Y)
+                Lw = 2*atan(abs(w))
+            Y = sin(3*Fid)/12-sin(2*Fid)/4/qc/X+(1-5/4*(qc*X)**2)/(qc*X)**2*sin(Fid)-((1-3/2*(qc*X)**2)*Fid-abs((qc*X)**2-1)**1.5*Lw)/(qc*X)**3
+        fi2 = exp(xu*Y)
     else:
-        fi2=1
+        fi2 = 1
 
     return fi0*fi1*fi2*1e-6
 
@@ -1673,26 +1708,27 @@ def _ThCond(rho, T):
     >>> "%.10f" % _ThCond(26.0569558,873.15)
     '0.0867570353'
     """
-    d=rho/317.7
-    Tr=T/647.26
+    d = rho/317.7
+    Tr = T/647.26
 
-    no=[0.102811e-1, 0.299621e-1, 0.156146e-1, -0.422464e-2]
-    suma=0
+    no = [0.102811e-1, 0.299621e-1, 0.156146e-1, -0.422464e-2]
+    suma = 0
     for i in range(4):
-        suma+=no[i]*Tr**i
-    L0=Tr**0.5*suma
+        suma += no[i]*Tr**i
+    L0 = Tr**0.5*suma
 
-    n1=[0, -0.397070, 0.400302, 0.106e1, -0.171587, 0.239219e1]
-    L1=n1[1]+n1[2]*d+n1[3]*exp(n1[4]*(d+n1[5])**2)
+    n1 = [0, -0.397070, 0.400302, 0.106e1, -0.171587, 0.239219e1]
+    L1 = n1[1]+n1[2]*d+n1[3]*exp(n1[4]*(d+n1[5])**2)
 
-    n2=[0, 0.701309e-1, 0.118520e-1, 0.642857, 0.169937e-2, -0.102000e1, -0.411717e1, -0.617937e1, 0.822994e-1, 0.100932e2, 0.308976e-2]
-    DT=abs(Tr-1)+n2[10]
-    A=2+n2[8]/DT**0.6
-    if Tr<1:
-        B=n2[9]/DT**0.6
+    n2 = [0, 0.701309e-1, 0.118520e-1, 0.642857, 0.169937e-2, -0.102000e1,
+          -0.411717e1, -0.617937e1, 0.822994e-1, 0.100932e2, 0.308976e-2]
+    DT = abs(Tr-1)+n2[10]
+    A = 2+n2[8]/DT**0.6
+    if Tr < 1:
+        B = n2[9]/DT**0.6
     else:
-        B=1/DT
-    L2=(n2[1]/Tr**10+n2[2])*d**1.8*exp(n2[3]*(1-d**2.8)) + n2[4]*B*d**A*exp(A/(1+A)*(1-d**(1+A)))+n2[5]*exp(n2[6]*Tr**1.5+n2[7]*d**-5)
+        B = 1/DT
+    L2 = (n2[1]/Tr**10+n2[2])*d**1.8*exp(n2[3]*(1-d**2.8)) + n2[4]*B*d**A*exp(A/(1+A)*(1-d**(1+A)))+n2[5]*exp(n2[6]*Tr**1.5+n2[7]*d**-5)
 
     return L0+L1+L2
 
@@ -1705,7 +1741,7 @@ def _Tension(T):
     >>> "%.10f" % _Tension(450)
     '0.0428914992'
     """
-    Tr=T/Tc
+    Tr = T/Tc
     return 1e-3*(235.8*(1-Tr)**1.256*(1-0.625*(1-Tr)))
 
 
@@ -1717,26 +1753,29 @@ def _Dielectric(rho, T):
     >>> "%.8f" % _Dielectric(26.0569558, 873.15)
     '1.12620970'
     """
-    k=1.380658e-23
-    Na=6.0221367e23
-    alfa=1.636e-40
-    epsilon0=8.854187817e-12
-    mu=6.138e-30
-    M=0.018015268
+    k = 1.380658e-23
+    Na = 6.0221367e23
+    alfa = 1.636e-40
+    epsilon0 = 8.854187817e-12
+    mu = 6.138e-30
+    M = 0.018015268
 
-    d=rho/rhoc
-    Tr=Tc/T
-    I=[1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 10, None]
-    J=[0.25, 1, 2.5, 1.5, 1.5, 2.5, 2, 2, 5, 0.5, 10, None]
-    n=[0.978224486826, -0.957771379375, 0.237511794148, 0.714692244396, -0.298217036956, -0.108863472196, 0.949327488264e-1, -0.980469816509e-2, 0.165167634970e-4, 0.937359795772e-4, -0.123179218720e-9, 0.196096504426e-2]
+    d = rho/rhoc
+    Tr = Tc/T
+    I = [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 10, None]
+    J = [0.25, 1, 2.5, 1.5, 1.5, 2.5, 2, 2, 5, 0.5, 10, None]
+    n = [0.978224486826, -0.957771379375, 0.237511794148, 0.714692244396,
+         -0.298217036956, -0.108863472196, .949327488264e-1, -.980469816509e-2,
+         .165167634970e-4, .937359795772e-4, -.12317921872e-9, .196096504426e-2]
 
-    g=1+n[11]*d/(Tc/228/Tr-1)**1.2
+    g = 1+n[11]*d/(Tc/228/Tr-1)**1.2
     for i in range(11):
-        g+=n[i]*d**I[i]*Tr**J[i]
-    A=Na*mu**2*rho*g/M/epsilon0/k/T
-    B=Na*alfa*rho/3/M/epsilon0
+        g += n[i]*d**I[i]*Tr**J[i]
+    A = Na*mu**2*rho*g/M/epsilon0/k/T
+    B = Na*alfa*rho/3/M/epsilon0
 
     return (1+A+5*B+(9+2*A+18*B+A**2+10*A*B+9*B**2)**0.5)/4/(1-B)
+
 
 def _Refractive(rho, T, l=0.5893):
     """Equation for the refractive index
@@ -1746,13 +1785,14 @@ def _Refractive(rho, T, l=0.5893):
     >>> "%.8f" % _Refractive(30.4758534, 773.15, 0.5893)
     '1.00949307'
     """
-    Lir=5.432937
-    Luv=0.229202
-    d=rho/1000
-    Tr=T/273.15
-    L=l/0.589
-    a=[0.244257733, 0.974634476e-2, -0.373234996e-2, 0.268678472e-3, 0.158920570e-2, 0.245934259e-2, 0.900704920, -0.166626219e-1]
-    A=d*(a[0]+a[1]*d+a[2]*Tr+a[3]*L**2*Tr+a[4]/L**2+a[5]/(L**2-Luv**2)+a[6]/(L**2-Lir**2)+a[7]*d**2)
+    Lir = 5.432937
+    Luv = 0.229202
+    d = rho/1000
+    Tr = T/273.15
+    L = l/0.589
+    a = [0.244257733, 0.974634476e-2, -0.373234996e-2, 0.268678472e-3,
+         0.158920570e-2, 0.245934259e-2, 0.900704920, -0.166626219e-1]
+    A = d*(a[0]+a[1]*d+a[2]*Tr+a[3]*L**2*Tr+a[4]/L**2+a[5]/(L**2-Luv**2)+a[6]/(L**2-Lir**2)+a[7]*d**2)
     return ((2*A+1)/(1-A))**0.5
 
 
@@ -1914,60 +1954,67 @@ def _Bound_hs(h, s):
             if P<=100:
                 T=_Backward2_T_Ph(P, h)
                 h2max=_Region2(1073.15, P)["h"]
-                if hs<=h and Pmin<=P<=100 and T<=1073.15: region=2
-                elif hmin4<=h<hs: region=4
-        elif s4v<=s<=smax:
-            P=_Backward2a_P_hs(h, s)
-            T=_Backward2a_T_Ph(P, h)
-            if P>=Pmin and T<=1073.15: region=2
+                if hs <= h and Pmin <= P <= 100 and T <= 1073.15:
+                    region=2
+                elif hmin4 <= h< hs:
+                    region=4
+        elif s4v <= s <= smax:
+            P = _Backward2a_P_hs(h, s)
+            T = _Backward2a_T_Ph(P, h)
+            if P >= Pmin and T <= 1073.15:
+                region = 2
 
-    if not region and _Region5(1073.15, 50)["s"]<s<=_Region5(2273.15, Pmin)["s"] and _Region5(1073.15, 50)["h"]<h<=_Region5(2273.15, Pmin)["h"]:
-        funcion = lambda par: (_Region5(par[0], par[1])["h"]-h, _Region5(par[0], par[1])["s"]-s)
-        T, P=fsolve(funcion, [1400, 0.001])
-        if 1073.15<T<=2273.15 and Pmin<=P<=50: region=5
+    if not region and \
+            _Region5(1073.15, 50)["s"] < s <= _Region5(2273.15, Pmin)["s"] and \
+            _Region5(1073.15, 50)["h"] < h <= _Region5(2273.15, Pmin)["h"]:
+        funcion = lambda par: (_Region5(par[0], par[1])["h"]-h,
+                               _Region5(par[0], par[1])["s"]-s)
+        T, P = fsolve(funcion, [1400, 0.001])
+        if 1073.15 < T <= 2273.15 and Pmin <= P <= 50:
+            region=5
 
     return region
 
 
 def prop0(T, P):
-    if T<=1073.15:
-        Tr=540/T
-        Pr=P/1.
-        go, gop, gopp, got, gott, gopt=Region2_cp0(Tr, Pr)
+    if T <= 1073.15:
+        Tr = 540/T
+        Pr = P/1.
+        go, gop, gopp, got, gott, gopt = Region2_cp0(Tr, Pr)
     else:
-        Tr=1000/T
-        Pr=P/1.
-        go, gop, gopp, got, gott, gopt=Region5_cp0(Tr, Pr)
+        Tr = 1000/T
+        Pr = P/1.
+        go, gop, gopp, got, gott, gopt = Region5_cp0(Tr, Pr)
 
-    prop0=fluid()
-    prop0.v=Pr*gop*R*T/P/1000
-    prop0.h=Tr*got*R*T
-    prop0.s=R*(Tr*got-go)
-    prop0.cp=-R*Tr**2*gott
-    prop0.cv=R*(-Tr**2*gott+(gop-Tr*gopt)**2/gopp)
+    prop0 = fluid()
+    prop0.v = Pr*gop*R*T/P/1000
+    prop0.h = Tr*got*R*T
+    prop0.s = R*(Tr*got-go)
+    prop0.cp = -R*Tr**2*gott
+    prop0.cv = R*(-Tr**2*gott+(gop-Tr*gopt)**2/gopp)
 
-    prop0.w=(R*T*1000/(1+1/Tr**2/gott))**0.5
-    prop0.alfav=1/T
-    prop0.xkappa=1/P
+    prop0.w = (R*T*1000/(1+1/Tr**2/gott))**0.5
+    prop0.alfav = 1/T
+    prop0.xkappa = 1/P
 #        prop0.gamma=-prop0.v/self.P/1000*self.derivative("P", "v", "s", prop0)
     return prop0
 
 
-#Constants
-m=8.31451           #kJ/kmol·K
-M=18.015257      #kg/kmol
-R=0.461526             #kJ/kg·K
-Tc=647.096          #K
-Pc=22.064           #MPa
-rhoc=322            #kg/m³
-Tt=273.16           #K
-Pt=611.657          #Pa
-Tb=373.1243         #K
+# Constants
+k = 8.31451           # kJ/kmol·K
+M = 18.015257      # kg/kmol
+R = 0.461526             # kJ/kg·K
+Tc = 647.096          # K
+Pc = 22.064           # MPa
+rhoc = 322            # kg/m³
+Tt = 273.16           # K
+Pt = 611.657          # Pa
+Tb = 373.1243         # K
 
-#Pmin=_PSat_T(273.15)        #Minimum pressure
-Pmin=1e-6        #Minimum pressure
-Ps_623=_PSat_T(623.15)     #Saturated Pressure at 623.15 K, boundary between region 1 and 3
-sc=4.41202148223476     #Critic entropy
+# Pmin = _PSat_T(273.15)        # Minimum pressure
+Pmin = 1e-6        # Minimum pressure
+Ps_623 = _PSat_T(623.15)     # Saturated Pressure at 623.15 K, boundary between region 1 and 3
+sc = 4.41202148223476     # Critic entropy
 
 
 class IAPWS97(object):
@@ -2195,112 +2242,114 @@ class IAPWS97(object):
             elif region==3:
                 vo=_Backward3_v_hs(h, s)
                 To=_Backward3_T_Ps(P, s)
-                funcion = lambda par: (_Region3(par[0], par[1])["h"]-h, _Region3(par[0], par[1])["s"]-s)
-                rho,T=fsolve(funcion, [1/vo, T])
-                propiedades=_Region3(rho, T)
-            elif region==4:
-                T=_Backward4_T_hs(h, s)
-                P=_PSat_T(T)
-                h1=_Region1(T, P)["h"]
-                h2=_Region2(T, P)["h"]
-                x=(h-h1)/(h2-h1)
-                propiedades=_Region4(P, x)
-            elif region==5:
-                funcion = lambda par: (_Region5(par[0], par[1])["h"]-h, _Region5(par[0], par[1])["s"]-s)
-                T, P=fsolve(funcion, [1400, 1])
-                propiedades=_Region5(T, P)
+                funcion = lambda par: (_Region3(par[0], par[1])["h"]-h,
+                                       _Region3(par[0], par[1])["s"]-s)
+                rho, T = fsolve(funcion, [1/vo, T])
+                propiedades = _Region3(rho, T)
+            elif region == 4:
+                T = _Backward4_T_hs(h, s)
+                P = _PSat_T(T)
+                h1 = _Region1(T, P)["h"]
+                h2 = _Region2(T, P)["h"]
+                x = (h-h1)/(h2-h1)
+                propiedades = _Region4(P, x)
+            elif region == 5:
+                funcion = lambda par: (_Region5(par[0], par[1])["h"]-h,
+                                       _Region5(par[0], par[1])["s"]-s)
+                T, P = fsolve(funcion, [1400, 1])
+                propiedades = _Region5(T, P)
             else:
                 raise NotImplementedError("Incoming out of bound")
 
-        elif self._thermo=="Px":
-            P, x=args
-            if Pt/1e6<=P<=Pc and 0<=x<=1:
-                propiedades=_Region4(P, x)
+        elif self._thermo == "Px":
+            P, x = args
+            if Pt/1e6 <= P <= Pc and 0 <= x <= 1:
+                propiedades = _Region4(P, x)
             else:
                 raise NotImplementedError("Incoming out of bound")
 
-        elif self._thermo=="Tx":
-            T, x=args
-            if Tt<=T<=Tc and 0<=x<=1:
-                P=_PSat_T(T)
-                propiedades=_Region4(P, x)
+        elif self._thermo == "Tx":
+            T, x = args
+            if Tt <= T <= Tc and 0 <= x <= 1:
+                P = _PSat_T(T)
+                propiedades = _Region4(P, x)
             else:
                 raise NotImplementedError("Incoming out of bound")
 
         else:
             raise NotImplementedError("Bad incoming variables")
 
-        self.M=unidades.Dimensionless(M)
-        self.Pc=unidades.Pressure(Pc, "MPa")
-        self.Tc=unidades.Temperature(Tc)
-        self.rhoc=unidades.Density(rhoc)
-        self.Tt=unidades.Temperature(Tt)
-        self.Tb=unidades.Temperature(Tb)
-        self.f_accent=unidades.Dimensionless(mEoS.H2O.H2O.f_acent)
-        self.momentoDipolar=mEoS.H2O.H2O.momentoDipolar
+        self.M = unidades.Dimensionless(M)
+        self.Pc = unidades.Pressure(Pc, "MPa")
+        self.Tc = unidades.Temperature(Tc)
+        self.rhoc = unidades.Density(rhoc)
+        self.Tt = unidades.Temperature(Tt)
+        self.Tb = unidades.Temperature(Tb)
+        self.f_accent = unidades.Dimensionless(mEoS.H2O.H2O.f_acent)
+        self.momentoDipolar = mEoS.H2O.H2O.momentoDipolar
 
-        self.x=unidades.Dimensionless(propiedades["x"])
-        self.region=propiedades["region"]
-        self.phase=self.getphase(propiedades)
-        self.name=mEoS.H2O.H2O.name
-        self.synonim=mEoS.H2O.H2O.synonym
-        self.CAS=mEoS.H2O.H2O.CASNumber
+        self.x = unidades.Dimensionless(propiedades["x"])
+        self.region = propiedades["region"]
+        self.phase = self.getphase(propiedades)
+        self.name = mEoS.H2O.H2O.name
+        self.synonim = mEoS.H2O.H2O.synonym
+        self.CAS = mEoS.H2O.H2O.CASNumber
 
-        self.T=unidades.Temperature(propiedades["T"])
-        self.P=unidades.Pressure(propiedades["P"], "MPa")
-        self.v=unidades.SpecificVolume(propiedades["v"])
-        self.rho=unidades.Density(1/self.v)
+        self.T = unidades.Temperature(propiedades["T"])
+        self.P = unidades.Pressure(propiedades["P"], "MPa")
+        self.v = unidades.SpecificVolume(propiedades["v"])
+        self.rho = unidades.Density(1/self.v)
 
-        self.Liquido=fluid()
-        self.Gas=fluid()
-        if self.x<1:            #liquid phase
-            liquido=_Region1(self.T, self.P.MPa)
+        self.Liquido = fluid()
+        self.Gas = fluid()
+        if self.x < 1:            # liquid phase
+            liquido = _Region1(self.T, self.P.MPa)
             self.fill(self.Liquido, liquido)
             self.Liquido.epsilon=unidades.Tension(_Tension(self.T))
-        if self.x>0:            #vapor phase
-            vapor=_Region2(self.T, self.P.MPa)
+        if self.x > 0:            # vapor phase
+            vapor = _Region2(self.T, self.P.MPa)
             self.fill(self.Gas, vapor)
-        if self.x in (0, 1):        #single phase
+        if self.x in (0, 1):        # single phase
             self.fill(self, propiedades)
         else:
-            self.h=unidades.Enthalpy(self.x*self.Vapor.h+(1-self.x)*self.Liquido.h)
-            self.s=unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
-            self.u=unidades.SpecificHeat(self.x*self.Vapor.u+(1-self.x)*self.Liquido.u)
-            self.a=unidades.Enthalpy(self.x*self.Vapor.a+(1-self.x)*self.Liquido.a)
-            self.g=unidades.Enthalpy(self.x*self.Vapor.g+(1-self.x)*self.Liquido.g)
+            self.h = unidades.Enthalpy(self.x*self.Vapor.h+(1-self.x)*self.Liquido.h)
+            self.s = unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
+            self.u = unidades.SpecificHeat(self.x*self.Vapor.u+(1-self.x)*self.Liquido.u)
+            self.a = unidades.Enthalpy(self.x*self.Vapor.a+(1-self.x)*self.Liquido.a)
+            self.g = unidades.Enthalpy(self.x*self.Vapor.g+(1-self.x)*self.Liquido.g)
 
-            self.cv=unidades.SpecificHeat(None)
-            self.cp=unidades.SpecificHeat(None)
-            self.cp_cv=unidades.Dimensionless(None)
-            self.w=unidades.Speed(None)
-
+            self.cv = unidades.SpecificHeat(None)
+            self.cp = unidades.SpecificHeat(None)
+            self.cp_cv = unidades.Dimensionless(None)
+            self.w = unidades.Speed(None)
 
     def fill(self, fase, estado):
-        fase.M=self.M
-        fase.v=unidades.SpecificVolume(estado["v"])
-        fase.rho=unidades.Density(1/fase.v)
-        fase.Z=unidades.Dimensionless(self.P*fase.v/R/1000*self.M/self.T)
+        """Fill phase properties"""
+        fase.M = self.M
+        fase.v = unidades.SpecificVolume(estado["v"])
+        fase.rho = unidades.Density(1/fase.v)
+        fase.Z = unidades.Dimensionless(self.P*fase.v/R/1000*self.M/self.T)
 
-        fase.h=unidades.Enthalpy(estado["h"], "kJkg")
-        fase.s=unidades.SpecificHeat(estado["s"], "kJkgK")
-        fase.u=unidades.Enthalpy(fase.h-self.P*fase.v)
-        fase.a=unidades.Enthalpy(fase.u-self.T*fase.s)
-        fase.g=unidades.Enthalpy(fase.h-self.T*fase.s)
+        fase.h = unidades.Enthalpy(estado["h"], "kJkg")
+        fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
+        fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
+        fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
+        fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
 
-        fase.cv=unidades.SpecificHeat(estado["cv"], "kJkgK")
-        fase.cp=unidades.SpecificHeat(estado["cp"], "kJkgK")
-        fase.cp_cv=unidades.Dimensionless(fase.cp/fase.cv)
-        fase.w=unidades.Speed(estado["w"])
+        fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
+        fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
+        fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.w = unidades.Speed(estado["w"])
 
-        fase.mu=unidades.Viscosity(_Viscosity(fase.rho, self.T))
-        fase.k=unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
-        fase.nu=unidades.Diffusivity(fase.mu/fase.rho)
-        fase.dielec=unidades.Dimensionless(_Dielectric(fase.rho, self.T))
-        fase.Prandt=unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+        fase.mu = unidades.Viscosity(_Viscosity(fase.rho, self.T))
+        fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
+        fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
+        fase.dielec = unidades.Dimensionless(_Dielectric(fase.rho, self.T))
+        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
 
 #        fase.joule=unidades.TemperaturePressure(self.derivative("T", "P", "h"))
-        fase.alfav=unidades.InvTemperature(estado["alfav"])
-        fase.xkappa=unidades.InvPressure(estado["kt"], "MPa")
+        fase.alfav = unidades.InvTemperature(estado["alfav"])
+        fase.xkappa = unidades.InvPressure(estado["kt"], "MPa")
 
 #        self.alfa=self.k/1000/self.rho/self.cp
 #        self.n=_Refractive(self.rho, self.T)
@@ -2315,68 +2364,67 @@ class IAPWS97(object):
 #            self.alfap=fase.alfav/self.P/fase.kt
 #            self.betap=-1/self.P/1000*self.derivative("P", "v", "T")
 
-        cp0=prop0(self.T, self.P.MPa)
-        fase.v0=unidades.SpecificVolume(cp0.v)
-        fase.h0=unidades.Enthalpy(cp0.h)
-        fase.u0=unidades.Enthalpy(fase.h0-self.P*fase.v0)
-        fase.s0=unidades.SpecificHeat(cp0.s)
-        fase.a0=unidades.Enthalpy(fase.u0-self.T*fase.s0)
-        fase.g0=unidades.Enthalpy(fase.h0-self.T*fase.s0)
-        fase.cp0=unidades.SpecificHeat(cp0.cp)
-        fase.cv0=unidades.SpecificHeat(cp0.cv)
-        fase.cp0_cv=unidades.Dimensionless(fase.cp0/fase.cv0)
-        fase.w0=cp0.w
+        cp0 = prop0(self.T, self.P.MPa)
+        fase.v0 = unidades.SpecificVolume(cp0.v)
+        fase.h0 = unidades.Enthalpy(cp0.h)
+        fase.u0 = unidades.Enthalpy(fase.h0-self.P*fase.v0)
+        fase.s0 = unidades.SpecificHeat(cp0.s)
+        fase.a0 = unidades.Enthalpy(fase.u0-self.T*fase.s0)
+        fase.g0 = unidades.Enthalpy(fase.h0-self.T*fase.s0)
+        fase.cp0 = unidades.SpecificHeat(cp0.cp)
+        fase.cv0 = unidades.SpecificHeat(cp0.cv)
+        fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv0)
+        fase.w0 = cp0.w
 #FIXME: Ideal Isentropic exponent dont work
 #        fase.gamma0=cp0.gamma
-        fase.f=unidades.Pressure(self.P*exp((fase.g-fase.g0)/R/self.T))
-
+        fase.f = unidades.Pressure(self.P*exp((fase.g-fase.g0)/R/self.T))
 
     def getphase(self, fld):
         """Return fluid phase"""
-        #check if fld above critical pressure
+        # check if fld above critical pressure
         if fld["P"] > self.Pc.MPa:
-            #check if fld above critical pressure
+            # check if fld above critical pressure
             if fld["T"] > self.Tc:
                 return QApplication.translate("pychemqt", "Supercritical fluid")
             else:
                 return QApplication.translate("pychemqt", "Compressible liquid")
-        #check if fld above critical pressure
+        # check if fld above critical pressure
         elif fld["T"] > self.Tc:
             return QApplication.translate("pychemqt", "Gas")
-        #check quality
+        # check quality
         if fld["x"] >= 1.:
-            if self.kwargs["x"]==1.:
+            if self.kwargs["x"] == 1.:
                 return QApplication.translate("pychemqt", "Saturated vapor")
             else:
                 return QApplication.translate("pychemqt", "Vapor")
         elif 0 < fld["x"] < 1:
             return QApplication.translate("pychemqt", "Two phases")
         elif fld["x"] <= 0.:
-            if self.kwargs["x"]==0.:
+            if self.kwargs["x"] == 0.:
                 return QApplication.translate("pychemqt", "Saturated liquid")
             else:
                 return QApplication.translate("pychemqt", "Liquid")
 
-
     def derivative(self, z, x, y):
-        """Calculate generic partial derivative: (δz/δx)y where x, y, z can be: P, T, v, u, h, s, g, a"""
-        if self.region!=4:
-            dT={"P": 0,
-                    "T": 1,
-                    "v": self.v*self.alfav,
-                    "u": self.cp-self.P*self.v*self.alfav,
-                    "h": self.cp,
-                    "s": self.cp/self.T,
-                    "g": -self.s,
-                    "a": -self.P*self.v*self.alfav-self.s}
-            dP={"P": 1,
-                    "T": 0,
-                    "v": -self.v*self.xkappa.MPa,
-                    "u": self.v*(self.P*self.xkappa.MPa-self.T*self.alfav),
-                    "h": self.v*(1-self.T*self.alfav),
-                    "s": -self.v*self.alfav,
-                    "g": self.v,
-                    "a": self.P*self.v*self.xkappa.MPa}
+        """Calculate generic partial derivative: (δz/δx)y
+        where x, y, z can be: P, T, v, u, h, s, g, a"""
+        if self.region != 4:
+            dT = {"P": 0,
+                  "T": 1,
+                  "v": self.v*self.alfav,
+                  "u": self.cp-self.P*self.v*self.alfav,
+                  "h": self.cp,
+                  "s": self.cp/self.T,
+                  "g": -self.s,
+                  "a": -self.P*self.v*self.alfav-self.s}
+            dP = {"P": 1,
+                  "T": 0,
+                  "v": -self.v*self.xkappa.MPa,
+                  "u": self.v*(self.P*self.xkappa.MPa-self.T*self.alfav),
+                  "h": self.v*(1-self.T*self.alfav),
+                  "s": -self.v*self.alfav,
+                  "g": self.v,
+                  "a": self.P*self.v*self.xkappa.MPa}
             return (dP[z]*dT[y]-dT[z]*dP[y])/(dP[x]*dT[y]-dT[x]*dP[y])
         else:
             raise NotImplementedError("Not implemented for region 4")
@@ -2386,17 +2434,21 @@ class IAPWS97_PT(IAPWS97):
     def __init__(self, P, T):
         IAPWS97.__init__(self, T=T, P=P)
 
+
 class IAPWS97_Ph(IAPWS97):
     def __init__(self, P, h):
         IAPWS97.__init__(self, P=P, h=h)
+
 
 class IAPWS97_Ps(IAPWS97):
     def __init__(self, P, s):
         IAPWS97.__init__(self, P=P, s=s)
 
+
 class IAPWS97_Pv(IAPWS97):
     def __init__(self, P, v):
         IAPWS97.__init__(self, P=P, v=v)
+
 
 class IAPWS97_Tx(IAPWS97):
     def __init__(self, T, x):
@@ -2412,5 +2464,5 @@ if __name__ == "__main__":
 #    print dir(fluido)
 #    print _Viscosity(997.047435,298.15)
 
-    fluido=IAPWS97_PT(101325, 300)
+    fluido = IAPWS97_PT(101325, 300)
     print fluido.cp

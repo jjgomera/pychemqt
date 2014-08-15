@@ -1,6 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+###############################################################################
+# Module with wizard project configuration
+# when it creates a new pychemqt project it execute this wizard to configure:
+#   -Component list
+#   -Thermodynamic properties methods
+#   -Transport properties methods
+#   -Units prefered
+#
+# The wizard can be launch whanever you want using its menu entry
+###############################################################################
+
 from ConfigParser import ConfigParser
 import os
 
@@ -8,7 +19,8 @@ from PyQt4 import QtGui
 
 from lib.config import conf_dir
 from lib.unidades import Temperature, Pressure
-from tools import UI_confComponents, UI_confTransport, UI_confThermo, UI_confUnits, UI_confResolution
+from tools import (UI_confComponents, UI_confTransport, UI_confThermo,
+                   UI_confUnits, UI_confResolution)
 from UI.widgets import Entrada_con_unidades
 
 
