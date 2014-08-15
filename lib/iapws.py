@@ -6,7 +6,7 @@
 ####################################
 
 from __future__ import division
-from math import sqrt, log, exp, tan, atan, acos
+from math import sqrt, log, exp, tan, atan, acos, sin
 
 from scipy.optimize import fsolve
 from PyQt4.QtGui import QApplication
@@ -85,15 +85,16 @@ def _h13_s(s):
     >>> "%.6f" % _h13_s(3.5)
     '1566.104611'
     """
-    sigma=s/3.8
-    I=[0, 1, 1, 3, 5, 6]
-    J=[0, -2, 2, -12, -4, -3]
-    n=[0.913965547600543, -0.430944856041991e-4, 0.603235694765419e2, 0.117518273082168e-17, 0.220000904781292, -0.690815545851641e2]
+    sigma = s / 3.8
+    I = [0, 1, 1, 3, 5, 6]
+    J = [0, -2, 2, -12, -4, -3]
+    n = [0.913965547600543, -0.430944856041991e-4, 0.603235694765419e2,
+         0.117518273082168e-17, 0.220000904781292, -0.690815545851641e2]
 
-    suma=0
+    suma = 0
     for i in range(6):
-        suma+=n[i]*(sigma-0.884)**I[i]*(sigma-0.864)**J[i]
-    return 1700*suma
+        suma+=n[i] * (sigma-0.884)**I[i] * (sigma-0.864)**J[i]
+    return 1700 * suma
 
 #Boundary Region2-Region3
 def _P23_T(T):
@@ -102,8 +103,9 @@ def _P23_T(T):
     >>> "%.8f" % _P23_T(623.15)
     '16.52916425'
     """
-    n=[0.34805185628969e3, -0.11671859879975e1, 0.10192970039326e-2]
-    return n[0]+n[1]*T+n[2]*T**2
+    n=[0, 0.34805185628969e3, -0.11671859879975e1, 0.10192970039326e-2,
+       0.57254459862746e3, 0.1391883977870e2]
+    return n[1] + n[2] * T + n[3] * T**2
 
 def _t_P(P):
     """Define the boundary between Region 2 and 3, T=f(P)
@@ -111,8 +113,9 @@ def _t_P(P):
     >>> "%.2f" % _t_P(16.52916425)
     '623.15'
     """
-    n=[0.10192970039326e-2,0.57254459862746e3, 0.1391883977870e2]
-    return n[1]+((P-n[2])/n[0])**0.5
+    n=[0, 0.34805185628969e3, -0.11671859879975e1, 0.10192970039326e-2,
+       0.57254459862746e3, 0.1391883977870e2]
+    return n[4] + ((P - n[5]) / n[3])**0.5
 
 def _t_hs(h, s):
     """Define the boundary between Region 2 and 3, T=f(h,s)
@@ -124,7 +127,8 @@ def _t_hs(h, s):
     """
     nu=h/3000
     sigma=s/5.3
-    I=[-12, -10, -8, -4, -3, -2, -2, -2, -2, 0, 1, 1, 1, 3, 3, 5, 6, 6, 8, 8, 8, 12, 12, 14, 14]
+    I=[-12, -10, -8, -4, -3, -2, -2, -2, -2, 0, 1, 1, 1, 3, 3, 5, 6, 6, 8, 8,
+            8, 12, 12, 14, 14]
     J=[10, 8, 3, 4, 3, -6, 2, 3, 4, 0, -3, -2, 10, -2, -1, -5, -6, -3, -8, -2, -1, -12, -1, -12, 1]
     n=[0.629096260829810e-3, -0.823453502583165e-3, 0.515446951519474e-7, -0.117565945784945e1, 0.348519684726192e1, -0.507837382408313e-11, -0.284637670005479e1, -0.236092263939673e1, 0.601492324973779e1, 0.148039650824546e1, 0.360075182221907e-3, -0.126700045009952e-1, -0.122184332521413e7, 0.149276502463272, 0.698733471798484, -0.252207040114321e-1, 0.147151930985213e-1, -0.108618917681849e1, -0.936875039816322e-3, 0.819877897570217e2, -0.182041861521835e3, 0.261907376402688e-5, -0.291626417025961e5, 0.140660774926165e-4, 0.783237062349385e7]
 
@@ -1508,11 +1512,12 @@ def _Region4(P, x):
     propiedades["cp"]=None
     propiedades["cv"]=None
     propiedades["w"]=None
-    propiedades["alfa"]=None
+    propiedades["alfav"]=None
     propiedades["kt"]=None
+    propiedades["alfap"]=None
+    propiedades["betap"]=None
     propiedades["region"]=4
-    propiedades["x"]=x
-    return propiedades
+    propiedades["x"]=x    return propiedades
 
 
 def _Backward4_T_hs(h, s):
@@ -1645,7 +1650,7 @@ def _Viscosity(rho, T):
         Go=0.06
         Tr2=1.5
         #TODO: Implement critical enhancement
-        a, b=0, 0
+        a, b=0
         DeltaX=Dr*(a-b*Tr2/Tr)
         X=Xo*(DeltaX/Go)**(v/g)
         if X<=0.3817016416:
@@ -1706,7 +1711,10 @@ def _Tension(T):
     '0.0428914992'
     """
     Tr=T/Tc
-    return 1e-3*(235.8*(1-Tr)**1.256*(1-0.625*(1-Tr)))
+    if 273.15<=T<Tc:
+        return 1e-3*(235.8*(1-Tr)**1.256*(1-0.625*(1-Tr)))
+    else:
+        return 0
 
 
 def _Dielectric(rho, T):
@@ -1855,6 +1863,7 @@ def _Bound_hs(h, s):
     """Region definition for input h and s"""
     region=None
     smin=_Region1(273.15, 100)["s"]
+    hmin=_Region1(273.15, 100)["h"]
     s13=_Region1(623.15, 100)["s"]
     s13s=_Region1(623.15, _PSat_T(623.15))["s"]
     smax=_Region2(1073.15, _PSat_T(273.15))["s"]
@@ -1872,7 +1881,7 @@ def _Bound_hs(h, s):
         if smin<=s<=s13:
             P=_Backward1_P_hs(h, s)
             T=_Backward1_T_Ph(P, h)
-            if T-0.0218>=273.15 and Pt<=P<=100:
+            if T-0.0218>=273.15 and Pt/1e6<=P<=100:
                 hs=_h1_s(s)
                 if h>=hs: region=1
                 elif hmin<=h<hs: region=4
@@ -1914,7 +1923,7 @@ def _Bound_hs(h, s):
             if P<=100:
                 T=_Backward2_T_Ph(P, h)
                 h2max=_Region2(1073.15, P)["h"]
-                if hs<=h and Pmin<=P<=100 and T<=1073.15: region=2
+                if hs<=h<h2max and Pmin<=P<=100 and T<=1073.15: region=2
                 elif hmin4<=h<hs: region=4
         elif s4v<=s<=smax:
             P=_Backward2a_P_hs(h, s)
@@ -1954,7 +1963,7 @@ def prop0(T, P):
 
 
 #Constants
-m=8.31451           #kJ/kmol·K
+Rm=8.31451           #kJ/kmol·K
 M=18.015257      #kg/kmol
 R=0.461526             #kJ/kg·K
 Tc=647.096          #K
@@ -1980,6 +1989,9 @@ class IAPWS97(object):
     s   -   Specific entropy, kJ/kg·K
     x   -   Quality
 
+    Optional:
+    l   -   Wavelength of light, for refractive index
+
     Definitions options:
     T, P    Not valid for two-phases region
     P, h
@@ -2004,12 +2016,23 @@ class IAPWS97(object):
     f              -   Fugacity, MPa
     gamma    -   Isoentropic exponent
     alfav        -   Isobaric cubic expansion coefficient, 1/K
-    kt            -   Isothermal compressibility, 1/MPa
+    xkappa     -   Isothermal compressibility, 1/MPa
     alfap        -   Relative pressure coefficient, 1/K
     betap       -   Isothermal stress coefficient, kg/m³
     joule         -   Joule-Thomson coefficient, K/MPa
     deltat       -   Isothermal throttling coefficient, kJ/kg·MPa
     region      -   Region
+
+    v0            -   Ideal specific volume, m³/kg
+    u0            -   Ideal specific internal energy, kJ/kg
+    h0            -   Ideal specific enthalpy, kJ/kg
+    s0            -   Ideal specific entropy, kJ/kg·K
+    a0            -   Ideal specific Helmholtz free energy, kJ/kg
+    g0            -   Ideal specific Gibbs free energy, kJ/kg
+    cp0          -   Ideal specific isobaric heat capacity, kJ/kg·K
+    cv0          -   Ideal specific isochoric heat capacity, kJ/kg·K
+    w0           -   Ideal speed of sound, m/s
+    gamma0  -   Ideal isoentropic exponent
 
     w             -   Speed of sound, m/s
     mu           -   Dynamic viscosity, Pa·s
