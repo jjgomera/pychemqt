@@ -7,6 +7,9 @@
 
 import os
 
+# To delete
+os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
+
 from PyQt4 import QtGui
 
 from lib import sql
