@@ -8,8 +8,11 @@
 #   -Thermodynamic properties methods
 #   -Transport properties methods
 #   -Units prefered
-#
 # The wizard can be launch whanever you want using its menu entry
+#
+# -auto: Function to calculate autovalues for thermo calculation
+# -AutoDialog: Dialog to define values for auto function, this dialog can be
+# launch in thermo page of wizard to autoselect a good stimation of values
 ###############################################################################
 
 from ConfigParser import ConfigParser
@@ -26,10 +29,16 @@ from UI.widgets import Entrada_con_unidades
 
 
 def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
-    """Function to calculate autovalues for thermo calculation"""
-    # TODO: add EOS configuration
+    """Function to calculate autovalues for thermo calculation
+        tmin: Stimated minimum temperature from project
+        tmax: Stimated maximum temperature from project
+        pmin: Stimated minimum pressure from project
+        pmax: Stimated maximum pressure from project
+        Components: array with ids numbers component from project"""
     config = ConfigParser()
     config = UI_confThermo.UI_confThermo_widget.default(config)
+
+    # TODO: add EOS configuration
 
     GERG_available = True
     REFPROP_available = True
@@ -58,6 +67,7 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
 
 
 class AutoDialog(QtGui.QDialog):
+    """Dialog to input value for auto thermal function"""
     def __init__(self, parent=None):
         super(AutoDialog, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
