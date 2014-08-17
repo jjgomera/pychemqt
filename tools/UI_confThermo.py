@@ -87,7 +87,11 @@ class UI_confThermo_widget(QtGui.QWidget):
         if os.environ["refprop"]:
             self.MEoS.toggled.connect(self.refprop.setEnabled)
 
-        if config and config.has_section("Thermo"):
+        if config:
+            self.setConfig(config)
+
+    def setConfig(self, config):
+        if config.has_section("Thermo"):
             self.K.setCurrentIndex(config.getint("Thermo", "K"))
             self.alfa.setCurrentIndex(config.getint("Thermo", "Alfa"))
             self.mixing_rule.setCurrentIndex(config.getint("Thermo", "Mixing"))
