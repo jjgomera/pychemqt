@@ -13,7 +13,7 @@ from PyQt4.QtGui import QApplication
 from compuestos import Componente
 from bip import SRK, PR, BWRS
 from physics import R_atml, R_cal, R, factor_acentrico_octano
-from lib import unidades, config, EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
+from lib import unidades, config, eos, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 
 
 class Mezcla(config.Entity):
@@ -225,7 +225,7 @@ class Mezcla(config.Entity):
             ai=[]
             bi=[]
             for componente in self.componente:
-                a, b=EoS.SRK_Thorwart_lib(componente, T)
+                a, b=eos.SRK_Thorwart_lib(componente, T)
                 ai.append(a)
                 bi.append(b)
             b=sum([fraccion*b for fraccion, b in zip(self.fraccion, bi)])
@@ -1443,7 +1443,7 @@ class Corriente(config.Entity):
             if self.tipoTermodinamica=="TP":
                 self.T=unidades.Temperature(T)
                 self.P=unidades.Pressure(P)
-                eos=EoS.K[self.Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
+                eos=eos.K[self.Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
                 self.eos=eos
                 self.x=unidades.Dimensionless(eos.x)
             else:
@@ -1465,10 +1465,10 @@ class Corriente(config.Entity):
             self.Gas.Z=unidades.Dimensionless(float(eos.Z[0]))
             self.Liquido.Z=unidades.Dimensionless(float(eos.Z[1]))
 
-            if EoS.H[self.Config.getint("Thermo","H")].__title__ == EoS.K[self.Config.getint("Thermo","K")].__title__:
+            if eos.H[self.Config.getint("Thermo","H")].__title__ == eos.K[self.Config.getint("Thermo","K")].__title__:
                 eosH=eos
             else:
-                eosH=EoS.H[self.Config.getint("Thermo","H")](self.T, self.P.atm, self.mezcla)
+                eosH=eos.H[self.Config.getint("Thermo","H")](self.T, self.P.atm, self.mezcla)
             self.H_exc=eosH.H_exc
 
             self.Liquido.Q=unidades.VolFlow(0)

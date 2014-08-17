@@ -10,7 +10,7 @@ from scipy.constants import R, calorie as cal, pi, Avogadro
 from PyQt4.QtGui import QApplication
 
 from physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
-import unidades, config, EoS, sql
+import unidades, config, eos, sql
 
 
 class Componente(object):
@@ -697,7 +697,7 @@ class Componente(object):
         # TODO: particularizar a compuestos cíclicos y no cíclicos
         k_prima2=1+1./Tr**5*Pr**4/(2.44*Tr**20+Pr**4)+0.012*Pr/Tr
         Cv=self.Cv_Lee_Kesler(T, P, 1)
-        Cv0, Cvh, vr0, vrh=EoS.Lee_Kesler_lib_Cp(Tr, Pr)
+        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(Tr, Pr)
         Cv_prima=4.965-R_Btu*(1+Cv0)
         Cv_prima2=Cv.BtulbF-Cv_prima
         return unidades.ThermalConductivity(k*(Cv_prima/Cv.BtulbF*k_prima+Cv_prima2/Cv.BtulbF*k_prima2))
@@ -1105,8 +1105,8 @@ class Componente(object):
         Pv=self.Pv_DIPPR(T)
         Tr=T/self.Tc
         Pr=Pv/self.Pc.atm
-        H_adimensional_vapor=EoS.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
-        H_adimensional_liquido=EoS.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
+        H_adimensional_vapor=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
+        H_adimensional_liquido=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
         return unidades.Enthalpy(R*self.Tc/self.M*(H_adimensional_vapor-H_adimensional_liquido), "Jg")
 
     def Cp_Solido_DIPPR(self,T):
@@ -1138,7 +1138,7 @@ class Componente(object):
         Tr=self.tr(T)
         if fase==None:
             fase=self.Fase(T, P)
-        Cv0, Cvh, vr0, vrh=EoS.Lee_Kesler_lib_Cp(T, P, fase)
+        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(T, P, fase)
         
         B=0.1181193-0.265728/Tr-0.154790/Tr**2-0.030323/Tr**3
         C=0.0236744-0.0186984/Tr
@@ -1166,7 +1166,7 @@ class Componente(object):
         if fase==None:
             fase=self.Fase(T, P)
         Cpo=self.Cp_ideal(T)
-        Cv0, Cvh, vr0, vrh=EoS.Lee_Kesler_lib_Cp(Tr, Pr, fase)
+        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(Tr, Pr, fase)
         Cv_adimensional=Cv0+self.f_acent/factor_acentrico_octano*(Cvh-Cv0)
         return unidades.SpecificHeat(100*(Cpo.JgK-R/self.M*(1+Cv_adimensional)), "JgK")
 
@@ -1185,7 +1185,7 @@ class Componente(object):
         Procedure API 7G1.8 Pag.752"""
         Tr=T/self.Tc
         Pr=P/self.Pc.atm
-        f=EoS.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P))
+        f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P))
         return unidades.Pressure(P*exp(f), "atm")
         
     def Entropia_Lee_Kesler(self, T, P):
@@ -1194,8 +1194,8 @@ class Componente(object):
         Tr=T/self.Tc
         Pr=P/self.Pc.atm
         S0=self.Entropia_ideal(T)
-        H_adimensional=EoS.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
-        f=EoS.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
+        H_adimensional=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
+        f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
         S=H_adimensional+f+log(P/101325)
         
         return unidades.SpecificHeat(S0.JgK-R*S/self.M, "JgK")
@@ -1233,11 +1233,11 @@ class Componente(object):
 
 
     def RhoG_Lee_Kesler(self, T, P):
-        a, b=EoS.SRK_lib(self, T)
-        Z_srk=EoS.Z_Cubic_EoS(T, P, b, a, b, 0, b)
+        a, b=eos.SRK_lib(self, T)
+        Z_srk=eos.Z_Cubic_EoS(T, P, b, a, b, 0, b)
         Vvo=Z_srk[0]*R_atml*T/P
         
-        vr0v, vrhv, vr0l, vrhl=EoS.Lee_Kesler_lib(T/self.Tc, P/self.Pc.atm, fase=1, Vvo=Vvo)
+        vr0v, vrhv, vr0l, vrhl=eos.Lee_Kesler_lib(T/self.Tc, P/self.Pc.atm, fase=1, Vvo=Vvo)
         z0v=P/self.Pc.atm*vr0v/T*self.Tc
         zhv=P/self.Pc.atm*vrhv/T*self.Tc
         z=z0v+self.f_acent/factor_acentrico_octano*(zhv-z0v)

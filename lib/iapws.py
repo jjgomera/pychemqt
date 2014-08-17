@@ -1530,7 +1530,8 @@ def _Region4(P, x):
     propiedades["alfap"]=None
     propiedades["betap"]=None
     propiedades["region"]=4
-    propiedades["x"]=x    return propiedades
+    propiedades["x"]=x
+    return propiedades
 
 
 def _Backward4_T_hs(h, s):

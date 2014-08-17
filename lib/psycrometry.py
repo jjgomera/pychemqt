@@ -13,7 +13,7 @@ from PyQt4.QtGui import QApplication
 from compuestos import Componente
 from bip import SRK, PR, BWRS
 from physics import R_atml, R_cal, R, factor_acentrico_octano
-from lib import unidades, config, EoS, mEoS
+from lib import unidades, config, eos, mEoS
 from lib.corriente import Corriente
 
 

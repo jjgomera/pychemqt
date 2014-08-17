@@ -118,7 +118,7 @@ from UI import texteditor, newComponent, flujo, charts, plots, viewComponents
 from UI.widgets import createAction, ClickableLabel, TreeEquipment
 from lib.config import conf_dir, getComponents
 from lib.project import Project
-from lib.EoS import K, H
+from lib.eos import K, H
 from lib import unidades
 
 

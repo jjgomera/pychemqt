@@ -84,6 +84,13 @@ def volume_Correction_Peneloux(compuesto):
 
 
 class EoS(object):
+    def __init__(self, T, P, mezcla, **kwargs):
+        self.T = unidades.Temperature(T)
+        self.P = unidades.Pressure(P, "atm")
+        self.mezcla = mezcla
+        self.componente = mezcla.componente
+        self.xi = mezcla.fraccion
+        self.kwargs = kwargs
 
     def _Flash(self):
         """Cálculo de los coeficientes de reparto entre fases, Ref Naji - Conventional and rapid flash claculations"""

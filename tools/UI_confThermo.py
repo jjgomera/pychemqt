@@ -9,7 +9,7 @@ import os
 
 from PyQt4 import QtGui
 
-from lib.EoS import K, H
+from lib.eos import K, H
 
 
 class UI_confThermo_widget(QtGui.QWidget):

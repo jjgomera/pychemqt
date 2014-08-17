@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Virial ecuation of state implementation
+# Virial equation of state implementation
 ###############################################################################
 
 from scipy import zeros
@@ -23,34 +23,39 @@ Database = {
 
 class Virial(EoS):
     """Class to model virial equation of state"""
-    def __init__(self, T, P, mezcla):
-        self.T = unidades.Temperature(T)
-        self.P = unidades.Pressure(P, "atm")
-        self.mezcla = mezcla
-        self.componente = mezcla.componente
-        self.xi = mezcla.fraccion
 
     def _Bi(self):
         B = []
+        Bt = []
+        Btt = []
         for comp in self.componente:
             if comp.indice in Database:
                 Bi = 0
+                Bit = 0
+                Bitt = 0
                 for i, a in enumerate(Database[comp.indice]):
                     Bi += a/self.T**i
+                    Bit += -a*i*self.T**(i-1)
+                    Bitt += a*i*(i-1)*self.T**(i-2))))
             else:
                 # Use general correlation
-                Bi = self._B_Tsonopoulos(comp.Tc, comp.Pc, comp.f_acent)
+                Bi, Bit, Bitt = self._B_Tsonopoulos(comp.Tc, comp.Pc, comp.f_acent)
         B.append(Bi)
-        return B
+        Bt.append(Bit)
+        Btt.append(Bitt)
+        return B, Bt, Btt
 
     def _Ci(self):
         C = []
         for comp in self.componente:
-            C.append(self._C_Orbey_vera(comp.Tc, comp.Pc, comp.f_acent))
+            if self.kwargs.get("C", 0):
+                C.append(self._C_Orbey_Vera(comp.Tc, comp.Pc, comp.f_acent))
+            else:
+                C.append(self._C_Liu_Xiang(comp.Tc, comp.Pc, comp.f_acent, comp.Zc))
         return C
 
     def B(self):
-        Bi = self._Bi()
+        Bi, Bit, Bitt = self._Bi()
         B = 0
         for i, xi in enumerate(self.xi):
             for j, xj in enumerate(self.xi):
@@ -62,7 +67,7 @@ class Virial(EoS):
                     Tcij = (ci.Tc*cj.Tc)**0.5
                     Pcij = 4*Tcij*(ci.Zc+cj.Zc)/(ci.Vc**(1./3)+cj.Vc**(1./3))**3
                     wij = 0.5*(ci.f_acent+cj.f_acent)
-                    Bij = self._B_Tsonopoulos(Tcij, Pcij, wij)
+                    Bij, Bt, Btt = self._B_Tsonopoulos(Tcij, Pcij, wij)
                 B += xi*xj*Bij
         return B
 
@@ -77,9 +82,14 @@ class Virial(EoS):
                     ci = self.componente[i]
                     cj = self.componente[j]
                     Tcij = (ci.Tc*cj.Tc)**0.5
-                    Pcij = 4*Tcij*(ci.Zc+cj.Zc)/(ci.Vc**(1./3)+cj.Vc**(1./3))**3
+                    Vcij = (ci.Vc**(1./3)+cj.Vc**(1./3))**3
+                    Pcij = 4*Tcij*(ci.Zc+cj.Zc)/Vcij
                     wij = 0.5*(ci.f_acent+cj.f_acent)
-                    Cij[i, j] = self._C_Orbey_vera(Tcij, Pcij, wij)
+                    if self.kwargs.get("C", 0):
+                        Cij[i, j] = self._C_Orbey_Vera(Tcij, Pcij, wij)
+                    else:
+                        Zcij = Pcij*Vcij/R_atml/Tcij
+                        Cij[i, j] = self._C_Liu_Xiang(Tcij, Pcij, wij, Zcij)
 
         C = 0
         for i, xi in enumerate(self.xi):
@@ -90,7 +100,14 @@ class Virial(EoS):
 
     def _B1(self):
         """First derivative first virial term versus T"""
-        pass
+        if comp.indice in Database:
+            B1i = 0
+            for i, a in enumerate(Database[comp.indice]):
+                B1i += a/self.T**(i+1)
+#        else:
+#           # Use general correlation
+#            Bi = self._B_Tsonopoulos(comp.Tc, comp.Pc, comp.f_acent)
+        return B1i
 
     def _C1(self):
         """First derivative second virial term versus T"""
@@ -125,14 +142,24 @@ class Virial(EoS):
         f2 = 1/Tr**6
         f3 = -1/Tr**8
         f = f0 + w*f1 + a*f2 + b*f3
-        return f*R_atml*Tc/Pc.atm
+        return f*R_atml*Tc/Pc.atm, 0, 0
 
-    def _C_Orbey_vera(self, Tc, Pc, w):
+    def _C_Orbey_Vera(self, Tc, Pc, w):
         Tr = self.T/Tc
         g0 = 0.01407+0.02432/Tr**2.8-0.00313/Tr**10.5
         g1 = -0.02676+0.0177/Tr**2.8+0.04/Tr**3-0.003/Tr**6-0.00228/Tr**10.5
         g = g0+w*g1
         return g*R_atml**2*Tc**2/Pc.atm**2
+
+    def _C_Liu_Xiang(self, Tc, Pc, w, Zc):
+        """Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and Prediction of Third Virial Coefficients for a Wide Range of Substances. International Journal of Thermophysics, November 2003, Volume 24, Issue 6, pp 1667-1680"""
+        Tr = self.T/Tc
+        X=(Zc-0.29)**2
+        g0=0.1623538+0.3087440/Tr**3-0.01790184/Tr**6-0.02789157/Tr**11
+        g1=-0.5390344+1.783526/Tr**3-1.055391/Tr**6+0.09955867/Tr**11
+        g2=34.22804-74.76559/Tr**3+279.9220/Tr**6-62.85431/Tr**11
+        g = g0+w*g1+X*g2
+        return g*Zc**2*R_atml**2*Tc**2/Pc.atm**2
 
 
 if __name__ == "__main__":
