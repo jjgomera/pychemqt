@@ -65,8 +65,8 @@ class Virial(EoS):
     def B(self):
         Bi, Bit, Bitt = self._Bi()
         B, Bt, Btt = 0, 0, 0
-        for i, xi in enumerate(self.xi):
-            for j, xj in enumerate(self.xi):
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
                 if i == j:
                     Bij = Bi[i]
                     Bijt = Bit[i]
@@ -85,11 +85,11 @@ class Virial(EoS):
 
     def C(self):
         Ci, Cit, Citt = self._Ci()
-        Cij = zeros(len(Ci), len(Ci))
-        Cijt = zeros(len(Ci), len(Ci))
-        Cijtt = zeros(len(Ci), len(Ci))
-        for i, xi in enumerate(self.xi):
-            for j, xj in enumerate(self.xi):
+        Cij = zeros((len(Ci), len(Ci)))
+        Cijt = zeros((len(Ci), len(Ci)))
+        Cijtt = zeros((len(Ci), len(Ci)))
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
                 if i == j:
                     Cij[i, j] = Ci[i]
                     Cijt[i, j] = Cit[i]
@@ -107,10 +107,10 @@ class Virial(EoS):
                         Zcij = Pcij*Vcij/R_atml/Tcij
                         Cij[i, j] = self._C_Liu_Xiang(Tcij, Pcij, wij, Zcij)
 
-        C, Ct, Ctt = 0
-        for i, xi in enumerate(self.xi):
-            for j, xj in enumerate(self.xi):
-                for k, xk in enumerate(self.xi):
+        C, Ct, Ctt = 0, 0, 0
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
+                for k, xk in enumerate(self.fraccion):
                     C += xi*xj*xk*(Cij[i, j]*Cij[j, k]*Cij[j, k])**(1./3)
         return C, Ct, Ctt
 
@@ -146,7 +146,7 @@ class Virial(EoS):
         g0 = 0.01407+0.02432/Tr**2.8-0.00313/Tr**10.5
         g1 = -0.02676+0.0177/Tr**2.8+0.04/Tr**3-0.003/Tr**6-0.00228/Tr**10.5
         g = g0+w*g1
-        return g*R_atml**2*Tc**2/Pc.atm**2
+        return g*R_atml**2*Tc**2/Pc.atm**2, 0, 0
 
     def _C_Liu_Xiang(self, Tc, Pc, w, Zc):
         """Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and Prediction of Third Virial Coefficients for a Wide Range of Substances. International Journal of Thermophysics, November 2003, Volume 24, Issue 6, pp 1667-1680"""
@@ -156,12 +156,12 @@ class Virial(EoS):
         g1 = -0.5390344+1.783526/Tr**3-1.055391/Tr**6+0.09955867/Tr**11
         g2 = 34.22804-74.76559/Tr**3+279.9220/Tr**6-62.85431/Tr**11
         g = g0+w*g1+X*g2
-        return g*Zc**2*R_atml**2*Tc**2/Pc.atm**2
+        return g*Zc**2*R_atml**2*Tc**2/Pc.atm**2, 0, 0
 
 
 if __name__ == "__main__":
     from lib.corriente import Mezcla
-    mezcla = Mezcla(1, ids=[62], caudalUnitarioMasico=[1.])
+    mezcla = Mezcla(1, ids=[98], caudalUnitarioMasico=[1.])
     for T in [125, 135, 145, 165, 185, 205]:
         eq = Virial(T, 1, mezcla)
-        print eq.B()
+        print eq.H_exc
