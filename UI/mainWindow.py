@@ -127,6 +127,8 @@ class UI_pychemqt(QtGui.QMainWindow):
         self.BarraHerramientas.addAction(steamTablesAction)
         self.BarraHerramientas.addAction(psychrometricChartAction)
         self.BarraHerramientas.addAction(externalProgramAction)
+        self.BarraHerramientas.addSeparator()
+        self.BarraHerramientas.addAction(actionAyuda)
         self.addToolBar(QtCore.Qt.TopToolBarArea,self.BarraHerramientas)
 
 

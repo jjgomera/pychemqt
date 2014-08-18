@@ -47,7 +47,10 @@ class Componente(object):
             self.Vc=self.vc_Riedel()
         else:
             self.Vc=0
-        self.Zc=self.Pc*self.Vc/R/self.Tc
+        if self.Tc:
+            self.Zc=self.Pc*self.Vc/R/self.Tc
+        else:
+            self.Zc=0
         if componente[7]<>0:
             self.API=componente[7]
         elif componente[124]<>0:

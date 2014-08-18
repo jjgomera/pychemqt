@@ -69,6 +69,7 @@ class equipment(Entity):
     statusCoste = False
     indiceCostos = None
     calculateCostos = ()
+    __doi__ = []
 
     def __init__(self, **kwargs):
         """Class constructor, copy kwargs for child class to instance and do
