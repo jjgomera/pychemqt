@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-###Módulo que define la librería de projectos general
+###############################################################################
+# Module for project (group of equipment asociated in a graph) and many more
+###############################################################################
 
 import os
 from ConfigParser import ConfigParser
@@ -16,8 +18,8 @@ except:
 from lib.config import conf_dir
 from lib.corriente import Corriente
 from equipment import equipments
-from equipment.parents import equipment
 from equipment.flux import Mixer
+
 
 class Project(object):
     MAGIC_NUMBER = 0x3051E
@@ -35,9 +37,9 @@ class Project(object):
         self.config=config
         self.streams=streams
         self.graph=self.calGraph()
-        
+
         self.downToStream={}
-        
+
 #        import gv
 #        for item in items:
 #           print gv.tailof(item)
@@ -52,7 +54,7 @@ class Project(object):
     @property
     def streamCount(self):
         return len(self.streams)
-        
+
     def calGraph(self):
         grafo = graph()
         for item in self.items:
@@ -60,13 +62,13 @@ class Project(object):
         for key, stream in self.streams.iteritems():
             grafo.add_edge((stream[0], stream[1]), attrs = [("splines",  "")])
         return grafo
-        
+
     def getObject(self, id):
         if id[0] in ["e", "i", "o"]:
             return self.items[id]
         else:
             return  self.getStream(int(id[1:]))
-            
+
     def setPFD(self, streams):
         self.streams=streams
     def setItems(self, items):
@@ -75,7 +77,7 @@ class Project(object):
         self.streams=streams
     def setConfig(self, config):
         self.config=config
-        
+
     def addItem(self, id, obj):
         if id not in self.items:
             self.items[id]=obj
@@ -91,7 +93,7 @@ class Project(object):
         self.run("i%i" %id)
     def getInput(self, id):
         return self.items["i%i" %id]
-        
+
     def setOutput(self, id, obj):
         self.items["o%i" %id]=obj
     def getOutput(self, id):
@@ -101,12 +103,12 @@ class Project(object):
     def addStream(self, id, up, down, obj=Corriente(), ind_up=0, ind_down=0):
         if up[0]=="i":
             obj=self.items[up]
-            
+
         stream=(up, down, ind_up, ind_down, obj)
         if id not in self.streams.keys():
             self.streams[id]=stream
             self.graph.add_edge((up, down))
-            
+
         if down[0]=="e":
             eq=self.items[down]
             if isinstance(eq, Mixer):
@@ -114,7 +116,7 @@ class Project(object):
             else:
                 kwargs={eq.kwargsInput[ind_down]: obj}
             eq(**kwargs)
-        
+
     def setStream(self, id, obj):
         stream=self.streams[id]
         self.streams[id]=stream[0:4]+(obj, )
@@ -122,14 +124,14 @@ class Project(object):
 
     def getStream(self, id):
         return self.streams[id][-1]
-        
+
     def getDownToStream(self, id):
         up, down, ind_up, ind_down, obj=self.streams[id]
         if down[0]=="e":
             return self.getItem(int(down[1]))
         else:
             return obj
-    
+
     def getDownToEquip(self, str):
         lista=[]
         for key, value in self.streams.iteritems():
@@ -137,12 +139,12 @@ class Project(object):
                 lista.append((key, value))
         return lista
 
-        
+
     def run(self, name):
         """Ejecuta el projecto de forma recursiva hasta que encuentra un equipo no resuelto"""
         tipo=name[0]
         ind=int(name[1])
-        
+
         if tipo=="i":
             obj=self.getInput(ind)
             if obj.status:
@@ -170,11 +172,10 @@ class Project(object):
                     self.run(down)
                 elif down[0]=="o":
                     self.setOutput(int(down[1]), stream)
-                    
 
     def writeToStream(self, stream):
-        """Escribe al stream el projecto completo"""
-        #Write configuration
+        """Write the project to stream"""
+        # Write configuration
         stream.writeInt32(len(self.config.sections()))
         for section in self.config.sections():
             stream.writeString(section)
@@ -182,16 +183,16 @@ class Project(object):
             for option in self.config.options(section):
                 stream.writeString(option)
                 stream.writeString(str(self.config.get(section, option)))
-        
-        #write equipments
+
+        # write equipments
         stream.writeInt32(len(self.items))
         for key, item in self.items.iteritems():
             stream.writeString(key)
-            if key[0]=="e":
+            if key[0] == "e":
                 stream.writeInt32(equipments.index(item.__class__))
                 item.writeToStream(stream)
 
-        #write streams
+        # write streams
         stream.writeInt32(len(self.streams))
         for id, item in self.streams.iteritems():
             stream.writeInt32(id)
@@ -200,19 +201,20 @@ class Project(object):
             stream.writeInt32(item[2])
             stream.writeInt32(item[3])
             item[4].writeToStream(stream)
-            
-        
+
     def loadFromStream(self, stream, huella=True):
-        #read configuration
-        config=ConfigParser()
+        """Read project from stream
+        huella: boolean to save project file to pychemqt_temporal"""
+        # read configuration
+        config = ConfigParser()
         for i in range(stream.readInt32()):
-            section=stream.readString()
+            section = stream.readString()
             config.add_section(section)
             for contador_option in range(stream.readInt32()):
-                option=stream.readString()
-                valor=stream.readString()
+                option = stream.readString()
+                valor = stream.readString()
                 config.set(section, option, valor)
-                
+
         #TODO: Necesario para cargar los proyectos viejos
 #        config.set("Thermo", "freesteam", "False")
 #        config.set("Thermo", "coolprop", "True")
@@ -225,66 +227,66 @@ class Project(object):
             os.rename(conf_dir+"pychemqtrc_temporal", conf_dir+"pychemqtrc_temporal_bak")
         config.write(open(conf_dir+"pychemqtrc_temporal", "w"))
 
-        #read equipments
-        items={}
-        contador_equipos=stream.readInt32()
+        # read equipments
+        items = {}
+        contador_equipos = stream.readInt32()
         for i in range(contador_equipos):
-            id=stream.readString()
-            if id[0]=="e":
-                equip=equipments[stream.readInt32()]()
+            id = stream.readString()
+            if id[0] == "e":
+                equip = equipments[stream.readInt32()]()
                 equip.readFromStream(stream)
             else:
-                equip=None
-            items[id]=equip
+                equip = None
+            items[id] = equip
         self.setItems(items)
-        
-        #read stream
-        streams={}
-        contador_streams=stream.readInt32()
+
+        # read streams
+        streams = {}
+        contador_streams = stream.readInt32()
         for item in range(contador_streams):
-            id=stream.readInt32()
-            up=stream.readString()
-            down=stream.readString()
-            ind_up=stream.readInt32()
-            ind_down=stream.readInt32()
-            obj=Corriente()
+            id = stream.readInt32()
+            up = stream.readString()
+            down = stream.readString()
+            ind_up = stream.readInt32()
+            ind_down = stream.readInt32()
+            obj = Corriente()
             obj.readFromStream(stream)
-            streams[id]=(up, down, ind_up, ind_down, obj)
+            streams[id] = (up, down, ind_up, ind_down, obj)
             if huella:
-                if down[0]=="e":
-                    equip=self.items[down]
+                if down[0] == "e":
+                    equip = self.items[down]
                     if isinstance(equip, Mixer):
-                        kwargs={"entrada": obj, "id_entrada": ind_down}
+                        kwargs = {"entrada": obj, "id_entrada": ind_down}
                     else:
-                        kwargs={equip.kwargsInput[ind_down]: obj}
+                        kwargs = {equip.kwargsInput[ind_down]: obj}
                     equip(**kwargs)
         self.setStreams(streams)
-        
+
         if not huella:
             os.rename(conf_dir+"pychemqtrc_temporal_bak", conf_dir+"pychemqtrc_temporal")
-    
-    
+
     def printer(self):
         # Draw as PNG
         dot = write(self.graph)
         gvv = gv.readstring(dot)
         gv.layout(gvv,'dot')
         gv.render(gvv,'png','project.png')
-        
+
     def cycle(self):
-        cicle=find_cycle(self.graph)
+        cicle = find_cycle(self.graph)
         if cicle:
             return cicle
         else:
             return None
-            
+
     def hasCycle(self):
-        cicle=self.cycle()
+        """Detect cycle in project"""
+        cicle = self.cycle()
         return bool(cicle)
 
 
 if __name__ == '__main__':
-    
+
     from corriente import Corriente, Mezcla
 
 #    project=Project()
@@ -302,8 +304,8 @@ if __name__ == '__main__':
 #    project.setInput(1, caliente)
 #    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
 #    project.setInput(2, fria)
-#    Cambiador(modo=1,  
-#                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3, 
+#    Cambiador(modo=1,
+#                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
 #                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
 #    project.setItem(1, Cambiador)
 #    print project.getOutput(1),  project.getStream(2)
@@ -316,7 +318,7 @@ if __name__ == '__main__':
 #
 #    items={"i1": entrada, "e1": bomba}
 #    streams=[("i1", "e1", 0, 0), ("e1", "o1", 0, 0)]
-#    
+#
 #    project=Project(items=items, streams=streams)
 #    project.printer()
 #    print dir(gv)

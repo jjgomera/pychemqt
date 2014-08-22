@@ -45,9 +45,10 @@ class ShowReference(QtGui.QDialog):
         layout.addWidget(self.buttonBox)
 
         self.fill()
-        self.tree.itemDoubleClicked.connect(self.openpdf)
+        self.tree.itemDoubleClicked.connect(self.open)
 
     def fill(self):
+        """Fill tree with documentation entries"""
         # Equipment
         itemEquipment = QtGui.QTreeWidgetItem([QtGui.QApplication.translate(
             "pychemqt", "Equipments")])
@@ -56,13 +57,13 @@ class ShowReference(QtGui.QDialog):
             itemequip = QtGui.QTreeWidgetItem([equip.__name__])
             itemEquipment.addChild(itemequip)
             for link in equip.__doi__:
-                item = QtGui.QTreeWidgetItem([link["doi"], "%s: %s. %s" %(link["autor"], link["title"], link["ref"])])
+                item = QtGui.QTreeWidgetItem([link["doi"], "%s: %s. %s" %(
+                    link["autor"], link["title"], link["ref"])])
                 itemequip.addChild(item)
 
-        #MEoS
+        # MEoS
         link = []
         objects = [mEoS.MEoS]+mEoS.__all__
-#        objects.insert(0,("MEoS", mEoS.MEoS))
 
         for objeto in objects:
             item = QtGui.QTreeWidgetItem([objeto.__name__, ""])
@@ -72,7 +73,8 @@ class ShowReference(QtGui.QDialog):
                 doc = inspect.getdoc(function)
                 if doc:
                     lastline = doc.split("\n")[-1]
-                    if lastline[:17] == "http://dx.doi.org" and lastline not in link:
+                    if lastline[:17] == "http://dx.doi.org" and \
+                            lastline not in link:
                         link.append(lastline)
                         item.addChild(QtGui.QTreeWidgetItem([name, lastline]))
 
@@ -81,10 +83,11 @@ class ShowReference(QtGui.QDialog):
                 if lista in objeto.__dict__:
                     for eq in objeto.__dict__[lista]:
                         if eq and "__doi__" in eq:
-                            item.addChild(QtGui.QTreeWidgetItem([eq["__name__"], eq["__doi__"]]))
+                            item.addChild(QtGui.QTreeWidgetItem(
+                                [eq["__name__"], eq["__doi__"]]))
 
-
-    def openpdf(self, item, int):
+    def open(self, item, int):
+        """Open file if exist in doc/doi folder or open a browser in paper link"""
         if item.parent():
             text = item.text(0)
             code = str(text).replace("/", "_")
@@ -92,7 +95,8 @@ class ShowReference(QtGui.QDialog):
             if os.path.isfile(file):
                 os.system('evince "'+file+'"')
             else:
-                explorer = HelpView.HelpView(text, QtCore.QUrl("http://dx.doi.org/%s" %text))
+                explorer = HelpView.HelpView(text, QtCore.QUrl(
+                    "http://dx.doi.org/%s" %text))
                 explorer.exec_()
 
 

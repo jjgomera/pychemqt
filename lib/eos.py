@@ -13,7 +13,6 @@ from scipy.optimize import fsolve
 import unidades
 import config
 from physics import R_atml, factor_acentrico_octano
-from bip import SRK, PR, BWRS
 
 #from EoS import *
 

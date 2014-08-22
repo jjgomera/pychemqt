@@ -1,8 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#para convertir la base de datos de array de python en sql
-#y utilidades varias sobre consulta, modificación de la base de datos
+###############################################################################
+# Module for properties database manipulation
+#   -createDatabase: Create empty database
+#
+#   -getElement
+#   -copyElement
+#   -deleteElement
+#   -inserElementFromArray
+#   -updateElement
+#   -transformElement
+###############################################################################
+
 import sqlite3, os
 
 
@@ -25,8 +35,8 @@ def createDatabase(name):
     Cp_ideal_D    FLOAT,
     Cp_ideal_E    FLOAT,
     Cp_ideal_F    FLOAT,
-    antoine_A   FLOAT,     
-    antoine_B   FLOAT,     
+    antoine_A   FLOAT,
+    antoine_B   FLOAT,
     antoine_C   FLOAT,
     henry_A     FLOAT,
     henry_B     FLOAT,
@@ -172,11 +182,11 @@ def transformElement(elemento):
     vals=[]
     vals.append(str(elemento[0]))
     vals.append(str(elemento[1]))
-    vals.append(elemento[2])    
-    vals.append(elemento[3])    
-    vals.append(elemento[4])    
+    vals.append(elemento[2])
+    vals.append(elemento[3])
+    vals.append(elemento[4])
     vals.append(elemento[5])
-    vals.append(elemento[6])   
+    vals.append(elemento[6])
 
     if elemento[7]:
         vals+=elemento[7]
@@ -244,43 +254,43 @@ def transformElement(elemento):
         vals+=elemento[23][0:8]
     else:
         vals+=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        
-    vals.append(elemento[24])   
-    vals.append(elemento[25])   
-    vals.append(elemento[26])   
-    vals.append(elemento[27])   
-    vals.append(elemento[28])   
-    vals.append(elemento[29])   
-    vals.append(elemento[30])   
+
+    vals.append(elemento[24])
+    vals.append(elemento[25])
+    vals.append(elemento[26])
+    vals.append(elemento[27])
+    vals.append(elemento[28])
+    vals.append(elemento[29])
+    vals.append(elemento[30])
     if elemento[31]:
-        vals+=elemento[31] 
+        vals+=elemento[31]
     else:
         vals+=[0.0, 0.0]
-    vals.append(elemento[32])   
-    vals.append(elemento[33])   
-    vals.append(elemento[34])   
+    vals.append(elemento[32])
+    vals.append(elemento[33])
+    vals.append(elemento[34])
     vals.append(str(elemento[35]))
     vals.append(str(elemento[36]))
     vals.append(str(elemento[37]))
-    vals.append(elemento[38])   
-    vals.append(elemento[39])   
-    vals.append(elemento[40])   
-    vals.append(elemento[41])   
-    vals.append(elemento[42])   
-    vals.append(elemento[43])   
-    vals.append(elemento[44])   
-    vals.append(elemento[45])   
-    vals.append(elemento[46])   
-    vals.append(elemento[47])   
+    vals.append(elemento[38])
+    vals.append(elemento[39])
+    vals.append(elemento[40])
+    vals.append(elemento[41])
+    vals.append(elemento[42])
+    vals.append(elemento[43])
+    vals.append(elemento[44])
+    vals.append(elemento[45])
+    vals.append(elemento[46])
+    vals.append(elemento[47])
     vals.append(str(elemento[48]))
-    vals.append(elemento[49])   
-    vals.append(elemento[50])   
-    vals.append(elemento[51])   
-    vals.append(elemento[53])   
+    vals.append(elemento[49])
+    vals.append(elemento[50])
+    vals.append(elemento[51])
+    vals.append(elemento[53])
     try:
         vals.append(elemento[59])
     except:
-        vals.append("") 
+        vals.append("")
     return vals
 
 def inserElementsFromArray(name, lista):
@@ -296,7 +306,7 @@ def inserElementsFromArray(name, lista):
         vals=transformElement(elemento)
         vals.insert(0, numero+indice+1)
         curs.execute(query+str(tuple(vals)))
-        
+
     conn.commit()
     conn.close()
 
@@ -304,7 +314,7 @@ def updateElement(elemento, indice):
     """lista: array con datos de componentes en formato texto"""
     variables=["formula", "nombre", "peso_molecular", "tc", "pc", "vc", "API", "Cp_ideal_A", "Cp_ideal_B", "Cp_ideal_C", "Cp_ideal_D", "Cp_ideal_E", "Cp_ideal_F", "antoine_A", "antoine_B", "antoine_C", "henry_A", "henry_B", "henry_C", "henry_D", "visco_A", "visco_B", "tension_A", "tension_B", "rhoS_DIPPR_EQ", "rhoS_DIPPR_A", "rhoS_DIPPR_B", "rhoS_DIPPR_C", "rhoS_DIPPR_D", "rhoS_DIPPR_E", "rhoS_DIPPR_tmin", "rhoS_DIPPR_tmax", "rhoL_DIPPR_EQ", "rhoL_DIPPR_A", "rhoL_DIPPR_B", "rhoL_DIPPR_C", "rhoL_DIPPR_D", "rhoL_DIPPR_E", "rhoL_DIPPR_tmin", "rhoL_DIPPR_tmax", "Pv_DIPPR_EQ", "Pv_DIPPR_A", "Pv_DIPPR_B", "Pv_DIPPR_C", "Pv_DIPPR_D", "Pv_DIPPR_E", "Pv_DIPPR_tmin", "Pv_DIPPR_tmax", "Hv_DIPPR_EQ", "Hv_DIPPR_A", "Hv_DIPPR_B", "Hv_DIPPR_C", "Hv_DIPPR_D", "Hv_DIPPR_E", "Hv_DIPPR_tmin", "Hv_DIPPR_tmax", "CpS_DIPPR_EQ", "CpS_DIPPR_A", "CpS_DIPPR_B", "CpS_DIPPR_C", "CpS_DIPPR_D", "CpS_DIPPR_E", "CpS_DIPPR_tmin", "CpS_DIPPR_tmax", "CpL_DIPPR_EQ", "CpL_DIPPR_A", "CpL_DIPPR_B", "CpL_DIPPR_C", "CpL_DIPPR_D", "CpL_DIPPR_E", "CpL_DIPPR_tmin", "CpL_DIPPR_tmax", "CpG_DIPPR_EQ", "CpG_DIPPR_A", "CpG_DIPPR_B", "CpG_DIPPR_C", "CpG_DIPPR_D", "CpG_DIPPR_E", "CpG_DIPPR_tmin", "CpG_DIPPR_tmax", "muL_DIPPR_EQ", "muL_DIPPR_A", "muL_DIPPR_B", "muL_DIPPR_C", "muL_DIPPR_D", "muL_DIPPR_E", "muL_DIPPR_tmin", "muL_DIPPR_tmax", "muG_DIPPR_EQ", "muG_DIPPR_A", "muG_DIPPR_B", "muG_DIPPR_C", "muG_DIPPR_D", "muG_DIPPR_E", "muG_DIPPR_tmin", "muG_DIPPR_tmax", "ThcondL_DIPPR_EQ", "ThcondL_DIPPR_A", "ThcondL_DIPPR_B", "ThcondL_DIPPR_C", "ThcondL_DIPPR_D", "ThcondL_DIPPR_E", "ThcondL_DIPPR_tmin", "ThcondL_DIPPR_tmax", "ThcondG_DIPPR_EQ", "ThcondG_DIPPR_A", "ThcondG_DIPPR_B", "ThcondG_DIPPR_C", "ThcondG_DIPPR_D", "ThcondG_DIPPR_E", "ThcondG_DIPPR_tmin", "ThcondG_DIPPR_tmax", "tension_DIPPR_EQ", "tension_DIPPR_A", "tension_DIPPR_B", "tension_DIPPR_C", "tension_DIPPR_D", "tension_DIPPR_E", "tension_DIPPR_tmin", "tension_DIPPR_tmax", "momento_dipolar", "constante_volumen_liquido", "constante_rackett", "densidad_especifica", "factor_acentrico", "parametro_solubilidad", "watson", "MSRK_A", "MSRK_B", "Stiehl", "t_ebullicion", "t_fusion", "CAS_id", "formula_alternativa", "UNIFAC", "diametro_molecular", "Eps_k", "UNIQUAC_area", "UNIQUAC_volumen", "factor_acentrico_modificado", "calor_formacion_gas", "energia_libre_gas", "volumen_wilson", "calor_combustion_neto", "calor_combustion_bruto", "nombre_alternativo", "volumen_caracteristico", "calor_formacion_solido", "energia_libre_solido", "parametro_polar", "smile"]
     vals=transformElement(elemento)
-    
+
     conn = sqlite3.connect(databank_Custom_name)
     curs = conn.cursor()
     for variable, valor in zip(variables, vals):
@@ -317,7 +327,7 @@ def updateElement(elemento, indice):
             curs.execute('UPDATE compuestos SET %s=%s WHERE id==%i' %(variable, valor, indice))
     conn.commit()
     conn.close()
-    
+
 def deleteElement(indice):
     """lista: array con datos de componentes en formato texto"""
     conn = sqlite3.connect(databank_Custom_name)
@@ -372,5 +382,5 @@ if __name__ == "__main__":
 #    createDatabase('databank.db')
 #    inserElementsFromArray('databank.db', databank.base_datos)
 #    inserElementsFromArray('databank.db', databank400.base_datos)
-    
+
     copyElement(5)

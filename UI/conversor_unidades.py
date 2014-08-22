@@ -81,23 +81,28 @@ class UI_conversorUnidades(QtGui.QDialog):
 
 
 class moneda(UI_conversorUnidades):
+
     def __init__(self, valor=None, parent=None):
         super(moneda, self).__init__(Currency, valor=valor, parent=parent)
 
-        self.fecha=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Date::")+self.value.fecha)
+        self.fecha = QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Date::") + self.value.fecha)
         self.gridLayout.addWidget(self.fecha, 0, 1)
-        self.botonActualizar=QtGui.QPushButton(QtGui.QApplication.translate("pychemqt", "Update"))
+        self.botonActualizar = QtGui.QPushButton(
+            QtGui.QApplication.translate("pychemqt", "Update"))
         self.botonActualizar.clicked.connect(self.getrates)
         self.gridLayout.addWidget(self.botonActualizar, 1, 1)
 
         for i in range(len(Currency.__units__)):
-            self.tabla.verticalHeaderItem(i).setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/flag/%s.gif" % Currency.__units__[i])))
+            self.tabla.verticalHeaderItem(i).setIcon(QtGui.QIcon(QtGui.QPixmap(
+                os.environ["pychemqt"]+"/images/flag/%s.gif" % Currency.__units__[i])))
 
     def getrates(self):
         getrates()
-        self.value=self.unidad(self.value)
-        self.fecha.setText(QtGui.QApplication.translate("pychemqt", "Date:")+self.value.fecha)
-        if self.value!=0:
+        self.value = self.unidad(self.value)
+        self.fecha.setText(QtGui.QApplication.translate("pychemqt", "Date:") +
+                           self.value.fecha)
+        if self.value != 0:
             self.actualizar(0, 0)
 
 
@@ -107,4 +112,3 @@ if __name__ == "__main__":
     dialogo = moneda(300)
     dialogo.show()
     sys.exit(app.exec_())
-

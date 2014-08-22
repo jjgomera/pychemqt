@@ -1,19 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-###Módulo que define los diferentes elementos disponibles del diagrama de flujo
+###############################################################################
+# Module for graphics elements of PFD
+###############################################################################
+
 
 from functools import partial
 from datetime import datetime
-from ConfigParser import ConfigParser
-import tempfile, os, subprocess
+import tempfile
+import os
+import subprocess
 
 from PyQt4 import QtCore, QtGui, QtXml, QtSvg
 
 from lib import unidades
 from lib.project import Project
 from lib.thread import WaitforClick
-from lib.config import conf_dir, Preferences
+from lib.config import Preferences
 from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
@@ -21,7 +25,9 @@ from UI.widgets import createAction, Table_Graphics, PathConfig
 from tools.UI_Preferences import ConfLine
 from equipment import *
 
-factor=5
+
+# Value for mouse wheel zoom
+factor = 5
 
 
 def loadFromFile(path):
@@ -49,7 +55,7 @@ class SelectStreamProject(QtGui.QDialog):
     def __init__(self, parent=None):
         super(SelectStreamProject, self).__init__(parent)
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Select stream from file"))
-        
+
         layout = QtGui.QGridLayout(self)
         label=QtGui.QApplication.translate("pychemqt", "Project path")+":"
         msg=QtGui.QApplication.translate("pychemqt", "Select pychemqt project file")
@@ -59,7 +65,7 @@ class SelectStreamProject(QtGui.QDialog):
         self.filename=PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeproject)
         layout.addWidget(self.filename,1,1,1,3)
-        
+
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Streams")),2,1)
         self.stream=QtGui.QComboBox()
         layout.addWidget(self.stream,2,2)
@@ -78,7 +84,7 @@ class SelectStreamProject(QtGui.QDialog):
         QtGui.QApplication.processEvents()
         try:
             self.project=loadFromFile(path)
-            self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True) 
+            self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
             self.status.setText(QtGui.QApplication.translate("pychemqt", "Project loaded succesfully"))
         except Exception as e:
             print e
@@ -86,7 +92,7 @@ class SelectStreamProject(QtGui.QDialog):
         self.stream.clear()
         for stream in self.project.streams.keys():
             self.stream.addItem("%i" %stream)
-    
+
 
 
 class ConfLineDialog(QtGui.QDialog, ConfLine):
@@ -114,7 +120,7 @@ class TextItemDlg(QtGui.QDialog):
         layout.addWidget(self.buttonBox, 2, 1, 1, 1)
         self.editor.notas.setFocus()
         if text:
-            self.editor.setText(text)            
+            self.editor.setText(text)
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Edit text"))
         self.updateUi()
 
@@ -130,7 +136,7 @@ class GeometricItem(object):
         self.setPen(self._pen())
         self.setFlags(QtGui.QGraphicsItem.ItemIsSelectable|QtGui.QGraphicsItem.ItemIsMovable|QtGui.QGraphicsItem.ItemSendsGeometryChanges|QtGui.QGraphicsItem.ItemIsFocusable)
         self.setZValue(-1)
-    
+
     def _pen(self):
         pen=QtGui.QPen(QtGui.QColor(Preferences.get("PFD", 'Color_Stream')))
         pen.setWidthF(Preferences.getfloat("PFD", 'Width'))
@@ -150,7 +156,7 @@ class GeometricItem(object):
             pen=dialog.pen()
             self.setPen(pen)
             self.itemChange(QtGui.QGraphicsItem.ItemPositionChange, 0)
-            
+
     def contextMenu(self):
         contextMenu= QtGui.QMenu("%s Item" % self.type, self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
@@ -225,7 +231,7 @@ class EllipseItem(GeometricItem, QtGui.QGraphicsEllipseItem):
 class TextItem(QtGui.QGraphicsTextItem):
     """Clase que define los textos en el diagrama de flujo"""
     type="txt"
-    
+
     def __init__(self, text, parent=None, position=QtCore.QPointF(0, 0), transform=QtGui.QTransform(), selectable=True):
         super(TextItem, self).__init__(parent=parent)
         if selectable:
@@ -236,7 +242,7 @@ class TextItem(QtGui.QGraphicsTextItem):
         self.setPos(position)
         self.setTransform(transform)
         self.selectable=selectable
-        
+
     def delete(self):
         self.scene().delete(self)
 
@@ -263,7 +269,7 @@ class TextItem(QtGui.QGraphicsTextItem):
                     self.scene().parent().activeControl(True)
                     self.scene().parent().tabModified(self.scene().parent().idTab)
         return QtGui.QGraphicsItem.itemChange(self, change, variant)
-            
+
     def keyPressEvent(self, event):
         if event.key()==QtCore.Qt.Key_Delete or event.key()==QtCore.Qt.Key_Backspace:
             self.delete()
@@ -283,7 +289,7 @@ class TextItem(QtGui.QGraphicsTextItem):
 
 class GraphicsEntity(object):
     """Clase que modela la funcionalidad comun a corrientes y equipos en el PFD"""
-    
+
     def view(self):
         with tempfile.NamedTemporaryFile("w+r", delete=False, suffix=".txt") as temp:
             temp.write(QtGui.QApplication.translate("pychemqt","Project Name")+": "+self.scene().parent().currentFilename+os.linesep)
@@ -313,7 +319,7 @@ class GraphicsEntity(object):
             name, ext=os.path.splitext(ruta)
             if not ext or ext not in (".ods", ".xlsx", ".xls"):
                 ruta+="."+str(patrones[0]).split(".")[-1][:-1]
-                
+
             if ruta[-3:]=="ods":
                 import ezodf
                 templatefile=os.environ["pychemqt"]+os.sep+"dat"+os.sep+"templates"+os.sep+self.entity.__class__.__name__.lower()+".ots"
@@ -330,11 +336,11 @@ class GraphicsEntity(object):
                 else:
                     spreadsheet = ezodf.newdoc("ods", ruta)
                     sheets = spreadsheet.sheets
-                    sheet=ezodf.Table('pychemqt - s%i'%self.id) 
+                    sheet=ezodf.Table('pychemqt - s%i'%self.id)
                     sheets+=sheet
                     propiedades=self.entity.properties()
                     sheet.reset(size=(len(propiedades)+1, 10))
-                    
+
                     for i, (name, attr, unit) in enumerate(self.entity.propertiesNames()):
                         value=self.entity._prop(attr)
                         txt=""
@@ -343,7 +349,7 @@ class GraphicsEntity(object):
                             value=value.config()
                         elif isinstance(value, list):
                             txt=value[0].text()
-                        
+
                         sheet["B%i"%(i+2)].set_value(name)
                         sheet["C%i"%(i+2)].set_value(value)
                         sheet["D%i"%(i+2)].set_value(txt)
@@ -361,7 +367,7 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
     id=0
     free_id=[]
     type="stream"
-    
+
     def __init__(self, parent=None):
         super(StreamItem, self).__init__()
         self.parent=parent
@@ -377,7 +383,7 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
         self.idLabel=TextItem("S%i" %self.id, self, selectable=False)
         self.idLabel.setZValue(2)
         self.setAcceptHoverEvents(True)
-        
+
     @property
     def corriente(self):
         return self.scene().project.getStream(self.id)
@@ -403,14 +409,14 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
         dialog = UI_corriente.Corriente_Dialog(self.corriente)
         if dialog.exec_():
             self.setCorriente(dialog.corriente)
-        
+
     def copyFromProject(self):
         dialog=SelectStreamProject()
         if dialog.exec_():
             indice=int(dialog.stream.currentText())
             corriente=dialog.project.getStream(indice)
             self.setCorriente(corriente)
-            
+
 
     def keyPressEvent(self, event):
         if event.key()==QtCore.Qt.Key_Delete or event.key()==QtCore.Qt.Key_Backspace:
@@ -430,11 +436,11 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
         if not (self.scene().addObj and self.scene().addType=="stream"):
             self.tabla.hide()
             self.tabla.deleteLater()
-    
+
 #    def hoverMoveEvent(self, event):
 #        self.tabla.move(event.screenPos())
 #        self.tabla.show()
-        
+
     def contextMenu(self):
         ViewAction=createAction(QtGui.QApplication.translate("pychemqt", "View Properties"), slot=self.view, parent=self.scene())
         SolidDistributionAction=createAction(QtGui.QApplication.translate("pychemqt", "Solid Distribution Fit"), slot=self.solidFit, parent=self.scene())
@@ -444,7 +450,7 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
         else:
             ViewAction.setEnabled(False)
             SolidDistributionAction.setEnabled(False)
-            
+
         contextMenu= QtGui.QMenu("Stream %i" %self.id, self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/stream.png")))
         contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
@@ -465,7 +471,7 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
             self.entrada=entrada
         if salida:
             self.salida=salida
-        
+
         max_height=max(self.up.boundingRect().height(), self.down.boundingRect().height())
         max_width=max(self.up.boundingRect().width(), self.down.boundingRect().width())
         y_up=min(self.up.pos().y(), self.down.pos().y())
@@ -487,12 +493,12 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
             Ydist_entrada=20
         elif self.Ang_entrada==360:
             Ydist_entrada=-20
-            
+
         if self.Ang_salida==0:
             Xdist_salida=-20
         elif self.Ang_salida==180:
             Xdist_salida=20
-        
+
         qp=QtGui.QPainterPath()
         qp.moveTo(self.entrada)
         if self.Ang_entrada==self.Ang_salida:
@@ -534,8 +540,8 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
 
     def idLabelVisibility(self):
         self.idLabel.setVisible(not self.idLabel.isVisible())
-    
-    
+
+
     def solidFit(self):
         if self.corriente.solido:
             dialog=Plot_Distribucion(self.id, self.corriente.solido)
@@ -582,8 +588,8 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 EquipmentItem.id_out+=1
                 self.id=EquipmentItem.id_out
                 self.tipo="o"
-            
-        
+
+
         output=[]
         input=[]
         dom = QtXml.QDomDocument()
@@ -595,20 +601,20 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         fh.close()
         root = dom.documentElement()
         node = root.firstChild().toElement()
-        
+
         while node.toElement().tagName()!="ins":
             node=node.nextSibling()
-        child=node.toElement().firstChild().toElement()            
+        child=node.toElement().firstChild().toElement()
         while not child.isNull():
             x=child.attribute("x").toFloat()[0]
             y=child.attribute("y").toFloat()[0]
             d=child.attribute("d")
             input.append([x, y, d])
             child = child.nextSibling().toElement()
-            
+
         while node.toElement().tagName()!="outs":
             node=node.nextSibling()
-        child=node.toElement().firstChild().toElement()            
+        child=node.toElement().firstChild().toElement()
         while not child.isNull():
             x=child.attribute("x").toFloat()[0]
             y=child.attribute("y").toFloat()[0]
@@ -643,7 +649,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
     def entity(self):
         return self.equipment
 
-    def mouseDoubleClickEvent(self, event=None):                
+    def mouseDoubleClickEvent(self, event=None):
         if self.dialogoId!=None:
             args=[self.equipment]
             #Añadimos argumentos adicionales en algunos equipos
@@ -658,14 +664,14 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             elif isinstance(self.equipment, spreadsheet.Spreadsheet):         #spreadsheet
                 self.equipment(project=self.scene().project)
                 args.append(self.scene().project)
-                
+
             dialog = self.dialogo(*args)
             if dialog.exec_():
                 self.scene().project.setItem(self.id, dialog.Equipment)
 #                self.up[0].setCorriente(dialog.Equipment.entrada)
                 for i, corriente in enumerate(dialog.Equipment.salida):
                     self.down[i].setCorriente(corriente)
-                
+
                 self.itemChange(QtGui.QGraphicsItem.ItemPositionChange, 0)
         else:
             if self.output:
@@ -723,7 +729,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         if not self.scene().addObj and self.scene().addType=="stream":
             self.tabla.hide()
             self.tabla.deleteLater()
-    
+
 #    def hoverMoveEvent(self, event):
 #        self.tabla.move(event.screenPos())
 #        self.tabla.show()
@@ -781,7 +787,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 contextMenu=self.down[0].contextMenu()
             else:
                 contextMenu=self.up[0].contextMenu()
-                
+
         contextMenu.addSeparator()
         self.menuTransform=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Transform"))
         self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_90.png"), QtGui.QApplication.translate("pychemqt", "Rotate by 90"), partial(self.rotate, 90))
@@ -793,11 +799,11 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         contextMenu.addAction(self.menuTransform.menuAction())
 
         return contextMenu
-    
-    
+
+
     def delete(self):
         self.scene().delete(self)
-    
+
     def format(self):
         pass
 
@@ -843,26 +849,26 @@ class GraphicsView(QtGui.QGraphicsView):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         self.PFD=PFD
-        
+
 #    def wheelEvent(self, event):
 #        print event.delta()
-#        
+#
 #        factor = 1.41 ** (-event.delta() / 240.0)
 #        self.zoom(factor)
 
     def mouseMoveEvent(self, event):
         QtGui.QGraphicsView.mouseMoveEvent(self, event)
         self.mouseMove.emit(event.posF())
-        
+
     def mousePressEvent(self, event):
         QtGui.QGraphicsView.mousePressEvent(self, event)
         if not self.PFD:
             self.scene().views()[0].centerOn(self.mapToScene(event.pos()))
-        
+
     def closeEvent(self, event):
         if self.PFD:
             event.ignore()
-        
+
 #    def dragEnterEvent(self, event):
 #        if event.mimeData().hasFormat("application/x-equipment"):
 #            event.accept()
@@ -895,7 +901,7 @@ class GraphicsView(QtGui.QGraphicsView):
         self.resetMatrix()
         self.scale(factor, factor)
 
-        
+
 
 
 class GraphicsScene(QtGui.QGraphicsScene):
@@ -914,7 +920,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
         QtGui.QGraphicsScene.mousePressEvent(self, event)
         if self.addObj and self.addType!="stream":
             self.Pos.append(event.scenePos())
-        
+
     def addActions(self, menu, pos=None):
         menu.addAction(QtGui.QApplication.translate("pychemqt", "Redraw"), self.update)
         menu.addSeparator()
@@ -929,7 +935,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
         actionDelete=createAction(QtGui.QApplication.translate("pychemqt", "Delete All"), slot=self.delete, shortcut=QtGui.QKeySequence.Delete, icon=os.environ["pychemqt"]+"/images/button/editDelete", parent=self)
         menu.addAction(actionDelete)
         menu.addSeparator()
-        
+
         if self.copiedItem.isEmpty():
             actionPaste.setEnabled(False)
         items=self.selectedItems()
@@ -937,12 +943,12 @@ class GraphicsScene(QtGui.QGraphicsScene):
             actionCut.setEnabled(False)
             actionCopy.setEnabled(False)
             actionDelete.setEnabled(False)
-            
+
         for item in items:
             menuEl=item.contextMenu()
             menu.addAction(menuEl.menuAction())
         return menu
-        
+
     def contextMenuEvent(self, event):
         item=self.itemAt(event.scenePos())
         if item:
@@ -950,11 +956,11 @@ class GraphicsScene(QtGui.QGraphicsScene):
         contextMenu= QtGui.QMenu()
         self.addActions(contextMenu, event.scenePos())
         contextMenu.exec_(event.screenPos())
-        
+
     def selectAll(self):
         for item in self.items():
             item.setSelected(True)
-            
+
     def copy(self, item=None):
         if not item:
             item=self.selectedItems()[0]
@@ -994,7 +1000,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             self.removeItem(item)
         self.update()
         self.parent().list.updateList(self.objects)
-        
+
 
     def waitClick(self, numClick, type, object):
         self.object=object
@@ -1006,7 +1012,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
         self.clickCollector = WaitforClick(numClick, self)
         self.clickCollector.finished.connect(self.click)
         self.clickCollector.start()
-        
+
 
     def click(self):
         if self.addType in ["equip", "in",  "out", "txt"]:
@@ -1024,7 +1030,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
         elif self.addType in ["square", "ellipse"]:
             rect=QtCore.QRectF(self.Pos[0], self.Pos[1])
             self.object.setRect(rect)
-            
+
         self.addItem(self.object)
         if self.addType=="equip":
             self.project.addItem("e%i" %(self.object.id), self.object.dialogo.Equipment)
@@ -1052,10 +1058,10 @@ class GraphicsScene(QtGui.QGraphicsScene):
 #            if isinstance(item, QtSvg.QGraphicsSvgItem):
 #                item.hoverLeaveEvent(None)
 #            item.setAcceptHoverEvents(False)
-            
 
 
-        
+
+
     def readItemFromStream(self, stream):
         type = QtCore.QString()
         matrix = QtGui.QTransform()
@@ -1083,7 +1089,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             stream >> name
             dialogoid=stream.readInt32()
             item=EquipmentItem(name, dialogoid)
-                
+
         item.setTransform(matrix)
         return item
 
@@ -1099,9 +1105,9 @@ class GraphicsScene(QtGui.QGraphicsScene):
         elif isinstance(item, EquipmentItem):
             stream << QtCore.QString(item.name)
             stream.writeInt32(item.dialogoId)
-    
-    
-    def readFromFile(self, stream):        
+
+
+    def readFromFile(self, stream):
         n_txt = stream.readInt32()
         for obj in range(n_txt):
             txt=QtCore.QString()
@@ -1112,7 +1118,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             s.setPos(pos)
             self.objects["txt"].append(s)
             self.addItem(s)
-        
+
         n_square=stream.readInt32()
         for obj in range(n_square):
             rect=QtCore.QRectF()
@@ -1124,7 +1130,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             s.setPen(pen)
             self.objects["square"].append(s)
             self.addItem(s)
-            
+
         n_circle=stream.readInt32()
         for obj in range(n_circle):
             rect=QtCore.QRectF()
@@ -1151,7 +1157,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             id_stream.append(stream.readInt32())
             up_type=QtCore.QString()
             down_type=QtCore.QString()
-            stream >> up_type 
+            stream >> up_type
             up_id=stream.readInt32()
             stream >> down_type
             down_id=stream.readInt32()
@@ -1194,7 +1200,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             s.up=up
             self.objects["in"][id]=s
             self.addItem(s)
-            
+
         n_out=stream.readInt32()
         angle_out={}
         for obj in range(n_out):
@@ -1247,14 +1253,14 @@ class GraphicsScene(QtGui.QGraphicsScene):
             stream >> pos
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
-            
+
         for id in id_stream:
             tipo, i=up_stream[id]
             self.objects["stream"][id].up=self.getObject(tipo, i)
             tipo, i=down_stream[id]
             self.objects["stream"][id].down=self.getObject(tipo, i)
             self.objects["stream"][id].redraw()
-        
+
         for id, angle in angle_in.iteritems():
             self.objects["in"][id].rotate(angle)
         for id, angle in angle_out.iteritems():
@@ -1263,7 +1269,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             self.objects["equip"][id].rotate(angle)
 
 
-    def saveToFile(self, stream):        
+    def saveToFile(self, stream):
         stream.writeInt32(len(self.objects["txt"]))
         for obj in self.objects["txt"]:
             stream << obj.toHtml()
@@ -1305,7 +1311,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             stream.writeInt32(len(self.objects["in"][id].down))
             for down in self.objects["in"][id].down:
                 stream.writeInt32(down.id)
-                
+
         stream.writeInt32(len(self.objects["out"]))
         for id in self.objects["out"]:
             stream << self.objects["out"][id].pos()
@@ -1317,7 +1323,7 @@ class GraphicsScene(QtGui.QGraphicsScene):
             stream.writeInt32(len(self.objects["out"][id].down))
             for down in self.objects["out"][id].down:
                 stream.writeInt32(down.id)
-            
+
         stream.writeInt32(len(self.objects["equip"]))
         for id in self.objects["equip"]:
             stream << QtCore.QString(self.objects["equip"][id].name)
@@ -1333,8 +1339,8 @@ class GraphicsScene(QtGui.QGraphicsScene):
                 stream.writeInt32(down.id)
             stream << self.objects["equip"][id].idLabel.toHtml()
             stream << self.objects["equip"][id].idLabel.pos()
-            
-            
+
+
     def getObject(self, tipo, id):
         if tipo=="e":
             lista=self.objects["equip"]
@@ -1355,4 +1361,4 @@ if __name__ == "__main__":
     dialogo = SelectStreamProject()
     dialogo.show()
     sys.exit(app.exec_())
-    
+

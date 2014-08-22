@@ -11,7 +11,7 @@ from pylab import triu, plot, grid, show, figtext, xlabel, ylabel
 from PyQt4.QtGui import QApplication
 
 from compuestos import Componente
-from bip import SRK, PR, BWRS
+from bip import srk
 from physics import R_atml, R_cal, R, factor_acentrico_octano
 from lib import unidades, config, eos, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 
@@ -230,7 +230,7 @@ class Mezcla(config.Entity):
                 bi.append(b)
             b=sum([fraccion*b for fraccion, b in zip(self.fraccion, bi)])
 
-            k=self.Kij(SRK)
+            k=self.Kij(srk)
 
             aij=[[(ai[i]*ai[j])**0.5*(1-k[i][j]) for j in range(len(self.componente))] for i in range(len(self.componente))]
             a=sum([fraccioni*fraccionj*aij[i][j] for j, fraccionj in enumerate(self.fraccion) for i, fraccioni in enumerate(self.fraccion)])
@@ -1390,7 +1390,7 @@ class Corriente(config.Entity):
         T=unidades.Temperature(self.kwargs.get("T", None))
         P=unidades.Pressure(self.kwargs.get("P", None))
         x=self.kwargs.get("x", None)
-    
+
         MEoS=self.Config.getboolean("Thermo","MEoS")
         COOLPROP=self.Config.getboolean("Thermo", "coolprop")
         REFPROP=self.Config.getboolean("Thermo", "refprop")
@@ -1408,7 +1408,7 @@ class Corriente(config.Entity):
                 GERG_available=False
             if id not in refProp.__all__:
                 REFPROP_available=False
-                
+
         if IAPWS and FREESTEAM:
             compuesto=freeSteam.Freesteam(**self.kwargs)
         elif IAPWS:
@@ -1448,7 +1448,7 @@ class Corriente(config.Entity):
                 self.x=unidades.Dimensionless(eos.x)
             else:
                 self.x=unidades.Dimensionless(x)
-            
+
             self.mezcla.recallZeros(eos.xi)
             self.mezcla.recallZeros(eos.yi)
             self.mezcla.recallZeros(eos.Ki, 1.)
@@ -1526,7 +1526,7 @@ class Corriente(config.Entity):
 
             self.Liquido=compuesto.Liquido
             self.Gas=compuesto.Gas
-            
+
 #            if self.x<1:      #Fase líquida
 #                self.Liquido=compuesto.Liquido
 #            if self.x>0:       #Fase gaseosa
@@ -1559,7 +1559,7 @@ class Corriente(config.Entity):
                 self.Liquido.caudalunitariomasico=[self.Liquido.caudalmasico]
                 self.Liquido.caudalunitariomolar=[self.Liquido.caudalmolar]
 
-        
+
         if self.Config.get("Components", "Solids"):
             if self.kwargs["solido"]:
                 self.solido=self.kwargs["solido"]
@@ -1689,24 +1689,24 @@ class Corriente(config.Entity):
 
     @classmethod
     def propertiesNames(cls):
-        list=[(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature), 
-                (QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure), 
-                (QApplication.translate("pychemqt", "Vapor Fraction"), "x", unidades.Dimensionless), 
-                (QApplication.translate("pychemqt", "Molar Flow"), "caudalmolar", unidades.MolarFlow), 
-                (QApplication.translate("pychemqt", "Mass Flow"), "caudalmasico", unidades.MassFlow), 
-                (QApplication.translate("pychemqt", "Volumetric Flow"), "Q", unidades.VolFlow), 
-                (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy), 
-                (QApplication.translate("pychemqt", "Critic Temperature"), "Tc", unidades.Temperature), 
-                (QApplication.translate("pychemqt", "Critic Pressure"), "Pc", unidades.Pressure), 
-                (QApplication.translate("pychemqt", "SG, water=1"), "SG", unidades.Dimensionless), 
-                (QApplication.translate("pychemqt", "Molecular weight"), "M", unidades.Dimensionless), 
-                (QApplication.translate("pychemqt", "Molar Composition"), "fraccion", unidades.Dimensionless), 
-                (QApplication.translate("pychemqt", "Mass Composition"), "fraccion_masica", unidades.Dimensionless), 
-                (QApplication.translate("pychemqt", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow), 
-                (QApplication.translate("pychemqt", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow), 
+        list=[(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
+                (QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure),
+                (QApplication.translate("pychemqt", "Vapor Fraction"), "x", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Molar Flow"), "caudalmolar", unidades.MolarFlow),
+                (QApplication.translate("pychemqt", "Mass Flow"), "caudalmasico", unidades.MassFlow),
+                (QApplication.translate("pychemqt", "Volumetric Flow"), "Q", unidades.VolFlow),
+                (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
+                (QApplication.translate("pychemqt", "Critic Temperature"), "Tc", unidades.Temperature),
+                (QApplication.translate("pychemqt", "Critic Pressure"), "Pc", unidades.Pressure),
+                (QApplication.translate("pychemqt", "SG, water=1"), "SG", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Molecular weight"), "M", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Molar Composition"), "fraccion", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Mass Composition"), "fraccion_masica", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow),
+                (QApplication.translate("pychemqt", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow),
                 (QApplication.translate("pychemqt", "Notes"), "notasPlain", str)]
         return list
-        
+
     def propertiesListTitle(self, index):
         """Define los titulos para los popup de listas"""
         lista=[comp.nombre for comp in self.componente]

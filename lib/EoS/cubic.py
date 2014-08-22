@@ -5,9 +5,9 @@
 # Virial equation of state implementation
 ###############################################################################
 
-from scipy import zeros, log, exp
-from scipy.constants import R
+from scipy import roots, r_, log, exp
 
+from lib import unidades, config
 from lib.eos import EoS
 from lib.physics import R_atml
 

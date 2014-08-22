@@ -1,11 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""Librería de calculo de propiedades usando refprop
-https://github.com/BenThelen/python-refprop"""
+###############################################################################
+# Library to multiparameter equation of state calculation using refprop
+# https://github.com/BenThelen/python-refprop
+# refprop dll must be installed from NIST package, license requered
+# optional method to meos tools calculations and to stream
+###############################################################################
+
+#TODO: Don't work when it's used in qt loop, as library work great
 
 from PyQt4.QtGui import QApplication
-#import pdb; pdb.set_trace()  # XXX BREAKPOINT
 
 try:
     import refprop
@@ -17,7 +22,7 @@ from config import fluid
 
 
 class RefProp(object):
-    """Clase que define una corriente mediante refprop"""
+    """Stream class using refProp external library"""
     kwargs = {"ref": u"def",
               "fluido": None,
               "fraccionMolar": None,
@@ -34,16 +39,19 @@ class RefProp(object):
     msg = "Unknown variables"
 
     def __init__(self, **kwargs):
-        """Los parámetros necesarios para definirla son:
+        """Parameters needed to define it are:
 
-        -ref: estado referencia
-        -fluido: nombre del fluido
-        -fraccion: fraccion molar
+        -ref: reference state
+        -fluido: index of fluid
+        -fraccionMolar: molar fraction
 
-        -T: temperatura de la corriente en kelvin
-        -P: presión de la corriente en atm
-        -x: fracción de vapor
-
+        -T: Temperature, Kelvin
+        -P: Pressure, Pa
+        -rho: Density, kg/m3
+        -H: Enthalpy, J/kg
+        -S: Entropy, J/kgK
+        -U: Internal energy, J/kg
+        -x: Quality, -
         """
         self.kwargs = RefProp.kwargs.copy()
         self.__call__(**kwargs)
@@ -102,8 +110,7 @@ class RefProp(object):
         return self._definition and self._thermo
 
     def args(self):
-        # tener en centa las diferencias entre la nomenclatura general
-        # de la corriente y la de refprop
+        # Correct refprop custom namespace versus pychemqt namespace
         if "Q" in self._thermo:
             self.kwargs["Q"] = self.kwargs["x"]
         if "D" in self._thermo:
@@ -114,7 +121,8 @@ class RefProp(object):
         var1 = self.kwargs[self._thermo[0]]
         var2 = self.kwargs[self._thermo[1]]
 
-        # conversiones a las unidades necesarias:
+        # unit conversion to refprop accepted units
+        # P in kPa, U,H in kJ/kg, S in kJ/kgK
         if self._thermo[0] == "P":
             var1 /= 1000.
         if self._thermo[0] in ("E", "H", "S"):
@@ -263,104 +271,103 @@ class RefProp(object):
 #                transport, multiRP.mRP[u'result'][processlist[3].name], multiRP.mRP[u'result'][processlist[4].name])
 
         self.h = unidades.Enthalpy(self.x*self.Vapor.h+(1-self.x)*self.Liquido.h)
-        self.s=unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
-        self.cp=unidades.SpecificHeat(self.x*self.Vapor.cp+(1-self.x)*self.Liquido.cp)
-        self.cp0=unidades.SpecificHeat(self.x*self.Vapor.cp0+(1-self.x)*self.Liquido.cp0)
-        self.cv=unidades.SpecificHeat(self.x*self.Vapor.cv+(1-self.x)*self.Liquido.cv)
+        self.s = unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
+        self.cp = unidades.SpecificHeat(self.x*self.Vapor.cp+(1-self.x)*self.Liquido.cp)
+        self.cp0 = unidades.SpecificHeat(self.x*self.Vapor.cp0+(1-self.x)*self.Liquido.cp0)
+        self.cv = unidades.SpecificHeat(self.x*self.Vapor.cv+(1-self.x)*self.Liquido.cv)
 
-        self.cp_cv=unidades.Dimensionless(self.cp/self.cv)
-        self.cp0_cv=unidades.Dimensionless(self.cp0/self.cv)
+        self.cp_cv = unidades.Dimensionless(self.cp/self.cv)
+        self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv)
 
-        if self.T<=self.Tc:
-            surten = refprop.surten(flash["t"], flash["Dliq"], flash["Dvap"], flash["xliq"], flash["xvap"])
-            self.surten=unidades.Tension(surten["sigma"])
+        if self.T <= self.Tc:
+            surten = refprop.surten(flash["t"], flash["Dliq"], flash["Dvap"],
+                                    flash["xliq"], flash["xvap"])
+            self.surten = unidades.Tension(surten["sigma"])
         else:
-            self.surten=unidades.Tension(None)
+            self.surten = unidades.Tension(None)
 
 #        cp2=refprop.cv2pk(self.nc, flash["t"], flash["D"])
 #        self.cv2p=unidades.SpecificHeat(cp2["cv2p"]/self.M)
 #        self.csat=unidades.SpecificHeat(cp2["csat"]/self.M)
 
-
     def fill(self, fase, flash, thermo, mol, transport, dielec, thermo0):
         fase.update(fluid(thermo))
-        fase.fraccion=flash["xliq"]
-        fase.M=unidades.Dimensionless(mol["wmix"])
-        fase.rho=unidades.Density(flash["Dliq"]*fase.M)
+        fase.fraccion = flash["xliq"]
+        fase.M = unidades.Dimensionless(mol["wmix"])
+        fase.rho = unidades.Density(flash["Dliq"]*fase.M)
 
-        fase.u=unidades.Enthalpy(fase["e"]/fase.M, "Jg")
-        fase.cv=unidades.SpecificHeat(fase["cv"]/fase.M, "JgK")
-        fase.cp=unidades.SpecificHeat(fase["cp"]/fase.M, "JgK")
-        fase.h=unidades.Enthalpy(fase["h"]/fase.M, "Jg")
-        fase.s=unidades.SpecificHeat(fase["s"]/fase.M, "JgK")
-        fase.w=unidades.Speed(fase["w"])
-        fase.joule=unidades.TemperaturePressure(fase["hjt"], "KkPa")
-        fase.Z=unidades.Dimensionless(fase["Z"])
-        fase.A=unidades.Enthalpy(fase["A"]/fase.M, "Jg")
-        fase.G=unidades.Enthalpy(fase["G"]/fase.M, "Jg")
-        fase.xkappa=unidades.InvPressure(fase["xkappa"], "kPa")
-        fase.alfav=unidades.InvTemperature(fase["beta"])
-#            fase.dpdD=fase["dpdD"]      #derivative dP/dD [kPa-L/mol]
-#            fase.d2pdD2=fase["d2pdD2"]  #derivative d^2p/dD^2 [kPa-L^2/mol^2]
-#            fase.dpdt=unidades.PressureTemperature(fase["dpdt"], "kPaK")
-#            fase.dDdt=fase["dDdt"]      #derivative dD/dt [mol/(L-K)]
-#            fase.dDdp=fase["dDdp"]      #derivative dD/dp [mol/(L-kPa)]
+        fase.u = unidades.Enthalpy(fase["e"]/fase.M, "Jg")
+        fase.cv = unidades.SpecificHeat(fase["cv"]/fase.M, "JgK")
+        fase.cp = unidades.SpecificHeat(fase["cp"]/fase.M, "JgK")
+        fase.h = unidades.Enthalpy(fase["h"]/fase.M, "Jg")
+        fase.s = unidades.SpecificHeat(fase["s"]/fase.M, "JgK")
+        fase.w = unidades.Speed(fase["w"])
+        fase.joule = unidades.TemperaturePressure(fase["hjt"], "KkPa")
+        fase.Z = unidades.Dimensionless(fase["Z"])
+        fase.A = unidades.Enthalpy(fase["A"]/fase.M, "Jg")
+        fase.G = unidades.Enthalpy(fase["G"]/fase.M, "Jg")
+        fase.xkappa = unidades.InvPressure(fase["xkappa"], "kPa")
+        fase.alfav = unidades.InvTemperature(fase["beta"])
+#            fase.dpdD = fase["dpdD"]      #derivative dP/dD [kPa-L/mol]
+#            fase.d2pdD2 = fase["d2pdD2"]  #derivative d^2p/dD^2 [kPa-L^2/mol^2]
+#            fase.dpdt = unidades.PressureTemperature(fase["dpdt"], "kPaK")
+#            fase.dDdt = fase["dDdt"]      #derivative dD/dt [mol/(L-K)]
+#            fase.dDdp = fase["dDdp"]      #derivative dD/dp [mol/(L-kPa)]
 #
 #            fluido2=refprop.therm3(flash["t"], flash["Dliq"], flash["xliq"])
-#            fase.xisenk=fluido2["xisenk"]
-#            fase.xkt=fluido2["xkt"]
-#            fase.betas=fluido2["betas"]
-#            fase.bs=fluido2["bs"]
-#            fase.xkkt=fluido2["xkkt"]
-#            fase.thrott=fluido2["thrott"]
-#            fase.pint=fluido2["pint"]
-#            fase.spht=fluido2["spht"]
+#            fase.xisenk = fluido2["xisenk"]
+#            fase.xkt = fluido2["xkt"]
+#            fase.betas = fluido2["betas"]
+#            fase.bs = fluido2["bs"]
+#            fase.xkkt = fluido2["xkkt"]
+#            fase.thrott = fluido2["thrott"]
+#            fase.pint = fluido2["pint"]
+#            fase.spht = fluido2["spht"]
 
-#            fase.fpv=refprop.fpv(flash["t"], flash["Dliq"], flash["p"], flash["xliq"])
-#            fase.chempot=refprop.chempot(flash["t"], flash["Dliq"], flash["xliq"])
-#            fase.fgcty=refprop.fgcty(flash["t"], flash["Dliq"], flash["xliq"])
-#            fase.fugcof=refprop.fugcof(flash["t"], flash["Dliq"], flash["xliq"])
+#            fase.fpv = refprop.fpv(flash["t"], flash["Dliq"], flash["p"], flash["xliq"])
+#            fase.chempot = refprop.chempot(flash["t"], flash["Dliq"], flash["xliq"])
+#            fase.fgcty = refprop.fgcty(flash["t"], flash["Dliq"], flash["xliq"])
+#            fase.fugcof = refprop.fugcof(flash["t"], flash["Dliq"], flash["xliq"])
 
-#            fase.virb=refprop.virb(flash["t"], flash["xliq"])["b"]
-#            fase.virc=refprop.virc(flash["t"], flash["xliq"])["c"]
-#            fase.vird=refprop.vird(flash["t"], flash["xliq"])["d"]
-#            fase.virba=refprop.virba(flash["t"], flash["xliq"])["ba"]
-#            fase.virca=refprop.virca(flash["t"], flash["xliq"])["ca"]
+#            fase.virb = refprop.virb(flash["t"], flash["xliq"])["b"]
+#            fase.virc = refprop.virc(flash["t"], flash["xliq"])["c"]
+#            fase.vird = refprop.vird(flash["t"], flash["xliq"])["d"]
+#            fase.virba = refprop.virba(flash["t"], flash["xliq"])["ba"]
+#            fase.virca = refprop.virca(flash["t"], flash["xliq"])["ca"]
 
         if transport:
-            fase.mu=unidades.Viscosity(transport["eta"], "muPas")
-            fase.k=unidades.ThermalConductivity(transport["tcx"])
-            fase.Prandt=unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+            fase.mu = unidades.Viscosity(transport["eta"], "muPas")
+            fase.k = unidades.ThermalConductivity(transport["tcx"])
+            fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
         else:
-            fase.mu=unidades.Viscosity(None)
-            fase.k=unidades.ThermalConductivity(None)
-            fase.Prandt=unidades.Dimensionless(None)
+            fase.mu = unidades.Viscosity(None)
+            fase.k = unidades.ThermalConductivity(None)
+            fase.Prandt = unidades.Dimensionless(None)
 
-        fase.dielec=unidades.Dimensionless(dielec["de"])
-        fase.cp0=unidades.SpecificHeat(thermo0["cp"]/fase.M)
-        fase.cp0_cv=unidades.Dimensionless(fase.cp0/fase.cv)
-
+        fase.dielec = unidades.Dimensionless(dielec["de"])
+        fase.cp0 = unidades.SpecificHeat(thermo0["cp"]/fase.M)
+        fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv)
 
     def getphase(self, fld):
-        u'''Return fluid phase
-        Override refprop original function with translation support"'''
-        #check if fld above critical pressure
+        """Return fluid phase
+        Override refprop original function with translation support"""
+        # check if fld above critical pressure
         if fld[u'p'] > self.Pc.kPa:
-            #check if fld above critical pressure
+            # check if fld above critical pressure
             if fld[u't'] > self.Tc:
                 return QApplication.translate("pychemqt", "Supercritical fluid"), 1.
             else:
                 return QApplication.translate("pychemqt", "Compressible liquid"), 1.
-        #check if fld above critical pressure
+        # check if fld above critical pressure
         elif fld[u't'] > self.Tc:
             return QApplication.translate("pychemqt", "Gas"), 1.
-        #check if ['q'] in fld
-        if not u'q' in fld.keys():
+        # check if ['q'] in fld
+        if u'q' not in fld.keys():
             if u'h' in fld.keys():
                 fld[u'q'] = refprop.flsh(u'ph', fld[u'p'], fld[u'h'], fld[u'x'])[u'q']
             elif u's' in fld.keys():
                 fld[u'q'] = refprop.flsh(u'ps', fld[u'p'], fld[u's'], fld[u'x'])[u'q']
-        #check q
+        # check q
         if fld[u'q'] > 1:
             return QApplication.translate("pychemqt", "Vapor"), 1.
         elif fld[u'q'] == 1:
@@ -373,86 +380,85 @@ class RefProp(object):
             return QApplication.translate("pychemqt", "Liquid"), 0.
 
 
-__all__={ 212: u"helium",
-                107: u"neon",
-                98: u"argon",
-                1: u"hydrogen",
-                46: u"nitrogen",
-                47: u"oxygen",
-                208: u"fluorine",
-                62: u"water",
-                49: u"co2",
-                48: u"co",
-                110: u"n2o",
-                51: u"so2",
-                219: u"cos",
-                63: u"ammonia",
-                50: u"h2s",
-                2: u"methane",
-                3: u"ethane",
-                4: u"propane",
-                6: u"butane",
-                5: u"isobutan",
-                8: u"pentane",
-                9: u"neopentn",
-                7: u"ipentane",
-                10: u"hexane",
-                52: u"ihexane",
-                11: u"heptane",
-                12: u"octane",
-                13: u"nonane",
-                14: u"decane",
-                16: u"c12",
-                258: u"cyclopro",
-                38: u"cyclohex",
-                40: u"benzene",
-                41: u"toluene",
-                22: u"ethylene",
-                23: u"propylen",
-                24: u"1butene",
-                27: u"ibutene",
-                25: u"c2butene",
-                26: u"t2butene",
-                66: u"propyne",
-                117: u"methanol",
-                134: u"ethanol",
-                140: u"acetone",
-                133: u"dme",
-                951: u"nf3",
-                971: u"krypton",
-                994: u"xenon",
-                953: u"sf6",
-                645: u"cf3i",
-                217: u"r11",
-                216: u"r12",
-                215: u"r13",
-                218: u"r14",
-                642: u"r21",
-                220: u"r22",
-                643: u"r23",
-                645: u"r32",
-                225: u"r41",
-                232: u"r113",
-                231: u"r114",
-                229: u"r115",
-                236: u"r116",
-                1631: u"r123",
-                1629: u"r124",
-                1231: u"r125",
-                1235: u"r134a",
-                1633: u"r141b",
-                241: u"r142b",
-                243: u"r143a",
-                245: u"r152a",
-                671: u"r218",
-                1872: u"r227ea",
-                1873: u"r236fa",
-                1817: u"r245fa",
-                692: u"rc318",
-                475: u"air",
-                }
+__all__ = {212: u"helium",
+           107: u"neon",
+           98: u"argon",
+           1: u"hydrogen",
+           46: u"nitrogen",
+           47: u"oxygen",
+           208: u"fluorine",
+           62: u"water",
+           49: u"co2",
+           48: u"co",
+           110: u"n2o",
+           51: u"so2",
+           219: u"cos",
+           63: u"ammonia",
+           50: u"h2s",
+           2: u"methane",
+           3: u"ethane",
+           4: u"propane",
+           6: u"butane",
+           5: u"isobutan",
+           8: u"pentane",
+           9: u"neopentn",
+           7: u"ipentane",
+           10: u"hexane",
+           52: u"ihexane",
+           11: u"heptane",
+           12: u"octane",
+           13: u"nonane",
+           14: u"decane",
+           16: u"c12",
+           258: u"cyclopro",
+           38: u"cyclohex",
+           40: u"benzene",
+           41: u"toluene",
+           22: u"ethylene",
+           23: u"propylen",
+           24: u"1butene",
+           27: u"ibutene",
+           25: u"c2butene",
+           26: u"t2butene",
+           66: u"propyne",
+           117: u"methanol",
+           134: u"ethanol",
+           140: u"acetone",
+           133: u"dme",
+           951: u"nf3",
+           971: u"krypton",
+           994: u"xenon",
+           953: u"sf6",
+           645: u"cf3i",
+           217: u"r11",
+           216: u"r12",
+           215: u"r13",
+           218: u"r14",
+           642: u"r21",
+           220: u"r22",
+           643: u"r23",
+           645: u"r32",
+           225: u"r41",
+           232: u"r113",
+           231: u"r114",
+           229: u"r115",
+           236: u"r116",
+           1631: u"r123",
+           1629: u"r124",
+           1231: u"r125",
+           1235: u"r134a",
+           1633: u"r141b",
+           241: u"r142b",
+           243: u"r143a",
+           245: u"r152a",
+           671: u"r218",
+           1872: u"r227ea",
+           1873: u"r236fa",
+           1817: u"r245fa",
+           692: u"rc318",
+           475: u"air"}
 
-noId=["d2", "parahyd", "d2o", "r365mfc", "r404a", "r410a", "r407c", "r507a"]
+noId = ["d2", "parahyd", "d2o", "r365mfc", "r404a", "r410a", "r407c", "r507a"]
 
 if __name__ == '__main__':
     import sys
