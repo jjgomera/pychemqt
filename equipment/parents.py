@@ -46,6 +46,7 @@ class equipment(Entity):
         statusCoste: Cost section status
         indiceCostos: Index of equipment in costindex
         calculateCostos: Results values in cost section
+        __doi__: Bibliography in array of dict format
 
         isCalculable: procedure to define solvable status of equipment, use too
          to define cost status and other definition options

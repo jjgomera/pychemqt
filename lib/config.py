@@ -4,15 +4,15 @@
 import os, random, sys
 
 #TODO: Borrar cuando no haga falta debug
-os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-os.environ["freesteam"]="True"
-os.environ["oasa"]="True"
-os.environ["Elemental"]="True"
-os.environ["CoolProp"]="True"
-os.environ["refprop"]="True"
-os.environ["ezodf"]="True"
-os.environ["openpyxl"]="True"
-os.environ["xlwt"]="True"
+#os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
+#os.environ["freesteam"]="True"
+#os.environ["oasa"]="True"
+#os.environ["Elemental"]="True"
+#os.environ["CoolProp"]="True"
+#os.environ["refprop"]="True"
+#os.environ["ezodf"]="True"
+#os.environ["openpyxl"]="True"
+#os.environ["xlwt"]="True"
 
 from ConfigParser import ConfigParser
 
