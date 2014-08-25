@@ -29,12 +29,66 @@ magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter',
               'PackingDP', 'V2V', 'InvTemperature', 'InvPressure',
               'EnthalpyPressure', 'TemperaturePressure', 'PressureTemperature',
               'Currency', 'Dimensionless']
+
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
 equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
            'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
            'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
            'ElectricPrecipitator', 'Dryer', 'Hairpin', 'Spreadsheet']
+
+
+def which(program):
+    """Function to detect program availability in systemi and return path"""
+    import os
+
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return ""
+
+calculator = ""
+if sys.platform == "win32":
+    calculator = "calc.exe"
+else:
+    for programa in ["qalculate", "gcalctool", "kcalc"]:
+        ejecutable = which(programa)
+        if ejecutable:
+            calculator = ejecutable
+            break
+
+editor = ""
+if sys.platform == "win32":
+    editor = "notepad.exe"
+else:
+    for programa in ["gedit", "leafpad", "geany", "kate", "kwrite", "vim",
+            "vi", "emacs", "nano", "pico"]:
+        ejecutable = which(programa)
+        if ejecutable:
+            editor = ejecutable
+            break
+
+shell = ""
+if sys.platform == "win32":
+    shell = ""
+else:
+    shell = which("xterm")
+# TODO: De momento solo soporta xterm
+#    for programa in ["xterm", "gnome-terminal", "kterminal", "lxterminal", "xfce4-terminal", "terminator"]:
+#        ejecutable=which(programa)
+#        if ejecutable:
+#            shell=ejecutable
+#            break
 
 
 def Preferences():
@@ -185,55 +239,6 @@ def config():
     config.set("PFD", "y", "480")
 
     return config
-
-
-def which(program):
-    """Function to detect program availability in systemi and return path"""
-    import os
-
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-    return None
-
-if sys.platform == "win32":
-    calculator = "calc.exe"
-else:
-    for programa in ["qalculate", "gcalctool", "kcalc"]:
-        ejecutable = which(programa)
-        if ejecutable:
-            calculator = ejecutable
-            break
-
-if sys.platform == "win32":
-    editor = "notepad.exe"
-else:
-    for programa in ["gedit", "leafpad", "geany", "kate"]:
-        ejecutable = which(programa)
-        if ejecutable:
-            editor = ejecutable
-            break
-
-if sys.platform == "win32":
-    shell = ""
-else:
-    shell = which("xterm")
-# TODO: De momento solo soporta xterm
-#    for programa in ["xterm", "gnome-terminal", "kterminal", "lxterminal", "xfce4-terminal", "terminator"]:
-#        ejecutable=which(programa)
-#        if ejecutable:
-#            shell=ejecutable
-#            break
 
 
 def getrates(archivo):  # From Python Cookbook
