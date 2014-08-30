@@ -22,7 +22,7 @@ class UI_equipment(UI_equip):
     Equipment=Dryer()
     def __init__(self, equipment=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada"""
-        super(UI_equipment, self).__init__(Dryer, costos=False, parent=parent)
+        super(UI_equipment, self).__init__(Dryer, parent=parent)
 
         #Pestaña entrada
         self.EntradaSolido= UI_corriente.Ui_corriente()
@@ -31,7 +31,7 @@ class UI_equipment(UI_equip):
         self.EntradaAire= UI_corriente.Ui_psychrometry()
         self.EntradaAire.Changed.connect(partial(self.changeParams, "entradaAire"))
         self.Entrada.addTab(self.EntradaAire,QtGui.QApplication.translate("pychemqt", "Air"))
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Mode")),1,1)
@@ -56,12 +56,12 @@ class UI_equipment(UI_equip):
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Heat Duty")),6,1)
         self.Heat=Entrada_con_unidades(unidades.Power)
         self.Heat.valueChanged.connect(partial(self.changeParams, "Heat"))
-        gridLayout_Calculo.addWidget(self.Heat,6,2) 
+        gridLayout_Calculo.addWidget(self.Heat,6,2)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure Drop")),7,1)
         self.DeltaP=Entrada_con_unidades(unidades.Pressure)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
-        gridLayout_Calculo.addWidget(self.DeltaP,7,2) 
-  
+        gridLayout_Calculo.addWidget(self.DeltaP,7,2)
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),8,1,1,6)
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,9,1,1,5)
@@ -75,7 +75,7 @@ class UI_equipment(UI_equip):
         gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output Air Relative Humidity")),3,1)
         self.HumedadCalculada=Entrada_con_unidades(float, readOnly=True, textounidad="%")
         gridLayout_1.addWidget(self.HumedadCalculada,3,2)
-        
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,1,1,6)
 
         #Pestaña salida
@@ -83,7 +83,7 @@ class UI_equipment(UI_equip):
         self.Salida.addTab(self.SalidaSolido,QtGui.QApplication.translate("pychemqt", "Dry solid"))
         self.SalidaAire= UI_corriente.Ui_psychrometry(readOnly=True)
         self.Salida.addTab(self.SalidaAire,QtGui.QApplication.translate("pychemqt", "Air"))
-        
+
         if equipment:
             self.setEquipment(equipment)
 
@@ -101,7 +101,7 @@ class UI_equipment(UI_equip):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Mezcla, Corriente, Solid
     from lib.psycrometry import Punto_Psicrometrico
     app = QtGui.QApplication(sys.argv)

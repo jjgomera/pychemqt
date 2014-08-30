@@ -19,7 +19,7 @@ class UI_equipment(parents.UI_equip):
     """Dialogo de definición de unidades de secado de sólidos"""
     def __init__(self, entradaSolido=None, entradaAire=None,  parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada"""
-        super(UI_equipment, self).__init__(Dryer, costos=False, parent=parent)
+        super(UI_equipment, self).__init__(Dryer, parent=parent)
         self.entradaSolido=entradaSolido
         self.entradaAire=entradaAire
         self.Equipment=Dryer()

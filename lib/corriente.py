@@ -13,7 +13,7 @@ from PyQt4.QtGui import QApplication
 from compuestos import Componente
 from bip import srk
 from physics import R_atml, R_cal, R, factor_acentrico_octano
-from lib import unidades, config, eos, mEoS, gerg, iapws, freeSteam, refProp, coolProp
+from lib import unidades, config, EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 
 
 class Mezcla(config.Entity):
@@ -1190,7 +1190,7 @@ class Corriente(config.Entity):
         -P: presión de la corriente en atm
         -x: fracción de vapor
 
-        -caudalMasico: caudal en kg/h (en el caso de corrientes con componentes sólidos, no se incluirán en el caudal total
+        -caudalMasico: caudal en k]/h (en el caso de corrientes con componentes sólidos, no se incluirán en el caudal total
         -caudalMolar: caudal en kmol/h (en el caso de corrientes con componentes sólidos, no se incluirán en el caudal total
         -caudalVolumetrico: caudal en m3/h medido en condiciones estandar de P y T
         -caudalUnitarioMolar: array con los caudales molares de cada componente
@@ -1443,7 +1443,7 @@ class Corriente(config.Entity):
             if self.tipoTermodinamica=="TP":
                 self.T=unidades.Temperature(T)
                 self.P=unidades.Pressure(P)
-                eos=eos.K[self.Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
+                eos=EoS.K[self.Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
                 self.eos=eos
                 self.x=unidades.Dimensionless(eos.x)
             else:
@@ -1465,10 +1465,10 @@ class Corriente(config.Entity):
             self.Gas.Z=unidades.Dimensionless(float(eos.Z[0]))
             self.Liquido.Z=unidades.Dimensionless(float(eos.Z[1]))
 
-            if eos.H[self.Config.getint("Thermo","H")].__title__ == eos.K[self.Config.getint("Thermo","K")].__title__:
+            if EoS.H[self.Config.getint("Thermo","H")].__title__ == EoS.K[self.Config.getint("Thermo","K")].__title__:
                 eosH=eos
             else:
-                eosH=eos.H[self.Config.getint("Thermo","H")](self.T, self.P.atm, self.mezcla)
+                eosH=EoS.H[self.Config.getint("Thermo","H")](self.T, self.P.atm, self.mezcla)
             self.H_exc=eosH.H_exc
 
             self.Liquido.Q=unidades.VolFlow(0)
@@ -1599,6 +1599,8 @@ class Corriente(config.Entity):
                 kwargs["caudalMolar"]=split*self.kwargs["caudalMolar"]
         if kwargs.has_key("x"):
             del old_kwargs["T"]
+        if kwargs.has_key("mezcla"):
+            old_kwargs.update(kwargs["mezcla"].kwargs)
         old_kwargs.update(kwargs)
         return Corriente(**old_kwargs)
 

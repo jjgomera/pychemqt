@@ -58,7 +58,7 @@ class TableDelegate(QtGui.QItemDelegate):
             value = editor.currentText()
         else:
             value = editor.text().toUpper()
-            
+
         model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
 
 
@@ -69,9 +69,9 @@ class UI_equipment(UI_equip):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(Spreadsheet, entrada=True, salida=True, costos=False, calculo=False, parent=parent)
+        super(UI_equipment, self).__init__(Spreadsheet, entrada=True, salida=True, calculo=False, parent=parent)
         self.project=project
-        
+
         #Pestaña calculo
         layout = QtGui.QGridLayout(self.entrada)
         label=QtGui.QApplication.translate("pychemqt", "Spreadsheet path")+":"
@@ -87,10 +87,10 @@ class UI_equipment(UI_equip):
         self.filename=PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename,1,1)
-        header=[QtGui.QApplication.translate("pychemqt", "Entity"), 
-                QtGui.QApplication.translate("pychemqt", "Variable"), 
-                QtGui.QApplication.translate("pychemqt", "Unit value"), 
-                QtGui.QApplication.translate("pychemqt", "Sheet"), 
+        header=[QtGui.QApplication.translate("pychemqt", "Entity"),
+                QtGui.QApplication.translate("pychemqt", "Variable"),
+                QtGui.QApplication.translate("pychemqt", "Unit value"),
+                QtGui.QApplication.translate("pychemqt", "Sheet"),
                 QtGui.QApplication.translate("pychemqt", "Cell")]
         self.datamap=Tabla(5, filas=1, dinamica=True, horizontalHeader=header, verticalHeader=False, orientacion=QtCore.Qt.AlignLeft, num=False, delegateforRow=TableDelegate, parent=self)
         self.datamap.setEnabled(False)
@@ -98,7 +98,7 @@ class UI_equipment(UI_equip):
         self.datamap.rowFinished.connect(self.addRow)
         layout.addWidget(self.datamap,2,1)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1)
-        
+
         entitys=[]
         for stream in self.project.streams.keys():
             entitys.append("s%i"%stream)
@@ -120,7 +120,7 @@ class UI_equipment(UI_equip):
         spreadsheet = ezodf.opendoc(path)
         sheets=[name for name in spreadsheet.sheets.names()]
         self.datamap.itemDelegateForRow(0).setItemsByIndex(3, sheets)
-    
+
     def rellenarInput(self):
         self.blockSignals(True)
         self.datamap.itemDelegateForRow(self.datamap.rowCount()-1).setItemsByIndex(0, self.entitys)
@@ -149,7 +149,7 @@ class UI_equipment(UI_equip):
     def rellenar(self):
         self.rellenarInput()
         self.status.setState(self.Equipment.status, self.Equipment.msg)
-    
+
     def cellChanged(self, i, j):
         obj=self.project.getObject(str(self.datamap.item(i, 0).text()))
         properties=[prop[0] for prop in obj.propertiesNames()]
@@ -168,7 +168,7 @@ class UI_equipment(UI_equip):
                 self.datamap.itemDelegateForRow(i).setItemsByIndex(2, obj.propertiesNames()[ind][2].__text__)
         elif j==3:
             self.datamap.item(i, 4).setText("")
-        
+
     def addRow(self, fila):
         datamap=self.Equipment.kwargs["datamap"][:]
         data={}
@@ -183,7 +183,7 @@ class UI_equipment(UI_equip):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente
     from lib.project import Project
     from equipment.heatExchanger import Hairpin
@@ -200,13 +200,13 @@ if __name__ == "__main__":
     project.addStream(4, "e1", "o2", ind_up=1)
     caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
     project.setInput(1, caliente)
-    
-#    spreadsheet=Spreadsheet(filename="/media/datos/ejemplo.ods", project=project, 
-#                            datamap=[{"entity": "s1", "property": "Pressure", "unit": "atm", "sheet": "Prueba", "cell":"B6"}, 
+
+#    spreadsheet=Spreadsheet(filename="/media/datos/ejemplo.ods", project=project,
+#                            datamap=[{"entity": "s1", "property": "Pressure", "unit": "atm", "sheet": "Prueba", "cell":"B6"},
 #                                               {"entity": "s1", "property": "Temperature", "unit": "K", "sheet": "Prueba", "cell":"B7"}]
 #                                               )
-    spreadsheet=Spreadsheet(filename="/media/datos/ejemplo.xlsx", project=project, 
-#                            datamap=[{"entity": "s1", "property": "Pressure", "unit": "atm", "sheet": "Calculos", "cell":"B5"}, 
+    spreadsheet=Spreadsheet(filename="/media/datos/ejemplo.xlsx", project=project,
+#                            datamap=[{"entity": "s1", "property": "Pressure", "unit": "atm", "sheet": "Calculos", "cell":"B5"},
 #                                               {"entity": "s1", "property": "Temperature", "unit": "K", "sheet": "Calculos", "cell":"B6"}]
                                                )
     app = QtGui.QApplication(sys.argv)

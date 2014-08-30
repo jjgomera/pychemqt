@@ -22,8 +22,8 @@ class UI_equipment(UI_equipment_Solid):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(ElectricPrecipitator, entrada=False, costos=False, parent=parent)
-        
+        super(UI_equipment, self).__init__(ElectricPrecipitator, entrada=False, parent=parent)
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Mode")),1,1)
@@ -37,11 +37,11 @@ class UI_equipment(UI_equipment_Solid):
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Area")),3,1)
         self.area=Entrada_con_unidades(Area, resaltado=True)
         self.area.valueChanged.connect(partial(self.changeParams, "area"))
-        gridLayout_Calculo.addWidget(self.area,3,2) 
+        gridLayout_Calculo.addWidget(self.area,3,2)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Allowable efficiency")),4,1)
         self.rendimientoAdmisible=Entrada_con_unidades(float,  readOnly=True)
         self.rendimientoAdmisible.valueChanged.connect(partial(self.changeParams, "rendimientoAdmisible"))
-        gridLayout_Calculo.addWidget(self.rendimientoAdmisible,4,2) 
+        gridLayout_Calculo.addWidget(self.rendimientoAdmisible,4,2)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),5,1,1,6)
 
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Dielectric constant")),6,1)
@@ -61,7 +61,7 @@ class UI_equipment(UI_equipment_Solid):
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
         gridLayout_Calculo.addWidget(self.deltaP,9,2)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1,1,6)
-        
+
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Result"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,11,1,1,5)
         gridLayout_1 = QtGui.QGridLayout(self.groupBox_Calculo)
@@ -70,7 +70,7 @@ class UI_equipment(UI_equipment_Solid):
         gridLayout_1.addWidget(self.areaCalculada,0,2)
         gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Efficiency")),1,1)
         self.rendimiento=Entrada_con_unidades(float, readOnly=True)
-        gridLayout_1.addWidget(self.rendimiento,1,2)      
+        gridLayout_1.addWidget(self.rendimiento,1,2)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),12,1,1,6)
 
         #Salidas
@@ -78,11 +78,11 @@ class UI_equipment(UI_equipment_Solid):
         self.Salida.addTab(self.SalidaGas,QtGui.QApplication.translate("pychemqt", "Filtered gas"))
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
         self.Salida.addTab(self.SalidaSolido,QtGui.QApplication.translate("pychemqt", "Collected solids"))
-        
+
         if equipment:
             self.setEquipment(equipment)
 
-        
+
     def tipoCalculoCambiado(self, tipo_calculo):
         self.area.setReadOnly(tipo_calculo)
         self.area.setResaltado(not tipo_calculo)
@@ -92,7 +92,7 @@ class UI_equipment(UI_equipment_Solid):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Solid
     app = QtGui.QApplication(sys.argv)
     diametros=[17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]

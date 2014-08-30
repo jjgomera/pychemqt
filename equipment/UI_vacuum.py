@@ -19,7 +19,7 @@ class UI_equipment(parents.UI_equip):
     """Diálogo de definición de filtros de mangas"""
     def __init__(self, entrada=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada"""
-        super(UI_equipment, self).__init__(Baghouse, entrada=False, costos=False, parent=parent)
+        super(UI_equipment, self).__init__(Baghouse, entrada=False, parent=parent)
         self.entrada=entrada
 
         #Pestaña entrada

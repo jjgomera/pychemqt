@@ -1147,7 +1147,7 @@ class Preferences(QtGui.QDialog):
         for icon, dialog, title in self.classes:
             self.stacked.addWidget(dialog(config))
             icon = QtGui.QIcon(QtGui.QPixmap(
-                os.enfiron["pychemqt"]+"/images/%s.png" % icon))
+                os.environ["pychemqt"]+"/images/%s.png" % icon))
             self.lista.addItem(QtGui.QListWidgetItem(icon, title))
 
         self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)

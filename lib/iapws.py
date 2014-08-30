@@ -2815,7 +2815,8 @@ def prop0(T, P):
     prop0.alfav = 1/T
     prop0.xkappa = 1/P
     # FIXME: Ideal Isentropic exponent dont work
-    prop0.gamma=-prop0.v/self.P/1000*self.derivative("P", "v", "s", prop0)
+    # prop0.gamma = -prop0.v/P/1000*derivative("P", "v", "s", prop0)
+    prop0.gamma = 1.
     return prop0
 
 
@@ -2899,14 +2900,29 @@ class IAPWS97(object):
     sigma       -   Surface tension, N/m
     epsilon     -   Dielectric constant
     n              -   Refractive index
-    Pr             -   Prandtl number
+    Prandt      -   Prandtl number
+    Pr             -   Reduced Pressure
+    Tr              -   Reduced Temperature
+
+
+    Usage:
+    >>> water=IAPWS97(T=170+273.15,x=0.5)
+    >>> "%0.4f %0.4f %0.1f %0.2f" %(water.Liquid.cp, water.Vapor.cp, water.Liquid.w, water.Vapor.w)
+    '4.3695 2.5985 1418.3 498.78'
+    >>> water=IAPWS97(T=325+273.15,x=0.5)
+    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" %(water.P, water.Liquid.v, water.Vapor.v, water.Liquid.h, water.Vapor.h)
+    '12.0505 0.00152830 0.0141887 1493.37 2684.48'
+    >>> water=IAPWS97(T=50+273.15,P=0.0006112127)
+    >>> "%0.4f %0.4f %0.2f %0.3f %0.2f" %(water.cp0, water.cv0, water.h0, water.s0, water.w0)
+    '1.8714 1.4098 2594.66 9.471 444.93'
     """
     kwargs = {"T": 0.0,
               "P": 0.0,
               "x": None,
               "h": None,
               "s": None,
-              "v": 0.0}
+              "v": 0.0,
+              "l": 0.5893}
     status = 0
     msg = "Unknown variables"
 
@@ -3065,7 +3081,7 @@ class IAPWS97(object):
             region = _Bound_hs(h, s)
             if region == 1:
                 Po = _Backward1_P_hs(h, s)
-                To = _Backward1_T_ph(Po, h)
+                To = _Backward1_T_Ph(Po, h)
                 funcion = lambda par: (_Region1(par[0], par[1])["h"]-h,
                                        _Region1(par[0], par[1])["s"]-s)
                 T, P = fsolve(funcion, [To, Po])
@@ -3078,7 +3094,8 @@ class IAPWS97(object):
                 T, P = fsolve(funcion, [To, Po])
                 propiedades = _Region2(T, P)
             elif region == 3:
-                vo = _Backward3_v_hs(h, s)
+                P=_Backward3_P_hs(h, s)
+                vo=_Backward3_v_Ps(P, s)
                 To = _Backward3_T_Ps(P, s)
                 funcion = lambda par: (_Region3(par[0], par[1])["h"]-h,
                                        _Region3(par[0], par[1])["s"]-s)
@@ -3099,18 +3116,37 @@ class IAPWS97(object):
             else:
                 raise NotImplementedError("Incoming out of bound")
 
-        elif self._thermo == "Px":
+        elif self._thermo=="Px":
             P, x = args
-            if Pt/1e6 <= P <= Pc and 0 <= x <= 1:
+            if Pt/1e6 <= P <= Pc and 0 < x < 1:
                 propiedades = _Region4(P, x)
+            elif P > 16.529:
+                T = _TSat_P(P)
+                rho = 1./_Backward3_v_PT(T, P)
+                propiedades = _Region3(rho, T)
+            elif x == 0:
+                T = _TSat_P(P)
+                propiedades = _Region1(T, P)
+            elif x == 1:
+                T = _TSat_P(P)
+                propiedades = _Region2(T, P)
             else:
                 raise NotImplementedError("Incoming out of bound")
 
-        elif self._thermo == "Tx":
+        elif self._thermo=="Tx":
             T, x = args
-            if Tt <= T <= Tc and 0 <= x <= 1:
-                P = _PSat_T(T)
+            P = _PSat_T(T)
+            if Tt <= T <= Tc and 0 < x < 1:
                 propiedades = _Region4(P, x)
+            elif P > 16.529:
+                rho = 1./_Backward3_v_PT(T, P)
+                propiedades = _Region3(rho, T)
+            elif x == 0:
+                T = _TSat_P(P)
+                propiedades = _Region1(T, P)
+            elif x == 1:
+                T = _TSat_P(P)
+                propiedades = _Region2(T, P)
             else:
                 raise NotImplementedError("Incoming out of bound")
 
@@ -3183,7 +3219,7 @@ class IAPWS97(object):
         fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.dielec = unidades.Dimensionless(_Dielectric(fase.rho, self.T))
-        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
 
 #        fase.joule=unidades.TemperaturePressure(self.derivative("T", "P", "h"))
         fase.alfav = unidades.InvTemperature(estado["alfav"])
@@ -3242,7 +3278,7 @@ class IAPWS97(object):
             else:
                 return QApplication.translate("pychemqt", "Liquid")
 
-    def derivative(self, z, x, y):
+    def derivative(self, z, x, y, fase):
         """Calculate generic partial derivative: (δz/δx)y
         where x, y, z can be: P, T, v, u, h, s, g, a"""
         if self.region != 4:
@@ -3268,31 +3304,31 @@ class IAPWS97(object):
 
 
 class IAPWS97_PT(IAPWS97):
-    """Derivated class for P and T input"""
+    """Derivated class for direct P and T input"""
     def __init__(self, P, T):
         IAPWS97.__init__(self, T=T, P=P)
 
 
 class IAPWS97_Ph(IAPWS97):
-    """Derivated class for P and h input"""
+    """Derivated class for direct P and h input"""
     def __init__(self, P, h):
         IAPWS97.__init__(self, P=P, h=h)
 
 
 class IAPWS97_Ps(IAPWS97):
-    """Derivated class for P and s input"""
+    """Derivated class for direct P and s input"""
     def __init__(self, P, s):
         IAPWS97.__init__(self, P=P, s=s)
 
 
 class IAPWS97_Pv(IAPWS97):
-    """Derivated class for P and v input"""
+    """Derivated class for direct P and v input"""
     def __init__(self, P, v):
         IAPWS97.__init__(self, P=P, v=v)
 
 
 class IAPWS97_Tx(IAPWS97):
-    """Derivated class for T and x input"""
+    """Derivated class for direct T and x input"""
     def __init__(self, T, x):
         IAPWS97.__init__(self, T=T, x=x)
 

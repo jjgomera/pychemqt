@@ -221,6 +221,7 @@ class Project(object):
 #        config.set("Thermo", "refprop", "False")
 #        config.set("Thermo", "iapws", "True")
 #        config.set("Thermo", "MEoS", "False")
+#        config.set("Units", "specificvolume_square", "0")
 
         self.setConfig(config)
         if not huella:
@@ -233,7 +234,9 @@ class Project(object):
         for i in range(contador_equipos):
             id = stream.readString()
             if id[0] == "e":
-                equip = equipments[stream.readInt32()]()
+                i=stream.readInt32()
+                equip = equipments[i]()
+                #equip = equipments[stream.readInt32()]()
                 equip.readFromStream(stream)
             else:
                 equip = None

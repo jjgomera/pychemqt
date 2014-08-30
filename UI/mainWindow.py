@@ -10,7 +10,7 @@ from scipy import arange
 from scipy.optimize import fsolve
 
 from UI import texteditor, newComponent, flujo, wizard, charts, plots, viewComponents
-from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout, Tabla, TabWidget
+from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout, Tabla
 from lib.config import conf_dir, getComponents
 from lib.project import Project
 from lib.EoS import K, H
@@ -20,6 +20,40 @@ from tools import UI_confComponents, UI_Preferences, UI_confTransport, UI_confTh
 from UI.conversor_unidades import moneda
 
 __version__ = "0.1.0"
+
+
+class TabWidget(QtGui.QTabWidget):
+    """Custom tabwidget to show a message in mainwindow when no project loaded"""
+    def paintEvent(self, event):
+        if self.count():
+            QtGui.QTabWidget.paintEvent(self, event)
+        else:
+            painter = QtGui.QPainter(self)
+            rect = event.rect()
+            h = rect.height()
+            w = rect.width()
+            image = QtGui.QImage("images/pychemqt.png")
+            if w > 500 and h > 500:
+                hi = (h-300)/2
+                wi = (w-300)/2
+                rectImage= QtCore.QRect(wi, hi, 300, 300)
+            else:
+                x = min(h, w)-200
+                rectImage = QtCore.QRect(x+50, 100, w-200, h-200)
+            painter.drawImage(rectImage, image)
+            txt = QtGui.QApplication.translate(
+                "pychemqt", """Welcome to pychemqt,
+a software for simulate units operations in Chemical Engineering,
+
+Copyright © 2012 Juan José Gómez Romera (jjgomera)
+Licenced with GPL.v3
+This software is distributed in the hope that it will be useful,
+but without any warranty, it is provided "as is" without warranty of any kind
+
+To use you can start creating a new project or open an existing project.""",
+                None, QtGui.QApplication.UnicodeUTF8)
+#            rect.setLeft(200)
+            painter.drawText(rect, QtCore.Qt.AlignBottom, txt)
 
 
 class UI_pychemqt(QtGui.QMainWindow):

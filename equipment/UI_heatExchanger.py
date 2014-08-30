@@ -28,8 +28,8 @@ class UI_equipment(UI_equip):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(Heat_Exchanger, entrada=False, salida=False, costos=False, parent=parent)
-        
+        super(UI_equipment, self).__init__(Heat_Exchanger, entrada=False, salida=False, parent=parent)
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output temperature")),1,1)
@@ -59,14 +59,14 @@ class UI_equipment(UI_equip):
         self.Text=Entrada_con_unidades(Temperature)
         self.Text.valueChanged.connect(partial(self.changeParams, "Text"))
         lyt.addWidget(self.Text,3,2)
-        
+
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),5,0,1,3)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure loss")),6,1)
         self.DeltaP=Entrada_con_unidades(DeltaP, value=0)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         gridLayout_Calculo.addWidget(self.DeltaP,6,2)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),7,0,1,3)
-        
+
         self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,8,1,1,5)
         gridLayout_1 = QtGui.QGridLayout(self.groupBox_Calculo)
@@ -93,11 +93,11 @@ class UI_equipment(UI_equip):
             self.DeltaT.clear()
             self.Tout.clear()
         self.calculo(**{parametro: valor})
-    
+
 class Chart(QtGui.QDialog):
     """Implementa la funcionalidad comun de los dialogos de graficos"""
     PosImage=None
-    
+
     def resizeEvent(self, event):
         self.refixImage()
         QtGui.QDialog.resizeEvent(self, event)
@@ -120,10 +120,10 @@ class Chart(QtGui.QDialog):
             y-=hlogo
         else:
             yi=y+10
-        
+
         self.logo.ox=x
         self.logo.oy=y
-        
+
         if self.PosImage:
             a=self.PosImage[0]*xmax+(1-self.PosImage[0])*xmin
             b=self.PosImage[1]*ymax+(1-self.PosImage[1])*ymin
@@ -148,11 +148,11 @@ class Chart(QtGui.QDialog):
 
 class Efectividad(Chart):
     title=QtGui.QApplication.translate("pychemqt", "Heat Exchanger effectiveness")
-    flujo=[(QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"), 
-                (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"), 
+    flujo=[(QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"),
+                (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
                 (QtGui.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado=("Cmin", "Cmax")
@@ -199,7 +199,7 @@ class Efectividad(Chart):
         modelo=self.flow.currentIndex()
         self.plot(modelo)
 
-        
+
     def plot(self, indice):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0, 6)
@@ -213,14 +213,14 @@ class Efectividad(Chart):
         kwargs={}
         if flujo=="CrFSMix":
             kwargs["mixed"]=str(self.mixed.currentText())
-            
+
         C=[0, 0.2, 0.4, 0.6, 0.8, 1.]
-        
+
         NTU=arange(0, 6.1, 0.1)
         for  ci in C:
             e=[0]+[Heat_ExchangerDesign.efectividad(N, ci, flujo, **kwargs) for N in NTU[1:]]
             self.diagrama.plot(NTU, e, "k")
-            
+
             fraccionx=(NTU[40]-NTU[30])/6
             fracciony=(e[40]-e[30])
             try:
@@ -238,23 +238,23 @@ class Efectividad(Chart):
 
 class TemperatureEfectividad(Chart):
     title=QtGui.QApplication.translate("pychemqt", "Heat Exchanger temperature effectiveness")
-    flujo=[(QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"), 
-                (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"), 
-                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA E"), "1-2TEMAE"), 
-                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"), 
-                (QtGui.QApplication.translate("pychemqt", "1-3 TEMA E"), "1-3TEMAE"), 
-                (QtGui.QApplication.translate("pychemqt", "1-4 TEMA E"), "1-4TEMAE"), 
-                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA G"), "1-1TEMAG"), 
-                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA G"), "1-2TEMAG"), 
-                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA H"), "1-1TEMAH"), 
-                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA H"), "1-2TEMAH"), 
-                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA J"), "1-1TEMAJ"), 
-                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA J"), "1-2TEMAJ"), 
-                (QtGui.QApplication.translate("pychemqt", "1-4 TEMA J"), "1-4TEMAJ"), 
-                
+    flujo=[(QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"),
+                (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA E"), "1-2TEMAE"),
+                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
+                (QtGui.QApplication.translate("pychemqt", "1-3 TEMA E"), "1-3TEMAE"),
+                (QtGui.QApplication.translate("pychemqt", "1-4 TEMA E"), "1-4TEMAE"),
+                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA G"), "1-1TEMAG"),
+                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA G"), "1-2TEMAG"),
+                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA H"), "1-1TEMAH"),
+                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA H"), "1-2TEMAH"),
+                (QtGui.QApplication.translate("pychemqt", "1-1 TEMA J"), "1-1TEMAJ"),
+                (QtGui.QApplication.translate("pychemqt", "1-2 TEMA J"), "1-2TEMAJ"),
+                (QtGui.QApplication.translate("pychemqt", "1-4 TEMA J"), "1-4TEMAJ"),
+
                 ]
 
     mezclado=("1", "2")
@@ -300,13 +300,13 @@ class TemperatureEfectividad(Chart):
         modelo=self.flow.currentIndex()
         self.plot(modelo)
 
-        
+
     def plot(self, indice):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0.1, 10)
         self.diagrama.axes2D.set_ylim(0, 1)
         self.diagrama.axes2D.set_xscale("log")
-        
+
         self.diagrama.axes2D.set_title(QtGui.QApplication.translate("pychemqt", "Heat Transfer Temperature Effectiveness"), size='12')
         self.diagrama.axes2D.set_xlabel("NTU", size='12')
         self.diagrama.axes2D.set_ylabel("P", size='14')
@@ -318,9 +318,9 @@ class TemperatureEfectividad(Chart):
         kwargs={}
         if flujo=="CrFSMix":
             kwargs["mixed"]=str(self.mixed.currentText())
-            
+
         R=[0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.2, 1.4, 1.6, 1.8, 2., 2.5, 3., 4., 6., 8., 10., 15.]
-        
+
         NTU=logspace(-1.5, 1, 100)
         for  ri in R:
             e=[0]+[Heat_ExchangerDesign.TemperatureEffectiveness(N, ri, flujo, **kwargs) for N in NTU[1:]]
@@ -337,7 +337,7 @@ class TemperatureEfectividad(Chart):
 #                pi=fsolve(func, 0.2)
 #                p.append(pi)
 #                NTU.append(Heat_ExchangerDesign.NTU_fPR(p, r, flujo))
-                
+
 #            p=[fsolve(lambda P: Heat_ExchangerDesign.CorrectionFactor(P, r, flujo)-f, 0.5)[0] for r in R]
 #            NTU=[Heat_ExchangerDesign.NTU_fPR(pi, ri) for pi, ni in zip(p, R)]
 #            self.diagrama.plot(NTU, p, "--")
@@ -355,15 +355,15 @@ class TemperatureEfectividad(Chart):
 class F(Chart):
     title=QtGui.QApplication.translate("pychemqt", u"ΔT Correction Factor", None, QtGui.QApplication.UnicodeUTF8)
 
-    flujo=[(QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"), 
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"), 
+    flujo=[(QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
                 (QtGui.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado=("Cmin", "Cmax")
     PosLogo=(1, 1)
     PosImage=(0, 0)
-    
+
     def __init__(self, parent=None):
         super(F, self).__init__(parent)
         self.setWindowTitle(self.title)
@@ -417,15 +417,15 @@ class F(Chart):
         kwargs={}
         if flujo=="CrFSMix":
             kwargs["mixed"]=str(self.mixed.currentText())
-            
+
         R=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 4, 6, 8, 10, 15, 20]
 #        R=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-        
+
         P=arange(0, 1.01, 0.01)
         for ri in R:
             f=[Heat_ExchangerDesign.CorrectionFactor(p, ri, flujo, **kwargs) for p in P]
             self.diagrama.plot(P, f, "k")
-            
+
 #            fraccionx=P[90]-P[80]
 #            fracciony=f[90]-f[80]
 #            try:
@@ -443,14 +443,14 @@ class F(Chart):
 class Fi(Chart):
     title=QtGui.QApplication.translate("pychemqt", u"ψ", None, QtGui.QApplication.UnicodeUTF8)
 
-    flujo=[#(QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"), 
-#                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"), 
-#                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"), 
+    flujo=[#(QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+#                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+#                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
                 (QtGui.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado=("Cmin", "Cmax")
     PosLogo=(1, 1)
-    
+
     def __init__(self, parent=None):
         super(Fi, self).__init__(parent)
         self.setWindowTitle(self.title)
@@ -504,14 +504,14 @@ class Fi(Chart):
         kwargs={}
         if flujo=="CrFSMix":
             kwargs["mixed"]=str(self.mixed.currentText())
-            
+
         R=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.2, 1.4, 1.6, 1.8, 2, 2.5, 3, 4, 6, 8, 10]
-        
+
         P=arange(0, 1.01, 0.01)
         for ri in R:
             f=[Heat_ExchangerDesign.Fi(p, ri, flujo, **kwargs) for p in P]
             self.diagrama.plot(P, f, "k")
-            
+
         NTU=[0.2, 0.4, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.]
         for ntu in NTU:
             self.diagrama.plot([0, 1], [0, 1./ntu], "k", linestyle=":")
@@ -534,7 +534,7 @@ chart=(Efectividad, TemperatureEfectividad, F, Fi)
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente
     app = QtGui.QApplication(sys.argv)
 #    agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])

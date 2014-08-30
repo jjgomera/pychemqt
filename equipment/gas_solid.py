@@ -41,7 +41,7 @@ class Separador_SolidGas(equipment):
         for i, fraccion in enumerate(self.entrada.solido.fracciones):
             rendimiento_global += rendimientos[i]*fraccion
         return Dimensionless(rendimiento_global)
-        
+
     def CalcularSalidas(self):
         Solido_NoCapturado, Solido_Capturado=self.entrada.solido.Separar(self.rendimiento_parcial)
         self.salida=[]
@@ -364,7 +364,7 @@ class Ciclon(Separador_SolidGas):
         return velocidad
 
     def coste(self):
-        Q=self.entrada.Q.kft3min*self.entrada.Gas.rho/self.entrada.Gas.rhoSd
+        Q=self.entrada.Q.kft3min*self.entrada.Gas.rho/self.entrada.Gas.rho#Sd
         if self.num_ciclones!=1:
             Q=Q/self.num_ciclones
 
@@ -1092,7 +1092,8 @@ if __name__ == '__main__':
     solido=Solid(caudalSolido=[0.1], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
     corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
 
-#    ciclon=Ciclon(entrada=corriente, tipo_ccalculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
+    ciclon=Ciclon(entrada=corriente, tipo_calculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
+    print ciclon.msg, ciclon.status
 #    print ciclon.C_instTotal, ciclon.C_adqTotal
 
 #    camara=GravityChamber(entrada=corriente, metodo=1, modelo=1, H=1, rendimientoAdmisible=0.9)

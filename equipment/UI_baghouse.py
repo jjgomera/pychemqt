@@ -23,7 +23,7 @@ class UI_equipment(UI_equipment_Solid):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(Baghouse, entrada=False, costos=False, parent=parent)
+        super(UI_equipment, self).__init__(Baghouse, entrada=False, parent=parent)
 
         #Pestaña definición rendimientos
         self.Rendimientos=Tabla(2, horizontalHeader=[QtGui.QApplication.translate("pychemqt", "Diameter")+", "+Length.text("ParticleDiameter"), QtGui.QApplication.translate("pychemqt", "Efficiency")], filas=1, stretch=False)

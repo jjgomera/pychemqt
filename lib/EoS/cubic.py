@@ -5,7 +5,7 @@
 # Virial equation of state implementation
 ###############################################################################
 
-from scipy import roots, r_, log, exp
+from scipy import roots, r_, log, exp, sqrt
 
 from lib import unidades, config
 from lib.eos import EoS

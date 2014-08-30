@@ -23,8 +23,8 @@ class UI_equipment (UI_equip):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment , self).__init__(Valve, entrada=False, salida=False, costos=False, parent=parent)
-        
+        super(UI_equipment , self).__init__(Valve, entrada=False, salida=False, parent=parent)
+
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Valve operation")),1,1)
@@ -51,13 +51,13 @@ class UI_equipment (UI_equip):
         self.Bubble.valueChanged.connect(partial(self.changeParams, "Bubble"))
         gridLayout_Calculo.addWidget(self.Bubble,6,2)
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,1,1,6)
-        
+
         self.criterio_Changed(0)
-                
+
         if equipment:
             self.setEquipment(equipment)
 
-            
+
     def criterio_Changed(self, int):
         self.Pout.setEnabled(int==1)
         self.DeltaP.setEnabled(int==1)
@@ -67,7 +67,7 @@ class UI_equipment (UI_equip):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente
     app = QtGui.QApplication(sys.argv)
     agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMasica=[1.])

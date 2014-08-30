@@ -1009,27 +1009,6 @@ class FlowLayout(QtGui.QLayout):
         return y + lineHeight - rect.y()
 
 
-class TabWidget(QtGui.QTabWidget):
-    """Custom tabwidget to show a message in mainwindow when no project loaded"""
-    def paintEvent(self, event):
-        if self.count():
-            QtGui.QTabWidget.paintEvent(self, event)
-        else:
-            painter = QtGui.QPainter(self)
-            rect = event.rect()
-            rect.setLeft(200)
-            txt = QtGui.QApplication.translate(
-                "pychemqt", """Welcome to pychemqt,
-a software for simulate units operations in Chemical Engineering,
-
-Copyright © 2012 Juan José Gómez Romera (jjgomera)
-Licenced with GPL.v3
-This software is distributed in the hope that it will be useful,
-but without any warranty, it is provided "as is" without warranty of any kind
-
-To use you can start creating a new project or open an existing project.""",
-                None, QtGui.QApplication.UnicodeUTF8)
-            painter.drawText(rect, QtCore.Qt.AlignVCenter, txt)
 
 
 def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
