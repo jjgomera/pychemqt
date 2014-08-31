@@ -161,7 +161,7 @@ These are the options you must expecific next:<br>
             "pychemqt", "Define thermodynamics procedures"))
         page3_thermo.setSubTitle(QtGui.QApplication.translate(
             "pychemqt", "The thermodynamics properties are the basic of \
-            pychemqt, a bad selection would be disastrous for the results"))
+pychemqt, a bad selection would be disastrous for the results"))
         page3_thermo.setPixmap(QtGui.QWizard.LogoPixmap, QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/pychemqt_98.png"))
         lyt = QtGui.QVBoxLayout(page3_thermo)
@@ -174,7 +174,7 @@ These are the options you must expecific next:<br>
             "pychemqt", "Define transport procedures"))
         page4_transport.setSubTitle(QtGui.QApplication.translate(
             "pychemqt", "The transport properties are important too for good \
-            simulation results"))
+simulation results"))
         page4_transport.setPixmap(QtGui.QWizard.LogoPixmap, QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/pychemqt_98.png"))
         lyt = QtGui.QVBoxLayout(page4_transport)
@@ -187,7 +187,7 @@ These are the options you must expecific next:<br>
             "pychemqt", "Define preferred units"))
         page5_units.setSubTitle(QtGui.QApplication.translate(
             "pychemqt", "The preferred units are not necessary for the \
-            simulation, but a good election let you only focus in simulation"))
+simulation, but a good election let you only focus in simulation"))
         page5_units.setPixmap(QtGui.QWizard.LogoPixmap, QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/pychemqt_98.png"))
         lyt = QtGui.QVBoxLayout(page5_units)

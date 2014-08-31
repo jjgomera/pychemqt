@@ -166,6 +166,7 @@ class BWRS(EoS):
 
         return Ao, Bo, Co, Do, Eo, a, b, c, d, alfa, gamma
 
+_all = [BWRS]
 
 if __name__ == "__main__":
     from lib.corriente import Mezcla

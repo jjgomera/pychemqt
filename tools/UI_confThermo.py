@@ -26,7 +26,7 @@ class UI_confThermo_widget(QtGui.QWidget):
         layout.addWidget(self.K, 0, 2)
 
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
-            "pychemqt", "Alfa function:")), 1, 0, 1, 2)
+            "pychemqt   ", "Alfa function:")), 1, 0, 1, 2)
         self.alfa = QtGui.QComboBox()
         self.alfa.addItem(QtGui.QApplication.translate("pychemqt", "Original"))
         self.alfa.addItem("Boston-Mathias")

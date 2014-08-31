@@ -100,6 +100,7 @@ class Lee_Kesler(EoS):
         self.x, self.xi, self.yi, self.Ki=srk._Flash()
 
 
+_all = [Lee_Kesler]
 
 if __name__ == "__main__":
     from lib.corriente import Mezcla

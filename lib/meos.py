@@ -240,8 +240,8 @@ class MEoS(object):
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
         ref = self.kwargs["ref"]
-
-        if ref is not  None:
+        
+        if ref is None:
             ho = so = 0
         else:
             if ref == "CUSTOM":

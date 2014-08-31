@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# librería de definición de equipos de separación gas-sólido-liquido:
-#     -Secadores de sólidos
-#     -Lavadores de gases
+# library for definition of equipment with gas, solid and liquid interaction:
+#     -Dryer
+#     -Scrubber
 ###############################################################################
 
 
@@ -38,14 +38,14 @@ class Dryer(equipment):
     title=QApplication.translate("pychemqt", "Solid dryer")
     help=""
     kwargs={"entradaSolido": None,
-                    "entradaAire": None,
-                    "entrada": [],
-                    "tipoCalculo": 0,
-                    "HR": 0.0,
-                    "TemperaturaSolid": 0.0,
-                    "HumedadResidual": 0.0,
-                    "Heat": 0.0,
-                    "deltaP": 0.0}
+            "entradaAire": None,
+            "entrada": [],
+            "tipoCalculo": 0,
+            "HR": 0.0,
+            "TemperaturaSolid": 0.0,
+            "HumedadResidual": 0.0,
+            "Heat": 0.0,
+            "deltaP": 0.0}
 
     @property
     def isCalculable(self):
@@ -106,21 +106,21 @@ class Dryer(equipment):
 
 
 class Scrubber(equipment):
-    """ Clase que define el scrubber
+    """ Model equipment for scrubber
 
-    Parámetros:
-        entradaGas: Instancia de clase corriente que define el gas que fluye por el equipo
-        entradaLiquido: Instancia de clase corriente que define el líquido lavador
+    Parameters:
+        entradaGas: Stream instance of Corriente for define gas input
+        entradaLiquido: Stream instance of Corriente for define liquid input
         tipo_calculo:
-            0   -   Evaluación del funcionamiento de un venturi de dimensiones conocidas
-            1   -   Diseño de un venturi a partir del rendimiento o perdida de carga admisibles
-        diametro: diametro del venturi
-        rendimiento: Rendimiento admisible
-        modelo_rendimiento: Modelo de cálculo del venturi:
+            0   -   Rating, known dimensions
+            1   -   Design, fixed efficiency, calculate dimensions
+        diametro: scruber diameter
+        rendimiento: Efficiency admisible
+        modelo_rendimiento: Scrubber calculate model:
             0   -   Johnstone (1954)
             1   -   Calvert (1972)
-        k: Método Johnstone - contante empirica del venturi, valores entre 500 y 100
-        f: Método Calvert - correlative parameter 0.2 (hydrophobic) to 0.7 (hydrophilic)
+        k: Johnstone Method - Empiric constant of scrubber, range 500-1000
+        f: Calvert Method - Empiric parameter 0.2 (hydrophobic) to 0.7 (hydrophilic)
         modelo_DeltaP:
             0   -   Young (1977)
     """
