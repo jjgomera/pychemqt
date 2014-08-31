@@ -61,14 +61,15 @@ class Mezcla(config.Entity):
         caudalUnitarioMasico=self.kwargs.get("caudalUnitarioMasico", None)
         caudalUnitarioMolar=self.kwargs.get("caudalUnitarioMolar", None)
 
-        # normalizar fracciones a la unidad
+        # normalizce fractions to unit
         if fraccionMolar:
             suma=float(sum(fraccionMolar))
             fraccionMolar=[x/suma for x in fraccionMolar]
         if fraccionMasica:
             suma=float(sum(fraccionMasica))
             fraccionMasica=[x/suma for x in fraccionMasica]
-
+            
+        # calculate all concentration units
         if tipo==1:
             caudalMasico=sum(caudalUnitarioMasico)
             caudalUnitarioMolar=[mass/componente.M for mass, componente in zip(caudalUnitarioMasico, self.componente)]
@@ -106,16 +107,29 @@ class Mezcla(config.Entity):
             caudalUnitarioMasico=[x*caudalMasico for x in fraccionMasica]
             caudalUnitarioMolar=[x*caudalMolar for x in fraccionMolar]
 
-        self.fraccion_normalizada=[unidades.Dimensionless(f) for f in fraccionMolar]
-        self.componente_normalizado=self.componente[:]
+        # Clean component with null composition
         self.zeros=[]
-        for i in range(fraccionMolar.count(0)):
-            ind=fraccionMolar.index(0)
-            self.zeros.insert(0, ind)
-            del fraccionMolar[ind]
-            del self.componente[ind]
+        for i, x in enumerate(fraccionMolar):
+            if not x:
+                self.zeros.append(i)
+        
+        for i in self.zeros[::-1]:
+            del self.ids[i]
+            del self.componente[i]
+            del fraccionMolar[i]
+            del fraccionMasica[i]
+            del caudalUnitarioMasico[i]
+            del caudalUnitarioMolar[i]
+            
+#        self.fraccion_normalizada=[unidades.Dimensionless(f) for f in fraccionMolar]
+#        self.componente_normalizado=self.componente[:]
+#        self.zeros=[]
+#        for i in range(fraccionMolar.count(0)):
+#            ind=fraccionMolar.index(0)
+#            del fraccionMolar[ind]
+#            del self.componente[ind]
 
-        self.fraccion=fraccionMolar
+        self.fraccion=[unidades.Dimensionless(f) for f in fraccionMolar]
         self.caudalmasico=unidades.MassFlow(caudalMasico)
         self.caudalmolar=unidades.MolarFlow(caudalMolar)
         self.fraccion_masica=[unidades.Dimensionless(f) for f in fraccionMasica]
@@ -174,10 +188,11 @@ class Mezcla(config.Entity):
         self.Tb=unidades.Temperature(sum([fraccion*componente.Tb for fraccion, componente in zip(self.fraccion, self.componente)]))
         self.SG=sum([fraccion*componente.SG for fraccion, componente in zip(self.fraccion, self.componente)])
 
-    def recallZeros(self, fraccion, val=0):
-        for indice in self.zeros:
-            fraccion.insert(indice, val)
-
+    def recallZeros(self, lista, val=0):
+        l=lista[:]
+        for i in self.zeros:
+            l.insert(i, val)
+        return l
 
     def tr(self,T):
        return T/self.tpc
@@ -1379,8 +1394,8 @@ class Corriente(config.Entity):
             self.mezcla=Mezcla(self.tipoFlujo, **self.kwargs)
 
         self.ids=self.mezcla.ids
-        self.componente=self.mezcla.componente_normalizado
-        self.fraccion=self.mezcla.fraccion_normalizada
+        self.componente=self.mezcla.componente
+        self.fraccion=self.mezcla.fraccion
         self.caudalmasico=self.mezcla.caudalmasico
         self.caudalmolar=self.mezcla.caudalmolar
         self.fraccion_masica=self.mezcla.fraccion_masica
@@ -1449,9 +1464,9 @@ class Corriente(config.Entity):
             else:
                 self.x=unidades.Dimensionless(x)
 
-            self.mezcla.recallZeros(eos.xi)
-            self.mezcla.recallZeros(eos.yi)
-            self.mezcla.recallZeros(eos.Ki, 1.)
+#            self.mezcla.recallZeros(eos.xi)
+#            self.mezcla.recallZeros(eos.yi)
+#            self.mezcla.recallZeros(eos.Ki, 1.)
 
             if 0.<self.x<1.:
                 self.Liquido=Mezcla(tipo=5, fraccionMolar=eos.xi, caudalMolar=self.caudalmolar*(1-self.x))
@@ -1988,6 +2003,9 @@ if __name__ == '__main__':
 #    corr=Corriente(T=300, P=101325., mezcla=mezcla)
 #    print corr.x, corr.Q, corr.P, corr.caudalmasico
 
-    corr=Corriente(T=300, P=101325.)
-    if corr:
-        print bool(corr)
+#    corr=Corriente(T=300, P=101325.)
+#    if corr:
+#        print bool(corr)
+
+    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1., 0])
+#    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])

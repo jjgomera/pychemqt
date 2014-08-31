@@ -399,7 +399,8 @@ class Ui_corriente(QtGui.QWidget):
                 self.caudalVol.setValue(self.corriente.Q)
                 
                 self.TablaComposicion.item(0, 0).setText("0")
-                for i, fraccion in enumerate(self.corriente.fraccion):
+                fracciones = self.corriente.mezcla.recallZeros(self.corriente.fraccion)
+                for i, fraccion in enumerate(fracciones):
                     self.TablaComposicion.item(i+1, 0).setText(config.representacion(fraccion))
                 
                 self.x.setValue(self.corriente.x)

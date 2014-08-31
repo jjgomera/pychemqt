@@ -7,11 +7,13 @@
 #     -Scrubber
 ###############################################################################
 
+import os
 
 from PyQt4.QtGui import QApplication
 from scipy import pi, exp, sqrt, log
 
-from lib import unidades
+from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless, Length,
+                          MassFlow, Power)
 from lib.physics import Cunningham
 from lib.corriente import Corriente
 from lib.psycrometry import Punto_Psicrometrico
@@ -76,8 +78,8 @@ class Dryer(equipment):
     def calculo(self):
         #TODO: De momento, no se implementan las cuestiones de cinetica de intercambio de calor y materia que definirían las dimensiones necesarias del equipo
         HR=self.kwargs.get("HR", 100)
-        self.Heat=unidades.Power(self.kwargs["Heat"])
-        self.deltaP=unidades.Pressure(self.kwargs["deltaP"])
+        self.Heat=Power(self.kwargs["Heat"])
+        self.deltaP=Pressure(self.kwargs["deltaP"])
         self.entradaAire=self.kwargs["entradaAire"]
 
         Pout=min(self.kwargs["entradaSolido"].P.atm, self.kwargs["entradaAire"].P.atm)-self.deltaP.atm
@@ -208,23 +210,23 @@ class Scrubber(equipment):
     def calculo(self):
         self.entradaGas = self.kwargs["entradaGas"]
         self.entradaLiquido = self.kwargs["entradaLiquido"]
-        self.Dt = unidades.Length(self.kwargs["diametro"])
-        self.Lt = unidades.Length(self.kwargs["Lt"])
+        self.Dt = Length(self.kwargs["diametro"])
+        self.Lt = Length(self.kwargs["Lt"])
 
         if self.kwargs["k"]:
-            self.k = self.kwargs["k"]
+            self.k = Dimensionless(self.kwargs["k"])
         else:
-            self.k = 1000.
+            self.k = Dimensionless(1000.)
         if self.kwargs["f"]:
-            self.f = self.kwargs["f"]
+            self.f = Dimensionless(self.kwargs["f"])
         else:
-            self.f = 0.5
+            self.f = Dimensionless(0.5)
 
-        self.At = unidades.Area(pi/4*self.Dt**2)
-        self.Vg = unidades.Speed(self.entradaGas.Q/self.At)
+        self.At = Area(pi/4*self.Dt**2)
+        self.Vg = Speed(self.entradaGas.Q/self.At)
         self.R = self.entradaLiquido.Q/self.entradaGas.Q
-        self.dd = 58600*(self.entradaLiquido.Liquido.epsilon/self.entradaLiquido.Liquido.rho)**0.5/self.Vg**2 +\
-            597*(self.entradaLiquido.Liquido.mu/self.entradaLiquido.Liquido.epsilon**0.5/self.entradaLiquido.Liquido.rho**0.5)**0.45*(1000*self.R)**1.5
+        self.dd = Length(58600*(self.entradaLiquido.Liquido.epsilon/self.entradaLiquido.Liquido.rho)**0.5/self.Vg**2 +
+            597*(self.entradaLiquido.Liquido.mu/self.entradaLiquido.Liquido.epsilon**0.5/self.entradaLiquido.Liquido.rho**0.5)**0.45*(1000*self.R)**1.5)
 
         self.efficiency_i = self._Efficiency()
         self.efficiencyCalc = self._GlobalEfficiency(self.efficiency_i)
@@ -232,11 +234,11 @@ class Scrubber(equipment):
         if self.statusDeltaP:
             self.deltaP=self._deltaP()
         else:
-            self.deltaP=unidades.DeltaP(0)
+            self.deltaP=DeltaP(0)
 
         Solido_NoCapturado, Solido_Capturado=self.entradaGas.solido.Separar(self.efficiency_i)
         self.Pin=min(self.entradaGas.P, self.entradaLiquido.P)
-        self.Pout=self.Pin-self.deltaP
+        self.Pout=Pressure(self.Pin-self.deltaP)
         self.Min=self.entradaGas.solido.caudal
         self.Dmin=self.entradaGas.solido.diametro_medio
         self.Mr=Solido_NoCapturado.caudal
@@ -275,7 +277,7 @@ class Scrubber(equipment):
         rendimiento_global = 0
         for i, fraccion in enumerate(self.entradaGas.solido.fracciones):
             rendimiento_global += rendimientos[i]*fraccion
-        return unidades.Dimensionless(rendimiento_global)
+        return Dimensionless(rendimiento_global)
 
 #        DeltaP=Pressure(1.002*V**2*R, "kPa")
 #
@@ -314,54 +316,36 @@ class Scrubber(equipment):
 #        elif self.kwargs["modelo_DeltaP"] == 9: #Behie & Beeckman (1973)
 #            pass
 
-        return unidades.DeltaP(deltaP)
+        return DeltaP(deltaP)
 
     def propTxt(self):
         txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["tipo_calculo"]].split(":")[0])+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_MODEL[self.kwargs["modelo_rendimiento"]])+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Pressure Loss Model"), self.TEXT_MODEL_DELTAP[self.kwargs["modelo_DeltaP"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Ciclon Model"), self.TEXT_MODEL_CICLON[self.kwargs["modelo_ciclon"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Diameter"), self.Dt.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Length"), self.Lt.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Johnstone method scrubber constant"), self.k.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Calvert method scrubber constant"), self.f.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Drops Diameter"), self.dd.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Cross Area"), self.At.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Speed"), self.Vg.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.efficiencyCalc.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entradaGas.P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Critic Particle Diameter"), self.dc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Internal Cycles"), self.N.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Speed"), self.V.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimiento.str)+os.linesep
-        txt+="%-25s\t %i" %(QApplication.translate("pychemqt", "Cyclone number"), self.num_ciclones)+os.linesep
 
-        txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Cyclone Dimensions")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Ciclon Diameter"), self.Dc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Inlet Height"), self.Hc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Inlet Width"), self.Bc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Diameter"), self.Jc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Cylinder Cyclone Section Length"), self.Lc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Conical Cyclone Section Length"), self.Zc.str)+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Gas Output Diameter"), self.De.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Gas Inlet Orifice Length"), self.Sc.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
-        if len(self.entrada.solido.diametros)>=1:
+        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entradaGas.solido.caudal.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entradaGas.solido.diametro_medio.str)+os.linesep
+        if len(self.entradaGas.solido.diametros)>=1:
             txt+="%10s %10s %10s %10s %10s" %(u"Dp(µm)", "Xi", u"ηi", "Xis", "Xig")+os.linesep
-            for i in range(len(self.rendimiento_parcial)):
-                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
+            for i in range(len(self.efficiency_i)):
+                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entradaGas.solido.diametros[i].config("ParticleDiameter"), self.entradaGas.solido.fracciones[i],  self.efficiency_i[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
-
-        if self.statusCoste:
-            txt+=os.linesep
-            txt+="#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_COST[self.kwargs["tipo_costo"]])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
 
         return txt
 
@@ -371,32 +355,23 @@ class Scrubber(equipment):
         list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
                 (QApplication.translate("pychemqt", "Model"), ("TEXT_MODEL", "modelo_rendimiento"), str),
                 (QApplication.translate("pychemqt", "Pressure Loss Model"), ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-                (QApplication.translate("pychemqt", "Ciclon Model"), ("TEXT_MODEL_CICLON", "modelo_ciclon"), str),
+                (QApplication.translate("pychemqt", "Throat Diameter"), "Dt", Length),
+                (QApplication.translate("pychemqt", "Throat Length"), "Lt", Length),
+                (QApplication.translate("pychemqt", "Johnstone method scrubber constant"), "k", Dimensionless),
+                (QApplication.translate("pychemqt", "Calvert method scrubber constant"), "f", Dimensionless),
+                (QApplication.translate("pychemqt", "Drops Diameter"), "dd", Length),
+                (QApplication.translate("pychemqt", "Throat Cross Area"), "At", Area),
+                (QApplication.translate("pychemqt", "Throat Speed"), "Vg", Speed),
+                (QApplication.translate("pychemqt", "Efficiency"), "efficiencyCalc", Dimensionless),
                 (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
                 (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
                 (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Critic Particle Diameter"), "dc", Length),
-                (QApplication.translate("pychemqt", "Gas Internal Cycles"), "N", Dimensionless),
-                (QApplication.translate("pychemqt", "Gas Speed"), "V", Speed),
-                (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),
-                (QApplication.translate("pychemqt", "Cyclone number"), "num_ciclones", Dimensionless),
-                (QApplication.translate("pychemqt", "Ciclon Diameter"), "Dc", Length),
-                (QApplication.translate("pychemqt", "Inlet Height"), "Hc", Length),
-                (QApplication.translate("pychemqt", "Inlet Width"), "Bc", Length),
-                (QApplication.translate("pychemqt", "Solid Output Diameter"), "Jc", Length),
-                (QApplication.translate("pychemqt", "Cylinder Cyclone Section Length"), "Lc", Length),
-                (QApplication.translate("pychemqt", "Conical Cyclone Section Length"), "Zc", Length),
-                (QApplication.translate("pychemqt", "Clean Gas Output Diameter"), "De", Length),
-                (QApplication.translate("pychemqt", "Clean Gas Inlet Orifice Length"), "Sc", Length),
                 (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
                 (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
                 (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
                 (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
                 (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length),
-                (QApplication.translate("pychemqt", "Cost Mode"), ("TEXT_COST", "tipo_costo"), str),
-                (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", Currency),
-                (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
+                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length)]
         return list
 
 

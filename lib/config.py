@@ -191,7 +191,7 @@ class Entity(object):
         for val in value:
             stream.writeFloat(val)
 
-    def readFromStream(self, stream):
+    def readFromStream(self, stream, run=True):
         for i in range(stream.readInt32()):
             key=stream.readString()
             if isinstance(self.kwargs[key], float):
@@ -203,7 +203,8 @@ class Entity(object):
             elif isinstance(self.kwargs[key], list):
                 valor=self.readListFromStream(stream, key)
             self.kwargs[key]=valor
-        self.__call__()
+        if run:
+            self.__call__()
 
     def readListFromStream(self, stream, key):
         """Personalizar en el caso de equipos con listas complejas"""
