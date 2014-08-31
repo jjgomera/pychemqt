@@ -202,7 +202,7 @@ class Project(object):
             stream.writeInt32(item[3])
             item[4].writeToStream(stream)
 
-    def loadFromStream(self, stream, huella=True):
+    def loadFromStream(self, stream, huella=True, run=True):
         """Read project from stream
         huella: boolean to save project file to pychemqt_temporal"""
         # read configuration
@@ -234,10 +234,8 @@ class Project(object):
         for i in range(contador_equipos):
             id = stream.readString()
             if id[0] == "e":
-                i=stream.readInt32()
-                equip = equipments[i]()
-                #equip = equipments[stream.readInt32()]()
-                equip.readFromStream(stream)
+                equip = equipments[stream.readInt32()]()
+                equip.readFromStream(stream, run)
             else:
                 equip = None
             items[id] = equip
@@ -253,7 +251,7 @@ class Project(object):
             ind_up = stream.readInt32()
             ind_down = stream.readInt32()
             obj = Corriente()
-            obj.readFromStream(stream)
+            obj.readFromStream(stream, run)
             streams[id] = (up, down, ind_up, ind_down, obj)
             if huella:
                 if down[0] == "e":

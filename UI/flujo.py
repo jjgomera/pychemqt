@@ -47,7 +47,7 @@ def loadFromFile(path):
     stream.setVersion(QtCore.QDataStream.Qt_4_2)
 
     project=Project()
-    project.loadFromStream(stream, False)
+    project.loadFromStream(stream, huella=False, run=False)
     return project
 
 class SelectStreamProject(QtGui.QDialog):
@@ -82,13 +82,13 @@ class SelectStreamProject(QtGui.QDialog):
     def changeproject(self, path):
         self.status.setText(QtGui.QApplication.translate("pychemqt", "Loading project..."))
         QtGui.QApplication.processEvents()
-        try:
-            self.project=loadFromFile(path)
-            self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
-            self.status.setText(QtGui.QApplication.translate("pychemqt", "Project loaded succesfully"))
-        except Exception as e:
-            print e
-            self.status.setText(QtGui.QApplication.translate("pychemqt", "Failed to loading project..."))
+#        try:
+        self.project=loadFromFile(path)
+        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(True)
+        self.status.setText(QtGui.QApplication.translate("pychemqt", "Project loaded succesfully"))
+#        except Exception as e:
+#            print e
+#            self.status.setText(QtGui.QApplication.translate("pychemqt", "Failed to loading project..."))
         self.stream.clear()
         for stream in self.project.streams.keys():
             self.stream.addItem("%i" %stream)
@@ -415,6 +415,15 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
         if dialog.exec_():
             indice=int(dialog.stream.currentText())
             corriente=dialog.project.getStream(indice)
+            component = eval(self.scene().project.config.get("Components", "components"))
+            for variable in ["caudalUnitarioMolar", "caudalUnitarioMasico",
+                             "fraccionMolar", "fraccionMasica"]:
+                if corriente.kwargs[variable]:
+                    while len(corriente.kwargs[variable]) < len(component):
+                        corriente.kwargs[variable].append(0)
+                    if len(corriente.kwargs[variable]) > len(component):
+                        corriente.kwargs[variable] = corriente.kwargs[variable][:len(component)]
+            corriente.__call__()
             self.setCorriente(corriente)
 
 
