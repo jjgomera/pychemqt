@@ -12,6 +12,7 @@ from numpy import transpose
 
 from lib.unidades import Length, VolFlow, Power
 from lib import config
+from lib.utilities import representacion
 from widgets import Entrada_con_unidades, Tabla
 
 
@@ -199,7 +200,7 @@ class Ui_bombaCurva(QtGui.QDialog):
         self.Tabla.blockSignals(True)
         for fila in range(0, len(text)):
             a=unit(text[fila], units[magn][old_i]).__getattribute__(units[magn][i])
-            self.Tabla.item(fila+1, col).setText(config.representacion(a))
+            self.Tabla.item(fila+1, col).setText(representacion(a))
         self.Tabla.blockSignals(False)
         self.oldIndices[col]=i
         

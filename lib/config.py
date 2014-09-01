@@ -74,56 +74,6 @@ def getMainWindowConfig():
 #solidos, nombreSolidos, MSolidos=getComponents(solidos=True)
 
 
-def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, signo=False, thousand=False):
-    """Función que expresa un valor de tipo float en forma de string
-    float: numero a representar
-    format: tipo de modo
-        0   -   fixed point
-        1   -   Significant figures
-        2   -   Engineering format
-    total: numero total de digitos
-    decimales: numero de decimales
-    exp: boolean que indica si se usa notacion exponencial para numeros grandes y pequeños
-    tol: potencia por encima de la cual se usa notacion exponencial
-    signo: mostrar signo positivo
-    thousand: usa separador para miles
-    """
-    if type(float) is str:
-        return float
-
-    if signo:
-        start="{:+"
-    else:
-        start="{: "
-
-    if thousand:
-        coma=",."
-    else:
-        coma="."
-
-    if exp:
-        if -10**tol > float or -10**-tol < float < 10**-tol or float > 10**tol:
-            format=2
-
-    if format==1:
-        string=start+"{}{:d}g".format(coma, decimales)+"}"
-    elif format==2:
-        string=start+"{:d}{}{:d}e".format(total, coma, decimales)+"}"
-    else:
-        string=start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"
-
-    return string.format(float)
-
-
-def colors(int):
-    """Función que devuelve una lista de colores con el número de elementos indicados"""
-    r = lambda: random.randint(0,255)
-    colores=[]
-    for i in range(int):
-        colores.append(('#%02X%02X%02X' % (r(),r(),r())))
-    return colores
-
-
 class Entity(object):
     """Clase general que define la funcionalidad comun básica:
     -clear object
@@ -286,10 +236,3 @@ class fluid(dict):
     cv=0
     cp_cv=0
     cp0=0
-
-
-if __name__ == "__main__":
-    import math
-    print representacion(math.pi, decimales=6, tol=1)
-#    print repr(Configuracion("Density", "DenGas").text())
-    print representacion("3232326262")

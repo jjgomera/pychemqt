@@ -10,7 +10,8 @@ import os
 from PyQt4.QtGui import QApplication
 from scipy.constants import g, pi
 
-from lib import unidades, config
+from lib import unidades
+from lib.utilities import representacion
 from lib.corriente import Corriente
 from lib.physics import f_friccion, Re
 from equipment.parents import equipment
@@ -278,10 +279,10 @@ class Pipe(equipment):
         if key=="material":
             valor.append(stream.readString())
             valor.append(stream.readString())
-            valor.append(float(config.representacion(stream.readFloat())))
+            valor.append(float(representacion(stream.readFloat())))
             valor.append(stream.readString())
             for i in range(6):
-                valor.append(float(config.representacion(stream.readFloat())))
+                valor.append(float(representacion(stream.readFloat())))
             valor.append(stream.readInt32())
             valor.append(stream.readInt32())
         elif key=="accesorios":
@@ -289,7 +290,7 @@ class Pipe(equipment):
                 accesorio=[]
                 accesorio.append(stream.readInt32())
                 accesorio.append(stream.readInt32())
-                accesorio.append(float(config.representacion(stream.readFloat())))
+                accesorio.append(float(representacion(stream.readFloat())))
                 accesorio.append(stream.readInt32())
                 for j in range(4):
                     accesorio.append(stream.readString())

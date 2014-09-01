@@ -7,8 +7,9 @@ from ConfigParser import ConfigParser
 from PyQt4.QtGui import QApplication
 import scipy.constants as k
 
-from config import conf_dir, getMainWindowConfig, representacion
-from firstrun import getrates
+from lib.config import conf_dir, getMainWindowConfig
+from lib.utilities import representacion
+from lib.firstrun import getrates
 
 # Defining conversion factor not available in scipy
 k.tonUS = 2000 * k.lb

@@ -15,6 +15,7 @@ from scipy.constants import lb
 from lib.compuestos import Componente
 from lib.psycrometry import Psychrometry
 from lib import unidades, config
+from lib.utilities import representacion
 from lib.physics import R_atml
 from UI.widgets import Entrada_con_unidades
 
@@ -80,7 +81,7 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.labelPresion=QtGui.QLabel()
         self.labelPresion.setFrameShadow(QtGui.QFrame.Sunken)
         self.labelPresion.setFrameShape(QtGui.QFrame.WinPanel)
-        self.labelPresion.setText(config.representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
+        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
         self.statusbar.addPermanentWidget(self.labelPresion)
 
         self.centralWidget=QtGui.QWidget()
@@ -253,7 +254,7 @@ class UI_Psychrometry(QtGui.QMainWindow):
             Td=[unidades.Temperature(i).config() for i in T]
             H=[self.AireHumedo.Isocora_H(i, v) for i in T]
             self.diagrama2D.plot(Td, H, grosor=0.8, linestyle=":", color="green")
-#            self.diagrama2D.axes2D.annotate(config.representacion(unidades.SpecificVolume(v).config())+config.Configuracion("SpecificVolume").text(), (Td[5], H[5]), rotation=arctan((H[5]-H[4])/0.04/(Td[5]-Td[4])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
+#            self.diagrama2D.axes2D.annotate(representacion(unidades.SpecificVolume(v).config())+config.Configuracion("SpecificVolume").text(), (Td[5], H[5]), rotation=arctan((H[5]-H[4])/0.04/(Td[5]-Td[4])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
 
     def mouse_move(self, event):
         if event.xdata and event.ydata and self.checkMouse.isChecked():
@@ -304,7 +305,7 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.AireHumedo=Psychrometry(value.atm)
         self.Altitud.setValue(self.AireHumedo.altura())
         self.plot()
-        self.labelPresion.setText(config.representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
+        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
         self.diagrama2D.draw()
         
     def cambiarAltitud(self, value):
@@ -312,7 +313,7 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.AireHumedo=Psychrometry(presion.atm)
         self.PresionDiagrama.setValue(presion)
         self.plot()
-        self.labelPresion.setText(config.representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
+        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
         self.diagrama2D.draw()
         
     def NuevoPunto(self):

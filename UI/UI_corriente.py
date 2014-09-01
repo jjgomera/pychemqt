@@ -14,6 +14,7 @@ from tools import UI_databank
 from lib.corriente import Corriente, Mezcla, Solid
 from lib.psycrometry import Psychrometry
 from lib import unidades, config
+from lib.utilities import representacion
 from lib.thread import Evaluate
 from UI import texteditor
 from UI.delegate import CellEditor
@@ -401,7 +402,7 @@ class Ui_corriente(QtGui.QWidget):
                 self.TablaComposicion.item(0, 0).setText("0")
                 fracciones = self.corriente.mezcla.recallZeros(self.corriente.fraccion)
                 for i, fraccion in enumerate(fracciones):
-                    self.TablaComposicion.item(i+1, 0).setText(config.representacion(fraccion))
+                    self.TablaComposicion.item(i+1, 0).setText(representacion(fraccion))
                 
                 self.x.setValue(self.corriente.x)
                 self.PageNotas.setText(self.corriente.notas)
@@ -493,22 +494,22 @@ class Ui_corriente(QtGui.QWidget):
     def tipoFraccionesCambiado(self):
         if self.tipoFraccion.currentIndex()==0:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.caudalunitariomasico[i].kgh))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.caudalunitariomasico[i].kgh))
         elif self.tipoFraccion.currentIndex()==1:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.caudalunitariomolar[i]))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.caudalunitariomolar[i]))
         elif self.tipoFraccion.currentIndex()==2:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.caudalunitariomasico[i].lbh))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.caudalunitariomasico[i].lbh))
         elif self.tipoFraccion.currentIndex()==3:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.caudalunitariomolar[i]*lb))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.caudalunitariomolar[i]*lb))
         elif self.tipoFraccion.currentIndex()==4:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.fraccion_masica[i]))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.fraccion_masica[i]))
         elif self.tipoFraccion.currentIndex()==5:
             for i in range(len(self.indices)):
-                self.TablaComposicion.item(i+1, 0).setText(config.representacion(self.corriente.fraccion[i]))
+                self.TablaComposicion.item(i+1, 0).setText(representacion(self.corriente.fraccion[i]))
 
     def composicionEntrada(self):
         fracciones=self.TablaComposicion.getColumn(0)[1:]
