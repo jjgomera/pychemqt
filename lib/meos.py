@@ -22,7 +22,7 @@ from scipy.optimize import fsolve
 
 from lib import unidades, compuestos
 from physics import R_atml
-from config import fluid
+from config import Fluid
 
 
 Tref = 298.15
@@ -469,8 +469,8 @@ class MEoS(object):
             if recursion:
                 if self.Tt < self.T < self.Tc and 0 < self.P.atm < self.Pc.atm:
                     rhol, rhov, Ps = self._saturation()
-                    self.Liquido = fluid()
-                    self.Gas = fluid()
+                    self.Liquido = Fluid()
+                    self.Gas = Fluid()
 
                     vapor = self._eq(rhov, self.T)
                     liquido = self._eq(rhol, self.T)
@@ -490,7 +490,7 @@ class MEoS(object):
 
                 else:
                     self.Gas = self.__class__(T=self.T, rho=self.rho, recursion=False)
-                    self.Liquido = fluid()
+                    self.Liquido = Fluid()
                     self.x = unidades.Dimensionless(1)
                     self.Hvap = unidades.Enthalpy(None)
 

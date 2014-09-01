@@ -12,7 +12,7 @@ from scipy.optimize import fsolve
 from PyQt4.QtGui import QApplication
 
 from lib import unidades, mEoS
-from config import fluid
+from config import Fluid
 
 properties = {
     "P": QApplication.translate("pychemqt", "Pressure"),
@@ -2804,7 +2804,7 @@ def prop0(T, P):
         Pr = P/1.
         go, gop, gopp, got, gott, gopt = Region5_cp0(Tr, Pr)
 
-    prop0 = fluid()
+    prop0 = Fluid()
     prop0.v = Pr*gop*R*T/P/1000
     prop0.h = Tr*got*R*T
     prop0.s = R*(Tr*got-go)
@@ -3174,8 +3174,8 @@ class IAPWS97(object):
         self.v = unidades.SpecificVolume(propiedades["v"])
         self.rho = unidades.Density(1/self.v)
 
-        self.Liquido = fluid()
-        self.Gas = fluid()
+        self.Liquido = Fluid()
+        self.Gas = Fluid()
         if self.x < 1:            # liquid phase
             liquido = _Region1(self.T, self.P.MPa)
             self.fill(self.Liquido, liquido)
