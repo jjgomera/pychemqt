@@ -8,7 +8,8 @@
 from PyQt4 import QtCore, QtGui
 
 from gas_solid import Baghouse
-from lib import unidades, config
+from lib import unidades
+from lib.utilities import representacion
 from UI import UI_corriente
 from equipment import parents
 from UI.delegate import CellEditor
@@ -122,7 +123,7 @@ class UI_equipment(parents.UI_equip):
         self.Rendimientos.setHorizontalHeaderLabels([QtGui.QApplication.translate("equipment", "Diámetro, µm", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("equipment", "Rendimiento", None, QtGui.QApplication.UnicodeUTF8)])
         for i in range(len(self.entrada.solido.distribucion)):
             self.Rendimientos.setRowHeight(i, 22)
-            self.Rendimientos.setItem(i, 0, QtGui.QTableWidgetItem(config.representacion(1e6*self.entrada.solido.diametros[i])))
+            self.Rendimientos.setItem(i, 0, QtGui.QTableWidgetItem(representacion(1e6*self.entrada.solido.diametros[i])))
             self.Rendimientos.item(i, 0).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
             self.Rendimientos.item(i, 0).setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
             self.Rendimientos.setItem(i, 1, QtGui.QTableWidgetItem(""))

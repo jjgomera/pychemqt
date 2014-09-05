@@ -10,11 +10,12 @@ from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspa
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
-from lib import meos, mEoS, unidades, config, plot, iapws
+from lib import meos, mEoS, unidades, plot, iapws
+from lib.utilities import format2txt, representacion
 from UI.widgets import Entrada_con_unidades, ClickableLabel, Tabla, createAction, LineStyleCombo, MarkerCombo, ColorSelector, InputFond
 from UI.delegate import CheckEditor
 from tools.codeEditor import SimplePythonEditor
-from tools.UI_Preferences import NumericFactor, format2txt
+from tools.UI_Preferences import NumericFactor
 
 if os.environ["freesteam"]:
     import freesteam
@@ -2094,7 +2095,7 @@ class TablaMEoS(Tabla):
             if fila>=self.rowCount():
                 self.addRow()
             for columna, data in enumerate(array):
-                str=config.representacion(data, **self.format[columna])
+                str=representacion(data, **self.format[columna])
                 self.setValue(fila, columna, str)
 
 

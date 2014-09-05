@@ -14,8 +14,6 @@
 #   - ConfTooltipEntity
 #   - ConfmEoS: mEoS parameter configuration dialog
 #       Isolinea: widget to configure isolines for mEoS
-
-#   - format2txt: function to convert dict format config in a string value
 ###############################################################################
 
 import os
@@ -30,26 +28,9 @@ from UI.widgets import Entrada_con_unidades, ColorSelector, LineConfig, PathConf
 from UI.delegate import CheckEditor, comboLine
 from tools import UI_confResolution
 from lib import unidades, corriente
+from lib.utilities import format2txt, representacion
 from equipment import equipments
 from lib.firstrun import calculator, editor, shell
-from lib.config import representacion
-
-
-def format2txt(formato):
-    """Function to convert dict format config in a string equivalent"""
-    if formato["signo"]:
-        txt = "+"
-    else:
-        txt = ""
-    if formato["format"] == 0:
-        txt += "{total}.{decimales} fixed".format(**formato)
-    elif formato["format"] == 1:
-        txt += "{decimales} sign".format(**formato)
-    elif formato["format"] == 2:
-        txt += "{decimales} exp".format(**formato)
-    if formato.get("exp", False):
-        txt += " ({tol} exp)".format(**formato)
-    return txt
 
 
 class ConfLine(QtGui.QWidget):
@@ -1147,7 +1128,7 @@ class Preferences(QtGui.QDialog):
         for icon, dialog, title in self.classes:
             self.stacked.addWidget(dialog(config))
             icon = QtGui.QIcon(QtGui.QPixmap(
-                os.environ["pychemqt"]+"/images/%s.png" % icon))
+                os.environ["pychemqt"]+"/images/%s" % icon))
             self.lista.addItem(QtGui.QListWidgetItem(icon, title))
 
         self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)

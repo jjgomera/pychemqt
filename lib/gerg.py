@@ -22,7 +22,7 @@ from scipy.optimize import fsolve
 import unidades
 from physics import R_atml
 from lib import mEoS
-from lib.config import fluid
+from lib.config import Fluid
 
 Tref = 298.15
 Pref = 101325.
@@ -431,8 +431,8 @@ class GERG(object):
         self.xv = yi
         if self.kwargs["mezcla"]:
             self.Pc = self.kwargs["mezcla"].Pc
-        self.Liquido = fluid()
-        self.Gas = fluid()
+        self.Liquido = Fluid()
+        self.Gas = Fluid()
 
     def fug(self, rho, T, nfirni=None):
         if not nfirni:

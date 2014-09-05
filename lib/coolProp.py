@@ -18,7 +18,7 @@ except:
     pass
 
 from lib import unidades
-from config import fluid
+from config import Fluid
 
 
 class CoolProp(object):
@@ -142,8 +142,8 @@ class CoolProp(object):
         self.phase, x = self.getphase(estado)
         self.x = unidades.Dimensionless(x)
 
-        self.Liquido = fluid()
-        self.Gas = fluid()
+        self.Liquido = Fluid()
+        self.Gas = Fluid()
         if self.x == 0:
             # liquid phase
             self.fill(self.Liquido, estado)

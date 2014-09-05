@@ -22,7 +22,7 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from config import fluid
+from config import Fluid
 
 
 class Freesteam(object):
@@ -121,8 +121,8 @@ class Freesteam(object):
         self.rho = unidades.Density(fluido.rho)
         self.v = unidades.SpecificVolume(1./self.rho)
 
-        self.Liquido = fluid()
-        self.Gas = fluid()
+        self.Liquido = Fluid()
+        self.Gas = Fluid()
         if self.x < 1:
             # Liquid phase
             liquido = freesteam.steam_Tx(fluido.T, 0.)

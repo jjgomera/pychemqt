@@ -12,7 +12,8 @@ from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import meshgrid, zeros, arange, linspace, concatenate, max, min, transpose, logspace, log, arctan, pi
 
-from lib import unidades,  config
+from lib import unidades, config
+from lib.utilities import colors, representacion
 
 
 class Plot(FigureCanvasQTAgg):
@@ -75,7 +76,7 @@ class Plot(FigureCanvasQTAgg):
 
     def plot_puntos(self, x, y, z=0):
         """Método que dibuja puntos individuales"""
-        colores=config.colors(len(x))
+        colores=colors(len(x))
         self.puntos=[]
         if self.dim==3:
             for i in range(len(x)):
@@ -161,14 +162,14 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
         self.setFixedSize(500, self.minimumHeight())
         
-        self.colores=config.colors(len(self.puntos))
+        self.colores=colors(len(self.puntos))
         self.rellenarLista()
         self.rellenarTabla()
 
     def rellenarLista(self):
         self.listWidget.clear()
         for i, punto in enumerate(self.puntos):
-            self.listWidget.addItem(str(i+1)+" - "+config.representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x))
+            self.listWidget.addItem(str(i+1)+" - "+representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+representacion(punto.x))
             pixmap=QtGui.QPixmap(10, 10)
             pixmap.fill(QtGui.QColor(self.colores[i]))
             self.listWidget.item(i).setIcon(QtGui.QIcon(pixmap))
@@ -187,22 +188,22 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
             pixmap=QtGui.QPixmap(10, 10)
             pixmap.fill(QtGui.QColor(self.colores[i]))
             self.tablaPropiedades.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(QtGui.QIcon(pixmap), str(i+1)))
-            self.tablaPropiedades.setItem(0, i, QtGui.QTableWidgetItem(config.representacion(unidades.Pressure(punto.p).config())))
-            self.tablaPropiedades.setItem(1, i, QtGui.QTableWidgetItem(config.representacion(unidades.Temperature(punto.T).config())))
-            self.tablaPropiedades.setItem(2, i, QtGui.QTableWidgetItem(config.representacion(unidades.SpecificVolume(punto.v).config())))
-            self.tablaPropiedades.setItem(3, i, QtGui.QTableWidgetItem(config.representacion(unidades.Enthalpy(punto.h).config())))
-            self.tablaPropiedades.setItem(4, i, QtGui.QTableWidgetItem(config.representacion(unidades.SpecificHeat(punto.s).config("Entropy"))))
-            self.tablaPropiedades.setItem(5, i, QtGui.QTableWidgetItem(config.representacion(punto.x)))
-            self.tablaPropiedades.setItem(6, i, QtGui.QTableWidgetItem(config.representacion(unidades.Enthalpy(punto.u).config())))
-            self.tablaPropiedades.setItem(7, i, QtGui.QTableWidgetItem(config.representacion(unidades.Enthalpy(punto.s).config())))
-            self.tablaPropiedades.setItem(8, i, QtGui.QTableWidgetItem(config.representacion(unidades.Enthalpy(punto.s).config())))
-            self.tablaPropiedades.setItem(9, i, QtGui.QTableWidgetItem(config.representacion(unidades.Density(punto.rho).config())))
-            self.tablaPropiedades.setItem(10, i, QtGui.QTableWidgetItem(config.representacion(unidades.SpecificHeat(punto.cp).config())))
-            self.tablaPropiedades.setItem(11, i, QtGui.QTableWidgetItem(config.representacion(unidades.SpecificHeat(punto.cv).config())))
-            self.tablaPropiedades.setItem(12, i, QtGui.QTableWidgetItem(config.representacion(unidades.ThermalConductivity(punto.k).config())))
-            self.tablaPropiedades.setItem(13, i, QtGui.QTableWidgetItem(config.representacion(unidades.Viscosity(punto.mu).config())))
+            self.tablaPropiedades.setItem(0, i, QtGui.QTableWidgetItem(representacion(unidades.Pressure(punto.p).config())))
+            self.tablaPropiedades.setItem(1, i, QtGui.QTableWidgetItem(representacion(unidades.Temperature(punto.T).config())))
+            self.tablaPropiedades.setItem(2, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificVolume(punto.v).config())))
+            self.tablaPropiedades.setItem(3, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.h).config())))
+            self.tablaPropiedades.setItem(4, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.s).config("Entropy"))))
+            self.tablaPropiedades.setItem(5, i, QtGui.QTableWidgetItem(representacion(punto.x)))
+            self.tablaPropiedades.setItem(6, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.u).config())))
+            self.tablaPropiedades.setItem(7, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
+            self.tablaPropiedades.setItem(8, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
+            self.tablaPropiedades.setItem(9, i, QtGui.QTableWidgetItem(representacion(unidades.Density(punto.rho).config())))
+            self.tablaPropiedades.setItem(10, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cp).config())))
+            self.tablaPropiedades.setItem(11, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cv).config())))
+            self.tablaPropiedades.setItem(12, i, QtGui.QTableWidgetItem(representacion(unidades.ThermalConductivity(punto.k).config())))
+            self.tablaPropiedades.setItem(13, i, QtGui.QTableWidgetItem(representacion(unidades.Viscosity(punto.mu).config())))
             if punto.region !='\x04' and  punto.region !='\x03':
-                self.tablaPropiedades.setItem(14, i, QtGui.QTableWidgetItem(config.representacion(unidades.Speed(punto.w).config())))
+                self.tablaPropiedades.setItem(14, i, QtGui.QTableWidgetItem(representacion(unidades.Speed(punto.w).config())))
             else:
                 self.tablaPropiedades.setItem(14, i, QtGui.QTableWidgetItem('nan'))
             if punto.region =='\x01':
@@ -1582,7 +1583,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
             for i, fila in enumerate(zdata):
                 for j, dato in enumerate(fila):
-                    self.tabla.setItem(i, j,QtGui.QTableWidgetItem(config.representacion(dato)))
+                    self.tabla.setItem(i, j,QtGui.QTableWidgetItem(representacion(dato)))
                     self.tabla.item(i, j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
             self.tabla.resizeColumnsToContents()
@@ -1856,7 +1857,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             j=int(pos/100.*len(x[i]))
             x_label.append(x[i][j])
             y_label.append(y[i][j])
-            label.append(config.representacion(isolineas[i]))
+            label.append(representacion(isolineas[i]))
             if self.ejeX_escala.isChecked():
                 fraccionx=(log(x[i][j+1])-log(x[i][j]))/(log(self.ejeX_max.value)-log(self.ejeX_min.value))
             else:
@@ -2177,29 +2178,29 @@ class Ui_SteamTables(QtGui.QMainWindow):
         if self.factorx2==0:  #El eje x es la temperatura
             xmax=unidades.Temperature(self.ejeX_max.value, config.Configuracion("Temperature").func())
             xmin=unidades.Temperature(self.ejeX_min.value, config.Configuracion("Temperature").func())
-            self.ejeX_max.setValue(config.representacion(xmax.config()))
-            self.ejeX_min.setValue(config.representacion(xmin.config()))
+            self.ejeX_max.setValue(representacion(xmax.config()))
+            self.ejeX_min.setValue(representacion(xmin.config()))
         else: #En cualquier otro caso basta con usar el factor de correción para ese eje
             xmax=float(self.ejeX_max.value)*self.factorx2
             xmin=float(self.ejeX_min.value)*self.factorx2
-            self.ejeX_max.setValue(config.representacion(xmax/self.factorx2))
-            self.ejeX_min.setValue(config.representacion(xmin/self.factorx2))
+            self.ejeX_max.setValue(representacion(xmax/self.factorx2))
+            self.ejeX_min.setValue(representacion(xmin/self.factorx2))
         if self.factory2==0:  
             ymax=unidades.Temperature(self.ejeY_max.value, config.Configuracion("Temperature").func())
             ymin=unidades.Temperature(self.ejeY_min.value, config.Configuracion("Temperature").func())
-            self.ejeY_max.setValue(config.representacion(ymax.config()))
-            self.ejeY_min.setValue(config.representacion(ymin.config()))
+            self.ejeY_max.setValue(representacion(ymax.config()))
+            self.ejeY_min.setValue(representacion(ymin.config()))
         else: 
             ymax=float(self.ejeY_max.value)*self.factory2
             ymin=float(self.ejeY_min.value)*self.factory2      
-            self.ejeY_max.setValue(config.representacion(ymax/self.factory2))
-            self.ejeY_min.setValue(config.representacion(ymin/self.factory2))
+            self.ejeY_max.setValue(representacion(ymax/self.factory2))
+            self.ejeY_min.setValue(representacion(ymin/self.factory2))
         if self.factory2==0:  
-            self.ejeY_max.setValue(config.representacion(ymax.config))
-            self.ejeY_min.setValue(config.representacion(ymin.config))
+            self.ejeY_max.setValue(representacion(ymax.config))
+            self.ejeY_min.setValue(representacion(ymin.config))
         else: 
-            self.ejeY_max.setValue(config.representacion(ymax/self.factory2))
-            self.ejeY_min.setValue(config.representacion(ymin/self.factory2))
+            self.ejeY_max.setValue(representacion(ymax/self.factory2))
+            self.ejeY_min.setValue(representacion(ymin/self.factory2))
             
         self.mostrarUnidades()
 

@@ -24,6 +24,7 @@ from PyQt4 import QtCore, QtGui
 from UI.conversor_unidades import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 from lib import config
+from lib.utilities import representacion
 from lib.corriente import Corriente
 
 
@@ -213,7 +214,7 @@ class Entrada_con_unidades(QtGui.QWidget):
         else:
             dialog=UI_conversorUnidades(self.unidad, self.value)
         if dialog.exec_() and self.retornar:
-            self.entrada.setText(config.representacion(dialog.value.config(self.UIconfig))+self.suffix)
+            self.entrada.setText(representacion(dialog.value.config(self.UIconfig))+self.suffix)
             oldvalue=self.value
             self.value=dialog.value
             if oldvalue!=self.value:
@@ -226,7 +227,7 @@ class Entrada_con_unidades(QtGui.QWidget):
             else:
                 txt=self.entrada.text().replace(',', '.')
             if self.unidad!=int:
-                self.entrada.setText(config.representacion(float(txt), self.decimales, self.tolerancia)+self.suffix)
+                self.entrada.setText(representacion(float(txt), self.decimales, self.tolerancia)+self.suffix)
             oldvalue=self.value
             if self.magnitud:
                 self.value=self.unidad(float(txt), "conf", magnitud=self.UIconfig)
@@ -269,7 +270,7 @@ class Entrada_con_unidades(QtGui.QWidget):
             if self.magnitud:
                 self.entrada.setText(self.value.format(magnitud=self.UIconfig)+self.suffix)
             elif self.unidad==float:
-                self.entrada.setText(config.representacion(self.value, self.decimales, self.tolerancia)+self.suffix)
+                self.entrada.setText(representacion(self.value, self.decimales, self.tolerancia)+self.suffix)
             else:
                 self.entrada.setText(str(self.value)+self.suffix)
             self.setToolTip()
@@ -290,7 +291,7 @@ class Entrada_con_unidades(QtGui.QWidget):
             if len(lista)>0:
                 valores=[]
                 for i in lista:
-                    valores.append(config.representacion(self.value.__getattribute__(self.value.__units__[i]), self.decimales, self.tolerancia)+" "+self.value.__text__[i])
+                    valores.append(representacion(self.value.__getattribute__(self.value.__units__[i]), self.decimales, self.tolerancia)+" "+self.value.__text__[i])
                 self.entrada.setToolTip(os.linesep.join(valores))
 
     def keyPressEvent(self, e):
@@ -399,7 +400,7 @@ class Tabla(QtGui.QTableWidget):
         if not data:
             data=[""]*self.columnas
         else:
-            data=[config.representacion(i) for i in data]
+            data=[representacion(i) for i in data]
         self.blockSignals(True)
         i=self.rowCount()
         self.setRowCount(i+1)
@@ -471,7 +472,7 @@ class Tabla(QtGui.QTableWidget):
             self.addRow()
         self.blockSignals(True)
         for fila, dato in enumerate(data):
-            self.item(fila, columna).setText(config.representacion(dato))
+            self.item(fila, columna).setText(representacion(dato))
         self.blockSignals(False)
 
 
@@ -510,7 +511,7 @@ class Tabla(QtGui.QTableWidget):
             self.addRow()
         for fila in range(self.rowCount()-self.verticalOffset):
             for columna, dato in enumerate(matriz[fila]):
-                self.setItem(fila+self.verticalOffset, columna, QtGui.QTableWidgetItem(config.representacion(dato)))
+                self.setItem(fila+self.verticalOffset, columna, QtGui.QTableWidgetItem(representacion(dato)))
                 self.item(fila+self.verticalOffset, columna).setTextAlignment(self.orientacion|QtCore.Qt.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
             self.setRowHeight(i+self.verticalOffset, 20)

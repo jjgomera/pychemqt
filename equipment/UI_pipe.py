@@ -11,7 +11,8 @@ import os
 from PyQt4 import QtCore, QtGui
 from scipy import pi
 
-from lib.config import Preferences, representacion
+from lib.config import Preferences
+from lib.utilities import representacion
 from lib.unidades import Length, Temperature, HeatTransfCoef, Pressure, Power, Speed, Currency
 from lib.table import Material_Tuberia, Accesorios_Tuberia, Fitting_icon
 from lib.physics import K_contraction, K_enlargement, K_flush, K_MitreBend, Ft, K_longBend

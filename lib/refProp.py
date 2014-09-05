@@ -18,11 +18,26 @@ except:
     pass
 
 from lib import unidades
-from config import fluid
+from config import Fluid
 
 
 class RefProp(object):
-    """Stream class using refProp external library"""
+    """
+    Stream class using refProp external library
+    Parameters needed to define it are:
+
+        -ref: reference state
+        -fluido: index of fluid
+        -fraccionMolar: molar fraction
+
+        -T: Temperature, Kelvin
+        -P: Pressure, Pa
+        -rho: Density, kg/m3
+        -H: Enthalpy, J/kg
+        -S: Entropy, J/kgK
+        -U: Internal energy, J/kg
+        -x: Quality, -
+    """
     kwargs = {"ref": u"def",
               "fluido": None,
               "fraccionMolar": None,
@@ -39,20 +54,6 @@ class RefProp(object):
     msg = "Unknown variables"
 
     def __init__(self, **kwargs):
-        """Parameters needed to define it are:
-
-        -ref: reference state
-        -fluido: index of fluid
-        -fraccionMolar: molar fraction
-
-        -T: Temperature, Kelvin
-        -P: Pressure, Pa
-        -rho: Density, kg/m3
-        -H: Enthalpy, J/kg
-        -S: Entropy, J/kgK
-        -U: Internal energy, J/kg
-        -x: Quality, -
-        """
         self.kwargs = RefProp.kwargs.copy()
         self.__call__(**kwargs)
 
@@ -163,8 +164,8 @@ class RefProp(object):
             self.f_accent = unidades.Dimensionless(info["acf"])
             self.momentoDipolar = unidades.DipoleMoment(info["dip"], "Debye")
 
-        self.Liquido = fluid()
-        self.Vapor = fluid()
+        self.Liquido = Fluid()
+        self.Vapor = Fluid()
         if self.x < 1.:  # Hay fase liquida
             liquido_thermo = refprop.therm2(flash["t"], flash["Dliq"],
                                             flash["xliq"])
@@ -235,8 +236,8 @@ class RefProp(object):
 #        self.rho=unidades.Density(flash["D"]*self.M)
 #        self.v=unidades.SpecificVolume(1./self.rho)
 
-#        self.Liquido=fluid()
-#        self.Vapor=fluid()
+#        self.Liquido=Fluid()
+#        self.Vapor=Fluid()
 #        if self.x<1.: #Hay fase liquida
 #            liquido_thermo = multiRP.mRP[u'process'](target=multiRP.therm2, args=(flash["t"], flash["Dliq"], flash["xliq"]), kwargs={u'prop': setup, u'mRP': multiRP.mRP})
 #            liquido_mol = multiRP.mRP[u'process'](target=multiRP.wmol, args=(flash["xliq"], setup, multiRP.mRP))
@@ -291,7 +292,7 @@ class RefProp(object):
 #        self.csat=unidades.SpecificHeat(cp2["csat"]/self.M)
 
     def fill(self, fase, flash, thermo, mol, transport, dielec, thermo0):
-        fase.update(fluid(thermo))
+        fase.update(Fluid(thermo))
         fase.fraccion = flash["xliq"]
         fase.M = unidades.Dimensionless(mol["wmix"])
         fase.rho = unidades.Density(flash["Dliq"]*fase.M)

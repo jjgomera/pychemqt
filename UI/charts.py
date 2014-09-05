@@ -12,8 +12,7 @@ from UI.widgets import Entrada_con_unidades
 from lib.petro import Z_list
 from lib.physics import f_list
 from lib.plot import mpl
-from lib import config
-
+from lib.utilities import representacion
 from equipment.UI_heatExchanger import chart as chartHE
 
 
@@ -153,7 +152,7 @@ class Moody(QtGui.QDialog):
         Re=logspace(log10(2400), 8, 50)
         for e in eD:
             self.diagrama.axes2D.plot(Re, [F(Rei, e) for Rei in Re], "k")
-            self.diagrama.axes2D.annotate(config.representacion(e, tol=4.5), (Re[45], F(Re[45], e)), size="small", horizontalalignment="center", verticalalignment="bottom", rotation=arctan((log10(F(Re[47], e))-log10(F(Re[35], e)))/(log10(Re[47])-log10(Re[35])))*360/2/pi)
+            self.diagrama.axes2D.annotate(representacion(e, tol=4.5), (Re[45], F(Re[45], e)), size="small", horizontalalignment="center", verticalalignment="bottom", rotation=arctan((log10(F(Re[47], e))-log10(F(Re[35], e)))/(log10(Re[47])-log10(Re[35])))*360/2/pi)
 
         #Transición
         f=[(1/(1.14-2*log10(3500/R)))**2 for R in Re]
