@@ -7,6 +7,7 @@
 
 from __future__ import division
 from math import sqrt, log, exp, tan, atan, acos, sin
+from cmath import log as log_c
 
 from scipy.optimize import fsolve
 from PyQt4.QtGui import QApplication
@@ -77,6 +78,24 @@ units = [
     ("n", float, None),
     ("Pr", float, None),
     ("w", unidades.Speed, None)]
+
+
+# Constants
+Rm = 8.31451      # kJ/kmol·K
+M = 18.015257     # kg/kmol
+R = 0.461526      # kJ/kg·K
+Tc = 647.096      # K
+Pc = 22.064       # MPa
+rhoc = 322        # kg/m³
+Tt = 273.16       # K
+Pt = 611.657e-6   # MPa
+Tb = 373.1243     # K
+
+sc = 4.41202148223476     # Critic entropy
+# Pmin = _PSat_T(273.15)   # Minimum pressure
+Pmin = 0.000611212677444
+# Ps_623 = _PSat_T(623.15)  # P Saturation at 623.15 K, boundary region 1-3
+Ps_623 = 16.5291642526
 
 
 # Boundary Region1-Region2
@@ -2404,6 +2423,161 @@ def Region5_cp0(Tr, Pr):
     return go, gop, gopp, got, gott, gopt
 
 
+# IAPWS-06 for Ice
+def _Ice(T, P):
+    """Basic equation for Ice Ih
+
+    >>> "%.9f" % _Ice(100,100e6)["rho"]
+    '941.678203297'
+    >>> "%.6f" % _Ice(100,100e6)["h"]
+    '-483491.635676'
+    >>> "%.8f" % _Ice(100,100e6)["s"]
+    '-2611.95122589'
+    >>> "%.8f" % _Ice(273.152519,101325)["a"]
+    '-9.18701567'
+    >>> "%.6f" % _Ice(273.152519,101325)["u"]
+    '-333465.403393'
+    >>> "%.8f" % _Ice(273.152519,101325)["cp"]
+    '2096.71391024'
+    >>> "%.15f" % _Ice(273.16,611.657)["alfav"]
+    '0.000159863102566'
+    >>> "%.11f" % _Ice(273.16,611.657)["beta"]
+    '1.35714764659'
+    >>> "%.11e" % _Ice(273.16,611.657)["kt"]
+    '1.17793449348e-04'
+    >>> "%.11e" % _Ice(273.16,611.657)["ks"]
+    '1.14161597779e-04'
+    """    
+    # Check input in range of validity
+    if P < Pt*1e-6:
+        Psub = _Sublimation_Pressure(T)
+        if Psub > P:
+            # Zone Gas
+            raise NotImplementedError("Incoming out of bound")
+    elif P > 208.566e6:
+        # Ice Ih limit upper pressure
+        raise NotImplementedError("Incoming out of bound")
+    else:
+        Pmel = _Melting_Pressure(T, P)
+        if Pmel < P:
+            # Zone Liquid
+            raise NotImplementedError("Incoming out of bound")
+
+    Tr = T/Tt
+    Pr = P/Pt*1e-6
+    P0 = 101325/Pt*1e-6
+    s0 = -0.332733756492168e4
+    
+    gok = [-0.632020233335886e6, 0.655022213658955, -0.189369929326131e-7,
+           0.339746123271053e-14, -0.556464869058991e-21]
+    r2k = [complex(-0.725974574329220e2, -0.781008427112870e2),
+           complex(-0.557107698030123e-4, 0.464578634580806e-4),
+           complex(0.234801409215913e-10, -0.285651142904972e-10)]
+    t1 = complex(0.368017112855051e-1, 0.510878114959572e-1)
+    t2 = complex(0.337315741065416, 0.335449415919309)
+    r1 = complex(0.447050716285388e2, 0.656876847463481e2)
+  
+    go = gop = gopp = 0
+    for k in range(5):
+        go += gok[k]*(Pr-P0)**k
+    for k in range(1, 5):
+        gop += gok[k]*k/Pt*(Pr-P0)**(k-1)
+    for k in range(2, 5):
+        gopp += gok[k]*k*(k-1)/Pt**2*(Pr-P0)**(k-2)
+    r2 = r2p = 0
+    for k in range(3):
+        r2 += r2k[k]*(Pr-P0)**k
+    for k in range(1, 3):
+        r2p += r2k[k]*k/Pt*(Pr-P0)**(k-1)
+    r2pp = r2k[2]*2/Pt**2
+    
+    complejo = r1*((t1-Tr)*log_c(t1-Tr)+(t1+Tr)*log_c(t1+Tr)-2*t1*log_c(t1)-Tr**2/t1) + \
+               r2*((t2-Tr)*log_c(t2-Tr)+(t2+Tr)*log_c(t2+Tr)-2*t2*log_c(t2)-Tr**2/t2)
+    complejot = r1*(-log_c(t1-Tr)+log_c(t1+Tr)-2*Tr/t1) + \
+                r2*(-log_c(t2-Tr)+log_c(t2+Tr)-2*Tr/t2)
+    complejott = r1*(1/(t1-Tr)+1/(t1+Tr)-2/t1) + r2*(1/(t2-Tr)+1/(t2+Tr)-2/t2)
+    complejop = r2p*((t2-Tr)*log_c(t2-Tr)+(t2+Tr)*log_c(t2+Tr)-2*t2*log_c(t2)-Tr**2/t2)
+    complejotp = r2p*(-log_c(t2-Tr)+log_c(t2+Tr)-2*Tr/t2)
+    complejopp = r2pp*((t2-Tr)*log_c(t2-Tr)+(t2+Tr)*log_c(t2+Tr)-2*t2*log_c(t2)-Tr**2/t2)
+    
+    g = go-s0*Tt*Tr+Tt*complejo.real
+    gt = -s0+complejot.real
+    gp = gop+Tt*complejop.real
+    gtt = complejott.real/Tt
+    gtp = complejotp.real
+    gpp = gopp+Tt*complejopp.real
+    
+    propiedades = {}
+    propiedades["T"] = T
+    propiedades["P"] = P
+    propiedades["v"] = gp/1e6
+    propiedades["rho"] = 1e6/gp
+    propiedades["h"] = g-T*gt
+    propiedades["s"] = -gt
+    propiedades["cp"] = -T*gtt
+    propiedades["u"] = g-T*gt-P*1e-6*gp
+    propiedades["g"] = g
+    propiedades["a"] = g-P*1e-6*gp
+    propiedades["alfav"] = gtp/gp
+    propiedades["beta"] = -gtp/gpp
+    propiedades["kt"] = -gpp/gp
+    propiedades["ks"] = (gtp**2-gtt*gpp)/gp/gtt
+    return propiedades
+
+
+def _Sublimation_Pressure(T):
+    "Sublimation Pressure correlation"
+    Tita = T/Tt
+    suma = 0
+    a = [-0.212144006e2, 0.273203819e2, -0.61059813e1]
+    expo = [0.333333333e-2, 1.20666667, 1.70333333]
+    for ai, expi in zip(a, expo):
+        suma += ai*Tita**expi
+        return exp(suma/Tita)*Pt*1e6
+
+
+def _Melting_Pressure(T, P):
+    "Melting Pressure correlation"
+    if P < 208.566 and 251.165 <= T <= 273.16:
+        # Ice Ih
+        Tref = Tt
+        Pref = Pt*1e6
+        Tita = T/Tref
+        a = [0.119539337e7, 0.808183159e5, 0.33382686e4]
+        expo = [3., 0.2575e2, 0.10375e3]
+        suma = 1
+        for ai, expi in zip(a, expo):
+            suma += ai*(1-Tita**expi)
+        P = suma*Pref
+    elif 208.566 < P < 350.1 and 251.165 < T <= 256.164:
+        # Ice III
+        Tref = 251.165
+        Pref = 208.566*1e6
+        Tita = T/Tref
+        P = Pref*(1-0.299948*(1-Tita**60.))
+    elif 350.1 < P < 632.4 and 256.164 < T <= 273.31:
+        # Ice V
+        Tref = 256.164
+        Pref = 350.100*1e6
+        Tita = T/Tref
+        P = Pref*(1-1.18721*(1-Tita**8.))
+    elif 632.4 < P < 2216 and 273.31 < T <= 355:
+        # Ice VI
+        Tref = 273.31
+        Pref = 632.400*1e6
+        Tita = T/Tref
+        P = Pref*(1-1.07476*(1-Tita**4.6))
+    elif 2216 < P and 355. < T <= 715:
+        # Ice VII
+        Tref = 355
+        Pref = 2216.*1e6
+        Tita = T/Tref
+        P = Pref*exp(1.73683*(1-1./Tita)-0.544606e-1*(1-Tita**5) +
+                     0.806106e-7*(1-Tita**22))
+
+    return P
+
+
 # Transport properties
 def _Viscosity(rho, T):
     """Equation for the Viscosity
@@ -2713,7 +2887,7 @@ def _Bound_hs(h, s):
         if smin <= s <= s13:
             P = _Backward1_P_hs(h, s)
             T = _Backward1_T_Ph(P, h)
-            if T-0.0218 >= 273.15 and Pt/1e6 <= P <= 100:
+            if T-0.0218 >= 273.15 and Pt <= P <= 100:
                 hs = _h1_s(s)
                 if h >= hs:
                     region = 1
@@ -2820,29 +2994,12 @@ def prop0(T, P):
     return prop0
 
 
-# Constants
-Rm = 8.31451  # kJ/kmol·K
-M = 18.015257 # kg/kmol
-R = 0.461526  # kJ/kg·K
-Tc = 647.096  # K
-Pc = 22.064   # MPa
-rhoc = 322    # kg/m³
-Tt = 273.16   # K
-Pt = 611.657  # Pa
-Tb = 373.1243 # K
-
-# Pmin = _PSat_T(273.15)   # Minimum pressure
-Pmin = 1e-6              # Minimum pressure
-Ps_623 = _PSat_T(623.15) # Saturated Pressure at 623.15 K, boundary between region 1 and 3
-sc = 4.41202148223476    # Critic entropy
-
-
 class IAPWS97(object):
     """Class to model a state for liquid water or steam with the IAPWS-IF97
 
     Incoming properties:
     T   -   Temperature, K
-    P   -   Pressure, MPa
+    P   -   Pressure, Pa
     h   -   Specific enthalpy, kJ/kg
     s   -   Specific entropy, kJ/kg·K
     x   -   Quality
@@ -2907,12 +3064,12 @@ class IAPWS97(object):
 
     Usage:
     >>> water=IAPWS97(T=170+273.15,x=0.5)
-    >>> "%0.4f %0.4f %0.1f %0.2f" %(water.Liquid.cp, water.Vapor.cp, water.Liquid.w, water.Vapor.w)
+    >>> "%0.4f %0.4f %0.1f %0.2f" %(water.Liquido.cp.kJkgK, water.Gas.cp.kJkgK, water.Liquido.w, water.Gas.w)
     '4.3695 2.5985 1418.3 498.78'
     >>> water=IAPWS97(T=325+273.15,x=0.5)
-    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" %(water.P, water.Liquid.v, water.Vapor.v, water.Liquid.h, water.Vapor.h)
+    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" %(water.P.MPa, water.Liquido.v, water.Gas.v, water.Liquido.h.kJkg, water.Gas.h.kJkg)
     '12.0505 0.00152830 0.0141887 1493.37 2684.48'
-    >>> water=IAPWS97(T=50+273.15,P=0.0006112127)
+    >>> water=IAPWS97(T=50+273.15,P=611.2127)
     >>> "%0.4f %0.4f %0.2f %0.3f %0.2f" %(water.cp0, water.cv0, water.h0, water.s0, water.w0)
     '1.8714 1.4098 2594.66 9.471 444.93'
     """
@@ -3118,7 +3275,7 @@ class IAPWS97(object):
 
         elif self._thermo=="Px":
             P, x = args
-            if Pt/1e6 <= P <= Pc and 0 < x < 1:
+            if Pt <= P <= Pc and 0 < x < 1:
                 propiedades = _Region4(P, x)
             elif P > 16.529:
                 T = _TSat_P(P)
@@ -3186,11 +3343,11 @@ class IAPWS97(object):
         if self.x in (0, 1):        # single phase
             self.fill(self, propiedades)
         else:
-            self.h = unidades.Enthalpy(self.x*self.Vapor.h+(1-self.x)*self.Liquido.h)
-            self.s = unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
-            self.u = unidades.SpecificHeat(self.x*self.Vapor.u+(1-self.x)*self.Liquido.u)
-            self.a = unidades.Enthalpy(self.x*self.Vapor.a+(1-self.x)*self.Liquido.a)
-            self.g = unidades.Enthalpy(self.x*self.Vapor.g+(1-self.x)*self.Liquido.g)
+            self.h = unidades.Enthalpy(self.x*self.Gas.h+(1-self.x)*self.Liquido.h)
+            self.s = unidades.SpecificHeat(self.x*self.Gas.s+(1-self.x)*self.Liquido.s)
+            self.u = unidades.SpecificHeat(self.x*self.Gas.u+(1-self.x)*self.Liquido.u)
+            self.a = unidades.Enthalpy(self.x*self.Gas.a+(1-self.x)*self.Liquido.a)
+            self.g = unidades.Enthalpy(self.x*self.Gas.g+(1-self.x)*self.Liquido.g)
 
             self.cv = unidades.SpecificHeat(None)
             self.cp = unidades.SpecificHeat(None)
@@ -3333,6 +3490,7 @@ class IAPWS97_Tx(IAPWS97):
         IAPWS97.__init__(self, T=T, x=x)
 
 
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
@@ -3342,5 +3500,6 @@ if __name__ == "__main__":
     # print dir(fluido)
     # print _Viscosity(997.047435,298.15)
 
-    fluido = IAPWS97_PT(101325, 300)
-    print fluido.cp
+#    fluido = IAPWS97_PT(101325, 300)
+#    print fluido.cp
+
