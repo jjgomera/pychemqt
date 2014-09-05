@@ -79,7 +79,7 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T"),
         ("dhdp_rho", "dhdp_rho"),
         ("dhdT_rho", "dhdT_rho"),
         ("dhdT_P", "dhdT_P"),
-        ("dhdP_T", "dhdP_T")]    #Isothermal throttle coefficient
+        ("dhdP_T", "dhdP_T")]    # Isothermal throttle coefficient
 
 propiedades = [p[0] for p in data]
 keys = [p[1] for p in data]
@@ -87,9 +87,48 @@ properties = dict(zip(keys, propiedades))
 
 
 class MEoS(object):
-    """Implementación general de ecuaciones de estado de multiparámetros
-    Superclase de la que derivan todas los componentes que dispongan de parámetros para ella
+    """General class for implement multiparameter equation of state
+    Each child class must define parameters for do calculations:
+        name: Name of component
+        CASNumber: CAS Number of component
+        formula: Empiric formula
+        synonym: Alternate formula (Refrigerant name or sigles
+
+        rhoc: Critical density, instance of unidades.Density
+        Tc: Critical temperature, instance of unidades.Temperature
+        Pc: Critical pressure, instance of unidades.Pressure
+        M: Molecular weigth, g/mol
+        Tt: Temperature of triple point, instance of unidades.Temperature
+        Tb: Normal boiling point temperature, instance of unidades.Temperature
+        f_acent: Acentric factor
+        momentoDipolar: Depole moment, instance of unidades.DipoleMoment
+        id: index of component in database if exist
+
+        _Tr: Temperature parameter for generalized equation
+        _rhor: Density parameter for generalized equation
+        _w: Acentric factor for generalized equation
+
+        eq: array of pointer for equations parameters
+        _PR: Peneloux volume correction for Peng-Robinson equation of state
+
+        _dielectric: Data for dielectric constant calculation
+        _melting: Data for melting line calculation
+        _sublimation: Data for sublimation line calculation
+        _surface: Data for surface tension calculation
+        _vapor_Pressure: Data for vapor pressure ancillary equation
+        _liquid_Density: Data for liquid density ancillary equation
+        _vapor_Density: Data for vapor density ancillary equation
+
+        _viscosity: Tuple with viscosity equation
+        _thermal: Tuple with thermal conductivity equation
     """
+    id = None
+    _Tr = None
+    _rhor = None
+    _w = None
+
+    eq = ()
+    _PR = 0.
 
     _dielectric = None
     _melting = None
@@ -98,16 +137,13 @@ class MEoS(object):
     _vapor_Pressure = None
     _liquid_Density = None
     _vapor_Density = None
+
     _omega = None
     _viscosity = None,
     _thermal = None,
     _critical = None
-    _PR = 0.
-    id = None
 
-    _Tr = None
-    _rhor = None
-    _w = None
+    _test: []
 
     kwargs = {"T": 0.0,
               "P": 0.0,
@@ -154,44 +190,44 @@ class MEoS(object):
             None: Se usan ho,so=0, válido para calcular los valores de referencia
 
         Properties:
-        P            -   Pressure, MPa
-        T            -   Temperature, K
-        g            -   Specific Gibbs free energy, kJ/kg
-        a            -   Specific Helmholtz free energy, kJ/kg
-        v            -   Specific volume, m³/kg
-        rho         -   Density, kg/m³
-        h            -   Specific enthalpy, kJ/kg
-        u            -   Specific internal energy, kJ/kg
-        s             -   Specific entropy, kJ/kg·K
-        x             -   Quatity
-        cp           -   Specific isobaric heat capacity, kJ/kg·K
-        cv           -   Specific isochoric heat capacity, kJ/kg·K
-        Z             -   Compression factor
-        f              -   Fugacity, MPa
-        fi             -   Fugacity coefficient
-        gamma    -   Isoentropic exponent
-        alfav        -   Thermal expansion coefficient, 1/K
-        kappa      -   Isothermal compressibility, 1/MPa
-        alfap        -   Relative pressure coefficient, 1/K
-        betap       -   Isothermal stress coefficient, kg/m³
-        betas       -   Isoentropic temperature-pressure coefficient
-        joule         -   Joule-Thomson coefficient, K/MPa
-        dhdP_T     -   Isothermal throttling coefficient, kJ/kg·MPa
-        n              -   Isentropic Expansion Coefficient
-        kt             -   Isothermal Expansion Coefficient
-        ks             -   Adiabatic Compressibility, 1/MPa
-        Ks             -   Adiabatic bulk modulus, MPa
-        Kt             -   Isothermal bulk modulus, MPa
+        P       -   Pressure, MPa
+        T       -   Temperature, K
+        g       -   Specific Gibbs free energy, kJ/kg
+        a       -   Specific Helmholtz free energy, kJ/kg
+        v       -   Specific volume, m³/kg
+        rho     -   Density, kg/m³
+        h       -   Specific enthalpy, kJ/kg
+        u       -   Specific internal energy, kJ/kg
+        s       -   Specific entropy, kJ/kg·K
+        x       -   Quatity
+        cp      -   Specific isobaric heat capacity, kJ/kg·K
+        cv      -   Specific isochoric heat capacity, kJ/kg·K
+        Z       -   Compression factor
+        f       -   Fugacity, MPa
+        fi      -   Fugacity coefficient
+        gamma   -   Isoentropic exponent
+        alfav   -   Thermal expansion coefficient, 1/K
+        kappa   -   Isothermal compressibility, 1/MPa
+        alfap   -   Relative pressure coefficient, 1/K
+        betap   -   Isothermal stress coefficient, kg/m³
+        betas   -   Isoentropic temperature-pressure coefficient
+        joule   -   Joule-Thomson coefficient, K/MPa
+        dhdP_T  -   Isothermal throttling coefficient, kJ/kg·MPa
+        n       -   Isentropic Expansion Coefficient
+        kt      -   Isothermal Expansion Coefficient
+        ks      -   Adiabatic Compressibility, 1/MPa
+        Ks      -   Adiabatic bulk modulus, MPa
+        Kt      -   Isothermal bulk modulus, MPa
 
-        virialB       -   Second virial coefficient
-        virialC       -   Third virial coefficient
+        virialB -   Second virial coefficient
+        virialC -   Third virial coefficient
 
-        mu           -   Dynamic viscosity, Pa·s
-        nu            -   Kinematic viscosity, m²/s
-        k              -   Thermal conductivity, W/m·K
-        sigma       -   Surface tension, N/m
-        alfa           -   Thermal diffusivity, m²/s
-        Pr             -   Prandtl number
+        mu      -   Dynamic viscosity, Pa·s
+        nu      -   Kinematic viscosity, m²/s
+        k       -   Thermal conductivity, W/m·K
+        sigma   -   Surface tension, N/m
+        alfa    -   Thermal diffusivity, m²/s
+        Pr      -   Prandtl number
         """
         self._constants = self.eq[self.kwargs["eq"]]
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
@@ -240,7 +276,7 @@ class MEoS(object):
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
         ref = self.kwargs["ref"]
-        
+
         if ref is None:
             ho = so = 0
         else:
