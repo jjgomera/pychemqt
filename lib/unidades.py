@@ -210,6 +210,17 @@ with support for class unidad operations: txt, config. func."""
     __text__ = [""]
     _magnitudes = []
 
+    def __init__(self, data, txt=""):
+
+        self.txt = txt
+
+        if data is None:
+            data = 0
+            self.code = "n/a"
+        else:
+            data = data
+            self.code = ""
+
     def __new__(cls, *args, **kwargs):
         """Discard superfluous parameters for this class"""
         if args[0] is None:
@@ -218,7 +229,10 @@ with support for class unidad operations: txt, config. func."""
         else:
             val = args[0]
             cls.code = ""
-
+        if kwargs.get("txt", ""):
+            cls.txt=kwargs["txt"]
+        else:
+            cls.txt=""
         return float.__new__(cls, val)
 
     @classmethod
@@ -242,6 +256,8 @@ with support for class unidad operations: txt, config. func."""
     @property
     def str(self):
         num = self.format(self)
+        if self.txt:
+            num+=" "+self.txt
         return num
 
 

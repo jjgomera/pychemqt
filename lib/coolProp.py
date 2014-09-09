@@ -14,6 +14,7 @@ try:
     from CoolProp import phase_constants, param_constants
     from CoolProp.State import State
     from CoolProp.CoolProp import FluidsList, get_CAS_code, DerivTerms, get_aliases
+    from CoolProp.HumidAirProp import HAProps
 except:
     pass
 
@@ -336,6 +337,72 @@ __all__ = {1: 4,
            1629: 38,
            1817: 51}
 
+
+class Psychro_Coolprop(object):
+    """Psychrometric model class using coolProp external library"""
+    kwargs = {"P": 0.0,
+              "height": None,
+              
+              "Tdb": None,
+              "Twb": None,
+              "Tdew": None,
+              "h": None,
+              "w": None,
+              "HR": None}
+    status = 0
+    msg = "Unknown variables"
+
+    def __init__(self, **kwargs):
+        """Parameters needed to define it are:
+
+        -P: Pressure
+        -Altitude: Altitude, alternate input for pressure
+
+        -Tdb: Dry-bulb temperature
+        -Twb: Wet-bulb temperature
+        -Tdew: Dew-point temperature
+        -h: Enthalpy
+        -w: Absolute humidity
+        -HR: Relative humidity
+        """
+        self.kwargs = Psychro_Coolprop.kwargs.copy()
+        self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        self.kwargs.update(kwargs)
+
+        if self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = ""
+
+    @property
+    def calculable(self):
+        pass
+
+    def args(self):
+
+        var1 = self.kwargs[self._thermo[0]]
+        var2 = self.kwargs[self._thermo[1]]
+
+        # units conversion to coolprop expected unit:
+        # P in kPa, H in kJ/kg, S in kJ/kgK
+        if self._thermo[0] == "P":
+            var1 /= 1000.
+        if self._thermo == "PH":
+            var2 /= 1000.
+        if self._thermo == "HS":
+            var1 /= 1000.
+        if "S" in self._thermo:
+            var2 /= 1000.
+
+        args = {self._thermo[0]: var1, self._thermo[1]: var2}
+        return args
+
+    def calculo(self):
+        
+        
+        h = HAProps("H","T",298.15,"P",101.325,"R",0.5)
 
 if __name__ == '__main__':
 #    from CoolProp.CoolProp import IProps, get_Fluid_index

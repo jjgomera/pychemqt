@@ -844,7 +844,7 @@ class ConfApplications(QtGui.QDialog):
 
 class Isolinea(QtGui.QDialog):
     """Widget for isoline configuration for mEoS plot tools"""
-    def __init__(self, unidad, ConfSection, config, parent=None):
+    def __init__(self, unidad, ConfSection, config, section="MEOS", parent=None):
         """Constructor
             unidad: subclass of unidad to define the isoline type
             ConfSection: title of isoline
@@ -853,6 +853,7 @@ class Isolinea(QtGui.QDialog):
         self.ConfSection = ConfSection
         self.magnitud = unidad.__name__
         self.unidad = unidad
+        self.section = section
         layout = QtGui.QGridLayout(self)
         layout.addWidget(QtGui.QLabel(
             QtGui.QApplication.translate("pychemqt", "Start")), 1, 1)
@@ -882,7 +883,7 @@ class Isolinea(QtGui.QDialog):
         self.Personalizar.toggled.connect(self.Lista.setEnabled)
         layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
                                          QtGui.QSizePolicy.Fixed), 6, 1, 1, 4)
-        if unidad.__name__ != "float":
+        if unidad.__name__ != "float" and section != "Psychr":
             self.Critica = QtGui.QCheckBox(QtGui.QApplication.translate(
                 "pychemqt", "Include critic point line"))
             layout.addWidget(self.Critica, 7, 1, 1, 4)
@@ -913,35 +914,35 @@ class Isolinea(QtGui.QDialog):
         layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
                                          QtGui.QSizePolicy.Expanding), 14, 4)
 
-        if config.has_section("MEOS"):
-            self.inicio.setValue(config.getfloat("MEOS", ConfSection+'Start'))
-            self.fin.setValue(config.getfloat("MEOS", ConfSection+'End'))
-            self.intervalo.setValue(config.getfloat("MEOS", ConfSection+'Step'))
-            self.Personalizar.setChecked(config.getboolean("MEOS", ConfSection+'Custom'))
-            if config.get("MEOS", ConfSection+'List') != "":
+        if config.has_section(section):
+            self.inicio.setValue(config.getfloat(section, ConfSection+'Start'))
+            self.fin.setValue(config.getfloat(section, ConfSection+'End'))
+            self.intervalo.setValue(config.getfloat(section, ConfSection+'Step'))
+            self.Personalizar.setChecked(config.getboolean(section, ConfSection+'Custom'))
+            if config.get(section, ConfSection+'List') != "":
                 T = []
-                for i in config.get("MEOS", ConfSection+'List').split(','):
+                for i in config.get(section, ConfSection+'List').split(','):
                     if unidad.__name__ == "float":
                         T.append(representacion(float(i)))
                     else:
                         T.append(representacion(unidad(float(i)).config()))
                 self.Lista.setText(",".join(T))
-            if self.unidad.__name__ != "float":
-                self.Critica.setChecked(config.getboolean("MEOS", ConfSection+'Critic'))
+            if self.unidad.__name__ != "float" and section != "Psychr":
+                self.Critica.setChecked(config.getboolean(section, ConfSection+'Critic'))
             self.inicio.setDisabled(self.Personalizar.isChecked())
             self.fin.setDisabled(self.Personalizar.isChecked())
             self.intervalo.setDisabled(self.Personalizar.isChecked())
             self.Lista.setEnabled(self.Personalizar.isChecked())
-            self.label.setChecked(config.getboolean("MEOS", ConfSection+'Label'))
-            self.unit.setChecked(config.getboolean("MEOS", ConfSection+'Units'))
-            self.Posicion.setValue(config.getint("MEOS", ConfSection+'Position'))
-            self.lineconfig.setConfig(config)
+            self.label.setChecked(config.getboolean(section, ConfSection+'Label'))
+            self.unit.setChecked(config.getboolean(section, ConfSection+'Units'))
+            self.Posicion.setValue(config.getint(section, ConfSection+'Position'))
+            self.lineconfig.setConfig(config, section)
 
     def value(self, config):
-        config.set("MEOS", self.ConfSection+"Start", self.inicio.value)
-        config.set("MEOS", self.ConfSection+"End", self.fin.value)
-        config.set("MEOS", self.ConfSection+"Step", self.intervalo.value)
-        config.set("MEOS", self.ConfSection+"Custom", self.Personalizar.isChecked())
+        config.set(self.section, self.ConfSection+"Start", self.inicio.value)
+        config.set(self.section, self.ConfSection+"End", self.fin.value)
+        config.set(self.section, self.ConfSection+"Step", self.intervalo.value)
+        config.set(self.section, self.ConfSection+"Custom", self.Personalizar.isChecked())
         T = []
         if not self.Lista.text().isEmpty():
             T1 = self.Lista.text().split(',')
@@ -950,30 +951,30 @@ class Isolinea(QtGui.QDialog):
                     T.append(str(float(i)))
                 else:
                     T.append(str(self.unidad(float(i), "conf")))
-        config.set("MEOS", self.ConfSection+"List", ", ".join(T))
-        if self.unidad.__name__ != "float":
-            config.set("MEOS", self.ConfSection+"Critic",
+        config.set(self.section, self.ConfSection+"List", ", ".join(T))
+        if self.unidad.__name__ != "float" and self.section != "Psychr":
+            config.set(self.section, self.ConfSection+"Critic",
                        self.Critica.isChecked())
-        config = self.lineconfig.value(config)
+        config = self.lineconfig.value(config, self.section)
 
-        config.set("MEOS", self.ConfSection+"Label", self.label.isChecked())
-        config.set("MEOS", self.ConfSection+"Units", self.unit.isChecked())
-        config.set("MEOS", self.ConfSection+"Position", self.Posicion.value())
+        config.set(self.section, self.ConfSection+"Label", self.label.isChecked())
+        config.set(self.section, self.ConfSection+"Units", self.unit.isChecked())
+        config.set(self.section, self.ConfSection+"Position", self.Posicion.value())
         return config
 
     @classmethod
     def default(cls, config, ConfSection):
-        config.set("MEOS", ConfSection+"Start", "0")
-        config.set("MEOS", ConfSection+"End", "0")
-        config.set("MEOS", ConfSection+"Step", "0")
-        config.set("MEOS", ConfSection+"Custom", "True")
-        config.set("MEOS", ConfSection+"List", "")
+        config.set(self.section, ConfSection+"Start", "0")
+        config.set(self.section, ConfSection+"End", "0")
+        config.set(self.section, ConfSection+"Step", "0")
+        config.set(self.section, ConfSection+"Custom", "True")
+        config.set(self.section, ConfSection+"List", "")
         if ConfSection != "Isoquality":
-            config.set("MEOS", ConfSection+"Critic", "True")
+            config.set(self.section, ConfSection+"Critic", "True")
         config = LineConfig.default(config, ConfSection)
-        config.set("MEOS", ConfSection+"Label", "False")
-        config.set("MEOS", ConfSection+"Units", "False")
-        config.set("MEOS", ConfSection+"Position", "50")
+        config.set(self.section, ConfSection+"Label", "False")
+        config.set(self.section, ConfSection+"Units", "False")
+        config.set(self.section, ConfSection+"Position", "50")
         return config
 
 
@@ -1089,6 +1090,106 @@ class ConfmEoS(QtGui.QDialog):
         return config
 
 
+class ConfPsychrometric(QtGui.QDialog):
+    """Config mEoS parameter dialog"""
+    lineas = [
+        ("IsoTdb", unidades.Temperature,
+         QtGui.QApplication.translate("pychemqt", "Iso dry bulb temperature")),
+        ("IsoW", unidades.Pressure,
+         QtGui.QApplication.translate("pychemqt", "Iso humidity ratio")),
+        ("IsoHR", unidades.SpecificHeat,
+         QtGui.QApplication.translate("pychemqt", "Iso relative humidity")),
+        ("IsoTwb", unidades.Temperature,
+         QtGui.QApplication.translate("pychemqt", "Iso wet bulb temperature")),
+        ("Isochor", unidades.SpecificVolume,
+         QtGui.QApplication.translate("pychemqt", "Isochor"))]
+
+    def __init__(self, config, parent=None):
+        """constructor, config optional parameter to input project config"""
+        super(ConfPsychrometric, self).__init__(parent)
+        layout = QtGui.QGridLayout(self)
+
+        groupType = QtGui.QGroupBox(QtGui.QApplication.translate(
+            "pychemqt", "Chart type"))
+        groupLayout = QtGui.QVBoxLayout(groupType)
+        self.checkASHRAE = QtGui.QRadioButton(QtGui.QApplication.translate(
+            "pychemqt", "ASHRAE Chart, W vs Tdb"))
+        groupLayout.addWidget(self.checkASHRAE)
+        self.checkMollier = QtGui.QRadioButton(QtGui.QApplication.translate(
+            "pychemqt", "Mollier Chart ix"))
+        groupLayout.addWidget(self.checkMollier)
+        layout.addWidget(groupType, 0, 1, 1, 2)
+
+        self.virial = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use virial equation of state"))
+        layout.addWidget(self.virial, 1, 1, 1, 2)
+        self.coolProp = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use external library coolProp (faster)"))
+        self.coolProp.setEnabled(False)
+        layout.addWidget(self.coolProp, 2, 2)
+        self.refprop = QtGui.QCheckBox(QtGui.QApplication.translate(
+            "pychemqt", "Use external library refprop (fastest)"))
+        self.refprop.setEnabled(False)
+        layout.addWidget(self.refprop, 3, 2)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 4, 1)
+
+        self.satlineconfig = LineConfig("saturation", QtGui.QApplication.translate(
+            "pychemqt", "Saturation Line Style"))
+        layout.addWidget(self.satlineconfig, 5, 1, 1, 2)
+        group = QtGui.QGroupBox(
+            QtGui.QApplication.translate("pychemqt", "Isolines"))
+        layout.addWidget(group, 7, 1, 1, 2)
+        layoutgroup = QtGui.QGridLayout(group)
+        self.comboIsolineas = QtGui.QComboBox()
+        layoutgroup.addWidget(self.comboIsolineas, 1, 1)
+        self.Isolineas = QtGui.QStackedWidget()
+        self.comboIsolineas.currentIndexChanged.connect(
+            self.Isolineas.setCurrentIndex)
+        layoutgroup.addWidget(self.Isolineas, 2, 1)
+        for nombre, unidad, text in self.lineas:
+            self.comboIsolineas.addItem(text)
+            self.Isolineas.addWidget(Isolinea(unidad, nombre, config, "Psychr"))
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding), 10, 2)
+
+        if os.environ["CoolProp"]:
+            self.virial.toggled.connect(self.coolProp.setEnabled)
+        if os.environ["refprop"]:
+            self.virial.toggled.connect(self.refprop.setEnabled)
+
+        if config.has_section("Psychr"):
+            self.virial.setChecked(config.getboolean("Psychr", 'virial'))
+            self.coolProp.setChecked(config.getboolean("Psychr", 'coolprop'))
+            self.refprop.setChecked(config.getboolean("Psychr", 'refprop'))
+            self.satlineconfig.setConfig(config, "Psychr")
+
+    def value(self, config):
+        """Return value for main dialog"""
+        if not config.has_section("Psychr"):
+            config.add_section("Psychr")
+
+        config.set("Psychr", "virial", self.virial.isChecked())
+        config.set("Psychr", "coolprop", self.coolProp.isChecked())
+        config.set("Psychr", "refprop", self.refprop.isChecked())
+        config = self.satlineconfig.value(config, "Psychr")
+
+        for indice in range(self.Isolineas.count()):
+            config = self.Isolineas.widget(indice).value(config)
+        return config
+
+    @classmethod
+    def default(cls, config):
+        config.add_section("MEOS")
+        config.set("Psychr", "virial", "False")
+        config.set("Psychr", "coolprop", "False")
+        config.set("Psychr", "refprop", "False")
+        config = LineConfig.default(config, "saturation")
+        for nombre, texto, unidad in cls.lineas:
+            config = Isolinea.default(config, nombre)
+        return config
+
+
 class Preferences(QtGui.QDialog):
     """Preferences main dialog"""
     classes = [
@@ -1107,7 +1208,9 @@ class Preferences(QtGui.QDialog):
         ("button/tooltip.png", ConfTooltipEntity,
          QtGui.QApplication.translate("pychemqt", "Tooltips in PFD")),
         ("button/steamTables.png", ConfmEoS,
-         QtGui.QApplication.translate("pychemqt", "mEoS"))]
+         QtGui.QApplication.translate("pychemqt", "mEoS")),
+        ("button/psychrometric.png", ConfPsychrometric,
+         QtGui.QApplication.translate("pychemqt", "Psychrometric chart"))]
 
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter to input project config"""

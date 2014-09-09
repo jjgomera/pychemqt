@@ -768,25 +768,25 @@ class LineConfig(QtGui.QGroupBox):
         layout.addWidget(self.ColorButton)
         layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed))
 
-    def setConfig(self, config):
-        self.ColorButton.setColor(config.get("MEOS", self.confSection+'Color'))
-        self.Grosor.setValue(config.getfloat("MEOS", self.confSection+'lineWidth'))
-        self.Linea.setCurrentValue(config.get("MEOS", self.confSection+'lineStyle'))
-        self.Marca.setCurrentValue(config.get("MEOS", self.confSection+'marker'))
+    def setConfig(self, config, section="MEOS"):
+        self.ColorButton.setColor(config.get(section, self.confSection+'Color'))
+        self.Grosor.setValue(config.getfloat(section, self.confSection+'lineWidth'))
+        self.Linea.setCurrentValue(config.get(section, self.confSection+'lineStyle'))
+        self.Marca.setCurrentValue(config.get(section, self.confSection+'marker'))
 
-    def value(self, config):
-        config.set("MEOS", self.confSection+"Color", self.ColorButton.color.name())
-        config.set("MEOS", self.confSection+"lineWidth", self.Grosor.value())
-        config.set("MEOS", self.confSection+"lineStyle", self.Linea.currentValue())
-        config.set("MEOS", self.confSection+"marker", self.Marca.currentValue())
+    def value(self, config, section="MEOS"):
+        config.set(section, self.confSection+"Color", self.ColorButton.color.name())
+        config.set(section, self.confSection+"lineWidth", self.Grosor.value())
+        config.set(section, self.confSection+"lineStyle", self.Linea.currentValue())
+        config.set(section, self.confSection+"marker", self.Marca.currentValue())
         return config
 
     @classmethod
-    def default(cls, config, confSection):
-        config.set("MEOS", confSection+"Color", "#000000")
-        config.set("MEOS", confSection+"lineWidth", "0.5")
-        config.set("MEOS", confSection+"lineStyle", "-")
-        config.set("MEOS", confSection+"marker", "None")
+    def default(cls, config, confSection, section="MEOS"):
+        config.set(section, confSection+"Color", "#000000")
+        config.set(section, confSection+"lineWidth", "0.5")
+        config.set(section, confSection+"lineStyle", "-")
+        config.set(section, confSection+"marker", "None")
         return config
 
 

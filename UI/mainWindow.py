@@ -1045,7 +1045,7 @@ class UI_pychemqt(QtGui.QMainWindow):
     def diagramaPsicrometrico(self):
         Psychrometry=UI_psychrometry.UI_Psychrometry()
         self.updateStatus(QtGui.QApplication.translate("pychemqt", "Launched humid air properties aplication"))
-        Psychrometry.show()
+        Psychrometry.exec_()
 
     def externalPrograms(self):
         dialog=dependences.ShowDependences()

@@ -4,6 +4,8 @@
 ###Módulo en el que encuentran metodos relacionados con la psicrometria
 
 import os
+import cPickle
+from ConfigParser import ConfigParser
 
 from PyQt4 import QtCore, QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
@@ -26,14 +28,15 @@ class Plot(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         self.axes2D = self.fig.add_subplot(111)
-        self.axes2D.figure.subplots_adjust(left=0.01, right=0.9, bottom=0.08, top=0.98)
+        self.axes2D.figure.subplots_adjust(left=0.01, right=0.92, bottom=0.05, top=0.98)
         FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
+        self.notes = []
 
     
     def config(self):
         self.axes2D.set_autoscale_on(False)
-        self.axes2D.set_xlabel("Tdb"+unidades.Temperature(None).text())
+        self.axes2D.set_xlabel("Tdb, "+unidades.Temperature(None).text())
         self.axes2D.set_ylabel(QtGui.QApplication.translate("pychemqt", "Absolute humidity")+", "+unidades.Mass(None).text()+"/"+unidades.Mass(None).text())
         self.axes2D.yaxis.set_ticks_position("right")
         self.axes2D.yaxis.set_label_position("right")
@@ -47,98 +50,53 @@ class Plot(FigureCanvasQTAgg):
         self.axes2D.set_xlim(tmin, tmax)
         self.axes2D.set_ylim(0, 0.04)
 
-    def plot(self, x, y, color="#000000", grosor=1, linestyle="-"):
-        self.axes2D.plot(x, y, color=color, lw=grosor, ls=linestyle)
+    def plot(self, x, y, **kwargs):
+        self.axes2D.plot(x, y, **kwargs)
+    
+    def showPointData(self, psyState):
+        self.clearPointData()
+
+        yi = 0.99
+        for key in ("Tdb", "Tdp", "Twb", "HR", "w", "h", "V", "rho"):
+            self.notes.append(self.axes2D.annotate(
+                "%s: %s" %(key, psyState.__getattribute__(key).str), (0.01, yi),
+                xycoords='axes fraction', size="small", va="center"))
+            yi-=0.025
+        self.draw()
+
+    def clearPointData(self):
+        while self.notes:
+            anotation = self.notes.pop()
+            anotation.remove()
+        self.draw()
 
 
-        
-
-class UI_Psychrometry(QtGui.QMainWindow):
+class UI_Psychrometry(QtGui.QDialog):
     """Aplicación grafica de psychrometria"""
     def __init__(self, parent=None):
         super(UI_Psychrometry, self).__init__(parent)
-        self.resize(800, 600)
+        self.showMaximized()
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/psychrometric.png")))
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Psychrometric chart"))
         self.AireHumedo=Psychrometry(1)
         
-        #menu
-        self.menubar = QtGui.QMenuBar()
-        self.menubar.setGeometry(QtCore.QRect(0,0,700,30))
-        self.menuArchivo = QtGui.QMenu(self.menubar)
-        self.menuArchivo.setTitle(QtGui.QApplication.translate("pychemqt", "File"))
-        self.setMenuBar(self.menubar)
-        self.actionSalir = QtGui.QAction(self)
-        self.actionSalir.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/exit.png")))
-        self.actionSalir.setShortcut("Alt+F4")
-        self.actionSalir.setText(QtGui.QApplication.translate("pychemqt", "Close"))
-        self.actionSalir.triggered.connect(self.close)
-        self.menuArchivo.addAction(self.actionSalir)
-        self.menubar.addAction(self.menuArchivo.menuAction())
-        self.statusbar = QtGui.QStatusBar()
-        self.statusbar.setSizeGripEnabled(False)
-        self.setStatusBar(self.statusbar)
-        self.labelPresion=QtGui.QLabel()
-        self.labelPresion.setFrameShadow(QtGui.QFrame.Sunken)
-        self.labelPresion.setFrameShape(QtGui.QFrame.WinPanel)
-        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
-        self.statusbar.addPermanentWidget(self.labelPresion)
-
-        self.centralWidget=QtGui.QWidget()
-        self.setCentralWidget(self.centralWidget)
-        self.layout = QtGui.QGridLayout(self.centralWidget)
+        layout = QtGui.QGridLayout(self)
         self.diagrama2D = Plot(self, dpi=90)
         self.diagrama2D.fig.canvas.mpl_connect('motion_notify_event', self.mouse_move)
         self.diagrama2D.fig.canvas.mpl_connect('button_press_event', self.click)
-        self.layout.addWidget(self.diagrama2D,0,1,1,13)
-        self.checkMouse=QtGui.QRadioButton()
-        self.checkMouse.setChecked(True)
-        self.checkMouse.setText(QtGui.QApplication.translate("pychemqt", "Float"))
-        self.layout.addWidget(self.checkMouse,1,1,1,1)
-        self.checkPoint=QtGui.QRadioButton()
-        self.checkPoint.setText(QtGui.QApplication.translate("pychemqt", "Click"))
-        self.layout.addWidget(self.checkPoint,2,1,1,1)
-        self.layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),1,2,2,1)
-        
-        self.layout.addWidget(QtGui.QLabel("T<sub>db</sub>"),1,3,1,1)
-        self.tdb=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False, width=50, decimales=2, frame=False)
-        self.layout.addWidget(self.tdb,1,4,1,1)
-        self.layout.addWidget(QtGui.QLabel("T<sub>wb</sub>"),2,3,1,1)
-        self.twb=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False, width=50, decimales=2, frame=False)
-        self.layout.addWidget(self.twb,2,4,1,1)
-        
-        self.layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T<sub>dew</sub>")),1,6,1,1)
-        self.trocio=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False, width=50, decimales=2, frame=False)
-        self.layout.addWidget(self.trocio,1,7,1,1)
-        self.layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure")),2,6,1,1)
-        self.presion=Entrada_con_unidades(unidades.Pressure, readOnly=True, boton=False, width=50, frame=False)
-        self.layout.addWidget(self.presion,2,7,1,1)
-        
-        self.layout.addWidget(QtGui.QLabel("H<sub>abs</sub>:"),1,9,1,1)
-        self.H=Entrada_con_unidades(float, readOnly=True, width=50, frame=False)
-        self.layout.addWidget(self.H,1,10,1,1)
-        self.layout.addWidget(QtGui.QLabel("H<sub>rel</sub>"),2,9,1,1)
-        self.HR=Entrada_con_unidades(float, readOnly=True, width=50, frame=False)
-        self.layout.addWidget(self.HR,2,10,1,1)
-        
-        self.layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Volume")),1,12,1,1)
-        self.volumen=Entrada_con_unidades(unidades.SpecificVolume, boton=False, readOnly=True, width=50, frame=False)
-        self.layout.addWidget(self.volumen,1,13,1,1)
-        self.layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Enthalpy")),2,12,1,1)
-        self.entalpia=Entrada_con_unidades(unidades.Enthalpy, boton=False, readOnly=True, width=50, frame=False)
-        self.layout.addWidget(self.entalpia,2,13,1,1)
+        layout.addWidget(self.diagrama2D,1,3)
         
        #Toolbox
-        self.dockWidget_Mouse = QtGui.QDockWidget()
         self.controles = QtGui.QWidget()
-        self.gridLayout_1 = QtGui.QGridLayout(self.controles)
+        self.controles.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+        layoutToolbox = QtGui.QGridLayout(self.controles)
         self.checkPresion = QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Pressure"))
-        self.gridLayout_1.addWidget(self.checkPresion,1,1,1,1)
+        layoutToolbox.addWidget(self.checkPresion,1,1,1,1)
         self.PresionDiagrama=Entrada_con_unidades(unidades.Pressure, value=101325, width=60)
         self.PresionDiagrama.valueChanged.connect(self.cambiarPresion)
-        self.gridLayout_1.addWidget(self.PresionDiagrama,1,2,1,1)
+        layoutToolbox.addWidget(self.PresionDiagrama,1,2,1,1)
         self.checkAltitud = QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Altitude"))
-        self.gridLayout_1.addWidget(self.checkAltitud,2,1,1,1)
+        layoutToolbox.addWidget(self.checkAltitud,2,1,1,1)
         self.Altitud=Entrada_con_unidades(unidades.Length, value=0.0, min=-1e6, width=60, decimales=2)
         self.checkPresion.toggled.connect(self.PresionDiagrama.setEnabled)
         self.checkAltitud.toggled.connect(self.Altitud.setEnabled)
@@ -146,11 +104,11 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.checkPresion.setChecked(True)
         self.Altitud.setEnabled(False)
         self.Altitud.setValue(0)
-        self.gridLayout_1.addWidget(self.Altitud,2,2,1,1)
-        self.gridLayout_1.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),3,1,1,2)
+        layoutToolbox.addWidget(self.Altitud,2,2,1,1)
+        layoutToolbox.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),3,1,1,2)
         self.label_11 = QtGui.QLabel()
         self.label_11.setText(QtGui.QApplication.translate("pychemqt", "Select point"))
-        self.gridLayout_1.addWidget(self.label_11,4,1,1,2)
+        layoutToolbox.addWidget(self.label_11,4,1,1,2)
         self.variables=QtGui.QComboBox()
         self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, H absolute"))
         self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, H relative"))
@@ -158,154 +116,302 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Tª wet bulb"))
         self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dew point, H relative"))
         self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H relativa"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, densidad"))
-        self.gridLayout_1.addWidget(self.variables,5,1,1,2)
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H relativa"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, entalpía"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, entalpía"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, densidad"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, densidad"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, entalpía"))
+        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, densidad"))
+        layoutToolbox.addWidget(self.variables,5,1,1,2)
         
         self.label_12 = QtGui.QLabel("T db:")
-        self.gridLayout_1.addWidget(self.label_12,6,1,1,1)
-        self.EntradaTdb=Entrada_con_unidades(unidades.Temperature, width=60)
+        layoutToolbox.addWidget(self.label_12,6,1,1,1)
+        self.EntradaTdb=Entrada_con_unidades(unidades.Temperature)
         self.EntradaTdb.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaTdb,6,2,1,1)
+        layoutToolbox.addWidget(self.EntradaTdb,6,2,1,1)
         self.label_13 = QtGui.QLabel("T wb:")
-        self.gridLayout_1.addWidget(self.label_13,7,1,1,1)
-        self.EntradaTwb=Entrada_con_unidades(unidades.Temperature, width=60)
+        layoutToolbox.addWidget(self.label_13,7,1,1,1)
+        self.EntradaTwb=Entrada_con_unidades(unidades.Temperature)
         self.EntradaTwb.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaTwb,7,2,1,1)
+        layoutToolbox.addWidget(self.EntradaTwb,7,2,1,1)
         self.label_14 = QtGui.QLabel("T dp:")
-        self.gridLayout_1.addWidget(self.label_14,8,1,1,1)
-        self.EntradaTdp=Entrada_con_unidades(unidades.Temperature, width=60)
+        layoutToolbox.addWidget(self.label_14,8,1,1,1)
+        self.EntradaTdp=Entrada_con_unidades(unidades.Temperature)
         self.EntradaTdp.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaTdp,8,2,1,1)
+        layoutToolbox.addWidget(self.EntradaTdp,8,2,1,1)
         self.label_15 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "H absolute:"))
-        self.gridLayout_1.addWidget(self.label_15,9,1,1,1)
+        layoutToolbox.addWidget(self.label_15,9,1,1,1)
         self.EntradaH=Entrada_con_unidades(float)
         self.EntradaH.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaH,9,2,1,1)
+        layoutToolbox.addWidget(self.EntradaH,9,2,1,1)
         self.label_16 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "H relative:"))
-        self.gridLayout_1.addWidget(self.label_16,10,1,1,1)
+        layoutToolbox.addWidget(self.label_16,10,1,1,1)
         self.EntradaHR=Entrada_con_unidades(float)
         self.EntradaHR.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaHR,10,2,1,1)
+        layoutToolbox.addWidget(self.EntradaHR,10,2,1,1)
         self.label_17 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Volume"))
-        self.gridLayout_1.addWidget(self.label_17,11,1,1,1)
-        self.EntradaVolumen=Entrada_con_unidades(unidades.SpecificVolume, width=60)
+        layoutToolbox.addWidget(self.label_17,11,1,1,1)
+        self.EntradaVolumen=Entrada_con_unidades(unidades.SpecificVolume)
         self.EntradaVolumen.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaVolumen,11,2,1,1)
+        layoutToolbox.addWidget(self.EntradaVolumen,11,2,1,1)
         self.label_18 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Enthalpy"))
-        self.gridLayout_1.addWidget(self.label_18,12,1,1,1)
-        self.EntradaEntalpia=Entrada_con_unidades(unidades.Enthalpy, width=60)
+        layoutToolbox.addWidget(self.label_18,12,1,1,1)
+        self.EntradaEntalpia=Entrada_con_unidades(unidades.Enthalpy)
         self.EntradaEntalpia.valueChanged.connect(self.NuevoPunto)
-        self.gridLayout_1.addWidget(self.EntradaEntalpia,12,2,1,1)
+        layoutToolbox.addWidget(self.EntradaEntalpia,12,2,1,1)
         
-        self.gridLayout_1.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),13,1,1,2)
-
-        self.dockWidget_Mouse.setWidget(self.controles)
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidget_Mouse)
-        self.dockWidget_Mouse.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-        self.dockWidget_Mouse.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-
+        layoutToolbox.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),13,1,1,2)
+        layout.addWidget(self.controles,1,1,2,1)
+        
+        self.buttonShowToolbox = QtGui.QToolButton()
+        self.buttonShowToolbox.setCheckable(True)
+        self.buttonShowToolbox.toggled.connect(self.showToolBar)
+        layout.addWidget(self.buttonShowToolbox,1,2,2,1)
+        self.line = QtGui.QFrame()
+        self.line.setFrameShape(QtGui.QFrame.VLine)
+        self.line.setFrameShadow(QtGui.QFrame.Sunken)
+        layout.addWidget(self.line,1,3,2,1)
+        
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        butonPNG = QtGui.QPushButton(QtGui.QIcon(os.environ["pychemqt"]+
+            "images"+os.sep+"button"+os.sep+"image.png"), 
+            QtGui.QApplication.translate("pychemqt", "Save as PNG"))
+        self.buttonBox.addButton(butonPNG, QtGui.QDialogButtonBox.AcceptRole)
+        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.accepted.connect(self.savePNG)
+        layout.addWidget(self.buttonBox,2,2,1,2)
+        
+        self.showToolBar(False)
         self.plot()
         
-    def plot(self):
-        self.diagrama2D.axes2D.clear()
-        self.diagrama2D.config()
-        tmin=round(unidades.Temperature(274).config())
-        tmax=round(unidades.Temperature(330).config())
-        t=arange(tmin, tmax, 1.)
-        T=[unidades.Temperature(i, unidades.Temperature.func()) for i in t]
-        Hs=[self.AireHumedo.Humedad_Absoluta(i) for i in T]
-        self.diagrama2D.plot(t, Hs, color="#000000")
-        for i in [10, 20, 30, 40, 50, 60, 70, 80, 90]:
-            H0=[H*i/100 for H in Hs]
-            self.diagrama2D.plot(t, H0, grosor=0.5, linestyle="--", color="#000000")
-            self.diagrama2D.axes2D.annotate(str(i)+"%", (t[35], H0[35]), rotation=arctan((H0[35]-H0[34])/0.04/(t[35]-t[34])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
-        tredondeada=arange
+    def savePNG(self):
+        fname=unicode(QtGui.QFileDialog.getSaveFileName(
+            self, QtGui.QApplication.translate("pychemqt", "Save chart to file"),
+            "./", "Portable Network Graphics (*.png)"))
+        self.diagrama2D.fig.savefig(fname, facecolor='#eeeeee')
+
+    def showToolBar(self, checked):
+        self.controles.setVisible(not checked)
+        if checked:
+            image = "arrow-right-double.png"
+        else:
+            image = "arrow-left-double.png"
+        self.buttonShowToolbox.setIcon(QtGui.QIcon(os.environ["pychemqt"]+
+            "images"+os.sep+"button"+os.sep+image))     
+    
+    def LineList(self, name, Preferences):
+        if Preferences.getboolean("Psychr", name+"Custom"):
+            t=[]
+            for i in Preferences.get("Psychr", name+'List').split(','):
+                if i:
+                    t.append(float(i))
+        else:
+            start=Preferences.getfloat("Psychr", name+"Start")
+            end=Preferences.getfloat("Psychr", name+"End")
+            step=Preferences.getfloat("Psychr", name+"Step")
+            t=arange(start, end, step)
+        return t
         
-        for i, T in enumerate(t):
-            self.diagrama2D.plot([T, T], [0, Hs[i]], grosor=0.5, linestyle=":", color="#000000")
-            
-        H=arange(0, 0.04, 0.001)
-        t=[self.AireHumedo.Tdp(h).config() for h in H]
-        for i, H in enumerate(H):
-            self.diagrama2D.plot([t[i], tmax], [H, H], grosor=0.5, linestyle=":", color="#000000")
-            
-        for T in arange(250, 320, 1.):
+    def calculate(self):
+        Preferences=ConfigParser()
+        Preferences.read(config.conf_dir+"pychemqtrc")
+        
+        data = {}
+        
+        t=self.LineList("isotdb", Preferences)
+        
+        # Saturation line
+        Hs=[self.AireHumedo.Humedad_Absoluta(i) for i in t]
+        data["t"] = t
+        data["Hs"] = Hs
+        
+        # Humidity ratio lines
+        hr = self.LineList("isohr", Preferences)
+        print hr
+        Hr = {}
+        for i in hr:
+            Hr[i] = [H*i/100 for H in Hs]
+        data["Hr"] = Hr
+        
+        # Twb
+        lines = self.LineList("isotwb", Preferences)
+        Twb = {}
+        for T in lines:
             H=concatenate((arange(self.AireHumedo.Humedad_Absoluta(T), 0, -0.001), [0.]))
             Tw=[self.AireHumedo.Isoentalpica(T, h).config() for h in H]
-            self.diagrama2D.plot(Tw, H, linestyle=":", color="#652A00")
-  
-
-        for v in arange(0.8, 1, 0.01):
+            Twb[T] = (H, Tw)
+        data["Twb"] = Twb
+        
+        # v
+        lines = self.LineList("isochor", Preferences)
+        V = {}
+        for v in lines:
             def f(Ts):
                 return v-R_atml*Ts/self.AireHumedo.P.atm/self.AireHumedo.aire.M*(1+self.AireHumedo.Humedad_Absoluta(Ts)*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
             ts=fsolve(f, 300)
             T=linspace(ts, self.AireHumedo.P.atm*v*self.AireHumedo.aire.M/R_atml, 50)
             Td=[unidades.Temperature(i).config() for i in T]
             H=[self.AireHumedo.Isocora_H(i, v) for i in T]
-            self.diagrama2D.plot(Td, H, grosor=0.8, linestyle=":", color="green")
-#            self.diagrama2D.axes2D.annotate(representacion(unidades.SpecificVolume(v).config())+config.Configuracion("SpecificVolume").text(), (Td[5], H[5]), rotation=arctan((H[5]-H[4])/0.04/(Td[5]-Td[4])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
+            V[v] = (Td, H)
+        data["v"] = V
+        
+        return data
+    
+    def drawlabel(self, name, Preferences, t, W, label, unit):
+        if Preferences.getboolean("Psychr", name+"label"):
+            tmin=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbStart")).config()
+            tmax=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbEnd")).config()
+            x = tmax-tmin
+            wmin=Preferences.getfloat("Psychr", "isowStart")
+            wmax=Preferences.getfloat("Psychr", "isowEnd")
+            y = wmax-wmin
+
+            i = 0
+            for ti, wi in zip(t, W):
+                if tmin <= ti <= tmax and wmin <= wi <= wmax:
+                    i += 1
+            label = str(label)
+            if Preferences.getboolean("Psychr", name+"units"):
+                label += unit
+            pos = Preferences.getfloat("Psychr", name+"position")
+            p = int(i*pos/100-1)
+            rot=arctan((W[p]-W[p-1])/y/(t[p]-t[p-1])*x)*360/2/pi
+            self.diagrama2D.axes2D.annotate(label, (t[p], W[p]),
+                rotation=rot, size="small", ha="center", va="center")
+
+    def plot(self):
+        Preferences=ConfigParser()
+        Preferences.read(config.conf_dir+"pychemqtrc")
+
+        self.diagrama2D.axes2D.clear()
+        self.diagrama2D.config()
+        
+        filename = config.conf_dir+"psy_%i.pkl" % self.AireHumedo.P
+        if os.path.isfile(filename):
+            with open(filename, "r") as archivo:
+                data=cPickle.load(archivo)
+        else:
+            data = self.calculate()
+            cPickle.dump(data, open(filename, "w"))
+
+        tmin=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbStart")).config()
+        tmax=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbEnd")).config()
+        x = tmax-tmin
+        
+        wmin=Preferences.getfloat("Psychr", "isowStart")
+        wmax=Preferences.getfloat("Psychr", "isowEnd")
+        y = wmax-wmin
+        
+        t = [unidades.Temperature(ti).config() for ti in data["t"]]
+        Hs = data["Hs"]
+        format={}
+        format["ls"]=Preferences.get("Psychr", "saturationlineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "saturationlineWidth")
+        format["color"]=Preferences.get("Psychr", "saturationColor")
+        format["marker"]=Preferences.get("Psychr", "saturationmarker")
+        format["markersize"]=3
+        self.diagrama2D.plot(t, Hs, **format)
+
+        format={}
+        format["ls"]=Preferences.get("Psychr", "isotdblineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "isotdblineWidth")
+        format["color"]=Preferences.get("Psychr", "isotdbColor")
+        format["marker"]=Preferences.get("Psychr", "isotdbmarker")
+        format["markersize"]=3
+        for i, T in enumerate(t):
+            self.diagrama2D.plot([T, T], [0, Hs[i]], **format)
+
+        H = self.LineList("isow", Preferences)
+        th=[self.AireHumedo.Tdp(h).config() for h in H]
+        format={}
+        format["ls"]=Preferences.get("Psychr", "isowlineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "isowlineWidth")
+        format["color"]=Preferences.get("Psychr", "isowColor")
+        format["marker"]=Preferences.get("Psychr", "isowmarker")
+        format["markersize"]=3
+        for i, H in enumerate(H):
+            self.diagrama2D.plot([th[i], tmax], [H, H], **format)
+
+        format={}
+        format["ls"]=Preferences.get("Psychr", "isohrlineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "isohrlineWidth")
+        format["color"]=Preferences.get("Psychr", "isohrColor")
+        format["marker"]=Preferences.get("Psychr", "isohrmarker")
+        format["markersize"]=3
+        for Hr, H0 in data["Hr"].iteritems():
+#            print t, H0
+            self.diagrama2D.plot(t, H0, **format)
+            self.drawlabel("isohr", Preferences, t, H0, Hr, "%")
+                    
+        format={}
+        format["ls"]=Preferences.get("Psychr", "isotwblineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "isotwblineWidth")
+        format["color"]=Preferences.get("Psychr", "isotwbColor")
+        format["marker"]=Preferences.get("Psychr", "isotwbmarker")
+        format["markersize"]=3
+        for T, (H, Tw) in data["Twb"].iteritems():
+            self.diagrama2D.plot(Tw, H, **format)
+            value = unidades.Temperature(T).config()
+            txt = unidades.Temperature.text()
+            self.drawlabel("isotwb", Preferences, Tw, H, value, txt)
+  
+        format={}
+        format["ls"]=Preferences.get("Psychr", "isochorlineStyle")
+        format["lw"]=Preferences.getfloat("Psychr", "isochorlineWidth")
+        format["color"]=Preferences.get("Psychr", "isochorColor")
+        format["marker"]=Preferences.get("Psychr", "isochormarker")
+        format["markersize"]=3
+        for v, (Td, H) in data["v"].iteritems():
+            self.diagrama2D.plot(Td, H, **format)
+            value = unidades.SpecificVolume(v).config()
+            txt = unidades.SpecificVolume.text()
+            self.drawlabel("isochor", Preferences, Td, H, value, txt)
+#            self.diagrama2D.axes2D.annotate(unidades.SpecificVolume(v).str, (Td[5], H[5]), rotation=arctan((H[5]-H[4])/0.04/(Td[5]-Td[4])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
 
     def mouse_move(self, event):
-        if event.xdata and event.ydata and self.checkMouse.isChecked():
+        if event.xdata and event.ydata:
             self.ActualizarDatos(event.xdata, event.ydata)
             
     def click(self, event):
         if event.xdata and event.ydata:
-            self.ActualizarDatos(event.xdata, event.ydata)
+            punto = self.createPoint(event.xdata, event.ydata)
+            self.ActualizarEntradas(punto)
             self.diagrama2D.lx.set_ydata(event.ydata)
             self.diagrama2D.ly.set_xdata(event.xdata)
             self.diagrama2D.draw()
 
+    def createPoint(self, x, y):
+        tdb=unidades.Temperature(x, "conf")
+        punto=self.AireHumedo.definirPunto(0, tdb=tdb, w=y)
+        return punto
+
     def ActualizarDatos(self, x, y):
-            tdb=unidades.Temperature(x, unidades.Temperature(None).func())
-            H=y
-            if x and y:
-                punto=self.AireHumedo.definirPunto(0, tdb=tdb, H=y)
-                if H<punto.Hs:
-                    self.tdb.setValue(punto.Tdb)
-                    self.twb.setValue(punto.Twb)
-                    self.H.setValue(punto.H)
-                    self.HR.setValue(punto.HR)
-                    self.trocio.setValue(punto.Tdp)
-                    self.presion.setValue(punto.P)
-                    self.entalpia.setValue(punto.entalpia)
-                    self.volumen.setValue(punto.volumen)
-                else:
-                    self.tdb.clear()
-                    self.twb.clear()
-                    self.H.clear()
-                    self.HR.clear()
-                    self.trocio.clear()
-                    self.presion.clear()
-                    self.entalpia.clear()
-                    self.volumen.clear()
+            punto = self.createPoint(x, y)
+            if y<punto.Hs:
+                self.diagrama2D.showPointData(punto)
+            else:
+                self.diagrama2D.clearPointData()
                     
     def ActualizarEntradas(self, punto):
-        if punto.H<punto.Hs:
+        if punto.w<punto.Hs:
             self.EntradaTdb.setValue(punto.Tdb)
             self.EntradaTwb.setValue(punto.Twb)
-            self.EntradaH.setValue(punto.H)
+            self.EntradaH.setValue(punto.w)
             self.EntradaHR.setValue(punto.HR)
             self.EntradaTdp.setValue(punto.Tdp)
-            self.EntradaEntalpia.setValue(punto.entalpia)
-            self.EntradaVolumen.setValue(punto.volumen)
+            self.EntradaEntalpia.setValue(punto.h)
+            self.EntradaVolumen.setValue(punto.V)
                 
     def cambiarPresion(self, value):
         self.AireHumedo=Psychrometry(value.atm)
         self.Altitud.setValue(self.AireHumedo.altura())
         self.plot()
-        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
         self.diagrama2D.draw()
         
     def cambiarAltitud(self, value):
@@ -313,7 +419,6 @@ class UI_Psychrometry(QtGui.QMainWindow):
         self.AireHumedo=Psychrometry(presion.atm)
         self.PresionDiagrama.setValue(presion)
         self.plot()
-        self.labelPresion.setText(representacion(self.AireHumedo.P.config())+" "+unidades.Pressure(None).text())
         self.diagrama2D.draw()
         
     def NuevoPunto(self):
@@ -332,11 +437,13 @@ class UI_Psychrometry(QtGui.QMainWindow):
             calcular=self.EntradaTdb.value and self.EntradaEntalpia.value
             
         if calcular:
-            punto=self.AireHumedo.definirPunto(self.variables.currentIndex(), tdb=self.EntradaTdb.value, twb=self.EntradaTwb.value, tdp=self.EntradaTdp.value, H=self.EntradaH.value, HR=self.EntradaHR.value, volumen=self.EntradaVolumen.value, entalpia=self.EntradaEntalpia.value)
+            punto=self.AireHumedo.definirPunto(modo, tdb=self.EntradaTdb.value, 
+                twb=self.EntradaTwb.value, tdp=self.EntradaTdp.value, 
+                w=self.EntradaH.value, HR=self.EntradaHR.value,
+                V=self.EntradaVolumen.value, h=self.EntradaEntalpia.value)
             self.ActualizarEntradas(punto)
-            self.ActualizarDatos(punto.Tdb, punto.H)
-            self.diagrama2D.lx.set_ydata(punto.H)
-            self.diagrama2D.ly.set_xdata(punto.Tdb)
+            self.diagrama2D.lx.set_ydata(punto.w)
+            self.diagrama2D.ly.set_xdata(punto.Tdb.config())
             self.diagrama2D.draw()
 
 

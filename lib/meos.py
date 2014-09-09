@@ -139,11 +139,11 @@ class MEoS(object):
     _vapor_Density = None
 
     _omega = None
-    _viscosity = None,
-    _thermal = None,
+    _viscosity = None
+    _thermal = None
     _critical = None
 
-    _test: []
+    _test = []
 
     kwargs = {"T": 0.0,
               "P": 0.0,
