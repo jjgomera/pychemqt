@@ -164,7 +164,7 @@ def Preferences():
     config.set("MEOS", "coolprop", "False")
     config.set("MEOS", "refprop", "False")
     config.set("MEOS", "saturation"+"Color", "#000000")
-    config.set("MEOS", "saturation"+"lineWidth", "0.5")
+    config.set("MEOS", "saturation"+"lineWidth", "1.0")
     config.set("MEOS", "saturation"+"lineStyle", "-")
     config.set("MEOS", "saturation"+"marker", "None")
     config.set("MEOS", "surface", "False")
@@ -188,6 +188,48 @@ def Preferences():
         config.set("MEOS", linea+"Units", "False")
         config.set("MEOS", linea+"Position", "50")
 
+    # Psychr
+    config.add_section("Psychr")
+            
+    config.set("Psychr", "chart", "True")
+    config.set("Psychr", "virial", "False")
+    config.set("Psychr", "coolprop", "False")
+    config.set("Psychr", "refprop", "False")
+    config.set("Psychr", "saturation"+"Color", "#000000")
+    config.set("Psychr", "saturation"+"lineWidth", "0.5")
+    config.set("Psychr", "saturation"+"lineStyle", "-")
+    config.set("Psychr", "saturation"+"marker", "None")
+    lineas = ["IsoTdb", "IsoW", "IsoHR", "IsoTwb", "Isochor"]
+    values = [
+        {"start": 274.0, "end": 330.0, "step": 1.0, "color": "#000000", 
+        "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False", 
+        "position": 50}, 
+        {"start": 0.0, "end": 0.04, "step": 0.001, "color": "#000000", 
+        "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False", 
+        "position": 50}, 
+        {"start": 10.0, "end": 100.0, "step": 10.0, "color": "#000000", 
+        "linewidth": 0.5, "linestyle": "--", "label": "True", "units": "True", 
+        "position": 85}, 
+        {"start": 250.0, "end": 320.0, "step": 1.0, "color": "#aa0000", 
+        "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False", 
+        "position": 90}, 
+        {"start": 0.8, "end": 1.0, "step": 0.01, "color": "#00aa00", 
+        "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False", 
+        "position": 90}]
+    for linea, value in zip(lineas, values):
+        config.set("Psychr", linea+"Start", value["start"])
+        config.set("Psychr", linea+"End", value["end"])
+        config.set("Psychr", linea+"Step", value["step"])
+        config.set("Psychr", linea+"Custom", "False")
+        config.set("Psychr", linea+"List", "")
+        config.set("Psychr", linea+"Color", value["color"])
+        config.set("Psychr", linea+"lineWidth", value["linewidth"])
+        config.set("Psychr", linea+"lineStyle", value["linestyle"])
+        config.set("Psychr", linea+"marker", "None")
+        config.set("Psychr", linea+"Label", value["label"])
+        config.set("Psychr", linea+"Units", value["units"])
+        config.set("Psychr", linea+"Position", value["position"])
+    
     return config
 
 

@@ -233,7 +233,6 @@ class UI_Psychrometry(QtGui.QDialog):
         
         # Humidity ratio lines
         hr = self.LineList("isohr", Preferences)
-        print hr
         Hr = {}
         for i in hr:
             Hr[i] = [H*i/100 for H in Hs]
@@ -345,7 +344,6 @@ class UI_Psychrometry(QtGui.QDialog):
         format["marker"]=Preferences.get("Psychr", "isohrmarker")
         format["markersize"]=3
         for Hr, H0 in data["Hr"].iteritems():
-#            print t, H0
             self.diagrama2D.plot(t, H0, **format)
             self.drawlabel("isohr", Preferences, t, H0, Hr, "%")
                     

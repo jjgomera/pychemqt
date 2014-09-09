@@ -1159,6 +1159,10 @@ class ConfPsychrometric(QtGui.QDialog):
             self.virial.toggled.connect(self.refprop.setEnabled)
 
         if config.has_section("Psychr"):
+            if config.getboolean("Psychr", 'chart'):
+                self.checkASHRAE.setChecked(True)
+            else:
+                self.checkMollier.setChecked(True)
             self.virial.setChecked(config.getboolean("Psychr", 'virial'))
             self.coolProp.setChecked(config.getboolean("Psychr", 'coolprop'))
             self.refprop.setChecked(config.getboolean("Psychr", 'refprop'))
@@ -1168,7 +1172,8 @@ class ConfPsychrometric(QtGui.QDialog):
         """Return value for main dialog"""
         if not config.has_section("Psychr"):
             config.add_section("Psychr")
-
+            
+        config.set("Psychr", "chart", self.checkASHRAE.isChecked())
         config.set("Psychr", "virial", self.virial.isChecked())
         config.set("Psychr", "coolprop", self.coolProp.isChecked())
         config.set("Psychr", "refprop", self.refprop.isChecked())
@@ -1180,7 +1185,8 @@ class ConfPsychrometric(QtGui.QDialog):
 
     @classmethod
     def default(cls, config):
-        config.add_section("MEOS")
+        config.add_section("Psychr")
+        config.set("Psychr", "chart", "True")
         config.set("Psychr", "virial", "False")
         config.set("Psychr", "coolprop", "False")
         config.set("Psychr", "refprop", "False")
