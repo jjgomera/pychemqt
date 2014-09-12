@@ -15,7 +15,7 @@ from scipy.optimize import fsolve
 from scipy.constants import lb
 
 from lib.compuestos import Componente
-from lib.psycrometry import Psychrometry
+from lib.psycrometry import Psychrometry, _Pbar, _height
 from lib import unidades, config
 from lib.utilities import representacion
 from lib.physics import R_atml
@@ -84,7 +84,7 @@ class UI_Psychrometry(QtGui.QDialog):
         self.diagrama2D = Plot(self, dpi=90)
         self.diagrama2D.fig.canvas.mpl_connect('motion_notify_event', self.mouse_move)
         self.diagrama2D.fig.canvas.mpl_connect('button_press_event', self.click)
-        layout.addWidget(self.diagrama2D,1,3)
+        layout.addWidget(self.diagrama2D,1,3,1,2)
         
        #Toolbox
         self.controles = QtGui.QWidget()
@@ -92,18 +92,17 @@ class UI_Psychrometry(QtGui.QDialog):
         layoutToolbox = QtGui.QGridLayout(self.controles)
         self.checkPresion = QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Pressure"))
         layoutToolbox.addWidget(self.checkPresion,1,1,1,1)
-        self.PresionDiagrama=Entrada_con_unidades(unidades.Pressure, value=101325, width=60)
+        self.PresionDiagrama=Entrada_con_unidades(unidades.Pressure, value=101325)
         self.PresionDiagrama.valueChanged.connect(self.cambiarPresion)
         layoutToolbox.addWidget(self.PresionDiagrama,1,2,1,1)
         self.checkAltitud = QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Altitude"))
         layoutToolbox.addWidget(self.checkAltitud,2,1,1,1)
-        self.Altitud=Entrada_con_unidades(unidades.Length, value=0.0, min=-1e6, width=60, decimales=2)
+        self.Altitud=Entrada_con_unidades(unidades.Length, value=0)
         self.checkPresion.toggled.connect(self.PresionDiagrama.setEnabled)
         self.checkAltitud.toggled.connect(self.Altitud.setEnabled)
         self.Altitud.valueChanged.connect(self.cambiarAltitud)
         self.checkPresion.setChecked(True)
         self.Altitud.setEnabled(False)
-        self.Altitud.setValue(0)
         layoutToolbox.addWidget(self.Altitud,2,2,1,1)
         layoutToolbox.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),3,1,1,2)
         self.label_11 = QtGui.QLabel()
@@ -178,6 +177,12 @@ class UI_Psychrometry(QtGui.QDialog):
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         layout.addWidget(self.line,1,3,2,1)
         
+        self.progressBar=QtGui.QProgressBar()
+        self.progressBar.setVisible(False)
+        layout.addWidget(self.progressBar,2,3)
+        self.status = QtGui.QLabel()
+        layout.addWidget(self.status,2,3)
+        
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
         butonPNG = QtGui.QPushButton(QtGui.QIcon(os.environ["pychemqt"]+
             "images"+os.sep+"button"+os.sep+"image.png"), 
@@ -185,7 +190,7 @@ class UI_Psychrometry(QtGui.QDialog):
         self.buttonBox.addButton(butonPNG, QtGui.QDialogButtonBox.AcceptRole)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.savePNG)
-        layout.addWidget(self.buttonBox,2,2,1,2)
+        layout.addWidget(self.buttonBox,2,4)
         
         self.showToolBar(False)
         self.plot()
@@ -227,36 +232,52 @@ class UI_Psychrometry(QtGui.QDialog):
         t=self.LineList("isotdb", Preferences)
         
         # Saturation line
-        Hs=[self.AireHumedo.Humedad_Absoluta(i) for i in t]
+        Hs = []
+        for ti in t:
+            Hs.append(self.AireHumedo.Humedad_Absoluta(ti))
+            self.progressBar.setValue(5*len(Hs)/len(t))
         data["t"] = t
         data["Hs"] = Hs
         
         # Humidity ratio lines
         hr = self.LineList("isohr", Preferences)
         Hr = {}
+        cont = 0
         for i in hr:
+            Hr[i] = []
+            for H in Hs:
+                Hr[i].append(H*i/100 for H in Hs)
+                cont += 1
+                self.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
+
             Hr[i] = [H*i/100 for H in Hs]
         data["Hr"] = Hr
         
         # Twb
         lines = self.LineList("isotwb", Preferences)
         Twb = {}
+        cont = 0
         for T in lines:
             H=concatenate((arange(self.AireHumedo.Humedad_Absoluta(T), 0, -0.001), [0.]))
-            Tw=[self.AireHumedo.Isoentalpica(T, h).config() for h in H]
+            Tw = []
+            for h in H:
+                Tw.append(self.AireHumedo.Isoentalpica(T, h).config())
+            cont += 1
+            self.progressBar.setValue(15+75*cont/len(lines))
             Twb[T] = (H, Tw)
         data["Twb"] = Twb
         
         # v
         lines = self.LineList("isochor", Preferences)
         V = {}
-        for v in lines:
+        for cont, v in enumerate(lines):
             def f(Ts):
                 return v-R_atml*Ts/self.AireHumedo.P.atm/self.AireHumedo.aire.M*(1+self.AireHumedo.Humedad_Absoluta(Ts)*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
             ts=fsolve(f, 300)
             T=linspace(ts, self.AireHumedo.P.atm*v*self.AireHumedo.aire.M/R_atml, 50)
             Td=[unidades.Temperature(i).config() for i in T]
             H=[self.AireHumedo.Isocora_H(i, v) for i in T]
+            self.progressBar.setValue(90+10*cont/len(lines))
             V[v] = (Td, H)
         data["v"] = V
         
@@ -295,9 +316,17 @@ class UI_Psychrometry(QtGui.QDialog):
         if os.path.isfile(filename):
             with open(filename, "r") as archivo:
                 data=cPickle.load(archivo)
+                self.status.setText(QtGui.QApplication.translate("pychemqt", "Loading cached data..."))
+                QtGui.QApplication.processEvents()
         else:
+            self.progressBar.setVisible(True)
+            self.status.setText(QtGui.QApplication.translate("pychemqt", "Calculating data, be patient..."))
+            QtGui.QApplication.processEvents()
             data = self.calculate()
             cPickle.dump(data, open(filename, "w"))
+            self.progressBar.setVisible(False)
+        self.status.setText(QtGui.QApplication.translate("pychemqt", "Plotting..."))
+        QtGui.QApplication.processEvents()
 
         tmin=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbStart")).config()
         tmax=unidades.Temperature(Preferences.getfloat("Psychr", "isotdbEnd")).config()
@@ -370,7 +399,9 @@ class UI_Psychrometry(QtGui.QDialog):
             value = unidades.SpecificVolume(v).config()
             txt = unidades.SpecificVolume.text()
             self.drawlabel("isochor", Preferences, Td, H, value, txt)
-#            self.diagrama2D.axes2D.annotate(unidades.SpecificVolume(v).str, (Td[5], H[5]), rotation=arctan((H[5]-H[4])/0.04/(Td[5]-Td[4])*56)*360/2/pi, size="small", horizontalalignment="center", verticalalignment="center")
+
+        self.diagrama2D.draw()
+        self.status.clear()
 
     def mouse_move(self, event):
         if event.xdata and event.ydata:
@@ -407,15 +438,15 @@ class UI_Psychrometry(QtGui.QDialog):
             self.EntradaVolumen.setValue(punto.V)
                 
     def cambiarPresion(self, value):
-        self.AireHumedo=Psychrometry(value.atm)
-        self.Altitud.setValue(self.AireHumedo.altura())
+        self.AireHumedo=Psychrometry(value/101325.)
+        self.Altitud.setValue(_height(value))
         self.plot()
         self.diagrama2D.draw()
         
     def cambiarAltitud(self, value):
-        presion=self.AireHumedo.Presion(value)
-        self.AireHumedo=Psychrometry(presion.atm)
+        presion=_Pbar(value)
         self.PresionDiagrama.setValue(presion)
+        self.AireHumedo=Psychrometry(presion/101325.)
         self.plot()
         self.diagrama2D.draw()
         
