@@ -12,7 +12,7 @@ from scipy.special import erf
 
 from tools import UI_databank
 from lib.corriente import Corriente, Mezcla, Solid
-from lib.psycrometry import Psychrometry
+from lib.psycrometry import Psychrometry, Punto_Psicrometrico
 from lib import unidades, config
 from lib.utilities import representacion
 from lib.thread import Evaluate
@@ -876,11 +876,11 @@ class Ui_psychrometry(QtGui.QWidget):
     def ActualizarDatos(self):
         self.Tdb.setValue(self.punto.Tdb)
         self.Twb.setValue(self.punto.Twb)
-        self.H.setValue(self.punto.H)
+        self.H.setValue(self.punto.w)
         self.HR.setValue(self.punto.HR)
         self.Tdp.setValue(self.punto.Tdp)
-        self.Entalpia.setValue(self.punto.entalpia)
-        self.Volumen.setValue(self.punto.volumen)
+        self.Entalpia.setValue(self.punto.h)
+        self.Volumen.setValue(self.punto.V)
         self.Xa.setValue(self.punto.Xa)
             
     def mostrarEntradas(self, punto):
@@ -890,7 +890,7 @@ class Ui_psychrometry(QtGui.QWidget):
             self.caudal.setValue(punto.caudal)
         if punto.modo==0:
             self.EntradaTdb.setValue(punto.Tdb)
-            self.EntradaH.setValue(punto.H)
+            self.EntradaH.setValue(punto.w)
         elif punto.modo==1:
             self.EntradaTdb.setValue(punto.Tdb)
             self.EntradaHR.setValue(punto.HR)
@@ -933,15 +933,15 @@ if __name__ == "__main__":
 #    agua=Corriente(T=300, P=1e5, caudalMasico=1, fraccionMolar=[1.])
 #    agua(caudalSolido=[35], diametroMedio=0.0002, notas="Corriente de agua de ejemplo")
 #    print agua.solido
-    diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
-    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
-    corriente = Ui_corriente()
+#    diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
+#    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
+#    solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
+#    corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
+#    corriente = Ui_corriente()
 #    corriente=Corriente_Dialog()
 #    corriente.show()
-#    aire=Punto_Psicrometrico(caudal=5, tdb=300, HR=50)
-#    corriente=Ui_psychrometry(aire)
+    aire=Punto_Psicrometrico(caudal=5, tdb=300, HR=50)
+    corriente=Ui_psychrometry(aire)
 #    corriente.show()
 #    corriente = Dialog_Distribucion()
     corriente.show()

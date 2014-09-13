@@ -12,7 +12,174 @@ from compuestos import Componente
 from physics import R_atml
 from lib import unidades
 from lib.iapws import _PSat_T, _TSat_P, _Sublimation_Pressure, _Melting_Pressure
-from lib.corriente import Corriente
+#from lib.corriente import Corriente
+
+
+
+def _Pbar(Z):
+    """
+    ASHRAE Fundamentals Handbook pag 1.1 eq. 3
+    input:
+        Z: altitude, m
+    return
+        standard atmosphere barometric pressure, Pa
+    """
+    return 101325.*(1-2.25577e-5*Z)**5.256
+
+
+def _height(P):
+    """
+    Inverted _Pbar function
+    input:
+        standard atmosphere barometric pressure, Pa
+    return
+        Z: altitude, m
+    """
+    P_atm = P/101325.
+    return 1/2.25577e-5*(1-exp(log(P_atm)/5.2559))
+
+
+def _Tbar(self, Z):
+    """
+    ASHRAE Fundamentals Handbook pag 1.2 eq. 4
+    input:
+        Z: altitude, m
+    return
+        standard atmosphere dry bulb temperature, K
+    """
+    return 288.15-0.0065*Z
+    
+
+def _Psat(Tdb):
+    """
+    ASHRAE Fundamentals Handbook pag 1.2 eq. 4
+    input:
+        Dry bulb temperature, K
+    return:
+        Saturation pressure, Pa
+    """
+    if 173.15 <= Tdb < 273.15:
+        C1 = -5674.5359
+        C2 = 6.3925247
+        C3 = -0.009677843
+        C4 = 0.00000062215701
+        C5 = 2.0747825E-09
+        C6 = -9.484024E-13
+        C7 = 4.1635019
+        pws = exp(C1/Tdb + C2 + C3*Tdb + C4*Tdb**2 + C5*Tdb**3 + C6*Tdb**4 +
+                  C7*log(Tdb))
+    elif 273.15 <= Tdb <= 473.15:
+        C8 = -5800.2206
+        C9 = 1.3914993
+        C10 = -0.048640239
+        C11 = 0.000041764768
+        C12 = -0.000000014452093
+        C13 = 6.5459673
+        pws = exp(C8/Tdb + C9 + C10*Tdb + C11*Tdb**2 + C12*Tdb**3 + C13*log(Tdb))
+    else:
+        raise NotImplementedError("Incoming out of bound")
+
+    return pws
+
+
+def _h(Tdb, W):
+    """
+    ASHRAE Fundamentals Handbook pag 1.13 eq. 32
+    input:
+        Dry bulb temperature, K
+        Humidity ratio, kg water/kg dry air
+    return:
+        Specific enthalpy, kJ/kg (dry air)
+    """
+    T_c= Tdb-273.15
+    return 1.006*T_c + W*(2501 + 1.805*T_c)
+
+
+def _v(P, Tdb, W):
+    """
+    ASHRAE Fundamentals Handbook pag 1.13 eq. 28
+    input:
+        Dry bulb temperature, K
+        Humidity ratio, kg water/kg dry air
+        Barometric pressure, Pa
+    return:
+        Specific volume, m3/kg (dry air)
+    """
+    P_kpa = P/1000
+    return 0.2871*Tdb*(1+1.6078*W)/P_kpa
+
+
+def _W_twb(tdb, twb, Ws):
+    """
+    ASHRAE Fundamentals Handbook pag 1.13 eq. 35-37
+    input:
+        dry bulb temperature, K
+        wet bulb temperature, K
+        barometric pressure, Pa
+    return:
+        humidity ratio, kg H2O/kg air
+    """
+    tdb_C = tdb - 273.15
+    twb_C = twb - 273.15
+    if tdb >= 0:
+        w = ((2501-2.381*twb_C)*Ws-1.006*(tdb-twb))/(2501+1.805*tdb_C-4.186*twb_C)
+    else:                                   # Equation 37, p6.9
+        w = ((2830-0.24*twb_C)*Ws-1.006*(tdb-twb))/(2830+1.86*tdb_C-2.1*twb_C)
+    return w
+
+
+def _tdp(Pw):
+    """
+    ASHRAE Fundamentals Handbook pag 1.13 eq. 39-40
+    input:
+        water vapor partial pressure, Pa
+    return:
+        dew point temperature, K
+    """
+    C14 = 6.54
+    C15 = 14.526
+    C16 = 0.7389
+    C17 = 0.09486
+    C18 = 0.4569
+    
+    alpha = log(Pw/1000.)
+    Tdp1 = C14 + C15*alpha + C16*alpha**2 + C17*alpha**3 + C18*(Pw/1000.)**0.1984
+    Tdp2 = 6.09 + 12.608*alpha + 0.4959*alpha**2
+    if 0 <= Tdp1 <= 93:
+        t = Tdp1
+    elif Tdp2 < 0:
+        t = Tdp2
+    else:
+        raise NotImplementedError("Incoming out of bound")
+
+    return t+273.15
+
+
+
+def _twb(tdb, W, P):
+    """
+    ASHRAE Fundamentals Handbook pag 1.13 eq. 35-37
+    input:
+        dry bulb temperature, K
+        humidity ratio, kg H2O/kg air
+        saturated humidity ratio, kg H2O/kg air
+    return:
+        wet bulb temperature, K
+    """
+    tdb_C = tdb - 273.15
+    def f(twb):
+        Pvs = _Psat(twb)
+        Ws = 0.62198*Pvs/(P-Pvs)
+        twb_C = twb - 273.15
+        if tdb >= 0:
+            w = ((2501.-2.326*twb_C)*Ws-1.006*(tdb_C-twb_C))/(2501.+1.86*tdb_C-4.186*twb_C)-W
+        else:
+            w = ((2830-0.24*twb_C)*Ws-1.006*(tdb-twb))/(2830+1.86*tdb_C-2.1*twb_C)
+        return w
+
+    twb = fsolve(f, tdb)[0]
+    return twb
+
 
 
 class Psychrometry(object):
@@ -54,12 +221,6 @@ class Psychrometry(object):
 #        return unidades.SpecificVolume(v/self.aire.M/Xa)
         return unidades.SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
 
-    def altura(self):
-        return unidades.Length(1/2.25577e-5*(1-exp(log(self.P.atm)/5.2559)))
-#        return unidades.Length((8430.153*log(101325/self.P))/(1+0.095*log(101325/self.P)))
-
-    def Presion(self, Z):
-        return unidades.Pressure((1-2.25577e-5*Z)**5.256, "atm")
 
     def Humedad_Absoluta(self, T):
         pv = self.agua.Pv(T)
@@ -203,114 +364,222 @@ class Psychrometry(object):
 
 
 class Psy_state(object):
-    """Class to model a psychrometric state with properties"""
-    def __init__(self, eos=0, P=101325, **kwargs):
-        """
-        eos: Index of equation of state to use
-            0 - Ideal gas
-            1 - Real gas
-        P: Pressure
-        kwargs definition parameters:
-            tdp: dew-point temperature
-            tdb: dry-bulb temperature
-            twb: web-bulb temperature
-            w: Humidity Ratio [kg water/kg dry air]
-            HR: Relative humidity
-            h: Mixture enthalpy
-            v: Mixture specified volume
-        """
-        self.Water = Componente(62)
-        self.Air = Componente(475)
-        self.P = unidades.Pressure(P)
+    """
+    Class to model a psychrometric state with properties
+    kwargs definition parameters:
+        P: Pressure, Pa
+        z: altitude, m
         
-        tdp = kwargs.get("tdp", 0)
-        tdb = kwargs.get("tdb", 0)
-        twb = kwargs.get("twb", 0)
-        w = kwargs.get("w", None)
-        HR = kwargs.get("HR", None)
-        h = kwargs.get("h", None)
-        v = kwargs.get("v", 0)
+        tdp: dew-point temperature
+        tdb: dry-bulb temperature
+        twb: web-bulb temperature
+        w: Humidity Ratio [kg water/kg dry air]
+        HR: Relative humidity
+        h: Mixture enthalpy
+        v: Mixture specified volume
+    
+    P: mandatory input for barometric pressure, z is an alternate pressure input
+    it needs other two input parameters:
+        1 - tdb, w
+        2 - tdb, HR
+        3 - tdb, twb
+        4 - tdb, tdp
+        5 - tdp, HR
+        6 - tdp, twb
+        7 - twb, w
         
-        if tdb and w is not None:
-            self.Tdb = tdb
-            self.w = w
-            self.Xa = 1/(1+w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.h = self._h(tdb, w)
-            self.Hs = self._HS(tdb)
-            self.HR = w/self.Hs*100
-            self.Twb = self.AireHumedo.Tw(tdb, w)
-            self.Tdp = self.AireHumedo.Tdp(w)
-            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
-        elif tdb and HR is not None:
-            self.Tdb = tdb
-            self.Hs = self.AireHumedo.Humedad_Absoluta(tdb)
-            self.HR = HR
-            self.w = self.Hs*HR/100
-            self.Twb = self.AireHumedo.Tw(tdb, self.w)
-            self.Tdp = self.AireHumedo.Tdp(self.w)
-            self.h = self.AireHumedo.Entalpia(tdb, self.w)
-            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
-        elif tdb and tdp:
-            self.Tdb = tdb
-            self.Tdp = tdp
-            self.w = self.AireHumedo.Humedad_Absoluta(tdp)
-            self.Hs = self.AireHumedo.Humedad_Absoluta(tdb)
-            self.Twb = self.AireHumedo.Tw(tdb, self.w)
-            self.HR = self.w/self.Hs*100
-            self.h = self.AireHumedo.Entalpia(tdb, self.w)
-            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
-        elif tdb and twb:
-            self.Tdb = tdb
-            self.Twb = twb
-            self.Hs = self.AireHumedo.Humedad_Absoluta(tdb)
-            Hv = self.AireHumedo.agua.Hv_DIPPR(tdb)
+    """
+    kwargs = {"z": 0.0,
+              "P": 0.0,
+              
+              "tdb": 0.0,
+              "tdb": 0.0,
+              "twb": 0.0,
+              "w": None,
+              "HR": None,
+              "h": None,
+              "v": 0.0}
+    status = 0
+    msg = "Unknown variables"
 
-            def f(w):
-                return self.AireHumedo.Humedad_Absoluta(twb)-w - \
-                    self.AireHumedo.Calor_Especifico_Humedo(tdb, w)/Hv*(tdb-twb)
-            self.w = fsolve(f, 0.001)
-            self.Tdp = self.AireHumedo.Tdp(self.w)
-            self.HR = self.w/self.Hs*100
-            self.h = self.AireHumedo.Entalpia(tdb, self.w)
-            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
+    def __init__(self, **kwargs):
+        self.kwargs = Psy_state.kwargs.copy()
+        self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        self.kwargs.update(kwargs)
+
+        if self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = "Solved"
+
+    @property
+    def calculable(self):
+        tdp = self.kwargs.get("tdp", 0)
+        tdb = self.kwargs.get("tdb", 0)
+        twb = self.kwargs.get("twb", 0)
+        w = self.kwargs.get("w", None)
+        HR = self.kwargs.get("HR", None)
+        h = self.kwargs.get("h", None)
+        v = self.kwargs.get("v", 0)
+        
+        self.mode = 0
+        if tdb and w is not None:
+            self.mode = 1
+        elif tdb and HR is not None:
+            self.mode = 2
+        elif tdb and twb:
+            self.mode = 3
+        elif tdb and tdp:
+            self.mode = 4
         elif tdp and HR is not None:
-            self.Tdp = tdp
-            self.HR = HR
-            if HR:
-                self.w = self.AireHumedo.Humedad_Absoluta(tdp)
-                self.Hs = self.w/self.HR*100
-            else:
-                self.w = 0
-            self.Tdb = self.AireHumedo.Tdp(self.Hs)
-            self.Twb = self.AireHumedo.Tw(self.Tdb, self.w)
-            self.h = self.AireHumedo.Entalpia(self.Tdb, self.w)
-            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.V = self.AireHumedo.Volumen(self.Tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
-        elif tdb and h:
-            self.Tdb = tdb
-            self.h = unidades.Enthalpy(h, "kJkg")
-            f = lambda h: self.AireHumedo.Entalpia(self.Tdb, h).kJkg-h
-            self.w = fsolve(f, 0.001)
-            self.Hs = self.AireHumedo.Humedad_Absoluta(tdb)
-            self.Twb = self.AireHumedo.Tw(tdb, self.w)
-            self.HR = self.w/self.Hs*100
-            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
-            self.Xw = 1-self.Xa
-            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
-            self.rho = unidades.Density(1/self.V)
+            self.mode = 5
+            
+        return bool(self.mode)
+        
+    def calculo(self):
+        # Barometric pressure calculation
+        if self.kwargs["P"]:
+            P = self.kwargs["P"]
+        elif self.kwargs["z"]:
+            P = _Pbar(self.kwargs["z"])
+        else:
+            P = 101325.
+        self.P = unidades.Pressure(P)
+
+        tdp = self.kwargs.get("tdp", 0)
+        tdb = self.kwargs.get("tdb", 0)
+        twb = self.kwargs.get("twb", 0)
+        w = self.kwargs.get("w", None)
+        HR = self.kwargs.get("HR", None)
+        h = self.kwargs.get("h", None)
+        v = self.kwargs.get("v", 0)
+
+        if self.mode == 1:
+            # Tdb and w
+            Pvs = _Psat(tdb)
+            ws = 0.62198*Pvs/(P-Pvs)
+            Pv = w*P/(0.62198+w)
+            HR = Pv/Pvs*100
+            mu = w/ws
+            v = _v(P, tdb, w)
+            h = _h(tdb, w)
+            tdp = _tdp(Pv)
+            twb = _twb(tdb, w, P)
+
+        elif self.mode == 2:
+            # Tdb and HR
+            Pvs = _Psat(tdb)
+            ws = 0.62198*Pvs/(P-Pvs)
+            Pv = Pvs*HR/100
+            w = 0.62198*Pv/(P-Pv)
+            mu = w/ws
+            v = _v(P, tdb, w)
+            h = _h(tdb, w)
+            tdp = _tdp(Pv)
+            twb = _twb(tdb, w, P)
+        
+        elif self.mode == 3:
+            # Tdb and Twb
+            Pvs = _Psat(tdb)
+            ws = 0.62198*Pvs/(P-Pvs)
+            w = _W_twb(tdb, twb, ws)
+            Pv = w*P/(0.62198+w)
+            HR = Pv/Pvs*100
+            mu = w/ws
+            v = _v(P, tdb, w)
+            h = _h(tdb, w)
+            tdp = _tdp(Pv)
+        
+        elif self.mode == 4:
+            # Tdb and Tdp
+            Pv = _Psat(tdp)
+            w = 0.62198*Pv/(P-Pv)
+            Pvs = _Psat(tdb)
+            ws = 0.62198*Pvs/(P-Pvs)
+            mu = w/ws
+            v = _v(P, tdb, w)
+            h = _h(tdb, w)
+            twb = _twb(tdb, w, P)
+            
+        elif self.mode == 5:
+            # Tdp and HR
+            pass
+            
+            
+        elif self.mode == 6:
+            pass
+
+        elif self.mode == 7:
+            pass
+
+#        elif tdp and HR is not None:
+#            self.Tdp = tdp
+#            self.HR = HR
+#            if HR:
+#                self.w = self.AireHumedo.Humedad_Absoluta(tdp)
+#                self.Hs = self.w/self.HR*100
+#            else:
+#                self.w = 0
+#            self.Tdb = self.AireHumedo.Tdp(self.Hs)
+#            self.Twb = self.AireHumedo.Tw(self.Tdb, self.w)
+#            self.h = self.AireHumedo.Entalpia(self.Tdb, self.w)
+#            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
+#            self.Xw = 1-self.Xa
+#            self.V = self.AireHumedo.Volumen(self.Tdb, self.Xa)
+#            self.rho = unidades.Density(1/self.V)
+
+            
+        self.Tdp = unidades.Temperature(tdp)
+        self.Tdb = unidades.Temperature(tdb)
+        self.Twb = unidades.Temperature(twb)
+        self.P = unidades.Pressure(P)
+        self.Pvs = unidades.Pressure(Pvs)
+        self.Pv = unidades.Pressure(Pv)
+        self.ws = unidades.Dimensionless(ws, txt="kgw/kgda")
+        self.w = unidades.Dimensionless(w, txt="kgw/kgda")
+        self.HR = unidades.Dimensionless(HR, txt="%")
+        self.mu = unidades.Dimensionless(mu)
+        self.v = unidades.SpecificVolume(v)
+        self.h = unidades.Enthalpy(h, "kJkg")
+        self.Xa = 1/(1+self.w/0.62198)
+        self.Xw = 1-self.Xa
+
+    @property
+    def corriente(self, caudal):
+        corriente = Corriente(T=self.Twb, P=self.P, caudalMasico=caudal, ids=[62, 475], fraccionMolar=[self.Xw, self.Xa])
+        return corriente
+
+            
+            
+#        elif tdp and HR is not None:
+#            self.Tdp = tdp
+#            self.HR = HR
+#            if HR:
+#                self.w = self.AireHumedo.Humedad_Absoluta(tdp)
+#                self.Hs = self.w/self.HR*100
+#            else:
+#                self.w = 0
+#            self.Tdb = self.AireHumedo.Tdp(self.Hs)
+#            self.Twb = self.AireHumedo.Tw(self.Tdb, self.w)
+#            self.h = self.AireHumedo.Entalpia(self.Tdb, self.w)
+#            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
+#            self.Xw = 1-self.Xa
+#            self.V = self.AireHumedo.Volumen(self.Tdb, self.Xa)
+#            self.rho = unidades.Density(1/self.V)
+#        elif tdb and h:
+#            self.Tdb = tdb
+#            self.h = unidades.Enthalpy(h, "kJkg")
+#            f = lambda h: self.AireHumedo.Entalpia(self.Tdb, h).kJkg-h
+#            self.w = fsolve(f, 0.001)
+#            self.Hs = self.AireHumedo.Humedad_Absoluta(tdb)
+#            self.Twb = self.AireHumedo.Tw(tdb, self.w)
+#            self.HR = self.w/self.Hs*100
+#            self.Xa = 1/(1+self.w*self.AireHumedo.aire.M/self.AireHumedo.agua.M)
+#            self.Xw = 1-self.Xa
+#            self.V = self.AireHumedo.Volumen(tdb, self.Xa)
+#            self.rho = unidades.Density(1/self.V)
 
     def _Volume(self, T, Xa, eos=0):
         if eos:
@@ -503,6 +772,8 @@ if __name__ == '__main__':
 
 #    aire = Punto_Psicrometrico(caudal=1000, tdb=300, w=0.1)
 #    print aire.__dict__
-    aire = Psy_state(tdb=300, w=0.1)
-    print aire.__dict__
+#    aire = Psy_state(tdb=300, w=0.1)
+    aire = Psy_state(tdb=40+273.15, HR=10)
+    print aire.Tdb.C, aire.Twb.C, aire.Tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa
+#    print aire.__dict__
     
