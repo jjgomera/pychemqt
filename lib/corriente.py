@@ -1641,7 +1641,7 @@ class Corriente(config.Entity):
 
     def clone(self, **kwargs):
         """Create a new stream instance with change only kwags new values"""
-        old_kwargs = self.kwargas.copy()
+        old_kwargs = self.kwargs.copy()
         if "split" in kwargs:
             split = kwargs["split"]
             del kwargs["split"]
