@@ -12,7 +12,7 @@ from scipy.special import erf
 
 from tools import UI_databank
 from lib.corriente import Corriente, Mezcla, Solid
-from lib.psycrometry import Psychrometry, Punto_Psicrometrico
+from lib.psycrometry import Psychrometry, PsychroState, PsyState
 from lib import unidades, config
 from lib.utilities import representacion
 from lib.thread import Evaluate
@@ -667,24 +667,8 @@ class Ui_psychrometry(QtGui.QWidget):
         self.layout=QtGui.QGridLayout(self)
         self.readOnly=readOnly
         self.variables=QtGui.QComboBox()
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, H absolute"))
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, H relative"))
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, T dew point"))
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Tª wet bulb"))
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dew point, H relative"))
-        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H relativa"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, densidad"))
+        for txt in PsyState.TEXT_MODE:
+            self.variables.addItem(txt)
         self.variables.currentIndexChanged.connect(self.VariablesCambiadas)
         self.layout.addWidget(self.variables,1,1,1,2)
         
@@ -868,7 +852,7 @@ class Ui_psychrometry(QtGui.QWidget):
             calcular=self.EntradaTdp.value and self.EntradaHR.value
             
         if calcular:
-            punto=self.AireHumedo.definirPunto(self.variables.currentIndex(), tdb=self.EntradaTdb.value, twb=self.EntradaTwb.value, tdp=self.EntradaTdp.value, H=self.EntradaH.value, HR=self.EntradaHR.value)        
+            punto=PsychroState(tdb=self.EntradaTdb.value, twb=self.EntradaTwb.value, tdp=self.EntradaTdp.value, w=self.EntradaH.value, HR=self.EntradaHR.value)        
             self.punto=punto
             self.ActualizarDatos()
             self.Changed.emit(self.punto)
@@ -880,29 +864,29 @@ class Ui_psychrometry(QtGui.QWidget):
         self.HR.setValue(self.punto.HR)
         self.Tdp.setValue(self.punto.Tdp)
         self.Entalpia.setValue(self.punto.h)
-        self.Volumen.setValue(self.punto.V)
+        self.Volumen.setValue(self.punto.v)
         self.Xa.setValue(self.punto.Xa)
             
     def mostrarEntradas(self, punto):
-        self.variables.setCurrentIndex(punto.modo)
+        self.variables.setCurrentIndex(punto.mode)
         self.P.setValue(punto.P)
-        if punto.caudal:
-            self.caudal.setValue(punto.caudal)
-        if punto.modo==0:
-            self.EntradaTdb.setValue(punto.Tdb)
-            self.EntradaH.setValue(punto.w)
-        elif punto.modo==1:
-            self.EntradaTdb.setValue(punto.Tdb)
-            self.EntradaHR.setValue(punto.HR)
-        elif punto.modo==2:
-            self.EntradaTdb.setValue(punto.Tdb)
-            self.EntradaTdp.setValue(punto.Tdp)
-        elif punto.modo==3:
-            self.EntradaTdb.setValue(punto.Tdb)
-            self.EntradaTwb.setValue(punto.Twb)
-        elif punto.modo==4:
-            self.EntradaHR.setValue(punto.HR)
-            self.EntradaTdp.setValue(punto.Tdp)
+#        if punto.caudal:
+#            self.caudal.setValue(punto.caudal)
+#        if punto.modo==0:
+#            self.EntradaTdb.setValue(punto.Tdb)
+#            self.EntradaH.setValue(punto.w)
+#        elif punto.modo==1:
+#            self.EntradaTdb.setValue(punto.Tdb)
+#            self.EntradaHR.setValue(punto.HR)
+#        elif punto.modo==2:
+#            self.EntradaTdb.setValue(punto.Tdb)
+#            self.EntradaTdp.setValue(punto.Tdp)
+#        elif punto.modo==3:
+#            self.EntradaTdb.setValue(punto.Tdb)
+#            self.EntradaTwb.setValue(punto.Twb)
+#        elif punto.modo==4:
+#            self.EntradaHR.setValue(punto.HR)
+#            self.EntradaTdp.setValue(punto.Tdp)
             
     def todos_datos(self):
         return self.punto and self.P.value and self.caudal.value
@@ -940,7 +924,7 @@ if __name__ == "__main__":
 #    corriente = Ui_corriente()
 #    corriente=Corriente_Dialog()
 #    corriente.show()
-    aire=Punto_Psicrometrico(caudal=5, tdb=300, HR=50)
+    aire=PsychroState(caudal=5, tdb=300, HR=50)
     corriente=Ui_psychrometry(aire)
 #    corriente.show()
 #    corriente = Dialog_Distribucion()

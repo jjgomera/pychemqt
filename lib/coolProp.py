@@ -14,12 +14,10 @@ try:
     from CoolProp import phase_constants, param_constants
     from CoolProp.State import State
     from CoolProp.CoolProp import FluidsList, get_CAS_code, DerivTerms, get_aliases
-    from CoolProp.HumidAirProp import HAProps, HAProps_Aux
 except:
     pass
 
 from lib import unidades
-from lib.psycrometry import _Pbar
 from config import Fluid
 
 
@@ -339,145 +337,6 @@ __all__ = {1: 4,
            1817: 51}
 
 
-class Psychro_Coolprop(object):
-    """
-    Class to model a psychrometric state using coolprop external library
-    kwargs definition parameters:
-        P: Pressure, Pa
-        z: altitude, m
-        
-        tdp: dew-point temperature
-        tdb: dry-bulb temperature
-        twb: web-bulb temperature
-        w: Humidity Ratio [kg water/kg dry air]
-        HR: Relative humidity
-        h: Mixture enthalpy
-        v: Mixture specified volume
-    
-    P: mandatory input for barometric pressure, z is an alternate pressure input
-    it needs other two input parameters:
-        1 - tdb, w
-        2 - tdb, HR
-        3 - tdb, twb
-        4 - tdb, tdp
-        5 - tdp, HR
-        6 - tdp, twb
-        7 - twb, w
-        
-    """
-    kwargs = {"z": 0.0,
-              "P": 0.0,
-              
-              "tdb": 0.0,
-              "tdb": 0.0,
-              "twb": 0.0,
-              "w": None,
-              "HR": None,
-              "h": None,
-              "v": 0.0}
-    status = 0
-    msg = "Unknown variables"
-
-    def __init__(self, **kwargs):
-        self.kwargs = Psychro_Coolprop.kwargs.copy()
-        self.__call__(**kwargs)
-
-    def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
-
-        if self.calculable:
-            self.status = 1
-            self.calculo()
-            self.msg = ""
-
-    @property
-    def calculable(self):
-        tdp = self.kwargs.get("tdp", 0)
-        tdb = self.kwargs.get("tdb", 0)
-        twb = self.kwargs.get("twb", 0)
-        w = self.kwargs.get("w", None)
-        HR = self.kwargs.get("HR", None)
-        h = self.kwargs.get("h", None)
-        v = self.kwargs.get("v", 0)
-        
-        self._mode = 0
-        if tdb and w is not None:
-            self._mode = ("Tdb", "w")
-        elif tdb and HR is not None:
-            self._mode =  ("Tdb", "RH")
-        elif tdb and twb:
-            self._mode = 3
-        elif tdb and tdp:
-            self._mode = 4
-        elif tdp and HR is not None:
-            self._mode = 5
-            
-        return bool(self._mode)
-
-    def args(self):
-
-        # Correct refprop custom namespace versus pychemqt namespace
-        if "Tdb" in self._mode:
-            self.kwargs["Tdb"] = self.kwargs["tdb"]
-        if "RH" in self._mode:
-            self.kwargs["RH"] = self.kwargs["HR"]
-
-        var1 = self.kwargs[self._mode[0]]
-        var2 = self.kwargs[self._mode[1]]
-
-        # units conversion to coolprop expected unit:
-        # HR in 0-1, H in kJ/kg, S in kJ/kgK
-#        if self._mode[0] == "P":
-#            var1 /= 1000.
-        if "RH" in self._mode[0]:
-            var1 /= 100.
-        if "RH" in self._mode[1]:
-            var2 /= 100.
-#        if self._mode == "HS":
-#            var1 /= 1000.
-#        if "S" in self._mode:
-#            var2 /= 1000.
-
-        args = ("P", self._P_kPa, self._mode[0], var1, self._mode[1], var2)
-        return args
-
-    @property
-    def _P_kPa(self):
-        if self.kwargs["P"]:
-            P = self.kwargs["P"]
-        elif self.kwargs["z"]:
-            P = _Pbar(self.kwargs["z"])
-        else:
-            P = 101325.
-        return P/1000.
-            
-    def calculo(self):
-        args = self.args()
-        print args
-        h = HAProps("H", *args)
-        
-        if "Tdb" in self._mode:
-            self.Tdb = unidades.Temperature(self.kwargs["Tdb"])
-        else:
-            self.Tdb = unidades.Temperature(HAProps("Tdb", *args))
-        
-        
-        self.P = unidades.Pressure(self._P_kPa, "kPa")
-        self.Tdp = unidades.Temperature(HAProps("Tdp", *args))
-        self.Twb = unidades.Temperature(HAProps("Twb", *args))
-        self.w = unidades.Dimensionless(HAProps("W", *args), txt="kgw/kgda")
-        self.HR = unidades.Dimensionless(HAProps("RH", *args)*100, txt="%")
-        self.Pvs = unidades.Pressure(HAProps_Aux("p_ws", self.Tdb, self._P_kPa, self.w)[0], "kPa")
-        self.Pv = unidades.Pressure(self.Pvs*self.HR/100)
-        ws = 0.62198*self.Pvs/(self.P-self.Pvs)
-        self.ws = unidades.Dimensionless(ws, txt="kgw/kgda")
-        self.mu = unidades.Dimensionless(self.w/self.ws)
-        self.v = unidades.SpecificVolume(HAProps("V", *args))
-        self.h = unidades.Enthalpy(HAProps("H", *args), "kJkg")
-        self.Xa = 1/(1+self.w/0.62198)
-        self.Xw = 1-self.Xa
-        
-
 if __name__ == '__main__':
 #    from CoolProp.CoolProp import IProps, get_Fluid_index
 #    iPropane = get_Fluid_index('R134a')
@@ -487,8 +346,6 @@ if __name__ == '__main__':
 ##Out[9]: 398.60345362765497
 #    fluido=IAPWS97_PT(101325, 300)
 #    print fluido.cp
-#    fluido=CoolProp(fluido=0, T=300, P=101325)
-#    print fluido.M
+    fluido = CoolProp(fluido=0, T=300, P=101325)
+    print fluido.M
 
-    aire = Psychro_Coolprop(tdb=40+273.15, HR=10)
-    print aire.Tdb.C, aire.Twb.C, aire.Tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa

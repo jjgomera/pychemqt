@@ -25,7 +25,7 @@ class Dryer(equipment):
 
     Parámetros:
         entradaSolido: Instancia de clase Corriente que define la entrada de sólidos
-        entradaAire: Instancia de clase Psychrometry que define le aire entrante
+        entradaAire: Instancia de clase Psychrometry que define el aire entrante
         entrada: array con ambas entradas al equipo
         tipoCalculo: integer que indica el tipo de cálculo
             0   -   Cálculo, se calculan la humedad del aire a la salida
