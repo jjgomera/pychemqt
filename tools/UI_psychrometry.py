@@ -159,6 +159,13 @@ class PsychroInput(QtGui.QWidget):
         for par in PsyState.VAR_NAME[index]:
             self.__getattribute__(par).setReadOnly(False)
             self.__getattribute__(par).setResaltado(True)
+            
+        index = self.variables.currentIndex()
+        kwargs = {"P": self.P.value}
+        for par in PsyState.VAR_NAME[index]:
+            if self.__getattribute__(par).value:
+                kwargs[par] = self.state.__getattribute__(par)
+        self.state = PsychroState(**kwargs)
 
     def updateKwargs(self, key, value):
         """Update kwargs of state instance, if its correctly defined show it"""
@@ -166,7 +173,7 @@ class PsychroInput(QtGui.QWidget):
         self.state(**kwargs)
         if self.state.status:
             self.setState(self.state)
-            self.valueChanged.emit(self.state)
+            self.stateChanged.emit(self.state)
 
     def setState(self, state):
         """Fill data input with state properties"""
