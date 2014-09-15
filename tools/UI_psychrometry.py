@@ -286,14 +286,16 @@ class UI_Psychrometry(QtGui.QDialog):
 
         # Saturation line
         Hs = []
+        Pvs = []
         for ti in t:
-            Pvs = _Psat(ti)
-            Hs.append(0.62198*Pvs/(P-Pvs))
+            Pv = _Psat(ti)
+            Pvs.append(Pv)
+            Hs.append(0.62198*Pv/(P-Pv))
             self.progressBar.setValue(5*len(Hs)/len(t))
         data["t"] = t
         data["Hs"] = Hs
 
-        # lef limit of isow lines
+        # left limit of isow lines
         H = self.LineList("isow", Preferences)
         th = []
         for w in H:
@@ -312,12 +314,11 @@ class UI_Psychrometry(QtGui.QDialog):
         cont = 0
         for i in hr:
             Hr[i] = []
-            for H in Hs:
-                Hr[i].append(H*i/100 for H in Hs)
+            for pvs in Pvs:
+                pv = pvs*i/100
+                Hr[i].append(0.62198*pv/(P-pv))
                 cont += 1
                 self.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
-
-            Hr[i] = [H*i/100 for H in Hs]
         data["Hr"] = Hr
 
         # Twb
