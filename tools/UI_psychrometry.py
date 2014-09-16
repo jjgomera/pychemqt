@@ -14,7 +14,7 @@ from ConfigParser import ConfigParser
 from functools import partial
 
 from PyQt4 import QtCore, QtGui
-from scipy import arange, concatenate, pi, arctan, linspace
+from scipy import pi, arctan
 
 from lib.psycrometry import PsyState, PsychroState
 from lib.psycrometry import _Pbar, _height, _tdp, _Psat, _W, _Tdb, _Tdb_V, _W_V
@@ -75,7 +75,7 @@ class PsychroInput(QtGui.QWidget):
     stateChanged = QtCore.pyqtSignal(PsyState)
     pressureChanged = QtCore.pyqtSignal()
 
-    def __init__(self, state=None, parent=None):
+    def __init__(self, state=None, readOnly=False, parent=None):
         """
         constructor
         optional state parameter to assign initial psychrometric state"""
@@ -144,9 +144,10 @@ class PsychroInput(QtGui.QWidget):
         self.h = Entrada_con_unidades(unidades.Enthalpy)
         self.h.valueChanged.connect(partial(self.updateKwargs, "h"))
         layout.addWidget(self.h, 12, 2, 1, 1)
-        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Expanding,
-                                         QtGui.QSizePolicy.Expanding),13,1,1,2)
+        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed),13,1,1,2)
 
+        self.setReadOnly(readOnly)
         self.updateInputs(0)
         if state:
             self.setState(state)
@@ -167,6 +168,16 @@ class PsychroInput(QtGui.QWidget):
                 kwargs[par] = self.state.__getattribute__(par)
         self.state = PsychroState(**kwargs)
 
+    def setReadOnly(self, readOnly):
+        self.checkPresion.setEnabled(not readOnly)
+        self.checkAltitud.setEnabled(not readOnly)
+        self.P.setReadOnly(readOnly)
+        self.z.setReadOnly(readOnly)
+        self.variables.setEnabled(not readOnly)
+        for par in self.parameters:
+            self.__getattribute__(par).setReadOnly(True)
+            self.__getattribute__(par).setResaltado(False)
+            
     def updateKwargs(self, key, value):
         """Update kwargs of state instance, if its correctly defined show it"""
         kwargs = {key: value}
@@ -177,6 +188,7 @@ class PsychroInput(QtGui.QWidget):
 
     def setState(self, state):
         """Fill data input with state properties"""
+        self.state = state
         if state.w < state.ws:
             for par in self.parameters:
                 self.__getattribute__(par).setValue(state.__getattribute__(par))
@@ -209,12 +221,14 @@ class UI_Psychrometry(QtGui.QDialog):
         self.diagrama2D = PsychroPlot(self, dpi=90)
         self.diagrama2D.fig.canvas.mpl_connect('motion_notify_event', self.scroll)
         self.diagrama2D.fig.canvas.mpl_connect('button_press_event', self.click)
-        layout.addWidget(self.diagrama2D, 1, 3, 1, 2)
+        layout.addWidget(self.diagrama2D, 1, 3, 2, 2)
 
         self.inputs = PsychroInput()
         self.inputs.stateChanged.connect(self.createCrux)
         self.inputs.pressureChanged.connect(self.plot)
-        layout.addWidget(self.inputs, 1, 1, 2, 1)
+        layout.addWidget(self.inputs, 1, 1, 1, 1)
+        layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding), 2, 1)
 
         self.buttonShowToolbox = QtGui.QToolButton()
         self.buttonShowToolbox.setCheckable(True)
@@ -223,13 +237,13 @@ class UI_Psychrometry(QtGui.QDialog):
         self.line = QtGui.QFrame()
         self.line.setFrameShape(QtGui.QFrame.VLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
-        layout.addWidget(self.line, 1, 3, 2, 1)
+        layout.addWidget(self.line, 1, 3, 3, 1)
 
         self.progressBar = QtGui.QProgressBar()
         self.progressBar.setVisible(False)
-        layout.addWidget(self.progressBar, 2, 3)
+        layout.addWidget(self.progressBar, 3, 3)
         self.status = QtGui.QLabel()
-        layout.addWidget(self.status, 2, 3)
+        layout.addWidget(self.status, 3, 3)
 
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
         butonPNG = QtGui.QPushButton(QtGui.QIcon(os.environ["pychemqt"] +
@@ -238,7 +252,7 @@ class UI_Psychrometry(QtGui.QDialog):
         self.buttonBox.addButton(butonPNG, QtGui.QDialogButtonBox.AcceptRole)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.savePNG)
-        layout.addWidget(self.buttonBox, 2, 4)
+        layout.addWidget(self.buttonBox, 3, 4)
 
         self.showToolBar(False)
         self.plot()
@@ -259,96 +273,6 @@ class UI_Psychrometry(QtGui.QDialog):
             image = "arrow-left-double.png"
         self.buttonShowToolbox.setIcon(QtGui.QIcon(os.environ["pychemqt"] +
             "images"+os.sep+"button"+os.sep+image))
-
-    def LineList(self, name, Preferences):
-        """Return a list with the values of isoline name to plot"""
-        if Preferences.getboolean("Psychr", name+"Custom"):
-            t = []
-            for i in Preferences.get("Psychr", name+'List').split(','):
-                if i:
-                    t.append(float(i))
-        else:
-            start = Preferences.getfloat("Psychr", name+"Start")
-            end = Preferences.getfloat("Psychr", name+"End")
-            step = Preferences.getfloat("Psychr", name+"Step")
-            t = arange(start, end, step)
-        return t
-
-    def calculate(self):
-        """Calculate graph lines, separate of plot routine to save data to file"""
-        # TODO: Now only ideal gas, add method for coolprop, refprop, virial...
-        Preferences = ConfigParser()
-        Preferences.read(config.conf_dir+"pychemqtrc")
-
-        data = {}
-        P = self.inputs.P.value
-        t = self.LineList("isotdb", Preferences)
-
-        # Saturation line
-        Hs = []
-        Pvs = []
-        for ti in t:
-            Pv = _Psat(ti)
-            Pvs.append(Pv)
-            Hs.append(0.62198*Pv/(P-Pv))
-            self.progressBar.setValue(5*len(Hs)/len(t))
-        data["t"] = t
-        data["Hs"] = Hs
-
-        # left limit of isow lines
-        H = self.LineList("isow", Preferences)
-        th = []
-        for w in H:
-            if w:
-                Pv = w*P/(0.62198+w)
-                th.append(unidades.Temperature(_tdp(Pv)).config())
-            else:
-                tmin = Preferences.getfloat("Psychr", "isotdbStart")
-                th.append(unidades.Temperature(tmin).config())
-        data["H"] = H
-        data["th"] = th
-
-        # Humidity ratio lines
-        hr = self.LineList("isohr", Preferences)
-        Hr = {}
-        cont = 0
-        for i in hr:
-            Hr[i] = []
-            for pvs in Pvs:
-                pv = pvs*i/100
-                Hr[i].append(0.62198*pv/(P-pv))
-                cont += 1
-                self.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
-        data["Hr"] = Hr
-
-        # Twb
-        lines = self.LineList("isotwb", Preferences)
-        Twb = {}
-        cont = 0
-        for T in lines:
-            H = concatenate((arange(_W(P, T), 0, -0.001), [0.]))
-            Tw = []
-            for h in H:
-                Tw.append(unidades.Temperature(_Tdb(T, h, P)).config())
-            cont += 1
-            self.progressBar.setValue(15+75*cont/len(lines))
-            Twb[T] = (H, Tw)
-        data["Twb"] = Twb
-
-        # v
-        lines = self.LineList("isochor", Preferences)
-        V = {}
-        for cont, v in enumerate(lines):
-            ts = _Tdb_V(v, P)
-            T = linspace(ts, v*P/287.055, 50)
-            Td = [unidades.Temperature(ti).config() for ti in T]
-            _W_V
-            H = [_W_V(ti, P, v) for ti in T]
-            self.progressBar.setValue(90+10*cont/len(lines))
-            V[v] = (Td, H)
-        data["v"] = V
-
-        return data
 
     def drawlabel(self, name, Preferences, t, W, label, unit):
         """
@@ -388,8 +312,8 @@ class UI_Psychrometry(QtGui.QDialog):
 
         self.diagrama2D.axes2D.clear()
         self.diagrama2D.config()
-
-        filename = config.conf_dir+"psy_%i.pkl" % self.inputs.P.value
+        filename = config.conf_dir+"%s_%i.pkl" % (
+            PsychroState().__class__.__name__, self.inputs.P.value)
         if os.path.isfile(filename):
             with open(filename, "r") as archivo:
                 data = cPickle.load(archivo)
@@ -401,7 +325,7 @@ class UI_Psychrometry(QtGui.QDialog):
             self.status.setText(QtGui.QApplication.translate(
                 "pychemqt", "Calculating data, be patient..."))
             QtGui.QApplication.processEvents()
-            data = self.calculate()
+            data = PsychroState.calculatePlot(self)
             cPickle.dump(data, open(filename, "w"))
             self.progressBar.setVisible(False)
         self.status.setText(QtGui.QApplication.translate("pychemqt", "Plotting..."))
@@ -474,7 +398,8 @@ class UI_Psychrometry(QtGui.QDialog):
             self.drawlabel("isochor", Preferences, Td, H, value, txt)
 
         self.diagrama2D.draw()
-        self.status.clear()
+        self.status.setText(QtGui.QApplication.translate("pychemqt", "Using") +
+                            " " + PsychroState().__class__.__name__[3:])
 
     def scroll(self, event):
         """Update graph annotate when mouse scroll over chart"""

@@ -11,8 +11,9 @@ from scipy.constants import lb
 from scipy.special import erf
 
 from tools import UI_databank
+from tools.UI_psychrometry import PsychroInput
 from lib.corriente import Corriente, Mezcla, Solid
-from lib.psycrometry import Psychrometry, PsychroState, PsyState
+from lib.psycrometry import PsychroState, PsyState
 from lib import unidades, config
 from lib.utilities import representacion
 from lib.thread import Evaluate
@@ -661,214 +662,120 @@ class Corriente_Dialog(QtGui.QDialog, Ui_corriente):
 
         
 class Ui_psychrometry(QtGui.QWidget):
-    Changed = QtCore.pyqtSignal(Psychrometry)
+    Changed = QtCore.pyqtSignal(PsyState)
+    parameters = ["tdb", "twb", "tdp", "w", "mu", "HR", "v", "h", "Pv", "Xa", "Xw"]
+    
     def __init__(self, punto=None, readOnly=False, parent=None):
         super(Ui_psychrometry, self).__init__(parent)
-        self.layout=QtGui.QGridLayout(self)
         self.readOnly=readOnly
-        self.variables=QtGui.QComboBox()
-        for txt in PsyState.TEXT_MODE:
-            self.variables.addItem(txt)
-        self.variables.currentIndexChanged.connect(self.VariablesCambiadas)
-        self.layout.addWidget(self.variables,1,1,1,2)
+        layout=QtGui.QGridLayout(self)
         
-        self.label_1 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T dry bulb"))
-        self.layout.addWidget(self.label_1,2,1,1,1)
-        self.EntradaTdb=Entrada_con_unidades(unidades.Temperature, readOnly=readOnly)
-        self.EntradaTdb.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.EntradaTdb,2,2,1,2)
-        self.label_2 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T wet bulb"))
-        self.layout.addWidget(self.label_2,3,1,1,1)
-        self.EntradaTwb=Entrada_con_unidades(unidades.Temperature, readOnly=readOnly)
-        self.EntradaTwb.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.EntradaTwb,3,2,1,2)
-        self.label_3 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T dew point"))
-        self.layout.addWidget(self.label_3,4,1,1,1)
-        self.EntradaTdp=Entrada_con_unidades(unidades.Temperature, readOnly=readOnly)
-        self.EntradaTdp.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.EntradaTdp,4,2,1,2)
-        self.label_4 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Absolute humidity"))
-        self.layout.addWidget(self.label_4,5,1,1,1)
-        self.EntradaH=Entrada_con_unidades(float, textounidad=unidades.Mass(None).text()+"/"+unidades.Mass(None).text(), readOnly=readOnly)
-        self.EntradaH.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.EntradaH,5,2,1,2)
-        self.label_5 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Relative humidity"))
-        self.layout.addWidget(self.label_5,6,1,1,1)
-        self.EntradaHR=Entrada_con_unidades(float, max=100, spinbox=True, textounidad="%", readOnly=readOnly)
-        self.EntradaHR.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.EntradaHR,6,2,1,2)
-#        self.label_6 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Volume"))
-#        self.layout.addWidget(self.label_6,7,1,1,1)
-#        self.EntradaVolumen=Entrada_con_unidades(unidades.SpecificVolume)
-#        self.EntradaVolumen.valueChanged.connect(self.NuevoPunto)
-#        self.layout.addWidget(self.EntradaVolumen,7,2,1,1)
-#        self.label_7 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Enthalpy"))
-#        self.layout.addWidget(self.label_7,8,1,1,1)
-#        self.EntradaEntalpia=Entrada_con_unidades(unidades.Enthalpy)
-#        self.EntradaEntalpia.valueChanged.connect(self.NuevoPunto)
-#        self.layout.addWidget(self.EntradaEntalpia,8,2,1,1)
+        self.inputs = PsychroInput()
+        self.inputs.stateChanged.connect(self.rellenar)
+        layout.addWidget(self.inputs, 1, 1, 1, 2)
 
-        self.layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),2,4,7,1)
-        self.layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),2,6,7,1)
-        self.groupbox=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Calculated properties"))
-        self.layout.addWidget(self.groupbox,2,5,7,1)
-        self.layoutGroupbox=QtGui.QGridLayout(self.groupbox)
-        self.label_8 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T dry bulb:"))
-        self.layoutGroupbox.addWidget(self.label_8,1,1,1,1)
-        self.Tdb=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False)
-        self.layoutGroupbox.addWidget(self.Tdb,1,2,1,1)
-        self.label_9 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T wet bulb:"))
-        self.layoutGroupbox.addWidget(self.label_9,2,1,1,1)
-        self.Twb=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False)
-        self.layoutGroupbox.addWidget(self.Twb,2,2,1,1)
-        self.label_10 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "T dew point:"))
-        self.layoutGroupbox.addWidget(self.label_10,3,1,1,1)
-        self.Tdp=Entrada_con_unidades(unidades.Temperature, readOnly=True, boton=False)
-        self.layoutGroupbox.addWidget(self.Tdp,3,2,1,1)
-        self.label_11 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Absolute humidity"))
-        self.layoutGroupbox.addWidget(self.label_11,4,1,1,1)
-        self.H=Entrada_con_unidades(float, readOnly=True, textounidad=unidades.Mass(None).text()+"/"+unidades.Mass(None).text())
-        self.layoutGroupbox.addWidget(self.H,4,2,1,1)
-        self.label_12 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Relative humidity"))
-        self.layoutGroupbox.addWidget(self.label_12,5,1,1,1)
+        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 1, 3)
+        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
+                                         QtGui.QSizePolicy.Fixed), 2, 1)
+        
+        vlayout = QtGui.QVBoxLayout()
+        layout.addLayout(vlayout,1, 4, 6, 1)
+        vlayout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Expanding,
+                                          QtGui.QSizePolicy.Expanding))
+        groupbox = QtGui.QGroupBox(QtGui.QApplication.translate(
+            "pychemqt", "Calculated properties"))
+        vlayout.addWidget(groupbox)
+        lytGroup = QtGui.QGridLayout(groupbox)
+        lytGroup.addWidget(QtGui.QLabel("Tdb"),1,1)
+        self.tdb = Entrada_con_unidades(unidades.Temperature, readOnly=True)
+        lytGroup.addWidget(self.tdb, 1, 2)
+        lytGroup.addWidget(QtGui.QLabel("Twb"), 2, 1)
+        self.twb = Entrada_con_unidades(unidades.Temperature, readOnly=True)
+        lytGroup.addWidget(self.twb, 2, 2)
+        lytGroup.addWidget(QtGui.QLabel("Tdp"), 3, 1)
+        self.tdp = Entrada_con_unidades(unidades.Temperature, readOnly=True)
+        lytGroup.addWidget(self.tdp, 3, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Absolute humidity")), 4, 1)
+        massUnit = unidades.Mass(None).text()+"/"+unidades.Mass(None).text()
+        self.w = Entrada_con_unidades(float, readOnly=True, textounidad=massUnit)
+        lytGroup.addWidget(self.w, 4, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Degree of saturation")), 5, 1)
+        self.mu=Entrada_con_unidades(float, readOnly=True, textounidad="%")
+        lytGroup.addWidget(self.mu, 5, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Relative humidity")), 6, 1)
         self.HR=Entrada_con_unidades(float, readOnly=True, textounidad="%")
-        self.layoutGroupbox.addWidget(self.HR,5,2,1,1)
-        self.label_13 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Volume"))
-        self.layoutGroupbox.addWidget(self.label_13,6,1,1,1)
-        self.Volumen=Entrada_con_unidades(unidades.SpecificVolume, readOnly=True, boton=False)
-        self.layoutGroupbox.addWidget(self.Volumen,6,2,1,1)
-        self.label_14 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Enthalpy"))
-        self.layoutGroupbox.addWidget(self.label_14,7,1,1,1)
-        self.Entalpia=Entrada_con_unidades(unidades.Enthalpy, readOnly=True, boton=False)
-        self.layoutGroupbox.addWidget(self.Entalpia,7,2,1,1)
-        self.label_15 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Water fraction"))
-        self.layoutGroupbox.addWidget(self.label_15,8,1,1,1)
+        lytGroup.addWidget(self.HR, 6, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Volume")), 7, 1)
+        self.v=Entrada_con_unidades(unidades.SpecificVolume, readOnly=True)
+        lytGroup.addWidget(self.v, 7, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Enthalpy")), 8, 1)
+        self.h=Entrada_con_unidades(unidades.Enthalpy, readOnly=True)
+        lytGroup.addWidget(self.h, 8, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Vapour Pressure")), 9, 1)
+        self.Pv=Entrada_con_unidades(unidades.Pressure, readOnly=True)
+        lytGroup.addWidget(self.Pv, 9, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Air fraction")), 10, 1)
         self.Xa=Entrada_con_unidades(float, readOnly=True)
-        self.layoutGroupbox.addWidget(self.Xa,8,2,1,1)
-        
-        self.layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),9,1,1,5)
-        self.label_16 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure"))
-        self.layout.addWidget(self.label_16,10,1,1,1)
-        self.P=Entrada_con_unidades(unidades.Pressure, readOnly=readOnly)
-        self.P.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.P,10,2,1,2)
-        self.label_17 = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Flow"))
-        self.layout.addWidget(self.label_17,11,1,1,1)
-        self.caudal=Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
-        self.caudal.valueChanged.connect(self.NuevoPunto)
-        self.layout.addWidget(self.caudal,11,2,1,2)
-        self.layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),12,1,1,5)
-        self.setReadOnly(readOnly)
-        if punto:
-            self.setCorriente(punto)
-        else:
-            self.AireHumedo=Psychrometry(1)
+        lytGroup.addWidget(self.Xa, 10, 2)
+        lytGroup.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Water fraction")), 11, 1)
+        self.Xw=Entrada_con_unidades(float, readOnly=True)
+        lytGroup.addWidget(self.Xw, 11, 2)
+        vlayout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Expanding,
+                                          QtGui.QSizePolicy.Expanding))
 
-    def setCorriente(self, punto):
-            self.punto=punto
-            self.AireHumedo=Psychrometry(punto.P.atm)
-            self.ActualizarDatos()
-            self.mostrarEntradas(punto)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Mass Flow")), 3, 1)
+        self.caudal=Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
+#        self.caudal.valueChanged.connect(self.NuevoPunto)
+        layout.addWidget(self.caudal, 3, 2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Molar Flow")), 4, 1)
+        self.caudalMolar=Entrada_con_unidades(unidades.MolarFlow, readOnly=readOnly)
+#        self.caudalMolar.valueChanged.connect(self.NuevoPunto)
+        layout.addWidget(self.caudalMolar, 4, 2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Volumetric Flow")), 5, 1)
+        self.caudalVolumetrico=Entrada_con_unidades(unidades.VolFlow, readOnly=readOnly)
+#        self.caudalVolumetrico.valueChanged.connect(self.NuevoPunto)
+        layout.addWidget(self.caudalVolumetrico, 5, 2)
+        layout.addItem(QtGui.QSpacerItem(5, 5, QtGui.QSizePolicy.Expanding,
+                                         QtGui.QSizePolicy.Expanding),9,2)
+
+        self.setReadOnly(readOnly)
+        self.inputs.updateInputs(0)
+#        if punto:
+#            self.setCorriente(punto)
+#        else:
+#            self.AireHumedo=Psychrometry(1)
+
+    def setCorriente(self, state):
+            self.punto=state
+#            self.AireHumedo=Psychrometry(punto.P.atm)
+            self.rellenar(state)
+            self.rellenarInput(state)
         
     def setReadOnly(self, readOnly):
-        self.variables.setDisabled(readOnly)
-        self.EntradaTdb.setDisabled(readOnly)
-        self.EntradaTdp.setDisabled(readOnly)
-        self.EntradaTwb.setDisabled(readOnly)
-        self.EntradaH.setDisabled(readOnly)
-        self.EntradaHR.setDisabled(readOnly)
-        if not readOnly:
-            self.VariablesCambiadas(0)
-        
-    def VariablesCambiadas(self, int):
-        if int==0:
-            self.EntradaTdb.setReadOnly(False)
-            self.EntradaTdb.setResaltado(True)
-            self.EntradaH.setReadOnly(False)
-            self.EntradaH.setResaltado(True)
-            self.EntradaTwb.setReadOnly(True)
-            self.EntradaTwb.setResaltado(False)
-            self.EntradaTdp.setReadOnly(True)
-            self.EntradaTdp.setResaltado(False)
-            self.EntradaHR.setReadOnly(True)
-            self.EntradaHR.setResaltado(False)
-        elif int==1:
-            self.EntradaTdb.setReadOnly(False)
-            self.EntradaTdb.setResaltado(True)
-            self.EntradaH.setReadOnly(True)
-            self.EntradaH.setResaltado(False)
-            self.EntradaTwb.setReadOnly(True)
-            self.EntradaTwb.setResaltado(False)
-            self.EntradaTdp.setReadOnly(True)
-            self.EntradaTdp.setResaltado(False)
-            self.EntradaHR.setReadOnly(False)
-            self.EntradaHR.setResaltado(True)
-        elif int==2:
-            self.EntradaTdb.setReadOnly(False)
-            self.EntradaTdb.setResaltado(True)
-            self.EntradaH.setReadOnly(True)
-            self.EntradaH.setResaltado(False)
-            self.EntradaTwb.setReadOnly(True)
-            self.EntradaTwb.setResaltado(False)
-            self.EntradaTdp.setReadOnly(False)
-            self.EntradaTdp.setResaltado(True)
-            self.EntradaHR.setReadOnly(True)
-            self.EntradaHR.setResaltado(False)
-        elif int==3:
-            self.EntradaTdb.setReadOnly(False)
-            self.EntradaTdb.setResaltado(True)
-            self.EntradaH.setReadOnly(True)
-            self.EntradaH.setResaltado(False)
-            self.EntradaTwb.setReadOnly(False)
-            self.EntradaTwb.setResaltado(True)
-            self.EntradaTdp.setReadOnly(True)
-            self.EntradaTdp.setResaltado(False)
-            self.EntradaHR.setReadOnly(True)
-            self.EntradaHR.setResaltado(False)
-        elif int==4:
-            self.EntradaTdb.setReadOnly(True)
-            self.EntradaTdb.setResaltado(False)
-            self.EntradaH.setReadOnly(True)
-            self.EntradaH.setResaltado(False)
-            self.EntradaTwb.setReadOnly(True)
-            self.EntradaTwb.setResaltado(False)
-            self.EntradaTdp.setReadOnly(False)
-            self.EntradaTdp.setResaltado(True)
-            self.EntradaHR.setReadOnly(False)
-            self.EntradaHR.setResaltado(True)
+        self.inputs.setReadOnly(readOnly)
+        self.caudal.setReadOnly(readOnly)
+        self.caudalMolar.setReadOnly(readOnly)
+        self.caudalVolumetrico.setReadOnly(readOnly)
             
-            
-    def NuevoPunto(self):
-        modo=self.variables.currentIndex()
-        if modo==0:
-            calcular=self.EntradaTdb.value and self.EntradaH.value
-        elif modo==1:
-            calcular=self.EntradaTdb.value and self.EntradaHR.value
-        elif modo==2:
-            calcular=self.EntradaTdb.value and self.EntradaTdp.value
-        elif modo==3:
-            calcular=self.EntradaTdb.value and self.EntradaTwb.value
-        elif modo==4:
-            calcular=self.EntradaTdp.value and self.EntradaHR.value
-            
-        if calcular:
-            punto=PsychroState(tdb=self.EntradaTdb.value, twb=self.EntradaTwb.value, tdp=self.EntradaTdp.value, w=self.EntradaH.value, HR=self.EntradaHR.value)        
-            self.punto=punto
-            self.ActualizarDatos()
-            self.Changed.emit(self.punto)
-            
-    def ActualizarDatos(self):
-        self.Tdb.setValue(self.punto.Tdb)
-        self.Twb.setValue(self.punto.Twb)
-        self.H.setValue(self.punto.w)
-        self.HR.setValue(self.punto.HR)
-        self.Tdp.setValue(self.punto.Tdp)
-        self.Entalpia.setValue(self.punto.h)
-        self.Volumen.setValue(self.punto.v)
-        self.Xa.setValue(self.punto.Xa)
-            
-    def mostrarEntradas(self, punto):
-        self.variables.setCurrentIndex(punto.mode)
+    def rellenar(self, state):
+        for par in self.parameters:
+            self.__getattribute__(par).setValue(state.__getattribute__(par))
+
+    def rellenarInput(self, state):
+        self.blockSignals(True)
+        self.variables.setCurrentIndex(state.mode)
         self.P.setValue(punto.P)
 #        if punto.caudal:
 #            self.caudal.setValue(punto.caudal)
@@ -887,7 +794,8 @@ class Ui_psychrometry(QtGui.QWidget):
 #        elif punto.modo==4:
 #            self.EntradaHR.setValue(punto.HR)
 #            self.EntradaTdp.setValue(punto.Tdp)
-            
+        self.blockSignals(False)
+
     def todos_datos(self):
         return self.punto and self.P.value and self.caudal.value
             

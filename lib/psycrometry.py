@@ -10,7 +10,7 @@ from ConfigParser import ConfigParser
 
 from PyQt4.QtGui import QApplication
 from scipy.optimize import fsolve
-from scipy import log, exp
+from scipy import log, exp, arange, concatenate, linspace
 
 try:
     from CoolProp.HumidAirProp import HAProps, HAProps_Aux
@@ -112,7 +112,7 @@ def _Tsat(Pv):
 
         def f(T):
             return Pv - exp(C1/T+C2+C3*T+C4*T**2+C5*T**3+C6*T**4+C7*log(T))
-        t = fsolve(f, -20)[0]
+        t = fsolve(f, 250)[0]
 
     elif Pv_lim <= Pv <= Pv_max:
         C8 = -5800.2206
@@ -124,12 +124,12 @@ def _Tsat(Pv):
 
         def f(T):
             return Pv - exp(C8/T+C9+C10*T+C11*T**2+C12*T**3+C13*log(T))
-        t = fsolve(f, 20)[0]
+        t = fsolve(f, 300)[0]
 
     else:
         raise NotImplementedError("Incoming out of bound")
 
-    return t+273.15
+    return t
 
 
 def _W(P, Tdb):
@@ -171,18 +171,20 @@ def _v(P, Tdb, W):
     return 0.2871*Tdb*(1+1.6078*W)/P_kpa
 
 
-def _W_twb(tdb, twb, Ws):
+def _W_twb(tdb, twb, P):
     """
     ASHRAE Fundamentals Handbook pag 1.13 eq. 35-37
     input:
         dry bulb temperature, K
         wet bulb temperature, K
-        barometric pressure, Pa
+        barometric Pressure, Pa
     return:
         humidity ratio, kg H2O/kg air
     """
     tdb_C = tdb - 273.15
     twb_C = twb - 273.15
+    Pvs = _Psat(twb)
+    Ws = 0.62198*Pvs/(P-Pvs)
     if tdb >= 0:
         w = ((2501-2.381*twb_C)*Ws-1.006*(tdb-twb))/(2501+1.805*tdb_C-4.186*twb_C)
     else:
@@ -336,20 +338,21 @@ class PsyState(object):
         QApplication.translate("pychemqt", "T dry bulb, Relative humidity"),
         QApplication.translate("pychemqt", "T dry bulb, T wet bulb"),
         QApplication.translate("pychemqt", "T dry bulb, T dew point"),
-        QApplication.translate("pychemqt", "T dew point, Relative humidity")
+        QApplication.translate("pychemqt", "T dew point, Relative humidity"), 
+        QApplication.translate("pychemqt", "T wet bulb, Relative humidity")
         ]
     VAR_NAME = [
         ("tdb", "w"),
         ("tdb", "HR"),
         ("tdb", "twb"),
         ("tdb", "tdp"),
-        ("tdp", "HR")
+        ("tdp", "HR"), 
+        ("twb", "HR")
         ]
 
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H relativa"))
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
 #        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
@@ -421,12 +424,33 @@ class PsyState(object):
         self.ws = unidades.Dimensionless(ws, txt="kgw/kgda")
         self.w = unidades.Dimensionless(w, txt="kgw/kgda")
         self.HR = unidades.Dimensionless(HR, txt="%")
-        self.mu = unidades.Dimensionless(w/ws)
+        self.mu = unidades.Dimensionless(w/ws*100)
         self.v = unidades.SpecificVolume(v)
         self.rho = unidades.Density(1/v)
         self.h = unidades.Enthalpy(h, "kJkg")
         self.Xa = 1/(1+self.w/0.62198)
         self.Xw = 1-self.Xa
+
+    @classmethod
+    def calculatePlot(cls):
+        """Funtion to calculate point in chart, each child class must define
+        it, as default use ideal gas equation of state"""
+        return PsyIdeal.calculatePlot()
+
+    @staticmethod
+    def LineList(name, Preferences):
+        """Return a list with the values of isoline name to plot"""
+        if Preferences.getboolean("Psychr", name+"Custom"):
+            t = []
+            for i in Preferences.get("Psychr", name+'List').split(','):
+                if i:
+                    t.append(float(i))
+        else:
+            start = Preferences.getfloat("Psychr", name+"Start")
+            end = Preferences.getfloat("Psychr", name+"End")
+            step = Preferences.getfloat("Psychr", name+"Step")
+            t = arange(start, end, step)
+        return t
 
     @property
     def corriente(self, caudal):
@@ -435,73 +459,73 @@ class PsyState(object):
 
 
 
-    def _Volume(self, T, Xa, eos=0):
-        if eos:
-            return _V_Virial(T, Xa)
-        else:
-            return _V_Ideal(T, Xa)
-
-    def _V_Ideal(self, T, Xa):
-        """volumen por unidad de masa de aire seco"""
-        return unidades.SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
-
-    def Virial(self, T, Xa):
-        """Método que devuelve los coeficientes de la ecuación del virial
-        Temperatura en kelvin
-        X fracción molar de aire en la mezcla"""
-        Baa = 0.349568e2-0.668772e4/T-0.210141e7/T**2+0.924746e8/T**3
-        Caaa = 0.125975e4-0.190905e6/T+0.632467e8/T**2
-        Bww = R_atml*T*(0.7e-8-0.147184e-8*exp(1734.29/T))
-        Cwww = R_atml**2*T**2*(0.104e-14-0.335297e-17*exp(3645.09/T))**2*Bww**2
-
-        Xw = 1-Xa
-        Baw = 0.32366097e2-0.141138e5/T-0.1244535e7/T**2-0.2348789e10/T**4
-        Caaw = 0.482737e3+0.105678e6/T-0.656394e8/T**2+0.299444e11/T**3 - \
-            0.319317e13/T**4
-        Caww = -1e-6*exp(
-            -0.10728876e2+0.347802e4/T-0.383383e6/T**2+0.33406e8/T**3)
-        Bm = Xa**2*Baa+2*Xa*Xw*Baw+Xw**2*Bww
-        Cm = Xa**3*Caaa+3*Xa**2*Xw*Caaw+3*Xa*Xw**2*Caww+Xw**3*Cwww
-        return Bm, Cm
-
-    def _V_Virial(self, T, Xa):
-        """volumen por unidad de masa de aire seco"""
-        # FIXME: Don't work, for now use ideal gas equation
-        Bm, Cm=self.Virial(T, Xa)
-        vm=roots([1, -R_atml*T/self.P.atm, -R_atml*T*Bm/self.P.atm,-R_atml*T*Cm/self.P.atm])
-        if vm[0].imag==0.0:
-            v=vm[0].real
-        else:
-            v=vm[2].real
-        return unidades.SpecificVolume(v/self.aire.M/Xa)
-
-    def _h(self, Td, w):
-        """Enthalpy calculation procedure"""
-        cp_air = self.Air.Cp_Gas_DIPPR(Td)
-        cp_water = self.Water.Cp_Gas_DIPPR(Td)
-        h = (Td-273.15)*(cp_air+cp_water*w)
-        return unidades.Enthalpy(h, "kJkg")
-
-    def _HS(self, Td):
-        """Saturation humidity calculation procedure"""
-        pv = self._Ps(Td)
-        return self.Water.M*pv/(self.Air.M*(self.P-pv))
-
-    def _Ps(self, Td):
-        """Saturation pressure calculation procedure"""
-        if Td < 273.15:
-            return _Sublimation_Pressure(Td)
-        else:
-            return _PSat_T(Td)
-
-    def _Tw(self, Td, w):
-        Hv = self.agua.Hv_DIPPR(Td)
-        Cs = self.Calor_Especifico_Humedo(Td, w)
-
-        def f(Tw):
-            return self.Humedad_Absoluta(Tw)-w-Cs/Hv*(Td-Tw)
-        Tw = fsolve(f, Td)
-        return unidades.Temperature(Tw)
+#    def _Volume(self, T, Xa, eos=0):
+#        if eos:
+#            return _V_Virial(T, Xa)
+#        else:
+#            return _V_Ideal(T, Xa)
+#
+#    def _V_Ideal(self, T, Xa):
+#        """volumen por unidad de masa de aire seco"""
+#        return unidades.SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
+#
+#    def Virial(self, T, Xa):
+#        """Método que devuelve los coeficientes de la ecuación del virial
+#        Temperatura en kelvin
+#        X fracción molar de aire en la mezcla"""
+#        Baa = 0.349568e2-0.668772e4/T-0.210141e7/T**2+0.924746e8/T**3
+#        Caaa = 0.125975e4-0.190905e6/T+0.632467e8/T**2
+#        Bww = R_atml*T*(0.7e-8-0.147184e-8*exp(1734.29/T))
+#        Cwww = R_atml**2*T**2*(0.104e-14-0.335297e-17*exp(3645.09/T))**2*Bww**2
+#
+#        Xw = 1-Xa
+#        Baw = 0.32366097e2-0.141138e5/T-0.1244535e7/T**2-0.2348789e10/T**4
+#        Caaw = 0.482737e3+0.105678e6/T-0.656394e8/T**2+0.299444e11/T**3 - \
+#            0.319317e13/T**4
+#        Caww = -1e-6*exp(
+#            -0.10728876e2+0.347802e4/T-0.383383e6/T**2+0.33406e8/T**3)
+#        Bm = Xa**2*Baa+2*Xa*Xw*Baw+Xw**2*Bww
+#        Cm = Xa**3*Caaa+3*Xa**2*Xw*Caaw+3*Xa*Xw**2*Caww+Xw**3*Cwww
+#        return Bm, Cm
+#
+#    def _V_Virial(self, T, Xa):
+#        """volumen por unidad de masa de aire seco"""
+#        # FIXME: Don't work, for now use ideal gas equation
+#        Bm, Cm=self.Virial(T, Xa)
+#        vm=roots([1, -R_atml*T/self.P.atm, -R_atml*T*Bm/self.P.atm,-R_atml*T*Cm/self.P.atm])
+#        if vm[0].imag==0.0:
+#            v=vm[0].real
+#        else:
+#            v=vm[2].real
+#        return unidades.SpecificVolume(v/self.aire.M/Xa)
+#
+#    def _h(self, Td, w):
+#        """Enthalpy calculation procedure"""
+#        cp_air = self.Air.Cp_Gas_DIPPR(Td)
+#        cp_water = self.Water.Cp_Gas_DIPPR(Td)
+#        h = (Td-273.15)*(cp_air+cp_water*w)
+#        return unidades.Enthalpy(h, "kJkg")
+#
+#    def _HS(self, Td):
+#        """Saturation humidity calculation procedure"""
+#        pv = self._Ps(Td)
+#        return self.Water.M*pv/(self.Air.M*(self.P-pv))
+#
+#    def _Ps(self, Td):
+#        """Saturation pressure calculation procedure"""
+#        if Td < 273.15:
+#            return _Sublimation_Pressure(Td)
+#        else:
+#            return _PSat_T(Td)
+#
+#    def _Tw(self, Td, w):
+#        Hv = self.agua.Hv_DIPPR(Td)
+#        Cs = self.Calor_Especifico_Humedo(Td, w)
+#
+#        def f(Tw):
+#            return self.Humedad_Absoluta(Tw)-w-Cs/Hv*(Td-Tw)
+#        Tw = fsolve(f, Td)
+#        return unidades.Temperature(Tw)
 
 
 class PsyIdeal(PsyState):
@@ -543,7 +567,7 @@ class PsyIdeal(PsyState):
             # Tdb and Twb
             Pvs = _Psat(tdb)
             ws = 0.62198*Pvs/(P-Pvs)
-            w = _W_twb(tdb, twb, ws)
+            w = _W_twb(tdb, twb, P)
             Pv = w*P/(0.62198+w)
             HR = Pv/Pvs*100
             v = _v(P, tdb, w)
@@ -556,6 +580,7 @@ class PsyIdeal(PsyState):
             w = 0.62198*Pv/(P-Pv)
             Pvs = _Psat(tdb)
             ws = 0.62198*Pvs/(P-Pvs)
+            HR = Pv/Pvs*100
             v = _v(P, tdb, w)
             h = _h(tdb, w)
             twb = _twb(tdb, w, P)
@@ -573,10 +598,11 @@ class PsyIdeal(PsyState):
             tdb = _Tsat(Pvs)
             v = _v(P, tdb, w)
             h = _h(tdb, w)
+            twb = _twb(tdb, w, P)
 
         elif self.mode == 5:
             # Tdp and Twb
-            Pv = _Psat(tdp)
+#            Pv = _Psat(tdp)
             pass
 
         elif self.mode == 6:
@@ -595,6 +621,82 @@ class PsyIdeal(PsyState):
 #            self.rho = unidades.Density(1/self.V)
 
         return tdp, tdb, twb, P, Pvs, Pv, ws, w, HR, v, h
+
+    @classmethod
+    def calculatePlot(cls, parent):
+        """Funtion to calculate point in chart"""
+        Preferences = ConfigParser()
+        Preferences.read(conf_dir+"pychemqtrc")
+
+        data = {}
+        P = parent.inputs.P.value
+        t = cls.LineList("isotdb", Preferences)
+
+        # Saturation line
+        Hs = []
+        Pvs = []
+        for ti in t:
+            Pv = _Psat(ti)
+            Pvs.append(Pv)
+            Hs.append(0.62198*Pv/(P-Pv))
+            parent.progressBar.setValue(5*len(Hs)/len(t))
+        data["t"] = t
+        data["Hs"] = Hs
+
+        # left limit of isow lines
+        H = cls.LineList("isow", Preferences)
+        th = []
+        for w in H:
+            if w:
+                Pv = w*P/(0.62198+w)
+                th.append(unidades.Temperature(_tdp(Pv)).config())
+            else:
+                tmin = Preferences.getfloat("Psychr", "isotdbStart")
+                th.append(unidades.Temperature(tmin).config())
+        data["H"] = H
+        data["th"] = th
+
+        # Humidity ratio lines
+        hr = cls.LineList("isohr", Preferences)
+        Hr = {}
+        cont = 0
+        for i in hr:
+            Hr[i] = []
+            for pvs in Pvs:
+                pv = pvs*i/100
+                Hr[i].append(0.62198*pv/(P-pv))
+                cont += 1
+                parent.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
+        data["Hr"] = Hr
+
+        # Twb
+        lines = cls.LineList("isotwb", Preferences)
+        Twb = {}
+        cont = 0
+        for T in lines:
+            H = concatenate((arange(_W(P, T), 0, -0.001), [0.]))
+            Tw = []
+            for h in H:
+                Tw.append(unidades.Temperature(_Tdb(T, h, P)).config())
+            cont += 1
+            parent.progressBar.setValue(15+75*cont/len(lines))
+            Twb[T] = (H, Tw)
+        data["Twb"] = Twb
+
+        # v
+        lines = cls.LineList("isochor", Preferences)
+        V = {}
+        for cont, v in enumerate(lines):
+            ts = _Tdb_V(v, P)
+            T = linspace(ts, v*P/287.055, 50)
+            Td = [unidades.Temperature(ti).config() for ti in T]
+            _W_V
+            H = [_W_V(ti, P, v) for ti in T]
+            parent.progressBar.setValue(90+10*cont/len(lines))
+            V[v] = (Td, H)
+        data["v"] = V
+
+        return data
 
 
 class PsyVirial(PsyState):
@@ -617,15 +719,15 @@ class PsyCoolprop(PsyState):
 
         self._mode = 0
         if tdb and w is not None:
-            self._mode = ("Tdb", "w")
+            self._mode = ("Tdb", "W")
         elif tdb and HR is not None:
             self._mode = ("Tdb", "RH")
         elif tdb and twb:
-            self._mode = 3
+            self._mode = ("Tdb", "Twb")
         elif tdb and tdp:
-            self._mode = 4
+            self._mode = ("Tdb", "Tdp")
         elif tdp and HR is not None:
-            self._mode = 5
+            self._mode = ("Tdp", "RH")
 
         return bool(self._mode)
 
@@ -633,9 +735,15 @@ class PsyCoolprop(PsyState):
         # Correct coolprop custom namespace versus pychemqt namespace
         if "Tdb" in self._mode:
             self.kwargs["Tdb"] = self.kwargs["tdb"]
+        if "Twb" in self._mode:
+            self.kwargs["Twb"] = self.kwargs["twb"]
+        if "Tdp" in self._mode:
+            self.kwargs["Tdp"] = self.kwargs["tdp"]
         if "RH" in self._mode:
             self.kwargs["RH"] = self.kwargs["HR"]
-
+        if "W" in self._mode:
+            self.kwargs["W"] = self.kwargs["w"]
+            
         var1 = self.kwargs[self._mode[0]]
         var2 = self.kwargs[self._mode[1]]
 
@@ -675,11 +783,85 @@ class PsyCoolprop(PsyState):
         HR = HAProps("RH", *args)*100
         Pvs = HAProps_Aux("p_ws", tdb, self._P_kPa, w)[0]*1000
         Pv = Pvs*HR/100
-        ws = 0.62198*Pvs/(P-Pvs)
+        ws = HAProps("W", "P", self._P_kPa, "Tdb", tdb, "RH", 1)
         v = HAProps("V", *args)
         h = HAProps("H", *args)
 
         return tdp, tdb, twb, P, Pvs, Pv, ws, w, HR, v, h
+
+    @classmethod
+    def calculatePlot(cls, parent):
+        """Funtion to calculate point in chart"""
+        Preferences = ConfigParser()
+        Preferences.read(conf_dir+"pychemqtrc")
+
+        data = {}
+        P = parent.inputs.P.value
+        P_kPa = P/1000
+        t = cls.LineList("isotdb", Preferences)
+
+        # Saturation line
+        Hs = []
+        for tdb in t:
+            Hs.append(HAProps("W", "P", P_kPa, "Tdb", tdb, "RH", 1))
+            parent.progressBar.setValue(5*len(Hs)/len(t))
+        data["t"] = t
+        data["Hs"] = Hs
+
+        # left limit of isow lines
+        H = cls.LineList("isow", Preferences)
+        th = []
+        for w in H:
+            if w:
+                tdp = HAProps("Tdp", "P", 101.325, "W", w, "RH", 1)
+                th.append(unidades.Temperature(tdp).config())
+            else:
+                tmin = Preferences.getfloat("Psychr", "isotdbStart")
+                th.append(unidades.Temperature(tmin).config())
+        data["H"] = H
+        data["th"] = th
+
+        # Humidity ratio lines
+        hr = cls.LineList("isohr", Preferences)
+        Hr = {}
+        cont = 0
+        for i in hr:
+            Hr[i] = []
+            for tdb in t:
+                Hr[i].append(HAProps("W", "P", P_kPa, "Tdb", tdb, "RH", i/100.))
+                cont += 1
+                parent.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
+        data["Hr"] = Hr
+
+        # Twb
+        lines = cls.LineList("isotwb", Preferences)
+        Twb = {}
+        cont = 0
+        for T in lines:
+            ws = HAProps("W", "P", P_kPa, "RH", 1, "Tdb", T)
+            H = [ws, 0]
+            Tw = [unidades.Temperature(T).config(),
+                  unidades.Temperature(HAProps("Tdb", "P", P_kPa, "Twb", T, "RH", 0)).config()]
+            cont += 1
+            parent.progressBar.setValue(15+75*cont/len(lines))
+            Twb[T] = (H, Tw)
+        data["Twb"] = Twb
+
+        # v
+        lines = cls.LineList("isochor", Preferences)
+        V = {}
+        rh = arange(1,-0.05,-0.05)
+        for cont, v in enumerate(lines):
+            w = []
+            Td = []
+            for r in rh:
+                w.append(HAProps("W", "P", P_kPa, "RH", r, "V", v))
+                Td.append(unidades.Temperature(HAProps("Tdb", "P", P_kPa, "RH", r, "V", v)).config())
+            parent.progressBar.setValue(90+10*cont/len(lines))
+            V[v] = (Td, w)
+        data["v"] = V
+
+        return data
 
 
 class PsyRefprop(PsyState):
@@ -704,8 +886,26 @@ else:
 
 
 if __name__ == '__main__':
-    aire = PsyIdeal(tdb=40+273.15, HR=10)
-    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa
+    aire = PsyIdeal(tdb=40+273.15, w=0.001)
+    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
 
-    aire = PsyCoolprop(tdb=40+273.15, HR=10)
-    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa
+    aire = PsyCoolprop(tdb=40+273.15, w=0.001)
+    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+
+#    aire = PsyIdeal(tdb=40+273.15, HR=10)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa
+#
+#    aire = PsyCoolprop(tdb=40+273.15, HR=10)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa
+
+#    aire = PsyIdeal(tdb=40+273.15, twb=20+273.15)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+#
+#    aire = PsyCoolprop(tdb=40+273.15, tdp=20+273.15)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+
+#    aire = PsyCoolprop(HR=28.92, tdp=10+273.15)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+#
+#    aire = PsyIdeal(HR=28.92, tdp=10+273.15)
+#    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws

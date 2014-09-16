@@ -2640,3 +2640,5 @@ if __name__ == "__main__":
     l=Length(5, "ft")
     print l.m, l.inch
 #    print l.str("A")
+
+    print Mass.text()
