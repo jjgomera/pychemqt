@@ -21,7 +21,6 @@ from lib.physics import R_atml
 from lib.config import conf_dir
 from lib import unidades
 from lib.iapws import _PSat_T, _Sublimation_Pressure
-# from lib.corriente import Corriente
 
 
 def _Pbar(Z):
@@ -452,10 +451,6 @@ class PsyState(object):
             t = arange(start, end, step)
         return t
 
-    @property
-    def corriente(self, caudal):
-        corriente = Corriente(T=self.twb, P=self.P, caudalMasico=caudal, ids=[62, 475], fraccionMolar=[self.Xw, self.Xa])
-        return corriente
 
 
 

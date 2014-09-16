@@ -22,6 +22,7 @@ from bip import srk
 from physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
+from lib.psycrometry import PsychroState
 
 
 class Mezcla(config.Entity):
@@ -34,7 +35,7 @@ class Mezcla(config.Entity):
             2 - Unitary Molarflow
             3 - Mass flow and molar fractions
             4 - Mass flow and mass fractions
-            =5 - Molar flow and molar fractions
+            5 - Molar flow and molar fractions
             6 - Molar flow and mass fractions
         kwargs: any of this variable for define mixture
             fraccionMolar
@@ -1857,6 +1858,115 @@ class Corriente(config.Entity):
         """Define los titulos para los popup de listas"""
         lista = [comp.nombre for comp in self.componente]
         return lista
+
+
+class PsyStream(config.Entity):
+    """
+    Class to model a stream as psychrometric state
+    kwargs definition parameters:
+        P: Pressure, Pa
+        z: altitude, m
+
+        tdp: dew-point temperature
+        tdb: dry-bulb temperature
+        twb: web-bulb temperature
+        w: Humidity Ratio [kg water/kg dry air]
+        HR: Relative humidity
+        h: Mixture enthalpy
+        v: Mixture specified volume
+        state: opcional for predefined psychrometric state
+
+    P: mandatory input for barometric pressure, z is an alternate pressure input
+
+    For flow definition, one of:
+        caudalMasico
+        caudalVolumetrico
+        caudalMolar
+    """
+    kwargs = {"z": 0.0,
+              "P": 0.0,
+
+              "tdb": 0.0,
+              "tdb": 0.0,
+              "twb": 0.0,
+              "w": None,
+              "HR": None,
+              "h": None,
+              "v": 0.0,
+
+              "caudalMasico": 0.0,
+              "caudalVolumetrico": 0.0,
+              "caudalMolar": 0.0,
+              "state": None}
+
+    def __init__(self, **kwargs):
+        self.kwargs = PsyStream.kwargs.copy()
+        self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        if kwargs.get("state", None):
+            kwargs.update(kwargs["state"].kwargs)
+
+        for key, value in self.kwargs.iteritems():
+            if value:
+                self._bool = True
+                break
+
+        if self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = ""
+
+    @property
+    def calculable(self):
+        # State definition
+        tdp = self.kwargs.get("tdp", 0)
+        tdb = self.kwargs.get("tdb", 0)
+        twb = self.kwargs.get("twb", 0)
+        w = self.kwargs.get("w", None)
+        HR = self.kwargs.get("HR", None)
+        h = self.kwargs.get("h", None)
+        v = self.kwargs.get("v", 0)
+
+        self.mode = -1
+        if tdb and w is not None:
+            self.mode = 0
+        elif tdb and HR is not None:
+            self.mode = 1
+        elif tdb and twb:
+            self.mode = 2
+        elif tdb and tdp:
+            self.mode = 3
+        elif tdp and HR is not None:
+            self.mode = 4
+
+        # Flow definition
+        caudal = self.kwargs["caudalMasico"] or self.kwargs["caudalVolumetrico"]\
+            or self.kwargs["caudalMolar"]
+
+        return bool(self.mode+1) and caudal
+
+    def calculo(self):
+        if self.kwargs["state"]:
+            self.state = self.kwargs["state"]
+        else:
+            self.state = PsychroState(**self.kwargs)
+
+        if self.kwargs["caudalMasico"]:
+            G = self.kwargs["caudalMasico"]
+        elif self.kwargs["caudalMolar"]:
+            q = self.kwargs["caudalMolar"]
+            G = q*self.state.Xw*18.01528+q*self.state.Xa*28.9645
+        elif self.kwargs["caudalVolumetrico"]:
+            G = self.kwargs["caudalVolumetrico"]*self.state.rho
+        self.caudal = unidades.MassFlow(G)
+
+    @property
+    def corriente(self):
+        corriente = Corriente(T=self.state.twb, P=self.state.P,
+                              caudalMasico=self.caudal, ids=[62, 475],
+                              fraccionMolar=[self.state.Xw, self.state.Xa])
+        return corriente
 
 
 if __name__ == '__main__':
