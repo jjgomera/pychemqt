@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 from math import exp, log
 import sqlite3
 from ConfigParser import ConfigParser
@@ -358,12 +359,14 @@ class Ui_corriente(QtGui.QWidget):
         self.TablaPropiedades.setCellWidget(10, 0, self.Tension)
         self.gridLayout_Propiedades.addWidget(self.TablaPropiedades,1,1,1,1)
         self.gridLayout_Propiedades.addItem(QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),2,0,1,3)
-        self.toolBox.addItem(self.PagePropiedades, QtGui.QApplication.translate("pychemqt", "Properties"))
+        self.toolBox.addItem(self.PagePropiedades,
+            QtGui.QIcon(os.environ["pychemqt"] + "/images/button/helpAbout.png"),
+            QtGui.QApplication.translate("pychemqt", "Properties"))
 
         
         #Notas
         self.PageNotas = texteditor.TextEditor()
-        self.toolBox.addItem(self.PageNotas,QtGui.QApplication.translate("pychemqt", "Notes"))
+        self.toolBox.addItem(self.PageNotas,QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editor.png"), QtGui.QApplication.translate("pychemqt", "Notes"))
         
         if corriente:
             self.setCorriente(corriente)

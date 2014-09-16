@@ -217,43 +217,55 @@ class UI_equip(QtGui.QDialog):
         if entrada:
             self.entrada = QtGui.QTabWidget()
             self.tabWidget.addTab(
-                self.entrada, QtGui.QApplication.translate("pychemqt", "Input"))
+                self.entrada, QtGui.QIcon(os.environ["pychemqt"] +
+            "/images/equipment/in.svg"), 
+            QtGui.QApplication.translate("pychemqt", "Input"))
         elif entrada is None:
             pass
         else:
             self.entrada = UI_corriente.Ui_corriente()
             self.entrada.Changed.connect(partial(self.changeParams, "entrada"))
             self.tabWidget.addTab(
-                self.entrada, QtGui.QApplication.translate("pychemqt", "Input"))
+                self.entrada, QtGui.QIcon(os.environ["pychemqt"] +
+            "/images/equipment/in.svg"),
+            QtGui.QApplication.translate("pychemqt", "Input"))
 
         # Calcule tab
         if calculo:
             self.tabCalculo = QtGui.QWidget()
             self.tabWidget.addTab(self.tabCalculo,
+                QtGui.QIcon(os.environ["pychemqt"]+"/images/button/calculator.png"),
                 QtGui.QApplication.translate("pychemqt", "Calculation"))
 
         # Cost tab
         if equipment.indiceCostos is not None:
             self.tabCostos = QtGui.QWidget()
-            self.tabWidget.addTab(
-                self.tabCostos, QtGui.QApplication.translate("pychemqt", "Cost"))
+            self.tabWidget.addTab(self.tabCostos,
+                QtGui.QIcon(os.environ["pychemqt"]+"/images/button/currency.png"),
+                QtGui.QApplication.translate("pychemqt", "Cost"))
 
         # Output tab
         if salida:
             self.Salida = QtGui.QTabWidget()
             self.tabWidget.addTab(
-                self.Salida, QtGui.QApplication.translate("pychemqt", "Output"))
+                self.Salida, QtGui.QIcon(os.environ["pychemqt"] +
+            "/images/equipment/out.svg"), 
+            QtGui.QApplication.translate("pychemqt", "Output"))
         elif salida is None:
             pass
         else:
             self.Salida = UI_corriente.Ui_corriente(readOnly=True)
             self.tabWidget.addTab(
-                self.Salida, QtGui.QApplication.translate("pychemqt", "Output"))
+                self.Salida, QtGui.QIcon(os.environ["pychemqt"] +
+            "/images/equipment/out.svg"),
+            QtGui.QApplication.translate("pychemqt", "Output"))
 
         # Notes tab
         self.tabNotas = texteditor.TextEditor()
         self.tabWidget.addTab(
-            self.tabNotas, QtGui.QApplication.translate("pychemqt", "Notes"))
+            self.tabNotas, QtGui.QIcon(os.environ["pychemqt"] +
+            "/images/button/editor.png"),
+            QtGui.QApplication.translate("pychemqt", "Notes"))
         self.tabNotas.notas.textChanged.connect(self.cambiar_notas)
 
     def addSalida(self, title):
