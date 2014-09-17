@@ -13,7 +13,7 @@ from scipy.special import erf
 
 from tools import UI_databank
 from tools.UI_psychrometry import PsychroInput
-from lib.corriente import Corriente, Mezcla, Solid
+from lib.corriente import Corriente, Mezcla, Solid, PsyStream
 from lib.psycrometry import PsychroState, PsyState
 from lib import unidades, config
 from lib.utilities import representacion
@@ -667,8 +667,9 @@ class Corriente_Dialog(QtGui.QDialog, Ui_corriente):
 class Ui_psychrometry(QtGui.QWidget):
     Changed = QtCore.pyqtSignal(PsyState)
     parameters = ["tdb", "twb", "tdp", "w", "mu", "HR", "v", "h", "Pv", "Xa", "Xw"]
+    stream = PsyStream
     
-    def __init__(self, punto=None, readOnly=False, parent=None):
+    def __init__(self, psystream=None, readOnly=False, parent=None):
         super(Ui_psychrometry, self).__init__(parent)
         self.readOnly=readOnly
         layout=QtGui.QGridLayout(self)
@@ -738,71 +739,61 @@ class Ui_psychrometry(QtGui.QWidget):
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Mass Flow")), 3, 1)
         self.caudal=Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
-#        self.caudal.valueChanged.connect(self.NuevoPunto)
+        self.caudal.valueChanged.connect(partial(self.updatekwargsFlow, "caudal"))
         layout.addWidget(self.caudal, 3, 2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Molar Flow")), 4, 1)
         self.caudalMolar=Entrada_con_unidades(unidades.MolarFlow, readOnly=readOnly)
-#        self.caudalMolar.valueChanged.connect(self.NuevoPunto)
+        self.caudalMolar.valueChanged.connect(partial(self.updatekwargsFlow, "caudalMolar"))
         layout.addWidget(self.caudalMolar, 4, 2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Volumetric Flow")), 5, 1)
         self.caudalVolumetrico=Entrada_con_unidades(unidades.VolFlow, readOnly=readOnly)
-#        self.caudalVolumetrico.valueChanged.connect(self.NuevoPunto)
+        self.caudalVolumetrico.valueChanged.connect(partial(self.updatekwargsFlow, "caudalVolumetrico"))
         layout.addWidget(self.caudalVolumetrico, 5, 2)
         layout.addItem(QtGui.QSpacerItem(5, 5, QtGui.QSizePolicy.Expanding,
                                          QtGui.QSizePolicy.Expanding),9,2)
 
         self.setReadOnly(readOnly)
         self.inputs.updateInputs(0)
-#        if punto:
-#            self.setCorriente(punto)
-#        else:
-#            self.AireHumedo=Psychrometry(1)
-
-    def setCorriente(self, state):
-            self.punto=state
-#            self.AireHumedo=Psychrometry(punto.P.atm)
-            self.rellenar(state)
-            self.rellenarInput(state)
         
+        if psystream:
+            self.setStream(psystream)
+
+    def setStream(self, stream):
+        self.stream=stream
+        if stream:
+            self.rellenar(stream)
+
     def setReadOnly(self, readOnly):
         self.inputs.setReadOnly(readOnly)
         self.caudal.setReadOnly(readOnly)
         self.caudalMolar.setReadOnly(readOnly)
         self.caudalVolumetrico.setReadOnly(readOnly)
-            
-    def rellenar(self, state):
-        for par in self.parameters:
-            self.__getattribute__(par).setValue(state.__getattribute__(par))
 
-    def rellenarInput(self, state):
-        self.blockSignals(True)
-        self.variables.setCurrentIndex(state.mode)
-        self.P.setValue(punto.P)
-#        if punto.caudal:
-#            self.caudal.setValue(punto.caudal)
-#        if punto.modo==0:
-#            self.EntradaTdb.setValue(punto.Tdb)
-#            self.EntradaH.setValue(punto.w)
-#        elif punto.modo==1:
-#            self.EntradaTdb.setValue(punto.Tdb)
-#            self.EntradaHR.setValue(punto.HR)
-#        elif punto.modo==2:
-#            self.EntradaTdb.setValue(punto.Tdb)
-#            self.EntradaTdp.setValue(punto.Tdp)
-#        elif punto.modo==3:
-#            self.EntradaTdb.setValue(punto.Tdb)
-#            self.EntradaTwb.setValue(punto.Twb)
-#        elif punto.modo==4:
-#            self.EntradaHR.setValue(punto.HR)
-#            self.EntradaTdp.setValue(punto.Tdp)
-        self.blockSignals(False)
+    def calculo(self, key, value):
+        self.stream(**{key: value})
+        if self.stream:
+            self.rellenar(self.stream)
+        
+    def rellenar(self, stream):
+        self.inputs.setState(stream.state)
+        if stream:
+            for par in self.parameters:
+                self.__getattribute__(par).setValue(stream.__getattribute__(par))
+        self.rellenarFlow(stream)
 
-    def todos_datos(self):
-        return self.punto and self.P.value and self.caudal.value
-            
-            
+    def rellenarFlow(self, stream):
+        for arg in ("caudal", "caudalMolar", "caudalVolumetrico"):
+            if stream.kwargs[arg]:
+                self.__getattribute__(arg).setValue(stream.kwargs[arg])
+            else:
+                self.__getattribute__(arg).clear()
+    
+    def updatekwargsFlow(self, key, value):
+        self.stream.updatekwargsFlow(key, value)
+        self.rellenarFlow(self.stream)
+
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
@@ -835,7 +826,7 @@ if __name__ == "__main__":
 #    corriente = Ui_corriente()
 #    corriente=Corriente_Dialog()
 #    corriente.show()
-    aire=PsychroState(caudal=5, tdb=300, HR=50)
+    aire=PsyStream(caudal=5, tdb=300, HR=50)
     corriente=Ui_psychrometry(aire)
 #    corriente.show()
 #    corriente = Dialog_Distribucion()

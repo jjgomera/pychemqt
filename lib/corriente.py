@@ -6,6 +6,7 @@
 #   -Mezcla: Mixture related calculation
 #   -Solid: Solid entity
 #   -Corriente: Stream general class model
+#   -PsyStream: Stream specified as psychrometric state
 ###############################################################################
 
 import os
@@ -1894,7 +1895,7 @@ class PsyStream(config.Entity):
               "h": None,
               "v": 0.0,
 
-              "caudalMasico": 0.0,
+              "caudal": 0.0,
               "caudalVolumetrico": 0.0,
               "caudalMolar": 0.0,
               "state": None}
@@ -1906,6 +1907,8 @@ class PsyStream(config.Entity):
     def __call__(self, **kwargs):
         if kwargs.get("state", None):
             kwargs.update(kwargs["state"].kwargs)
+
+        self.kwargs.update(kwargs)
 
         for key, value in self.kwargs.iteritems():
             if value:
@@ -1941,7 +1944,7 @@ class PsyStream(config.Entity):
             self.mode = 4
 
         # Flow definition
-        caudal = self.kwargs["caudalMasico"] or self.kwargs["caudalVolumetrico"]\
+        caudal = self.kwargs["caudal"] or self.kwargs["caudalVolumetrico"]\
             or self.kwargs["caudalMolar"]
 
         return bool(self.mode+1) and caudal
@@ -1952,15 +1955,41 @@ class PsyStream(config.Entity):
         else:
             self.state = PsychroState(**self.kwargs)
 
-        if self.kwargs["caudalMasico"]:
-            G = self.kwargs["caudalMasico"]
-        elif self.kwargs["caudalMolar"]:
-            q = self.kwargs["caudalMolar"]
-            G = q*self.state.Xw*18.01528+q*self.state.Xa*28.9645
-        elif self.kwargs["caudalVolumetrico"]:
-            G = self.kwargs["caudalVolumetrico"]*self.state.rho
-        self.caudal = unidades.MassFlow(G)
+        self.__dict__.update(self.state.__dict__)
+        
+        self.updateFlow()
 
+    def updatekwargsFlow(self, key, value):
+        self.kwargs[key] = value
+        if key == "caudal" and value:
+            self.kwargs["caudalVolumetrico"] = 0.0
+            self.kwargs["caudalMolar"] = 0.0
+        elif key == "caudalMolar" and value:
+            self.kwargs["caudalVolumetrico"] = 0.0
+            self.kwargs["caudal"] = 0.0
+        elif key == "caudalVolumetrico" and value:
+            self.kwargs["caudal"] = 0.0
+            self.kwargs["caudalMolar"] = 0.0
+            
+           
+    def updateFlow(self):
+        if self.kwargs["caudal"]:
+            G = self.kwargs["caudal"]
+            M = G/(self.Xw*18.01528+self.Xa*28.9645)
+            Q = G*self.v
+        elif self.kwargs["caudalMolar"]:
+            M = self.kwargs["caudalMolar"]
+            G = M*self.Xw*18.01528+M*self.Xa*28.9645
+            Q = G*self.v
+        elif self.kwargs["caudalVolumetrico"]:
+            Q = self.kwargs["caudalVolumetrico"]
+            G = Q*self.rho
+            M = G/(self.Xw*18.01528+self.Xa*28.9645)
+        self.caudal = unidades.MassFlow(G)
+        self.caudalVolumetrico = unidades.VolFlow(Q)
+        self.caudalMolar = unidades.MolarFlow(M)
+
+        
     @property
     def corriente(self):
         corriente = Corriente(T=self.state.twb, P=self.state.P,
@@ -2246,5 +2275,9 @@ if __name__ == '__main__':
 #    if corr:
 #        print bool(corr)
 
-    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1., 0])
+#    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1., 0])
 #    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
+
+    aire=PsyStream(caudal=5, tdb=300, HR=50)
+
+

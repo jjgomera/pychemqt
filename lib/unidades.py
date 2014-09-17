@@ -884,7 +884,7 @@ class SpecificVolume(unidad):
                 u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
                 u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
                 u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
-    __units__ = ['m3kg', 'lkg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
+    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
                  'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
@@ -918,7 +918,7 @@ class SpecificVolume_square(unidad):
     >>> print  R.m3kg, R.ft3lb
     5e-05 0.0128295584431
     """
-    __title__ = QApplication.translate("pychemqt", "Specific Volume")
+    __title__ = QApplication.translate("pychemqt", "Third virial coefficient")
     rates = {"m3kg": 1.,
              "lg": 1.,
              "lkg": k.liter**2,
@@ -938,11 +938,15 @@ class SpecificVolume_square(unidad):
              "in3oz": k.inch**6/k.oz**2,
              "galUKoz": k.gallon_imp**2/k.oz**2,
              "galUSoz": k.gallon**2/k.oz**2}
+#    __text__ = [u'm⁶/kg²', u'cm⁶/g²', u'ml²/g²', u'm⁶/g²', u'cm⁶/kg²', u'ft⁶/lb²',
+#                u'in⁶/lb²', u'gallon UK²/lb²', u'gallon US²/lb²', u'barril²/lb²',
+#                u'ft⁶/ton UK²', u'ft⁶/ton US²', u'ft⁶/slug²', u'ft⁶/onza²',
+#                u'in⁶/onza²', u'gallon UK²/onza²', u'gallon US²/onza²']
     __text__ = [u'm³/kg', u'cm³/g', u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb',
                 u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
                 u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
                 u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
-    __units__ = ['m3kg', 'lkg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
+    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
                  'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
