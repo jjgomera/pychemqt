@@ -200,7 +200,8 @@ class Ui_corriente(QtGui.QWidget):
         self.solidos, self.nombreSolidos, MSolidos=config.getComponents(solidos=True)
 
         gridLayout1 = QtGui.QVBoxLayout(self)
-        self.toolBox = QtGui.QToolBox()
+        self.toolBox = QtGui.QTabWidget()
+        self.toolBox.setTabPosition(QtGui.QTabWidget.South)
         gridLayout1.addWidget(self.toolBox)
 
         #Caracteristicas principales
@@ -249,7 +250,7 @@ class Ui_corriente(QtGui.QWidget):
         self.TablaComposicion.setCellWidget(0, 0, self.tipoFraccion)
         grid_Principal.addWidget(self.TablaComposicion,5,1,1,2)
         grid_Principal.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),6,0,1,5)
-        self.toolBox.addItem(self.PagePrincipales,QtGui.QApplication.translate("pychemqt", "Definition"))
+        self.toolBox.addTab(self.PagePrincipales,QtGui.QApplication.translate("pychemqt", "Definition"))
         
         #Solidos
         self.pageSolidos = QtGui.QWidget()
@@ -286,7 +287,7 @@ class Ui_corriente(QtGui.QWidget):
         self.diametroParticula.valueChanged.connect(partial(self.calculo, "diametroMedio"))
         grid_Solidos.addWidget(self.diametroParticula,8,2,1,2)  
         grid_Solidos.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),9,1,1,7)
-        self.toolBox.addItem(self.pageSolidos,QtGui.QApplication.translate("pychemqt", "Solid"))
+        self.toolBox.addTab(self.pageSolidos,QtGui.QApplication.translate("pychemqt", "Solid"))
         self.pageSolidos.setEnabled(len(self.solidos))
 
 
@@ -359,14 +360,14 @@ class Ui_corriente(QtGui.QWidget):
         self.TablaPropiedades.setCellWidget(10, 0, self.Tension)
         self.gridLayout_Propiedades.addWidget(self.TablaPropiedades,1,1,1,1)
         self.gridLayout_Propiedades.addItem(QtGui.QSpacerItem(20,40,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),2,0,1,3)
-        self.toolBox.addItem(self.PagePropiedades,
+        self.toolBox.addTab(self.PagePropiedades,
             QtGui.QIcon(os.environ["pychemqt"] + "/images/button/helpAbout.png"),
             QtGui.QApplication.translate("pychemqt", "Properties"))
 
         
         #Notas
         self.PageNotas = texteditor.TextEditor()
-        self.toolBox.addItem(self.PageNotas,QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editor.png"), QtGui.QApplication.translate("pychemqt", "Notes"))
+        self.toolBox.addTab(self.PageNotas,QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editor.png"), QtGui.QApplication.translate("pychemqt", "Notes"))
         
         if corriente:
             self.setCorriente(corriente)
