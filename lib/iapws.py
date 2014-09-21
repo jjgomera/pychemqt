@@ -2617,7 +2617,7 @@ def _Viscosity(rho, T):
         Go = 0.06
         Tr2 = 1.5
         # TODO: Implement critical enhancement
-        a, b = 0
+        a, b = 0, 0
         DeltaX = Dr*(a-b*Tr2/Tr)
         X = Xo*(DeltaX/Go)**(v/g)
         if X <= 0.3817016416:
