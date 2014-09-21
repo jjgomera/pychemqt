@@ -376,9 +376,6 @@ class MEoS(object):
                     rhoo = self._Vapor_Density(T)
                 else:
                     rhoo = self.rhoc
-#                    print rhoo
-#                    rhoo=2.
-#                    rhoo=self.componente.RhoG_Lee_Kesler(T, P/0.101325)
                 rho = fsolve(lambda rho: self._eq(rho, T)["P"]-P*1e6, rhoo)
                 propiedades = self._eq(rho[0], T)
             elif T and rho:
@@ -599,7 +596,7 @@ class MEoS(object):
         Tc = self._constants.get("Tref", self.Tc)
         delta = rho/rhoc
         tau = Tc/T
-
+        
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=self._phir(tau, delta)
 
@@ -624,7 +621,6 @@ class MEoS(object):
         propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
         propiedades["dpdT"] = self.R.kJkgK*rho*(1+delta*fird+delta*tau*firdt)
 #        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
-
         return propiedades
 
 
@@ -958,19 +954,19 @@ class MEoS(object):
         hyp = [fi/Tc for fi in cp["hyp"]]
         cI = -(1+co)/tau0
         cII = co*(1-log(tau0))-log(delta0)
-#        for c, t in zip(ci, ti):
-#            cI-=c*t*tau0**(t-1)
-#            cII+=c*(t-1)*tau0**t
-#        for ao, tita in zip(cp["ao_exp"], titao):
-#            cI-=ao*tita*(1/(1-exp(-tita*tau0))-1)
-#            cII+=ao*tita*(tau0*(1/(1-exp(-tita*tau0))-1)-log(1-exp(-tita*tau0)))
-#        if cp["ao_hyp"]:
-#            for i in [0, 2]:
-#                cI-=cp["ao_hyp"][i]*hyp[i]/(tanh(hyp[i]*tau0))
-#                cII+=cp["ao_hyp"][i]*(hyp[i]*tau0/tanh(hyp[i]*tau0)-log(abs(sinh(hyp[i]*tau0))))
-#            for i in [1, 3]:
-#                cI+=cp["ao_hyp"][i]*hyp[i]*tanh(hyp[i]*tau0)
-#                cII-=cp["ao_hyp"][i]*(hyp[i]*tau0*tanh(hyp[i]*tau0)-log(abs(cosh(hyp[i]*tau0))))
+        for c, t in zip(ci, ti):
+            cI-=c*t*tau0**(t-1)
+            cII+=c*(t-1)*tau0**t
+        for ao, tita in zip(cp["ao_exp"], titao):
+            cI-=ao*tita*(1/(1-exp(-tita*tau0))-1)
+            cII+=ao*tita*(tau0*(1/(1-exp(-tita*tau0))-1)-log(1-exp(-tita*tau0)))
+        if cp["ao_hyp"]:
+            for i in [0, 2]:
+                cI-=cp["ao_hyp"][i]*hyp[i]/(tanh(hyp[i]*tau0))
+                cII+=cp["ao_hyp"][i]*(hyp[i]*tau0/tanh(hyp[i]*tau0)-log(abs(sinh(hyp[i]*tau0))))
+            for i in [1, 3]:
+                cI+=cp["ao_hyp"][i]*hyp[i]*tanh(hyp[i]*tau0)
+                cII-=cp["ao_hyp"][i]*(hyp[i]*tau0*tanh(hyp[i]*tau0)-log(abs(cosh(hyp[i]*tau0))))
 
         Fi0 = {"ao_log": [1,  co],
                "pow": [0, 1] + ti,
@@ -986,13 +982,13 @@ class MEoS(object):
         cp0sav = self._Cp0(cp, T)
         cpisav = self._dCp(cp, T, To)
         cptsav = self._dCpT(cp, T, To)
-        fio = cpisav/R/T-cptsav/R+log(T*rho/rho0/Tref)-1
-        fiot = (cpisav-1)/tau
-        fiott = (1-cp0sav/R)/tau**2
-
-#        fio=Fi0["ao_log"][0]*log(delta)+Fi0["ao_log"][1]*log(tau)
-#        fiot=+Fi0["ao_log"][1]/tau
-#        fiott=-Fi0["ao_log"][1]/tau**2
+        
+#        fio = cpisav/R/T-cptsav/R+log(T*rho/rho0/Tref)-1
+#        fiot = (cpisav-1)/tau
+#        fiott = (1-cp0sav/R)/tau**2
+        fio=Fi0["ao_log"][0]*log(delta)+Fi0["ao_log"][1]*log(tau)
+        fiot=+Fi0["ao_log"][1]/tau
+        fiott=-Fi0["ao_log"][1]/tau**2
 
         fiod = 1/delta
         fiodd = -1/delta**2
@@ -1029,94 +1025,113 @@ class MEoS(object):
         delta_0 = 1e-50
 
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
-        for i in range(len(self._constants.get("nr1", []))):
-            # Polinomial terms
-            fir += self._constants["nr1"][i]*delta**self._constants["d1"][i]*tau**self._constants["t1"][i]
-            fird += self._constants["nr1"][i]*self._constants["d1"][i]*delta**(self._constants["d1"][i]-1)*tau**self._constants["t1"][i]
-            firdd += self._constants["nr1"][i]*self._constants["d1"][i]*(self._constants["d1"][i]-1)*delta**(self._constants["d1"][i]-2)*tau**self._constants["t1"][i]
-            firt += self._constants["nr1"][i]*self._constants["t1"][i]*delta**self._constants["d1"][i]*tau**(self._constants["t1"][i]-1)
-            firtt += self._constants["nr1"][i]*self._constants["t1"][i]*(self._constants["t1"][i]-1)*delta**self._constants["d1"][i]*tau**(self._constants["t1"][i]-2)
-            firdt += self._constants["nr1"][i]*self._constants["t1"][i]*self._constants["d1"][i]*delta**(self._constants["d1"][i]-1)*tau**(self._constants["t1"][i]-1)
-            firdtt += self._constants["nr1"][i]*self._constants["t1"][i]*self._constants["d1"][i]*(self._constants["t1"][i]-1)*delta**(self._constants["d1"][i]-1)*tau**(self._constants["t1"][i]-2)
-            B += self._constants["nr1"][i]*self._constants["d1"][i]*delta_0**(self._constants["d1"][i]-1)*tau**self._constants["t1"][i]
-            C += self._constants["nr1"][i]*self._constants["d1"][i]*(self._constants["d1"][i]-1)*delta_0**(self._constants["d1"][i]-2)*tau**self._constants["t1"][i]
 
-        for i in range(len(self._constants.get("nr2", []))):    #Exponential terms
-            fir += self._constants["nr2"][i]*delta**self._constants["d2"][i]*tau**self._constants["t2"][i]*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])
-            fird += self._constants["nr2"][i]*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])*delta**(self._constants["d2"][i]-1)*tau**self._constants["t2"][i]*(self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta**self._constants["c2"][i])
-            firdd += self._constants["nr2"][i]*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])*delta**(self._constants["d2"][i]-2)*tau**self._constants["t2"][i]*((self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta**self._constants["c2"][i])*(self._constants["d2"][i]-1-self._constants["gamma2"][i]*self._constants["c2"][i]*delta**self._constants["c2"][i])-self._constants["gamma2"][i]**2*self._constants["c2"][i]**2*delta**self._constants["c2"][i])
-            firt += self._constants["nr2"][i]*self._constants["t2"][i]*delta**self._constants["d2"][i]*tau**(self._constants["t2"][i]-1)*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])
-            firtt += self._constants["nr2"][i]*self._constants["t2"][i]*(self._constants["t2"][i]-1)*delta**self._constants["d2"][i]*tau**(self._constants["t2"][i]-2)*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])
-            firdt += self._constants["nr2"][i]*self._constants["t2"][i]*delta**(self._constants["d2"][i]-1)*tau**(self._constants["t2"][i]-1)*(self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta**self._constants["c2"][i])*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])
-            firdtt += self._constants["nr2"][i]*self._constants["t2"][i]*(self._constants["t2"][i]-1)*delta**(self._constants["d2"][i]-1)*tau**(self._constants["t2"][i]-2)*(self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta**self._constants["c2"][i])*exp(-self._constants["gamma2"][i]*delta**self._constants["c2"][i])
-            B += self._constants["nr2"][i]*exp(-self._constants["gamma2"][i]*delta_0**self._constants["c2"][i])*delta_0**(self._constants["d2"][i]-1)*tau**self._constants["t2"][i]*(self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta_0**self._constants["c2"][i])
-            C += self._constants["nr2"][i]*exp(-self._constants["gamma2"][i]*delta_0**self._constants["c2"][i])*(delta_0**(self._constants["d2"][i]-2)*tau**self._constants["t2"][i]*((self._constants["d2"][i]-self._constants["gamma2"][i]*self._constants["c2"][i]*delta_0**self._constants["c2"][i])*(self._constants["d2"][i]-1-self._constants["gamma2"][i]*self._constants["c2"][i]*delta_0**self._constants["c2"][i])-self._constants["gamma2"][i]**2*self._constants["c2"][i]**2*delta_0**self._constants["c2"][i]))
+        # Polinomial terms
+        nr1 = self._constants.get("nr1", [])
+        d1 = self._constants.get("d1", [])
+        t1 = self._constants.get("t1", [])
+        for i in range(len(nr1)):
+            fir += nr1[i]*delta**d1[i]*tau**t1[i]
+            fird += nr1[i]*d1[i]*delta**(d1[i]-1)*tau**t1[i]
+            firdd += nr1[i]*d1[i]*(d1[i]-1)*delta**(d1[i]-2)*tau**t1[i]
+            firt += nr1[i]*t1[i]*delta**d1[i]*tau**(t1[i]-1)
+            firtt += nr1[i]*t1[i]*(t1[i]-1)*delta**d1[i]*tau**(t1[i]-2)
+            firdt += nr1[i]*t1[i]*d1[i]*delta**(d1[i]-1)*tau**(t1[i]-1)
+            firdtt += nr1[i]*t1[i]*d1[i]*(t1[i]-1)*delta**(d1[i]-1)*tau**(t1[i]-2)
+            B += nr1[i]*d1[i]*delta_0**(d1[i]-1)*tau**t1[i]
+            C += nr1[i]*d1[i]*(d1[i]-1)*delta_0**(d1[i]-2)*tau**t1[i]
+            
+        # Exponential terms
+        nr2 = self._constants.get("nr2", [])
+        d2 = self._constants.get("d2", [])
+        g2 = self._constants.get("gamma2", [])
+        t2 = self._constants.get("t2", [])
+        c2 = self._constants.get("c2", [])
+        for i in range(len(nr2)):
+            fir += nr2[i]*delta**d2[i]*tau**t2[i]*exp(-g2[i]*delta**c2[i])
+            fird += nr2[i]*exp(-g2[i]*delta**c2[i])*delta**(d2[i]-1)*tau**t2[i]*(d2[i]-g2[i]*c2[i]*delta**c2[i])
+            firdd += nr2[i]*exp(-g2[i]*delta**c2[i])*delta**(d2[i]-2)*tau**t2[i]*((d2[i]-g2[i]*c2[i]*delta**c2[i])*(d2[i]-1-g2[i]*c2[i]*delta**c2[i])-g2[i]**2*c2[i]**2*delta**c2[i])
+            firt += nr2[i]*t2[i]*delta**d2[i]*tau**(t2[i]-1)*exp(-g2[i]*delta**c2[i])
+            firtt += nr2[i]*t2[i]*(t2[i]-1)*delta**d2[i]*tau**(t2[i]-2)*exp(-g2[i]*delta**c2[i])
+            firdt += nr2[i]*t2[i]*delta**(d2[i]-1)*tau**(t2[i]-1)*(d2[i]-g2[i]*c2[i]*delta**c2[i])*exp(-g2[i]*delta**c2[i])
+            firdtt += nr2[i]*t2[i]*(t2[i]-1)*delta**(d2[i]-1)*tau**(t2[i]-2)*(d2[i]-g2[i]*c2[i]*delta**c2[i])*exp(-g2[i]*delta**c2[i])
+            B += nr2[i]*exp(-g2[i]*delta_0**c2[i])*delta_0**(d2[i]-1)*tau**t2[i]*(d2[i]-g2[i]*c2[i]*delta_0**c2[i])
+            C += nr2[i]*exp(-g2[i]*delta_0**c2[i])*(delta_0**(d2[i]-2)*tau**t2[i]*((d2[i]-g2[i]*c2[i]*delta_0**c2[i])*(d2[i]-1-g2[i]*c2[i]*delta_0**c2[i])-g2[i]**2*c2[i]**2*delta_0**c2[i]))
 
-        for i in range(len(self._constants.get("nr3", []))):    #Gaussian terms
-            exp1 = self._constants.get("exp1", [2]*len(self._constants["nr3"]))
-            exp2 = self._constants.get("exp2", [2]*len(self._constants["nr3"]))
-            fir += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])
-            fird += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(self._constants["d3"][i]/delta-2*self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i]))
-            firdd += self._constants["nr3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(-2*self._constants["alfa3"][i]*delta**self._constants["d3"][i]+4*self._constants["alfa3"][i]**2*delta**self._constants["d3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-4*self._constants["d3"][i]*self._constants["alfa3"][i]*delta**2*(delta-self._constants["epsilon3"][i])+self._constants["d3"][i]*2*delta)
-            firt += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(self._constants["t3"][i]/tau-2*self._constants["beta3"][i]*(tau-self._constants["gamma3"][i]))
-            firtt += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*((self._constants["t3"][i]/tau-2*self._constants["beta3"][i]*(tau-self._constants["gamma3"][i]))**exp2[i]-self._constants["t3"][i]/tau**2-2*self._constants["beta3"][i])
-            firdt += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(self._constants["t3"][i]/tau-2*self._constants["beta3"][i]*(tau-self._constants["gamma3"][i]))*(self._constants["d3"][i]/delta-2*self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i]))
-            firdtt += self._constants["nr3"][i]*delta**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*((self._constants["t3"][i]/tau-2*self._constants["beta3"][i]*(tau-self._constants["gamma3"][i]))**exp2[i]-self._constants["t3"][i]/tau**2-2*self._constants["beta3"][i])*(self._constants["d3"][i]/delta-2*self._constants["alfa3"][i]*(delta-self._constants["epsilon3"][i]))
-            B += self._constants["nr3"][i]*delta_0**self._constants["d3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta_0-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(self._constants["d3"][i]/delta_0-2*self._constants["alfa3"][i]*(delta_0-self._constants["epsilon3"][i]))
-            C += self._constants["nr3"][i]*tau**self._constants["t3"][i]*exp(-self._constants["alfa3"][i]*(delta_0-self._constants["epsilon3"][i])**exp1[i]-self._constants["beta3"][i]*(tau-self._constants["gamma3"][i])**exp2[i])*(-2*self._constants["alfa3"][i]*delta_0**self._constants["d3"][i]+4*self._constants["alfa3"][i]**2*delta_0**self._constants["d3"][i]*(delta_0-self._constants["epsilon3"][i])**exp1[i]-4*self._constants["d3"][i]*self._constants["alfa3"][i]*delta_0**2*(delta_0-self._constants["epsilon3"][i])+self._constants["d3"][i]*2*delta_0)
+        # Gaussian terms
+        nr3 = self._constants.get("nr3", [])
+        d3 = self._constants.get("d3", [])
+        t3 = self._constants.get("t3", [])
+        a3 = self._constants.get("alfa3", [])
+        e3 = self._constants.get("epsilon3", [])
+        b3 = self._constants.get("beta3", [])
+        g3 = self._constants.get("gamma3", [])
+        for i in range(len(nr3)):
+            exp1 = self._constants.get("exp1", [2]*len(nr3))
+            exp2 = self._constants.get("exp2", [2]*len(nr3))
+            fir += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])
+            fird += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
+            firdd += nr3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(-2*a3[i]*delta**d3[i]+4*a3[i]**2*delta**d3[i]*(delta-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta**2*(delta-e3[i])+d3[i]*2*delta)
+            firt += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(t3[i]/tau-2*b3[i]*(tau-g3[i]))
+            firtt += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i])
+            firdt += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(t3[i]/tau-2*b3[i]*(tau-g3[i]))*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
+            firdtt += nr3[i]*delta**d3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i])*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
+            B += nr3[i]*delta_0**d3[i]*tau**t3[i]*exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(d3[i]/delta_0-2*a3[i]*(delta_0-e3[i]))
+            C += nr3[i]*tau**t3[i]*exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])*(-2*a3[i]*delta_0**d3[i]+4*a3[i]**2*delta_0**d3[i]*(delta_0-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta_0**2*(delta_0-e3[i])+d3[i]*2*delta_0)
 
-        for i in range(len(self._constants.get("nr4", []))):
-            # Non analitic terms
-            A = self._constants["A"]
-            b = self._constants["b"]
-            C = self._constants["A"]
-            D = self._constants["A"]
-            beta4 = self._constants["A"]
-            A = self._constants["A"]
+        # Non analitic terms
+        nr4 = self._constants.get("nr4", [])
+        a4 = self._constants.get("a4", [])
+        b4 = self._constants.get("beta4", [])
+        A = self._constants.get("A", [])
+        Bi = self._constants.get("B", [])
+        Ci = self._constants.get("C", [])
+        D = self._constants.get("D", [])
+        b = self._constants.get("b", [])
+        for i in range(len(nr4)):
+            Tita = (1-tau)+A[i]*((delta-1)**2)**(1/2/b4[i])
+            F = exp(-Ci[i]*(delta-1)**2-D[i]*(tau-1)**2)
+            Fd = -2*Ci[i]*F*(delta-1)
+            Fdd = 2*Ci[i]*F*(2*Ci[i]*(delta-1)**2-1)
+            Ft = -2*D[i]*F*(tau-1)
+            Ftt = 2*D[i]*F*(2*D[i]*(tau-1)**2-1)
+            Fdt = 4*Ci[i]*D[i]*F*(delta-1)*(tau-1)
+            Fdtt = 4*Ci[i]*D[i]*F*(delta-1)*(2*D[i]*(tau-1)**2-1)
 
-            Tita = (1-tau)+self._constants["A"][i]*((delta-1)**2)**(1/2/self._constants["beta4"][i])
-            F = exp(-self._constants["C"][i]*(delta-1)**2-self._constants["D"][i]*(tau-1)**2)
-            Fd = -2*self._constants["C"][i]*F*(delta-1)
-            Fdd = 2*self._constants["C"][i]*F*(2*self._constants["C"][i]*(delta-1)**2-1)
-            Ft = -2*self._constants["D"][i]*F*(tau-1)
-            Ftt = 2*self._constants["D"][i]*F*(2*self._constants["D"][i]*(tau-1)**2-1)
-            Fdt = 4*self._constants["C"][i]*self._constants["D"][i]*F*(delta-1)*(tau-1)
-            Fdtt = 4*self._constants["C"][i]*self._constants["D"][i]*F*(delta-1)*(2*self._constants["D"][i]*(tau-1)**2-1)
+            Delta = Tita**2+Bi[i]*((delta-1)**2)**a4[i]
+            Deltad = (delta-1)*(A[i]*Tita*2/b4[i]*((delta-1)**2)**(1/2/b4[i]-1)+2*Bi[i]*a4[i]*((delta-1)**2)**(a4[i]-1))
+            Deltadd = Deltad/(delta-1)+(delta-1)**2*(4*Bi[i]*a4[i]*(a4[i]-1)*((delta-1)**2)**(a4[i]-2)+2*A[i]**2/b4[i]**2*(((delta-1)**2)**(1/2/b4[i]-1))**2+A[i]*Tita*4/b4[i]*(1/2/b4[i]-1)*((delta-1)**2)**(1/2/b4[i]-2))
 
-            Delta = Tita**2+self._constants["B"][i]*((delta-1)**2)**self._constants["a4"][i]
-            Deltad = (delta-1)*(self._constants["A"][i]*Tita*2/self._constants["beta4"][i]*((delta-1)**2)**(1/2/self._constants["beta4"][i]-1)+2*self._constants["B"][i]*self._constants["a4"][i]*((delta-1)**2)**(self._constants["a4"][i]-1))
-            Deltadd = Deltad/(delta-1)+(delta-1)**2*(4*self._constants["B"][i]*self._constants["a4"][i]*(self._constants["a4"][i]-1)*((delta-1)**2)**(self._constants["a4"][i]-2)+2*self._constants["A"][i]**2/self._constants["beta4"][i]**2*(((delta-1)**2)**(1/2/self._constants["beta4"][i]-1))**2+self._constants["A"][i]*Tita*4/self._constants["beta4"][i]*(1/2/self._constants["beta4"][i]-1)*((delta-1)**2)**(1/2/self._constants["beta4"][i]-2))
+            DeltaBd = b[i]*Delta**(b[i]-1)*Deltad
+            DeltaBdd = b[i]*(Delta**(b[i]-1)*Deltadd+(b[i]-1)*Delta**(b[i]-2)*Deltad**2)
+            DeltaBt = -2*Tita*b[i]*Delta**(b[i]-1)
+            DeltaBtt = 2*b[i]*Delta**(b[i]-1)+4*Tita**2*b[i]*(b[i]-1)*Delta**(b[i]-2)
+            DeltaBdt = -A[i]*b[i]*2/b4[i]*Delta**(b[i]-1)*(delta-1)*((delta-1)**2)**(1/2/b4[i]-1)-2*Tita*b[i]*(b[i]-1)*Delta**(b[i]-2)*Deltad
+            DeltaBdtt = 2*b[i]*(b[i]-1)*Delta**(b[i]-2)*(Deltad*(1+2*Tita**2*(b[i]-2)/Delta)+4*Tita*A[i]*(delta-1)/b4[i]*((delta-1)**2)**(1/2/b4[i]-1))
 
-            DeltaBd = self._constants["b"][i]*Delta**(self._constants["b"][i]-1)*Deltad
-            DeltaBdd = self._constants["b"][i]*(Delta**(self._constants["b"][i]-1)*Deltadd+(self._constants["b"][i]-1)*Delta**(self._constants["b"][i]-2)*Deltad**2)
-            DeltaBt = -2*Tita*self._constants["b"][i]*Delta**(self._constants["b"][i]-1)
-            DeltaBtt = 2*self._constants["b"][i]*Delta**(self._constants["b"][i]-1)+4*Tita**2*self._constants["b"][i]*(self._constants["b"][i]-1)*Delta**(self._constants["b"][i]-2)
-            DeltaBdt = -self._constants["A"][i]*self._constants["b"][i]*2/self._constants["beta4"][i]*Delta**(self._constants["b"][i]-1)*(delta-1)*((delta-1)**2)**(1/2/self._constants["beta4"][i]-1)-2*Tita*self._constants["b"][i]*(self._constants["b"][i]-1)*Delta**(self._constants["b"][i]-2)*Deltad
-            DeltaBdtt = 2*self._constants["b"][i]*(self._constants["b"][i]-1)*Delta**(self._constants["b"][i]-2)*(Deltad*(1+2*Tita**2*(self._constants["b"][i]-2)/Delta)+4*Tita*self._constants["A"][i]*(delta-1)/self._constants["beta4"][i]*((delta-1)**2)**(1/2/self._constants["beta4"][i]-1))
+            fir += nr4[i]*Delta**b[i]*delta*F
+            fird += nr4[i]*(Delta**b[i]*(F+delta*Fd)+DeltaBd*delta*F)
+            firdd += nr4[i]*(Delta**b[i]*(2*Fd+delta*Fdd)+2*DeltaBd*(F+delta*Fd)+DeltaBdd*delta*F)
+            firt += nr4[i]*delta*(DeltaBt*F+Delta**b[i]*delta*Ft)
+            firtt += nr4[i]*delta*(DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt)
+            firdt += nr4[i]*(Delta**b[i]*(Ft+delta*Fdt)+delta*DeltaBd*Ft+DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
+            firdtt += nr4[i]*((DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt)+delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft+2*DeltaBt*Fdt+DeltaBt*Ftt+Delta**b[i]*Fdtt))
 
-            fir += self._constants["nr4"][i]*Delta**self._constants["b"][i]*delta*F
-            fird += self._constants["nr4"][i]*(Delta**self._constants["b"][i]*(F+delta*Fd)+DeltaBd*delta*F)
-            firdd += self._constants["nr4"][i]*(Delta**self._constants["b"][i]*(2*Fd+delta*Fdd)+2*DeltaBd*(F+delta*Fd)+DeltaBdd*delta*F)
-            firt += self._constants["nr4"][i]*delta*(DeltaBt*F+Delta**self._constants["b"][i]*delta*Ft)
-            firtt += self._constants["nr4"][i]*delta*(DeltaBtt*F+2*DeltaBt*Ft+Delta**self._constants["b"][i]*Ftt)
-            firdt += self._constants["nr4"][i]*(Delta**self._constants["b"][i]*(Ft+delta*Fdt)+delta*DeltaBd*Ft+DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
-            firdtt += self._constants["nr4"][i]*((DeltaBtt*F+2*DeltaBt*Ft+Delta**self._constants["b"][i]*Ftt)+delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft+2*DeltaBt*Fdt+DeltaBt*Ftt+Delta**self._constants["b"][i]*Fdtt))
+            Tita_virial = (1-tau)+A[i]*((delta_0-1)**2)**(1/2/b4[i])
+            Delta_Virial = Tita_virial**2+Bi[i]*((delta_0-1)**2)**a4[i]
+            Deltad_Virial = (delta_0-1)*(A[i]*Tita_virial*2/b4[i]*((delta_0-1)**2)**(1/2/b4[i]-1)+2*Bi[i]*a4[i]*((delta_0-1)**2)**(a4[i]-1))
+            Deltadd_Virial = Deltad_Virial/(delta_0-1)+(delta_0-1)**2*(4*Bi[i]*a4[i]*(a4[i]-1)*((delta_0-1)**2)**(a4[i]-2)+2*A[i]**2/b4[i]**2*(((delta_0-1)**2)**(1/2/b4[i]-1))**2+A[i]*Tita_virial*4/b4[i]*(1/2/b4[i]-1)*((delta_0-1)**2)**(1/2/b4[i]-2))
+            DeltaBd_Virial = b[i]*Delta_Virial**(b[i]-1)*Deltad_Virial
+            DeltaBdd_Virial = b[i]*(Delta_Virial**(b[i]-1)*Deltadd_Virial+(b[i]-1)*Delta_Virial**(b[i]-2)*Deltad_Virial**2)
+            F_virial = exp(-Ci[i]*(delta_0-1)**2-D[i]*(tau-1)**2)
+            Fd_virial = -2*Ci[i]*F_virial*(delta_0-1)
+            Fdd_virial = 2*Ci[i]*F_virial*(2*Ci[i]*(delta_0-1)**2-1)
 
-            Tita_virial = (1-tau)+self._constants["A"][i]*((delta_0-1)**2)**(1/2/self._constants["beta4"][i])
-            Delta_Virial = Tita_virial**2+self._constants["B"][i]*((delta_0-1)**2)**self._constants["a4"][i]
-            Deltad_Virial = (delta_0-1)*(self._constants["A"][i]*Tita_virial*2/self._constants["beta4"][i]*((delta_0-1)**2)**(1/2/self._constants["beta4"][i]-1)+2*self._constants["B"][i]*self._constants["a4"][i]*((delta_0-1)**2)**(self._constants["a4"][i]-1))
-            Deltadd_Virial = Deltad_Virial/(delta_0-1)+(delta_0-1)**2*(4*self._constants["B"][i]*self._constants["a4"][i]*(self._constants["a4"][i]-1)*((delta_0-1)**2)**(self._constants["a4"][i]-2)+2*self._constants["A"][i]**2/self._constants["beta4"][i]**2*(((delta_0-1)**2)**(1/2/self._constants["beta4"][i]-1))**2+self._constants["A"][i]*Tita_virial*4/self._constants["beta4"][i]*(1/2/self._constants["beta4"][i]-1)*((delta_0-1)**2)**(1/2/self._constants["beta4"][i]-2))
-            DeltaBd_Virial = self._constants["b"][i]*Delta_Virial**(self._constants["b"][i]-1)*Deltad_Virial
-            DeltaBdd_Virial = self._constants["b"][i]*(Delta_Virial**(self._constants["b"][i]-1)*Deltadd_Virial+(self._constants["b"][i]-1)*Delta_Virial**(self._constants["b"][i]-2)*Deltad_Virial**2)
-            F_virial = exp(-self._constants["C"][i]*(delta_0-1)**2-self._constants["D"][i]*(tau-1)**2)
-            Fd_virial = -2*self._constants["C"][i]*F_virial*(delta_0-1)
-            Fdd_virial = 2*self._constants["C"][i]*F_virial*(2*self._constants["C"][i]*(delta_0-1)**2-1)
+            B += nr4[i]*(Delta_Virial**b[i]*(F_virial+delta_0*Fd_virial)+DeltaBd_Virial*delta_0*F_virial)
+            C += nr4[i]*(Delta_Virial**b[i]*(2*Fd_virial+delta_0*Fdd_virial)+2*DeltaBd_Virial*(F_virial+delta_0*Fd_virial)+DeltaBdd_Virial*delta_0*F_virial)
 
-            B += self._constants["nr4"][i]*(Delta_Virial**self._constants["b"][i]*(F_virial+delta_0*Fd_virial)+DeltaBd_Virial*delta_0*F_virial)
-            C += self._constants["nr4"][i]*(Delta_Virial**self._constants["b"][i]*(2*Fd_virial+delta_0*Fdd_virial)+2*DeltaBd_Virial*(F_virial+delta_0*Fd_virial)+DeltaBdd_Virial*delta_0*F_virial)
-
+        # Hard sphere term
         if self._constants.get("Fi", None):
-            # Hard sphere term
             f = self._constants["Fi"]
             n = 0.1617
             a = 0.689
@@ -1145,7 +1160,9 @@ class MEoS(object):
             ahdXX_virial = -(f**2-1)/(1-X_virial)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
             B += ahdX_virial*Xd
             C += ahdXX_virial*Xd**2
+        
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
+
 
     def _Cp0(self, cp, T=False):
         if not T:
