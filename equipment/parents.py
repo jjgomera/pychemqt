@@ -96,19 +96,8 @@ class equipment(Entity):
     def __call__(self, **kwargs):
         """All equipment are callables, so we can instance or add/change
         input value with flexibility"""
-        oldkwargs = self.kwargs.copy()
-        self.cleanOldValues(**kwargs)
-        self._bool = True
-        txt = kwargs.get("notas", "")
-        if txt:
-            self.notas = txt
-            self.notasPlain = txt
-
-        for key in self.kwargsInteger:
-            if key not in self.kwargs_forbidden:
-                self.kwargs[key] = int(self.kwargs[key])
-
-        if oldkwargs != self.kwargs and self.isCalculable:
+        Entity.__call__(self, **kwargs)
+        if self._oldkwargs != self.kwargs and self.isCalculable:
             self.calculo()
             if self.statusCoste:
                 self.coste()

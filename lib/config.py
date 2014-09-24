@@ -35,7 +35,8 @@ from lib.sql import databank
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
-# FIXME: This instance is not update when preferences are changed 
+# FIXME: This instance is not update when preferences are changed
+
 
 def getComponents(solidos=False, config=None, name=True):
     """
@@ -113,6 +114,44 @@ class Entity(object):
     kwargs_forbidden = ["entrada"]
     notas = ""
     notasPlain = ""
+
+    def __init__(self, **kwargs):
+        """
+        Class constructor, copy kwargs for child class, it can be customize
+        for child class to add functionality
+        """
+        self.kwargs = self.__class__.kwargs.copy()
+
+        # Values defined as integer Entrada_con_unidades return as float
+        # and it must be corrected
+        self.kwargsInteger = []
+        for key, value in self.kwargs.iteritems():
+            if isinstance(value, int):
+                self.kwargsInteger.append(key)
+
+        if kwargs:
+            self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        """
+        Add callable functionality, so it can be possible add kwargs,
+        advanced functionality can be added in subclass"""
+        self._oldkwargs = self.kwargs.copy()
+        self.cleanOldValues(**kwargs)
+        self._bool = True
+        txt = kwargs.get("notas", "")
+        if txt:
+            self.notas = txt
+            self.notasPlain = txt
+
+        for key in self.kwargsInteger:
+            if key not in self.kwargs_forbidden:
+                self.kwargs[key] = int(self.kwargs[key])
+
+    def cleanOldValues(self, **kwargs):
+        """Update kwargs with new input kwargs, defined in child class,
+        here can be implemented kwarg incompatibiity input and more"""
+        self.kwargs.update(kwargs)
 
     def clear(self):
         """Clear entity and stay as new instance"""
