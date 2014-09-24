@@ -1080,7 +1080,26 @@ class Solid(config.Entity):
               "distribucion_fraccion": [],
               "distribucion_diametro": []}
 
-    def __init__(self, tipo=2, **kwargs):
+    
+    def __call__(self, **kwargs):
+        """All equipment are callables, so we can instance or add/change
+        input value with flexibility"""
+        config.Entity.__call__(self, **kwargs)
+        if self._oldkwargs != self.kwargs and self.isCalculable:
+            self.calculo()
+
+    @property
+    def isCalculable(self):
+        self._def = 0
+        if sum(self.kwargs["caudalSolido"]) > 0:
+            if self.kwargs["distribucion_fraccion"] and \
+                    self.kwargs["distribucion_diametro"]:
+                self._def = 2
+            elif self.kwargs["diametroMedio"]:
+                self._def = 1
+        return self._def
+
+    def calculo(self):
         self.Config = config.getMainWindowConfig()
         txt = self.Config.get("Components", "Solids")
         if isinstance(txt, str):
@@ -1088,14 +1107,13 @@ class Solid(config.Entity):
         else:
             self.ids = txt
         self.componente = [Componente(int(i)) for i in self.ids]
-
-        self.kwargs = kwargs
+        
         caudal = self.kwargs.get("caudalSolido", [])
         diametro_medio = self.kwargs.get("diametroMedio", 0.0)
         fraccion = self.kwargs.get("distribucion_fraccion", [])
         diametros = self.kwargs.get("distribucion_diametro", [])
 
-        if tipo == 0:
+        if self._def == 0:
             self._bool = False
             return
         else:
@@ -1105,7 +1123,7 @@ class Solid(config.Entity):
         self.caudal = unidades.MassFlow(sum(self.caudalUnitario))
         self.diametros = diametros
         self.fracciones = fraccion
-        if tipo == 2:
+        if self._def == 2:
             self.diametros = [unidades.Length(i, magnitud="ParticleDiameter")
                               for i in diametros]
             self.fracciones = fraccion
@@ -1116,7 +1134,7 @@ class Solid(config.Entity):
                 self.fracciones_acumuladas.append(xi+self.fracciones_acumuladas[-1])
                 del self.fracciones_acumuladas[0]
         self.diametro_medio = unidades.Length(diametro_medio, magnitud="ParticleDiameter")
-
+        
     def RhoS(self, T):
         densidad = 0
         for i in range(len(self.ids)):
@@ -1214,8 +1232,8 @@ class Solid(config.Entity):
             for i in range(len(self.diametros)):
                 fraccion_engas.append(self.caudal*self.fracciones[i]*(1-rendimiento_parcial[i])/caudal_escapado)
                 fraccion_ensolido.append(self.caudal*self.fracciones[i]*rendimiento_parcial[i]/caudal_separado)
-            Solido_NoCapturado = Solid(2, caudalSolido=[caudal_escapado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_engas)
-            Solido_Capturado = Solid(2, caudalSolido=[caudal_separado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_ensolido)
+            Solido_NoCapturado = Solid(caudalSolido=[caudal_escapado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_engas)
+            Solido_Capturado = Solid(caudalSolido=[caudal_separado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_ensolido)
             return Solido_NoCapturado, Solido_Capturado
 
 
@@ -1362,6 +1380,13 @@ class Corriente(config.Entity):
             self.kwargs["caudalUnitarioMolar"] = []
             self.kwargs["fraccionMasica"] = []
 
+        elif kwargs.get("x", None) and self.kwargs["T"] and self.kwargs["P"]:
+            self.kwargs["T"] = 0.0
+        elif kwargs.get("T", 0.0) and self.kwargs["x"] and self.kwargs["P"]:
+            self.kwargs["P"] = 0.0
+        elif kwargs.get("P", 0.0) and self.kwargs["T"] and self.kwargs["x"]:
+            self.kwargs["x"] = None
+            
         self.kwargs.update(kwargs)
 
         for key, value in self.kwargs.iteritems():
@@ -1373,11 +1398,18 @@ class Corriente(config.Entity):
             self.status = 1
             self.calculo()
             self.msg = ""
+            
+        elif self.tipoFlujo:
+            if self.kwargs["mezcla"]:
+                self.mezcla = self.kwargs["mezcla"]
+            else:
+                self.mezcla = Mezcla(self.tipoFlujo, **self.kwargs)
+                
         elif self.tipoSolido:
             if self.kwargs["solido"]:
                 self.solido = self.kwargs["solido"]
             else:
-                self.solido = Solid(self.tipoSolido, **self.kwargs)
+                self.solido = Solid(**self.kwargs)
             if self.solido:
                 self.solido.RhoS(self.kwargs["T"])
 
@@ -1627,8 +1659,8 @@ class Corriente(config.Entity):
             if self.kwargs["solido"]:
                 self.solido = self.kwargs["solido"]
             else:
-                self.solido = Solid(self.tipoSolido, **self.kwargs)
-            if self.solido:
+                self.solido = Solid(**self.kwargs)
+            if self.solido._def:
                 self.solido.RhoS(T)
         else:
             self.solido = None
@@ -1641,6 +1673,9 @@ class Corriente(config.Entity):
             self.kwargs["caudalVolumetrico"] = Q
             self.kwargs["caudalMolar"] = None
 
+    def setSolid(self, solid):
+        self.solido = solid
+        
     def clone(self, **kwargs):
         """Create a new stream instance with change only kwags new values"""
         old_kwargs = self.kwargs.copy()
@@ -2150,28 +2185,28 @@ if __name__ == '__main__':
 
 
 
-#    distribucion=[[17.5, 0.02],
-#                                [22.4, 0.03],
-#                                [26.2,  0.05],
-#                                [31.8,  0.1],
-#                                [37, 0.1],
-#                                [42.4, 0.1],
-#                                [48, 0.1],
-#                                [54, 0.1],
-#                                [60, 0.1],
-#                                [69, 0.1],
-#                                [81.3, 0.1],
-#                                [96.5, 0.05],
-#                                [109, 0.03],
-#                                [127, 0.02]]
+#    distribucion = [[17.5, 0.02],
+#                   [22.4, 0.03],
+#                   [26.2,  0.05],
+#                   [31.8,  0.1],
+#                   [37, 0.1],
+#                   [42.4, 0.1],
+#                   [48, 0.1],
+#                   [54, 0.1],
+#                   [60, 0.1],
+#                   [69, 0.1],
+#                   [81.3, 0.1],
+#                   [96.5, 0.05],
+#                   [109, 0.03],
+#                   [127, 0.02]]
 #    diametros=[]
 #    fracciones=[]
 #    for diametro, fraccion in distribucion:
 #        diametros.append(diametro)
 #        fracciones.append(fraccion)
 #
-#    solido=Solid(caudal=[5], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-#    solido.ajustar_distribucion(3)
+#    solido=Solid(caudalSolido=[5], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
+#    print solido._def
 
 #    t=unidades.Temperature(160, "F")
 #    p=unidades.Pressure(3000, "psi")
@@ -2276,8 +2311,8 @@ if __name__ == '__main__':
 #        print bool(corr)
 
 #    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1., 0])
-#    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
+    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
 
-    aire=PsyStream(caudal=5, tdb=300, HR=50)
+#    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
 
