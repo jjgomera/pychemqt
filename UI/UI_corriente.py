@@ -22,7 +22,6 @@ from scipy.special import erf
 
 from tools.UI_psychrometry import PsychroInput
 from lib.corriente import Corriente, Solid, PsyStream
-from lib.psycrometry import PsyState
 from lib import unidades, config
 from lib.thread import Evaluate
 from UI import texteditor
@@ -68,6 +67,7 @@ class Ui_corriente(QtGui.QWidget):
         # Humid Air
         if psychro:
             self.pagePsychro = PsychroDefinition(readOnly=readOnly)
+            self.pagePsychro.Changed.connect(self.changePsychroState)
             self.toolBox.addTab(
                 self.pagePsychro,
                 QtGui.QIcon(os.environ["pychemqt"] + "/images/button/psychrometric.png"),
@@ -112,15 +112,22 @@ class Ui_corriente(QtGui.QWidget):
         self.pageDefinition.setReadOnly(bool)
         self.pageSolids.setReadOnly(bool)
 
-    def setCorriente(self, corriente):
+    def setCorriente(self, corriente, psychro=True):
         if corriente:
             self.corriente = corriente
             self.repaint()
 
-    def repaint(self):
+    def changePsychroState(self, stream):
+        self.setCorriente(stream.corriente, False)
+
+    def repaint(self, psychro=True):
+        # Parameter to avoid recursive repaint
         if self.semaforo.available() > 0:
             self.semaforo.acquire(1)
         self.pageDefinition.setStream(self.corriente)
+        if psychro and self.psychro:
+            psystream = self.corriente.psystream
+            self.pagePsychro.setStream(psystram)
         self.pageSolids.setSolido(self.corriente.solido)
         self.PageNotas.setText(self.corriente.notas)
         self.pageProperties.fill(self.corriente)
@@ -176,7 +183,7 @@ class StreamDefinition(QtGui.QWidget):
 
         self.indices, self.nombres, M = config.getComponents()
 
-        lyt =  QtGui.QGridLayout(self)
+        lyt = QtGui.QGridLayout(self)
         lyt.setVerticalSpacing(0)
         lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Temperature")), 1, 1)
@@ -403,16 +410,16 @@ class StreamDefinition(QtGui.QWidget):
 
 class PsychroDefinition(QtGui.QWidget):
     """Widget for stream definition as humid air input"""
-    Changed = QtCore.pyqtSignal(PsyState)
+    Changed = QtCore.pyqtSignal(PsyStream)
     parameters = ["tdb", "twb", "tdp", "w", "mu", "HR", "v", "h", "Pv", "Xa", "Xw"]
-    stream = PsyStream
+    stream = PsyStream()
 
     def __init__(self, psystream=None, readOnly=False, parent=None):
         super(PsychroDefinition, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
 
         self.inputs = PsychroInput()
-        self.inputs.stateChanged.connect(self.rellenar)
+        self.inputs.stateChanged.connect(partial(self.calculo, "state"))
         layout.addWidget(self.inputs, 1, 1, 1, 2)
 
         layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
@@ -475,9 +482,9 @@ class PsychroDefinition(QtGui.QWidget):
 
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Mass Flow")), 3, 1)
-        self.caudal = Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
-        self.caudal.valueChanged.connect(partial(self.updatekwargsFlow, "caudal"))
-        layout.addWidget(self.caudal, 3, 2)
+        self.caudalMasico = Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
+        self.caudalMasico.valueChanged.connect(partial(self.updatekwargsFlow, "caudalMasico"))
+        layout.addWidget(self.caudalMasico, 3, 2)
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Molar Flow")), 4, 1)
         self.caudalMolar = Entrada_con_unidades(unidades.MolarFlow, readOnly=readOnly)
@@ -499,12 +506,11 @@ class PsychroDefinition(QtGui.QWidget):
 
     def setStream(self, stream):
         self.stream = stream
-        if stream:
-            self.rellenar(stream)
+        self.rellenar(stream)
 
     def setReadOnly(self, readOnly):
         self.inputs.setReadOnly(readOnly)
-        self.caudal.setReadOnly(readOnly)
+        self.caudalMasico.setReadOnly(readOnly)
         self.caudalMolar.setReadOnly(readOnly)
         self.caudalVolumetrico.setReadOnly(readOnly)
 
@@ -512,16 +518,24 @@ class PsychroDefinition(QtGui.QWidget):
         self.stream(**{key: value})
         if self.stream:
             self.rellenar(self.stream)
+            if self.stream.status:
+                self.Changed.emit(self.stream)
 
     def rellenar(self, stream):
-        self.inputs.setState(stream.state)
-        if stream:
+        state = None
+        if stream.status:
+            state = stream.state
+        elif stream.kwargs["state"]:
+            state = stream.kwargs["state"]
+
+        if state:
+            self.inputs.setState(state)
             for par in self.parameters:
-                self.__getattribute__(par).setValue(stream.__getattribute__(par))
+                self.__getattribute__(par).setValue(state.__getattribute__(par))
         self.rellenarFlow(stream)
 
     def rellenarFlow(self, stream):
-        for arg in ("caudal", "caudalMolar", "caudalVolumetrico"):
+        for arg in ("caudalMasico", "caudalMolar", "caudalVolumetrico"):
             if stream.kwargs[arg]:
                 self.__getattribute__(arg).setValue(stream.kwargs[arg])
             else:
@@ -530,6 +544,8 @@ class PsychroDefinition(QtGui.QWidget):
     def updatekwargsFlow(self, key, value):
         self.stream.updatekwargsFlow(key, value)
         self.rellenarFlow(self.stream)
+        if self.stream.status:
+            self.Changed.emit(self.stream)
 
 
 class StreamProperties(QtGui.QTableWidget):
@@ -950,7 +966,7 @@ class SolidDistribution(QtGui.QDialog):
 
         self.entries = {}
         for key in ("Rosin Rammler Sperling", "Gates Gaudin Schumann",
-                "Broadbent Callcott", "Gaudin Meloy", "Lognormal", "Harris"):
+                    "Broadbent Callcott", "Gaudin Meloy", "Lognormal", "Harris"):
             widget = QtGui.QWidget()
             self.modelo.addItem(key)
             lyt = QtGui.QGridLayout(widget)
@@ -1041,15 +1057,15 @@ if __name__ == "__main__":
 
 #    corriente=Corriente(T=273.15+30, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1, 0])
 #    corriente=Corriente(caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
-#    dialogo = Corriente_Dialog(corriente, psychro=True)
-#    dialogo.show()
+    dialogo = Corriente_Dialog(psychro=True)
+    dialogo.show()
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 #    corriente=PsychroDefinition(aire)
 #    corriente.show()
 
-    corriente = SolidDistribution()
-    corriente.show()
+#    corriente = SolidDistribution()
+#    corriente.show()
 
 #    diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
 #    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]

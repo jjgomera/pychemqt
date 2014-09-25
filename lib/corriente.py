@@ -1676,6 +1676,14 @@ class Corriente(config.Entity):
     def setSolid(self, solid):
         self.solido = solid
         
+    @property
+    def psystream(self):
+        xw = self.fraccion_masica[self.ids.index[62]]
+        xa = self.fraccion_masica[self.ids.index[475]]
+        psystream = PsyStream(caudalMasico=self.caudalMasico, P=self.P,
+                              tdb=self.T, w=xw/xa)
+        return psystream
+
     def clone(self, **kwargs):
         """Create a new stream instance with change only kwags new values"""
         old_kwargs = self.kwargs.copy()
@@ -1930,10 +1938,12 @@ class PsyStream(config.Entity):
               "h": None,
               "v": 0.0,
 
-              "caudal": 0.0,
+              "caudalMasico": 0.0,
               "caudalVolumetrico": 0.0,
               "caudalMolar": 0.0,
               "state": None}
+    status = 0
+    msg = "undefined"
 
     def __init__(self, **kwargs):
         self.kwargs = PsyStream.kwargs.copy()
@@ -1977,9 +1987,11 @@ class PsyStream(config.Entity):
             self.mode = 3
         elif tdp and HR is not None:
             self.mode = 4
+        elif self.kwargs["state"]:
+            self.mode = 5
 
         # Flow definition
-        caudal = self.kwargs["caudal"] or self.kwargs["caudalVolumetrico"]\
+        caudal = self.kwargs["caudalMasico"] or self.kwargs["caudalVolumetrico"]\
             or self.kwargs["caudalMolar"]
 
         return bool(self.mode+1) and caudal
@@ -1990,26 +2002,34 @@ class PsyStream(config.Entity):
         else:
             self.state = PsychroState(**self.kwargs)
 
+        kwargs = self.kwargs
         self.__dict__.update(self.state.__dict__)
+        self.kwargs = kwargs
         
         self.updateFlow()
 
     def updatekwargsFlow(self, key, value):
         self.kwargs[key] = value
-        if key == "caudal" and value:
+        if key == "caudalMasico" and value:
             self.kwargs["caudalVolumetrico"] = 0.0
             self.kwargs["caudalMolar"] = 0.0
         elif key == "caudalMolar" and value:
             self.kwargs["caudalVolumetrico"] = 0.0
-            self.kwargs["caudal"] = 0.0
+            self.kwargs["caudalMasico"] = 0.0
         elif key == "caudalVolumetrico" and value:
-            self.kwargs["caudal"] = 0.0
+            self.kwargs["caudalMasico"] = 0.0
             self.kwargs["caudalMolar"] = 0.0
-            
+
+        if self.status:
+            self.updateFlow()
+        elif self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = ""
            
     def updateFlow(self):
-        if self.kwargs["caudal"]:
-            G = self.kwargs["caudal"]
+        if self.kwargs["caudalMasico"]:
+            G = self.kwargs["caudalMasico"]
             M = G/(self.Xw*18.01528+self.Xa*28.9645)
             Q = G*self.v
         elif self.kwargs["caudalMolar"]:
@@ -2020,7 +2040,7 @@ class PsyStream(config.Entity):
             Q = self.kwargs["caudalVolumetrico"]
             G = Q*self.rho
             M = G/(self.Xw*18.01528+self.Xa*28.9645)
-        self.caudal = unidades.MassFlow(G)
+        self.caudalMasico = unidades.MassFlow(G)
         self.caudalVolumetrico = unidades.VolFlow(Q)
         self.caudalMolar = unidades.MolarFlow(M)
 
@@ -2028,7 +2048,7 @@ class PsyStream(config.Entity):
     @property
     def corriente(self):
         corriente = Corriente(T=self.state.twb, P=self.state.P,
-                              caudalMasico=self.caudal, ids=[62, 475],
+                              caudalMasico=self.caudalMasico, ids=[62, 475],
                               fraccionMolar=[self.state.Xw, self.state.Xa])
         return corriente
 
