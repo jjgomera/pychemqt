@@ -2423,14 +2423,39 @@ class EnthalpyPressure(unidad):
     __title__ = QApplication.translate("pychemqt", "Enthalpy per pressure")
     rates = {"JkgPa": 1.,
              "kJkgkPa": 1.,
-             "kJkgMPa": k.milli}
-    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa']
-    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa']
+             "kJkgMPa": k.milli, 
+             "Jkgatm": 1./101325,
+             "kJkgatm": 1./101.325}
+    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa', "J/kgatm", "kJ/kgatm"]
+    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm"]
     __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
                      "cgs": "kJkgkPa", "english": "kJkgkPa"}
 
     def __init__(self, data, unit="JkgPa", magnitud=""):
         super(EnthalpyPressure, self).__init__(data, unit, magnitud)
+
+
+class EnthalpyDensity(unidad):
+    """Class that models a enthalpy per density measure
+    Supported units:
+
+    * Joule per kilogram per kilogram cubic meter(Jkgkgm3) default
+    * Kilojoule per kilogram kilopascal (kJkgkgm3)
+
+    >>> H=EnthalpyPressure(5, "JkgPa")
+    >>> print H.JkgPa, H.kJkgMPa
+    5.0 5000.0
+    """
+    __title__ = QApplication.translate("pychemqt", "Enthalpy per density")
+    rates = {"Jkgkgm3": 1.,
+             "kJkgkgm3": k.kilo}
+    __text__ = ['J/kgkgm3', 'kJ/kgkgm3']
+    __units__ = ['Jkgkgm3', 'kJkgkgm3']
+    __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
+                     "cgs": "kJkgkgm3", "english": "kJkgkgm3"}
+
+    def __init__(self, data, unit="Jkgkgm3", magnitud=""):
+        super(EnthalpyDensity, self).__init__(data, unit, magnitud)
 
 
 class TemperaturePressure(unidad):
@@ -2448,9 +2473,10 @@ class TemperaturePressure(unidad):
     __title__ = QApplication.translate("pychemqt", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
-             "KMPa": k.micro}
-    __text__ = ['K/Pa', 'K/kPa', 'K/MPa']
-    __units__ = ['KPa', 'KkPa', 'KMPa']
+             "KMPa": k.micro, 
+             "Katm": 1/101325.}
+    __text__ = ['K/Pa', 'K/kPa', 'K/MPa', "K/atm"]
+    __units__ = ['KPa', 'KkPa', 'KMPa', "Katm"]
     __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa",
                      "cgs": "KPa", "english": "KPa"}
 
@@ -2475,15 +2501,102 @@ class PressureTemperature(unidad):
              "kPaK": k.kilo,
              "barK": 1e5,
              "MPaK": k.mega,
-             "atmK": 1e6/1.01325}
-    __text__ = ['Pa/K', 'kPa/K', 'bar/K', 'MPa/K', "atm/K"]
-    __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK"]
+             "atmK": 101325., 
+             "psiF": k.psi/k.Rankine}
+    __text__ = ['Pa/K', 'kPa/K', 'bar/K', 'MPa/K', "atm/K", "psi/F"]
+    __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK", "psiF"]
     __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK",
-                     "cgs": "PaK", "english": "PaK"}
+                     "cgs": "PaK", "english": "psiF"}
 
     def __init__(self, data, unit="PaK", magnitud=""):
         super(PressureTemperature, self).__init__(data, unit, magnitud)
 
+
+class PressureDensity(unidad):
+    """Class that models a Pressure/density measure
+    Supported units:
+
+    * pascal per kg/m3 (Pakgm3) default
+    * kilopascal per kg/m3 (kPakgm3)
+    * megapascal per kg/m3 (MPakgm3)
+    * atmosphere per kg/m3 (atmkgm3)
+
+    >>> H=PressureTemperature(1000, "Pakgm3")
+    >>> print H.PaK, H.atmK
+    1000.0 0.00101325
+    """
+    __title__ = QApplication.translate("pychemqt", "Pressure per density")
+    rates = {"Pakgm3": 1.,
+             "kPakgm3": k.kilo,
+             "barkgm3": 1e5,
+             "Pagcc": k.liter, 
+             "MPakgm3": k.mega,
+             "atmkgm3": 101325., 
+             "psilbft3": k.psi/k.pound*k.foot**3}
+    __text__ = ['Pa/kgm3', 'kPa/kgm3', 'bar/kgm3', 'MPa/kgm3', "atm/kgm3"]
+    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3"]
+    __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
+                     "cgs": "Pagcc", "english": "psilbft3"}
+
+    def __init__(self, data, unit="Pakgm3", magnitud=""):
+        super(PressureDensity, self).__init__(data, unit, magnitud)
+
+
+class DensityPressure(unidad):
+    """Class that models a Density/Pressure measure
+    Supported units:
+
+    * kg/m3 per pascal (kgm3Pa) default
+    * kg/m3 per kilopascal (kgm3kPa)
+    * kg/m3 per megapascal (kgm3MPa)
+    * kg/m3 per atmosphere (kgm3atm)
+
+    >>> H=DensityPressure(1000, "PaK")
+    >>> print H.PaK, H.atmK
+    1000.0 0.00101325
+    """
+    __title__ = QApplication.translate("pychemqt", "Density per pressure")
+    rates = {"kgm3Pa": 1.,
+             "kgm3kPa": k.milli,
+             "kgm3bar": 1/1e5,
+             "gccPa": 1./k.liter, 
+             "kgm3MPa": k.micro,
+             "kgm3atm": 1/101325., 
+             "lbft3psi": k.pound/k.foot**3/k.psi}
+    __text__ = [u'kg/m³Pa', u'kg/m³kPa', u'kg/m³MPa', u"kg/m³bar", u'kg/m³atm', 
+                u"lb/ft³psi"]
+    __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "lbft3psi"]
+    __units_set__ = {"altsi": "kgm3kPa", "si": "kgm3Pa", "metric": "kgm3kPa",
+                     "cgs": "gccPa", "english": "lbft3psi"}
+
+    def __init__(self, data, unit="kgm3Pa", magnitud=""):
+        super(DensityPressure, self).__init__(data, unit, magnitud)
+
+
+class DensityTemperature(unidad):
+    """Class that models a Density/Pressure measure
+    Supported units:
+
+    * kg/m3 per kelvin (kgm3K) default
+    * g/cm3 per Kelvin (gccK)
+    * lb/ft3 per farenheit (lbft3F)
+
+    >>> H=DensityTemperature(1000, "PaK")
+    >>> print H.PaK, H.atmK
+    1000.0 0.00101325
+    """
+    __title__ = QApplication.translate("pychemqt", "Density per pressure")
+    rates = {"kgm3K": 1.,
+             "gccK": 1./k.liter,
+             "lbft3F": k.pound/k.foot**3/k.Rankine}
+    __text__ = [u'kg/m³K', u'g/cm³K', u"lb/ft³F"]
+    __units__ = ['kgm3K', 'gccK', "lbft3F"]
+    __units_set__ = {"altsi": "kgm3K", "si": "kgm3K", "metric": "kgm3K",
+                     "cgs": "gccK", "english": "lbft3F"}
+
+    def __init__(self, data, unit="kgm3K", magnitud=""):
+        super(DensityTemperature, self).__init__(data, unit, magnitud)
+        
 
 class Currency(unidad):
     """Class that models a currency rate
