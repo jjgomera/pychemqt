@@ -12,7 +12,7 @@ from cmath import log as log_c
 from scipy.optimize import fsolve
 from PyQt4.QtGui import QApplication
 
-from lib import unidades, mEoS
+from lib import unidades
 from config import Fluid
 
 properties = {
@@ -3328,15 +3328,16 @@ class IAPWS97(object):
         self.rhoc = unidades.Density(rhoc)
         self.Tt = unidades.Temperature(Tt)
         self.Tb = unidades.Temperature(Tb)
-        self.f_accent = unidades.Dimensionless(mEoS.H2O.H2O.f_acent)
-        self.momentoDipolar = mEoS.H2O.H2O.momentoDipolar
+
+        self.f_accent = unidades.Dimensionless(0.3443)
+        self.momentoDipolar = unidades.DipoleMoment(1.855, "Debye")
 
         self.x = unidades.Dimensionless(propiedades["x"])
         self.region = propiedades["region"]
         self.phase = self.getphase(propiedades)
-        self.name = mEoS.H2O.H2O.name
-        self.synonim = mEoS.H2O.H2O.synonym
-        self.CAS = mEoS.H2O.H2O.CASNumber
+        self.name = "water"
+        self.synonim = "R-718"
+        self.CAS = "7732-18-5"
 
         self.T = unidades.Temperature(propiedades["T"])
         self.P = unidades.Pressure(propiedades["P"], "MPa")
