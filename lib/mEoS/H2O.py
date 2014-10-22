@@ -3,24 +3,102 @@
 
 from scipy import exp
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.iapws import _Viscosity, _ThCond, _Dielectric
+from lib.meos import MEoS
 
 
 class H2O(MEoS):
     """Multiparameter equation of state for water (including IAPWS95)
 
-    >>> water=H2O(T=300, rho=996.5560)
-    >>> print "%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK)
-    0.0992418352 4.13018112 1501.51914 0.393062643
+    >>> water=IAPWS95(T=300, rho=996.5560)
+    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
+    0.0992418350 4.13018112 1501.51914 0.393062643
 
-    >>> water=H2O(T=500, rho=0.435)
-    >>> print "%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK)
+    >>> water=IAPWS95(T=500, rho=0.435)
+    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
     0.0999679423 1.50817541 548.31425 7.944882714
 
-    >>> water=H2O(T=900., P=700)
-    >>> print "%0.4f %0.8f %0.5f %0.8f" % (water.rho, water.cv.kJkgK, water.w, water.s.kJkgK)
+    >>> water=IAPWS95(T=900., P=700)
+    >>> print("%0.4f %0.8f %0.5f %0.8f" % (water.rho, water.cv, water.w, water.s))
     870.7690 2.66422350 2019.33608 4.17223802
+
+    >>> water=IAPWS95(T=300., P=0.1)
+    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+    300.00 0.10000 996.56 112.65 0.39306 4.1806 1501.5 -0.066682
+
+    >>> water=IAPWS95(T=500., P=0.1)
+    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+    500.00 0.10000 0.43514 2928.6 7.9447 1.9813 548.31 -0.0094137
+
+    >>> water=IAPWS95(T=450., x=0.5)
+    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.virialB))
+    450.00 0.93220 9.5723 1761.8 4.3589 -0.013028
+
+    >>> water=IAPWS95(P=1.5, rho=1000.)
+    >>> print("%0.2f %0.4f %0.1f %0.3f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+    286.44 1.5000 1000.0 57.253 0.19931 4.1855 1462.1 -0.085566
+
+    >>> water=IAPWS95(h=3000, s=8.)
+    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+    536.24 0.11970 0.48547 3000.0 8.0000 1.9984 567.04 -0.0076606
+
+    >>> water=IAPWS95(h=150, s=0.4)
+    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+    301.27 35.50549 1011.48 150.00 0.40000 4.0932 1564.1 -0.065238
+
+    >>> water=IAPWS95(T=450., rho=300)
+    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.6f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
+    450.00 0.93220 300.00 770.82 2.1568 0.010693 -0.013028
+
+    >>> water=IAPWS95(rho=300., P=0.1)
+    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.7f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
+    372.76 0.10000 300.00 420.56 1.3110 0.0013528 -0.025144
+
+    >>> water=IAPWS95(h=1500., P=0.1)
+    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
+    372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
+
+    >>> water=IAPWS95(s=5., P=3.5)
+    >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
+    515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
+
+    >>> water=IAPWS95(T=500., u=900)
+    >>> print("%0.2f %0.2f %0.2f %0.2f %0.1f %0.4f %0.4f %0.1f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.cp, water.w, water.virialB))
+    500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
+
+    >>> water=IAPWS95(P=0.3, u=1550.)
+    >>> print("%0.2f %0.5f %0.4f %0.1f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    406.67 0.30000 3.3029 1550.0 1640.8 4.3260 0.49893 -0.018263
+
+    >>> water=IAPWS95(rho=300, h=1000.)
+    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.6f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    494.92 2.3991 300.00 992.00 1000.0 2.6315 0.026071 -0.0097064
+
+    >>> water=IAPWS95(rho=30, s=8.)
+    >>> print("%0.2f %0.3f %0.3f %0.1f %0.1f %0.4f %0.4f %0.2f %0.9f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.cp, water.w, water.virialB))
+    1562.42 21.671 30.000 4628.5 5350.9 8.0000 2.7190 943.53 0.000047165
+
+    >>> water=IAPWS95(rho=30, s=4.)
+    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    495.00 2.4029 30.000 1597.3 1677.4 4.0000 0.39218 -0.0097015
+
+    >>> water=IAPWS95(rho=300, u=1000.)
+    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    496.44 2.4691 300.000 1000.0 1008.2 2.6476 0.02680 -0.0096173
+
+    >>> water=IAPWS95(s=3., h=1000.)
+    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    345.73 0.034850 0.73526 952.60 1000.0 3.0000 0.29920 -0.034124
+
+    >>> water=IAPWS95(u=995., h=1000.)
+    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    501.89 2.7329 546.58 995.00 1000.0 2.6298 0.00866 -0.009308
+
+    >>> water=IAPWS95(u=1000., s=3.)
+    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
+    371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543
+
     """
     name = "water"
     CASNumber = "7732-18-5"
@@ -97,7 +175,7 @@ class H2O(MEoS):
 
         "nr4": [-0.14874640856724, 0.31806110878444],
         "a4": [3.5, 3.5],
-        "b": [0.85, 0.95],
+        "b4": [0.85, 0.95],
         "B": [0.2, 0.2],
         "C": [28, 32],
         "D": [700, 800],
@@ -158,10 +236,6 @@ class H2O(MEoS):
     _PR = 0.0043451
 
     _surface = {"sigma": [0.2358, -0.147375], "exp": [1.256, 2.256]}
-#    _dielectric={"eq": 2, "Tref": 273.16, "rhoref": 1000.,
-#                            "a0": [],  "expt0": [], "expd0": [],
-#                            "a1": [], "expt1": [], "expd1": [],
-#                            "a2": [], "expt2": [], "expd2": []}
 #    _sublimation={"eq": 2, "Tref": 1, "Pref": 0.133332237, "a1": [-0.212144006e2, 0.273203819e2, -0.61059813e1], "exp1": [-0.9933333333, 0.206667, 0.703333], "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {
         "eq": 6,
@@ -201,33 +275,12 @@ class H2O(MEoS):
 
     _viscosity = visco0, visco1
 
-    def _visco0(self, coef=False):
-        """International Association for the Properties of Water and Steam, "Revised Release on the IAPS Formulation 1985 for the Viscosity of Ordinary Water Substance," IAPWS, 1997
-Kestin, J., Sengers, J.V., Kamgar-Parsi, B. and Levelt Sengers, J.M.H. "Thermophysical Properties of Fluid H2O," J. Phys. Chem. Ref. Data, 13(1):175-183, 1984."""
-        Tr = self.T/647.226
-        rhor = self.rho/self.M/17.6385386
-        n0 = [1.0, 0.978197, 0.579829, -0.202354]
-        fi0 = Tr**0.5/sum([n/Tr**i for i, n in enumerate(n0)])
-
-        Li = [0, 1, 4, 5, 0, 1, 2, 3, 0, 1, 2, 0, 1, 2, 3, 0, 3, 1, 3]
-        Lj = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 6]
-        Lij = [0.5132047, 0.3205656, -0.7782567, 0.1885447, 0.2151778,
-               0.7317883, 1.241044, 1.476783, -0.2818107, -1.070786,
-               -1.263184, 0.1778064, 0.4605040, 0.2340379, -0.4924179,
-               -0.0417661, 0.1600435, -0.01578386, -0.003629481]
-        lst = [lij*(1./Tr-1)**i*(rhor-1)**j for i, j, lij in zip(Li, Lj, Lij)]
-        fi1 = exp(rhor*sum(lst))
-
-        fi2 = 1.
-        if 645.91 < self.T < 650.77 and 245.8 < self.rho < 405.3:
-            x = rhor/self.derivative("P", "rho", "T")/self.M/17.6385386*22115
-            if x >= 21.93:
-                fi2 = 0.922*x**0.0263
-
-        if coef:
-            return fi0, fi1
-        else:
-            return unidades.Viscosity(55.071*fi0*fi1*fi2, "muPas")
+    def _visco0(self, rho, T, fase):
+        ref = H2O()
+        ref._ref("OTO")
+        estado = ref._Helmholtz(rho, 1.5*647.096)
+        drho = 1/estado["dpdrho"]*1e3
+        return _Viscosity(rho, T, fase=fase, drho=drho)
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
@@ -235,61 +288,15 @@ Kestin, J., Sengers, J.V., Kamgar-Parsi, B. and Levelt Sengers, J.M.H. "Thermoph
 
     _thermal = thermo0,
 
-    def _thermo0(self):
-        """International Association for the Properties of Water and Steam, "Revised Release on the IAPS Formulation 1985 for the Thermal Conductivity of Ordinary Water Substance," IAPWS, 1998.
-Kestin, J., Sengers, J.V., Kamgar-Parsi, B. and Levelt Sengers, J.M.H. "Thermophysical Properties of Fluid H2O," J. Phys. Chem. Ref. Data, 13(1):175-183, 1984."""
-        rhor = self.rho/self.M/17.6385386
-        Tr = self.T/647.226
-
-        Lo = [1.0, 6.978267, 2.599096, -0.998254]
-        L0 = Tr**0.5/sum([Li/Tr**i for i, Li in enumerate(Lo)])
-
-        L1i = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 0, 1, 2]
-        L1j = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5]
-        L1ij = [1.3293046, 1.7018363, 5.2246158, 8.7127675, -1.8525999,
-                -0.40452437, -2.2156845, -10.124111, -9.5000611, 0.9340469,
-                0.2440949, 1.6511057, 4.9874687, 4.3786606, 0.018660751,
-                -0.76736002, -0.27297694, -0.91783782, -0.12961068, 0.37283344,
-                -0.43083393, 0.044809953, -0.11203160, 0.13333849]
-        lst = [Lij*(1./Tr-1)**i*(rhor-1)**j for i, j, Lij in zip(L1i, L1j, L1ij)]
-        L1 = exp(rhor*sum(lst))
-
-        eta0, eta1 = self._visco0(True)
-        x = rhor/self.derivative("P", "rho", "T")/self.M/17.6385386*22115
-        L2 = 0.0013848*(self.T/rhor)**2/eta0/eta1*(self.dpdT/22115)**2*x**0.4678*rhor**0.5*exp(-18.66*(Tr-1)**2-(rhor-1)**4)
-        return unidades.ThermalConductivity(.4945*(L0*L1+L2), "mWmK")
-
-    def _Dielectric(self):
-        """Equation for the Dielectric constant
-
-        >>> "%.7f" % _Dielectric(999.242866, 298.15)
-        '78.5907250'
-        >>> "%.8f" % _Dielectric(26.0569558, 873.15)
-        '1.12620970'
-        """
-        k = 1.380658e-23
-        Na = 6.0221367e23
-        alfa = 1.636e-40
-        epsilon0 = 8.854187817e-12
-        mu = 6.138e-30
-        M = 0.018015268
-
-        d = self.rho/self.rhoc
-        Tr = self.Tc/self.T
-        I = [1, 1, 1, 2, 3, 3, 4, 5, 6, 7, 10, None]
-        J = [0.25, 1, 2.5, 1.5, 1.5, 2.5, 2, 2, 5, 0.5, 10, None]
-        n = [0.978224486826, -0.957771379375, 0.237511794148, 0.714692244396,
-             -0.298217036956, -0.108863472196, 0.949327488264e-1,
-             -0.980469816509e-2, 0.165167634970e-4, 0.937359795772e-4,
-             -0.123179218720e-9, 0.196096504426e-2]
-
-        g = 1+n[11]*d/(self.Tc/228/Tr-1)**1.2
-        for i in range(11):
-            g += n[i]*d**I[i]*Tr**J[i]
-        A = Na*mu**2*self.rho*g/M/epsilon0/k/self.T
-        B = Na*alfa*self.rho/3/M/epsilon0
-
-        return unidades.Dimensionless((1+A+5*B+(9+2*A+18*B+A**2+10*A*B+9*B**2)**0.5)/4/(1-B))
+    def _thermo0(self, rho, T, fase):
+        ref = H2O()
+        ref._ref("OTO")
+        estado = ref._Helmholtz(rho, 1.5*647.096)
+        drho = 1/estado["dpdrho"]*1e3
+        return _ThCond(rho, T, fase, drho)
+        
+    def _Dielectric(self, rho, T):
+        return unidades.Dimensionless(_Dielectric(rho, T))
 
     @classmethod
     def _Melting_Pressure(cls, T=None):
@@ -349,7 +356,37 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    cyc5=H2O(T=500., rho=838.025, recursion=False)
+#    cyc5=H2O(T=500., rho=838.025, recursion=False)
 #    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-
 #    print cyc5.cp.kJkgK, cyc5.cp0.kJkgK
+
+#    water = H2O(T=300, x=0.5)
+#    print water.v0, water.rho0
+#    print water.h0, water.u0, water.s0
+#    print water.a0, water.g0, water.gamma0
+#    print water.cp0.kJkgK, water.cv0.kJkgK, water.cp0_cv
+
+
+#    water=H2O(T=300, rho=1000)
+#    print water.joule.Katm, water.virialB, water.virialC, water.Hvap.kJkg
+#    0.0992418350 4.13018112 1501.51914 0.393062643
+#
+#    >>> water=H2O(T=500, rho=0.435)
+#    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
+#    0.0999679423 1.50817541 548.31425 7.944882714
+#
+    water=H2O(T=298.15, P=101325.)
+    print water.P, water.rho, water.h, water.s
+#    870.7690 2.66422350 2019.33608 4.17223802
+#
+#    >>> water=H2O(T=300., P=0.1)
+#    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+#    300.00 0.10000 996.56 112.65 0.39306 4.1806 1501.5 -0.066682
+#
+#    >>> water=H2O(T=500., P=0.1)
+#    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
+#    500.00 0.10000 0.43514 2928.6 7.9447 1.9813 548.31 -0.0094137
+#
+#    >>> water=H2O(T=450., x=0.5)
+#    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.virialB))
+#    450.00 0.93220 9.5723 1761.8 4.3589 -0.013028

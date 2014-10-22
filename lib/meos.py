@@ -25,11 +25,6 @@ from physics import R_atml
 from config import Fluid
 
 
-Tref = 298.15
-Pref = 101325.
-# so=0
-# ho=0
-
 data = [(QApplication.translate("pychemqt", "Temperature"), "T"),
         (QApplication.translate("pychemqt", "Pressure"), "P"),
         (QApplication.translate("pychemqt", "Density"), "rho"),
@@ -212,8 +207,7 @@ class MEoS(_fase):
               "eq": 0,
               "visco": 0,
               "thermal": 0,
-              "ref": None,
-              "recursion": True}
+              "ref": "OTO"}
 
     def __init__(self, **kwargs):
         """Incoming properties:
@@ -241,7 +235,6 @@ class MEoS(_fase):
             IIR:  h=200,s=1 saturated liquid 0ºC
             ASHRAE:  h,s=0 saturated liquid at -40ºC
             CUSTOM
-            None: Se usan ho,so=0, válido para calcular los valores de referencia
 
     Calculated properties:
         P         -   Pressure, MPa
@@ -377,22 +370,12 @@ class MEoS(_fase):
         h = self.kwargs["h"]
         u = self.kwargs["u"]
         x = self.kwargs["x"]
-        recursion = self.kwargs["recursion"]
         eq = self.kwargs["eq"]
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
         ref = self.kwargs["ref"]
 
-        if ref is None:
-            ho = so = 0
-        else:
-            if ref == "CUSTOM":
-                file = conf_dir+"std.pkl"
-            else:
-                file = os.environ["pychemqt"]+"dat/%s.pkl" % ref
-            with open(file) as archivo:
-                std = cPickle.load(archivo)
-                ho, so = std[self.__class__.__name__][str(eq)]
+        self._ref(ref)
 
         if self.id:
             self.componente = compuestos.Componente(self.id)
@@ -437,15 +420,19 @@ class MEoS(_fase):
 
         if x is None:
             # Method with iteration necessary to get x
+            print T, self.Tc, P, self.Pc
             if self._mode == "TP":
                 if T < self.Tc and P < self.Pc and \
                         self._Vapor_Pressure(T) < P:
                     rhoo = self._Liquid_Density(T)
                 elif T < self.Tc and P < self.Pc:
                     rhoo = self._Vapor_Density(T)
+                elif P < self.Pc:
+                    rhoo = 1.
                 else:
                     rhoo = self.rhoc*3
-                rho = fsolve(lambda rho: self._Helmholtz(rho, T)["P"]-P*1000, rhoo)
+                print rhoo
+                rho = fsolve(lambda rho: self._Helmholtz(rho, T)["P"]-P, rhoo)
 
             elif self._mode == "Th":
                 rhol = self._Liquid_Density(T)
@@ -480,23 +467,23 @@ class MEoS(_fase):
 
                 def funcion(rho):
                     par = self._Helmholtz(rho, T)
-                    return par["h"]-par["P"]*par["v"]-u
+                    return par["h"]-par["P"]/1000*par["v"]-u
                 rho = fsolve(funcion, rhoo)
 
             elif self._mode == "Prho":
-                T = fsolve(lambda T: self._Helmholtz(rho, T)["P"]-P*1000, 600)
+                T = fsolve(lambda T: self._Helmholtz(rho, T)["P"]-P, 600)
                 rhol = self._Liquid_Density(T)
                 rhov = self._Vapor_Density(T)
                 if T[0] == 600 or rhov <= rho <= rhol:
                     def funcion(T):
                         rhol, rhov, Ps = self._saturation(T)
-                        return Ps-P*1000
+                        return Ps-P
                     T = fsolve(funcion, 600)
 
             elif self._mode == "Ph":
                 def funcion(parr):
                     par = self._Helmholtz(parr[0], parr[1])
-                    return par["P"]-P*1000, par["h"]-h
+                    return par["P"]-P, par["h"]-h
                 rho, T = fsolve(funcion, [1000, 300])
                 rhol = self._Liquid_Density(T)
                 rhov = self._Vapor_Density(T)
@@ -507,13 +494,13 @@ class MEoS(_fase):
                         vapor = self._Helmholtz(rhov, T)
                         liquido = self._Helmholtz(rhol, T)
                         x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P*1000, vapor["h"]*x+liquido["h"]*(1-x)-h
+                        return Ps-P, vapor["h"]*x+liquido["h"]*(1-x)-h
                     rho, T = fsolve(funcion, [2., 500.])
 
             elif self._mode == "Ps":
                 def funcion(parr):
                     par = self._Helmholtz(parr[0], parr[1])
-                    return par["P"]-P*1000, par["s"]-s
+                    return par["P"]-P, par["s"]-s
                 rho, T = fsolve(funcion, [2., 400])
                 rhol = self._Liquid_Density(T)
                 rhov = self._Vapor_Density(T)
@@ -524,13 +511,13 @@ class MEoS(_fase):
                         vapor = self._Helmholtz(rhov, T)
                         liquido = self._Helmholtz(rhol, T)
                         x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P*1000, vapor["s"]*x+liquido["s"]*(1-x)-s
+                        return Ps-P, vapor["s"]*x+liquido["s"]*(1-x)-s
                     rho, T = fsolve(funcion, [2., 500.])
 
             elif self._mode == "Pu":
                 def funcion(parr):
                     par = self._Helmholtz(parr[0], parr[1])
-                    return par["h"]-par["P"]*par["v"]-u, par["P"]-P*1000
+                    return par["h"]-par["P"]*par["v"]-u, par["P"]-P
                 rho, T = fsolve(funcion, [1000, 600])
                 rhol = self._Liquid_Density(T)
                 rhov = self._Vapor_Density(T)
@@ -543,7 +530,7 @@ class MEoS(_fase):
                         vu = vapor["h"]-Ps/rhov
                         lu = liquido["h"]-Ps/rhol
                         x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P*1000, vu*x+lu*(1-x)-u
+                        return Ps-P, vu*x+lu*(1-x)-u
                     rho, T = fsolve(funcion, [2., 500.])
 
             elif self._mode == "rhoh":
@@ -676,6 +663,8 @@ class MEoS(_fase):
 
             if not P:
                 P = propiedades["P"]/1000.
+            else:
+                P = P/1000.
 
         elif self._mode == "Tx":
             # Check input T in saturation range
@@ -696,7 +685,7 @@ class MEoS(_fase):
             # FIXME: Too slow, it need find any other algorithm
             def funcion(T):
                 rhol, rhov, Ps = self._saturation(T)
-                return Ps/1000-P
+                return Ps-P
             To = (self.Tc-self.Tt)/2
             T = fsolve(funcion, 500)[0]
             rhol, rhov, Ps = self._saturation(T)
@@ -706,6 +695,7 @@ class MEoS(_fase):
                 propiedades = liquido
             elif x == 1:
                 propiedades = vapor
+            P = P/1000.
 
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
@@ -885,7 +875,7 @@ class MEoS(_fase):
         delta = rho/rhoc
         tau = Tc/T
         
-        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=self._phir(tau, delta)
 
         propiedades = {}
@@ -924,7 +914,7 @@ class MEoS(_fase):
         delta = rho/rhoc
         tau = Tc/T
 
-        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 
         ref = self._constants["ref"](eq=self._constants["eq"])
         Tr = T/Tc
@@ -980,7 +970,7 @@ class MEoS(_fase):
         tau = self.Tc/T
         b = self._constants["b"]
 
-        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 
         a = [None]
         a.append(self.R*T)
@@ -1131,7 +1121,7 @@ class MEoS(_fase):
         daT = -a*m/T**0.5/self.Tc**0.5*alfa**0.5
         d2aT = a*m*(1+m)/2/T/(T*self.Tc)**0.5
 
-        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+        fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 
         v = 1./rho
         vb = v-b
@@ -1234,13 +1224,38 @@ class MEoS(_fase):
         helmholtz["nr2"] = nr[5:]
         self._constants = helmholtz
 
+    def _ref(self, ref):
+        """Define reference state"""
+        if ref == "OTO":
+            self.Tref = 298.15
+            self.Pref = 101325.
+            self.ho = 0
+            self.so = 0
+        elif ref == "NBP":
+            self.Tref = self.Tb
+            self.Pref = 101325.
+            self.ho = 0
+            self.so = 0
+        elif ref == "IIR":
+            self.Tref = 273.15
+            self.Pref = self._Vapor_Pressure(273.15)
+            self.ho = 200
+            self.so = 1
+        elif ref == "ASHRAE":
+            self.Tref = 233.15
+            self.Pref = self._Vapor_Pressure(233.15)
+            self.ho = 0
+            self.so = 0
+        elif ref == "CUSTOM":
+            pass
+
     def _prop0(self, rho, T):
         """Ideal gas properties"""
         rhoc = self._constants.get("rhoref", self.rhoc)
         Tc = self._constants.get("Tref", self.Tc)
         delta = rho/rhoc
         tau = Tc/T
-        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
 
         propiedades = _fase()
         propiedades.v = self.R*T/self.P
@@ -1251,21 +1266,22 @@ class MEoS(_fase):
         propiedades.alfap = 1/T
         propiedades.betap = rho
         return propiedades
-
-    def _phi0(self, cp, tau, delta, To, Po):
+    
+    def _PHIO(self, cp):
+        """Convert cp dict in phi0 dict"""
         R = cp.get("R", self._constants["R"])/self.M*1000
         rhoc = self._constants.get("rhoref", self.rhoc)
         Tc = self._constants.get("Tref", self.Tc)
-        rho0 = Po/R/To
-        tau0 = Tc/To
+        rho0 = self.Pref/R/self.Tref
+        tau0 = Tc/self.Tref
         delta0 = rho0/rhoc
         co = cp["ao"]-1
         ti = [-x for x in cp["pow"]]
         ci = [-n/(t*(t+1))*Tc**t for n, t in zip(cp["an"], cp["pow"])]
         titao = [fi/Tc for fi in cp["exp"]]
         hyp = [fi/Tc for fi in cp["hyp"]]
-        cI = -(1+co)/tau0
-        cII = co*(1-log(tau0))-log(delta0)
+        cI = self.ho/R/self.Tc-cp["ao"]/tau0
+        cII = log(tau0/delta0)-self.so/R-1+cp["ao"]-cp["ao"]*log(tau0)
         for c, t in zip(ci, ti):
             cI-=c*t*tau0**(t-1)
             cII+=c*(t-1)*tau0**t
@@ -1279,7 +1295,7 @@ class MEoS(_fase):
             for i in [1, 3]:
                 cI+=cp["ao_hyp"][i]*hyp[i]*tanh(hyp[i]*tau0)
                 cII-=cp["ao_hyp"][i]*(hyp[i]*tau0*tanh(hyp[i]*tau0)-log(abs(cosh(hyp[i]*tau0))))
-
+        
         Fi0 = {"ao_log": [1,  co],
                "pow": [0, 1] + ti,
                "ao_pow": [cII, cI] + ci,
@@ -1287,17 +1303,25 @@ class MEoS(_fase):
                "titao": titao,
                "ao_hyp": cp["ao_hyp"],
                "hyp": hyp}
+        return Fi0
 
-        # FIXME: Reference estate
-        T = self._constants.get("Tref", self.Tc)/tau
-        rho = delta*self.rhoc
-        cp0sav = self._Cp0(cp, T)
-        cpisav = self._dCp(cp, T, To)
-        cptsav = self._dCpT(cp, T, To)
-        
-#        fio = cpisav/R/T-cptsav/R+log(T*rho/rho0/Tref)-1
+    def _phi0(self, cp, tau, delta):
+        Fi0 = self._PHIO(cp)
+        print Fi0
+
+#        T = self._constants.get("Tref", self.Tc)/tau
+#        rho = delta*self.rhoc
+#        rho0 = self.Pref/R/self.Tref
+#
+#        cp0sav = self._Cp0(cp, T)
+#        cpisav = self._dCp(cp, T, self.Tref)
+#        cptsav = self._dCpT(cp, T, self.Tref)
+#        
+#        fio = cpisav/R/T-cptsav/R+log(T*rho/rho0/self.Tref)-1
 #        fiot = (cpisav-1)/tau
 #        fiott = (1-cp0sav/R)/tau**2
+
+        # FIXME: Reference estate
         fio=Fi0["ao_log"][0]*log(delta)+Fi0["ao_log"][1]*log(tau)
         fiot=+Fi0["ao_log"][1]/tau
         fiott=-Fi0["ao_log"][1]/tau**2
@@ -1879,22 +1903,22 @@ class MEoS(_fase):
                 # second virial
                 Tc = self._viscosity.get("Tref_virial", self.Tc)
                 etar = self._viscosity.get("etaref_virial", 1.)
-                tau = self.T/Tc
+                tau = T/Tc
                 mud = 0
                 if self._viscosity.has_key("n_virial"):
                     muB = 0
                     for n, t in zip(self._viscosity["n_virial"],
                                     self._viscosity["t_virial"]):
                         muB += n*tau**t
-                    mud = etar*muB*self.rho/self.M*muo
+                    mud = etar*muB*rho/self.M*muo
 
                 Tc = self._viscosity.get("Tref_res", self.Tc)
                 rhoc = self._viscosity.get("rhoref_res", self.rhoc)
                 mured = self._viscosity.get("etaref_res", 1.)
-                tau = self.T/Tc
-                delta = self.rho/rhoc
+                tau = T/Tc
+                delta = rho/rhoc
                 if abs(delta-1) <= 0.001:
-                    expdel = self.rho/self.rhoc
+                    expdel = rho/self.rhoc
                 else:
                     expdel = delta
 
@@ -1968,21 +1992,21 @@ class MEoS(_fase):
                 muo = self._Visco0()
                 f = self._viscosity["F"]
                 e = self._viscosity["E"]
-                mu1 = f[0]+f[1]*(f[2]-log(self.T/f[3]))**2
+                mu1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2
 
-                rho = self.rho/self.M
-                G = e[0]+e[1]/self.T
-                H = rho**0.5*(rho-self._viscosity["rhoc"])/self._viscosity["rhoc"]
-                F = G+(e[2]+e[3]*self.T**-1.5)*rho**0.1+H*(e[4]+e[5]/self.T+e[6]/self.T**2)
+                rhom = rho/self.M
+                G = e[0]+e[1]/T
+                H = rhom**0.5*(rhom-self._viscosity["rhoc"])/self._viscosity["rhoc"]
+                F = G+(e[2]+e[3]*T**-1.5)*rhom**0.1+H*(e[4]+e[5]/self.T+e[6]/self.T**2)
                 mu2 = exp(F)-exp(G)
-                mu = muo+mu1*rho+mu2
+                mu = muo+mu1*rhom+mu2
 
             elif self._viscosity["eq"] == 3:
                 Tc = self._viscosity.get("Tref", 1.)
                 rhoc = self._viscosity.get("rhoref", 1.)
                 muref = self._viscosity.get("muref", 1.)
-                tau = self.T/Tc
-                delta = self.rho/self.M/rhoc
+                tau = T/Tc
+                delta = rho/self.M/rhoc
 
                 muo = self._Visco0()
 
@@ -2002,7 +2026,7 @@ class MEoS(_fase):
             elif self._viscosity["eq"] == 4:
                 muo = self._Visco0()
                 mur = 0
-                Gamma = self.Tc/self.T
+                Gamma = self.Tc/T
                 psi1 = exp(Gamma)-1.0
                 psi2 = exp(Gamma**2)-1.0
                 a = self._viscosity["a"]
@@ -2019,9 +2043,9 @@ class MEoS(_fase):
                 ki = (c[0]+c[1]*psi1+c[2]*psi2)*Gamma
                 kii = (C[0]+C[1]*psi1+C[2]*psi2)*Gamma**3
 
-                Prep = self.T*self.dpdT.barK
+                Prep = T*self.dpdT.barK
                 Patt = self.P.bar-Prep
-                Pid = self.rho*self.R*self.T/1e5
+                Pid = rho*self.R*self.T/1e5
                 delPr = Prep-Pid
                 mur = kr*delPr + ka*Patt + krr*delPr**2 + kaa*Patt**2 + ki*Pid + kii*Pid**2 + D[0]*Prep**3*Gamma**2
 
@@ -2041,7 +2065,7 @@ class MEoS(_fase):
                     A.append(a0[i]+a1[i]*self._viscosity["w"]+a2[i]*self._viscosity["mur"]**4+a3[i]*self._viscosity["k"])
 
                 muo = self._Visco0()
-                Y = self.rho/self.rhoc/6
+                Y = rho/self.rhoc/6
                 T_ = self.T/self._viscosity.get("ek", self.Tc/1.2593)
                 G1 = (1-0.5*Y)/(1-Y)**3
                 G2 = (A[1]*(1-exp(-A[4]*Y))/Y+A[2]*G1*exp(A[5]*Y)+A[3]*G1)/(A[1]*A[4]+A[2]+A[3])
@@ -2055,7 +2079,7 @@ class MEoS(_fase):
 #                delta=rho/rhoc
 #                tau=Tc/T
 #
-#                fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta, Tref, Pref)
+#                fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 #
 #                ref=self._constants["ref"](eq=self._constants["eq"])
 #                Tr=T/Tc
@@ -2081,12 +2105,12 @@ class MEoS(_fase):
 #                tauref=ref_Tc/T0
 #                fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=ref._phir(tauref, deltaref)
 
-                Tr = self.T/self.Tc
-                rhor = self.rho/self.rhoc
+                Tr = T/self.Tc
+                rhor = rho/self.rhoc
 
                 fint = 0
                 for n, m in zip(self._viscosity["fint"], self._viscosity["fint_t"]):
-                    fint += n*self.T**m
+                    fint += n*T**m
 
                 psi = 0
                 for n, t, d in zip(self._viscosity["psi"], self._viscosity["psi_t"], self._viscosity["psi_d"]):
@@ -2098,7 +2122,7 @@ class MEoS(_fase):
             mu = None
         return unidades.Viscosity(mu, "muPas")
 
-    def _KCritical(self):
+    def _KCritical(self, rho, T, fase):
         """Enchancement thermal conductivity calculation for critical region"""
         if self._thermal["critical"] == 0:
             tc = 0
@@ -2108,10 +2132,10 @@ class MEoS(_fase):
             if "crit_num_n" in self._thermal:
                 Tref = self._thermal["crit_num_Tref"]
                 if Tref < 0:
-                    tau = Tref/self.T
+                    tau = Tref/T
                 else:
-                    tau = self.T/Tref
-                delta = self.rho/self.M/self._thermal["crit_num_rhoref"]
+                    tau = T/Tref
+                delta = rho/self.M/self._thermal["crit_num_rhoref"]
 
                 for n, alfa, t, beta, d in zip(self._thermal["crit_num_n"], self._thermal["crit_num_alfa"], self._thermal["crit_num_t"], self._thermal["crit_num_beta"], self._thermal["crit_num_d"]):
                     tc += n*(tau+alfa)**t*(delta+beta)**d
@@ -2129,10 +2153,10 @@ class MEoS(_fase):
             if "crit_exp_n" in self._thermal:
                 Tref = self._thermal["crit_exp_Tref"]
                 if Tref < 0:
-                    tau = Tref/self.T
+                    tau = Tref/T
                 else:
-                    tau = self.T/Tref
-                delta = self.rho/self.M/self._thermal["crit_exp_rhoref"]
+                    tau = T/Tref
+                delta = rho/self.M/self._thermal["crit_exp_rhoref"]
                 expo = 0
                 for n, alfa, t, beta, d, c in zip(self._thermal["crit_exp_n"], self._thermal["crit_exp_alfa"], self._thermal["crit_exp_t"], self._thermal["crit_exp_beta"], self._thermal["crit_exp_d"], self._thermal["crit_exp_c"]):
                     expo += n*(tau+alfa)**t*(delta+beta)**d
@@ -2142,10 +2166,10 @@ class MEoS(_fase):
 
         elif self._thermal["critical"] == 2:
             X = self._thermal["X"]
-            xi = self.Pc*self.rho/self.rhoc**2/self.derivative("P", "rho", "T")
-            normterm = X[3]*Boltzmann/self.Pc*(self.T*self.dpdT*self.rhoc/self.rho)**2*xi**X[2]
-            delT = abs(self.T-self.Tc)/self.Tc
-            delrho = abs(self.rho-self.rhoc)/self.rhoc
+            xi = self.Pc*rho/self.rhoc**2/self.derivative("P", "rho", "T", fase)
+            normterm = X[3]*Boltzmann/self.Pc*(T*self.dpdT*self.rhoc/rho)**2*xi**X[2]
+            delT = abs(T-self.Tc)/self.Tc
+            delrho = abs(rho-self.rhoc)/self.rhoc
             expterm = exp(-(X[0]*delT**4+X[1]*delrho**4))
             mu = self._Viscosity()
             tc = normterm*expterm/(6*pi*mu*self._thermal["Z"])
@@ -2153,30 +2177,30 @@ class MEoS(_fase):
         elif self._thermal["critical"] == 3:
             qd = self._thermal["qd"]
             Tref = self._thermal["Tcref"]
-            x_T = self.Pc*self.rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T")
-            x_Tr = self.Pc*self.rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T")*Tref/self.T
+            x_T = self.Pc*rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T", fase)
+            x_Tr = self.Pc*rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T", fase)*Tref/T
             delchi = x_T-x_Tr
             if delchi <= 0:
                 tc = 0
             else:
                 Xi = self._thermal["Xio"]*(delchi/self._thermal["gam0"])**(self._thermal["gnu"]/self._thermal["gamma"])
                 omega = 2/pi*((self.cp-self.cv)/self.cp*arctan(Xi*qd)+self.cv/self.cp*Xi*qd)
-                omega0 = 2/pi*(1-exp(-1/(1./qd/Xi+Xi**2*qd**2/3*(self.rhoc/self.rho)**2)))
-                tc = self.rho/self.M*1e9*self.cp*Boltzmann*self._thermal["R0"]*self.T/(6*pi*Xi*self.mu.muPas)*(omega-omega0)
+                omega0 = 2/pi*(1-exp(-1/(1./qd/Xi+Xi**2*qd**2/3*(self.rhoc/rho)**2)))
+                tc = rho/self.M*1e9*self.cp*Boltzmann*self._thermal["R0"]*T/(6*pi*Xi*self.mu.muPas)*(omega-omega0)
 
         elif self._thermal["critical"] == 4:
-            rho = self.rho/self.M
-            Xt = (rho*self._thermal["Pcref"]/self._thermal["rhocref"]**2/self.derivative("P", "rho", "T"))**self._thermal["expo"]
-            parterm = self._thermal["alfa"]*Boltzmann/self._thermal["Pcref"]*(self.T*self.dpdT*self._thermal["rhocref"]/rho)**2*Xt*1e21
-            delT = abs(self.T-self._thermal["Tcref"])/self._thermal["Tcref"]
-            delrho = abs(rho-self._thermal["rhocref"])/self._thermal["rhocref"]
+            rhom = rho/self.M
+            Xt = (rhom*self._thermal["Pcref"]/self._thermal["rhocref"]**2/self.derivative("P", "rho", "T", fase))**self._thermal["expo"]
+            parterm = self._thermal["alfa"]*Boltzmann/self._thermal["Pcref"]*(T*self.dpdT*self._thermal["rhocref"]/rhom)**2*Xt*1e21
+            delT = abs(T-self._thermal["Tcref"])/self._thermal["Tcref"]
+            delrho = abs(rhom-self._thermal["rhocref"])/self._thermal["rhocref"]
             expterm = exp(-(self._thermal["alfa"]*delT**2+self._thermal["beta"]*delrho**4))
             tc = parterm*expterm/(6*pi*self._thermal["Xio"]*self.mu.muPas)*self._thermal["kcref"]
 
         elif self._thermal["critical"] == "NH3":
-            tr = abs(self.T-405.4)/405.4
+            tr = abs(T-405.4)/405.4
             trr = tr
-            if 404.4 < self.T < 406.5 and (self.rho/self.M<9.6 or self.rho/self.M>18): #to avoid infinite value in critical region
+            if 404.4 < T < 406.5 and (rho/self.M<9.6 or rho/self.M>18): #to avoid infinite value in critical region
                 trr = 0.002
             etab = 1.0e-5*(2.6+1.6*tr)
             dPT = 1.0e5*(2.18-0.12/exp(17.8*tr))
@@ -2185,21 +2209,21 @@ class MEoS(_fase):
                 dtcid = tcrhoc
                 xcon = -1.e20
             else:
-                tcrhoc = 1.2*1.38066e-23*self.T**2*dPT**2*0.423e-8/trr**1.24*\
+                tcrhoc = 1.2*1.38066e-23*T**2*dPT**2*0.423e-8/trr**1.24*\
                     (1.0+1.429*tr**0.5)/(6.0*pi*etab*(1.34e-10/trr**0.63*(1.0+1.0*tr**0.5)))
                 dtcid = tcrhoc*exp(-36.0*tr**2)
                 xcon = 0.61*235+16.5*log(trr)
-            if self.rho/self.rhoc < 0.6:
+            if rho/self.rhoc < 0.6:
                 tccsw = dtcid*xcon**2/(xcon**2+(141.0-0.96*235.0)**2)
-                tc = tccsw*self.rho**2/141.0**2
+                tc = tccsw*rho**2/141.0**2
             else:
-                tc = dtcid*xcon**2/(xcon**2+(self.rho-0.96*235.0)**2)
+                tc = dtcid*xcon**2/(xcon**2+(rho-0.96*235.0)**2)
 
         elif self._thermal["critical"] == "CH4":
-            tau = self.Tc/self.T
-            delta = self.rho/self.rhoc
-            ts = (self.Tc-self.T)/self.Tc
-            ds = (self.rhoc-self.rho)/self.rhoc
+            tau = self.Tc/T
+            delta = rho/self.rhoc
+            ts = (self.Tc-T)/self.Tc
+            ds = (self.rhoc-rho)/self.rhoc
             xt = 0.28631*delta*tau/self.derivative("P", "rho", "T")
             ftd = exp(-2.646*abs(ts)**0.5+2.678*ds**2-0.637*ds)
             tc = 91.855/self.mu/tau**2*self.dpdT**2*xt**0.4681*ftd*1e-3
@@ -2216,7 +2240,7 @@ class MEoS(_fase):
                 # Dilute gas terms
                 kg = 0
                 if "no" in self._thermal:
-                    tau = self.T/self._thermal["Tref"]
+                    tau = T/self._thermal["Tref"]
                     for n, c in zip(self._thermal["no"], self._thermal["co"]):
                         if c == -99:
                             cpi = 1.+n*(self.cp0.kJkgK-2.5*self.R.kJkgK)
@@ -2246,8 +2270,8 @@ class MEoS(_fase):
                 # Backgraund terms
                 kb = 0
                 if "nb" in self._thermal:
-                    tau = self.T/self._thermal["Trefb"]
-                    delta = self.rho/self.M/self._thermal["rhorefb"]
+                    tau = T/self._thermal["Trefb"]
+                    delta = rho/self.M/self._thermal["rhorefb"]
                     for n, t, d, c in zip(self._thermal["nb"], self._thermal["tb"], self._thermal["db"], self._thermal["cb"]):
                         if c == -99:
                             if tau < 1:
@@ -2271,7 +2295,7 @@ class MEoS(_fase):
                     kb *= self._thermal["krefb"]
 
                 # Critical enhancement
-                kc = self._KCritical()
+                kc = self._KCritical(rho, T, fase)
 
                 k = kg+kb+kc
 
@@ -2279,46 +2303,46 @@ class MEoS(_fase):
                 self._viscosity = self._thermal["visco"]
                 muo = self._Visco0()
                 G = self._thermal["G"]
-                kg = 1e-3*muo/self.M*(3.75*self.R+(self.cp0.kJkgK-2.5*self.R)*(G[0]+G[1]*self._viscosity["ek"]/self.T))
+                kg = 1e-3*muo/self.M*(3.75*self.R+(self.cp0.kJkgK-2.5*self.R)*(G[0]+G[1]*self._viscosity["ek"]/T))
 
                 E = self._thermal["E"]
-                F0 = E[0]+E[1]/self.T+E[2]/self.T**2
-                F1 = E[3]+E[4]/self.T+E[5]/self.T**2
-                F2 = E[6]+E[7]/self.T
-                rho = self.rho/self.M
-                kb = (F0+F1*rho)*rho/(1+F2*rho)
+                F0 = E[0]+E[1]/T+E[2]/T**2
+                F1 = E[3]+E[4]/T+E[5]/T**2
+                F2 = E[6]+E[7]/T
+                rhom = rho/self.M
+                kb = (F0+F1*rhom)*rhom/(1+F2*rhom)
 
                 # Critical enhancement
-                kc = self._KCritical()
+                kc = self._KCritical(rho, T, fase)
 
                 k = kg+kb+kc
 
             elif self._thermal["eq"] == 3:
-                T_ = self._thermal["ek"]/self.T
-                rho = self.rho/self.M
+                T_ = self._thermal["ek"]/T
+                rhom = rho/self.M
                 suma = 0
                 for i, bi in enumerate(self._thermal["b"]):
                     suma += bi*T_**((3.-i)/3.)
-                ko = self._thermal["Nchapman"]*self.T**self._thermal["tchapman"]/(self._thermal["sigma"]**2/suma)
+                ko = self._thermal["Nchapman"]*T**self._thermal["tchapman"]/(self._thermal["sigma"]**2/suma)
 
                 f = self._thermal["F"]
                 e = self._thermal["E"]
-                k1 = f[0]+f[1]*(f[2]-log(self.T/f[3]))**2
-                kg = ko+k1*rho
+                k1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2
+                kg = ko+k1*rhom
 
-                G = e[0]+e[1]/self.T
-                H = rho**0.5*(rho-self._thermal["rhoc"])/self._thermal["rhoc"]
-                F = G+(e[2]+e[3]*self.T**-1.5)*rho**0.1+H*(e[4]+e[5]/self.T+e[6]/self.T**2)
+                G = e[0]+e[1]/T
+                H = rhom**0.5*(rhom-self._thermal["rhoc"])/self._thermal["rhoc"]
+                F = G+(e[2]+e[3]*T**-1.5)*rhom**0.1+H*(e[4]+e[5]/T+e[6]/T**2)
                 kb = exp(F)-exp(G)
 
-                bl = self._thermal["ff"]*(self._thermal["rm"]**5*self.rho.gcc*Avogadro/self.M*self._thermal["Nchapman"]/self.T)**0.5
-                y = 6.0*pi*self.mu/100000.*bl*(Boltzmann*self.T*self.rho.gcc*Avogadro/self.M)**0.5
+                bl = self._thermal["ff"]*(self._thermal["rm"]**5*rho/1000.*Avogadro/self.M*self._thermal["Nchapman"]/T)**0.5
+                y = 6.0*pi*self.mu/100000.*bl*(Boltzmann*T*rho/1000.*Avogadro/self.M)**0.5
                 deltaL = 0.0
                 if self.derivative("P", "rho", "T") > 0:
-                    deltaL = Boltzmann*(self.T*self.dpdT)**2/(self.rho.gcc*self.derivative("P", "rho", "T") )**0.5/y
+                    deltaL = Boltzmann*(T*self.dpdT)**2/(rho/1000.*self.derivative("P", "rho", "T") )**0.5/y
                 else:
                     deltaL = 0.0
-                kc = deltaL*exp(-18.66*((self.rho-self.rhoc)/self.rhoc)**4-4.25*((self.T-self.Tc)/self.Tc)**2)
+                kc = deltaL*exp(-18.66*((rho-self.rhoc)/self.rhoc)**4-4.25*((T-self.Tc)/self.Tc)**2)
 
                 k = kg+kb+kc
 

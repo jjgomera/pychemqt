@@ -387,10 +387,12 @@ class Ar(MEoS):
 #                        700.0 0.68620 63.355 209.09 0.44677 0.31223 0.52050 492.95"""}
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+#    import doctest
+#    doctest.testmod()
 
+#    cyc5=Ar(T=300., P=0.1)
+#    print "%0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.h.kJkg, cyc5.s.kJkgK, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
+#    print cyc5.k.mWmK, cyc5.mu.muPas
 
-    cyc5=Ar(T=300., P=0.1)
-    print "%0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.h.kJkg, cyc5.s.kJkgK, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
+    water=Ar(T=298.15, P=101325.)
+    print water.T, water.P, water.rho, water.h, water.s, water.x
