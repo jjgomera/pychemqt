@@ -938,14 +938,10 @@ class SpecificVolume_square(unidad):
              "in3oz": k.inch**6/k.oz**2,
              "galUKoz": k.gallon_imp**2/k.oz**2,
              "galUSoz": k.gallon**2/k.oz**2}
-#    __text__ = [u'm⁶/kg²', u'cm⁶/g²', u'ml²/g²', u'm⁶/g²', u'cm⁶/kg²', u'ft⁶/lb²',
-#                u'in⁶/lb²', u'gallon UK²/lb²', u'gallon US²/lb²', u'barril²/lb²',
-#                u'ft⁶/ton UK²', u'ft⁶/ton US²', u'ft⁶/slug²', u'ft⁶/onza²',
-#                u'in⁶/onza²', u'gallon UK²/onza²', u'gallon US²/onza²']
-    __text__ = [u'm³/kg', u'cm³/g', u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb',
-                u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
-                u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
-                u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
+    __text__ = [u'm⁶/kg²', u'cm⁶/g²', u'ml²/g²', u'm⁶/g²', u'cm⁶/kg²', u'ft⁶/lb²',
+                u'in⁶/lb²', u'gallon UK²/lb²', u'gallon US²/lb²', u'barril²/lb²',
+                u'ft⁶/ton UK²', u'ft⁶/ton US²', u'ft⁶/slug²', u'ft⁶/onza²',
+                u'in⁶/onza²', u'gallon UK²/onza²', u'gallon US²/onza²']
     __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
                  'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
@@ -2395,8 +2391,9 @@ class InvPressure(unidad):
              "dyncm2": k.centi**2/k.dyn}
     __text__ = ['1/Pa', '1/hPa', '1/kPa', '1/MPa', '1/bar', '1/bar g',
                 '1/mbar', '1/psi', '1/psi g', '1/atm', u'1/kg/cm²',
-                u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O',
-                'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+                u'1/kg/cm² g', '1/mmH2O', '1/cmH2O', '1/mH2O', '1/inH2O',
+                '1/ftH2O', '1/mmHg', '1/cmHg', '1/inHg', '1/ftHg', u'1/lb/cm²',
+                u'1/lb/ft²', u'1/dyn/cm²']
     __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
@@ -2425,11 +2422,12 @@ class EnthalpyPressure(unidad):
              "kJkgkPa": 1.,
              "kJkgMPa": k.milli, 
              "Jkgatm": 1./101325,
-             "kJkgatm": 1./101.325}
-    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa', "J/kgatm", "kJ/kgatm"]
-    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm"]
+             "kJkgatm": 1./101.325,
+             "Btulbpsi": k.Btu/k.lb/k.psi}
+    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa', "J/kgatm", "kJ/kgatm", "Btu/lb psi"]
+    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm", "Btulbpsi"]
     __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
-                     "cgs": "kJkgkPa", "english": "kJkgkPa"}
+                     "cgs": "kJkgkPa", "english": "Btulbpsi"}
 
     def __init__(self, data, unit="JkgPa", magnitud=""):
         super(EnthalpyPressure, self).__init__(data, unit, magnitud)
@@ -2448,11 +2446,12 @@ class EnthalpyDensity(unidad):
     """
     __title__ = QApplication.translate("pychemqt", "Enthalpy per density")
     rates = {"Jkgkgm3": 1.,
-             "kJkgkgm3": k.kilo}
-    __text__ = ['J/kgkgm3', 'kJ/kgkgm3']
-    __units__ = ['Jkgkgm3', 'kJkgkgm3']
+             "kJkgkgm3": k.kilo, 
+             "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
+    __text__ = ['J/kgkgm3', 'kJ/kgkgm3', "Btulb/lbft3"]
+    __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
-                     "cgs": "kJkgkgm3", "english": "kJkgkgm3"}
+                     "cgs": "kJkgkgm3", "english": "Btulb2ft3"}
 
     def __init__(self, data, unit="Jkgkgm3", magnitud=""):
         super(EnthalpyDensity, self).__init__(data, unit, magnitud)
@@ -2473,12 +2472,14 @@ class TemperaturePressure(unidad):
     __title__ = QApplication.translate("pychemqt", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
+             "Kbar": 1e-5, 
              "KMPa": k.micro, 
-             "Katm": 1/101325.}
-    __text__ = ['K/Pa', 'K/kPa', 'K/MPa', "K/atm"]
-    __units__ = ['KPa', 'KkPa', 'KMPa', "Katm"]
+             "Katm": 1/101325., 
+             "Fpsi": k.Rankine/k.psi}
+    __text__ = ['K/Pa', 'K/kPa', "K/bar", 'K/MPa', "K/atm", "F/psi"]
+    __units__ = ['KPa', 'KkPa', "Kbar", 'KMPa', "Katm", "Fpsi"]
     __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa",
-                     "cgs": "KPa", "english": "KPa"}
+                     "cgs": "KPa", "english": "Fpsi"}
 
     def __init__(self, data, unit="KPa", magnitud=""):
         super(TemperaturePressure, self).__init__(data, unit, magnitud)
@@ -2490,11 +2491,14 @@ class PressureTemperature(unidad):
 
     * pascal per Kelvin (PaK) default
     * kilopascal per Kelvin (kPaK)
+    * bar per Kelvin (barK)
+    * atmosphere per Kelvin (atmK)
     * megapascal per Kelvin (MPaK)
+    * psi per Fahrenheit (psiF)
 
     >>> H=PressureTemperature(1000, "PaK")
-    >>> print H.PaK, H.atmK
-    1000.0 0.00101325
+    >>> print H.kPaK, H.atmK
+    1.0 0.00986923266716
     """
     __title__ = QApplication.translate("pychemqt", "Pressure per Temperature")
     rates = {"PaK": 1.,
@@ -2521,9 +2525,9 @@ class PressureDensity(unidad):
     * megapascal per kg/m3 (MPakgm3)
     * atmosphere per kg/m3 (atmkgm3)
 
-    >>> H=PressureTemperature(1000, "Pakgm3")
-    >>> print H.PaK, H.atmK
-    1000.0 0.00101325
+    >>> H=PressureDensity(1000, "Pakgm3")
+    >>> print H.kPakgm3, H.atmkgm3
+    1.0 0.00986923266716
     """
     __title__ = QApplication.translate("pychemqt", "Pressure per density")
     rates = {"Pakgm3": 1.,
@@ -2533,8 +2537,8 @@ class PressureDensity(unidad):
              "MPakgm3": k.mega,
              "atmkgm3": 101325., 
              "psilbft3": k.psi/k.pound*k.foot**3}
-    __text__ = ['Pa/kgm3', 'kPa/kgm3', 'bar/kgm3', 'MPa/kgm3', "atm/kgm3"]
-    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3"]
+    __text__ = ['Pa/kgm³', 'kPa/kgm³', 'bar/kgm³', 'MPa/kgm³', "atm/kgm³", "Pa/gcm³", "psi/lbft³"]
+    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3", "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
                      "cgs": "Pagcc", "english": "psilbft3"}
 
@@ -2551,9 +2555,9 @@ class DensityPressure(unidad):
     * kg/m3 per megapascal (kgm3MPa)
     * kg/m3 per atmosphere (kgm3atm)
 
-    >>> H=DensityPressure(1000, "PaK")
-    >>> print H.PaK, H.atmK
-    1000.0 0.00101325
+    >>> H=DensityPressure(5, "lbft3psi")
+    >>> print H.kgm3Pa, H.kgm3atm
+    0.0116164084484 1177.03258603
     """
     __title__ = QApplication.translate("pychemqt", "Density per pressure")
     rates = {"kgm3Pa": 1.,
@@ -2564,8 +2568,8 @@ class DensityPressure(unidad):
              "kgm3atm": 1/101325., 
              "lbft3psi": k.pound/k.foot**3/k.psi}
     __text__ = [u'kg/m³Pa', u'kg/m³kPa', u'kg/m³MPa', u"kg/m³bar", u'kg/m³atm', 
-                u"lb/ft³psi"]
-    __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "lbft3psi"]
+                u"gcm³/Pa", u"lb/ft³psi"]
+    __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "gccPa", "lbft3psi"]
     __units_set__ = {"altsi": "kgm3kPa", "si": "kgm3Pa", "metric": "kgm3kPa",
                      "cgs": "gccPa", "english": "lbft3psi"}
 
@@ -2574,18 +2578,18 @@ class DensityPressure(unidad):
 
 
 class DensityTemperature(unidad):
-    """Class that models a Density/Pressure measure
+    """Class that models a Density/Temperature measure
     Supported units:
 
     * kg/m3 per kelvin (kgm3K) default
     * g/cm3 per Kelvin (gccK)
     * lb/ft3 per farenheit (lbft3F)
 
-    >>> H=DensityTemperature(1000, "PaK")
-    >>> print H.PaK, H.atmK
-    1000.0 0.00101325
+    >>> H=DensityTemperature(1, "gccK")
+    >>> print H.kgm3K, H.lbft3F
+    1000.0 34.6822003201
     """
-    __title__ = QApplication.translate("pychemqt", "Density per pressure")
+    __title__ = QApplication.translate("pychemqt", "Density per temperature")
     rates = {"kgm3K": 1.,
              "gccK": 1./k.liter,
              "lbft3F": k.pound/k.foot**3/k.Rankine}
@@ -2726,36 +2730,26 @@ _magnitudes.append(("Dimensionless",
 
 
 # Run this when add some new magnitude to rebuild units_set
-# unit_set={}
-# for unidad in _all:
-#     if unidad._magnitudes:
-#         unit_set.update(unidad.__units_set__)
-#     else:
-#         unit_set[unidad.__name__]=unidad.__units_set__
+#unit_set={}
+#for unidad in _all:
+#    if unidad._magnitudes:
+#        unit_set.update(unidad.__units_set__)
+#    else:
+#        unit_set[unidad.__name__]=unidad.__units_set__
 #
-# sets={}
-# for set in ("altsi", "si", "metric", "cgs", "english"):
-#     sets[set]=[]
-#     for magnitud, titulo, unidad in _magnitudes:
-#         sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
-# print sets
+#sets={}
+#for set in ("altsi", "si", "metric", "cgs", "english"):
+#    sets[set]=[]
+#    for magnitud, titulo, unidad in _magnitudes[:-1]:
+#        sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
+#print sets
 
-units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 3, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 0, 0, 0],
-             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 0],
-             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 6, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 7, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 1, 0, 0, 0]}
-
+units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 4, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 1, 0, 0, 5, 5, 1, 0],
+             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0], 
+             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], 
+             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-
-#    T=Temperature(5, "C")
-#    print T.str.encode("utf-8")
-
-    l=Length(5, "ft")
-    print l.m, l.inch
-#    print l.str("A")
-
-    print Mass.text()

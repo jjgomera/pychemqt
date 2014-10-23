@@ -420,7 +420,6 @@ class MEoS(_fase):
 
         if x is None:
             # Method with iteration necessary to get x
-            print T, self.Tc, P, self.Pc
             if self._mode == "TP":
                 if T < self.Tc and P < self.Pc and \
                         self._Vapor_Pressure(T) < P:
@@ -431,7 +430,6 @@ class MEoS(_fase):
                     rhoo = 1.
                 else:
                     rhoo = self.rhoc*3
-                print rhoo
                 rho = fsolve(lambda rho: self._Helmholtz(rho, T)["P"]-P, rhoo)
 
             elif self._mode == "Th":
@@ -1307,7 +1305,6 @@ class MEoS(_fase):
 
     def _phi0(self, cp, tau, delta):
         Fi0 = self._PHIO(cp)
-        print Fi0
 
 #        T = self._constants.get("Tref", self.Tc)/tau
 #        rho = delta*self.rhoc
