@@ -15,27 +15,27 @@ import cPickle
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
 # magnitude are added
-magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter',
+magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter', 
               'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq',
               'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass',
-              'Mol', 'SpecificVolume', 'MolarVolume', 'Density', 'DenLiq',
-              'DenGas', 'MolarDensity', 'Force', 'Pressure', 'DeltaP',
-              'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy', 'Entropy',
+              'Mol', 'SpecificVolume', 'SpecificVolume_square', 'MolarVolume',
+              'Density', 'DenLiq', 'DenGas', 'MolarDensity', 'Force', 'Pressure',
+              'DeltaP', 'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy', 'Entropy',
               'SpecificHeat', 'EnergyFlow', 'Power', 'MassFlow', 'MolarFlow',
-              'VolFlow', 'QLiq', 'QGas', 'Diffusivity', 'KViscosity',
-              'HeatFlux', 'ThermalConductivity', 'UA', 'HeatTransfCoef',
-              'Fouling', 'Tension', 'Viscosity', 'SolubilityParameter',
-              'PotencialElectric', 'DipoleMoment', 'CakeResistance',
-              'PackingDP', 'V2V', 'InvTemperature', 'InvPressure',
-              'EnthalpyPressure', 'TemperaturePressure', 'PressureTemperature',
+              'VolFlow', 'QLiq', 'QGas', 'Diffusivity', 'KViscosity', 'HeatFlux',
+              'ThermalConductivity', 'UA', 'HeatTransfCoef', 'Fouling', 'Tension',
+              'Viscosity', 'SolubilityParameter', 'PotencialElectric',
+              'DipoleMoment', 'CakeResistance', 'PackingDP', 'V2V',
+              'InvTemperature', 'InvPressure', 'EnthalpyPressure',
+              'EnthalpyDensity', 'TemperaturePressure', 'PressureTemperature',
+              'PressureDensity', 'DensityPressure', 'DensityTemperature',
               'Currency', 'Dimensionless']
-
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
 equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
            'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
-           'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
-           'ElectricPrecipitator', 'Dryer', 'Hairpin', 'Spreadsheet']
+           'Hairpin', 'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
+           'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Spreadsheet']
 
 
 def which(program):
