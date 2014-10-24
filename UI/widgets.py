@@ -467,12 +467,12 @@ class Tabla(QtGui.QTableWidget):
         self.item(fila, columna).setText(value)
         self.item(fila, columna).setTextAlignment(orientacion|QtCore.Qt.AlignVCenter)
 
-    def setColumn(self, columna, data):
+    def setColumn(self, columna, data, **format):
         while len(data)>self.rowCount()-self.verticalOffset:
             self.addRow()
         self.blockSignals(True)
         for fila, dato in enumerate(data):
-            self.item(fila, columna).setText(representacion(dato))
+            self.item(fila, columna).setText(representacion(dato, **format))
         self.blockSignals(False)
 
 
