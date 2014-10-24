@@ -184,7 +184,7 @@ class H2O(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for oxygen of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for water of Kunz and Wagner (2004).",
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP2,
