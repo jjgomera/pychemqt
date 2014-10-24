@@ -69,22 +69,6 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, sign
 
     return string.format(float)
 
-#public Color generateRandomColor(Color mix) {
-#    Random random = new Random();
-#    int red = random.nextInt(256);
-#    int green = random.nextInt(256);
-#    int blue = random.nextInt(256);
-#
-#    // mix the color
-#    if (mix != null) {
-#        red = (red + mix.getRed()) / 2;
-#        green = (green + mix.getGreen()) / 2;
-#        blue = (blue + mix.getBlue()) / 2;
-#    }
-#
-#    Color color = new Color(red, green, blue);
-#    return color;
-#}
 
 def colors(number, mix=""):
     """Function to generate colors
