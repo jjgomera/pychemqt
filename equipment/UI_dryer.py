@@ -27,10 +27,10 @@ class UI_equipment(UI_equip):
         #Pestaña entrada
         self.EntradaSolido= UI_corriente.Ui_corriente()
         self.EntradaSolido.Changed.connect(partial(self.changeParams, "entradaSolido"))
-        self.Entrada.addTab(self.EntradaSolido,QtGui.QApplication.translate("pychemqt", "Humid Solid"))
-        self.EntradaAire= UI_corriente.Ui_psychrometry()
+        self.entrada.addTab(self.EntradaSolido,QtGui.QApplication.translate("pychemqt", "Humid Solid"))
+        self.EntradaAire= UI_corriente.Ui_corriente(psychro=True)
         self.EntradaAire.Changed.connect(partial(self.changeParams, "entradaAire"))
-        self.Entrada.addTab(self.EntradaAire,QtGui.QApplication.translate("pychemqt", "Air"))
+        self.entrada.addTab(self.EntradaAire,QtGui.QApplication.translate("pychemqt", "Air"))
 
         #Pestaña calculo
         gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
@@ -103,14 +103,14 @@ class UI_equipment(UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Mezcla, Corriente, Solid
-    from lib.psycrometry import Punto_Psicrometrico
+#    from lib.psycrometry import PsychroState
     app = QtGui.QApplication(sys.argv)
-    diametros=[96.5, 105, 110, 118, 125, 130, 140, 150, 170]
-    fraccion=[0.02, 0.05, 0.1, 0.15, 0.25, 0.2, 0.15, 0.05, 0.03]
-    solido=Solid(caudalSolido=[5000], distribucion_fraccion=fraccion, distribucion_diametro=diametros)
-    Solido=Corriente(T=300, P=101325., caudalMasico=50, fraccionMolar=[1, 0], solido=solido)
-    Aire=Punto_Psicrometrico(caudal=100, tdb=300, HR=50)
-    secador=Dryer(entradaSolido=Solido, entradaAire=Aire)
-    dialogo = UI_equipment(secador)
+#    diametros=[96.5, 105, 110, 118, 125, 130, 140, 150, 170]
+#    fraccion=[0.02, 0.05, 0.1, 0.15, 0.25, 0.2, 0.15, 0.05, 0.03]
+#    solido=Solid(caudalSolido=[5000], distribucion_fraccion=fraccion, distribucion_diametro=diametros)
+#    Solido=Corriente(T=300, P=101325., caudalMasico=50, fraccionMolar=[1, 0], solido=solido)
+#    Aire=PsychroState(caudal=100, tdb=300, HR=50)
+#    secador=Dryer(entradaSolido=Solido, entradaAire=Aire)
+    dialogo = UI_equipment()
     dialogo.show()
     sys.exit(app.exec_())

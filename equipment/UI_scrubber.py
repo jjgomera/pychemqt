@@ -27,7 +27,7 @@ class UI_equipment(UI_equip):
         super(UI_equipment, self).__init__(Scrubber, parent=parent)
 
         # Pestaña entrada
-        self.entradaGas = UI_corriente.Ui_corriente()
+        self.entradaGas = UI_corriente.Ui_corriente(psychro=True)
         self.entradaGas.Changed.connect(partial(self.changeParams,"entradaGas"))
         self.entrada.addTab(self.entradaGas, QtGui.QApplication.translate("equipment", "Gas"))
         self.entradaLiquido = UI_corriente.Ui_corriente()
@@ -106,7 +106,7 @@ class UI_equipment(UI_equip):
         gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,1,1,6)
 
         #Pestaña salida
-        self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
+        self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True, psychro=True)
         self.Salida.addTab(self.SalidaGas,QtGui.QApplication.translate("pychemqt", "Clean Gas"))
         self.SalidaLiquido= UI_corriente.Ui_corriente(readOnly=True)
         self.Salida.addTab(self.SalidaLiquido,QtGui.QApplication.translate("pychemqt", "Liquid"))
@@ -146,9 +146,10 @@ if __name__ == "__main__":
     diametros=[17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
     solido=Solid(caudalSolido=[0.1], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475], fraccionMolar=[1.], solido=solido)
-    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.])
+    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
+    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[1., 0], solido=solido)
     scrubber=Scrubber(entradaGas=aire, entradaLiquido=agua, diametro=0.25, modelo_rendimiento=0, modelo_DeltaP=1, k=1000)
     dialogo = UI_equipment(scrubber)
+#    dialogo = UI_equipment()
     dialogo.show()
     sys.exit(app.exec_())

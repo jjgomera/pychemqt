@@ -2636,7 +2636,7 @@ def _Viscosity(rho, T, fase=None, drho=None):
 
 
 def _ThCond(rho, T, fase=None, drho=None):
-    """Equation for the thermal conductivity
+    """IAPWS, Release on the IAPWS Formulation 2011 for the Thermal Conductivity of Ordinary Water Substance (International Association for the Properties of Water and Steam, 2011)
 
     >>> "%.9f" % _ThCond(997.047435,298.15)
     '0.606515826'
