@@ -2583,7 +2583,7 @@ def _Melting_Pressure(T, P):
 
 # Transport properties
 def _Viscosity(rho, T, fase=None, drho=None):
-    """Equation for the Viscosity
+    """IAPWS, Release on the IAPWS Formulation 2008 for the Viscosity of Ordinary Water Substance (International Association for the Properties of Water and Steam, 2008)
 
     >>> "%.12f" % _Viscosity(997.047435,298.15)
     '0.000890022551'
