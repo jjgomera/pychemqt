@@ -255,11 +255,12 @@ class H2O(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "IAPWS (1997)"}
+              "__name__": "IAPWS (1997)",
+              "__code__": (_Viscosity, )}
 
     visco1 = {"eq": 4, "omega": 1,
-              "__doc__": """S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
-              "__name__": "Quiñones-Cisneros (2006)",
+              "__doc__": u"""S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
+              "__name__": u"Quiñones-Cisneros (2006)",
               "Tref": 647.096, "muref": 1.0,
               "ek": 809.1, "sigma": 0.2641, "n_chapman": 0,
               "n_ideal": [151.138, -444.318, 398.262, -81.7008],
@@ -276,6 +277,7 @@ class H2O(MEoS):
     _viscosity = visco0, visco1
 
     def _visco0(self, rho, T, fase):
+        """IAPWS, Release on the IAPWS Formulation 2008 for the Viscosity of Ordinary Water Substance (International Association for the Properties of Water and Steam, 2008)"""
         ref = H2O()
         ref._ref("OTO")
         estado = ref._Helmholtz(rho, 1.5*647.096)
@@ -284,11 +286,13 @@ class H2O(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "IAPWS (1997)"}
+               "__name__": "IAPWS (1997)", 
+               "__code__": (_ThCond, )}
 
     _thermal = thermo0,
 
     def _thermo0(self, rho, T, fase):
+        """IAPWS, Release on the IAPWS Formulation 2011 for the Thermal Conductivity of Ordinary Water Substance"""
         ref = H2O()
         ref._ref("OTO")
         estado = ref._Helmholtz(rho, 1.5*647.096)

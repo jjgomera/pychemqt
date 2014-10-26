@@ -209,7 +209,8 @@ class He(MEoS):
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "Hands (1981)",
-               "__doi__": "http://dx.doi.org/10.1016/0011-2275(81)90211-3"}
+               "__doi__": "http://dx.doi.org/10.1016/0011-2275(81)90211-3", 
+               "__code__": (_visco0, )}
     thermo1 = {"eq": 0,
                "method": "_thermo1",
                "__name__": "Peterser (1970)"}
