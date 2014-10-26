@@ -54,6 +54,9 @@ class Mezcla(config.Entity):
               "fraccionMasica": []}
 
     def __init__(self, tipo=0, **kwargs):
+        if tipo == 0:
+            return
+            
         self.kwargs.update(kwargs)
         if "ids" in self.kwargs:
             self.ids = self.kwargs.get("ids")
@@ -213,6 +216,9 @@ class Mezcla(config.Entity):
         self.SG = sum([xi*cmp.SG for xi, cmp in
                        zip(self.fraccion, self.componente)])
 
+    def __call__(self):
+        pass
+        
     def recallZeros(self, lista, val=0):
         """Method to return any list with null component added"""
         l = lista[:]
@@ -1527,7 +1533,7 @@ class Corriente(config.Entity):
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, x=x)
             elif self.tipoTermodinamica == "Px":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P.MPa, x=x)
-
+        
         else:
             setData = False
             self.M = unidades.Dimensionless(self.mezcla.M)
@@ -1578,7 +1584,7 @@ class Corriente(config.Entity):
                 self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
                 self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
                 self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm)
-                self.Liquido.epsilon = self.Liquido.Tension(T)
+                self.Liquido.sigma = self.Liquido.Tension(T)
                 self.Liquido.Q = unidades.VolFlow(self.Liquido.caudalmasico/self.Liquido.rho)
                 self.Liquido.Pr = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
             if self.x > 0:
@@ -1678,8 +1684,8 @@ class Corriente(config.Entity):
         
     @property
     def psystream(self):
-        xw = self.fraccion_masica[self.ids.index[62]]
-        xa = self.fraccion_masica[self.ids.index[475]]
+        xw = self.fraccion_masica[self.ids.index(62)]
+        xa = self.fraccion_masica[self.ids.index(475)]
         psystream = PsyStream(caudalMasico=self.caudalMasico, P=self.P,
                               tdb=self.T, w=xw/xa)
         return psystream
@@ -2329,10 +2335,14 @@ if __name__ == '__main__':
 #    corr=Corriente(T=300, P=101325.)
 #    if corr:
 #        print bool(corr)
+#    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[0.99, 0.01])
+#    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
 
-#    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1., 0])
-    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
+    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
+    print aire.Liquido.sigma.str
+    
+    
 
