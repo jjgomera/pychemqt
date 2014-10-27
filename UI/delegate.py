@@ -49,6 +49,14 @@ class CheckEditor(QtGui.QItemDelegate):
         widget = QtGui.QCheckBox(parent)
         return widget
 
+    def setEditorData(self, editor, index):
+        value = index.data(QtCore.Qt.DisplayRole).toBool()
+        editor.setChecked(value)
+
+    def setModelData(self, editor, model, index):
+        value = editor.isChecked()
+        model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
+
 
 class ComboEditor(QtGui.QItemDelegate):
     """Combobox Editor for tableitem"""
