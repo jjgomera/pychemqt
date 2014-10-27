@@ -92,7 +92,6 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T"),
         (QApplication.translate("pychemqt", "Ideal gas heat capacities ratio"), "cp0_cv"),
         (QApplication.translate("pychemqt", "Ideal gas Isoentropic exponent"), "gamma0")]
 
-
 propiedades = [p[0] for p in data]
 keys = [p[1] for p in data]
 properties = dict(zip(keys, propiedades))
@@ -813,7 +812,7 @@ class MEoS(_fase):
         fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
         fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
         fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
-        fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase))
+        fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
         fase.dhdP_rho = unidades.EnthalpyPressure(self.derivative("h", "P", "rho", fase))
         fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
         fase.dhdrho_P = unidades.EnthalpyDensity(estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])

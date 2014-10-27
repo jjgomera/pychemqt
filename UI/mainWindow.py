@@ -898,7 +898,7 @@ class UI_pychemqt(QtGui.QMainWindow):
 
     def changeStatusThermo(self, config):
             if config.has_section("Thermo") and config.has_section("Components"):
-                components=eval(config.get("Components", "components"))
+                components=config.get("Components", "components")
                 if config.getboolean("Thermo", "iapws") and config.getboolean("Thermo", "freesteam") and len(components)==1 and components[0]==62:
                     txt="Freesteam"
                 elif config.getboolean("Thermo", "iapws") and len(components)==1 and components[0]==62:
