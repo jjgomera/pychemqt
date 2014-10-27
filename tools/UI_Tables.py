@@ -1028,20 +1028,17 @@ class Widget_Conductivity_Data(QtGui.QWidget):
 
 class Ui_Properties(QtGui.QDialog):
     """Dialog for select and sort shown properties in tables"""
-    _default=["True"]*3+["False"]*46
+    _default=[1, 0, 1, 0, 0, 1, 0, 1, 1]+[0]*55
     def __init__(self, config=None, parent=None):
         super(Ui_Properties, self).__init__(parent)
-        if config.has_option("MEoS", "properties"):
+        if config and config.has_option("MEoS", "properties"):
             values=eval(config.get("MEoS", "properties"))
+            fase=config.getboolean("MEoS", "phase")
+            self.order = eval(config.get("MEoS", "propertiesOrder"))
         else:
             values=self._default
-        #Delete when finish to add properties and check _dafault length
-        while len(values) < len(meos.propiedades):
-            values.append(False)
-        if config.has_option("MEoS", "phase"):
-            fase=config.getboolean("MEoS", "phase")
-        else:
             fase=False
+            self.order = range(64)
 
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Select Properties"))
         layout = QtGui.QGridLayout(self)
@@ -1053,20 +1050,16 @@ class Ui_Properties(QtGui.QDialog):
         self.listaDisponibles.setColumnWidth(0, 18)
         self.listaDisponibles.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.listaDisponibles.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        for i, propiedad in enumerate(meos.propiedades):
-            self.listaDisponibles.setItemDelegateForColumn(0, CheckEditor(self))
-            self.listaDisponibles.setItem(i, 0, QtGui.QTableWidgetItem(values[i]))
-            self.listaDisponibles.setItem(i, 1, QtGui.QTableWidgetItem(propiedad))
+        self.listaDisponibles.setItemDelegateForColumn(0, CheckEditor(self))
+        for i in range(64):
+            self.listaDisponibles.setItem(i, 0, QtGui.QTableWidgetItem(str(values[i])))
+            self.listaDisponibles.setItem(i, 1, QtGui.QTableWidgetItem(meos.propiedades[self.order[i]]))
             self.listaDisponibles.setRowHeight(i, 20)
             self.listaDisponibles.openPersistentEditor(self.listaDisponibles.item(i, 0))
         self.listaDisponibles.currentCellChanged.connect(self.comprobarBotones)
         self.listaDisponibles.cellDoubleClicked.connect(self.toggleCheck)
         layout.addWidget(self.listaDisponibles,1,1,6,1)
 
-        self.ButtonTop=QtGui.QToolButton()
-        self.ButtonTop.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/arrow-up-double.png")))
-        self.ButtonTop.clicked.connect(self.Top)
-        layout.addWidget(self.ButtonTop, 2, 2, 1, 1)
         self.ButtonArriba=QtGui.QToolButton()
         self.ButtonArriba.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/arrow-up.png")))
         self.ButtonArriba.clicked.connect(self.Up)
@@ -1075,10 +1068,6 @@ class Ui_Properties(QtGui.QDialog):
         self.ButtonAbajo.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/arrow-down.png")))
         self.ButtonAbajo.clicked.connect(self.Down)
         layout.addWidget(self.ButtonAbajo, 4, 2, 1, 1)
-        self.ButtonBottom=QtGui.QToolButton()
-        self.ButtonBottom.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/arrow-down-double.png")))
-        self.ButtonBottom.clicked.connect(self.Bottom)
-        layout.addWidget(self.ButtonBottom, 5, 2, 1, 1)
 
         self.checkFase=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Show bulk, liquid and vapor properties"))
         self.checkFase.setChecked(fase)
@@ -1088,77 +1077,64 @@ class Ui_Properties(QtGui.QDialog):
         layout.addWidget(self.buttonBox,8,1,1,2)
 
     def toggleCheck(self, fila, columna):
+        """Toggle check status with a doubleclick in row"""
         txt=self.listaDisponibles.item(fila, 0).text()
-        if txt == "False":
-            newtxt="True"
+        if txt == "0":
+            newtxt = "1"
         else:
-            newtxt="False"
+            newtxt = "0"
         self.listaDisponibles.item(fila, 0).setText(newtxt)
 
-    def Bottom(self):
-        indice=self.listaDisponibles.currentRow()
-        ultimo=self.listaDisponibles.rowCount()-1
-        propiedad=self.listaDisponibles.cellWidget(indice, 0).isChecked()
-        item=self.listaDisponibles.takeItem(indice, 1)
-        for i in range(indice, ultimo):
-            self.listaDisponibles.cellWidget(i, 0).setChecked(self.listaDisponibles.cellWidget(i+1, 0).isChecked())
-            self.listaDisponibles.setItem(i, 1, self.listaDisponibles.takeItem(i+1, 1))
-        self.listaDisponibles.cellWidget(ultimo, 0).setChecked(propiedad)
-        self.listaDisponibles.setItem(ultimo, 1, item)
-        self.listaDisponibles.setCurrentCell(ultimo, 0)
-
     def Down(self):
-        indice=self.listaDisponibles.currentRow()
-        propiedad=self.listaDisponibles.cellWidget(indice, 0).isChecked()
-        self.listaDisponibles.cellWidget(indice, 0).setChecked(self.listaDisponibles.cellWidget(indice+1, 0).isChecked())
-        self.listaDisponibles.cellWidget(indice+1, 0).setChecked(propiedad)
-        item=self.listaDisponibles.takeItem(indice, 1)
-        self.listaDisponibles.setItem(indice, 1, self.listaDisponibles.takeItem(indice+1, 1))
-        self.listaDisponibles.setItem(indice+1, 1, item)
-        self.listaDisponibles.setCurrentCell(indice+1, 0)
+        """Change current selected row with next row"""
+        i=self.listaDisponibles.currentRow()
+        txt=self.listaDisponibles.item(i, 0).text()
+        self.listaDisponibles.item(i, 0).setText(self.listaDisponibles.item(i+1, 0).text())
+        self.listaDisponibles.item(i+1, 0).setText(txt)
+        item=self.listaDisponibles.takeItem(i, 1)
+        self.listaDisponibles.setItem(i, 1, self.listaDisponibles.takeItem(i+1, 1))
+        self.listaDisponibles.setItem(i+1, 1, item)
+        self.listaDisponibles.setCurrentCell(i+1, 0)
+        self.order[i], self.order[i+1] = self.order[i+1], self.order[i]
+        print self.order
 
     def Up(self):
-        indice=self.listaDisponibles.currentRow()
-        propiedad=self.listaDisponibles.cellWidget(indice, 0).isChecked()
-        self.listaDisponibles.cellWidget(indice, 0).setChecked(self.listaDisponibles.cellWidget(indice-1, 0).isChecked())
-        self.listaDisponibles.cellWidget(indice-1, 0).setChecked(propiedad)
-        item=self.listaDisponibles.takeItem(indice, 1)
-        self.listaDisponibles.setItem(indice, 1, self.listaDisponibles.takeItem(indice-1, 1))
-        self.listaDisponibles.setItem(indice-1, 1, item)
-        self.listaDisponibles.setCurrentCell(indice-1, 0)
-
-    def Top(self):
-        ultimo=self.listaDisponibles.currentRow()
-        propiedad=self.listaDisponibles.cellWidget(ultimo, 0).isChecked()
-        item=self.listaDisponibles.takeItem(ultimo, 1)
-        for i in range(ultimo, 0, -1):
-            self.listaDisponibles.cellWidget(i, 0).setChecked(self.listaDisponibles.cellWidget(i-1, 0).isChecked())
-            self.listaDisponibles.setItem(i, 1, self.listaDisponibles.takeItem(i-1, 1))
-        self.listaDisponibles.cellWidget(0, 0).setChecked(propiedad)
-        self.listaDisponibles.setItem(0, 1, item)
-        self.listaDisponibles.setCurrentCell(0, 0)
+        """Change current selected row with previous row"""
+        i=self.listaDisponibles.currentRow()
+        txt=self.listaDisponibles.item(i, 0).text()
+        self.listaDisponibles.item(i, 0).setText(self.listaDisponibles.item(i-1, 0).text())
+        self.listaDisponibles.item(i-1, 0).setText(txt)
+        item=self.listaDisponibles.takeItem(i, 1)
+        self.listaDisponibles.setItem(i, 1, self.listaDisponibles.takeItem(i-1, 1))
+        self.listaDisponibles.setItem(i-1, 1, item)
+        self.listaDisponibles.setCurrentCell(i-1, 0)
+        self.order[i], self.order[i-1] = self.order[i-1], self.order[i]
+        print self.order
 
     def buttonClicked(self, boton):
+        """Actions for dialogbuttonbox functionality"""
         if self.buttonBox.buttonRole(boton)==QtGui.QDialogButtonBox.AcceptRole:
             self.accept()
         elif self.buttonBox.buttonRole(boton)==QtGui.QDialogButtonBox.RejectRole:
             self.reject()
-        else:
+        elif self.buttonBox.buttonRole(boton)==QtGui.QDialogButtonBox.ResetRole:
             for i, propiedad in enumerate(self._default):
-                self.listaDisponibles.item(i, 0).setText(propiedad)
+                self.listaDisponibles.item(i, 0).setText(str(propiedad))
+            self.checkFase.setChecked(False)
 
     @property
     def properties(self):
+        """Properties list"""
         value=[]
         for i in range(self.listaDisponibles.rowCount()):
             value.append(str(self.listaDisponibles.cellWidget(i, 0).isChecked()))
         return value
 
     def comprobarBotones(self, fila):
-        self.ButtonTop.setEnabled(fila>=1)
+        """Check if button are enabled or disabled"""
         self.ButtonArriba.setEnabled(fila>=1)
         self.ButtonAbajo.setEnabled(fila<self.listaDisponibles.rowCount()-1)
-        self.ButtonBottom.setEnabled(fila<self.listaDisponibles.rowCount()-1)
+
 
 def method(parent):
     if parent.currentConfig.getfloat("MEoS", "fluid")!=12:
@@ -1239,12 +1215,13 @@ def get_propiedades(parent):
                 propiedades.append(propiedad)
                 keys.append(key)
     else:
-        booleanos=eval(parent.currentConfig.get("MEoS", "properties"))
+        booleanos = eval(parent.currentConfig.get("MEoS", "properties"))
+        order = eval(parent.currentConfig.get("MEoS", "propertiesOrder"))
         propiedades=[]
         keys=[]
-        for key, propiedad, bool in zip(meos.keys, meos.propiedades, booleanos):
+        for key, indice, bool in zip(meos.keys, order, booleanos):
             if bool=="True":
-                propiedades.append(propiedad)
+                propiedades.append(meos.propiedades[indice])
                 keys.append(key)
     return propiedades, keys
 
@@ -2477,10 +2454,15 @@ class plugin(QtGui.QMenu):
             self.parent().currentConfig.set("MEoS", "Generalized", str(dialog.radioGeneralized.isChecked()))
             self.parent().currentConfig.set("MEoS", "visco", str(dialog.visco.currentIndex()))
             self.parent().currentConfig.set("MEoS", "thermal", str(dialog.thermal.currentIndex()))
-
+            self.checkProperties()
             self.parent().dirty[self.parent().idTab]=True
             self.parent().saveControl()
-
+    
+    def checkProperties(self):
+        if not self.parent().currentConfig.has_option("MEoS", "properties"):
+            self.parent().currentConfig.set("MEoS", "properties", str(Ui_Properties._default))
+            self.parent().currentConfig.set("MEoS", "phase", "False")
+            self.parent().currentConfig.set("MEoS", "propertiesOrder", range(64))
 
     def showReference(self):
         dialog=Ui_ReferenceState(self.parent().currentConfig)
@@ -2503,16 +2485,18 @@ class plugin(QtGui.QMenu):
             self.parent().currentConfig.set("MEoS", "P", str(referencia[2]))
             self.parent().currentConfig.set("MEoS", "h", str(referencia[3]))
             self.parent().currentConfig.set("MEoS", "s", str(referencia[4]))
+            self.checkProperties()
             self.parent().dirty[self.parent().idTab]=True
             self.parent().saveControl()
 
     def showProperties(self):
-        dialog=Ui_Properties(self.parent())
+        dialog=Ui_Properties(self.parent().currentConfig)
         if dialog.exec_():
             if not self.parent().currentConfig.has_section("MEoS"):
                 self.parent().currentConfig.add_section("MEoS")
             self.parent().currentConfig.set("MEoS", "properties", str(dialog.properties))
             self.parent().currentConfig.set("MEoS", "phase", str(dialog.checkFase.isChecked()))
+            self.parent().currentConfig.set("MEoS", "propertiesOrder", str(dialog.order))
             self.parent().dirty[self.parent().idTab]=True
             self.parent().saveControl()
 
@@ -2733,9 +2717,9 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
 
-#    SteamTables = Ui_ReferenceState()
+    SteamTables = Ui_Properties()
 #    SteamTables=AddLine(None)
-    SteamTables=transportDialog(mEoS.__all__[2])
+#    SteamTables=transportDialog(mEoS.__all__[2])
 
     SteamTables.show()
     sys.exit(app.exec_())
