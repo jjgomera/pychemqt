@@ -420,7 +420,7 @@ class UI_pychemqt(QtGui.QMainWindow):
         self.menuHerramientas.addAction(currencyAction)
         self.menuHerramientas.addAction(TablaPeriodicaAction)
         self.menuHerramientas.addAction(steamTablesAction)
-        self.menuMEoS=UI_Tables.plugin(QtGui.QApplication.translate("pychemqt", "MEoS properties"), parent=self)
+        self.menuMEoS=UI_Tables.plugin(parent=self)
         self.menuHerramientas.addAction(self.menuMEoS.menuAction())
         self.menuHerramientas.addAction(psychrometricChartAction)
         self.menuHerramientas.addSeparator()

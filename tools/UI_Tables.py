@@ -4,6 +4,9 @@
 ###############################################################################
 # Library with meos plugin functionality
 # 
+#   - plugin: QMenu to import in mainwindow with all meos addon functionality
+#
+#   Dialogs for configuration:
 #   - Ui_ChooseFluid: Dialog to choose fluid for meos plugins calculations
 #   - Ui_ReferenceState: Dialog to select reference state
 #   - Dialog_InfoFluid: Dialog to show parameter of element with meos
@@ -12,6 +15,10 @@
 #       - Widget_Viscosity_Data: Widget to show viscosity data
 #       - Widget_Conductivity_Data: Widget to show thermal conductivity data
 #   - Ui_Properties: Dialog for select and sort shown properties in tables
+#
+#   Dialogs for input data:
+#   - Ui_Saturation: Dialog to define input for a two-phase table calculation
+#   - Ui_Isoproperty: Dialog to define input for isoproperty table calculations
 ###############################################################################
 
 import inspect, csv, os
@@ -32,6 +39,344 @@ from tools.UI_Preferences import NumericFactor
 
 if os.environ["freesteam"]:
     import freesteam
+
+
+class plugin(QtGui.QMenu):
+    """QMenu to import in mainwindow with all meos addon functionality"""
+    def __init__(self, parent=None):
+        title = QtGui.QApplication.translate("pychemqt", "MEoS properties")
+        super(plugin, self).__init__(title, parent)
+        self.aboutToShow.connect(self.aboutToShow_menu)
+
+    def aboutToShow_menu(self):
+        """Populate menu, check if fluid and reference state are defined to 
+        enable/disable calculation/plot option"""
+        self.clear()
+
+        if self.parent().currentConfig.has_option("MEoS", "fluid"):
+            fluidTxt=mEoS.__all__[self.parent().currentConfig.getint("MEoS","fluid")].name
+        else:
+            fluidTxt=QtGui.QApplication.translate("pychemqt", "Fluid")
+        if self.parent().currentConfig.has_option("MEoS", "reference"):
+            refTxt=self.parent().currentConfig.get("MEoS","reference")
+        else:
+            refTxt=QtGui.QApplication.translate("pychemqt", "Reference State")
+        fluidoAction=createAction(fluidTxt, slot=self.showChooseFluid, parent=self)
+        referenciaAction=createAction(refTxt, slot=self.showReference, parent=self)
+        propAction=createAction(QtGui.QApplication.translate("pychemqt", "Properties"), slot=self.showProperties, parent=self)
+
+        menuCalculate=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Calculate"), parent=self)
+        saturationAction = createAction(QtGui.QApplication.translate("pychemqt", "Saturation"), slot=self.showSaturation, parent=self)
+        menuCalculate.addAction(saturationAction)
+        IsopropertyAction = createAction(QtGui.QApplication.translate("pychemqt", "Isoproperty"), slot=self.showIsoproperty, parent=self)
+        menuCalculate.addAction(IsopropertyAction)
+        menuCalculate.addSeparator()
+        SpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Specified point"), slot=self.addTableSpecified, parent=self)
+        menuCalculate.addAction(SpecifyAction)
+        SaturationSpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Saturation Specified point"), slot=self.addTableSpecified, parent=self)
+        menuCalculate.addAction(SaturationSpecifyAction)
+
+        menuPlot=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Plot"), parent=self)
+        Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "2D Plot"), slot=self.plot2D, parent=self)
+        menuPlot.addAction(Plot2DAction)
+        Plot3DAction = createAction(QtGui.QApplication.translate("pychemqt", "3D Plot"), slot=self.plot3D, parent=self)
+        menuPlot.addAction(Plot3DAction)
+        menuPlot.addSeparator()
+        Plot_T_s_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-s diagram"), slot=self.showChooseFluid, parent=self)
+        menuPlot.addAction(Plot_T_s_Action)
+        Plot_T_h_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-h diagram"), slot=self.showChooseFluid, parent=self)
+        menuPlot.addAction(Plot_T_h_Action)
+
+        self.addAction(fluidoAction)
+        self.addAction(referenciaAction)
+        self.addSeparator()
+        self.addAction(propAction)
+        self.addSeparator()
+        self.addAction(menuCalculate.menuAction())
+        self.addAction(menuPlot.menuAction())
+        self.addSeparator()
+
+        if not (self.parent().currentConfig.has_option("MEoS", "fluid") and self.parent().currentConfig.has_option("MEoS", "reference")):
+            menuCalculate.setEnabled(False)
+            menuPlot.setEnabled(False)
+
+    def showChooseFluid(self):
+        """Show dialog to choose/view fluid"""
+        dialog=Ui_ChooseFluid(self.parent().currentConfig)
+        if dialog.exec_():
+            if not self.parent().currentConfig.has_section("MEoS"):
+                self.parent().currentConfig.add_section("MEoS")
+            self.parent().currentConfig.set("MEoS", "fluid", str(dialog.lista.currentRow()))
+            self.parent().currentConfig.set("MEoS", "eq", str(dialog.eq.currentIndex()))
+            self.parent().currentConfig.set("MEoS", "PR", str(dialog.radioPR.isChecked()))
+            self.parent().currentConfig.set("MEoS", "Generalized", str(dialog.radioGeneralized.isChecked()))
+            self.parent().currentConfig.set("MEoS", "visco", str(dialog.visco.currentIndex()))
+            self.parent().currentConfig.set("MEoS", "thermal", str(dialog.thermal.currentIndex()))
+            self.checkProperties()
+            self.parent().dirty[self.parent().idTab]=True
+            self.parent().saveControl()
+    
+    def showReference(self):
+        """Show dialog to choose reference state, for enthalpy and entropy zero state"""
+        dialog=Ui_ReferenceState(self.parent().currentConfig)
+        if dialog.exec_():
+            if not self.parent().currentConfig.has_section("MEoS"):
+                self.parent().currentConfig.add_section("MEoS")
+            if dialog.OTO.isChecked():
+                referencia=["OTO", 298.15, 101325, 0, 0]
+            elif dialog.NBP.isChecked():
+                Tb=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")].Tb
+                referencia=["NBP", Tb, 101325, 0, 0]
+            elif dialog.IIR.isChecked():
+                referencia=["IIR", 273.15, 101325, 200, 1]
+            elif dialog.ASHRAE.isChecked():
+                referencia=["ASHRAE", 233.15, 101325, 0, 0]
+            else:
+                referencia=["Custom", dialog.T.value, dialog.P.value, dialog.h.value, dialog.s.value]
+            self.parent().currentConfig.set("MEoS", "reference", referencia[0])
+            self.parent().currentConfig.set("MEoS", "T", str(referencia[1]))
+            self.parent().currentConfig.set("MEoS", "P", str(referencia[2]))
+            self.parent().currentConfig.set("MEoS", "h", str(referencia[3]))
+            self.parent().currentConfig.set("MEoS", "s", str(referencia[4]))
+            self.checkProperties()
+            self.parent().dirty[self.parent().idTab]=True
+            self.parent().saveControl()
+            
+    def checkProperties(self):
+        """Add default properties to show to configuration automatic when
+        choose fluid or reference state and properties are not defined"""
+        if not self.parent().currentConfig.has_option("MEoS", "properties"):
+            self.parent().currentConfig.set("MEoS", "properties", str(Ui_Properties._default))
+            self.parent().currentConfig.set("MEoS", "phase", "False")
+            self.parent().currentConfig.set("MEoS", "propertiesOrder", range(64))
+
+    def showProperties(self):
+        """Show dialog to choose/sort properties to show in tables"""
+        dialog=Ui_Properties(self.parent().currentConfig)
+        if dialog.exec_():
+            if not self.parent().currentConfig.has_section("MEoS"):
+                self.parent().currentConfig.add_section("MEoS")
+            self.parent().currentConfig.set("MEoS", "properties", str(dialog.properties))
+            self.parent().currentConfig.set("MEoS", "phase", str(dialog.checkFase.isChecked()))
+            self.parent().currentConfig.set("MEoS", "propertiesOrder", str(dialog.order))
+            self.parent().dirty[self.parent().idTab]=True
+            self.parent().saveControl()
+
+    def showSaturation(self):
+        """Show dialog to define input for a two-phase saturation table calculation"""
+        dialog=Ui_Saturation(self.parent().currentConfig)
+        if dialog.exec_():
+            start=dialog.Inicial.value
+            end=dialog.Final.value
+            fix=dialog.variableFix.value
+            incr=dialog.Incremento.value
+            value=arange(start, end, incr)
+            if (end-start)%incr == 0:
+                value=append(value, end)
+            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+
+            fluidos=[]
+            if dialog.VL.isChecked():
+                txt=QtGui.QApplication.translate("pychemqt", "Liquid-Gas Line")
+                if dialog.VariarTemperatura.isChecked():
+                    for val in value:
+                        vconfig = unidades.Temperature(val).str
+                        self.parent().statusbar.showMessage("%s: %s=%s, %s" % (fluid.name, "T", vconfig, txt), 3000)
+                        fluidos.append(fluid(T=val, x=1))
+                elif dialog.VariarPresion.isChecked():
+                    for val in value:
+                        vconfig = unidades.Temperature(val).str
+                        self.parent().statusbar.showMessage("%s: %s=%s, %s" % (fluid.name, "P", vconfig, txt), 3000)
+                        fluidos.append(fluid(P=val, x=1))
+                elif dialog.VariarXconT.isChecked():
+                    fconfig = unidades.Temperature(fix).str
+                    for val in value:
+                        self.parent().statusbar.showMessage("%s: %s=%0.2f %s=%s, %s" % (fluid.name, "T", fconfig, "x", val, txt), 3000)
+                        fluidos.append(fluid(T=fix, x=val))
+                elif dialog.VariarXconP.isChecked():
+                    fconfig = unidades.Temperature(fix).str
+                    for val in value:
+                        self.parent().statusbar.showMessage("%s: %s=%0.2f %s=%s, %s" % (fluid.name, "P", fconfig, "x", val, txt), 3000)
+                        fluidos.append(fluid(P=fix, x=val))
+
+            else:
+                if dialog.SL.isChecked():
+                    func=fluid._Melting_Pressure
+                    txt=QtGui.QApplication.translate("pychemqt", "Melting Line")
+                elif dialog.SV.isChecked():
+                    func=fluid._Sublimation_Pressure
+                    txt=QtGui.QApplication.translate("pychemqt", "Sublimation Line")
+
+                if dialog.VariarTemperatura.isChecked():
+                    for val in value:
+                        p=func(val)
+                        fluidos.append(fluid(T=val, P=p.MPa))
+                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "T", val, txt), 3000)
+                else:
+                    for p in value:
+                        T=fsolve(lambda T: p-func(T), fluid.Tt)
+                        fluidos.append(fluid(T=T, P=p*1e-6))
+                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt), 3000)
+
+            title=QtGui.QApplication.translate("pychemqt", "Table %s: %s changing %s" %(fluid.name, txt, "T"))
+            self.addTable(fluidos, title)
+
+    def showIsoproperty(self):
+        dialog=Ui_Isoproperty(self.parent())
+        if dialog.exec_():
+            self.parent().updateStatus(QtGui.QApplication.translate("pychemqt", "Launch MEoS Isoproperty calculation..."))
+            indice1=dialog.fix.currentIndex()
+            indice2=dialog.vary.currentIndex()
+            var1=meos.keys[indice1]
+            keys=meos.keys[:]
+            del keys[indice1]
+            var2=keys[indice2]
+            if var1=="P":
+                value1=dialog.variableFix.value.MPa
+            else:
+                value1=dialog.variableFix.value
+            if var2=="P":
+                start=dialog.Inicial.value.MPa
+                end=dialog.Final.value.MPa
+                incr=dialog.Incremento.value.MPa
+            else:
+                start=dialog.Inicial.value
+                end=dialog.Final.value
+                incr=dialog.Incremento.value
+            value2=arange(start, end, incr)
+            if (end-start)%incr == 0:
+                value2=append(value2, end)
+            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+            kwarg={}
+            for key in ("eq", "visco", "thermal"):
+                kwarg[key]=self.parent().currentConfig.getint("MEoS", key)
+            fluidos=[]
+            for v2 in value2:
+                kwarg[var1]=value1
+                kwarg[var2]=v2
+                fluidos.append(fluid(**kwarg))
+                self.parent().statusbar.showMessage("%s: %s=%0.2f, %s=%0.2f" % (fluid.name, var1, value1, var2, v2), 3000)
+            title=QtGui.QApplication.translate("pychemqt", "%s: %s=%0.2f %s changing %s" %(fluid.formula, var1, value1, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
+            self.addTable(fluidos, title)
+
+
+    def plot2D(self):
+        dialog=Plot2D(self.parent())
+        if dialog.exec_():
+            self.parent().progressBar.setVisible(True)
+            i=dialog.ejeX.currentIndex()
+            j=dialog.ejeY.currentIndex()
+            if j>=i:
+                j+=1
+            xini=dialog.ejeX_min[i].value
+            xfin=dialog.ejeX_max[i].value
+            yini=dialog.ejeY_min[j].value
+            yfin=dialog.ejeY_max[j].value
+            c1=dialog.var[i][0]
+            c2=dialog.var[j][0]
+
+            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+            sufx=configSufx(fluid, self.parent())
+            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, dialog.ejeY.currentText(), dialog.ejeX.currentText(), sufx))
+            grafico=PlotMEoS(dim=2, parent=self.parent())
+            grafico.setWindowTitle(title)
+            var=configVariables(self.parent())
+            grafico.plot.ax.set_xlabel(var[str(dialog.ejeX.currentText())])
+            grafico.plot.ax.set_ylabel(var[str(dialog.ejeY.currentText())])
+            grafico.plot.ax.set_title("")
+            grafico.plot.ax.c1=c1
+            grafico.plot.ax.c2=c2
+            grafico.plot.ax.property=None
+
+            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2)
+            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2)
+
+            grafico.plot.ax.set_xlim(xini, xfin)
+            grafico.plot.ax.set_ylim(yini, yfin)
+            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
+            if dialog.ejeX_escala.isChecked():
+                grafico.plot.ax.set_xscale("log")
+            if dialog.ejeY_escala.isChecked():
+                grafico.plot.ax.set_yscale("log")
+            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+            grafico.show()
+            self.parent().progressBar.setVisible(False)
+
+    def plot3D(self):
+        dialog=Plot3D(self.parent())
+        if dialog.exec_():
+            self.parent().progressBar.setVisible(True)
+            i, j=dialog.currentIndex()
+            xini=dialog.abscisaInicio[i].value
+            xfin=dialog.abscisaFin[i].value
+            xsalto=dialog.abscisaIntervalo[i].value
+            xn=int((xfin-xini)/xsalto+1)
+            yini=dialog.ordenadaInicio[j].value
+            yfin=dialog.ordenadaFin[j].value
+            ysalto=dialog.ordenadaIntervalo[j].value
+            yn=int((yfin-yini)/ysalto+1)
+            xi=arange(xini, xfin, xsalto)
+            if (xfin-xini)/xsalto==float(int((xfin-xini)/xsalto)):
+                xi=concatenate((xi, [xfin]))
+            yi=arange(yini, yfin, ysalto)
+            if (yfin-yini)/ysalto==float(int((yfin-yini)/ysalto)):
+                yi=concatenate((yi, [yfin]))
+
+            #python 2.6 compatibility
+            inv_dict={}
+            for k, v in configVariables(self.parent()).items():
+                inv_dict[v]=k
+            #inv_dict = {v:k for k, v in configVariables(self.parent()).items()}
+            property=inv_dict[dialog.variableTabla.currentText()]
+            c1, c2=map(str, dialog.ejesTabla.currentText().split(","))
+
+            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+            sufx=configSufx(fluid, self.parent())
+            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, property, dialog.ejesTabla.currentText(), sufx))
+            labels=[dialog.label_ejeX.text(), dialog.label_ejeY.text(), "z"]
+            grafico=PlotMEoS(dim=3, parent=self.parent())
+            grafico.setWindowTitle(title)
+            xdata, ydata, zdata=calculate(self.parent(), xi, yi, c1, c2, property, dialog)
+            grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
+            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
+            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
+
+            grafico.plot.ax.set_title("")
+            grafico.plot.ax.set_xlim3d(xini, xfin)
+            grafico.plot.ax.set_ylim3d(yini, yfin)
+            grafico.plot.ax.set_zlim3d(min(zdata), max(zdata))
+            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
+            grafico.plot.ax.c1=c1
+            grafico.plot.ax.c2=c2
+            grafico.plot.ax.property=property
+
+            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+            grafico.show()
+            self.parent().progressBar.setVisible(False)
+
+
+
+
+
+
+    def addPlot(self, labels, title, xdata, ydata, zdata):
+        grafico=PlotMEoS(dim=3, parent=self.parent())
+        grafico.setWindowTitle(title)
+        grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
+        self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+        grafico.show()
+
+    def addTable(self, fluidos, title, tabla=None):
+        tabla=createTabla(self.parent(), title, fluidos)
+        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        tabla.show()
+
+    def addTableSpecified(self):
+        name=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")].formula
+        title="%s: %s" % (name, QtGui.QApplication.translate("pychemqt", "Specified state points"))
+        tabla=createTabla(self.parent(), title)
+        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        tabla.show()
 
 
 class Ui_ChooseFluid(QtGui.QDialog):
@@ -1136,8 +1481,229 @@ class Ui_Properties(QtGui.QDialog):
         self.ButtonAbajo.setEnabled(fila<self.listaDisponibles.rowCount()-1)
 
 
+class Ui_Saturation(QtGui.QDialog):
+    """Dialog to define input for a two-phase saturation table calculation"""
+    def __init__(self, config=None, parent=None):
+        """config: instance with project config to set initial values"""
+        super(Ui_Saturation, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Saturation Table"))
+        layout = QtGui.QGridLayout(self)
+
+        groupboxTypo=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Interphase"))
+        layout.addWidget(groupboxTypo,1,1,1,2)
+        layoutg1=QtGui.QGridLayout(groupboxTypo)
+        self.VL=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Vapor-Liquid (boiling line)" ))
+        layoutg1.addWidget(self.VL,1,1)
+        self.SL=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Solid-Liquid (melting line"))
+        layoutg1.addWidget(self.SL,2,1)
+        self.SV=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Solid-Vapor (Sublimation line)" ))
+        layoutg1.addWidget(self.SV,3,1)
+
+        groupboxVariar=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Change"))
+        layout.addWidget(groupboxVariar,1,3,1,2)
+        layoutg2=QtGui.QGridLayout(groupboxVariar)
+        self.VariarTemperatura=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Temperature"))
+        self.VariarTemperatura.toggled.connect(self.updateVar)
+        layoutg2.addWidget(self.VariarTemperatura,1,1)
+        self.VariarPresion=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Pressure"))
+        self.VariarPresion.toggled.connect(self.updateVar)
+        layoutg2.addWidget(self.VariarPresion,2,1)
+        self.VariarXconT=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Quality at fixed temperature"))
+        self.VariarXconT.toggled.connect(self.updateVar)
+        layoutg2.addWidget(self.VariarXconT,3,1)
+        self.VariarXconP=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Quality at fixed pressure"))
+        self.VariarXconP.toggled.connect(self.updateVar)
+        layoutg2.addWidget(self.VariarXconP,4,1)
+
+        line = QtGui.QFrame()
+        line.setFrameShape(QtGui.QFrame.HLine)
+        line.setFrameShadow(QtGui.QFrame.Sunken)
+        layout.addWidget(line,2,1,1,4)
+
+        self.labelFix=QtGui.QLabel()
+        layout.addWidget(self.labelFix,4,3)
+        self.variableFix=Entrada_con_unidades(float)
+        layout.addWidget(self.variableFix,4,4)
+        self.labelinicial=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Initial"))
+        layout.addWidget(self.labelinicial,4,1)
+        self.Inicial=Entrada_con_unidades(float)
+        layout.addWidget(self.Inicial,4,2)
+        self.labelfinal=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Final"))
+        layout.addWidget(self.labelfinal,5,1)
+        self.Final=Entrada_con_unidades(float)
+        layout.addWidget(self.Final,5,2)
+        self.labelincremento=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Increment"))
+        layout.addWidget(self.labelincremento,6,1)
+        self.Incremento=Entrada_con_unidades(float)
+        layout.addWidget(self.Incremento,6,2)
+
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox,10,1,1,4)
+
+        self.VL.setChecked(True)
+        self.VariarTemperatura.setChecked(True)
+        self.updateVary()
+        self.VL.toggled.connect(self.updateVary)
+
+        if config:
+            fluido=mEoS.__all__[config.getint("MEoS", "fluid")]
+            if fluido._melting or fluido._Melting_Pressure != meos.MEoS._Melting_Pressure:
+                self.SL.setEnabled(True)
+            else:
+                self.SL.setEnabled(False)
+            if fluido._sublimation or fluido._Sublimation_Pressure != meos.MEoS._Sublimation_Pressure:
+                self.SV.setEnabled(True)
+            else:
+                self.SV.setEnabled(False)
+
+    def updateVary(self):
+        """Update state for option to choose for properties to change"""
+        self.VariarXconP.setEnabled(self.VL.isChecked())
+        self.VariarXconT.setEnabled(self.VL.isChecked())
+        self.VariarTemperatura.setChecked(not self.VL.isChecked())
+
+    def updateVar(self, bool):
+        """Update input values units and text"""
+        if bool:
+            self.Inicial.deleteLater()
+            self.Final.deleteLater()
+            self.Incremento.deleteLater()
+            if self.sender() == self.VariarXconT:
+                self.labelFix.setVisible(True)
+                self.labelFix.setText(unidades.Temperature.__title__)
+                self.variableFix.deleteLater()
+                self.variableFix=Entrada_con_unidades(unidades.Temperature)
+                self.layout().addWidget(self.variableFix,4,4)
+                unidadVariable=float
+                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial quality"))
+                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final quality"))
+
+            elif self.sender() == self.VariarXconP:
+                self.labelFix.setVisible(True)
+                self.labelFix.setText(unidades.Pressure.__title__)
+                self.variableFix.deleteLater()
+                self.variableFix=Entrada_con_unidades(unidades.Pressure)
+                self.layout().addWidget(self.variableFix,4,4)
+                unidadVariable=float
+                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial quality"))
+                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final quality"))
+
+            elif self.sender() == self.VariarTemperatura:
+                self.labelFix.setVisible(False)
+                self.variableFix.setVisible(False)
+                unidadVariable=unidades.Temperature
+                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial temperature"))
+                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final temperature"))
+
+            else:
+                self.labelFix.setVisible(False)
+                self.variableFix.setVisible(False)
+                unidadVariable=unidades.Pressure
+                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial pressure"))
+                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final pressure"))
+
+            self.Inicial=Entrada_con_unidades(unidadVariable)
+            self.Final=Entrada_con_unidades(unidadVariable)
+            if unidadVariable==unidades.Temperature:
+                unidadDelta=unidades.DeltaT
+            elif unidadVariable==unidades.Pressure:
+                unidadDelta=unidades.DeltaP
+            else:
+                unidadDelta=unidadVariable
+
+            self.Incremento=Entrada_con_unidades(unidadDelta)
+            self.layout().addWidget(self.Inicial,4,2)
+            self.layout().addWidget(self.Final,5,2)
+            self.layout().addWidget(self.Incremento,6,2)
+
+
+class Ui_Isoproperty(QtGui.QDialog):
+    """Dialog to define input for isoproperty table calculations"""
+    propiedades=[QtGui.QApplication.translate("pychemqt", "Temperature"),
+                                QtGui.QApplication.translate("pychemqt", "Pressure"),
+                                QtGui.QApplication.translate("pychemqt", "Density"),
+                                QtGui.QApplication.translate("pychemqt", "Volume"),
+                                QtGui.QApplication.translate("pychemqt", "Enthalpy"),
+                                QtGui.QApplication.translate("pychemqt", "Entropy")]
+    unidades=[unidades.Temperature, unidades.Pressure, unidades.Density, unidades.SpecificVolume, unidades.Enthalpy, unidades.SpecificHeat]
+
+    def __init__(self, parent=None):
+        super(Ui_Isoproperty, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Specify Isoproperty Table"))
+        layout = QtGui.QGridLayout(self)
+
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Hold constant")),1,1)
+        self.fix=QtGui.QComboBox()
+        for propiedad in self.propiedades:
+            self.fix.addItem(propiedad)
+        self.fix.currentIndexChanged.connect(self.actualizarUI)
+        layout.addWidget(self.fix,1,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Vary")),2,1)
+        self.vary=QtGui.QComboBox()
+        self.vary.currentIndexChanged.connect(self.actualizarVariable)
+        layout.addWidget(self.vary,2,2)
+
+        line = QtGui.QFrame()
+        line.setFrameShape(QtGui.QFrame.HLine)
+        line.setFrameShadow(QtGui.QFrame.Sunken)
+        layout.addWidget(line,3,1,1,2)
+
+        self.labelFix=QtGui.QLabel()
+        layout.addWidget(self.labelFix,4,1)
+        self.variableFix=Entrada_con_unidades(float)
+        layout.addWidget(self.variableFix,4,2)
+        self.labelinicial=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Initial"))
+        layout.addWidget(self.labelinicial,5,1)
+        self.Inicial=Entrada_con_unidades(float)
+        layout.addWidget(self.Inicial,5,2)
+        self.labelfinal=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Final"))
+        layout.addWidget(self.labelfinal,6,1)
+        self.Final=Entrada_con_unidades(float)
+        layout.addWidget(self.Final,6,2)
+        self.labelincremento=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Increment"))
+        layout.addWidget(self.labelincremento,7,1)
+        self.Incremento=Entrada_con_unidades(float)
+        layout.addWidget(self.Incremento,7,2)
+
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox,10,1,1,2)
+
+        self.actualizarUI(0)
+
+    def actualizarUI(self, indice):
+        self.vary.clear()
+        propiedades=self.propiedades[:3]
+        if indice<3:
+            del propiedades[indice]
+        elif indice==3:
+            del propiedades[2]
+        for propiedad in propiedades:
+            self.vary.addItem(propiedad)
+        self.labelFix.setText(self.propiedades[indice])
+        self.variableFix.deleteLater()
+        self.variableFix=Entrada_con_unidades(self.unidades[indice])
+        self.layout().addWidget(self.variableFix,4,2)
+
+    def actualizarVariable(self, indice):
+        self.Inicial.deleteLater()
+        self.Final.deleteLater()
+        self.Incremento.deleteLater()
+        if indice>=self.fix.currentIndex():
+            indice+=1
+        self.Inicial=Entrada_con_unidades(self.unidades[indice])
+        self.Final=Entrada_con_unidades(self.unidades[indice])
+        self.Incremento=Entrada_con_unidades(self.unidades[indice])
+        self.layout().addWidget(self.Inicial,5,2)
+        self.layout().addWidget(self.Final,6,2)
+        self.layout().addWidget(self.Incremento,7,2)
+
+
 def method(parent):
-    if parent.currentConfig.getfloat("MEoS", "fluid")!=12:
+    if parent.currentConfig.getfloat("MEoS", "fluid"):
         return "meos"
     elif parent.Preferences.getboolean("MEOS", "iapws") and parent.Preferences.getboolean("MEOS", "freesteam"):
         return "freesteam"
@@ -1219,24 +1785,26 @@ def get_propiedades(parent):
         order = eval(parent.currentConfig.get("MEoS", "propertiesOrder"))
         propiedades=[]
         keys=[]
-        for key, indice, bool in zip(meos.keys, order, booleanos):
+        for indice, bool in zip(order, booleanos):
             if bool=="True":
                 propiedades.append(meos.propiedades[indice])
-                keys.append(key)
+                keys.append(meos.keys[indice])
     return propiedades, keys
 
 def createTabla(parent, title, fluidos=None):
     propiedades, keys=get_propiedades(parent)
     if fluidos:
-#        for i, key in enumerate(keys):
-#            propiedades[i]=propiedades[i]+"\n"+fluidos[0].__getattribute__(key).text()
+        for i, key in enumerate(keys):
+            sufx = fluidos[0].__getattribute__(key).text()
+            if not sufx:
+                sufx = "[-]"
+            propiedades[i]=propiedades[i]+"\n"+sufx
         tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, parent=parent)
         data=[]
         for fluido in fluidos:
             fila=[]
             for key in keys:
-#                fila.append(fluido.__getattribute__(key).config())
-                fila.append(fluido.__getattribute__(key))
+                fila.append(fluido.__getattribute__(key).config())
             data.append(fila)
         tabla.setMatrix(data)
     else:
@@ -1483,222 +2051,9 @@ def plotLine(grafico, xi=None, yi=None, zi=None, xini=None, xfin=None, yini=None
 
 
 
-class Ui_Saturacion(QtGui.QDialog):
-    def __init__(self, parent=None):
-        super(Ui_Saturacion, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Saturation Table"))
-        layout = QtGui.QGridLayout(self)
-
-        groupboxTypo=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Interphase"))
-        layout.addWidget(groupboxTypo,1,1,1,2)
-        layoutg1=QtGui.QGridLayout(groupboxTypo)
-        self.VL=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Vapor-Liquid (boiling line)" ))
-        layoutg1.addWidget(self.VL,1,1)
-        self.SL=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Solid-Liquid (melting line"))
-        layoutg1.addWidget(self.SL,2,1)
-        self.SV=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Solid-Vapor (Sublimation line)" ))
-        layoutg1.addWidget(self.SV,3,1)
-
-        groupboxVariar=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Variar"))
-        layout.addWidget(groupboxVariar,1,3,1,2)
-        layoutg2=QtGui.QGridLayout(groupboxVariar)
-        self.VariarTemperatura=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Temperature"))
-        self.VariarTemperatura.toggled.connect(self.updateVar)
-        layoutg2.addWidget(self.VariarTemperatura,1,1)
-        self.VariarPresion=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Pressure"))
-        self.VariarPresion.toggled.connect(self.updateVar)
-        layoutg2.addWidget(self.VariarPresion,2,1)
-        self.VariarXconT=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Quality at fixed temperature"))
-        self.VariarXconT.toggled.connect(self.updateVar)
-        layoutg2.addWidget(self.VariarXconT,3,1)
-        self.VariarXconP=QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Quality at fixed pressure"))
-        self.VariarXconP.toggled.connect(self.updateVar)
-        layoutg2.addWidget(self.VariarXconP,4,1)
-
-        line = QtGui.QFrame()
-        line.setFrameShape(QtGui.QFrame.HLine)
-        line.setFrameShadow(QtGui.QFrame.Sunken)
-        layout.addWidget(line,2,1,1,4)
-
-        self.labelFix=QtGui.QLabel()
-        layout.addWidget(self.labelFix,4,3)
-        self.variableFix=Entrada_con_unidades(float)
-        layout.addWidget(self.variableFix,4,4)
-        self.labelinicial=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Initial"))
-        layout.addWidget(self.labelinicial,4,1)
-        self.Inicial=Entrada_con_unidades(float)
-        layout.addWidget(self.Inicial,4,2)
-        self.labelfinal=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Final"))
-        layout.addWidget(self.labelfinal,5,1)
-        self.Final=Entrada_con_unidades(float)
-        layout.addWidget(self.Final,5,2)
-        self.labelincremento=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Increment"))
-        layout.addWidget(self.labelincremento,6,1)
-        self.Incremento=Entrada_con_unidades(float)
-        layout.addWidget(self.Incremento,6,2)
-
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox,10,1,1,4)
-
-        self.VL.setChecked(True)
-        self.VariarTemperatura.setChecked(True)
-        self.updateVary()
-        self.VL.toggled.connect(self.updateVary)
-
-        if parent.currentConfig.has_option("MEoS", "fluid"):
-            fluido=mEoS.__all__[parent.currentConfig.getint("MEoS", "fluid")]
-            if fluido._melting or fluido._Melting_Pressure != meos.MEoS._Melting_Pressure:
-                self.SL.setEnabled(True)
-            else:
-                self.SL.setEnabled(False)
-            if fluido._sublimation or fluido._Sublimation_Pressure != meos.MEoS._Sublimation_Pressure:
-                self.SV.setEnabled(True)
-            else:
-                self.SV.setEnabled(False)
-
-
-    def updateVary(self):
-        self.VariarXconP.setEnabled(self.VL.isChecked())
-        self.VariarXconT.setEnabled(self.VL.isChecked())
-        self.VariarTemperatura.setChecked(not self.VL.isChecked())
-
-    def updateVar(self, bool):
-        if bool:
-            self.Inicial.deleteLater()
-            self.Final.deleteLater()
-            self.Incremento.deleteLater()
-            if self.sender() == self.VariarXconT:
-                self.labelFix.setVisible(True)
-                self.labelFix.setText(unidades.Temperature.__title__)
-                self.variableFix.deleteLater()
-                self.variableFix=Entrada_con_unidades(unidades.Temperature)
-                self.layout().addWidget(self.variableFix,4,4)
-                unidadVariable=float
-                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial quality"))
-                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final quality"))
-
-            elif self.sender() == self.VariarXconP:
-                self.labelFix.setVisible(True)
-                self.labelFix.setText(unidades.Pressure.__title__)
-                self.variableFix.deleteLater()
-                self.variableFix=Entrada_con_unidades(unidades.Pressure)
-                self.layout().addWidget(self.variableFix,4,4)
-                unidadVariable=float
-                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial quality"))
-                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final quality"))
-
-            elif self.sender() == self.VariarTemperatura:
-                self.labelFix.setVisible(False)
-                self.variableFix.setVisible(False)
-                unidadVariable=unidades.Temperature
-                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial temperature"))
-                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final temperature"))
-
-            else:
-                self.labelFix.setVisible(False)
-                self.variableFix.setVisible(False)
-                unidadVariable=unidades.Pressure
-                self.labelinicial.setText(QtGui.QApplication.translate("pychemqt", "Initial pressure"))
-                self.labelfinal.setText(QtGui.QApplication.translate("pychemqt", "Final pressure"))
-
-            self.Inicial=Entrada_con_unidades(unidadVariable)
-            self.Final=Entrada_con_unidades(unidadVariable)
-            if unidadVariable==unidades.Temperature:
-                unidadDelta=unidades.DeltaT
-            elif unidadVariable==unidades.Pressure:
-                unidadDelta==unidades.DeltaP
-            else:
-                unidadDelta==unidadVariable
-
-            self.Incremento=Entrada_con_unidades(unidadDelta)
-            self.layout().addWidget(self.Inicial,4,2)
-            self.layout().addWidget(self.Final,5,2)
-            self.layout().addWidget(self.Incremento,6,2)
 
 
 
-class Ui_Isoproperty(QtGui.QDialog):
-    propiedades=[QtGui.QApplication.translate("pychemqt", "Temperature"),
-                                QtGui.QApplication.translate("pychemqt", "Pressure"),
-                                QtGui.QApplication.translate("pychemqt", "Density"),
-                                QtGui.QApplication.translate("pychemqt", "Volume"),
-                                QtGui.QApplication.translate("pychemqt", "Enthalpy"),
-                                QtGui.QApplication.translate("pychemqt", "Entropy")]
-    unidades=[unidades.Temperature, unidades.Pressure, unidades.Density, unidades.SpecificVolume, unidades.Enthalpy, unidades.SpecificHeat]
-
-    def __init__(self, parent=None):
-        super(Ui_Isoproperty, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Specify Isoproperty Table"))
-        layout = QtGui.QGridLayout(self)
-
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Hold constant")),1,1)
-        self.fix=QtGui.QComboBox()
-        for propiedad in self.propiedades:
-            self.fix.addItem(propiedad)
-        self.fix.currentIndexChanged.connect(self.actualizarUI)
-        layout.addWidget(self.fix,1,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Vary")),2,1)
-        self.vary=QtGui.QComboBox()
-        self.vary.currentIndexChanged.connect(self.actualizarVariable)
-        layout.addWidget(self.vary,2,2)
-
-        line = QtGui.QFrame()
-        line.setFrameShape(QtGui.QFrame.HLine)
-        line.setFrameShadow(QtGui.QFrame.Sunken)
-        layout.addWidget(line,3,1,1,2)
-
-        self.labelFix=QtGui.QLabel()
-        layout.addWidget(self.labelFix,4,1)
-        self.variableFix=Entrada_con_unidades(float)
-        layout.addWidget(self.variableFix,4,2)
-        self.labelinicial=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Initial"))
-        layout.addWidget(self.labelinicial,5,1)
-        self.Inicial=Entrada_con_unidades(float)
-        layout.addWidget(self.Inicial,5,2)
-        self.labelfinal=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Final"))
-        layout.addWidget(self.labelfinal,6,1)
-        self.Final=Entrada_con_unidades(float)
-        layout.addWidget(self.Final,6,2)
-        self.labelincremento=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Increment"))
-        layout.addWidget(self.labelincremento,7,1)
-        self.Incremento=Entrada_con_unidades(float)
-        layout.addWidget(self.Incremento,7,2)
-
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox,10,1,1,2)
-
-        self.actualizarUI(0)
-
-    def actualizarUI(self, indice):
-        self.vary.clear()
-        propiedades=self.propiedades[:3]
-        if indice<3:
-            del propiedades[indice]
-        elif indice==3:
-            del propiedades[2]
-        for propiedad in propiedades:
-            self.vary.addItem(propiedad)
-        self.labelFix.setText(self.propiedades[indice])
-        self.variableFix.deleteLater()
-        self.variableFix=Entrada_con_unidades(self.unidades[indice])
-        self.layout().addWidget(self.variableFix,4,2)
-
-    def actualizarVariable(self, indice):
-        self.Inicial.deleteLater()
-        self.Final.deleteLater()
-        self.Incremento.deleteLater()
-        if indice>=self.fix.currentIndex():
-            indice+=1
-        self.Inicial=Entrada_con_unidades(self.unidades[indice])
-        self.Final=Entrada_con_unidades(self.unidades[indice])
-        self.Incremento=Entrada_con_unidades(self.unidades[indice])
-        self.layout().addWidget(self.Inicial,5,2)
-        self.layout().addWidget(self.Final,6,2)
-        self.layout().addWidget(self.Incremento,7,2)
 
 
 class EditPlot(QtGui.QWidget):
@@ -2387,328 +2742,6 @@ class TablaMEoS(Tabla):
 
 
 
-class plugin(QtGui.QMenu):
-    """Estructura de plugin importable en la ventana principal como una entrada de menu para esta herramienta"""
-    def __init__(self, title, parent=None):
-        super(plugin, self).__init__(title, parent)
-        self.aboutToShow.connect(self.aboutToShow_menu)
-
-    def aboutToShow_menu(self):
-        self.clear()
-
-        if self.parent().currentConfig.has_option("MEoS", "fluid"):
-            fluidotexto=mEoS.__all__[self.parent().currentConfig.getint("MEoS","fluid")].name
-        else:
-            fluidotexto=QtGui.QApplication.translate("pychemqt", "Fluid")
-        if self.parent().currentConfig.has_option("MEoS", "reference"):
-            referenciatexto=self.parent().currentConfig.get("MEoS","reference")
-        else:
-            referenciatexto=QtGui.QApplication.translate("pychemqt", "Reference State")
-        fluidoAction=createAction(fluidotexto, slot=self.showChooseFluid, parent=self)
-        referenciaAction=createAction(referenciatexto, slot=self.showReference, parent=self)
-        propiedades=createAction(QtGui.QApplication.translate("pychemqt", "Properties"), slot=self.showProperties, parent=self)
-
-        menuCalculate=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Calculate"), parent=self)
-        saturationAction = createAction(QtGui.QApplication.translate("pychemqt", "Saturation"), slot=self.showSaturation, parent=self)
-        menuCalculate.addAction(saturationAction)
-        IsopropertyAction = createAction(QtGui.QApplication.translate("pychemqt", "Isoproperty"), slot=self.showIsoproperty, parent=self)
-        menuCalculate.addAction(IsopropertyAction)
-        menuCalculate.addSeparator()
-        SpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Specified point"), slot=self.addTableSpecified, parent=self)
-        menuCalculate.addAction(SpecifyAction)
-        SaturationSpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Saturation Specified point"), slot=self.addTableSpecified, parent=self)
-        menuCalculate.addAction(SaturationSpecifyAction)
-
-        menuPlot=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Plot"), parent=self)
-        Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "2D Plot"), slot=self.plot2D, parent=self)
-        menuPlot.addAction(Plot2DAction)
-        Plot3DAction = createAction(QtGui.QApplication.translate("pychemqt", "3D Plot"), slot=self.plot3D, parent=self)
-        menuPlot.addAction(Plot3DAction)
-        menuPlot.addSeparator()
-        Plot_T_s_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-s diagram"), slot=self.showChooseFluid, parent=self)
-        menuPlot.addAction(Plot_T_s_Action)
-        Plot_T_h_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-h diagram"), slot=self.showChooseFluid, parent=self)
-        menuPlot.addAction(Plot_T_h_Action)
-
-        self.addAction(fluidoAction)
-        self.addAction(referenciaAction)
-        self.addSeparator()
-        self.addAction(propiedades)
-        self.addSeparator()
-        self.addAction(menuCalculate.menuAction())
-        self.addAction(menuPlot.menuAction())
-        self.addSeparator()
-
-        if not (self.parent().currentConfig.has_option("MEoS", "fluid") and self.parent().currentConfig.has_option("MEoS", "reference")):
-            menuCalculate.setEnabled(False)
-            menuPlot.setEnabled(False)
-
-    def showChooseFluid(self):
-        dialog=Ui_ChooseFluid(self.parent().currentConfig)
-        if dialog.exec_():
-            if not self.parent().currentConfig.has_section("MEoS"):
-                self.parent().currentConfig.add_section("MEoS")
-            self.parent().currentConfig.set("MEoS", "fluid", str(dialog.lista.currentRow()))
-            self.parent().currentConfig.set("MEoS", "eq", str(dialog.eq.currentIndex()))
-            self.parent().currentConfig.set("MEoS", "PR", str(dialog.radioPR.isChecked()))
-            self.parent().currentConfig.set("MEoS", "Generalized", str(dialog.radioGeneralized.isChecked()))
-            self.parent().currentConfig.set("MEoS", "visco", str(dialog.visco.currentIndex()))
-            self.parent().currentConfig.set("MEoS", "thermal", str(dialog.thermal.currentIndex()))
-            self.checkProperties()
-            self.parent().dirty[self.parent().idTab]=True
-            self.parent().saveControl()
-    
-    def checkProperties(self):
-        if not self.parent().currentConfig.has_option("MEoS", "properties"):
-            self.parent().currentConfig.set("MEoS", "properties", str(Ui_Properties._default))
-            self.parent().currentConfig.set("MEoS", "phase", "False")
-            self.parent().currentConfig.set("MEoS", "propertiesOrder", range(64))
-
-    def showReference(self):
-        dialog=Ui_ReferenceState(self.parent().currentConfig)
-        if dialog.exec_():
-            if not self.parent().currentConfig.has_section("MEoS"):
-                self.parent().currentConfig.add_section("MEoS")
-            if dialog.OTO.isChecked():
-                referencia=["OTO", 298.15, 101325, 0, 0]
-            elif dialog.NBP.isChecked():
-                Tb=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")].Tb
-                referencia=["NBP", Tb, 101325, 0, 0]
-            elif dialog.IIR.isChecked():
-                referencia=["IIR", 273.15, 101325, 200, 1]
-            elif dialog.ASHRAE.isChecked():
-                referencia=["ASHRAE", 233.15, 101325, 0, 0]
-            else:
-                referencia=["Custom", dialog.T.value, dialog.P.value, dialog.h.value, dialog.s.value]
-            self.parent().currentConfig.set("MEoS", "reference", referencia[0])
-            self.parent().currentConfig.set("MEoS", "T", str(referencia[1]))
-            self.parent().currentConfig.set("MEoS", "P", str(referencia[2]))
-            self.parent().currentConfig.set("MEoS", "h", str(referencia[3]))
-            self.parent().currentConfig.set("MEoS", "s", str(referencia[4]))
-            self.checkProperties()
-            self.parent().dirty[self.parent().idTab]=True
-            self.parent().saveControl()
-
-    def showProperties(self):
-        dialog=Ui_Properties(self.parent().currentConfig)
-        if dialog.exec_():
-            if not self.parent().currentConfig.has_section("MEoS"):
-                self.parent().currentConfig.add_section("MEoS")
-            self.parent().currentConfig.set("MEoS", "properties", str(dialog.properties))
-            self.parent().currentConfig.set("MEoS", "phase", str(dialog.checkFase.isChecked()))
-            self.parent().currentConfig.set("MEoS", "propertiesOrder", str(dialog.order))
-            self.parent().dirty[self.parent().idTab]=True
-            self.parent().saveControl()
-
-    def showIsoproperty(self):
-        dialog=Ui_Isoproperty(self.parent())
-        if dialog.exec_():
-            self.parent().updateStatus(QtGui.QApplication.translate("pychemqt", "Launch MEoS Isoproperty calculation..."))
-            indice1=dialog.fix.currentIndex()
-            indice2=dialog.vary.currentIndex()
-            var1=meos.keys[indice1]
-            keys=meos.keys[:]
-            del keys[indice1]
-            var2=keys[indice2]
-            if var1=="P":
-                value1=dialog.variableFix.value.MPa
-            else:
-                value1=dialog.variableFix.value
-            if var2=="P":
-                start=dialog.Inicial.value.MPa
-                end=dialog.Final.value.MPa
-                incr=dialog.Incremento.value.MPa
-            else:
-                start=dialog.Inicial.value
-                end=dialog.Final.value
-                incr=dialog.Incremento.value
-            value2=arange(start, end, incr)
-            if (end-start)%incr == 0:
-                value2=append(value2, end)
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
-            kwarg={}
-            for key in ("eq", "visco", "thermal"):
-                kwarg[key]=self.parent().currentConfig.getint("MEoS", key)
-            fluidos=[]
-            for v2 in value2:
-                kwarg[var1]=value1
-                kwarg[var2]=v2
-                fluidos.append(fluid(**kwarg))
-                self.parent().statusbar.showMessage("%s: %s=%0.2f, %s=%0.2f" % (fluid.name, var1, value1, var2, v2), 3000)
-            title=QtGui.QApplication.translate("pychemqt", "%s: %s=%0.2f %s changing %s" %(fluid.formula, var1, value1, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
-            self.addTable(fluidos, title)
-
-    def showSaturation(self):
-        dialog=Ui_Saturacion(self.parent())
-        if dialog.exec_():
-            start=dialog.Inicial.value
-            end=dialog.Final.value
-            fix=dialog.variableFix.value
-            incr=dialog.Incremento.value
-            value=arange(start, end, incr)
-            if (end-start)%incr == 0:
-                value=append(value, end)
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
-
-            fluidos=[]
-            if dialog.VL.isChecked():
-                txt=QtGui.QApplication.translate("pychemqt", "Liquid-Gas Line")
-                if dialog.VariarTemperatura.isChecked():
-                    for val in value:
-                        fluidos.append(fluid(T=val, x=1))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "T", val, txt), 3000)
-                elif dialog.VariarPresion.isChecked():
-                    for val in value:
-                        fluidos.append(fluid(P=val, x=1))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "P", val, txt), 3000)
-                elif dialog.VariarXconT.isChecked():
-                    for val in value:
-                        fluidos.append(fluid(T=fix, x=val))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "P", val, txt), 3000)
-                elif dialog.VariarXconP.isChecked():
-                    for val in value:
-                        fluidos.append(fluid(P=fix, x=val))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "P", val, txt), 3000)
-
-            else:
-                if dialog.SL.isChecked():
-                    func=fluid._Melting_Pressure
-                    txt=QtGui.QApplication.translate("pychemqt", "Melting Line")
-                elif dialog.SV.isChecked():
-                    func=fluid._Sublimation_Pressure
-                    txt=QtGui.QApplication.translate("pychemqt", "Sublimation Line")
-
-                if dialog.VariarTemperatura.isChecked():
-                    for val in value:
-                        p=func(val)
-                        fluidos.append(fluid(T=val, P=p.MPa))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "T", val, txt), 3000)
-                else:
-                    for p in value:
-                        T=fsolve(lambda T: p-func(T), fluid.Tt)
-                        fluidos.append(fluid(T=T, P=p*1e-6))
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt), 3000)
-
-            title=QtGui.QApplication.translate("pychemqt", "Table %s: %s changing %s" %(fluid.name, txt, "T"))
-            self.addTable(fluidos, title)
-
-    def plot2D(self):
-        dialog=Plot2D(self.parent())
-        if dialog.exec_():
-            self.parent().progressBar.setVisible(True)
-            i=dialog.ejeX.currentIndex()
-            j=dialog.ejeY.currentIndex()
-            if j>=i:
-                j+=1
-            xini=dialog.ejeX_min[i].value
-            xfin=dialog.ejeX_max[i].value
-            yini=dialog.ejeY_min[j].value
-            yfin=dialog.ejeY_max[j].value
-            c1=dialog.var[i][0]
-            c2=dialog.var[j][0]
-
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
-            sufx=configSufx(fluid, self.parent())
-            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, dialog.ejeY.currentText(), dialog.ejeX.currentText(), sufx))
-            grafico=PlotMEoS(dim=2, parent=self.parent())
-            grafico.setWindowTitle(title)
-            var=configVariables(self.parent())
-            grafico.plot.ax.set_xlabel(var[str(dialog.ejeX.currentText())])
-            grafico.plot.ax.set_ylabel(var[str(dialog.ejeY.currentText())])
-            grafico.plot.ax.set_title("")
-            grafico.plot.ax.c1=c1
-            grafico.plot.ax.c2=c2
-            grafico.plot.ax.property=None
-
-            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2)
-            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2)
-
-            grafico.plot.ax.set_xlim(xini, xfin)
-            grafico.plot.ax.set_ylim(yini, yfin)
-            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
-            if dialog.ejeX_escala.isChecked():
-                grafico.plot.ax.set_xscale("log")
-            if dialog.ejeY_escala.isChecked():
-                grafico.plot.ax.set_yscale("log")
-            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
-            grafico.show()
-            self.parent().progressBar.setVisible(False)
-
-    def plot3D(self):
-        dialog=Plot3D(self.parent())
-        if dialog.exec_():
-            self.parent().progressBar.setVisible(True)
-            i, j=dialog.currentIndex()
-            xini=dialog.abscisaInicio[i].value
-            xfin=dialog.abscisaFin[i].value
-            xsalto=dialog.abscisaIntervalo[i].value
-            xn=int((xfin-xini)/xsalto+1)
-            yini=dialog.ordenadaInicio[j].value
-            yfin=dialog.ordenadaFin[j].value
-            ysalto=dialog.ordenadaIntervalo[j].value
-            yn=int((yfin-yini)/ysalto+1)
-            xi=arange(xini, xfin, xsalto)
-            if (xfin-xini)/xsalto==float(int((xfin-xini)/xsalto)):
-                xi=concatenate((xi, [xfin]))
-            yi=arange(yini, yfin, ysalto)
-            if (yfin-yini)/ysalto==float(int((yfin-yini)/ysalto)):
-                yi=concatenate((yi, [yfin]))
-
-            #python 2.6 compatibility
-            inv_dict={}
-            for k, v in configVariables(self.parent()).items():
-                inv_dict[v]=k
-            #inv_dict = {v:k for k, v in configVariables(self.parent()).items()}
-            property=inv_dict[dialog.variableTabla.currentText()]
-            c1, c2=map(str, dialog.ejesTabla.currentText().split(","))
-
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
-            sufx=configSufx(fluid, self.parent())
-            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, property, dialog.ejesTabla.currentText(), sufx))
-            labels=[dialog.label_ejeX.text(), dialog.label_ejeY.text(), "z"]
-            grafico=PlotMEoS(dim=3, parent=self.parent())
-            grafico.setWindowTitle(title)
-            xdata, ydata, zdata=calculate(self.parent(), xi, yi, c1, c2, property, dialog)
-            grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
-            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
-            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
-
-            grafico.plot.ax.set_title("")
-            grafico.plot.ax.set_xlim3d(xini, xfin)
-            grafico.plot.ax.set_ylim3d(yini, yfin)
-            grafico.plot.ax.set_zlim3d(min(zdata), max(zdata))
-            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
-            grafico.plot.ax.c1=c1
-            grafico.plot.ax.c2=c2
-            grafico.plot.ax.property=property
-
-            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
-            grafico.show()
-            self.parent().progressBar.setVisible(False)
-
-
-
-
-
-
-    def addPlot(self, labels, title, xdata, ydata, zdata):
-        grafico=PlotMEoS(dim=3, parent=self.parent())
-        grafico.setWindowTitle(title)
-        grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
-        self.parent().centralwidget.currentWidget().addSubWindow(grafico)
-        grafico.show()
-
-    def addTable(self, fluidos, title, tabla=None):
-        tabla=createTabla(self.parent(), title, fluidos)
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        tabla.show()
-
-    def addTableSpecified(self):
-        name=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")].formula
-        title="%s: %s" % (name, QtGui.QApplication.translate("pychemqt", "Specified state points"))
-        tabla=createTabla(self.parent(), title)
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        tabla.show()
 
 
 
@@ -2717,7 +2750,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
 
-    SteamTables = Ui_Properties()
+    SteamTables = Ui_Saturation()
 #    SteamTables=AddLine(None)
 #    SteamTables=transportDialog(mEoS.__all__[2])
 
