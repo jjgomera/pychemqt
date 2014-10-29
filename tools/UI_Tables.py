@@ -222,27 +222,21 @@ class plugin(QtGui.QMenu):
             self.addTable(fluidos, title)
 
     def showIsoproperty(self):
+        """Show dialog to define input for isoproperty table calculations"""
         dialog=Ui_Isoproperty(self.parent())
         if dialog.exec_():
             self.parent().updateStatus(QtGui.QApplication.translate("pychemqt", "Launch MEoS Isoproperty calculation..."))
             indice1=dialog.fix.currentIndex()
             indice2=dialog.vary.currentIndex()
-            var1=meos.keys[indice1]
-            keys=meos.keys[:]
-            del keys[indice1]
+            if indice2 >= indice1:
+                indice2 += 1
+            var1=dialog.keys[indice1]
+            keys=dialog.keys[:]
             var2=keys[indice2]
-            if var1=="P":
-                value1=dialog.variableFix.value.MPa
-            else:
-                value1=dialog.variableFix.value
-            if var2=="P":
-                start=dialog.Inicial.value.MPa
-                end=dialog.Final.value.MPa
-                incr=dialog.Incremento.value.MPa
-            else:
-                start=dialog.Inicial.value
-                end=dialog.Final.value
-                incr=dialog.Incremento.value
+            value1=dialog.variableFix.value
+            start=dialog.Inicial.value
+            end=dialog.Final.value
+            incr=dialog.Incremento.value
             value2=arange(start, end, incr)
             if (end-start)%incr == 0:
                 value2=append(value2, end)
@@ -250,13 +244,18 @@ class plugin(QtGui.QMenu):
             kwarg={}
             for key in ("eq", "visco", "thermal"):
                 kwarg[key]=self.parent().currentConfig.getint("MEoS", key)
+            v1config = dialog.unidades[indice1](value1).str
             fluidos=[]
             for v2 in value2:
                 kwarg[var1]=value1
                 kwarg[var2]=v2
+                if dialog.unidades[indice2] == float:
+                    v2config = v2
+                else:
+                    v2config = dialog.unidades[indice2](v2).str
+                self.parent().statusbar.showMessage("%s: %s=%s, %s=%s" % (fluid.name, var1, v1config, var2, v2config), 3000)
                 fluidos.append(fluid(**kwarg))
-                self.parent().statusbar.showMessage("%s: %s=%0.2f, %s=%0.2f" % (fluid.name, var1, value1, var2, v2), 3000)
-            title=QtGui.QApplication.translate("pychemqt", "%s: %s=%0.2f %s changing %s" %(fluid.formula, var1, value1, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
+            title=QtGui.QApplication.translate("pychemqt", "%s: %s=%s %s changing %s" %(fluid.formula, var1, v1config, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
             self.addTable(fluidos, title)
 
 
@@ -1621,13 +1620,17 @@ class Ui_Saturation(QtGui.QDialog):
 
 class Ui_Isoproperty(QtGui.QDialog):
     """Dialog to define input for isoproperty table calculations"""
-    propiedades=[QtGui.QApplication.translate("pychemqt", "Temperature"),
-                                QtGui.QApplication.translate("pychemqt", "Pressure"),
-                                QtGui.QApplication.translate("pychemqt", "Density"),
-                                QtGui.QApplication.translate("pychemqt", "Volume"),
-                                QtGui.QApplication.translate("pychemqt", "Enthalpy"),
-                                QtGui.QApplication.translate("pychemqt", "Entropy")]
-    unidades=[unidades.Temperature, unidades.Pressure, unidades.Density, unidades.SpecificVolume, unidades.Enthalpy, unidades.SpecificHeat]
+    propiedades = [QtGui.QApplication.translate("pychemqt", "Temperature"),
+                   QtGui.QApplication.translate("pychemqt", "Pressure"),
+                   QtGui.QApplication.translate("pychemqt", "Density"),
+                   QtGui.QApplication.translate("pychemqt", "Volume"),
+                   QtGui.QApplication.translate("pychemqt", "Enthalpy"),
+                   QtGui.QApplication.translate("pychemqt", "Entropy"),
+                   QtGui.QApplication.translate("pychemqt", "Internal Energy")]
+    unidades = [unidades.Temperature, unidades.Pressure, unidades.Density,
+                unidades.SpecificVolume, unidades.Enthalpy,
+                unidades.SpecificHeat, unidades.Enthalpy, float]
+    keys = ["T", "P", "rho", "v", "h", "s", "u", "x"]
 
     def __init__(self, parent=None):
         super(Ui_Isoproperty, self).__init__(parent)
@@ -1676,11 +1679,10 @@ class Ui_Isoproperty(QtGui.QDialog):
 
     def actualizarUI(self, indice):
         self.vary.clear()
-        propiedades=self.propiedades[:3]
-        if indice<3:
-            del propiedades[indice]
-        elif indice==3:
-            del propiedades[2]
+        propiedades=self.propiedades[:]
+        if indice <= 1:
+            propiedades.append(QtGui.QApplication.translate("pychemqt", "Quality"))
+        del propiedades[indice]
         for propiedad in propiedades:
             self.vary.addItem(propiedad)
         self.labelFix.setText(self.propiedades[indice])
@@ -1799,13 +1801,16 @@ def createTabla(parent, title, fluidos=None):
             if not sufx:
                 sufx = "[-]"
             propiedades[i]=propiedades[i]+"\n"+sufx
-        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, parent=parent)
         data=[]
         for fluido in fluidos:
             fila=[]
             for key in keys:
                 fila.append(fluido.__getattribute__(key).config())
             data.append(fila)
+        units = []
+        for key in keys:
+            units.append(fluido.__getattribute__(key).__class__)
+        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, parent=parent)
         tabla.setMatrix(data)
     else:
         columnInput=[]
@@ -2750,7 +2755,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
 
-    SteamTables = Ui_Saturation()
+    SteamTables = Ui_Isoproperty()
 #    SteamTables=AddLine(None)
 #    SteamTables=transportDialog(mEoS.__all__[2])
 
