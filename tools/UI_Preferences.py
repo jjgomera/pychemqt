@@ -452,7 +452,7 @@ class ConfTooltipEntity(QtGui.QDialog):
 
 class NumericFactor(QtGui.QDialog):
     """Clase que define un dialogo con las opciones de formato numérico"""
-    def __init__(self, config, parent=None):
+    def __init__(self, config, unit=None, order=0, parent=None):
         super(NumericFactor, self).__init__(parent)
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Format"))
         layout=QtGui.QGridLayout(self)
@@ -502,7 +502,7 @@ class NumericFactor(QtGui.QDialog):
         buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        layout.addWidget(buttonBox,15,1,1,3)
+        layout.addWidget(buttonBox,20,1,1,3)
 
         self.checkFixed.setChecked(config["format"]==0)
         self.TotalDigits.setNotReadOnly(config["format"]==0)
@@ -542,6 +542,15 @@ class NumericFactor(QtGui.QDialog):
         self.checkSign.toggled.connect(self.updateMuestra)
         self.checkThousand.toggled.connect(self.updateMuestra)
 
+        if unit and unit.__text__:
+            layout.addItem(QtGui.QSpacerItem(20,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),15,1,1,3)
+            self.muestra=QtGui.QLabel()
+            layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Convert units")),16,1)
+            self.unit = QtGui.QComboBox()
+            for txt in unit.__text__:
+                self.unit.addItem(txt)
+            self.unit.setCurrentIndex(order)
+            layout.addWidget(self.unit,16,2,1,2)
 
     def ExpToggled(self, bool):
         self.FiguresExponential.setNotReadOnly(bool)

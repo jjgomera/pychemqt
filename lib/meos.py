@@ -68,7 +68,6 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T"),
         (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks"),
         (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks"),
         (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt"),
-#        (QApplication.translate("pychemqt", "Isothermal throttle coefficient"), "deltat"),
 #        Z_rho     -   (Z-1) over the density, m³/kg
         (QApplication.translate("pychemqt", "Internal pressure"), "IntP"),
         (QApplication.translate("pychemqt", "Negative reciprocal temperature"), "invT"),

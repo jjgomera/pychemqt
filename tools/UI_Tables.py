@@ -181,22 +181,22 @@ class plugin(QtGui.QMenu):
                 if dialog.VariarTemperatura.isChecked():
                     for val in value:
                         vconfig = unidades.Temperature(val).str
-                        self.parent().statusbar.showMessage("%s: %s=%s, %s" % (fluid.name, "T", vconfig, txt), 3000)
+                        self.parent().statusbar.showMessage("%s: %s =%s, %s" % (fluid.name, "T", vconfig, txt), 3000)
                         fluidos.append(fluid(T=val, x=1))
                 elif dialog.VariarPresion.isChecked():
                     for val in value:
                         vconfig = unidades.Temperature(val).str
-                        self.parent().statusbar.showMessage("%s: %s=%s, %s" % (fluid.name, "P", vconfig, txt), 3000)
+                        self.parent().statusbar.showMessage("%s: %s =%s, %s" % (fluid.name, "P", vconfig, txt), 3000)
                         fluidos.append(fluid(P=val, x=1))
                 elif dialog.VariarXconT.isChecked():
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f %s=%s, %s" % (fluid.name, "T", fconfig, "x", val, txt), 3000)
+                        self.parent().statusbar.showMessage("%s: %s = %0.2f %s =%s, %s" % (fluid.name, "T", fconfig, "x", val, txt), 3000)
                         fluidos.append(fluid(T=fix, x=val))
                 elif dialog.VariarXconP.isChecked():
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
-                        self.parent().statusbar.showMessage("%s: %s=%0.2f %s=%s, %s" % (fluid.name, "P", fconfig, "x", val, txt), 3000)
+                        self.parent().statusbar.showMessage("%s: %s = %0.2f %s =%s, %s" % (fluid.name, "P", fconfig, "x", val, txt), 3000)
                         fluidos.append(fluid(P=fix, x=val))
 
             else:
@@ -253,9 +253,9 @@ class plugin(QtGui.QMenu):
                     v2config = v2
                 else:
                     v2config = dialog.unidades[indice2](v2).str
-                self.parent().statusbar.showMessage("%s: %s=%s, %s=%s" % (fluid.name, var1, v1config, var2, v2config), 3000)
+                self.parent().statusbar.showMessage("%s: %s =%s, %s =%s" % (fluid.name, var1, v1config, var2, v2config), 3000)
                 fluidos.append(fluid(**kwarg))
-            title=QtGui.QApplication.translate("pychemqt", "%s: %s=%s %s changing %s" %(fluid.formula, var1, v1config, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
+            title=QtGui.QApplication.translate("pychemqt", "%s: %s =%s %s changing %s" %(fluid.formula, var1, v1config, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
             self.addTable(fluidos, title)
 
 
@@ -1810,7 +1810,7 @@ def createTabla(parent, title, fluidos=None):
         units = []
         for key in keys:
             units.append(fluido.__getattribute__(key).__class__)
-        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, parent=parent)
+        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, units=units, parent=parent)
         tabla.setMatrix(data)
     else:
         columnInput=[]
@@ -2688,6 +2688,14 @@ class TablaMEoS(Tabla):
     """Tabla de datos de las ecuaciones multiparametro, reescribe las acciones de menu contextual."""
 
     def __init__(self, *args, **kwargs):
+        self.units = kwargs["units"]
+        self.orderUnit = []
+        for unit in self.units:
+            if unit == unidades.Dimensionless:
+                self.orderUnit.append(0)
+            else:
+                self.orderUnit.append(unit.Config.getint('Units', unit.__name__))
+        del kwargs["units"]
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
@@ -2697,8 +2705,22 @@ class TablaMEoS(Tabla):
 
     def show_header_context_menu(self, position):
         column = self.horizontalHeader().logicalIndexAt(position)
-        dialog=NumericFactor(self.format[column])
+        unit = self.units[column]
+        dialog=NumericFactor(self.format[column], unit, self.orderUnit[column])
         if dialog.exec_():
+            if unit != unidades.Dimensionless and \
+                dialog.unit.currentIndex() != self.orderUnit[column]:
+                value = []
+                for i, fila in enumerate(self.data):
+                    newvalue = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
+                    value.append(newvalue)
+                    self.data[i][column] = newvalue
+                self.orderUnit[column] = dialog.unit.currentIndex()
+                txt = self.horizontalHeaderItem(column).text().split(os.linesep)[0]
+                txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
+                self.setHorizontalHeaderItem(column,QtGui.QTableWidgetItem(txt))
+
+
             self.format[column]=dialog.args()
             self.setStr()
             self.resizeColumnToContents(column)
