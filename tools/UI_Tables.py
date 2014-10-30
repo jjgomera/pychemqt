@@ -1440,7 +1440,6 @@ class Ui_Properties(QtGui.QDialog):
         self.listaDisponibles.setItem(i+1, 1, item)
         self.listaDisponibles.setCurrentCell(i+1, 0)
         self.order[i], self.order[i+1] = self.order[i+1], self.order[i]
-        print self.order
 
     def Up(self):
         """Change current selected row with previous row"""
@@ -1453,7 +1452,6 @@ class Ui_Properties(QtGui.QDialog):
         self.listaDisponibles.setItem(i-1, 1, item)
         self.listaDisponibles.setCurrentCell(i-1, 0)
         self.order[i], self.order[i-1] = self.order[i-1], self.order[i]
-        print self.order
 
     def buttonClicked(self, boton):
         """Actions for dialogbuttonbox functionality"""
@@ -1787,29 +1785,59 @@ def get_propiedades(parent):
         order = eval(parent.currentConfig.get("MEoS", "propertiesOrder"))
         propiedades=[]
         keys=[]
+        units = []
         for indice, bool in zip(order, booleanos):
             if bool=="True":
                 propiedades.append(meos.propiedades[indice])
                 keys.append(meos.keys[indice])
-    return propiedades, keys
+                units.append(meos.units[indice])
+    return propiedades, keys, units
 
 def createTabla(parent, title, fluidos=None):
-    propiedades, keys=get_propiedades(parent)
+    propiedades, keys, units =get_propiedades(parent)
     if fluidos:
-        for i, key in enumerate(keys):
-            sufx = fluidos[0].__getattribute__(key).text()
+        for i, unit in enumerate(units):
+            sufx = unit.text()
             if not sufx:
                 sufx = "[-]"
-            propiedades[i]=propiedades[i]+"\n"+sufx
+            propiedades[i]=propiedades[i]+os.linesep+sufx
+            
+        # Add two phases properties if requested
+        if parent.currentConfig.get("MEoS", "phase"):
+            for i in range(len(propiedades)-1, -1, -1):
+                if keys[i] in meos._fase.__dict__:
+                    txt = [propiedades[i]]
+                    prefix = QtGui.QApplication.translate("pychemqt", "Liquid")
+                    txt.append(prefix+os.linesep+propiedades[i])
+                    prefix = QtGui.QApplication.translate("pychemqt", "Vapour")
+                    txt.append(prefix+os.linesep+propiedades[i])
+                    propiedades[i:i+1] = txt
+
         data=[]
         for fluido in fluidos:
             fila=[]
             for key in keys:
-                fila.append(fluido.__getattribute__(key).config())
+                p = fluido.__getattribute__(key)
+                if p is None:
+                    txt = QtGui.QApplication.translate("pychemqt", "undefined")
+                else:
+                    txt = p.config()
+                fila.append(txt)
+                if parent.currentConfig.get("MEoS", "phase") and key in meos._fase.__dict__:
+                    p = fluido.Liquid.__getattribute__(key)
+                    if p is None:
+                        txt = QtGui.QApplication.translate("pychemqt", "undefined")
+                    else:
+                        txt = p.config()
+                    fila.append(txt)
+                    p = fluido.Gas.__getattribute__(key)
+                    if p is None:
+                        txt = QtGui.QApplication.translate("pychemqt", "undefined")
+                    else:
+                        txt = p.config()
+                    fila.append(txt)
             data.append(fila)
-        units = []
-        for key in keys:
-            units.append(fluido.__getattribute__(key).__class__)
+
         tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, units=units, parent=parent)
         tabla.setMatrix(data)
     else:
@@ -2699,15 +2727,17 @@ class TablaMEoS(Tabla):
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
-        self.format=[{"format": 1, "decimales": 4, "signo": False}]*args[0]
+        self.format=[{"format": 1, "decimales": 6, "signo": False}]*args[0]
         self.data=[]
         self.parent=kwargs.get("parent", None)
 
     def show_header_context_menu(self, position):
+        """Show dialog to config format and unit"""
         column = self.horizontalHeader().logicalIndexAt(position)
         unit = self.units[column]
         dialog=NumericFactor(self.format[column], unit, self.orderUnit[column])
         if dialog.exec_():
+            # Check unit change
             if unit != unidades.Dimensionless and \
                 dialog.unit.currentIndex() != self.orderUnit[column]:
                 value = []
@@ -2720,7 +2750,7 @@ class TablaMEoS(Tabla):
                 txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
                 self.setHorizontalHeaderItem(column,QtGui.QTableWidgetItem(txt))
 
-
+            # Check formt change
             self.format[column]=dialog.args()
             self.setStr()
             self.resizeColumnToContents(column)
@@ -2735,8 +2765,11 @@ class TablaMEoS(Tabla):
             if fila>=self.rowCount():
                 self.addRow()
             for columna, data in enumerate(array):
-                str=representacion(data, **self.format[columna])
-                self.setValue(fila, columna, str)
+                if isinstance(data, QtCore.QString):
+                    txt = data
+                else:
+                    txt=representacion(data, **self.format[columna])
+                self.setValue(fila, columna, txt)
 
 
     def contextMenuEvent(self, event):
