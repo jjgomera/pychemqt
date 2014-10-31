@@ -95,12 +95,7 @@ propiedades = [p[0] for p in data]
 keys = [p[1] for p in data]
 units = [p[2] for p in data]
 properties = dict(zip(keys, propiedades))
-p_phase = ["v", "rho", "h", "s", "u", "a", "g", "cp", "cv", "cp_cv", "w", "Z",
-           "fi", "f", "mu", "k", "nu", "Prandt", "epsilon", "alfa", "n",
-           "alfap", "betap", "joule", "Gruneisen", "alfav", "kappa", "betas",
-           "gamma", "Kt", "kt", "Ks", "ks", "dpdT_rho", "dpdrho_T", "drhodT_P",
-           "drhodP_T", "dhdT_rho", "dhdT_P", "dhdrho_T", "dhdrho_P", "dhdP_T",
-           "dhdP_rho", "Z_rho", "IntP", "hInput"]
+
 
 class _fase(object):
     """Class to implement a null phase"""
@@ -229,6 +224,7 @@ class MEoS(_fase):
               "visco": 0,
               "thermal": 0,
               "ref": "OTO"}
+    status = 0
 
     def __init__(self, **kwargs):
         """Incoming properties:
@@ -441,12 +437,12 @@ class MEoS(_fase):
         if x is None:
             # Method with iteration necessary to get x
             if self._mode == "TP":
-                if T < self.Tc and P < self.Pc and \
+                if T < self.Tc*0.9 and P < self.Pc*0.9 and \
                         self._Vapor_Pressure(T) < P:
                     rhoo = self._Liquid_Density(T)
-                elif T < self.Tc and P < self.Pc:
+                elif T < self.Tc*0.9 and P < self.Pc*0.9:
                     rhoo = self._Vapor_Density(T)
-                elif P < self.Pc:
+                elif P < self.Pc*0.9:
                     rhoo = 1.
                 else:
                     rhoo = self.rhoc*3
@@ -665,7 +661,7 @@ class MEoS(_fase):
                         x = 0
                     elif x > 1:
                         x = 1
-                    P = Ps/1000
+                    P = Ps
                 elif rho <= rhov:
                     x = 1
                 elif rho >= rhol:
@@ -721,16 +717,18 @@ class MEoS(_fase):
         self.Pr = unidades.Dimensionless(self.P/self.Pc)
         self.x = unidades.Dimensionless(x)
     
-        self.Liquid = Fluid()
-        self.Gas = Fluid()
+        self.Liquid = _fase()
+        self.Gas = _fase()
         if x == 0:
             # liquid phase
             self.fill(self.Liquid, propiedades)
             self.fill(self, propiedades)
+            self.fillNone(self.Gas)
         elif x == 1:
             # vapor phase
             self.fill(self.Gas, propiedades)
             self.fill(self, propiedades)
+            self.fillNone(self.Liquid)
         else:
             self.fill(self.Liquid, liquido)
             self.fill(self.Gas, vapor)
@@ -782,6 +780,18 @@ class MEoS(_fase):
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
         self.gamma0 = unidades.Dimensionless(-self.v0/self.P/1000*self.derivative("P", "v", "s", cp0))
 
+    def fillNone(self, fase):
+        """Fill properties in null phase with a explicative msg"""
+        if self.x == 0:
+            txt = QApplication.translate("pychemqt", "Subcooled")
+        elif self.Tr <= 1 and self.Pr <= 1: 
+            txt = QApplication.translate("pychemqt", "Superheated")
+        else:
+            txt = QApplication.translate("pychemqt", "Supercritical")
+        for key in _fase.__dict__:
+            if key[0] != "_":
+                fase.__setattr__(key, txt)
+            
     def fill(self, fase, estado):
         """Fill phase properties"""
         fase.v = unidades.SpecificVolume(estado["v"])
