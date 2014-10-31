@@ -99,7 +99,8 @@ class unidad(float):
     __tooltip__ = []
     _magnitudes = []
     __units_set__ = []
-
+    Config = getMainWindowConfig()
+    
     def __init__(self, data, unit="", magnitud=""):
         """Non proportional magnitudes (Temperature, Pressure)
         must rewrite this method"""
@@ -2753,3 +2754,5 @@ units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1,
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+    
+    print Enthalpy.text()

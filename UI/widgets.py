@@ -338,7 +338,11 @@ class Tabla(QtGui.QTableWidget):
     """Clase que genera tablas personalizadas para entrada de datos"""
     editingFinished = QtCore.pyqtSignal()
     rowFinished = QtCore.pyqtSignal(list)
-    def __init__(self, columnas=0, horizontalHeader=None, verticalHeaderLabels=None, verticalHeader=True, filas=0, stretch=True, verticalOffset=0, dinamica=False, orientacion=QtCore.Qt.AlignRight, verticalHeaderModel="", readOnly=False, columnReadOnly=None, num=True, delegateforRow=None, parent=None):
+    def __init__(self, columnas=0, horizontalHeader=None, verticalHeaderLabels=None,
+                 verticalHeader=True, filas=0, stretch=True, verticalOffset=0,
+                 dinamica=False, external=False, orientacion=QtCore.Qt.AlignRight,
+                 verticalHeaderModel="", readOnly=False, columnReadOnly=None, 
+                 num=True, delegateforRow=None, parent=None):
         """
         columnas: número de columnas
         horizontalHeader: texto de título de columnas
@@ -363,9 +367,10 @@ class Tabla(QtGui.QTableWidget):
             self.columnReadOnly=[self.readOnly]*self.columnas
         else:
             self.columnReadOnly=columnReadOnly
-        if dinamica:
+        if dinamica and not external:
             self.cellChanged.connect(self.tabla_cellChanged)
         self.dinamica=dinamica
+        self.external=external
         if num:
             self.setItemDelegate(CellEditor(self))
         self.delegateforRow=delegateforRow
@@ -474,8 +479,7 @@ class Tabla(QtGui.QTableWidget):
         for fila, dato in enumerate(data):
             self.item(fila, columna).setText(representacion(dato, **format))
         self.blockSignals(False)
-
-
+    
     def getColumn(self, columna, fill=True):
         lista=[]
         for i in range(self.verticalOffset, self.rowCount()):
