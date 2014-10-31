@@ -73,8 +73,6 @@ class plugin(QtGui.QMenu):
         menuCalculate.addSeparator()
         SpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Specified point"), slot=self.addTableSpecified, parent=self)
         menuCalculate.addAction(SpecifyAction)
-        SaturationSpecifyAction = createAction(QtGui.QApplication.translate("pychemqt", "Saturation Specified point"), slot=self.addTableSpecified, parent=self)
-        menuCalculate.addAction(SaturationSpecifyAction)
 
         menuPlot=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Plot"), parent=self)
         Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "2D Plot"), slot=self.plot2D, parent=self)
@@ -258,7 +256,57 @@ class plugin(QtGui.QMenu):
             title=QtGui.QApplication.translate("pychemqt", "%s: %s =%s %s changing %s" %(fluid.formula, var1, v1config, dialog.unidades[indice1].text(), meos.propiedades[indice2]))
             self.addTable(fluidos, title)
 
+    def addTable(self, fluidos, title, tabla=None):
+        tabla=createTabla(self.parent(), title, fluidos)
+        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        tabla.show()
 
+    def addTableSpecified(self):
+        fluid = mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+        name = fluid.formula
+        title="%s: %s" % (name, QtGui.QApplication.translate("pychemqt", "Specified state points"))
+        tabla=createTabla(self.parent(), title, None)
+        tabla.fluid = fluid
+        self.Point = fluid()
+        tabla.cellChanged.connect(self.calculatePoint)
+        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        tabla.show()
+
+    def calculatePoint(self, row, column):
+        tabla = self.sender()
+        key = tabla.keys[column]
+        unit = tabla.units[column]
+        if unit is unidades.Dimensionless:
+            value = float(tabla.item(row, column).text())
+        else:
+            value = unit(float(tabla.item(row, column).text()), unit.__units__[tabla.orderUnit[column]])
+        self.Point(**{key: value})
+        if self.Point.status:
+            units = []
+            for ui, order in zip(tabla.units, tabla.orderUnit):
+                if ui is unidades.Dimensionless:
+                    units.append("")
+                else:
+                    units.append(ui.__units__[order])
+            data = _getData(self.Point, tabla.keys, self.parent().currentConfig,
+                            units)
+            tabla.setRow(row, data)
+            self.Point = tabla.fluid()
+            
+            # Set calculate point readOnly
+            tabla.blockSignals(True)
+            flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
+            color=QtGui.QColor(self.parent().Preferences.get("General", 'Color_ReadOnly'))
+            for i, bool in enumerate(tabla.columnReadOnly):
+                if not bool:
+                    tabla.item(row, i).setFlags(flags)
+                    tabla.item(row, i).setBackground(color)
+            tabla.blockSignals(False)
+
+            tabla.addRow()
+            tabla.setCurrentCell(row+1, column)
+
+        
     def plot2D(self):
         dialog=Plot2D(self.parent())
         if dialog.exec_():
@@ -365,17 +413,7 @@ class plugin(QtGui.QMenu):
         self.parent().centralwidget.currentWidget().addSubWindow(grafico)
         grafico.show()
 
-    def addTable(self, fluidos, title, tabla=None):
-        tabla=createTabla(self.parent(), title, fluidos)
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        tabla.show()
 
-    def addTableSpecified(self):
-        name=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")].formula
-        title="%s: %s" % (name, QtGui.QApplication.translate("pychemqt", "Specified state points"))
-        tabla=createTabla(self.parent(), title)
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        tabla.show()
 
 
 class Ui_ChooseFluid(QtGui.QDialog):
@@ -1795,47 +1833,29 @@ def get_propiedades(parent):
 
 def createTabla(parent, title, fluidos=None):
     propiedades, keys, units =get_propiedades(parent)
-    if fluidos:
-        for i, unit in enumerate(units):
-            sufx = unit.text()
-            if not sufx:
-                sufx = "[-]"
-            propiedades[i]=propiedades[i]+os.linesep+sufx
-            
-        # Add two phases properties if requested
-        if parent.currentConfig.get("MEoS", "phase"):
-            for i in range(len(propiedades)-1, -1, -1):
-                if keys[i] in meos._fase.__dict__:
-                    txt = [propiedades[i]]
-                    prefix = QtGui.QApplication.translate("pychemqt", "Liquid")
-                    txt.append(prefix+os.linesep+propiedades[i])
-                    prefix = QtGui.QApplication.translate("pychemqt", "Vapour")
-                    txt.append(prefix+os.linesep+propiedades[i])
-                    propiedades[i:i+1] = txt
 
+    for i, unit in enumerate(units):
+        sufx = unit.text()
+        if not sufx:
+            sufx = "[-]"
+        propiedades[i]=propiedades[i]+os.linesep+sufx
+
+    # Add two phases properties if requested
+    if parent.currentConfig.get("MEoS", "phase"):
+        for i in range(len(propiedades)-1, -1, -1):
+            if keys[i] in meos._fase.__dict__:
+                txt = [propiedades[i]]
+                prefix = QtGui.QApplication.translate("pychemqt", "Liquid")
+                txt.append(prefix+os.linesep+propiedades[i])
+                prefix = QtGui.QApplication.translate("pychemqt", "Vapour")
+                txt.append(prefix+os.linesep+propiedades[i])
+                propiedades[i:i+1] = txt
+                units[i:i+1] = [units[i]]*3
+                
+    if fluidos:
         data=[]
         for fluido in fluidos:
-            fila=[]
-            for key in keys:
-                p = fluido.__getattribute__(key)
-                if p is None:
-                    txt = QtGui.QApplication.translate("pychemqt", "undefined")
-                else:
-                    txt = p.config()
-                fila.append(txt)
-                if parent.currentConfig.get("MEoS", "phase") and key in meos._fase.__dict__:
-                    p = fluido.Liquid.__getattribute__(key)
-                    if p is None:
-                        txt = QtGui.QApplication.translate("pychemqt", "undefined")
-                    else:
-                        txt = p.config()
-                    fila.append(txt)
-                    p = fluido.Gas.__getattribute__(key)
-                    if p is None:
-                        txt = QtGui.QApplication.translate("pychemqt", "undefined")
-                    else:
-                        txt = p.config()
-                    fila.append(txt)
+            fila = _getData(fluido, keys, parent.currentConfig)
             data.append(fila)
 
         tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, stretch=False, readOnly=True, units=units, parent=parent)
@@ -1847,8 +1867,17 @@ def createTabla(parent, title, fluidos=None):
                 columnInput.append(False)
             else:
                 columnInput.append(True)
-        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, filas=1, dinamica=True, stretch=False, columnReadOnly=columnInput, parent=parent)
+            if parent.currentConfig.get("MEoS", "phase") and key in meos._fase.__dict__:
+                columnInput.append(True)
+                columnInput.append(True)
+                
+        if parent.currentConfig.get("MEoS", "phase"):
+            for i in range(len(keys)-1, -1, -1):
+                if keys[i] in meos._fase.__dict__:
+                    keys[i:i+1] = [keys[i], "", ""]
 
+        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades, filas=1, units=units, keys=keys, stretch=False, columnReadOnly=columnInput, parent=parent)
+        
     if fluidos:
         sufx=configSufx(fluidos[0], parent)
     else:
@@ -1857,6 +1886,45 @@ def createTabla(parent, title, fluidos=None):
     tabla.setWindowTitle(prefix+": "+title+" "+sufx)
     tabla.resizeColumnsToContents()
     return tabla
+
+
+def _getData(fluido, keys, config, unit=None):
+    fila=[]
+    for i, key in enumerate(keys):
+        if key:
+            p = fluido.__getattribute__(key)
+            if p is None:
+                txt = QtGui.QApplication.translate("pychemqt", "undefined")
+            else:
+                if unit and unit[i]:
+                    txt = p.__getattribute__(unit[i])
+                else:
+                    txt = p.config()
+            fila.append(txt)
+            if config.get("MEoS", "phase") and key in meos._fase.__dict__:
+                p = fluido.Liquid.__getattribute__(key)
+                if p is None:
+                    txt = QtGui.QApplication.translate("pychemqt", "undefined")
+                elif isinstance(p, unidades.unidad):
+                    if unit and unit[i]:
+                        txt = p.__getattribute__(unit[i])
+                    else:
+                        txt = p.config()
+                else:
+                    txt = p
+                fila.append(txt)
+                p = fluido.Gas.__getattribute__(key)
+                if p is None:
+                    txt = QtGui.QApplication.translate("pychemqt", "undefined")
+                elif isinstance(p, unidades.unidad):
+                    if unit and unit[i]:
+                        txt = p.__getattribute__(unit[i])
+                    else:
+                        txt = p.config()
+                else:
+                    txt = p
+                fila.append(txt)
+    return fila
 
 
 def calculate(mainwindow, xi, yi, c1, c2, property, dialog):
@@ -2716,6 +2784,9 @@ class TablaMEoS(Tabla):
     """Tabla de datos de las ecuaciones multiparametro, reescribe las acciones de menu contextual."""
 
     def __init__(self, *args, **kwargs):
+        if "keys" in kwargs:
+            self.keys = kwargs["keys"]
+            del kwargs["keys"]
         self.units = kwargs["units"]
         self.orderUnit = []
         for unit in self.units:
@@ -2740,11 +2811,10 @@ class TablaMEoS(Tabla):
             # Check unit change
             if unit != unidades.Dimensionless and \
                 dialog.unit.currentIndex() != self.orderUnit[column]:
-                value = []
+                print len(self.data)
                 for i, fila in enumerate(self.data):
-                    newvalue = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
-                    value.append(newvalue)
-                    self.data[i][column] = newvalue
+                    value = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
+                    self.data[i][column] = value
                 self.orderUnit[column] = dialog.unit.currentIndex()
                 txt = self.horizontalHeaderItem(column).text().split(os.linesep)[0]
                 txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
@@ -2770,6 +2840,18 @@ class TablaMEoS(Tabla):
                 else:
                     txt=representacion(data, **self.format[columna])
                 self.setValue(fila, columna, txt)
+
+    def setRow(self, row, data, **format):
+        self.blockSignals(True)
+        self.data.append(data)
+        for column, data in enumerate(data):
+            if isinstance(data, QtCore.QString):
+                txt = data
+            else:
+                txt=representacion(data, **self.format[column])
+            self.setValue(row, column, txt)
+        self.resizeColumnsToContents()
+        self.blockSignals(False)
 
 
     def contextMenuEvent(self, event):
