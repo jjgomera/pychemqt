@@ -892,8 +892,10 @@ class MEoS(_fase):
                 rhoG = rhoG+g/Delta*((Kv-Kl)*Jdl-(Jv-Jl)*Kdl)
         if error > 1e-3:
             print("Iteration don´t converge, residual error %g" % error)
-
-        Ps = self.R*T*rhoL*rhoG/(rhoL-rhoG)*(liquido["fir"]-vapor["fir"]+log(deltaL/deltaG))
+        if rhoL == rhoG:
+            Ps = self.Pc
+        else:
+            Ps = self.R*T*rhoL*rhoG/(rhoL-rhoG)*(liquido["fir"]-vapor["fir"]+log(deltaL/deltaG))
         return rhoL, rhoG, Ps
 
     def _Helmholtz(self, rho, T):
@@ -1490,21 +1492,26 @@ class MEoS(_fase):
                 + 2*Bi[i]*a4[i]*((delta-1)**2)**(a4[i]-1))
             if delta == 1:
                 Deltadd = 0
+                DeltaBd = 0
+                DeltaBdd = 0
+                DeltaBt = 0
+                DeltaBtt = 0
+                DeltaBdt = 0
+                DeltaBdtt = 0
             else:
                 Deltadd = Deltad/(delta-1)+(delta-1)**2 * \
                     (4*Bi[i]*a4[i]*(a4[i]-1)*((delta-1)**2)**(a4[i]-2) +
                     2*A[i]**2/bt[i]**2*(((delta-1)**2)**(0.5/bt[i]-1))**2 +
                     A[i]*Tita*4/bt[i]*(0.5/bt[i]-1)*((delta-1)**2)**(0.5/bt[i]-2))
-
-            DeltaBd = b[i]*Delta**(b[i]-1)*Deltad
-            DeltaBdd = b[i]*(Delta**(b[i]-1)*Deltadd+(b[i]-1)*Delta**(b[i]-2)*Deltad**2)
-            DeltaBt = -2*Tita*b[i]*Delta**(b[i]-1)
-            DeltaBtt = 2*b[i]*Delta**(b[i]-1)+4*Tita**2*b[i]*(b[i]-1)*Delta**(b[i]-2)
-            DeltaBdt = -A[i]*b[i]*2/bt[i]*Delta**(b[i]-1)*(delta-1)*((delta-1)**2) ** \
-                (0.5/bt[i]-1)-2*Tita*b[i]*(b[i]-1)*Delta**(b[i]-2)*Deltad
-            DeltaBdtt = 2*b[i]*(b[i]-1)*Delta**(b[i]-2) * \
-                (Deltad*(1+2*Tita**2*(b[i]-2)/Delta)+4*Tita*A[i] *
-                (delta-1)/bt[i]*((delta-1)**2)**(0.5/bt[i]-1))
+                DeltaBd = b[i]*Delta**(b[i]-1)*Deltad
+                DeltaBdd = b[i]*(Delta**(b[i]-1)*Deltadd+(b[i]-1)*Delta**(b[i]-2)*Deltad**2)
+                DeltaBt = -2*Tita*b[i]*Delta**(b[i]-1)
+                DeltaBtt = 2*b[i]*Delta**(b[i]-1)+4*Tita**2*b[i]*(b[i]-1)*Delta**(b[i]-2)
+                DeltaBdt = -A[i]*b[i]*2/bt[i]*Delta**(b[i]-1)*(delta-1)*((delta-1)**2) ** \
+                    (0.5/bt[i]-1)-2*Tita*b[i]*(b[i]-1)*Delta**(b[i]-2)*Deltad
+                DeltaBdtt = 2*b[i]*(b[i]-1)*Delta**(b[i]-2) * \
+                    (Deltad*(1+2*Tita**2*(b[i]-2)/Delta)+4*Tita*A[i] *
+                    (delta-1)/bt[i]*((delta-1)**2)**(0.5/bt[i]-1))
 
             fir += nr4[i]*Delta**b[i]*delta*F
             fird += nr4[i]*(Delta**b[i]*(F+delta*Fd)+DeltaBd*delta*F)
