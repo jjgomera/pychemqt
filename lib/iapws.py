@@ -6,7 +6,7 @@
 ###############################################################################
 
 from __future__ import division
-from math import sqrt, log, exp, tan, atan, acos, sin
+from math import sqrt, log, exp, tan, atan, acos, sin, pi
 from cmath import log as log_c
 
 from scipy.optimize import fsolve

@@ -379,7 +379,7 @@ if __name__ == "__main__":
 #    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
 #    0.0999679423 1.50817541 548.31425 7.944882714
 #
-    water=H2O(T=640, P=1e5)
+    water=H2O(T=647.096, x=1)
     print water.P.MPa, water.rho, water.h, water.s
 #    870.7690 2.66422350 2019.33608 4.17223802
 #
