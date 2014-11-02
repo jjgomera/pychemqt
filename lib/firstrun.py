@@ -169,6 +169,7 @@ def Preferences():
     config.set("MEOS", "saturation"+"marker", "None")
     config.set("MEOS", "surface", "False")
     config.set("MEOS", "grid", "False")
+    config.set("MEOS", "definition", "1")    
     lineas = ["Isotherm", "Isobar", "Isoenthalpic", "Isoentropic", "Isochor",
               "Isoquality"]
     for linea in lineas:

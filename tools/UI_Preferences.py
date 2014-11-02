@@ -1030,7 +1030,7 @@ class ConfmEoS(QtGui.QDialog):
         layout.addWidget(self.lineconfig, 5, 1, 1, 2)
         group = QtGui.QGroupBox(
             QtGui.QApplication.translate("pychemqt", "Isolines"))
-        layout.addWidget(group, 7, 1, 1, 2)
+        layout.addWidget(group, 6, 1, 1, 2)
         layoutgroup = QtGui.QGridLayout(group)
         self.comboIsolineas = QtGui.QComboBox()
         layoutgroup.addWidget(self.comboIsolineas, 1, 1)
@@ -1041,6 +1041,13 @@ class ConfmEoS(QtGui.QDialog):
         for nombre, unidad, text in self.lineas:
             self.comboIsolineas.addItem(text)
             self.Isolineas.addWidget(Isolinea(unidad, nombre, config))
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Plot Definition")), 7, 1)
+        self.definition = QtGui.QComboBox()
+        self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Low"))
+        self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Medium"))
+        self.definition.addItem(QtGui.QApplication.translate("pychemqt", "High"))
+        layout.addWidget(self.definition, 7, 2)
         self.surface = QtGui.QCheckBox(QtGui.QApplication.translate(
             "pychemqt", "Use surface in plot (slower)"))
         layout.addWidget(self.surface, 8, 1, 1, 2)
@@ -1065,6 +1072,7 @@ class ConfmEoS(QtGui.QDialog):
             self.refprop.setChecked(config.getboolean("MEOS", 'refprop'))
             self.surface.setChecked(config.getboolean("MEOS", 'surface'))
             self.grid.setChecked(config.getboolean("MEOS", 'grid'))
+            self.definition.setCurrentIndex(config.getint("MEOS", 'definition'))
             self.lineconfig.setConfig(config)
 
     def value(self, config):
@@ -1079,6 +1087,7 @@ class ConfmEoS(QtGui.QDialog):
         config = self.lineconfig.value(config)
         config.set("MEOS", "surface", self.surface.isChecked())
         config.set("MEOS", "grid", self.grid.isChecked())
+        config.set("MEOS", "definition", self.definition.currentIndex())
 
         for indice in range(self.Isolineas.count()):
             config = self.Isolineas.widget(indice).value(config)
@@ -1094,6 +1103,7 @@ class ConfmEoS(QtGui.QDialog):
         config = LineConfig.default(config, "saturation")
         config.set("MEOS", "surface", "False")
         config.set("MEOS", "grid", "False")
+        config.set("MEOS", "definition", "1")
         for nombre, texto, unidad in cls.lineas:
             config = Isolinea.default(config, nombre)
         return config
