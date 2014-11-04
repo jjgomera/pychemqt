@@ -35,7 +35,7 @@ from string import maketrans
 from math import ceil, floor
 
 from PyQt4 import QtCore, QtGui
-from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, min, max
+from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, min, max, transpose
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
@@ -1873,7 +1873,6 @@ class TablaMEoS(Tabla):
             # Check unit change
             if unit != unidades.Dimensionless and \
                 dialog.unit.currentIndex() != self.orderUnit[column]:
-                print len(self.data)
                 for i, fila in enumerate(self.data):
                     value = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
                     self.data[i][column] = value
@@ -1882,7 +1881,7 @@ class TablaMEoS(Tabla):
                 txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
                 self.setHorizontalHeaderItem(column,QtGui.QTableWidgetItem(txt))
 
-            # Check formt change
+            # Check format change
             self.format[column]=dialog.args()
             self.setStr()
             self.resizeColumnToContents(column)
@@ -2229,9 +2228,13 @@ class PlotMEoS(QtGui.QWidget):
         menu.addAction(self.toolbarVisibleAction)
         menu.addAction(self.gridToggleAction)
         menu.exec_(event.globalPos())
+    
+        if self.plot.ax._gridOn:
+            self.gridToggleAction.setChecked(True)
 
     def grid(self, bool):
         self.plot.ax.grid(bool)
+        self.plot.ax._gridOn = bool
         self.plot.draw()
 
     def edit(self):
@@ -2244,19 +2247,23 @@ class PlotMEoS(QtGui.QWidget):
 
     def table(self, obj):
         """Crea una tabla con los datos del grafico"""
-        title=QtGui.QApplication.translate("pychemqt", "Table from")+" "+obj.get_label()
-        tabla=createTabla(self.parent, title, obj.fluids)
+        title = QtGui.QApplication.translate("pychemqt", "Table from") + " " + \
+            obj.get_label()
+        
+        xkey = self.plot.ax.get_xlabel()
+        ykey = self.plot.ax.get_ylabel()
+        xtxt = meos.propiedades[meos.keys.index(xkey)]
+        ytxt = meos.propiedades[meos.keys.index(ykey)]
+        xunit = meos.units[meos.keys.index(xkey)]
+        yunit = meos.units[meos.keys.index(ykey)]
+        HHeader=[xtxt+os.linesep+xunit.text(), ytxt+os.linesep+yunit.text()]
+        tabla = TablaMEoS(2, horizontalHeader=HHeader, units=[xunit, yunit], 
+                          stretch=False, readOnly=True, parent=self.parent)
+        tabla.setMatrix(transpose(obj.get_data()))
+        prefix=QtGui.QApplication.translate("pychemqt", "Table from")+" "
+        tabla.setWindowTitle(title)
         self.parent.centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
-
-    #        HHeader=[str(x) for x in self.plot.data["x"]]
-    #        VHeader=[str(y) for y in self.plot.data["y"]]
-    #        tabla = TablaMEoS(len(self.plot.data["x"]), horizontalHeader=HHeader, verticalHeaderLabels=VHeader, stretch=False, readOnly=True, parent=self.parent)
-    #        tabla.setMatrix(self.plot.data["z"])
-    #        prefix=QtGui.QApplication.translate("pychemqt", "Table from")+" "
-    #        tabla.setWindowTitle(prefix+obj.get_label())
-    #        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
-    #        tabla.show()
 
 class Plot2D(QtGui.QDialog):
     """Dialog for select a special 2D plot"""
@@ -2631,7 +2638,7 @@ class EditAxis(QtGui.QDialog):
         self.labelX.setColor(QtGui.QColor(self.fig.ax.xaxis.get_label().get_color()))
         self.labelY.setText(self.fig.ax.get_ylabel())
         self.labelY.setColor(QtGui.QColor(self.fig.ax.yaxis.get_label().get_color()))
-        self.gridCheckbox.setChecked(self.fig.ax.get_xgridlines()[0].get_visible())
+        self.gridCheckbox.setChecked(self.fig.ax._gridOn)
         self.scaleX.setChecked(self.fig.ax.get_xscale()=="log")
         self.scaleY.setChecked(self.fig.ax.get_yscale()=="log")
         xmin, xmax=self.fig.ax.get_xlim()
@@ -2661,6 +2668,8 @@ class EditAxis(QtGui.QDialog):
                 value="log"
             else:
                 value="linear"
+        if key == "grid":
+            self.fig.ax._gridOn = value
         if key in ("titlecolor", "xlabelcolor", "ylabelcolor"):
             value=str(value)
         if key in ("titlefont", "xlabelfont", "ylabelfont"):
