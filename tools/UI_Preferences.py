@@ -1047,6 +1047,7 @@ class ConfmEoS(QtGui.QDialog):
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Low"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Medium"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "High"))
+        self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Ultra High"))
         layout.addWidget(self.definition, 7, 2)
         self.surface = QtGui.QCheckBox(QtGui.QApplication.translate(
             "pychemqt", "Use surface in plot (slower)"))

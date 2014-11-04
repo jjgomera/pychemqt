@@ -803,7 +803,6 @@ class customCombo(QtGui.QComboBox):
 
     def __init__(self, parent=None):
         super(customCombo, self).__init__(parent)
-        self.setFixedWidth(80)
         self.setIconSize(QtCore.QSize(35, 18))
         self.currentIndexChanged.connect(self.emitir)
         if self.image and self.text:

@@ -16,9 +16,17 @@
 #       - Widget_Conductivity_Data: Widget to show thermal conductivity data
 #   - Ui_Properties: Dialog for select and sort shown properties in tables
 #
-#   Dialogs for input data:
+#   Table data:
+#   - TablaMEoS: Tabla subclass to show meos data, add context menu options
 #   - Ui_Saturation: Dialog to define input for a two-phase table calculation
 #   - Ui_Isoproperty: Dialog to define input for isoproperty table calculations
+#
+#   Plot data:
+#   - PlotMEoS: Plot widget to show meos plot data, add context menu options
+#   - Plot2D: Dialog for select a special 2D plot
+#   - EditPlot: Dialog to edit plot
+#   - AddLine: Dialog to add new isoline to plot
+#   - EditAxis: Dialog to configure axes plot properties
 ###############################################################################
 
 import inspect, csv, os, cPickle
@@ -41,7 +49,7 @@ from tools.UI_Preferences import NumericFactor
 if os.environ["freesteam"]:
     import freesteam
 
-
+# Plugin to inport in mainwindow, it implement of meos functionality as QMenu
 class plugin(QtGui.QMenu):
     """QMenu to import in mainwindow with all meos addon functionality"""
     def __init__(self, parent=None):
@@ -489,11 +497,13 @@ class plugin(QtGui.QMenu):
         data = {}
         definition = self.parent().Preferences.getint("MEOS", "definition")
         if definition == 1:
-            points = 50
-        elif definition == 2:
-            points = 100
-        else:
             points = 10
+        elif definition == 2:
+            points = 25
+        elif definition == 3:
+            points = 50
+        else:
+            points = 5
 
         # Calculate melting line
         if fluid._melting:
@@ -523,7 +533,10 @@ class plugin(QtGui.QMenu):
             data["ymel"] = ymel
             
         
-        T = list(concatenate([linspace(fluid.Tt, 0.9*fluid.Tc, points), linspace(0.9*fluid.Tc, fluid.Tc, points)]))
+        T = list(concatenate([linspace(fluid.Tt, 0.9*fluid.Tc, points),
+                              linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points), 
+                              linspace(0.99*fluid.Tc, fluid.Tc, points)]))
+        del T[points+points]
         del T[points]
         
         # Calculate saturation
@@ -729,8 +742,7 @@ class plugin(QtGui.QMenu):
         grafico.show()
 
 
-
-
+# Dialogs for configuration:
 class Ui_ChooseFluid(QtGui.QDialog):
     """Dialog to choose fluid for meos plugins calculations"""
     def __init__(self, config=None, parent=None):
@@ -1830,6 +1842,108 @@ class Ui_Properties(QtGui.QDialog):
         self.ButtonArriba.setEnabled(fila>=1)
         self.ButtonAbajo.setEnabled(fila<self.listaDisponibles.rowCount()-1)
 
+# Table data
+class TablaMEoS(Tabla):
+    """Tabla subclass to show meos data, add context menu options"""
+    def __init__(self, *args, **kwargs):
+        if "keys" in kwargs:
+            self.keys = kwargs["keys"]
+            del kwargs["keys"]
+        self.units = kwargs["units"]
+        self.orderUnit = []
+        for unit in self.units:
+            if unit == unidades.Dimensionless:
+                self.orderUnit.append(0)
+            else:
+                self.orderUnit.append(unit.Config.getint('Units', unit.__name__))
+        del kwargs["units"]
+        super(TablaMEoS, self).__init__(*args, **kwargs)
+        self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
+        self.format=[{"format": 1, "decimales": 6, "signo": False}]*args[0]
+        self.data=[]
+        self.parent=kwargs.get("parent", None)
+
+    def show_header_context_menu(self, position):
+        """Show dialog to config format and unit"""
+        column = self.horizontalHeader().logicalIndexAt(position)
+        unit = self.units[column]
+        dialog=NumericFactor(self.format[column], unit, self.orderUnit[column])
+        if dialog.exec_():
+            # Check unit change
+            if unit != unidades.Dimensionless and \
+                dialog.unit.currentIndex() != self.orderUnit[column]:
+                print len(self.data)
+                for i, fila in enumerate(self.data):
+                    value = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
+                    self.data[i][column] = value
+                self.orderUnit[column] = dialog.unit.currentIndex()
+                txt = self.horizontalHeaderItem(column).text().split(os.linesep)[0]
+                txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
+                self.setHorizontalHeaderItem(column,QtGui.QTableWidgetItem(txt))
+
+            # Check formt change
+            self.format[column]=dialog.args()
+            self.setStr()
+            self.resizeColumnToContents(column)
+        self.setRangeSelected(QtGui.QTableWidgetSelectionRange(0, column, self.rowCount()-1, column), True)
+
+    def setMatrix(self, data):
+        self.data=data
+        self.setStr()
+
+    def setStr(self):
+        for fila, array in enumerate(self.data):
+            if fila>=self.rowCount():
+                self.addRow()
+            for columna, data in enumerate(array):
+                if isinstance(data, QtCore.QString):
+                    txt = data
+                else:
+                    txt=representacion(data, **self.format[columna])
+                self.setValue(fila, columna, txt)
+
+    def setRow(self, row, data, **format):
+        self.blockSignals(True)
+        self.data.append(data)
+        for column, data in enumerate(data):
+            if isinstance(data, QtCore.QString):
+                txt = data
+            else:
+                txt=representacion(data, **self.format[column])
+            self.setValue(row, column, txt)
+        self.resizeColumnsToContents()
+        self.blockSignals(False)
+
+
+    def contextMenuEvent(self, event):
+        menu = QtGui.QMenu()
+        actionCopy=createAction(QtGui.QApplication.translate("pychemqt", "&Copy"), slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy, icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
+        export = createAction(QtGui.QApplication.translate("pychemqt", "E&xport to csv"), self.export, icon=os.environ["pychemqt"]+"/images/button/export", tip=QtGui.QApplication.translate("pychemqt", "Export table to csv"), parent=self)
+        menu.addAction(actionCopy)
+        menu.addSeparator()
+        menu.addAction(export)
+        menu.exec_(event.globalPos())
+
+    def copy(self, event):
+        widget=self.itemAt(self.viewport().mapFromGlobal(event.globalPos()))
+        QtGui.QApplication.clipboard().setText(widget.text())
+
+    def export(self):
+        dir = self.parent.currentFilename if self.parent.currentFilename else "."
+        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
+                            QtGui.QApplication.translate("pychemqt", "Export table to csv"), dir,
+                            "csv files (*.csv)"))
+        if fname:
+            if fname.split(".")[-1]!="csv":
+                fname+=".csv"
+
+            cambio=maketrans(".", ",")
+            with open(fname, "w") as archivo:
+                writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
+                for row in self.data:
+                    writer.writerow([str(data).translate(cambio) for data in row])
+
 
 class Ui_Saturation(QtGui.QDialog):
     """Dialog to define input for a two-phase saturation table calculation"""
@@ -2073,10 +2187,79 @@ class Ui_Isoproperty(QtGui.QDialog):
         self.layout().addWidget(self.Final,6,2)
         self.layout().addWidget(self.Incremento,7,2)
 
+# Plot data
+class PlotMEoS(QtGui.QWidget):
+    """Plot widget to show meos plot data, add context menu options"""
+    def __init__(self, dim, toolbar=False, parent=None):
+        super(PlotMEoS, self).__init__(parent)
+        self.parent=parent
+        self.dim=dim
+
+        layout=QtGui.QVBoxLayout(self)
+        self.plot=plot.matplotlib(dim)
+        layout.addWidget(self.plot)
+        self.toolbar=plot.NavigationToolbar2QT(self.plot, self.plot)
+        self.toolbar.setVisible(toolbar)
+        layout.addWidget(self.toolbar)
+
+        self.editAxesAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Axis"), icon=os.environ["pychemqt"]+"/images/button/editor", slot=self.editAxis, parent=self)
+        self.editAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Plot"), slot=self.edit, icon=os.environ["pychemqt"]+"/images/button/Regression", parent=self)
+        self.editMarginAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Margins"), slot=self.toolbar.configure_subplots, parent=self)
+        self.saveAction=createAction(QtGui.QApplication.translate("pychemqt", "&Save Plot"), slot=self.toolbar.save_figure, icon=os.environ["pychemqt"]+"/images/button/fileSave", parent=self)
+        self.toolbarVisibleAction = createAction(QtGui.QApplication.translate("pychemqt", "Toggle &Toolbar"), self.toolbar.setVisible, checkable=True, parent=self)
+        self.gridToggleAction = createAction(QtGui.QApplication.translate("pychemqt", "Toggle &Grid"), self.grid, checkable=True, parent=self)
+        self.gridToggleAction.setChecked(self.parent.Preferences.getboolean("MEOS", "grid"))
+
+
+    def contextMenuEvent(self, event):
+        menuTable=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Tabulated data"))
+        menuTable.setIcon(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/table"))
+        for linea in self.plot.ax.lines:
+            action=createAction(linea.get_label(), slot=partial(self.table, linea), parent=self)
+            menuTable.addAction(action)
+
+        menu = QtGui.QMenu()
+        menu.addAction(self.editAxesAction)
+        menu.addAction(self.editAction)
+        menu.addAction(self.editMarginAction)
+        menu.addSeparator()
+        menu.addAction(self.saveAction)
+        menu.addAction(menuTable.menuAction())
+        menu.addSeparator()
+        menu.addAction(self.toolbarVisibleAction)
+        menu.addAction(self.gridToggleAction)
+        menu.exec_(event.globalPos())
+
+    def grid(self, bool):
+        self.plot.ax.grid(bool)
+        self.plot.draw()
+
+    def edit(self):
+        dialog=EditPlot(self, self.parent)
+        dialog.show()
+
+    def editAxis(self):
+        dialog=EditAxis(self.plot)
+        dialog.exec_()
+
+    def table(self, obj):
+        """Crea una tabla con los datos del grafico"""
+        title=QtGui.QApplication.translate("pychemqt", "Table from")+" "+obj.get_label()
+        tabla=createTabla(self.parent, title, obj.fluids)
+        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
+        tabla.show()
+
+    #        HHeader=[str(x) for x in self.plot.data["x"]]
+    #        VHeader=[str(y) for y in self.plot.data["y"]]
+    #        tabla = TablaMEoS(len(self.plot.data["x"]), horizontalHeader=HHeader, verticalHeaderLabels=VHeader, stretch=False, readOnly=True, parent=self.parent)
+    #        tabla.setMatrix(self.plot.data["z"])
+    #        prefix=QtGui.QApplication.translate("pychemqt", "Table from")+" "
+    #        tabla.setWindowTitle(prefix+obj.get_label())
+    #        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
+    #        tabla.show()
 
 class Plot2D(QtGui.QDialog):
-    """Widget de configuracion inicial de graficos 2D"""
-
+    """Dialog for select a special 2D plot"""
     def __init__(self, config=None, parent=None):
         super(Plot2D, self).__init__(parent)
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Setup 2D Plot"))
@@ -2159,6 +2342,352 @@ class Plot2D(QtGui.QDialog):
         for i in self.ejeY_max:
             i.setVisible(False)
         self.ejeY_max[int].setVisible(True)
+
+
+class EditPlot(QtGui.QWidget):
+    """Dialog to edit plot"""
+    def __init__(self, plotMEoS, mainwindow, parent=None):
+        super(EditPlot, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Edit Plot"))
+        layout = QtGui.QGridLayout(self)
+        self.plotMEoS=plotMEoS
+        self.fig=plotMEoS.plot
+        self.mainwindow=mainwindow
+
+        self.lista=QtGui.QListWidget()
+        layout.addWidget(self.lista,0,1,1,3)
+        
+        lytTitle = QtGui.QHBoxLayout()
+        label=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label"))
+        lytTitle.addWidget(label)
+        self.label=QtGui.QLineEdit()
+        lytTitle.addWidget(self.label)
+        layout.addLayout(lytTitle,1,1,1,3)
+
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Line Width")),2,1)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Line Style")),2,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Color")),2,3)
+        self.Grosor = QtGui.QDoubleSpinBox()
+        self.Grosor.setAlignment(QtCore.Qt.AlignRight)
+        self.Grosor.setRange(0.1, 5)
+        self.Grosor.setDecimals(1)
+        self.Grosor.setSingleStep(0.1)
+        layout.addWidget(self.Grosor,3,1)
+        self.Linea = LineStyleCombo()
+        layout.addWidget(self.Linea,3,2)
+        self.ColorButton = ColorSelector()
+        layout.addWidget(self.ColorButton,3,3)
+
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker")),4,1)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker Size")),4,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker Color")),4,3)
+        self.Marca = MarkerCombo()
+        layout.addWidget(self.Marca,5,1)
+        self.markerSize = QtGui.QDoubleSpinBox()
+        self.markerSize.setAlignment(QtCore.Qt.AlignRight)
+        self.markerSize.setDecimals(1)
+        self.markerSize.setSingleStep(0.1)
+        layout.addWidget(self.markerSize,5,2)
+        self.markerfacecolor = ColorSelector()
+        layout.addWidget(self.markerfacecolor,5,3)
+
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker edge")),7,1)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Width")),6,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Color")),6,3)
+        self.markerEdgeSize = QtGui.QDoubleSpinBox()
+        self.markerEdgeSize.setAlignment(QtCore.Qt.AlignRight)
+        self.markerEdgeSize.setDecimals(1)
+        self.markerEdgeSize.setSingleStep(0.1)
+        layout.addWidget(self.markerEdgeSize,7,2)
+        self.markeredgecolor = ColorSelector()
+        layout.addWidget(self.markeredgecolor,7,3)
+
+        self.visible=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Visible"))
+        layout.addWidget(self.visible,8,1,1,3)
+        self.antialiases=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Antialiases"))
+        layout.addWidget(self.antialiases,9,1,1,3)
+
+        layoutButton=QtGui.QHBoxLayout()
+        layout.addLayout(layoutButton,10,1,1,3)
+        self.botonAdd=QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/add.png")), "")
+        self.botonAdd.clicked.connect(self.add)
+        layoutButton.addWidget(self.botonAdd)
+        self.botonRemove=QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/remove.png")), "")
+        self.botonRemove.clicked.connect(self.remove)
+        layoutButton.addWidget(self.botonRemove)
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self.close)
+        layoutButton.addWidget(self.buttonBox)
+
+        self.populateList()
+
+        self.lista.currentRowChanged.connect(self.update)
+        self.label.textChanged.connect(partial(self.changeValue, "label"))
+        self.Grosor.valueChanged.connect(partial(self.changeValue, "lw"))
+        self.Linea.valueChanged.connect(partial(self.changeValue, "ls"))
+        self.Linea.currentIndexChanged.connect(self.ColorButton.setEnabled)
+        self.ColorButton.valueChanged.connect(partial(self.changeValue, "color"))
+        self.Marca.valueChanged.connect(partial(self.changeValue, "marker"))
+        self.Marca.currentIndexChanged.connect(self.markerSize.setEnabled)
+        self.Marca.currentIndexChanged.connect(self.markerfacecolor.setEnabled)
+        self.Marca.currentIndexChanged.connect(self.markerEdgeSize.setEnabled)
+        self.Marca.currentIndexChanged.connect(self.markeredgecolor.setEnabled)
+        self.markerSize.valueChanged.connect(partial(self.changeValue, "ms"))
+        self.markerfacecolor.valueChanged.connect(partial(self.changeValue, "mfc"))
+        self.markerEdgeSize.valueChanged.connect(partial(self.changeValue, "mew"))
+        self.markeredgecolor.valueChanged.connect(partial(self.changeValue, "mec"))
+        self.visible.toggled.connect(partial(self.changeValue, "visible"))
+        self.antialiases.toggled.connect(partial(self.changeValue, "antialiases"))
+        self.lista.setCurrentRow(0)
+
+    def populateList(self):
+        """Rellena la lista con los label de los elementos disponibles en el grafico"""
+        self.lista.clear()
+        for linea in self.fig.ax.lines:
+            self.lista.addItem(linea._label)
+
+    def update(self, i):
+        """Rellena widgets con los valores del elemento del grafico seleccionado en la lista"""
+        linea=self.fig.ax.lines[i]
+        self.label.setText(linea.get_label())
+        self.Grosor.setValue(linea.get_lw())
+        self.Linea.setCurrentValue(linea.get_ls())
+        self.ColorButton.setColor(linea.get_color())
+        self.Marca.setCurrentValue(linea.get_marker())
+        self.Marca.currentIndexChanged.emit(self.Marca.currentIndex())
+        self.markerSize.setValue(linea.get_ms())
+        self.markerfacecolor.setColor(linea.get_mfc())
+        self.markerEdgeSize.setValue(linea.get_mew())
+        self.markeredgecolor.setColor(linea.get_mec())
+        self.visible.setChecked(linea.get_visible())
+        self.antialiases.setChecked(linea.get_antialiased())
+
+
+    def changeValue(self, key, value):
+        """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
+        linea=self.fig.ax.lines[self.lista.currentRow()]
+        func={"label": linea.set_label,
+                    "lw": linea.set_lw,
+                    "ls": linea.set_ls,
+                    "marker": linea.set_marker,
+                    "color": linea.set_color,
+                    "ms": linea.set_ms,
+                    "mfc": linea.set_mfc,
+                    "mew": linea.set_mew,
+                    "mec": linea.set_mec,
+                    "visible": linea.set_visible,
+                    "antialiases": linea.set_antialiased}
+        if key in ("ls", "marker", "color", "mfc", "mec"):
+            value=str(value)
+        func[key](value)
+        if key=="label":
+            self.lista.currentItem().setText(value)
+        else:
+            self.fig.draw()
+
+    def add(self):
+        """Añade una isolinea al grafico"""
+        dialog=AddLine()
+        if dialog.exec_():
+            fluid=mEoS.__all__[self.mainwindow.currentConfig.getint("MEoS", "fluid")]
+            metodo=method(self.mainwindow)
+            Preferences=self.mainwindow.Preferences
+            xini, xfin=self.fig.ax.get_xlim()
+            yini, yfin=self.fig.ax.get_ylim()
+            c1=self.fig.ax.c1
+            c2=self.fig.ax.c2
+            property=self.fig.ax.property
+            prop=dialog.tipo.currentIndex()
+            value=dialog.input[prop].value
+            calcularIsolineas(Preferences, self.plotMEoS, fluid, metodo, xini, xfin, yini, yfin, c1, c2, property, (prop, value))
+            self.fig.draw()
+            self.lista.addItem(self.fig.ax.lines[-1].get_label())
+            self.lista.setCurrentRow(self.lista.count()-1)
+
+    def remove(self):
+        """Elimina el elemento seleccionado en la lista del grafico"""
+        del self.fig.ax.lines[self.lista.currentRow()]
+        self.populateList()
+        self.fig.draw()
+
+
+class AddLine(QtGui.QDialog):
+    """Dialog to add new isoline to plot"""
+    lineas = [(QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature, None),
+              (QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure, None),
+              (QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy, None),
+              (QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat, "Entropy"),
+              (QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume, None),
+              (QtGui.QApplication.translate("pychemqt", "Isoquality"), float, None)]
+
+    def __init__(self, parent=None):
+        super(AddLine, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Add Line to Plot"))
+        layout = QtGui.QGridLayout(self)
+
+        self.tipo=QtGui.QComboBox()
+        layout.addWidget(self.tipo,1,1,1,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Value")),2,1)
+
+        self.input=[]
+        for title, unidad, magnitud in self.lineas:
+            self.input.append(Entrada_con_unidades(unidad, magnitud))
+            layout.addWidget(self.input[-1],2,2)
+            self.tipo.addItem(title)
+
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox,10,1,1,2)
+
+        self.isolineaChanged(0)
+        self.tipo.currentIndexChanged.connect(self.isolineaChanged)
+
+    def isolineaChanged(self, int):
+        """Deja visible solo entrada seleccionada en la lista"""
+        for i in self.input:
+            i.setVisible(False)
+        self.input[int].setVisible(True)
+
+
+class EditAxis(QtGui.QDialog):
+    """Dialog to configure axes plot properties"""
+    def __init__(self, fig=None, parent=None):
+        super(EditAxis, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Edit Axis"))
+        layout = QtGui.QGridLayout(self)
+        self.fig=fig
+
+        lytTitle = QtGui.QHBoxLayout()
+        label=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Title"))
+        label.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
+        lytTitle.addWidget(label)
+        self.title=InputFond()
+        lytTitle.addWidget(self.title)
+        layout.addLayout(lytTitle,1,1,1,4)
+
+        groupX=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "x Axis"))
+        layout.addWidget(groupX,2,1,1,2)
+        groupXlayout=QtGui.QGridLayout(groupX)
+        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label")),1,1)
+        self.labelX=InputFond()
+        groupXlayout.addWidget(self.labelX,1,2)
+        self.scaleX=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
+        groupXlayout.addWidget(self.scaleX,2,1,1,2)
+        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "from")),3,1)
+        self.xmin=Entrada_con_unidades(float)
+        groupXlayout.addWidget(self.xmin,3,2)
+        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "to")),4,1)
+        self.xmax=Entrada_con_unidades(float)
+        groupXlayout.addWidget(self.xmax,4,2)
+
+        groupY=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "y Axis"))
+        layout.addWidget(groupY,2,3,1,2)
+        groupYlayout=QtGui.QGridLayout(groupY)
+        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label")),1,1)
+        self.labelY=InputFond()
+        groupYlayout.addWidget(self.labelY,1,2)
+        self.scaleY=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
+        groupYlayout.addWidget(self.scaleY,2,1,1,2)
+        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "from")),3,1)
+        self.ymin=Entrada_con_unidades(float)
+        groupYlayout.addWidget(self.ymin,3,2)
+        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "to")),4,1)
+        self.ymax=Entrada_con_unidades(float)
+        groupYlayout.addWidget(self.ymax,4,2)
+
+        self.gridCheckbox=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Show Grid"))
+        layout.addWidget(self.gridCheckbox,3,1,1,4)
+        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),5,1,1,4)
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox,10,1,1,4)
+
+        if fig:
+            self.populate()
+
+        self.title.textChanged.connect(partial(self.update, "title"))
+        self.title.colorChanged.connect(partial(self.update, "titlecolor"))
+        self.title.fontChanged.connect(partial(self.update, "titlefont"))
+        self.labelX.textChanged.connect(partial(self.update, "xlabel"))
+        self.labelX.colorChanged.connect(partial(self.update, "xlabelcolor"))
+        self.labelX.fontChanged.connect(partial(self.update, "xlabelfont"))
+        self.labelY.textChanged.connect(partial(self.update, "ylabel"))
+        self.labelY.colorChanged.connect(partial(self.update, "ylabelcolor"))
+        self.labelY.fontChanged.connect(partial(self.update, "ylabelfont"))
+        self.gridCheckbox.toggled.connect(partial(self.update, "grid"))
+        self.scaleX.toggled.connect(partial(self.update, "xscale"))
+        self.scaleY.toggled.connect(partial(self.update, "yscale"))
+        self.xmin.valueChanged.connect(partial(self.update, "xmin"))
+        self.xmax.valueChanged.connect(partial(self.update, "xmax"))
+        self.ymin.valueChanged.connect(partial(self.update, "ymin"))
+        self.ymax.valueChanged.connect(partial(self.update, "ymax"))
+
+    def populate(self):
+        """Rellena widgets con los valores del gráfico"""
+        self.title.setText(self.fig.ax.get_title())
+        self.title.setColor(QtGui.QColor(self.fig.ax.title.get_color()))
+        self.labelX.setText(self.fig.ax.get_xlabel())
+        self.labelX.setColor(QtGui.QColor(self.fig.ax.xaxis.get_label().get_color()))
+        self.labelY.setText(self.fig.ax.get_ylabel())
+        self.labelY.setColor(QtGui.QColor(self.fig.ax.yaxis.get_label().get_color()))
+        self.gridCheckbox.setChecked(self.fig.ax.get_xgridlines()[0].get_visible())
+        self.scaleX.setChecked(self.fig.ax.get_xscale()=="log")
+        self.scaleY.setChecked(self.fig.ax.get_yscale()=="log")
+        xmin, xmax=self.fig.ax.get_xlim()
+        self.xmin.setValue(xmin)
+        self.xmax.setValue(xmax)
+        ymin, ymax=self.fig.ax.get_ylim()
+        self.ymin.setValue(ymin)
+        self.ymax.setValue(ymax)
+
+    def update(self, key, value):
+        """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
+        func={"xlabel": self.fig.ax.set_xlabel,
+                    "xlabelcolor": self.fig.ax.xaxis.get_label().set_color,
+                    "xlabelfont": self.fig.ax.xaxis.get_label().set_fontproperties,
+                    "ylabel": self.fig.ax.set_ylabel,
+                    "ylabelcolor": self.fig.ax.yaxis.get_label().set_color,
+                    "ylabelfont": self.fig.ax.yaxis.get_label().set_fontproperties,
+                    "title": self.fig.ax.set_title,
+                    "titlecolor": self.fig.ax.title.set_color,
+                    "titlefont": self.fig.ax.title.set_fontproperties,
+                    "grid": self.fig.ax.grid,
+                    "xscale": self.fig.ax.set_xscale,
+                    "yscale": self.fig.ax.set_yscale}
+
+        if key in ("xscale", "yscale"):
+            if value:
+                value="log"
+            else:
+                value="linear"
+        if key in ("titlecolor", "xlabelcolor", "ylabelcolor"):
+            value=str(value)
+        if key in ("titlefont", "xlabelfont", "ylabelfont"):
+            value=self.convertFont(value)
+
+        if key in ("xmin", "xmax"):
+            xmin=self.xmin.value
+            xmax=self.xmax.value
+            self.fig.ax.set_xlim(xmin, xmax)
+        elif key in ("ymin", "ymax"):
+            ymin=self.ymin.value
+            ymax=self.ymax.value
+            self.fig.ax.set_ylim(ymin, ymax)
+        else:
+            func[key](value)
+        self.fig.draw()
+
+    def convertFont(self, font):
+        """Convierte la QFont devuelta por QFontDialog en una FontProperties usada por matplotlib"""
+        family=str(font.family())
+        if str(font.style()) in ("normal", "italic", "oblique"):
+            style=str(font.style())
+        else:
+            style=None
+        font=FontProperties(family, style, None, font.stretch(), font.weight(), font.pointSize())
+        return font
+
 
 def method(parent):
     if parent.currentConfig.getfloat("MEoS", "fluid"):
@@ -2560,342 +3089,8 @@ def plotLine(grafico, xi=None, yi=None, zi=None, xini=None, xfin=None, yini=None
         return True
 
 
-class EditPlot(QtGui.QWidget):
-    """Dialogo de configuracion de datos del grafico"""
-    def __init__(self, plotMEoS, mainwindow, parent=None):
-        super(EditPlot, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Edit Plot"))
-        layout = QtGui.QGridLayout(self)
-        self.plotMEoS=plotMEoS
-        self.fig=plotMEoS.plot
-        self.mainwindow=mainwindow
-
-        self.lista=QtGui.QListWidget()
-        layout.addWidget(self.lista,0,1,1,3)
-
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label")),1,1)
-        self.label=QtGui.QLineEdit()
-        layout.addWidget(self.label,1,2,1,2)
-
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Line Width")),2,1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Line Style")),2,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Color")),2,3)
-        self.Grosor = QtGui.QDoubleSpinBox()
-        self.Grosor.setAlignment(QtCore.Qt.AlignRight)
-        self.Grosor.setRange(0.1, 5)
-        self.Grosor.setDecimals(1)
-        self.Grosor.setSingleStep(0.1)
-        layout.addWidget(self.Grosor,3,1)
-        self.Linea = LineStyleCombo()
-        layout.addWidget(self.Linea,3,2)
-        self.ColorButton = ColorSelector()
-        layout.addWidget(self.ColorButton,3,3)
-
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker")),4,1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker Size")),4,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker Color")),4,3)
-        self.Marca = MarkerCombo()
-        layout.addWidget(self.Marca,5,1)
-        self.markerSize = QtGui.QDoubleSpinBox()
-        self.markerSize.setAlignment(QtCore.Qt.AlignRight)
-        self.markerSize.setDecimals(1)
-        self.markerSize.setSingleStep(0.1)
-        layout.addWidget(self.markerSize,5,2)
-        self.markerfacecolor = ColorSelector()
-        layout.addWidget(self.markerfacecolor,5,3)
-
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Marker edge")),7,1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Width")),6,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Color")),6,3)
-        self.markerEdgeSize = QtGui.QDoubleSpinBox()
-        self.markerEdgeSize.setAlignment(QtCore.Qt.AlignRight)
-        self.markerEdgeSize.setDecimals(1)
-        self.markerEdgeSize.setSingleStep(0.1)
-        layout.addWidget(self.markerEdgeSize,7,2)
-        self.markeredgecolor = ColorSelector()
-        layout.addWidget(self.markeredgecolor,7,3)
-
-        self.visible=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Visible"))
-        layout.addWidget(self.visible,8,1,1,3)
-        self.antialiases=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Antialiases"))
-        layout.addWidget(self.antialiases,9,1,1,3)
-
-        layoutButton=QtGui.QHBoxLayout()
-        layout.addLayout(layoutButton,10,1,1,3)
-        self.botonAdd=QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/add.png")), "")
-        self.botonAdd.clicked.connect(self.add)
-        layoutButton.addWidget(self.botonAdd)
-        self.botonRemove=QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/remove.png")), "")
-        self.botonRemove.clicked.connect(self.remove)
-        layoutButton.addWidget(self.botonRemove)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self.close)
-        layoutButton.addWidget(self.buttonBox)
-
-        self.populateList()
-
-        self.lista.currentRowChanged.connect(self.update)
-        self.label.textChanged.connect(partial(self.changeValue, "label"))
-        self.Grosor.valueChanged.connect(partial(self.changeValue, "lw"))
-        self.Linea.valueChanged.connect(partial(self.changeValue, "ls"))
-        self.Linea.currentIndexChanged.connect(self.ColorButton.setEnabled)
-        self.ColorButton.valueChanged.connect(partial(self.changeValue, "color"))
-        self.Marca.valueChanged.connect(partial(self.changeValue, "marker"))
-        self.Marca.currentIndexChanged.connect(self.markerSize.setEnabled)
-        self.Marca.currentIndexChanged.connect(self.markerfacecolor.setEnabled)
-        self.Marca.currentIndexChanged.connect(self.markerEdgeSize.setEnabled)
-        self.Marca.currentIndexChanged.connect(self.markeredgecolor.setEnabled)
-        self.markerSize.valueChanged.connect(partial(self.changeValue, "ms"))
-        self.markerfacecolor.valueChanged.connect(partial(self.changeValue, "mfc"))
-        self.markerEdgeSize.valueChanged.connect(partial(self.changeValue, "mew"))
-        self.markeredgecolor.valueChanged.connect(partial(self.changeValue, "mec"))
-        self.visible.toggled.connect(partial(self.changeValue, "visible"))
-        self.antialiases.toggled.connect(partial(self.changeValue, "antialiases"))
-        self.lista.setCurrentRow(0)
-
-    def populateList(self):
-        """Rellena la lista con los label de los elementos disponibles en el grafico"""
-        self.lista.clear()
-        for linea in self.fig.ax.lines:
-            self.lista.addItem(linea._label)
-
-    def update(self, i):
-        """Rellena widgets con los valores del elemento del grafico seleccionado en la lista"""
-        linea=self.fig.ax.lines[i]
-        self.label.setText(linea.get_label())
-        self.Grosor.setValue(linea.get_lw())
-        self.Linea.setCurrentValue(linea.get_ls())
-        self.ColorButton.setColor(linea.get_color())
-        self.Marca.setCurrentValue(linea.get_marker())
-        self.Marca.currentIndexChanged.emit(self.Marca.currentIndex())
-        self.markerSize.setValue(linea.get_ms())
-        self.markerfacecolor.setColor(linea.get_mfc())
-        self.markerEdgeSize.setValue(linea.get_mew())
-        self.markeredgecolor.setColor(linea.get_mec())
-        self.visible.setChecked(linea.get_visible())
-        self.antialiases.setChecked(linea.get_antialiased())
 
 
-    def changeValue(self, key, value):
-        """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
-        linea=self.fig.ax.lines[self.lista.currentRow()]
-        func={"label": linea.set_label,
-                    "lw": linea.set_lw,
-                    "ls": linea.set_ls,
-                    "marker": linea.set_marker,
-                    "color": linea.set_color,
-                    "ms": linea.set_ms,
-                    "mfc": linea.set_mfc,
-                    "mew": linea.set_mew,
-                    "mec": linea.set_mec,
-                    "visible": linea.set_visible,
-                    "antialiases": linea.set_antialiased}
-        if key in ("ls", "marker", "color", "mfc", "mec"):
-            value=str(value)
-        func[key](value)
-        if key=="label":
-            self.lista.currentItem().setText(value)
-        else:
-            self.fig.draw()
-
-    def add(self):
-        """Añade una isolinea al grafico"""
-        dialog=AddLine()
-        if dialog.exec_():
-            fluid=mEoS.__all__[self.mainwindow.currentConfig.getint("MEoS", "fluid")]
-            metodo=method(self.mainwindow)
-            Preferences=self.mainwindow.Preferences
-            xini, xfin=self.fig.ax.get_xlim()
-            yini, yfin=self.fig.ax.get_ylim()
-            c1=self.fig.ax.c1
-            c2=self.fig.ax.c2
-            property=self.fig.ax.property
-            prop=dialog.tipo.currentIndex()
-            value=dialog.input[prop].value
-            calcularIsolineas(Preferences, self.plotMEoS, fluid, metodo, xini, xfin, yini, yfin, c1, c2, property, (prop, value))
-            self.fig.draw()
-            self.lista.addItem(self.fig.ax.lines[-1].get_label())
-            self.lista.setCurrentRow(self.lista.count()-1)
-
-    def remove(self):
-        """Elimina el elemento seleccionado en la lista del grafico"""
-        del self.fig.ax.lines[self.lista.currentRow()]
-        self.populateList()
-        self.fig.draw()
-
-
-class AddLine(QtGui.QDialog):
-    """Dialogo de definicion de nuevas isolineas"""
-    lineas=[(QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature, None),
-                (QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure, None),
-                (QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy, None),
-                (QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat, "Entropy"),
-                (QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume, None),
-                (QtGui.QApplication.translate("pychemqt", "Isoquality"), float, None)]
-
-    def __init__(self, parent=None):
-        super(AddLine, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Add Line to Plot"))
-        layout = QtGui.QGridLayout(self)
-
-        self.tipo=QtGui.QComboBox()
-        layout.addWidget(self.tipo,1,1,1,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Value")),2,1)
-
-        self.input=[]
-        for title, unidad, magnitud in self.lineas:
-            self.input.append(Entrada_con_unidades(unidad, magnitud))
-            layout.addWidget(self.input[-1],2,2)
-            self.tipo.addItem(title)
-
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox,10,1,1,2)
-
-        self.isolineaChanged(0)
-        self.tipo.currentIndexChanged.connect(self.isolineaChanged)
-
-    def isolineaChanged(self, int):
-        """Deja visible solo entrada seleccionada en la lista"""
-        for i in self.input:
-            i.setVisible(False)
-        self.input[int].setVisible(True)
-
-
-class EditAxis(QtGui.QDialog):
-    """Dialogo de configuracion de parametros generales del grafico"""
-    def __init__(self, fig, parent=None):
-        super(EditAxis, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Edit Axis"))
-        layout = QtGui.QGridLayout(self)
-        self.fig=fig
-
-        label=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Title"))
-        label.setSizePolicy(QtGui.QSizePolicy.Maximum,QtGui.QSizePolicy.Maximum)
-        layout.addWidget(label,1,1)
-        self.title=InputFond()
-        layout.addWidget(self.title,1,2,1,3)
-
-        groupX=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "x Axis"))
-        layout.addWidget(groupX,2,1,1,2)
-        groupXlayout=QtGui.QGridLayout(groupX)
-        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label")),1,1)
-        self.labelX=InputFond()
-        groupXlayout.addWidget(self.labelX,1,2)
-        self.scaleX=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
-        groupXlayout.addWidget(self.scaleX,2,1,1,2)
-        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "from")),3,1)
-        self.xmin=Entrada_con_unidades(float)
-        groupXlayout.addWidget(self.xmin,3,2)
-        groupXlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "to")),4,1)
-        self.xmax=Entrada_con_unidades(float)
-        groupXlayout.addWidget(self.xmax,4,2)
-
-        groupY=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "y Axis"))
-        layout.addWidget(groupY,2,3,1,2)
-        groupYlayout=QtGui.QGridLayout(groupY)
-        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Label")),1,1)
-        self.labelY=InputFond()
-        groupYlayout.addWidget(self.labelY,1,2)
-        self.scaleY=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
-        groupYlayout.addWidget(self.scaleY,2,1,1,2)
-        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "from")),3,1)
-        self.ymin=Entrada_con_unidades(float)
-        groupYlayout.addWidget(self.ymin,3,2)
-        groupYlayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "to")),4,1)
-        self.ymax=Entrada_con_unidades(float)
-        groupYlayout.addWidget(self.ymax,4,2)
-
-        self.gridCheckbox=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Show Grid"))
-        layout.addWidget(self.gridCheckbox,3,1,1,4)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox,10,1,1,4)
-
-        self.populate()
-
-        self.title.textChanged.connect(partial(self.update, "title"))
-        self.title.colorChanged.connect(partial(self.update, "titlecolor"))
-        self.title.fontChanged.connect(partial(self.update, "titlefont"))
-        self.labelX.textChanged.connect(partial(self.update, "xlabel"))
-        self.labelX.colorChanged.connect(partial(self.update, "xlabelcolor"))
-        self.labelX.fontChanged.connect(partial(self.update, "xlabelfont"))
-        self.labelY.textChanged.connect(partial(self.update, "ylabel"))
-        self.labelY.colorChanged.connect(partial(self.update, "ylabelcolor"))
-        self.labelY.fontChanged.connect(partial(self.update, "ylabelfont"))
-        self.gridCheckbox.toggled.connect(partial(self.update, "grid"))
-        self.scaleX.toggled.connect(partial(self.update, "xscale"))
-        self.scaleY.toggled.connect(partial(self.update, "yscale"))
-        self.xmin.valueChanged.connect(partial(self.update, "xmin"))
-        self.xmax.valueChanged.connect(partial(self.update, "xmax"))
-        self.ymin.valueChanged.connect(partial(self.update, "ymin"))
-        self.ymax.valueChanged.connect(partial(self.update, "ymax"))
-
-    def populate(self):
-        """Rellena widgets con los valores del gráfico"""
-        self.title.setText(self.fig.ax.get_title())
-        self.title.setColor(QtGui.QColor(self.fig.ax.title.get_color()))
-        self.labelX.setText(self.fig.ax.get_xlabel())
-        self.labelX.setColor(QtGui.QColor(self.fig.ax.xaxis.get_label().get_color()))
-        self.labelY.setText(self.fig.ax.get_ylabel())
-        self.labelY.setColor(QtGui.QColor(self.fig.ax.yaxis.get_label().get_color()))
-        self.gridCheckbox.setChecked(self.fig.ax.get_xgridlines()[0].get_visible())
-        self.scaleX.setChecked(self.fig.ax.get_xscale()=="log")
-        self.scaleY.setChecked(self.fig.ax.get_yscale()=="log")
-        xmin, xmax=self.fig.ax.get_xlim()
-        self.xmin.setValue(xmin)
-        self.xmax.setValue(xmax)
-        ymin, ymax=self.fig.ax.get_ylim()
-        self.ymin.setValue(ymin)
-        self.ymax.setValue(ymax)
-
-    def update(self, key, value):
-        """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
-        func={"xlabel": self.fig.ax.set_xlabel,
-                    "xlabelcolor": self.fig.ax.xaxis.get_label().set_color,
-                    "xlabelfont": self.fig.ax.xaxis.get_label().set_fontproperties,
-                    "ylabel": self.fig.ax.set_ylabel,
-                    "ylabelcolor": self.fig.ax.yaxis.get_label().set_color,
-                    "ylabelfont": self.fig.ax.yaxis.get_label().set_fontproperties,
-                    "title": self.fig.ax.set_title,
-                    "titlecolor": self.fig.ax.title.set_color,
-                    "titlefont": self.fig.ax.title.set_fontproperties,
-                    "grid": self.fig.ax.grid,
-                    "xscale": self.fig.ax.set_xscale,
-                    "yscale": self.fig.ax.set_yscale}
-
-        if key in ("xscale", "yscale"):
-            if value:
-                value="log"
-            else:
-                value="linear"
-        if key in ("titlecolor", "xlabelcolor", "ylabelcolor"):
-            value=str(value)
-        if key in ("titlefont", "xlabelfont", "ylabelfont"):
-            value=self.convertFont(value)
-
-        if key in ("xmin", "xmax"):
-            xmin=self.xmin.value
-            xmax=self.xmax.value
-            self.fig.ax.set_xlim(xmin, xmax)
-        elif key in ("ymin", "ymax"):
-            ymin=self.ymin.value
-            ymax=self.ymax.value
-            self.fig.ax.set_ylim(ymin, ymax)
-        else:
-            func[key](value)
-        self.fig.draw()
-
-    def convertFont(self, font):
-        """Convierte la QFont devuelta por QFontDialog en una FontProperties usada por matplotlib"""
-        family=str(font.family())
-        if str(font.style()) in ("normal", "italic", "oblique"):
-            style=str(font.style())
-        else:
-            style=None
-        font=FontProperties(family, style, None, font.stretch(), font.weight(), font.pointSize())
-        return font
 
 
 
@@ -3026,179 +3221,9 @@ class Plot3D(QtGui.QDialog):
         return i, j
 
 
-class PlotMEoS(QtGui.QWidget):
-    """Gráfico de datos de las ecuaciones multiparametro, reescribe las acciones de menu contextual."""
-    def __init__(self, dim, toolbar=False, parent=None):
-        super(PlotMEoS, self).__init__(parent)
-        self.parent=parent
-        self.dim=dim
-
-        layout=QtGui.QVBoxLayout(self)
-        self.plot=plot.matplotlib(dim)
-        layout.addWidget(self.plot)
-        self.toolbar=plot.NavigationToolbar2QT(self.plot, self.plot)
-        self.toolbar.setVisible(toolbar)
-        layout.addWidget(self.toolbar)
-
-        self.editAxesAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Axis"), icon=os.environ["pychemqt"]+"/images/button/editor", slot=self.editAxis, parent=self)
-        self.editAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Plot"), slot=self.edit, icon=os.environ["pychemqt"]+"/images/button/Regression", parent=self)
-        self.editMarginAction=createAction(QtGui.QApplication.translate("pychemqt", "Edit &Margins"), slot=self.toolbar.configure_subplots, parent=self)
-        self.saveAction=createAction(QtGui.QApplication.translate("pychemqt", "&Save Plot"), slot=self.toolbar.save_figure, icon=os.environ["pychemqt"]+"/images/button/fileSave", parent=self)
-        self.toolbarVisibleAction = createAction(QtGui.QApplication.translate("pychemqt", "Toggle &Toolbar"), self.toolbar.setVisible, checkable=True, parent=self)
-        self.gridToggleAction = createAction(QtGui.QApplication.translate("pychemqt", "Toggle &Grid"), self.grid, checkable=True, parent=self)
-        self.gridToggleAction.setChecked(self.parent.Preferences.getboolean("MEOS", "grid"))
-
-
-    def contextMenuEvent(self, event):
-        menuTable=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Tabulated data"))
-        menuTable.setIcon(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/table"))
-        for linea in self.plot.ax.lines:
-            action=createAction(linea.get_label(), slot=partial(self.table, linea), parent=self)
-            menuTable.addAction(action)
-
-        menu = QtGui.QMenu()
-        menu.addAction(self.editAxesAction)
-        menu.addAction(self.editAction)
-        menu.addAction(self.editMarginAction)
-        menu.addSeparator()
-        menu.addAction(self.saveAction)
-        menu.addAction(menuTable.menuAction())
-        menu.addSeparator()
-        menu.addAction(self.toolbarVisibleAction)
-        menu.addAction(self.gridToggleAction)
-        menu.exec_(event.globalPos())
-
-    def grid(self, bool):
-        self.plot.ax.grid(bool)
-        self.plot.draw()
-
-    def edit(self):
-        dialog=EditPlot(self, self.parent)
-        dialog.show()
-
-    def editAxis(self):
-        dialog=EditAxis(self.plot)
-        dialog.exec_()
-
-    def table(self, obj):
-        """Crea una tabla con los datos del grafico"""
-        title=QtGui.QApplication.translate("pychemqt", "Table from")+" "+obj.get_label()
-        tabla=createTabla(self.parent, title, obj.fluids)
-        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
-        tabla.show()
-
-#        HHeader=[str(x) for x in self.plot.data["x"]]
-#        VHeader=[str(y) for y in self.plot.data["y"]]
-#        tabla = TablaMEoS(len(self.plot.data["x"]), horizontalHeader=HHeader, verticalHeaderLabels=VHeader, stretch=False, readOnly=True, parent=self.parent)
-#        tabla.setMatrix(self.plot.data["z"])
-#        prefix=QtGui.QApplication.translate("pychemqt", "Table from")+" "
-#        tabla.setWindowTitle(prefix+obj.get_label())
-#        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
-#        tabla.show()
 
 
 
-class TablaMEoS(Tabla):
-    """Tabla de datos de las ecuaciones multiparametro, reescribe las acciones de menu contextual."""
-
-    def __init__(self, *args, **kwargs):
-        if "keys" in kwargs:
-            self.keys = kwargs["keys"]
-            del kwargs["keys"]
-        self.units = kwargs["units"]
-        self.orderUnit = []
-        for unit in self.units:
-            if unit == unidades.Dimensionless:
-                self.orderUnit.append(0)
-            else:
-                self.orderUnit.append(unit.Config.getint('Units', unit.__name__))
-        del kwargs["units"]
-        super(TablaMEoS, self).__init__(*args, **kwargs)
-        self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
-        self.format=[{"format": 1, "decimales": 6, "signo": False}]*args[0]
-        self.data=[]
-        self.parent=kwargs.get("parent", None)
-
-    def show_header_context_menu(self, position):
-        """Show dialog to config format and unit"""
-        column = self.horizontalHeader().logicalIndexAt(position)
-        unit = self.units[column]
-        dialog=NumericFactor(self.format[column], unit, self.orderUnit[column])
-        if dialog.exec_():
-            # Check unit change
-            if unit != unidades.Dimensionless and \
-                dialog.unit.currentIndex() != self.orderUnit[column]:
-                print len(self.data)
-                for i, fila in enumerate(self.data):
-                    value = unit(fila[column], unit.__units__[self.orderUnit[column]]).__getattribute__(unit.__units__[dialog.unit.currentIndex()])
-                    self.data[i][column] = value
-                self.orderUnit[column] = dialog.unit.currentIndex()
-                txt = self.horizontalHeaderItem(column).text().split(os.linesep)[0]
-                txt += os.linesep+unit.__text__[dialog.unit.currentIndex()]
-                self.setHorizontalHeaderItem(column,QtGui.QTableWidgetItem(txt))
-
-            # Check formt change
-            self.format[column]=dialog.args()
-            self.setStr()
-            self.resizeColumnToContents(column)
-        self.setRangeSelected(QtGui.QTableWidgetSelectionRange(0, column, self.rowCount()-1, column), True)
-
-    def setMatrix(self, data):
-        self.data=data
-        self.setStr()
-
-    def setStr(self):
-        for fila, array in enumerate(self.data):
-            if fila>=self.rowCount():
-                self.addRow()
-            for columna, data in enumerate(array):
-                if isinstance(data, QtCore.QString):
-                    txt = data
-                else:
-                    txt=representacion(data, **self.format[columna])
-                self.setValue(fila, columna, txt)
-
-    def setRow(self, row, data, **format):
-        self.blockSignals(True)
-        self.data.append(data)
-        for column, data in enumerate(data):
-            if isinstance(data, QtCore.QString):
-                txt = data
-            else:
-                txt=representacion(data, **self.format[column])
-            self.setValue(row, column, txt)
-        self.resizeColumnsToContents()
-        self.blockSignals(False)
-
-
-    def contextMenuEvent(self, event):
-        menu = QtGui.QMenu()
-        actionCopy=createAction(QtGui.QApplication.translate("pychemqt", "&Copy"), slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy, icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
-        export = createAction(QtGui.QApplication.translate("pychemqt", "E&xport to csv"), self.export, icon=os.environ["pychemqt"]+"/images/button/export", tip=QtGui.QApplication.translate("pychemqt", "Export table to csv"), parent=self)
-        menu.addAction(actionCopy)
-        menu.addSeparator()
-        menu.addAction(export)
-        menu.exec_(event.globalPos())
-
-    def copy(self, event):
-        widget=self.itemAt(self.viewport().mapFromGlobal(event.globalPos()))
-        QtGui.QApplication.clipboard().setText(widget.text())
-
-    def export(self):
-        dir = self.parent.currentFilename if self.parent.currentFilename else "."
-        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
-                            QtGui.QApplication.translate("pychemqt", "Export table to csv"), dir,
-                            "csv files (*.csv)"))
-        if fname:
-            if fname.split(".")[-1]!="csv":
-                fname+=".csv"
-
-            cambio=maketrans(".", ",")
-            with open(fname, "w") as archivo:
-                writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
-                for row in self.data:
-                    writer.writerow([str(data).translate(cambio) for data in row])
 
 
 
@@ -3210,7 +3235,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
 
-    SteamTables = Ui_Saturation()
+    SteamTables = EditAxis()
 #    SteamTables=AddLine(None)
 #    SteamTables=transportDialog(mEoS.__all__[2])
 
