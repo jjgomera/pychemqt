@@ -342,7 +342,7 @@ class MEoS(_fase):
         self._mode = ""
         if self.kwargs["T"] and self.kwargs["P"]:
             self._mode = "TP"
-        elif self.kwargs["T"] and self.kwargs["rho"]:
+        elif self.kwargs["T"] and (self.kwargs["rho"] or self.kwargs["v"]):
             self._mode = "Trho"
         elif self.kwargs["T"] and self.kwargs["h"] is not None:
             self._mode = "Th"
@@ -350,7 +350,7 @@ class MEoS(_fase):
             self._mode = "Ts"
         elif self.kwargs["T"] and self.kwargs["u"] is not None:
             self._mode = "Tu"
-        elif self.kwargs["P"] and self.kwargs["rho"]:
+        elif self.kwargs["P"] and (self.kwargs["rho"] or self.kwargs["v"]):
             self._mode = "Prho"
         elif self.kwargs["P"] and self.kwargs["h"] is not None:
             self._mode = "Ph"
@@ -358,11 +358,11 @@ class MEoS(_fase):
             self._mode = "Ps"
         elif self.kwargs["P"] and self.kwargs["u"] is not None:
             self._mode = "Pu"
-        elif self.kwargs["rho"] and self.kwargs["h"] is not None:
+        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["h"] is not None:
             self._mode = "rhoh"
-        elif self.kwargs["rho"] and self.kwargs["s"] is not None:
+        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["s"] is not None:
             self._mode = "rhos"
-        elif self.kwargs["rho"] and self.kwargs["u"] is not None:
+        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["u"] is not None:
             self._mode = "rhou"
         elif self.kwargs["h"] is not None and self.kwargs["s"] is not None:
             self._mode = "hs"
