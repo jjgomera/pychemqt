@@ -381,6 +381,8 @@ class plugin(QtGui.QMenu):
         fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
         title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s)" %(fluid.formula, y, x))
         grafico=PlotMEoS(dim=2, parent=self.parent())
+        grafico.x = x
+        grafico.y = y
         grafico.setWindowTitle(title)
         grafico.plot.ax.set_xlabel(x)
         grafico.plot.ax.set_ylabel(y)
@@ -392,6 +394,7 @@ class plugin(QtGui.QMenu):
                 self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Loading cached data..."), 3000)
                 QtGui.QApplication.processEvents()
         else:
+            self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
             self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Calculating data, be patient..."), 3000)
             QtGui.QApplication.processEvents()
@@ -433,33 +436,33 @@ class plugin(QtGui.QMenu):
                 label = "x = %2g" % key
                 grafico.plot.ax.plot(xi, yi, label=label, **format)
 
-#        # Plot isobar lines
-#        if x != "P" and y != "P":
-#            format={}
-#            format["ls"]=self.parent().Preferences.get("MEOS", "IsobarlineStyle")
-#            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsobarlineWidth")
-#            format["color"]=self.parent().Preferences.get("MEOS", "IsobarColor")
-#            format["marker"]=self.parent().Preferences.get("MEOS", "Isobarmarker")
-#            format["ms"]=3
-#            
-#            for key in sorted(data["P"].keys()):
-#                xi, yi = data["P"][key]
-#                label = "P =%s" % unidades.Pressure(key).str
-#                grafico.plot.ax.plot(xi, yi, label=label, **format)
-#
-#        # Plot isochor lines
-#        if x not in ["rho", "v"] and y not in ["rho", "v"]:
-#            format={}
-#            format["ls"]=self.parent().Preferences.get("MEOS", "IsochorlineStyle")
-#            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsochorlineWidth")
-#            format["color"]=self.parent().Preferences.get("MEOS", "IsochorColor")
-#            format["marker"]=self.parent().Preferences.get("MEOS", "Isochormarker")
-#            format["ms"]=3
-#            
-#            for key in sorted(data["v"].keys()):
-#                xi, yi = data["v"][key]
-#                label = "v =%s" % unidades.SpecificVolume(key).str
-#                grafico.plot.ax.plot(xi, yi, label=label, **format)
+        # Plot isobar lines
+        if x != "P" and y != "P":
+            format={}
+            format["ls"]=self.parent().Preferences.get("MEOS", "IsobarlineStyle")
+            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsobarlineWidth")
+            format["color"]=self.parent().Preferences.get("MEOS", "IsobarColor")
+            format["marker"]=self.parent().Preferences.get("MEOS", "Isobarmarker")
+            format["ms"]=3
+            
+            for key in sorted(data["P"].keys()):
+                xi, yi = data["P"][key]
+                label = "P =%s" % unidades.Pressure(key).str
+                grafico.plot.ax.plot(xi, yi, label=label, **format)
+
+        # Plot isochor lines
+        if x not in ["rho", "v"] and y not in ["rho", "v"]:
+            format={}
+            format["ls"]=self.parent().Preferences.get("MEOS", "IsochorlineStyle")
+            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsochorlineWidth")
+            format["color"]=self.parent().Preferences.get("MEOS", "IsochorColor")
+            format["marker"]=self.parent().Preferences.get("MEOS", "Isochormarker")
+            format["ms"]=3
+            
+            for key in sorted(data["v"].keys()):
+                xi, yi = data["v"][key]
+                label = "v =%s" % unidades.SpecificVolume(key).str
+                grafico.plot.ax.plot(xi, yi, label=label, **format)
 #
 #        # Plot isoenthalpic lines
 #        if x != "h" and y != "h":
@@ -495,24 +498,19 @@ class plugin(QtGui.QMenu):
 
     def calculatePlot(self, fluid, x, y):
         data = {}
-        definition = self.parent().Preferences.getint("MEOS", "definition")
-        if definition == 1:
-            points = 10
-        elif definition == 2:
-            points = 25
-        elif definition == 3:
-            points = 50
-        else:
-            points = 5
+        points = get_points(self.parent().Preferences)
 
         # Calculate melting line
         if fluid._melting:
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating melting line..."))
             T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"], points)
             fluidos = []
             for Ti in T:
                 P = fluid._Melting_Pressure(Ti)
                 fluidos.append(fluid(T=Ti, P=P))
                 self.parent().progressBar.setValue(5*len(fluidos)/len(T))
+                QtGui.QApplication.processEvents()
             xmel=[fluido.__getattribute__(x).config() for fluido in fluidos]
             ymel=[fluido.__getattribute__(y).config() for fluido in fluidos]
             data["xmel"] = xmel
@@ -520,6 +518,8 @@ class plugin(QtGui.QMenu):
             
         # Calculate sublimation line
         if fluid._sublimation:
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating sublimation line..."))
             T = linspace(fluid._sublimation["Tmin"], fluid._sublimation["Tmax"], points)
             fluidos = []
             for Ti in T:
@@ -527,19 +527,22 @@ class plugin(QtGui.QMenu):
                 print P
                 fluidos.append(fluid(T=Ti, P=P))
                 self.parent().progressBar.setValue(5+5*len(fluidos)/len(T))
+                QtGui.QApplication.processEvents()
             xmel=[fluido.__getattribute__(x).config() for fluido in fluidos]
             ymel=[fluido.__getattribute__(y).config() for fluido in fluidos]
-            data["xmel"] = xmel
-            data["ymel"] = ymel
+            data["xsub"] = xmel
+            data["ysub"] = ymel
             
         
         T = list(concatenate([linspace(fluid.Tt, 0.9*fluid.Tc, points),
                               linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points), 
                               linspace(0.99*fluid.Tc, fluid.Tc, points)]))
-        del T[points+points]
-        del T[points]
+        for i in range(2, 0, -1):
+            del T[points*i]
         
         # Calculate saturation
+        self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+            "pychemqt", "Calculating Liquid-Vapour saturation line..."))
         if x == "P" and y == "T":
             fases = [0]
         else:
@@ -549,6 +552,7 @@ class plugin(QtGui.QMenu):
             for Ti in T:
                 fluidos.append(fluid(T=Ti, x=fase))
                 self.parent().progressBar.setValue(10+5*fase+5*len(fluidos)/len(T))
+                QtGui.QApplication.processEvents()
             xsat=[fluido.__getattribute__(x).config() for fluido in fluidos]
             ysat=[fluido.__getattribute__(y).config() for fluido in fluidos]
             data["xsat%i" %fase] = xsat
@@ -556,113 +560,105 @@ class plugin(QtGui.QMenu):
         
         # Calculate isoquality lines
         if x != "P" or y != "T":
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isoquality lines..."))
             values = self.LineList("Isoquality", self.parent().Preferences)
             quality = {}
             for i, value in enumerate(values):
-                fluidos = []
-                for Ti in T:
-                    fluidos.append(fluid(T=Ti, x=value))
-                    self.parent().progressBar.setValue(20+20*i/len(values)+20*i/len(values)*len(fluidos)/len(T))
+                fluidos = calcIsoline(fluid, "T", "x", T, value, 20, i, 20, 
+                                       len(values), self.parent().progressBar)
                 xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
                 yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
                 quality[value] = (xi, yi)
             data["x"] = quality
             
-#        rho = logspace(0.01, 10000, points)
-#        # Calculate isothern lines
-#        if x != "T" and y != "T":
-#            values = self.LineList("Isotherm", self.parent().Preferences)
-#            isotherm = {}
-#            for i, value in enumerate(values):
-#                fluidos = []
-#                fase = None
-#                for rhoi in rho:
-#                    fluido = fluid(T=value, rho=rhoi)
-##                    if fase is None:
-##                        fase = fluido.x
-##                    elif fase != fluido.x:
-##                        fluidos.append(fluid(P=value, x=fase))
-##                        fluidos.append(fluid(T=fluidos[-1].T, x=fluido.x))
-##                        fase = fluido.x
-#                    fluidos.append(fluido)
-#                    self.parent().progressBar.setValue(20+10*i+10*len(fluidos)/len(T))
-#                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
-#                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
-#                isotherm[value] = (xi, yi)
-#            data["T"] = isotherm
-#            
-#        T = linspace(fluid.Tt, 1000, points)
-#        # Calculate isobar lines
-#        if x != "P" and y != "P":
-#            values = self.LineList("Isobar", self.parent().Preferences)
-#            isobar = {}
-#            for i, value in enumerate(values):
-#                fluidos = []
-#                fase = None
-#                for Ti in T:
-#                    fluido = fluid(T=Ti, P=value)
-#                    if fase is None:
-#                        fase = fluido.x
-#                    elif fase != fluido.x:
-#                        fluidos.append(fluid(P=value, x=fase))
-#                        fluidos.append(fluid(T=fluidos[-1].T, x=fluido.x))
-#                        fase = fluido.x
-#                    fluidos.append(fluido)
-#                    self.parent().progressBar.setValue(20+10*i+10*len(fluidos)/len(T))
-#                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
-#                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
-#                isobar[value] = (xi, yi)
-#            data["P"] = isobar
-#
-#        # Calculate isochor lines
-#        if x not in ["rho", "v"] and y not in ["rho", "v"]:
-#            values = self.LineList("Isochor", self.parent().Preferences)
-#            isochor = {}
-#            for i, value in enumerate(values):
-#                fluidos = []
-#                fase = None
-#                for Ti in T:
-#                    fluidos.append(fluid(T=Ti, rho=1./value))
-#                    self.parent().progressBar.setValue(20+10*i+10*len(fluidos)/len(T))
-#                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
-#                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
-#                isochor[value] = (xi, yi)
-#            data["v"] = isochor
-#
-#        # Calculate isoenthalpic lines
-#        if x != "h" and y != "h":
-#            values = self.LineList("Isoenthalpic", self.parent().Preferences)
-#            isoenthalpic = {}
-#            for i, value in enumerate(values):
-#                fluidos = []
-#                fase = None
-#                for Ti in T:
-#                    fluidos.append(fluid(T=Ti, h=value))
-#                    self.parent().progressBar.setValue(20+10*i+10*len(fluidos)/len(T))
-#                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
-#                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
-#                isoenthalpic[value] = (xi, yi)
-#            data["h"] = isoenthalpic
-#
-#        # Calculate isoentropic lines
-#        if x != "s" and y != "s":
-#            values = self.LineList("Isoentropic", self.parent().Preferences)
-#            isoentropic = {}
-#            for i, value in enumerate(values):
-#                fluidos = []
-#                fase = None
-#                for Ti in T:
-#                    fluidos.append(fluid(T=Ti, rho=1./value))
-#                    self.parent().progressBar.setValue(20+10*i+10*len(fluidos)/len(T))
-#                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
-#                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
-#                isoentropic[value] = (xi, yi)
-#            data["s"] = isoentropic
+        rho = logspace(0.01, 1000, points)
+        # Calculate isotherm lines
+        if x != "T" and y != "T":
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isotherm lines..."))
+            values = self.LineList("Isotherm", self.parent().Preferences, fluid)
+            isotherm = {}
+            for i, value in enumerate(values):
+                fluidos = calcIsoline(fluid, "T", "rho", rho, value, 40, i, 10, 
+                                       len(values), self.parent().progressBar)
+                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
+                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
+                isotherm[value] = (xi, yi)
+            data["T"] = isotherm
+            
+        eq = fluid.eq[self.parent().currentConfig.getint("MEoS", "eq")]
+        T = list(concatenate([linspace(eq["Tmin"], 0.9*fluid.Tc, points), 
+                              linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
+                              linspace(0.99*fluid.Tc, fluid.Tc, points),
+                              linspace(fluid.Tc, 1.01*fluid.Tc, points),
+                              linspace(1.01*fluid.Tc, 1.1*fluid.Tc, points),
+                              linspace(1.1*fluid.Tc, eq["Tmax"], points)]))
+        for i in range(5, 0, -1):
+            print i, len(T), points*i
+            del T[points*i]
+
+        # Calculate isobar lines
+        if x != "P" and y != "P":
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isobar lines..."))
+            values = self.LineList("Isobar", self.parent().Preferences, fluid)
+            values = values[-1:]
+            isobar = {}
+            for i, value in enumerate(values):
+                fluidos = calcIsoline(fluid, "T", "P", T, value, 50, i, 10, 
+                                       len(values), self.parent().progressBar)
+                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
+                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
+                isobar[value] = (xi, yi)
+            data["P"] = isobar
+
+        # Calculate isochor lines
+        if x not in ["rho", "v"] and y not in ["rho", "v"]:
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isochor lines..."))
+            values = self.LineList("Isochor", self.parent().Preferences, fluid)
+            isochor = {}
+            for i, value in enumerate(values):
+                fluidos = calcIsoline(fluid, "T", "v", T, value, 60, i, 10, 
+                                       len(values), self.parent().progressBar)
+                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
+                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
+                isochor[value] = (xi, yi)
+            data["v"] = isochor
+
+        # Calculate isoenthalpic lines
+        if x != "h" and y != "h":
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isoenthalpic lines..."))
+            values = self.LineList("Isoenthalpic", self.parent().Preferences, fluid)
+            isoenthalpic = {}
+            for i, value in enumerate(values):
+                fluidos = calcIsoline(fluid, "T", "h", T, value, 70, i, 10, 
+                                       len(values), self.parent().progressBar)
+                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
+                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
+                isoenthalpic[value] = (xi, yi)
+            data["h"] = isoenthalpic
+
+        # Calculate isoentropic lines
+        if x != "s" and y != "s":
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate(
+                "pychemqt", "Calculating isoentropic lines..."))
+            values = self.LineList("Isoentropic", self.parent().Preferences, fluid)
+            isoentropic = {}
+            for i, value in enumerate(values):
+                fluidos = calcIsoline(fluid, "T", "s", T, value, 80, i, 20, 
+                                       len(values), self.parent().progressBar)
+                xi=[fluido.__getattribute__(x).config() for fluido in fluidos]
+                yi=[fluido.__getattribute__(y).config() for fluido in fluidos]
+                isoentropic[value] = (xi, yi)
+            data["s"] = isoentropic
 
         return data
 
     @staticmethod
-    def LineList(name, Preferences):
+    def LineList(name, Preferences, fluid=None):
         """Return a list with the values of isoline name to plot"""
         if Preferences.getboolean("MEOS", name+"Custom"):
             t = []
@@ -673,7 +669,20 @@ class plugin(QtGui.QMenu):
             start = Preferences.getfloat("MEOS", name+"Start")
             end = Preferences.getfloat("MEOS", name+"End")
             step = Preferences.getfloat("MEOS", name+"Step")
-            t = arange(start, end, step)
+            t = list(arange(start, end, step))
+        
+        if fluid is not None and Preferences.getboolean("MEOS", name+"Critic"):
+            if name == "Isotherm":
+                t.append(fluid.Tc)
+            elif name == "Isobar":
+                t.append(fluid.Pc)
+            elif name == "Isochor":
+                t.append(1./fluid.rhoc)
+            else:
+                prop = {"Isoenthalpic": "h",
+                        "Isoentropic": "s"}
+                fc = fluid(T=fluid.Tc, rho=fluid.rhoc)
+                t.append(fc.__getattribute__(prop[name]))
         return t
 
         
@@ -2209,7 +2218,6 @@ class PlotMEoS(QtGui.QWidget):
         self.gridToggleAction = createAction(QtGui.QApplication.translate("pychemqt", "Toggle &Grid"), self.grid, checkable=True, parent=self)
         self.gridToggleAction.setChecked(self.parent.Preferences.getboolean("MEOS", "grid"))
 
-
     def contextMenuEvent(self, event):
         menuTable=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Tabulated data"))
         menuTable.setIcon(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/table"))
@@ -2246,10 +2254,11 @@ class PlotMEoS(QtGui.QWidget):
         dialog.exec_()
 
     def table(self, obj):
-        """Crea una tabla con los datos del grafico"""
+        """
+        Export plot data to table
+        obj: object (Line2D instance) to show data"""
         title = QtGui.QApplication.translate("pychemqt", "Table from") + " " + \
             obj.get_label()
-        
         xkey = self.plot.ax.get_xlabel()
         ykey = self.plot.ax.get_ylabel()
         xtxt = meos.propiedades[meos.keys.index(xkey)]
@@ -2264,6 +2273,7 @@ class PlotMEoS(QtGui.QWidget):
         tabla.setWindowTitle(title)
         self.parent.centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
+
 
 class Plot2D(QtGui.QDialog):
     """Dialog for select a special 2D plot"""
@@ -2469,7 +2479,6 @@ class EditPlot(QtGui.QWidget):
         self.visible.setChecked(linea.get_visible())
         self.antialiases.setChecked(linea.get_antialiased())
 
-
     def changeValue(self, key, value):
         """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
         linea=self.fig.ax.lines[self.lista.currentRow()]
@@ -2493,23 +2502,100 @@ class EditPlot(QtGui.QWidget):
             self.fig.draw()
 
     def add(self):
-        """Añade una isolinea al grafico"""
+        """Add a isoline to plot"""
         dialog=AddLine()
         if dialog.exec_():
+            points = get_points(self.mainwindow.Preferences)
+            self.mainwindow.progressBar.setVisible(True)
             fluid=mEoS.__all__[self.mainwindow.currentConfig.getint("MEoS", "fluid")]
-            metodo=method(self.mainwindow)
-            Preferences=self.mainwindow.Preferences
-            xini, xfin=self.fig.ax.get_xlim()
-            yini, yfin=self.fig.ax.get_ylim()
-            c1=self.fig.ax.c1
-            c2=self.fig.ax.c2
-            property=self.fig.ax.property
             prop=dialog.tipo.currentIndex()
             value=dialog.input[prop].value
-            calcularIsolineas(Preferences, self.plotMEoS, fluid, metodo, xini, xfin, yini, yfin, c1, c2, property, (prop, value))
-            self.fig.draw()
+            
+            eq = fluid.eq[self.mainwindow.currentConfig.getint("MEoS", "eq")]
+            T = list(concatenate([linspace(eq["Tmin"], 0.9*fluid.Tc, points), 
+                                  linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
+                                  linspace(0.99*fluid.Tc, fluid.Tc, points),
+                                  linspace(fluid.Tc, 1.01*fluid.Tc, points),
+                                  linspace(1.01*fluid.Tc, 1.1*fluid.Tc, points),
+                                  linspace(1.1*fluid.Tc, eq["Tmax"], points)]))
+            for i in range(5, 0, -1):
+                print i, len(T), points*i
+                del T[points*i]
+            if prop == 0:
+                # Calcualte isotherm line
+                rho = logspace(-2, 3, points*10)
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isotherm line..."))
+                fluidos = calcIsoline(fluid, "rho", "T", rho, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "T =%s" % unidades.Temperature(value).str
+            elif prop == 1:
+                # Calculate isobar line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isobar line..."))
+                fluidos = calcIsoline(fluid, "T", "P", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "P =%s" % unidades.Pressure(value).str
+            elif prop == 2:
+                # Calculate isoenthalpic line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isoenthalpic line..."))
+                fluidos = calcIsoline(fluid, "T", "h", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "h =%s" % unidades.Enthalpy(value).str
+            elif prop == 3:
+                # Calculate isoentropic line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isoentropic line..."))
+                fluidos = calcIsoline(fluid, "T", "s", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "s =%s" % unidades.SpecificHeat(value).str
+            elif prop == 4:
+                # Calculate isochor line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isochor line..."))
+                fluidos = calcIsoline(fluid, "T", "v", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "v =%s" % unidades.SpecificVolume(value).str
+            elif prop == 5:
+                # Calculate isoquality line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isoquality line..."))
+                fluidos = calcIsoline(fluid, "T", "x", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                label = "x = %2g" % value
+
+            xi=[fluido.__getattribute__(self.plotMEoS.x).config() for fluido in fluidos]
+            yi=[fluido.__getattribute__(self.plotMEoS.y).config() for fluido in fluidos]
+
+            format={}
+            format["ls"]=self.mainwindow.Preferences.get("MEOS", "IsobarlineStyle")
+            format["lw"]=self.mainwindow.Preferences.getfloat("MEOS", "IsobarlineWidth")
+            format["color"]=self.mainwindow.Preferences.get("MEOS", "IsobarColor")
+            format["marker"]=self.mainwindow.Preferences.get("MEOS", "Isobarmarker")
+            format["ms"]=3
+
+            self.plotMEoS.plot.ax.plot(xi, yi, label=label, **format)
+            self.plotMEoS.plot.draw()
+
+            self.mainwindow.progressBar.setVisible(False)
+            
             self.lista.addItem(self.fig.ax.lines[-1].get_label())
             self.lista.setCurrentRow(self.lista.count()-1)
+            
+#            metodo=method(self.mainwindow)
+#            Preferences=self.mainwindow.Preferences
+#            xini, xfin=self.fig.ax.get_xlim()
+#            yini, yfin=self.fig.ax.get_ylim()
+#            c1=self.fig.ax.c1
+#            c2=self.fig.ax.c2
+#            property=self.fig.ax.property
+#            prop=dialog.tipo.currentIndex()
+#            value=dialog.input[prop].value
+#            calcularIsolineas(Preferences, self.plotMEoS, fluid, metodo, xini, xfin, yini, yfin, c1, c2, property, (prop, value))
+#            self.fig.draw()
+#            self.lista.addItem(self.fig.ax.lines[-1].get_label())
+#            self.lista.setCurrentRow(self.lista.count()-1)
 
     def remove(self):
         """Elimina el elemento seleccionado en la lista del grafico"""
@@ -2698,6 +2784,7 @@ class EditAxis(QtGui.QDialog):
         return font
 
 
+# Procedures
 def method(parent):
     if parent.currentConfig.getfloat("MEoS", "fluid"):
         return "meos"
@@ -3063,24 +3150,67 @@ def calcularIsolineas(Preferences, grafico, fluid, metodo, xini, xfin, yini, yfi
                 grafico.plot.ax.lines[-1].set_visible(False)
             grafico.plot.ax.lines[-1].__setattr__("fluids", fluidos)
 
+def calcIsoline(fluid, var, fix, valuevar, valuefix, ini, step, end, total, bar):
+    fluidos = []
+    fase = None
+    for Ti in valuevar:
+        print {var: Ti, fix: valuefix}
+        try:
+            fluido = fluid(**{var: Ti, fix: valuefix})
+            fluidos.append(fluido)
+            if var == "T" and fix == "P":
+                if var == "P":
+                    value = fluido.P
+                else:
+                    value = fluido.T
+                if fase is None:
+                    fase = fluido.x
+                if fase != fluido.x and fase == 0:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        fluidos.insert(-1, fluid(**{var: value, "x": 0}))
+                if fase != fluido.x and fluido.x == 1:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        fluidos.append(fluid(**{var: value, "x": 1}))
+                fase = fluido.x
+        except TypeError as e:
+            print e
+
+        bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(valuevar))
+        QtGui.QApplication.processEvents()
+    return fluidos
+    
+#    fluidos = []
+#    fase = None
+#    for Ti in T:
+#        fluido = fluid(T=Ti, P=value)
+#        fluidos.append(fluido)
+#        if fase is None:
+#            fase = fluido.x
+#        elif fase != fluido.x:
+#            if value < fluid.Pc and fluido.T < fluid.Tc:
+#                print value, fase
+#                fluidos.insert(-1, fluid(P=value, x=fase))
+#                print fluidos[-1].T, fluido.x
+#                fluidos.append(fluid(T=fluidos[-1].T, x=fluido.x))
+#            fase = fluido.x
 
 
-def calcIsolinea(prop, func, linea, X, c1, c2, property, factor1, factor2, factorProperty):
-    if prop in ["p", "P"]:
-        fluidos=[func(linea, Xi) for Xi in X]
-    else:
-        fluidos=[]
-        for Xi in X:
-#            print prop, func, linea, Xi
-            fluidos.append(func(Xi, linea))
-#        fluidos=[func(Xi, linea) for Xi in X]
-    xi=[fluido.__getattribute__(c1)*factor1 for fluido in fluidos]
-    yi=[fluido.__getattribute__(c2)*factor2 for fluido in fluidos]
-    if property:
-        zi=[fluido.__getattribute__(property)*factorProperty for fluido in fluidos]
-    else:
-        zi=None
-    return xi, yi, zi, fluidos
+#def calcIsolinea(prop, func, linea, X, c1, c2, property, factor1, factor2, factorProperty):
+#    if prop in ["p", "P"]:
+#        fluidos=[func(linea, Xi) for Xi in X]
+#    else:
+#        fluidos=[]
+#        for Xi in X:
+##            print prop, func, linea, Xi
+#            fluidos.append(func(Xi, linea))
+##        fluidos=[func(Xi, linea) for Xi in X]
+#    xi=[fluido.__getattribute__(c1)*factor1 for fluido in fluidos]
+#    yi=[fluido.__getattribute__(c2)*factor2 for fluido in fluidos]
+#    if property:
+#        zi=[fluido.__getattribute__(property)*factorProperty for fluido in fluidos]
+#    else:
+#        zi=None
+#    return xi, yi, zi, fluidos
 
 
 def plotLine(grafico, xi=None, yi=None, zi=None, xini=None, xfin=None, yini=None, yfin=None, format=None, label=None):
@@ -3098,10 +3228,18 @@ def plotLine(grafico, xi=None, yi=None, zi=None, xini=None, xfin=None, yini=None
         return True
 
 
-
-
-
-
+def get_points(Preferences):
+    """Get point number to plot lines as Preferences"""
+    definition = Preferences.getint("MEOS", "definition")
+    if definition == 1:
+        points = 10
+    elif definition == 2:
+        points = 25
+    elif definition == 3:
+        points = 50
+    else:
+        points = 5
+    return points
 
 
 class Plot3D(QtGui.QDialog):
@@ -3228,16 +3366,6 @@ class Plot3D(QtGui.QDialog):
             j=[0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 3, 4, 5, 3, 4, 5, 4, 5, 5][self.ejesTabla.currentIndex()]
 
         return i, j
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
