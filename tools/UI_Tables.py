@@ -424,73 +424,33 @@ class plugin(QtGui.QMenu):
 
         # PLot quality isolines
         if x != "P" or y != "T":
-            format={}
-            format["ls"]=self.parent().Preferences.get("MEOS", "IsoqualitylineStyle")
-            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsoqualitylineWidth")
-            format["color"]=self.parent().Preferences.get("MEOS", "IsoqualityColor")
-            format["marker"]=self.parent().Preferences.get("MEOS", "Isoqualitymarker")
-            format["ms"]=3
-            
-            for key in sorted(data["x"].keys()):
-                xi, yi = data["x"][key]
-                label = "x = %2g" % key
-                grafico.plot.ax.plot(xi, yi, label=label, **format)
+            plotIsoline(self.parent().Preferences, "Isoquality", data["x"],
+                        "x", unidades.Dimensionless, grafico)
 
+        # Plot isotherm lines
+        if x != "T" and y != "T":
+            plotIsoline(self.parent().Preferences, "Isotherm", data["T"],
+                        "T", unidades.Temperature, grafico)
+                        
         # Plot isobar lines
         if x != "P" and y != "P":
-            format={}
-            format["ls"]=self.parent().Preferences.get("MEOS", "IsobarlineStyle")
-            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsobarlineWidth")
-            format["color"]=self.parent().Preferences.get("MEOS", "IsobarColor")
-            format["marker"]=self.parent().Preferences.get("MEOS", "Isobarmarker")
-            format["ms"]=3
-            
-            for key in sorted(data["P"].keys()):
-                xi, yi = data["P"][key]
-                label = "P =%s" % unidades.Pressure(key).str
-                grafico.plot.ax.plot(xi, yi, label=label, **format)
+            plotIsoline(self.parent().Preferences, "Isobar", data["P"],
+                        "P", unidades.Pressure, grafico)
 
         # Plot isochor lines
         if x not in ["rho", "v"] and y not in ["rho", "v"]:
-            format={}
-            format["ls"]=self.parent().Preferences.get("MEOS", "IsochorlineStyle")
-            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsochorlineWidth")
-            format["color"]=self.parent().Preferences.get("MEOS", "IsochorColor")
-            format["marker"]=self.parent().Preferences.get("MEOS", "Isochormarker")
-            format["ms"]=3
-            
-            for key in sorted(data["v"].keys()):
-                xi, yi = data["v"][key]
-                label = "v =%s" % unidades.SpecificVolume(key).str
-                grafico.plot.ax.plot(xi, yi, label=label, **format)
-#
-#        # Plot isoenthalpic lines
-#        if x != "h" and y != "h":
-#            format={}
-#            format["ls"]=self.parent().Preferences.get("MEOS", "IsoenthalpiclineStyle")
-#            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsoenthalpiclineWidth")
-#            format["color"]=self.parent().Preferences.get("MEOS", "IsoenthalpicColor")
-#            format["marker"]=self.parent().Preferences.get("MEOS", "Isoenthalpicmarker")
-#            format["ms"]=3
-#            
-#            for key in sorted(data["h"].keys()):
-#                xi, yi = data["h"][key]
-#                label = "h =%s" % unidades.Enthalpy(key).str
-#                grafico.plot.ax.plot(xi, yi, label=label, **format)
-#
-#        # Plot isoentropic lines
-#        if x != "s" and y != "s":
-#            format={}
-#            format["ls"]=self.parent().Preferences.get("MEOS", "IsoentropiclineStyle")
-#            format["lw"]=self.parent().Preferences.getfloat("MEOS", "IsoentropiclineWidth")
-#            format["color"]=self.parent().Preferences.get("MEOS", "IsoentropicColor")
-#            format["marker"]=self.parent().Preferences.get("MEOS", "Isoentropicmarker")
-#            format["ms"]=3
-#            
-#            for key in sorted(data["s"].keys()):
-#                xi, yi = data["s"][key]
-#                label = "s =%s" % unidades.SpecificHeat(key).str
-#                grafico.plot.ax.plot(xi, yi, label=label, **format)
+            plotIsoline(self.parent().Preferences, "Isochor", data["v"],
+                        "v", unidades.SpecificVolume, grafico)
+
+        # Plot isoenthalpic lines
+        if x != "h" and y != "h":
+            plotIsoline(self.parent().Preferences, "Isoenthalpic", data["h"],
+                        "h", unidades.Enthalpy, grafico)
+
+        # Plot isoentropic lines
+        if x != "s" and y != "s":
+            plotIsoline(self.parent().Preferences, "Isoentropic", data["s"],
+                        "s", unidades.SpecificHeat, grafico)
 
         self.parent().centralwidget.currentWidget().addSubWindow(grafico)
         grafico.show()
@@ -2528,58 +2488,63 @@ class EditPlot(QtGui.QWidget):
                     "pychemqt", "Adding isotherm line..."))
                 fluidos = calcIsoline(fluid, "rho", "T", rho, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "T =%s" % unidades.Temperature(value).str
+                var = "T"
+                name = "Isotherm"
+                unidad = unidades.Temperature
             elif prop == 1:
                 # Calculate isobar line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isobar line..."))
                 fluidos = calcIsoline(fluid, "T", "P", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "P =%s" % unidades.Pressure(value).str
+                var = "P"
+                name = "Isobar"
+                unidad = unidades.Pressure
             elif prop == 2:
                 # Calculate isoenthalpic line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoenthalpic line..."))
                 fluidos = calcIsoline(fluid, "T", "h", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "h =%s" % unidades.Enthalpy(value).str
+                var = "h"
+                name = "Isoenthalpic"
+                unidad = unidades.Enthalpy
             elif prop == 3:
                 # Calculate isoentropic line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoentropic line..."))
                 fluidos = calcIsoline(fluid, "T", "s", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "s =%s" % unidades.SpecificHeat(value).str
+                var = "s"
+                name = "Isoentropic"
+                unidad = unidades.SpecificHeat
             elif prop == 4:
                 # Calculate isochor line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isochor line..."))
                 fluidos = calcIsoline(fluid, "T", "v", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "v =%s" % unidades.SpecificVolume(value).str
+                var = "v"
+                name = "Isochor"
+                unidad = unidades.SpecificVolume
             elif prop == 5:
                 # Calculate isoquality line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoquality line..."))
                 fluidos = calcIsoline(fluid, "T", "x", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
-                label = "x = %2g" % value
+                var = "x"
+                name = "Isoquality"
+                unidad = unidades.Dimensionless
 
             xi=[fluido.__getattribute__(self.plotMEoS.x).config() for fluido in fluidos]
             yi=[fluido.__getattribute__(self.plotMEoS.y).config() for fluido in fluidos]
-
-            format={}
-            format["ls"]=self.mainwindow.Preferences.get("MEOS", "IsobarlineStyle")
-            format["lw"]=self.mainwindow.Preferences.getfloat("MEOS", "IsobarlineWidth")
-            format["color"]=self.mainwindow.Preferences.get("MEOS", "IsobarColor")
-            format["marker"]=self.mainwindow.Preferences.get("MEOS", "Isobarmarker")
-            format["ms"]=3
-
-            self.plotMEoS.plot.ax.plot(xi, yi, label=label, **format)
+            data = {value: (xi, yi)}
+            plotIsoline(self.mainwindow.Preferences, name, data,
+                        "x", unidades.Dimensionless, self.plotMEoS)
+                        
             self.plotMEoS.plot.draw()
-
             self.mainwindow.progressBar.setVisible(False)
-            
             self.lista.addItem(self.fig.ax.lines[-1].get_label())
             self.lista.setCurrentRow(self.lista.count()-1)
             
@@ -3179,6 +3144,19 @@ def calcIsoline(fluid, var, fix, valuevar, valuefix, ini, step, end, total, bar)
         QtGui.QApplication.processEvents()
     return fluidos
     
+def plotIsoline(Preferences, name, data, title, unidad, grafico):
+    format={}
+    format["ls"]=Preferences.get("MEOS", name+"lineStyle")
+    format["lw"]=Preferences.getfloat("MEOS", name+"lineWidth")
+    format["color"]=Preferences.get("MEOS", name+"Color")
+    format["marker"]=Preferences.get("MEOS", name+"marker")
+    format["ms"]=3
+    
+    for key in sorted(data.keys()):
+        xi, yi = data[key]
+        label = "%s =%s" % (title, unidad(key).str)
+        grafico.plot.ax.plot(xi, yi, label=label, **format)
+
 #    fluidos = []
 #    fase = None
 #    for Ti in T:
