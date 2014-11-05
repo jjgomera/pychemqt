@@ -384,8 +384,11 @@ class plugin(QtGui.QMenu):
         grafico.x = x
         grafico.y = y
         grafico.setWindowTitle(title)
-        grafico.plot.ax.set_xlabel(x)
-        grafico.plot.ax.set_ylabel(y)
+        
+        xtxt = "%s, %s" %(x, meos.units[meos.keys.index(x)].text())
+        ytxt = "%s, %s" %(y, meos.units[meos.keys.index(y)].text())
+        grafico.plot.ax.set_xlabel(xtxt)
+        grafico.plot.ax.set_ylabel(ytxt)
         
         filename = config.conf_dir+"%s-%s,%s.pkl" % (fluid.formula, y, x)
         if os.path.isfile(filename):
@@ -2219,12 +2222,10 @@ class PlotMEoS(QtGui.QWidget):
         obj: object (Line2D instance) to show data"""
         title = QtGui.QApplication.translate("pychemqt", "Table from") + " " + \
             obj.get_label()
-        xkey = self.plot.ax.get_xlabel()
-        ykey = self.plot.ax.get_ylabel()
-        xtxt = meos.propiedades[meos.keys.index(xkey)]
-        ytxt = meos.propiedades[meos.keys.index(ykey)]
-        xunit = meos.units[meos.keys.index(xkey)]
-        yunit = meos.units[meos.keys.index(ykey)]
+        xtxt = meos.propiedades[meos.keys.index(self.x)]
+        ytxt = meos.propiedades[meos.keys.index(self.y)]
+        xunit = meos.units[meos.keys.index(self.x)]
+        yunit = meos.units[meos.keys.index(self.y)]
         HHeader=[xtxt+os.linesep+xunit.text(), ytxt+os.linesep+yunit.text()]
         tabla = TablaMEoS(2, horizontalHeader=HHeader, units=[xunit, yunit], 
                           stretch=False, readOnly=True, parent=self.parent)
@@ -2531,6 +2532,7 @@ class EditPlot(QtGui.QWidget):
                 # Calculate isoquality line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoquality line..."))
+                T = T[:3*points-2]
                 fluidos = calcIsoline(fluid, "T", "x", T, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
                 var = "x"
@@ -2541,27 +2543,13 @@ class EditPlot(QtGui.QWidget):
             yi=[fluido.__getattribute__(self.plotMEoS.y).config() for fluido in fluidos]
             data = {value: (xi, yi)}
             plotIsoline(self.mainwindow.Preferences, name, data,
-                        "x", unidades.Dimensionless, self.plotMEoS)
+                        var, unidad, self.plotMEoS)
                         
             self.plotMEoS.plot.draw()
             self.mainwindow.progressBar.setVisible(False)
             self.lista.addItem(self.fig.ax.lines[-1].get_label())
             self.lista.setCurrentRow(self.lista.count()-1)
             
-#            metodo=method(self.mainwindow)
-#            Preferences=self.mainwindow.Preferences
-#            xini, xfin=self.fig.ax.get_xlim()
-#            yini, yfin=self.fig.ax.get_ylim()
-#            c1=self.fig.ax.c1
-#            c2=self.fig.ax.c2
-#            property=self.fig.ax.property
-#            prop=dialog.tipo.currentIndex()
-#            value=dialog.input[prop].value
-#            calcularIsolineas(Preferences, self.plotMEoS, fluid, metodo, xini, xfin, yini, yfin, c1, c2, property, (prop, value))
-#            self.fig.draw()
-#            self.lista.addItem(self.fig.ax.lines[-1].get_label())
-#            self.lista.setCurrentRow(self.lista.count()-1)
-
     def remove(self):
         """Elimina el elemento seleccionado en la lista del grafico"""
         del self.fig.ax.lines[self.lista.currentRow()]
