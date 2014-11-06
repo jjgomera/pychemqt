@@ -379,8 +379,9 @@ class plugin(QtGui.QMenu):
         x: property for axes x
         y: property for axes y"""
         fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+        filename = config.conf_dir+"%s-%s,%s.pkl" % (fluid.formula, y, x)
         title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s)" %(fluid.formula, y, x))
-        grafico=PlotMEoS(dim=2, parent=self.parent())
+        grafico=PlotMEoS(dim=2, parent=self.parent(), filename=filename)
         grafico.x = x
         grafico.y = y
         grafico.setWindowTitle(title)
@@ -390,7 +391,6 @@ class plugin(QtGui.QMenu):
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
         
-        filename = config.conf_dir+"%s-%s,%s.pkl" % (fluid.formula, y, x)
         if os.path.isfile(filename):
             with open(filename, "r") as archivo:
                 data = cPickle.load(archivo)
@@ -2161,11 +2161,12 @@ class Ui_Isoproperty(QtGui.QDialog):
 # Plot data
 class PlotMEoS(QtGui.QWidget):
     """Plot widget to show meos plot data, add context menu options"""
-    def __init__(self, dim, toolbar=False, parent=None):
+    def __init__(self, dim, toolbar=False, filename="", parent=None):
         super(PlotMEoS, self).__init__(parent)
         self.parent=parent
         self.dim=dim
-
+        self.filename = filename
+        
         layout=QtGui.QVBoxLayout(self)
         self.plot=plot.matplotlib(dim)
         layout.addWidget(self.plot)
@@ -2234,6 +2235,16 @@ class PlotMEoS(QtGui.QWidget):
         tabla.setWindowTitle(title)
         self.parent.centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
+
+    def _getData(self):
+        """Get data from file"""
+        with open(self.filename, "r") as archivo:
+            data = cPickle.load(archivo)
+        return data
+
+    def _saveData(self, data):
+        """Save changes in data to file"""
+        cPickle.dump(data, open(self.filename, "w"))
 
 
 class Plot2D(QtGui.QDialog):
@@ -2541,17 +2552,42 @@ class EditPlot(QtGui.QWidget):
 
             xi=[fluido.__getattribute__(self.plotMEoS.x).config() for fluido in fluidos]
             yi=[fluido.__getattribute__(self.plotMEoS.y).config() for fluido in fluidos]
-            data = {value: (xi, yi)}
-            plotIsoline(self.mainwindow.Preferences, name, data,
+            line = {value: (xi, yi)}
+            plotIsoline(self.mainwindow.Preferences, name, line,
                         var, unidad, self.plotMEoS)
                         
             self.plotMEoS.plot.draw()
             self.mainwindow.progressBar.setVisible(False)
             self.lista.addItem(self.fig.ax.lines[-1].get_label())
             self.lista.setCurrentRow(self.lista.count()-1)
+        
+            # Save new line to file
+            data = self.plotMEoS._getData()
+            data[var][value] = (xi, yi)
+            self.plotMEoS._saveData(data)
             
     def remove(self):
         """Elimina el elemento seleccionado en la lista del grafico"""
+        # Remove data from file
+        data = self.plotMEoS._getData()
+        txt = unicode(self.lista.currentItem().text()).split()
+        var = txt[0]
+        value = float(txt[2])
+        units = {"T": unidades.Temperature, 
+                 "P": unidades.Pressure, 
+                 "v": unidades.SpecificVolume, 
+                 "h": unidades.Enthalpy, 
+                 "s": unidades.SpecificHeat, 
+                 "x": unidades.Dimensionless}
+        unit = units[var]
+        for key in data[var]:
+            str = unit(key).str
+            if str[1:] == " ".join(txt[2:]):
+                del data[var][key]
+                self.plotMEoS._saveData(data)
+                break
+        
+        # Remove line to plot and update list element
         del self.fig.ax.lines[self.lista.currentRow()]
         self.populateList()
         self.fig.draw()
