@@ -426,8 +426,10 @@ class MEoS(_fase):
             self._eq = self._ECS
             self._constants = self.eq[eq]
 
-        self._viscosity = self._viscosity[visco]
-        self._thermal = self._thermal[thermal]
+        if self._viscosity:
+            self._viscosity = self._viscosity[visco]
+        if self._thermal:
+            self._thermal = self._thermal[thermal]
 
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
 
@@ -1332,7 +1334,10 @@ class MEoS(_fase):
         return Fi0
 
     def _phi0(self, cp, tau, delta):
-        Fi0 = self._PHIO(cp)
+        if "ao_log" in cp:
+            Fi0 = cp
+        else:
+            Fi0 = self._PHIO(cp)
 
 #        T = self._constants.get("Tref", self.Tc)/tau
 #        rho = delta*self.rhoc
@@ -2197,7 +2202,7 @@ class MEoS(_fase):
         elif self._thermal["critical"] == 2:
             X = self._thermal["X"]
             xi = self.Pc*rho/self.rhoc**2/self.derivative("P", "rho", "T", fase)
-            normterm = X[3]*Boltzmann/self.Pc*(T*self.dpdT*self.rhoc/rho)**2*xi**X[2]
+            normterm = X[3]*Boltzmann/self.Pc*(T*fase.dpdT*self.rhoc/rho)**2*xi**X[2]
             delT = abs(T-self.Tc)/self.Tc
             delrho = abs(rho-self.rhoc)/self.rhoc
             expterm = exp(-(X[0]*delT**4+X[1]*delrho**4))
@@ -2214,18 +2219,18 @@ class MEoS(_fase):
                 tc = 0
             else:
                 Xi = self._thermal["Xio"]*(delchi/self._thermal["gam0"])**(self._thermal["gnu"]/self._thermal["gamma"])
-                omega = 2/pi*((self.cp-self.cv)/self.cp*arctan(Xi*qd)+self.cv/self.cp*Xi*qd)
+                omega = 2/pi*((fase.cp-fase.cv)/fase.cp*arctan(Xi*qd)+fase.cv/fase.cp*Xi*qd)
                 omega0 = 2/pi*(1-exp(-1/(1./qd/Xi+Xi**2*qd**2/3*(self.rhoc/rho)**2)))
-                tc = rho/self.M*1e9*self.cp*Boltzmann*self._thermal["R0"]*T/(6*pi*Xi*self.mu.muPas)*(omega-omega0)
+                tc = rho/self.M*1e9*fase.cp*Boltzmann*self._thermal["R0"]*T/(6*pi*Xi*fase.mu.muPas)*(omega-omega0)
 
         elif self._thermal["critical"] == 4:
             rhom = rho/self.M
             Xt = (rhom*self._thermal["Pcref"]/self._thermal["rhocref"]**2/self.derivative("P", "rho", "T", fase))**self._thermal["expo"]
-            parterm = self._thermal["alfa"]*Boltzmann/self._thermal["Pcref"]*(T*self.dpdT*self._thermal["rhocref"]/rhom)**2*Xt*1e21
+            parterm = self._thermal["alfa"]*Boltzmann/self._thermal["Pcref"]*(T*fase.dpdT*self._thermal["rhocref"]/rhom)**2*Xt*1e21
             delT = abs(T-self._thermal["Tcref"])/self._thermal["Tcref"]
             delrho = abs(rhom-self._thermal["rhocref"])/self._thermal["rhocref"]
             expterm = exp(-(self._thermal["alfa"]*delT**2+self._thermal["beta"]*delrho**4))
-            tc = parterm*expterm/(6*pi*self._thermal["Xio"]*self.mu.muPas)*self._thermal["kcref"]
+            tc = parterm*expterm/(6*pi*self._thermal["Xio"]*fase.mu.muPas)*self._thermal["kcref"]
 
         elif self._thermal["critical"] == "NH3":
             tr = abs(T-405.4)/405.4
@@ -2254,9 +2259,9 @@ class MEoS(_fase):
             delta = rho/self.rhoc
             ts = (self.Tc-T)/self.Tc
             ds = (self.rhoc-rho)/self.rhoc
-            xt = 0.28631*delta*tau/self.derivative("P", "rho", "T")
+            xt = 0.28631*delta*tau/self.derivative("P", "rho", "T", fase)
             ftd = exp(-2.646*abs(ts)**0.5+2.678*ds**2-0.637*ds)
-            tc = 91.855/self.mu/tau**2*self.dpdT**2*xt**0.4681*ftd*1e-3
+            tc = 91.855/fase.mu/tau**2*fase.dpdT**2*xt**0.4681*ftd*1e-3
 
         return tc
 
