@@ -3177,21 +3177,30 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         print {var: Ti, fix: valuefix}
         fluido = calcPoint(fluid, config, **{var: Ti, fix: valuefix})
         if fluido:
+#            print fluido.h.kJkg, fluido.s.kJkgK, fluido.x
             fluidos.append(fluido)
-#            if var == "T" and fix == "P":
-#                if var == "P":
-#                    value = fluido.P
-#                else:
-#                    value = fluido.T
-#                if fase is None:
-#                    fase = fluido.x
-#                if fase != fluido.x and fase == 0:
-#                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-#                        fluidos.insert(-1, fluid(**{var: value, "x": 0}))
-#                if fase != fluido.x and fluido.x == 1:
-#                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-#                        fluidos.append(fluid(**{var: value, "x": 1}))
-#                fase = fluido.x
+            if var in ("T", "P") and fix in ("T", "P"):
+                if fix == "P":
+                    value = fluido.P
+                else:
+                    value = fluido.T
+                if fase is None:
+                    fase = fluido.x
+                if fase != fluido.x and fase == 0:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        fluidos.insert(-1, fluid(**{fix: valuefix, "x": 0}))
+                elif fase != fluido.x and fase == 1:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        print fix, valuefix, 1
+                        fluidos.insert(-1, fluid(**{fix: valuefix, "x": 1}))
+                if fase != fluido.x and fluido.x == 1:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        fluidos.append(fluid(**{fix: valuefix, "x": 1}))
+                elif fase != fluido.x and fluido.x == 0:
+                    if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
+                        print fix, valuefix, 1
+                        fluidos.append(fluid(**{fix: valuefix, "x": 0}))
+                fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(valuevar))
         QtGui.QApplication.processEvents()
