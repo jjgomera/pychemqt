@@ -2565,6 +2565,16 @@ class EditPlot(QtGui.QWidget):
                 name = "Isochor"
                 unidad = unidades.SpecificVolume
             elif prop == 5:
+                # Calculate isodensity line
+                self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
+                    "pychemqt", "Adding isodensity line..."))
+                fluidos = calcIsoline(fluid, self.mainwindow.currentConfig, 
+                                      "T", "rho", T, value, 0, 0, 100, 
+                                      1, self.mainwindow.progressBar)
+                var = "rho"
+                name = "Isochor"
+                unidad = unidades.Density
+            elif prop == 6:
                 # Calculate isoquality line
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoquality line..."))
@@ -2631,6 +2641,7 @@ class AddLine(QtGui.QDialog):
               (QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy, None),
               (QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat, "Entropy"),
               (QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume, None),
+              (QtGui.QApplication.translate("pychemqt", "Isodensity"), unidades.Density, None),
               (QtGui.QApplication.translate("pychemqt", "Isoquality"), float, None)]
 
     def __init__(self, parent=None):
