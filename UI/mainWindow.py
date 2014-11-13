@@ -21,6 +21,9 @@ from UI.conversor_unidades import moneda
 
 __version__ = "0.1.0"
 
+other_window = (plots.Binary_distillation, UI_Tables.TablaMEoS,
+                UI_Tables.PlotMEoS)
+
 
 class TabWidget(QtGui.QTabWidget):
     """Custom tabwidget to show a message in mainwindow when no project loaded"""
@@ -696,7 +699,6 @@ class UI_pychemqt(QtGui.QMainWindow):
         if not self.filename[indice]:
             self.fileSaveAs()
         else:
-
             fh = QtCore.QFile(self.filename[indice])
             if not fh.open(QtCore.QIODevice.WriteOnly):
                 raise IOError, unicode(fh.errorString())
@@ -715,13 +717,9 @@ class UI_pychemqt(QtGui.QMainWindow):
             otras_ventanas=len(self.centralwidget.currentWidget().subWindowList())-1
             stream.writeInt32(otras_ventanas)
             for ventana in self.centralwidget.currentWidget().subWindowList()[1:]:
-                stream.writeInt32(ventana.widget().Comp1.currentIndex())
-                stream.writeInt32(ventana.widget().Comp2.currentIndex())
-                stream.writeInt32(len(ventana.widget().x))
-                for i in ventana.widget().x:
-                    stream.writeFloat(i)
-                for i in ventana.widget().y:
-                    stream.writeFloat(i)
+                clase = ventana.widget().__class__
+                stream.writeInt32(other_window.index(clase))
+                ventana.widget().writeToStream(stream)
                 stream << ventana.pos()
                 stream << ventana.size()
 
@@ -817,17 +815,9 @@ class UI_pychemqt(QtGui.QMainWindow):
 
             otras_ventanas=stream.readInt32()
             for ventana in range(otras_ventanas):
-                id1=stream.readInt32()
-                id2=stream.readInt32()
-                len=stream.readInt32()
-                x=[]
-                for i in range(len):
-                    x.append(stream.readFloat())
-                y=[]
-                for i in range(len):
-                    y.append(stream.readFloat())
-                self.plot(0, x, y)
-
+                widget = other_window[stream.readInt32()]
+                grafico = widget.readFromStream(stream, self)
+                mdiArea.addSubWindow(grafico)
                 pos=QtCore.QPoint()
                 size=QtCore.QSize()
                 stream >> pos >> size

@@ -46,7 +46,6 @@ class Binary_distillation(QtGui.QDialog):
         else:
             self.calculo()
         
-        
     def rellenar(self, x, y):
         self.x=x
         self.y=y
@@ -83,7 +82,29 @@ class Binary_distillation(QtGui.QDialog):
             x.append(1)
             y.append(1)
             self.rellenar(x, y)
-            
+
+    def writeToStream(self, stream):
+        stream.writeInt32(self.widget().Comp1.currentIndex())
+        stream.writeInt32(self.widget().Comp2.currentIndex())
+        stream.writeInt32(len(self.widget().x))
+        for i in self.widget().x:
+            stream.writeFloat(i)
+        for i in self.widget().y:
+            stream.writeFloat(i)
+    
+    @classmethod
+    def readToStream(cls, stream):
+        id1=stream.readInt32()
+        id2=stream.readInt32()
+        len=stream.readInt32()
+        x=[]
+        for i in range(len):
+            x.append(stream.readFloat())
+        y=[]
+        for i in range(len):
+            y.append(stream.readFloat())
+        self.plot(0, x, y)
+
 
 class Plot_Distribucion(mpl):
     title=QtGui.QApplication.translate("pychemqt", "Solid Distribution")

@@ -407,57 +407,7 @@ class plugin(QtGui.QMenu):
         self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Plotting..."), 3000)
         QtGui.QApplication.processEvents()
 
-        # Plot saturation lines
-        format = getLineFormat(self.parent().Preferences, "saturation")
-        if x == "P" and y == "T":
-            satLines = [(QtGui.QApplication.translate("pychemqt", "Saturation Line"), 0)]
-        else:
-            satLines = [(QtGui.QApplication.translate("pychemqt", "Liquid Saturation Line"), 0), 
-                        (QtGui.QApplication.translate("pychemqt", "Vapor Saturation Line"), 1)]
-        for label, fase in satLines:
-            xsat = data["xsat%i" %fase]
-            ysat = data["ysat%i" %fase]
-            grafico.plot.ax.plot(xsat, ysat, label=label, **format)
-
-        # Plot melting and sublimation lines
-        if "xmel" in data:
-            label = QtGui.QApplication.translate("pychemqt", "Melting Line")
-            grafico.plot.ax.plot(data["xmel"], data["ymel"], label=label, **format)
-        if "xsub" in data:
-            label = QtGui.QApplication.translate("pychemqt", "Sublimation Line")
-            grafico.plot.ax.plot(data["xsub"], data["ysub"], label=label, **format)
-
-        # PLot quality isolines
-        if x not in ["P", "T"]  or y  not in ["P", "T"]:
-            format = getLineFormat(self.parent().Preferences, "Isoquality")
-            plotIsoline(data["x"], "x", unidades.Dimensionless, grafico, **format)
-
-        # Plot isotherm lines
-        if x != "T" and y != "T":
-            format = getLineFormat(self.parent().Preferences, "Isotherm")
-            plotIsoline(data["T"], "T", unidades.Temperature, grafico, **format)
-                        
-        # Plot isobar lines
-        if x != "P" and y != "P":
-            format = getLineFormat(self.parent().Preferences, "Isobar")
-            plotIsoline(data["P"], "P", unidades.Pressure, grafico, **format)
-
-        # Plot isochor lines
-        if x not in ["rho", "v"] and y not in ["rho", "v"]:
-            format = getLineFormat(self.parent().Preferences, "Isochor")
-            plotIsoline(data["v"], "v", unidades.SpecificVolume, grafico, **format)
-            if "rho" in data:
-                plotIsoline(data["rho"], "rho", unidades.Density, grafico, **format)
-
-        # Plot isoenthalpic lines
-        if x != "h" and y != "h":
-            format = getLineFormat(self.parent().Preferences, "Isoenthalpic")
-            plotIsoline(data["h"], "h", unidades.Enthalpy, grafico, **format)
-
-        # Plot isoentropic lines
-        if x != "s" and y != "s":
-            format = getLineFormat(self.parent().Preferences, "Isoentropic")
-            plotIsoline(data["s"], "s", unidades.SpecificHeat, grafico, **format)
+        plot2D(grafico, data, self.parent().Preferences, x, y)
 
         self.parent().centralwidget.currentWidget().addSubWindow(grafico)
         grafico.show()
@@ -2265,6 +2215,32 @@ class PlotMEoS(QtGui.QWidget):
         """Save changes in data to file"""
         cPickle.dump(data, open(self.filename, "w"))
 
+    def writeToStream(self, stream):
+        stream.writeString(self.filename)
+        stream.writeString(self.windowTitle())
+        stream.writeString(self.x)
+        stream.writeString(self.y)
+
+    @classmethod
+    def readFromStream(cls, stream, parent):
+        filename = stream.readString()
+        title = stream.readString()
+        grafico = PlotMEoS(dim=2, parent=parent, filename=filename)
+        x = stream.readString()
+        y = stream.readString()
+        grafico.x = x
+        grafico.y = y
+        grafico.setWindowTitle(title)
+        
+        xtxt = "%s, %s" %(x, meos.units[meos.keys.index(x)].text())
+        ytxt = "%s, %s" %(y, meos.units[meos.keys.index(y)].text())
+        grafico.plot.ax.set_xlabel(xtxt)
+        grafico.plot.ax.set_ylabel(ytxt)
+
+        with open(filename, "r") as archivo:
+            data = cPickle.load(archivo)
+        plot2D(grafico, data, parent.Preferences, x, y)
+        return grafico
 
 class Plot2D(QtGui.QDialog):
     """Dialog for select a special 2D plot"""
@@ -3302,6 +3278,59 @@ def get_points(Preferences):
     else:
         points = 5
     return points
+
+def plot2D(grafico, data, Preferences, x, y):
+    # Plot saturation lines
+    format = getLineFormat(Preferences, "saturation")
+    if x == "P" and y == "T":
+        satLines = [(QtGui.QApplication.translate("pychemqt", "Saturation Line"), 0)]
+    else:
+        satLines = [(QtGui.QApplication.translate("pychemqt", "Liquid Saturation Line"), 0), 
+                    (QtGui.QApplication.translate("pychemqt", "Vapor Saturation Line"), 1)]
+    for label, fase in satLines:
+        xsat = data["xsat%i" %fase]
+        ysat = data["ysat%i" %fase]
+        grafico.plot.ax.plot(xsat, ysat, label=label, **format)
+
+    # Plot melting and sublimation lines
+    if "xmel" in data:
+        label = QtGui.QApplication.translate("pychemqt", "Melting Line")
+        grafico.plot.ax.plot(data["xmel"], data["ymel"], label=label, **format)
+    if "xsub" in data:
+        label = QtGui.QApplication.translate("pychemqt", "Sublimation Line")
+        grafico.plot.ax.plot(data["xsub"], data["ysub"], label=label, **format)
+
+    # PLot quality isolines
+    if x not in ["P", "T"]  or y  not in ["P", "T"]:
+        format = getLineFormat(Preferences, "Isoquality")
+        plotIsoline(data["x"], "x", unidades.Dimensionless, grafico, **format)
+
+    # Plot isotherm lines
+    if x != "T" and y != "T":
+        format = getLineFormat(Preferences, "Isotherm")
+        plotIsoline(data["T"], "T", unidades.Temperature, grafico, **format)
+                    
+    # Plot isobar lines
+    if x != "P" and y != "P":
+        format = getLineFormat(Preferences, "Isobar")
+        plotIsoline(data["P"], "P", unidades.Pressure, grafico, **format)
+
+    # Plot isochor lines
+    if x not in ["rho", "v"] and y not in ["rho", "v"]:
+        format = getLineFormat(Preferences, "Isochor")
+        plotIsoline(data["v"], "v", unidades.SpecificVolume, grafico, **format)
+        if "rho" in data:
+            plotIsoline(data["rho"], "rho", unidades.Density, grafico, **format)
+
+    # Plot isoenthalpic lines
+    if x != "h" and y != "h":
+        format = getLineFormat(Preferences, "Isoenthalpic")
+        plotIsoline(data["h"], "h", unidades.Enthalpy, grafico, **format)
+
+    # Plot isoentropic lines
+    if x != "s" and y != "s":
+        format = getLineFormat(Preferences, "Isoentropic")
+        plotIsoline(data["s"], "s", unidades.SpecificHeat, grafico, **format)
 
 
 class Plot3D(QtGui.QDialog):
