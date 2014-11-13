@@ -446,6 +446,8 @@ class plugin(QtGui.QMenu):
         if x not in ["rho", "v"] and y not in ["rho", "v"]:
             format = getLineFormat(self.parent().Preferences, "Isochor")
             plotIsoline(data["v"], "v", unidades.SpecificVolume, grafico, **format)
+            if "rho" in data:
+                plotIsoline(data["rho"], "rho", unidades.Density, grafico, **format)
 
         # Plot isoenthalpic lines
         if x != "h" and y != "h":
@@ -2599,6 +2601,8 @@ class EditPlot(QtGui.QWidget):
         
             # Save new line to file
             data = self.plotMEoS._getData()
+            if var not in data:
+                data[var] = {}
             data[var][value] = (xi, yi)
             self.plotMEoS._saveData(data)
             
