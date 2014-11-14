@@ -1899,6 +1899,143 @@ class TablaMEoS(Tabla):
                 for row in self.data:
                     writer.writerow([str(data).translate(cambio) for data in row])
 
+    def writeToStream(self, stream):
+        stream.writeInt32(self.columnCount())
+        
+        # Save titles
+        stream.writeString(self.windowTitle())
+        for col in range(self.columnCount()):
+            stream.writeString(self.horizontalHeaderItem(col).text())
+
+        # Save units as index
+        all = unidades._all
+        all.append(unidades.Dimensionless)
+        for unit in self.units:
+            stream.writeInt32(all.index(unit))
+        
+        # Save keys if necesary
+        stream.writeBool(self.readOnly)
+        if not self.readOnly:
+            stream.writeInt32(mEoS.__all__.index(self.fluid))
+            for key in self.keys:
+                stream.writeString(key)
+            for boolean in self.columnReadOnly:
+                stream.writeBool(boolean)
+  
+        # Save order unit
+        for index in self.orderUnit:
+            stream.writeInt32(index)
+
+        # Save format
+        for format in self.format:
+            stream.writeInt32(format.get("format", 1))
+            stream.writeInt32(format.get("decimales", 6))
+            stream.writeBool(format.get("signo", False))
+            stream.writeInt32(format.get("total", 10))
+            stream.writeBool(format.get("exp", False))
+            stream.writeInt32(format.get("tol", 6))
+            stream.writeBool(format.get("thousand", False))
+        
+        # Save data if exist
+        stream.writeInt32(len(self.data))
+        for row in self.data:
+            stream.writeInt32(len(row))
+            for data in row:
+                boolean = isinstance(data, str) or isinstance(data, QtCore.QString)
+                stream.writeBool(boolean)
+                if boolean:
+                    stream.writeString(data)
+                else:
+                    stream.writeFloat(data)
+
+    @classmethod
+    def readFromStream(cls, stream, parent):
+        columnCount = stream.readInt32()
+        
+        # Get titles
+        title = stream.readString()
+        propiedades = []
+        for col in range(columnCount):
+            propiedades.append(stream.readString())
+            
+        # Get units
+        all = unidades._all
+        all.append(unidades.Dimensionless)
+        units = []
+        for i in range(columnCount):
+            index = stream.readInt32()
+            units.append(all[index])
+        
+        # Get keys if neccesary
+        readOnly = stream.readBool()
+        if not readOnly:
+            index = stream.readInt32()
+            fluid = mEoS.__all__[index]
+            keys = []
+            for i in range(columnCount):
+                keys.append(stream.readString())
+            columnReadOnly = []
+            for i in range(columnCount):
+                columnReadOnly.append(stream.readBool())
+        
+        # Get OrderUnit
+        orderUnit = []
+        for i in range(columnCount):
+            orderUnit.append(stream.readInt32())
+
+        
+        # Get format
+        format = []
+        for col in range(columnCount):
+            fr = {}
+            fr["format"] = stream.readInt32()
+            fr["decimales"] = stream.readInt32()
+            fr["signo"] = stream.readBool()
+            fr["total"] = stream.readInt32()
+            fr["exp"] = stream.readBool()
+            fr["tol"] = stream.readInt32()
+            fr["thousand"] = stream.readBool()
+            format.append(fr)
+            
+        # Get data
+        data = []
+        datalen = stream.readInt32()
+        for row in range(datalen):
+            rowlen = stream.readInt32()
+            lista = []
+            for element in range(rowlen):
+                boolean = stream.readBool()
+                if boolean:
+                    lista.append(stream.readString())
+                else:
+                    lista.append(stream.readFloat())
+            data.append(lista)
+        
+        #Create Tabla
+        args = (columnCount, )
+        kwargs = {}
+        kwargs["horizontalHeader"] = propiedades
+        kwargs["format"] = format
+        kwargs["stretch"] = False
+        kwargs["parent"] = parent
+        kwargs["units"] = units
+        kwargs["orderUnit"] = orderUnit
+
+        if readOnly:
+            kwargs["readOnly"] = True
+        else:
+            kwargs["filas"] = datalen+1
+            kwargs["keys"] = keys
+            kwargs["columnReadOnly"] = columnReadOnly
+
+        tabla = TablaMEoS(*args, **kwargs)
+        tabla.setWindowTitle(title)
+        tabla.setMatrix(data)
+        if not readOnly:
+            tabla.fluid = fluid
+            tabla.Point = fluid()
+        return tabla
+
 
 class Ui_Saturation(QtGui.QDialog):
     """Dialog to define input for a two-phase saturation table calculation"""
