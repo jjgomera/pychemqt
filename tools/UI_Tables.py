@@ -290,47 +290,9 @@ class plugin(QtGui.QMenu):
         title="%s: %s" % (name, QtGui.QApplication.translate("pychemqt", "Specified state points"))
         tabla=createTabla(self.parent(), title, None)
         tabla.fluid = fluid
-        self.Point = fluid()
-        tabla.cellChanged.connect(self.calculatePoint)
+        tabla.Point = fluid()
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
-
-    def calculatePoint(self, row, column):
-        """Add new value to kwargs for point, and show properties if is calculable
-        row, column: index for modified cell in table"""
-        tabla = self.sender()
-        key = tabla.keys[column]
-        unit = tabla.units[column]
-        if unit is unidades.Dimensionless:
-            value = float(tabla.item(row, column).text())
-        else:
-            value = unit(float(tabla.item(row, column).text()), unit.__units__[tabla.orderUnit[column]])
-        self.Point(**{key: value})
-        if self.Point.status:
-            units = []
-            for ui, order in zip(tabla.units, tabla.orderUnit):
-                if ui is unidades.Dimensionless:
-                    units.append("")
-                else:
-                    units.append(ui.__units__[order])
-            data = _getData(self.Point, tabla.keys, self.parent().currentConfig,
-                            units)
-            tabla.setRow(row, data)
-            self.Point = tabla.fluid()
-            
-            # Set calculate point readOnly
-            tabla.blockSignals(True)
-            flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
-            color=QtGui.QColor(self.parent().Preferences.get("General", 'Color_ReadOnly'))
-            for i, bool in enumerate(tabla.columnReadOnly):
-                if not bool:
-                    tabla.item(row, i).setFlags(flags)
-                    tabla.item(row, i).setBackground(color)
-            tabla.blockSignals(False)
-
-            tabla.addRow()
-            tabla.setCurrentCell(row+1, column)
-
         
     def plot2D(self):
         dialog=Plot2D(self.parent())
@@ -1791,19 +1753,32 @@ class TablaMEoS(Tabla):
             self.keys = kwargs["keys"]
             del kwargs["keys"]
         self.units = kwargs["units"]
-        self.orderUnit = []
-        for unit in self.units:
-            if unit == unidades.Dimensionless:
-                self.orderUnit.append(0)
-            else:
-                self.orderUnit.append(unit.Config.getint('Units', unit.__name__))
         del kwargs["units"]
+        if "orderUnit" in kwargs:
+            self.orderUnit = kwargs["orderUnit"]
+            del kwargs["orderUnit"]
+        else:
+            self.orderUnit = []
+            for unit in self.units:
+                if unit == unidades.Dimensionless:
+                    self.orderUnit.append(0)
+                else:
+                    self.orderUnit.append(unit.Config.getint('Units', unit.__name__))
+                    
+        if "format" in kwargs:
+            self.format = kwargs["format"]
+            del kwargs["format"]
+        else:
+            self.format=[{"format": 1, "decimales": 6, "signo": False}]*args[0]
+            
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
-        self.format=[{"format": 1, "decimales": 6, "signo": False}]*args[0]
         self.data=[]
         self.parent=kwargs.get("parent", None)
+        if not self.readOnly:
+            self.cellChanged.connect(self.calculatePoint)
+
 
     def show_header_context_menu(self, position):
         """Show dialog to config format and unit"""
@@ -1828,9 +1803,41 @@ class TablaMEoS(Tabla):
             self.resizeColumnToContents(column)
         self.setRangeSelected(QtGui.QTableWidgetSelectionRange(0, column, self.rowCount()-1, column), True)
 
+    def calculatePoint(self, row, column):
+        """Add new value to kwargs for point, and show properties if is calculable
+        row, column: index for modified cell in table"""
+        key = self.keys[column]
+        unit = self.units[column]
+        if unit is unidades.Dimensionless:
+            value = float(self.item(row, column).text())
+        else:
+            value = unit(float(self.item(row, column).text()), unit.__units__[self.orderUnit[column]])
+        self.Point(**{key: value})
+        print self.Point
+        if self.Point.status:
+            units = []
+            for ui, order in zip(self.units, self.orderUnit):
+                if ui is unidades.Dimensionless:
+                    units.append("")
+                else:
+                    units.append(ui.__units__[order])
+            data = _getData(self.Point, self.keys, self.parent.currentConfig,
+                            units)
+            self.setRow(row, data)
+            self.Point = self.fluid()
+            
+
+            self.addRow()
+            self.setCurrentCell(row+1, column)
+
     def setMatrix(self, data):
-        self.data=data
-        self.setStr()
+        if self.readOnly:
+            self.data=data
+            self.setStr()
+        else:
+            for i, row in enumerate(data):
+                self.setRow(i, row)
+        self.resizeColumnsToContents()
 
     def setStr(self):
         for fila, array in enumerate(self.data):
@@ -1843,7 +1850,7 @@ class TablaMEoS(Tabla):
                     txt=representacion(data, **self.format[columna])
                 self.setValue(fila, columna, txt)
 
-    def setRow(self, row, data, **format):
+    def setRow(self, row, data):
         self.blockSignals(True)
         self.data.append(data)
         for column, data in enumerate(data):
@@ -1853,8 +1860,16 @@ class TablaMEoS(Tabla):
                 txt=representacion(data, **self.format[column])
             self.setValue(row, column, txt)
         self.resizeColumnsToContents()
+        
+        # Set calculate point readOnly
+        if not self.readOnly:
+            flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
+            color=QtGui.QColor(self.parent.Preferences.get("General", 'Color_ReadOnly'))
+            for i, bool in enumerate(self.columnReadOnly):
+                if not bool:
+                    self.item(row, i).setFlags(flags)
+                    self.item(row, i).setBackground(color)
         self.blockSignals(False)
-
 
     def contextMenuEvent(self, event):
         menu = QtGui.QMenu()
