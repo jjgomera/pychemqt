@@ -35,7 +35,7 @@ from string import maketrans
 from math import ceil, floor, log10
 
 from PyQt4 import QtCore, QtGui
-from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, min, max, transpose
+from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
@@ -2410,7 +2410,7 @@ class PlotMEoS(QtGui.QWidget):
             fluid = mEoS.__all__[data["config"]["fluid"]]
             kwargs = {self.x: x, self.y: y}
             fluido = calcPoint(fluid, data["config"], **kwargs)
-            if fluido.status and \
+            if fluido and fluido.status and \
                     fluido._constants["Tmin"] <= fluido.T <= fluido._constants["Tmax"] and \
                     fluido._constants["Pmin"] <= fluido.P.kPa <= fluido._constants["Pmax"]:
                 self.plot.lx.set_ydata(event.ydata)
@@ -2629,7 +2629,7 @@ class EditPlot(QtGui.QWidget):
         self.buttonBox.rejected.connect(self.close)
         layoutButton.addWidget(self.buttonBox)
 
-        for linea in self.fig.ax.lines:
+        for linea in self.fig.ax.lines[2:]:
             self.lista.addItem(linea._label)
 
         self.lista.currentRowChanged.connect(self.update)
@@ -2653,7 +2653,7 @@ class EditPlot(QtGui.QWidget):
 
     def update(self, i):
         """Fill format widget with value of selected line"""
-        linea=self.fig.ax.lines[i]
+        linea=self.fig.ax.lines[i+2]
         self.label.setText(linea.get_label())
         self.Grosor.setValue(linea.get_lw())
         self.Linea.setCurrentValue(linea.get_ls())
@@ -2669,7 +2669,7 @@ class EditPlot(QtGui.QWidget):
 
     def changeValue(self, key, value):
         """Actualiza datos del grafico, cambios hechos al vuelo en el grafico"""
-        linea=self.fig.ax.lines[self.lista.currentRow()]
+        linea=self.fig.ax.lines[self.lista.currentRow()+2]
         func={"label": linea.set_label,
                     "lw": linea.set_lw,
                     "ls": linea.set_ls,
@@ -2817,6 +2817,7 @@ class EditPlot(QtGui.QWidget):
         units = {"T": unidades.Temperature, 
                  "P": unidades.Pressure, 
                  "v": unidades.SpecificVolume, 
+                 "rho": unidades.Density, 
                  "h": unidades.Enthalpy, 
                  "s": unidades.SpecificHeat, 
                  "x": unidades.Dimensionless}
@@ -2831,7 +2832,7 @@ class EditPlot(QtGui.QWidget):
         
         # Remove line to plot and update list element
         index = self.lista.currentRow()
-        del self.fig.ax.lines[index]
+        del self.fig.ax.lines[index+2]
         if index == 0:
             self.lista.setCurrentRow(1)
         else:
@@ -3432,17 +3433,25 @@ def calcPoint(fluid, config, **kwargs):
         option["visco"] = config.getint("MEoS", "visco")
         option["thermal"] = config.getint("MEoS", "thermal")
     kwargs.update(option)
+    Tmin = fluid.eq[option["eq"]]["Tmin"]
+    Tmax = fluid.eq[option["eq"]]["Tmax"]
+    Pmin = fluid.eq[option["eq"]]["Pmin"]*1000
+    Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
     if "T" in kwargs:
-        Tmin = fluid.eq[option["eq"]]["Tmin"]
-        Tmax = fluid.eq[option["eq"]]["Tmax"]
         if kwargs["T"] < Tmin or kwargs["T"] > Tmax:
             return None
     if "P" in kwargs:
-        Pmin = fluid.eq[option["eq"]]["Pmin"]*1000
-        Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
         if kwargs["P"] < Pmin or kwargs["P"] > Pmax:
             return None
     fluido = fluid(**kwargs)
+    
+    if fluido._melting and fluido._melting["Tmin"] < fluido.T < fluido._melting["Tmax"]:
+        Pmel = fluido._Melting_Pressure(fluido.T)
+        print Pmel, Pmax
+        Pmax = min(Pmax, Pmel)
+
+    if fluido.P < Pmin or fluido.P > Pmax or fluido.T < Tmin or fluido.T > Tmax:
+        return None
     return fluido
 
 def getLineFormat(Preferences, name):
