@@ -4,7 +4,7 @@
 from PyQt4 import QtCore, QtGui
 from matplotlib import rcParams
 rcParams['backend'] = 'QT4Agg'  #Fija el backend de las ventanas de matplotlib a qt4
-#rcParams['font.size'] = '9'
+rcParams['font.size'] = '9'
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from pylab import Figure, plot,  title,  figtext,  xlabel,  grid,  show
 from mpl_toolkits.mplot3d import Axes3D

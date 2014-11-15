@@ -309,7 +309,8 @@ class plugin(QtGui.QMenu):
             c1=dialog.var[i][0]
             c2=dialog.var[j][0]
 
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+            index = self.parent().currentConfig.getint("MEoS", "fluid")
+            fluid=mEoS.__all__[index]
             sufx=configSufx(fluid, self.parent())
             title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, dialog.ejeY.currentText(), dialog.ejeX.currentText(), sufx))
             grafico=PlotMEoS(dim=2, parent=self.parent())
@@ -340,7 +341,8 @@ class plugin(QtGui.QMenu):
         """Create a plot
         x: property for axes x
         y: property for axes y"""
-        fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+        index = self.parent().currentConfig.getint("MEoS", "fluid")
+        fluid=mEoS.__all__[index]
         filename = config.conf_dir+"%s-%s,%s.pkl" % (fluid.formula, y, x)
         title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s)" %(fluid.formula, y, x))
         grafico=PlotMEoS(dim=2, parent=self.parent(), filename=filename)
@@ -364,6 +366,12 @@ class plugin(QtGui.QMenu):
             self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Calculating data, be patient..."), 3000)
             QtGui.QApplication.processEvents()
             data = self.calculatePlot(fluid, x, y)
+            conf = {}
+            conf["fluid"] = index
+            config["eq"] = self.parent().currentConfig.getint("MEoS", "eq")
+            config["visco"] = self.parent().currentConfig.getint("MEoS", "visco")
+            config["thermal"] = self.parent().currentConfig.getint("MEoS", "thermal")
+            data["config"] = conf
             cPickle.dump(data, open(filename, "w"))
             self.parent().progressBar.setVisible(False)
         self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Plotting..."), 3000)
@@ -1779,7 +1787,6 @@ class TablaMEoS(Tabla):
         if not self.readOnly:
             self.cellChanged.connect(self.calculatePoint)
 
-
     def show_header_context_menu(self, position):
         """Show dialog to config format and unit"""
         column = self.horizontalHeader().logicalIndexAt(position)
@@ -1813,7 +1820,6 @@ class TablaMEoS(Tabla):
         else:
             value = unit(float(self.item(row, column).text()), unit.__units__[self.orderUnit[column]])
         self.Point(**{key: value})
-        print self.Point
         if self.Point.status:
             units = []
             for ui, order in zip(self.units, self.orderUnit):
@@ -2287,9 +2293,18 @@ class PlotMEoS(QtGui.QWidget):
         self.parent=parent
         self.dim=dim
         self.filename = filename
+        self.notes = []
         
         layout=QtGui.QVBoxLayout(self)
         self.plot=plot.matplotlib(dim)
+        
+        format = {}
+        self.plot.lx = self.plot.ax.axhline(c="#888888", ls=":")  # the horiz line
+        self.plot.ly = self.plot.ax.axvline(c="#888888", ls=":")  # the vert line
+        self.plot.fig.canvas.mpl_connect('button_press_event', self.click)
+        self.plot.lx.set_visible(False)
+        self.plot.ly.set_visible(False)
+
         layout.addWidget(self.plot)
         self.toolbar=plot.NavigationToolbar2QT(self.plot, self.plot)
         self.toolbar.setVisible(toolbar)
@@ -2361,11 +2376,69 @@ class PlotMEoS(QtGui.QWidget):
         """Get data from file"""
         with open(self.filename, "r") as archivo:
             data = cPickle.load(archivo)
+        if "config" not in data:
+            config = {}
+            config["fluid"] = 12
+            config["eq"] = 0
+            config["visco"] = 0
+            config["thermal"] = 0
+            data["config"] = config
+            self._saveData(data)
         return data
 
     def _saveData(self, data):
         """Save changes in data to file"""
         cPickle.dump(data, open(self.filename, "w"))
+
+    def click(self, event):
+        """Update input and graph annotate when mouse click over chart"""
+        # Accept only left click
+        if event.button != 1:
+            return
+        units = {"x": unidades.Dimensionless, 
+                 "T": unidades.Temperature, 
+                 "P": unidades.Pressure, 
+                 "h": unidades.Enthalpy,
+                 "u": unidades.Enthalpy,
+                 "s": unidades.SpecificHeat, 
+                 "v": unidades.SpecificVolume, 
+                 "rho": unidades.Density}
+        if self.x in units and self.y in units:
+            x = units[self.x](event.xdata, "conf")
+            y = units[self.y](event.ydata, "conf")
+            data = self._getData()
+            fluid = mEoS.__all__[data["config"]["fluid"]]
+            kwargs = {self.x: x, self.y: y}
+            fluido = calcPoint(fluid, data["config"], **kwargs)
+            if fluido.status and \
+                    fluido._constants["Tmin"] <= fluido.T <= fluido._constants["Tmax"] and \
+                    fluido._constants["Pmin"] <= fluido.P.kPa <= fluido._constants["Pmax"]:
+                self.plot.lx.set_ydata(event.ydata)
+                self.plot.ly.set_xdata(event.xdata)
+                self.plot.lx.set_visible(True)
+                self.plot.ly.set_visible(True)
+                self.showPointData(fluido)
+            else:
+                self.plot.lx.set_visible(False)
+                self.plot.ly.set_visible(False)
+                self.clearPointData()
+            self.plot.draw()
+
+    def showPointData(self, state):
+        self.clearPointData()
+        yi = 0.98
+        for key in ("T", "P", "x", "v", "rho", "h", "s", "u"):
+            self.notes.append(self.plot.ax.annotate(
+                "%s: %s" % (key, state.__getattribute__(key).str), (0.01, yi),
+                xycoords='axes fraction', size="small", va="center"))
+            yi -= 0.025
+        self.plot.draw()
+
+    def clearPointData(self):
+        while self.notes:
+            anotation = self.notes.pop()
+            anotation.remove()
+        self.plot.draw()
 
     def writeToStream(self, stream):
         stream.writeString(self.filename)
@@ -2377,9 +2450,10 @@ class PlotMEoS(QtGui.QWidget):
     def readFromStream(cls, stream, parent):
         filename = stream.readString()
         title = stream.readString()
-        grafico = PlotMEoS(dim=2, parent=parent, filename=filename)
         x = stream.readString()
         y = stream.readString()
+        index = stream.readInt32()
+        grafico = PlotMEoS(dim=2, parent=parent, filename=filename)
         grafico.x = x
         grafico.y = y
         grafico.setWindowTitle(title)
@@ -3350,10 +3424,13 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
     return fluidos
 
 def calcPoint(fluid, config, **kwargs):
-    option = {}
-    option["eq"] = config.getint("MEoS", "eq")
-    option["visco"] = config.getint("MEoS", "visco")
-    option["thermal"] = config.getint("MEoS", "thermal")
+    if isinstance(config, dict):
+        option = config
+    else:
+        option = {}
+        option["eq"] = config.getint("MEoS", "eq")
+        option["visco"] = config.getint("MEoS", "visco")
+        option["thermal"] = config.getint("MEoS", "thermal")
     kwargs.update(option)
     if "T" in kwargs:
         Tmin = fluid.eq[option["eq"]]["Tmin"]
