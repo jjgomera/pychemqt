@@ -1781,15 +1781,53 @@ class TablaMEoS(Tabla):
             
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.horizontalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.horizontalHeader().customContextMenuRequested.connect(self.show_header_context_menu)
+        self.horizontalHeader().customContextMenuRequested.connect(self.horizontalHeaderClicked)
+        self.verticalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.verticalHeader().customContextMenuRequested.connect(self.verticalHeaderClicked)
+        self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.itemSelectionChanged.connect(self.selectPoint)
         self.data=[]
         self.parent=kwargs.get("parent", None)
         if not self.readOnly:
             self.cellChanged.connect(self.calculatePoint)
+        
+    def _getPlot(self):
+        """Return plot if it's loaded"""
+        for window in self.parent.centralwidget.currentWidget().subWindowList():
+            widget = window.widget()
+            if isinstance(widget, PlotMEoS):
+                return widget
+        
+    def delete(self, row):
+        self.removeRow(row)
+    
+    def add(self):
+        pass
 
-    def show_header_context_menu(self, position):
+    def selectPoint(self):
+        plot = self._getPlot()
+        if plot:
+        #Remove old selected point if exist
+            for i, line in enumerate(plot.plot.ax.lines):
+                if line.get_label() == QtGui.QApplication.translate("pychemqt", "Selected Point"):
+                    del line
+                    del plot.plot.ax.lines[i]
+                    
+        #Add new selected points
+            x = []
+            y = []
+            for item in self.selectedItems():
+                if item.column():
+                    y.append(float(item.text()))
+                else:
+                    x.append(float(item.text()))
+            label = QtGui.QApplication.translate("pychemqt", "Selected Point")
+            plot.plot.ax.plot(x, y, 'ro', label=label)            
+            plot.plot.draw()
+
+    def horizontalHeaderClicked(self, event):
         """Show dialog to config format and unit"""
-        column = self.horizontalHeader().logicalIndexAt(position)
+        column = self.horizontalHeader().logicalIndexAt(event)
         unit = self.units[column]
         dialog=NumericFactor(self.format[column], unit, self.orderUnit[column])
         if dialog.exec_():
@@ -1810,6 +1848,19 @@ class TablaMEoS(Tabla):
             self.resizeColumnToContents(column)
         self.setRangeSelected(QtGui.QTableWidgetSelectionRange(0, column, self.rowCount()-1, column), True)
 
+    def verticalHeaderClicked(self, position):
+        row = self.verticalHeader().logicalIndexAt(position)
+
+        deleteAction=createAction(QtGui.QApplication.translate("pychemqt", "Delete Point"), icon=os.environ["pychemqt"]+"/images/button/editDelete", slot=partial(self.delete, row), parent=self)
+        inserPoint=createAction(QtGui.QApplication.translate("pychemqt", "Insert Point"), icon=os.environ["pychemqt"]+"/images/button/add", slot=self.add, parent=self)
+
+        menu = QtGui.QMenu()
+        menu.addAction(deleteAction)
+        menu.addSeparator()
+        menu.addAction(inserPoint)
+        menu.exec_(self.mapToGlobal(position))
+
+        
     def calculatePoint(self, row, column):
         """Add new value to kwargs for point, and show properties if is calculable
         row, column: index for modified cell in table"""
@@ -2357,8 +2408,6 @@ class PlotMEoS(QtGui.QWidget):
         """
         Export plot data to table
         obj: object (Line2D instance) to show data"""
-        title = QtGui.QApplication.translate("pychemqt", "Table from") + " " + \
-            obj.get_label()
         xtxt = meos.propiedades[meos.keys.index(self.x)]
         ytxt = meos.propiedades[meos.keys.index(self.y)]
         xunit = meos.units[meos.keys.index(self.x)]
@@ -2367,7 +2416,10 @@ class PlotMEoS(QtGui.QWidget):
         tabla = TablaMEoS(2, horizontalHeader=HHeader, units=[xunit, yunit], 
                           stretch=False, readOnly=True, parent=self.parent)
         tabla.setMatrix(transpose(obj.get_data()))
-        prefix=QtGui.QApplication.translate("pychemqt", "Table from")+" "
+        tabla.verticalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+        title = QtGui.QApplication.translate("pychemqt", "Table from") + " " + \
+            obj.get_label()
         tabla.setWindowTitle(title)
         self.parent.centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
@@ -2452,7 +2504,6 @@ class PlotMEoS(QtGui.QWidget):
         title = stream.readString()
         x = stream.readString()
         y = stream.readString()
-        index = stream.readInt32()
         grafico = PlotMEoS(dim=2, parent=parent, filename=filename)
         grafico.x = x
         grafico.y = y
@@ -3391,33 +3442,42 @@ def calcularIsolineas(Preferences, grafico, fluid, metodo, xini, xfin, yini, yfi
 def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, total, bar):
     fluidos = []
     fase = None
+    rhoo = 0
+    To = 0
     for Ti in valuevar:
         print {var: Ti, fix: valuefix}
-        fluido = calcPoint(fluid, config, **{var: Ti, fix: valuefix})
+        kwargs = {var: Ti, fix: valuefix, "rho0": rhoo, "T0": To}
+        fluido = calcPoint(fluid, config, **kwargs)
         if fluido:
-#            print fluido.h.kJkg, fluido.s.kJkgK, fluido.x
+            rhoo = fluido.rho
+            To = fluido.T
+#            if fluido.x in (0, 1):
+#                if fix == "T":
+#                    fluido
+#                
+#        fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
+#        fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
+
             fluidos.append(fluido)
             if var in ("T", "P") and fix in ("T", "P"):
-                if fix == "P":
-                    value = fluido.P
-                else:
-                    value = fluido.T
                 if fase is None:
                     fase = fluido.x
                 if fase != fluido.x and fase == 0:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-                        fluidos.insert(-1, fluid(**{fix: valuefix, "x": 0}))
+                        fluido_x0 = calcPoint(fluid, config, **{fix: valuefix, "x": 0})
+                        fluidos.insert(-1, fluido_x0)
                 elif fase != fluido.x and fase == 1:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-                        print fix, valuefix, 1
-                        fluidos.insert(-1, fluid(**{fix: valuefix, "x": 1}))
+                        fluido_x1 = calcPoint(fluid, config, **{fix: valuefix, "x": 1})
+                        fluidos.insert(-1, fluido_x1)
                 if fase != fluido.x and fluido.x == 1:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-                        fluidos.append(fluid(**{fix: valuefix, "x": 1}))
+                        fluido_x1 = calcPoint(fluid, config, **{fix: valuefix, "x": 1})
+                        fluidos.insert(-1, fluido_x1)
                 elif fase != fluido.x and fluido.x == 0:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
-                        print fix, valuefix, 1
-                        fluidos.append(fluid(**{fix: valuefix, "x": 0}))
+                        fluido_x0 = calcPoint(fluid, config, **{fix: valuefix, "x": 0})
+                        fluidos.insert(-1, fluido_x0)
                 fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(valuevar))
@@ -3441,16 +3501,15 @@ def calcPoint(fluid, config, **kwargs):
         if kwargs["T"] < Tmin or kwargs["T"] > Tmax:
             return None
     if "P" in kwargs:
-        if kwargs["P"] < Pmin or kwargs["P"] > Pmax:
+        if kwargs["P"] < Pmin-1 or kwargs["P"] > Pmax+1:
             return None
     fluido = fluid(**kwargs)
     
     if fluido._melting and fluido._melting["Tmin"] < fluido.T < fluido._melting["Tmax"]:
         Pmel = fluido._Melting_Pressure(fluido.T)
-        print Pmel, Pmax
         Pmax = min(Pmax, Pmel)
 
-    if fluido.P < Pmin or fluido.P > Pmax or fluido.T < Tmin or fluido.T > Tmax:
+    if fluido.P < Pmin-1 or fluido.P > Pmax+1 or fluido.T < Tmin or fluido.T > Tmax:
         return None
     return fluido
 
