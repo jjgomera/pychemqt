@@ -35,7 +35,7 @@ from string import maketrans
 from math import ceil, floor, log10
 
 from PyQt4 import QtCore, QtGui
-from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose
+from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose, delete
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
@@ -1756,6 +1756,7 @@ class Ui_Properties(QtGui.QDialog):
 # Table data
 class TablaMEoS(Tabla):
     """Tabla subclass to show meos data, add context menu options"""
+    Plot = None
     def __init__(self, *args, **kwargs):
         if "keys" in kwargs:
             self.keys = kwargs["keys"]
@@ -1793,13 +1794,61 @@ class TablaMEoS(Tabla):
         
     def _getPlot(self):
         """Return plot if it's loaded"""
-        for window in self.parent.centralwidget.currentWidget().subWindowList():
-            widget = window.widget()
-            if isinstance(widget, PlotMEoS):
-                return widget
+        if not self.Plot:
+            for window in self.parent.centralwidget.currentWidget().subWindowList():
+                widget = window.widget()
+                if isinstance(widget, PlotMEoS):
+                    self.Plot = widget
+                    break
+        return self.Plot
         
     def delete(self, row):
+        # Delete point from table
         self.removeRow(row)
+        delete(self.data, row)
+        
+        # Delete point from data plot
+        plot =  self._getPlot()
+        data = plot._getData()
+        title = self.windowTitle().split(QtGui.QApplication.translate("pychemqt", "Table from "))[1]
+        if title == QtGui.QApplication.translate("pychemqt", "Melting Line"):
+            del data["xmel"][row]
+            del data["ymel"][row]
+        elif title == QtGui.QApplication.translate("pychemqt", "Sublimation Line"):
+            del data["xsub"][row]
+            del data["ysub"][row]
+        elif title == QtGui.QApplication.translate("pychemqt", "Saturation Line") or \
+                title == QtGui.QApplication.translate("pychemqt", "Liquid Saturation Line"):
+            del data["xsat0"][row]
+            del data["ysat0"][row]
+        elif title == QtGui.QApplication.translate("pychemqt", "Vapor Saturation Line"):
+            del data["xsat1"][row]
+            del data["ysat1"][row]
+        else:
+            units = {"P": unidades.Pressure, 
+                     "T": unidades.Temperature, 
+                     "h": unidades.Enthalpy, 
+                     "s": unidades.Enthalpy, 
+                     "v": unidades.SpecificVolume, 
+                     "rho": unidades.Density}
+            var, txt = map(str, title.split(" = "))
+            unit = units[var]
+            value = float(txt.split(" ")[0])
+            magnitud = txt.split(" ")[1]
+            stdValue = unit(value, magnitud)
+            del data[var][stdValue][0][row]
+            del data[var][stdValue][1][row]
+        plot._saveData(data)
+        
+        # Delete point from data
+        for line in plot.plot.ax.lines:
+            if line.get_label() == title:
+                xdata = delete(line._x, row)
+                ydata = delete(line._y, row)
+                line.set_xdata(xdata)
+                line.set_ydata(ydata)
+                plot.plot.draw()
+                break
     
     def add(self):
         pass
@@ -2040,7 +2089,6 @@ class TablaMEoS(Tabla):
         for i in range(columnCount):
             orderUnit.append(stream.readInt32())
 
-        
         # Get format
         format = []
         for col in range(columnCount):
@@ -2428,6 +2476,8 @@ class PlotMEoS(QtGui.QWidget):
         """Get data from file"""
         with open(self.filename, "r") as archivo:
             data = cPickle.load(archivo)
+            
+        # Delete when loaded all plot data
         if "config" not in data:
             config = {}
             config["fluid"] = 12
@@ -3448,7 +3498,7 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         print {var: Ti, fix: valuefix}
         kwargs = {var: Ti, fix: valuefix, "rho0": rhoo, "T0": To}
         fluido = calcPoint(fluid, config, **kwargs)
-        if fluido:
+        if fluido and fluido.rho != rhoo and fluido.T != To:
             rhoo = fluido.rho
             To = fluido.T
 #            if fluido.x in (0, 1):
@@ -3474,10 +3524,14 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x1 = calcPoint(fluid, config, **{fix: valuefix, "x": 1})
                         fluidos.insert(-1, fluido_x1)
+                        rhoo = fluido_x1.rho
+                        To = fluido_x1.T
                 elif fase != fluido.x and fluido.x == 0:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x0 = calcPoint(fluid, config, **{fix: valuefix, "x": 0})
                         fluidos.insert(-1, fluido_x0)
+                        rhoo = fluido_x0.rho
+                        To = fluido_x0.T
                 fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(valuevar))
