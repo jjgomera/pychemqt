@@ -1850,8 +1850,61 @@ class TablaMEoS(Tabla):
                 plot.plot.draw()
                 break
     
-    def add(self):
-        pass
+    def add(self, row):
+        dialog = AddPoint(self, self.parent)
+        if dialog.exec_():
+            point = []
+            for entrada in dialog.Inputs:
+                point.append(entrada.value.config())
+            
+            # Add point to table
+            self.addRow(point, row)
+            self.data.insert(row, point)
+            
+            # Add point to data plot
+            plot =  self._getPlot()
+            data = plot._getData()
+            title = self.windowTitle().split(QtGui.QApplication.translate("pychemqt", "Table from "))[1]
+            if title == QtGui.QApplication.translate("pychemqt", "Melting Line"):
+                data["xmel"].insert(row, point[0])
+                data["ymel"].insert(row, point[1])
+            elif title == QtGui.QApplication.translate("pychemqt", "Sublimation Line"):
+                data["xsub"].insert(row, point[0])
+                data["ysub"].insert(row, point[1])
+            elif title == QtGui.QApplication.translate("pychemqt", "Saturation Line") or \
+                    title == QtGui.QApplication.translate("pychemqt", "Liquid Saturation Line"):
+                data["xsat0"].insert(row, point[0])
+                data["ysat0"].insert(row, point[1])
+            elif title == QtGui.QApplication.translate("pychemqt", "Vapor Saturation Line"):
+                data["xsat1"].insert(row, point[0])
+                data["ysat1"].insert(row, point[1])
+            else:
+                units = {"P": unidades.Pressure, 
+                         "T": unidades.Temperature, 
+                         "h": unidades.Enthalpy, 
+                         "s": unidades.Enthalpy, 
+                         "v": unidades.SpecificVolume, 
+                         "rho": unidades.Density}
+                var, txt = map(str, title.split(" = "))
+                unit = units[var]
+                value = float(txt.split(" ")[0])
+                magnitud = txt.split(" ")[1]
+                stdValue = unit(value, magnitud)
+                
+                data[var][stdValue][0].insert(row, point[0])
+                data[var][stdValue][1].insert(row, point[1])
+            plot._saveData(data)
+            
+            # Add point to data
+            for line in plot.plot.ax.lines:
+                if line.get_label() == title:
+                    xdata = insert(line._x, row, point[0])
+                    ydata = insert(line._y, row, point[1])
+                    line.set_xdata(xdata)
+                    line.set_ydata(ydata)
+                    plot.plot.draw()
+                    break
+
 
     def selectPoint(self):
         plot = self._getPlot()
@@ -1901,7 +1954,7 @@ class TablaMEoS(Tabla):
         row = self.verticalHeader().logicalIndexAt(position)
 
         deleteAction=createAction(QtGui.QApplication.translate("pychemqt", "Delete Point"), icon=os.environ["pychemqt"]+"/images/button/editDelete", slot=partial(self.delete, row), parent=self)
-        inserPoint=createAction(QtGui.QApplication.translate("pychemqt", "Insert Point"), icon=os.environ["pychemqt"]+"/images/button/add", slot=self.add, parent=self)
+        inserPoint=createAction(QtGui.QApplication.translate("pychemqt", "Insert Point"), icon=os.environ["pychemqt"]+"/images/button/add", slot=partial(self.add, row), parent=self)
 
         menu = QtGui.QMenu()
         menu.addAction(deleteAction)
@@ -2383,6 +2436,28 @@ class Ui_Isoproperty(QtGui.QDialog):
         self.layout().addWidget(self.Inicial,5,2)
         self.layout().addWidget(self.Final,6,2)
         self.layout().addWidget(self.Incremento,7,2)
+
+class AddPoint(QtGui.QDialog):
+    """Dialog to add new point to line2D"""
+
+    def __init__(self, table, parent=None):
+        super(AddPoint, self).__init__(parent)
+        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Add Point to line"))
+        layout = QtGui.QGridLayout(self)
+
+        self.Inputs = []
+        for i, txt in enumerate(table.encabezadoHorizontal):
+            title = txt.split(os.linesep)[0]
+            layout.addWidget(QtGui.QLabel(title),i,1)
+            entrada = Entrada_con_unidades(table.units[i])
+            self.Inputs.append(entrada)
+            layout.addWidget(entrada,i,2)
+            
+        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox,i+1,1,1,2)
+
 
 # Plot data
 class PlotMEoS(QtGui.QWidget):

@@ -401,14 +401,19 @@ class Tabla(QtGui.QTableWidget):
             for i, titulo in enumerate(self.encabezadoHorizontal):
                 self.setHorizontalHeaderItem(i,QtGui.QTableWidgetItem(titulo))
 
-    def addRow(self, data=None):
+    
+    def addRow(self, data=None, index=None):
         if not data:
             data=[""]*self.columnas
         else:
             data=[representacion(i) for i in data]
         self.blockSignals(True)
-        i=self.rowCount()
-        self.setRowCount(i+1)
+        if index:
+            i = index
+        else:
+            i=self.rowCount()
+        self.insertRow(i)
+#        self.setRowCount(i+1)
         self.setRowHeight(i, 22)
         if self.delegateforRow:
             delegate=self.delegateforRow(self.parent())
