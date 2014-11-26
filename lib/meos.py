@@ -463,29 +463,72 @@ class MEoS(_fase):
 
             elif self._mode == "Th":
                 if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
+                    rhoo = self.kwargs["rho0"]
                 else:
+                    rhoo = self.rhoc
+                    
+                funcion = lambda rho: self._eq(rho, T)["h"]*1000-h
+                ro = [rhoo, self._constants["rhomax"], 1e-3]
+                for r in ro:
+                    try:
+                        rho = fsolve(funcion, r)[0]
+                    except:
+                        pass
+                    else:
+                        if rho != r:
+                            print funcion(rho)
+                            break
+                            
+                if self.Tt < T < self.Tc:
                     rhol = self._Liquid_Density(T)
                     rhov = self._Vapor_Density(T)
-                    hv = self._eq(rhov, T)["h"]
-                    if h > hv:
-                        rhoo = rhov
-                    else:
-                        rhoo = rhol
-                rho = fsolve(lambda rho: self._eq(rho, T)["h"]*1000-h, rhoo)
+                    if rho == r or rhol < rho < rhov:
+                        def funcion(rho):
+                            rhol, rhov, Ps = self._saturation(T)
+                            vapor = self._eq(rhov, T)
+                            liquido = self._eq(rhol, T)
+                            x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                            return vapor["h"]*1000.*x+liquido["h"]*1000.*(1-x)-h
+                        rho = fsolve(funcion, r)[0]
+#
+#                    rhol = self._Liquid_Density(T)
+#                    rhov = self._Vapor_Density(T)
+#                    hv = self._eq(rhov, T)["h"]
+#                    if h > hv:
+#                        rhoo = rhov
+#                    else:
+#                        rhoo = rhol
+#                rho = fsolve(lambda rho: self._eq(rho, T)["h"]*1000-h, rhoo)
 
             elif self._mode == "Ts":
                 if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
+                    rhoo = self.kwargs["rho0"]
                 else:
+                    rhoo = self.rhoc
+
+                funcion = lambda rho: self._eq(rho, T)["s"]*1000-s
+                ro = [rhoo, self._constants["rhomax"], 1e-3]
+                for r in ro:
+                    try:
+                        rho = fsolve(funcion, r)[0]
+                    except:
+                        pass
+                    else:
+                        if rho != r:
+                            print funcion(rho)
+                            break
+                
+                if self.Tt < T < self.Tc:
                     rhol = self._Liquid_Density(T)
                     rhov = self._Vapor_Density(T)
-                    sv = self._eq(rhov, T)["s"]
-                    if s > sv:
-                        rhoo = rhov
-                    else:
-                        rhoo = rhol
-                rho = fsolve(lambda rho: self._eq(rho, T)["s"]*1000-s, rhoo)
+                    if rho == r or rhol < rho < rhov:
+                        def funcion(rho):
+                            rhol, rhov, Ps = self._saturation(T)
+                            vapor = self._eq(rhov, T)
+                            liquido = self._eq(rhol, T)
+                            x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                            return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
+                        rho = fsolve(funcion, r)[0]
 
             elif self._mode == "Tu":
                 if self.kwargs["rho0"]:
@@ -564,7 +607,7 @@ class MEoS(_fase):
                 rho, T = fsolve(funcion, [rhoo, To])
                 rhol = self._Liquid_Density(T)
                 rhov = self._Vapor_Density(T)
-                if rho == 2. or rhov <= rho <= rhol:
+                if rho == rhoo or rhov <= rho <= rhol:
                     def funcion(parr):
                         rho, T = parr
                         rhol, rhov, Ps = self._saturation(T)
@@ -687,7 +730,7 @@ class MEoS(_fase):
                         pass
                     else:
                         print rho, r, T, t
-                        if rho != r and T != t:
+                        if rho != r or T != t:
                             print funcion([rho, T])
                             break
                 if self.Tt < T < self.Tc:

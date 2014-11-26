@@ -20,6 +20,7 @@
 #   - TablaMEoS: Tabla subclass to show meos data, add context menu options
 #   - Ui_Saturation: Dialog to define input for a two-phase table calculation
 #   - Ui_Isoproperty: Dialog to define input for isoproperty table calculations
+#   - AddPoint: Dialog to add new point to line2D
 #
 #   Plot data:
 #   - PlotMEoS: Plot widget to show meos plot data, add context menu options
@@ -35,7 +36,7 @@ from string import maketrans
 from math import ceil, floor, log10
 
 from PyQt4 import QtCore, QtGui
-from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose, delete
+from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose, delete, insert
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
@@ -343,7 +344,8 @@ class plugin(QtGui.QMenu):
         y: property for axes y"""
         index = self.parent().currentConfig.getint("MEoS", "fluid")
         fluid=mEoS.__all__[index]
-        filename = config.conf_dir+"%s-%s,%s.pkl" % (fluid.formula, y, x)
+        filename = "%s-%s,%s.pkl" % (fluid.formula, y, x)
+        
         title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s)" %(fluid.formula, y, x))
         grafico=PlotMEoS(dim=2, parent=self.parent(), filename=filename)
         grafico.x = x
@@ -355,11 +357,10 @@ class plugin(QtGui.QMenu):
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
         
-        if os.path.isfile(filename):
-            with open(filename, "r") as archivo:
-                data = cPickle.load(archivo)
-                self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Loading cached data..."), 3000)
-                QtGui.QApplication.processEvents()
+        data = grafico._getData()
+        if data:
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Loading cached data..."), 3000)
+            QtGui.QApplication.processEvents()
         else:
             self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
@@ -368,11 +369,11 @@ class plugin(QtGui.QMenu):
             data = self.calculatePlot(fluid, x, y)
             conf = {}
             conf["fluid"] = index
-            config["eq"] = self.parent().currentConfig.getint("MEoS", "eq")
-            config["visco"] = self.parent().currentConfig.getint("MEoS", "visco")
-            config["thermal"] = self.parent().currentConfig.getint("MEoS", "thermal")
+            conf["eq"] = self.parent().currentConfig.getint("MEoS", "eq")
+            conf["visco"] = self.parent().currentConfig.getint("MEoS", "visco")
+            conf["thermal"] = self.parent().currentConfig.getint("MEoS", "thermal")
             data["config"] = conf
-            cPickle.dump(data, open(filename, "w"))
+            grafico._saveData(data)
             self.parent().progressBar.setVisible(False)
         self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Plotting..."), 3000)
         QtGui.QApplication.processEvents()
@@ -1859,7 +1860,7 @@ class TablaMEoS(Tabla):
             
             # Add point to table
             self.addRow(point, row)
-            self.data.insert(row, point)
+            self.data=insert(self.data, row, point)
             
             # Add point to data plot
             plot =  self._getPlot()
@@ -2439,7 +2440,6 @@ class Ui_Isoproperty(QtGui.QDialog):
 
 class AddPoint(QtGui.QDialog):
     """Dialog to add new point to line2D"""
-
     def __init__(self, table, parent=None):
         super(AddPoint, self).__init__(parent)
         self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Add Point to line"))
@@ -2549,23 +2549,32 @@ class PlotMEoS(QtGui.QWidget):
 
     def _getData(self):
         """Get data from file"""
-        with open(self.filename, "r") as archivo:
-            data = cPickle.load(archivo)
+        filenameHard = os.environ["pychemqt"]+"dat"+os.sep+"mEoS"+ \
+                       os.sep+self.filename
+        filenameSoft = config.conf_dir+self.filename
+        if os.path.isfile(filenameSoft):
+            with open(filenameSoft, "r") as archivo:
+                data = cPickle.load(archivo)
+        elif os.path.isfile(filenameHard):
+            with open(filenameHard, "r") as archivo:
+                data = cPickle.load(archivo)
+        else:
+            return
             
         # Delete when loaded all plot data
         if "config" not in data:
-            config = {}
-            config["fluid"] = 12
-            config["eq"] = 0
-            config["visco"] = 0
-            config["thermal"] = 0
-            data["config"] = config
+            conf = {}
+            conf["fluid"] = 12
+            conf["eq"] = 0
+            conf["visco"] = 0
+            conf["thermal"] = 0
+            data["config"] = conf
             self._saveData(data)
         return data
-
+        
     def _saveData(self, data):
         """Save changes in data to file"""
-        cPickle.dump(data, open(self.filename, "w"))
+        cPickle.dump(data, open(config.conf_dir+self.filename, "w"))
 
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
@@ -2639,8 +2648,9 @@ class PlotMEoS(QtGui.QWidget):
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
 
-        with open(filename, "r") as archivo:
-            data = cPickle.load(archivo)
+        data = grafico._getData()
+#        with open(filename, "r") as archivo:
+#            data = cPickle.load(archivo)
         plot2D(grafico, data, parent.Preferences, x, y)
         return grafico
 
@@ -3573,7 +3583,7 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         print {var: Ti, fix: valuefix}
         kwargs = {var: Ti, fix: valuefix, "rho0": rhoo, "T0": To}
         fluido = calcPoint(fluid, config, **kwargs)
-        if fluido and fluido.rho != rhoo and fluido.T != To:
+        if fluido and (fluido.rho != rhoo or fluido.T != To):
             rhoo = fluido.rho
             To = fluido.T
 #            if fluido.x in (0, 1):
