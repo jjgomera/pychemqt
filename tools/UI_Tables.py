@@ -2631,6 +2631,24 @@ class PlotMEoS(QtGui.QWidget):
         stream.writeString(self.windowTitle())
         stream.writeString(self.x)
         stream.writeString(self.y)
+        
+        # TODO: Add support for save font properties
+        stream.writeString(self.plot.ax.get_title())
+        stream.writeString(self.plot.ax.title.get_color())
+        stream.writeString(self.plot.ax.get_xlabel())
+        stream.writeString(self.plot.ax.xaxis.get_label().get_color())
+        stream.writeString(self.plot.ax.get_ylabel())
+        stream.writeString(self.plot.ax.yaxis.get_label().get_color())
+        stream.writeBool(self.plot.ax._gridOn)
+        stream.writeString(self.plot.ax.get_xscale())
+        stream.writeString(self.plot.ax.get_yscale())
+        xmin, xmax=self.plot.ax.get_xlim()
+        stream.writeFloat(xmin)
+        stream.writeFloat(xmax)
+        ymin, ymax=self.plot.ax.get_ylim()
+        stream.writeFloat(ymin)
+        stream.writeFloat(ymax)
+
 
     @classmethod
     def readFromStream(cls, stream, parent):
@@ -2649,9 +2667,40 @@ class PlotMEoS(QtGui.QWidget):
         grafico.plot.ax.set_ylabel(ytxt)
 
         data = grafico._getData()
-#        with open(filename, "r") as archivo:
-#            data = cPickle.load(archivo)
         plot2D(grafico, data, parent.Preferences, x, y)
+        
+        plotTitle = stream.readString()
+        if plotTitle:
+            grafico.plot.ax.set_title(plotTitle)
+        titleColor = stream.readString()
+        grafico.plot.ax.title.set_color(titleColor)
+        xlabel = stream.readString()
+        if xlabel:
+            grafico.plot.ax.set_xlabel(xlabel)
+        xlabelColor = stream.readString()
+        grafico.plot.ax.xaxis.get_label().set_color(xlabelColor)
+        ylabel = stream.readString()
+        if ylabel:
+            grafico.plot.ax.set_ylabel(ylabel)
+        ylabelColor = stream.readString()
+        grafico.plot.ax.yaxis.get_label().set_color(ylabelColor)
+        grid = stream.readBool()
+        grafico.plot.ax._gridOn = grid
+        grafico.plot.ax.grid(grid)
+        xscale = stream.readString()
+        if xscale:
+            grafico.plot.ax.set_xscale(xscale)
+        yscale = stream.readString()
+        if yscale:
+            grafico.plot.ax.set_yscale(yscale)
+        
+        xmin = stream.readFloat()
+        xmax = stream.readFloat()
+        grafico.plot.ax.set_xlim(xmin, xmax)
+        ymin = stream.readFloat()
+        ymax = stream.readFloat()
+        grafico.plot.ax.set_ylim(ymin, ymax)
+
         return grafico
 
 class Plot2D(QtGui.QDialog):
@@ -3583,9 +3632,10 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         print {var: Ti, fix: valuefix}
         kwargs = {var: Ti, fix: valuefix, "rho0": rhoo, "T0": To}
         fluido = calcPoint(fluid, config, **kwargs)
+#        print fluido.T, fluido.P, fluido.rho
         if fluido and (fluido.rho != rhoo or fluido.T != To):
-            rhoo = fluido.rho
-            To = fluido.T
+#            rhoo = fluido.rho
+#            To = fluido.T
 #            if fluido.x in (0, 1):
 #                if fix == "T":
 #                    fluido
@@ -3595,28 +3645,29 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
 
             fluidos.append(fluido)
             if var in ("T", "P") and fix in ("T", "P"):
+                print fase, fluido.x
                 if fase is None:
                     fase = fluido.x
-                if fase != fluido.x and fase == 0:
+                if fase != fluido.x and fase <= 0:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x0 = calcPoint(fluid, config, **{fix: valuefix, "x": 0})
                         fluidos.insert(-1, fluido_x0)
-                elif fase != fluido.x and fase == 1:
+                elif fase != fluido.x and fase >= 1:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x1 = calcPoint(fluid, config, **{fix: valuefix, "x": 1})
                         fluidos.insert(-1, fluido_x1)
-                if fase != fluido.x and fluido.x == 1:
+                if fase != fluido.x and fluido.x >= 1:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x1 = calcPoint(fluid, config, **{fix: valuefix, "x": 1})
                         fluidos.insert(-1, fluido_x1)
-                        rhoo = fluido_x1.rho
-                        To = fluido_x1.T
-                elif fase != fluido.x and fluido.x == 0:
+#                        rhoo = fluido_x1.rho
+#                        To = fluido_x1.T
+                elif fase != fluido.x and fluido.x <= 0:
                     if fluido.P < fluid.Pc and fluido.T < fluid.Tc:
                         fluido_x0 = calcPoint(fluid, config, **{fix: valuefix, "x": 0})
                         fluidos.insert(-1, fluido_x0)
-                        rhoo = fluido_x0.rho
-                        To = fluido_x0.T
+#                        rhoo = fluido_x0.rho
+#                        To = fluido_x0.T
                 fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(valuevar))
