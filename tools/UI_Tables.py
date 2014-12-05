@@ -33,10 +33,10 @@
 import inspect, csv, os, cPickle
 from functools import partial
 from string import maketrans
-from math import ceil, floor, log10
+from math import ceil, floor, log10, atan, pi
 
 from PyQt4 import QtCore, QtGui
-from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose, delete, insert
+from numpy import arange, append, concatenate, meshgrid, zeros, linspace, logspace, max, transpose, delete, insert, log
 from matplotlib.lines import Line2D
 from matplotlib.font_manager import FontProperties
 
@@ -2665,9 +2665,6 @@ class PlotMEoS(QtGui.QWidget):
         ytxt = "%s, %s" %(y, meos.units[meos.keys.index(y)].text())
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
-
-        data = grafico._getData()
-        plot2D(grafico, data, parent.Preferences, x, y)
         
         plotTitle = stream.readString()
         if plotTitle:
@@ -2688,12 +2685,8 @@ class PlotMEoS(QtGui.QWidget):
         grafico.plot.ax._gridOn = grid
         grafico.plot.ax.grid(grid)
         xscale = stream.readString()
-        if xscale:
-            grafico.plot.ax.set_xscale(xscale)
         yscale = stream.readString()
-        if yscale:
-            grafico.plot.ax.set_yscale(yscale)
-        
+
         xmin = stream.readFloat()
         xmax = stream.readFloat()
         grafico.plot.ax.set_xlim(xmin, xmax)
@@ -2701,6 +2694,13 @@ class PlotMEoS(QtGui.QWidget):
         ymax = stream.readFloat()
         grafico.plot.ax.set_ylim(ymin, ymax)
 
+        data = grafico._getData()
+        plot2D(grafico, data, parent.Preferences, x, y, xscale, yscale)
+        if xscale:
+            grafico.plot.ax.set_xscale(xscale)
+        if yscale:
+            grafico.plot.ax.set_yscale(yscale)
+        
         return grafico
 
 class Plot2D(QtGui.QDialog):
@@ -3710,14 +3710,63 @@ def getLineFormat(Preferences, name):
     format["color"]=Preferences.get("MEOS", name+"Color")
     format["marker"]=Preferences.get("MEOS", name+"marker")
     format["ms"]=3
+    
+    # Anotation
+    if name != "saturation":
+        format["annotate"]=Preferences.getboolean("MEOS", name+"label")
+        format["pos"]=Preferences.getint("MEOS", name+"position")
+        format["unit"]=Preferences.getboolean("MEOS", name+"units")
+        format["variable"]=Preferences.getboolean("MEOS", name+"variable")
+        
     return format
     
     
-def plotIsoline(data, title, unidad, grafico, **format):
+def plotIsoline(data, title, unidad, grafico, xscale=None, yscale=None, **format):
+    if not xscale:
+        xscale = grafico.plot.ax.get_xscale()
+    if not yscale:
+        yscale = grafico.plot.ax.get_yscale()
+    annotate = format.pop("annotate")
+    pos = format.pop("pos")
+    unit = format.pop("unit")
+    variable = format.pop("variable")
     for key in sorted(data.keys()):
         xi, yi = data[key]
         label = "%s =%s" % (title, unidad(key).str)
         grafico.plot.ax.plot(xi, yi, label=label, **format)
+        
+        # Add annotate for isolines
+        if annotate:
+            if variable and unit:
+                txt = label
+            elif variable:
+                txt =  "%s =%s" % (title, unidad(key).config())
+            elif unit:
+                txt = unidad(key).str
+            else:
+                txt = unidad(key).config()
+                
+            xmin, xmax = grafico.plot.ax.get_xlim()
+            ymin, ymax = grafico.plot.ax.get_ylim()
+
+            i = int(len(xi)*pos/100)
+            if pos > 50:
+                j = i-10
+            else:
+                j = i+10
+            if xscale == "log":
+                fx=(log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
+            else:
+                fx=(xi[i]-xi[j])/(xmax-xmin)
+            if yscale == "log":
+                fy=(log(yi[i])-log(yi[j]))/(log(ymax)-log(ymin))
+            else:
+                fy=(yi[i]-yi[j])/(ymax-ymin)
+
+            rot = atan(fy/fx)*360/2/pi
+            grafico.plot.ax.annotate(txt, (xi[i], yi[i]),
+                    rotation=rot, size="small", ha="center", va="center")
+
 
 
 def calcIsolinea(prop, func, linea, X, c1, c2, property, factor1, factor2, factorProperty):
@@ -3766,7 +3815,7 @@ def get_points(Preferences):
         points = 5
     return points
 
-def plot2D(grafico, data, Preferences, x, y):
+def plot2D(grafico, data, Preferences, x, y, xscale="Linear", yscale="Linear"):
     # Plot saturation lines
     format = getLineFormat(Preferences, "saturation")
     if x == "P" and y == "T":
@@ -3790,34 +3839,41 @@ def plot2D(grafico, data, Preferences, x, y):
     # PLot quality isolines
     if x not in ["P", "T"]  or y  not in ["P", "T"]:
         format = getLineFormat(Preferences, "Isoquality")
-        plotIsoline(data["x"], "x", unidades.Dimensionless, grafico, **format)
+        plotIsoline(data["x"], "x", unidades.Dimensionless, grafico, xscale,
+                    yscale, **format)
 
     # Plot isotherm lines
     if x != "T" and y != "T":
         format = getLineFormat(Preferences, "Isotherm")
-        plotIsoline(data["T"], "T", unidades.Temperature, grafico, **format)
+        plotIsoline(data["T"], "T", unidades.Temperature, grafico, xscale,
+                    yscale, **format)
                     
     # Plot isobar lines
     if x != "P" and y != "P":
         format = getLineFormat(Preferences, "Isobar")
-        plotIsoline(data["P"], "P", unidades.Pressure, grafico, **format)
+        plotIsoline(data["P"], "P", unidades.Pressure, grafico, xscale,
+                    yscale, **format)
 
     # Plot isochor lines
     if x not in ["rho", "v"] and y not in ["rho", "v"]:
         format = getLineFormat(Preferences, "Isochor")
-        plotIsoline(data["v"], "v", unidades.SpecificVolume, grafico, **format)
+        plotIsoline(data["v"], "v", unidades.SpecificVolume, grafico, xscale,
+                    yscale, **format)
         if "rho" in data:
-            plotIsoline(data["rho"], "rho", unidades.Density, grafico, **format)
+            plotIsoline(data["rho"], "rho", unidades.Density, grafico, xscale,
+                    yscale, **format)
 
     # Plot isoenthalpic lines
     if x != "h" and y != "h":
         format = getLineFormat(Preferences, "Isoenthalpic")
-        plotIsoline(data["h"], "h", unidades.Enthalpy, grafico, **format)
+        plotIsoline(data["h"], "h", unidades.Enthalpy, grafico, xscale,
+                    yscale, **format)
 
     # Plot isoentropic lines
     if x != "s" and y != "s":
         format = getLineFormat(Preferences, "Isoentropic")
-        plotIsoline(data["s"], "s", unidades.SpecificHeat, grafico, **format)
+        plotIsoline(data["s"], "s", unidades.SpecificHeat, grafico, xscale,
+                    yscale, **format)
 
 
 class Plot3D(QtGui.QDialog):
