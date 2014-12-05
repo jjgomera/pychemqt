@@ -908,20 +908,23 @@ class Isolinea(QtGui.QDialog):
         self.label = QtGui.QCheckBox(
             QtGui.QApplication.translate("pychemqt", "Label"))
         layout.addWidget(self.label, 11, 1)
+        self.variable = QtGui.QCheckBox(
+            QtGui.QApplication.translate("pychemqt", "Variable in Label"))
+        layout.addWidget(self.variable, 12, 1, 1, 4)
         self.unit = QtGui.QCheckBox(
             QtGui.QApplication.translate("pychemqt", "Units in Label"))
-        layout.addWidget(self.unit, 12, 1, 1, 3)
+        layout.addWidget(self.unit, 13, 1, 1, 4)
         layout.addWidget(QtGui.QLabel(
-            QtGui.QApplication.translate("pychemqt", "Position")), 13, 1)
+            QtGui.QApplication.translate("pychemqt", "Position")), 14, 1)
         self.label5 = Entrada_con_unidades(int, value=0, width=25, frame=False,
                                            readOnly=True)
         self.label5.setFixedWidth(30)
-        layout.addWidget(self.label5, 13, 2)
+        layout.addWidget(self.label5, 14, 2)
         self.Posicion = QtGui.QSlider(QtCore.Qt.Horizontal)
         self.Posicion.valueChanged.connect(self.label5.setValue)
-        layout.addWidget(self.Posicion, 13, 3, 1, 2)
+        layout.addWidget(self.Posicion, 14, 3, 1, 2)
         layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
-                                         QtGui.QSizePolicy.Expanding), 14, 4)
+                                         QtGui.QSizePolicy.Expanding), 15, 4)
 
         if config.has_section(section):
             self.inicio.setValue(config.getfloat(section, ConfSection+'Start'))
@@ -943,6 +946,7 @@ class Isolinea(QtGui.QDialog):
             self.intervalo.setDisabled(self.Personalizar.isChecked())
             self.Lista.setEnabled(self.Personalizar.isChecked())
             self.label.setChecked(config.getboolean(section, ConfSection+'Label'))
+            self.variable.setChecked(config.getboolean(section, ConfSection+'Variable'))
             self.unit.setChecked(config.getboolean(section, ConfSection+'Units'))
             self.Posicion.setValue(config.getint(section, ConfSection+'Position'))
             self.lineconfig.setConfig(config, section)
@@ -967,6 +971,7 @@ class Isolinea(QtGui.QDialog):
         config = self.lineconfig.value(config, self.section)
 
         config.set(self.section, self.ConfSection+"Label", self.label.isChecked())
+        config.set(self.section, self.ConfSection+"Variable", self.variable.isChecked())
         config.set(self.section, self.ConfSection+"Units", self.unit.isChecked())
         config.set(self.section, self.ConfSection+"Position", self.Posicion.value())
         return config
@@ -982,6 +987,7 @@ class Isolinea(QtGui.QDialog):
             config.set(self.section, ConfSection+"Critic", "True")
         config = LineConfig.default(config, ConfSection)
         config.set(self.section, ConfSection+"Label", "False")
+        config.set(self.section, ConfSection+"Variable", "False")
         config.set(self.section, ConfSection+"Units", "False")
         config.set(self.section, ConfSection+"Position", "50")
         return config

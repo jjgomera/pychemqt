@@ -186,6 +186,7 @@ def Preferences():
         config.set("MEOS", linea+"marker", "None")
 
         config.set("MEOS", linea+"Label", "False")
+        config.set("MEOS", linea+"Variable", "False")
         config.set("MEOS", linea+"Units", "False")
         config.set("MEOS", linea+"Position", "50")
 
