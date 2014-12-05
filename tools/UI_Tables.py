@@ -88,8 +88,6 @@ class plugin(QtGui.QMenu):
         Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "Other Plots"), slot=self.plot2D, parent=self)
         Plot_T_s_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-s diagram"), slot=partial(self.plot, "s", "T"), parent=self)
         menuPlot.addAction(Plot_T_s_Action)
-        Plot_T_h_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-h diagram"), slot=partial(self.plot, "h", "T"), parent=self)
-        menuPlot.addAction(Plot_T_h_Action)
         Plot_T_rho_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-rho diagram"), slot=partial(self.plot, "rho", "T"), parent=self)
         menuPlot.addAction(Plot_T_rho_Action)
         Plot_P_h_Action = createAction(QtGui.QApplication.translate("pychemqt", "P-h diagram"), slot=partial(self.plot, "h", "P"), parent=self)
@@ -1832,18 +1830,18 @@ class TablaMEoS(Tabla):
                      "s": unidades.Enthalpy, 
                      "v": unidades.SpecificVolume, 
                      "rho": unidades.Density}
-            var, txt = map(str, title.split(" = "))
+            var = str(title.split(" = ")[0])
+            txt = title.split(" = ")[1]
             unit = units[var]
             value = float(txt.split(" ")[0])
-            magnitud = txt.split(" ")[1]
-            stdValue = unit(value, magnitud)
+            stdValue = unit(value, "conf")
             del data[var][stdValue][0][row]
             del data[var][stdValue][1][row]
         plot._saveData(data)
         
         # Delete point from data
         for line in plot.plot.ax.lines:
-            if line.get_label() == title:
+            if unicode(line.get_label()) == unicode(title):
                 xdata = delete(line._x, row)
                 ydata = delete(line._y, row)
                 line.set_xdata(xdata)
@@ -1886,11 +1884,13 @@ class TablaMEoS(Tabla):
                          "s": unidades.Enthalpy, 
                          "v": unidades.SpecificVolume, 
                          "rho": unidades.Density}
-                var, txt = map(str, title.split(" = "))
+                var = str(title.split(" = ")[0])
+                txt = title.split(" = ")[1]
+#                var, txt = map(str, title.split(" = "))
                 unit = units[var]
                 value = float(txt.split(" ")[0])
-                magnitud = txt.split(" ")[1]
-                stdValue = unit(value, magnitud)
+#                magnitud = txt.split(" ")[1]
+                stdValue = unit(value, "conf")
                 
                 data[var][stdValue][0].insert(row, point[0])
                 data[var][stdValue][1].insert(row, point[1])
@@ -1898,7 +1898,7 @@ class TablaMEoS(Tabla):
             
             # Add point to data
             for line in plot.plot.ax.lines:
-                if line.get_label() == title:
+                if unicode(line.get_label()) == unicode(title):
                     xdata = insert(line._x, row, point[0])
                     ydata = insert(line._y, row, point[1])
                     line.set_xdata(xdata)
@@ -2635,9 +2635,9 @@ class PlotMEoS(QtGui.QWidget):
         # TODO: Add support for save font properties
         stream.writeString(self.plot.ax.get_title())
         stream.writeString(self.plot.ax.title.get_color())
-        stream.writeString(self.plot.ax.get_xlabel())
+        stream.writeString(QtCore.QString(self.plot.ax.get_xlabel()))
         stream.writeString(self.plot.ax.xaxis.get_label().get_color())
-        stream.writeString(self.plot.ax.get_ylabel())
+        stream.writeString(QtCore.QString(self.plot.ax.get_ylabel()))
         stream.writeString(self.plot.ax.yaxis.get_label().get_color())
         stream.writeBool(self.plot.ax._gridOn)
         stream.writeString(self.plot.ax.get_xscale())
@@ -3634,14 +3634,9 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         fluido = calcPoint(fluid, config, **kwargs)
 #        print fluido.T, fluido.P, fluido.rho
         if fluido and (fluido.rho != rhoo or fluido.T != To):
-#            rhoo = fluido.rho
-#            To = fluido.T
-#            if fluido.x in (0, 1):
-#                if fix == "T":
-#                    fluido
-#                
-#        fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
-#        fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
+            if var not in ("T", "P") or fix not in ("T", "P"):
+                rhoo = fluido.rho
+                To = fluido.T
 
             fluidos.append(fluido)
             if var in ("T", "P") and fix in ("T", "P"):
@@ -3695,6 +3690,8 @@ def calcPoint(fluid, config, **kwargs):
             return None
     fluido = fluid(**kwargs)
     
+    if not fluido.status:
+        return None
     if fluido._melting and fluido._melting["Tmin"] < fluido.T < fluido._melting["Tmax"]:
         Pmel = fluido._Melting_Pressure(fluido.T)
         Pmax = min(Pmax, Pmel)
