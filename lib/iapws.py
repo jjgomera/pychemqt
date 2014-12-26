@@ -3376,6 +3376,7 @@ class IAPWS97(object):
 
     def fill(self, fase, estado):
         """Fill phase properties"""
+        fase.M = unidades.Dimensionless(M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1/fase.v)
         
