@@ -1092,17 +1092,18 @@ if __name__ == '__main__':
     solido=Solid(caudalSolido=[0.1], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
     corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
 
-    ciclon=Ciclon(entrada=corriente, tipo_calculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
-    print ciclon.msg, ciclon.status
+#    ciclon=Ciclon(entrada=corriente, tipo_calculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
+#    print ciclon.msg, ciclon.status
 #    print ciclon.C_instTotal, ciclon.C_adqTotal
 
 #    camara=GravityChamber(entrada=corriente, metodo=1, modelo=1, H=1, rendimientoAdmisible=0.9)
 #    camara.show()
 
 #
-#    filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
-#    print filtro.floorArea, filtro.Vgas.ftmin
+    filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
+    print filtro.floorArea, filtro.Vgas.ftmin
 
 
 #    precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)
-#    print precipitador.area, precipitador.rendimiento
+#    print precipitador.msg, precipitador.status
+#    print precipitador.areaCalculada, precipitador.rendimiento

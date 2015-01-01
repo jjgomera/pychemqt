@@ -1528,11 +1528,11 @@ class Corriente(config.Entity):
             compuesto = coolProp.CoolProp(fluido=self.ids[0], **self.kwargs)
         elif MEoS and len(self.ids) == 1 and mEoS_available:
             if self.tipoTermodinamica == "TP":
-                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P.MPa)
+                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
             elif self.tipoTermodinamica == "Tx":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, x=x)
             elif self.tipoTermodinamica == "Px":
-                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P.MPa, x=x)
+                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
         
         else:
             setData = False
