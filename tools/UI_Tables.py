@@ -2633,11 +2633,11 @@ class PlotMEoS(QtGui.QWidget):
         stream.writeString(self.y)
         
         # TODO: Add support for save font properties
-        stream.writeString(self.plot.ax.get_title())
+        stream.writeQString(self.plot.ax.get_title())
         stream.writeString(self.plot.ax.title.get_color())
-        stream.writeString(QtCore.QString(self.plot.ax.get_xlabel()))
+        stream.writeQString(QtCore.QString(self.plot.ax.get_xlabel()))
         stream.writeString(self.plot.ax.xaxis.get_label().get_color())
-        stream.writeString(QtCore.QString(self.plot.ax.get_ylabel()))
+        stream.writeQString(QtCore.QString(self.plot.ax.get_ylabel()))
         stream.writeString(self.plot.ax.yaxis.get_label().get_color())
         stream.writeBool(self.plot.ax._gridOn)
         stream.writeString(self.plot.ax.get_xscale())
@@ -2666,19 +2666,19 @@ class PlotMEoS(QtGui.QWidget):
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
         
-        plotTitle = stream.readString()
+        plotTitle = stream.readQString()
         if plotTitle:
-            grafico.plot.ax.set_title(plotTitle)
+            grafico.plot.ax.set_title(unicode(plotTitle))
         titleColor = stream.readString()
         grafico.plot.ax.title.set_color(titleColor)
-        xlabel = stream.readString()
+        xlabel = stream.readQString()
         if xlabel:
-            grafico.plot.ax.set_xlabel(xlabel)
+            grafico.plot.ax.set_xlabel(unicode(xlabel))
         xlabelColor = stream.readString()
         grafico.plot.ax.xaxis.get_label().set_color(xlabelColor)
-        ylabel = stream.readString()
+        ylabel = stream.readQString()
         if ylabel:
-            grafico.plot.ax.set_ylabel(ylabel)
+            grafico.plot.ax.set_ylabel(unicode(ylabel))
         ylabelColor = stream.readString()
         grafico.plot.ax.yaxis.get_label().set_color(ylabelColor)
         grid = stream.readBool()
@@ -3633,14 +3633,13 @@ def calcIsoline(fluid, config, var, fix, valuevar, valuefix, ini, step, end, tot
         kwargs = {var: Ti, fix: valuefix, "rho0": rhoo, "T0": To}
         fluido = calcPoint(fluid, config, **kwargs)
 #        print fluido.T, fluido.P, fluido.rho
-        if fluido and (fluido.rho != rhoo or fluido.T != To):
+        if fluido and fluido.status and (fluido.rho != rhoo or fluido.T != To):
             if var not in ("T", "P") or fix not in ("T", "P"):
                 rhoo = fluido.rho
                 To = fluido.T
 
             fluidos.append(fluido)
             if var in ("T", "P") and fix in ("T", "P"):
-                print fase, fluido.x
                 if fase is None:
                     fase = fluido.x
                 if fase != fluido.x and fase <= 0:
