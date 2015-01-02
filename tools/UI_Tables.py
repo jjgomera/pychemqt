@@ -2978,7 +2978,7 @@ class EditPlot(QtGui.QWidget):
                 self.mainwindow.statusbar.showMessage(QtGui.QApplication.translate(
                     "pychemqt", "Adding isoenthalpic line..."))
                 fluidos = calcIsoline(fluid, self.mainwindow.currentConfig,
-                                      "T", "h", T, value, 0, 0, 100, 
+                                      "P", "h", P, value, 0, 0, 100, 
                                       1, self.mainwindow.progressBar)
                 var = "h"
                 name = "Isoenthalpic"
@@ -3081,7 +3081,7 @@ class AddLine(QtGui.QDialog):
     lineas = [(QtGui.QApplication.translate("pychemqt", "Isotherm"), unidades.Temperature, None),
               (QtGui.QApplication.translate("pychemqt", "Isobar"), unidades.Pressure, None),
               (QtGui.QApplication.translate("pychemqt", "Isoenthalpic"), unidades.Enthalpy, None),
-              (QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat, "Entropy"),
+              (QtGui.QApplication.translate("pychemqt", "Isoentropic"), unidades.SpecificHeat, "SpecificEntropy"),
               (QtGui.QApplication.translate("pychemqt", "Isochor"), unidades.SpecificVolume, None),
               (QtGui.QApplication.translate("pychemqt", "Isodensity"), unidades.Density, None),
               (QtGui.QApplication.translate("pychemqt", "Isoquality"), float, None)]
