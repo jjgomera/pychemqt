@@ -1548,6 +1548,9 @@ class SpecificHeat(unidad):
              "kcalgK": k.calorie*k.kilo**2,
              "kWhkgK": k.kilo*k.hour,
              "BtulbF": k.Btu/k.lb/k.Rankine}
+    _magnitudes = [
+        ("SpecificHeat", QApplication.translate("pychemqt", "Specific Heat")),
+        ("SpecificEntropy", QApplication.translate("pychemqt", "Specific Entropy"))]
     __text__ = [u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'cal/g·K', u'kcal/g·K',
                 u'kWh/kg·K', u'Btu/lb·F']
     __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK',
@@ -2724,10 +2727,10 @@ _magnitudes.append(("Dimensionless",
 
 # For get a fresh new list of magnitudes when we add some new, the list can be
 # add start of lib/firstrun.py file:
-# magnitudes=[]
-# for magnitud, title, unit in _magnitudes:
-#     magnitudes.append(magnitud)
-# print magnitudes
+#magnitudes=[]
+#for magnitud, title, unit in _magnitudes:
+#    magnitudes.append(magnitud)
+#print magnitudes
 
 
 # Run this when add some new magnitude to rebuild units_set

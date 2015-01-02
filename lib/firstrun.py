@@ -15,20 +15,21 @@ import cPickle
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
 # magnitude are added
-magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter', 
-              'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq',
-              'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass',
+magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter',
+              'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq', 
+              'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass', 
               'Mol', 'SpecificVolume', 'SpecificVolume_square', 'MolarVolume',
-              'Density', 'DenLiq', 'DenGas', 'MolarDensity', 'Force', 'Pressure',
-              'DeltaP', 'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy', 'Entropy',
-              'SpecificHeat', 'EnergyFlow', 'Power', 'MassFlow', 'MolarFlow',
-              'VolFlow', 'QLiq', 'QGas', 'Diffusivity', 'KViscosity', 'HeatFlux',
-              'ThermalConductivity', 'UA', 'HeatTransfCoef', 'Fouling', 'Tension',
-              'Viscosity', 'SolubilityParameter', 'PotencialElectric',
+              'Density', 'DenLiq', 'DenGas', 'MolarDensity', 'Force', 
+              'Pressure', 'DeltaP', 'Energy', 'Work', 'Enthalpy', 
+              'MolarEnthalpy', 'Entropy', 'SpecificHeat', 'SpecificEntropy',
+              'EnergyFlow', 'Power', 'MassFlow', 'MolarFlow', 'VolFlow', 'QLiq',
+              'QGas', 'Diffusivity', 'KViscosity', 'HeatFlux',
+              'ThermalConductivity', 'UA', 'HeatTransfCoef', 'Fouling',
+              'Tension', 'Viscosity', 'SolubilityParameter', 'PotencialElectric',
               'DipoleMoment', 'CakeResistance', 'PackingDP', 'V2V',
               'InvTemperature', 'InvPressure', 'EnthalpyPressure',
               'EnthalpyDensity', 'TemperaturePressure', 'PressureTemperature',
-              'PressureDensity', 'DensityPressure', 'DensityTemperature',
+              'PressureDensity', 'DensityPressure', 'DensityTemperature', 
               'Currency', 'Dimensionless']
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
