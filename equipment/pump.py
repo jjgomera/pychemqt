@@ -388,7 +388,7 @@ class Pump(equipment):
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Volumetric Flow"), self.volflow.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Power"), self.power.str)+os.linesep
         txt+="%-25s\t %0.4f" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimientoCalculado)+os.linesep
-        txt+="%-25s\t %0.4f" %("Cp/Cv", self.entrada.cp_cv)+os.linesep
+        txt+="%-25s\t %0.4f" %("Cp/Cv", self.entrada.Liquido.cp_cv)+os.linesep
 
         if self.statusCoste:
             txt+=os.linesep
