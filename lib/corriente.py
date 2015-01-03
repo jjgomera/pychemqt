@@ -1861,7 +1861,7 @@ class Corriente(config.Entity):
             txt += QApplication.translate("pychemqt", "No Fluid Stream")
             txt += "-------------------#"+os.linesep
 
-        if self.solido:
+        if self.solido._def:
             txt += os.linesep+"#---------------"
             txt += QApplication.translate("pychemqt", "Solid")
             txt += "-------------------#"+os.linesep
