@@ -2452,7 +2452,7 @@ class EnthalpyDensity(unidad):
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo, 
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
-    __text__ = ['J/kgkgm3', 'kJ/kgkgm3', "Btulb/lbft3"]
+    __text__ = ['J/kgkgm³', 'kJ/kgkgm³', "Btulb/lbft³"]
     __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
                      "cgs": "kJkgkgm3", "english": "Btulb2ft3"}
@@ -2541,7 +2541,8 @@ class PressureDensity(unidad):
              "MPakgm3": k.mega,
              "atmkgm3": 101325., 
              "psilbft3": k.psi/k.pound*k.foot**3}
-    __text__ = ['Pa/kgm³', 'kPa/kgm³', 'bar/kgm³', 'MPa/kgm³', "atm/kgm³", "Pa/gcm³", "psi/lbft³"]
+    __text__ = [u'Pa/kgm³', u'kPa/kgm³', u'bar/kgm³', u'MPa/kgm³', u"atm/kgm³",
+                u"Pa/gcm³", u"psi/lbft³"]
     __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3", "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
                      "cgs": "Pagcc", "english": "psilbft3"}
