@@ -462,16 +462,15 @@ class StreamItem(GeometricItem, QtGui.QGraphicsPathItem, GraphicsEntity):
 
         contextMenu= QtGui.QMenu("Stream %i" %self.id, self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/stream.png")))
-        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
+        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Copy from another project"), self.copyFromProject)
+        contextMenu.addAction(SolidDistributionAction)
+        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
+        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtGui.QApplication.translate("pychemqt", "Delete"), self.delete)
         contextMenu.addSeparator()
         contextMenu.addAction(ViewAction)
-        contextMenu.addAction(SolidDistributionAction)
-        contextMenu.addSeparator()
-        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Copy from another project"), self.copyFromProject)
-        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
         contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
+        contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
         contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Appearance"), self.format)
-        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtGui.QApplication.translate("pychemqt", "Delete"), self.delete)
         return contextMenu
 
 
@@ -781,15 +780,14 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
             contextMenu= QtGui.QMenu("Equipment %i" %self.id, self.scene().parent())
             contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/%s.svg" % self.name)))
-            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
-            contextMenu.addSeparator()
             contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
             contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtGui.QApplication.translate("pychemqt", "Delete"), self.delete)
-            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
-            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Appearance"), self.format)
             contextMenu.addSeparator()
             contextMenu.addAction(ViewAction)
-            contextMenu.addSeparator()
+            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
+            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
+#            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Appearance"), self.format)
+#            contextMenu.addSeparator()
 #            contextMenu.addAction("Run", self.mouseDoubleClickEvent)
         else:
             if self.output:
@@ -797,7 +795,6 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             else:
                 contextMenu=self.up[0].contextMenu()
 
-        contextMenu.addSeparator()
         self.menuTransform=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Transform"))
         self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_90.png"), QtGui.QApplication.translate("pychemqt", "Rotate by 90"), partial(self.rotate, 90))
         self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_180.png"), QtGui.QApplication.translate("pychemqt", "Rotate by 180"), partial(self.rotate, 180))
