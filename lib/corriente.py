@@ -21,7 +21,7 @@ from PyQt4.QtGui import QApplication
 from compuestos import Componente
 from bip import srk
 from physics import R_atml, R
-from lib import unidades, config
+from lib import unidades, config, meos
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 from lib.psycrometry import PsychroState
 
@@ -1512,11 +1512,14 @@ class Corriente(config.Entity):
 
         if IAPWS and FREESTEAM:
             compuesto = freeSteam.Freesteam(**self.kwargs)
+            self._thermo = "freesteam"
         elif IAPWS:
             compuesto = iapws.IAPWS97(**self.kwargs)
+            self._thermo = "iapws"
         elif MEoS and REFPROP and REFPROP_available:
             fluido = [refProp.__all__[id] for id in self.ids]
             compuesto = refProp.RefProp(fluido=fluido, **self.kwargs)
+            self._thermo = "refprop"
         elif GERG and GERG_available:
             ids = []
             for id in self.ids:
@@ -1524,8 +1527,10 @@ class Corriente(config.Entity):
             kwargs = self.kwargs
             kwargs["mezcla"] = self.mezcla
             compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
+            self._thermo = "gerg"
         elif MEoS and len(self.ids) == 1 and COOLPROP and COOLPROP_available:
             compuesto = coolProp.CoolProp(fluido=self.ids[0], **self.kwargs)
+            self._thermo = "coolprop"
         elif MEoS and len(self.ids) == 1 and mEoS_available:
             if self.tipoTermodinamica == "TP":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
@@ -1533,8 +1538,9 @@ class Corriente(config.Entity):
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, x=x)
             elif self.tipoTermodinamica == "Px":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
-        
+            self._thermo = "meos"
         else:
+            self._thermo = "eos"
             setData = False
             self.M = unidades.Dimensionless(self.mezcla.M)
             self.Tc = self.mezcla.Tc
@@ -1609,6 +1615,7 @@ class Corriente(config.Entity):
 
         if setData:
         # Asignación de valores comun
+            self.cmp = compuesto
             self.T = compuesto.T
             self.P = compuesto.P
             self.x = compuesto.x
@@ -1881,6 +1888,10 @@ class Corriente(config.Entity):
                 for di, xi in zip(self.solido.diametros, self.solido.fracciones):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
+        
+        if self._thermo != "eos":
+            txt += os.linesep+self.cmp.txt()
+
         return txt
 
     @classmethod

@@ -2452,7 +2452,7 @@ class EnthalpyDensity(unidad):
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo, 
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
-    __text__ = ['J/kgkgm³', 'kJ/kgkgm³', "Btulb/lbft³"]
+    __text__ = [u'J/kgkgm³', u'kJ/kgkgm³', u"Btulb/lbft³"]
     __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
                      "cgs": "kJkgkgm3", "english": "Btulb2ft3"}

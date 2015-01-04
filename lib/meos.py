@@ -2577,6 +2577,39 @@ class MEoS(_fase):
         pruebas[str(i)] = prueba
         return pruebas
 
+    def txt(self):
+        """Return a text repr of class with all properties"""
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Advanced MEoS properties")
+        txt += "-------------------#"+os.linesep
+        
+        if 0 < self.x < 1:
+            param = "%-40s\t%20s\t%20s"
+        else:
+            param = "%-40s\t%s"
+        if self.x == 0:
+            txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
+            phases = [self.Liquido]
+        elif self.x == 1:
+            txtphases += "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
+            phases = [self.Gas]
+        else:
+            txtphases += "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"), 
+                                 QApplication.translate("pychemqt", "Gas"))+os.linesep
+            phases = [self.Liquido, self.Gas]
+            
+        complejos = ""
+        for propiedad, key, unit in data:
+            if key in _fase.__dict__:
+                values = [propiedad]
+                for phase in phases:
+                    values.append(phase.__getattribute__(key).str)
+                complejos += param % tuple(values) +os.linesep
+            else:
+                txt += os.linesep
+                txt += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
+        txt += os.linesep + os.linesep + txtphases + complejos
+        return txt
 
 if __name__ == "__main__":
 #    import doctest
