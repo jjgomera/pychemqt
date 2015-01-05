@@ -21,7 +21,7 @@ from PyQt4.QtGui import QApplication
 from compuestos import Componente
 from bip import srk
 from physics import R_atml, R
-from lib import unidades, config, meos
+from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 from lib.psycrometry import PsychroState
 
@@ -1889,7 +1889,7 @@ class Corriente(config.Entity):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
         
-        if self._thermo != "eos":
+        if self._thermo == "meos":
             txt += os.linesep+self.cmp.txt()
 
         return txt

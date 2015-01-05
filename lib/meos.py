@@ -466,366 +466,179 @@ class MEoS(_fase):
                 rho = rinput[0][0]
 
             elif self._mode == "Th":
-                if self.kwargs["rho0"]:
-                    rhoo = self.kwargs["rho0"]
-                else:
-                    rhoo = self.rhoc
-                    
                 funcion = lambda rho: self._eq(rho, T)["h"]*1000-h
-                ro = [rhoo, self._constants["rhomax"]*self.M, 1e-3]
-                for r in ro:
-                    try:
-                        rho = fsolve(funcion, r)[0]
-                    except:
-                        pass
-                    else:
-                        if rho != r:
-                            break
-                            
-                if self.Tt <= T < self.Tc:
-                    rhol = self._Liquid_Density(T)
-                    rhov = self._Vapor_Density(T)
-                    if rho == r or rhol < rho < rhov:
-                        def funcion(rho):
-                            rhol, rhov, Ps = self._saturation(T)
-                            vapor = self._eq(rhov, T)
-                            liquido = self._eq(rhol, T)
-                            x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                            return vapor["h"]*1000.*x+liquido["h"]*1000.*(1-x)-h
-                        rho = fsolve(funcion, r)[0]
-#
-#                    rhol = self._Liquid_Density(T)
-#                    rhov = self._Vapor_Density(T)
-#                    hv = self._eq(rhov, T)["h"]
-#                    if h > hv:
-#                        rhoo = rhov
-#                    else:
-#                        rhoo = rhol
-#                rho = fsolve(lambda rho: self._eq(rho, T)["h"]*1000-h, rhoo)
+                def funcion2(rho):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["h"]*1000.*x+liquido["h"]*1000.*(1-x)-h
+
+                rho = self.fsolve(funcion, True, funcion2, **{"h": h, "T": T})
+
 
             elif self._mode == "Ts":
-                rvalue = None
-                ro = [self.rhoc, self._constants["rhomax"]*self.M, 1, 1e-3]
-                if self.kwargs["rho0"]:
-                    ro.insert(0, self.kwargs["rho0"])
-
                 funcion = lambda rho: self._eq(rho, T)["s"]*1000-s
-                for r in ro:
-                    try:
-                        rvalue = fsolve(funcion, r, full_output=True)
-                    except:
-                        pass
-                    else:
-                        if rvalue[2] != 1:
-                            continue
-                        rho = rvalue[0]
-                        if rho != r and 0 < rho < self._constants["rhomax"]*self.M and funcion(rho) < 1:
-                            break
-                            
-                if rvalue and rvalue[2] != 1:
-                    self.status = 0
-                    return
-                    
-                if self.Tt <= T < self.Tc:
-                    rhol = self._Liquid_Density(T)
-                    rhov = self._Vapor_Density(T)
-                    if rho == r or rhol > rho > rhov:
-                        def funcion(rho):
-                            rhol, rhov, Ps = self._saturation(T)
-                            vapor = self._eq(rhov, T)
-                            liquido = self._eq(rhol, T)
-                            x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                            return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-                        rho = fsolve(funcion, rho)[0]
+                def funcion2(rho):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
+
+                rho = self.fsolve(funcion, True, funcion2, **{"s": s, "T": T})
 
             elif self._mode == "Tu":
-                if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
-                else:
-                    rhol = self._Liquid_Density(T)
-                    rhov = self._Vapor_Density(T)
-                    Ps = self._Vapor_Pressure(T)
-                    vapor = self._eq(rhov, T)
-                    uv = vapor["h"]-Ps/1000.*vapor["v"]
-                    if u > uv:
-                        rhoo = rhov
-                    else:
-                        rhoo = 1000
-
                 def funcion(rho):
                     par = self._eq(rho, T)
                     return par["h"]-par["P"]/1000.*par["v"]-u/1000.
-                rho = fsolve(funcion, rhoo)
+                def funcion2(rho):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    vu = vapor["h"]-Ps/rhov
+                    lu = liquido["h"]-Ps/rhol
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vu*x+lu*(1-x)-u
+
+                rho = self.fsolve(funcion, True, funcion2, **{"u": u, "T": T})
 
             elif self._mode == "Prho":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
+                funcion = lambda T: self._eq(rho, T)["P"]-P
+                def funcion2(T):
+                    rhol, rhov, Ps = self._saturation(T)
+                    return Ps-P
 
-                T = fsolve(lambda T: self._eq(rho, T)["P"]-P, To)
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T[0] == 600 or rhov <= rho <= rhol:
-                    def funcion(T):
-                        rhol, rhov, Ps = self._saturation(T)
-                        return Ps-P
-                    T = fsolve(funcion, To)
+                T = self.fsolve(funcion, True, funcion2, **{"P": P, "rho": rho})
 
             elif self._mode == "Ph":
-                to = [self.Tc, self._constants["Tmin"], self._constants["Tmax"]]
-                if self.kwargs["T0"]:
-                    to.insert(0, kwargs["T0"])
-                ro = [self.rhoc, self._constants["rhomax"]*self.M, 1, 1e-3]
-                if self.kwargs["rho0"]:
-                    ro.insert(0, kwargs["rho0"])
-                    
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["P"]-P, par["h"]*1000-h
+                def funcion2(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return Ps-P, vapor["h"]*x+liquido["h"]*(1-x)-h/1000.
 
-                for r, t in product(ro, to):
-                    try:
-                        rinput = fsolve(funcion, [r, t], full_output=True)
-                        rho, T = rinput[0]
-                    except:
-                        pass
-                    else:
-                        f1, f2 = funcion([rho, T])
-                        if (rho != r or T != t) and abs(f1) < 1e-3 and abs(f2) < 1e-3:
-                            break
-
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if rho == r or rinput[2] != 1 or rhov <= rho <= rhol:
-                    def funcion(parr):
-                        rho, T = parr
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P, vapor["h"]*x+liquido["h"]*(1-x)-h/1000.
-                    print rinput
-                    if rinput[2] == 1 and 0 < rho < self._constants["rhomax"]*self.M:
-                        rhoo = rho
-                        To = T
-                    else:
-                        rhol = self._Liquid_Density(self.Tc/2)
-                        rhov = self._Vapor_Density(self.Tc/2)
-                        rhoo = 1/(0.5/rhol+0.5/rhov)
-                        To = self.Tc/2
-                    print rhoo, To
-                    rho, T = fsolve(funcion, [rhoo, To])
-                    print rho, T
+                rho, T = self.fsolve(funcion, True, funcion2, **{"P": P, "h": h})
 
             elif self._mode == "Ps":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-                if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
-                else:
-                    rhoo = self.rhoc
-
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["P"]*1000-P, par["s"]*1000.-s
-                rho, T = fsolve(funcion, [rhoo, To])
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if rho == rhoo or rhov <= rho <= rhol:
-                    def funcion(parr):
-                        rho, T = parr
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P, vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-                    rho, T = fsolve(funcion, [rhoo, To])
+                def funcion(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return Ps-P, vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
+
+                rho, T = self.fsolve(funcion, True, funcion2, **{"P": P, "s": s})
 
             elif self._mode == "Pu":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-                if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
-                else:
-                    rhoo = self.rhoc
-
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["h"]-par["P"]*par["v"]-u/1000., par["P"]-P
-                rho, T = fsolve(funcion, [rhoo, To])
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if rho == 1000 or rhov <= rho <= rhol:
-                    def funcion(parr):
-                        rho, T = parr
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        vu = vapor["h"]-Ps/rhov
-                        lu = liquido["h"]-Ps/rhol
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return Ps-P, vu*x+lu*(1-x)-u
-                    rho, T = fsolve(funcion, [rhoo, To])
+                def funcion(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    vu = vapor["h"]-Ps/rhov
+                    lu = liquido["h"]-Ps/rhol
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return Ps-P, vu*x+lu*(1-x)-u
+
+                rho, T = self.fsolve(funcion, True, funcion2, **{"P": P, "u": u})
 
             elif self._mode == "rhoh":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
+                funcion = lambda T: self._eq(rho, T)["h"]*1000-h
+                def funcion2(T):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["h"]*x+liquido["h"]*(1-x)-h/1000
 
-                f = lambda T: self._eq(rho, T)["h"]*1000-h
-                T = fsolve(f, To)
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T[0] == 600 or rhov <= rho <= rhol:
-                    def funcion(T):
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return vapor["h"]*x+liquido["h"]*(1-x)-h/1000
-                    T = fsolve(funcion, To)
+                T = self.fsolve(funcion, True, funcion2, **{"h": h, "rho": rho})
 
             elif self._mode == "rhos":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-
-                f = lambda T: self._eq(rho, T)["s"]*1000.-s
-                T = fsolve(f, To)
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T[0] == 600 or rhov <= rho <= rhol:
-                    def funcion(T):
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-                    T = fsolve(funcion, To)
-
+                funcion = lambda T: self._eq(rho, T)["s"]*1000.-s
+                def funcion2(T):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
+                
+                T = self.fsolve(funcion, True, funcion2, **{"s": s, "rho": rho})
+                
             elif self._mode == "rhou":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-
                 def funcion(T):
                     par = self._eq(rho, T)
                     return par["h"]-par["P"]/1000*par["v"]-u/1000
-                T = fsolve(funcion, To)
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T[0] == 600 or rhov <= rho <= rhol:
-                    def funcion(T):
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        vu = vapor["h"]-Ps/rhov
-                        lu = liquido["h"]-Ps/rhol
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return vu*x+lu*(1-x)-u/1000
-                    T = fsolve(funcion, To)
+                def funcion2(T):
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    vu = vapor["h"]-Ps/rhov
+                    lu = liquido["h"]-Ps/rhol
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vu*x+lu*(1-x)-u/1000
+
+                T = self.fsolve(funcion, True, funcion2, **{"u": u, "rho": rho})
 
             elif self._mode == "hs":
-                
-                if self.kwargs["T0"]:
-                    to = [kwargs["T0"], self.Tc, self._constants["Tmin"], self._constants["Tmax"]]
-                else:
-                    to = [self.Tc, self._constants["Tmin"], self._constants["Tmax"]]
-                if self.kwargs["rho0"]:
-                    ro = [kwargs["rho0"], self.rhoc, self._constants["rhomax"]*self.M, 1e-3]
-                else:
-                    ro = [self.rhoc, self._constants["rhomax"]*self.M, 1e-3]
-
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["h"]*1000-h, par["s"]*1000.-s
-                    
-                for r, t in product(ro, to):
-                    try:
-                        rho, T = fsolve(funcion, [r, t])
-                    except:
-                        pass
-                    else:
-                        if rho != r or T != t:
-                            break
+                def funcion2(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return (vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h, 
+                            vapor["s"]*1000*x+liquido["s"]*1000*(1-x)-s)
                             
-                if self.Tt < T < self.Tc:
-                    rhol = self._Liquid_Density(T)
-                    rhov = self._Vapor_Density(T)
-                    if rhov <= rho <= rhol:
-                        def funcion(parr):
-                            rho, T = parr
-                            rhol, rhov, Ps = self._saturation(T)
-                            vapor = self._eq(rhov, T)
-                            liquido = self._eq(rhol, T)
-                            x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                            return (vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h, 
-                                    vapor["s"]*1000*x+liquido["s"]*1000*(1-x)-s)
-                        rho, T = fsolve(funcion, [self.rhoc, (self.Tc+self.Tt)/2])
+                rho, T = self.fsolve(funcion, True, funcion2, **{"s": s, "h": h})
 
             elif self._mode == "hu":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-                if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
-                else:
-                    rhoo = self.rhoc
-
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["h"]-par["P"]/1000*par["v"]-u, par["h"]-h
-                rho, T = fsolve(funcion, [rhoo, To])
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T == 600 or rhov <= rho <= rhol:
-                    def funcion(parr):
-                        rho, T = parr
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        vu = vapor["h"]-Ps/rhov
-                        lu = liquido["h"]-Ps/rhol
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return vapor["h"]*x+liquido["h"]*(1-x)-h, vu*x+lu*(1-x)-u
-                    rho, T = fsolve(funcion, [rhoo, To])
+                def funcion(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    vu = vapor["h"]-Ps/rhov
+                    lu = liquido["h"]-Ps/rhol
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["h"]*x+liquido["h"]*(1-x)-h, vu*x+lu*(1-x)-u
+
+                rho, T = self.fsolve(funcion, True, funcion2, **{"u": u, "h": h})
 
             elif self._mode == "su":
-                if self.kwargs["T0"]:
-                    To = kwargs["T0"]
-                else:
-                    To = self.Tc
-                if self.kwargs["rho0"]:
-                    rhoo = kwargs["rho0"]
-                else:
-                    rhoo = self.rhoc
-
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
-                    return par["h"]-par["P"]/1000*par["v"]-u, par["s"]*1000.-s
-                rho, T = fsolve(funcion, [rhoo, T0])
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if T == 600 or rhov <= rho <= rhol:
-                    def funcion(parr):
-                        rho, T = parr
-                        rhol, rhov, Ps = self._saturation(T)
-                        vapor = self._eq(rhov, T)
-                        liquido = self._eq(rhol, T)
-                        vu = vapor["h"]-Ps/rhov
-                        lu = liquido["h"]-Ps/rhol
-                        x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                        return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s, vu*x+lu*(1-x)-u
-                    rho, T = fsolve(funcion, [rhoo, T0])
+                    return par["h"]-par["P"]*par["v"]-u, par["s"]*1000.-s
+                def funcion2(parr):
+                    rho, T = parr
+                    rhol, rhov, Ps = self._saturation(T)
+                    vapor = self._eq(rhov, T)
+                    liquido = self._eq(rhol, T)
+                    vu = vapor["h"]-Ps/rhov
+                    lu = liquido["h"]-Ps/rhol
+                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
+                    return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s, vu*x+lu*(1-x)-u
+
+                rho, T = self.fsolve(funcion, True, funcion2, **{"u": u, "s": s})
+
 
             if rho > self._constants["rhomax"]*self.M or rho <= 0:
                 self.status = 0
@@ -961,6 +774,83 @@ class MEoS(_fase):
         self.cv0 = unidades.SpecificHeat(cp0.cv)
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
         self.gamma0 = unidades.Dimensionless(-self.v0/self.P/1000*self.derivative("P", "v", "s", cp0))
+
+    def fsolve(self, function, phases=True, function2phase=None, **kwargs):
+        """Iterate to calculate T and rho
+        function: function to iterate
+        phases: calculate two phases region
+        funtion2phase: function to iterate in two phase region"""
+        if "T" not in kwargs:
+            to = [self.Tc, self._constants["Tmin"], self._constants["Tmax"]]
+            if self.kwargs["T0"]:
+                to.insert(0, self.kwargs["T0"])
+        if "rho" not in kwargs:
+            ro = [self.rhoc, self._constants["rhomax"]*self.M, 1, 1e-3]
+            if self.kwargs["rho0"]:
+                ro.insert(0, self.kwargs["rho0"])
+        
+        if "T" in kwargs:
+            T = kwargs["T"]
+            if T >= self.Tc:
+                phases = False
+            for r in ro:
+                try:
+                    rinput = fsolve(function, r, full_output=True)
+                    rho = rinput[0][0]
+                except:
+                    pass
+                else:
+                    f1 = function(rho)
+                    if rho != r and abs(f1) < 1e-3:
+                        break
+        elif "rho" in kwargs:
+            rho = kwargs["rho"]
+            for t in to:
+                try:
+                    rinput = fsolve(function, t, full_output=True)
+                    T = rinput[0][0]
+                except:
+                    pass
+                else:
+                    f1 = function(T)
+                    if T != t and abs(f1) < 1e-3:
+                        break
+        else:
+            for r, t in product(ro, to):
+                try:
+                    rinput = fsolve(function, [r, t], full_output=True)
+                    rho, T = rinput[0]
+                except:
+                    pass
+                else:
+                    f1, f2 = function([rho, T])
+                    if (rho != r or T != t) and abs(f1) < 1e-3 and abs(f2) < 1e-3:
+                        break
+
+        if phases:
+            rhol = self._Liquid_Density(T)
+            rhov = self._Vapor_Density(T)
+            if rinput[2] != 1 or rhov <= rho <= rhol:
+                if rinput[2] == 1 and 0 < rho < self._constants["rhomax"]*self.M:
+                    rhoo = rho
+                    To = T
+                else:
+                    rhol = self._Liquid_Density(self.Tc/2)
+                    rhov = self._Vapor_Density(self.Tc/2)
+                    rhoo = 1/(0.5/rhol+0.5/rhov)
+                    To = self.Tc/2
+                if "T" in kwargs:
+                    rho = fsolve(function2phase, rhoo)
+                elif "rho" in kwargs:
+                    T = fsolve(function2phase, To)
+                else:
+                    rho, T = fsolve(function2phase, [rhoo, To])
+        if "T" in kwargs:
+            return rho
+        elif "rho" in kwargs:
+            return T
+        else:
+            return rho, T
 
     def fillNone(self, fase):
         """Fill properties in null phase with a explicative msg"""
@@ -2591,10 +2481,10 @@ class MEoS(_fase):
             txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
             phases = [self.Liquido]
         elif self.x == 1:
-            txtphases += "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
+            txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
             phases = [self.Gas]
         else:
-            txtphases += "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"), 
+            txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"), 
                                  QApplication.translate("pychemqt", "Gas"))+os.linesep
             phases = [self.Liquido, self.Gas]
             
