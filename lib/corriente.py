@@ -129,18 +129,18 @@ class Mezcla(config.Entity):
             caudalUnitarioMolar = [x*caudalMolar for x in fraccionMolar]
 
         # Clean component with null composition
-        self.zeros = []
-        for i, x in enumerate(fraccionMolar):
-            if not x:
-                self.zeros.append(i)
-
-        for i in self.zeros[::-1]:
-            del self.ids[i]
-            del self.componente[i]
-            del fraccionMolar[i]
-            del fraccionMasica[i]
-            del caudalUnitarioMasico[i]
-            del caudalUnitarioMolar[i]
+#        self.zeros = []
+#        for i, x in enumerate(fraccionMolar):
+#            if not x:
+#                self.zeros.append(i)
+#
+#        for i in self.zeros[::-1]:
+#            del self.ids[i]
+#            del self.componente[i]
+#            del fraccionMolar[i]
+#            del fraccionMasica[i]
+#            del caudalUnitarioMasico[i]
+#            del caudalUnitarioMolar[i]
 
         self.fraccion = [unidades.Dimensionless(f) for f in fraccionMolar]
         self.caudalmasico = unidades.MassFlow(caudalMasico)
@@ -1556,7 +1556,7 @@ class Corriente(config.Entity):
                 self.x = unidades.Dimensionless(eos.x)
             else:
                 self.x = unidades.Dimensionless(x)
-
+            
 #            self.mezcla.recallZeros(eos.xi)
 #            self.mezcla.recallZeros(eos.yi)
 #            self.mezcla.recallZeros(eos.Ki, 1.)
@@ -1591,7 +1591,7 @@ class Corriente(config.Entity):
                 self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
                 self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
                 self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm)
-                self.Liquido.sigma = self.Liquido.Tension(T)
+                self.Liquido.epsilon = self.Liquido.Tension(T)
                 self.Liquido.Q = unidades.VolFlow(self.Liquido.caudalmasico/self.Liquido.rho)
                 self.Liquido.Pr = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
             if self.x > 0:
