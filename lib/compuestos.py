@@ -201,7 +201,7 @@ class Componente(object):
     def tr(self,T):
        return T/self.Tc
     def pr(self,P):
-        return P/self.Pc.atm
+        return P/self.Pc
 
 
 #Metodos de estimacion de propiedades no disponibles en la base de datos
@@ -403,7 +403,7 @@ class Componente(object):
         """Procedimiento que define el método más apropiado para el calculo de la densidad del líquido"""
         rhoL=self.Config.getint("Transport","RhoL")
         corr=self.Config.getint("Transport","Corr_RhoL")
-        if P<2:
+        if P<1013250:
             if rhoL==0 and self.densidad_liquido and self.densidad_liquido[6]<=T<=self.densidad_liquido[7]:
                 return self.RhoL_DIPPR(T)
             elif rhoL==1 and self.rackett<>0 and T<self.Tc:
@@ -472,12 +472,12 @@ class Componente(object):
         if self.f_acent_mod:
             w=self.f_acent_mod
         else: w=self.f_acent
-        rho_sat=self.RhoL(T, 1)
+        rho_sat=self.RhoL(T, 101325)
         pv_sat=self.Pv_DIPPR(T)
         C=0.0861488+0.0344483*w
         e=exp(4.79594+0.250047*w+1.14188*w**2)
-        B=self.Pc.atm*(-1-9.070217*(1-self.tr(T))**(1./3)+62.45326*(1-self.tr(T))**(2./3)-135.1102*(1-self.tr(T))+e*(1-self.tr(T))**(4./3))
-        return unidades.Density(rho_sat/(1-C*log((B+P)/(B+pv_sat.atm))), "gl")
+        B=self.Pc*(-1-9.070217*(1-self.tr(T))**(1./3)+62.45326*(1-self.tr(T))**(2./3)-135.1102*(1-self.tr(T))+e*(1-self.tr(T))**(4./3))
+        return unidades.Density(rho_sat/(1-C*log((B+P)/(B+pv_sat))), "gl")
 
     def RhoL_API(self, T, P):
         """Método alternativo para calcular la densidad de líquidos haciendo uso del método API
@@ -485,11 +485,11 @@ class Componente(object):
         donde:  C2,C1: valor empirico que se calcula a partir de una tabla de valores, C2 a T y P dadas, C1 a 60F y 1 atm
                 dens1: densidad a 60ºF y 1 atm, situada en la base de datos en el puesto veintisiete
                 densidad obtenida en mol/l"""
-
-        A02=1.6368-0.04615*self.pr(P)+2.1138e-3*self.pr(P)**2-0.7845e-5*self.pr(P)**3-0.6923e-6*self.pr(P)**4
-        A12=-1.9693-0.21874*self.pr(P)-8.0028e-3*self.pr(P)**2-8.2328e-5*self.pr(P)**3+5.2604e-6*self.pr(P)**4
-        A22=2.4638-0.36461*self.pr(P)-12.8763e-3*self.pr(P)**2+14.8059e-5*self.pr(P)**3-8.6895e-6*self.pr(P)**4
-        A32=-1.5841-0.25136*self.pr(P)-11.3805e-3*self.pr(P)**2+9.5672e-5*self.pr(P)**3+2.1812e-6*self.pr(P)**4
+        pr=P/self.Pc
+        A02=1.6368-0.04615*pr+2.1138e-3*pr**2-0.7845e-5*pr**3-0.6923e-6*pr**4
+        A12=-1.9693-0.21874*pr-8.0028e-3*pr**2-8.2328e-5*pr**3+5.2604e-6*pr**4
+        A22=2.4638-0.36461*pr-12.8763e-3*pr**2+14.8059e-5*pr**3-8.6895e-6*pr**4
+        A32=-1.5841-0.25136*pr-11.3805e-3*pr**2+9.5672e-5*pr**3+2.1812e-6*pr**4
         C2=A02+A12*self.tr(T)+A22*self.tr(T)**2+A32*self.tr(T)**3
         A01=1.6368-0.04615*self.pr(1)+2.1138e-3*self.pr(1)**2-0.7845e-5*self.pr(1)**3-0.6923e-6*self.pr(1)**4
         A11=-1.9693-0.21874*self.pr(1)-8.0028e-3*self.pr(1)**2-8.2328e-5*self.pr(1)**3+5.2604e-6*self.pr(1)**4
@@ -662,7 +662,7 @@ class Componente(object):
     def ThCond_Gas(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1136"""
         ThCondG=self.Config.getint("Transport","ThCondG")
-        p=unidades.Pressure(P, "atm")
+        p=unidades.Pressure(P)
         if p.psi<50:
             if ThCondG==0 and self.conductividad_gas and self.conductividad_gas[6]<=T<=self.conductividad_gas[7]:
                 return self.ThCond_Gas_DIPPR(T)
@@ -671,7 +671,9 @@ class Componente(object):
         elif self.indice in [1, 46, 47, 48, 50, 51, 111]:
             return self.ThCond_Gas_Nonhidrocarbon(T, P)
         else:
-            return self.ThCond_Gas_Crooks(T, P)
+            # TODO: fix crooks methods with lost lee_kesler library
+            return self.ThCond_Gas(T, 101325.)
+#            return self.ThCond_Gas_Crooks(T, P)
 
     def ThCond_Gas_DIPPR(self,T):
         """Cálculo de la conductividad terminca del gas usando las ecuaciones DIPPR
@@ -734,7 +736,7 @@ class Componente(object):
     def Mu_Gas(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
         MuG=self.Config.getint("Transport","MuG")
-        if P/self.Pc.atm<0.6:
+        if P/self.Pc<0.6:
            if MuG==0 and self.viscosidad_gas and self.viscosidad_gas[6]<=T<=self.viscosidad_gas[7]:
                 return self.Mu_Gas_DIPPR(T)
            elif MuG==1:
@@ -813,7 +815,7 @@ class Componente(object):
     def Mu_Gas_Eakin_Ellingtong(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de hidrocarburos gaseosos a alta presión, API procedure 11B4.1, pag 1107"""
         if muo==0:
-            muo=self.Mu_Gas(T, 1)
+            muo=self.Mu_Gas(T, 101325)
         else:
             muo=unidades.Viscosity(muo)
         x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
@@ -826,7 +828,7 @@ class Componente(object):
         Tr=self.tr(T)
         Pr=self.pr(P)
         if muo==0:
-            muo=self.Mu_Gas(T, 1)
+            muo=self.Mu_Gas(T, 101325)
 
         A1=83.8970*Tr**0.0105+0.6030*Tr**-0.0822+0.9017*Tr**-0.12-85.3080
         A2=1.514*Tr**-11.3036+0.3018*Tr**-0.6856+2.0636*Tr**-2.7611
@@ -855,7 +857,7 @@ class Componente(object):
         #Comparacion de métodos: pag 405 Vismanath
         MuL=self.Config.getint("Transport","MuL")
         corr=self.Config.getint("Transport","Corr_MuL")
-        if P<2:
+        if P<1013250:
             if MuL==0 and self.viscosidad_liquido and self.viscosidad_liquido[6]<=T<=self.viscosidad_liquido[7]:
                 return self.Mu_Liquido_DIPPR(T)
             elif MuL==1 and self.viscosidad_parametrica[0]!=0 and self.viscosidad_parametrica[1]!=0:
@@ -967,8 +969,8 @@ class Componente(object):
         else:
 #            muc=self.Mu_critica().cP
             To=298.15
-            Po=1
-            muo=self.Mu_Liquido(To, 1)
+            Po=101325
+            muo=self.Mu_Liquido(To, 101325)
 
             Pr=self.pr(Po)
             Tr=self.tr(To)
@@ -1109,7 +1111,7 @@ class Componente(object):
         Valor en J/mol"""
         Pv=self.Pv_DIPPR(T)
         Tr=T/self.Tc
-        Pr=Pv/self.Pc.atm
+        Pr=Pv/self.Pc
         H_adimensional_vapor=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
         H_adimensional_liquido=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
         return unidades.Enthalpy(R*self.Tc/self.M*(H_adimensional_vapor-H_adimensional_liquido), "Jg")
@@ -1166,7 +1168,7 @@ class Componente(object):
         """Método de cálculo de la capacidad calorífica a volumen constante
         Procedure API 7E1.6 Pag.726"""
         #FIXME: No sale, un factor de 100 tengo que añadir no sé de donde
-        Pr=P/self.Pc.atm
+        Pr=P/self.Pc
         Tr=T/self.Tc
         if fase==None:
             fase=self.Fase(T, P)
@@ -1189,7 +1191,7 @@ class Componente(object):
         """Método de cálculo de la fugacidad
         Procedure API 7G1.8 Pag.752"""
         Tr=T/self.Tc
-        Pr=P/self.Pc.atm
+        Pr=P/self.Pc
         f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P))
         return unidades.Pressure(P*exp(f), "atm")
 
@@ -1197,7 +1199,7 @@ class Componente(object):
         """Método de cálculo de la entropia
         Procedure API 7F1.7 Pag.739"""
         Tr=T/self.Tc
-        Pr=P/self.Pc.atm
+        Pr=P/self.Pc
         S0=self.Entropia_ideal(T)
         H_adimensional=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
         f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
@@ -1435,7 +1437,7 @@ class GroupContribution(newComponente):
 
     def _factor_acentrico_Lee_Kesler(self):
         Tr=self.Tb/self.Tc
-        Pr=1/self.Pc.atm
+        Pr=101325./self.Pc
         return (log(Pr)-5.92714+6.09648/Tr+1.28862*log(Tr)-0.169347*Tr**6)/(15.2518-15.6875/Tr-13.4721*log(Tr)+0.43577*Tr**6)
 
     def _cp(self):
