@@ -57,6 +57,7 @@ class Mezcla(config.Entity):
         if tipo == 0:
             return
             
+        self.kwargs = Mezcla.kwargs.copy()
         self.kwargs.update(kwargs)
         if "ids" in self.kwargs:
             self.ids = self.kwargs.get("ids")
