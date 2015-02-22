@@ -114,13 +114,7 @@ class Flash(equipment):
         if self.kwargs["flash"]==0:
             Vapor=self.entrada.clone(mezcla=self.entrada.Gas)
             Liquido=self.entrada.clone(mezcla=self.entrada.Liquido)
-            #Vapor=Corriente(T=self.entrada.T, P=self.entrada.P, mezcla=self.entrada.Gas)
-            #Liquido=Corriente(T=self.entrada.T, P=self.entrada.P, mezcla=self.entrada.Liquido)
             self.salida=[Vapor, Liquido]
-            print Liquido.kwargs
-            print Vapor.kwargs
-        print Liquido.mezcla.fraccion
-        print Vapor.mezcla.fraccion
         self.Tout=Vapor.T
         self.Pout=Vapor.P
         self.VaporMolarFlow=Vapor.caudalmolar
@@ -309,14 +303,13 @@ class Tower(equipment):
         return unidades.Volume(pi/4*self.kwargs["Di"]**2*self.kwargs["h"])
 
 
-    def McCabe(self):
-
-        A = self.kwargs["entrada"].componente[0].nombre
-        B = self.kwargs["entrada"].componente[1].nombre
+    def McCabe(self, LK=0, HK=1):
+        A = self.kwargs["entrada"].componente[LK].nombre
+        B = self.kwargs["entrada"].componente[HK].nombre
         P = self.kwargs["entrada"].P
         Psat = dict()
-        Psat[A] = self.kwargs["entrada"].componente[0].Pv
-        Psat[B] = self.kwargs["entrada"].componente[1].Pv
+        Psat[A] = self.kwargs["entrada"].componente[LK].Pv
+        Psat[B] = self.kwargs["entrada"].componente[HK].Pv
         Tsat = dict()
         for i, s in enumerate(Psat.keys()):
             Tsat[s] = lambda P, s=s: fsolve(lambda T: Psat[s](T)-P,self.kwargs["entrada"].componente[i].Tb)[0]
@@ -327,7 +320,7 @@ class Tower(equipment):
         y = lambda T: x(T)*Psat[A](T)/P
 
         xB = 1-self.kwargs["HKsplit"]
-        xF = self.kwargs["entrada"].fraccion[0]
+        xF = self.kwargs["entrada"].fraccion[LK]
         xD = self.kwargs["LKsplit"]
         Tbub = fsolve(lambda T:x(T) - xF,T[25])
         yF = y(Tbub)
@@ -499,7 +492,7 @@ class ColumnFUG(Tower):
         W: Espesor carcasa
         Wb: Espesor carcasa fondo
     """
-    title=QApplication.translate("pychemqt", "Column (FUG method)")
+    title=QApplication.translate("pychemqt", "Column (Shortcut method)")
     help=""
     kwargs={"entrada": None,
                     "feed": 0,
@@ -607,22 +600,22 @@ class ColumnFUG(Tower):
         #Estimate splits of components
         b=[]
         d=[]
-        for i in range(len(self.entrada.ids)):
+        for i, caudal_i in enumerate(self.entrada.caudalunitariomolar):
             if i==self.kwargs["LK"]:
-                b.append(self.entrada.caudalunitariomolar[i]*(1-self.LKsplit))
-                d.append(self.entrada.caudalunitariomolar[i]*self.LKsplit)
+                b.append(caudal_i*(1-self.LKsplit))
+                d.append(caudal_i*self.LKsplit)
             elif i==self.kwargs["HK"]:
-                d.append(self.entrada.caudalunitariomolar[i]*(1-self.HKsplit))
-                b.append(self.entrada.caudalunitariomolar[i]*self.HKsplit)
+                d.append(caudal_i*(1-self.HKsplit))
+                b.append(caudal_i*self.HKsplit)
             elif self.entrada.eos.Ki[i]>self.entrada.eos.Ki[self.kwargs["LK"]]:
                 b.append(0)
-                d.append(self.entrada.caudalunitariomolar[i])
+                d.append(caudal_i)
             elif self.entrada.eos.Ki[i]<self.entrada.eos.Ki[self.kwargs["HK"]]:
                 d.append(0)
-                b.append(self.entrada.caudalunitariomolar[i])
+                b.append(caudal_i)
             else:
-                d.append(self.entrada.caudalunitariomolar[i]*0.5)
-                b.append(self.entrada.caudalunitariomolar[i]*0.5)
+                d.append(caudal_i*0.5)
+                b.append(caudal_i*0.5)
 
         while True:
             bo=b
@@ -635,7 +628,7 @@ class ColumnFUG(Tower):
             destilado=Corriente(T=self.entrada.T, P=self.Pd, caudalMasico=Qt, fraccionMolar=xt)
             residuo=Corriente(T=self.entrada.T, P=self.Pd, caudalMasico=Qb, fraccionMolar=xb)
             #TODO: Add algorithm to calculate Pd and condenser type fig 12.4 pag 230
-
+            
             #Fenske equation for Nmin
             alfam=(destilado.eos.Ki[self.kwargs["LK"]]/destilado.eos.Ki[self.kwargs["HK"]]*residuo.eos.Ki[self.kwargs["LK"]]/residuo.eos.Ki[self.kwargs["HK"]])**0.5
             Nmin=log10(destilado.caudalunitariomolar[self.kwargs["LK"]]/destilado.caudalunitariomolar[self.kwargs["HK"]] * residuo.caudalunitariomolar[self.kwargs["HK"]]/residuo.caudalunitariomolar[self.kwargs["LK"]]) / log10(alfam)
@@ -713,6 +706,8 @@ class ColumnFUG(Tower):
         self.LKName=self.salida[0].componente[self.kwargs["LK"]].nombre
         self.HKName=self.salida[0].componente[self.kwargs["HK"]].nombre
 
+    def McCabe(self):
+        return Tower.McCabe(self, self.kwargs["LK"], self.kwargs["HK"])
 
     def propTxt(self):
         txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
@@ -725,7 +720,7 @@ class ColumnFUG(Tower):
 
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Temperature"), self.salida[1].T.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Pressure"), self.salida[1].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Mass Flow"), self.Salida[1].caudalmolar.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
         txt+="#"+QApplication.translate("pychemqt", "Bottom Output Molar Composition")+os.linesep
         for componente, fraccion in zip(self.salida[1].componente, self.salida[1].fraccion):
             txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
@@ -759,7 +754,7 @@ class ColumnFUG(Tower):
                 (QApplication.translate("pychemqt", "Heavy Key Component"), "HKName", str),
                 (QApplication.translate("pychemqt", "Minimum Reflux Ratio"), "Rmin", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Reflux Ratio"), "RCalculada", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Stage Number"), "N", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Stage Number"), "NTray", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Feed Stage"), "N_feed", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Condenser Duty"), "DutyCondenser", unidades.Power),
                 (QApplication.translate("pychemqt", "Reboiler Duty"), "DutyReboiler", unidades.Power)]
@@ -813,17 +808,15 @@ if __name__ == '__main__':
 #    blend=Corriente(T=340, P=101325, caudalMasico=1, fraccionMolar=[0.3, 0.5, 0.05, 0.15])
 #    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.9866, HK=3, HKsplit=0.639, R_Rmin=1.1, feed=0)
 
-#    import sys
-#    from PyQt4 import QtGui
-#    app = QtGui.QApplication(sys.argv)
-#    blend=Corriente(T=340, P=101325, caudalMasico=1, fraccionMolar=[0.6, 0.4])
-#    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=1, HKsplit=0.95, R_Rmin=1.2)
-#    columna.McCabe()
-#    sys.exit(app.exec_())
+    T = unidades.Temperature(205, "F")
+    P = unidades.Pressure(315, "psi")
+    blend=Corriente(T=T, P=P, caudalMasico=1, fraccionMolar=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
+    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=3, HKsplit=0.95, R_Rmin=1.2)
+    print columna.DutyCondenser
 
-    entrada=Corriente(T=340, P=101325, caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
-    flash=Flash(entrada=entrada)
-    print flash.status, flash.msg
+#    entrada=Corriente(T=340, P=101325, caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
+#    flash=Flash(entrada=entrada)
+#    print flash.status, flash.msg
 
 #    from scipy import *
 #    from scipy.integrate import odeint
@@ -831,7 +824,3 @@ if __name__ == '__main__':
 #    import matplotlib.pyplot as plt
 #    batch()
 
-#    from scipy.optimize import fsolve
-#    from scipy import linspace
-#    from pylab import *
-#    McCabe()
