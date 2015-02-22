@@ -136,6 +136,11 @@ class EoS(object):
                     else:
                         Ki=[l/v for l, v in zip(tital, titav)]
 
+        if x < 0:
+            x = 0
+        elif x > 1:
+            x = 1
+            
         return x, xi, yi, Ki
 
 
