@@ -55,6 +55,9 @@ class N2(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
+        "Pmin": 12.5198, "rhomin": 30.957, 
+
         "nr1": [0.924803575275, -0.492448489428, 0.661883336938,
                 -0.192902649201e1, -0.622469309629e-1, 0.349943957581],
         "d1": [1, 1, 2, 2, 3, 3],
@@ -94,6 +97,9 @@ class N2(MEoS):
         "R": 8.31434,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 1900.0, "Pmax": 1013000.0, "rhomax": 30.977, 
+        "Pmin": 12.463, "rhomin": 30.977, 
+
         "b": [None, 0.1380297474657e-2, 0.1084506501349, -0.2471324064362e1,
               0.3455257980807e2, -0.4279707690666e4, 0.1064911566998e-3,
               -0.1140867079735e-1, 0.1444902497287e-3, 0.1871457567553e5,
@@ -112,6 +118,9 @@ class N2(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP3,
+
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
+#        "Pmin": 73.476, "rhomin": 29.249, 
 
         "nr1": [0.59889711801201, -0.16941557480731e1, 0.24579736191718,
                 -0.23722456755175, 0.17954918715141e-1, 0.14592875720215e-1],
@@ -139,6 +148,9 @@ class N2(MEoS):
         "__doc__":  u"""Jacobsen, R.T, Stewart, R.B., and Jahangiri, M., "Thermodynamic properties of nitrogen from the freezing line to 2000 K at pressures to 1000 MPa," J. Phys. Chem. Ref. Data, 15(2):735-909, 1986.""",
         "R": 8.31434,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 30.96, 
+        "Pmin": 12.52, "rhomin": 31.046, 
 
         "nr1": [0.9499541827, 0.2481718513, -0.2046287122, -0.1748429008,
                 0.6387017148, -0.5272986168, -0.2049741504e1, 0.5551383553e-1,
@@ -168,6 +180,9 @@ class N2(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 53.15, 
+        "Pmin": 12.566, "rhomin": 30.935, 
+
         "nr1": [0.92296567, -0.25575012e1, 0.64482463, 0.1083102e-1,
                 0.73924167e-1, 0.23532962e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -193,9 +208,11 @@ class N2(MEoS):
                    "a2": [2.206, 1.135, -169., -35.83],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3.1, 3.1]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 12.523,
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [1, 12798.61, -12798.61], "exp1": [0, 1.78963, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 12.523,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-13.088692], "exp2": [1],
                     "a3": [], "exp3": []}

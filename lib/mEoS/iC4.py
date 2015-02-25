@@ -78,6 +78,9 @@ class iC4(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
+        "Pmin": 0.0000219, "rhomin": 12.74, 
+
         "nr1":  [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
                  0.17745845870123, -0.12361807851599, 0.45145314010528e-1,
                  0.30476479965980e-1],
@@ -110,6 +113,9 @@ class iC4(MEoS):
         "R": 8.31434,
         "cp": CP4,
 
+        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 35000.0, "rhomax": 12.89, 
+        "Pmin": 1.948e-5, "rhomin": 12.755, 
+
         "b": [None, 0.1307325972e-1, 0.3927802742, -0.3185427394e2,
               0.7608825192e4, -0.1753919859e7, -0.2090019755e-2, 0.8959557971e1,
               -0.6816710130e4, -0.1111271045e7, 0.3248737572e-3, -0.1046526456e1,
@@ -126,6 +132,9 @@ class iC4(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
+#        "Pmin": 7.36, "rhomin": 38.2, 
 
         "nr1":  [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
                  -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
@@ -145,6 +154,9 @@ class iC4(MEoS):
         "__doc__":  u"""Miyamoto, H. and Watanabe, K. "A Thermodynamic Property Model for Fluid-Phase Isobutane," Int. J. Thermophys., 23(2):477-499, 2002.""",
         "R": 8.314472,
         "cp": CP3,
+
+        "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9, 
+        "Pmin": 0.000021, "rhomin": 12.738, 
 
         "nr1":  [2.892737e-1, -1.342570, -7.976713e-3, 2.025793e-1,
                  -4.241612e-2, 2.617971e-3, 5.068955e-5, -1.144596e-6],
@@ -166,6 +178,9 @@ class iC4(MEoS):
         "R": 8.31451,
         "cp": CP5,
 
+        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 12.89, 
+        "Pmin": 0.000020860, "rhomin": 12.784, 
+
         "nr1":  [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
                  0.986157490e-1, 0.23948209e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -184,6 +199,9 @@ class iC4(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP6,
+
+        "Tmin": 120.0, "Tmax": 498.0, "Pmax": 35000.0, "rhomax": 12.89, 
+        "Pmin": 0.46491e-4, "rhomin": 12.649, 
 
         "nr1":  [-0.958589873652, 0.818846326211, -0.115814967179,
                  0.345513148715, -0.168751721524e1, 0.936693300209,
@@ -210,6 +228,7 @@ class iC4(MEoS):
                    "a2": [126.25, 52.91, -7501.4, -2672.9],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.000022891,
+                "Tmin": Tt, "Tmax": 575.0,
                 "a1": [-1953637129., 1953637130.], "exp1": [0, 6.12],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

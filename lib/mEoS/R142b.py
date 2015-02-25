@@ -38,6 +38,9 @@ class R142b(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 470.0, "Pmax": 60000.0, "rhomax": 14.44, 
+        "Pmin": 0.00363, "rhomin": 14.44, 
 
         "nr1": [1.0038, -2.7662, 0.42921, 0.081363, 0.00024174],
         "d1": [1, 1, 1, 3, 7],

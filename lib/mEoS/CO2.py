@@ -58,6 +58,9 @@ class CO2(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 800000.0, "rhomax": 37.24, 
+        "Pmin": 517.95, "rhomin": 26.777, 
+
         "nr1": [0.38856823203161, 0.29385475942740e1, -0.55867188534934e1,
                 -0.76753199592477, 0.31729005580416, 0.54803315897767,
                 0.12279411220335],
@@ -106,6 +109,9 @@ class CO2(MEoS):
         "R": 8.31434,
         "cp": CP3,
 
+        "Tmin": 216.58, "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778, 
+        "Pmin": 518.2, "rhomin": 26.778, 
+
         "b": [None, -0.981851065838e-2, 0.995062267309, -0.228380160313e2,
               0.281827634529e4, -0.347001262699e6, 0.394706709102e-3,
               -0.325550000110, 0.484320083063e1, -0.352181542995e6,
@@ -124,6 +130,9 @@ class CO2(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24, 
+#        "Pmin": 0.61166, "rhomin": 55.497, 
 
         "nr1": [0.52646564804653, -0.14995725042592e1, 0.27329786733782,
                 0.12949500022786],
@@ -148,6 +157,9 @@ class CO2(MEoS):
         "__doc__":  u"""Ely, J.F., Magee, J.W., and Haynes, W.M., "Thermophysical properties for special high CO2 content mixtures," Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.""",
         "R": 8.31434,
         "cp": CP3,
+
+        "Tmin": 216.58, "Tmax": 1000., "Pmax": 100000.0, "rhomax": 26.776, 
+        "Pmin": 518.03, "rhomin": 26.776, 
 
         "nr1": [0.485497428986, -0.191900462349e1, 0.451739876847,
                 0.838475229022e-2, 0.310719428397, -0.183619563850,
@@ -177,6 +189,9 @@ class CO2(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 37.24, 
+        "Pmin": 517.86, "rhomin": 26.795, 
+
         "nr1": [0.89875108, -0.21281985e1, -0.6819032e-1, 0.76355306e-1,
                 0.22053253e-3],
         "d1": [1, 1, 1, 3, 7],
@@ -198,10 +213,12 @@ class CO2(MEoS):
                    "a2": [83.93, 145.1, -578.8, -1012.],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.55, 2.55]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 517.95,
+                "Tmin": Tt, "Tmax": 1100.0,
                 "a1": [1], "exp1": [0],
                 "a2": [1955.539, 2055.4593], "exp2": [1, 2],
                 "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 517.950,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-14.740846, 2.4327015, -5.3061778],
                     "exp2": [1, 1.9, 2.9],

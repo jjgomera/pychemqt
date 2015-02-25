@@ -43,6 +43,9 @@ class R41(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 70000.0, "rhomax": 29.66, 
+        "Pmin": 0.345, "rhomin": 29.65, 
 
         "nr1": [1.6264, -2.8337, 0.0010932, 0.037136, 0.00018724],
         "d1": [1, 1, 1, 3, 7],
@@ -60,6 +63,9 @@ class R41(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 29.6, 
+        "Pmin": 0.343, "rhomin": 29.6, 
 
         "nr1": [0.85316, -2.6366, 0.69129, 0.054681, 0.00012796],
         "d1": [1, 1, 1, 3, 7],
@@ -78,6 +84,10 @@ class R41(MEoS):
         "__doc__":  u"""Haynes, W.M., "Thermophysical properties of HCFC alternatives," National Institute of Standards and Technology, Boulder, Colorado, Final Report for ARTI MCLR Project Number 660-50800, 1996.""",
         "R": 8.314471,
         "cp": CP2,
+
+        "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006, 
+        "Pmin": 0.32, "rhomin": 29.66, 
+
         "b": [None, -0.326441485138e-1, 0.338620074694e1, -0.831696847103e2,
               0.139589938388e5, -0.156113972752e7, -0.165160386413e-2,
               0.118821153813e1, -0.137311604695e3, 0.176999573025e6,

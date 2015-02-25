@@ -38,6 +38,9 @@ class R227ea(MEoS):
         "__doc__":  u"""Lemmon, E.W., McLinden, M.O., and Meier, K. to be published in J. Chem. Eng. Data, 2007.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 11.05, 
+        "Pmin": 0.0073, "rhomin": 11.05, 
 
         "nr1": [2.024341, -2.605930, 0.4957216, -0.8240820, 0.06543703],
         "d1": [1, 1, 2, 2, 4],

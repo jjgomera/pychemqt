@@ -44,6 +44,9 @@ class SO2(MEoS):
         "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30, 
+        "Pmin": 1.66, "rhomin": 25.29, 
 
         "nr1": [0.93061, -1.9528, -0.17467, 0.061524, 0.00017711],
         "d1": [1, 1, 1, 3, 7, ],
@@ -62,6 +65,9 @@ class SO2(MEoS):
         "__doc__":  u"""Polt, A., Zur Beschreibung der thermodynamischen Eigenschaften reiner Fluide mit "Erweiterten BWR-Gleichungen", Ph.D. Dissertation, Universitaet Kaiserslautern, Germany, 1987.""",
         "R": 8.3143,
         "cp": CP2,
+        
+        "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91, 
+        "Pmin": 11.82, "rhomin": 23.0, 
 
         "nr1": [0.789407019882, -0.170449580056e1, 0.115984637964e1,
                 -0.576307837294, 0.249237283833e1, -0.518115678632e1,

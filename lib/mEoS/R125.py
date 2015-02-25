@@ -66,6 +66,9 @@ class R125(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Jacobsen, R.T, "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)," J. Phys. Chem. Ref. Data, 34(1):69-108, 2005.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
+        "Pmin": 2.914, "rhomin": 14.086, 
 
         "nr1": [0.5280760e1, -0.8676580e1, 0.7501127, 0.7590023, 0.1451899e-1],
         "d1": [1, 1, 1, 2, 4],
@@ -93,6 +96,9 @@ class R125(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)," Int. J. Thermophysics, 16:79-89, 1995.""",
         "R": 8.314471,
         "cp": CP4,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.10, 
+        "Pmin": 2.921, "rhomin": 14.095, 
 
         "b": [None, -0.523369607050e-1, 0.378761878904e1, -0.807152818990e2,
               0.115654605248e5, -0.152175619161e7, 0.597541484451e-2,
@@ -112,6 +118,9 @@ class R125(MEoS):
         "__doc__":  u"""Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K., "A Thermodynamic Equation of State for Pentafluoroethane (R-125)," Int. J. Thermophys., 19(6):1623-1635, 1998.""",
         "R": 8.314471,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
+        "Pmin": 2.943, "rhomin": 14.088, 
 
         "nr1": [0.12439220, 0.27922179, -0.11822597e1, 0.23616512, -0.11571810e-1],
         "d1": [1, 2, 2, 3, 2],
@@ -131,6 +140,9 @@ class R125(MEoS):
         "__doc__":  u"""Piao, C.-C. and Noguchi, M., "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)," J. Phys. Chem. Ref. Data, 27(4):775-806, 1998.""",
         "R": 8.314471,
         "cp": CP3,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.11, 
+        "Pmin": 2.9562, "rhomin": 14.1, 
 
         "nr1": [0.85393382372e-1, -0.133260499658, 0.257817782488,
                 -0.735018179542, -0.787454743426, -0.190320468891e-1,
@@ -152,6 +164,9 @@ class R125(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP5,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 14.1, 
+        "Pmin": 2.9213, "rhomin": 14.096, 
 
         "nr1": [0.11290996e1, -0.28349269e1, 0.29968733, 0.87282204e-1,
                 0.26347747e-3],
@@ -171,6 +186,9 @@ class R125(MEoS):
         "__doc__":  u"""Astina, I.M. and Sato, H. "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases," Int. J. Thermophys., 25(1):113-131, 2004.""",
         "R": 8.314472,
         "cp": CP6,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 70000.0, "rhomax": 14.1, 
+        "Pmin": 2.94, "rhomin": 14.1, 
 
         "nr1": [1.51628822, -1.4959805, -1.2893965, 1.47295195, -2.22976436,
                 1.02082011, -9.61695881e-3, 4.14142522e-2],

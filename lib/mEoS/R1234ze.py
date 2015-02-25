@@ -37,6 +37,9 @@ class R1234ze(MEoS):
         "__doc__":  u"""McLinden, M.O., Thol, M., and Lemmon, E.W. "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State," International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
+        "Pmin": 0.23, "rhomin": 13.19, 
 
         "nr1": [0.4434245e-1, 0.1646369e1, -0.2437488e1, -0.517056, 0.1815626],
         "d1": [4, 1, 1, 2, 3],

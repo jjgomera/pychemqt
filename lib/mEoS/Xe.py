@@ -37,6 +37,9 @@ class Xe(MEoS):
         "__doc__": u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 700000.0, "rhomax": 28.78, 
+        "Pmin": 81.77, "rhomin": 22.59, 
 
         "nr1": [0.83115, -2.3553, 0.53904, 0.014382, 0.066309, 0.00019649],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -57,6 +60,10 @@ class Xe(MEoS):
         "__doc__": u"""Coefficients from NIST Thermophysical Properties of Pure Fluids Database, NIST12, Version 3.0, National Institute of Standards and Technology, Boulder, CO, 1992.""",
         "R": 8.31434,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 1300.0, "Pmax": 100000.0, "rhomax": 24.62, 
+        "Pmin": 81.654, "rhomin": 22.597, 
+
         "b": [None, -0.1122246365118e-2, 0.4265740662874, -0.1219294183093e2,
               0.9986032891995e3, -0.1292471898135e6, 0.1460668285129e-3,
               -0.1075162481632, 0.1235414695585e3, -0.1225638806967e6,
@@ -79,9 +86,11 @@ class Xe(MEoS):
                    "a2": [31.97, 46.97, -82.51, -948.4],
                    "expt2": [0, 1, 0], "expd2": [2, 2, 2.7]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 101.325,
+                "Tmin": Tt, "Tmax": 800.0,
                 "a1": [-2573.936225, 0.7983277028], "exp1": [0, 1.589165],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 81.750,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-13.9, 14.0], "exp2": [1.06, 3.1],
                     "a3": [], "exp3": []}

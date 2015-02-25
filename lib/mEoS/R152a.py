@@ -43,6 +43,9 @@ class R152a(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)," J. Phys. Chem. Ref. Data, 25(2):605-636, 1996.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07, 
+        "Pmin": 0.0641, "rhomin": 18.061, 
 
         "b": [None, -0.101623317192e-1, 0.215677129618e1, -0.648581254334e2,
               0.122535596303e5, -0.206805988259e7, -0.379836507323e-3,
@@ -62,6 +65,9 @@ class R152a(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)," J. Phys. Chem. Ref. Data, 25(2):605-636, 1996.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07, 
+        "Pmin": 0.0641, "rhomin": 18.061, 
 
         "nr1": [-0.354657949982e1, -0.364631280620, 0.333233335558e-1,
                 -0.6809684351170, 0.735212646801e1, -0.112473063838e2,
@@ -91,6 +97,9 @@ class R152a(MEoS):
         "__doc__":  u"""Tillner-Roth, R., "A Fundamental Equation of State for 1,1-Difluoroethane (HFC-152a)," Int. J. Thermophys., 16(1):91-100, 1995.""",
         "R": 8.314471,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 435.0, "Pmax": 30000.0, "rhomax": 18.03, 
+        "Pmin": 0.065395176, "rhomin": 18.020671, 
 
         "nr1": [0.3552260, -0.1425660e1, -0.4631621e-1, 0.6903546e-1,
                 0.1975710e-1, 0.7486977e-3, 0.4642204e-3],
@@ -111,6 +120,9 @@ class R152a(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 18.1, 
+        "Pmin": 0.064093, "rhomin": 18.031, 
 
         "nr1": [.95702326, -.23707196e1, .18748463, .63800843e-1, .16625977e-3],
         "d1": [1, 1, 1, 3, 7],
@@ -129,6 +141,9 @@ class R152a(MEoS):
         "__doc__":  u"""Astina, I.M. and Sato, H., "A Rigorous Thermodynamic Property Model for Fluid - Phase 1,1-Difluoroethane (R-152a)," Int. J. Thermophys., 25(6):1713-1733, 2004.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 60000.0, "rhomax": 18.04 , 
+        "Pmin": 0.064, "rhomin": 18.04 , 
 
         "nr1": [1.753847317, -4.049760759, -2.277389257e-1, 7.087751950e-1,
                 -5.528619502e-1, -3.025046686e-2, 1.396289974e-1, 1.121238954e-4],

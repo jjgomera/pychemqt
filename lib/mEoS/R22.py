@@ -45,6 +45,9 @@ class R22(MEoS):
         "__doc__":  u"""Kamei, A., Beyerlein, S.W., and Jacobsen, R.T, "Application of nonlinear regression in the development of a wide range formulation for HCFC-22," Int. J. Thermophysics, 16:1155-1164, 1995.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
+        "Pmin": 0.0003793, "rhomin": 19.907, 
 
         "nr1": [0.695645445236e-1, 0.252275419999e2, -0.202351148311e3,
                 0.350063090302e3, -0.223134648863e3, 0.488345904592e2,
@@ -73,6 +76,9 @@ class R22(MEoS):
         "__doc__":  u"""Wagner, W., Marx, V., and Pruss, A., "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa," Int. J. Refrig., 16(6):373-389, 1993.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
+        "Pmin": 0.00036783, "rhomin": 19.907, 
 
         "nr1": [0.29599201810, -0.1151392173e1, 0.5259746924, -0.6644393736,
                 .1723481086, -.1158525163e-3, .3803104348e-3, .4119291557e-5],
@@ -94,6 +100,9 @@ class R22(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 20.0, 
+        "Pmin": 0.00036704, "rhomin": 19.976, 
 
         "nr1": [.96268924, -.25275103e1, .31308745, .72432837e-1, .21930233e-3],
         "d1": [1, 1, 1, 3, 7],

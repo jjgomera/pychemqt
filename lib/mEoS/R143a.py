@@ -48,6 +48,9 @@ class R143a(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Jacobsen, R.T, "An International Standard Formulation for the Thermodynamic Properties of 1,1,1-Trifluoroethane (HFC-143a) for Temperatures from 161 to 450 K and Pressures to 50 MPa," J. Phys. Chem. Ref. Data, 29(4):521-552, 2000.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 100000.0, "rhomax": 15.85, 
+        "Pmin": 1.0749, "rhomin": 15.832, 
 
         "nr1": [.77736443e1, -.870185e1, -.27779799, .1460922, .89581616e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -67,6 +70,9 @@ class R143a(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "An equation of state for the thermodynamic properties of R143a (1,1,1-trifluoroethane)," Int. J. Thermophys., 18(6):1445-1463, 1997.""",
         "R": 8.314471,
         "cp": CP3,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 15.84, 
+        "Pmin": 1.069, "rhomin": 15.8328, 
 
         "b": [None, -0.240561786316e-1, 0.262345913719e1, -0.650858041394e2,
               0.995952053681e4, -0.147536464961e7, 0.135498153308e-2,
@@ -86,6 +92,9 @@ class R143a(MEoS):
         "__doc__":  u"""Li, J., Tillner-Roth, R., Sato, H., and Watanabe, K., "An Equation of State for 1,1,1-Trifluoroethane (R-143a)," Int. J. Thermophys., 20(6):1639-1651, 1999.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 50000.0, "rhomax": 15.84, 
+        "Pmin": 1.0808, "rhomin": 15.819, 
 
         "nr1": [.1606645e-1, .4163515e1, -.5031058e1, -.1920208e-1, .1470093e-2],
         "d1": [5, 1, 1, 2, 4],
@@ -106,6 +115,9 @@ class R143a(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.82, 
+        "Pmin": 1.072, "rhomin": 15.816, 
 
         "nr1": [.10306886e1, -.29497307e1, .6943523, .71552102e-1, .19155982e-3],
         "d1": [1, 1, 1, 3, 7],

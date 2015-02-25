@@ -43,6 +43,9 @@ class C4F10(MEoS):
         "eq": "helmholtz1",
         "R": 8.314471,
 
+        "Tmin": 189., "Tmax": 500., "Pmax": 30000.0, "rhomax": 7.64, 
+#        "Pmin": 0.61166, "rhomin": 55.497, 
+
         "ft": [0.776042865e-2, -0.641975631],
         "ft_add": [], "ft_add_exp": [],
         "fd": [], "fd_exp": [],

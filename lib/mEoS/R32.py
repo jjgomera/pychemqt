@@ -50,6 +50,9 @@ class R32(MEoS):
         "__doc__":  u"""Tillner-Roth, R., Yokozeki, A. An international standard equation of state for difluoromethane (R-32) for temperatures from the triple point at 136.4 K to 435 K at pressures up to 70 MPa. J. Phys. Chem. Ref. Data 26 (1997), 1273 – 1328.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 435.0, "Pmax": 70000.0, "rhomax": 27.4734, 
+        "Pmin": 0.480e-1, "rhomin": 27.4734, 
 
         "nr1": [0.1046634e1, -0.5451165, -0.2448595e-2, -0.4877002e-1,
                 0.3520158e-1, 0.1622750e-2, 0.2377225e-4, 0.2914900e-1],
@@ -70,6 +73,9 @@ class R32(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.41, 
+        "Pmin": 0.047922, "rhomin": 27.41, 
 
         "nr1": [.93080907, -.24777491e1, .41470439, .54859755e-1, .11475587e-3],
         "d1": [1, 1, 1, 3, 7],
@@ -88,6 +94,9 @@ class R32(MEoS):
         "__doc__":  u"""Astina, I.M. and Sato, H. "A Rational Helmholtz Fundamental Equation of State for Difluoromethane with an Intermolecular Potential Background," Int. J. Thermophys., 34(4):963-990, 2003.""",
         "R": 8.314472,
         "cp": CP3,
+        
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 72000.0, "rhomax": 27.48, 
+        "Pmin": 0.0485, "rhomin": 27.47, 
 
         "nr1": [2.118688, -4.531096, 1.442456, 2.053906e-1, -1.311675e-1,
                 1.022272e-2],
@@ -108,6 +117,9 @@ class R32(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)," Int. J. Thermophysics, 16:79-89, 1995.""",
         "R": 8.314471,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.48, 
+        "Pmin": 0.0477, "rhomin": 27.48, 
 
         "b": [None, -0.131275405202e-3, 0.899927934911, -0.281400805178e2,
               0.436091182784e4, -0.837235280004e6, -0.782176408963e-6,

@@ -46,6 +46,9 @@ class nC9(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
+        "Pmin": 0.00044, "rhomin": 6.05, 
+
         "nr1": [1.1151, -2.7020, 0.83416, -0.38828, 0.1376, 0.00028185],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
@@ -62,6 +65,9 @@ class nC9(MEoS):
         "__doc__":  u"""Kunz, O.; Wagner, W. -- The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures- An Expansion of GERG-2004. J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
+        "Pmin": 0.00044, "rhomin": 6.05, 
 
         "nr1": [0.11151e1, -0.27020e1, 0.83416, -0.38828, 0.13760, 0.28185e-3],
         "d1": [1, 1, 1, 2, 3, 7],

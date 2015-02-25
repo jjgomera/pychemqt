@@ -53,6 +53,9 @@ class Propylene(MEoS):
         "R": 8.314472,
         "cp": CP0,
 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.1, 
+        "Pmin": 0.00000075, "rhomin": 18.255, 
+
         "nr1": [0.4341002e-1, 0.1136592e1, -0.8528611, 0.5216669, -0.1382953e1,
                 0.1214347],
         "d1": [4, 1, 1, 2, 2, 3],
@@ -80,6 +83,9 @@ class Propylene(MEoS):
         "__doc__":  u"""Overhoff, U. Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.4, 
+        "Pmin": 0.00000074, "rhomin": 18.26, 
 
         "nr1": [0.11167427541961e1, -0.76114879497376, -0.18654354344883e1,
                 0.41500701892893e-1, 0.10706545719025e-1, 0.17481482892991e-1],
@@ -116,6 +122,9 @@ class Propylene(MEoS):
         "R": 8.31434,
         "cp": CP2,
 
+        "Tmin": 100.0, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 9.73, 
+        "Pmin": 0.48475e-4, "rhomin": 17.938, 
+
         "nr1": [0.631922681460, 0.102655250604, -0.70798923e-2, 0.18624829,
                 -0.1292611017e1, -0.5410160974e-1, 0.5069017035, -0.10606146125e1,
                 0.763136083, -0.850733053e-1, 0.438262575, 0.2316495716e-1,
@@ -137,6 +146,7 @@ class Propylene(MEoS):
 
     _surface = {"sigma": [0.0562], "exp": [1.26]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [-6593000000, 6593000001], "exp1": [0, 2.821],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

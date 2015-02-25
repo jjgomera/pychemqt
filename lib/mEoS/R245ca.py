@@ -39,6 +39,9 @@ class R245ca(MEoS):
            "ref": R134a,
            "eq": "helmholtz1",
            "R": 8.314471,
+        
+            "Tmin": 200.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 11.995, 
+#            "Pmin": aaaaaaa, "rhomin": aaaaaaa, 
 
            "ft": [-0.241011472, -0.788477331],
            "ft_add": [], "ft_add_exp": [],

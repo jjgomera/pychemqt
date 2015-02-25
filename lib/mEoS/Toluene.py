@@ -45,6 +45,9 @@ class Toluene(MEoS):
         "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 700.0, "Pmax": 500000.0, "rhomax": 10.581, 
+        "Pmin": 0.000039, "rhomin": 10.58, 
 
         "nr1": [0.96464, -2.7855, 0.86712, -0.18860, 0.11804, 0.00025181],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -62,6 +65,9 @@ class Toluene(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP1,
+        
+        "Tmin": 298.0, "Tmax": 673.0, "Pmax": 25000.0, "rhomax": 9.7242, 
+        "Pmin": 3.774, "rhomin": 9.3606, 
 
         "nr1": [-0.343905499875, 0.737562743137, -0.158601557810,
                 0.113243121503e1, -0.253681929563e1, 0.104584338973e1,

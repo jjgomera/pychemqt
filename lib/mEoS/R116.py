@@ -45,6 +45,9 @@ class R116(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31, 
+        "Pmin": 26.1, "rhomin": 12.3, 
 
         "nr1": [1.1632, -2.8123, 0.77202, -0.14331, 0.10227, 0.00024629],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -62,6 +65,10 @@ class R116(MEoS):
         "__doc__":  u"""private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23, 
+        "Pmin": 32.09, "rhomin": 12.231, 
+        "Pmin": 32.09, "rhomin": 12.231, 
 
         "nr1": [2.1775273, -5.5052198, -1.3675742, -8.1284229e-1,
                 -4.0207525e-1, 2.5890073, 1.4500537, -1.0445036, 9.8965288e-1,

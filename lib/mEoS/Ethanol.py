@@ -39,6 +39,9 @@ class Ethanol(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4, 
+        "Pmin": 0.00000088, "rhomin": 19.4, 
+
         "nr1": [0.114008942201e2, -0.395227128302e2, 0.413063408370e2,
                 -0.188892923721e2, 0.472310314140e1, -0.778322827052e-2,
                 0.171707850032, -0.153758307602e1, 0.142405508571e1,
@@ -61,6 +64,9 @@ class Ethanol(MEoS):
         "__doc__":  u"""Sun, L. and Ely, J.F., "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids," Fluid Phase Equilib., 222-223:107-118, 2004.""",
         "R": 8.314472,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6, 
+        "Pmin": 0.00000064, "rhomin": 19.55, 
 
         "nr1":  [-2.95455387, 1.95055493, -1.31612955, -1.47547651e-2,
                  1.39251945e-4, 5.04178939e-1],
@@ -148,6 +154,8 @@ class Ethanol(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 2.307981e-10, "Tcref": 770.85}
 
     _thermal = thermo0,
+
+# TODO: Add discard eq and thermal in refprop
 
 if __name__ == "__main__":
 #    import doctest

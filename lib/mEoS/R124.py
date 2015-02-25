@@ -45,6 +45,9 @@ class R124(MEoS):
         "__doc__":  u"""de Vries, B., Tillner-Roth, R., and Baehr, H.D., "Thermodynamic Properties of HCFC 124," 19th International Congress of Refrigeration, The Hague, The Netherlands, International Institute of Refrigeration, IVa:582-589, 1995.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": 120.0, "Tmax": 470.0, "Pmax": 40000.0, "rhomax": 13.5758, 
+        "Pmin": 0.00000000032, "rhomin": 13.5758, 
 
         "nr1": [-0.1262962e-1, 0.2168373e1, -0.3330033e1, 0.1610361,
                 -0.9666145e-4, 0.1191310e-1, -0.2880217e-2, 0.1681346e-2,
@@ -66,6 +69,10 @@ class R124(MEoS):
         "__doc__":  u"""McLinden, M.O., Younglove, B.A., and Sandarusi, J., "Measurement of the PVT properties and formulation of an equation of state for refrigerant 124 (1-chloro-1,2,2,2-tetrafluoroethane)," 1994. (unpublished manuscript).""",
         "R": 8.314471,
         "cp": CP2,
+        
+        "Tmin": 120.0, "Tmax": 475.0, "Pmax": 36000.0, "rhomax": 13.98, 
+        "Pmin": 0.00000000032, "rhomin": 14.54, 
+
         "b": [None, -0.195111839846e-1, 0.299978502039e1, -0.845849168162e2,
               0.146720754658e5, -0.232549336572e7, 0.938866046628e-3,
               -0.425069993257e1, 0.304859131600e4, 0.221314829910e7,

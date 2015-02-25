@@ -38,6 +38,9 @@ class R236fa(MEoS):
         "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "An equation of state for the thermodynamic properties of R236fa," NIST report to sponsor (U.S. Navy, David Taylor Model Basin) under contract N61533-94-F-0152, 1995.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 11.30, 
+        "Pmin": 0.162, "rhomin": 11.29, 
 
         "b": [None, -0.661121874831e-1, 0.861763902745e1, -0.233732255968e3,
               0.437486232843e5, -0.539677761508e7, -0.757588552002e-2,

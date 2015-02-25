@@ -19,7 +19,7 @@ class C1Oleate(MEoS):
     rhoc = unidades.Density(241.000222029)
     Tc = unidades.Temperature(782.0)
     Pc = unidades.Pressure(1246.0, "kPa")
-    M = 294.47206   # g/mol
+    M = 296.48794   # g/mol
     Tt = unidades.Temperature(253.47)
     Tb = unidades.Temperature(627.18)
     f_acent = 0.91
@@ -39,6 +39,9 @@ class C1Oleate(MEoS):
         "__doc__":  u"""Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J. "Model for the Thermodynamic Properties of a Biodiesel Fuel," Energy & Fuels, 23:3790-3797, 2009.""",
         "R": 8.314472,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.05, 
+        "Pmin": 0.0000000004, "rhomin": 3.05, 
 
         "nr1": [0.4596121e-1, 0.22954e1, -0.3554366e1, -0.2291674, 0.6854534e-1],
         "d1": [4, 1, 1, 2, 3],

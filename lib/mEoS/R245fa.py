@@ -38,6 +38,9 @@ class R245fa(MEoS):
         "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 440.0, "Pmax": 200000.0, "rhomax": 12.3, 
+        "Pmin": 0.0125, "rhomin": 12.29, 
 
         "nr1": [1.2904, -3.2154, 0.50693, 0.093148, 0.00027638],
         "d1": [1, 1, 1, 3, 7],

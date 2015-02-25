@@ -39,6 +39,9 @@ class DME(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15, 
+        "Pmin": 0.0022, "rhomin": 19.15, 
+
         "nr1":  [0.29814139e-1, 0.14351700e1, -0.26496400e1, -0.29515532,
                  0.17035607],
         "d1": [4, 1, 1, 2, 3],
@@ -66,6 +69,9 @@ class DME(MEoS):
         "__doc__":  u"""Ihmels, E.C. and Lemmon, E.W. "Experimental Densities, Vapor Pressures, and Critical Point, and a Fundamental Equation of State for Dimethyl Ether," in press, Fluid Phase Equilibria, 2007.""",
         "R": 8.314472,
         "cp": CP1,
+
+#        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
+#        "Pmin": 0.61166, "rhomin": 55.497, 
 
         "nr1":  [1.22690, -2.47245, 0.119889, 0.0000354],
         "d1": [1, 1, 3, 8],

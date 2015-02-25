@@ -58,6 +58,9 @@ class iC5(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
+        "Pmin": 0.83e-7, "rhomin": 10.925, 
+
         "nr1": [1.0963, -3.0402, 1.0317, -0.15410, 0.11535, 0.00029809],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
@@ -74,6 +77,9 @@ class iC5(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
+        "Pmin": 0.83e-7, "rhomin": 10.925, 
 
         "nr1": [0.11017531966644e1, -0.30082368531980e1, 0.99411904271336,
                 -0.14008636562629, 0.11193995351286, 0.29548042541230e-3],
@@ -93,6 +99,9 @@ class iC5(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP3,
+
+        "Tmin": 200.0, "Tmax": 553.0, "Pmax": 7500.0, "rhomax": 5.2252, 
+        "Pmin": 51.964, "rhomin": 8.7248, 
 
         "nr1": [-0.143819012123e1, 0.138298276836e1, -0.203328695121,
                 0.619304204378, -0.311353942178e1, 0.316914412369e1,
@@ -117,6 +126,9 @@ class iC5(MEoS):
         "R": 8.3159524,
         "cp": CP4,
 
+        "Tmin": 199.82, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 9.9258626, 
+        "Pmin": 0.34375, "rhomin": 9.9259, 
+
         "nr1": [0.179378842786e1, 0.258488286720, -0.812072482201,
                 -0.753941018871, 0.565338153509e-1, -0.115706201242e-2,
                 0.406090628523, -0.469700474204, -0.967480812300e-1,
@@ -139,6 +151,7 @@ class iC5(MEoS):
                    "a2": [108.9, 63.68, -15447, -5449.3],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.83e-7,
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [-7127700000000, 7127700000001], "exp1": [0, 1.563],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

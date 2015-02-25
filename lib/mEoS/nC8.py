@@ -60,6 +60,9 @@ class nC8(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
+        "Pmin": 0.001989, "rhomin": 6.6864, 
+
         "nr1": [0.10722545e1, -0.24632951e1, 0.65386674, -0.36324974,
                 0.1271327, 0.30713573e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -79,6 +82,9 @@ class nC8(MEoS):
         "R": 8.314472,
         "cp": CP2,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
+#        "Pmin": 73.476, "rhomin": 29.249, 
+
         "nr1": [0.10722544875633e1, -0.24632951172003e1, 0.65386674054928,
                 -0.36324974085628, 0.12713269626764, 0.30713572777930e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -97,6 +103,9 @@ class nC8(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP3,
+
+        "Tmin": 258.0, "Tmax": 500.0, "Pmax": 200000.0, "rhomax": 6.6355607, 
+        "Pmin": 0.15134, "rhomin": 6.3907, 
 
         "nr1": [0.266117347782e1, -0.343810366899e1, 0.700476763325,
                 0.573101545749e1, -0.411975339382e1, -0.771251551395e1,
@@ -120,6 +129,9 @@ class nC8(MEoS):
         "__doc__":  u"""Starling, K.E., "Fluid Thermodynamic Properties for Light Petroleum Systems," Gulf Publishing Company, 1973.""",
         "R": 8.3159524,
         "cp": CP4,
+
+        "Tmin": 255.372, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 6.36203, 
+        "Pmin": 0.099571, "rhomin": 6.3620, 
 
         "nr1": [0.253526486527e1, 0.616872653050, -0.941731168114,
                 -0.109609729872e1, 0.849362892312e-1, -0.363538456997e-3,

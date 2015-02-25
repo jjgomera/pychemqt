@@ -46,6 +46,9 @@ class Benzene(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45, 
+        "Pmin": 4.78, "rhomin": 11.45, 
+
         "nr1": [0.3513062e-1, 0.2229707e1, -0.3100459e1, -0.5763224, 0.2504179],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.3, 0.744, 1.174, 0.68],
@@ -71,6 +74,9 @@ class Benzene(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP2,
+
+        "Tmin": 278.7, "Tmax": 635.0, "Pmax": 78000.0, "rhomax": 11.45, 
+        "Pmin": 6.0329, "rhomin": 11.385, 
 
         "nr1": [-0.918572178424, 0.155357491575e1, -0.356149241161,
                 0.817273664265, -0.331303917534e1, 0.335336626528e1,
@@ -104,3 +110,10 @@ class Benzene(MEoS):
         "eq": 3,
         "ao": [-0.31147e1, -0.46689e1, -0.16161e2, -0.14650e3, 0.51887e3, -0.82772e3],
         "exp": [0.419, 1.12, 2.8, 7.3, 10., 12.]}
+
+
+if __name__ == "__main__":
+#    water=Benzene(T=278.674, s=211.06289982269442)
+    water=Benzene(T=278.674, s=-1500)
+#    water=Benzene(P=2e5, x=0.1)
+    print water.T, water.P.MPa, water.rho, water.h, water.s, water.x

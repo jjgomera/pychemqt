@@ -55,6 +55,9 @@ class SF6(MEoS):
         "__doc__":  u"""Guder, C. and Wagner, W. "A Reference Equation of State for the Thermodynamic Properties of Sulfur Hexafluoride for Temperatures from the Melting Line to 625 K and Pressures up to 150 MPa," to be submitted to J. Phys. Chem. Ref. Data, 2007.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 150000.0, "rhomax": 14.5, 
+        "Pmin": 231.429, "rhomin": 12.632, 
 
         "nr1": [.54958259132835, -.87905033269396, -.84656969731452,
                 .27692381593529, -.49864958372345e01, .48879127058055e01,
@@ -92,6 +95,9 @@ class SF6(MEoS):
         "__doc__":  u"""de Reuck, K.M., Craven, R.J.B., and Cole, W.A., "Report on the Development of an Equation of State for Sulphur Hexafluoride," IUPAC Thermodynamic Tables Project Centre, London, 1991.""",
         "R": 8.31448,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 55000.0, "rhomax": 12.7, 
+        "Pmin": 224.36, "rhomin": 12.677, 
 
         "nr1": [0.26945570453, -0.554046585076, -0.929624636454, 0.505661081063,
                 -0.683495847809, 0.579161832426, -0.122636218956,
@@ -115,6 +121,9 @@ class SF6(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. II. Results for Nonpolar Fluids," Int. J. Thermophys., 24(1):41-109, 2003.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 12.65, 
+        "Pmin": 221.22, "rhomin": 12.645, 
 
         "nr1": [0.12279403e1, -0.33035623e1, 0.12094019e1, -0.12316,
                 0.11044657, 0.32952153e-3],
@@ -134,6 +143,9 @@ class SF6(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP3,
+        
+        "Tmin": Tt, "Tmax": 523.0, "Pmax": 40000.0, "rhomax": 13.133, 
+        "Pmin": 236.73, "rhomin": 12.712, 
 
         "nr1": [0.131111896375, -0.792338803106, 0.580899809209,
                 0.153233600406e1, -0.485096079094e1, 0.482411603806e1,
@@ -155,10 +167,12 @@ class SF6(MEoS):
 
     _surface = {"sigma": [0.05488, -1.62445e-3], "exp": [1.289, 1.799]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
+                "Tmin": Tt, "Tmax": 800.0,
                 "a1": [1., -30.0468473, 30.0468473, 359.771253, -359.771253],
                 "exp1": [0, -20., 0, 3.25, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {"eq": 2, "Tref": Tt, "Pref": 231.429,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [-11.6942141, 11.6942141], "exp1": [-1.07, 0],
                     "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

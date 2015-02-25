@@ -38,6 +38,9 @@ class Trans_2_butene(MEoS):
         "__doc__":  u"""Lemmon, E.W., Ihmels, E.C. Thermodynamic properties of the butenes Part II. Short fundamental equations of state. Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 13.141, 
+        "Pmin": 0.075, "rhomin": 13.14, 
 
         "nr1": [0.81107, -2.8846, 1.0265, 0.016591, 0.086511, 0.00023256],
         "d1": [1, 1, 1, 2, 3, 7],

@@ -41,6 +41,9 @@ class C5F12(MEoS):
         "eq": "helmholtz1",
         "R": 8.314471,
 
+        "Tmin": Tt, "Tmax": 500., "Pmax": 30000.0, "rhomax": 6.7, 
+#        "Pmin": 0.61166, "rhomin": 55.497, 
+
         "ft": [0.960871894e-2, -0.820122088],
         "ft_add": [], "ft_add_exp": [],
         "fd": [], "fd_exp": [],

@@ -11,93 +11,93 @@ from lib.meos import MEoS
 class H2O(MEoS):
     """Multiparameter equation of state for water (including IAPWS95)
 
-    >>> water=IAPWS95(T=300, rho=996.5560)
-    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
-    0.0992418350 4.13018112 1501.51914 0.393062643
-
-    >>> water=IAPWS95(T=500, rho=0.435)
-    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
-    0.0999679423 1.50817541 548.31425 7.944882714
-
-    >>> water=IAPWS95(T=900., P=700)
-    >>> print("%0.4f %0.8f %0.5f %0.8f" % (water.rho, water.cv, water.w, water.s))
-    870.7690 2.66422350 2019.33608 4.17223802
-
-    >>> water=IAPWS95(T=300., P=0.1)
-    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
-    300.00 0.10000 996.56 112.65 0.39306 4.1806 1501.5 -0.066682
-
-    >>> water=IAPWS95(T=500., P=0.1)
-    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
-    500.00 0.10000 0.43514 2928.6 7.9447 1.9813 548.31 -0.0094137
-
-    >>> water=IAPWS95(T=450., x=0.5)
-    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.virialB))
-    450.00 0.93220 9.5723 1761.8 4.3589 -0.013028
-
-    >>> water=IAPWS95(P=1.5, rho=1000.)
-    >>> print("%0.2f %0.4f %0.1f %0.3f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
-    286.44 1.5000 1000.0 57.253 0.19931 4.1855 1462.1 -0.085566
-
-    >>> water=IAPWS95(h=3000, s=8.)
-    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
-    536.24 0.11970 0.48547 3000.0 8.0000 1.9984 567.04 -0.0076606
-
-    >>> water=IAPWS95(h=150, s=0.4)
-    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.cp, water.w, water.virialB))
-    301.27 35.50549 1011.48 150.00 0.40000 4.0932 1564.1 -0.065238
-
-    >>> water=IAPWS95(T=450., rho=300)
-    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.6f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
-    450.00 0.93220 300.00 770.82 2.1568 0.010693 -0.013028
-
-    >>> water=IAPWS95(rho=300., P=0.1)
-    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.7f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
-    372.76 0.10000 300.00 420.56 1.3110 0.0013528 -0.025144
-
-    >>> water=IAPWS95(h=1500., P=0.1)
-    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
-    372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
-
-    >>> water=IAPWS95(s=5., P=3.5)
-    >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.h, water.s, water.x, water.virialB))
+#    >>> water=H2O(T=300, rho=996.5560)
+#    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
+#    0.0992418350 4.13018112 1501.51914 0.393062643
+#
+#    >>> water=H2O(T=500, rho=0.435)
+#    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
+#    0.0999679423 1.50817541 548.31425 7.944882714
+#
+#    >>> water=H2O(T=900., P=700e6)
+#    >>> print("%0.4f %0.8f %0.5f %0.8f" % (water.rho, water.cv.kJkgK, water.w, water.s.kJkgK))
+#    870.7690 2.66422350 2019.33608 4.17223802
+#
+#    >>> water=H2O(T=300., P=0.1e6)
+#    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    300.00 0.10000 996.56 112.65 0.39306 4.1806 1501.5 -0.066682
+#
+#    >>> water=H2O(T=500., P=0.1e6)
+#    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    500.00 0.10000 0.43514 2928.6 7.9447 1.9813 548.31 -0.0094137
+#
+#    >>> water=H2O(T=450., x=0.5)
+#    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.virialB))
+#    450.00 0.93220 9.5723 1761.8 4.3589 -0.013028
+#
+#    >>> water=H2O(P=1.5e6, rho=1000.)
+#    >>> print("%0.2f %0.4f %0.1f %0.3f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    286.44 1.5000 1000.0 57.253 0.19931 4.1855 1462.1 -0.085566
+#
+#    >>> water=H2O(h=3000e3, s=8e3)
+#    >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    536.24 0.11970 0.48547 3000.0 8.0000 1.9984 567.04 -0.0076606
+#
+#    >>> water=H2O(h=150e3, s=0.4e3)
+#    >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    301.27 35.50549 1011.48 150.00 0.40000 4.0932 1564.1 -0.065238
+#
+#    >>> water=H2O(T=450., rho=300)
+#    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.6f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    450.00 0.93220 300.00 770.82 2.1568 0.010693 -0.013028
+#
+#    >>> water=H2O(rho=300., P=0.1e6)
+#    >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.7f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    372.76 0.10000 300.00 420.56 1.3110 0.0013528 -0.025144
+#
+#    >>> water=H2O(h=1500e3, P=0.1e6)
+#    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
+#
+    >>> water=H2O(s=5e3, P=3.5e6)
+    >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
     515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
 
-    >>> water=IAPWS95(T=500., u=900)
-    >>> print("%0.2f %0.2f %0.2f %0.2f %0.1f %0.4f %0.4f %0.1f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.cp, water.w, water.virialB))
-    500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
-
-    >>> water=IAPWS95(P=0.3, u=1550.)
-    >>> print("%0.2f %0.5f %0.4f %0.1f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    406.67 0.30000 3.3029 1550.0 1640.8 4.3260 0.49893 -0.018263
-
-    >>> water=IAPWS95(rho=300, h=1000.)
-    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.6f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    494.92 2.3991 300.00 992.00 1000.0 2.6315 0.026071 -0.0097064
-
-    >>> water=IAPWS95(rho=30, s=8.)
-    >>> print("%0.2f %0.3f %0.3f %0.1f %0.1f %0.4f %0.4f %0.2f %0.9f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.cp, water.w, water.virialB))
-    1562.42 21.671 30.000 4628.5 5350.9 8.0000 2.7190 943.53 0.000047165
-
-    >>> water=IAPWS95(rho=30, s=4.)
-    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    495.00 2.4029 30.000 1597.3 1677.4 4.0000 0.39218 -0.0097015
-
-    >>> water=IAPWS95(rho=300, u=1000.)
-    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    496.44 2.4691 300.000 1000.0 1008.2 2.6476 0.02680 -0.0096173
-
-    >>> water=IAPWS95(s=3., h=1000.)
-    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    345.73 0.034850 0.73526 952.60 1000.0 3.0000 0.29920 -0.034124
-
-    >>> water=IAPWS95(u=995., h=1000.)
-    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    501.89 2.7329 546.58 995.00 1000.0 2.6298 0.00866 -0.009308
-
-    >>> water=IAPWS95(u=1000., s=3.)
-    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P, water.rho, water.u, water.h, water.s, water.x, water.virialB))
-    371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543
+#    >>> water=H2O(T=500., u=900e3)
+#    >>> print("%0.2f %0.2f %0.2f %0.2f %0.1f %0.4f %0.4f %0.1f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
+#
+#    >>> water=H2O(P=0.3e6, u=1550.e3)
+#    >>> print("%0.2f %0.5f %0.4f %0.1f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    406.67 0.30000 3.3029 1550.0 1640.8 4.3260 0.49893 -0.018263
+#
+#    >>> water=H2O(rho=300, h=1000.e3)
+#    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.6f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    494.92 2.3991 300.00 992.00 1000.0 2.6315 0.026071 -0.0097064
+#
+#    >>> water=H2O(rho=30, s=8.e3)
+#    >>> print("%0.2f %0.3f %0.3f %0.1f %0.1f %0.4f %0.4f %0.2f %0.9f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    1562.42 21.671 30.000 4628.5 5350.9 8.0000 2.7190 943.53 0.000047165
+#
+#    >>> water=H2O(rho=30, s=4.e3)
+#    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    495.00 2.4029 30.000 1597.3 1677.4 4.0000 0.39218 -0.0097015
+#
+#    >>> water=H2O(rho=300, u=1000.e3)
+#    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    496.44 2.4691 300.000 1000.0 1008.2 2.6476 0.02680 -0.0096173
+#
+#    >>> water=H2O(s=3.e3, h=1000.e3)
+#    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    345.73 0.034850 0.73526 952.60 1000.0 3.0000 0.29920 -0.034124
+#
+#    >>> water=H2O(u=995.e3, h=1000.e3)
+#    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    501.89 2.7329 546.58 995.00 1000.0 2.6298 0.00866 -0.009308
+#
+#    >>> water=H2O(u=1000.e3, s=3.e3)
+#    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543
 
     """
     name = "water"
@@ -125,13 +125,23 @@ class H2O(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [0.01059, -0.98763, 3.06904, 0],
            "hyp": [0.415386589*Tc, 1.763895929*Tc, 3.874803739*Tc, 0]}
+           
+    Fi0 = {"ao_log": [1, 3.00632],
+           "pow": [0, 1],
+           "ao_pow": [-8.3204464837497, 6.6832105275932],
+           "ao_exp": [0.012436, 0.97315, 1.2795, 0.96956, 0.24873],
+           "titao": [1.28728967, 3.53734222, 7.74073708, 9.24437796, 27.5075105]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for water of Wagner and Pruß (2002).",
         "__doc__":  u"""Wagner, W., Pruß, A. The IAPWS formulation 1995 for the thermodyamic properties of ordinary water substance for general and scientific use. J. Phys. Chem. Ref. Data 31 (2002), 387 – 535.""",
         "R": 8.314371357587,
-        "cp": CP1,
+#        "cp": CP1,
+        "cp": Fi0,
+
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96, 
+        "Pmin": 0.61248, "rhomin": 55.49696, 
 
         "nr1": [0.12533547935523e-1, 0.78957634722828e1, -0.87803203303561e1,
                 0.31802509345418, -0.26145533859358, -0.78199751687981e-2,
@@ -189,6 +199,9 @@ class H2O(MEoS):
         "R": 8.314472,
         "cp": CP2,
 
+        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
+        "Pmin": 0.61166, "rhomin": 55.497, 
+
         "nr1": [0.82728408749586, -0.18602220416584e1, -0.11199009613744e1,
                 0.15635753976056, 0.87375844859025, -0.36674403715731,
                 0.53987893432436e-1],
@@ -209,6 +222,9 @@ class H2O(MEoS):
         "__doc__":  u"""Saul, A. and Wagner, W., "A Fundamental Equation for Water Covering the Range From the Melting Line to 1273 K at Pressures up to 25000 MPa," J. Phys. Chem. Ref. Data, 18(4):1537-1564, 1989.""",
         "R": 8.31434,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
+        "Pmin": 0.61166, "rhomin": 55.497, 
 
         "nr1": [0.2330009013, -0.1402091128e-1, 0.1172248041, -0.1850749499,
                 0.1770110422, 0.5525151794e-1, -0.341325738e-3, 0.8557274367e-3,
@@ -236,7 +252,10 @@ class H2O(MEoS):
     _PR = 0.0043451
 
     _surface = {"sigma": [0.2358, -0.147375], "exp": [1.256, 2.256]}
+    _melting = {"Tmin": 251.165, "Tmax": 370.0}
+    _sublimation = {"Tmin": 50.0, "Tmax": Tt}
 #    _sublimation={"eq": 2, "Tref": 1, "Pref": 0.133332237, "a1": [-0.212144006e2, 0.273203819e2, -0.61059813e1], "exp1": [-0.9933333333, 0.206667, 0.703333], "a2": [], "exp2": [], "a3": [], "exp3": []}
+
     _vapor_Pressure = {
         "eq": 6,
         "ao": [-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719,
@@ -303,62 +322,67 @@ class H2O(MEoS):
         return unidades.Dimensionless(_Dielectric(rho, T))
 
     @classmethod
-    def _Melting_Pressure(cls, T=None):
-#        if not T:
-#            T=self.T
-#        if not P:
-#            P=self.P
-        if 251.165 <= T <= 273.16:
-            Tref = cls.Tt
-            Pref = 0.611657
-            Tita = T/Tref
-            a = [0.119539337e7, 0.808183159e5, 0.33382686e4]
-            expo = [3., 0.2575e2, 0.10375e3]
-            suma = 1
-            for ai, expi in zip(a, expo):
-                suma += ai*(1-Tita**expi)
-            P = suma*Pref
-        elif 251.165 < T <= 256.164:
+    def _Melting_Pressure(cls, T):
+#        if 251.165 <= T <= 273.16:
+#            Tita = T/cls.Tt
+#            a = [0.119539337e7, 0.808183159e5, 0.33382686e4]
+#            expo = [3., 0.2575e2, 0.10375e3]
+#            suma = 1
+#            for ai, expi in zip(a, expo):
+#                suma += ai*(1-Tita**expi)
+#            P1 = suma*611.657
+#        else:
+#            P1 = None
+        
+        if 251.165 <= T <= 256.164:
             Tref = 251.165
             Pref = 208566.
             Tita = T/Tref
-            P = Pref*(1-0.299948*(1-Tita**60.))
+            P2 = Pref*(1-0.299948*(1-Tita**60.))
         elif 256.164 < T <= 273.31:
             Tref = 256.164
             Pref = 350100.
             Tita = T/Tref
-            P = Pref*(1-1.18721*(1-Tita**8.))
+            P2 = Pref*(1-1.18721*(1-Tita**8.))
         elif 273.31 < T <= 355:
             Tref = 273.31
             Pref = 632400.
             Tita = T/Tref
-            P = Pref*(1-1.07476*(1-Tita**4.6))
-        elif 355. < T <= 715:
+            P2 = Pref*(1-1.07476*(1-Tita**4.6))
+        elif 355. < T:
             Tref = 355
             Pref = 2216000.
             Tita = T/Tref
-            P = Pref*exp(1.73683*(1-1./Tita)-0.544606e-1*(1-Tita**5)+0.806106e-7*(1-Tita**22))
-
-        return unidades.Pressure(P, "kPa")
+            P2 = Pref*exp(1.73683*(1-1./Tita)-0.544606e-1*(1-Tita**5)+0.806106e-7*(1-Tita**22))
+        return unidades.Pressure(P2, "kPa")
 
     @classmethod
-    def _Sublimation_Pressure(cls, T=None):
-#        if not T:
-#            T=self.T
-        Tref = cls.Tt
-        Pref = 0.611657
-        Tita = T/Tref
-        suma = 0
+    def _Sublimation_Pressure(cls, T):
+        Pref = 611.657
+        Tita = T/cls.Tt
         a = [-0.212144006e2, 0.273203819e2, -0.61059813e1]
         expo = [0.333333333e-2, 1.20666667, 1.70333333]
+        suma = 0
         for ai, expi in zip(a, expo):
             suma += ai*Tita**expi
-        return unidades.Pressure(exp(suma/Tita)*Pref, "kPa")
+        return unidades.Pressure(exp(suma/Tita)*Pref)
 
 
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
+    
+    water=H2O(s=5e3, P=3.5e6)
+    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
+
+#    water=H2O(rho=300., P=0.1e6)
+#    print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.7f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    372.76 0.10000 300.00 420.56 1.3110 0.0013528 -0.025144
+
+#    water=H2O(h=1500e3, P=0.1e6)
+#    print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
 
 #    cyc5=H2O(T=500., rho=838.025, recursion=False)
 #    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
@@ -379,8 +403,8 @@ if __name__ == "__main__":
 #    >>> print("%0.10f %0.8f %0.5f %0.9f" % (water.P, water.cv, water.w, water.s))
 #    0.0999679423 1.50817541 548.31425 7.944882714
 #
-    water=H2O(T=647.096, x=1)
-    print water.P.MPa, water.rho, water.h, water.s
+#    water=H2O(T=647.096, rho=100.0)
+#    print water.P.MPa, water.rho, water.h, water.s
 #    870.7690 2.66422350 2019.33608 4.17223802
 #
 #    >>> water=H2O(T=300., P=0.1)
@@ -394,3 +418,82 @@ if __name__ == "__main__":
 #    >>> water=H2O(T=450., x=0.5)
 #    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, water.P, water.rho, water.h, water.s, water.virialB))
 #    450.00 0.93220 9.5723 1761.8 4.3589 -0.013028
+
+#    print H2O._Melting_Pressure(252)
+
+#{'P': 10513642.277577657, 'T': 600.0}
+#{'P': 12996040.325499836, 'T': 600.0}
+#T 600.0 1
+#{'P': 16064562.56384358, 'T': 600.0}
+#/usr/lib/python2.7/dist-packages/scipy/optimize/minpack.py:152: RuntimeWarning: The iteration is not making good progress, as measured by the 
+#  improvement from the last ten iterations.
+#  warnings.warn(msg, RuntimeWarning)
+#{'P': 19857600.000000007, 'T': 600.0}
+#T 600.0 1
+#{'P': 19898125.714285713, 'T': 600.0}
+
+#{'P': 3338.5258541981202, 'T': 600.0}
+#{'P': 20000000.0, 'T': 639.43649632653057}
+#    water=H2O(P=2384230.3837643899, T=700.0)
+#    print water.P.MPa, water.T, water.rho, water.x
+
+#    water=H2O(T=600, x=0)
+#    print water.P, water.T, water.x    
+#    water=H2O(P=12996040.325499836, x=0.5)
+#    print water.P, water.T, water.x
+
+#    water=H2O(T=500., u=900e3)
+#    print water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB
+#    500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
+#
+#    >>> water=H2O(P=0.3, u=1550.)
+#    >>> print("%0.2f %0.5f %0.4f %0.1f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    406.67 0.30000 3.3029 1550.0 1640.8 4.3260 0.49893 -0.018263
+#
+#    >>> water=H2O(rho=300, h=1000.)
+#    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.6f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    494.92 2.3991 300.00 992.00 1000.0 2.6315 0.026071 -0.0097064
+#
+#    >>> water=H2O(rho=30, s=8.)
+#    >>> print("%0.2f %0.3f %0.3f %0.1f %0.1f %0.4f %0.4f %0.2f %0.9f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
+#    1562.42 21.671 30.000 4628.5 5350.9 8.0000 2.7190 943.53 0.000047165
+#
+#    >>> water=H2O(rho=30, s=4.)
+#    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    495.00 2.4029 30.000 1597.3 1677.4 4.0000 0.39218 -0.0097015
+#
+#    >>> water=H2O(rho=300, u=1000.)
+#    >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    496.44 2.4691 300.000 1000.0 1008.2 2.6476 0.02680 -0.0096173
+#{'s': 11000.0, 'T': 411.99634285714285}
+#{'P': 22064000.0, 'T': 600.0}
+#79.6790793628
+
+#    water=H2O(P=1e5, h=5000000)
+#    print water.P.bar, water.T, water.rho, water.x, water.s.kJkgK, water.h.kJkg
+#    water2=H2O(P=water.P, T=water.T)
+#    print water2.P.bar, water2.T, water2.rho, water2.x, water2.s.kJkgK, water2.h.kJkg
+#    water2=H2O(s=water.s, T=water.T)
+#    print water2.P.bar, water2.T, water2.rho, water2.x, water2.s.kJkgK, water2.h.kJkg
+
+#    water=H2O(P=1e5, x=0.5)
+#    print water.P.bar, water.T, water.rho, water.x, water.s.kJkgK, water.h.kJkg
+#    water=H2O(P=water.P, h=water.h)
+#    print water.P.bar, water.T, water.rho, water.x, water.s.kJkgK, water.h.kJkg
+#    water2=H2O(s=water.s, T=water.T)
+#    print water2.P.bar, water2.T, water2.rho, water2.x, water2.s.kJkgK, water2.h.kJkg
+
+#    water=H2O(T=280, x=0)
+#    print water.P, water.T, water.rho, water.x, water.h
+    
+#    water=H2O(P=612.48, T=650)
+#    print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    345.73 0.034850 0.73526 952.60 1000.0 3.0000 0.29920 -0.034124
+#
+#    >>> water=H2O(u=995., h=1000.)
+#    >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    501.89 2.7329 546.58 995.00 1000.0 2.6298 0.00866 -0.009308
+#
+#    >>> water=H2O(u=1000., s=3.)
+#    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543

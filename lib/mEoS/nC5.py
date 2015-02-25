@@ -60,6 +60,9 @@ class nC5(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2, 
+        "Pmin": 0.76322e-4, "rhomin": 10.566, 
+
         "nr1": [0.10968643e1, -0.29988888e1, 0.99516887, -0.16170709,
                 0.11334460, 0.26760595e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -79,6 +82,9 @@ class nC5(MEoS):
         "R": 8.314472,
         "cp": CP2,
 
+        "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57, 
+#        "Pmin": 73.476, "rhomin": 29.249, 
+
         "nr1": [0.10968643098001e1, -0.29988888298061e1, 0.99516886799212,
                 -0.16170708558539, 0.11334460072775, 0.26760595150748e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -97,6 +103,9 @@ class nC5(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP3,
+
+        "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819, 
+        "Pmin": 3.624503, "rhomin": 9.3861, 
 
         "nr1": [-0.117648900900e1, 0.163499095773e1, -0.366669005817,
                 0.724947274043, -0.221919300269e1, 0.188671490348e1,
@@ -119,6 +128,9 @@ class nC5(MEoS):
         "__doc__":  u"""Starling, K.E., "Fluid Thermodynamic Properties for Light Petroleum Systems," Gulf Publishing Company, 1973.""",
         "R": 8.3159524,
         "cp": CP4,
+
+        "Tmin": 177.0, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 10.2534, 
+        "Pmin": 0.011064, "rhomin": 10.253, 
 
         "nr1": [0.175873733594e1, 0.485604047435, -0.111896446456e1,
                 -0.685918143315, 0.368714111378e-1, -0.167498784887e-2,
@@ -143,6 +155,7 @@ class nC5(MEoS):
                    "a2": [78.39, 54.15, -12480, -4800.0],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.76322e-4,
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [-8647500000, 8647500001], "exp1": [0, 1.649],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

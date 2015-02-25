@@ -38,6 +38,9 @@ class R113(MEoS):
         "__doc__":  u"""Marx, V., Pruss, A., and Wagner, W.,"Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113.  Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa," Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 9.10, 
+        "Pmin": 1.87, "rhomin": 9.099, 
 
         "nr1": [0.8432092286, -0.2019185967e1, 0.2920612996, 0.5323107661e-1,
                 0.3214971931e-2, 0.4667858574e-4, -0.1227522799e-5],
@@ -59,6 +62,9 @@ class R113(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.09, 
+        "Pmin": 1.869, "rhomin": 9.0893, 
 
         "nr1": [0.10519071e1, -0.28724742e1, 0.41983153, 0.87107788e-1,
                 0.24105194e-3],

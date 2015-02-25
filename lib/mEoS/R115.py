@@ -44,6 +44,9 @@ class R115(MEoS):
         "__doc__":  u"""Lemmon, E.W. unpublished equation, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 11.3, 
+        "Pmin": 2.2, "rhomin": 11.3, 
 
         "nr1": [1.20873, -3.54460, 0.745302, 0.114128, 0.000436572],
         "d1": [1, 1, 1, 3, 7],
@@ -62,6 +65,9 @@ class R115(MEoS):
         "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": 200.0 , "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7, 
+        "Pmin": 6.213, "rhomin": 10.743, 
 
         "nr1": [-0.377294477051, -0.695891789165e-1, 0.206972205161,
                 0.266609543946, -0.117158857583e1, 0.817521154071,

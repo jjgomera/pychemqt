@@ -45,6 +45,9 @@ class neoC5(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 200000.0, "rhomax": 8.71, 
+        "Pmin": 35.4, "rhomin": 8.70, 
+
         "nr1": [1.1136, -3.1792, 1.1411, -0.10467, 0.11754, 0.00034058],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
@@ -61,6 +64,9 @@ class neoC5(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP2,
+
+        "Tmin": 273.0, "Tmax": 498.0, "Pmax": 20000.0, "rhomax": 8.511, 
+        "Pmin": 70.6, "rhomin": 8.51, 
 
         "nr1": [-0.146552261671e1, 0.199230626557e1, -0.500821886276,
                 0.119809758161e1, -0.363135896710e1, 0.312770556886e1,

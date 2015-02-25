@@ -54,6 +54,9 @@ class R23(MEoS):
         "__doc__":  u"""Penoncello, S.G., Lemmon, E.W., Jacobsen, R.T, Shan, Z., "A Fundamental Equation for Triflurormethane (R-23)," J. Phys. Chem. Ref. Data, 32(4):1473-1499, 2003.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 475.0, "Pmax": 120000.0, "rhomax": 24.31, 
+        "Pmin": 0.058, "rhomin": 24.31, 
 
         "nr1": [.7041529e1, -.8259512e1, .805304e-2, -.8617615e-1, .633341e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -73,6 +76,9 @@ class R23(MEoS):
         "__doc__":  u"""Penoncello, S.G., Shan, Z., and Jacobsen, R.T, "A fundamental equation for the calculation of the thermodynamic properties of trifluoromethane (R23)," ASHRAE Trans. 106(Part 1), 2000.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 473.15, "Pmax": 120000.0, "rhomax": 23.0, 
+        "Pmin": 0.05888, "rhomin": 22.851535, 
 
         "nr1": [0.350093635099, -0.131185838025e1, -0.254118065769,
                 .104275296122, -.205326997924, .256040993750, .118078220087e-1,
@@ -98,6 +104,9 @@ class R23(MEoS):
         "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
         "R": 8.31451,
         "cp": CP3,
+        
+        "Tmin": 90.0, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 16.65, 
+        "Pmin": 2.5664104, "rhomin": 22.851535, 
 
         "nr1": [-0.133234251368e1, 0.210373595421e1, -0.376198728030,
                 0.881622087335, -0.272053790906e1, 0.247468024356e1,

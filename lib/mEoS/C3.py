@@ -73,6 +73,9 @@ class C3(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 1000000.0, "rhomax": 20.6, 
+        "Pmin": 0.00000017, "rhomin": 16.63, 
+
         "nr1":  [0.42910051e-1, 0.17313671e1, -0.24516524e1, 0.34157466,
                  -0.46047898],
         "d1": [4, 1, 1, 2, 2],
@@ -100,6 +103,9 @@ class C3(MEoS):
         "__doc__":  u"""Bücker, D., Wagner, W. Reference equations of state for the thermodynamic properties of fluid phase n-butane and isobutane. J. Phys. Chem. Ref. Data 35 (2006), 929 – 1020.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
+        "Pmin": 0.00000017, "rhomin": 16.62, 
 
         "nr1": [.21933784906951e1, -.38432884604893e1, .56820219711755,
                 .11235233289697, -.13246623110619e-1, .14587076590314e-1,
@@ -134,6 +140,9 @@ class C3(MEoS):
         "R": 8.31434,
         "cp": CP5,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
+        "Pmin": 1.685e-7, "rhomin": 16.617, 
+
         "b": [None, -0.2804337729e-2, 0.1180666107e1, -0.3756325860e2,
               0.5624374521e4, -0.9354759605e6, -0.4557405505e-3, 0.1530044332e1,
               -0.1078107476e4, 0.2218072099e6, 0.6629473971e-4, -0.6199354447e-1,
@@ -150,6 +159,9 @@ class C3(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP3,
+
+        "Tmin": 85.48, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
+#        "Pmin": 73.476, "rhomin": 29.249, 
 
         "nr1": [0.10403973107358e1, -0.28318404081403e1, 0.84393809606294,
                 -0.76559591850023e-1, 0.94697373057280e-1, 0.24796475497006e-3],
@@ -170,6 +182,9 @@ class C3(MEoS):
         "R": 8.314472,
         "cp": CP4,
 
+        "Tmin": Tt, "Tmax": 623.0, "Pmax": 103000.0, "rhomax": 17.41, 
+        "Pmin": 0.00000017, "rhomin": 16.64, 
+
         "nr1":  [2.698378e-1, -1.339252, -2.273858e-2, 2.414973e-1,
                  -3.321461e-2, 2.203323e-3, 5.935588e-5, -1.137457e-6],
         "d1": [1, 1, 2, 2, 3, 5, 8, 8],
@@ -189,6 +204,9 @@ class C3(MEoS):
         "__doc__":  u"""Span, R., Wagner, W. Equations of state for technical applications. II. Results for nonpolar fluids. Int. J. Thermophys. 24 (2003), 41 – 109.""",
         "R": 8.31451,
         "cp": CP6,
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
+        "Pmin": 0.00000015304, "rhomin": 16.706, 
 
         "nr1":  [0.10403973e1, -0.28318404e1, 0.8439381, -0.76559592e-1,
                  0.94697373e-1, 0.24796475e-3],
@@ -211,6 +229,7 @@ class C3(MEoS):
                    "a2": [172.75, 505.67, -388.21, -2078.8],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.35, 2.35]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.00000017,
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [-4230000000000, 4230000000001], "exp1": [0, 1.283],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

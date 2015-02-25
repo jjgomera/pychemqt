@@ -38,6 +38,9 @@ class R365mfc(MEoS):
         "__doc__":  u"""Lemmon, E.W., McLinden, M.O., and Meier, K. to be published in J. Chem. Eng. Data, 2007.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 35000.0, "rhomax": 9.3, 
+        "Pmin": 2.5, "rhomin": 9.3, 
 
         "nr1": [2.20027, -2.86240, 0.384559, -0.621227, 0.066596],
         "d1": [1, 1, 2, 2, 4],

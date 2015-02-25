@@ -44,6 +44,9 @@ class R13(MEoS):
         "__doc__":  u"""Magee, J.W., Outcalt, S.L., and Ely, J.F., "Molar heat capacity C(v), vapor pressure, and (p, rho, T) measurements from 92 to 350 K at pressures to 35 MPa and a new equation of state for chlorotrifluoromethane (R13)," Int. J. Thermophys., 21(5):1097-1121, 2000.""",
         "R": 8.314471,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85, 
+        "Pmin": 0.00033, "rhomin": 17.84, 
 
         "b": [None, 0.427710490378e-2, 0.106603397093e1, -0.383065097813e2,
               0.661580211522e4, -0.800160780370e6, -0.406405755462e-2,
@@ -63,6 +66,9 @@ class R13(MEoS):
         "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
         "R": 8.31451,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806, 
+        "Pmin": 0.0009047, "rhomin": 17.6998, 
 
         "nr1": [-0.628346559920, 0.792797111341, -0.134038992692,
                 0.761143010172, -0.194465098795e1, 0.940938700406,

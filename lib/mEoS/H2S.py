@@ -64,6 +64,9 @@ class H2S(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12, 
+        "Pmin": 23.3, "rhomin": 29.12, 
+
         "nr1": [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.00019076],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
@@ -80,6 +83,9 @@ class H2S(MEoS):
         "__doc__":  u"""Sakoda, N., Uematsu, M. "A Thermodynamic Property Model for Fluid Phase Hydrogen Sulfide," Int. J. Thermophys., 25(3):709-737, 2004.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": 187.67, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.13, 
+        "Pmin": 23.3, "rhomin": 29.12, 
 
         "nr1": [0.1545780, -0.1717693e1, -0.1595211e1, 0.2046589e1,
                 -0.1690358e1, 0.9483623, -0.6800772e-1, 0.4372273e-2,
@@ -102,6 +108,9 @@ class H2S(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP3,
+
+        "Tmin": Tt, "Tmax": 760.0, "Pmax": 142000.0, "rhomax": 29.1, 
+        "Pmin": 23.85, "rhomin": 29.07, 
 
         "nr1": [0.135782366339e1, -0.153224981014e1, 0.329107661253,
                 0.195802782279e1, -0.301125182071e1, -0.126614059078e1,
@@ -126,6 +135,9 @@ class H2S(MEoS):
         "R": 8.3159524,
         "cp": CP4,
 
+        "Tmin": Tt, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 29.578, 
+        "Pmin": 23.85, "rhomin": 29.07, 
+
         "nr1": [0.110928333109e1, 0.188834546108, -0.930906931583,
                 -0.411249591635, 0.140676923412e-1, -0.169077883177e-4,
                 0.510265859853, -0.572402742986, -0.828859606622e-3,
@@ -145,6 +157,9 @@ class H2S(MEoS):
         "__doc__":  u"""Kunz, O.; Wagner, W. -- The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures- An Expansion of GERG-2004. J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091""",
         "R": 8.314472,
         "cp": CP5,
+
+        "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12, 
+        "Pmin": 23.3, "rhomin": 29.12, 
 
         "nr1":  [0.87641, -0.20367e1, 0.21634, -0.50199e-1, 0.66994e-1, 0.19076e-3],
         "d1": [1, 1, 1, 2, 3, 7],

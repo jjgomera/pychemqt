@@ -66,6 +66,9 @@ class CH4(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
+        "Pmin": 11.696, "rhomin": 28.142, 
+
         "nr1": [0.43679010280e-1, 0.67092361990, -0.17655778590e01,
                 0.85823302410, -0.12065130520e01, 0.51204672200,
                 -0.40000107910e-3, -0.12478424230e-1, 0.31002697010e-1,
@@ -101,6 +104,10 @@ class CH4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely (1987)",
         "__doc__":  u"""Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+        
+        "Tmin": 90.68, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 36.2029, 
+        "Pmin": 11.744, "rhomin": 28.147, 
+
         "R": 8.31434,
         "cp": CP4,
         "b": [None, 0.9898937956e-4, 0.2199608275, -0.5322788000e1,
@@ -119,6 +126,9 @@ class CH4(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP2,
+
+        "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
+#        "Pmin": 73.476, "rhomin": 29.249, 
 
         "nr1":  [0.57335704239162, -0.16760687523730e1, 0.23405291834916,
                  -0.21947376343441, 0.16369201404128e-1, 0.15004406389280e-1],
@@ -143,6 +153,9 @@ class CH4(MEoS):
         "__doc__":  u"""Friend, D.G., Ely, J.F., and Ingham, H., "Thermophysical Properties of Methane," J. Phys. Chem. Ref. Data, 18(2):583-638, 1989.""",
         "R": 8.31451,
         "cp": CP3,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 100000.0, "rhomax": 29.714, 
+        "Pmin": 11.694, "rhomin": 28.145, 
 
         "nr1": [0.384436099659, -0.179692598800e1, 0.329444947369,
                 0.226312728442e-1, 0.759236768798e-1, 0.693758447259e-1,
@@ -172,6 +185,9 @@ class CH4(MEoS):
         "R": 8.31451,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 40.072, 
+        "Pmin": 11.661, "rhomin": 28.167, 
+
         "nr1": [0.89269676, -0.25438282e1, 0.64980978, 0.20793471e-1,
                 0.70189104e-1, 0.23700378e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -194,10 +210,12 @@ class CH4(MEoS):
                    "a2": [8.4578, 3.7196, -352.97, -100.65],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 11.696,
+                "Tmin": Tt, "Tmax": 625.0,
                 "a1": [1, 0.247568e5, -0.736602e4, -0.247568e5, 0.736602e4],
                 "exp1": [0, 1.85, 2.1, 0, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 11.696,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-12.84], "exp2": [1],
                     "a3": [], "exp3": []}

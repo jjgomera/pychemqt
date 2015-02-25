@@ -58,6 +58,9 @@ class Methanol(MEoS):
         "Tref": 513.38,
         "rhoref": 8.78517*M,
 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57, 
+        "Pmin": 0.18629e-3, "rhomin": 28.23, 
+
         "nr1": [-0.280062505988e1, 0.125636372418e2, -0.130310563173e2,
                 0.326593134060e1, -0.411425343805e1, 0.346397741254e1,
                 -0.836443967590e-1, -0.369240098923, 0.313180842152e-2,
@@ -99,24 +102,24 @@ class Methanol(MEoS):
 
     helmholtz2 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
+        "__doc__":  u"""Sun, L. and Ely, J.F., "Universal equation of state for engineering application: Algorithm and application to non-polar and polar fluids," Fluid Phase Equilib., 222-223:107-118, 2004.""",
         "R": 8.3143,
         "cp": CP1,
 
-        "nr1": [-0.412043979985e1, 0.541210456547e1, -0.974639417666,
-                -0.909437999343, -0.143467597275, 0.557052459597e1,
-                -0.697445416557e1, 0.860535902136, 0.244117735035e1,
-                -0.449073510921e1, 0.223855290012e1, -0.71733653794,
-                0.876135006507, 0.151777405466, -0.233178058896, 0.140022534721e-1],
-        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
-        "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
 
-        "nr2": [0.412043979985e1, -0.541210456547e1, 0.974639417666,
-                -0.4642672133, 0.944015617353, -0.449348200461],
-        "d2": [0, 0, 0, 2, 2, 2],
-        "t2": [3, 4, 5, 3, 4, 5],
-        "c2": [2]*6,
+        "nr1": [-5.24578394, 1.39060027, 8.56114069e-1, -4.20843418e-2, 
+                3.63682442e-5, 7.05598662e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [3.70573369e-1, 2.46303468, 1.50253790, 7.47553687e-2, 
+                -3.06417876e-1, -7.48402758e-1, -1.01432849e-1, 8.06830693e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0.0, 2.375, 2.0, 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [0.591872]*6}
 
     helmholtz3 = {
@@ -124,7 +127,10 @@ class Methanol(MEoS):
         "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
-        "cp": CP1,
+        "cp": CP2,
+
+        "Tmin": 298., "Tmax": 703.0, "Pmax": 63000.0, "rhomax": 26.0625, 
+        "Pmin": 16.803, "rhomin": 24.576, 
 
         "nr1": [-0.412043979985e1, 0.541210456547e1, -0.974639417666,
                 -0.909437999343, -0.143467597275, 0.557052459597e1,
@@ -146,6 +152,7 @@ class Methanol(MEoS):
     _surface = {"sigma": [0.1226257, -0.1994044, 0.1533744],
                 "exp": [1.25, 2.25, 3.25]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.187e-3,
+                "Tmin": Tt, "Tmax": 620.,
                 "a1": [1], "exp1": [0],
                 "a2": [5.320770e9, 4.524780e9, 3.888861e10], "exp2": [1, 1.5, 4],
                 "a3": [], "exp3": []}

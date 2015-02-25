@@ -51,6 +51,9 @@ class H2(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0, 
+        "Pmin": 7.36, "rhomin": 38.2, 
+
         "nr1": [-6.93643, 0.01, 2.1101, 4.52059, 0.732564, -1.34086, 0.130985],
         "d1": [1, 4, 1, 1, 2, 2, 3],
         "t1": [0.6844, 1., 0.989, 0.489, 0.803, 1.1444, 1.409],
@@ -77,6 +80,9 @@ class H2(MEoS):
         "R": 8.31434,
         "cp": CP2,
 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
+        "Pmin": 7.70, "rhomin": 38.3, 
+
         "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
               0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
               -0.1339776859288e-2, 0.3056473115421, 0.5161197159532e2,
@@ -95,6 +101,9 @@ class H2(MEoS):
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
+#        "Pmin": 0.61166, "rhomin": 55.497, 
 
         "nr1": [0.53579928451252e1, -0.62050252530595e1,  0.13830241327086,
                 -0.71397954896129e-1,  0.15474053959733e-1],
@@ -118,6 +127,9 @@ class H2(MEoS):
         "__doc__":  u"""Bender, E. "Equation of state of normal hydrogen in the range 18 to 700 K and 1 to 500 bar," VDI Forschungsheft N 609, pp. 15-20, 1982.""",
         "R": 8.3143,
         "cp": CP1,
+
+        "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74, 
+        "Pmin": 8.736, "rhomin": 38.7, 
 
         "nr1": [0.133442326203e1, -0.104116843433e1, 0.227202245707,
                 0.300374270906, -0.463984214813, -0.178010492282e1,
@@ -148,10 +160,12 @@ class H2(MEoS):
                    "a2": [0.181, 0.021, -7.4],
                    "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 7.3578,
+                "Tmin": Tt, "Tmax": 400.0,
                 "a1": [1], "exp1": [0],
                 "a2": [5626.3, 2717.2], "exp2": [1, 1.83],
                 "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 7.7,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-8.065], "exp2": [0.93],
                     "a3": [], "exp3": []}

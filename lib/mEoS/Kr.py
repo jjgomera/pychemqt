@@ -38,6 +38,9 @@ class Kr(MEoS):
         "R": 8.314472,
         "cp": CP1,
 
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 33.42, 
+        "Pmin": 73.5, "rhomin": 29.2, 
+
         "nr1": [0.83561, -2.3725, 0.54567, 0.014361, 0.066502, 0.00019310],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
@@ -57,6 +60,9 @@ class Kr(MEoS):
         "__doc__": u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 780.0, "Pmax": 375000.0, "rhomax": 33.55, 
+        "Pmin": 73.476, "rhomin": 29.249, 
 
         "nr1": [-0.402218741560, 0.679250544381, -0.1878869802860,
                 0.603399982935, -0.177297564389e1, 0.581208430222,
@@ -86,9 +92,11 @@ class Kr(MEoS):
                    "a2": [6.485, 13.48, -82.51, -170.4],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.7, 2.7]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 101.325,
+                "Tmin": Tt, "Tmax": 800.0,
                 "a1": [-2345.757, 1.080476685], "exp1": [0, 1.6169841],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {"eq": 3, "Tref": Tt, "Pref": 73.197,
+                    "Tmin": Tt, "Tmax": Tt,
                     "a1": [], "exp1": [],
                     "a2": [-11.5616], "exp2": [1],
                     "a3": [], "exp3": []}

@@ -38,6 +38,9 @@ class R1234yf(MEoS):
         "__doc__":  u"""Richter, M., McLinden, M.O., and Lemmon, E.W. "Thermodynamic Properties of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf): p-rho-T Measurements and an Equation of State," submitted to J. Chem. Eng. Data, 2010.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 410.0, "Pmax": 30000.0, "rhomax": 11.64, 
+        "Pmin": 31.5, "rhomin": 11.63, 
 
         "nr1": [0.4592563e-1, 0.1546958e1, -0.2355237e1, -0.4827835, 0.1758022],
         "d1": [4, 1, 1, 2, 3],

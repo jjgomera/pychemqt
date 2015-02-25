@@ -38,6 +38,9 @@ class R404A(MEoS):
         "__doc__":  u"""Lemmon, E.W., "Pseudo Pure-Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C," Int. J. Thermophys., 24(4):991-1006, 2003.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.21, 
+        "Pmin": 22.65, "rhomin": 14.21, 
 
         "nr1": [0.610984e1, -0.779453e1, 0.183377e-1, 0.262270, -0.351688e-2,
                 0.116181e-1, 0.105992e-2],

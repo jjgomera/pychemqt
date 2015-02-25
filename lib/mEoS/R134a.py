@@ -51,6 +51,9 @@ class R134a(MEoS):
         "Tref": 374.18,
         "rhoref": 4.978830171*M,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 455.0, "Pmax": 70000.0, "rhomax": 15.60, 
+        "Pmin": 0.3896, "rhomin": 15.5942, 
 
         "nr1": [0.5586817e-1, 0.498223, 0.2458698e-1, 0.8570145e-3,
                 0.4788584e-3, -0.1800808e1, 0.2671641, -0.4781652e-1],
@@ -72,6 +75,9 @@ class R134a(MEoS):
         "__doc__":  u"""Huber, M.L. and McLinden, M.O., "Thermodynamic properties of R134a (1,1,1,2-tetrafluoroethane)," International Refrigeration Conference, West Lafayette, IN, July 14-17, 453-462, 1992.""",
         "R": 8.314471,
         "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 15.60, 
+        "Pmin": 0.3922, "rhomin": 15.60, 
 
         "b": [None, 0.965209362217e-1, -0.401824768889e1, 0.395239532858e2,
               0.134532868960e4, -0.139439741347e7, -0.309281355175e-2,
@@ -91,6 +97,9 @@ class R134a(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.6, 
+        "Pmin": 0.38818, "rhomin": 15.588, 
 
         "nr1": [0.106631890000e1, -0.244959700000e1, 0.446457180000e-1,
                 0.756568840000e-1, 0.206520890000e-3],
@@ -110,6 +119,9 @@ class R134a(MEoS):
         "__doc__":  u"""Astina, I.M. and Sato, H., "A Fundamental Equation of State for 1,1,1,2-Tetrafluoroethane with an Intermolecular Potential Energy Background and Relialbe Ideal-Gas Properties," Fluid Phase Equilib., 221:103-111, 2004.""",
         "R": 8.314472,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 460.0, "Pmax": 70000.0, "rhomax": 15.58, 
+        "Pmin": 0.327, "rhomin": 15.58, 
 
         "nr1": [1.832124209, -2.940698861, 5.156071823e-1, 2.756965911e-1,
                 1.225264939, -6.486749497e-1, -9.286738053e-1, 3.920381291e-1,

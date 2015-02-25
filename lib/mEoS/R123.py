@@ -39,6 +39,9 @@ class R123(MEoS):
         "__doc__":  u"""Younglove, B.A. and McLinden, M.O., "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)," J. Phys. Chem. Ref. Data, 23:731-779, 1994.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
+        "Pmin": 0.0042, "rhomin": 11.60, 
 
         "b": [None, -0.657453133659e-2, 0.293479845842e1, -0.989140469845e2,
               0.201029776013e5, -0.383566527886e7, 0.227587641969e-2,
@@ -58,6 +61,9 @@ class R123(MEoS):
         "__doc__":  u"""Younglove, B.A. and McLinden, M.O., "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)," J. Phys. Chem. Ref. Data, 23:731-779, 1994.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
+        "Pmin": 0.0042, "rhomin": 11.60, 
 
         "nr1": [-0.100242647494e2, -0.280607656419, 0.206814471606e-1,
                 -0.284379431451, 0.593928110321e1, -0.936560389528e1,
@@ -87,6 +93,9 @@ class R123(MEoS):
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62, 
+        "Pmin": 0.0041534, "rhomin": 11.613, 
 
         "nr1": [0.1116973e1, -0.3074593e1, 0.51063873, 0.94478812e-1,
                 0.29532752e-3],

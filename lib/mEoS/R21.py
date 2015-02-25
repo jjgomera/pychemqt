@@ -39,6 +39,9 @@ class R21(MEoS):
         "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
         "R": 8.31451,
         "cp": CP1,
+        
+        "Tmin": 200.0, "Tmax": 473.19, "Pmax": 137900.0, "rhomax": 15.36, 
+        "Pmin": 0.6828e-4, "rhomin": 16.519, 
 
         "nr1": [-.44386484873e2, .926505600935e1, -.551709104376, .504676623431,
                 -.732431415692, -.868403860387, .146234705555, -.280576335053,

@@ -40,6 +40,9 @@ class R236ea(MEoS):
            "eq": "helmholtz1",
            # "eq": "MBWR",
            "R": 8.314471,
+        
+            "Tmin": 242.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 10.465, 
+#            "Pmin": aaaaaaa, "rhomin": aaaaaaa, 
 
            "ft": [-0.67786992, -0.52182651],
            "ft_add": [], "ft_add_exp": [],

@@ -40,8 +40,11 @@ class D2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for heavy water of Hill et al. (1982).",
         "__doc__":  u"""Hill, P.G., MacMillan, R.D.C., and Lee, V., "A Fundamental Equation of State for Heavy Water," J. Phys. Chem. Ref. Data, 11(1):1-14, 1982.""",
-        "R": 8.3143565,
+        "R": 8.3143565, "rhoref": 17.875414*M, 
         "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65., 
+        "Pmin": 0.66103, "rhomin": 55.198, 
 
         "nr1": [-0.384820628204e3, 0.108213047259e4, -0.110768260635e4,
                 0.164668954246e4, -0.137959852228e4, 0.598964185629e3,
