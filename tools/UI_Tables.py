@@ -334,14 +334,13 @@ class plugin(QtGui.QMenu):
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
                 
+        self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Loading cached data..."))
+        QtGui.QApplication.processEvents()
         data = grafico._getData()
-        if data:
-            self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Loading cached data..."), 3000)
-            QtGui.QApplication.processEvents()
-        else:
+        if not data:
             self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
-            self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Calculating data, be patient..."), 3000)
+            self.parent().statusbar.showMessage(QtGui.QApplication.translate("pychemqt", "Calculating data, be patient..."))
             QtGui.QApplication.processEvents()
             data = self.calculatePlot(fluid)
             conf = {}
@@ -356,6 +355,8 @@ class plugin(QtGui.QMenu):
         QtGui.QApplication.processEvents()
 
         plot2D(grafico, data, self.parent().Preferences, x, y)
+        grafico.config=data["config"]
+        
         if x in ["P", "rho", "v"]:
             xscale = "log"
         else:
@@ -2720,7 +2721,7 @@ class PlotMEoS(QtGui.QWidget):
     def _getData(self):
         """Get data from file"""
         filenameHard = os.environ["pychemqt"]+"dat"+os.sep+"mEoS"+ \
-                       os.sep+self.filename
+                       os.sep+self.filename+".gz"
         filenameSoft = config.conf_dir+self.filename
         file = ""
         if os.path.isfile(filenameSoft):
@@ -2730,6 +2731,7 @@ class PlotMEoS(QtGui.QWidget):
         elif os.path.isfile(filenameHard):
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
                 data = cPickle.load(archivo)
+            self._saveData(data)
             return data
         
     def _saveData(self, data):
@@ -2753,10 +2755,10 @@ class PlotMEoS(QtGui.QWidget):
         if self.x in units and self.y in units:
             x = units[self.x](event.xdata, "conf")
             y = units[self.y](event.ydata, "conf")
-            data = self._getData()
-            fluid = mEoS.__all__[data["config"]["fluid"]]
+            
+            fluid = mEoS.__all__[self.config["fluid"]]
             kwargs = {self.x: x, self.y: y}
-            fluido = calcPoint(fluid, data["config"], **kwargs)
+            fluido = calcPoint(fluid, self.config, **kwargs)
             if fluido and fluido.status and \
                     fluido._constants["Tmin"] <= fluido.T <= fluido._constants["Tmax"] and \
                     fluido._constants["Pmin"] <= fluido.P.kPa <= fluido._constants["Pmax"]:
@@ -2808,7 +2810,17 @@ class PlotMEoS(QtGui.QWidget):
         ymin, ymax=self.plot.ax.get_ylim()
         stream.writeFloat(ymin)
         stream.writeFloat(ymax)
+        # Margins
+        stream.writeFloat(self.plot.fig.subplotpars.left)
+        stream.writeFloat(self.plot.fig.subplotpars.bottom)
+        stream.writeFloat(self.plot.fig.subplotpars.right)
+        stream.writeFloat(self.plot.fig.subplotpars.top)
 
+        # Config
+        stream.writeInt32(self.config["fluid"])
+        stream.writeInt32(self.config["eq"])
+        stream.writeInt32(self.config["visco"])
+        stream.writeInt32(self.config["thermal"])
 
     @classmethod
     def readFromStream(cls, stream, parent):
@@ -2860,7 +2872,22 @@ class PlotMEoS(QtGui.QWidget):
             grafico.plot.ax.set_xscale(xscale)
         if yscale:
             grafico.plot.ax.set_yscale(yscale)
+            
+        # Load margins
+        left = stream.readFloat()
+        bottom = stream.readFloat()
+        right = stream.readFloat()
+        top = stream.readFloat()
+        grafico.plot.fig.subplots_adjust(left=left, bottom=bottom, right=right, top=top)        
         
+        # Load config
+        conf = {}
+        conf["fluid"] = stream.readInt32()
+        conf["eq"] = stream.readInt32()
+        conf["visco"] = stream.readInt32()
+        conf["thermal"] = stream.readInt32()
+        grafico.config = conf
+
         return grafico
 
 class Plot2D(QtGui.QDialog):
