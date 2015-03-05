@@ -92,7 +92,6 @@ class plugin(QtGui.QMenu):
         menuCalculate.addAction(SpecifyAction)
 
         menuPlot=QtGui.QMenu(QtGui.QApplication.translate("pychemqt", "Plot"), parent=self)
-        Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "Other Plots"), slot=self.plot2D, parent=self)
         Plot_T_s_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-s diagram"), slot=partial(self.plot, "s", "T"), parent=self)
         menuPlot.addAction(Plot_T_s_Action)
         Plot_T_rho_Action = createAction(QtGui.QApplication.translate("pychemqt", "T-rho diagram"), slot=partial(self.plot, "rho", "T"), parent=self)
@@ -105,10 +104,13 @@ class plugin(QtGui.QMenu):
         menuPlot.addAction(Plot_P_T_Action)
         Plot_h_s_Action = createAction(QtGui.QApplication.translate("pychemqt", "h-s diagram"), slot=partial(self.plot, "s", "h"), parent=self)
         menuPlot.addAction(Plot_h_s_Action)
-        menuPlot.addSeparator()
+        Plot_v_u_Action = createAction(QtGui.QApplication.translate("pychemqt", "v-u diagram"), slot=partial(self.plot, "u", "v"), parent=self)
+        menuPlot.addAction(Plot_v_u_Action)
+        Plot2DAction = createAction(QtGui.QApplication.translate("pychemqt", "Other Plots"), slot=self.plot2D, parent=self)
         menuPlot.addAction(Plot2DAction)
-#        Plot3DAction = createAction(QtGui.QApplication.translate("pychemqt", "3D Plot"), slot=self.plot3D, parent=self)
-#        menuPlot.addAction(Plot3DAction)
+        menuPlot.addSeparator()
+        Plot3DAction = createAction(QtGui.QApplication.translate("pychemqt", "3D Plot"), slot=self.plot3D, parent=self)
+        menuPlot.addAction(Plot3DAction)
 
         self.addAction(fluidoAction)
         self.addAction(referenciaAction)
@@ -309,9 +311,18 @@ class plugin(QtGui.QMenu):
                 j+=1
             x = prop_pickle[i]
             y = prop_pickle[j]
-            self.plot(x, y)
+            
+            if dialog.Xscale.isChecked():
+                xscale = "log"
+            else:
+                xscale = "linear"
+            if dialog.Yscale.isChecked():
+                yscale = "log"
+            else:
+                yscale = "linear"
+            self.plot(x, y, xscale, yscale)
 
-    def plot(self, x, y):
+    def plot(self, x, y, xscale=None, yscale=None):
         """Create a plot
         x: property for axes x
         y: property for axes y"""
@@ -357,15 +368,17 @@ class plugin(QtGui.QMenu):
         plot2D(grafico, data, self.parent().Preferences, x, y)
         grafico.config=data["config"]
         
-        if x in ["P", "rho", "v"]:
-            xscale = "log"
-        else:
-            xscale = "linear"
+        if not xscale:
+            if x in ["P", "rho", "v"]:
+                xscale = "log"
+            else:
+                xscale = "linear"
         grafico.plot.ax.set_xscale(xscale)
-        if y in ["P", "rho", "v"]:
-            yscale = "log"
-        else:
-            yscale = "linear"
+        if not yscale:
+            if y in ["P", "rho", "v"]:
+                yscale = "log"
+            else:
+                yscale = "linear"
         grafico.plot.ax.set_yscale(yscale)
 
         self.parent().centralwidget.currentWidget().addSubWindow(grafico)
@@ -632,54 +645,55 @@ class plugin(QtGui.QMenu):
     def plot3D(self):
         dialog=Plot3D(self.parent())
         if dialog.exec_():
-            self.parent().progressBar.setVisible(True)
-            i, j=dialog.currentIndex()
-            xini=dialog.abscisaInicio[i].value
-            xfin=dialog.abscisaFin[i].value
-            xsalto=dialog.abscisaIntervalo[i].value
-            xn=int((xfin-xini)/xsalto+1)
-            yini=dialog.ordenadaInicio[j].value
-            yfin=dialog.ordenadaFin[j].value
-            ysalto=dialog.ordenadaIntervalo[j].value
-            yn=int((yfin-yini)/ysalto+1)
-            xi=arange(xini, xfin, xsalto)
-            if (xfin-xini)/xsalto==float(int((xfin-xini)/xsalto)):
-                xi=concatenate((xi, [xfin]))
-            yi=arange(yini, yfin, ysalto)
-            if (yfin-yini)/ysalto==float(int((yfin-yini)/ysalto)):
-                yi=concatenate((yi, [yfin]))
-
-            #python 2.6 compatibility
-            inv_dict={}
-            for k, v in configVariables(self.parent()).items():
-                inv_dict[v]=k
-            #inv_dict = {v:k for k, v in configVariables(self.parent()).items()}
-            property=inv_dict[dialog.variableTabla.currentText()]
-            c1, c2=map(str, dialog.ejesTabla.currentText().split(","))
-
-            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
-            sufx=configSufx(fluid, self.parent())
-            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, property, dialog.ejesTabla.currentText(), sufx))
-            labels=[dialog.label_ejeX.text(), dialog.label_ejeY.text(), "z"]
-            grafico=PlotMEoS(dim=3, parent=self.parent())
-            grafico.setWindowTitle(title)
-            xdata, ydata, zdata=calculate(self.parent(), xi, yi, c1, c2, property, dialog)
-            grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
-            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
-            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
-
-            grafico.plot.ax.set_title("")
-            grafico.plot.ax.set_xlim3d(xini, xfin)
-            grafico.plot.ax.set_ylim3d(yini, yfin)
-            grafico.plot.ax.set_zlim3d(min(zdata), max(zdata))
-            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
-            grafico.plot.ax.c1=c1
-            grafico.plot.ax.c2=c2
-            grafico.plot.ax.property=property
-
-            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
-            grafico.show()
-            self.parent().progressBar.setVisible(False)
+            pass
+#            self.parent().progressBar.setVisible(True)
+#            i, j=dialog.currentIndex()
+#            xini=dialog.abscisaInicio[i].value
+#            xfin=dialog.abscisaFin[i].value
+#            xsalto=dialog.abscisaIntervalo[i].value
+#            xn=int((xfin-xini)/xsalto+1)
+#            yini=dialog.ordenadaInicio[j].value
+#            yfin=dialog.ordenadaFin[j].value
+#            ysalto=dialog.ordenadaIntervalo[j].value
+#            yn=int((yfin-yini)/ysalto+1)
+#            xi=arange(xini, xfin, xsalto)
+#            if (xfin-xini)/xsalto==float(int((xfin-xini)/xsalto)):
+#                xi=concatenate((xi, [xfin]))
+#            yi=arange(yini, yfin, ysalto)
+#            if (yfin-yini)/ysalto==float(int((yfin-yini)/ysalto)):
+#                yi=concatenate((yi, [yfin]))
+#
+#            #python 2.6 compatibility
+#            inv_dict={}
+#            for k, v in configVariables(self.parent()).items():
+#                inv_dict[v]=k
+#            #inv_dict = {v:k for k, v in configVariables(self.parent()).items()}
+#            property=inv_dict[dialog.variableTabla.currentText()]
+#            c1, c2=map(str, dialog.ejesTabla.currentText().split(","))
+#
+#            fluid=mEoS.__all__[self.parent().currentConfig.getint("MEoS", "fluid")]
+#            sufx=configSufx(fluid, self.parent())
+#            title=QtGui.QApplication.translate("pychemqt", "Plot %s: %s=f(%s) %s" %(fluid.formula, property, dialog.ejesTabla.currentText(), sufx))
+#            labels=[dialog.label_ejeX.text(), dialog.label_ejeY.text(), "z"]
+#            grafico=PlotMEoS(dim=3, parent=self.parent())
+#            grafico.setWindowTitle(title)
+#            xdata, ydata, zdata=calculate(self.parent(), xi, yi, c1, c2, property, dialog)
+#            grafico.plot.plot_3D(labels, xdata, ydata, zdata, self.parent().Preferences)
+#            calcularSaturacion(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
+#            calcularIsolineas(self.parent().Preferences, grafico, fluid, dialog.metodo, xini, xfin, yini, yfin, c1, c2, property)
+#
+#            grafico.plot.ax.set_title("")
+#            grafico.plot.ax.set_xlim3d(xini, xfin)
+#            grafico.plot.ax.set_ylim3d(yini, yfin)
+#            grafico.plot.ax.set_zlim3d(min(zdata), max(zdata))
+#            grafico.plot.ax.grid(self.parent().Preferences.getboolean("MEOS", "grid"))
+#            grafico.plot.ax.c1=c1
+#            grafico.plot.ax.c2=c2
+#            grafico.plot.ax.property=property
+#
+#            self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+#            grafico.show()
+#            self.parent().progressBar.setVisible(False)
 
 
 
@@ -2914,8 +2928,8 @@ class Plot2D(QtGui.QDialog):
         layout_GroupX=QtGui.QGridLayout(group_Ejex)
         self.ejeX = QtGui.QComboBox()
         layout_GroupX.addWidget(self.ejeX,1,1)
-        self.ejeX_escala=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
-        layout_GroupX.addWidget(self.ejeX_escala,2,1)
+        self.Xscale=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
+        layout_GroupX.addWidget(self.Xscale,2,1)
         for prop in prop_pickle:
             self.ejeX.addItem(meos.properties[prop])
             
@@ -2924,8 +2938,8 @@ class Plot2D(QtGui.QDialog):
         layout_GroupY=QtGui.QGridLayout(group_Ejey)
         self.ejeY = QtGui.QComboBox()
         layout_GroupY.addWidget(self.ejeY,1,1)
-        self.ejeY_escala=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
-        layout_GroupY.addWidget(self.ejeY_escala,2,1)
+        self.Yscale=QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Logarithmic scale"))
+        layout_GroupY.addWidget(self.Yscale,2,1)
 
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self.accept)
@@ -3821,35 +3835,13 @@ class Plot3D(QtGui.QDialog):
         label=QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Step")+"         ")
         label.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignBottom)
         layout.addWidget(label,3,4)
-        self.metodo=method(self.parent())
-        if self.metodo=="freesteam":
-            Ejes=["p,T", "p,h", "p,s", "p,v", "T,s", "T,x"]
-
-            self.abscisaInicio = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Temperature, texto=False)]
-            self.abscisaFin = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Temperature, texto=False)]
-            self.abscisaIntervalo = [Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.DeltaT)]
-            self.ordenadaInicio = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False, title=QtGui.QApplication.translate("pychemqt", "Entropy")), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Dimensionless, texto=False, title=QtGui.QApplication.translate("pychemqt", "Quality"))]
-            self.ordenadaFin = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
-            self.ordenadaIntervalo = [Entrada_con_unidades(unidades.DeltaT), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy"), Entrada_con_unidades(unidades.SpecificVolume), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
-
-        elif self.metodo=="iapws":
-            Ejes=["T,P", "P,h", "P,s", "h,s", "T,x", "P,x"]
-
-            self.abscisaInicio = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False)]
-            self.abscisaFin = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False)]
-            self.abscisaIntervalo = [Entrada_con_unidades(unidades.DeltaT), Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Enthalpy)]
-            self.ordenadaInicio = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False, title=QtGui.QApplication.translate("pychemqt", "Entropy")), Entrada_con_unidades(unidades.Dimensionless, texto=False, title=QtGui.QApplication.translate("pychemqt", "Quality"))]
-            self.ordenadaFin = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
-            self.ordenadaIntervalo = [Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy"), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
-
-        else:
-            Ejes=["T,P", "T,rho", "T,v", "T,h", "T,s", "T,u", "T,x", "P,rho", "P,v", "P,h", "P,s", "P,u", "P,x", "rho,h", "rho,s", "rho,u", "v,h", "v,s", "v,u", "h,s", "h,u", "s,u"]
-            self.abscisaInicio = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False, title=QtGui.QApplication.translate("pychemqt", "Entropy"))]
-            self.abscisaFin = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False)]
-            self.abscisaIntervalo = [Entrada_con_unidades(unidades.DeltaT), Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Density), Entrada_con_unidades(unidades.SpecificVolume), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy")]
-            self.ordenadaInicio = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False, title=QtGui.QApplication.translate("pychemqt", "Internal Energy")), Entrada_con_unidades(unidades.Dimensionless, texto=False, title=QtGui.QApplication.translate("pychemqt", "Quality"))]
-            self.ordenadaFin = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
-            self.ordenadaIntervalo = [Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Density), Entrada_con_unidades(unidades.SpecificVolume), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy"), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
+        Ejes=["T,P", "T,rho", "T,v", "T,h", "T,s", "T,u", "T,x", "P,rho", "P,v", "P,h", "P,s", "P,u", "P,x", "rho,h", "rho,s", "rho,u", "v,h", "v,s", "v,u", "h,s", "h,u", "s,u"]
+        self.abscisaInicio = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False, title=QtGui.QApplication.translate("pychemqt", "Entropy"))]
+        self.abscisaFin = [Entrada_con_unidades(unidades.Temperature, texto=False), Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False)]
+        self.abscisaIntervalo = [Entrada_con_unidades(unidades.DeltaT), Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Density), Entrada_con_unidades(unidades.SpecificVolume), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy")]
+        self.ordenadaInicio = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False, title=QtGui.QApplication.translate("pychemqt", "Internal Energy")), Entrada_con_unidades(unidades.Dimensionless, texto=False, title=QtGui.QApplication.translate("pychemqt", "Quality"))]
+        self.ordenadaFin = [Entrada_con_unidades(unidades.Pressure, texto=False), Entrada_con_unidades(unidades.Density, texto=False), Entrada_con_unidades(unidades.SpecificVolume, texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.SpecificHeat, "Entropy", texto=False), Entrada_con_unidades(unidades.Enthalpy, texto=False), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
+        self.ordenadaIntervalo = [Entrada_con_unidades(unidades.DeltaP), Entrada_con_unidades(unidades.Density), Entrada_con_unidades(unidades.SpecificVolume), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.SpecificHeat, "Entropy"), Entrada_con_unidades(unidades.Enthalpy), Entrada_con_unidades(unidades.Dimensionless, texto=False)]
 
         for widget in self.abscisaInicio:
             layout.addWidget(widget,4,2)
@@ -3872,8 +3864,8 @@ class Plot3D(QtGui.QDialog):
         for i in Ejes:
             self.ejesTabla.addItem(i)
 
-        self.ejesTabla.currentIndexChanged.connect(self.ejesTabla_currentIndexChanged)
-        self.ejesTabla_currentIndexChanged(0)
+#        self.ejesTabla.currentIndexChanged.connect(self.ejesTabla_currentIndexChanged)
+#        self.ejesTabla_currentIndexChanged(0)
 
 
     def ejesTabla_currentIndexChanged(self, indice):
