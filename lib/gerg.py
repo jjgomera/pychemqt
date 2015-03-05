@@ -277,7 +277,7 @@ class GERG(object):
 
         self.comp = []
         for i in self.kwargs["componente"]:
-            c = self.componentes[i](recursion=False, eq="GERG", **self.kwargs)
+            c = self.componentes[i](eq="GERG", **self.kwargs)
             self.comp.append(c)
         self.id = self.kwargs["componente"]
         self.xi = self.kwargs["fraccion"]
@@ -501,7 +501,7 @@ class GERG(object):
             deltai = delta*self.rhoc/componente.rhoc
             taui = componente.Tc*tau/self.Tc
             fio_, fiot_, fiott_, fiod_, fiodd_, fiodt_ = componente._phi0(
-                componente.GERG["cp"], taui, deltai, Tref, Pref)
+                componente.GERG["cp"], taui, deltai)
             fio += self.xi[i]*(fio_+log(self.xi[i]))
             fiot += self.xi[i]*fiot_
             fiott += self.xi[i]*fiott_
@@ -595,44 +595,45 @@ class GERG(object):
                 C += nr1[i]*d1[i]*(d1[i]-1)*delta_0**(d1[i]-2)*tau**t1[i]
 
             nr2 = constants["nr2"]
-            d2 = constants["d2"]
-            t2 = constants["t2"]
-            n2 = constants["n2"]
-            e2 = constants["e2"]
-            b2 = constants["b2"]
-            g2 = constants["g2"]
-            for i in range(len(constants.get("nr2", []))):
-                # Gaussian terms
-                fir += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2))
-                fird += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                firdd += nr2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (-2*n2[i]*delta**d2[i]+4*n2[i]**2*delta**d2[i] *
-                     (delta-e2[i])**2-4*d2[i]*n2[i]*delta**2*(delta-e2[i])+d2[i]*2*delta)
-                firt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (t2[i]/tau-2*b2[i]*(tau-g2[i]))
-                firtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i])
-                firdt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (t2[i]/tau-2*b2[i]*(tau-g2[i])) * \
-                    (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                firdtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i]) * \
-                    (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                B += nr2[i]*delta_0**d2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (d2[i]/delta_0-2*n2[i]*(delta_0-e2[i]))
-                C += nr2[i]*tau**t2[i] * \
-                    exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                    (-2*n2[i]*delta_0**d2[i]+4*n2[i]**2*delta_0**d2[i]*(delta_0-e2[i])**2 -
-                     4*d2[i]*n2[i]*delta_0**2*(delta_0-e2[i])+d2[i]*2*delta_0)
+            if nr2:
+                d2 = constants["d2"]
+                t2 = constants["t2"]
+                n2 = constants["n2"]
+                e2 = constants["e2"]
+                b2 = constants["b2"]
+                g2 = constants["g2"]
+                for i in range(len(constants.get("nr2", []))):
+                    # Gaussian terms
+                    fir += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2))
+                    fird += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
+                    firdd += nr2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (-2*n2[i]*delta**d2[i]+4*n2[i]**2*delta**d2[i] *
+                         (delta-e2[i])**2-4*d2[i]*n2[i]*delta**2*(delta-e2[i])+d2[i]*2*delta)
+                    firt += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (t2[i]/tau-2*b2[i]*(tau-g2[i]))
+                    firtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i])
+                    firdt += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (t2[i]/tau-2*b2[i]*(tau-g2[i])) * \
+                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
+                    firdtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i]) * \
+                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
+                    B += nr2[i]*delta_0**d2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (d2[i]/delta_0-2*n2[i]*(delta_0-e2[i]))
+                    C += nr2[i]*tau**t2[i] * \
+                        exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
+                        (-2*n2[i]*delta_0**d2[i]+4*n2[i]**2*delta_0**d2[i]*(delta_0-e2[i])**2 -
+                         4*d2[i]*n2[i]*delta_0**2*(delta_0-e2[i])+d2[i]*2*delta_0)
 
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
 
@@ -688,8 +689,9 @@ id_GERG = [i.id for i in GERG.componentes]
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
-
-    aire = GERG(componente=[1, 13, 17], fraccion=[0.78, 0.21, 0.01], P=0.1, T=300)
+    T = unidades.Temperature(205, "F")
+    P = unidades.Pressure(315, "psi")
+    aire = GERG(T=T, P=P, componente=[0, 3, 4, 5, 7, 9], fraccion=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
 #    print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w), aire.P.MPa
 
 #    aire=GERG([0], [1.], P=0.1, T=300)
