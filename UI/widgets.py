@@ -300,8 +300,6 @@ class Entrada_con_unidades(QtGui.QWidget):
         if not self.readOnly:
             if e.key() in [QtCore.Qt.Key_Insert, QtCore.Qt.Key_Backspace]:
                 self.clear()
-            elif e.key() in [QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter]:
-                self.valueChanged.emit(self.value)
             if self.spinbox:
                 if not self.value:
                     self.value=self.start
