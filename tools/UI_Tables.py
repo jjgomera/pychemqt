@@ -2583,12 +2583,23 @@ class AddPoint(QtGui.QDialog):
             
         self.status = Status(self.fluid.status, self.fluid.msg)
         layout.addWidget(self.status,i+1,1,1,2)
+
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "To")),i+2,1)
+        self.To = Entrada_con_unidades(unidades.Temperature)
+        self.To.valueChanged.connect(partial(self.update, "To"))
+        layout.addWidget(self.To,i+2,2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "rhoo")),i+3,1)
+        self.rhoo = Entrada_con_unidades(unidades.Density)
+        self.rhoo.valueChanged.connect(partial(self.update, "rhoo"))
+        layout.addWidget(self.rhoo,i+3,2)
+        
         self.checkBelow = QtGui.QCheckBox(
             QtGui.QApplication.translate("pychemqt", "Add below selected point"))
-        layout.addWidget(self.checkBelow,i+2,1,1,2)
+        layout.addWidget(self.checkBelow,i+4,1,1,2)
+
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Reset|QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
         self.buttonBox.clicked.connect(self.click)
-        layout.addWidget(self.buttonBox,i+3,1,1,2)
+        layout.addWidget(self.buttonBox,i+5,1,1,2)
 
     def click(self, button):
         """Manage mouse click event over buttonbox"""
@@ -2604,7 +2615,7 @@ class AddPoint(QtGui.QDialog):
         self.status.setState(4)
         QtGui.QApplication.processEvents()
         self.fluid(**{key: value})
-        if self.fluid.status:
+        if self.fluid.status in (1, 3):
             self.fill(self.fluid)
         self.status.setState(self.fluid.status, self.fluid.msg)
         
@@ -2625,6 +2636,8 @@ class AddPoint(QtGui.QDialog):
         """Reset dialog widgets to initial clear status"""
         self.fluid = self.fluid.__class__()
         self.status.setState(self.fluid.status, self.fluid.msg)
+        self.rhoo.clear()
+        self.To.clear()
         for input in self.Inputs:
             input.clear()
             input.setResaltado(False)

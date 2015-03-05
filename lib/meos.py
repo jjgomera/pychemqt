@@ -338,17 +338,17 @@ class MEoS(_fase):
 
         if self.calculable:
             self.calculo()
-            
+
             if self.status == 1:
                 converge = True
                 for input in self._mode.split("-"):
-                    if abs(self.kwargs[input]-self.__getattribute__(input)._data) > 1e-10:
+                    if abs(self.kwargs[input]-self.__getattribute__(input)._data) > 1e-9:
                         converge = False
                         break
                 if not converge:
                     self.status = 5
-                    self.msg = QApplication.translate("pychemqt", "Solution don´t converge")
-                    print "dont converge for %s by %f" %(input, self.kwargs[input]-self.__getattribute__(input)._data)            
+                    self.msg = QApplication.translate("pychemqt", "Solution don´t converge", None, QApplication.UnicodeUTF8)
+                    print "dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)            
             
     @property
     def calculable(self):
@@ -704,6 +704,7 @@ class MEoS(_fase):
             elif x == 1:
                 propiedades = vapor
             P = Ps/1000.
+            self.status = 1
 
         elif self._mode == "P-x":
             # Iterate over saturation routine to get T
@@ -721,6 +722,7 @@ class MEoS(_fase):
             elif x == 1:
                 propiedades = vapor
             P = P/1000.
+            self.status = 1
             
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
