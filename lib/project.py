@@ -217,10 +217,6 @@ class Project(object):
 
         #TODO: Necesario para cargar los proyectos viejos
 #        config.set("Thermo", "freesteam", "False")
-#        config.set("Thermo", "coolprop", "True")
-#        config.set("Thermo", "refprop", "False")
-#        config.set("Thermo", "iapws", "True")
-#        config.set("Thermo", "MEoS", "False")
 #        config.set("Units", "specificvolume_square", "0")
 
         self.setConfig(config)

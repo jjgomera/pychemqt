@@ -685,8 +685,8 @@ class ColumnFUG(Tower):
 
 #FIXME: o el ejemplo está mal planteado o este valor es ilógico
         ToutReboiler=residuo.eos._Bubble_T()
-#        ToutReboiler2=residuo.eos._Dew_T()
-#        print ToutReboiler, ToutReboiler, Tin, Tout
+        ToutReboiler2=residuo.eos._Dew_T()
+        print ToutReboiler, ToutReboiler2, Tin, Tout
         SalidaResiduo=residuo.clone(T=ToutReboiler)
         self.salida=[SalidaDestilado, SalidaResiduo]
 
@@ -811,9 +811,9 @@ if __name__ == '__main__':
     T = unidades.Temperature(205, "F")
     P = unidades.Pressure(315, "psi")
     blend=Corriente(T=T, P=P, caudalMasico=1, fraccionMolar=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
-    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=3, HKsplit=0.95, R_Rmin=1.2)
-    print columna.DutyCondenser
-
+#    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=3, HKsplit=0.95, R_Rmin=1.2)
+#    print columna.DutyCondenser
+    print blend.mezcla.ids
 #    entrada=Corriente(T=340, P=101325, caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
 #    flash=Flash(entrada=entrada)
 #    print flash.status, flash.msg
