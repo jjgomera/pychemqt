@@ -216,10 +216,10 @@ with support for class unidad operations: txt, config. func."""
         self.txt = txt
 
         if data is None:
-            data = 0
+            self._data = 0
             self.code = "n/a"
         else:
-            data = data
+            self._data = data
             self.code = ""
 
     def __new__(cls, *args, **kwargs):
@@ -1207,6 +1207,21 @@ class Pressure(unidad):
 
         if unit == "conf":
             unit = self.__units__[self.Config.getint('Units', magnitud)]
+
+        if unit == "barg":
+            self._data = data*k.bar+k.atm
+        elif unit == "psig":
+            self._data = data*k.psi+k.atm
+        elif unit == "kgcm2g":
+            self._data = data*k.g/k.centi**2+k.atm
+        else:
+            self._data = data * self.__class__.rates[unit]
+
+        if data is None:
+            self._data = 0
+            self.code = "n/a"
+        else:
+            self.code = ""
 
         for key in self.__class__.rates:
             self.__setattr__(key, self._data/self.__class__.rates[key])
@@ -2756,7 +2771,9 @@ units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1,
              'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+#    import doctest
+#    doctest.testmod()
     
-    print Enthalpy.text()
+    t = Pressure(1e3, "kPa")
+    print t._data
+    print t.bar
