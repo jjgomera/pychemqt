@@ -372,8 +372,14 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
     
-    water=H2O(s=5e3, P=3.5e6)
+    water=H2O(T=1500, s=13000.)
     print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+
+#    water=H2O(P=1e5, x=1)
+#    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+
+#    water=H2O(s=5e3, P=3.5e6)
+#    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
 #    515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
 
 #    water=H2O(rho=300., P=0.1e6)
