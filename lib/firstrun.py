@@ -160,15 +160,12 @@ def Preferences():
 
     # mEoS
     config.add_section("MEOS")
-    config.set("MEOS", "iapws", "False")
-    config.set("MEOS", "freesteam", "False")
     config.set("MEOS", "coolprop", "False")
     config.set("MEOS", "refprop", "False")
     config.set("MEOS", "saturation"+"Color", "#000000")
     config.set("MEOS", "saturation"+"lineWidth", "1.0")
     config.set("MEOS", "saturation"+"lineStyle", "-")
     config.set("MEOS", "saturation"+"marker", "None")
-    config.set("MEOS", "surface", "False")
     config.set("MEOS", "grid", "False")
     config.set("MEOS", "definition", "1")    
     lineas = ["Isotherm", "Isobar", "Isoenthalpic", "Isoentropic", "Isochor",
@@ -193,7 +190,6 @@ def Preferences():
 
     # Psychr
     config.add_section("Psychr")
-            
     config.set("Psychr", "chart", "True")
     config.set("Psychr", "virial", "False")
     config.set("Psychr", "coolprop", "False")

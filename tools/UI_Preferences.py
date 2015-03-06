@@ -1014,13 +1014,6 @@ class ConfmEoS(QtGui.QDialog):
         super(ConfmEoS, self).__init__(parent)
         layout = QtGui.QGridLayout(self)
 
-        self.iapws = QtGui.QCheckBox(QtGui.QApplication.translate(
-            "pychemqt", "Use iapws97 for water"))
-        layout.addWidget(self.iapws, 1, 1, 1, 2)
-        self.freesteam = QtGui.QCheckBox(QtGui.QApplication.translate(
-            "pychemqt", "Use freesteam library (faster)"))
-        self.freesteam.setEnabled(False)
-        layout.addWidget(self.freesteam, 2, 2)
         self.coolProp = QtGui.QCheckBox(QtGui.QApplication.translate(
             "pychemqt", "Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
@@ -1050,14 +1043,12 @@ class ConfmEoS(QtGui.QDialog):
         layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
             "pychemqt", "Plot Definition")), 7, 1)
         self.definition = QtGui.QComboBox()
+        self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Very Low"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Low"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Medium"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "High"))
         self.definition.addItem(QtGui.QApplication.translate("pychemqt", "Ultra High"))
         layout.addWidget(self.definition, 7, 2)
-        self.surface = QtGui.QCheckBox(QtGui.QApplication.translate(
-            "pychemqt", "Use surface in plot (slower)"))
-        layout.addWidget(self.surface, 8, 1, 1, 2)
         self.grid = QtGui.QCheckBox(
             QtGui.QApplication.translate("pychemqt", "Draw grid"))
         layout.addWidget(self.grid, 9, 1, 1, 2)
@@ -1065,19 +1056,14 @@ class ConfmEoS(QtGui.QDialog):
         layout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
                                          QtGui.QSizePolicy.Expanding), 10, 2)
 
-        if os.environ["freesteam"]:
-            self.iapws.toggled.connect(self.freesteam.setEnabled)
         if os.environ["CoolProp"]:
             self.coolProp.setEnabled(True)
         if os.environ["refprop"]:
             self.refprop.setEnabled(True)
 
         if config.has_section("MEOS"):
-            self.iapws.setChecked(config.getboolean("MEOS", 'iapws'))
-            self.freesteam.setChecked(config.getboolean("MEOS", 'freesteam'))
             self.coolProp.setChecked(config.getboolean("MEOS", 'coolprop'))
             self.refprop.setChecked(config.getboolean("MEOS", 'refprop'))
-            self.surface.setChecked(config.getboolean("MEOS", 'surface'))
             self.grid.setChecked(config.getboolean("MEOS", 'grid'))
             self.definition.setCurrentIndex(config.getint("MEOS", 'definition'))
             self.lineconfig.setConfig(config)
@@ -1087,12 +1073,9 @@ class ConfmEoS(QtGui.QDialog):
         if not config.has_section("MEOS"):
             config.add_section("MEOS")
 
-        config.set("MEOS", "iapws", self.iapws.isChecked())
-        config.set("MEOS", "freesteam", self.freesteam.isChecked())
         config.set("MEOS", "coolprop", self.coolProp.isChecked())
         config.set("MEOS", "refprop", self.refprop.isChecked())
         config = self.lineconfig.value(config)
-        config.set("MEOS", "surface", self.surface.isChecked())
         config.set("MEOS", "grid", self.grid.isChecked())
         config.set("MEOS", "definition", self.definition.currentIndex())
 
@@ -1103,12 +1086,9 @@ class ConfmEoS(QtGui.QDialog):
     @classmethod
     def default(cls, config):
         config.add_section("MEOS")
-        config.set("MEOS", "iapws", "False")
-        config.set("MEOS", "freesteam", "False")
         config.set("MEOS", "coolprop", "False")
         config.set("MEOS", "refprop", "False")
         config = LineConfig.default(config, "saturation")
-        config.set("MEOS", "surface", "False")
         config.set("MEOS", "grid", "False")
         config.set("MEOS", "definition", "1")
         for nombre, texto, unidad in cls.lineas:
