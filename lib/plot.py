@@ -54,6 +54,7 @@ class matplotlib(FigureCanvasQTAgg):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self,  dim=2, parent=None):
         self.fig = Figure(figsize=(10, 10), dpi=100)
+        self.dim = dim
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -65,6 +66,7 @@ class matplotlib(FigureCanvasQTAgg):
 
         else:
             self.ax = Axes3D(self.fig)
+            self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
 
         FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
