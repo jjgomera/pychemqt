@@ -308,10 +308,10 @@ class GraphicsEntity(object):
         patrones=QtCore.QStringList()
         if os.environ["ezodf"]:
             patrones.append(QtGui.QApplication.translate("pychemqt", "Libreoffice spreadsheet files")+ " (*.ods)")
-        if os.environ["openpyxl"]:
-            patrones.append(QtGui.QApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML")+ " (*.xlsx)")
         if os.environ["xlwt"]:
             patrones.append(QtGui.QApplication.translate("pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
+        if os.environ["openpyxl"]:
+            patrones.append(QtGui.QApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML")+ " (*.xlsx)")
         patron=patrones.join(";;")
         dir=os.path.dirname(str(self.scene().parent().currentFilename))
         ruta = unicode(QtGui.QFileDialog.getSaveFileName(self.scene().parent(), msg, dir, patron))

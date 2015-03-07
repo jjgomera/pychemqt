@@ -2230,40 +2230,66 @@ class TablaMEoS(Tabla):
         # Set calculate point readOnly
         if not self.readOnly:
             flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
-            color=QtGui.QColor(self.parent.Preferences.get("General", 'Color_ReadOnly'))
+            color=self.parent.Preferences.get("General", 'Color_ReadOnly')
             for i, bool in enumerate(self.columnReadOnly):
                 if not bool:
                     self.item(row, i).setFlags(flags)
-                    self.item(row, i).setBackground(color)
+                    self.item(row, i).setBackground(QtGui.QColor(color))
         self.blockSignals(False)
 
     def contextMenuEvent(self, event):
+        """Show context menu over cell"""
         menu = QtGui.QMenu()
-        actionCopy=createAction(QtGui.QApplication.translate("pychemqt", "&Copy"), slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy, icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
-        export = createAction(QtGui.QApplication.translate("pychemqt", "E&xport to csv"), self.export, icon=os.environ["pychemqt"]+"/images/button/export", tip=QtGui.QApplication.translate("pychemqt", "Export table to csv"), parent=self)
+        actionCopy = createAction(
+            QtGui.QApplication.translate("pychemqt", "&Copy"),
+            slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy,
+            icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
+        export = createAction(
+            QtGui.QApplication.translate("pychemqt", "E&xport to csv"),
+            self.exportCSV, icon=os.environ["pychemqt"]+"/images/button/export",
+            tip=QtGui.QApplication.translate("pychemqt", "Export table to file"),
+            parent=self)
         menu.addAction(actionCopy)
         menu.addSeparator()
         menu.addAction(export)
         menu.exec_(event.globalPos())
 
     def copy(self, event):
+        """Copy selected value to clipboard"""
         widget=self.itemAt(self.viewport().mapFromGlobal(event.globalPos()))
         QtGui.QApplication.clipboard().setText(widget.text())
 
-    def export(self):
-        dir = self.parent.currentFilename if self.parent.currentFilename else "."
-        fname = unicode(QtGui.QFileDialog.getSaveFileName(self,
-                            QtGui.QApplication.translate("pychemqt", "Export table to csv"), dir,
-                            "csv files (*.csv)"))
-        if fname:
-            if fname.split(".")[-1]!="csv":
-                fname+=".csv"
+    def exportCSV(self):
+        """Export data table as a csv file"""
+        if self.parent.currentFilename:
+            dir = os.path.dirname(str(self.parent.currentFilename))
+        else:
+            dir = "."
 
-            cambio=maketrans(".", ",")
-            with open(fname, "w") as archivo:
-                writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
-                for row in self.data:
-                    writer.writerow([str(data).translate(cambio) for data in row])
+        pat=QtCore.QStringList()
+        pat.append(QtGui.QApplication.translate("pychemqt", "CSV files") + " (*.csv)")
+        if os.environ["ezodf"]:
+            pat.append(QtGui.QApplication.translate(
+            "pychemqt", "Libreoffice spreadsheet files")+ " (*.ods)")
+        if os.environ["xlwt"]:
+            pat.append(QtGui.QApplication.translate(
+            "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML")+ " (*.xls)")
+        if os.environ["openpyxl"]:
+            pat.append(QtGui.QApplication.translate(
+            "pychemqt", "Microsoft Excel 2007/2010 XML")+ " (*.xlsx)")
+        patron=pat.join(";;")
+
+        dialog = QtGui.QFileDialog(self,
+            QtGui.QApplication.translate("pychemqt", "Export table to file"),
+            dir, patron)
+        dialog.setAcceptMode(QtGui.QFileDialog.AcceptOpen)
+        dialog.setFileMode(QtGui.QFileDialog.AnyFile)
+        if dialog.exec_():
+            fname = unicode(dialog.selectedFiles().join(""))
+            ext = unicode(dialog.selectedNameFilter().split(".")[-1][:-1])
+            
+            if fname:
+                exportTable(self.data, fname, ext, self.encabezadoHorizontal)
 
     def writeToStream(self, stream):
         stream.writeInt32(self.columnCount())

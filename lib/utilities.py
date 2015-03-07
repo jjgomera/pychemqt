@@ -3,13 +3,18 @@
 
 #################################################################################
 # Module with utilities:
-#   - format2txt: function to convert dict format config in a string value
-#   - representacion
-#   - colors
+#   - format2txt: Function to convert dict format config in a string value
+#   - representacion: Function for string representation of float values
+#   - colors: Function to generate colors
+#   - exportTable; Save data to a file
 #################################################################################
 
 
 import random
+import os
+from string import maketrans
+
+from PyQt4.QtGui import QApplication
 
 
 def format2txt(formato):
@@ -30,18 +35,18 @@ def format2txt(formato):
 
 
 def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, signo=False, thousand=False):
-    """Función que expresa un valor de tipo float en forma de string
-    float: numero a representar
-    format: tipo de modo
+    """Function for string representation of float values
+    float: number to transform
+    format: mode
         0   -   fixed point
         1   -   Significant figures
         2   -   Engineering format
-    total: numero total de digitos
-    decimales: numero de decimales
-    exp: boolean que indica si se usa notacion exponencial para numeros grandes y pequeños
-    tol: potencia por encima de la cual se usa notacion exponencial
-    signo: mostrar signo positivo
-    thousand: usa separador para miles
+    total: total number of digits
+    decimales: decimal number
+    exp: boolean to use engineering repr for big or small number
+    tol: exponent limit tu use engineering repr over float normal repr
+    signo: show sign
+    thousand: use thousan separator point
     """
     if type(float) is str:
         return float
@@ -72,8 +77,12 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, sign
 
 def colors(number, mix=""):
     """Function to generate colors
-    number: number of required colors
-    mix: string name color for mix"""
+    Input:
+        number: number of required colors
+        mix: string name color for mix
+    Output:
+        Array with color hex repr
+    """
     colors = []
     for i in number:
         red = random.randint(0, 255)
@@ -90,9 +99,125 @@ def colors(number, mix=""):
         colors.append(('#%02X%02X%02X' % (r(),r(),r())))
     return
     
+    
+def exportTable(matrix, fname, format, title=None):
+    """Save data to a file
+    Inputs
+        matrix: array with data to save
+        fname: name of file to save
+        format: name of format to save
+            csv | ods | xls | xlsx
+        title: column title array, optional
+    """
+    sheetTitle = unicode(QApplication.translate("pychemqt", "Table"))
+    if fname.split(".")[-1] != format:
+        fname+=".%s" % format
+
+    # Format title
+    if title:
+        header = []
+        for ttl in title:
+            line = unicode(ttl).split(os.linesep)
+            if line[-1] != "[-]":
+                line[-1] = "["+line[-1]+"]"
+            header.append(" ".join(line))
+        c_newline=maketrans(os.linesep, " ")
+
+    if format == "csv":
+        import csv
+        with open(fname, "w") as archivo:
+            writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
+            
+            # Add Data
+            if title:
+                writer.writerow([ttl.translate(c_newline) for ttl in header])
+            c_float=maketrans(".", ",")
+            for row in matrix:
+                writer.writerow([str(data).translate(c_float) for data in row])
+
+    elif format == "ods":
+        import ezodf
+        spreadsheet = ezodf.newdoc("ods", fname)
+        sheets = spreadsheet.sheets
+        sheet=ezodf.Table(sheetTitle)
+        sheets+=sheet
+        sheet.reset(size=(len(matrix)+1, len(matrix[0])))
+        
+        # Add Data
+        if title:
+            for i, ttl in enumerate(header):
+                sheet["%s%i"%(spreadsheetColumn(i), 1)].set_value(ttl)
+        for j, row in enumerate(matrix):
+            for i, data in enumerate(row):
+                sheet["%s%i"%(spreadsheetColumn(i), j+2)].set_value(data)
+        spreadsheet.save()
+
+    elif format == "xls":
+        import xlwt
+        spreadsheet = xlwt.Workbook()
+        sheet = spreadsheet.add_sheet(sheetTitle)
+        
+        font = xlwt.Font()
+        font.bold = True
+        style = xlwt.XFStyle()
+        style.font = font
+
+        # Add Data
+        if title:
+            for i, ttl in enumerate(header):
+                sheet.write(0, i, ttl, style)
+        for j, row in enumerate(matrix):
+            for i, data in enumerate(row):
+                sheet.write(j+1, i, data)
+        spreadsheet.save(fname)
+
+    elif format == "xlsx":
+        import openpyxl
+        from openpyxl.styles import Style, Font
+        spreadsheet = openpyxl.Workbook()
+        sheet = spreadsheet.active
+        sheet.title = sheetTitle
+        
+        font1 = Font()
+        font1.size = 9
+        font1.bold = True
+        font2 = Font()
+        font2.size = 9
+        
+        # Add Data
+        if title:
+            for i, ttl in enumerate(header):
+                sheet["%s%i"%(spreadsheetColumn(i), 1)] = ttl
+                sheet["%s%i"%(spreadsheetColumn(i), 1)].style.font= font1
+        for j, row in enumerate(matrix):
+            for i, data in enumerate(row):
+                sheet["%s%i"%(spreadsheetColumn(i), j+2)] = data
+                sheet["%s%i"%(spreadsheetColumn(i), j+2)].style.font = font2
+        spreadsheet.save(filename=fname)
+    
+    else:
+        raise ValueError(QApplication.translate(
+            "pychemqt", "Unsopported format") + " " + format)
+
+
+def spreadsheetColumn(index):
+    """Procedure to convert index column in AAA spreadsheet column namestyle
+    Input:
+        index: index of column start with 0
+    """
+    index += 1
+    letters = ""
+    while index:
+        mod = index % 26
+        index = index // 26
+        letters += chr(mod + 64)
+    return "".join(reversed(letters))
+
 
 if __name__ == "__main__":
-    import math
-    print representacion(math.pi, decimales=6, tol=1)
+#    import math
+#    print representacion(math.pi, decimales=6, tol=1)
 #    print repr(Configuracion("Density", "DenGas").text())
-    print representacion("3232326262")
+#    print representacion("3232326262")
+
+    print spreadsheetColumn(55)
