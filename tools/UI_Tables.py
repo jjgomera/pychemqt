@@ -2087,17 +2087,21 @@ class TablaMEoS(Tabla):
         self.parent.statusbar.clearMessage()
 
     def add(self, row):
-        dialog = AddPoint(self.parent.currentConfig, self.parent)
-        if dialog.exec_():
-            if dialog.checkBelow.isChecked():
+        """Add point to a table and to saved file"""
+        pref = QtGui.QApplication.translate("pychemqt", "Table from ")
+        title = self.windowTitle().split(pref)[1]
+        melting = title == QtGui.QApplication.translate("pychemqt", "Melting Line")
+        dlg = AddPoint(self.parent.currentConfig, melting, self.parent)
+        if dlg.exec_():
+            if dlg.checkBelow.isChecked():
                 row += 1
             plot = self.Plot
             if plot is None:
                 plot =  self._getPlot()
 
             datatoTable = []
-            datatoTable.append(dialog.fluid.__getattribute__(plot.x).config())
-            datatoTable.append(dialog.fluid.__getattribute__(plot.y).config())
+            datatoTable.append(dlg.fluid.__getattribute__(plot.x).config())
+            datatoTable.append(dlg.fluid.__getattribute__(plot.y).config())
 
             # Add point to table
             self.addRow(datatoTable, row)
@@ -2670,13 +2674,15 @@ class Ui_Isoproperty(QtGui.QDialog):
         self.layout().addWidget(self.Final,6,2)
         self.layout().addWidget(self.Incremento,7,2)
 
+
 class AddPoint(QtGui.QDialog):
     """Dialog to add new point to line2D"""
     keys = ["T", "P", "x", "rho", "v", "h", "s", "u"]
-    def __init__(self, config, parent=None):
+    def __init__(self, config, melting=False, parent=None):
         """config: configParser Instance with currentproject configuration"""
         super(AddPoint, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Add Point to line"))
+        self.setWindowTitle(
+            QtGui.QApplication.translate("pychemqt", "Add Point to line"))
         layout = QtGui.QGridLayout(self)
         fluid = mEoS.__all__[config.getint("MEoS", "fluid")]
         self.fluid = fluid()
@@ -2695,11 +2701,18 @@ class AddPoint(QtGui.QDialog):
         self.status = Status(self.fluid.status, self.fluid.msg)
         layout.addWidget(self.status,i+1,1,1,2)
 
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "To")),i+2,1)
+        if fluid._melting:
+            self.checkMelting = QtGui.QRadioButton(QtGui.QApplication.translate("pychemqt", "Melting Point"))
+            self.checkMelting.setChecked(melting)
+            layout.addWidget(self.checkMelting,i+2,1,1,2)
+            i+=1
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "To")),i+2,1)
         self.To = Entrada_con_unidades(unidades.Temperature)
         self.To.valueChanged.connect(partial(self.update, "To"))
         layout.addWidget(self.To,i+2,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "rhoo")),i+3,1)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "rhoo")),i+3,1)
         self.rhoo = Entrada_con_unidades(unidades.Density)
         self.rhoo.valueChanged.connect(partial(self.update, "rhoo"))
         layout.addWidget(self.rhoo,i+3,2)
