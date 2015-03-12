@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class Butene_1(MEoS):
-    """Multiparameter equation of state for 1-butene
-
-    >>> buteno=Butene_1(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (buteno.T, buteno.rho, buteno.h.kJkg, buteno.s.kJkgK, buteno.cv.kJkgK, buteno.cp.kJkgK, buteno.w)
-    300.0 2.31151 -4.169 0.00742 1.39641 1.56581 217.19
-    """
+    """Multiparameter equation of state for 1-butene"""
     name = "butene"
     CASNumber = "106-98-9"
     formula = "CH3-CH2-CH=CH2"
     synonym = ""
-    rhoc = unidades.Density(237.89)
+    rhoc = unidades.Density(237.8907968)
     Tc = unidades.Temperature(419.29)
     Pc = unidades.Pressure(4005.1, "kPa")
     M = 56.10632  # g/mol
@@ -25,19 +20,38 @@ class Butene_1(MEoS):
     f_acent = 0.192
     momentoDipolar = unidades.DipoleMoment(0.339, "Debye")
     id = 24
-
-    CP1 = {"ao": 3.9197,
-           "an": [], "pow": [],
+           
+    Fi1 = {"ao_log": [1, 2.9197],
+           "pow": [0, 1],
+           "ao_pow": [-0.00101126, 2.3869174],
            "ao_exp": [2.9406, 6.5395, 14.5395, 5.8971],
-           "exp": [274, 951, 2127, 5752],
-           "ao_hyp": [], "hyp": []}
+           "titao": [274/Tc, 951/Tc, 2127/Tc, 5752/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for 1-butene of Lemmon and Ihmels (2005)",
-        "__doc__":  u"""Lemmon, E.W., Ihmels, E.C. Thermodynamic properties of the butenes Part II. Short fundamental equations of state. Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.""",
+        "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+        "__test__": """
+            >>> st=Butene_1(T=350, rho=0)
+            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.0 0.0 29617 88.208 96.522 238.24
+            >>> st=Butene_1(T=350, rho=0.3*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.3 0.75679 28321 87.626 92.719 108.45 211.38
+            >>> st=Butene_1(T=350, rho=10*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 10.0 17.864 11377 31.563 97.760 135.36 843.31
+            >>> st=Butene_1(T=440, rho=4*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            440 4.0 5.3245 29454 80.191 124.13 416.03 151.49
+            """, # Table 9, Pag 186
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 525., "Pmax": 70000.0, "rhomax": 14.59, 
         "Pmin": 0.0000000008, "rhomin": 14.58, 
@@ -67,3 +81,8 @@ class Butene_1(MEoS):
         "eq": 3,
         "ao": [-0.31106e1, -0.63103e1, -0.19272e2, -0.48739e2, -0.99898e2, -0.19001e3],
         "exp": [0.415, 1.27, 3.34, 7.0, 14.5, 28.0]}
+
+if __name__ == "__main__":
+    st=Butene_1(T=350, rho=0)
+    print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+#    350 0.0 0.0 29617 88.208 96.522 238.24

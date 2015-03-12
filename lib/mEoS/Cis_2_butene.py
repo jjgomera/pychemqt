@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class Cis_2_butene(MEoS):
-    """Multiparameter equation of state for cis-butene
-
-    >>> buteno=Cis_2_butene(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (buteno.T, buteno.rho, buteno.h.kJkg, buteno.s.kJkgK, buteno.cv.kJkgK, buteno.cp.kJkgK, buteno.w)
-    300.0 2.31809 -4.733 0.06643 1.32353 1.49632 217.44
-    """
+    """Multiparameter equation of state for cis-butene"""
     name = "cis-butene"
     CASNumber = "590-18-1"
     formula = "CH3-CH=CH-CH3"
     synonym = ""
-    rhoc = unidades.Density(238.11522)
+    rhoc = unidades.Density(238.11522208)
     Tc = unidades.Temperature(435.75)
     Pc = unidades.Pressure(4225.5, "kPa")
     M = 56.10632  # g/mol
@@ -26,18 +21,37 @@ class Cis_2_butene(MEoS):
     momentoDipolar = None
     id = 25
 
-    CP1 = {"ao": 3.9687,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 2.9687],
+           "pow": [0, 1],
+           "ao_pow": [0.2591542, 2.4189888],
            "ao_exp": [3.2375, 7.0437, 11.414, 7.3722],
-           "exp": [248, 1183, 2092, 4397],
-           "ao_hyp": [], "hyp": []}
+           "titao": [248/Tc, 1183/Tc, 2092/Tc, 4397/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for cis-butene of Lemmon and Ihmels (2005)",
-        "__doc__":  u"""Lemmon, E.W., Ihmels, E.C. Thermodynamic properties of the butenes Part II. Short fundamental equations of state. Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.""",
+        "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+        "__test__": """
+            >>> st=Cis_2_butene(T=350, rho=0)
+            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.0 0.0 29735 83.593 91.907 238.8
+            >>> st=Cis_2_butene(T=350, rho=0.3*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.3 0.74661 28294 84.888 89.258 106.34 209.87
+            >>> st=Cis_2_butene(T=350, rho=10*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 10.0 5.8051 9632.7 29.1 93.935 138.23 770.1
+            >>> st=Cis_2_butene(T=440, rho=4*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            440 4.0 4.5067 28321 75.755 126 1686.3 130.71
+            """, # Table 9, Pag 186
+
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 525., "Pmax": 50000.0, "rhomax": 14.09, 
         "Pmin": 0.00026, "rhomin": 14.09, 

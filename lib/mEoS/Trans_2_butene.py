@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class Trans_2_butene(MEoS):
-    """Multiparameter equations of state for trans-butene
-
-    >>> buteno=Trans_2_butene(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (buteno.T, buteno.rho, buteno.h.kJkg, buteno.s.kJkgK, buteno.cv.kJkgK, buteno.cp.kJkgK, buteno.w)
-    300.0 2.31798 -4.715 0.00633 1.44222 1.61487 216.41
-    """
+    """Multiparameter equations of state for trans-butene"""
     name = "trans-butene "
     CASNumber = "624-64-6"
     formula = "CH3-CH=CH-CH3"
     synonym = ""
-    rhoc = unidades.Density(236.376)
+    rhoc = unidades.Density(236.37592616)
     Tc = unidades.Temperature(428.61)
     Pc = unidades.Pressure(4027.3, "kPa")
     M = 56.10632  # g/mol
@@ -26,18 +21,37 @@ class Trans_2_butene(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 26
 
-    CP1 = {"ao": 3.9988,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 2.9988],
+           "pow": [0, 1],
+           "ao_pow": [0.5917816, 2.1427758],
            "ao_exp": [5.3276, 13.29, 9.6745, 0.40087],
-           "exp": [362, 1603, 3729, 4527],
-           "ao_hyp": [], "hyp": []}
+           "titao": [362/Tc, 1603/Tc, 3729/Tc, 4527/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for trans-butene of Lemmon and Ihmels (2005)",
-        "__doc__":  u"""Lemmon, E.W., Ihmels, E.C. Thermodynamic properties of the butenes Part II. Short fundamental equations of state. Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.""",
+        "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+        "__test__": """
+            >>> st=Trans_2_butene(T=350, rho=0)
+            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.0 0.0 29959 89.965 98.279 238.03
+            >>> st=Trans_2_butene(T=350, rho=0.3*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.3 0.74692 28521 86.364 95.429 112.42 208.86
+            >>> st=Trans_2_butene(T=350, rho=10*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 10.0 12.844 10494 29.866 99.512 139.07 821.74
+            >>> st=Trans_2_butene(T=440, rho=4*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            440 4.0 4.749 29180 78.589 128.04 692.14 139.25
+            """, # Table 9, Pag 186
+
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 13.141, 
         "Pmin": 0.075, "rhomin": 13.14, 

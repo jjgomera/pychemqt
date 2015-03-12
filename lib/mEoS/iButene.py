@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class iButene(MEoS):
-    """Multiparameter equation of state for isobutene
-
-    >>> buteno=iButene(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (buteno.T, buteno.rho, buteno.u.kJkg, buteno.h.kJkg, buteno.s.kJkgK, buteno.cv.kJkgK, buteno.cp.kJkgK, buteno.w)
-    300.0 2.31141 406.68 449.941 1.64447 1.4647 1.6344 216.67
-    """
+    """Multiparameter equation of state for isobutene"""
     name = "isobutene"
     CASNumber = "115-11-7"
     formula = "CH2=C(CH3)2"
     synonym = ""
-    rhoc = unidades.Density(233.963)
+    rhoc = unidades.Density(233.9633544)
     Tc = unidades.Temperature(418.09)
     Pc = unidades.Pressure(4009.8, "kPa")
     M = 56.10632  # g/mol
@@ -26,23 +21,42 @@ class iButene(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.5, "Debye")
     id = 27
 
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [-0.12737888, 2.3125128],
            "ao_exp": [4.8924, 7.832, 7.2867, 8.7293],
-           "exp": [399, 1270, 2005, 4017],
-           "ao_hyp": [], "hyp": []}
+           "titao": [399/Tc, 1270/Tc, 2005/Tc, 4017/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isobutene of Lemmon and Ihmels (2005)",
-        "__doc__":  u"""Lemmon, E.W., Ihmels, E.C. Thermodynamic properties of the butenes Part II. Short fundamental equations of state. Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.""",
+        "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+        "__test__": """
+            >>> st=iButene(T=350, rho=0)
+            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.0 0.0 29966 92.121 100.44 237.8
+            >>> st=iButene(T=350, rho=0.3*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 0.3 0.75754 28666 88.966 96.794 112.57 211.02
+            >>> st=iButene(T=350, rho=10*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            350 10.0 17.776 11782 32.951 101.72 139.45 838.25
+            >>> st=iButene(T=440, rho=4*56.10632)
+            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            440 4.0 5.4086 30169 82.345 127.28 407 151.13
+            """, # Table 9, Pag 186
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 50000.0, "rhomax": 13.67, 
         "Pmin": 0.00068, "rhomin": 13.67, 
 
-        "nr1":  [0.77111, -2.7971, 1.0118, 0.02073, 0.085086, 0.0021968],
+        "nr1":  [0.77111, -2.7971, 1.0118, 0.02073, 0.085086, 0.00021968],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.12, 1.3, 1.74, 2.1, 0.28, 0.69],
 
