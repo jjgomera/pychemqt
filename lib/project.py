@@ -217,7 +217,7 @@ class Project(object):
 
         #TODO: Necesario para cargar los proyectos viejos
 #        config.set("Thermo", "freesteam", "False")
-#        config.set("Units", "specificvolume_square", "0")
+        config.set("Units", "MolarSpecificHeat", "0")
 
         self.setConfig(config)
         if not huella:

@@ -1570,11 +1570,51 @@ class SpecificHeat(unidad):
                 u'kWh/kg·K', u'Btu/lb·F']
     __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK',
                  'BtulbF']
-    __units_set__ = {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
-                     "cgs": "calgK", "english": "BtulbF"}
+    __units_set__ = {
+        "SpecificHeat": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
+                         "cgs": "calgK", "english": "BtulbF"}, 
+        "SpecificEntropy": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
+                         "cgs": "calgK", "english": "BtulbF"}}
 
     def __init__(self, data, unit="JkgK", magnitud=""):
         super(SpecificHeat, self).__init__(data, unit, magnitud)
+
+
+class MolarSpecificHeat(unidad):
+    """Class that models a specific heat measure with molar base
+    Supported units:
+
+    * Joule per kilomol kelvin (JkmolK) default
+    * Kilojoule per kilomol kelvin (kJkmolK)
+    * Joule per mol kelvin (JmolK)
+    * Calorie per kilomol kelvin (kcalkmolK)
+    * Calorie per mol kelvin (calmolK)
+    * Kilocalorie per mol kelvin (kcalmolK)
+    * Kilowatt hour per kilomol kelvin (kWhkmolK)
+    * Btu per poundmol fahrenheit (BtulbmolF)
+
+    >>> C=SpecificHeat(1, "BtulbmolF")
+    >>> print C.kJkmolK, C.kcalkmolK
+    4.1868 1.00066921606
+    """
+    __title__ = QApplication.translate("pychemqt", "Molar Specific Heat")
+    rates = {"JkmolK": 1.,
+             "kJkmolK": k.kilo,
+             "JmolK": k.kilo,
+             "kcalkmolK": k.calorie*k.kilo,
+             "calmolK": k.calorie*k.kilo,
+             "kcalmolK": k.calorie*k.kilo**2,
+             "kWhkmolK": k.kilo*k.hour,
+             "BtulbmolF": k.Btu/k.lb/k.Rankine}
+    __text__ = [u'J/kmol·K', u'kJ/kmol·K', u'kcal/kmol·K', u'cal/mol·K', u'kcal/mol·K',
+                u'kWh/kmol·K', u'Btu/lbmol·F']
+    __units__ = ['JkmolK', 'kJkmolK', 'kcalkmolK', 'calmolK', 'kcalmolK', 'kWhkmolK',
+                 'BtulbmolF']
+    __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
+                     "cgs": "calmolK", "english": "BtulbmolF"}
+
+    def __init__(self, data, unit="JkmolK", magnitud=""):
+        super(MolarSpecificHeat, self).__init__(data, unit, magnitud)
 
 
 class Power(unidad):
@@ -2764,12 +2804,11 @@ _magnitudes.append(("Dimensionless",
 #        sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
 #print sets
 
-units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 4, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 1, 0, 0, 5, 5, 1, 0],
-             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0], 
-             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], 
-             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
-
+units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 4, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 1, 0, 0, 5, 5, 1, 0],
+             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0], 
+             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], 
+             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 6, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
