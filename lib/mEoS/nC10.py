@@ -8,9 +8,10 @@ from lib import unidades
 class nC10(MEoS):
     """Multiparameter equation of state for n-decane
 
-    >>> decano=nC10(T=500, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (decano.T, decano.rho, decano.u.kJkg, decano.h.kJkg, decano.s.kJkgK, decano.cv.kJkgK, decano.cp.kJkgK, decano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
+#    >>> decano=nC10(T=500, P=0.1)
+#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (decano.T, decano.rho, decano.u.kJkg, decano.h.kJkg, decano.s.kJkgK, decano.cv.kJkgK, decano.cp.kJkgK, decano.w)
+#    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
+#    
     """
     name = "decane"
     CASNumber = "124-18-5"
@@ -25,6 +26,12 @@ class nC10(MEoS):
     f_acent = 0.4884
     momentoDipolar = unidades.DipoleMoment(0.07, "Debye")
     id = 14
+
+    Fi1 = {"ao_log": [1, 18.109],
+           "pow": [0, 1],
+           "ao_pow": [13.9361966549, -10.5265128286],
+           "ao_exp": [25.685, 28.233, 12.417, 10.035],
+           "titao": [1193/Tc, 2140/Tc, 4763/Tc, 10862/Tc]}
 
     CP1 = {"ao": 19.109,
            "an": [],
@@ -42,9 +49,19 @@ class nC10(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for decane of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=nC10(T=619, rho=142.28168)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            619 1 2071.025 89742.553 164.787 437.033 1043.328 74.576
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 800000.0, "rhomax": 5.41, 
         "Pmin": 0.0014, "rhomin": 5.41, 
@@ -79,7 +96,7 @@ class nC10(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, GERG
+    eq = helmholtz1, #GERG
 
     _surface = {"sigma": [0.0536], "exp": [1.26]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

@@ -8,9 +8,9 @@ from lib import unidades
 class R116(MEoS):
     """Multiparameter equation of state for R116
 
-    >>> r116=R116(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r116.T, r116.rho, r116.u.kJkg, r116.h.kJkg, r116.s.kJkgK, r116.cv.kJkgK, r116.cp.kJkgK, r116.w)
-    300.0 5.5897 286.68 304.57 1.5380 0.71520 0.77847 138.83
+#    >>> r116=R116(T=300, P=0.1)
+#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r116.T, r116.rho, r116.u.kJkg, r116.h.kJkg, r116.s.kJkgK, r116.cv.kJkgK, r116.cp.kJkgK, r116.w)
+#    300.0 5.5897 286.68 304.57 1.5380 0.71520 0.77847 138.83
     """
     name = "hexafluoroethane"
     CASNumber = "76-16-4"
@@ -25,6 +25,12 @@ class R116(MEoS):
     f_acent = 0.2566
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 236
+
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [-10.7088650331, 8.9148979056],
+           "ao_exp": [2.4818, 7.0622, 7.9951],
+           "titao": [190/Tc, 622/Tc, 1470/Tc]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
@@ -42,9 +48,19 @@ class R116(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-116 of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=R116(T=295, rho=4*138.01182)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            295 4 3180.336 34509.528 161.389 120.218 2189.730 73.317
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31, 
         "Pmin": 26.1, "rhomin": 12.3, 
@@ -84,7 +100,7 @@ class R116(MEoS):
         "c2": [1, 2, 2, 2, 3, 3, 3, 4],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, #helmholtz2
 
     _surface = {"sigma": [0.05059375, -0.0119435], "exp": [1.29, 2.0]}
     _vapor_Pressure = {

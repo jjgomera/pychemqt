@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class COS(MEoS):
-    """Multiparameter equation of state for carbonyl sulfide
-
-    >>> cos=COS(T=500, P=0.1)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.5f %0.5f %0.2f" % (cos.T, cos.rho, cos.u.kJkg, cos.h.kJkg, cos.s.kJkgK, cos.cv.kJkgK, cos.cp.kJkgK, cos.w)
-    500.0 1.4482 444.73 513.78 1.9750 0.67596 0.81579 288.36
-    """
+    """Multiparameter equation of state for carbonyl sulfide"""
     name = "carbonyl sulfide"
     CASNumber = "463-58-1"
     formula = "COS"
@@ -26,18 +21,28 @@ class COS(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.7152, "Debye")
     id = 219
 
-    CP1 = {"ao": 3.5,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 2.5],
+           "pow": [0, 1],
+           "ao_pow": [-3.6587449805, 3.7349245016],
            "ao_exp": [2.1651, 0.93456, 1.0623, 0.34269],
-           "exp": [768, 1363, 3175, 12829],
-           "ao_hyp": [], "hyp": []}
+           "titao": [768/Tc, 1363/Tc, 3175/Tc, 12829/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbonyl sulfide of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=COS(T=380, rho=7*60.0751)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            380 7 6498.429 16511.877 51.563 55.861 4139.577 161.717
+            """, # Table 10, Pag 842
+
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 22.52, 
         "Pmin": 0.064, "rhomin": 22.5, 

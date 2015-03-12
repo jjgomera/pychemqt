@@ -8,15 +8,20 @@ from lib import unidades
 class CO(MEoS):
     """Multiparameter equation of state for carbon monoxide
 
-    >>> monoxido=CO(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (monoxido.T, monoxido.rho, monoxido.u.kJkg, monoxido.h.kJkg, monoxido.s.kJkgK, monoxido.cv.kJkgK, monoxido.cp.kJkgK, monoxido.w)
-    300.0 1.12 355.27 444.29 4.00957 0.7434 1.0418 353.1
+#    >>> monoxido=CO(T=300, P=0.1)
+#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (monoxido.T, monoxido.rho, monoxido.u.kJkg, monoxido.h.kJkg, monoxido.s.kJkgK, monoxido.cv.kJkgK, monoxido.cp.kJkgK, monoxido.w)
+#    300.0 1.12 355.27 444.29 4.00957 0.7434 1.0418 353.1
+#
+#    >>> acet=Acetone(T=510, rho=4*58.07914)
+#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
+#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
+#
     """
     name = "carbon monoxide"
     CASNumber = "630-08-0"
     formula = "CO"
     synonym = ""
-    rhoc = unidades.Density(303.91)
+    rhoc = unidades.Density(303.909585)
     Tc = unidades.Temperature(132.86)
     Pc = unidades.Pressure(3494.0, "kPa")
     M = 28.0101  # g/mol
@@ -25,6 +30,12 @@ class CO(MEoS):
     f_acent = 0.0497
     momentoDipolar = unidades.DipoleMoment(0.1, "Debye")
     id = 48
+
+    Fi1 = {"ao_log": [1, 2.5],
+           "pow": [0, 1, -1.5],
+           "ao_pow": [-3.3728318564, 3.3683460039, 9.111274701235156e-5],
+           "ao_exp": [1.0128], 
+           "titao": [3089/Tc]}
 
     CP1 = {"ao": 3.5,
            "an": [0.22311e-6], "pow": [1.5],
@@ -47,9 +58,19 @@ class CO(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon monoxide of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=CO(T=134, rho=10*28.0101)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            134 10 3668.867 4838.507 41.601 38.702 1642.142 168.632
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84, 
         "Pmin": 15.45, "rhomin": 30.33, 
@@ -108,7 +129,7 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, MBWR, GERG
+    eq = helmholtz1, #MBWR, GERG
 
     _surface = {"sigma": [0.0350998, -0.0093076, -0.0017393],
                 "exp": [1.25, 2.25, 3.25]}

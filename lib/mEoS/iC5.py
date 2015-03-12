@@ -8,9 +8,10 @@ from lib import unidades
 class iC5(MEoS):
     """Multiparameter equation of state for isopentane
 
-    >>> isopentano=iC5(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.4f %0.4f %0.7f %0.4f %0.4f %0.2f" % (isopentano.T, isopentano.rho, isopentano.u.kJkg, isopentano.h.kJkg, isopentano.s.kJkgK, isopentano.cv.kJkgK, isopentano.cp.kJkgK, isopentano.w)
-    300.0 613.09 -2.3963 -2.2332 -0.0074246 1.7111 2.2836 951.69
+#    >>> isopentano=iC5(T=300, P=0.1)
+#    >>> print "%0.1f %0.2f %0.4f %0.4f %0.7f %0.4f %0.4f %0.2f" % (isopentano.T, isopentano.rho, isopentano.u.kJkg, isopentano.h.kJkg, isopentano.s.kJkgK, isopentano.cv.kJkgK, isopentano.cp.kJkgK, isopentano.w)
+#    300.0 613.09 -2.3963 -2.2332 -0.0074246 1.7111 2.2836 951.69
+#
     """
     name = "isopentane"
     CASNumber = "78-78-4"
@@ -25,6 +26,12 @@ class iC5(MEoS):
     f_acent = 0.2274
     momentoDipolar = unidades.DipoleMoment(0.11, "Debye")
     id = 7
+
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [2.5822330405, 1.1609103419],
+           "ao_exp": [7.4056, 9.5772, 15.765, 12.119],
+           "titao": [442/Tc, 1109/Tc, 2069/Tc, 4193/Tc]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
@@ -54,9 +61,19 @@ class iC5(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isopentane of Lemmon and Span (2006).",
-        "__doc__":  u"""Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=iC5(T=462, rho=3*72.14878)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            462 3 3458.617 37318.534 94.634 190.631 4660.943 96.324
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
         "Pmin": 0.83e-7, "rhomin": 10.925, 
@@ -142,7 +159,7 @@ class iC5(MEoS):
         "c2": [2]*2,
         "gamma2": [0.48056842]*2}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4
+    eq = helmholtz1, #GERG, helmholtz3, helmholtz4
 
     _surface = {"sigma": [0.05106], "exp": [1.21]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

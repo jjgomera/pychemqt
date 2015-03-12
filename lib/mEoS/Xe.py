@@ -7,10 +7,10 @@ from lib import unidades
 
 class Xe(MEoS):
     """Multiparameter equation of state for xenon
-
-    >>> xenon=Xe(T=300, P=.1)
-    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (xenon.T, xenon.rho, xenon.u.kJkg, xenon.h.kJkg, xenon.s.kJkgK, xenon.cv.kJkgK, xenon.cp.kJkgK, xenon.w)
-    300.0 5.291 98.794 117.695 0.67823 0.0954 0.1600 177.58
+#
+#    >>> xenon=Xe(T=300, P=.1)
+#    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (xenon.T, xenon.rho, xenon.u.kJkg, xenon.h.kJkg, xenon.s.kJkgK, xenon.cv.kJkgK, xenon.cp.kJkgK, xenon.w)
+#    300.0 5.291 98.794 117.695 0.67823 0.0954 0.1600 177.58
     """
     name = "xenon"
     CASNumber = "7440-63-3"
@@ -27,6 +27,11 @@ class Xe(MEoS):
     # id = 994
     id = 1
 
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-3.8227178129, 3.8416395351],
+           "ao_exp": [], "titao": []}
+
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
@@ -34,9 +39,19 @@ class Xe(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for xenon of Lemmon and Span (2006).",
-        "__doc__": u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=Xe(T=291, rho=8*131.293)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            291 8 5986.014 9193.668 36.895 28.692 3063.309 125.648
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 700000.0, "rhomax": 28.78, 
         "Pmin": 81.77, "rhomin": 22.59, 
@@ -76,7 +91,7 @@ class Xe(MEoS):
               -0.1048773067133e-3, 0.9082979494829e-2, 0.6458784488434e-6,
               -0.1667673822070e-4, 0.1556036272902e-2]}
 
-    eq = helmholtz1, MBWR
+    eq = helmholtz1, #MBWR
 
     _surface = {"sigma": [0.0491907, 0.0132643, -0.0104283],
                 "exp": [1.25, 2.25, 3.25]}

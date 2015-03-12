@@ -8,9 +8,9 @@ from lib import unidades
 class R41(MEoS):
     """Multiparameter equation of state for R41
 
-    >>> r41=R41(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r41.T, r41.rho, r41.u.kJkg, r41.h.kJkg, r41.s.kJkgK, r41.cv.kJkgK, r41.cp.kJkgK, r41.w)
-    300.0 1.3757 555.51 628.20 3.2409 0.86669 1.12067 305.33
+#    >>> r41=R41(T=300, P=0.1)
+#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r41.T, r41.rho, r41.u.kJkg, r41.h.kJkg, r41.s.kJkgK, r41.cv.kJkgK, r41.cp.kJkgK, r41.w)
+#    300.0 1.3757 555.51 628.20 3.2409 0.86669 1.12067 305.33
     """
     name = "fluoromethane"
     CASNumber = "593-53-3"
@@ -26,6 +26,12 @@ class R41(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.851, "Debye")
     id = 225
 
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1, -1],
+           "ao_pow": [-4.8676441160, 4.2527951258, -0.0268688568],
+           "ao_exp": [5.6936, 2.9351],
+           "titao": [1841/Tc, 4232/Tc]}
+
     CP1 = {"ao": 4.,
            "an": [0.00016937], "pow": [1.],
            "ao_exp": [5.6936, 2.9351], "exp": [1841, 4232],
@@ -40,9 +46,19 @@ class R41(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=R41(T=319, rho=9*34.03292)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            319 9 6129.100 13670.133 55.886 55.438 2796.224 189.549
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 70000.0, "rhomax": 29.66, 
         "Pmin": 0.345, "rhomin": 29.65, 
@@ -60,9 +76,19 @@ class R41(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=R41(T=319, rho=9*34.03292, eq=1)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            319 9 6130.986 13699.382 55.982 53.388 2724.221 194.624
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 29.6, 
         "Pmin": 0.343, "rhomin": 29.6, 
@@ -100,7 +126,7 @@ class R41(MEoS):
               -0.600934897964e-4, 0.145050417148e-1, 0.222324172533e-7,
               -0.204419971811e-4, 0.245556593457e-3]}
 
-    eq = helmholtz1, MBWR, helmholtz2
+    eq = helmholtz1, helmholtz2, #MBWR
 
     _surface = {"sigma": [0.0633], "exp": [1.26]}
     _vapor_Pressure = {

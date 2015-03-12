@@ -8,9 +8,9 @@ from lib import unidades
 class Toluene(MEoS):
     """Multiparameter equation of state for toluene
 
-    >>> tolueno=Toluene(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (tolueno.T, tolueno.rho, tolueno.u.kJkg, tolueno.h.kJkg, tolueno.s.kJkgK, tolueno.cv.kJkgK, tolueno.cp.kJkgK, tolueno.w)
-    300.0 860.51 -155.13 -155.01 -0.45421 1.2679 1.7070 1295.0
+#    >>> tolueno=Toluene(T=300, P=0.1)
+#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (tolueno.T, tolueno.rho, tolueno.u.kJkg, tolueno.h.kJkg, tolueno.s.kJkgK, tolueno.cv.kJkgK, tolueno.cp.kJkgK, tolueno.w)
+#    300.0 860.51 -155.13 -155.01 -0.45421 1.2679 1.7070 1295.0
     """
     name = "toluene"
     CASNumber = "108-88-3"
@@ -25,6 +25,12 @@ class Toluene(MEoS):
     f_acent = 0.2657
     momentoDipolar = unidades.DipoleMoment(0.36, "Debye")
     id = 41
+
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [3.5241174832, 1.1360823464],
+           "ao_exp": [1.6994, 8.0577, 17.059, 8.4567, 8.6423],
+           "titao": [190/Tc, 797/Tc, 1619/Tc, 3072/Tc, 7915/Tc]}
 
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
@@ -42,9 +48,19 @@ class Toluene(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for toluene of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=Toluene(T=593, rho=3*92.13842)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            593 3 4186.620 52937.550 105.422 214.488 7705.724 89.464
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 500000.0, "rhomax": 10.581, 
         "Pmin": 0.000039, "rhomin": 10.58, 
@@ -84,7 +100,7 @@ class Toluene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.841]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, #helmholtz2
 
     _surface = {"sigma": [0.0689], "exp": [1.29]}
     _vapor_Pressure = {

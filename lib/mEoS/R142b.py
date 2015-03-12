@@ -8,9 +8,9 @@ from lib import unidades
 class R142b(MEoS):
     """Multiparameter equation of state for R142b
 
-    >>> r142B=R142b(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (r142B.T, r142B.rho, r142B.u.kJkg, r142B.h.kJkg, r142B.s.kJkgK, r142B.cv.kJkgK, r142B.cp.kJkgK, r142B.w)
-    300.0 4.13163 -2.155 -0.03818 0.76055 0.85441 162.77
+#    >>> r142B=R142b(T=300, P=0.1)
+#    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (r142B.T, r142B.rho, r142B.u.kJkg, r142B.h.kJkg, r142B.s.kJkgK, r142B.cv.kJkgK, r142B.cp.kJkgK, r142B.w)
+#    300.0 4.13163 -2.155 -0.03818 0.76055 0.85441 162.77
     """
     name = "1-chloro-1,1-difluoroethane"
     CASNumber = "75-68-3"
@@ -26,6 +26,12 @@ class R142b(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.14, "Debye")
     id = 241
 
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [-12.6016527149, 8.3160183265],
+           "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
+           "titao": [473/Tc, 1256/Tc, 2497/Tc, 6840/Tc]}
+
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
            "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
@@ -35,9 +41,19 @@ class R142b(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-142b of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=R142b(T=412, rho=4*100.49503)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            412 4 4165.653 44982.401 170.029 117.705 3187.213 96.468
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 470.0, "Pmax": 60000.0, "rhomax": 14.44, 
         "Pmin": 0.00363, "rhomin": 14.44, 

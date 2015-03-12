@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class iC6(MEoS):
-    """Multiparameter equation of state for isohexane
-
-    >>> isohexano=iC6(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.4f %0.4f %0.7f %0.4f %0.4f %0.2f" % (isohexano.T, isohexano.rho, isohexano.u.kJkg, isohexano.h.kJkg, isohexano.s.kJkgK, isohexano.cv.kJkgK, isohexano.cp.kJkgK, isohexano.w)
-    300.0 646.90 -77.7760 -77.6215 -0.2451750 1.7371 2.2442 1037.16
-    """
+    """Multiparameter equation of state for isohexane"""
     name = "isohexane"
     CASNumber = "107-83-5"
     formula = "(CH3)2-CH-(CH2)2-CH3"
@@ -26,6 +21,12 @@ class iC6(MEoS):
     momentoDipolar = None
     id = 52
 
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [6.9259123919, -0.3128629679],
+           "ao_exp": [7.9127, 16.871, 19.257, 14.075],
+           "titao": [325/Tc, 1150/Tc, 2397/Tc, 5893/Tc]}
+
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [7.9127, 16.871, 19.257, 14.075],
@@ -35,9 +36,19 @@ class iC6(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isohexane of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=iC6(T=499, rho=2*86.17536)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            499 2 3058.917 48733.740 113.316 233.627 1129.816 90.210
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 1000000.0, "rhomax": 9.38, 
         "Pmin": 7.34e-9, "rhomin": 9.37, 

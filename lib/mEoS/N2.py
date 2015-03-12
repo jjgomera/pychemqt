@@ -29,6 +29,13 @@ class N2(MEoS):
     _rhor = unidades.Density(316.134310)
     _w = 0.043553140
 
+    Fi1 = {"ao_log": [1, 2.5],
+           "pow": [0, 1, -1, -2, -3],
+           "ao_pow": [-12.76952708, -0.00784163, -1.934819e-4, 
+                      -1.247742e-5, 6.678326e-8],
+           "ao_exp": [1.012941],
+           "titao": [26.65788]}
+
     CP1 = {"ao": 3.5,
            "an": [3.066469e-6, 4.70124e-9, -3.987984e-13], "pow": [1, 2, 3],
            "ao_exp": [1.012941], "exp": [3364.011],
@@ -51,9 +58,13 @@ class N2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Span et al. (2000).",
-        "__doc__":  u"""Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, W., Yokozeki, A. A reference equation of state for the thermodynamic properties of nitrogen for temperatures from 63.151 to 1000 K and pressures to 2200 MPa. J. Phys. Chem. Ref. Data 29 (2000), 1361 – 1433.""",
+        "__doi__": {"autor": "Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, W., Yokozeki, A.",
+                    "title": "A Reference Equation of State for the Thermodynamic Properties of Nitrogen for Temperatures from 63.151 to 1000 K and Pressures to 2200 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 29, 1361 (2000)",
+                    "doi":  "10.1063/1.1349047"}, 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8.670/M, "so": 0.1915/M}, 
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
         "Pmin": 12.5198, "rhomin": 30.957, 
@@ -198,7 +209,7 @@ class N2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4
+    eq = helmholtz1, #MBWR, GERG, helmholtz3, helmholtz4
     _PR = -0.004032
 
     _surface = {"sigma": [0.029324108], "exp": [1.259]}
@@ -368,3 +379,13 @@ class N2(MEoS):
                "Xio": 0.165e-9, "gam0": 0.055, "qd": 0.386e-9, "Tcref": 252.384}
 
     _thermal = thermo0, thermo1, thermo2, thermo3
+
+if __name__ == "__main__":
+#    import doctest
+#    doctest.testmod()
+    
+#    water=N2(T=298.15, P=101325)
+#    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cv.kJkgK, water.cp.kJkgK, water.w
+
+    n2 = N2(T=298.15, v=1)
+    print n2.T

@@ -8,15 +8,15 @@ from lib import unidades
 class neoC5(MEoS):
     """Multiparameter equation of state for neopentane
 
-    >>> neopentano=neoC5(T=500, P=50)
-    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (neopentano.T, neopentano.rho, neopentano.h.kJkg, neopentano.s.kJkgK, neopentano.cv.kJkgK, neopentano.cp.kJkgK, neopentano.w)
-    500.0 508.46 263.82 0.12415 2.5649 2.9723 795.9
+#    >>> neopentano=neoC5(T=500, P=50)
+#    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (neopentano.T, neopentano.rho, neopentano.h.kJkg, neopentano.s.kJkgK, neopentano.cv.kJkgK, neopentano.cp.kJkgK, neopentano.w)
+#    500.0 508.46 263.82 0.12415 2.5649 2.9723 795.9
     """
     name = "neopentane"
     CASNumber = "463-82-1"
     formula = "C(CH3)4"
     synonym = ""
-    rhoc = unidades.Density(235.93)
+    rhoc = unidades.Density(235.9265106)
     Tc = unidades.Temperature(433.74)
     Pc = unidades.Pressure(3196.0, "kPa")
     M = 72.14878  # g/mol
@@ -25,7 +25,13 @@ class neoC5(MEoS):
     f_acent = 0.1961
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 9
-
+    
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [0.8702452614, 1.6071746358],
+           "ao_exp": [14.422, 12.868, 17.247, 12.663],
+           "titao": [710/Tc, 1725/Tc, 3280/Tc, 7787/Tc]}
+           
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [14.422, 12.868, 17.247, 12.663],
@@ -41,9 +47,19 @@ class neoC5(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for neopentane of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=neoC5(T=435, rho=3*72.14878)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            435 3 3256.677 34334.720 92.525 184.435 5161.767 93.352
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 200000.0, "rhomax": 8.71, 
         "Pmin": 35.4, "rhomin": 8.70, 
@@ -83,7 +99,7 @@ class neoC5(MEoS):
         "c2": [2]*6,
         "gamma2": [0.968832]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, #helmholtz2
 
     _vapor_Pressure = {
         "eq": 5,

@@ -8,9 +8,10 @@ from lib import unidades
 class nC9(MEoS):
     """Multiparameter equation of state for n-nonane
 
-    >>> nonano=nC9(T=500, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (nonano.T, nonano.rho, nonano.h.kJkg, nonano.s.kJkgK, nonano.cv.kJkgK, nonano.cp.kJkgK, nonano.w)
-    500.0 3.18 779.85 1.93601 2.4514 2.5277 177.3
+#    >>> nonano=nC9(T=500, P=0.1)
+#    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (nonano.T, nonano.rho, nonano.h.kJkg, nonano.s.kJkgK, nonano.cv.kJkgK, nonano.cp.kJkgK, nonano.w)
+#    500.0 3.18 779.85 1.93601 2.4514 2.5277 177.3
+#
     """
     name = "nonane"
     CASNumber = "111-84-2"
@@ -25,6 +26,12 @@ class nC9(MEoS):
     f_acent = 0.4433
     momentoDipolar = unidades.DipoleMoment(0.07, "Debye")
     id = 13
+
+    Fi1 = {"ao_log": [1, 16.349],
+           "pow": [0, 1],
+           "ao_pow": [10.7927224829, -8.2418318753],
+           "ao_exp": [24.926, 24.842, 11.188, 17.483],
+           "titao": [1221/Tc, 2244/Tc, 5008/Tc, 11724/Tc]}
 
     CP1 = {"ao": 17.349,
            "an": [],
@@ -42,9 +49,19 @@ class nC9(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nonane of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=nC9(T=596, rho=128.2551)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            596 1 2200.687 81692.218 156.217 379.897 715.553 85.318
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
         "Pmin": 0.00044, "rhomin": 6.05, 
@@ -79,7 +96,7 @@ class nC9(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, GERG
+    eq = helmholtz1, #GERG
 
     _surface = {"sigma": [0.0539], "exp": [1.26]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

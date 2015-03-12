@@ -7,10 +7,10 @@ from lib import unidades
 
 class Kr(MEoS):
     """Multiparameter equation of state for krypton
-
-    >>> kripton=Kr(T=300, P=0.1)
-    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (kripton.T, kripton.rho, kripton.u.kJkg, kripton.h.kJkg, kripton.s.kJkgK, kripton.cv.kJkgK, kripton.cp.kJkgK, kripton.w)
-    300.0 3.366 123.073 152.779 1.12967 0.1490 0.2492 222.65
+#
+#    >>> kripton=Kr(T=300, P=0.1)
+#    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (kripton.T, kripton.rho, kripton.u.kJkg, kripton.h.kJkg, kripton.s.kJkgK, kripton.cv.kJkgK, kripton.cp.kJkgK, kripton.w)
+#    300.0 3.366 123.073 152.779 1.12967 0.1490 0.2492 222.65
     """
     name = "krypton"
     CASNumber = "7439-90-9"
@@ -27,6 +27,11 @@ class Kr(MEoS):
     # id = 971
     id = 1
 
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-3.7506412806, 3.7798018435],
+           "ao_exp": [], "titao": []}
+
     CP1 = {"ao": 2.5,
            "an": [], "pow": [], "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
@@ -34,9 +39,19 @@ class Kr(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for krypton of Lemmon and Span (2006).",
-        "__doc__": u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=Kr(T=211, rho=10*83.798)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            211 10 5741.445 6700.326 36.936 27.390 1667.678 137.838
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 33.42, 
         "Pmin": 73.5, "rhomin": 29.2, 
@@ -83,7 +98,7 @@ class Kr(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, #helmholtz2
 
     _surface = {"sigma": [0.0431], "exp": [1.2]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

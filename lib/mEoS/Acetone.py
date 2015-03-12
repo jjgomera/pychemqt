@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class Acetone(MEoS):
-    """Multiparameter equation  of state for Acetone
-
-    >>> acetona=Acetone(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.4f %0.1f" % (acetona.T, acetona.rho, acetona.u.kJkg, acetona.h.kJkg, acetona.s.kJkgK, acetona.cv.kJkgK, acetona.cp.kJkgK, acetona.w)
-    300.0 782.6222 256.774 256.902 1.19826 1.5527 2.1475 1155.7
-    """
+    """Multiparameter equation  of state for Acetone"""
     name = "acetone"
     CASNumber = "67-64-1"
     formula = "CH3COCH3"
     synonym = ""
-    rhoc = unidades.Density(272.97)
+    rhoc = unidades.Density(272.971958)
     Tc = unidades.Temperature(508.1)
     Pc = unidades.Pressure(4700.0, "kPa")
     M = 58.07914  # g/mol
@@ -26,18 +21,28 @@ class Acetone(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.88, "Debye")
     id = 140
 
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [-9.4883659997, 7.1422719708],
            "ao_exp": [3.7072, 7.0675, 11.012],
-           "exp": [310, 3480, 1576],
-           "ao_hyp": [], "hyp": []}
+           "titao": [310/Tc, 3480/Tc, 1576/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for acetone of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short Fundamental Equations of State for 20 Industrial Fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=Acetone(T=510, rho=4*58.07914)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 700000.0, "rhomax": 15.73, 
         "Pmin": 0.0023, "rhomin": 15.72, 
@@ -53,7 +58,7 @@ class Acetone(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eqi = helmholtz1,
+    eq = helmholtz1,
 
     _surface = {"sigma": [0.07], "exp": [1.26]}
     _vapor_Pressure = {

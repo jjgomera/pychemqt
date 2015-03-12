@@ -8,9 +8,9 @@ from lib import unidades
 class SO2(MEoS):
     """Multiparameter equation of state for sulfur dioxide
 
-    >>> so2=SO2(T=500, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (so2.T, so2.rho, so2.u.kJkg, so2.h.kJkg, so2.s.kJkgK, so2.cv.kJkgK, so2.cp.kJkgK, so2.w)
-    500.0 1.55 486.25 550.97 1.91669 0.5977 0.7293 280.7
+#    >>> so2=SO2(T=500, P=0.1)
+#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (so2.T, so2.rho, so2.u.kJkg, so2.h.kJkg, so2.s.kJkgK, so2.cv.kJkgK, so2.cp.kJkgK, so2.w)
+#    500.0 1.55 486.25 550.97 1.91669 0.5977 0.7293 280.7
     """
     name = "sulfur dioxide"
     CASNumber = "7446-09-5"
@@ -25,6 +25,12 @@ class SO2(MEoS):
     f_acent = 0.2557
     momentoDipolar = unidades.DipoleMoment(1.6, "Debye")
     id = 51
+
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1, -1],
+           "ao_pow": [-4.5328346436, 4.4777967379, -0.01560057996],
+           "ao_exp": [1.062, 1.9401],
+           "titao": [775/Tc, 1851/Tc]}
 
     CP1 = {"ao": 4,
            "an": [0.72453e-4], "pow": [1],
@@ -41,9 +47,19 @@ class SO2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for sulfur dioxide of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=SO2(T=432, rho=8*64.0638)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            432 8 8052.256 20821.200 56.819 61.478 4877.456 171.538
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30, 
         "Pmin": 1.66, "rhomin": 25.29, 
@@ -84,7 +100,7 @@ class SO2(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, #helmholtz2
 
     _surface = {"sigma": [0.1016572, -0.020501, -0.0057962],
                 "exp": [1.25, 2.25, 3.25]}

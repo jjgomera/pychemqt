@@ -8,9 +8,14 @@ from lib import unidades
 class H2S(MEoS):
     """Multiparameter equation of state for hydrogen sulfide
 
-    >>> sulfuro=H2S(T=500, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (sulfuro.T, sulfuro.rho, sulfuro.u.kJkg, sulfuro.h.kJkg, sulfuro.s.kJkgK, sulfuro.cv.kJkgK, sulfuro.cp.kJkgK, sulfuro.w)
-    500.0 0.82094 723.06 844.868 3.45347 0.8487 1.0944 396.06
+#    >>> sulfuro=H2S(T=500, P=0.1)
+#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (sulfuro.T, sulfuro.rho, sulfuro.u.kJkg, sulfuro.h.kJkg, sulfuro.s.kJkgK, sulfuro.cv.kJkgK, sulfuro.cp.kJkgK, sulfuro.w)
+#    500.0 0.82094 723.06 844.868 3.45347 0.8487 1.0944 396.06
+#
+#    >>> acet=Acetone(T=510, rho=4*58.07914)
+#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
+#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
+#
     """
     name = "hydrogen sulfide"
     CASNumber = "7783-06-4"
@@ -25,6 +30,12 @@ class H2S(MEoS):
     f_acent = 0.1005
     momentoDipolar = unidades.DipoleMoment(0.97, "Debye")
     id = 50
+
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1, -1.5],
+           "ao_pow": [-4.0740770957, 3.7632137341, -0.002753352822675789],
+           "ao_exp": [1.1364, 1.9721],
+           "titao": [1823/Tc, 3965/Tc]}
 
     CP1 = {"ao": 4,
            "an": [0.14327e-5], "pow": [1.5],
@@ -60,9 +71,19 @@ class H2S(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for hydrogen sulfide of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=H2S(T=375, rho=10*34.08088)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            375 10 9289.914 15571.227 49.880 42.574 2645.392 248.512
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12, 
         "Pmin": 23.3, "rhomin": 29.12, 
@@ -171,7 +192,7 @@ class H2S(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4, GERG
+    eq = helmholtz1, #helmholtz2, helmholtz3, helmholtz4, GERG
 
     _surface = {"sigma": [0.082], "exp": [1.26]}
     _vapor_Pressure = {

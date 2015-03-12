@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R245fa(MEoS):
-    """Multiparameter equation of state for R245fa
-
-    >>> r245fa=R245fa(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r245fa.T, r245fa.rho, r245fa.u.kJkg, r245fa.h.kJkg, r245fa.s.kJkgK, r245fa.cv.kJkgK, r245fa.cp.kJkgK, r245fa.w)
-    300.0 5.59737 -21.31 -3.447 0.06665 0.8368 0.9196 137.15
-    """
+    """Multiparameter equation of state for R245fa"""
     name = "1,1,1,3,3-pentafluoropropane"
     CASNumber = "460-73-1"
     formula = "CF3CH2CHF2"
@@ -27,17 +22,28 @@ class R245fa(MEoS):
     id = 671
     # id = 1817
 
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
-           "ao_exp": [5.5728, 10.385, 12.554], "exp": [222, 1010, 2450],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1],
+           "ao_pow": [-13.4283638514, 9.87236538],
+           "ao_exp": [5.5728, 10.385, 12.554],
+           "titao": [222/Tc, 1010/Tc, 2450/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-245fa of Lemmon and Span (2006).",
-        "__doc__":  u"""Lemmon, E.W. and Span, R., "Short Fundamental Equations of State for 20 Industrial Fluids," J. Chem. Eng. Data, 51:785-850, 2006.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=R245fa(T=429, rho=3*134.04794)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            429 3 3737.844 63909.823 235.875 172.283 1891.957 78.673
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 440.0, "Pmax": 200000.0, "rhomax": 12.3, 
         "Pmin": 0.0125, "rhomin": 12.29, 

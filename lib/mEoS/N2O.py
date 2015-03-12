@@ -8,9 +8,13 @@ from lib import unidades
 class N2O(MEoS):
     """Multiparameter equation of state for nitrous oxide
 
-    >>> n2o=N2O(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (n2o.T, n2o.rho, n2o.u.kJkg, n2o.h.kJkg, n2o.s.kJkgK, n2o.cv.kJkgK, n2o.cp.kJkgK, n2o.w)
-    300.0 1.77389 413.83 470.200 2.43074 0.6915 0.8848 267.85
+#    >>> acet=Acetone(T=510, rho=4*58.07914)
+#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
+#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
+#
+#    >>> n2o=N2O(T=300, P=0.1)
+#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (n2o.T, n2o.rho, n2o.u.kJkg, n2o.h.kJkg, n2o.s.kJkgK, n2o.cv.kJkgK, n2o.cp.kJkgK, n2o.w)
+#    300.0 1.77389 413.83 470.200 2.43074 0.6915 0.8848 267.85
     """
     name = "nitrous oxide"
     CASNumber = "10024-97-2"
@@ -26,6 +30,12 @@ class N2O(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.1608, "Debye")
     id = 110
 
+    Fi1 = {"ao_log": [1, 2.5],
+           "pow": [0, 1],
+           "ao_pow": [-4.4262736272, 4.3120475243],
+           "ao_exp": [2.1769, 1.6145, 0.48393],
+           "titao": [879/Tc, 2372/Tc, 5447/Tc]}
+
     CP1 = {"ao": 3.5,
            "an": [], "pow": [],
            "ao_exp": [2.1769, 1.6145, 0.48393],
@@ -35,9 +45,19 @@ class N2O(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nitrous oxide of Lemmon and Span (2006)",
-        "__doc__":  u"""Lemmon, E.W., Span, R. Short fundamental equations of state for 20 industrial fluids. J. Chem. Eng. Data 51 (2006), 785 – 850.""",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "doi":  "10.1021/je050186n"}, 
+        "__test__": """
+            >>> st=N2O(T=311, rho=10*44.0128)
+            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            311 10 7474.778 13676.531 52.070 50.336 2997.404 185.945
+            """, # Table 10, Pag 842
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 28.12, 
         "Pmin": 87.84, "rhomin": 28.11, 
