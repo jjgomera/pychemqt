@@ -212,8 +212,7 @@ class MEoS(_fase):
 
     kwargs = {"T": 0.0,
               "P": 0.0,
-              "rho": 0.0,
-              "v": 0.0,
+              "rho": None,
               "h": None,
               "s": None,
               "u": None,
@@ -223,6 +222,7 @@ class MEoS(_fase):
               "visco": 0,
               "thermal": 0,
               "ref": "OTO", 
+              "refvalues": None, 
               "rho0": 0, 
               "T0": 0}
     status = 0
@@ -254,6 +254,8 @@ class MEoS(_fase):
             IIR:  h=200,s=1 saturated liquid 0ºC
             ASHRAE:  h,s=0 saturated liquid at -40ºC
             CUSTOM
+        refvalues: array with custom values of reference state
+            [Tref, Pref, ho, so]
         rho0: Initial value for iteration over density
         T0: Initial value for iteration over temperature
 
@@ -334,7 +336,7 @@ class MEoS(_fase):
         self.__call__(**kwargs)
 
     def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
+        self.cleanOldValues(**kwargs)
 
         if self.calculable:
             self.calculo()
@@ -350,12 +352,25 @@ class MEoS(_fase):
                     self.msg = QApplication.translate("pychemqt", "Solution don´t converge", None, QApplication.UnicodeUTF8)
                     print "dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)            
             
+    def cleanOldValues(self, **kwargs):
+        """Convert alternative rho input to correct rho value"""
+        if kwargs.get("rhom", 0):
+            kwargs["rho"] = kwargs["rhom"]*self.M
+            del kwargs["rhom"]
+        elif kwargs.get("v", 0):
+            kwargs["rho"] = 1./kwargs["v"]
+            del kwargs["v"]
+        elif kwargs.get("vm", 0):
+            kwargs["rho"] = self.M/kwargs["vm"]
+            del kwargs["vm"]
+        self.kwargs.update(kwargs)
+
     @property
     def calculable(self):
         self._mode = ""
         if self.kwargs["T"] and self.kwargs["P"]:
             self._mode = "T-P"
-        elif self.kwargs["T"] and (self.kwargs["rho"] or self.kwargs["v"]):
+        elif self.kwargs["T"] and self.kwargs["rho"] is not None:
             self._mode = "T-rho"
         elif self.kwargs["T"] and self.kwargs["h"] is not None:
             self._mode = "T-h"
@@ -363,7 +378,7 @@ class MEoS(_fase):
             self._mode = "T-s"
         elif self.kwargs["T"] and self.kwargs["u"] is not None:
             self._mode = "T-u"
-        elif self.kwargs["P"] and (self.kwargs["rho"] or self.kwargs["v"]):
+        elif self.kwargs["P"] and self.kwargs["rho"] is not None:
             self._mode = "P-rho"
         elif self.kwargs["P"] and self.kwargs["h"] is not None:
             self._mode = "P-h"
@@ -371,11 +386,11 @@ class MEoS(_fase):
             self._mode = "P-s"
         elif self.kwargs["P"] and self.kwargs["u"] is not None:
             self._mode = "P-u"
-        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["h"] is not None:
+        elif self.kwargs["rho"] is not None and self.kwargs["h"] is not None:
             self._mode = "rho-h"
-        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["s"] is not None:
+        elif self.kwargs["rho"] is not None and self.kwargs["s"] is not None:
             self._mode = "rho-s"
-        elif (self.kwargs["rho"] or self.kwargs["v"]) and self.kwargs["u"] is not None:
+        elif self.kwargs["rho"] is not None and self.kwargs["u"] is not None:
             self._mode = "rho-u"
         elif self.kwargs["h"] is not None and self.kwargs["s"] is not None:
             self._mode = "h-s"
@@ -395,7 +410,6 @@ class MEoS(_fase):
         T = self.kwargs["T"]
         rho = self.kwargs["rho"]
         P = self.kwargs["P"]
-        v = self.kwargs["v"]
         s = self.kwargs["s"]
         h = self.kwargs["h"]
         u = self.kwargs["u"]
@@ -404,8 +418,9 @@ class MEoS(_fase):
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
         ref = self.kwargs["ref"]
-
-        self._ref(ref)
+        refvalues = self.kwargs["refvalues"]
+        
+        self._ref(ref, refvalues)
 
         if self.id:
             self.componente = compuestos.Componente(self.id)
@@ -447,8 +462,6 @@ class MEoS(_fase):
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
 
         propiedades = None
-        if v and not rho:
-            rho = 1./v
 
         if x is None:
             # Method with iteration necessary to get x
@@ -650,7 +663,7 @@ class MEoS(_fase):
 
 
             if self._constants["Tmin"]<=T<=self._constants["Tmax"] and \
-                    0 < rho <= self._constants["rhomax"]*self.M:
+                    0 <= rho <= self._constants["rhomax"]*self.M:
                 self.status = 1
                 self.msg = ""
             else:
@@ -742,7 +755,10 @@ class MEoS(_fase):
         self.cp0 = unidades.SpecificHeat(cp0.cp)
         self.cv0 = unidades.SpecificHeat(cp0.cv)
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
-        self.gamma0 = unidades.Dimensionless(-self.v0/self.P/1000*self.derivative("P", "v", "s", cp0))
+        if self.rho0:
+            self.gamma0 = unidades.Dimensionless(-self.v0/self.P/1000*self.derivative("P", "v", "s", cp0))
+        else:
+            self.gamma0 = 0
 
         self.Liquido = _fase()
         self.Gas = _fase()
@@ -768,6 +784,13 @@ class MEoS(_fase):
             self.u = unidades.Enthalpy(x*self.Gas.u+(1-x)*self.Liquido.u)
             self.a = unidades.Enthalpy(x*self.Gas.a+(1-x)*self.Liquido.a)
             self.g = unidades.Enthalpy(x*self.Gas.g+(1-x)*self.Liquido.g)
+            
+            self.rhoM = unidades.MolarDensity(self.rho/self.M)
+            self.hM = unidades.MolarEnthalpy(self.h*self.M)
+            self.sM = unidades.MolarSpecificHeat(self.s*self.M)
+            self.uM = unidades.MolarEnthalpy(self.u*self.M)
+            self.aM = unidades.MolarEnthalpy(self.a*self.M)
+            self.gM = unidades.MolarEnthalpy(self.g*self.M)
 
             self.Z = unidades.Dimensionless(x*self.Gas.Z+(1-x)*self.Liquido.Z)
             self.f = unidades.Pressure(x*self.Gas.f+(1-x)*self.Liquido.f)
@@ -910,8 +933,10 @@ class MEoS(_fase):
         """Fill properties in null phase with a explicative msg"""
         if self.x == 0:
             txt = QApplication.translate("pychemqt", "Subcooled")
-        elif self.Tr <= 1 and self.Pr <= 1: 
+        elif self.Tr < 1 and self.Pr < 1: 
             txt = QApplication.translate("pychemqt", "Superheated")
+        elif self.Tr == 1 and self.Pr == 1: 
+            txt = QApplication.translate("pychemqt", "Critic point")
         else:
             txt = QApplication.translate("pychemqt", "Supercritical")
         for key in _fase.__dict__:
@@ -938,34 +963,45 @@ class MEoS(_fase):
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
         fase.w = unidades.Speed(estado["w"])
 
+        fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
+        fase.hM = unidades.MolarEnthalpy(fase.h*self.M)
+        fase.sM = unidades.MolarSpecificHeat(fase.s*self.M)
+        fase.uM = unidades.MolarEnthalpy(fase.u*self.M)
+        fase.aM = unidades.MolarEnthalpy(fase.a*self.M)
+        fase.gM = unidades.MolarEnthalpy(fase.g*self.M)
+        fase.cvM = unidades.MolarSpecificHeat(fase.cv*self.M)
+        fase.cpM = unidades.MolarSpecificHeat(fase.cp*self.M)
+        
         fase.alfap = unidades.InvTemperature(estado["alfap"])
         fase.betap = unidades.Density(estado["betap"])
 
         fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
         fase.Gruneisen = unidades.Dimensionless(fase.v/fase.cv*self.derivative("P", "T", "v", fase))
-        fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
-        fase.kappa = unidades.InvPressure(-self.derivative("v", "P", "T", fase)/fase.v)
-        fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
+        
+        if fase.rho:
+            fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
+            fase.kappa = unidades.InvPressure(-self.derivative("v", "P", "T", fase)/fase.v)
+            fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
+            fase.gamma = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "s", fase))
 
-        fase.gamma = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "s", fase))
-        fase.kt = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "T", fase))
-        fase.ks = unidades.InvPressure(-self.derivative("v", "P", "s", fase)/fase.v)
-        fase.Kt = unidades.Pressure(-fase.v*self.derivative("P", "v", "s", fase))
-        fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
-        fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
-        fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
-        fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
-        fase.dhdP_rho = unidades.EnthalpyPressure(self.derivative("h", "P", "rho", fase))
-        fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
-        fase.dhdrho_P = unidades.EnthalpyDensity(estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
-        fase.dpdT_rho = unidades.PressureTemperature(self.derivative("P", "T", "rho", fase))
-        fase.dpdrho_T = unidades.PressureDensity(estado["dpdrho"])
-        fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
-        fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
+            fase.kt = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "T", fase))
+            fase.ks = unidades.InvPressure(-self.derivative("v", "P", "s", fase)/fase.v)
+            fase.Kt = unidades.Pressure(-fase.v*self.derivative("P", "v", "s", fase))
+            fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
+            fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
+            fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
+            fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
+            fase.dhdP_rho = unidades.EnthalpyPressure(self.derivative("h", "P", "rho", fase))
+            fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
+            fase.dhdrho_P = unidades.EnthalpyDensity(estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
+            fase.dpdT_rho = unidades.PressureTemperature(self.derivative("P", "T", "rho", fase))
+            fase.dpdrho_T = unidades.PressureDensity(estado["dpdrho"])
+            fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
+            fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
 
-        fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
-        fase.IntP = unidades.Pressure(self.T*self.derivative("P", "T", "rho", fase)-self.P)
-        fase.hInput = unidades.Enthalpy(fase.v*self.derivative("h", "v", "P", fase))
+            fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
+            fase.IntP = unidades.Pressure(self.T*self.derivative("P", "T", "rho", fase)-self.P)
+            fase.hInput = unidades.Enthalpy(fase.v*self.derivative("h", "v", "P", fase))
 
         fase.mu = self._Viscosity(fase.rho, self.T, fase)
         fase.k = self._ThCond(fase.rho, self.T, fase)
@@ -1011,7 +1047,6 @@ class MEoS(_fase):
             vapor = self._eq(rhoG, T)
             deltaL = rhoL/self.rhoc
             deltaG = rhoG/self.rhoc
-
             Ps = self.R*T*rhoL*rhoG/(rhoL-rhoG)*(liquido["fir"]-vapor["fir"]+log(deltaL/deltaG))
         return rhoL, rhoG, Ps
 
@@ -1032,7 +1067,11 @@ class MEoS(_fase):
 
         propiedades["T"] = T
         propiedades["P"] = (1+delta*fird)*self.R*T*rho
-        propiedades["v"] = 1./rho
+        if rho:
+            propiedades["v"] = 1./rho
+        else:
+            propiedades["v"] = float("inf")
+            
         propiedades["h"] = self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
         propiedades["s"] = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
         propiedades["cv"] = -self.R.kJkgK*tau**2*(fiott+firtt)
@@ -1048,8 +1087,11 @@ class MEoS(_fase):
         propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
         propiedades["drhodt"] = -rho*(1+delta*fird-delta*tau*firdt) / \
             (T*(1+2*delta*fird+delta**2*firdd))
-        propiedades["dhdrho"] = self.R*T/rho * \
-            (tau*delta*(fiodt+firdt)+delta*fird+delta**2*firdd)
+        if rho:
+            propiedades["dhdrho"] = self.R*T/rho * \
+                (tau*delta*(fiodt+firdt)+delta*fird+delta**2*firdd)
+        else:
+            propiedades["dhdrho"] = 0
 #        dbt=-phi11/rho/t
 #        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
         return propiedades
@@ -1371,7 +1413,7 @@ class MEoS(_fase):
         helmholtz["nr2"] = nr[5:]
         self._constants = helmholtz
 
-    def _ref(self, ref):
+    def _ref(self, ref, refvalues=None):
         """Define reference state"""
         if ref == "OTO":
             self.Tref = 298.15
@@ -1394,7 +1436,9 @@ class MEoS(_fase):
             self.ho = 0
             self.so = 0
         elif ref == "CUSTOM":
-            pass
+            if refvalues is None:
+                refvalues = [298.15, 101325., 0., 0.]
+            self.Tref, self.Pref, self.ho, self.so = refvalues
 
     def _prop0(self, rho, T):
         """Ideal gas properties"""
@@ -1405,7 +1449,10 @@ class MEoS(_fase):
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
 
         propiedades = _fase()
-        propiedades.v = self.R*T/self.P
+        if rho:
+            propiedades.v = self.R*T/self.P
+        else:
+            propiedades.v = float("inf")
         propiedades.h = self.R*T*(1+tau*fiot)
         propiedades.s = self.R*(tau*fiot-fio)
         propiedades.cv = -self.R*tau**2*fiott
@@ -1453,31 +1500,32 @@ class MEoS(_fase):
         return Fi0
 
     def _phi0(self, cp, tau, delta):
-        if "ao_log" in cp:
-            Fi0 = cp
-        else:
-            Fi0 = self._PHIO(cp)
-
+#        if "ao_log" in cp:
+        Fi0 = cp
+#        else:
+#            Fi0 = self._PHIO(cp)
+#        print Fi0
+#        
 #        T = self._constants.get("Tref", self.Tc)/tau
 #        rho = delta*self.rhoc
-#        rho0 = self.Pref/R/self.Tref
-#
+#        rho0 = self.Pref/self.R/self.Tref
+#        delta0=rho0/self.rhoc
+#        tau0=self._constants.get("Tref", self.Tc)/self.Tref
+#        
 #        cp0sav = self._Cp0(cp, T)
 #        cpisav = self._dCp(cp, T, self.Tref)
 #        cptsav = self._dCpT(cp, T, self.Tref)
+#        cpt2sav = self._dCpT2(cp, T, self.Tref)
 #        
-#        fio = cpisav/R/T-cptsav/R+log(T*rho/rho0/self.Tref)-1
-#        fiot = (cpisav-1)/tau
-#        fiott = (1-cp0sav/R)/tau**2
-
+#        fio = self.ho*tau/self.R/self.Tc-self.so/self.R-1+\
+#            log(delta*tau0/delta0/tau)-tau*cpt2sav/self.R*1000+cptsav/self.R
+#        fiot = (cpisav/self.R*1000/T-1)/tau+self.ho/self.R/self.Tc
+#        fiott = (1-cp0sav/self.R*1000)/tau**2
+        
         # FIXME: Reference estate
         fio=Fi0["ao_log"][0]*log(delta)+Fi0["ao_log"][1]*log(tau)
-        fiot=+Fi0["ao_log"][1]/tau
+        fiot=Fi0["ao_log"][1]/tau
         fiott=-Fi0["ao_log"][1]/tau**2
-
-        fiod = 1/delta
-        fiodd = -1/delta**2
-        fiodt = 0
 
         for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
             fio += n*tau**t
@@ -1486,10 +1534,10 @@ class MEoS(_fase):
             if t not in [0, 1]:
                 fiott += n*t*(t-1)*tau**(t-2)
 
-        for i in range(len(Fi0["ao_exp"])):
-            fio += Fi0["ao_exp"][i]*log(1-exp(-tau*Fi0["titao"][i]))
-            fiot += Fi0["ao_exp"][i]*Fi0["titao"][i]*((1-exp(-Fi0["titao"][i]*tau))**-1-1)
-            fiott -= Fi0["ao_exp"][i]*Fi0["titao"][i]**2*exp(-Fi0["titao"][i]*tau)*(1-exp(-Fi0["titao"][i]*tau))**-2
+        for n, g in zip(Fi0["ao_exp"], Fi0["titao"]):
+            fio += n*log(1-exp(-g*tau))
+            fiot += n*g*((1-exp(-g*tau))**-1-1)
+            fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
 
         if "ao_hyp" in Fi0 and Fi0["ao_hyp"]:
             for i in [0, 2]:
@@ -1502,8 +1550,16 @@ class MEoS(_fase):
                 fiot -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]*tanh(Fi0["hyp"][i]*tau)
                 fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/cosh(Fi0["hyp"][i]*tau)**2
 
+        if delta:
+            fiod = 1/delta
+            fiodd = -1/delta**2
+        else:
+            fiod, fiodd = 0, 0
+        fiodt = 0
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
+#        print fio, fiot, fiott, factor
+        
         return factor*fio, factor*fiot, factor*fiott, factor*fiod, factor*fiodd, factor*fiodt
 
     def _Cp0(self, cp, T=False):
@@ -1520,7 +1576,7 @@ class MEoS(_fase):
                 cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
             for i in [1, 3]:
                 cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
-        return unidades.SpecificHeat(cpo/self.M*1000)
+        return unidades.SpecificHeat(cpo*self.R/1000)
 
     def _dCp(self, cp, T, Tref):
         """Calcula la integral de Cp0 entre T y Tref, necesario para calcular la entalpia usando estados de referencia"""
@@ -1530,211 +1586,217 @@ class MEoS(_fase):
             if t == 0:
                 cpsum += n*log(T/Tref)
             else:
-                cpsum += n*(T**t-Tref**t)/t
-        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
-            cpsum += -ao*0.5*tita*((1.+exp(tita/T))/(1.-exp(tita/T))-(1.+exp(tita/Tref))/(1.-exp(tita/Tref)))
-        return cpsum*self.R
+                cpsum += n*(T**(t+1)-Tref**(t+1))/((t+1)*self.Tc**t)
+#        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
+#            cpsum += -ao*0.5*tita*((1.+exp(tita/T))/(1.-exp(tita/T))-(1.+exp(tita/Tref))/(1.-exp(tita/Tref)))
+        return unidades.Enthalpy(cpsum/self.M/1000)
 
     def _dCpT(self, cp, T, Tref):
         """Calcula la integral de Cp0/T entre T y Tref, necesario para calcular la entropia usando estados de referencia"""
         cpsum = cp.get("ao", 0)*log(T/Tref)
-        for n, t in zip(cp["an"], cp["pow"]):
-            cpsum += n*(T**t-Tref**t)/t
-        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
-            cpsum += ao*(log((1.-exp(tita/Tref))/(1.-exp(tita/T)))+tita/T*exp(tita/T)/(exp(tita/T)-1.)-tita/Tref*exp(tita/Tref)/(exp(tita/Tref)-1.))
-        return cpsum*self.R
+#        for n, t in zip(cp["an"], cp["pow"]):
+#            cpsum += n*(T**t-Tref**t)/(t*self.Tc**t)
+#        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
+#            cpsum += ao*(log((1.-exp(tita/Tref))/(1.-exp(tita/T)))+tita/T*exp(tita/T)/(exp(tita/T)-1.)-tita/Tref*exp(tita/Tref)/(exp(tita/Tref)-1.))
+        return unidades.SpecificHeat(cpsum*self.R*1000)
 
+    def _dCpT2(self, cp, T, Tref):
+        """Calcula la integral de Cp0/T² entre T y Tref, necesario para calcular la entropia usando estados de referencia"""
+        cpsum = -cp.get("ao", 0)*(1/T-1/Tref)
+        return unidades.SpecificHeat(cpsum*self.M*1000)
+        
 
     def _phir(self, tau, delta):
         delta_0 = 1e-200
 
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
 
-        # Polinomial terms
-        nr1 = self._constants.get("nr1", [])
-        d1 = self._constants.get("d1", [])
-        t1 = self._constants.get("t1", [])
-        for n, d, t in zip(nr1, d1, t1):
-            fir += n*delta**d*tau**t
-            fird += n*d*delta**(d-1)*tau**t
-            firdd += n*d*(d-1)*delta**(d-2)*tau**t
-            firt += n*t*delta**d*tau**(t-1)
-            firtt += n*t*(t-1)*delta**d*tau**(t-2)
-            firdt += n*t*d*delta**(d-1)*tau**(t-1)
-            firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
-            B += n*d*delta_0**(d-1)*tau**t
-            C += n*d*(d-1)*delta_0**(d-2)*tau**t
-            
-        # Exponential terms
-        nr2 = self._constants.get("nr2", [])
-        d2 = self._constants.get("d2", [])
-        g2 = self._constants.get("gamma2", [])
-        t2 = self._constants.get("t2", [])
-        c2 = self._constants.get("c2", [])
-        for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
-            fir += n*delta**d*tau**t*exp(-g*delta**c)
-            fird += n*exp(-g*delta**c)*delta**(d-1)*tau**t*(d-g*c*delta**c)
-            firdd += n*exp(-g*delta**c)*delta**(d-2)*tau**t * \
-                ((d-g*c*delta**c)*(d-1-g*c*delta**c)-g**2*c**2*delta**c)
-            firt += n*t*delta**d*tau**(t-1)*exp(-g*delta**c)
-            firtt += n*t*(t-1)*delta**d*tau**(t-2)*exp(-g*delta**c)
-            firdt += n*t*delta**(d-1)*tau**(t-1)*(d-g*c*delta**c)*exp(-g*delta**c)
-            firdtt += n*t*(t-1)*delta**(d-1)*tau**(t-2)*(d-g*c*delta**c) * \
-                exp(-g*delta**c)
-            B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t*(d-g*c*delta_0**c)
-            C += n*exp(-g*delta_0**c)*(delta_0**(d-2)*tau**t *
-                ((d-g*c*delta_0**c)*(d-1-g*c*delta_0**c)-g**2*c**2*delta_0**c))
+        if delta:
+            # Polinomial terms
+            nr1 = self._constants.get("nr1", [])
+            d1 = self._constants.get("d1", [])
+            t1 = self._constants.get("t1", [])
+            for n, d, t in zip(nr1, d1, t1):
+                fir += n*delta**d*tau**t
+                fird += n*d*delta**(d-1)*tau**t
+                firdd += n*d*(d-1)*delta**(d-2)*tau**t
+                firt += n*t*delta**d*tau**(t-1)
+                firtt += n*t*(t-1)*delta**d*tau**(t-2)
+                firdt += n*t*d*delta**(d-1)*tau**(t-1)
+                firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
+                B += n*d*delta_0**(d-1)*tau**t
+                C += n*d*(d-1)*delta_0**(d-2)*tau**t
+                
+            # Exponential terms
+            nr2 = self._constants.get("nr2", [])
+            d2 = self._constants.get("d2", [])
+            g2 = self._constants.get("gamma2", [])
+            t2 = self._constants.get("t2", [])
+            c2 = self._constants.get("c2", [])
+            for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
+                fir += n*delta**d*tau**t*exp(-g*delta**c)
+                fird += n*exp(-g*delta**c)*delta**(d-1)*tau**t*(d-g*c*delta**c)
+                firdd += n*exp(-g*delta**c)*delta**(d-2)*tau**t * \
+                    ((d-g*c*delta**c)*(d-1-g*c*delta**c)-g**2*c**2*delta**c)
+                firt += n*t*delta**d*tau**(t-1)*exp(-g*delta**c)
+                firtt += n*t*(t-1)*delta**d*tau**(t-2)*exp(-g*delta**c)
+                firdt += n*t*delta**(d-1)*tau**(t-1)*(d-g*c*delta**c)*exp(-g*delta**c)
+                firdtt += n*t*(t-1)*delta**(d-1)*tau**(t-2)*(d-g*c*delta**c) * \
+                    exp(-g*delta**c)
+                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t*(d-g*c*delta_0**c)
+                C += n*exp(-g*delta_0**c)*(delta_0**(d-2)*tau**t *
+                    ((d-g*c*delta_0**c)*(d-1-g*c*delta_0**c)-g**2*c**2*delta_0**c))
 
-        # Gaussian terms
-        nr3 = self._constants.get("nr3", [])
-        d3 = self._constants.get("d3", [])
-        t3 = self._constants.get("t3", [])
-        a3 = self._constants.get("alfa3", [])
-        e3 = self._constants.get("epsilon3", [])
-        b3 = self._constants.get("beta3", [])
-        g3 = self._constants.get("gamma3", [])
-        for i in range(len(nr3)):
-            exp1 = self._constants.get("exp1", [2]*len(nr3))
-            exp2 = self._constants.get("exp2", [2]*len(nr3))
-            fir += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])
-            fird += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                (d3[i]/delta-2*a3[i]*(delta-e3[i]))
-            firdd += nr3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i] *
-                (tau-g3[i])**exp2[i])*(-2*a3[i]*delta**d3[i]+4*a3[i]**2 *
-                delta**d3[i]*(delta-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta**2 *
-                (delta-e3[i])+d3[i]*2*delta)
-            firt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                (t3[i]/tau-2*b3[i]*(tau-g3[i]))
-            firtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i])
-            firdt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                (t3[i]/tau-2*b3[i]*(tau-g3[i]))*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
-            firdtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i]) * \
-                (d3[i]/delta-2*a3[i]*(delta-e3[i]))
-            B += nr3[i]*delta_0**d3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                (d3[i]/delta_0-2*a3[i]*(delta_0-e3[i]))
-            C += nr3[i]*tau**t3[i] * \
-                exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                (-2*a3[i]*delta_0**d3[i]+4*a3[i]**2*delta_0**d3[i] *
-                (delta_0-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta_0**2*(delta_0-e3[i]) +
-                d3[i]*2*delta_0)
+            # Gaussian terms
+            nr3 = self._constants.get("nr3", [])
+            d3 = self._constants.get("d3", [])
+            t3 = self._constants.get("t3", [])
+            a3 = self._constants.get("alfa3", [])
+            e3 = self._constants.get("epsilon3", [])
+            b3 = self._constants.get("beta3", [])
+            g3 = self._constants.get("gamma3", [])
+            for i in range(len(nr3)):
+                exp1 = self._constants.get("exp1", [2]*len(nr3))
+                exp2 = self._constants.get("exp2", [2]*len(nr3))
+                fir += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])
+                fird += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    (d3[i]/delta-2*a3[i]*(delta-e3[i]))
+                firdd += nr3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i] *
+                    (tau-g3[i])**exp2[i])*(-2*a3[i]*delta**d3[i]+4*a3[i]**2 *
+                    delta**d3[i]*(delta-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta**2 *
+                    (delta-e3[i])+d3[i]*2*delta)
+                firt += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    (t3[i]/tau-2*b3[i]*(tau-g3[i]))
+                firtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i])
+                firdt += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    (t3[i]/tau-2*b3[i]*(tau-g3[i]))*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
+                firdtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i]) * \
+                    (d3[i]/delta-2*a3[i]*(delta-e3[i]))
+                B += nr3[i]*delta_0**d3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    (d3[i]/delta_0-2*a3[i]*(delta_0-e3[i]))
+                C += nr3[i]*tau**t3[i] * \
+                    exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
+                    (-2*a3[i]*delta_0**d3[i]+4*a3[i]**2*delta_0**d3[i] *
+                    (delta_0-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta_0**2*(delta_0-e3[i]) +
+                    d3[i]*2*delta_0)
 
-        # Non analitic terms
-        nr4 = self._constants.get("nr4", [])
-        a4 = self._constants.get("a4", [])
-        b = self._constants.get("b4", [])
-        A = self._constants.get("A", [])
-        Bi = self._constants.get("B", [])
-        Ci = self._constants.get("C", [])
-        D = self._constants.get("D", [])
-        bt = self._constants.get("beta4", [])
-        for i in range(len(nr4)):
-            Tita = (1-tau)+A[i]*((delta-1)**2)**(0.5/bt[i])
-            F = exp(-Ci[i]*(delta-1)**2-D[i]*(tau-1)**2)
-            Fd = -2*Ci[i]*F*(delta-1)
-            Fdd = 2*Ci[i]*F*(2*Ci[i]*(delta-1)**2-1)
-            Ft = -2*D[i]*F*(tau-1)
-            Ftt = 2*D[i]*F*(2*D[i]*(tau-1)**2-1)
-            Fdt = 4*Ci[i]*D[i]*F*(delta-1)*(tau-1)
-            Fdtt = 4*Ci[i]*D[i]*F*(delta-1)*(2*D[i]*(tau-1)**2-1)
+            # Non analitic terms
+            nr4 = self._constants.get("nr4", [])
+            a4 = self._constants.get("a4", [])
+            b = self._constants.get("b4", [])
+            A = self._constants.get("A", [])
+            Bi = self._constants.get("B", [])
+            Ci = self._constants.get("C", [])
+            D = self._constants.get("D", [])
+            bt = self._constants.get("beta4", [])
+            for i in range(len(nr4)):
+                Tita = (1-tau)+A[i]*((delta-1)**2)**(0.5/bt[i])
+                F = exp(-Ci[i]*(delta-1)**2-D[i]*(tau-1)**2)
+                Fd = -2*Ci[i]*F*(delta-1)
+                Fdd = 2*Ci[i]*F*(2*Ci[i]*(delta-1)**2-1)
+                Ft = -2*D[i]*F*(tau-1)
+                Ftt = 2*D[i]*F*(2*D[i]*(tau-1)**2-1)
+                Fdt = 4*Ci[i]*D[i]*F*(delta-1)*(tau-1)
+                Fdtt = 4*Ci[i]*D[i]*F*(delta-1)*(2*D[i]*(tau-1)**2-1)
 
-            Delta = Tita**2+Bi[i]*((delta-1)**2)**a4[i]
-            Deltad = (delta-1)*(A[i]*Tita*2/bt[i]*((delta-1)**2)**(0.5/bt[i]-1) \
-                + 2*Bi[i]*a4[i]*((delta-1)**2)**(a4[i]-1))
-            if delta == 1:
-                Deltadd = 0
-                DeltaBd = 0
-                DeltaBdd = 0
-                DeltaBt = 0
-                DeltaBtt = 0
-                DeltaBdt = 0
-                DeltaBdtt = 0
-            else:
-                Deltadd = Deltad/(delta-1)+(delta-1)**2 * \
-                    (4*Bi[i]*a4[i]*(a4[i]-1)*((delta-1)**2)**(a4[i]-2) +
-                    2*A[i]**2/bt[i]**2*(((delta-1)**2)**(0.5/bt[i]-1))**2 +
-                    A[i]*Tita*4/bt[i]*(0.5/bt[i]-1)*((delta-1)**2)**(0.5/bt[i]-2))
-                DeltaBd = b[i]*Delta**(b[i]-1)*Deltad
-                DeltaBdd = b[i]*(Delta**(b[i]-1)*Deltadd+(b[i]-1)*Delta**(b[i]-2)*Deltad**2)
-                DeltaBt = -2*Tita*b[i]*Delta**(b[i]-1)
-                DeltaBtt = 2*b[i]*Delta**(b[i]-1)+4*Tita**2*b[i]*(b[i]-1)*Delta**(b[i]-2)
-                DeltaBdt = -A[i]*b[i]*2/bt[i]*Delta**(b[i]-1)*(delta-1)*((delta-1)**2) ** \
-                    (0.5/bt[i]-1)-2*Tita*b[i]*(b[i]-1)*Delta**(b[i]-2)*Deltad
-                DeltaBdtt = 2*b[i]*(b[i]-1)*Delta**(b[i]-2) * \
-                    (Deltad*(1+2*Tita**2*(b[i]-2)/Delta)+4*Tita*A[i] *
-                    (delta-1)/bt[i]*((delta-1)**2)**(0.5/bt[i]-1))
+                Delta = Tita**2+Bi[i]*((delta-1)**2)**a4[i]
+                Deltad = (delta-1)*(A[i]*Tita*2/bt[i]*((delta-1)**2)**(0.5/bt[i]-1) \
+                    + 2*Bi[i]*a4[i]*((delta-1)**2)**(a4[i]-1))
+                if delta == 1:
+                    Deltadd = 0
+                    DeltaBd = 0
+                    DeltaBdd = 0
+                    DeltaBt = 0
+                    DeltaBtt = 0
+                    DeltaBdt = 0
+                    DeltaBdtt = 0
+                else:
+                    Deltadd = Deltad/(delta-1)+(delta-1)**2 * \
+                        (4*Bi[i]*a4[i]*(a4[i]-1)*((delta-1)**2)**(a4[i]-2) +
+                        2*A[i]**2/bt[i]**2*(((delta-1)**2)**(0.5/bt[i]-1))**2 +
+                        A[i]*Tita*4/bt[i]*(0.5/bt[i]-1)*((delta-1)**2)**(0.5/bt[i]-2))
+                    DeltaBd = b[i]*Delta**(b[i]-1)*Deltad
+                    DeltaBdd = b[i]*(Delta**(b[i]-1)*Deltadd+(b[i]-1)*Delta**(b[i]-2)*Deltad**2)
+                    DeltaBt = -2*Tita*b[i]*Delta**(b[i]-1)
+                    DeltaBtt = 2*b[i]*Delta**(b[i]-1)+4*Tita**2*b[i]*(b[i]-1)*Delta**(b[i]-2)
+                    DeltaBdt = -A[i]*b[i]*2/bt[i]*Delta**(b[i]-1)*(delta-1)*((delta-1)**2) ** \
+                        (0.5/bt[i]-1)-2*Tita*b[i]*(b[i]-1)*Delta**(b[i]-2)*Deltad
+                    DeltaBdtt = 2*b[i]*(b[i]-1)*Delta**(b[i]-2) * \
+                        (Deltad*(1+2*Tita**2*(b[i]-2)/Delta)+4*Tita*A[i] *
+                        (delta-1)/bt[i]*((delta-1)**2)**(0.5/bt[i]-1))
 
-            fir += nr4[i]*Delta**b[i]*delta*F
-            fird += nr4[i]*(Delta**b[i]*(F+delta*Fd)+DeltaBd*delta*F)
-            firdd += nr4[i]*(Delta**b[i]*(2*Fd+delta*Fdd)+2*DeltaBd *
-                (F+delta*Fd)+DeltaBdd*delta*F)
-            firt += nr4[i]*delta*(DeltaBt*F+Delta**b[i]*Ft)
-            firtt += nr4[i]*delta*(DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt)
-            firdt += nr4[i]*(Delta**b[i]*(Ft+delta*Fdt)+delta*DeltaBd*Ft +
-                DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
-            firdtt += nr4[i]*((DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt) +
-                delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft+2*DeltaBt*Fdt +
-                DeltaBt*Ftt+Delta**b[i]*Fdtt))
+                fir += nr4[i]*Delta**b[i]*delta*F
+                fird += nr4[i]*(Delta**b[i]*(F+delta*Fd)+DeltaBd*delta*F)
+                firdd += nr4[i]*(Delta**b[i]*(2*Fd+delta*Fdd)+2*DeltaBd *
+                    (F+delta*Fd)+DeltaBdd*delta*F)
+                firt += nr4[i]*delta*(DeltaBt*F+Delta**b[i]*Ft)
+                firtt += nr4[i]*delta*(DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt)
+                firdt += nr4[i]*(Delta**b[i]*(Ft+delta*Fdt)+delta*DeltaBd*Ft +
+                    DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
+                firdtt += nr4[i]*((DeltaBtt*F+2*DeltaBt*Ft+Delta**b[i]*Ftt) +
+                    delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft+2*DeltaBt*Fdt +
+                    DeltaBt*Ftt+Delta**b[i]*Fdtt))
 
-            Tita_ = (1-tau)+A[i]*((delta_0-1)**2)**(0.5/bt[i])
-            Delta_ = Tita_**2+Bi[i]*((delta_0-1)**2)**a4[i]
-            Deltad_ = (delta_0-1)*(A[i]*Tita_*2/bt[i]*((delta_0-1)**2) **
-                (0.5/bt[i]-1)+2*Bi[i]*a4[i]*((delta_0-1)**2)**(a4[i]-1))
-            Deltadd_ = Deltad_/(delta_0-1)+(delta_0-1)**2 * \
-                (4*Bi[i]*a4[i]*(a4[i]-1)*((delta_0-1)**2)**(a4[i]-2)+2*A[i]**2 /
-                bt[i]**2*(((delta_0-1)**2)**(0.5/bt[i]-1))**2+A[i]*Tita_ *
-                4/bt[i]*(0.5/bt[i]-1)*((delta_0-1)**2)**(0.5/bt[i]-2))
-            DeltaBd_ = b[i]*Delta_**(b[i]-1)*Deltad_
-            DeltaBdd_ = b[i]*(Delta_**(b[i]-1)*Deltadd_ +
-                (b[i]-1)*Delta_**(b[i]-2)*Deltad_**2)
-            F_ = exp(-Ci[i]*(delta_0-1)**2-D[i]*(tau-1)**2)
-            Fd_ = -2*Ci[i]*F_*(delta_0-1)
-            Fdd_ = 2*Ci[i]*F_*(2*Ci[i]*(delta_0-1)**2-1)
+                Tita_ = (1-tau)+A[i]*((delta_0-1)**2)**(0.5/bt[i])
+                Delta_ = Tita_**2+Bi[i]*((delta_0-1)**2)**a4[i]
+                Deltad_ = (delta_0-1)*(A[i]*Tita_*2/bt[i]*((delta_0-1)**2) **
+                    (0.5/bt[i]-1)+2*Bi[i]*a4[i]*((delta_0-1)**2)**(a4[i]-1))
+                Deltadd_ = Deltad_/(delta_0-1)+(delta_0-1)**2 * \
+                    (4*Bi[i]*a4[i]*(a4[i]-1)*((delta_0-1)**2)**(a4[i]-2)+2*A[i]**2 /
+                    bt[i]**2*(((delta_0-1)**2)**(0.5/bt[i]-1))**2+A[i]*Tita_ *
+                    4/bt[i]*(0.5/bt[i]-1)*((delta_0-1)**2)**(0.5/bt[i]-2))
+                DeltaBd_ = b[i]*Delta_**(b[i]-1)*Deltad_
+                DeltaBdd_ = b[i]*(Delta_**(b[i]-1)*Deltadd_ +
+                    (b[i]-1)*Delta_**(b[i]-2)*Deltad_**2)
+                F_ = exp(-Ci[i]*(delta_0-1)**2-D[i]*(tau-1)**2)
+                Fd_ = -2*Ci[i]*F_*(delta_0-1)
+                Fdd_ = 2*Ci[i]*F_*(2*Ci[i]*(delta_0-1)**2-1)
 
-            B += nr4[i]*(Delta_**b[i]*(F_+delta_0*Fd_) +
-                DeltaBd_*delta_0*F_)
-            C += nr4[i]*(Delta_**b[i]*(2*Fd_+delta_0*Fdd_) +
-                2*DeltaBd_*(F_+delta_0*Fd_) +
-                DeltaBdd_*delta_0*F_)
+                B += nr4[i]*(Delta_**b[i]*(F_+delta_0*Fd_) +
+                    DeltaBd_*delta_0*F_)
+                C += nr4[i]*(Delta_**b[i]*(2*Fd_+delta_0*Fdd_) +
+                    2*DeltaBd_*(F_+delta_0*Fd_) +
+                    DeltaBdd_*delta_0*F_)
 
-        # Hard sphere term
-        if self._constants.get("Fi", None):
-            f = self._constants["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-            Xd = n/(a+(1-a)/tau**g)
-            Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-            Xdt = n*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-            Xtt = -n*delta*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g)-2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
-            Xdtt = -n*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g)-2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
+            # Hard sphere term
+            if self._constants.get("Fi", None):
+                f = self._constants["Fi"]
+                n = 0.1617
+                a = 0.689
+                g = 0.3674
+                X = n*delta/(a+(1-a)/tau**g)
+                Xd = n/(a+(1-a)/tau**g)
+                Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
+                Xdt = n*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
+                Xtt = -n*delta*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g)-2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
+                Xdtt = -n*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g)-2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
 
-            ahdX = -(f**2-1)/(1-X)+(f**2+3*f+X*(f**2-3*f))/(1-X)**3
-            ahdXX = -(f**2-1)/(1-X)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X))/(1-X)**4
-            ahdXXX = -2*(f**2-1)/(1-X)**3+6*(2*(f**2+3*f)+(f**2-3*f)*(1+X))/(1-X)**5
+                ahdX = -(f**2-1)/(1-X)+(f**2+3*f+X*(f**2-3*f))/(1-X)**3
+                ahdXX = -(f**2-1)/(1-X)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X))/(1-X)**4
+                ahdXXX = -2*(f**2-1)/(1-X)**3+6*(2*(f**2+3*f)+(f**2-3*f)*(1+X))/(1-X)**5
 
-            fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
-            fird += ahdX*Xd
-            firdd += ahdXX*Xd**2
-            firt += ahdX*Xt
-            firtt += ahdXX*Xt**2+ahdX*Xtt
-            firdt += ahdXX*Xt*Xd+ahdX*Xdt
-            firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
+                fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
+                fird += ahdX*Xd
+                firdd += ahdXX*Xd**2
+                firt += ahdX*Xt
+                firtt += ahdXX*Xt**2+ahdX*Xtt
+                firdt += ahdXX*Xt*Xd+ahdX*Xdt
+                firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
 
-            X_virial = n*delta_0/(a+(1-a)/tau**g)
-            ahdX_virial = -(f**2-1)/(1-X_virial)+(f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
-            ahdXX_virial = -(f**2-1)/(1-X_virial)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
-            B += ahdX_virial*Xd
-            C += ahdXX_virial*Xd**2
+                X_virial = n*delta_0/(a+(1-a)/tau**g)
+                ahdX_virial = -(f**2-1)/(1-X_virial)+(f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
+                ahdXX_virial = -(f**2-1)/(1-X_virial)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
+                B += ahdX_virial*Xd
+                C += ahdXX_virial*Xd**2
         
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
 
@@ -2485,14 +2547,15 @@ class MEoS(_fase):
                 kb = exp(F)-exp(G)
 
                 bl = self._thermal["ff"]*(self._thermal["rm"]**5*rho/1000.*Avogadro/self.M*self._thermal["Nchapman"]/T)**0.5
-                y = 6.0*pi*self.mu/100000.*bl*(Boltzmann*T*rho/1000.*Avogadro/self.M)**0.5
+                y = 6.0*pi*fase.mu/100000.*bl*(Boltzmann*T*rho/1000.*Avogadro/self.M)**0.5
                 deltaL = 0.0
-                if self.derivative("P", "rho", "T") > 0:
-                    deltaL = Boltzmann*(T*self.dpdT)**2/(rho/1000.*self.derivative("P", "rho", "T") )**0.5/y
+                der = self.derivative("P", "rho", "T", fase)
+                if der > 0:
+                    deltaL = Boltzmann*(T*fase.dpdT_rho)**2/(rho/1000.*der)**0.5/y
                 else:
                     deltaL = 0.0
                 kc = deltaL*exp(-18.66*((rho-self.rhoc)/self.rhoc)**4-4.25*((T-self.Tc)/self.Tc)**2)
-
+                
                 k = kg+kb+kc
 
             elif self._thermal["eq"] == "ecs":
