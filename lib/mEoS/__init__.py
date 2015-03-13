@@ -121,16 +121,15 @@ import R407c
 import R410a
 import R507a
 
-# Silicio
-import OctaC1Cyc4Siloxane
-import DecaC1Cyc5Siloxane
-import DodecaC1Cyc6Siloxane
-import OctaC1_3Siloxane
-import TetradecaC1_6Siloxane
-import DodecaC1_5Siloxane
-import DecaC1_4Siloxane
-import HexaC1_2Siloxane
-
+# Siloxanes
+import D4
+import D5
+import D6
+import MDM
+import MD2M
+import MD3M
+import MD4M
+import MM
 
 __all__ = MEoS.__subclasses__()
 id_mEoS = [i.id for i in __all__]
@@ -138,6 +137,11 @@ id_mEoS = [i.id for i in __all__]
 
 if __name__ == "__main__":
     import doctest
-    for module in __all__[2:3]:
+    for module in __all__:
         print module.__module__
-        doctest.testmod(locals()[module.__module__])
+        inst = module()
+        inst.__doc__ = ""
+        for eq in inst.eq:
+            if "__test__" in eq:
+                inst.__doc__ += eq["__test__"]
+            doctest.run_docstring_examples(inst, globs={module.__module__: module})
