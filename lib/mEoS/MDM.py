@@ -5,24 +5,19 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class OctaC1_3Siloxane(MEoS):
-    """Multiparamenter equation of state for octamethyltrisiloxane
-
-    >>> metilciclohexano=OctaC1_3Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class MDM(MEoS):
+    """Multiparamenter equation of state for octamethyltrisiloxane"""
     name = "octamethyltrisiloxane"
     CASNumber = "107-51-7"
     formula = "C8H24O2Si3"
     synonym = "MDM"
-    rhoc = unidades.Density(256.7394094963634)
+    rhoc = unidades.Density(256.73940949935815)
     Tc = unidades.Temperature(564.09)
     Pc = unidades.Pressure(1415.0, "kPa")
     M = 236.531  # g/mol
     Tt = unidades.Temperature(187.2)
     Tb = unidades.Temperature(425.66)
-    f_acent = 0.529
+    f_acent = 0.5297
     momentoDipolar = unidades.DipoleMoment(1.079, "Debye")
     id = 39
     # id = 1893
@@ -36,9 +31,14 @@ class OctaC1_3Siloxane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MDM of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
+                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6", 
+                    "ref": "Fluid Phase Equilibria 263:115-130, 2008",
+                    "doi":  "10.1016/j.fluid.2007.10.001"}, 
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.94, 
         "Pmin": 0.0000008, "rhomin": 3.93, 
@@ -71,7 +71,10 @@ class OctaC1_3Siloxane(MEoS):
         "exp": [0.296, 0.905, 2.8, 5.9, 12.0, 13.0]}
 
     visco0 = {"eq": 5, "omega": 3,
-              "__doc__": """T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E. "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties" Ind. Eng. Chem. Res. 1998, 27, 671-679""",
+              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
+                          "doi": "10.1021/ie00076a024"}, 
               "__name__": "Chung (1988)",
               "w": 0.531, "mur": 0.0, "k": 0.0}
 
@@ -83,6 +86,6 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    cyc5=OctaC1_3Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
+    cyc5=MDM(T=400., P=1e5)
+    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.w)
     print cyc5.k.mWmK, cyc5.mu.muPas

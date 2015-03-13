@@ -5,20 +5,15 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class DecaC1Cyc5Siloxane(MEoS):
-    """Multiparameter equation of state for decamethylcyclopentasiloxane
-
-    >>> metilciclohexano=DecaC1Cyc5Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class D5(MEoS):
+    """Multiparameter equation of state for decamethylcyclopentasiloxane"""
     name = "decamethylcyclopentasiloxane"
     CASNumber = "541-02-6"
     formula = "C10H30O5Si5"
     synonym = "D5"
     rhoc = unidades.Density(292.570762680819)
     Tc = unidades.Temperature(619.23462341)
-    Pc = unidades.Pressure(1160.0, "kPa")
+    Pc = unidades.Pressure(1161.46, "kPa")
     M = 370.7697  # g/mol
     Tt = unidades.Temperature(226.0)
     Tb = unidades.Temperature(484.05)
@@ -36,9 +31,19 @@ class DecaC1Cyc5Siloxane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
+                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+        "__test__": """
+            >>> st=D5(T=619.23462341, P=1161460)
+            >>> print "%0.6f" % st.v
+            0.003418
+            """, # Table 22, Pag 206
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.83, 
         "Pmin": 0.000005, "rhomin": 2.83, 

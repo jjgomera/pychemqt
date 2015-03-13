@@ -5,19 +5,14 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class OctaC1Cyc4Siloxane(MEoS):
-    """Multiparameter equation of state for octamethylcyclotetrasiloxane
-
-    >>> metilciclohexano=OctaC1Cyc4Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class D4(MEoS):
+    """Multiparameter equation of state for octamethylcyclotetrasiloxane"""
     name = "octamethylcyclotetrasiloxane"
     CASNumber = "556-67-2"
     formula = "C8H24O4Si4"
     synonym = "D4"
     rhoc = unidades.Density(307.0335906736056)
-    Tc = unidades.Temperature(586.49)
+    Tc = unidades.Temperature(586.49127187)
     Pc = unidades.Pressure(1332.0, "kPa")
     M = 296.61576  # g/mol
     Tt = unidades.Temperature(290.25)
@@ -35,9 +30,19 @@ class OctaC1Cyc4Siloxane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octamethylcyclotetrasiloxane of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
+                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+        "__test__": """
+            >>> st=D4(T=586.49127187, P=1332000)
+            >>> print "%0.6f" % st.v
+            0.003257 
+            """, # Table 20, Pag 204
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.21, 
         "Pmin": 0.0696, "rhomin": 3.2, 
@@ -70,7 +75,10 @@ class OctaC1Cyc4Siloxane(MEoS):
         "exp": [0.31, 0.78, 2.5, 4.4, 5.0, 15.0]}
 
     visco0 = {"eq": 5, "omega": 3,
-              "__doc__": """T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E. "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties" Ind. Eng. Chem. Res. 1998, 27, 671-679""",
+              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
+                          "doi": "10.1021/ie00076a024"}, 
               "__name__": "Chung (1988)",
               "w": 0.592, "mur": 0.0, "k": 0.0}
 

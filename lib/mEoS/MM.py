@@ -5,20 +5,15 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class HexaC1_2Siloxane(MEoS):
-    """Multiparameter equation of state for hexamethyldisiloxane
-
-    >>> metilciclohexano=HexaC1_2Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class MM(MEoS):
+    """Multiparameter equation of state for hexamethyldisiloxane"""
     name = "hexamethyldisiloxane"
     CASNumber = "107-46-0"
     formula = "C6H18OSi2"
     synonym = "MM"
     rhoc = unidades.Density(304.4043888253152)
-    Tc = unidades.Temperature(518.7)
-    Pc = unidades.Pressure(1939.0, "kPa")
+    Tc = unidades.Temperature(518.69997204)
+    Pc = unidades.Pressure(1939.39, "kPa")
     M = 162.37752  # g/mol
     Tt = unidades.Temperature(204.93)
     Tb = unidades.Temperature(373.401)
@@ -28,16 +23,32 @@ class HexaC1_2Siloxane(MEoS):
     # id=1376
 
     CP1 = {"ao": 51.894,
-           "an": [741.34e-3, -416.10e-6, 70.e-9], "pow": [1, 2, 3],
+           "an": [741.34e-3, -416e-6, 70e-9], "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
+
+    Fi1 = {"ao_log": [1, 50.894],
+           "pow": [0, 1, -1, -2, -3],
+           "ao_pow": [229.69732080664645, -86.53450336886623, -192.26652900000002, 
+                      18.654111840000002, -0.8140770995175003],
+           "ao_exp": [], "titao": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
+                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+        "__test__": """
+            >>> st=MM(T=518.69997204, P=1939390)
+            >>> print "%0.6f" % st.v
+            0.003285
+            """, # Table 16, Pag 202
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21, 
         "Pmin": 0.00269, "rhomin": 5.2, 
@@ -74,6 +85,5 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    cyc5=HexaC1_2Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
+    mm=MM(T=400, P=1e6)
+    print mm.rho, mm.h, mm.s

@@ -5,24 +5,19 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class DodecaC1Cyc6Siloxane(MEoS):
-    """Multiparameter equation of state for dodecamethylcyclohexasilosane
-
-    >>> metilciclohexano=DodecaC1Cyc6Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class D6(MEoS):
+    """Multiparameter equation of state for dodecamethylcyclohexasilosane"""
     name = "dodecamethylcyclohexasiloxane"
     CASNumber = "540-97-6"
     formula = "C12H36Si6O6"
     synonym = "D6"
-    rhoc = unidades.Density(279.0957298413672)
+    rhoc = unidades.Density(279.09572983533354)
     Tc = unidades.Temperature(645.78)
     Pc = unidades.Pressure(961.0, "kPa")
     M = 444.924  # g/mol
     Tt = unidades.Temperature(270.2)
-    Tb = unidades.Temperature(518.11)
-    f_acent = 0.736
+    Tb = unidades.Temperature(518.14)
+    f_acent = 0.7361
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 39
     # id=1674
@@ -36,9 +31,14 @@ class DodecaC1Cyc6Siloxane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
+                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6", 
+                    "ref": "Fluid Phase Equilibria 263:115-130, 2008",
+                    "doi":  "10.1016/j.fluid.2007.10.001"}, 
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.246, 
         "Pmin": 0.00016, "rhomin": 2.245, 

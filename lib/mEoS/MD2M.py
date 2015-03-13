@@ -5,18 +5,13 @@ from lib.meos import MEoS
 from lib import unidades
 
 
-class DecaC1_4Siloxane(MEoS):
-    """Multiparameter equation of state for decamethyltetrasiloxane
-
-    >>> metilciclohexano=DecaC1_4Siloxane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+class MD2M(MEoS):
+    """Multiparameter equation of state for decamethyltetrasiloxane"""
     name = "decamethyltetrasiloxane"
     CASNumber = "141-62-8"
     formula = "C10H30Si4O3"
     synonym = "MD2M"
-    rhoc = unidades.Density(284.1716396620275)
+    rhoc = unidades.Density(284.1716396703609)
     Tc = unidades.Temperature(599.40)
     Pc = unidades.Pressure(1227.0, "kPa")
     M = 310.685  # g/mol
@@ -36,9 +31,14 @@ class DecaC1_4Siloxane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MD2M of Colonna et al. (2006).",
-        "__doc__":  u"""Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W., Multiparameter Equations of State for Selected Siloxanes, Fluid Phase Equilibria, 244:193-211, 2006.""",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
+                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6", 
+                    "ref": "Fluid Phase Equilibria 263:115-130, 2008",
+                    "doi":  "10.1016/j.fluid.2007.10.001"}, 
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.033, 
         "Pmin": 0.0000005, "rhomin": 3.032, 
