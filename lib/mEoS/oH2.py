@@ -6,18 +6,13 @@ from lib import unidades
 
 
 class oH2(MEoS):
-    """Multiparamente equation of state for hydrogen (orto)
-
-    >>> hidrogeno=oH2(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.4f %0.4f %0.2f" % (hidrogeno.T, hidrogeno.rho, hidrogeno.h.kJkg, hidrogeno.s.kJkgK, hidrogeno.cv.kJkgK, hidrogeno.cp.kJkgK, hidrogeno.w)
-    300.0 0.08077 26.133 0.14170 10.7414 14.8676 1309.43
-    """
+    """Multiparamente equation of state for hydrogen (orto)"""
     name = "ortohydrogen"
     CASNumber = "1333-74-0o"
     formula = "H2"
     synonym = "R-702o"
-    rhoc = unidades.Density(31.1362)
-    Tc = unidades.Temperature(33.32)
+    rhoc = unidades.Density(31.1361933)
+    Tc = unidades.Temperature(33.22)
     Pc = unidades.Pressure(1310.65, "kPa")
     M = 2.01594  # g/mol
     Tt = unidades.Temperature(14.008)
@@ -25,6 +20,13 @@ class oH2(MEoS):
     f_acent = -0.219
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 1
+
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-1.4675442336, 1.8845068862],
+           "ao_exp": [2.54151, -2.3661, 1.00365, 1.22447],
+           "titao": [25.7676098736, 43.4677904877, 66.044551475,
+                     209.7531607465]}
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
@@ -35,9 +37,22 @@ class oH2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ortohydrogen of Leachman et al. (2007)",
-        "__doc__":  u"""Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W. Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen. J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748.""",
+        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
+                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
+                    "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
+                    "doi": "10.1063/1.3160306"}, 
+        "__test__": """
+            >>> st=oH2(T=14.008, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            14.008 7.5600 77.010 0.13273 −53.820 400.77 −3.0625 29.390 5.1746 6.2707 7.1448 10.557 1264.7 307.38
+            """, # Table 15, Pag 746
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 38.2, 
         "Pmin": 7.461, "rhomin": 38.2, 

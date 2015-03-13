@@ -8,17 +8,12 @@ from lib import unidades
 
 
 class H2(MEoS):
-    """Multiparameter equation of state for hydrogen (normal)
-
-    >>> hidrogeno=H2(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (hidrogeno.T, hidrogeno.rho, hidrogeno.u.kJkg, hidrogeno.h.kJkg, hidrogeno.s.kJkgK, hidrogeno.cv.kJkgK, hidrogeno.cp.kJkgK, hidrogeno.w)
-    300.0 0.08077 2720.12 3958.157 53.51722 10.1861 14.3124 1319.31
-    """
+    """Multiparameter equation of state for hydrogen (normal)"""
     name = "hydrogen"
     CASNumber = "1333-74-0"
     formula = "H2"
     synonym = "R-702"
-    rhoc = unidades.Density(31.26319752)
+    rhoc = unidades.Density(31.26226704)
     Tc = unidades.Temperature(33.145)
     Pc = unidades.Pressure(1296.4, "kPa")
     M = 2.01588  # g/mol
@@ -34,6 +29,13 @@ class H2(MEoS):
            "exp": [531., 751., 1989., 2484., 6859.],
            "ao_hyp": [], "hyp": []}
 
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-1.4579856475, 1.888076782],
+           "ao_exp": [1.616, -0.4117, -0.792, 0.758, 1.217],
+           "titao": [16.0205159149, 22.6580178006, 60.0090511389,
+                     74.9434303817, 206.9392065168]}
+
     CP2 = {"ao": 0.72480209e3,
            "an": [0.12155215e11, -0.36396763e10, 0.43375265e9, -0.23085817e8,
                   -0.38680927e4, 0.88240136e5, -0.78587085e4, -0.18426806e3,
@@ -47,9 +49,22 @@ class H2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for normal hydrogen of Leachman et al. (2007).",
-        "__doc__":  u"""Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W. Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen. J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748.""",
+        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
+                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
+                    "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
+                    "doi": "10.1063/1.3160306"}, 
+        "__test__": """
+            >>> st=H2(T=13.957, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            13.957 7.3580 77.004 0.12985 −53.926 399.83 −3.0723 29.438 5.1616 6.2433 7.0212 10.564 1269.2 307.14
+            """, # Table 14, Pag 746
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0, 
         "Pmin": 7.36, "rhomin": 38.2, 
@@ -188,7 +203,7 @@ class H2(MEoS):
 
     _viscosity = visco0,
 
-    def _visco0(self):
+    def _visco0(self, rho, T, fase):
         """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
 
         DELV = lambda rho1, T1, rho2, T2: DILV(T1) + EXCESV(rho1, T2) \
@@ -217,11 +232,11 @@ class H2(MEoS):
             B = c[0]+c[5]/T
             return 0.1*(exp(A)-exp(B))
 
-        if self.T > 100:
-            n = DILV(100) + EXVDIL(self.rho, 100) \
-                + DELV(self.rho, self.T, self.rho, 100)
+        if T > 100:
+            n = DILV(100) + EXVDIL(rho, 100) \
+                + DELV(rho, T, rho, 100)
         else:
-            n = DILV(self.T)+EXVDIL(self.rho, self.T)
+            n = DILV(T)+EXVDIL(rho, T)
         return unidades.Viscosity(n, "muPas")
 
     thermo0 = {"eq": 0,
@@ -230,7 +245,7 @@ class H2(MEoS):
 
     _thermal = thermo0,
 
-    def _thermo0(self):
+    def _thermo0(self, rho, T, fase):
         """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
         # TODO:
         return unidades.ThermalConductivity(0)

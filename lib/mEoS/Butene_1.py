@@ -81,8 +81,3 @@ class Butene_1(MEoS):
         "eq": 3,
         "ao": [-0.31106e1, -0.63103e1, -0.19272e2, -0.48739e2, -0.99898e2, -0.19001e3],
         "exp": [0.415, 1.27, 3.34, 7.0, 14.5, 28.0]}
-
-if __name__ == "__main__":
-    st=Butene_1(T=350, rho=0)
-    print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-#    350 0.0 0.0 29617 88.208 96.522 238.24
