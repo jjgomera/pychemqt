@@ -35,8 +35,6 @@ class Cubic(EoS):
         self.x, self.xi, self.yi, self.Ki=self._Flash()
         self.H_exc=-(self.tita+self.dTitadT)/R_atml/self.T/(self.delta**2-4*self.epsilon)**0.5*log((2*self.V+self.delta-(self.delta**2-4*self.epsilon)**0.5)/(2*self.V+self.delta+(self.delta**2-4*self.epsilon)**0.5))+1-self.Z
 
-
-
     def _fug(self, Z, xi):
         Ai=[]
         for i in range(len(self.componente)):
@@ -50,7 +48,9 @@ class Cubic(EoS):
         return tita
 
 
-
+class _2ParameterCubic(Cubic):
+    pass
+    
 class van_Waals(Cubic):
     """Ecuación de estado de van der Waals
         van der Waals, J.D. Over de continuiteit van den gas- en vloestof-toestand. Dissertation, Leiden University, Leiden, Niederlande, 1873."""
@@ -652,11 +652,14 @@ class PR(Cubic):
 
 
 
-class PR_SV(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Stryjek y Vera
-    Stryjek, R.; Vera, J.H. PRSV2: A Cubic Equation of State for Accurate Vapor-Liquid Equilibria Calculations. Can. J. Chem. Eng. 1986b, 64, 820."""
+class PRSV(Cubic):
+    """Ecuación de estado de Peng Robinson modificada por Stryjek y Vera, v1"""
     __title__="PR-SV (1986)"
     __status__="PR-SV"
+    __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
+               "title": "PRSV: An improved peng—Robinson equation of state for pure compounds and mixtures", 
+               "ref": "Can. J. Chem. Eng. 1986, 64: 323–333",
+               "doi":  "10.1002/cjce.5450640224"}, 
 
     def __init__(self, T, P, mezcla):
         ai=[]
@@ -664,11 +667,11 @@ class PR_SV(Cubic):
         aci=[]
         mi=[]
         for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
+            a, b, ac, k=self.__lib(componente, T)
             ai.append(a)
             bi.append(b)
             aci.append(ac)
-            mi.append(m)
+            mi.append(k)
         self.kij=mezcla.Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
@@ -692,38 +695,105 @@ class PR_SV(Cubic):
 
 
     def __lib(self, compuesto, T):
-        """Stryjek, R.; Vera, J.H. PRSV2: A Cubic Equation of State for Accurate Vapor-Liquid Equilibria Calculations. Can. J. Chem. Eng. 1986b, 64, 820."""
         Tr=T/compuesto.Tc
-        if compuesto.f_acent>=0.49:
-            mo=0.378893+1.4897153*compuesto.f_acent-0.17131848*compuesto.f_acent**2+0.0196554*compuesto.f_acent**3
+        w = compuesto.f_acent
+        if w>=0.49:
+            ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
         else:
-            mo=0.37464+1.54226*compuesto.f_acent-0.26992*compuesto.f_acent**2
-        if Tr>=0.7:
-            m1=0
+            ko=0.37464+1.54226*w-0.26992*w**2
+        
+        if compuesto.PRSV_k1:
+            # TODO: Add data from journal to database
+            k1 = compuesto.PRSV_k1
+        elif Tr>=0.7:
+            k1=0
+        elif 1<compuesto.C<=18:
+            k1=[-0.00159, 0.02669, 0.03136, 0.03443, 0.03946, 0.05104, 0.04648,
+                0.04464, 0.04104, 0.04510, 0.02919, 0.05426, 0.04157, 0.02686,
+                0.01892, 0.02665, 0.04048, 0.08291][compuesto.C]
         else:
-            if compuesto.indice==46:
-                m1=0.01996
-            elif compuesto.indice==47:
-                m1=0.01512
-            elif compuesto.indice==49:
-                m1=0.04285
-            elif compuesto.indice==63:
-                m1=0.001
-            elif compuesto.indice==62:
-                m1=-0.06635
-            elif compuesto.indice==104:
-                m1=0.01989
-            else:
-                if 1<compuesto.C<=18:
-                    m1=[-0.00159, 0.02669, 0.03136, 0.03443, 0.03946, 0.05104, 0.04648, 0.04464, 0.04104, 0.04510, 0.02919, 0.05426, 0.04157, 0.02686, 0.01892, 0.02665, 0.04048, 0.08291][compuesto.C]
-                else:
-                    m1=0
-        m=mo+m1*(1.+sqrt(Tr))*(0.7-Tr)
-        alfa=(1+m*(1-Tr**0.5))**2
+            k1=0
+        k=ko+k1*(1.+sqrt(Tr))*(0.7-Tr)
+        alfa=(1+k*(1-Tr**0.5))**2
         a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
         b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
 
-        return a*alfa, b, a, m
+        return a*alfa, b, a, k
+
+
+class PRSV2(Cubic):
+    """Ecuación de estado de Peng Robinson modificada por Stryjek y Vera, v2"""
+    __title__="PR-SV2 (1986)"
+    __status__="PR-SV2"
+    __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
+               "title": "PRSV2: A cubic equation of state for accurate vapor—liquid equilibria calculations", 
+               "ref": "Can. J. Chem. Eng., 64: 820–826",
+               "doi":  "10.1002/cjce.5450640516"}, 
+
+    def __init__(self, T, P, mezcla):
+        ai=[]
+        bi=[]
+        aci=[]
+        mi=[]
+        for componente in mezcla.componente:
+            a, b, ac, k=self.__lib(componente, T)
+            ai.append(a)
+            bi.append(b)
+            aci.append(ac)
+            mi.append(k)
+        self.kij=mezcla.Kij(PR)
+        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
+        tdadt=0
+        for i in range(len(mezcla.componente)):
+            for j in range(len(mezcla.componente)):
+                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
+
+        self.ai=ai
+        self.bi=bi
+        self.b=b
+        self.tita=a
+        self.delta=2*b
+        self.epsilon=-b**2
+        self.eta=b
+
+        self.u=2
+        self.w=-1
+
+        self.dTitadT=tdadt
+        super(PR_SV, self).__init__(T, P, mezcla)
+
+
+    def __lib(self, compuesto, T):
+        Tr=T/compuesto.Tc
+        w = compuesto.f_acent
+        if w>=0.49:
+            ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
+        else:
+            ko=0.37464+1.54226*w-0.26992*w**2
+        
+        if compuesto.PRSV_k1 and compuesto.PRSV_k2:
+            # TODO: Add data from journal to database
+            k1 = compuesto.PRSV_k1
+            k2 = compuesto.PRSV_k2
+            k3 = compuesto.PRSV_k3
+        else:
+            # Use PRSV V1
+            k2 = 0
+            K3 = 0
+            if Tr>=0.7:
+                k1=0
+            elif 1<compuesto.C<=18:
+                k1=[-0.00159, 0.02669, 0.03136, 0.03443, 0.03946, 0.05104,
+                    0.04648, 0.04464, 0.04104, 0.04510, 0.02919, 0.05426,
+                    0.04157, 0.02686, 0.01892, 0.02665, 0.04048, 0.08291][compuesto.C]
+            else:
+                k1=0
+        k = ko+(k1+k2*(k3-Tr)*(1-Tr**0.5))*(1+Tr**0.5)*(0.7-Tr)
+        alfa = (1+k*(1-Tr**0.5))**2
+        a = 0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
+        b = 0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
+
+        return a*alfa, b, a, k
 
 
 class PR_Gasem(Cubic):
@@ -982,7 +1052,7 @@ class PR_Yu_Lu(Cubic):
 
 
 
-_all=[van_Waals, RK, Wilson, Fuller, SRK, SRK_API, MSRK, SRK_Graboski, PR, PR_SV, PR_Gasem, PR_Melhem, PR_Almeida]
+_all=[van_Waals, RK, Wilson, Fuller, SRK, SRK_API, MSRK, SRK_Graboski, PR, PRSV, PR_Gasem, PR_Melhem, PR_Almeida]
 
 if __name__ == "__main__":
     from lib.corriente import Mezcla
