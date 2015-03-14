@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class C1Linolenate(MEoS):
-    """Multiparameter equation of state for methyl linolenate
-
-    >>> metilciclohexano=C1Linolenate(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for methyl linolenate"""
     name = "methyl linolenate"
     CASNumber = "301-00-8"
     formula = "C19H32O2"
@@ -35,9 +30,14 @@ class C1Linolenate(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
-        "__doc__":  u"""Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J. "Model for the Thermodynamic Properties of a Biodiesel Fuel," Energy & Fuels, 23:3790-3797, 2009.""",
+        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
+                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel", 
+                    "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
+                    "doi": "10.1021/ef900159g"}, 
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.29, 
         "Pmin": 1.e-17, "rhomin": 3.28, 
@@ -96,12 +96,3 @@ class C1Linolenate(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1158.0}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=C1Linolenate(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
