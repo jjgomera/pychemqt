@@ -33,7 +33,7 @@ class Acetone(MEoS):
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
                     "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi": "10.1021/je050186n"}, 
         "__test__": """
             >>> st=Acetone(T=510, rho=4*58.07914)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

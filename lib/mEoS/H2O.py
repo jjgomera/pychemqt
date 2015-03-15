@@ -59,10 +59,10 @@ class H2O(MEoS):
 #    >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
 #    372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
 #
-    >>> water=H2O(s=5e3, P=3.5e6)
-    >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
-    515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
-
+#    >>> water=H2O(s=5e3, P=3.5e6)
+#    >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
+#
 #    >>> water=H2O(T=500., u=900e3)
 #    >>> print("%0.2f %0.2f %0.2f %0.2f %0.1f %0.4f %0.4f %0.1f %0.7f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
 #    500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
@@ -114,31 +114,135 @@ class H2O(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.855, "Debye")
     id = 62
 
-    CP1 = {"ao": 4.00632,
-           "an": [], "pow": [],
-           "ao_exp": [0.012436, 0.97315, 1.27950, 0.96956, 0.24873],
-           "exp": [833, 2289, 5009, 5982, 17800],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4.00392,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [0.01059, -0.98763, 3.06904, 0],
-           "hyp": [0.415386589*Tc, 1.763895929*Tc, 3.874803739*Tc, 0]}
-           
-    Fi0 = {"ao_log": [1, 3.00632],
+    Fi1 = {"ao_log": [1, 3.00632],
            "pow": [0, 1],
            "ao_pow": [-8.3204464837497, 6.6832105275932],
            "ao_exp": [0.012436, 0.97315, 1.2795, 0.96956, 0.24873],
            "titao": [1.28728967, 3.53734222, 7.74073708, 9.24437796, 27.5075105]}
+           
+    Fi2 = {"ao_log": [1, 3.00392],
+           "pow": [0, 1],
+           "ao_pow": [8.203520690, -11.996306443],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [0.01059, -0.98763, 3.06904, 0],
+           "hyp": [0.415386589, 1.763895929, 3.874803739, 0]}
+
+    Fi3 = {"ao_log": [1, 3.00632],
+           "pow": [0, 1],
+           "ao_pow": [-8.318441, 6.681816],
+           "ao_exp": [0.012436, 0.97315, 1.2795, 0.96956, 0.24873],
+           "titao": [1.287202151, 3.537101709, 7.740210774, 9.243749421, 27.5056402]}
+
+    Fi4 = {"ao_log": [1, 3.00632],
+           "pow": [0, 1],
+           "ao_pow": [-8.3177095, 6.6815049],
+           "ao_exp": [0.012436, 0.97315, 1.2795, 0.96956, 0.24873],
+           "titao": [1.287202151, 3.537101709, 7.740210774, 9.243749421, 27.5056402]}
+
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for water of Wagner and Pruß (2002).",
-        "__doc__":  u"""Wagner, W., Pruß, A. The IAPWS formulation 1995 for the thermodyamic properties of ordinary water substance for general and scientific use. J. Phys. Chem. Ref. Data 31 (2002), 387 – 535.""",
+        "__doi__": {"autor": "Wagner, W., Pruß, A.",
+                    "title": "The IAPWS Formulation 1995 for the Thermodynamic \
+                    Properties of Ordinary Water Substance for General and Scientific Use", 
+                    "ref": "J. Phys. Chem. Ref. Data 31, 387 (2002)",
+                    "doi":  "10.1063/1.1461829"}, 
+        "__test__": 
+            # Table 6.6, Pag 436
+            """
+            >>> wt=H2O()
+            >>> tau=wt.Tc/500
+            >>> delta=838.025/wt.rhoc
+            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phi0(wt._constants["cp"], tau, delta)
+            2.04797734 9.04611106 -1.93249185 0.384236747 -0.147637878 0
+            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phir(tau, delta)[:6]
+            -3.42693206 -5.81403435 -2.23440737 -0.36436665 0.856063701 -1.12176915
+            >>> tau=wt.Tc/647
+            >>> delta=358/wt.rhoc
+            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phi0(wt._constants["cp"], tau, delta)
+            -1.56319605 9.80343918 -3.43316334 0.899441341 -0.808994726 0
+            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phir(tau, delta)[:6]
+            -1.21202657 -3.21722501 -9.96029507 -0.714012024 0.475730696 -1.3321472
+            """
+            #Table 13.1, Pag 486
+            """
+            >>> st=H2O(T=273.16, x=0.5)
+            >>> print "%0.6g %0.3g %0.6g %0.3g %0.3f %0.6g %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            273.16 0.000612 999.793 0.00485 0.001 2500.92 -0.0000 9.1555 4.2174 1.4184 4.2199 1.8844 1402.3 409
+
+            >>> st=H2O(T=300, x=0.5)
+            >>> print "%0.6g %0.4g %0.6g %0.4g %0.3f %0.6g %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            300 0.003537 996.513 0.02559 112.565 2549.85 0.3931 8.5174 4.1305 1.4422 4.1809 1.9141 1501.4 427.89
+
+            >>> st=H2O(T=400, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.3f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            400 0.24577 937.486 1.3694 532.953 2715.7 1.6013 7.0581 3.6324 1.6435 4.2555 2.2183 1509.5 484.67
+            
+            >>> st=H2O(T=500, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.3f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            500 2.6392 831.313 13.199 975.431 2802.48 2.581 6.2351 3.2255 2.2714 4.6635 3.4631 1239.6 504.55
+
+            >>> st=H2O(T=600, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            600 12.345 649.411 72.842 1505.36 2677.81 3.519 5.4731 3.0475 3.3271 6.9532 9.1809 749.57 457.33
+
+            >>> st=H2O(T=646, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            646 21.775 402.96 243.46 1963.49 2238.06 4.2214 4.6465 4.5943 5.1457 204.58 385.23 297.13 331.61
+                
+            >>> st=H2O(T=647, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            647 22.038 357.34 286.51 2029.44 2148.56 4.3224 4.5065 6.2344 6.274 3905.2 5334.1 251.19 285.32
+            """
+            #Table 13.2, Pag 495
+            """
+            >>> st=H2O(T=290, P=50000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            290 998.78 70.725 70.775 0.2513 4.1682 4.1868 1472.2
+
+            >>> st=H2O(T=600, P=15000000)
+            >>> print "%0.6g %0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            600 659.407 1474.91 1497.65 3.4994 3.0282 6.583 787.74
+
+            >>> st=H2O(T=640, P=22500000)
+            >>> print "%0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            640 531.385 1744.16 1786.5 3.9443 3.1724 12.142 529.59
+            
+            >>> st=H2O(T=580, P=40000000)
+            >>> print "%0.6g %0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            580 753.362 1306.43 1359.53 3.2061 2.9966 4.9863 1099.6
+            """, 
+            
         "R": 8.314371357587,
-#        "cp": CP1,
-        "cp": Fi0,
+        "cp": Fi1,
+        "ref": {"name": "CUSTOM",
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96, 
         "Pmin": 0.61248, "rhomin": 55.49696, 
@@ -195,9 +299,15 @@ class H2O(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": {"name": "CUSTOM",
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
         "Pmin": 0.61166, "rhomin": 55.497, 
@@ -218,15 +328,70 @@ class H2O(MEoS):
 
     helmholtz2 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for water of Saul and Wagner (1989).",
-        "__doc__":  u"""Saul, A. and Wagner, W., "A Fundamental Equation for Water Covering the Range From the Melting Line to 1273 K at Pressures up to 25000 MPa," J. Phys. Chem. Ref. Data, 18(4):1537-1564, 1989.""",
+        "__name__": "Helmholtz equation of state for water of Saul and Wagner-58 coeff (1989).",
+        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25 000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
+                    "doi":  "10.1063/1.555836"}, 
         "R": 8.31434,
-        "cp": CP1,
+        "cp": Fi3,
+        "ref": {"name": "CUSTOM",
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
         "Pmin": 0.61166, "rhomin": 55.497, 
 
-        "nr1": [0.2330009013, -0.1402091128e-1, 0.1172248041, -0.1850749499,
+        "nr1": [0.8216377478, -0.2543894379, -0.08830868648, -0.8903097248e-6, 
+                -0.1241333357e-5, 0.2895590286e-8, 0.1403610309e-10, 
+                0.8183943371e-12, -0.2397905287e-12],
+        "d1": [1, 1, 2, 5, 8, 11, 11, 13, 13],
+        "t1": [0, 2, 0, 9, 0, 0, 12, 7, 13],
+
+        "nr2": [-0.7519743341, -0.4151278588, -0.103051374e1, -0.1648036888e1, 
+                -0.4686350251, 0.3560258142, -0.6364658294, 0.2227482363, 
+                -0.8954849939e-1, 0.1557686788e-2, 0.1347719088e-2, 
+                -0.1301353385e-2, 0.9987368673e-6, 0.2263629476e-3, 
+                0.289330495e-5, 0.1995437169, -0.2707767662e-1, 
+                0.1849068216e-1, -0.4402394357e-2, -0.8546876737e-1, 
+                0.1220538576, -0.2562237041, 0.2555034636, -0.6323203907e-1, 
+                0.3351397575e-4, -0.6152834985e-1, -0.3533048208e-3,
+                0.3146309259e-1, -0.2261795983e-2, 0.18689702e-3, 
+                -0.1384614556e-2, 0.2713160073e-2, -0.4866118539e-2, 
+                0.3751789129e-2, -0.5692669373e-3, -0.5876414555, 0.5687838346,
+                -0.1642158198, 0.5878635885, -0.2844301931, -0.2049198337, 
+                -0.4039233716e-2, 0.5459049594e-1, -0.8914260146e-2, 
+                0.4974411254e-2],
+        "c2": [1]*15+[2]*20+[3]*10,
+        "d2": [1, 1, 1, 2, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9, 11, 1, 1, 1, 1, 2, 2,
+               4, 5, 6, 6, 7, 7, 8, 10, 10, 11, 11, 11, 11, 11, 2, 2, 2, 3, 3,
+               4, 4, 5, 5, 5],
+        "t2": [0, 1, 3, 1, 5, 5, 2, 3, 5, 6, 4, 1, 8, 0, 1, 0, 9, 10, 11, 0, 
+               8, 5, 4, 2, 12, 3, 10, 3, 2, 8, 0, 1, 3, 4, 6, 13, 14, 15, 14,
+               16, 13, 26, 15, 23, 25],
+        "gamma2": [1]*45, 
+        
+        "nr5": [-0.709318338e-2, 0.1718796342e-1, -0.1482653038e-1, 
+                0.4517292884e-2], 
+        "d5": [1, 2, 3, 4], 
+        "t5": [50, 40, 32, 26]
+        }
+
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for water of Saul and Wagner-38 coeff (1989).",
+        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25 000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
+                    "doi":  "10.1063/1.555836"}, 
+        "R": 8.31434,
+        "cp": Fi4,
+        "ref": {"name": "CUSTOM",
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+
+        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
+        "Pmin": 0.61166, "rhomin": 55.497, 
+
+        "nr1": [0.2330009013, -0.1402091128e1, 0.1172248041, -0.1850749499,
                 0.1770110422, 0.5525151794e-1, -0.341325738e-3, 0.8557274367e-3,
                 0.3716900685e-3, -0.1308871233e-3, 0.3216895199e-4,
                 0.2785881034e-6],
@@ -245,10 +410,10 @@ class H2O(MEoS):
         "d2": [1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7, 8, 8, 9, 11, 11, 11, 11,
                11, 2, 2, 3, 3, 5],
         "t2": [5, 7, 9, 5, 4, 6, 13, 5, 2, 3, 2, 0, 11, 1, 4, 0, 0, 3, 5, 6,
-               7, 13, 14, 13, 24, 15],
+               7, 13, 14, 15, 24, 15],
         "gamma2": [1]*26}
-
-    eq = helmholtz1, GERG, helmholtz2
+        
+    eq = helmholtz1, GERG, helmholtz2, helmholtz3
     _PR = 0.0043451
 
     _surface = {"sigma": [0.2358, -0.147375], "exp": [1.256, 2.256]}
@@ -372,11 +537,21 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
     
-#    water=H2O(T=1500, s=13000.)
-#    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+#    st=H2O(T=300, x=0.5)
+#    print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (
+#        st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg,
+#        st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, 
+#        st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
 
-    water=H2O(P=1e6, x=1)
-    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
+
+#    water=H2O(T=273.16, P=612)
+#    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cv.kJkgK, water.cp.kJkgK, water.w
+#    water=H2O(T=273.16, P=612, eq="GERG")
+#    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s, water.cv, water.cp, water.w
+    
+
+#    water=H2O(P=1e6, x=1)
+#    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
 
 #    water=H2O(s=5e3, P=3.5e6)
 #    print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % (water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
@@ -503,3 +678,15 @@ if __name__ == "__main__":
 #    >>> water=H2O(u=1000., s=3.)
 #    >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % (water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, water.s.kJkgK, water.x, water.virialB))
 #    371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543
+
+#    wt=H2O()
+#    tau=wt.Tc/500
+#    delta=838.025/wt.rhoc
+#    print wt._phi0(wt._constants["cp"], tau, delta)
+
+    for eq in range(4):
+        st=H2O(T=500, x=0.5,  eq=eq)
+        print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+            st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+            st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+            st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)

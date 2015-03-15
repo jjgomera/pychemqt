@@ -115,6 +115,15 @@ class _fase(object):
     fi = None
     f = None
 
+    rhoM = None
+    hM = None
+    sM = None
+    uM = None
+    aM = None
+    gM = None
+    cvM = None
+    cpM = None
+
     mu = None
     k = None
     nu = None
@@ -217,6 +226,7 @@ class MEoS(_fase):
               "s": None,
               "u": None,
               "x": None,
+              "v": 0.0, 
 
               "eq": 0,
               "visco": 0,
@@ -340,8 +350,7 @@ class MEoS(_fase):
 
         if self.calculable:
             self.calculo()
-
-            if self.status == 1:
+            if self.status in (1, 3):
                 converge = True
                 for input in self._mode.split("-"):
                     if abs(self.kwargs[input]-self.__getattribute__(input)._data) > 1e-9:
@@ -476,8 +485,8 @@ class MEoS(_fase):
                     rhoo = self._Vapor_Density(T)
                 elif T > 2*self.Tc or P > 2*self.Pc:
                     rhoo = self.eq[eq]["rhomax"]*self.M
-                elif 0.99*self.Tc <= T < self.Tc and self.Pc*0.9 < P < self.Pc:
-                    rhoo = self.rhoc
+#                elif 0.99*self.Tc <= T < self.Tc and self.Pc*0.9 < P < self.Pc:
+#                    rhoo = self.rhoc
                 else:
                     rhoo = P/T/self.R
                 rinput = fsolve(lambda rho: self._eq(rho, T)["P"]-P, rhoo, full_output=True)
@@ -661,9 +670,11 @@ class MEoS(_fase):
 
                 rho, T = self.fsolve(funcion, True, funcion2, **{"u": u, "s": s})
 
-
-            if self._constants["Tmin"]<=T<=self._constants["Tmax"] and \
-                    0 <= rho <= self._constants["rhomax"]*self.M:
+            if self._mode == "T-rho" and self.kwargs["rho"] == 0:
+                self.status = 3
+                self.msg = QApplication.translate("pychemqt", "Ideal condition at zero pressure")
+            elif self._constants["Tmin"]<=T<=self._constants["Tmax"] and \
+                    0 < rho <= self._constants["rhomax"]*self.M:
                 self.status = 1
                 self.msg = ""
             else:
@@ -951,7 +962,7 @@ class MEoS(_fase):
 
         fase.h = unidades.Enthalpy(estado["h"], "kJkg")
         fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
-        fase.u = unidades.Enthalpy(fase.h-self.P/1000*fase.v)
+        fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
 
@@ -1002,7 +1013,6 @@ class MEoS(_fase):
             fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
             fase.IntP = unidades.Pressure(self.T*self.derivative("P", "T", "rho", fase)-self.P)
             fase.hInput = unidades.Enthalpy(fase.v*self.derivative("h", "v", "P", fase))
-
         fase.mu = self._Viscosity(fase.rho, self.T, fase)
         fase.k = self._ThCond(fase.rho, self.T, fase)
         if fase.mu:
@@ -1059,7 +1069,7 @@ class MEoS(_fase):
         
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=self._phir(tau, delta)
-
+        
         propiedades = {}
         propiedades["fir"] = fir
         propiedades["fird"] = fird
@@ -1500,10 +1510,10 @@ class MEoS(_fase):
         return Fi0
 
     def _phi0(self, cp, tau, delta):
-#        if "ao_log" in cp:
-        Fi0 = cp
-#        else:
-#            Fi0 = self._PHIO(cp)
+        if "ao_log" in cp:
+            Fi0 = cp
+        else:
+            Fi0 = self._PHIO(cp)
 #        print Fi0
 #        
 #        T = self._constants.get("Tref", self.Tc)/tau
@@ -1523,7 +1533,7 @@ class MEoS(_fase):
 #        fiott = (1-cp0sav/self.R*1000)/tau**2
         
         # FIXME: Reference estate
-        fio=Fi0["ao_log"][0]*log(delta)+Fi0["ao_log"][1]*log(tau)
+        fio=Fi0["ao_log"][1]*log(tau)
         fiot=Fi0["ao_log"][1]/tau
         fiott=-Fi0["ao_log"][1]/tau**2
 
@@ -1558,9 +1568,9 @@ class MEoS(_fase):
         fiodt = 0
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
-#        print fio, fiot, fiott, factor
-        
-        return factor*fio, factor*fiot, factor*fiott, factor*fiod, factor*fiodd, factor*fiodt
+        fio = Fi0["ao_log"][0]*log(delta)+factor*fio
+            
+        return fio, factor*fiot, factor*fiott, fiod, fiodd, fiodt
 
     def _Cp0(self, cp, T=False):
         if not T:
@@ -1608,7 +1618,7 @@ class MEoS(_fase):
 
     def _phir(self, tau, delta):
         delta_0 = 1e-200
-
+        print delta
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
 
         if delta:
@@ -1797,7 +1807,60 @@ class MEoS(_fase):
                 ahdXX_virial = -(f**2-1)/(1-X_virial)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
                 B += ahdX_virial*Xd
                 C += ahdXX_virial*Xd**2
-        
+            
+            # Special form from Saul, A. and Wagner, W. Water 58 coefficient equation
+            if "nr5" in self._constants:
+                delta_0 = 1e-200
+                if delta < 0.2:
+                    factor = 1.6*delta**6*(1-1.2*delta**6)
+                else:
+                    factor = exp(0.4*delta**6)-exp(-2*delta**6)
+
+                nr5 = self._constants.get("nr5", [])
+                d5 = self._constants.get("d5", [])
+                t5 = self._constants.get("t5", [])
+                fr, frt, frtt, frdtt1, frdtt2 = 0, 0, 0, 0, 0
+                frd1, frd2 = 0, 0
+                frdd1, frdd2, frdd3 = 0, 0, 0
+                frdt1, frdt2, frdt3 = 0, 0, 0
+                Bsum1, Bsum2, Csum1, Csum2, Csum3 = 0, 0, 0, 0, 0
+                for n, d, t in zip(nr5, d5, t5):
+                    fr += n*delta**d*tau**t
+                    frd1 += n*delta**(d+5)*tau**t
+                    frd2 += n*d*delta**(d-1)*tau**t
+                    frdd1 += n*delta**(d+10)*tau**t
+                    frdd2 += n*(2*d+5)*delta**(d+4)*tau**t
+                    frdd3 += n*d*(d-1)*delta**(d-2)*tau**t
+                    frt += n*delta**d*t*tau**(t-1)
+                    frtt += n*delta**d*t*(t-1)*tau**(t-2)
+                    frdt1 += n*delta**(d+5)*t*tau**(t-1)
+                    frdt2 += n*d*delta**(d-1)*t*tau**(t-1)
+                    frdtt1 += n*delta**(d+5)*t*(t-1)*tau**(t-2)
+                    frdtt2 += n*d*delta**(d-1)*t*(t-1)*tau**(t-2)
+                    Bsum1 += n*delta_0**(d+5)*tau**t
+                    Bsum2 += n*d*delta_0**(d-1)*tau**t
+                    Csum1 += n*delta_0**(d+10)*tau**t
+                    Csum2 += n*(2*d+5)*delta_0**(d+4)*tau**t
+                    Csum3 += n*d*(d-1)*delta_0**(d-2)*tau**t
+                    
+                fir += factor*fr
+                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 +\
+                    factor*frd2
+                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6))*frdd1 +\
+                    (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frdd2 +\
+                    factor*frdd3
+                firt += factor*frt
+                firtt += factor*frtt
+                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frdt1 +\
+                    factor*frdt2
+                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frdtt1 +\
+                    factor*frdtt2
+                B += (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6))*Bsum1 +\
+                    (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Bsum2
+                C += (5.76*exp(-0.4*delta_0**6)-144*exp(-2*delta_0**6))*Csum1 +\
+                    (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6))*Csum2 +\
+                    (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Csum3
+                    
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
 
 
