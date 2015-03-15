@@ -6,16 +6,7 @@ from lib import unidades
 
 
 class CH4(MEoS):
-    """Multiparameter equation of state for methane
-
-    >>> metano=CH4(T=270, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (metano.T, metano.rho, metano.u.kJkg, metano.h.kJkg, metano.s.kJkgK, metano.cv.kJkgK, metano.cp.kJkgK, metano.w)
-    270.0 0.71638 -202.56 -62.969 -0.21391 1.6510 2.1754 428.34
-
-    >>> metano=CH4(h=97.111, s=-2.8743)
-    >>> print "%0.1f %0.2f %0.2f %0.3f %0.4f %0.4f %0.4f %0.2f" % (metano.T, metano.rho, metano.u.kJkg, metano.h.kJkg, metano.s.kJkgK, metano.cv.kJkgK, metano.cp.kJkgK, metano.w)
-    400.0 203.42 -148.68 97.111 -2.8743 2.1333 3.2276 779.35
-    """
+    """Multiparameter equation of state for methane"""
     name = "methane"
     CASNumber = "74-82-8"
     formula = "CH4"
@@ -24,7 +15,7 @@ class CH4(MEoS):
     Tc = unidades.Temperature(190.564)
     Pc = unidades.Pressure(4599.2, "kPa")
     M = 16.0428  # g/mol
-    Tt = unidades.Temperature(90.6941)
+    Tt = unidades.Temperature(90.694)
     Tb = unidades.Temperature(111.667)
     f_acent = 0.01142
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
@@ -38,6 +29,21 @@ class CH4(MEoS):
            "ao_exp": [0.008449, 4.6942, 3.4865, 1.6572, 1.4115],
            "exp": [648, 1957, 3895, 5705, 15080],
            "ao_hyp": [], "hyp": []}
+           
+    Fi1 = {"ao_log": [1, 3.00160],
+           "pow": [0, 1],
+           "ao_pow": [9.91243972, -6.33270087],
+           "ao_exp": [0.008449, 4.6942, 3.4865, 1.6572, 1.4115],
+           "titao": [648/Tc, 1957/Tc, 3895/Tc, 5705/Tc, 15080/Tc], 
+           "ao_hyp": [], "hyp": []}
+
+    Fi2 = {"R": 8.314510, 
+           "ao_log": [1, 3.00088],
+           "pow": [0, 1],
+           "ao_pow": [19.597508817, -83.959667892],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [0.76315, 0.0046, 8.74432, -4.46921],
+           "hyp": [4.306474465, 0.936220902, 5.577233895, 5.722644361]}
 
     CP2 = {"ao": 4.00088,
            "an": [], "pow": [],
@@ -62,10 +68,218 @@ class CH4(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Setzmann and Wagner (1991)",
-        "__doc__":  u"""Setzmann, U., Wagner, W. A new equation of state and tables of the thermodynamic properties for methane covering the range from the melting line to 625 K at pressures up to 1000 MPa. J. Phys. Chem. Ref. Data 20 (1991) 1061 – 1155.""",
-        "R": 8.31451,
-        "cp": CP1,
+        "__doi__": {"autor": "Setzmann, U., Wagner, W.",
+                    "title": "A New Equation of State and Tables of Thermodynamic Properties for Methane Covering the Range from the Melting Line to 625 K at Pressures up to 1000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 20, 1061 (1991)",
+                    "doi": "10.1063/1.555898"}, 
+        "__test__": 
+            # Table 39, Pag 1117
+            """
+            >>> st=CH4(T=90.694, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            90.694 0.011696 451.48 0.25074 -982.76 -438.5 -7.3868 -1.3857 2.1677 1.5735 3.3678 2.11 1538.6 249.13
+            
+            >>> st=CH4(T=100, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            100 0.034376 438.89 0.67457 -951.21 -420.73 -7.0562 -1.7514 2.1136 1.5887 3.4084 2.1458 1452 260.09
 
+            >>> st=CH4(T=126, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            126 0.28667 400.52 4.7434 -859.94 -378.42 -6.2511 -2.4295 1.995 1.6591 3.6102 2.3638 1190.8 281.28
+
+            >>> st=CH4(T=160, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            160 1.5921 336.31 25.382 -726.14 -353.87 -5.3391 -3.0124 1.9037 1.8473 4.4354 3.4189 795.43 283.01
+
+            >>> st=CH4(T=162, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            162 1.7235 331.57 27.66 -717.27 -354.28 -5.2864 -3.0457 1.9028 1.8655 4.5448 3.5665 769.03 282.03
+
+            >>> st=CH4(T=164, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            164 1.8626 326.64 30.132 -708.21 -355.01 -5.2334 -3.0797 1.9027 1.8852 4.6702 3.7374 742.1 280.91
+
+            >>> st=CH4(T=166, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            166 2.0096 321.5 32.822 -698.95 -356.07 -5.18 -3.1145 1.9037 1.9066 4.8154 3.9373 714.59 279.65
+
+            >>> st=CH4(T=168, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            168 2.1647 316.14 35.758 -689.46 -357.52 -5.1261 -3.1503 1.9059 1.93 4.9854 4.174 686.42 278.23
+            
+            >>> st=CH4(T=170, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            170 2.3283 310.5 38.974 -679.7 -359.4 -5.0715 -3.1874 1.9095 1.9556 5.1872 4.4585 657.52 276.66
+
+            >>> st=CH4(T=172, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            172 2.5007 304.56 42.514 -669.64 -361.77 -5.0159 -3.226 1.9149 1.984 5.4311 4.8066 627.77 274.93
+
+            >>> st=CH4(T=174, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            174 2.6822 298.25 46.434 -659.64 -361.77 -5.0159 -3.226 1.9225 2.0157 5.7318 5.2416 597.05 273.02
+
+            >>> st=CH4(T=176, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            176 2.8732 291.5 50.808 -648.37 -368.31 -4.9009 -3.3096 1.933 2.0515 6.1124 5.8 565.18 270.92
+
+            >>> st=CH4(T=178, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            178 3.074 284.21 55.74 -637.01 -372.71 -4.8406 -3.3558 1.9473 2.0925 6.6105 6.5421 531.94 268.6
+
+            >>> st=CH4(T=180, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            180 3.2852 273.23 61.375 -625 -378.11 -4.7778 -3.4062 1.9669 2.1404 7.2923 7.574 497.01 266.04
+
+            >>> st=CH4(T=182, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            182 3.5071 267.33 67.94 -612.14 -384.81 -4.7112 -3.4621 1.9944 2.1977 8.2863 9.103 459.94 263.17
+
+            >>> st=CH4(T=184, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            184 3.7405 257.14 75.81 -598.08 -393.29 -4.6393 -3.5262 2.0346 2.2688 9.8808 11.592 420 259.89
+
+            >>> st=CH4(T=186, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            186 3.986 244.93 85.704 -582.19 -404.47 -4.5586 -3.6032 2.0978 2.362 12.883 16.333 375.88 255.97
+            
+            >>> st=CH4(T=188, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            188 4.2448 228.93 99.377 -562.88 -420.58 -4.4612 -3.7044 2.213 2.5001 20.738 28.774 324.57 250.72
+            
+            >>> st=CH4(T=190, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            190 4.5186 200.78 125.18 -532.67 -451.91 -4.3082 -3.8831 2.6022 2.8546 94.012 140.81 250.31 238.55
+
+            >>> st=CH4(T=190.564, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Gas.rho, st.Gas.h.kJkg, st.Gas.s.kJkgK)
+            190.564 4.5992 162.66 -495.35 -4.1144
+            """
+            # Table 39, Pag 1117
+            """
+            >>> st=CH4(T=115, P=25000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            115 0.42278 -447.44 -388.31 -1.2861 1.5667 2.1012 280.5
+
+            >>> st=CH4(T=620, P=25000)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            620 0.07780 565.93 887.27 2.693 2.8267 3.3451 616.69
+
+            >>> st=CH4(T=90.704, P=50000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            90.704 451.49 -982.78 -982.67 -7.3867 2.1677 3.3676 1538.8
+            
+            >>> st=CH4(T=230, P=50000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            230 0.42032 -267.02 -148.06 -0.19648 1.5947 2.1175 397.03
+            
+            >>> st=CH4(T=620, P=50000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            620 0.15559 565.86 887.22 2.3337 2.8267 3.3454 616.74
+
+            >>> st=CH4(T=190, P=100000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            190 1.023 -331.02 -233.27 -0.96123 1.5707 2.104 360.51
+
+            >>> st=CH4(T=190, P=2000000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            190 24.354 -362.79 -280.67 -2.6867 1.6906 2.7325 328.4
+
+            >>> st=CH4(T=180, P=4000000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            180 285.08 -644.73 -630.7 -4.8236 1.9295 6.1588 552.74
+
+            >>> st=CH4(T=190, P=4000000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            190 70.942 -423.54 -367.16 -3.4054 2.0278 6.887 279.41
+
+            >>> st=CH4(T=150, P=4500000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 365.67 -778.92 -766.62 -5.6533 1.9241 3.8443 989.75
+
+            >>> st=CH4(T=185, P=4500000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            185 266.01 -618.18 -601.26 -4.6722 1.9687 7.5262 477.08
+
+            >>> st=CH4(T=190, P=4500000)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            190 115.69 -477.41 -438.51 -3.8118 2.6453 55.55 246.05
+            """, 
+            
+        "R": 8.31451,
+        "cp": Fi1,
+        "ref": "OTO",
+        
         "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
         "Pmin": 11.696, "rhomin": 28.142, 
 
@@ -125,7 +339,7 @@ class CH4(MEoS):
         "__name__": "Helmholtz equation of state for methane of Kunz and Wagner (2004).",
         "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
 
         "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
 #        "Pmin": 73.476, "rhomin": 29.249, 
