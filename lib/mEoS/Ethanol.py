@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Ethanol(MEoS):
-    """Multiparameter equation of state for ethanol
-
-    >>> etanol=Ethanol(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.5f %0.5f %0.2f" % (etanol.T, etanol.rho, etanol.u.kJkg, etanol.h.kJkg, etanol.s.kJkgK, etanol.cv.kJkgK, etanol.cp.kJkgK, etanol.w)
-    300.0 783.9034 -941.06 -940.93 -2.6357 2.21247 2.59650 1132.52
-    """
+    """Multiparameter equation of state for ethanol"""
     name = "ethanol"
     CASNumber = "64-17-5"
     formula = "C2H6O"
@@ -35,9 +30,38 @@ class Ethanol(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Dillon and Penoncello (2004)",
-        "__doc__":  u"""Dillon, H.E. and Penoncello, S.G., "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol," Int. J. Thermophys., 25(2):321-335, 2004.""",
+        "__doi__": {"autor": "Dillon, H.E. and Penoncello, S.G.",
+                    "title": "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol", 
+                    "ref": "Int. J. Thermophys., 25(2):321-335, 2004.",
+                    "doi": "10.1023/B:IJOT.0000028470.49774.14"}, 
+        "__test__": """
+            >>> st=Ethanol(T=350, P=1e5)
+            >>> print "%0.1f %0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            0.1 350 737.85 259.95 1.0363 2.6542 3.1707 964.32
+            >>> st=Ethanol(T=650, P=1e5)
+            >>> print "%0.1f %0.0f %0.4g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            0.1 650 0.8534 1771.7 4.8011 2.3679 2.5512 355.1
+            
+            >>> st=Ethanol(T=450, P=1e6)
+            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            1 450 13.736 1270.3 3.4711 2.0217 2.3954 276.5
+            
+            >>> st=Ethanol(T=250, P=1e7)
+            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            10 250 831.84 9.4714 0.1625 1.6724 2.0325 1372.8
+            >>> st=Ethanol(T=600, P=1e7)
+            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            10 600 129 1474.5 3.5258 2.7347 4.0688 273.66
+            
+            >>> st=Ethanol(T=400, P=1e8)
+            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            100 400 784.52 500.06 1.3279 2.8005 3.2736 1348.2
+            """, # Table IV, Pag 329
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": {"name": "CUSTOM",
+            "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
 
         "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4, 
         "Pmin": 0.00000088, "rhomin": 19.4, 
@@ -156,10 +180,3 @@ class Ethanol(MEoS):
     _thermal = thermo0,
 
 # TODO: Add discard eq and thermal in refprop
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    helio=Ethanol(T=300, P=0.1, eq=1)
-    print "%0.1f %0.5f %0.4f %0.4f %0.4f %0.2f" % (helio.T, helio.rho, helio.h.kJkg, helio.s.kJkgK, helio.cp.kJkgK, helio.w)
