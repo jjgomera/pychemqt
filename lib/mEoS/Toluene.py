@@ -100,7 +100,33 @@ class Toluene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.841]*6}
 
-    eq = helmholtz1, #helmholtz2
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for toluene of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": "NBP", 
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [1.34060172, 1.01624262, -3.27810202, 9.69209624e-2,
+                2.61950176e-4, -1.58891991e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+ 
+        "nr2": [6.28559812e-2, -8.42364946e-2, 4.49701117e-1, -1.08658876e-2,
+                -3.83733669e-1, 2.21127543e-2, -9.54658223e-2, -1.77905259e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, helmholtz2, helmholtz3
 
     _surface = {"sigma": [0.0689], "exp": [1.29]}
     _vapor_Pressure = {
@@ -160,7 +186,8 @@ class Toluene(MEoS):
 
 
 if __name__ == "__main__":
-    tolueno=Toluene(T=300, P=0.1)
-    print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (tolueno.T, tolueno.rho, tolueno.u.kJkg, tolueno.h.kJkg, tolueno.s.kJkgK, tolueno.cv.kJkgK, tolueno.cp.kJkgK, tolueno.w)
-    print tolueno.k, tolueno.mu
+    st=Toluene(T=593, rho=3*92.13842)
+    print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+    st=Toluene(T=593, rho=3*92.13842, eq=2)
+    print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
 

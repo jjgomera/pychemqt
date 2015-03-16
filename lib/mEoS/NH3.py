@@ -98,7 +98,7 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ammonia of Span and Wagner (2003)",
         "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
-        "R": 8.31451,
+        "R": 8.314471,
         "cp": CP1,
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 52.915, 
@@ -115,7 +115,32 @@ class NH3(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    helmholtz4 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for ammonia of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.3143,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [3.29159441e-1, 8.48237019e-1, -2.30706412, 4.08625188e-2,
+                6.79597481e-5, 4.99412149e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [1.23624654e-1, -3.02129187e-1, 3.31747586e-1, -2.97121254e-3,
+                -1.30202073e-1, -7.45181207e-2, -4.73506171e-2, -9.70095484e-3],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
                 "Tmin": Tt, "Tmax": 700.0, 

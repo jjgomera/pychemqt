@@ -203,7 +203,32 @@ class R125(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4, helmholtz5
+    helmholtz6 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-125 of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314472,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [7.41057508e-1, 1.13555445, -3.12563760, 9.32031442e-2,
+                2.76844975e-4, -5.64403707e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [9.63969526e-3, 4.30480259e-1, 7.65668079e-1, -1.13913859e-2,
+                -4.41468178e-1, -2.00943884e-2, -1.26041587e-1, -2.32331768e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4, helmholtz5, helmholtz6
     _PR = -0.00247
 
     _surface = {"sigma": [0.05260], "exp": [1.24]}

@@ -146,7 +146,32 @@ class nC8(MEoS):
         "c2": [2]*2,
         "gamma2": [0.35285564]*2}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4
+    helmholtz5 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31451,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [1.57750154, 1.15745614, -3.54867092, 1.18030671e-1,
+                3.02753897e-4, -2.63074957e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [2.55299486e-2, -1.26632996e-1, 4.48343319e-1, -9.46702997e-3,
+                -4.43927529e-1, -1.68224827e-2, -1.15864640e-1, -1.32417591e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5
 
     _surface = {"sigma": [0.0565399, -0.0104928, 0.0084723],
                 "exp": [1.25, 2.25, 3.25]}

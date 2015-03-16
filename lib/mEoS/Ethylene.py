@@ -164,7 +164,32 @@ class Ethylene(MEoS):
               -0.2054114462372e-3, 0.6727558766661e-1, -0.1557168403328e-5,
               -0.1229814736077e-3, 0.4234325938573e-3]}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3
+    helmholtz4 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for ethylene of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31451,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [8.42278605e-1, 8.65139678e-1, -2.79801027, 6.74520156e-2,
+                2.42445468e-4, -2.74767618e-3],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-1.48602227e-2, 1.29307481e-1, 3.74759088e-1, -1.25336440e-2,
+                -2.33507187e-1, 1.38862785e-2, -4.88033330e-2, -2.38141707e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
 
     _surface = {"sigma": [0.050195], "exp": [1.26]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

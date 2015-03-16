@@ -412,8 +412,35 @@ class H2O(MEoS):
         "t2": [5, 7, 9, 5, 4, 6, 13, 5, 2, 3, 2, 0, 11, 1, 4, 0, 0, 3, 5, 6,
                7, 13, 14, 15, 24, 15],
         "gamma2": [1]*26}
-        
-    eq = helmholtz1, GERG, helmholtz2, helmholtz3
+
+    helmholtz4 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for water of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314371357587,
+        "cp": Fi1,
+        "ref": {"name": "CUSTOM",
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [3.46821920e-1, 5.03423025e-1, -3.51059570e-1, 5.07004866e-2,
+                1.99939129e-4, -5.69888763e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-1.96198912e-1, -2.02509554, -1.09353609, 7.25785202e-2,
+                2.16072642e-1, -1.01542630e-1, 7.46926106e-2, 2.18830463e-3],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, GERG, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.0043451
 
     _surface = {"sigma": [0.2358, -0.147375], "exp": [1.256, 2.256]}
@@ -684,7 +711,7 @@ if __name__ == "__main__":
 #    delta=838.025/wt.rhoc
 #    print wt._phi0(wt._constants["cp"], tau, delta)
 
-    for eq in range(4):
+    for eq in (0, 1, 3, 4):
         st=H2O(T=500, x=0.5,  eq=eq)
         print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
             st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \

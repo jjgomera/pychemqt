@@ -84,7 +84,32 @@ class Cyclohexane(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for cyclohexane of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31434,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [1.27436292, 1.15372124, -3.86726473, 8.84627298e-2,
+                2.76478090e-4, 7.26682313e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [7.10849914e-2, 4.46376742e-1, 7.64476190e-1, -4.23520282e-2,
+                -3.96468623e-1, -1.41250071e-2, -1.08371284e-1, -2.50082884e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, helmholtz2, helmholtz3
 
     _surface = {"sigma": [0.0653], "exp": [1.26]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 700,

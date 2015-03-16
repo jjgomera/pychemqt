@@ -137,7 +137,32 @@ class R134a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3
+    helmholtz4 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-134a of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314471,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [1.08605179, 1.03772416, -2.92069735, 9.15573346e-2,
+                2.40541430e-4, -2.00239570e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-1.61424796e-2, -2.15499979e-1, 3.11819936e-1, 1.12867938e-3,
+                -2.83454532e-1, -4.21157950e-2, -8.08314045e-2, -1.59762784e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.001032
 
     _surface = {"sigma": [0.06016], "exp": [1.26]}

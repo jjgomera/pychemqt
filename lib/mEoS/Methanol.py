@@ -103,24 +103,27 @@ class Methanol(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
-        "__doc__":  u"""Sun, L. and Ely, J.F., "Universal equation of state for engineering application: Algorithm and application to non-polar and polar fluids," Fluid Phase Equilib., 222-223:107-118, 2004.""",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.3143,
         "cp": CP1,
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
 
-        "nr1": [-5.24578394, 1.39060027, 8.56114069e-1, -4.20843418e-2, 
+        "nr1": [-2.4578394, 1.39060027, 8.56114069e-1, -4.20843418e-2,
                 3.63682442e-5, 7.05598662e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
-        "nr2": [3.70573369e-1, 2.46303468, 1.50253790, 7.47553687e-2, 
+        "nr2": [3.70573369e-1, 2.46303468, 1.50253790, 7.47553687e-2,
                 -3.06417876e-1, -7.48402758e-1, -1.01432849e-1, 8.06830693e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
-        "t2": [0.0, 2.375, 2.0, 2.125, 3.5, 6.5, 4.75, 12.5],
-        "c2": [1, 1, 1, 2, 2, 2, 3],
-        "gamma2": [0.591872]*6}
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
 
     helmholtz3 = {
         "__type__": "Helmholtz",

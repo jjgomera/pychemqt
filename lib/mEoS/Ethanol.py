@@ -85,9 +85,15 @@ class Ethanol(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely (2004).",
-        "__doc__":  u"""Sun, L. and Ely, J.F., "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids," Fluid Phase Equilib., 222-223:107-118, 2004.""",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+            
         "R": 8.314472,
         "cp": CP1,
+        "ref": {"name": "CUSTOM",
+            "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6, 
         "Pmin": 0.00000064, "rhomin": 19.55, 
@@ -96,7 +102,7 @@ class Ethanol(MEoS):
                  1.39251945e-4, 5.04178939e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
-
+        
         "nr2": [2.52310166e-1, 1.97074652, 8.73146115e-1, 4.27767205e-2,
                 9.68966545e-2, -8.39632113e-1, -7.71828521e-2, 1.63430744e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],

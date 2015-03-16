@@ -94,7 +94,32 @@ class Benzene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.95481]*6}
 
-    eq = helmholtz1, helmholtz2
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for benzene of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314472,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [1.76284970, 1.02610647, -3.74263321, 9.57682041e-2,
+                2.59179321e-4, -1.03082188e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [1.07359246e-1, -1.12562310e-1, 3.18737987e-1, -3.07549016e-2,
+                -3.25082386e-1, 2.28099159e-2, -7.07431076e-2, -1.96809158e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, helmholtz2, helmholtz3
 
     _surface = {"sigma": [0.0766304, -0.0157455, 0.0150819],
                 "exp": [1.25, 2.25, 3.25]}

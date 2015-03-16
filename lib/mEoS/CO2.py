@@ -204,7 +204,32 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4
+    helmholtz5 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for carbon dioxide of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31451,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [-4.71122371e-1, 9.13375599e-1, -1.96793707, 6.89687161e-2,
+                2.15658922e-4, 9.51876380e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-4.91366518e-3, 7.32487713e-1, 8.70918629e-1, -5.35917679e-3,
+                -4.03818537e-1, -2.40820897e-2, -1.04239403e-1, -2.16335828e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
 
     _surface = {"sigma": [0.084497], "exp": [1.28]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

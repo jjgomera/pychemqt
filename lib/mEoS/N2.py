@@ -209,7 +209,33 @@ class N2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, #MBWR, GERG, helmholtz3, helmholtz4
+    helmholtz5 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for nitrogen of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31451,
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5}, 
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [9.57664698e-1, 8.68692283e-1, -2.88536117, 6.12953165e-2,
+                2.55919463e-4, 1.69423647e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-4.43639900e-2, 1.37987734e-1, 2.77148365e-1, -1.44381707e-2,
+                -1.69955805e-1, 5.46894457e-3, -2.87747274e-2, -2.38630424e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
     _PR = -0.004032
 
     _surface = {"sigma": [0.029324108], "exp": [1.259]}
@@ -384,8 +410,7 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
     
-#    water=N2(T=298.15, P=101325)
-#    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cv.kJkgK, water.cp.kJkgK, water.w
-
-    n2 = N2(T=298.15, v=1)
-    print n2.T
+    water=N2(T=298.15, P=101325)
+    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cv.kJkgK, water.cp.kJkgK, water.w
+    water=N2(T=298.15, P=101325, eq=5)
+    print water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.cv.kJkgK, water.cp.kJkgK, water.w

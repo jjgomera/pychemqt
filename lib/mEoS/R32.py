@@ -133,7 +133,32 @@ class R32(MEoS):
               -0.169690612464e-3, 0.639250820631e-1, -0.204925767440e-6,
               -0.165629700870e-3, -0.932607493424e-2]}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3
+    helmholtz4 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-32 of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314471,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [2.75866232e-1, 9.26526641e-1, -2.44296579, 5.34289357e-2,
+                1.06739638e-4, 3.46487335e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [9.07435007e-2, -1.93104843e-1, 5.11370826e-1, 3.09453923e-3,
+                -1.53328967e-1, -1.03816916e-1, -3.8066998e-2, -1.16075825e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.00585
 
     _surface = {"sigma": [0.07216], "exp": [1.252]}

@@ -1424,7 +1424,16 @@ class MEoS(_fase):
         self._constants = helmholtz
 
     def _ref(self, ref, refvalues=None):
-        """Define reference state"""
+        """Define reference state
+        Input:
+            ref: name of standard
+                OTO | NBP | IIR | ASHRAE | CUSTOM
+            refvalues: array with custom refvalues
+                Tref
+                Pref in kPa
+                ho in J/mol
+                so in J/mol·K
+        """
         if ref == "OTO":
             self.Tref = 298.15
             self.Pref = 101325.
@@ -1448,7 +1457,10 @@ class MEoS(_fase):
         elif ref == "CUSTOM":
             if refvalues is None:
                 refvalues = [298.15, 101325., 0., 0.]
-            self.Tref, self.Pref, self.ho, self.so = refvalues
+            self.Tref = unidades.Temperature(refvalues[0])
+            self.Pref = unidades.Pressure(refvalues[1], "kPa")
+            self.ho = unidades.Enthalpy(refvalues[2]/self.M, "Jg")
+            self.so = unidades.SpecificHeat(refvalues[3]/self.M, "JgK")
 
     def _prop0(self, rho, T):
         """Ideal gas properties"""
@@ -1618,7 +1630,6 @@ class MEoS(_fase):
 
     def _phir(self, tau, delta):
         delta_0 = 1e-200
-        print delta
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
 
         if delta:

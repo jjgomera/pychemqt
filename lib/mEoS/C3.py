@@ -220,7 +220,32 @@ class C3(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, MBWR, helmholtz2, GERG, helmholtz4, helmholtz5
+    helmholtz6 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for propane of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.314472,
+        "cp": CP1,
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
+        "Pmin": 0.1, "rhomin": 40., 
+
+        "nr1": [9.70439249e-1, 9.73671323e-1, -2.96661981, 7.84340496e-2,
+                2.78440866e-4, -6.77622221e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-8.56371936e-2, 1.77467443e-1, 3.91636018e-1, -8.03312946e-3,
+                -2.60385851e-1, -1.91104746e-2, -6.31331470e-2, -2.27769095e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, helmholtz2, GERG, helmholtz4, helmholtz5, helmholtz6
 
     _surface = {"sigma": [0.05666, -0.005291], "exp": [1.265, 1.265]}
     _dielectric = {"eq": 4, "Tref": 273.16, "rhoref": 1000.,
