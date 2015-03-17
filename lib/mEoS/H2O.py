@@ -241,8 +241,7 @@ class H2O(MEoS):
             
         "R": 8.314371357587,
         "cp": Fi1,
-        "ref": {"name": "CUSTOM",
-            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96, 
         "Pmin": 0.61248, "rhomin": 55.49696, 
