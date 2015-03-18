@@ -6,16 +6,7 @@ from lib import unidades
 
 
 class iC4(MEoS):
-    """Multiparameter equation of state for isobutane
-
-    >>> butano=iC4(T=500, P=0.1)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (butano.T, butano.rho, butano.u.kJkg, butano.h.kJkg, butano.s.kJkgK, butano.cv.kJkgK, butano.cp.kJkgK, butano.w)
-    500.0 1.4048 357.41 428.59 1.0807 2.4261 2.5726 274.09
-
-    >>> butano=iC4(u=-300.4, s=-1.1807)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (butano.T, butano.rho, butano.u.kJkg, butano.h.kJkg, butano.s.kJkgK, butano.cv.kJkgK, butano.cp.kJkgK, butano.w)
-    330.0 573.4842 -300.40 -239.17 -1.1807 1.8387 2.3936 1031.02
-    """
+    """Multiparameter equation of state for isobutane"""
     name = "isobutane"
     CASNumber = "75-28-5"
     formula = "CH(CH3)3"
@@ -33,10 +24,11 @@ class iC4(MEoS):
     _rhor = unidades.Density(228.302484)
     _w = 0.178714317
 
-    CP1 = {"ao": 4.05956619,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3.05956619],
+           "pow": [0, 1],
+           "ao_pow": [11.60865546, -5.29450411],
            "ao_exp": [4.94641014, 4.09475197, 15.6632824, 9.73918122],
-           "exp": [387.94064, 973.80782, 1772.71103, 4228.52424],
+           "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351], 
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 4.06714,
@@ -74,9 +66,119 @@ class iC4(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Buecker and Wagner (2006)",
-        "__doc__":  u"""Bücker, D., Wagner, W. Reference equations of state for the thermodynamic properties of fluid phase n-butane and isobutane. J. Phys. Chem. Ref. Data 35 (2006), 929 – 1020.""",
+        "__doi__": {"autor": "Bücker, D., Wagner, W.",
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
+                    "doi": "10.1063/1.1901687"}, 
+        "__test__":
+            # Table 46, Pag 996
+            """
+            >>> st=iC4(T=113.730, x=0.5)
+            >>> print "%0.6g %0.8f %0.5f %0.7f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            113.73 0.00000002 740.33876 0.0000014 -714.04 -233.34 -3.199 1.028 1.174 0.737 1.689 0.880 1999.81 139.39
+            >>> st=iC4(T=130, x=0.5)
+            >>> print "%0.6g %0.8f %0.4f %0.6f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            130 0.00000088 724.9759 0.000047 -686.14 -218.43 -2.970 0.628 1.209 0.810 1.741 0.953 1863.41 147.92
+            >>> st=iC4(T=170, x=0.5)
+            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            170 0.000274 686.932 0.01127 -613.96 -177.00 -2.486 0.084 1.293 0.975 1.868 1.118 1578.65 166.95
+            >>> st=iC4(T=180, x=0.5)
+            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            180 0.000737 677.281 0.02867 -595.12 -165.68 -2.379 0.007 1.315 1.014 1.900 1.158 1514.00 171.29
+            >>> st=iC4(T=300, x=0.5)
+            >>> print "%0.6g %0.5f %0.2f %0.4f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            300 0.37000 548.32 9.6096 -338.17 -11.29 -1.299 -0.209 1.690 1.578 2.442 1.810 810.25 197.74
+            >>> st=iC4(T=400, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            400 3.1856 341.03 118.39 -36.27 81.59 -0.459 -0.164 2.250 2.354 6.349 7.555 184.38 128.90
+            >>> st=iC4(T=405, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            405 3.4629 305.04 148.28 -9.33 71.55 -0.394 -0.194 2.362 2.481 13.190 18.178 138.43 119.17
+            >>> st=iC4(T=406, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            406 3.5210 293.52 158.36 -2.12 67.07 -0.376 -0.206 2.402 2.521 19.368 27.552 128.12 116.78
+            >>> st=iC4(T=407, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            407 3.5801 276.83 173.46 7.30 59.64 -0.354 -0.225 2.465 2.575 42.319 61.185 116.97 113.83
+            """
+            # Table 47, Pag 1003
+            """
+            >>> st=iC4(T=200, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            200 657.78 -556.49 -556.34 -2.1751 1.3627 1.9676 1389.68
+            >>> st=iC4(T=400, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 9.2132 129.91 184.18 0.31057 2.0152 2.1959 236.58
+            >>> st=iC4(T=400, P=1e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 19.586 122.43 173.49 0.19221 2.0358 2.2711 224.3
+            >>> st=iC4(T=350, P=1.5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            350 476.78 -209.39 -206.24 -0.89941 1.9081 2.8832 530.58
+            >>> st=iC4(T=400, P=2e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 46.082 103.55 146.95 0.042963 2.0943 2.5614 194.12
+            >>> st=iC4(T=400, P=3e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 95.405 69.772 101.22 -0.11041 2.2417 4.2367 145.97
+            >>> st=iC4(T=400, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 374.74 -59.311 -48.637 -0.4951 2.1788 4.0279 270.3
+            >>> st=iC4(T=575, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            575 54.649 522.22 595.42 0.88371 2.7352 3.0054 268.45
+            >>> st=iC4(T=400, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 394.05 -67.804 -55.115 -0.51779 2.1541 3.5415 328.2
+            >>> st=iC4(T=400, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 439.11 -89.303 -66.53 -0.57611 2.1246 3.0033 486.23
+            >>> st=iC4(T=500, P=3.5e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            500 433.69 145.98 226.69 -0.051328 2.522 3.0667 628.75
+            """, 
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
         "Pmin": 0.0000219, "rhomin": 12.74, 
@@ -239,7 +341,7 @@ class iC4(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 

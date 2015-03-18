@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class nC4(MEoS):
-    """Multiparameter equation of state for n-butane
-
-    >>> butano=nC4(h=50.470, P=25)
-    >>> print "%0.1f %0.2f %0.4f %0.3f %0.5f %0.4f %0.4f %0.2f" % (butano.T, butano.rho, butano.u.kJkg, butano.h.kJkg, butano.s.kJkgK, butano.cv.kJkgK, butano.cp.kJkgK, butano.w)
-    450.0 463.97 -3.4126 50.470 -0.35405 2.3235 2.9759 632.80
-    """
+    """Multiparameter equation of state for n-butane"""
     name = "n-butane"
     CASNumber = "106-97-8"
     formula = "CH3-(CH2)2-CH3"
@@ -29,10 +24,11 @@ class nC4(MEoS):
     _rhor = unidades.Density(230.384826)
     _w = 0.194240287
 
-    CP1 = {"ao": 4.24680487,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3.24680487],
+           "pow": [0, 1],
+           "ao_pow": [12.54882924, -5.46976878],
            "ao_exp": [5.54913289, 11.4648996, 7.59987584, 9.66033239],
-           "exp": [329.40404, 1420.17366, 2113.08938, 4240.8573],
+           "titao": [0.7748404445, 3.3406025522, 4.9705130961, 9.9755537783], 
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 4.33944,
@@ -70,9 +66,125 @@ class nC4(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Buecker and Wagner (2006)",
-        "__doc__":  u"""Bücker, D., Wagner, W. Reference equations of state for the thermodynamic properties of fluid phase n-butane and isobutane. J. Phys. Chem. Ref. Data 35 (2006), 929 – 1020.""",
+        "__doi__": {"autor": "Bücker, D., Wagner, W.",
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
+                    "doi": "10.1063/1.1901687"}, 
+        "__test__": 
+            # Table 44, Pag 974
+            """
+            >>> st=nC4(T=134.895, x=0.5)
+            >>> print "%0.6g %0.8f %0.4f %0.6f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            134.895 0.00000067 734.9588 0.000034 -721.64 -225.72 -3.036 0.640 1.441 0.963 1.973 1.106 1826.82 148.87
+            >>> st=nC4(T=156, x=0.5)
+            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            156 0.000020 715.291 0.00091 -679.81 -201.60 -2.748 0.317 1.443 1.034 1.992 1.178 1693.20 159.37
+            >>> st=nC4(T=170, x=0.5)
+            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            170 0.000116 702.237 0.00478 -651.81 -184.83 -2.576 0.171 1.447 1.078 2.009 1.221 1610.11 165.94
+            >>> st=nC4(T=180, x=0.5)
+            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            180 0.000335 692.876 0.01301 -631.64 -172.50 -2.461 0.090 1.453 1.109 2.024 1.253 1552.13 170.43
+            >>> st=nC4(T=300, x=0.5)
+            >>> print "%0.6g %0.5f %0.2f %0.4f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            300 0.25760 570.68 6.5164 -367.83 -8.24 -1.349 -0.150 1.729 1.602 2.451 1.811 890.88 202.15
+            >>> st=nC4(T=400, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            400 2.4954 408.48 73.077 -80.60 113.39 -0.542 -0.057 2.173 2.210 3.838 3.623 318.35 154.77
+            >>> st=nC4(T=410, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            410 2.9578 377.13 95.371 -42.76 116.18 -0.452 -0.064 2.247 2.306 4.677 4.840 246.50 141.36
+            >>> st=nC4(T=420, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            420 3.4897 327.77 135.00 3.37 108.06 -0.344 -0.095 2.357 2.444 8.852 10.719 165.59 124.46
+            >>> st=nC4(T=424, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            424 3.7265 284.03 173.21 32.66 91.15 -0.277 -0.139 2.454 2.549 34.430 44.895 127.24 115.73
+            >>> st=nC4(T=425, x=0.5)
+            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            425 3.7881 250.17 205.54 50.78 73.93 -0.235 -0.180 2.534 2.589 375.35 460.13 114.85 112.63
+            """
+            # Table 45, Pag 980
+            """
+            >>> st=nC4(T=200, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            200 674.06 -590.85 -590.7 -2.2462 1.4733 2.062 1438.79
+            >>> st=nC4(T=425, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 8.619 183.13 241.14 0.45027 2.1279 2.3062 244.71
+            >>> st=nC4(T=425, P=1e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 18.184 175.73 230.73 0.3333 2.1469 2.3739 233.55
+            >>> st=nC4(T=370, P=1.5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            370 473.15 -181.62 -178.45 -0.79043 2.0102 3.05 508.67
+            >>> st=nC4(T=425, P=2e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 41.696 157.9 205.86 0.18997 2.195 2.6031 206.82
+            >>> st=nC4(T=400, P=3e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 416.28 -90.374 -83.167 -0.55176 2.1613 3.623 348.01
+            >>> st=nC4(T=425, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 323.28 6.3288 18.702 -0.31172 2.364 7.3685 173.79
+            >>> st=nC4(T=575, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            575 55.37 518.95 591.19 0.87953 2.7242 3.0176 265.11
+            >>> st=nC4(T=425, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 368.63 -12.88 0.68419 -0.36083 2.2866 4.1643 268.65
+            >>> st=nC4(T=425, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            425 427.92 -41.303 -17.934 -0.43378 2.2319 3.1867 454.17
+            >>> st=nC4(T=500, P=6.9e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            500 515.49 90.412 224.26 -0.17641 2.533 2.986 923.31
+            """, 
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 575., "Pmax": 200000.0, "rhomax": 13.86, 
         "Pmin": 0.000653, "rhomin": 12.645, 
@@ -188,7 +300,7 @@ class nC4(MEoS):
         "R": 8.31451,
         "cp": CP5,
 
-        "Tmin": 134.86, "Tmax": 600., "Pmax": 100000.0, "rhomax": 13.20, 
+        "Tmin": 134.86, "Tmax": 750., "Pmax": 100000.0, "rhomax": 13.20, 
         "Pmin": 0.00064578, "rhomin": 12.671, 
 
         "nr1": [0.10626277e1, -0.28620952e1, 0.88738233, -0.12570581,
@@ -237,7 +349,7 @@ class nC4(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
