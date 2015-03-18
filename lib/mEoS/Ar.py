@@ -6,16 +6,7 @@ from lib import unidades
 
 
 class Ar(MEoS):
-    """Multiparamter equation of state for argon
-
-    >>> argon=Ar(T=700, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.2f %0.5f %0.5f %0.5f %0.2f" % (argon.T, argon.rho, argon.u.kJkg, argon.h.kJkg, argon.s.kJkgK, argon.cv.kJkgK, argon.cp.kJkgK, argon.w)
-    700.0 0.68620 63.355 209.09 0.44677 0.31223 0.52050 492.95
-
-    >>> argon=Ar(h=-11.589, P=1)
-    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.5f %0.5f %0.2f" % (argon.T, argon.rho, argon.u.kJkg, argon.h.kJkg, argon.s.kJkgK, argon.cv.kJkgK, argon.cp.kJkgK, argon.w)
-    280.0 17.302 -69.385 -11.589 -0.51511 0.31441 0.53463 312.22
-    """
+    """Multiparamter equation of state for argon"""
     name = "argon"
     CASNumber = "7440-37-1"
     formula = "Ar"
@@ -33,36 +24,178 @@ class Ar(MEoS):
     _rhor = unidades.Density(540.014968)
     _w = 0.000305675
 
-    CP1 = {"R": 8.31451, "ao": 2.5,
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [8.31666243, -4.94651164],
+           "ao_exp": [], "titao": []}
+
+    CP1 = {"ao": 2.5,
            "an": [], "pow": [], "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
-
+           
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "FEQ  Helmholtz equation of state for argon of Tegeler et al. (1999).",
-        "__doc__": u"""Tegeler, Ch., Span, R., Wagner, W. A new equation of state for argon covering the fluid region for temperatures from the melting line to 700 K at pressures up to 1000 MPa. J. Phys. Chem. Ref. Data 28 (1999), 779 – 850. """,
+        "__name__": "FEQ Helmholtz equation of state for argon of Tegeler et al. (1999).",
+        "__doi__": {"autor": "Tegeler, Ch., Span, R., Wagner, W.",
+                    "title": "A New Equation of State for Argon Covering the Fluid Region for Temperatures From the Melting Line to 700 K at Pressures up to 1000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 28, 779 (1999)",
+                    "doi": "10.1063/1.556037"}, 
+        "__test__": 
+            #Table 33, Pag 828
+            """
+            >>> st=Ar(T=83.8058, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            83.8058 0.068891 1416.77 4.0546 -276.56 -112.85 -2.544 -0.59044 0.5496 0.32471 1.1157 0.55503 862.43 168.12
+
+            >>> st=Ar(T=90, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            90 0.13351 1378.63 7.4362 -269.61 -110.55 -2.4645 -0.69718 0.52677 0.33094 1.1212 0.57569 819.45 172.83
+
+            >>> st=Ar(T=120, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            120 1.213 1162.82 60.144 -233.48 -106.71 -2.1274 -1.071 0.45763 0.38934 1.3324 0.86265 584.19 185.09
+
+            >>> st=Ar(T=130, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            130 2.0255 1068.13 103.56 -219.29 -109.83 -2.0197 -1.1777 0.4492 0.42745 1.5638 1.1717 487.88 184.85
+
+            >>> st=Ar(T=140, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            140 3.1682 943.71 178.86 -202.29 -117.65 -1.9023 -1.2978 0.45984 0.49404 2.2247 2.1036 371.63 181.5
+
+            >>> st=Ar(T=142, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            142 3.4435 911.61 201.37 -198.23 -120.25 -1.8756 -1.3265 0.46729 0.51706 2.5349 2.5648 344.14 180
+
+            >>> st=Ar(T=144, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            144 3.7363 874.98 228.48 -193.76 -123.46 -1.8467 -1.3584 0.47972 0.54719 3.0262 3.3149 313.8 177.93
+
+            >>> st=Ar(T=146, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            146 4.0479 831.38 262.63 -188.68 -127.57 -1.8142 -1.3956 0.50257 0.58923 3.9312 4.7346 278.88 174.89
+
+            >>> st=Ar(T=148, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            148 4.3797 775.03 309.6 -182.49 -133.29 -1.7749 -1.4424 0.55094 0.6568 6.2097 8.383 236.08 169.81
+            
+            >>> st=Ar(T=150, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            150 4.7346 680.43 394.5 -173.01 -143.6 -1.7145 -1.5185 0.70603 0.82182 23.582 35.468 174.74 157.01
+            """
+            #Table 33, Pag 828
+            """
+            >>> st=Ar(T=83.814, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            83.814 1416.8 -276.61 -276.54 -2.544 0.54961 1.1156 862.52
+            >>> st=Ar(T=700, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            700 0.68619 63.355 209.09 0.44677 0.31223 0.5205 492.95
+            >>> st=Ar(T=150, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 16.605 -110.45 -80.334 -0.70404 0.32098 0.55987 224.97
+            >>> st=Ar(T=150, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 16.605 -110.45 -80.334 -0.70404 0.32098 0.55987 224.97
+            >>> st=Ar(T=170, P=1e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            170 29.723 -105.62 -71.972 -0.78987 0.32356 0.57801 238.88
+            >>> st=Ar(T=125, P=2e6)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            125 1122.34 -228.45 -226.66 -2.0773 0.45179 1.4048 544.65
+            >>> st=Ar(T=135, P=3e6)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            135 1020.52 -214.63 -211.69 -1.9694 0.44845 1.7159 445.83
+            >>> st=Ar(T=150, P=3e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 128.93 -124.64 -101.37 -1.1772 0.39203 1.0311 205.67
+            >>> st=Ar(T=140, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            140 968.76 -207.81 -203.68 -1.9185 0.45035 1.9268 403.8
+            >>> st=Ar(T=145, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            145 862.44 -196.53 -191.89 -1.8358 0.48302 3.1513 306.38
+            >>> st=Ar(T=150, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 209.45 -134.47 -115.38 -1.3116 0.46106 1.8982 193.39
+            >>> st=Ar(T=125, P=5e6)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            125 1150.27 -231.07 -226.72 -2.0989 0.45236 1.2969 586.37
+            >>> st=Ar(T=150, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 765.37 -186.33 -179.79 -1.7622 0.52622 5.1511 248.19
+            >>> st=Ar(T=150, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 964.88 -203.07 -192.7 -1.8855 0.43203 1.5594 445.1
+            """, 
+            
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 1000000.0, "rhomax": 50.65, 
         "Pmin": 68.891, "rhomin": 35.465, 
 
-        "nr1": [0.88722304990011e-1, 0.70514805167298, -0.16820115654090e1,
-                -0.14909014431486, -0.12024804600940, -0.12164978798599,
-                0.40035933626752, -0.27136062699129, 0.24211924579645,
-                0.57889583185570e-2, -0.41097335615341e-1, 0.24710761541614e-1],
+        "nr1": [0.887223049900e-1, 0.705148051673, -0.168201156541e1,
+                 -0.149090144315, -0.120248046009, -0.121649787986,
+                 0.400359336268, -0.271360626991, 0.242119245796,
+                 0.578895831856e-2, -0.410973356153e-1, 0.247107615416e-1],
         "d1": [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4],
         "t1": [0., 0.25, 1., 2.75, 4.0, 0., 0.25, 0.75, 2.75, 0.0, 2.0, 0.75],
 
-        "nr2": [-0.32181391750702, 0.33230017695794, 0.31019986287345e-1,
-                -0.30777086002437e-1, 0.93891137419581e-1, -0.90643210682031e-1,
-                -0.45778349276654e-3, -0.82659729024197e-4, 0.13013415603147e-3,
-                -0.11397840001996e-1, -0.24455169960535e-1, -0.64324067175955e-1,
-                0.58889471093674e-1, -0.64933551212965e-3, -0.13889862158435e-1,
-                0.40489839296910, -0.38612519594749, -0.18817142332233,
-                0.15977647596482, 0.53985518513856e-1, -0.28953417958014e-1,
-                -0.13025413381384e-1, 0.28948696775778e-2, -0.22647134304796,
-                0.17616456196368e-2],
+        "nr2": [-0.321813917507, 0.332300176958, 0.310199862873e-1,
+                -0.307770860024e-1, 0.938911374196e-1, -0.906432106820e-1,
+                -0.457783492767e-3, -0.826597290252e-4, 0.130134156031e-3,
+                -0.113978400020e-1, -0.244551699605e-1, -0.643240671760e-1,
+                0.588894710937e-1, -0.649335521130e-3, -0.138898621584e-1,
+                0.404898392969, -0.386125195947, -0.188171423322,
+                0.159776475965, 0.539855185139e-1, -0.289534179580e-1,
+                -0.130254133814e-1, 0.289486967758e-2, -0.226471343048e-2,
+                0.176164561964e-2],
         "c2": [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
                3, 3, 4, 4],
         "d2": [1, 1, 3, 4, 4, 5, 7, 10, 10, 2, 2, 4, 4, 8, 3, 5, 5, 6, 6, 7, 7,
@@ -71,14 +204,14 @@ class Ar(MEoS):
                13., 14., 11., 14., 8., 14., 6., 7., 24., 22.],
         "gamma2": [1]*25,
 
-        "nr3": [0.58552454482774e-2, -0.69251908570028, 0.15315490030516e1,
-                -0.27380447449783e-2],
+        "nr3": [0.585524544828e-2, -0.6925190827, 0.153154900305e1,
+                -0.273804474498e-2],
         "d3": [2, 1, 2, 3],
         "t3": [3, 1, 0, 0],
         "alfa3": [20]*4,
-        "beta3": [0, 375, 300, 225],
-        "gamma3": [1.11, 0, 1.17, 1.11],
-        "epsilon3": [1, 0, 1, 1],
+        "beta3": [250, 375, 300, 225],
+        "gamma3": [1.11, 1.14, 1.17, 1.11],
+        "epsilon3": [1, 1, 1, 1],
         "nr4": []}
 
     GERG = {
@@ -109,10 +242,135 @@ class Ar(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Stewart and Jacobsen (1989).",
-        "__doc__": """Stewart, R.B. and Jacobsen, R.T, "Thermodynamic Properties of Argon from the Triple Point to 1200 K at Pressures to 1000 MPa," J. Phys. Chem. Ref. Data, 18(2):639-798, 1989""",
+        "__doi__": {"autor": "Stewart, R.B. and Jacobsen, R.T.",
+                    "title": "Thermodynamic Properties of Argon from the Triple Point to 1200 K at Pressures to 1000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data, 18(2):639-798, 1989",
+                    "doi": "10.1063/1.555829"}, 
+        "__test__": 
+            #Table 14, Pag 379
+            """
+            >>> st=Ar(T=83.804, x=0.5)
+            >>> print "%0.6g %0.4g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            83.804 0.06895 35.475 0.10152 -4835.9 1701.4 53.29 131.3 21.34 42.61 853 208
+            >>> st=Ar(T=90, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            90 0.13362 34.538 0.18651 -4568.1 1777.5 56.35 126.86 20.59 43.49 811 186
+            >>> st=Ar(T=100, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            100 0.32401 32.918 0.42327 -4120.9 1876.3 61 120.98 19.55 45.48 742 180
+            >>> st=Ar(T=110, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            110 0.66575 31.133 0.83561 -3648.1 1931.3 65.41 116.13 18.75 48.45 668 181
+            >>> st=Ar(T=120, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
+                st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            120 1.2139 29.123 1.5090 -3138.4 1917.7 69.68 111.81 18.16 16.75 53.27 36.15 586 182
+            >>> st=Ar(T=130, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
+                st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            130 2.027 26.748 2.597 -2570 1798.1 73.99 107.59 17.88 18.05 62.79 48.3 490 182
+            >>> st=Ar(T=140, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
+                st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            140 3.1704 23.59 4.4877 -1883.5 1489.2 78.74 102.83 18.44 20.15 90.97 84.59 368 179
+            >>> st=Ar(T=150, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
+                st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            150 4.7363 16.973 9.7709 -707.3 487.7 86.28 94.25 23.74 26 762.2 1098.27 198 171
+            """
+            #Table 15, Pag 684
+            """
+            >>> st=Ar(T=84, P=8e4)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            84 35.447 -4829.6 -4827.3 53.39 21.31 42.64 852
+            >>> st=Ar(T=300, P=8e4)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300 0.03209 3736.4 6229.5 156.81 12.48 20.82 323
+            >>> st=Ar(T=1200, P=8e4)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            1200 0.00802 14965 24944 185.64 12.47 20.79 645
+            >>> st=Ar(T=84, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            84 35.448 -4829.8 -4827 53.39 21.31 42.63 852
+            >>> st=Ar(T=150, P=1.5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 0.12154 1845.3 3079.4 137.02 12.58 21.23 227
+            >>> st=Ar(T=116, P=1e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            116 29.967 -3380.9 -3347.5 67.97 18.37 50.98 621
+            >>> st=Ar(T=150, P=2e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 1.8988 1482.8 2536.2 112.99 14.26 30.07 214
+            >>> st=Ar(T=138, P=3e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            138 24.393 -2164.9 -2041.9 77.65 18.16 80.50 400
+            >>> st=Ar(T=150, P=3e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 3.2266 1217.3 2147.1 107.70 15.78 41.36 205
+            >>> st=Ar(T=144, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            144 22.202 -1757.7 -1577.5 80.64 18.97 110.7 326
+            >>> st=Ar(T=150, P=4e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 5.2481 822.44 1584.6 102.31 18.61 76.39 193
+            >>> st=Ar(T=150, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 18.975 -1229.6 -966.11 84.46 21.06 209.4 245
+            >>> st=Ar(T=100, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            100 33.825 -4265.2 -3969.5 59.62 19.92 42.91 802
+            >>> st=Ar(T=1200, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            1200 0.98207 14899 25082 145.44 12.53 20.95 660
+            >>> st=Ar(T=150, P=1e8)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 34.219 -3331.3 -408.95 67.05 19.55 36.23 956
+            >>> st=Ar(T=450, P=1e9)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            450 41.651 2711.6 26720 80.63 20.67 28.69 1815
+            """, 
+
         "R": 8.31434,
         "cp": CP1,
-
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732}, 
+        "Tc": 150.6633, "Pc": 4860, "rhoc": 13.29, "Tt": 83.804, 
+        
         "Tmin": 83.804, "Tmax": 1200., "Pmax": 1000000.0, "rhomax": 45.814, 
         "Pmin": 68.961, "rhomin": 35.475, 
 
@@ -350,67 +608,10 @@ class Ar(MEoS):
 
     _thermal = thermo0, thermo1, thermo2, thermo3
 
-    _test=[{"var1": "T", "var2": "P", "value1": range(90, 510, 10), "value2": [0.1],
-                "prop": ["T", "P", "rho", "h", "s", "cv", "cp", "cp0", "joule", "virialB", "virialC", "k", "mu"],
-                "unit": ["K", "MPa", "kgm3", "kJkg", "kJkgK", "kJkgK", "kJkgK", "kJkgK","KMPa", "m3kg", "m3kg", "mWmK", "muPas"],
-                "result": """90.000 0.10000 5.5077 45.161 3.2408 0.32570 0.56000 0.52033 30.886 -0.0055597 -0.0000034538 5.7988 7.3958
-100.00 0.10000 4.9152 50.689 3.2991 0.32058 0.54702 0.52033 25.048 -0.0045750 -0.00000029711 6.4504 8.2341
-110.00 0.10000 4.4436 56.119 3.3508 0.31778 0.53948 0.52033 20.914 -0.0038420 0.00000093185 7.0962 9.0615
-120.00 0.10000 4.0577 61.488 3.3975 0.31612 0.53472 0.52033 17.843 -0.0032762 0.0000013827 7.7348 9.8777
-130.00 0.10000 3.7352 66.818 3.4402 0.31506 0.53153 0.52033 15.476 -0.0028270 0.0000015065 8.3653 10.682
-140.00 0.10000 3.4613 72.122 3.4795 0.31436 0.52928 0.52033 13.599 -0.0024622 0.0000014920 8.9874 11.475
-150.00 0.10000 3.2255 77.406 3.5160 0.31388 0.52764 0.52033 12.076 -0.0021603 0.0000014219 9.6009 12.257
-160.00 0.10000 3.0202 82.676 3.5500 0.31353 0.52641 0.52033 10.817 -0.0019066 0.0000013335 10.206 13.027
-170.00 0.10000 2.8398 87.935 3.5819 0.31327 0.52546 0.52033 9.7590 -0.0016906 0.0000012433 10.802 13.786
-180.00 0.10000 2.6800 93.186 3.6119 0.31308 0.52472 0.52033 8.8588 -0.0015045 0.0000011584 11.389 14.534
-190.00 0.10000 2.5374 98.430 3.6402 0.31294 0.52412 0.52033 8.0838 -0.0013426 0.0000010816 11.969 15.271
-200.00 0.10000 2.4093 103.67 3.6671 0.31282 0.52364 0.52033 7.4099 -0.0012006 0.0000010135 12.539 15.998
-210.00 0.10000 2.2936 108.90 3.6926 0.31273 0.52324 0.52033 6.8187 -0.0010751 0.00000095365 13.102 16.714
-220.00 0.10000 2.1885 114.13 3.7170 0.31266 0.52291 0.52033 6.2962 -0.00096346 0.00000090135 13.657 17.420
-230.00 0.10000 2.0927 119.36 3.7402 0.31260 0.52264 0.52033 5.8311 -0.00086348 0.00000085574 14.205 18.117
-240.00 0.10000 2.0050 124.59 3.7625 0.31255 0.52240 0.52033 5.4147 -0.00077349 0.00000081597 14.744 18.804
-250.00 0.10000 1.9244 129.81 3.7838 0.31251 0.52220 0.52033 5.0397 -0.00069210 0.00000078124 15.277 19.481
-260.00 0.10000 1.8500 135.03 3.8043 0.31248 0.52202 0.52033 4.7004 -0.00061817 0.00000075088 15.802 20.150
-270.00 0.10000 1.7812 140.25 3.8240 0.31245 0.52187 0.52033 4.3920 -0.00055073 0.00000072426 16.321 20.810
-280.00 0.10000 1.7174 145.47 3.8429 0.31242 0.52174 0.52033 4.1104 -0.00048899 0.00000070086 16.833 21.462
-290.00 0.10000 1.6579 150.68 3.8612 0.31240 0.52162 0.52033 3.8525 -0.00043227 0.00000068023 17.338 22.105
-300.00 0.10000 1.6025 155.90 3.8789 0.31238 0.52152 0.52033 3.6153 -0.00038001 0.00000066198 17.837 22.741
-310.00 0.10000 1.5507 161.12 3.8960 0.31237 0.52143 0.52033 3.3965 -0.00033172 0.00000064580 18.330 23.368
-320.00 0.10000 1.5021 166.33 3.9126 0.31235 0.52135 0.52033 3.1942 -0.00028696 0.00000063141 18.817 23.989
-330.00 0.10000 1.4565 171.54 3.9286 0.31234 0.52128 0.52033 3.0064 -0.00024539 0.00000061855 19.298 24.602
-340.00 0.10000 1.4135 176.75 3.9442 0.31233 0.52121 0.52033 2.8318 -0.00020668 0.00000060704 19.773 25.207
-350.00 0.10000 1.3731 181.97 3.9593 0.31232 0.52115 0.52033 2.6690 -0.00017056 0.00000059669 20.243 25.806
-360.00 0.10000 1.3349 187.18 3.9740 0.31231 0.52110 0.52033 2.5169 -0.00013678 0.00000058736 20.708 26.398
-370.00 0.10000 1.2987 192.39 3.9882 0.31231 0.52105 0.52033 2.3744 -0.00010514 0.00000057893 21.167 26.984
-380.00 0.10000 1.2645 197.60 4.0021 0.31230 0.52101 0.52033 2.2408 -0.000075447 0.00000057127 21.622 27.563
-390.00 0.10000 1.2320 202.81 4.0157 0.31229 0.52097 0.52033 2.1152 -0.000047530 0.00000056429 22.071 28.136
-400.00 0.10000 1.2012 208.02 4.0289 0.31229 0.52093 0.52033 1.9970 -0.000021245 0.00000055792 22.516 28.704
-410.00 0.10000 1.1719 213.23 4.0417 0.31228 0.52090 0.52033 1.8855 0.0000035429 0.00000055209 22.956 29.265
-420.00 0.10000 1.1439 218.44 4.0543 0.31228 0.52087 0.52033 1.7801 0.000026951 0.00000054672 23.391 29.820
-430.00 0.10000 1.1173 223.65 4.0665 0.31227 0.52084 0.52033 1.6805 0.000049087 0.00000054176 23.823 30.371
-440.00 0.10000 1.0919 228.85 4.0785 0.31227 0.52081 0.52033 1.5861 0.000070046 0.00000053718 24.249 30.915
-450.00 0.10000 1.0676 234.06 4.0902 0.31227 0.52079 0.52033 1.4966 0.000089915 0.00000053292 24.672 31.455
-460.00 0.10000 1.0444 239.27 4.1016 0.31226 0.52077 0.52033 1.4116 0.00010877 0.00000052896 25.090 31.989
-470.00 0.10000 1.0221 244.48 4.1128 0.31226 0.52074 0.52033 1.3307 0.00012669 0.00000052525 25.505 32.518
-480.00 0.10000 1.0008 249.68 4.1238 0.31226 0.52072 0.52033 1.2538 0.00014373 0.00000052178 25.916 33.043
-490.00 0.10000 0.98038 254.89 4.1345 0.31226 0.52071 0.52033 1.1804 0.00015996 0.00000051852 26.323 33.562
-500.00 0.10000 0.96076 260.10 4.1451 0.31225 0.52069 0.52033 1.1105 0.00017542 0.00000051544 26.726 34.077
-"""}]
-
-
-
-#__test__=Ar.__test__()
-#{"1": """>>> argon=Ar(T=700, P=0.1)
-#                        >>> print "%0.1f %0.5f %0.3f %0.2f %0.5f %0.5f %0.5f %0.2f" % (argon.T, argon.rho, argon.u.kJkg, argon.h.kJkg, argon.s.kJkgK, argon.cv.kJkgK, argon.cp.kJkgK, argon.w)
-#                        700.0 0.68620 63.355 209.09 0.44677 0.31223 0.52050 492.95"""}
 
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-#    cyc5=Ar(T=300., P=0.1)
-#    print "%0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.h.kJkg, cyc5.s.kJkgK, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-#    print cyc5.k.mWmK, cyc5.mu.muPas
-
-    water=Ar(T=90., x=0.)
+    water=Ar(T=298.15, P=101325., ref="CUSTOM", refvalues=[298.15, 101325., 0., 0.])
     print water.T, water.P.MPa, water.rho, water.h, water.s, water.x
