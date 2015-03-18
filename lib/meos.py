@@ -231,7 +231,7 @@ class MEoS(_fase):
               "eq": 0,
               "visco": 0,
               "thermal": 0,
-              "ref": "OTO", 
+              "ref": None, 
               "refvalues": None, 
               "rho0": 0, 
               "T0": 0}
@@ -340,8 +340,20 @@ class MEoS(_fase):
         gamma0    -   Ideal gas Isoentropic exponent
         """
         self._constants = self.eq[self.kwargs["eq"]]
+        # Configure custom parameter from eq
+        if "M" in self._constants:
+            self.M = self._constants["M"]
+        if "Tc" in self._constants:
+            self.Tc = unidades.Temperature(self._constants["Tc"])
+        if "Pc" in self._constants:
+            self.Pc = unidades.Pressure(self._constants["Pc"], "kPa")
+        if "rhoc" in self._constants:
+            self.rhoc = unidades.Density(self._constants["rhoc"]*self.M)
+        if "Tt" in self._constants:
+            self.Tt = unidades.Temperature(self._constants["Tt"])
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
         self.Zc = self.Pc/self.rhoc/self.R/self.Tc
+        
         self.kwargs = MEoS.kwargs.copy()
         self.__call__(**kwargs)
 
@@ -467,8 +479,6 @@ class MEoS(_fase):
             self._viscosity = self._viscosity[visco]
         if self._thermal:
             self._thermal = self._thermal[thermal]
-
-        self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
 
         propiedades = None
 
@@ -1062,10 +1072,10 @@ class MEoS(_fase):
 
     def _Helmholtz(self, rho, T):
         """Implementación general de la ecuación de estado Setzmann-Wagner, ecuación de estado de multiparámetros basada en la energía libre de Helmholtz"""
-        rhoc = self._constants.get("rhoref", self.rhoc)
-        Tc = self._constants.get("Tref", self.Tc)
-        delta = rho/rhoc
-        tau = Tc/T
+#        rhoc = self._constants.get("rhoref", self.rhoc)
+#        Tc = self._constants.get("Tref", self.Tc)
+        delta = rho/self.rhoc
+        tau = self.Tc/T
         
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=self._phir(tau, delta)
@@ -1108,10 +1118,8 @@ class MEoS(_fase):
 
 
     def _ECS(self,  rho, T):
-        rhoc = self._constants.get("rhoref", self.rhoc)
-        Tc = self._constants.get("Tref", self.Tc)
-        delta = rho/rhoc
-        tau = Tc/T
+        delta = rho/self.rhoc
+        tau = self.Tc/T
 
         fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 
@@ -1133,10 +1141,8 @@ class MEoS(_fase):
             phi += n*rhor**m
         rho0 = rho*ref.rhoc/self.rhoc*phi
 
-        ref_rhoc = ref._constants.get("rhoref", ref.rhoc)
-        ref_Tc = ref._constants.get("Tref", ref.Tc)
-        deltaref = rho0/ref_rhoc
-        tauref = ref_Tc/T0
+        deltaref = rho0/ref.rhoc
+        tauref = ref.Tc/T0
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=ref._phir(tauref, deltaref)
 
         propiedades = {}
@@ -1397,8 +1403,8 @@ class MEoS(_fase):
 
         helmholtz = {
             "R": 8.31451,
-            "Tref": Tref,
-            "rhoref": rhoref,
+            "Tc": Tref,
+            "rhoc": rhoref,
             "cp": self.eq[0]["cp"],
 
             "d1": [1, 1, 2, 3, 8],
@@ -1434,6 +1440,16 @@ class MEoS(_fase):
                 ho in J/mol
                 so in J/mol·K
         """
+        if ref is None:
+            refeq = self._constants["ref"]
+            if isinstance(refeq, str):
+                ref = refeq
+            elif isinstance(refeq, dict):
+                ref = "CUSTOM"
+                refvalues = [refeq["Tref"], refeq["Pref"], refeq["ho"], refeq["so"]]
+            else:
+                ref = "OTO"
+                
         if ref == "OTO":
             self.Tref = 298.15
             self.Pref = 101325.
@@ -1464,10 +1480,8 @@ class MEoS(_fase):
 
     def _prop0(self, rho, T):
         """Ideal gas properties"""
-        rhoc = self._constants.get("rhoref", self.rhoc)
-        Tc = self._constants.get("Tref", self.Tc)
-        delta = rho/rhoc
-        tau = Tc/T
+        delta = rho/self.rhoc
+        tau = self.Tc/T
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
 
         propiedades = _fase()
@@ -1486,16 +1500,14 @@ class MEoS(_fase):
     def _PHIO(self, cp):
         """Convert cp dict in phi0 dict"""
         R = cp.get("R", self._constants["R"])/self.M*1000
-        rhoc = self._constants.get("rhoref", self.rhoc)
-        Tc = self._constants.get("Tref", self.Tc)
         rho0 = self.Pref/R/self.Tref
-        tau0 = Tc/self.Tref
-        delta0 = rho0/rhoc
+        tau0 = self.Tc/self.Tref
+        delta0 = rho0/self.rhoc
         co = cp["ao"]-1
         ti = [-x for x in cp["pow"]]
-        ci = [-n/(t*(t+1))*Tc**t for n, t in zip(cp["an"], cp["pow"])]
-        titao = [fi/Tc for fi in cp["exp"]]
-        hyp = [fi/Tc for fi in cp["hyp"]]
+        ci = [-n/(t*(t+1))*self.Tc**t for n, t in zip(cp["an"], cp["pow"])]
+        titao = [fi/self.Tc for fi in cp["exp"]]
+        hyp = [fi/self.Tc for fi in cp["hyp"]]
         cI = self.ho/R/self.Tc-cp["ao"]/tau0
         cII = log(tau0/delta0)-self.so/R-1+cp["ao"]-cp["ao"]*log(tau0)
         for c, t in zip(ci, ti):
@@ -1580,25 +1592,36 @@ class MEoS(_fase):
         fiodt = 0
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
-        fio = Fi0["ao_log"][0]*log(delta)+factor*fio
-            
+        if delta:
+            fio = Fi0["ao_log"][0]*log(delta)+factor*fio
+        else:
+            fio *= factor
         return fio, factor*fiot, factor*fiott, fiod, fiodd, fiodt
 
-    def _Cp0(self, cp, T=False):
+    def _Cp0(self, T=False):
+        Tc = self._constants.get("Tref", self.Tc)
         if not T:
             T = self.T
-        tau = self.Tc/T
-        cpo = cp["ao"]
-        for a, t in zip(cp["an"], cp["pow"]):
-            cpo += a*T**t
-        for m, tita in zip(cp["ao_exp"], cp["exp"]):
-            cpo += m*(tita/T)**2*exp(tita/T)/(1-exp(tita/T))**2
-        if cp["ao_hyp"]:
-            for i in [0, 2]:
-                cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
-            for i in [1, 3]:
-                cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
-        return unidades.SpecificHeat(cpo*self.R/1000)
+        cp = self._constants["cp"]
+            
+        if "ao_log" in cp:
+            tau = Tc/T
+            fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(cp, tau, 0)
+            cpo = (-tau**2*fiott+1)*self.R
+            return unidades.SpecificHeat(cpo)
+        else:
+            tau = Tc/T
+            cpo = cp["ao"]
+            for a, t in zip(cp["an"], cp["pow"]):
+                cpo += a*T**t
+            for m, tita in zip(cp["ao_exp"], cp["exp"]):
+                cpo += m*(tita/T)**2*exp(tita/T)/(1-exp(tita/T))**2
+            if cp["ao_hyp"]:
+                for i in [0, 2]:
+                    cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
+                for i in [1, 3]:
+                    cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
+            return unidades.SpecificHeat(cpo*self.R/1000)
 
     def _dCp(self, cp, T, Tref):
         """Calcula la integral de Cp0 entre T y Tref, necesario para calcular la entalpia usando estados de referencia"""
