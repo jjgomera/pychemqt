@@ -289,9 +289,22 @@ class N2(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nitrogen of Span and Wagner (2003).",
-        "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. II. Results for Nonpolar Fluids," Int. J. Thermophys., 24(1):41-109, 2003.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "doi": "10.1023/A:1022310214958"}, 
+        "__test__": """
+            >>> st=N2(T=700, rho=200, eq=4)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            1.0979 51.268 1.1719
+            >>> st2=N2(T=750, rho=100, eq=4)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            41.82 0.31052
+            """, # Table III, Pag 46
+
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5}, 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 53.15, 
         "Pmin": 12.566, "rhomin": 30.935, 
@@ -517,7 +530,10 @@ if __name__ == "__main__":
 #    print n2._Cp0(70)/n2.R
 #    print n2._prop0(0, 70).cp/n2.R
 
-    st=N2(T=125, P=3.5e6)
-    print st.status, st.msg
-#    print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
-#        st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+#    st=N2(T=125, P=3.5e6)
+#    print st.status, st.msg
+    
+    for eq in (0, 4, 5):
+        st=N2(T=300, P=1e6, eq=eq)
+        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

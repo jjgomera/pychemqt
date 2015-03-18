@@ -65,7 +65,19 @@ class Cyclohexane(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for cyclohexane of Span and Wagner (2003)",
-        "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. II. Results for Nonpolar Fluids," Int. J. Thermophys., 24(1):41-109, 2003.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "doi": "10.1023/A:1022310214958"}, 
+        "__test__": """
+            >>> st=Cyclohexane(T=700, rho=200, eq=1)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            3.0278 9.007 3.5927
+            >>> st2=Cyclohexane(T=750, rho=100, eq=1)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            206.82 0.31448
+            """, # Table III, Pag 46
+
         "R": 8.31451,
         "cp": CP1,
 

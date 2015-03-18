@@ -172,7 +172,19 @@ class nC4(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for butane of Span and Wagner (2003)",
-        "__doc__":  u"""Span, R., Wagner, W. Equations of state for technical applications. II. Results for nonpolar fluids. Int. J. Thermophys. 24 (2003), 41 – 109.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "doi": "10.1023/A:1022310214958"}, 
+        "__test__": """
+            >>> st=nC4(T=700, rho=200, eq=4)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            3.2176 18.416 3.5758
+            >>> st2=nC4(T=750, rho=100, eq=4)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            213.77 0.37465
+            """, # Table III, Pag 46
+
         "R": 8.31451,
         "cp": CP5,
 

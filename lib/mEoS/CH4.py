@@ -395,11 +395,24 @@ class CH4(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for methane of Span and Wagner (2003)",
-        "__doc__":  u"""Span, R., Wagner, W. Equations of state for technical applications. II. Results for nonpolar fluids. Int. J. Thermophys. 24 (2003), 41 – 109.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "doi": "10.1023/A:1022310214958"}, 
+        "__test__": """
+            >>> st=CH4(T=700, rho=200, eq=4)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            3.6278 108.108 3.9282
+            >>> st2=CH4(T=750, rho=100, eq=4)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            142.73 0.78167
+            """, # Table III, Pag 46
+            
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 40.072, 
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 40.072, 
         "Pmin": 11.661, "rhomin": 28.167, 
 
         "nr1": [0.89269676, -0.25438282e1, 0.64980978, 0.20793471e-1,
@@ -414,7 +427,33 @@ class CH4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4
+    helmholtz5 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for methane of Sun and Ely (2004)",
+        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+        "R": 8.31451,
+        "cp": Fi1,
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
+        "Pmin": 11.696, "rhomin": 28.142, 
+
+        "nr1": [1.25595787, 8.48007435e-1, -3.00939285, 5.99544996e-2,
+                2.57003062e-4, -2.85914246e-2],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-6.83210861e-2, -3.47523515e-2, 1.04637008e-1, -1.09884198e-2,
+                -1.25124331e-1, -5.53450960e-3, -1.51182884e-2, -2.04800000e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
 
     _surface = {"sigma": [0.0308936, 0.0249105, -0.0068276],
                 "exp": [1.25, 2.25, 3.25]}
@@ -562,3 +601,10 @@ class CH4(MEoS):
                "Z": 6.512707e-10}
 
     _thermal = thermo0, thermo1
+
+if __name__ == "__main__":
+
+    for eq in (0, 2, 4, 5):
+        st=CH4(T=300, P=1e6, eq=eq)
+        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

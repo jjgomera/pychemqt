@@ -397,9 +397,22 @@ class Ar(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for argon of Span and Wagner (2003).",
-        "__doc__": """Span, R. and Wagner, W. "Equations of State for Technical Applications. II. Results for Nonpolar Fluids," Int. J. Thermophys., 24(1):41-109, 2003.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "doi": "10.1023/A:1022310214958"}, 
+        "__test__": """
+            >>> st=Ar(T=700, rho=200, eq=3)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            0.5203 31.922 0.5630
+            >>> st2=Ar(T=750, rho=100, eq=3)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            25.97 0.18479
+            """, # Table III, Pag 46
+
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 50.65, 
         "Pmin": 69.026, "rhomin": 35.498, 
@@ -613,5 +626,7 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    water=Ar(T=298.15, P=101325., ref="CUSTOM", refvalues=[298.15, 101325., 0., 0.])
-    print water.T, water.P.MPa, water.rho, water.h, water.s, water.x
+    for eq in (0, 2, 3, 4):
+        st=Ar(T=300, P=1e6, eq=eq)
+        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
