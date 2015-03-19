@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Xe(MEoS):
-    """Multiparameter equation of state for xenon
-#
-#    >>> xenon=Xe(T=300, P=.1)
-#    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (xenon.T, xenon.rho, xenon.u.kJkg, xenon.h.kJkg, xenon.s.kJkgK, xenon.cv.kJkgK, xenon.cp.kJkgK, xenon.w)
-#    300.0 5.291 98.794 117.695 0.67823 0.0954 0.1600 177.58
-    """
+    """Multiparameter equation of state for xenon"""
     name = "xenon"
     CASNumber = "7440-63-3"
     formula = "Xe"
@@ -91,7 +86,7 @@ class Xe(MEoS):
               -0.1048773067133e-3, 0.9082979494829e-2, 0.6458784488434e-6,
               -0.1667673822070e-4, 0.1556036272902e-2]}
 
-    eq = helmholtz1, #MBWR
+    eq = helmholtz1, MBWR
 
     _surface = {"sigma": [0.0491907, 0.0132643, -0.0104283],
                 "exp": [1.25, 2.25, 3.25]}

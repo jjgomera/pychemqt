@@ -1573,6 +1573,11 @@ class MEoS(_fase):
             fio += n*log(1-exp(-g*tau))
             fiot += n*g*((1-exp(-g*tau))**-1-1)
             fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
+        if "ao_exp2" in Fi0:
+            for n, g, sum in zip(Fi0["ao_exp2"], Fi0["titao2"], Fi0["sum2"]):
+                fio += n*log(sum+exp(g*tau))
+                fiot += n*g/(sum*exp(-g*tau)+1)
+                fiott += sum*n*g**2*exp(-g*tau)/(sum*exp(-g*tau)+1)**2
 
         if "ao_hyp" in Fi0 and Fi0["ao_hyp"]:
             for i in [0, 2]:

@@ -8,17 +8,17 @@ from lib import unidades
 
 class Air(MEoS):
     """Multiparameter equqtion of state for Air as pseudocomponent
-
-    >>> aire=Air(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w)
-    300.0 1.1613 -0.200 -0.001 0.71811 1.0064 347.35
+#
+#    >>> aire=Air(T=300, P=0.1)
+#    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w)
+#    300.0 1.1613 -0.200 -0.001 0.71811 1.0064 347.35
     """
     name = "air"
     CASNumber = "1"
     formula = "N2+Ar+O2"
     synonym = "R-729"
     rhoc = unidades.Density(342.60456)
-    Tc = unidades.Temperature(132.5306)
+    Tc = unidades.Temperature(132.6306)
     Pc = unidades.Pressure(3786.0, "kPa")
     M = 28.96546  # g/mol
     Tt = unidades.Temperature(59.75)
@@ -27,12 +27,23 @@ class Air(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 475
 
-    CP1 = {"ao": 0.34908880e1,
-           "an": [0.23955256e-5, 0.71721112e-8, -0.31154131e-12, 0.22380669],
-           "pow": [1, 2, 3, -1.5],
-           "ao_exp": [0.79130951, 0.21223677],
-           "exp": [3364.011, 2242.45],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, 2.490888032],
+           "pow": [-3, -2, -1, 0, 1, 1.5],
+           "ao_pow": [0.6057194e-7, -0.210274769e-4, -0.158860716e-3, 
+                      -13.841928076, 17.275266575, -0.19536342e-3],
+           "ao_exp": [0.791309509, 0.212236768],
+           "titao": [25.36365, 16.90741], 
+           "ao_exp2": [-0.197938904], 
+           "titao2": [87.31279], 
+           "sum2": [2./3]
+           }
+
+#    CP1 = {"ao": 0.34908880e1,
+#           "an": [0.23955256e-5, 0.71721112e-8, -0.31154131e-12, 0.22380669],
+#           "pow": [1, 2, 3, -1.5],
+#           "ao_exp": [0.79130951, 0.21223677],
+#           "exp": [3364.011, 2242.45],
+#           "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 0.34941563e1,
            "an": [-0.65392681e3, 0.29618973e2, 0.22380669, -0.47007760, -0.68351536e-5, 0.15136141e-7, -0.20027652e-11],
@@ -46,9 +57,62 @@ class Air(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for air of Lemmon et al. (2000)",
-        "__doc__":  u"""Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and Friend, D.G., "Thermodynamic Properties of Air and Mixtures of Nitrogen, Argon, and Oxygen from 60 to 2000 K at Pressures to 2000 MPa," J. Phys. Chem. Ref. Data, 29(3):331-385, 2000.""",
-        "R": 8.31451, "Tref": 132.6312, "rhoref": 10.4477*M,
-        "cp": CP1,
+        "__doi__": {"autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and Friend, D.G.",
+                    "title": "Thermodynamic Properties of Air and Mixtures of Nitrogen, Argon, and Oxygen From 60 to 2000 K at Pressures to 2000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
+                    "doi":  "10.1063/1.1285884"}, 
+        "__test__": 
+            # TODO: Add equilibrium multicomponent support Table A1, Pag 363
+            # Table A2, Pag 366
+            """
+            >>> st=Air(T=100, P=101325)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            100 0.12449 2028.2 2784.1 166.61 21.09 30.13 198.2
+            >>> st=Air(T=2000, P=101325)
+            >>> print "%0.0f %0.4g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            2000 0.006092 48610 65242 259.62 27.90 36.21 863.5
+            >>> st=Air(T=500, P=2e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            500 0.048077 10418 14578 208.2 21.51 29.84 446.6
+            >>> st=Air(T=300, P=5e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 0.20075 6179.8 8670.5 185.5 20.82 29.33 347.8
+            >>> st=Air(T=130, P=1e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            130 1.0295 2461.1 3432.5 153.79 22.058 34.69 216.8
+            >>> st=Air(T=70, P=5e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            70 31.895 -4198 -4041.2 78.907 32.17 54.57 974.6
+            >>> st=Air(T=2000, P=1e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            2000 0.59094 48600 65522 221.44 27.93 36.25 878.6
+            >>> st=Air(T=130, P=5e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            130 27.946 -1831.3 -42.096 104.84 27.68 48.19 878.8
+            >>> st=Air(T=100, P=1e8)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            100 33.161 -3403.9 -388.34 87.644 31.98 48.22 1192.4
+            >>> st=Air(T=1000, P=1e9)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            1000 30.791 21944 54421 156.83 29.07 36.77 1966.3
+
+            """,
+            
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.}, 
+
+        "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 53.73, 
         "Pmin": 5.2646, "rhomin": 33.067, 
