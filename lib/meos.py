@@ -339,6 +339,13 @@ class MEoS(_fase):
         cp0_cv    -   Ideal gas Heat capacity ratio
         gamma0    -   Ideal gas Isoentropic exponent
         """
+
+        self.kwargs = MEoS.kwargs.copy()
+        self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        self.cleanOldValues(**kwargs)
+        
         self._constants = self.eq[self.kwargs["eq"]]
         # Configure custom parameter from eq
         if "M" in self._constants:
@@ -353,12 +360,6 @@ class MEoS(_fase):
             self.Tt = unidades.Temperature(self._constants["Tt"])
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
         self.Zc = self.Pc/self.rhoc/self.R/self.Tc
-        
-        self.kwargs = MEoS.kwargs.copy()
-        self.__call__(**kwargs)
-
-    def __call__(self, **kwargs):
-        self.cleanOldValues(**kwargs)
 
         if self.calculable:
             self.calculo()
@@ -1699,39 +1700,39 @@ class MEoS(_fase):
             e3 = self._constants.get("epsilon3", [])
             b3 = self._constants.get("beta3", [])
             g3 = self._constants.get("gamma3", [])
-            for i in range(len(nr3)):
-                exp1 = self._constants.get("exp1", [2]*len(nr3))
-                exp2 = self._constants.get("exp2", [2]*len(nr3))
-                fir += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i])
-                fird += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    (d3[i]/delta-2*a3[i]*(delta-e3[i]))
-                firdd += nr3[i]*tau**t3[i]*exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i] *
-                    (tau-g3[i])**exp2[i])*(-2*a3[i]*delta**d3[i]+4*a3[i]**2 *
-                    delta**d3[i]*(delta-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta**2 *
-                    (delta-e3[i])+d3[i]*2*delta)
-                firt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    (t3[i]/tau-2*b3[i]*(tau-g3[i]))
-                firtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i])
-                firdt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    (t3[i]/tau-2*b3[i]*(tau-g3[i]))*(d3[i]/delta-2*a3[i]*(delta-e3[i]))
-                firdtt += nr3[i]*delta**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    ((t3[i]/tau-2*b3[i]*(tau-g3[i]))**exp2[i]-t3[i]/tau**2-2*b3[i]) * \
-                    (d3[i]/delta-2*a3[i]*(delta-e3[i]))
-                B += nr3[i]*delta_0**d3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    (d3[i]/delta_0-2*a3[i]*(delta_0-e3[i]))
-                C += nr3[i]*tau**t3[i] * \
-                    exp(-a3[i]*(delta_0-e3[i])**exp1[i]-b3[i]*(tau-g3[i])**exp2[i]) * \
-                    (-2*a3[i]*delta_0**d3[i]+4*a3[i]**2*delta_0**d3[i] *
-                    (delta_0-e3[i])**exp1[i]-4*d3[i]*a3[i]*delta_0**2*(delta_0-e3[i]) +
-                    d3[i]*2*delta_0)
+            exp1 = self._constants.get("exp1", [2]*len(nr3))
+            exp2 = self._constants.get("exp2", [2]*len(nr3))            
+            for n, d, t, a, e, b, g, ex1, ex2 in zip(nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
+                fir += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
+                fird += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
+                    (d/delta-2*a*(delta-e))
+                firdd += n*tau**t*exp(-a*(delta-e)**ex1-b *
+                    (tau-g)**ex2)*(-2*a*delta**d+4*a**2 *
+                    delta**d*(delta-e)**ex1-4*d*a*delta**(d-1) *
+                    (delta-e)+d*(d-1)*delta**(d-2))
+                firt += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
+                    (t/tau-2*b*(tau-g))
+                firtt += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
+                    ((t/tau-2*b*(tau-g))**ex2-t/tau**2-2*b)
+                firdt += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
+                    (t/tau-2*b*(tau-g))*(d/delta-2*a*(delta-e))
+                firdtt += n*delta**d*tau**t * \
+                    exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
+                    ((t/tau-2*b*(tau-g))**ex2-t/tau**2-2*b) * \
+                    (d/delta-2*a*(delta-e))
+                B += n*delta_0**d*tau**t * \
+                    exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2) * \
+                    (d/delta_0-2*a*(delta_0-e))
+                C += n*tau**t * \
+                    exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2) * \
+                    (-2*a*delta_0**d+4*a**2*delta_0**d *
+                    (delta_0-e)**ex1-4*d*a*delta_0**2*(delta_0-e) +
+                    d*2*delta_0)
 
             # Non analitic terms
             nr4 = self._constants.get("nr4", [])

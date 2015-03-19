@@ -249,49 +249,49 @@ class Ar(MEoS):
         "__test__": 
             #Table 14, Pag 379
             """
-            >>> st=Ar(T=83.804, x=0.5)
+            >>> st=Ar(T=83.804, x=0.5, eq=3)
             >>> print "%0.6g %0.4g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
                 st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
             83.804 0.06895 35.475 0.10152 -4835.9 1701.4 53.29 131.3 21.34 42.61 853 208
-            >>> st=Ar(T=90, x=0.5)
+            >>> st=Ar(T=90, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
                 st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
             90 0.13362 34.538 0.18651 -4568.1 1777.5 56.35 126.86 20.59 43.49 811 186
-            >>> st=Ar(T=100, x=0.5)
+            >>> st=Ar(T=100, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
                 st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
             100 0.32401 32.918 0.42327 -4120.9 1876.3 61 120.98 19.55 45.48 742 180
-            >>> st=Ar(T=110, x=0.5)
+            >>> st=Ar(T=110, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
                 st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
             110 0.66575 31.133 0.83561 -3648.1 1931.3 65.41 116.13 18.75 48.45 668 181
-            >>> st=Ar(T=120, x=0.5)
+            >>> st=Ar(T=120, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
                 st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
             120 1.2139 29.123 1.5090 -3138.4 1917.7 69.68 111.81 18.16 16.75 53.27 36.15 586 182
-            >>> st=Ar(T=130, x=0.5)
+            >>> st=Ar(T=130, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
                 st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
             130 2.027 26.748 2.597 -2570 1798.1 73.99 107.59 17.88 18.05 62.79 48.3 490 182
-            >>> st=Ar(T=140, x=0.5)
+            >>> st=Ar(T=140, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
                 st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
             140 3.1704 23.59 4.4877 -1883.5 1489.2 78.74 102.83 18.44 20.15 90.97 84.59 368 179
-            >>> st=Ar(T=150, x=0.5)
+            >>> st=Ar(T=150, x=0.5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
                 st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
@@ -300,67 +300,67 @@ class Ar(MEoS):
             """
             #Table 15, Pag 684
             """
-            >>> st=Ar(T=84, P=8e4)
+            >>> st=Ar(T=84, P=8e4, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             84 35.447 -4829.6 -4827.3 53.39 21.31 42.64 852
-            >>> st=Ar(T=300, P=8e4)
+            >>> st=Ar(T=300, P=8e4, eq=3)
             >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             300 0.03209 3736.4 6229.5 156.81 12.48 20.82 323
-            >>> st=Ar(T=1200, P=8e4)
+            >>> st=Ar(T=1200, P=8e4, eq=3)
             >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             1200 0.00802 14965 24944 185.64 12.47 20.79 645
-            >>> st=Ar(T=84, P=1e5)
+            >>> st=Ar(T=84, P=1e5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             84 35.448 -4829.8 -4827 53.39 21.31 42.63 852
-            >>> st=Ar(T=150, P=1.5e5)
+            >>> st=Ar(T=150, P=1.5e5, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 0.12154 1845.3 3079.4 137.02 12.58 21.23 227
-            >>> st=Ar(T=116, P=1e6)
+            >>> st=Ar(T=116, P=1e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             116 29.967 -3380.9 -3347.5 67.97 18.37 50.98 621
-            >>> st=Ar(T=150, P=2e6)
+            >>> st=Ar(T=150, P=2e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 1.8988 1482.8 2536.2 112.99 14.26 30.07 214
-            >>> st=Ar(T=138, P=3e6)
+            >>> st=Ar(T=138, P=3e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             138 24.393 -2164.9 -2041.9 77.65 18.16 80.50 400
-            >>> st=Ar(T=150, P=3e6)
+            >>> st=Ar(T=150, P=3e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 3.2266 1217.3 2147.1 107.70 15.78 41.36 205
-            >>> st=Ar(T=144, P=4e6)
+            >>> st=Ar(T=144, P=4e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             144 22.202 -1757.7 -1577.5 80.64 18.97 110.7 326
-            >>> st=Ar(T=150, P=4e6)
+            >>> st=Ar(T=150, P=4e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 5.2481 822.44 1584.6 102.31 18.61 76.39 193
-            >>> st=Ar(T=150, P=5e6)
+            >>> st=Ar(T=150, P=5e6, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 18.975 -1229.6 -966.11 84.46 21.06 209.4 245
-            >>> st=Ar(T=100, P=1e7)
+            >>> st=Ar(T=100, P=1e7, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             100 33.825 -4265.2 -3969.5 59.62 19.92 42.91 802
-            >>> st=Ar(T=1200, P=1e7)
+            >>> st=Ar(T=1200, P=1e7, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             1200 0.98207 14899 25082 145.44 12.53 20.95 660
-            >>> st=Ar(T=150, P=1e8)
+            >>> st=Ar(T=150, P=1e8, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             150 34.219 -3331.3 -408.95 67.05 19.55 36.23 956
-            >>> st=Ar(T=450, P=1e9)
+            >>> st=Ar(T=450, P=1e9, eq=3)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             450 41.651 2711.6 26720 80.63 20.67 28.69 1815
@@ -402,10 +402,10 @@ class Ar(MEoS):
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
         "__test__": """
-            >>> st=Ar(T=700, rho=200, eq=3)
+            >>> st=Ar(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
             0.5203 31.922 0.5630
-            >>> st2=Ar(T=750, rho=100, eq=3)
+            >>> st2=Ar(T=750, rho=100, eq=4)
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             25.97 0.18479
             """, # Table III, Pag 46
@@ -414,7 +414,7 @@ class Ar(MEoS):
         "cp": Fi1,
         "ref": "OTO", 
 
-        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 50.65, 
+        "Tmin": Tt, "Tmax": 750., "Pmax": 100000.0, "rhomax": 50.65, 
         "Pmin": 69.026, "rhomin": 35.498, 
 
         "nr1": [0.85095715, -0.24003223e1, 0.54127841, 0.16919771e-1,
@@ -630,3 +630,8 @@ if __name__ == "__main__":
         st=Ar(T=300, P=1e6, eq=eq)
         print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
             st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+
+#            >>> st=Ar(T=84, P=8e4, eq=3)
+#            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+#                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+#            84 35.447 -4829.6 -4827.3 53.39 21.31 42.64 852

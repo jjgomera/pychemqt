@@ -116,19 +116,19 @@ class nC4(MEoS):
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             410 2.9578 377.13 95.371 -42.76 116.18 -0.452 -0.064 2.247 2.306 4.677 4.840 246.50 141.36
             >>> st=nC4(T=420, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             420 3.4897 327.77 135.00 3.37 108.06 -0.344 -0.095 2.357 2.444 8.852 10.719 165.59 124.46
             >>> st=nC4(T=424, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            424 3.7265 284.03 173.21 32.66 91.15 -0.277 -0.139 2.454 2.549 34.430 44.895 127.24 115.73
+            424 3.7262 284.03 173.21 32.66 91.15 -0.277 -0.139 2.454 2.549 34.430 44.895 127.24 115.73
             >>> st=nC4(T=425, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f %0.2f %0.2f" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
