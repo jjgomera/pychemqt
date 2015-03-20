@@ -487,8 +487,32 @@ class Ar(MEoS):
         "exp": [0.72, 1.25, 0.32, 4.34]}
 
     visco0 = {"eq": 1, "omega": 1,
-              "__doc__": """Lemmon, E.W. and Jacobsen, R.T, "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air," Int. J. Thermophys., 25:21-69, 2004.""",
               "__name__": "Lemmon (2004)",
+               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+               "__test__": """
+                    >>> st=Ar(T=100, rhom=0)
+                    >>> print "%0.5f" % st.mu.muPas
+                    8.18940
+                    >>> st=Ar(T=300, rhom=0)
+                    >>> print "%0.4f" % st.mu.muPas
+                    22.7241
+                    >>> st=Ar(T=100, rhom=33)
+                    >>> print "%0.3f" % st.mu.muPas
+                    184.232
+                    >>> st=Ar(T=200, rhom=10)
+                    >>> print "%0.4f" % st.mu.muPas
+                    25.5662
+                    >>> st=Ar(T=300, rhom=5)
+                    >>> print "%0.4f" % st.mu.muPas
+                    26.3706
+                    >>> st=Ar(T=150.69, rhom=13.4)
+                    >>> print "%0.4f" % st.mu.muPas
+                    27.6101
+                    """, # Table V, Pag 28
+
               "ek": 143.2, "sigma": 0.335,
               "n_poly": [12.19, 13.99, 0.005027, -18.93, -6.698, -3.827],
               "t_poly": [0.42, 0.0, 0.95, 0.5, 0.9, 0.8],
@@ -546,15 +570,38 @@ class Ar(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
-               "__doc__": """Lemmon, E.W. and Jacobsen, R.T, "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air," Int. J. Thermophys., 25:21-69, 2004.""",
+               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+               "__test__": """
+                    >>> st=Ar(T=100, rhom=0)
+                    >>> print "%0.5f" % st.k.mWmK
+                    6.36587
+                    >>> st=Ar(T=300, rhom=0)
+                    >>> print "%0.4f" % st.k.mWmK
+                    17.8042
+                    >>> st=Ar(T=100, rhom=33)
+                    >>> print "%0.3f" % st.k.mWmK
+                    111.266
+                    >>> st=Ar(T=200, rhom=10)
+                    >>> print "%0.4f" % st.k.mWmK
+                    26.1377
+                    >>> st=Ar(T=300, rhom=5)
+                    >>> print "%0.4f" % st.k.mWmK
+                    23.2302
+                    >>> st=Ar(T=150.69, rhom=13.4)
+                    >>> print "%0.4f" % st.k.mWmK
+                    856.793
+                    """, # Table V, Pag 28
 
                "Tref": 150.687, "kref": 1e-3,
                "no": [0.8158, -0.432],
-               "co": [-97, 0.77],
+               "co": [-97, -0.77],
 
                "Trefb": 150.687, "rhorefb": 13.40742965, "krefb": 1e-3,
                "nb": [13.73, 10.07, 0.7375, -33.96, 20.47, -2.274, -3.973],
-               "tb": [0.0, 0.0, 0.0, -0.8, -1.2, -0.8, -0.5],
+               "tb": [0.0, 0.0, 0.0, 0.8, 1.2, 0.8, 0.5],
                "db": [1, 2, 4, 5, 6, 9, 1],
                "cb": [0, 0, 0, 2, 2, 2, 4],
 
@@ -600,26 +647,7 @@ class Ar(MEoS):
                "gamma": 1.02,
                "expo": 0.46807, "alfa": 39.8, "beta": 5.45, "Xio": 6.0795e-1}
 
-    thermo3 = {"eq": 1,
-               "__name__": "Lemmon (2000)",
-               "__doc__": """Lemmon, E.W. and Jacobsen, R.T, preliminary equation, 2000.""",
-
-               "Tref": 150.687, "kref": 1e-3,
-               "no": [1.113, 0],
-               "co": [0, -96],
-
-               "Trefb": 150.687, "rhorefb": 13.40742965, "krefb": 1e-3,
-               "nb": [8.08988587735, 0.282141564450e2, -0.177669835303e1,
-                      -0.668846314430e2, 0.226891675451e2, 0.940133443986e1],
-               "tb": [-.1308, -4.4438, -.2799, -1.5418, -8.8969],
-               "db": [1, 2, 1, 3, 4, 2],
-               "cb": [0, 0, 1, 1, 2, 3],
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.31088466e-9, "gam0": 0.55e-1, "qd": 0.51260334e-9, "Tcref": 301.374}
-
-    _thermal = thermo0, thermo1, thermo2, thermo3
+    _thermal = thermo0, thermo1, thermo2
 
 
 if __name__ == "__main__":

@@ -234,7 +234,8 @@ class MEoS(_fase):
               "ref": None, 
               "refvalues": None, 
               "rho0": 0, 
-              "T0": 0}
+              "T0": 0, 
+              "recursion": True}
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown Variables")
 
@@ -376,7 +377,7 @@ class MEoS(_fase):
             
     def cleanOldValues(self, **kwargs):
         """Convert alternative rho input to correct rho value"""
-        if kwargs.get("rhom", 0):
+        if "rhom" in kwargs:
             kwargs["rho"] = kwargs["rhom"]*self.M
             del kwargs["rhom"]
         elif kwargs.get("v", 0):
@@ -1024,21 +1025,22 @@ class MEoS(_fase):
             fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
             fase.IntP = unidades.Pressure(self.T*self.derivative("P", "T", "rho", fase)-self.P)
             fase.hInput = unidades.Enthalpy(fase.v*self.derivative("h", "v", "P", fase))
-        fase.mu = self._Viscosity(fase.rho, self.T, fase)
-        fase.k = self._ThCond(fase.rho, self.T, fase)
-        if fase.mu:
-            fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
-        else:
-            fase.nu = None
-        if fase.k:
-            fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
-        else:
-            fase.alfa = None
-        if fase.mu and fase.k:
-            fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
-        else:
-            fase.Prandt = None
-        fase.epsilon = unidades.Dimensionless(self._Dielectric(fase.rho, self.T))
+        if self.kwargs["recursion"]:
+            fase.mu = self._Viscosity(fase.rho, self.T, fase)
+            fase.k = self._ThCond(fase.rho, self.T, fase)
+            if fase.mu and fase.rho:
+                fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
+            else:
+                fase.nu = None
+            if fase.k and fase.rho:
+                fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+            else:
+                fase.alfa = None
+            if fase.mu and fase.k:
+                fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
+            else:
+                fase.Prandt = None
+            fase.epsilon = unidades.Dimensionless(self._Dielectric(fase.rho, self.T))
 
     def _saturation(self, T=None):
         """Saturation calculation for two phase search"""
@@ -2214,92 +2216,95 @@ class MEoS(_fase):
             elif self._viscosity["eq"] == 1:
                 muo = self._Visco0()
 
-                # second virial
-                Tc = self._viscosity.get("Tref_virial", self.Tc)
-                etar = self._viscosity.get("etaref_virial", 1.)
-                tau = T/Tc
-                mud = 0
-                if self._viscosity.has_key("n_virial"):
-                    muB = 0
-                    for n, t in zip(self._viscosity["n_virial"],
-                                    self._viscosity["t_virial"]):
-                        muB += n*tau**t
-                    mud = etar*muB*rho/self.M*muo
+                if rho > 0:
+                    # second virial
+                    Tc = self._viscosity.get("Tref_virial", self.Tc)
+                    etar = self._viscosity.get("etaref_virial", 1.)
+                    tau = T/Tc
+                    mud = 0
+                    if self._viscosity.has_key("n_virial"):
+                        muB = 0
+                        for n, t in zip(self._viscosity["n_virial"],
+                                        self._viscosity["t_virial"]):
+                            muB += n*tau**t
+                        mud = etar*muB*rho/self.M*muo
 
-                Tc = self._viscosity.get("Tref_res", self.Tc)
-                rhoc = self._viscosity.get("rhoref_res", self.rhoc)
-                mured = self._viscosity.get("etaref_res", 1.)
-                tau = T/Tc
-                delta = rho/rhoc
-                if abs(delta-1) <= 0.001:
-                    expdel = rho/self.rhoc
-                else:
-                    expdel = delta
+                    Tc = self._viscosity.get("Tref_res", self.Tc)
+                    rhoc = self._viscosity.get("rhoref_res", self.rhoc)
+                    mured = self._viscosity.get("etaref_res", 1.)
+                    tau = Tc/T
+                    delta = rho/rhoc
+                    if abs(delta-1) <= 0.001:
+                        expdel = rho/self.rhoc
+                    else:
+                        expdel = delta
 
-                mur = 0
-                # close-packed density;
-                if "n_packed" in self._viscosity:
-                    del0 = 0
-                    for n, t in zip(self._viscosity["n_packed"],
-                                    self._viscosity["t_packed"]):
-                        del0 += n*tau**t
-                else:
-                    del0 = 1.
+                    mur = 0
+                    # close-packed density;
+                    if "n_packed" in self._viscosity:
+                        del0 = 0
+                        for n, t in zip(self._viscosity["n_packed"],
+                                        self._viscosity["t_packed"]):
+                            del0 += n*tau**t
+                    else:
+                        del0 = 1.
 
-                # polynomial term
-                if "n_poly" in self._viscosity:
-                    for n, t, d, c, g in zip(
-                        self._viscosity["n_poly"], self._viscosity["t_poly"],
-                        self._viscosity["d_poly"], self._viscosity["c_poly"],
-                        self._viscosity["g_poly"]):
-                        vis = n*tau**t*delta**d*del0**g
-                        if c:
-                            vis *= exp(-expdel**c)
-                        mur += vis
-                # numerator of rational poly; denominator of rat. poly;
-                num = 0
-                if "n_num" in self._viscosity:
-                    for n, t, d, c, g in zip(
-                        self._viscosity["n_num"], self._viscosity["t_num"],
-                        self._viscosity["d_num"], self._viscosity["c_num"],
-                        self._viscosity["g_num"]):
-                        num += n*tau**t*delta**d*del0**g
-                        if c:
-                            num *= exp(-expdel**c)
-                if "n_den" in self._viscosity:
-                    den = 0
-                    for n, t, d, c, g in zip(
-                        self._viscosity["n_den"], self._viscosity["t_den"],
-                        self._viscosity["d_den"], self._viscosity["c_den"],
-                        self._viscosity["g_den"]):
-                        den += n*tau**t*delta**d*del0**g
-                        if c:
-                            den *= exp(-expdel**c)
-                else:
-                    den = 1.
-                mur += num/den
-
-                # numerator of exponential; denominator of exponential
-                num = 0
-                if "n_numexp" in self._viscosity:
-                    for n, t, d, c, g in zip(
-                        self._viscosity["n_numexp"], self._viscosity["t_numexp"],
-                        self._viscosity["d_numexp"], self._viscosity["c_numexp"],
-                        self._viscosity["g_numexp"]):
-                        num += n*tau**t*delta**d*del0**g
-                if "n_denexp" in self._viscosity:
-                    den = 0
-                    for n, t, d, c, g in zip(
-                        self._viscosity["n_denexp"], self._viscosity["t_denexp"],
-                        self._viscosity["d_denexp"], self._viscosity["c_denexp"],
-                        self._viscosity["g_denexp"]):
-                        den += n*tau**t*delta**d*del0**g
+                    # polynomial term
+                    if "n_poly" in self._viscosity:
+                        for n, t, d, c, g in zip(
+                            self._viscosity["n_poly"], self._viscosity["t_poly"],
+                            self._viscosity["d_poly"], self._viscosity["c_poly"],
+                            self._viscosity["g_poly"]):
+                            vis = n*tau**t*delta**d*del0**g
+                            if c:
+                                vis *= exp(-expdel**c)
+                            mur += vis
+                    # numerator of rational poly; denominator of rat. poly;
+                    num = 0
+                    if "n_num" in self._viscosity:
+                        for n, t, d, c, g in zip(
+                            self._viscosity["n_num"], self._viscosity["t_num"],
+                            self._viscosity["d_num"], self._viscosity["c_num"],
+                            self._viscosity["g_num"]):
+                            num += n*tau**t*delta**d*del0**g
+                            if c:
+                                num *= exp(-expdel**c)
+                    if "n_den" in self._viscosity:
+                        den = 0
+                        for n, t, d, c, g in zip(
+                            self._viscosity["n_den"], self._viscosity["t_den"],
+                            self._viscosity["d_den"], self._viscosity["c_den"],
+                            self._viscosity["g_den"]):
+                            den += n*tau**t*delta**d*del0**g
+                            if c:
+                                den *= exp(-expdel**c)
                     else:
                         den = 1.
-                if "n_numexp" in self._viscosity:
-                    mur += exp(num/den)
+                    mur += num/den
 
-                mur *= mured
+                    # numerator of exponential; denominator of exponential
+                    num = 0
+                    if "n_numexp" in self._viscosity:
+                        for n, t, d, c, g in zip(
+                            self._viscosity["n_numexp"], self._viscosity["t_numexp"],
+                            self._viscosity["d_numexp"], self._viscosity["c_numexp"],
+                            self._viscosity["g_numexp"]):
+                            num += n*tau**t*delta**d*del0**g
+                    if "n_denexp" in self._viscosity:
+                        den = 0
+                        for n, t, d, c, g in zip(
+                            self._viscosity["n_denexp"], self._viscosity["t_denexp"],
+                            self._viscosity["d_denexp"], self._viscosity["c_denexp"],
+                            self._viscosity["g_denexp"]):
+                            den += n*tau**t*delta**d*del0**g
+                        else:
+                            den = 1.
+                    if "n_numexp" in self._viscosity:
+                        mur += exp(num/den)
+
+                    mur *= mured
+                else:
+                    mud, mur = 0, 0
                 mu = muo+mud+mur
 
             elif self._viscosity["eq"] == 2:
@@ -2491,16 +2496,17 @@ class MEoS(_fase):
         elif self._thermal["critical"] == 3:
             qd = self._thermal["qd"]
             Tref = self._thermal["Tcref"]
-            x_T = self.Pc*rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T", fase)
-            x_Tr = self.Pc*rho*self.M/self.rhoc**2/self.derivative("P", "rho", "T", fase)*Tref/T
+#            ref = self.__class__(T=Tref, rho=rho, recursion=False)
+            x_T = self.Pc*rho/self.rhoc**2*self.derivative("rho", "P", "T", fase)
+            x_Tr = self.Pc*rho/self.rhoc**2*self.derivative("rho", "P", "T", fase)*Tref/T
             delchi = x_T-x_Tr
             if delchi <= 0:
                 tc = 0
             else:
                 Xi = self._thermal["Xio"]*(delchi/self._thermal["gam0"])**(self._thermal["gnu"]/self._thermal["gamma"])
-                omega = 2/pi*((fase.cp-fase.cv)/fase.cp*arctan(Xi*qd)+fase.cv/fase.cp*Xi*qd)
+                omega = 2/pi*((fase.cp-fase.cv)/fase.cp*arctan(Xi/qd)+fase.cv/fase.cp*Xi/qd)
                 omega0 = 2/pi*(1-exp(-1/(1./qd/Xi+Xi**2*qd**2/3*(self.rhoc/rho)**2)))
-                tc = rho/self.M*1e9*fase.cp*Boltzmann*self._thermal["R0"]*T/(6*pi*Xi*fase.mu.muPas)*(omega-omega0)
+                tc = rho/self.M*fase.cp*Boltzmann*self._thermal["R0"]*T/(6*pi*Xi*fase.mu)*(omega-omega0)
 
         elif self._thermal["critical"] == 4:
             rhom = rho/self.M
@@ -2554,7 +2560,7 @@ class MEoS(_fase):
                 # Dilute gas terms
                 kg = 0
                 if "no" in self._thermal:
-                    tau = T/self._thermal["Tref"]
+                    tau = self._thermal["Tref"]/T
                     for n, c in zip(self._thermal["no"], self._thermal["co"]):
                         if c == -99:
                             cpi = 1.+n*(self.cp0.kJkgK-2.5*self.R.kJkgK)
@@ -2583,33 +2589,35 @@ class MEoS(_fase):
 
                 # Backgraund terms
                 kb = 0
-                if "nb" in self._thermal:
-                    tau = T/self._thermal["Trefb"]
-                    delta = rho/self.M/self._thermal["rhorefb"]
-                    for n, t, d, c in zip(self._thermal["nb"], self._thermal["tb"], self._thermal["db"], self._thermal["cb"]):
-                        if c == -99:
-                            if tau < 1:
-                                th = (1.-tau)**(1./3.)
-                                kb /= exp(-1.880284*th**1.062 -
-                                          2.8526531*th**2.5-3.000648*th**4.5 -
-                                          5.251169*th**7.5-13.191869*th**12.5 -
-                                          37.553961*th**23.5)
-                        else:
-                            if c != 0:
-                                kb += n*tau**t*delta**d*exp(-delta**c)
+                kc = 0
+                if rho > 0:
+                    if "nb" in self._thermal:
+                        tau = self._thermal["Trefb"]/T
+                        delta = rho/self.M/self._thermal["rhorefb"]
+                        for n, t, d, c in zip(self._thermal["nb"], self._thermal["tb"], self._thermal["db"], self._thermal["cb"]):
+                            if c == -99:
+                                if tau < 1:
+                                    th = (1.-tau)**(1./3.)
+                                    kb /= exp(-1.880284*th**1.062 -
+                                              2.8526531*th**2.5-3.000648*th**4.5 -
+                                              5.251169*th**7.5-13.191869*th**12.5 -
+                                              37.553961*th**23.5)
                             else:
-                                kb += n*tau**t*delta**d
+                                if c != 0:
+                                    kb += n*tau**t*delta**d*exp(-delta**c)
+                                else:
+                                    kb += n*tau**t*delta**d
 
-                    if "nbden" in self._thermal:
-                        den = 0
-                        for n, t, d in zip(self._thermal["nbden"], self._thermal["tbden"], self._thermal["dbden"]):
-                            den += n*tau**t*delta**d
-                        kb /= den
+                        if "nbden" in self._thermal:
+                            den = 0
+                            for n, t, d in zip(self._thermal["nbden"], self._thermal["tbden"], self._thermal["dbden"]):
+                                den += n*tau**t*delta**d
+                            kb /= den
 
-                    kb *= self._thermal["krefb"]
+                        kb *= self._thermal["krefb"]
 
-                # Critical enhancement
-                kc = self._KCritical(rho, T, fase)
+                    # Critical enhancement
+                    kc = self._KCritical(rho, T, fase)
 
                 k = kg+kb+kc
 
