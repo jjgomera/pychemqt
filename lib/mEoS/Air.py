@@ -1,18 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from math import exp
 
 from lib.meos import MEoS
 from lib import unidades
 
 
 class Air(MEoS):
-    """Multiparameter equqtion of state for Air as pseudocomponent
-#
-#    >>> aire=Air(T=300, P=0.1)
-#    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w)
-#    300.0 1.1613 -0.200 -0.001 0.71811 1.0064 347.35
-    """
+    """Multiparameter equqtion of state for Air as pseudocomponent"""
     name = "air"
     CASNumber = "1"
     formula = "N2+Ar+O2"
@@ -38,13 +34,6 @@ class Air(MEoS):
            "sum2": [2./3]
            }
 
-#    CP1 = {"ao": 0.34908880e1,
-#           "an": [0.23955256e-5, 0.71721112e-8, -0.31154131e-12, 0.22380669],
-#           "pow": [1, 2, 3, -1.5],
-#           "ao_exp": [0.79130951, 0.21223677],
-#           "exp": [3364.011, 2242.45],
-#           "ao_hyp": [], "hyp": []}
-
     CP2 = {"ao": 0.34941563e1,
            "an": [-0.65392681e3, 0.29618973e2, 0.22380669, -0.47007760, -0.68351536e-5, 0.15136141e-7, -0.20027652e-11],
            # Coeff 0 and -1 cause overflow
@@ -62,7 +51,21 @@ class Air(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
                     "doi":  "10.1063/1.1285884"}, 
         "__test__": 
-            # TODO: Add equilibrium multicomponent support Table A1, Pag 363
+            # Table A1, Pag 363
+            """
+            >>> print "%0.6f %0.5f" % (Air._bubbleP(59.75).MPa, Air._dewP(59.75).MPa)
+            0.005265 0.00243
+            >>> print "%0.5f %0.5f" % (Air._bubbleP(70).MPa, Air._dewP(70).MPa)
+            0.03191 0.01943
+            >>> print "%0.5f %0.5f" % (Air._bubbleP(80).MPa, Air._dewP(80).MPa)
+            0.11462 0.08232
+            >>> print "%0.5f %0.5f" % (Air._bubbleP(100).MPa, Air._dewP(100).MPa)
+            0.66313 0.56742
+            >>> print "%0.5f %0.5f" % (Air._bubbleP(120).MPa, Air._dewP(120).MPa)
+            2.15573 2.00674
+            >>> print "%0.5f %0.5f" % (Air._bubbleP(130).MPa, Air._dewP(130).MPa)
+            3.42947 3.30835
+            """
             # Table A2, Pag 366
             """
             >>> st=Air(T=100, P=101325)
@@ -105,7 +108,6 @@ class Air(MEoS):
             >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
                 st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             1000 30.791 21944 54421 156.83 29.07 36.77 1966.3
-
             """,
             
         "R": 8.314472,
@@ -115,7 +117,14 @@ class Air(MEoS):
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 53.73, 
-        "Pmin": 5.2646, "rhomin": 33.067, 
+        "Pmin": 5.2646, "rhomin": 33.067,
+        
+        "Tj": 132.6312, "Pj": 3.78502, 
+        "dew": {"i": [1, 2, 5, 8], 
+                "n": [-0.1567266, -5.539635, 0.7567212, -3.514322]}, 
+        "bubble": {"i": [1, 2, 3, 4, 5, 6], 
+                   "n": [0.2260724, -7.080499, 5.700283, -12.44017, 17.81926,
+                         -10.81364]}, 
 
         "nr1": [0.118160747229, 0.713116392079, -0.161824192067e1,
                 0.714140178971e-1, -0.865421396646e-1, 0.134211176704,
@@ -135,12 +144,26 @@ class Air(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for air of Jacobsen et al. (1992)",
-        "__doc__":  u"""Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., Clarke, W.P., and Lemmon, E.W.,"A Thermodynamic Property Formulation for Air," Fluid Phase Equilibria, 79:113-124, 1992.""",
-        "R": 8.31451,  "Tref": 132.6312, "rhoref": 10.4477*M,
-        "cp": CP2,
+        "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., Clarke, W.P., and Lemmon, E.W.",
+                    "title": "A Thermodynamic Property Formulation for Air", 
+                    "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
+                    "doi":  "10.1016/0378-3812(92)85124-Q"}, 
+
+        "R": 8.31451,  
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.}, 
+        "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
         "Tmin": Tt, "Tmax": 870.0, "Pmax": 70000.0, "rhomax": 34.628, 
         "Pmin": 6.2545, "rhomin": 33.073, 
+
+        "Tj": 132.61738, "Pj": 3.78502, 
+        "dew": {"i": [1, 2, 10, 11, 13, 14], 
+                "n": [-0.1537763029, -5.544542064, 312.7182733, -895.9553274, 
+                      1834.176566, -1321.892808]}, 
+        "bubble": {"i": [1, 2, 4, 5, 6, 7, 12], 
+                   "n": [0.2095592444, -6.654905539, 22.13718815, -84.14553609, 
+                         135.9753732, -83.66895082, 17.97856602]}, 
 
         "nr1": [0.206604930965, 0.367099749382, -0.943192015369,
                 0.382519513142e-2, -0.865385542309e-1, 0.323019987452,
@@ -247,10 +270,36 @@ class Air(MEoS):
 
     _thermal = thermo0, thermo1
 
+    @classmethod
+    def _dewP(cls, T, eq=0):
+        """Using ancillary equation return the pressure of dew point"""
+        c = cls.eq[eq]["dew"]
+        Tj = cls.eq[eq]["Tj"]
+        Pj = cls.eq[eq]["Pj"]
+        Tita = 1-T/Tj
+        
+        suma = 0
+        for i, n in zip(c["i"], c["n"]):
+            suma += n*Tita**(i/2.)
+        P = Pj*exp(Tj/T*suma)
+        return unidades.Pressure(P, "MPa")
+    
+    @classmethod
+    def _bubbleP(cls, T, eq=0):
+        """Using ancillary equation return the pressure of bubble point"""
+        c = cls.eq[eq]["bubble"]
+        Tj = cls.eq[eq]["Tj"]
+        Pj = cls.eq[eq]["Pj"]
+        Tita = 1-T/Tj
+        
+        suma = 0
+        for i, n in zip(c["i"], c["n"]):
+            suma += n*Tita**(i/2.)
+        P = Pj*exp(Tj/T*suma)
+        return unidades.Pressure(P, "MPa")
 
 if __name__ == "__main__":
-    #import doctest
-    #doctest.testmod()
-
-    aire = Air(T=300., P=0.1)
-    print aire.rho
+    for eq in (0, 1):
+        st=Air(T=300, P=1e6, eq=eq)
+        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
