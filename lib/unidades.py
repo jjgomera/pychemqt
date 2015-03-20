@@ -100,10 +100,11 @@ class unidad(float):
     _magnitudes = []
     __units_set__ = []
     Config = getMainWindowConfig()
-    
+
     def __init__(self, data, unit="", magnitud=""):
         """Non proportional magnitudes (Temperature, Pressure)
         must rewrite this method"""
+        self.Config = getMainWindowConfig()
         if not magnitud:
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
@@ -112,14 +113,17 @@ class unidad(float):
             self._data = 0
             self.code = "n/a"
         else:
-            self._data = data
+            self._data = float(data)
             self.code = ""
 
         if unit == "conf":
             unit = self.__units__[self.Config.getint('Units', magnitud)]
+        elif not unit:
+            unit = self.__units__[0]
+
         try:
             conversion = self.__class__.rates[unit]
-        except:
+        except KeyError:
             raise ValueError(
                 QApplication.translate("pychemqt", "Wrong input code"))
 
@@ -128,24 +132,7 @@ class unidad(float):
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
     def __new__(cls, data, unit="", magnitud=""):
-        """Non proportional magnitudes (Temperature, Pressure)
-        must rewrite this method"""
-        cls.Config = getMainWindowConfig()
-
-        if data:
-            data = float(data)
-        else:
-            data = 0.
-
-        if not magnitud:
-            magnitud = cls.__name__
-
-        if not unit:
-            unit = cls.__units__[0]
-        elif unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
-
-        return float.__new__(cls, data * cls.rates[unit])
+        return float.__new__(cls, data)
 
     def config(self, magnitud=""):
         """Using config file return the value in the configurated unit"""
@@ -171,7 +158,7 @@ class unidad(float):
     @classmethod
     def magnitudes(cls):
         """Return the magnitudes list for unit,
-if a unit define several magnitudes, must be fill the _magnitudes variable"""
+        if define several magnitudes, it must fill the _magnitudes variable"""
         if cls._magnitudes:
             return cls._magnitudes
         else:
@@ -198,7 +185,7 @@ if a unit define several magnitudes, must be fill the _magnitudes variable"""
                 conf = self.func(self.magnitud)
                 txt = self.text(self.magnitud)
             else:
-                txt=self.__text__[self.__units__.index(conf)]
+                txt = self.__text__[self.__units__.index(conf)]
             num = self.format(conf, self.magnitud)
             return num+" "+txt
     str = property(get_str)
@@ -222,19 +209,9 @@ with support for class unidad operations: txt, config. func."""
             self._data = data
             self.code = ""
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, data, txt=""):
         """Discard superfluous parameters for this class"""
-        if args[0] is None:
-            val = 0
-            cls.code = "n/a"
-        else:
-            val = args[0]
-            cls.code = ""
-        if kwargs.get("txt", ""):
-            cls.txt=kwargs["txt"]
-        else:
-            cls.txt=""
-        return float.__new__(cls, val)
+        return float.__new__(cls, data)
 
     @classmethod
     def text(cls):
@@ -258,7 +235,7 @@ with support for class unidad operations: txt, config. func."""
     def str(self):
         num = self.format(self)
         if self.txt:
-            num+=" "+self.txt
+            num += " "+self.txt
         return num
 
 
@@ -284,6 +261,7 @@ class Temperature(unidad):
                      "english": "F"}
 
     def __init__(self, data, unit="K", magnitud=""):
+        self.Config = getMainWindowConfig()
 
         if not magnitud:
             magnitud = self.__class__.__name__
@@ -319,38 +297,6 @@ class Temperature(unidad):
         self.R = K2R(self._data)
         self.Re = K2Re(self._data)
 
-    def __new__(cls, data, unit="K", magnitud=""):
-        cls.Config = getMainWindowConfig()
-
-        if data is None:
-            cls.code = "n/a"
-            data = 0.
-        else:
-            cls.code = ""
-            data = float(data)
-
-        if not magnitud:
-            magnitud = cls.__name__
-
-        if unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
-
-        if unit == "K":
-            cls._data = data
-        elif unit == "C":
-            cls._data = C2K(data)
-        elif unit == "F":
-            cls._data = F2K(data)
-        elif unit == "R":
-            cls._data = R2K(data)
-        elif unit == "Re":
-            cls._data = Re2K(data)
-        else:
-            raise ValueError(
-                QApplication.translate("pychemqt", "Wrong input code"))
-
-        return float.__new__(cls, cls._data)
-
 
 class DeltaT(unidad):
     """Class that models a delta temperature measure
@@ -377,9 +323,6 @@ class DeltaT(unidad):
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
-
-    def __init__(self, data, unit="K", magnitud=""):
-        super(DeltaT, self).__init__(data, unit, magnitud)
 
 
 class Angle(unidad):
@@ -411,9 +354,6 @@ class Angle(unidad):
                    QApplication.translate("pychemqt", "Gradian")]
     __units_set__ = {"altsi": "rad", "si": "rad", "metric": "rad",
                      "cgs": "rad", "english": "rad"}
-
-    def __init__(self, data, unit="rad", magnitud=""):
-        super(Angle, self).__init__(data, unit, magnitud)
 
 
 class Length(unidad):
@@ -483,9 +423,6 @@ class Length(unidad):
         "Head": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
                  "english": "ft"}}
 
-    def __init__(self, data, unit="m", magnitud=""):
-        super(Length, self).__init__(data, unit, magnitud)
-
 
 class Area(unidad):
     """Class that models a area measure
@@ -519,9 +456,6 @@ class Area(unidad):
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha', "acre"]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
-
-    def __init__(self, data, unit="m2", magnitud=""):
-        super(Area, self).__init__(data, unit, magnitud)
 
 
 class Volume(unidad):
@@ -593,9 +527,6 @@ class Volume(unidad):
         "VolGas": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
                    "english": "ft3"}}
 
-    def __init__(self, data, unit="m3", magnitud=""):
-        super(Volume, self).__init__(data, unit, magnitud)
-
 
 class Time(unidad):
     """Class that models a time measure
@@ -627,9 +558,6 @@ class Time(unidad):
     __units_set__ = {"altsi": "h", "si": "h", "metric": "h", "cgs": "s",
                      "english": "h"}
 
-    def __init__(self, data, unit="s", magnitud=""):
-        super(Time, self).__init__(data, unit, magnitud)
-
 
 class Frequency(unidad):
     """Class that models a frequency measure
@@ -659,9 +587,6 @@ class Frequency(unidad):
     __units__ = ['rpm', 'rps', 'rph', 'Hz', 'rads', 'radmin', "radh"]
     __units_set__ = {"altsi": "rpm", "si": "Hz", "metric": "Hz", "cgs": "Hz",
                      "english": "rpm"}
-
-    def __init__(self, data, unit="rpm", magnitud=""):
-        super(Frequency, self).__init__(data, unit, magnitud)
 
 
 class Speed(unidad):
@@ -718,9 +643,6 @@ class Speed(unidad):
     __units_set__ = {"altsi": "ms", "si": "ms", "metric": "ms", "cgs": "cms",
                      "english": "fts"}
 
-    def __init__(self, data, unit="ms", magnitud=""):
-        super(Speed, self).__init__(data, unit, magnitud)
-
 
 class Acceleration(unidad):
     """Class that models a acceleration measure
@@ -752,9 +674,6 @@ class Acceleration(unidad):
                  "ftmin2", "inchmin2"]
     __units_set__ = {"altsi": "ms2", "si": "ms2", "metric": "ms2",
                      "cgs": "cms2", "english": "fts2"}
-
-    def __init__(self, data, unit="ms2", magnitud=""):
-        super(Acceleration, self).__init__(data, unit, magnitud)
 
 
 class Mass(unidad):
@@ -808,9 +727,6 @@ class Mass(unidad):
     __units_set__ = {"altsi": "kg", "si": "kg", "metric": "kg", "cgs": "g",
                      "english": "lb"}
 
-    def __init__(self, data, unit="kg", magnitud=""):
-        super(Mass, self).__init__(data, unit, magnitud)
-
 
 class Mol(unidad):
     """Class that models a mol measure
@@ -833,9 +749,6 @@ class Mol(unidad):
     __units__ = ['kmol', 'mol', 'mmol', "lbmol"]
     __units_set__ = {"altsi": "kmol", "si": "kmol", "metric": "kmol",
                      "cgs": "mol", "english": "lbmol"}
-
-    def __init__(self, data, unit="kmol", magnitud=""):
-        super(Mol, self).__init__(data, unit, magnitud)
 
 
 class SpecificVolume(unidad):
@@ -890,9 +803,6 @@ class SpecificVolume(unidad):
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
-
-    def __init__(self, data, unit="m3kg", magnitud=""):
-        super(SpecificVolume, self).__init__(data, unit, magnitud)
 
 
 class SpecificVolume_square(unidad):
@@ -949,9 +859,6 @@ class SpecificVolume_square(unidad):
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
 
-    def __init__(self, data, unit="m3kg", magnitud=""):
-        super(SpecificVolume_square, self).__init__(data, unit, magnitud)
-
 
 class MolarVolume(unidad):
     """Class that models a specific molar volume measure
@@ -984,9 +891,6 @@ class MolarVolume(unidad):
                  'cckmol', 'ft3lbmol', 'inch3lbmol']
     __units_set__ = {"altsi": "m3kmol", "si": "m3kmol", "metric": "m3kmol",
                      "cgs": "ccmol", "english": "ft3lbmol"}
-
-    def __init__(self, data, unit="m3kmol", magnitud=""):
-        super(MolarVolume, self).__init__(data, unit, magnitud)
 
 
 class Density(unidad):
@@ -1053,9 +957,6 @@ class Density(unidad):
         "DenGas": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
                    "cgs": "gcc", "english": "lbft3"}}
 
-    def __init__(self, data, unit="kgm3", magnitud=""):
-        super(Density, self).__init__(data, unit, magnitud)
-
 
 class MolarDensity(unidad):
     """Class that models a molar density measure
@@ -1085,9 +986,6 @@ class MolarDensity(unidad):
     __units__ = ['kmolm3', 'molcc', 'molm3', 'kmolcc', 'lbmolft3', 'lbmolin3']
     __units_set__ = {"altsi": "kmolm3", "si": "kmolm3", "metric": "kmolm3",
                      "cgs": "molcc", "english": "lbmolft3"}
-
-    def __init__(self, data, unit="kmolm3", magnitud=""):
-        super(MolarDensity, self).__init__(data, unit, magnitud)
 
 
 class Force(unidad):
@@ -1126,9 +1024,6 @@ class Force(unidad):
                  "TonfUS"]
     __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn",
                      "english": "lbf"}
-
-    def __init__(self, data, unit="N", magnitud=""):
-        super(Force, self).__init__(data, unit, magnitud)
 
 
 class Pressure(unidad):
@@ -1201,6 +1096,8 @@ class Pressure(unidad):
                      "cgs": "dyncm2", "english": "psi"}
 
     def __init__(self, data, unit="Pa", magnitud=""):
+        self.Config = getMainWindowConfig()
+
         if not magnitud:
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
@@ -1229,30 +1126,6 @@ class Pressure(unidad):
         self.barg = (self.Pa-k.atm)/k.bar
         self.psig = (self.Pa-k.atm)/k.psi
         self.kgcm2g = (self.Pa-k.atm)*k.centi**2/k.g
-
-    def __new__(cls, data, unit="Pa", magnitud=""):
-        cls.Config = getMainWindowConfig()
-
-        if data is None:
-            data = 0
-            cls.code = "n/a"
-        else:
-            cls.code = ""
-            data = float(data)
-
-        if unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', 'Pressure')]
-
-        if unit == "barg":
-            cls._data = data*k.bar+k.atm
-        elif unit == "psig":
-            cls._data = data*k.psi+k.atm
-        elif unit == "kgcm2g":
-            cls._data = data*k.g/k.centi**2+k.atm
-        else:
-            cls._data = data * cls.rates[unit]
-
-        return float.__new__(cls, cls._data)
 
 
 class DeltaP(unidad):
@@ -1327,9 +1200,6 @@ class DeltaP(unidad):
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
 
-    def __init__(self, data, unit="Pa", magnitud=""):
-        super(DeltaP, self).__init__(data, unit, magnitud)
-
 
 class Energy(unidad):
     """Class that models a energy measure
@@ -1400,9 +1270,6 @@ class Energy(unidad):
         "Work": {"altsi": "MJ", "si": "kWh", "metric": "J", "cgs": "erg",
                  "english": "HPh"}}
 
-    def __init__(self, data, unit="J", magnitud=""):
-        super(Energy, self).__init__(data, unit, magnitud)
-
 
 class Enthalpy(unidad):
     """Class that models a enthalpy measure
@@ -1443,9 +1310,6 @@ class Enthalpy(unidad):
     __units_set__ = {"altsi": "kJkg", "si": "Jkg", "metric": "Jkg",
                      "cgs": "calg", "english": "Btulb"}
 
-    def __init__(self, data, unit="Jkg", magnitud=""):
-        super(Enthalpy, self).__init__(data, unit, magnitud)
-
 
 class MolarEnthalpy(unidad):
     """Class that models a enthalpy measure in molar base
@@ -1485,9 +1349,6 @@ class MolarEnthalpy(unidad):
                  'callbmol', 'Btulbmol']
     __units_set__ = {"altsi": "kJkmol", "si": "Jkmol", "metric": "Jkmol",
                      "cgs": "calmol", "english": "Btulbmol"}
-
-    def __init__(self, data, unit="Jkmol", magnitud=""):
-        super(MolarEnthalpy, self).__init__(data, unit, magnitud)
 
 
 class Entropy(unidad):
@@ -1533,9 +1394,6 @@ class Entropy(unidad):
     __units_set__ = {"altsi": "kJK", "si": "JK", "metric": "JK",
                      "cgs": "calK", "english": "MBtuF"}
 
-    def __init__(self, data, unit="JK", magnitud=""):
-        super(Entropy, self).__init__(data, unit, magnitud)
-
 
 class SpecificHeat(unidad):
     """Class that models a specific heat measure
@@ -1572,12 +1430,9 @@ class SpecificHeat(unidad):
                  'BtulbF']
     __units_set__ = {
         "SpecificHeat": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
-                         "cgs": "calgK", "english": "BtulbF"}, 
+                         "cgs": "calgK", "english": "BtulbF"},
         "SpecificEntropy": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
                          "cgs": "calgK", "english": "BtulbF"}}
-
-    def __init__(self, data, unit="JkgK", magnitud=""):
-        super(SpecificHeat, self).__init__(data, unit, magnitud)
 
 
 class MolarSpecificHeat(unidad):
@@ -1593,7 +1448,7 @@ class MolarSpecificHeat(unidad):
     * Kilowatt hour per kilomol kelvin (kWhkmolK)
     * Btu per poundmol fahrenheit (BtulbmolF)
 
-    >>> C=SpecificHeat(1, "BtulbmolF")
+    >>> C=MolarSpecificHeat(1, "BtulbmolF")
     >>> print C.kJkmolK, C.kcalkmolK
     4.1868 1.00066921606
     """
@@ -1612,9 +1467,6 @@ class MolarSpecificHeat(unidad):
                  'BtulbmolF']
     __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
                      "cgs": "calmolK", "english": "BtulbmolF"}
-
-    def __init__(self, data, unit="JkmolK", magnitud=""):
-        super(MolarSpecificHeat, self).__init__(data, unit, magnitud)
 
 
 class Power(unidad):
@@ -1675,9 +1527,6 @@ class Power(unidad):
                        "cgs": "ergs", "english": "MBtuh"},
         "Power": {"altsi": "hp", "si": "kW", "metric": "Jh", "cgs": "ergs",
                   "english": "hp"}}
-
-    def __init__(self, data, unit="W", magnitud=""):
-        super(Power, self).__init__(data, unit, magnitud)
 
 
 class MassFlow(unidad):
@@ -1741,9 +1590,6 @@ class MassFlow(unidad):
     __units_set__ = {"altsi": "kgh", "si": "kgh", "metric": "kgs", "cgs": "gs",
                      "english": "lbh"}
 
-    def __init__(self, data, unit="kgs", magnitud=""):
-        super(MassFlow, self).__init__(data, unit, magnitud)
-
 
 class MolarFlow(unidad):
     """Class that models a molar flow measure
@@ -1779,9 +1625,6 @@ class MolarFlow(unidad):
                  'lbmols', 'lbmolmin', 'lbmolh']
     __units_set__ = {"altsi": "kmolh", "si": "kmolh", "metric": "kmols",
                      "cgs": "mols", "english": "lbmolh"}
-
-    def __init__(self, data, unit="kmols", magnitud=""):
-        super(MolarFlow, self).__init__(data, unit, magnitud)
 
 
 class VolFlow(unidad):
@@ -1864,9 +1707,6 @@ class VolFlow(unidad):
         "QGas": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
                  "english": "ft3h"}}
 
-    def __init__(self, data, unit="m3s", magnitud=""):
-        super(VolFlow, self).__init__(data, unit, magnitud)
-
 
 class Diffusivity(unidad):
     """Class that models a diffusivity measure (useful for kinematic viscosity)
@@ -1911,9 +1751,6 @@ class Diffusivity(unidad):
         "KViscosity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
                        "cgs": "cm2s", "english": "ft2s"}}
 
-    def __init__(self, data, unit="m2s", magnitud=""):
-        super(Diffusivity, self).__init__(data, unit, magnitud)
-
 
 class HeatFlux(unidad):
     """Class that models a heat flux measure
@@ -1946,9 +1783,6 @@ class HeatFlux(unidad):
                  "Btuhft2", "Btusft2"]
     __units_set__ = {"altsi": "Wm2", "si": "Wm2", "metric": "Wm2",
                      "cgs": "calscm2", "english": "Btuhft2"}
-
-    def __init__(self, data, unit="Wm2", magnitud=""):
-        super(HeatFlux, self).__init__(data, unit, magnitud)
 
 
 class ThermalConductivity(unidad):
@@ -1991,9 +1825,6 @@ class ThermalConductivity(unidad):
     __units_set__ = {"altsi": "mWmK", "si": "WmK", "metric": "WmK",
                      "cgs": "calscmK", "english": "lbfts3F"}
 
-    def __init__(self, data, unit="WmK", magnitud=""):
-        super(ThermalConductivity, self).__init__(data, unit, magnitud)
-
 
 class UA(unidad):
     """Class that models a UA measure
@@ -2034,9 +1865,6 @@ class UA(unidad):
     __units_set__ = {"altsi": "mWK", "si": "WK", "metric": "WK",
                      "cgs": "calsK", "english": "BtuhF"}
 
-    def __init__(self, data, unit="WK", magnitud=""):
-        super(UA, self).__init__(data, unit, magnitud)
-
 
 class HeatTransfCoef(unidad):
     """Class that models a heat transfer coefficient measure
@@ -2074,15 +1902,12 @@ class HeatTransfCoef(unidad):
              "Btusft2F": k.Btu/k.foot**2/k.Rankine}
     __text__ = [u'W/m²·K', u'kW/m²·K', u'J/h·m²·K', u'kJ/h·m²·K', u'cal/h·m³·K',
                 u'kcal/h·m²·K', u'cal/s·m²·K', u'kcal/s·m²·K', u'cal/s·cm²·K',
-                u'kcal/s·cm²·K' , u'Btu/h·ft²·F',u'Btu/s·ft²·F']
+                u'kcal/s·cm²·K', u'Btu/h·ft²·F', u'Btu/s·ft²·F']
     __units__ = ['Wm2K', 'kWm2K', 'Jhm2K', 'kJhm2K', 'calhm2K', 'kcalhm2K',
-                 'calsm2K', 'kcalsm2K', 'calscm2K', 'kcalscm2K' , 'Btuhft2F',
+                 'calsm2K', 'kcalsm2K', 'calscm2K', 'kcalscm2K', 'Btuhft2F',
                  'Btusft2F']
     __units_set__ = {"altsi": "Wm2K", "si": "Wm2K", "metric": "Wm2K",
                      "cgs": "calscm2K", "english": "Btuhft2F"}
-
-    def __init__(self, data, unit="Wm2K", magnitud=""):
-        super(HeatTransfCoef, self).__init__(data, unit, magnitud)
 
 
 class Fouling(unidad):
@@ -2129,9 +1954,6 @@ class Fouling(unidad):
     __units_set__ = {"altsi": "m2KW", "si": "m2KW", "metric": "m2KW",
                      "cgs": "scm2Kkcal", "english": "hft2FBtu"}
 
-    def __init__(self, data, unit="m2KW", magnitud=""):
-        super(Fouling, self).__init__(data, unit, magnitud)
-
 
 class Tension(unidad):
     """Class that models a surface tension measure
@@ -2154,9 +1976,6 @@ class Tension(unidad):
     __units__ = ['Nm', 'mNm', 'dyncm', 'lbfft']
     __units_set__ = {"altsi": "mNm", "si": "Nm", "metric": "Nm",
                      "cgs": "dyncm", "english": "lbfft"}
-
-    def __init__(self, data, unit="Nm", magnitud=""):
-        super(Tension, self).__init__(data, unit, magnitud)
 
 
 class Viscosity(unidad):
@@ -2199,9 +2018,6 @@ class Viscosity(unidad):
     __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas",
                      "cgs": "dynscm2", "english": "cP"}
 
-    def __init__(self, data, unit="Pas", magnitud=""):
-        super(Viscosity, self).__init__(data, unit, magnitud)
-
 
 class SolubilityParameter(unidad):
     """Class that models a solubility parameter measure
@@ -2223,9 +2039,6 @@ class SolubilityParameter(unidad):
     __units__ = ["Jm3", "calcc", "Btuft3"]
     __units_set__ = {"altsi": "Jm3", "si": "Jm3", "metric": "Jm3",
                      "cgs": "calcc", "english": "Btuft3"}
-
-    def __init__(self, data, unit="Jm3", magnitud=""):
-        super(SolubilityParameter, self).__init__(data, unit, magnitud)
 
 
 class PotencialElectric(unidad):
@@ -2259,9 +2072,6 @@ class PotencialElectric(unidad):
     __units_set__ = {"altsi": "Vm", "si": "Vm", "metric": "Vm", "cgs": "Vcm",
                      "english": "statVm"}
 
-    def __init__(self, data, unit="Vm", magnitud=""):
-        super(PotencialElectric, self).__init__(data, unit, magnitud)
-
 
 class DipoleMoment(unidad):
     """Class that models a solubility parameter measure
@@ -2280,9 +2090,6 @@ class DipoleMoment(unidad):
     __units__ = ['Cm', 'Debye']
     __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
                      "english": "Debye"}
-
-    def __init__(self, data, unit="Cm", magnitud=""):
-        super(DipoleMoment, self).__init__(data, unit, magnitud)
 
 
 class CakeResistance(unidad):
@@ -2305,9 +2112,6 @@ class CakeResistance(unidad):
     __units_set__ = {"altsi": "mkg", "si": "mkg", "metric": "mkg",
                      "cgs": "cmg", "english": "ftlb"}
 
-    def __init__(self, data, unit="mkg", magnitud=""):
-        super(CakeResistance, self).__init__(data, unit, magnitud)
-
 
 class PackingDP(unidad):
     """Class that models a packing drop pressure measure
@@ -2326,9 +2130,6 @@ class PackingDP(unidad):
     __units__ = ['mmH2Om', 'inH2Oft']
     __units_set__ = {"altsi": "mmH2Om", "si": "mmH2Om", "metric": "mmH2Om",
                      "cgs": "mmH2Om", "english": "inH2Oft"}
-
-    def __init__(self, data, unit="mmH2Om", magnitud=""):
-        super(PackingDP, self).__init__(data, unit, magnitud)
 
 
 class V2V(unidad):
@@ -2353,9 +2154,6 @@ class V2V(unidad):
     __units__ = ["m3m3", "ft3bbl"]
     __units_set__ = {"altsi": "m3m3", "si": "m3m3", "metric": "m3m3",
                      "cgs": "m3m3", "english": "ft3bbl"}
-
-    def __init__(self, data, unit="m3m3", magnitud=""):
-        super(V2V, self).__init__(data, unit, magnitud)
 
 
 class InvTemperature(unidad):
@@ -2382,9 +2180,6 @@ class InvTemperature(unidad):
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
-
-    def __init__(self, data, unit="K", magnitud=""):
-        super(InvTemperature, self).__init__(data, unit, magnitud)
 
 
 class InvPressure(unidad):
@@ -2460,9 +2255,6 @@ class InvPressure(unidad):
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
 
-    def __init__(self, data, unit="Pa", magnitud=""):
-        super(InvPressure, self).__init__(data, unit, magnitud)
-
 
 class EnthalpyPressure(unidad):
     """Class that models a enthalpy per pressure measure
@@ -2479,7 +2271,7 @@ class EnthalpyPressure(unidad):
     __title__ = QApplication.translate("pychemqt", "Enthalpy per pressure")
     rates = {"JkgPa": 1.,
              "kJkgkPa": 1.,
-             "kJkgMPa": k.milli, 
+             "kJkgMPa": k.milli,
              "Jkgatm": 1./101325,
              "kJkgatm": 1./101.325,
              "Btulbpsi": k.Btu/k.lb/k.psi}
@@ -2487,9 +2279,6 @@ class EnthalpyPressure(unidad):
     __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm", "Btulbpsi"]
     __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
                      "cgs": "kJkgkPa", "english": "Btulbpsi"}
-
-    def __init__(self, data, unit="JkgPa", magnitud=""):
-        super(EnthalpyPressure, self).__init__(data, unit, magnitud)
 
 
 class EnthalpyDensity(unidad):
@@ -2505,15 +2294,12 @@ class EnthalpyDensity(unidad):
     """
     __title__ = QApplication.translate("pychemqt", "Enthalpy per density")
     rates = {"Jkgkgm3": 1.,
-             "kJkgkgm3": k.kilo, 
+             "kJkgkgm3": k.kilo,
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
     __text__ = [u'J/kgkgm³', u'kJ/kgkgm³', u"Btulb/lbft³"]
     __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
                      "cgs": "kJkgkgm3", "english": "Btulb2ft3"}
-
-    def __init__(self, data, unit="Jkgkgm3", magnitud=""):
-        super(EnthalpyDensity, self).__init__(data, unit, magnitud)
 
 
 class TemperaturePressure(unidad):
@@ -2531,17 +2317,14 @@ class TemperaturePressure(unidad):
     __title__ = QApplication.translate("pychemqt", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
-             "Kbar": 1e-5, 
-             "KMPa": k.micro, 
-             "Katm": 1/101325., 
+             "Kbar": 1e-5,
+             "KMPa": k.micro,
+             "Katm": 1/101325.,
              "Fpsi": k.Rankine/k.psi}
     __text__ = ['K/Pa', 'K/kPa', "K/bar", 'K/MPa', "K/atm", "F/psi"]
     __units__ = ['KPa', 'KkPa', "Kbar", 'KMPa', "Katm", "Fpsi"]
     __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa",
                      "cgs": "KPa", "english": "Fpsi"}
-
-    def __init__(self, data, unit="KPa", magnitud=""):
-        super(TemperaturePressure, self).__init__(data, unit, magnitud)
 
 
 class PressureTemperature(unidad):
@@ -2564,15 +2347,12 @@ class PressureTemperature(unidad):
              "kPaK": k.kilo,
              "barK": 1e5,
              "MPaK": k.mega,
-             "atmK": 101325., 
+             "atmK": 101325.,
              "psiF": k.psi/k.Rankine}
     __text__ = ['Pa/K', 'kPa/K', 'bar/K', 'MPa/K', "atm/K", "psi/F"]
     __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK", "psiF"]
     __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK",
                      "cgs": "PaK", "english": "psiF"}
-
-    def __init__(self, data, unit="PaK", magnitud=""):
-        super(PressureTemperature, self).__init__(data, unit, magnitud)
 
 
 class PressureDensity(unidad):
@@ -2592,18 +2372,16 @@ class PressureDensity(unidad):
     rates = {"Pakgm3": 1.,
              "kPakgm3": k.kilo,
              "barkgm3": 1e5,
-             "Pagcc": k.liter, 
+             "Pagcc": k.liter,
              "MPakgm3": k.mega,
-             "atmkgm3": 101325., 
+             "atmkgm3": 101325.,
              "psilbft3": k.psi/k.pound*k.foot**3}
     __text__ = [u'Pa/kgm³', u'kPa/kgm³', u'bar/kgm³', u'MPa/kgm³', u"atm/kgm³",
                 u"Pa/gcm³", u"psi/lbft³"]
-    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3", "Pagcc", "psilbft3"]
+    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3",
+                 "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
                      "cgs": "Pagcc", "english": "psilbft3"}
-
-    def __init__(self, data, unit="Pakgm3", magnitud=""):
-        super(PressureDensity, self).__init__(data, unit, magnitud)
 
 
 class DensityPressure(unidad):
@@ -2623,18 +2401,16 @@ class DensityPressure(unidad):
     rates = {"kgm3Pa": 1.,
              "kgm3kPa": k.milli,
              "kgm3bar": 1/1e5,
-             "gccPa": 1./k.liter, 
+             "gccPa": 1./k.liter,
              "kgm3MPa": k.micro,
-             "kgm3atm": 1/101325., 
+             "kgm3atm": 1/101325.,
              "lbft3psi": k.pound/k.foot**3/k.psi}
-    __text__ = [u'kg/m³Pa', u'kg/m³kPa', u'kg/m³MPa', u"kg/m³bar", u'kg/m³atm', 
+    __text__ = [u'kg/m³Pa', u'kg/m³kPa', u'kg/m³MPa', u"kg/m³bar", u'kg/m³atm',
                 u"gcm³/Pa", u"lb/ft³psi"]
-    __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "gccPa", "lbft3psi"]
+    __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "gccPa",
+                 "lbft3psi"]
     __units_set__ = {"altsi": "kgm3kPa", "si": "kgm3Pa", "metric": "kgm3kPa",
                      "cgs": "gccPa", "english": "lbft3psi"}
-
-    def __init__(self, data, unit="kgm3Pa", magnitud=""):
-        super(DensityPressure, self).__init__(data, unit, magnitud)
 
 
 class DensityTemperature(unidad):
@@ -2658,9 +2434,6 @@ class DensityTemperature(unidad):
     __units_set__ = {"altsi": "kgm3K", "si": "kgm3K", "metric": "kgm3K",
                      "cgs": "gccK", "english": "lbft3F"}
 
-    def __init__(self, data, unit="kgm3K", magnitud=""):
-        super(DensityTemperature, self).__init__(data, unit, magnitud)
-        
 
 class Currency(unidad):
     """Class that models a currency rate
@@ -2757,9 +2530,6 @@ class Currency(unidad):
     __units_set__ = {"altsi": "usd", "si": "usd", "metric": "usd",
                      "cgs": "usd", "english": "usd"}
 
-    def __init__(self, data=None, unit='usd', magnitud=""):
-        super(Currency, self).__init__(data, unit, magnitud)
-
     @property
     def str(self):
         if self.code:
@@ -2805,14 +2575,11 @@ _magnitudes.append(("Dimensionless",
 #print sets
 
 units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 4, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 1, 0, 0, 5, 5, 1, 0],
-             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0], 
-             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], 
+             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0],
+             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
              'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 6, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-    
-    t = Pressure(1e3, "kPa")
-    print t._data
-    print t.bar
+    import doctest
+    doctest.testmod()
+
