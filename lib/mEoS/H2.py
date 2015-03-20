@@ -35,6 +35,13 @@ class H2(MEoS):
            "ao_exp": [1.616, -0.4117, -0.792, 0.758, 1.217],
            "titao": [16.0205159149, 22.6580178006, 60.0090511389,
                      74.9434303817, 206.9392065168]}
+                     
+    Fi2 = {"ao_log": [1, 1.47906],
+           "pow": [0, 1],
+           "ao_pow": [13.796443393, -175.864487294],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [0.95806, 0.45444, 1.56039, -1.3756],
+           "hyp": [6.891654113, 9.84763483, 49.76529075, 50.367279301]}
 
     CP2 = {"ao": 0.72480209e3,
            "an": [0.12155215e11, -0.36396763e10, 0.43375265e9, -0.23085817e8,
@@ -113,9 +120,13 @@ class H2(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
 #        "Pmin": 0.61166, "rhomin": 55.497, 

@@ -37,6 +37,13 @@ class H2S(MEoS):
            "ao_exp": [1.1364, 1.9721],
            "titao": [1823/Tc, 3965/Tc]}
 
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [9.336197742, -16.266508995],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [3.11942, 1.00243, 0, 0],
+           "hyp": [4.914580541, 2.27065398, 0, 0]}
+
     CP1 = {"ao": 4,
            "an": [0.14327e-5], "pow": [1.5],
            "ao_exp": [1.1364, 1.9721],
@@ -61,12 +68,6 @@ class H2S(MEoS):
            "ao_hyp": [-1.5769761e4/8.3159524*4.184, 2.0329947e6/8.3159524*4.184,
                       1.3861204e7/8.3159524*4.184, -3.5044957e6/8.3159524*4.184],
            "hyp": [4.33801e2, 8.43792e2, 1.48143e3, 1.10223e3]}
-
-    CP5 = {"ao": 4.0,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [3.11942, 1.00243, 0, 0],
-           "hyp": [4.914580541*Tc, 2.270653980*Tc, 0, 0]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
@@ -175,9 +176,14 @@ class H2S(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
-        "__doc__":  u"""Kunz, O.; Wagner, W. -- The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures- An Expansion of GERG-2004. J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP5,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12, 
         "Pmin": 23.3, "rhomin": 29.12, 
@@ -192,7 +198,7 @@ class H2S(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, #helmholtz2, helmholtz3, helmholtz4, GERG
+    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4, GERG
 
     _surface = {"sigma": [0.082], "exp": [1.26]}
     _vapor_Pressure = {
@@ -256,3 +262,9 @@ class H2S(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.3211e-9, "Tcref": 559.65}
 
     _thermal = thermo0,
+
+if __name__ == "__main__":
+    for eq in (0, 4):
+        st=H2S(T=500, P=1e5, eq=eq)
+        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

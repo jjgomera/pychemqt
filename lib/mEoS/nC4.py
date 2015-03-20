@@ -30,6 +30,13 @@ class nC4(MEoS):
            "ao_exp": [5.54913289, 11.4648996, 7.59987584, 9.66033239],
            "titao": [0.7748404445, 3.3406025522, 4.9705130961, 9.9755537783], 
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3.33944],
+           "pow": [0, 1],
+           "ao_pow": [20.884143364, -91.638478026],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [9.44893, 6.89406, 24.4618, 14.7824],
+           "hyp": [1.101487798, 0.43195766, 4.502440459, 2.124516319]}
 
     CP2 = {"ao": 4.33944,
            "an": [], "pow": [],
@@ -239,9 +246,14 @@ class nC4(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 575., "Pmax": 69000.0, "rhomax": 13.2, 
         "Pmin": 0.000653, "rhomin": 12.645, 
@@ -298,7 +310,8 @@ class nC4(MEoS):
             """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": CP5,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": 134.86, "Tmax": 750., "Pmax": 100000.0, "rhomax": 13.20, 
         "Pmin": 0.00064578, "rhomin": 12.671, 
@@ -350,6 +363,7 @@ class nC4(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
         "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -490,8 +504,7 @@ class nC4(MEoS):
     _thermal = thermo0, thermo1
 
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=nC4(T=300., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
+    for eq in (0, 2, 4, 6):
+        st=nC4(T=300, P=1e5, eq=eq)
+        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

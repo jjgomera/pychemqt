@@ -32,6 +32,13 @@ class iC5(MEoS):
            "ao_pow": [2.5822330405, 1.1609103419],
            "ao_exp": [7.4056, 9.5772, 15.765, 12.119],
            "titao": [442/Tc, 1109/Tc, 2069/Tc, 4193/Tc]}
+           
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [15.449907693, -101.298172792],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [11.7618, 20.1101, 33.1688, 0],
+           "hyp": [0.635392636, 1.977271641, 4.169371131, 0]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
@@ -91,9 +98,13 @@ class iC5(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
         "Pmin": 0.83e-7, "rhomin": 10.925, 

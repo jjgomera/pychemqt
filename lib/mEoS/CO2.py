@@ -39,6 +39,13 @@ class CO2(MEoS):
            "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
            "exp": [958.49956, 1858.80115, 2061.10114, 3443.89908, 8238.20035],
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 2.50002],
+           "pow": [0, 1],
+           "ao_pow": [11.925152758, -16.118762264],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [2.04452, -1.06044, 2.03366, 0.01393],
+           "hyp": [3.022758166, -2.844425476, 1.589964364, 1.12159609]}
 
     CP2 = {"ao": 3.50002,
            "an": [], "pow": [],
@@ -127,9 +134,14 @@ class CO2(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Kunz and Wagner (2004)",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24, 
 #        "Pmin": 0.61166, "rhomin": 55.497, 

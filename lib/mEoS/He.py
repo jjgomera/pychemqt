@@ -37,6 +37,12 @@ class He(MEoS):
            "an": [], "pow": [],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
 
+    Fi2 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [13.628409737, -143.470759602],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [], "hyp": []}
+
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2010).",
@@ -132,10 +138,14 @@ class He(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for helium of Kunz and Wagner (2004).",
-        "__doc__": u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph,Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
-        "__doi__": "http://dx.doi.org/Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
         "Pmin": 4.8565, "rhomin": 36.537, 

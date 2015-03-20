@@ -32,6 +32,13 @@ class nC10(MEoS):
            "ao_pow": [13.9361966549, -10.5265128286],
            "ao_exp": [25.685, 28.233, 12.417, 10.035],
            "titao": [1193/Tc, 2140/Tc, 4763/Tc, 10862/Tc]}
+           
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [15.870791919, -108.858547525],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [21.0069, 43.4931, 58.3657, 0],
+           "hyp": [0.267034159, 1.353835195, 2.833479035, 0]}
 
     CP1 = {"ao": 19.109,
            "an": [],
@@ -79,9 +86,13 @@ class nC10(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
-        "__doc__":  u"""Kunz, O.; Wagner, W. -- The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures- An Expansion of GERG-2004. J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 800000.0, "rhomax": 5.41, 
         "Pmin": 0.0014, "rhomin": 5.41, 
@@ -96,7 +107,7 @@ class nC10(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, #GERG
+    eq = helmholtz1, GERG
 
     _surface = {"sigma": [0.0536], "exp": [1.26]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

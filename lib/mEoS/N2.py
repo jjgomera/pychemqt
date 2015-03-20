@@ -30,6 +30,13 @@ class N2(MEoS):
                       -1.247742e-5, 6.678326e-8],
            "ao_exp": [1.012941],
            "titao": [26.65788]}
+           
+    Fi2 = {"ao_log": [1, 2.50031],
+           "pow": [0, 1],
+           "ao_pow": [11.083407489, -22.202102428],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [0.13732, -0.1466, 0.90066, 0],
+           "hyp": [5.25182262, -5.393067706, 13.788988208, 0]}
 
     CP1 = {"ao": 3.5,
            "an": [3.066469e-6, 4.70124e-9, -3.987984e-13], "pow": [1, 2, 3],
@@ -228,9 +235,14 @@ class N2(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP3,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
 #        "Pmin": 73.476, "rhomin": 29.249, 
@@ -546,7 +558,7 @@ if __name__ == "__main__":
 #    st=N2(T=125, P=3.5e6)
 #    print st.status, st.msg
     
-    for eq in (0, 4, 5):
+    for eq in (0, 2, 4, 5):
         st=N2(T=300, P=1e6, eq=eq)
         print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
             st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

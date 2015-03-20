@@ -30,6 +30,13 @@ class iC4(MEoS):
            "ao_exp": [4.94641014, 4.09475197, 15.6632824, 9.73918122],
            "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351], 
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3.06714],
+           "pow": [0, 1],
+           "ao_pow": [20.413726078, -94.467620036],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
+           "hyp": [1.074673199, 0.485556021, 4.671261865, 2.19158348]}
 
     CP2 = {"ao": 4.06714,
            "an": [], "pow": [],
@@ -231,9 +238,13 @@ class iC4(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
 #        "Pmin": 7.36, "rhomin": 38.2, 

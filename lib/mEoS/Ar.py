@@ -33,6 +33,12 @@ class Ar(MEoS):
            "an": [], "pow": [], "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
            
+    Fi2 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [8.3166315, -4.9465026],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [], "hyp": []}
+
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "FEQ Helmholtz equation of state for argon of Tegeler et al. (1999).",
@@ -217,9 +223,13 @@ class Ar(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Kunz and Wagner (2004).",
-        "__doc__": u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 50.65, 
         "Pmin": 68.891, "rhomin": 35.465, 
@@ -554,19 +564,7 @@ class Ar(MEoS):
                     234.196850483958],
               "rhoc": 13.4424752177831}
 
-    visco3 = {"eq": 1, "omega": 1,
-              "__doc__": """Lemmon, E.W. and Jacobsen, R.T, unpublished equation, 2001""",
-              "__name__": "Lemmon (2001)",
-              "collision": [0.5136, -0.5218, 0.8852e-1, 0.3445e-2, -0.2289e-2],
-              "ek": 104.9, "sigma": 0.3478,
-              "n_poly": [0.648491572951e1, 0.921829714883e1, 0.251873627628e1,
-                         0.710198542697e-1, 0.233411121182, -0.365386072189e1],
-              "t_poly": [0, 0, 1.1303, 0.2879, 4.4346, 2.2411],
-              "d_poly": [1, 2, 4, 7, 4, 3],
-              "g_poly": [0, 0, 0, 0, 0, 0],
-              "c_poly": [0, 0, 0, 0, 0, 0]}
-
-    _viscosity = visco0, visco1, visco2, visco3
+    _viscosity = visco0, visco1, visco2
 
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
@@ -651,15 +649,8 @@ class Ar(MEoS):
 
 
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
     for eq in (0, 2, 3, 4):
         st=Ar(T=300, P=1e6, eq=eq)
         print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
             st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
 
-#            >>> st=Ar(T=84, P=8e4, eq=3)
-#            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
-#                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
-#            84 35.447 -4829.6 -4827.3 53.39 21.31 42.64 852

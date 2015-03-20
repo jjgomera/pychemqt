@@ -305,8 +305,7 @@ class H2O(MEoS):
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
-        "ref": {"name": "CUSTOM",
-            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
         "Pmin": 0.61166, "rhomin": 55.497, 

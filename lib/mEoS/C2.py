@@ -38,6 +38,13 @@ class C2(MEoS):
            "ao_exp": [1.117433359, 3.467773215, 6.941944640, 5.970850948],
            "exp": [430.23083, 1224.3159, 2014.12064, 4268.34363],
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3.00263],
+           "pow": [0, 1],
+           "ao_pow": [24.675437527, -77.42531376],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [4.33939, 1.23722, 13.1974, -6.01989],
+           "hyp": [1.831882406, 0.731306621, 3.378007481, 3.508721939]}
 
     CP2 = {"ao": 4.00263,
            "an": [], "pow": [],
@@ -134,9 +141,14 @@ class C2(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
         
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
 #        "Pmin": 0.61166, "rhomin": 55.497, 

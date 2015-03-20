@@ -34,15 +34,6 @@ class Air(MEoS):
            "sum2": [2./3]
            }
 
-    CP2 = {"ao": 0.34941563e1,
-           "an": [-0.65392681e3, 0.29618973e2, 0.22380669, -0.47007760, -0.68351536e-5, 0.15136141e-7, -0.20027652e-11],
-           # Coeff 0 and -1 cause overflow
-           # "pow": [-3, -2, -1.5, -1, 1, 2, 3],
-           "pow": [-3, -2, -1.5, -1.01, 1, 2, 3],
-           "ao_exp": [0.78724442, 0.21223677],
-           "exp": [3353.4061, 2242.45],
-           "ao_hyp": [], "hyp": []}
-
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for air of Lemmon et al. (2000)",
@@ -203,31 +194,31 @@ class Air(MEoS):
         "exp": [0.5, 1, 2.5, 4]}
 
     visco0 = {"eq": 1, "omega": 1,
-            "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
-               "__test__": """
-                    >>> st=Air(T=100, rhom=0)
-                    >>> print "%0.5f" % st.mu.muPas
-                    7.09559
-                    >>> st=Air(T=300, rhom=0)
-                    >>> print "%0.4f" % st.mu.muPas
-                    18.5230
-                    >>> st=Air(T=100, rhom=28)
-                    >>> print "%0.3f" % st.mu.muPas
-                    107.923
-                    >>> st=Air(T=200, rhom=10)
-                    >>> print "%0.4f" % st.mu.muPas
-                    21.1392
-                    >>> st=Air(T=300, rhom=5)
-                    >>> print "%0.4f" % st.mu.muPas
-                    21.3241
-                    >>> st=Air(T=132.64, rhom=10.4)
-                    >>> print "%0.4f" % st.mu.muPas
-                    17.7623
-                    """, # Table V, Pag 28
+              "__name__": "Lemmon (2004)",
+              "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
+                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                          "ref": "Int. J. Thermophys., 25:21-69, 2004.",
+                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+              "__test__": """
+                  >>> st=Air(T=100, rhom=0)
+                  >>> print "%0.5f" % st.mu.muPas
+                  7.09559
+                  >>> st=Air(T=300, rhom=0)
+                  >>> print "%0.4f" % st.mu.muPas
+                  18.5230
+                  >>> st=Air(T=100, rhom=28)
+                  >>> print "%0.3f" % st.mu.muPas
+                  107.923
+                  >>> st=Air(T=200, rhom=10)
+                  >>> print "%0.4f" % st.mu.muPas
+                  21.1392
+                  >>> st=Air(T=300, rhom=5)
+                  >>> print "%0.4f" % st.mu.muPas
+                  21.3241
+                  >>> st=Air(T=132.64, rhom=10.4)
+                  >>> print "%0.4f" % st.mu.muPas
+                  17.7623
+                  """, # Table V, Pag 28
                     
             "ek": 103.3, "sigma": 0.36,
             "Tref": 1, "rhoref": 1.*M,

@@ -29,6 +29,13 @@ class nC6(MEoS):
     _rhor = unidades.Density(235.700888)
     _w = 0.298052404
 
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [14.345969349, -96.165722367],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [11.6977, 26.8142, 38.6164, 0],
+           "hyp": [0.359036667, 1.691951873, 3.596924107, 0]}
+
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
@@ -70,7 +77,8 @@ class nC6(MEoS):
             """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85, 
         "Pmin": 0.001277, "rhomin": 8.8394, 
@@ -89,10 +97,13 @@ class nC6(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85, 
 #        "Pmin": 0.61166, "rhomin": 55.497, 
@@ -166,7 +177,8 @@ class nC6(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -253,3 +265,9 @@ class nC6(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.0327e-9, "Tcref": 761.73}
 
     _thermal = thermo0,
+
+if __name__ == "__main__":
+    for eq in (0, 1, 4):
+        st=nC6(T=300, P=1e5, eq=eq)
+        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

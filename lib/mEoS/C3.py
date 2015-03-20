@@ -34,6 +34,13 @@ class C3(MEoS):
            "ao_exp": [3.043, 5.874, 9.337, 7.922],
            "exp": [393, 1237, 1984, 4351],
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3.02939],
+           "pow": [0, 1],
+           "ao_pow": [31.602908195, -84.463284382],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
+           "hyp": [1.297521801, 0.543210978, 2.583146083, 2.777773271]}
 
     CP2 = {"ao": 4.02256195,
            "an": [], "pow": [],
@@ -156,9 +163,14 @@ class C3(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP3,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": 85.48, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
 #        "Pmin": 73.476, "rhomin": 29.249, 

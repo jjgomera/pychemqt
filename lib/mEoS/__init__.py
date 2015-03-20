@@ -138,11 +138,17 @@ id_mEoS = [i.id for i in __all__]
 if __name__ == "__main__":
     import doctest
     for module in __all__:
-        if module.__module__ != "Air":
+        if module.__module__ != "Ar":
             continue
         print module.__module__
         inst = module()
         for eq in inst.eq:
+            if "__test__" in eq:
+                inst.__doc__ += eq["__test__"]
+        for eq in inst._viscosity:
+            if "__test__" in eq:
+                inst.__doc__ += eq["__test__"]
+        for eq in inst._thermal:
             if "__test__" in eq:
                 inst.__doc__ += eq["__test__"]
         doctest.run_docstring_examples(inst, globs={module.__module__: module})

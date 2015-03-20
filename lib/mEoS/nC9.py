@@ -32,19 +32,13 @@ class nC9(MEoS):
            "ao_pow": [10.7927224829, -8.2418318753],
            "ao_exp": [24.926, 24.842, 11.188, 17.483],
            "titao": [1221/Tc, 2244/Tc, 5008/Tc, 11724/Tc]}
-
-    CP1 = {"ao": 17.349,
-           "an": [],
-           "pow": [],
-           "ao_exp": [24.926, 24.842, 11.188, 17.483],
-           "exp": [1221, 2244, 5008, 11724],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4.0,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [18.02410, 38.12350, 53.34150, 0],
-           "hyp": [0.263819696*Tc, 1.37058615*Tc, 2.848860483*Tc, 0]}
+           
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [16.313913248, -102.160247463],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [18.0241, 38.1235, 53.3415, 0],
+           "hyp": [0.263819696, 1.370586158, 2.848860483, 0]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
@@ -79,9 +73,13 @@ class nC9(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
-        "__doc__":  u"""Kunz, O.; Wagner, W. -- The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures- An Expansion of GERG-2004. J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
         "Pmin": 0.00044, "rhomin": 6.05, 
@@ -96,7 +94,7 @@ class nC9(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, #GERG
+    eq = helmholtz1, GERG
 
     _surface = {"sigma": [0.0539], "exp": [1.26]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

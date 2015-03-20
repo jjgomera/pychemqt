@@ -36,6 +36,13 @@ class O2(MEoS):
            "exp": [2246.32440, 11259.9763, 1201.26209, 69.0089445, 5328.05445],
            "ao_hyp": [], "hyp": []}
 
+    Fi2 = {"ao_log": [1, 2.50146],
+           "pow": [0, 1],
+           "ao_pow": [10.001843586, -14.996095135],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [1.07558, 1.01334, 0, 0],
+           "hyp": [14.461722565, 7.223325463, 0, 0]}
+
     CP2 = {"ao": 3.521876773671,
            "an": [-0.4981998537119e4, 0.2302477799952e3, -0.3455653235107e1,
                   0.3521876773671e1, -0.4354202160244e-4, 0.1346353450132e-7,
@@ -76,9 +83,13 @@ class O2(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for oxygen of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 82000.0, "rhomax": 43.348, 
 #        "Pmin": 73.5, "rhomin": 29.2, 

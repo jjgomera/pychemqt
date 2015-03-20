@@ -34,6 +34,13 @@ class nC5(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [0.2857243e6, 0.1542722e8, 0.1051520e9, 0],
            "hyp": [0.17867e3, 0.840538e3, 0.177425e4, 0]}
+           
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [8.95043, 21.836, 33.4032, 0],
+           "hyp": [0.380391739, 1.789520971, 3.777411113, 0]}
 
     CP2 = {"ao": 4,
            "an": [], "pow": [],
@@ -69,9 +76,9 @@ class nC5(MEoS):
             213.42 0.34915
             """, # Table III, Pag 46
 
-        "__doc__":  u"""Span, R., Wagner, W. Equations of state for technical applications. II. Results for nonpolar fluids. Int. J. Thermophys. 24 (2003), 41 – 109.""",
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2, 
         "Pmin": 0.76322e-4, "rhomin": 10.566, 
@@ -91,9 +98,14 @@ class nC5(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for \
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57, 
 #        "Pmin": 73.476, "rhomin": 29.249, 

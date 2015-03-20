@@ -28,6 +28,13 @@ class nC8(MEoS):
     _Tr = unidades.Temperature(565.427917)
     _rhor = unidades.Density(234.605116)
     _w = 0.402698435
+    
+    Fi2 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [15.864687161, -97.370667555],
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
+           "hyp": [0.27914354, 1.431644769, 2.973845992, 0]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
@@ -90,9 +97,13 @@ class nC8(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Kunz and Wagner (2004).",
-        "__doc__":  u"""Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M. "The GERG-2004 Wide-Range Reference Equation of State for Natural Gases and Other Mixtures," to be published as a GERG Technical Monograph, Fortschr.-Ber. VDI, VDI-Verlag, Düsseldorf, 2006.""",
+        "__doi__": {"autor": "Kunz, O., Wagner, W.",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
 #        "Pmin": 73.476, "rhomin": 29.249, 

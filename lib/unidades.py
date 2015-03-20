@@ -132,6 +132,9 @@ class unidad(float):
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
     def __new__(cls, data, unit="", magnitud=""):
+        if data is None:
+            data = 0
+
         return float.__new__(cls, data)
 
     def config(self, magnitud=""):
