@@ -26,11 +26,11 @@ class Benzene(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 40
 
-    CP1 = {"ao": 3.94645,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 2.94645],
+           "pow": [0, 1],
+           "ao_pow": [-0.6740687105, 2.5560188958],
            "ao_exp": [7.36374, 18.6490, 4.01834],
-           "exp": [4116.0, 1511.0, 630.0],
-           "ao_hyp": [], "hyp": []}
+           "titao": [4116/Tc, 1511/Tc, 630/Tc]}
 
     CP2 = {"ao": -0.478176/8.3143*78.108,
            "an": [0.618649e-2/8.3143*78.108, -0.380363e-5/8.3143*78.108,
@@ -42,9 +42,13 @@ class Benzene(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Thol et al. (2010).",
-        "__doc__":  u"""Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa, High Temperatures -- High Pressures;2012, Vol. 41 Issue 2, p81""",
+        "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
+                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
+                    "ref": "High Temperatures-High Pressures 01/2012; 41:81.",
+                    "doi": ""}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45, 
         "Pmin": 4.78, "rhomin": 11.45, 
@@ -74,6 +78,7 @@ class Benzene(MEoS):
         "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
         "R": 8.3143,
         "cp": CP2,
+        "ref": "NBP", 
 
         "Tmin": 278.7, "Tmax": 635.0, "Pmax": 78000.0, "rhomax": 11.45, 
         "Pmin": 6.0329, "rhomin": 11.385, 
@@ -102,7 +107,8 @@ class Benzene(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -136,9 +142,8 @@ class Benzene(MEoS):
         "ao": [-0.31147e1, -0.46689e1, -0.16161e2, -0.14650e3, 0.51887e3, -0.82772e3],
         "exp": [0.419, 1.12, 2.8, 7.3, 10., 12.]}
 
-
 if __name__ == "__main__":
-#    water=Benzene(T=278.674, s=211.06289982269442)
-    water=Benzene(T=278.674, s=-1500)
-#    water=Benzene(P=2e5, x=0.1)
-    print water.T, water.P.MPa, water.rho, water.h, water.s, water.x
+    for eq in (0, 2):
+        st=Benzene(T=353.22, P=101325., eq=eq)
+        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
