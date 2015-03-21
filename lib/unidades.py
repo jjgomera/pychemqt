@@ -109,6 +109,7 @@ class unidad(float):
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
 
+        
         if data is None:
             self._data = 0
             self.code = "n/a"
@@ -120,22 +121,38 @@ class unidad(float):
             unit = self.__units__[self.Config.getint('Units', magnitud)]
         elif not unit:
             unit = self.__units__[0]
-
-        try:
-            conversion = self.__class__.rates[unit]
-        except KeyError:
-            raise ValueError(
-                QApplication.translate("pychemqt", "Wrong input code"))
-
-        self._data *= conversion
+        self._data = self._getBaseValue(data, unit, magnitud)
         for key in self.__class__.rates:
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
     def __new__(cls, data, unit="", magnitud=""):
+        if not magnitud:
+            magnitud = cls.__name__
+        if data is None:
+            data = 0
+        elif unit:
+            data = cls._getBaseValue(data, unit, magnitud)
+
+        return float.__new__(cls, data)
+    
+    @classmethod
+    def _getBaseValue(cls, data, unit, magnitud):
         if data is None:
             data = 0
 
-        return float.__new__(cls, data)
+        if unit == "conf":
+            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+        elif not unit:
+            unit = cls.__units__[0]
+            
+        try:
+            conversion = cls.rates[unit]
+        except KeyError:
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
+        
+        data *= conversion
+        return data
 
     def config(self, magnitud=""):
         """Using config file return the value in the configurated unit"""
@@ -299,6 +316,32 @@ class Temperature(unidad):
         self.F = K2F(self._data)
         self.R = K2R(self._data)
         self.Re = K2Re(self._data)
+
+    @classmethod
+    def _getBaseValue(cls, data, unit, magnitud):
+        if data is None:
+            data = 0
+        if not magnitud:
+            magnitud = cls.__name__
+
+        if unit == "conf":
+            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+        elif not unit:
+            unit = "K"
+            
+        if unit == "C":
+            data = C2K(data)
+        elif unit == "F":
+            data = F2K(data)
+        elif unit == "R":
+            data = R2K(data)
+        elif unit == "Re":
+            data = Re2K(data)
+        elif unit != "K":
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
+
+        return data
 
 
 class DeltaT(unidad):
@@ -1129,6 +1172,32 @@ class Pressure(unidad):
         self.barg = (self.Pa-k.atm)/k.bar
         self.psig = (self.Pa-k.atm)/k.psi
         self.kgcm2g = (self.Pa-k.atm)*k.centi**2/k.g
+
+    @classmethod
+    def _getBaseValue(cls, data, unit, magnitud):
+        if data is None:
+            data = 0
+        if not magnitud:
+            magnitud = cls.__name__
+
+        if unit == "conf":
+            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+        elif not unit:
+            unit = "Pa"
+
+        if unit == "barg":
+            data = data*k.bar+k.atm
+        elif unit == "psig":
+            data = data*k.psi+k.atm
+        elif unit == "kgcm2g":
+            data = data*k.g/k.centi**2+k.atm
+        elif unit in cls.rates:
+            data = data * cls.rates[unit]
+        else:
+            raise ValueError(
+                QApplication.translate("pychemqt", "Wrong input code"))
+        
+        return data
 
 
 class DeltaP(unidad):
@@ -2586,3 +2655,5 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
+    P=Pressure(5, "MPa")
+    print P

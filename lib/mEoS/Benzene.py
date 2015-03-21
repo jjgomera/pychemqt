@@ -75,7 +75,10 @@ class Benzene(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Polt et al. (1992).",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP2,
         "ref": "NBP", 

@@ -8,13 +8,13 @@ from lib import unidades
 class C2(MEoS):
     """Multiparameter equation of state for ethane
 
-    >>> etano=C2(T=320, P=0.1)
-    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
-    320.0 1.1370 -50.518 37.433 0.12661 1.5604 1.8441 321.43
-
-    >>> etano=C2(s=-3.2312, rho=564.71)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
-    220.0 564.71 -632.80 -500.00 -3.2312 1.5517 2.3047 1580.15
+#    >>> etano=C2(T=320, P=0.1)
+#    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
+#    320.0 1.1370 -50.518 37.433 0.12661 1.5604 1.8441 321.43
+#
+#    >>> etano=C2(s=-3.2312, rho=564.71)
+#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
+#    220.0 564.71 -632.80 -500.00 -3.2312 1.5517 2.3047 1580.15
     """
     name = "ethane"
     CASNumber = "74-84-0"
@@ -33,12 +33,13 @@ class C2(MEoS):
     _rhor = unidades.Density(207.557649)
     _w = 0.095234716
 
-    CP1 = {"ao": 4.003039265,
-           "an": [], "pow": [],
+    Fi1 = {"R": 8.314472,
+           "ao_log": [1, 3.003039265],
+           "pow": [0, 1],
+           "ao_pow": [9.212802589, -4.68224855],
            "ao_exp": [1.117433359, 3.467773215, 6.941944640, 5.970850948],
-           "exp": [430.23083, 1224.3159, 2014.12064, 4268.34363],
-           "ao_hyp": [], "hyp": []}
-           
+           "titao": [1.4091052332, 4.0099170712, 6.5967098342, 13.9798102659]}
+
     Fi2 = {"ao_log": [1, 3.00263],
            "pow": [0, 1],
            "ao_pow": [24.675437527, -77.42531376],
@@ -75,9 +76,125 @@ class C2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Buecker and Wagner (2006)",
-        "__doc__":  u"""Bücker, D., Wagner, W. A Reference equation of state for the thermodynamic properties of ethane for temperatures from the melting line to 675 K and pressures up to 900 MPa. J. Phys. Chem. Ref. Data 35 (2006), 205 – 266.""",
+        "__doi__": {"autor": "Bücker, D., Wagner, W.",
+                    "title": "A Reference Equation of State for the Thermodynamic Properties of Ethane for Temperatures from the Melting Line to 675 K and Pressures up to 900 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 35, 205 (2006)",
+                    "doi": "10.1063/1.1859286"}, 
+        "__test__":
+            # Table 29, Pag 238
+            """
+            >>> st=C2(T=90.368, x=0.5)
+            >>> print "%0.6g %0.7f %0.5f %0.6f %0.5g %0.5g %0.4g %0.4g %0.4g %0.3f %0.4g %0.4g %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            90.368 0.0000011 651.52948 0.000046 -888.9 -294.12 -5.058 1.524 1.605 0.892 2.326 1.168 2008.69 180.93
+            >>> st=C2(T=100, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.4g %0.4g %0.4g %0.3f %0.4g %0.4g %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            100 0.000011 640.94852 0.00040 -866.74 -282.78 -4.825 1.015 1.541 0.911 2.283 1.187 1938.44 189.86
+            >>> st=C2(T=130, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            130 0.001284 607.82999 0.03576 -798.36 -246.43 -4.227 0.019 1.462 0.977 2.293 1.256 1722.03 214.69
+            >>> st=C2(T=150, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            150 0.009638 585.16884 0.23373 -752.12 -221.71 -3.896 -0.360 1.442 1.027 2.333 1.312 1575.53 228.84
+            >>> st=C2(T=180, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            180 0.078638 549.50874 1.62533 -680.84 -185.53 -3.464 -0.712 1.434 1.098 2.421 1.409 1350.47 245.54
+            >>> st=C2(T=210, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            210 0.333796 510.45075 6.23900 -605.9 -153.48 -3.081 -0.927 1.454 1.228 2.572 1.622 1117.27 254.02
+            >>> st=C2(T=240, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            240 0.966788 465.30887 17.43487 -524.72 -128.82 -2.726 -1.077 1.507 1.388 2.847 1.976 873.25 252.14
+            >>> st=C2(T=270, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            270 2.209980 407.71776 42.08922 -432.13 -118.38 -2.375 -1.212 1.605 1.595 3.491 2.815 608.92 237.02
+            >>> st=C2(T=300, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            300 4.357255 303.50879 114.50091 -305.32 -155.61 -1.952 -1.453 1.912 2.089 10.022 13.299 274.91 200.51
+            >>> st=C2(T=305, x=0.5)
+            >>> print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            305 4.839225 241.96149 170.75482 -255.73 -202.19 -1.794 -1.619 2.470 2.623 164.093 247.460 175.12 178.83
+            """
+            # Table 30, Pag 243
+            """
+            >>> st=C2(T=90.384, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            90.384 651.55 -888.88 -888.73 -5.0574 1.6051 2.3256 2008.97
+            >>> st=C2(T=135, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            135 602.5 -787.09 -786.26 -4.1415 1.4563 2.3009 1688.21
+            >>> st=C2(T=220, P=1e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            220 497.12 -581.36 -579.35 -2.9641 1.4681 2.6365 1044.02
+            >>> st=C2(T=110, P=1.5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            110 630.62 -844.43 -842.05 -4.6118 1.5041 2.2713 1872.62
+            >>> st=C2(T=675, P=2e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            675 10.756 754.73 940.67 1.1385 2.9468 3.2442 451.69
+            >>> st=C2(T=310, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            310 123.88 -181.86 -141.49 -1.4246 1.9621 8.6868 211.1
+            >>> st=C2(T=160, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            160 580.45 -734.04 -716.81 -3.7788 1.4493 2.3263 1563.69
+            >>> st=C2(T=500, P=2e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            500 164.96 184.25 305.49 -0.5687 2.3996 3.2172 416.34
+            >>> st=C2(T=100, P=5e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            100 658.54 -877.76 -801.84 -4.9448 1.6011 2.2516 2107.34
+            >>> st=C2(T=450, P=1e8)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 428.87 -108.47 124.7 -1.471 2.2729 2.9465 1075.84
+            >>> st=C2(T=675, P=9e8)
+            >>> print "%0.6g %0.5g %0.5g %0.6g %0.5g %0.5g %0.5g %0.6g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            675 632.88 443.09 1865.16 -0.95311 3.2264 3.638 2628.58
+            """, 
+            
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
         "Pmin": 0.00114, "rhomin": 21.668, 
@@ -216,9 +333,10 @@ class C2(MEoS):
             """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": CP4,
+        "cp": Fi1,
+        "ref": "OTO", 
 
-        "Tmin": 90.352, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 22.419, 
+        "Tmin": 90.352, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 22.419, 
         "Pmin": 0.0010902, "rhomin": 21.721, 
 
         "nr1": [0.97628068, -0.26905251e1, 0.73498222, -0.35366206e-1,
@@ -241,7 +359,7 @@ class C2(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
         "Pmin": 0.00114, "rhomin": 21.668, 
