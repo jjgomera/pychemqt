@@ -690,7 +690,6 @@ class MEoS(_fase):
                 self.status = 1
                 self.msg = ""
             else:
-                print T, rho
                 self.status = 5
                 self.msg = QApplication.translate("pychemqt", "input out of range")
                 return 

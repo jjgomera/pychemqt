@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class C3(MEoS):
-    """Multiparameter equation of state for propane
-
-    >>> propano=C3(T=500, P=50)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (propano.T, propano.rho, propano.u.kJkg, propano.h.kJkg, propano.s.kJkgK, propano.cv.kJkgK, propano.cp.kJkgK, propano.w)
-    500.0 411.91 730.19 851.57 2.4327 2.4649 3.0773 725.76
-    """
+    """Multiparameter equation of state for propane"""
     name = "propane"
     CASNumber = "74-98-6"
     formula = "CH3CH2CH3"
@@ -29,12 +24,13 @@ class C3(MEoS):
     _rhor = unidades.Density(221.906745)
     _w = 0.149041513
 
-    CP1 = {"ao": 4,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-4.970583, 4.29352],
            "ao_exp": [3.043, 5.874, 9.337, 7.922],
-           "exp": [393, 1237, 1984, 4351],
+           "titao": [393/Tc, 1237/Tc, 1984/Tc, 4351/Tc], 
            "ao_hyp": [], "hyp": []}
-           
+
     Fi2 = {"ao_log": [1, 3.02939],
            "pow": [0, 1],
            "ao_pow": [31.602908195, -84.463284382],
@@ -76,9 +72,107 @@ class C3(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Lemmon et al. (2009)",
-        "__doc__":  u"""Lemmon, E.W., McLinden, M.O., Wagner, W. "Thermodynamic Properties of Propane.  III.  A Reference Equation of State for Temperatures from the Melting Line to 650 K and Pressures up to 1000 MPa," J. Chem. Eng. Data, 54:3141-3180, 2009""",
+        "__doi__": {"autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
+                    "title": "Thermodynamic Properties of Propane.  III.  A Reference Equation of State for Temperatures from the Melting Line to 650 K and Pressures up to 1000 MPa", 
+                    "ref": "J. Chem. Eng. Data, 2009, 54 (12), pp 3141–3180",
+                    "doi": "10.1021/je900217v"}, 
+        "__test__":
+            # Table 5, Pag AH
+            """
+            >>> st=C3(T=200, rhom=14)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            200.0 14.0 2.3795138 61.078424 93.475362 1381.9552
+            >>> st=C3(T=300, rhom=12)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300.0 12.0 19.053797 73.972542 108.61529 958.4052
+            >>> st=C3(T=300, rhom=0.4)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300.0 0.4 0.84694991 69.021875 85.753997 221.88959
+            >>> st=C3(T=400, rhom=5)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            400.0 5.0 6.646284 97.017439 271.07044 194.65847
+            >>> st=C3(T=369.9, rhom=5)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            369.9 5.0 4.2519399 117.71621 753625 130.898
+            """
+            # Table A1, Pag A1
+            """
+            >>> st=C3(T=C3.Tt, x=0.5)
+            >>> print "%0.6g %0.4e %0.2f %0.2e %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            -187.625 1.7203e-10 733.13 1.07e-08 -196.64 366.26 -1.396 5.186 1.355 0.6907 1.916 0.8792 2136.4 143.3
+            >>> st=C3(T=-110+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5f %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            -110 0.0011644 654.05 0.03790 -43.988 445.38 -0.1298 2.87 1.343 0.9614 2.032 1.151 1611.8 191.7
+            >>> st=C3(T=-50+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.1f %0.4g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            -50 0.070569 589.9 1.727 82.753 516.48 0.5298 2.473 1.428 1.182 2.212 1.397 1212.5 216.5
+            >>> st=C3(T=273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            0 0.47446 528.59 10.351 200 574.87 1 2.372 1.572 1.427 2.493 1.739 885.5 221.3
+            >>> st=C3(T=20+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            20 0.83646 500.06 18.082 251.64 595.95 1.18 2.354 1.647 1.544 2.666 1.949 752.9 217.2
+            >>> st=C3(T=40+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            40 1.3694 467.46 30.165 307.15 614.21 1.359 2.34 1.732 1.678 2.913 2.263 617.0 208.6
+            >>> st=C3(T=60+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            60 2.1168 427.97 49.493 368.14 627.36 1.543 2.321 1.832 1.836 3.337 2.841 474.2 194.1
+            >>> st=C3(T=80+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            80 3.1319 373.29 84.406 438.93 628.73 1.742 2.279 1.969 2.057 4.545 4.707 314.9 171.6
+            >>> st=C3(T=85+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            85 3.4361 353.96 98.818 459.81 624.75 1.798 2.259 2.023 2.144 5.433 6.182 269.1 164.1
+            >>> st=C3(T=90+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            90 3.7641 328.83 119 483.71 616.47 1.862 2.227 2.107 2.26 7.623 9.888 218.3 155.5
+            >>> st=C3(T=95+273.15, x=0.5)
+            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            95 4.1195 286.51 156.31 516.33 595.81 1.948 2.164 2.302 2.467 23.59 36.07 158.1 144.1
+            """
+            , 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 1000000.0, "rhomax": 20.6, 
         "Pmin": 0.00000017, "rhomin": 16.63, 
@@ -107,7 +201,11 @@ class C3(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Buecker and Wagner (2006)",
-        "__doc__":  u"""Bücker, D., Wagner, W. Reference equations of state for the thermodynamic properties of fluid phase n-butane and isobutane. J. Phys. Chem. Ref. Data 35 (2006), 929 – 1020.""",
+        "__doi__": {"autor": "Bücker, D., Wagner, W.",
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
+                    "doi": "10.1063/1.1901687"}, 
+                    
         "R": 8.314472,
         "cp": CP2,
 
@@ -164,8 +262,7 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
@@ -217,17 +314,18 @@ class C3(MEoS):
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-        "__test__": """
-            >>> st=C3(T=700, rho=200, eq=5)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2350 21.175 3.5658
-            >>> st2=C3(T=750, rho=100, eq=5)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            212.66 0.41879
-            """, # Table III, Pag 46
+#        "__test__": """
+#            >>> st=C3(T=700, rho=200, eq=5)
+#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+#            3.2350 21.175 3.5658
+#            >>> st2=C3(T=750, rho=100, eq=5)
+#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+#            212.66 0.41879
+#            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP6,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
         "Pmin": 0.00000015304, "rhomin": 16.706, 
@@ -252,7 +350,8 @@ class C3(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -393,3 +492,11 @@ class C3(MEoS):
                "Z": 8.117e-10}
 
     _thermal = thermo0, thermo1
+
+if __name__ == "__main__":
+
+    st=C3(T=85.525, x=0.5)
+    print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
+        st.T.K, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+        st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+        st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
