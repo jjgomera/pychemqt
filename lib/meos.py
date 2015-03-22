@@ -497,12 +497,12 @@ class MEoS(_fase):
                     rhoo = self._Vapor_Density(T)
                 elif T > 2*self.Tc or P > 2*self.Pc:
                     rhoo = self.eq[eq]["rhomax"]*self.M
-#                elif 0.99*self.Tc <= T < self.Tc and self.Pc*0.9 < P < self.Pc:
-#                    rhoo = self.rhoc
+                elif 0.99*self.Tc <= T < self.Tc and self.Pc*0.9 < P < self.Pc:
+                    rhoo = self.rhoc
                 else:
                     rhoo = P/T/self.R
                 rinput = fsolve(lambda rho: self._eq(rho, T)["P"]-P, rhoo, full_output=True)
-
+            
                 if rinput[2] != 1:
                     self.status = 0
                     return
@@ -686,10 +686,11 @@ class MEoS(_fase):
                 self.status = 3
                 self.msg = QApplication.translate("pychemqt", "Ideal condition at zero pressure")
             elif self._constants["Tmin"]<=T<=self._constants["Tmax"] and \
-                    0 < rho <= self._constants["rhomax"]*self.M:
+                    0 < rho:# <= self._constants["rhomax"]*self.M:
                 self.status = 1
                 self.msg = ""
             else:
+                print T, rho
                 self.status = 5
                 self.msg = QApplication.translate("pychemqt", "input out of range")
                 return 
@@ -770,12 +771,19 @@ class MEoS(_fase):
         cp0 = self._prop0(rho, self.T)
         self.v0 = unidades.SpecificVolume(cp0.v)
         self.rho0 = unidades.Density(1./self.v0)
+        self.rhoM0 = unidades.MolarDensity(self.rho0/self.M)
         self.h0 = unidades.Enthalpy(cp0.h)
+        self.hM0 = unidades.MolarEnthalpy(self.h0/self.M)
         self.u0 = unidades.Enthalpy(self.h0-self.P*self.v0)
+        self.uM0 = unidades.MolarEnthalpy(self.u0/self.M)
         self.s0 = unidades.SpecificHeat(cp0.s)
+        self.sM0 = unidades.MolarSpecificHeat(self.s0/self.M)
         self.a0 = unidades.Enthalpy(self.u0-self.T*self.s0)
+        self.aM0 = unidades.MolarEnthalpy(self.a0/self.M)
         self.g0 = unidades.Enthalpy(self.h0-self.T*self.s0)
+        self.gM0 = unidades.MolarEnthalpy(self.g0/self.M)
         self.cp0 = unidades.SpecificHeat(cp0.cp)
+        self.cpM0 = unidades.MolarSpecificHeat(self.cp0/self.M)
         self.cv0 = unidades.SpecificHeat(cp0.cv)
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
         if self.rho0:

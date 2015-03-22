@@ -142,7 +142,7 @@ if __name__ == "__main__":
             continue
         print module.__module__
         inst = module()
-        for eq in inst.eq:
+        for eq in inst.eq[3:]:
             if "__test__" in eq:
                 inst.__doc__ += eq["__test__"]
         for eq in inst._viscosity:

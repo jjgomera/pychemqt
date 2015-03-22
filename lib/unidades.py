@@ -291,7 +291,7 @@ class Temperature(unidad):
             data = 0
             self.code = "n/a"
         else:
-            data = data
+            data = float(data)
             self.code = ""
 
         if unit == "conf":
@@ -2657,3 +2657,6 @@ if __name__ == "__main__":
 
     P=Pressure(5, "MPa")
     print P
+
+    T=Temperature(5)
+    print T, type(T.K), T.C

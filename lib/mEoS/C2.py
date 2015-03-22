@@ -6,16 +6,7 @@ from lib import unidades
 
 
 class C2(MEoS):
-    """Multiparameter equation of state for ethane
-
-#    >>> etano=C2(T=320, P=0.1)
-#    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
-#    320.0 1.1370 -50.518 37.433 0.12661 1.5604 1.8441 321.43
-#
-#    >>> etano=C2(s=-3.2312, rho=564.71)
-#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.4f %0.4f %0.4f %0.2f" % (etano.T, etano.rho, etano.u.kJkg, etano.h.kJkg, etano.s.kJkgK, etano.cv.kJkgK, etano.cp.kJkgK, etano.w)
-#    220.0 564.71 -632.80 -500.00 -3.2312 1.5517 2.3047 1580.15
-    """
+    """Multiparameter equation of state for ethane"""
     name = "ethane"
     CASNumber = "74-84-0"
     formula = "CH3CH3"
@@ -52,12 +43,11 @@ class C2(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [4.33939, 1.23722, 13.1974, -6.01989],
            "hyp": [1.831882406*Tc, 0.731306621*Tc, 3.378007481*Tc, 3.508721939*Tc]}
-
-    CP3 = {"ao": 4.8159476,
-           "an": [-3.8231688/Tc**0.333, 3.6750817/Tc**0.667, 1.1191336/Tc],
-           "pow": [1./3, 2./3, 1],
-           "ao_exp": [5.0722267],
-           "exp": [-1.681601128e3],
+           
+    Fi3 = {"ao_log": [1, 3.8159476],
+           "pow": [0, -1./3, -2./3, -1],
+           "ao_pow": [-23.446765, 8.6021299, -3.3075735, -.55956678],
+           "ao_exp": [5.0722267], "titao": [5.5074874], 
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": 4.00263,
@@ -259,8 +249,7 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
@@ -290,10 +279,145 @@ class C2(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Friend et al. (1991)",
-        "__doc__":  u"""Friend, D.G., Ingham, H., and Ely, J.F., "Thermophysical Properties of Ethane," J. Phys. Chem. Ref. Data, 20(2):275-347, 1991.""",
-        "R": 8.31451,
-        "cp": CP3,
+        "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
+                    "title": "Thermophysical Properties of Ethane", 
+                    "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
+                    "doi": "10.1063/1.555881"}, 
+        "__test__":
+            # Table A1, Pag 336
+#            """
+#            >>> st=C2(T=500, P=1e5, eq=3)
+#            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+#                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
+#            500 -110.311 25.059 262.43 77.987
+#            """
+            # Table A2, Pag 337
+            """
+            >>> st=C2(T=92, x=0.5, eq=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            92 1.7e-06 21.61 2.27e-06 67.74 1987.2 1193.00 254.4
+            >>> st=C2(T=100, x=0.5, eq=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            100 1.1e-05 21.32 1.33e-05 70.09 1937.6 876.96 248.1
+            >>> st=C2(T=150, x=0.5, eq=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            150 9.7e-3 19.47 7.80e-3 70.27 1573.2 270.35 201.0
+            >>> st=C2(T=200, x=0.5, eq=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            200 0.217 17.42 0.139 74.86 1194.4 138.17 152.5
+            >>> st=C2(T=250, x=0.5, eq=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            250 1.301 14.89 0.787 87.29 794.6 78.06 109.1
+            >>> st=C2(T=300, x=0.5, eq=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            300 4.356 10.10 3.813 182.06 278.4 35.01 71.3
+            >>> st=C2(T=302, x=0.5, eq=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            302 4.543 9.59 4.262 223.66 246.4 32.44 72.0
+            >>> st=C2(T=304, rhom=8.82, eq=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            304 4.738 8.82 4.969 354.78 209.4 28.97 79.0
+            """
+            # Table A3, Pag 339
+            """
+            >>> st=C2(T=130, P=1e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            130 1 20.24 -12.071 102.03 45.01 70.10 1726.9 392.40 221.3
+            >>> st=C2(T=140, P=6e7, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            140 60 20.80 -9.131 102.52 46.34 67.67 1921.7 476.29 245.7
+            >>> st=C2(T=160, P=2e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            160 2 19.13 -9.933 116.48 43.04 70.44 1511.1 235.10 192.5
+            >>> st=C2(T=180, P=1e5, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            180 0.1 18.28 -8.571 125.09 42.65 72.41 1347.8 176.42 171.5
+            >>> st=C2(T=200, P=1e7, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            200 10 17.79 -6.804 131.51 43.41 73.00 1281.7 151.38 161.5
+            >>> st=C2(T=240, P=1e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            240 1 15.47 -3.894 147.18 44.93 85.36 878.8 87.70 117.4
+            >>> st=C2(T=270, P=2e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            270 2 1.20 8.589 194.29 47.40 76.57 245.2 9.33 21.6
+            >>> st=C2(T=280, P=5e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            280 5 13.26 -0.228 160.21 48.73 103.93 603.7 57.96 90.7
+            >>> st=C2(T=300, P=1e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            300 1 0.43 11.364 209.01 45.59 57.20 296.8 9.65 22.2
+            >>> st=C2(T=330, P=5e5, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            330 0.5 0.19 13.366 220.86 48.51 57.89 320.8 10.37 25.6
+            >>> st=C2(T=360, P=2e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            360 2 0.73 14.5 213.23 53.11 65.46 319.6 11.65 31.1
+            >>> st=C2(T=400, P=5e6, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            400 5 1.77 16.051 210.58 59.05 76.57 322.4 13.91 40.0
+            >>> st=C2(T=430, P=2e7, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            430 20 7.42 14.158 197.14 64.79 101.22 409.8 27.52 66.5
+            >>> st=C2(T=480, P=1e5, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            480 0.1 0.03 23.500 259.25 67.28 75.67 385.8 14.28 50.1
+            >>> st=C2(T=500, P=6e7, eq=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            500 60 11.21 19.385 199.38 73.24 95.28 752.5 48.34 101.4
+            """, 
 
+        "R": 8.31451,
+        "cp": Fi3,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874, "so": 229.12}, 
+        "Tt": 90.352, "Tc": 305.33, "Pc": 4871.8, "rhoc": 6.87, "M": 30.07, 
+        
         "Tmin": 90.352, "Tmax": 625.0, "Pmax": 70000.0, "rhomax": 22.419, 
         "Pmin": 1.130e-3, "rhomin": 21.665, 
 
@@ -360,6 +484,7 @@ class C2(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
         "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
         "Pmin": 0.00114, "rhomin": 21.668, 
@@ -405,7 +530,10 @@ class C2(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.17067154, -0.48879666, 0.039038856],
               "__name__": "Friend (1991)",
-              "__doc__": """Friend, D.G., Ingham, H., and Ely, J.F., "Thermophysical Properties of Ethane," J. Phys. Chem. Ref. Data, 20(2):275-347, 1991.""",
+              "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
+                          "title": "Thermophysical Properties of Ethane", 
+                          "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
+                          "doi": "10.1063/1.555881"}, 
               "ek": 245.0, "sigma": 0.43682,
               "Tref": 1, "rhoref": 1.*M,
               "n_chapman": 0.1463897/M**0.5,
@@ -455,7 +583,10 @@ class C2(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Friend (1991)",
-               "__doc__": """Friend, D.G., Ingham, H., and Ely, J.F., "Thermophysical Properties of Ethane," J. Phys. Chem. Ref. Data, 20(2):275-347, 1991.""",
+               "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
+                           "title": "Thermophysical Properties of Ethane", 
+                           "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
+                           "doi": "10.1063/1.555881"}, 
 
                "Tref": 245.0, "kref": 1e-3,
                "no": [1.7104147, -0.6936482, 0],
@@ -473,3 +604,23 @@ class C2(MEoS):
                "Xio": 0.19e-9, "gam0": 0.0563, "qd": -0.545e-9, "Tcref": 610.66}
 
     _thermal = thermo0,
+
+
+if __name__ == "__main__":
+#    for eq in (0, 2, 3, 4, 5):
+#        try:
+#            st=C2(T=298.15, P=101325., eq=eq)
+#            print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+#                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+#        except:
+#            pass
+
+#    st=C2(T=500, P=1e5, eq=3)
+#    print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+#        st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK, st.mu.muPas, st.k.mWmK)
+
+    st = C2(eq=3)
+    print st._Vapor_Pressure(292).MPa
+#    print "%0.6g %0.2g %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+#                st.T, st.P.MPa, st.Liquido.rhoM, st.Liquido.cpM.JmolK, st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+#_Vapor_Pressure
