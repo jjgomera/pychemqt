@@ -24,12 +24,6 @@ class CH4(MEoS):
     _rhor = unidades.Density(163.413536)
     _w = 0.010528102
 
-    CP1 = {"ao": 4.00160,
-           "an": [], "pow": [],
-           "ao_exp": [0.008449, 4.6942, 3.4865, 1.6572, 1.4115],
-           "exp": [648, 1957, 3895, 5705, 15080],
-           "ao_hyp": [], "hyp": []}
-           
     Fi1 = {"ao_log": [1, 3.00160],
            "pow": [0, 1],
            "ao_pow": [9.91243972, -6.33270087],
@@ -45,11 +39,10 @@ class CH4(MEoS):
            "ao_hyp": [0.76315, 0.0046, 8.74432, -4.46921],
            "hyp": [4.306474465, 0.936220902, 5.577233895, 5.722644361]}
 
-    CP3 = {"ao": 3.5998324,
-           "an": [2.614717613495e-1, -5.671028952515e-2, 4.105505612671e-3],
-           "pow": [1./3, 2./3, 1],
-           "ao_exp": [4.7206715],
-           "exp": [2009.15202],
+    Fi3 = {"ao_log": [1, 2.5998324],
+           "pow": [0, -1./3, -2./3, -1],
+           "ao_pow": [-10.413865, -3.3854083, 1.6900979, -0.3911541],
+           "ao_exp": [4.7206715], "titao": [10.543907], 
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": 0.15438149595e2,
@@ -332,8 +325,7 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
@@ -363,9 +355,159 @@ class CH4(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Friend et al. (1989)",
-        "__doc__":  u"""Friend, D.G., Ely, J.F., and Ingham, H., "Thermophysical Properties of Methane," J. Phys. Chem. Ref. Data, 18(2):583-638, 1989.""",
+        "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+                    "title": "Thermophysical Properties of Methane", 
+                    "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
+                    "doi": "10.1063/1.555828"}, 
+        "__test__":
+            # Table A1, Pag 630
+#            """
+#            >>> st=CH4(T=100, P=1e5, eq=3)
+#            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+#                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
+#            100 -12.479 3.311 149.58 33.277
+#            """
+            # Table A2, Pag 337
+            """
+            >>> st=CH4(T=92, x=0.5, eq=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            92 0.014 28.04 0.018 53.37 1532.7 194.89 209.7
+            >>> st=CH4(T=100, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            100 0.034 27.35 0.042 54.80 1444.3 156.97 199.5
+            >>> st=CH4(T=110, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            110 0.088 26.47 0.100 55.72 1344.7 122.39 186.0
+            >>> st=CH4(T=120, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            120 0.192 25.55 0.204 56.68 1245.3 97.85 172.0
+            >>> st=CH4(T=130, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            130 0.368 24.56 0.373 58.05 1142.2 79.97 157.8
+            >>> st=CH4(T=140, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            140 0.642 23.50 0.633 60.05 1033.3 66.42 143.6
+            >>> st=CH4(T=150, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            150 1.041 22.31 1.018 62.98 917.2 55.67 129.3
+            >>> st=CH4(T=160, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            160 1.593 20.96 1.584 67.42 791.5 46.70 115.0 
+            >>> st=CH4(T=170, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            170 2.329 19.35 2.432 75.04 653.2 38.76 100.5
+            >>> st=CH4(T=180, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            180 3.287 17.21 3.827 92.96 496.4 31.01 85.5
+            >>> st=CH4(T=190, x=0.5, eq=3, visco=3)
+            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
+                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
+            190 4.521 12.5 7.827 389.9 264.3 19.75 100.3
+            """
+            # Table A3, Pag 339
+            """
+            >>> st=CH4(T=100, P=1e5, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            100 0.1 27.37 -5.242 73.05 34.08 54.64 1446.8 157.48 199.8
+            >>> st=CH4(T=110, P=1e7, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            110 10 27.01 -4.449 77.13 33.86 54.39 1435.8 137.99 196.6
+            >>> st=CH4(T=120, P=2e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            120 2 25.68 -4.084 82.95 32.71 56.59 1268.0 100.43 174.4
+            >>> st=CH4(T=130, P=1e7, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            130 10 25.31 -3.348 86.32 32.27 55.81 1258.7 91.19 170.4
+            >>> st=CH4(T=140, P=5e7, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            140 50 26.69 -1.866 85.92 33.44 51.40 1496.4 122.21 199.6
+            >>> st=CH4(T=160, P=2e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            160 2 21.05 -1.634 100.48 30.52 70.18 804.0 47.23 116.0
+            >>> st=CH4(T=180, P=1e5, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            180 0.1 0.07 5.937 169.02 25.18 33.77 350.7 7.01 19.4
+            >>> st=CH4(T=200, P=1e7, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            200 10 16.59 1.159 113.68 30.21 84.94 566.0 29.72 84.1
+            >>> st=CH4(T=240, P=1e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            240 1 0.52 7.760 159.01 26.08 35.84 398.2 9.36 27.4
+            >>> st=CH4(T=270, P=2e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            270 2 0.94 8.641 156.96 26.90 37.46 419.5 10.58 31.9
+            >>> st=CH4(T=280, P=5e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            280 5 2.40 8.451 149.22 27.75 42.04 420.0 11.68 36.1
+            >>> st=CH4(T=300, P=1e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            300 1 0.41 9.927 167.07 27.61 36.72 447.0 11.35 35.0
+            >>> st=CH4(T=330, P=5e5, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            330 0.5 0.18 11.109 176.53 28.76 37.38 468.7 12.21 39.0
+            >>> st=CH4(T=360, P=2e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            360 2 0.68 12.083 167.95 30.34 39.67 486.4 13.35 44.4
+            >>> st=CH4(T=400, P=5e6, eq=3, visco=3)
+            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
+                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
+                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
+            400 5 1.53 13.441 164.04 32.65 42.95 512.9 14.96 52.6
+            """, 
+
         "R": 8.31451,
-        "cp": CP3,
+        "cp": Fi3,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10017.7, "so": 186.266}, 
+        "Tt": 90.6854, "Tc": 190.551, "rhoc": 10.139, "M": 16.043, 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 100000.0, "rhomax": 29.714, 
         "Pmin": 11.694, "rhomin": 28.145, 
@@ -549,7 +691,11 @@ class CH4(MEoS):
 
     visco3 = {"eq": 1, "omega": 2,
               "__name__": "Friend (1989)",
-              "__doc__": """Friend, D.G., Ely, J.F., and Ingham, H., "Tables for the Thermophysical Properties of Methane," NIST Technical Note 1325, 1989.""",
+              "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+                          "title": "Thermophysical Properties of Methane", 
+                          "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
+                          "doi": "10.1063/1.555828"}, 
+                          
               "Tref": 174., "etaref": 10.0,
               "ek": 174., "sigma": 0.36652,
               "n_chapman": 0.14105376/M**0.5,
@@ -572,7 +718,10 @@ class CH4(MEoS):
 
     thermo0 = {"eq": 1, "critical": "CH4",
                "__name__": "Friend (1989)",
-               "__doc__": """Friend, D.G., Ely, J.F., and Ingham, H., "Tables for the Thermophysical Properties of Methane," NIST Technical Note 1325, 1989.""",
+               "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+                           "title": "Thermophysical Properties of Methane", 
+                           "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
+                           "doi": "10.1063/1.555828"}, 
 
                "Tref": 174., "kref": 1e-3,
                "no": [1.45885, -0.4377162, 0],
@@ -603,7 +752,7 @@ class CH4(MEoS):
 
 if __name__ == "__main__":
 
-    for eq in (0, 2, 4, 5):
-        st=CH4(T=300, P=1e6, eq=eq)
+    for eq in (0, 2, 3, 4, 5):
+        st=CH4(T=298.15, P=101325, eq=eq)
         print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
             st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
