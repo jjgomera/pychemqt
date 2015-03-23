@@ -38,22 +38,18 @@ class C3(MEoS):
            "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
            "hyp": [1.297521801, 0.543210978, 2.583146083, 2.777773271]}
 
-    CP2 = {"ao": 4.02256195,
-           "an": [], "pow": [],
+    Fi3 = {"ao_log": [1, 3.02256195],
+           "pow": [0, 1],
+           "ao_pow": [10.14394256, -4.79513693],
            "ao_exp": [2.90591124, 4.68495401, 10.2971154, 8.08977905],
-           "exp": [388.87291, 1145.03868, 1880.40472, 4228.18881],
+           "titao": [1.0515052038, 3.0961635368, 5.0845797877, 11.4329447982], 
            "ao_hyp": [], "hyp": []}
-
-    CP3 = {"ao": 4.02939,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
-           "hyp": [1.297521801*Tc, 0.543210978*Tc, 2.583146083*Tc, 2.777773271*Tc]}
-
-    CP4 = {"ao": 4.021394,
-           "an": [], "pow": [],
-           "ao_exp": [2.889980, 4.474243, 1.048251e1, 8.139803],
-           "exp": [387.69088, 1129.1386, 1864.95906, 4224.43701],
+           
+    Fi4 = {"ao_log": [1, 3.021394],
+           "pow": [0, 1],
+           "ao_pow": [-4.992402, 4.291476],
+           "ao_exp": [2.889980, 4.474243, 8.139803, 10.48251],
+           "titao": [1.048309, 3.053170, 11.42280, 5.042815], 
            "ao_hyp": [], "hyp": []}
 
     CP5 = {"ao": -5.4041204338,
@@ -207,7 +203,8 @@ class C3(MEoS):
                     "doi": "10.1063/1.1901687"}, 
                     
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi3,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
         "Pmin": 0.00000017, "rhomin": 16.62, 
@@ -287,9 +284,13 @@ class C3(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Miyamoto and Watanabe (2001)",
-        "__doc__":  u"""Miyamoto, H. and Watanabe, K. "A Thermodynamic Property Model for Fluid-Phase Propane," Int. J. Thermophys., 21(5):1045-1072, 2000.""",
+        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase Propane", 
+                    "ref": "Int. J. Thermophys., 21(5):1045-1072, 2000.",
+                    "doi":  "10.1023/A:1026441903474"}, 
         "R": 8.314472,
-        "cp": CP4,
+        "cp": Fi4,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 623.0, "Pmax": 103000.0, "rhomax": 17.41, 
         "Pmin": 0.00000017, "rhomin": 16.64, 
@@ -324,8 +325,10 @@ class C3(MEoS):
 #            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": CP6,
-        "ref": "OTO", 
+#        "cp": CP6,
+#        "ref": "OTO", 
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
         "Pmin": 0.00000015304, "rhomin": 16.706, 
@@ -494,9 +497,7 @@ class C3(MEoS):
     _thermal = thermo0, thermo1
 
 if __name__ == "__main__":
-
-    st=C3(T=85.525, x=0.5)
-    print "%0.6g %0.6f %0.5f %0.5f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-        st.T.K, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-        st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-        st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+    for eq in (0, 2, 3, 4, 5, 6):
+        st=C3(T=298.15, P=101325, eq=eq)
+        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
