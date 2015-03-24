@@ -6,20 +6,7 @@ from lib import unidades
 
 
 class CO2(MEoS):
-    """Multiparameter equation of state for carbon dioxide
-
-    >>> co2=CO2(T=700, P=8)
-    >>> print "%0.i %.3f %.2f %.2f %.5f %.5f %.4f %0.2f" % (co2.T, co2.rho, co2.u.kJkg, co2.h.kJkg, co2.s.kJkgK, co2.cv.kJkgK, co2.cp.kJkgK, co2.w)
-    700 60.457 259.50 391.82 -0.00193 0.94470 1.1676 405.18
-
-    >>> co2=CO2(T=525, P=0.1)
-    >>> print "%0.i %.4f %.2f %.2f %.5f %.5f %.4f %0.2f" % (co2.T, co2.rho, co2.u.kJkg, co2.h.kJkg, co2.s.kJkgK, co2.cv.kJkgK, co2.cp.kJkgK, co2.w)
-    525 1.0088 114.93 214.06 0.53169 0.84192 1.0317 348.43
-
-    >>> co2=CO2(h=0.63726, rho=1.7966)
-    >>> print "%0.1f %.4f %.3f %.5f %.5f %.5f %.5f %0.2f" % (co2.T, co2.rho, co2.u.kJkg, co2.h.kJkg, co2.s.kJkgK, co2.cv.kJkgK, co2.cp.kJkgK, co2.w)
-    300.0 1.7966 -55.760 0.63726 0.00308 0.65935 0.85262 269.38
-    """
+    """Multiparameter equation of state for carbon dioxide"""
     name = "carbon dioxide"
     CASNumber = "124-38-9"
     formula = "CO2"
@@ -39,6 +26,14 @@ class CO2(MEoS):
            "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
            "exp": [958.49956, 1858.80115, 2061.10114, 3443.89908, 8238.20035],
            "ao_hyp": [], "hyp": []}
+    
+    Fi1 = {"ao_log": [1, 2.5],
+           "pow": [0, 1],
+           "ao_pow": [8.37304456, -3.70454304],
+           "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
+           "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792], 
+           "ao_hyp": [], "hyp": []}
+
            
     Fi2 = {"ao_log": [1, 2.50002],
            "pow": [0, 1],
@@ -61,9 +56,143 @@ class CO2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Span and Wagner (1996)",
-        "__doc__":  u"""Span, R., Wagner, W. A new equation of state for carbon dioxide covering the fluid region from the triple-point temperature to 1100 K at pressures up to 800 MPa. J. Phys. Chem. Ref. Data 25 (1996), 1509 – 1596.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "A New Equation of State for Carbon Dioxide Covering the Fluid Region from the Triple‐Point Temperature to 1100 K at Pressures up to 800 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 25, 1509 (1996)",
+                    "doi": "10.1063/1.555991"}, 
+        "__test__": 
+            # Table 34, Pag 1560
+            """
+            >>> st=CO2(T=216.592, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            216.592 0.51796 1178.46 13.761 -426.74 -76.364 -2.2177 -0.59999 0.97466 0.62921 1.9532 0.90872 975.85 222.78
+            >>> st=CO2(T=230, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            230 0.89291 1128.68 23.271 -400.21 -72.178 -2.1003 -0.67406 0.95667 0.67004 1.997 1.0053 879.09 223.57
+            >>> st=CO2(T=240, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            240 1.2825 1088.87 33.295 -379.94 -70.293 -2.0155 -0.72532 0.94535 0.70534 2.051 1.1033 806.38 222.96
+            >>> st=CO2(T=250, x=0.5)
+            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            250 1.785 1045.97 46.644 -359.07 -69.736 -1.9323 -0.77492 0.93643 0.74591 2.132 1.2366 731.78 221.22
+            >>> st=CO2(T=260, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            260 2.4188 998.89 64.417 -337.34 -70.862 -1.8495 -0.82456 0.93227 0.79426 2.2554 1.4295 652.58 218.19
+            >>> st=CO2(T=270, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            270 3.2033 945.83 88.374 -314.37 -74.223 -1.7658 -0.87641 0.93959 0.85168 2.4534 1.7307 565.46 213.75
+            >>> st=CO2(T=280, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            280 4.1607 883.58 121.74 -289.48 -80.84 -1.6792 -0.93401 0.96046 0.92316 2.8141 2.2769 471.54 207.72
+            >>> st=CO2(T=290, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            290 5.3177 804.67 171.96 -261.15 -93.025 -1.5846 -1.0049 0.99373 1.026 3.6756 3.6142 371.95 199.45
+            >>> st=CO2(T=300, x=0.5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            300 6.7131 679.24 268.58 -223.4 -119.7 -1.4631 -1.1175 1.1199 1.2476 8.6979 11.921 245.67 185.33
+            >>> st=CO2(T=304.1282, x=0.5)
+            >>> print "%0.7g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Gas.rho, st.Gas.h.kJkg, st.Gas.s.kJkgK)
+            304.1282 7.3773 467.6 -174.53 -1.3054
+            """
+            # Table 35, Pag 1562
+            """
+            >>> st=CO2(T=190, P=5e4)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            190 1.4089 -121.78 -86.286 -0.22345 0.54661 0.7466 218.9
+            >>> st=CO2(T=1100, P=5e4)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            1100 0.24057 675.87 883.71 1.5137 1.0702 1.2592 494.54
+            >>> st=CO2(T=280, P=1e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            280 1.9021 -68.784 -16.209 -0.05256 0.639 0.8333 261.03
+            >>> st=CO2(T=300, P=101325)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 1.7966 -55.76 0.63726 0.00307 0.65935 0.85262 269.38
+            >>> st=CO2(T=1100, P=2e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            1100 0.96197 675.75 883.66 1.2517 1.0702 1.2594 494.75
+            >>> st=CO2(T=500, P=5e5)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            500 5.3126 93.079 187.19 0.1757 0.82672 1.0207 340.25
+            >>> st=CO2(T=220, P=1e6)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            220 1167.03 -420.8 -419.95 -2.1884 0.97034 1.9589 953.55
+            >>> st=CO2(T=300, P=2e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 39.42 -69.155 -18.42 -0.60581 0.71116 1.0206 254.15
+            >>> st=CO2(T=500, P=5e6)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            500 54.826 81.644 172.84 -0.28196 0.84035 1.084 337.43
+            >>> st=CO2(T=300, P=1e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 801.62 -257.46 -244.98 -1.5496 0.94964 2.9906 414.28
+            >>> st=CO2(T=1000, P=2e7)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            1000 101.27 553.1 750.6 0.24652 1.0516 1.2727 501.16
+            >>> st=CO2(T=300, P=5e7)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 1028.94 -310.05 -261.46 -1.7458 0.92303 1.7514 827.23
+            >>> st=CO2(T=240, P=1e8)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            240 1257.21 -424.46 -344.92 -2.2162 1.0037 1.6854 1265.1
+            >>> st=CO2(T=600, P=2e8)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            600 876.69 8.1703 236.3 -0.96106 1.0016 1.4019 942
+            >>> st=CO2(T=310, P=6e8)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            310 1444.64 -386.39 28.939 -2.1927 1.1442 1.5427 1903
+            >>> st=CO2(T=1100, P=8e8)
+            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            1100 1092.77 545.32 1277.4 -0.43587 1.202 1.4286 1542.2
+            """, 
+
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 800000.0, "rhomax": 37.24, 
         "Pmin": 517.95, "rhomin": 26.777, 
@@ -135,8 +264,7 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Kunz and Wagner (2004)",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
@@ -166,7 +294,10 @@ class CO2(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Ely et al. (1987)",
-        "__doc__":  u"""Ely, J.F., Magee, J.W., and Haynes, W.M., "Thermophysical properties for special high CO2 content mixtures," Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.""",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+                    "title": "Thermophysical properties for special high CO2 content mixtures", 
+                    "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
+                    "doi": ""}, 
         "R": 8.31434,
         "cp": CP3,
 

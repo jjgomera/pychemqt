@@ -6,17 +6,7 @@ from lib import unidades
 
 
 class CO(MEoS):
-    """Multiparameter equation of state for carbon monoxide
-
-#    >>> monoxido=CO(T=300, P=0.1)
-#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (monoxido.T, monoxido.rho, monoxido.u.kJkg, monoxido.h.kJkg, monoxido.s.kJkgK, monoxido.cv.kJkgK, monoxido.cp.kJkgK, monoxido.w)
-#    300.0 1.12 355.27 444.29 4.00957 0.7434 1.0418 353.1
-#
-#    >>> acet=Acetone(T=510, rho=4*58.07914)
-#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
-#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
-#
-    """
+    """Multiparameter equation of state for carbon monoxide"""
     name = "carbon monoxide"
     CASNumber = "630-08-0"
     formula = "CO"
@@ -43,17 +33,6 @@ class CO(MEoS):
            "ao_exp": [], "titao": [], 
            "ao_hyp": [1.02865, 0.00493, 0, 0],
            "hyp": [11.6698028, 5.302762306, 0, 0]}
-
-    CP1 = {"ao": 3.5,
-           "an": [0.22311e-6], "pow": [1.5],
-           "ao_exp": [1.0128], "exp": [3089],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 3.50055,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [1.02865, -0.00493, 0, 0],
-           "hyp": [11.675075301*Tc, 5.305158133*Tc, 0, 0]}
 
     CP3 = {"ao": 0.36028218e1,
            "an": [-0.20871594e5, 0.89208708e3, -0.14157993e2, -0.34021345e-3,
@@ -140,7 +119,7 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, #MBWR, GERG
+    eq = helmholtz1, MBWR, GERG
 
     _surface = {"sigma": [0.0350998, -0.0093076, -0.0017393],
                 "exp": [1.25, 2.25, 3.25]}

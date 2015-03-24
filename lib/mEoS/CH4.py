@@ -752,7 +752,10 @@ class CH4(MEoS):
 
 if __name__ == "__main__":
 
-    for eq in (0, 2, 3, 4, 5):
-        st=CH4(T=298.15, P=101325, eq=eq)
-        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+#    for eq in (0, 2, 3, 4, 5):
+#        st=CH4(T=298.15, P=101325, eq=eq)
+#        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+#            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+
+    st=CH4(T=100, x=0.5)
+    print st.Liquido.cps, st.Gas.cps

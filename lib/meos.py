@@ -991,6 +991,7 @@ class MEoS(_fase):
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+#        fase.cps = estado["cps"]
         fase.w = unidades.Speed(estado["w"])
 
         fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
@@ -1082,8 +1083,6 @@ class MEoS(_fase):
 
     def _Helmholtz(self, rho, T):
         """Implementación general de la ecuación de estado Setzmann-Wagner, ecuación de estado de multiparámetros basada en la energía libre de Helmholtz"""
-#        rhoc = self._constants.get("rhoref", self.rhoc)
-#        Tc = self._constants.get("Tref", self.Tc)
         delta = rho/self.rhoc
         tau = self.Tc/T
         
@@ -1123,6 +1122,9 @@ class MEoS(_fase):
         else:
             propiedades["dhdrho"] = 0
 #        dbt=-phi11/rho/t
+#        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau*firdt)*T/rho*propiedades["drhodt"]
+#        propiedades["cps"] = self.R*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)/(1+2*delta*fird+delta**2*firdd)*
+#                                    ((1+delta*fird-delta*tau*firdt)-self.rhoc/self.R/delta*self.derivative("P", "T", "rho", propiedades)))
 #        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
         return propiedades
 
