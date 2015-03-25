@@ -21,12 +21,6 @@ class CO2(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 49
 
-    CP1 = {"ao": 3.5,
-           "an": [], "pow": [],
-           "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
-           "exp": [958.49956, 1858.80115, 2061.10114, 3443.89908, 8238.20035],
-           "ao_hyp": [], "hyp": []}
-    
     Fi1 = {"ao_log": [1, 2.5],
            "pow": [0, 1],
            "ao_pow": [8.37304456, -3.70454304],
@@ -300,6 +294,7 @@ class CO2(MEoS):
                     "doi": ""}, 
         "R": 8.31434,
         "cp": CP3,
+        "ref": "OTO", 
 
         "Tmin": 216.58, "Tmax": 1000., "Pmax": 100000.0, "rhomax": 26.776, 
         "Pmin": 518.03, "rhomin": 26.776, 
@@ -328,9 +323,22 @@ class CO2(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon dioxide of Span and Wagner (2003)",
-        "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "doi": "10.1023/A:1022362231796"}, 
+        "__test__": """
+            >>> st=CO2(T=700, rho=200, eq=4)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            1.0141 45.164 1.4994
+            >>> st2=CO2(T=750, rho=100, eq=4)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            191.33 0.60315
+            """, # Table III, Pag 117
+            
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 37.24, 
         "Pmin": 517.86, "rhomin": 26.795, 
@@ -355,7 +363,8 @@ class CO2(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -464,3 +473,10 @@ class CO2(MEoS):
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
 
     _thermal = thermo0,
+
+if __name__ == "__main__":
+
+    for eq in (0, 2, 3, 4, 5):
+        st=CO2(T=500, P=101325, eq=eq)
+        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

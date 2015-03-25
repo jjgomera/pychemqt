@@ -112,7 +112,19 @@ class R143a(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-143a of Span and Wagner (2003)",
-        "__doc__":  u"""Span, R. and Wagner, W. "Equations of State for Technical Applications. III. Results for Polar Fluids," Int. J. Thermophys., 24(1):111-162, 2003.""",
+        "__doi__": {"autor": "Span, R., Wagner, W.",
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "doi": "10.1023/A:1022362231796"}, 
+        "__test__": """
+            >>> st=R143a(T=700, rho=200, eq=3)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            1.2785 20.152 1.6702
+            >>> st2=R143a(T=750, rho=100, eq=3)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            201.13 0.47846
+            """, # Table III, Pag 117
+            
         "R": 8.31451,
         "cp": CP2,
         

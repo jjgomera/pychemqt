@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Cyclopropane(MEoS):
-    """Multiparameter equation of state for cyclopropane
-
-    >>> ciclopropano=Cyclopropane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclopropano.T, ciclopropano.rho, ciclopropano.u.kJkg, ciclopropano.h.kJkg, ciclopropano.s.kJkgK, ciclopropano.cv.kJkgK, ciclopropano.cp.kJkgK, ciclopropano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for cyclopropane"""
     name = "cyclopropane"
     CASNumber = "75-19-4"
     formula = "cyclo(CH2)3"
@@ -36,9 +31,13 @@ class Cyclopropane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopropane of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": 273.0, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595, 
 #        "Pmin": 0.61166, "rhomin": 55.497, 

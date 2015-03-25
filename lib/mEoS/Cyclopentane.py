@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Cyclopentane(MEoS):
-    """Multiparameter equation of state for cyclopropane
-
-    >>> cyc5=Cyclopentane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (cyc5.T, cyc5.rho, cyc5.u.kJkg, cyc5.h.kJkg, cyc5.s.kJkgK, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for cyclopentane"""
     name = "cyclopropane"
     CASNumber = "287-92-3"
     formula = "C5H10"

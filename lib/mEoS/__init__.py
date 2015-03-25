@@ -138,7 +138,7 @@ id_mEoS = [i.id for i in __all__]
 if __name__ == "__main__":
     import doctest
     for module in __all__:
-        if module.__module__ != "Cyclohexane":
+        if module.__module__ != "CO2":
             continue
         print module.__module__
         inst = module()
