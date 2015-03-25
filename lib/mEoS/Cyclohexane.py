@@ -6,28 +6,30 @@ from lib import unidades
 
 
 class Cyclohexane(MEoS):
-    """Multiparameter equation of state for cyclohexane
-
-    >>> ciclohexano=Cyclohexane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for cyclohexane"""
     name = "cyclohexane"
     CASNumber = "110-82-7"
     formula = "cyclo(CH2)6"
     synonym = ""
-    rhoc = unidades.Density(273.)
-    Tc = unidades.Temperature(553.64)
-    Pc = unidades.Pressure(4075.0, "kPa")
-    M = 84.1608  # g/mol
-    Tt = unidades.Temperature(279.47)
-    Tb = unidades.Temperature(353.886)
-    f_acent = 0.20926
+    rhoc = unidades.Density(271.33016352)
+    Tc = unidades.Temperature(553.6)
+    Pc = unidades.Pressure(4080.5, "kPa")
+    M = 84.15948  # g/mol
+    Tt = unidades.Temperature(279.86)
+    Tb = unidades.Temperature(353.865)
+    f_acent = 0.2096
     momentoDipolar = unidades.DipoleMoment(0.3, "Debye")
     id = 38
     _Tr = unidades.Temperature(526.231121)
     _rhor = unidades.Density(274.647526)
     _w = 0.221837522
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [0.9891140602, 1.6359660572],
+           "ao_exp": [0.83775, 16.036, 24.636, 7.1715],
+           "titao": [773/Tc, 941/Tc, 2185/Tc, 4495/Tc], 
+           "ao_hyp": [], "hyp": []}
 
     CP1 = {"ao": 9.3683272,
            "an": [-0.56214088e8, 0.15261554e-1, -0.36352468e-5],
@@ -38,12 +40,82 @@ class Cyclohexane(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for cyclohexane of Zhou et al. (2014)",
+        "__doi__": {"autor": "Zhou, Y., Jun Liu, J., Penoncello, S.G., Lemmon, E.W.",
+                    "title": "An Equation of State for the Thermodynamic Properties of Cyclohexane", 
+                    "ref": "J. Phys. Chem. Ref. Data 43, 043105 (2014)",
+                    "doi": "10.1063/1.4900538"}, 
+        "__test__": """
+            >>> st=Cyclohexane(T=300, rhom=9.4)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            300.0 9.4 24.173705 115.286 154.76956 1383.3878 -8400.0834 -28.889069
+            >>> st=Cyclohexane(T=500, rhom=6.5)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            500.0 6.5 3.9246630 192.52056 255.57087 434.13064 31070.127 70.891447
+            >>> st=Cyclohexane(T=500, rhom=0.7)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            500.0 0.7 1.9981172 191.96446 235.52281 155.348 52757.706 122.92657
+            >>> st=Cyclohexane(T=600, rhom=3.5)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            600.0 3.5 6.8225506 232.79222 388.55185 150.53318 70150.132 143.42323
+            >>> st=Cyclohexane(T=553.6, rhom=3.3)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            553.6 3.3 4.0805433 224.19555 199224.62 87.913911 58532.604 123.59810 
+            >>> st=Cyclohexane(P=101325, x=0)
+            >>> print "%0.9g %0.8g %0.8g %0.8g %0.8g %0.8g %0.5f %0.5f" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            353.864939 8.5487851 0.101325 134.6163 179.07223 994.05862 0.00000 -0.00000
+            >>> st=Cyclohexane(P=101325, x=1)
+            >>> print "%0.9g %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
+            353.864939 0.035779032 0.101325 123.4305 133.35895 186.91349 29991.286 84.753484
+            """, # Table 5, Pag 17
+
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": {"Tref": 300, "Pref": 1., "ho": 23949.01, "so": 104.2926004}, 
+        
+        "Tmin": 279.86, "Tmax": 700.0, "Pmax": 250000.0,# "rhomax": 9.77, 
+        #"Pmin": 5.2538, "rhomin": 9.4045, 
+
+        "nr1": [0.05483581, 1.607734, -2.375928, -0.5137709, 0.1858417],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.37, 0.79, 1.075, 0.37],
+ 
+        "nr2": [-0.9007515, -0.5628776, 0.2903717, -0.3279141, -0.03177644],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.4, 2.5, 0.5, 3, 1.06],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+        
+        "nr3": [0.8668676, -0.1962725, -0.1425992, 0.004197016, 0.1776584,
+                -0.04433903, -0.03861246, 0.07399692, 0.02036006, 0.00272825],
+        "d3": [1, 1, 3, 3, 2, 2, 3, 2, 3, 2],
+        "t3": [1.6, 0.37, 1.33, 2.5, 0.9, 0.5, 0.73, 0.2, 1.5, 1.5],
+        "alfa3": [0.99, 1.43, 0.97, 1.93, 0.92, 1.27, 0.87, 0.82, 1.4, 3],
+        "beta3": [0.38, 4.2, 1.2, 0.9, 1.2, 2.6, 5.3, 4.4, 4.2, 25],
+        "gamma3": [0.65, 0.63, 1.14, 0.09, 0.56, 0.4, 1.01, 0.45, 0.85, 0.86],
+        "epsilon3": [0.73, 0.75, 0.48, 2.32, 0.2, 1.33, 0.68, 1.11, 1.47, 0.99]}
+
+    helmholtz2 = {
+        "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Penoncello et al. (1995)",
-        "__doc__":  u"""Penoncello, S.G., Goodwin, A.R.H., and Jacobsen, R.T, "A Thermodynamic Property Formulation for Cyclohexane," Int. J. Thermophys., 16(2):519-531, 1995.""",
+        "__doi__": {"autor": "Penoncello, S.G., Goodwin, A.R.H., and Jacobsen, R.T.",
+                    "title": "A Thermodynamic Property Formulation for Cyclohexane", 
+                    "ref": "Int. J. Thermophys., 16(2):519-531, 1995.",
+                    "doi": "10.1007/BF01441918"}, 
+
         "R": 8.31434,
         "cp": CP1,
-
-        "Tmin": Tt, "Tmax": 700.0, "Pmax": 80000.0, "rhomax": 9.77, 
+        "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612}, 
+        "Tt": 279.47, "Tc": 553.64, "rhoc": 3.244, "M": 84.1608, 
+            
+        "Tmin": 279.47, "Tmax": 700.0, "Pmax": 80000.0, "rhomax": 9.77, 
         "Pmin": 5.2538, "rhomin": 9.4045, 
 
         "nr1": [0.8425412659, -0.3138388327e1, 0.1679072631e1, -0.153819249,
@@ -62,24 +134,26 @@ class Cyclohexane(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 3, 3, 2, 6, 2, 4, 2],
         "gamma2": [1]*17}
 
-    helmholtz2 = {
+    helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for cyclohexane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-        "__test__": """
-            >>> st=Cyclohexane(T=700, rho=200, eq=1)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.0278 9.007 3.5927
-            >>> st2=Cyclohexane(T=750, rho=100, eq=1)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            206.82 0.31448
-            """, # Table III, Pag 46
+#        "__test__": """
+#            >>> st=Cyclohexane(T=700, rho=200, eq=2)
+#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+#            3.0278 9.007 3.5927
+#            >>> st2=Cyclohexane(T=750, rho=100, eq=2)
+#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+#            206.82 0.31448
+#            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612}, 
+        "Tt": 279.47, "Tc": 553.64, "rhoc": 3.244, "M": 84.1608, 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.77, 
         "Pmin": 5.2428, "rhomin":9.3999, 
@@ -96,7 +170,7 @@ class Cyclohexane(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -105,6 +179,7 @@ class Cyclohexane(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31434,
         "cp": CP1,
+        "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612}, 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -121,7 +196,7 @@ class Cyclohexane(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
     _surface = {"sigma": [0.0653], "exp": [1.26]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 700,
@@ -143,8 +218,7 @@ class Cyclohexane(MEoS):
 
 
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=Cyclohexane(T=300., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
+    for eq in (0, 1, 2, 3):
+        st=Cyclohexane(T=298.15, P=101325, eq=eq)
+        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
