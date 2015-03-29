@@ -6,69 +6,84 @@ from lib import unidades
 
 
 class DMC(MEoS):
-    """Multiparameter equation of state for dimethyl carbonate
-
-    >>> metilciclohexano=DMC(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for dimethyl carbonate"""
     name = "dimethyl carbonate"
     CASNumber = "616-38-6"
     formula = "C3H6O3"
     synonym = ""
-    rhoc = unidades.Density(358.050803706)
-    Tc = unidades.Temperature(557.376)
-    Pc = unidades.Pressure(4835.08, "kPa")
-    M = 90.07794  # g/mol
+    rhoc = unidades.Density(360.3116)
+    Tc = unidades.Temperature(557.)
+    Pc = unidades.Pressure(4908.8, "kPa")
+    M = 90.0779  # g/mol
     Tt = unidades.Temperature(277.06)
-    Tb = unidades.Temperature(363.112)
-    f_acent = 0.33327
+    Tb = unidades.Temperature(363.256)
+    f_acent = 0.346
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 184
     # id=1798
 
-    CP1 = {"ao": 8.6169,
+    CP1 = {"ao": 9.28421,
            "an": [],
            "pow": [],
            "ao_exp": [0.69884, 0.13132e2, 0.69241, 0.83174e1],
            "exp": [1150., 1339., 1590., 3111.],
            "ao_hyp": [], "hyp": []}
+           
+    Fi1 = {"ao_log": [1, 8.28421],
+           "pow": [0, 1],
+           "ao_pow": [4.9916462, -0.1709449],
+           "ao_exp": [1.48525, 0.822585, 16.2453, 1.15925],
+           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc], 
+           "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2010).",
-        "__doc__":  u"""Zhou, Y., Wu, J., and Lemmon, E.W. "Equations for the Thermophysical Properties of Dimethyl Carbonate," submitted to J. Phys. Chem. Ref. Data, 2010.""",
+        "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of Dimethyl Carbonate", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
+                    "doi":  "10.1063/1.3664084"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 298.15, "Pref": 1.0, "ho": 26712.371, "so": 109.66202}, 
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 60000.0, "rhomax": 12.107, 
         "Pmin": 2.2495, "rhomin": 12.107, 
 
-        "nr1": [0.376822e-1, 0.128917e1, -0.254658e1, -0.208420, 0.187066],
-        "d1": [4, 1, 1, 2, 3],
-        "t1": [1, 0.2147, 1.033, 0.9774, 0.6649],
+        "nr1": [0.52683187e-3, 1.353396, -2.649283, -0.2785412, 0.1742554,
+                0.031606252],
+        "d1": [5, 1, 1, 2, 3, 4],
+        "t1": [1, 0.227, 1.05, 1.06, 0.5, 0.78],
 
-        "nr2": [-0.212435, 0.275468, -0.337738e-1, -0.353955, -0.209746, -0.504864],
+        "nr2": [0.399866, 1.178144, -0.0235281, -1.015, -0.7880436, -0.12696],
         "d2": [1, 2, 7, 1, 2, 3],
-        "t2": [0.5999, 1.095, 1.088, 5.117, 6.633, 2.465],
+        "t2": [1.3, 1.347, 0.706, 2, 2.5, 4.262],
         "c2": [1, 1, 1, 2, 2, 2],
         "gamma2": [1]*6,
 
-        "nr3": [-0.111732, 0.140922e1, -0.402018, -0.756710e-1, -0.875139e-1],
-        "d3": [1, 1, 1, 3, 3],
-        "t3": [0.9935, 1.805, 3.0, 2.235, 2.948],
-        "alfa3": [1.609, 1.014, 1.867, 1.307, 1.798],
-        "beta3": [9.306, 0.3138, 0.6848, 0.4879, 0.8123],
-        "gamma3": [0.6345, 1.87, 1.172, 1.55, 0.6256],
-        "epsilon3": [0.8785, 1.051, 1.049, 1.351, 1.179],
+        "nr3": [1.2198, -0.4883, -0.0033293, -0.0035387, -0.51172, -0.16882],
+        "d3": [1, 1, 2, 2, 3, 3],
+        "t3": [1, 2.124, 0.4, 3.5, 0.5, 2.7],
+        "alfa3": [0.9667, 1.5154, 1.0591, 1.6642, 12.4856, 0.9662],
+        "beta3": [1.24, 0.821, 15.45, 2.21, 437., 0.743],
+        "gamma3": [1.2827, 0.4317, 1.1217, 1.1871, 1.1243, 0.4203],
+        "epsilon3": [0.6734, 0.9239, 0.8636, 1.0507, 0.8482, 0.7522],
         "nr4": []}
 
     eq = helmholtz1,
-
-    #FIXME: Dan malas estimaciones que provocan bucle
-#    _vapor_Pressure={ "eq": 5, "ao": [-0.75913e1, -0.14610e1, 0.85506e1, -0.90296e1, -0.35161e1], "exp": [1.0, 1.5, 1.9, 2.4, 6.0]}
-#    _liquid_Density={ "eq": 1, "ao": [0.14791, 0.12391e2, -0.25090e2, 0.22517e2, -0.70191e1], "exp": [0.21, 0.7, 1.0, 1.3, 1.6]}
-#    _vapor_Density={ "eq": 3, "ao": [-0.23324e1, -0.50936e1, -0.20195e2, -0.94319e2, 0.25801e3, -0.49161e3], "exp": [0.461, 0.81, 2.8, 6.8, 10.0, 12.0]}
+    
+    _vapor_Pressure={
+        "eq": 5, 
+        "ao": [-8.3197, 3.4260, -3.5905, -3.3194],
+        "exp": [1.0, 1.5, 2.3, 4.7]}
+    _liquid_Density={ 
+        "eq": 1, 
+        "ao": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526], 
+        "exp": [0.27, 0.77, 1.29, 1.85, 2.46, 3.16]}
+    _vapor_Density={ 
+        "eq": 3,
+        "ao": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072, -379.799],
+        "exp": [0.197, 0.6, 2.86, 3.65, 4.5, 5.4, 6.4]}
 
     visco0 = {"eq": 1, "omega": 3,
               "__name__": "Zhou (2010)",
@@ -84,18 +99,7 @@ class DMC(MEoS):
               "t_poly": [-0.1, -3.0968, -2.8945, 0.0731, -3.9871],
               "d_poly": [4, 10, 12, 2, 0],
               "g_poly": [0, 0, 0, 0, 0, 0],
-              "c_poly": [0, 1, 1, 2, 3],
-#             "n_num": [],
-#             "t_num": [],
-#             "d_num": [],
-#             "g_num": [],
-#             "c_num": [],
-#             "n_den": [],
-#             "t_den": [],
-#             "d_den": [],
-#             "g_den": [],
-#             "c_den": []
-}
+              "c_poly": [0, 1, 1, 2, 3]}
 
     _viscosity = visco0,
 
@@ -104,6 +108,6 @@ if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    cyc5=DMC(T=400., rho=5.)
+    cyc5=DMC(T=298.15, P=1000)
     print "%0.1f %0.5f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
+    print cyc5.h, cyc5.s

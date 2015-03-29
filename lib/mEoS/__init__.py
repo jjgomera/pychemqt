@@ -136,24 +136,27 @@ id_mEoS = [i.id for i in __all__]
 
 
 if __name__ == "__main__":
-    import doctest
-    for module in __all__:
-        if module.__module__ != "CO2":
-            continue
-        print module.__module__
-        inst = module()
-        for eq in inst.eq:
-            if "__test__" in eq:
-                inst.__doc__ += eq["__test__"]
-        if inst._viscosity is not None:
-            for eq in inst._viscosity:
+        import doctest
+#    import timeit
+#    def test():
+        for module in __all__:
+            if module.__module__ != "Ar":
+                continue
+            print module.__module__
+            inst = module()
+            for eq in inst.eq:
                 if "__test__" in eq:
                     inst.__doc__ += eq["__test__"]
-        if inst._thermal is not None:
-            for eq in inst._thermal:
-                if "__test__" in eq:
-                    inst.__doc__ += eq["__test__"]
-        doctest.run_docstring_examples(inst, globs={module.__module__: module})
-
+            if inst._viscosity is not None:
+                for eq in inst._viscosity:
+                    if "__test__" in eq:
+                        inst.__doc__ += eq["__test__"]
+            if inst._thermal is not None:
+                for eq in inst._thermal:
+                    if "__test__" in eq:
+                        inst.__doc__ += eq["__test__"]
+            doctest.run_docstring_examples(inst, globs={module.__module__: module})
+#    timeit.timeit("test()", setup="from __main__ import test", number=3)
+    
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608

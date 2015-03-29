@@ -1521,13 +1521,13 @@ class MEoS(_fase):
         titao = [fi/self.Tc for fi in cp["exp"]]
         hyp = [fi/self.Tc for fi in cp["hyp"]]
         cI = self.ho/R/self.Tc-cp["ao"]/tau0
-        cII = log(tau0/delta0)-self.so/R-1+cp["ao"]-cp["ao"]*log(tau0)
+        cII = -1+log(tau0/delta0)+cp["ao"]-cp["ao"]*log(tau0)-self.so/R
         for c, t in zip(ci, ti):
             cI-=c*t*tau0**(t-1)
             cII+=c*(t-1)*tau0**t
         for ao, tita in zip(cp["ao_exp"], titao):
-            cI-=ao*tita*(1/(1-exp(-tita*tau0))-1)
-            cII+=ao*tita*(tau0*(1/(1-exp(-tita*tau0))-1)-log(1-exp(-tita*tau0)))
+            cI-=ao*tita/(exp(tita*tau0)-1)
+            cII-=ao*(tita*tau0/(1-exp(tita*tau0))+log(1-exp(-tita*tau0)))
         if cp["ao_hyp"]:
             for i in [0, 2]:
                 cI-=cp["ao_hyp"][i]*hyp[i]/(tanh(hyp[i]*tau0))
@@ -1667,7 +1667,6 @@ class MEoS(_fase):
         cpsum = -cp.get("ao", 0)*(1/T-1/Tref)
         return unidades.SpecificHeat(cpsum*self.M*1000)
         
-
     def _phir(self, tau, delta):
         delta_0 = 1e-200
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
