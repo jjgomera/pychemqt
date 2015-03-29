@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class nC8(MEoS):
-    """Multiparameter equation of state for n-octane
-
-    >>> octano=nC8(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (octano.T, octano.rho, octano.u.kJkg, octano.h.kJkg, octano.s.kJkgK, octano.cv.kJkgK, octano.cp.kJkgK, octano.w)
-    300.0 696.78 11.33 11.47 0.99413 1.8108 2.2332 1139.3
-    """
+    """Multiparameter equation of state for n-octane"""
     name = "octane"
     CASNumber = "111-65-9"
     formula = "CH3-(CH2)6-CH3"
@@ -78,6 +73,7 @@ class nC8(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
         "Pmin": 0.001989, "rhomin": 6.6864, 
@@ -99,8 +95,8 @@ class nC8(MEoS):
         "__name__": "Helmholtz equation of state for octane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "doi": "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO", 
@@ -219,7 +215,16 @@ class nC8(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.335103, -0.467898],
               "__name__": "Huber (2004)",
-              "__doc__": """Huber, M.L., Laesecke, A. and Xiang, H.W. , "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane" Fluid Phase Equilibria 224(2004)263-270.""",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
+                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                        "ref": "Fluid Phase Equilibria 224(2004)263-270.",
+                        "doi": "10.1016/j.fluid.2004.07.012"}, 
+              "__test__": """
+                  >>> st=nC8(T=300, rhom=6.1772)
+                  >>> print "%0.2f" % st.mu.muPas
+                  553.60
+                  """, # Section 3.1 pag 265
+
               "ek": 452.09, "sigma": 0.63617,
               "Tref": 1, "rhoref": 1.*M,
               "n_chapman": 0.228258776/M**0.5,
@@ -251,8 +256,12 @@ class nC8(MEoS):
               "c_den": [0, 0]}
 
     visco1 = {"eq": 4, "omega": 1,
-              "__doc__": """S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
               "__name__": "Quiñones-Cisneros (2006)",
+              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
+                          "doi": "10.1021/jp0618577"}, 
+                          
               "Tref": 569.32, "etaref": 1.0,
               "ek": 452.09, "sigma": 0.636170, "n_chapman": 0,
               "n_ideal": [16.7562, -53.1705, 46.9105],
@@ -270,7 +279,15 @@ class nC8(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
-               "__doc__": """Huber, M.L. and Perkins, R.A., "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane" Fluid Phase Equilibria 227 (2005) 47-55""",
+               "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
+                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                           "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                           "doi": "10.1016/j.fluid.2004.10.031"}, 
+               "__test__": """
+                   >>> st=nC8(T=300, rhom=6.1772)
+                   >>> print "%0.2f" % st.k
+                   128.36
+                   """, # Section 3.1 pag 50
 
                "Tref": 569.32, "kref": 1,
                "no": [0.772930e-2, -0.371138e-1, 0.977580e-1, -0.288707e-1],

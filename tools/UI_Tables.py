@@ -1066,8 +1066,8 @@ class Widget_MEoS_Data(QtGui.QWidget):
         """eq: dict with equation parameter"""
         super(Widget_MEoS_Data, self).__init__(parent)
         gridLayout = QtGui.QGridLayout(self)
-        txt = "{} {} {}".format(eq["__doi__"]["autor"], eq["__doi__"]["title"],
-                                eq["__doi__"]["ref"])
+        txt = " ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
+                                eq["__doi__"]["ref"]))
         ref = QtGui.QLabel(txt)
         ref.setWordWrap(True)
         gridLayout.addWidget(ref, 1, 1)

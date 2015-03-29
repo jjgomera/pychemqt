@@ -6,13 +6,7 @@ from lib import unidades
 
 
 class nC9(MEoS):
-    """Multiparameter equation of state for n-nonane
-
-#    >>> nonano=nC9(T=500, P=0.1)
-#    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (nonano.T, nonano.rho, nonano.h.kJkg, nonano.s.kJkgK, nonano.cv.kJkgK, nonano.cp.kJkgK, nonano.w)
-#    500.0 3.18 779.85 1.93601 2.4514 2.5277 177.3
-#
-    """
+    """Multiparameter equation of state for n-nonane"""
     name = "nonane"
     CASNumber = "111-84-2"
     formula = "CH3-(CH2)7-CH3"
@@ -75,7 +69,7 @@ class nC9(MEoS):
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
@@ -118,8 +112,17 @@ class nC9(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.340344, -0.466455],
               "__name__": "Huber (2004)",
-              "__doc__": """Huber, M.L., Laesecke, A. and Xiang, H.W. , "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane" Fluid Phase Equilibria 224(2004)263-270.""",
-              "ek": 472.12, "sigma": 0.66383,
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
+                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                        "ref": "Fluid Phase Equilibria 224(2004)263-270.",
+                        "doi": "10.1016/j.fluid.2004.07.012"}, 
+              "__test__": """
+                  >>> st=nC9(T=300, rhom=5.6191)
+                  >>> print "%0.2f" % st.mu.muPas
+                  709.53
+                  """, # Section 3.2 pag 267
+
+            "ek": 472.12, "sigma": 0.66383,
               "Tref": 1, "rhoref": 1.*M,
               "n_chapman": 0.2418675/M**0.5,
 
@@ -153,7 +156,15 @@ class nC9(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
-               "__doc__": """Huber, M.L. and Perkins, R.A., "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane" Fluid Phase Equilibria 227 (2005) 47-55""",
+              "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
+                        "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                        "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                        "doi": "10.1016/j.fluid.2004.10.031"}, 
+               "__test__": """
+                   >>> st=nC9(T=300, rhom=5.6194)
+                   >>> print "%0.2f" % st.k
+                   130.31
+                   """, # Section 3.2 pag 53
 
                "Tref": 594.55, "kref": 1,
                "no": [0.878765e-2, -0.413510e-1, 0.104791, -0.320032e-1],

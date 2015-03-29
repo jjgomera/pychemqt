@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class neoC5(MEoS):
-    """Multiparameter equation of state for neopentane
-
-#    >>> neopentano=neoC5(T=500, P=50)
-#    >>> print "%0.1f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (neopentano.T, neopentano.rho, neopentano.h.kJkg, neopentano.s.kJkgK, neopentano.cv.kJkgK, neopentano.cp.kJkgK, neopentano.w)
-#    500.0 508.46 263.82 0.12415 2.5649 2.9723 795.9
-    """
+    """Multiparameter equation of state for neopentane"""
     name = "neopentane"
     CASNumber = "463-82-1"
     formula = "C(CH3)4"
@@ -33,12 +28,6 @@ class neoC5(MEoS):
            "titao": [710/Tc, 1725/Tc, 3280/Tc, 7787/Tc]}
            
     CP1 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [14.422, 12.868, 17.247, 12.663],
-           "exp": [710, 1725, 3280, 7787],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
            "ao_hyp": [11.7618, -20.1101, 33.1688, 0],
@@ -99,7 +88,7 @@ class neoC5(MEoS):
         "c2": [2]*6,
         "gamma2": [0.968832]*6}
 
-    eq = helmholtz1, #helmholtz2
+    eq = helmholtz1, helmholtz2
 
     _vapor_Pressure = {
         "eq": 5,
