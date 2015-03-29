@@ -6,21 +6,16 @@ from lib import unidades
 
 
 class DME(MEoS):
-    """Multiparameter equation of state for dimethylether
-
-    >>> dme=DME(T=400, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (r245fa.T, r245fa.rho, r245fa.h.kJkg, r245fa.s.kJkgK, r245fa.cv.kJkgK, r245fa.cp.kJkgK, r245fa.w)
-    300.0 1.88281 -3.931 -0.02514 1.28073 1.48152 245.4
-    """
+    """Multiparameter equation of state for dimethylether"""
     name = "dimethylether"
     CASNumber = "115-10-6"
     formula = "CH3-O-CH3"
     synonym = "R-170"
-    rhoc = unidades.Density(273.6465)
+    rhoc = unidades.Density(273.6465336)
     Tc = unidades.Temperature(400.378)
-    Pc = unidades.Pressure(5336.845, "kPa")
+    Pc = unidades.Pressure(5336.8, "kPa")
     M = 46.06844  # g/mol
-    Tt = unidades.Temperature(131.65)
+    Tt = unidades.Temperature(131.66)
     Tb = unidades.Temperature(248.368)
     f_acent = 0.196
     momentoDipolar = unidades.DipoleMoment(1.301, "Debye")
@@ -32,12 +27,23 @@ class DME(MEoS):
            "exp": [361, 974, 1916, 4150],
            "ao_hyp": [], "hyp": []}
 
+    Fi1 = {"ao_log": [1, 3.039],
+           "pow": [0, 1],
+           "ao_pow": [-1.928925, 3.150284],
+           "ao_exp": [2.641, 2.123, 8.992, 6.191],
+           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc], 
+           "ao_hyp": [], "hyp": []}
+
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Wu et al. (2011).",
-        "__doc__":  u"""Wu, J., Zhou, Y., and Lemmon, E.W., "An equation of state for the thermodynamic properties of dimethyl ether," submitted to J. Phys. Chem. Ref. Data, 2011""",
+        "__doi__": {"autor": "Wu, J., Zhou, Y., and Lemmon, E.W.",
+                    "title": "An Equation of State for the Thermodynamic Properties of Dimethyl Ether", 
+                    "ref": "J. Phys. Chem. Ref. Data 40, 023104 (2011)",
+                    "doi":  "10.1063/1.3582533"}, 
         "R": 8.314472,
         "cp": CP1,
+        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883}, 
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15, 
         "Pmin": 0.0022, "rhomin": 19.15, 
@@ -66,12 +72,16 @@ class DME(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Ihmels and Lemmon (2007)",
-        "__doc__":  u"""Ihmels, E.C. and Lemmon, E.W. "Experimental Densities, Vapor Pressures, and Critical Point, and a Fundamental Equation of State for Dimethyl Ether," in press, Fluid Phase Equilibria, 2007.""",
+        "__doi__": {"autor": "Ihmels, E.C. and Lemmon, E.W.",
+                    "title": "Experimental densities, vapor pressures, and critical point, and a fundamental equation of state for dimethyl ether", 
+                    "ref": " Fluid Phase Equilibria (Impact Factor: 2.24). 10/2007; 260(1):36-48",
+                    "doi":  "10.1016/j.fluid.2006.09.016"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
 
-#        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
+        "Pmin": 0.61166, "rhomin": 55.497, 
 
         "nr1":  [1.22690, -2.47245, 0.119889, 0.0000354],
         "d1": [1, 1, 3, 8],
