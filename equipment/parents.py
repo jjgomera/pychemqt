@@ -9,6 +9,7 @@
 
 from functools import partial
 import os
+import logging
 
 from PyQt4 import QtCore, QtGui
 
@@ -98,6 +99,9 @@ class equipment(Entity):
         input value with flexibility"""
         Entity.__call__(self, **kwargs)
         if self._oldkwargs != self.kwargs and self.isCalculable:
+            logging.info('Calculate EQUIPMENT: %s' %self.__class__.__name__)
+            logging.debug('kwarg; %s' %kwargs)
+            QtGui.QApplication.processEvents()
             self.calculo()
             if self.statusCoste:
                 self.coste()

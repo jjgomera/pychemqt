@@ -5,13 +5,11 @@ import os
 import sys
 import urllib2
 import shutil
-
-if sys.version_info[0] == 2:
-    from ConfigParser import ConfigParser
-else:
-    from configparser import ConfigParser
+import logging
+from optparse import OptionParser
 
 from PyQt4 import QtCore, QtGui
+
 
 path = os.path.dirname(os.path.realpath(sys.argv[0]))
 sys.path.append(path)
@@ -23,6 +21,19 @@ app = QtGui.QApplication(sys.argv)
 app.setOrganizationName("pychemqt")
 app.setOrganizationDomain("pychemqt")
 app.setApplicationName("pychemqt")
+
+
+# Parse command line options
+parser = OptionParser()
+parser.add_option("--debug", action="store_true")
+parser.add_option("-l", "--log", dest="loglevel", default="INFO")
+(options, args) = parser.parse_args()
+
+if options.debug:
+    loglevel = "DEBUG"
+else:
+    loglevel = options.loglevel
+loglevel = getattr(logging, loglevel.upper())
 
 # Translation
 locale = QtCore.QLocale.system().name()
@@ -45,6 +56,12 @@ for module, use in optional_modules:
                                            % (module, use)).toUtf8())
         os.environ[module] = ""
 
+# Logging configuration
+logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
+                    level=loglevel, datefmt='%H:%M:%S', 
+                    format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
+logging.info(QtGui.QApplication.translate("pychemqt", 
+                                          "Starting pychemqt"))
 
 class SplashScreen(QtGui.QSplashScreen):
     """Clase que crea una ventana de splash"""
@@ -135,16 +152,19 @@ from UI.mainWindow import UI_pychemqt
 pychemqt = UI_pychemqt()
 
 splash.showMessage(QtGui.QApplication.translate("pychemqt", "Loading project files..."))
+logging.info(QtGui.QApplication.translate("pychemqt", "Loading project files"))
+
+pychemqt.show()
+
 if pychemqt.Preferences.getboolean("General", 'Load_Last_Project'):
     filename = pychemqt.settings.value("LastFile").toStringList()
-    for file in sys.argv[1:]:
+    for file in args:
         filename.append(file)
     for fname in filename:
         if fname and QtCore.QFile.exists(fname):
             splash.showMessage(QtGui.QApplication.translate("pychemqt", "Loading project files...")+"\n"+fname)
+            logging.info(QtGui.QApplication.translate("pychemqt", "Loading project")+ ": %s" %fname)
             pychemqt.fileOpen(fname)
-
-
 splash.finish(pychemqt)
-pychemqt.show()
+
 sys.exit(app.exec_())

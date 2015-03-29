@@ -10,6 +10,7 @@
 ###############################################################################
 
 import os
+import logging
 
 from scipy.optimize import fsolve, leastsq
 from scipy.special import erf
@@ -1402,6 +1403,10 @@ class Corriente(config.Entity):
                 break
 
         if self.calculable:
+            logging.info('Calculate STREAM')
+            logging.debug('kwarg; %s' %kwargs)
+            QApplication.processEvents()
+
             self.status = 1
             self.calculo()
             self.msg = ""
