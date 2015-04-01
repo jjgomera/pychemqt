@@ -2737,6 +2737,38 @@ class MEoS(_fase):
         txt += os.linesep + os.linesep + txtphases + complejos
         return txt
 
+class MEoSBlend(MEoS):
+    """Special meos class to implement pseudocomponente blend and defining its
+    ancillary dew and bubble point"""
+    @classmethod
+    def _dewP(cls, T, eq=0):
+        """Using ancillary equation return the pressure of dew point"""
+        c = cls.eq[eq]["dew"]
+        Tj = cls.eq[eq]["Tj"]
+        Pj = cls.eq[eq]["Pj"]
+        Tita = 1-T/Tj
+        
+        suma = 0
+        for i, n in zip(c["i"], c["n"]):
+            suma += n*Tita**(i/2.)
+        P = Pj*exp(Tj/T*suma)
+        return unidades.Pressure(P, "MPa")
+    
+    @classmethod
+    def _bubbleP(cls, T, eq=0):
+        """Using ancillary equation return the pressure of bubble point"""
+        c = cls.eq[eq]["bubble"]
+        Tj = cls.eq[eq]["Tj"]
+        Pj = cls.eq[eq]["Pj"]
+        Tita = 1-T/Tj
+        
+        suma = 0
+        for i, n in zip(c["i"], c["n"]):
+            suma += n*Tita**(i/2.)
+        P = Pj*exp(Tj/T*suma)
+        return unidades.Pressure(P, "MPa")
+
+
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
