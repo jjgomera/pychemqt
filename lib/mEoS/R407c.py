@@ -1,18 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from lib.meos import MEoS
+from lib.meos import MEoSBlend
 from lib import unidades
 
 
-class R407C(MEoS):
+class R407c(MEoSBlend):
     """Multiparamenter equation of state for R407C
-    23% R32, 25% R125, 52% R134a
-
-    >>> r407C=R407C(T=500, P=0.1)
-    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (r407C.T, r407C.rho, r407C.h.kJkg, r407C.s.kJkgK, r407C.cv.kJkgK, r407C.cp.kJkgK, r407C.w)
-    500.0 2.0783 195.613 0.479 1.03122 1.1291 229.27
-    """
+    (23% R32, 25% R125, 52% R134a)"""
+    
     name = "R407C"
     CASNumber = ""
     formula = "R32+R125+R134a"
@@ -27,20 +23,46 @@ class R407C(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 62
 
-    CP1 = {"ao": 0.,
-           "an": [0.76575], "pow": [0.4],
-           "ao_exp": [1.4245, 3.9419, 3.1209], "exp": [864, 1887, 4802],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, -1],
+           "pow": [0, 1, -0.4],
+           "ao_pow": [2.13194, 8.05008, -14.3914],
+           "ao_exp": [1.4245, 3.9419, 3.1209],
+           "titao": [864/Tc, 1887/Tc, 4802/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-407C of Lemmon (2003)",
-        "__doc__":  u"""Lemmon, E.W., "Pseudo Pure-Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C," Int. J. Thermophys., 24(4):991-1006, 2003.""",
+        "__doi__": {"autor": "Lemmon, E.W.",
+                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C", 
+                    "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
+                    "doi": "10.1023/A:1025048800563"}, 
+        "__test__": """
+            >>> st=R407c(T=300, rhom=0)
+            >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 0.0 0.0 62.631 70.945 181.04
+            >>> st=R407c(T=300, P=R407c._bubbleP(300))
+            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 1.2507 13.10230 78.624 133.31 458.46
+            >>> st=R407c(T=300, P=R407c._dewP(300))
+            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 1.0757 0.53670 74.027 99.203 154.41
+            >>> st=R407c(T=250, rhom=16)
+            >>> print "%0.3g %0.3f %0.1f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            250 25.372 16.0 74.065 110.74 851.38
+            """, # Table V, Pag 998
+
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 17.04, 
         "Pmin": 19.2, "rhomin": 17.04, 
+
+        "Tj": 359.345, "Pj": 4.6317, 
+        "dew": {"i": [0.4*2, 0.965*2, 3.1*2, 5.0*2], 
+                "n": [-0.086077, -6.6364, -2.4648, -3.4776]}, 
+        "bubble": {"i": [0.54*2, 0.925*2, 2.7*2, 4.7*2], 
+                   "n": [0.48722, -6.6959, -1.4165, -2.5109]}, 
 
         "nr1": [0.105880e1, -0.112018e1, 0.629064, -0.351953, 0.455978e-2],
         "d1": [1, 1, 1, 2, 5],

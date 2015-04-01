@@ -1,18 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from lib.meos import MEoS
+from lib.meos import MEoSBlend
 from lib import unidades
 
 
-class R507A(MEoS):
-    """Multiparameter equation of state for R507A
-    50% R125, 50% R143a
-
-    >>> r507A=R507A(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w)
-    500.0 2.3837 204.140 0.475 1.07947 1.1649 212.51
-    """
+class R507a(MEoSBlend):
+    """Multiparameter equation of state for R507A (50% R125, 50% R143a)"""
     name = "R507A"
     CASNumber = ""
     formula = "R125+R143a"
@@ -28,20 +22,46 @@ class R507A(MEoS):
     id = 62
     # id = None
 
-    CP1 = {"ao": 0.,
-           "an": [1.5680], "pow": [0.25],
-           "ao_exp": [0.95006, 4.1887, 5.5184], "exp": [364, 815, 1768],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, -1],
+           "pow": [0, 1, -0.25],
+           "ao_pow": [9.93541, 7.9985, -21.6054],
+           "ao_exp": [0.95006, 4.1887, 5.5184],
+           "titao": [364/Tc, 815/Tc, 1768/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-404A of Lemmon (2003)",
-        "__doc__":  u"""Pseudo Pure-Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C," Int. J. Thermophys., 24(4):991-1006, 2003.""",
+        "__doi__": {"autor": "Lemmon, E.W.",
+                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C", 
+                    "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
+                    "doi": "10.1023/A:1025048800563"}, 
+        "__test__": """
+            >>> st=R507a(T=300, rhom=0)
+            >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 0.0 0.0 76.838 85.152 167.22
+            >>> st=R507a(T=300, P=R507a._bubbleP(300))
+            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 1.3462 10.50670 91.290 153.79 356.72
+            >>> st=R507a(T=300, P=R507a._dewP(300))
+            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300 1.3450 0.73552 88.742 124.15 130.95
+            >>> st=R507a(T=250, rhom=13)
+            >>> print "%0.3g %0.3f %0.1f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            250 12.916 13.0 83.541 123.21 697.89
+            """, # Table V, Pag 998
+
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.13, 
         "Pmin": 23.23, "rhomin": 14.13, 
+
+        "Tj": 343.765, "Pj": 3.7049, 
+        "dew": {"i": [1*2, 1.5*2, 2.1*2, 4.7*2], 
+                "n": [-7.5459, 2.338, -2.237, -4.1535]}, 
+        "bubble": {"i": [1*2, 1.5*2, 2.2*2, 4.6*2], 
+                   "n": [-7.4853, 2.0115, -2.0141, -3.7763]}, 
 
         "nr1": [0.624982e1, -0.807855e1, 0.264843e-1, 0.286215, -0.507076e-2,
                 0.109552e-1, 0.116124e-2],
