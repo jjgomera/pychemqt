@@ -31,9 +31,13 @@ class Ne(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for neon of Katti et al. (1986).",
-        "__doc__": u"""Katti, R.S., Jacobsen, R.T, Stewart, R.B., Jahangiri, M. Thermodynamic properties for neon for temperatures from the triple point to 700 K at pressures up to 700 MPa. Adv. Cryo. Eng. 31 (1986), 1189 – 1197.""",
+        "__doi__": {"autor": "Katti, R.S., Jacobsen, R.T, Stewart, R.B., Jahangiri, M.",
+                    "title": "Thermodynamic properties for neon for temperatures from the triple point to 700 K at pressures up to 700 MPa", 
+                    "ref": "Adv. Cryo. Eng. 31 (1986), 1189-1197",
+                    "doi": "10.1007/978-1-4613-2213-9_132"}, 
         "R": 8.31434,
         "cp": CP1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6179, "so": 146.214}, 
 
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 700000.0, "rhomax": 90.56, 
         "Pmin": 43.464, "rhomin": 62.059, 

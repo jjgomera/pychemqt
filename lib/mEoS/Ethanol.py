@@ -60,8 +60,7 @@ class Ethanol(MEoS):
             
         "R": 8.314472,
         "cp": CP1,
-        "ref": {"name": "CUSTOM",
-            "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
 
         "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4, 
         "Pmin": 0.00000088, "rhomin": 19.4, 
