@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class nC5(MEoS):
-    """Multiparameter equation of state for n-pentane
-
-    >>> pentano=nC5(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (pentano.T, pentano.rho, pentano.u.kJkg, pentano.h.kJkg, pentano.s.kJkgK, pentano.cv.kJkgK, pentano.cp.kJkgK, pentano.w)
-    300.0 618.99 -22.72 -22.56 0.44047 1.7397 2.3237 1002.8
-    """
+    """Multiparameter equation of state for n-pentane"""
     name = "pentane"
     CASNumber = "109-66-0"
     formula = "CH3-(CH2)3-CH3"
@@ -99,9 +94,8 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
@@ -125,9 +119,13 @@ class nC5(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP3,
+        "ref": "NBP", 
 
         "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819, 
         "Pmin": 3.624503, "rhomin": 9.3861, 

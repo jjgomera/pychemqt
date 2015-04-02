@@ -14,12 +14,7 @@ from lib import unidades
 
 
 class Methanol(MEoS):
-    """Multiparameter equation of state for methanol
-
-    >>> metanol=Methanol(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.5f %0.5f %0.2f" % (metanol.T, metanol.rho, metanol.u.kJkg, metanol.h.kJkg, metanol.s.kJkgK, metanol.cv.kJkgK, metanol.cp.kJkgK, metanol.w)
-    300.0 783.9034 -941.06 -940.93 -2.6357 2.21247 2.59650 1132.52
-    """
+    """Multiparameter equation of state for methanol"""
     name = "methanol"
     CASNumber = "67-56-1"
     formula = "CH3OH"
@@ -128,9 +123,13 @@ class Methanol(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP2,
+        "ref": "NBP", 
 
         "Tmin": 298., "Tmax": 703.0, "Pmax": 63000.0, "rhomax": 26.0625, 
         "Pmin": 16.803, "rhomin": 24.576, 

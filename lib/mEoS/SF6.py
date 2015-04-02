@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class SF6(MEoS):
-    """Multiparameter equation of state for sulfur hexafluoride
-
-    >>> sf6=SF6(T=300, P=0.1)
-    >>> print "%0.1f %0.4f %0.2f %0.2f %0.4f %0.5f %0.5f %0.2f" % (sf6.T, sf6.rho, sf6.u.kJkg, sf6.h.kJkg, sf6.s.kJkgK, sf6.cv.kJkgK, sf6.cp.kJkgK, sf6.w)
-    300.0 5.9203 -16.27 0.62 0.0035 0.61202 0.67184 135.41
-    """
+    """Multiparameter equation of state for sulfur hexafluoride"""
     name = "sulfur hexafluoride"
     CASNumber = "2551-62-4"
     formula = "SF6"
@@ -152,9 +147,13 @@ class SF6(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP3,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 523.0, "Pmax": 40000.0, "rhomax": 13.133, 
         "Pmin": 236.73, "rhomin": 12.712, 

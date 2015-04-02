@@ -247,10 +247,9 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "doi": "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO", 
@@ -331,9 +330,13 @@ class nC4(MEoS):
     helmholtz5 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP6,
+        "ref": "NBP", 
 
         "Tmin": 140.0, "Tmax": 589., "Pmax": 30000.0, "rhomax": 12.81, 
         "Pmin": 0.00161, "rhomin": 12.573, 

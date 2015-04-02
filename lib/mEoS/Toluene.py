@@ -7,10 +7,6 @@ from lib import unidades
 
 class Toluene(MEoS):
     """Multiparameter equation of state for toluene
-
-#    >>> tolueno=Toluene(T=300, P=0.1)
-#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (tolueno.T, tolueno.rho, tolueno.u.kJkg, tolueno.h.kJkg, tolueno.s.kJkgK, tolueno.cv.kJkgK, tolueno.cp.kJkgK, tolueno.w)
-#    300.0 860.51 -155.13 -155.01 -0.45421 1.2679 1.7070 1295.0
     """
     name = "toluene"
     CASNumber = "108-88-3"
@@ -78,9 +74,13 @@ class Toluene(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "NBP", 
         
         "Tmin": 298.0, "Tmax": 673.0, "Pmax": 25000.0, "rhomax": 9.7242, 
         "Pmin": 3.774, "rhomin": 9.3606, 

@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Propyne(MEoS):
-    """Multiparamenter equation of state for propyne
-
-    >>> propino=Propyne(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (buteno.T, buteno.rho, buteno.h.kJkg, buteno.s.kJkgK, buteno.cv.kJkgK, buteno.cp.kJkgK, buteno.w)
-    300.0 1.63270 -3.467 -0.00821 1.33039 1.55519 265.34
-    """
+    """Multiparamenter equation of state for propyne"""
     name = "Propyne"
     CASNumber = "74-99-7"
     formula = "CH3-C≡CH"
@@ -35,9 +30,13 @@ class Propyne(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propyne of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": 273.0, "Tmax": 474.0, "Pmax": 32000.0, "rhomax": 16.28, 
         "Pmin": 0.2, "rhomin": 22.7, 

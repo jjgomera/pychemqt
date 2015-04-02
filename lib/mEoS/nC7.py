@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class nC7(MEoS):
-    """Multiparameter equation of state for n-heptane
-
-    >>> heptano=nC7(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (heptano.T, heptano.rho, heptano.u.kJkg, heptano.h.kJkg, heptano.s.kJkgK, heptano.cv.kJkgK, heptano.cp.kJkgK, heptano.w)
-    300.0 678.03 13.82 13.97 0.86061 1.7816 2.2475 1120.8
-    """
+    """Multiparameter equation of state for n-heptane"""
     name = "heptane"
     CASNumber = "142-82-5"
     formula = "CH3-(CH2)5-CH3"
@@ -98,8 +93,8 @@ class nC7(MEoS):
         "__type__": "Helmholtz",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "doi": "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO", 
@@ -122,9 +117,13 @@ class nC7(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heptane of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP3,
+        "ref": "NBP", 
 
         "Tmin": 273.0, "Tmax": 500.0, "Pmax": 510000.0, "rhomax": 7.3348901, 
         "Pmin": 0.17549e-3, "rhomin": 7.7457, 

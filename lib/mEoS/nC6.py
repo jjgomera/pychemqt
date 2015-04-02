@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class nC6(MEoS):
-    """Multiparameter equation of state for n-hexane
-
-    >>> hexano=nC6(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (hexano.T, hexano.rho, hexano.u.kJkg, hexano.h.kJkg, hexano.s.kJkgK, hexano.cv.kJkgK, hexano.cp.kJkgK, hexano.w)
-    300.0 653.08 14.32 14.47 0.69082 1.7504 2.2596 1048.3
-    """
+    """Multiparameter equation of state for n-hexane"""
     name = "hexane"
     CASNumber = "110-54-3"
     formula = "CH3-(CH2)4-CH3"
@@ -99,8 +94,8 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "doi": "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO", 
@@ -123,10 +118,14 @@ class nC6(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexane of Polt et al. (1992)",
-        "__doc__":  u"""Polt, A., Platzer, B., and Maurer, G., "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe," Chem. Tech. (Leipzig), 44(6):216-224, 1992.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP3,
-
+        "ref": "NBP", 
+        
         "Tmin": 223.0, "Tmax": 623.0, "Pmax": 510000.0, "rhomax": 8.726125, 
         "Pmin": 0.001277, "rhomin": 8.8394, 
 

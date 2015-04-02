@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class SO2(MEoS):
-    """Multiparameter equation of state for sulfur dioxide
-
-#    >>> so2=SO2(T=500, P=0.1)
-#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (so2.T, so2.rho, so2.u.kJkg, so2.h.kJkg, so2.s.kJkgK, so2.cv.kJkgK, so2.cp.kJkgK, so2.w)
-#    500.0 1.55 486.25 550.97 1.91669 0.5977 0.7293 280.7
-    """
+    """Multiparameter equation of state for sulfur dioxide"""
     name = "sulfur dioxide"
     CASNumber = "7446-09-5"
     formula = "SO2"
@@ -78,9 +73,13 @@ class SO2(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur dioxide of Polt (1987).",
-        "__doc__":  u"""Polt, A., Zur Beschreibung der thermodynamischen Eigenschaften reiner Fluide mit "Erweiterten BWR-Gleichungen", Ph.D. Dissertation, Universitaet Kaiserslautern, Germany, 1987.""",
+        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "doi": ""}, 
         "R": 8.3143,
         "cp": CP2,
+        "ref": "NBP", 
         
         "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91, 
         "Pmin": 11.82, "rhomin": 23.0, 
@@ -100,7 +99,7 @@ class SO2(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = helmholtz1, #helmholtz2
+    eq = helmholtz1, helmholtz2
 
     _surface = {"sigma": [0.1016572, -0.020501, -0.0057962],
                 "exp": [1.25, 2.25, 3.25]}
