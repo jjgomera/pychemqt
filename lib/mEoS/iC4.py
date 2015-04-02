@@ -38,16 +38,11 @@ class iC4(MEoS):
            "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
            "hyp": [1.074673199, 0.485556021, 4.671261865, 2.19158348]}
 
-    CP2 = {"ao": 4.06714,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
-           "hyp": [1.074673199*Tc, 0.485556021*Tc, 4.671261865*Tc, 2.19158348*Tc]}
-
-    CP3 = {"ao": 4.059347,
-           "an": [], "pow": [],
+    Fi3 = {"ao_log": [1, 3.059347],
+           "pow": [0, 1],
+           "ao_pow": [-5.404217, 4.91136],
            "ao_exp": [4.940314, 4.090139, 15.68832, 9.739581],
-           "exp": [387.75987, 972.01102, 1772.81924, 4235.81166],
+           "titao": [0.9508183, 2.383449, 10.38655, 4.347095], 
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": -1.7231723278e1,
@@ -264,9 +259,13 @@ class iC4(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Miyamoto and Watanabe (2001)",
-        "__doc__":  u"""Miyamoto, H. and Watanabe, K. "A Thermodynamic Property Model for Fluid-Phase Isobutane," Int. J. Thermophys., 23(2):477-499, 2002.""",
+        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase Isobutane", 
+                    "ref": "Int. J. Thermophys., 23(2):477-499, 2002.",
+                    "doi": "10.1023/A:1015161519954"}, 
         "R": 8.314472,
-        "cp": CP3,
+        "cp": Fi3,
+        "ref": "IIR", 
 
         "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9, 
         "Pmin": 0.000021, "rhomin": 12.738, 
