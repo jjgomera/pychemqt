@@ -101,9 +101,13 @@ class R23(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-23 of Platzer et al. (1990).",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP3,
+        "ref": "NBP", 
         
         "Tmin": 90.0, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 16.65, 
         "Pmin": 2.5664104, "rhomin": 22.851535, 

@@ -7,12 +7,7 @@ from C3 import C3
 
 
 class R13(MEoS):
-    """Multiparameter equation of state for R13
-
-    >>> r13=R13(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r13.T, r13.rho, r13.u.kJkg, r13.h.kJkg, r13.s.kJkgK, r13.cv.kJkgK, r13.cp.kJkgK, r13.w)
-    300.0 4.9388 23.52 43.77 0.2205 0.53911 0.61363 150.38
-    """
+    """Multiparameter equation of state for R13"""
     name = "chlorotrifluoromethane"
     CASNumber = "75-72-9"
     formula = "CClF3"
@@ -63,9 +58,13 @@ class R13(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-13 of Platzer et al. (1990).",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP2,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806, 
         "Pmin": 0.0009047, "rhomin": 17.6998, 

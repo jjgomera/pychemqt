@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R21(MEoS):
-    """Multiparameter equation of state for R21
-
-    >>> r21=R21(T=400, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r21.T, r21.rho, r21.u.kJkg, r21.h.kJkg, r21.s.kJkgK, r21.cv.kJkgK, r21.cp.kJkgK, r21.w)
-    300.0 4.9388 23.52 43.77 0.2205 0.53911 0.61363 150.38
-    """
+    """Multiparameter equation of state for R21"""
     name = "dichlorofluoromethane"
     CASNumber = "75-43-4"
     formula = "CHCl2F"
@@ -36,9 +31,13 @@ class R21(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-21 of Platzer et al. (1990)",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": 200.0, "Tmax": 473.19, "Pmax": 137900.0, "rhomax": 15.36, 
         "Pmin": 0.6828e-4, "rhomin": 16.519, 
@@ -73,8 +72,3 @@ class R21(MEoS):
         "eq": 3,
         "ao": [-0.38213, -0.55559e1, -0.15886e2, -0.44766e2, -0.27606e3],
         "exp": [0.09, 0.667, 2.5, 6.0, 15.0]}
-
-
-if __name__ == "__main__":
-    r14=R21(T=400, P=0.1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r14.T, r14.rho, r14.u.kJkg, r14.h.kJkg, r14.s.kJkgK, r14.cv.kJkgK, r14.cp.kJkgK, r14.w)

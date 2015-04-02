@@ -62,9 +62,13 @@ class R115(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-115 of Platzer et al. (1990).",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP2,
+        "ref": "NBP", 
         
         "Tmin": 200.0 , "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7, 
         "Pmin": 6.213, "rhomin": 10.743, 

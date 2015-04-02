@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class RC318(MEoS):
-    """Multiparameter equation of state for RC318
-
-    >>> rc318=RC318(T=500, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (rc318.T, rc318.rho, rc318.u.kJkg, rc318.h.kJkg, rc318.s.kJkgK, rc318.cv.kJkgK, rc318.cp.kJkgK, r365mfc.w)
-    500.0 3.5926 288.51 316.34 1.0399 1.26519 1.32359 169.91
-    """
+    """Multiparameter equation of state for RC318"""
     name = "octafluorocyclobutane "
     CASNumber = "406-58-6"
     formula = "cyclo-C4F8"
@@ -34,9 +29,13 @@ class RC318(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-C318 of Platzer et al. (1990)",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 623.0, "Pmax": 60000.0, "rhomax": 8.6452, 
         "Pmin": 19.461, "rhomin": 8.6452, 

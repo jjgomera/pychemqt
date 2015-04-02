@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R114(MEoS):
-    """Multiparameter equation of state for R114
-
-    >>> r114=R114(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r114.T, r114.rho, r114.u.kJkg, r114.h.kJkg, r114.s.kJkgK, r114.cv.kJkgK, r114.cp.kJkgK, r114.w)
-    300.0 1558.7841 -33.86 -33.79 0.1152 0.67117 0.91951 693.14
-    """
+    """Multiparameter equation of state for R114"""
     name = "1,2-dichloro-1,1,2,2-tetrafluoroethane"
     CASNumber = "76-14-2"
     formula = "CClF2CClF2"
@@ -35,9 +30,13 @@ class R114(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-114 of Platzer et al. (1990).",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": 273.15, "Tmax": 507.0, "Pmax": 21000.0, "rhomax": 8.942, 
         "Pmin": 0.2, "rhomin": 10.4, 

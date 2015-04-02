@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R14(MEoS):
-    """Multiparameter equation of state for R14
-
-    >>> r14=R14(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r14.T, r14.rho, r14.u.kJkg, r14.h.kJkg, r14.s.kJkgK, r14.cv.kJkgK, r14.cp.kJkgK, r14.w)
-    300.0 4.9388 23.52 43.77 0.2205 0.53911 0.61363 150.38
-    """
+    """Multiparameter equation of state for R14"""
     name = "tetrafluoromethane"
     CASNumber = "75-73-0"
     formula = "CF4"
@@ -35,9 +30,13 @@ class R14(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-14 of Platzer et al. (1990)",
-        "__doc__":  u"""Platzer, B., Polt, A., and Maurer, G., "Thermophysical properties of refrigerants," Berlin:  Springer-Verlag, 1990.""",
+        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
+                    "title": "Thermophysical properties of refrigerants", 
+                    "ref": "Berlin:  Springer-Verlag, 1990.",
+                    "doi": ""}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": 120.0, "Tmax": 623.0, "Pmax": 51000.0, "rhomax": 20.764, 
         "Pmin": 0.64144, "rhomin": 20.764, 
@@ -59,7 +58,7 @@ class R14(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.043721], "exp": [1.26]}
+    _surface = {"sigma": [0.0423], "exp": [1.24]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.61905e1, -0.91398e1, 0.12192e2, -0.47215e1, -0.20439e1],
