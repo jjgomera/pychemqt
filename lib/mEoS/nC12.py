@@ -6,17 +6,12 @@ from lib import unidades
 
 
 class nC12(MEoS):
-    """Multiparameter equation of state for n-dodecane
-
-    >>> dodecano=nC12(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (dodecano.T, dodecano.rho, dodecano.u.kJkg, dodecano.h.kJkg, dodecano.s.kJkgK, dodecano.cv.kJkgK, dodecano.cp.kJkgK, dodecano.w)
-    300.0 744.35971 -539.00 -538.864 -1.13621 1.8230 2.2183 1273.48
-    """
+    """Multiparameter equation of state for n-dodecane"""
     name = "dodecane"
     CASNumber = "112-40-3"
     formula = "CH3-(CH2)10-CH3"
     synonym = ""
-    rhoc = unidades.Density(226.545)
+    rhoc = unidades.Density(226.5453372)
     Tc = unidades.Temperature(658.1)
     Pc = unidades.Pressure(1817.0, "kPa")
     M = 170.33484  # g/mol
@@ -35,9 +30,31 @@ class nC12(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for dodecane of Lemmon (2004).",
-        "__doc__":  u"""Lemmon, E.W. and Huber, M.L. "Thermodynamic Properties of n-Dodecane," Energy & Fuels, 18:960-967, 2004.""",
+        "__doi__": {"autor": "Lemmon, E.W. and Huber, M.L.",
+                    "title": "Thermodynamic Properties of n-Dodecane", 
+                    "ref": "Energy & Fuels, 18:960-967, 2004.",
+                    "doi": "10.1021_ef0341062"}, 
+        "__test__": """
+            >>> st=nC12(T=300, rho=0)
+            >>> print "%0.1f %0.1f %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300.0 0.0 0.0 271.3952 279.7096 122.8511
+            >>> st=nC12(T=300, rhom=4.4)
+            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300.0 7.161946 4.4 311.1937 377.1307 1316.614
+            >>> st=nC12(T=600, rhom=0.2)
+            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            600.0 0.7228018 0.2 488.1173 526.2322 123.5851
+            >>> st=nC12(T=600, rhom=4.0)
+            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            600.0 120.2532 4.0 499.9857 539.3864 1255.247
+            >>> st=nC12(T=658.2, rhom=1.33)
+            >>> print "%0.1f %0.7g %0.2f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            658.2 1.820055 1.33 547.6852 128753.9 49.76424
+            """, # Table 5, Pag 967
+
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 700000.0, "rhomax": 4.53, 
         "Pmin": 0.00063, "rhomin": 4.53, 
@@ -72,7 +89,20 @@ class nC12(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.382987, -0.561050, 0.313962e-1],
               "__name__": "Huber (2004)",
-              "__doc__": """Huber, M.L., Laesecke, A. and Perkins, R.A., Transport Properties of n-Dodecane, Energy & Fuels, 18:968-975, 2004.""",
+              "__doc__": """, , Energy & Fuels, 18:968-975, 2004.""",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
+                          "title": "Transport Properties of n-Dodecane", 
+                          "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
+                          "doi": "10.1021/ef034109e"}, 
+              "__test__": """
+                  >>> st=nC12(T=300, rhom=4.4115)
+                  >>> print "%0.1f" % st.mu.muPas
+                  1484.8
+                  >>> st=nC12(T=500, rhom=3.4447)
+                  >>> print "%0.1f" % st.mu.muPas
+                  183.76
+                  """, # Pag 972
+
               "ek": 522.592, "sigma": 0.735639,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.2787353/M**0.5,
@@ -106,7 +136,21 @@ class nC12(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2004)",
-               "__doc__": """Huber, M.L., Laesecke, A. and Perkins, R.A., Transport Properties of n-Dodecane, Energy & Fuels, 18:968-975, 2004""",
+               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
+                           "title": "Transport Properties of n-Dodecane", 
+                           "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
+                           "doi": "10.1021/ef034109e"}, 
+               "__test__": """
+                   >>> st=nC12(T=300, rhom=4.4115)
+                   >>> print "%0.2f" % st.k.mWmK
+                   138.29
+                   >>> st=nC12(T=500, rhom=3.4447)
+                   >>> print "%0.2f" % st.k.mWmK
+                   93.84
+                   >>> st=nC12(T=660, rhom=1.50098)
+                   >>> print "%0.3f" % st.k.mWmK
+                   90.346
+                   """, # Pag 974
 
                "Tref": 658.1, "kref": 1.,
                "no": [0.436343e-2, -0.264054e-1, 0.922394e-1, -0.291756e-1],
