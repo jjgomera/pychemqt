@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R365mfc(MEoS):
-    """Multiparameter equation of state for R365mfc
-
-    >>> r365mfc=R365mfc(T=500, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r365mfc.T, r365mfc.rho, r365mfc.u.kJkg, r365mfc.h.kJkg, r365mfc.s.kJkgK, r365mfc.cv.kJkgK, r365mfc.cp.kJkgK, r365mfc.w)
-    500.0 3.5926 288.51 316.34 1.0399 1.26519 1.32359 169.91
-    """
+    """Multiparameter equation of state for R365mfc"""
     name = "1,1,1,3,3-pentafluorobutane"
     CASNumber = "406-58-6"
     formula = "CF3CH2CF2CH3"

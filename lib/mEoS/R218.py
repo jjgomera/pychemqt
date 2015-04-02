@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R218(MEoS):
-    """Multiparameter equation of R218
-
-#    >>> r218=R218(T=300, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r218.T, r218.rho, r218.u.kJkg, r218.h.kJkg, r218.s.kJkgK, r218.cv.kJkgK, r218.cp.kJkgK, r218.w)
-#    300.0 7.6962 302.73 315.72 1.4786 0.75013 0.79926 116.42
-    """
+    """Multiparameter equation of R218"""
     name = "octafluoropropane"
     CASNumber = "76-19-7"
     formula = "CF3CF2CF3"

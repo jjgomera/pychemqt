@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Propylene(MEoS):
-    """Multiparameter equation of state for propylene
-
-    >>> propileno=Propylene(T=400, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
-    300.0 1.71087 -58.20 0.248 0.00620 1.3446 1.5544 258.09
-    """
+    """Multiparameter equation of state for propylene"""
     name = "propylene"
     CASNumber = "115-07-1"
     formula = "CH2=CH-CH3"

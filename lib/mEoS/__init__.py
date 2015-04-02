@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from lib.meos import MEoS
+from lib.meos import MEoS, MEoSBlend
 
 # Noble Gases
 import He
@@ -114,13 +114,6 @@ import RC318
 import R1234yf
 import R1234ze
 
-# PseudoCompound
-import Air
-import R404a
-import R407c
-import R410a
-import R507a
-
 # Siloxanes
 import D4
 import D5
@@ -131,7 +124,14 @@ import MD3M
 import MD4M
 import MM
 
-__all__ = MEoS.__subclasses__()
+# PseudoCompound
+import Air
+import R404a
+import R407c
+import R410a
+import R507a
+
+__all__ = MEoS.__subclasses__()[1:] + MEoSBlend.__subclasses__()
 id_mEoS = [i.id for i in __all__]
 
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "Ar":
+            if module.__module__ != "nC12":
                 continue
             print module.__module__
             inst = module()

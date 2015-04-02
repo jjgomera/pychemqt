@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R141b(MEoS):
-    """Multiparameter equation of state for R141b
-#
-#    >>> r141B=R141b(T=500, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r141B.T, r141B.rho, r141B.u.kJkg, r141B.h.kJkg, r141B.s.kJkgK, r141B.cv.kJkgK, r141B.cp.kJkgK,r141B.w)
-#    500.0 2.8320 599.85 635.16 2.2987 0.92633 0.99970 194.56
-    """
+    """Multiparameter equation of state for R141b"""
     name = "1,1-dichloro-1-fluoroethane"
     CASNumber = "1717-00-6"
     formula = "CCl2FCH3"

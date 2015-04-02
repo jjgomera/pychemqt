@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R142b(MEoS):
-    """Multiparameter equation of state for R142b
-
-#    >>> r142B=R142b(T=300, P=0.1)
-#    >>> print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (r142B.T, r142B.rho, r142B.u.kJkg, r142B.h.kJkg, r142B.s.kJkgK, r142B.cv.kJkgK, r142B.cp.kJkgK, r142B.w)
-#    300.0 4.13163 -2.155 -0.03818 0.76055 0.85441 162.77
-    """
+    """Multiparameter equation of state for R142b"""
     name = "1-chloro-1,1-difluoroethane"
     CASNumber = "75-68-3"
     formula = "CClF2CH3"
@@ -31,13 +26,7 @@ class R142b(MEoS):
            "ao_pow": [-12.6016527149, 8.3160183265],
            "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
            "titao": [473/Tc, 1256/Tc, 2497/Tc, 6840/Tc]}
-
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
-           "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
-           "exp": [473, 1256, 2497, 6840],
-           "ao_hyp": [], "hyp": []}
-
+           
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-142b of Lemmon and Span (2006)",

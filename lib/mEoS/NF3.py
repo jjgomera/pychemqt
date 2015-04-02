@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class NF3(MEoS):
-    """Multiparameter equation of state for nitrogen trifluoride
-
-    >>> nf3=NF3(T=300, P=0.1, eq=1)
-    >>> print "%0.1f %0.5f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (nf3.T, nf3.rho, nf3.u.kJkg, nf3.h.kJkg, nf3.s.kJkgK, nf3.cv.kJkgK, nf3.cp.kJkgK, nf3.w)
-    300.0 0.16039 -613.532 9.947 0.05958 3.1162 5.1932 1019.58
-    """
+    """Multiparameter equation of state for nitrogen trifluoride"""
     name = "nitrogen trifluoride"
     CASNumber = "7783-54-2"
     formula = "NF3"

@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R116(MEoS):
-    """Multiparameter equation of state for R116
-
-#    >>> r116=R116(T=300, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r116.T, r116.rho, r116.u.kJkg, r116.h.kJkg, r116.s.kJkgK, r116.cv.kJkgK, r116.cp.kJkgK, r116.w)
-#    300.0 5.5897 286.68 304.57 1.5380 0.71520 0.77847 138.83
-    """
+    """Multiparameter equation of state for R116"""
     name = "hexafluoroethane"
     CASNumber = "76-16-4"
     formula = "CF3CF3"
@@ -100,7 +95,7 @@ class R116(MEoS):
         "c2": [1, 2, 2, 2, 3, 3, 3, 4],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, #helmholtz2
+    eq = helmholtz1, helmholtz2
 
     _surface = {"sigma": [0.05059375, -0.0119435], "exp": [1.29, 2.0]}
     _vapor_Pressure = {

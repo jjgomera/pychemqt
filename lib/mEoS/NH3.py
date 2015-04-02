@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class NH3(MEoS):
-    """Multiparameter equation of state for ammonia
-
-    >>> amoniaco=NH3(T=500, P=50)
-    >>> print "%0.1f %0.2f %0.1f %0.1f %0.4f %0.4f %0.4f %0.2f" % (amoniaco.T, amoniaco.rho, amoniaco.u.kJkg, amoniaco.h.kJkg, amoniaco.s.kJkgK, amoniaco.cv.kJkgK, amoniaco.cp.kJkgK, amoniaco.w)
-    500.0 347.40 1330.2 1474.1 4.2087 2.6614 5.4776 712.88
-    """
+    """Multiparameter equation of state for ammonia"""
     name = "ammonia"
     CASNumber = "7664-41-7"
     formula = "NH3"

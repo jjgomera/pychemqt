@@ -6,16 +6,7 @@ from lib import unidades
 
 
 class N2O(MEoS):
-    """Multiparameter equation of state for nitrous oxide
-
-#    >>> acet=Acetone(T=510, rho=4*58.07914)
-#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
-#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
-#
-#    >>> n2o=N2O(T=300, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (n2o.T, n2o.rho, n2o.u.kJkg, n2o.h.kJkg, n2o.s.kJkgK, n2o.cv.kJkgK, n2o.cp.kJkgK, n2o.w)
-#    300.0 1.77389 413.83 470.200 2.43074 0.6915 0.8848 267.85
-    """
+    """Multiparameter equation of state for nitrous oxide"""
     name = "nitrous oxide"
     CASNumber = "10024-97-2"
     formula = "N2O"

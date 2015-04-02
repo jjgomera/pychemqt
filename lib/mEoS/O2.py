@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class O2(MEoS):
-    """Multiparameter equation of state for oxygen
-
-    >>> oxigeno=O2(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (oxigeno.T, oxigeno.rho, oxigeno.u.kJkg, oxigeno.h.kJkg, oxigeno.s.kJkgK, oxigeno.cv.kJkgK, oxigeno.cp.kJkgK, oxigeno.w)
-    300.0 1.28367 -77.28 0.617 -0.00121 0.6587 0.9199 329.72
-    """
+    """Multiparameter equation of state for oxygen"""
     name = "oxygen"
     CASNumber = "7782-44-7"
     formula = "O2"

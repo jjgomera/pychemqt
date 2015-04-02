@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R41(MEoS):
-    """Multiparameter equation of state for R41
-
-#    >>> r41=R41(T=300, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r41.T, r41.rho, r41.u.kJkg, r41.h.kJkg, r41.s.kJkgK, r41.cv.kJkgK, r41.cp.kJkgK, r41.w)
-#    300.0 1.3757 555.51 628.20 3.2409 0.86669 1.12067 305.33
-    """
+    """Multiparameter equation of state for R41"""
     name = "fluoromethane"
     CASNumber = "593-53-3"
     formula = "CH3F"
@@ -126,7 +121,7 @@ class R41(MEoS):
               -0.600934897964e-4, 0.145050417148e-1, 0.222324172533e-7,
               -0.204419971811e-4, 0.245556593457e-3]}
 
-    eq = helmholtz1, helmholtz2, #MBWR
+    eq = helmholtz1, helmholtz2, MBWR
 
     _surface = {"sigma": [0.0633], "exp": [1.26]}
     _vapor_Pressure = {

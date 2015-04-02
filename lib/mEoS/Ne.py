@@ -9,12 +9,7 @@ from lib import unidades
 
 
 class Ne(MEoS):
-    """Multiparameter equation of state for neon
-
-    >>> neon=Ne(T=300, P=50)
-    >>> print "%0.1f %0.3f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (neon.T, neon.rho, neon.u.kJkg, neon.h.kJkg, neon.s.kJkgK, neon.cv.kJkgK, neon.cp.kJkgK, neon.w)
-    300.0 322.962 234.682 389.499 3.09898 0.6545 1.1149 577.50
-    """
+    """Multiparameter equation of state for neon"""
     name = "neon"
     CASNumber = "7440-01-9"
     formula = "Ne"
