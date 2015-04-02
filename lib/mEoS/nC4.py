@@ -38,16 +38,11 @@ class nC4(MEoS):
            "ao_hyp": [9.44893, 6.89406, 24.4618, 14.7824],
            "hyp": [1.101487798, 0.43195766, 4.502440459, 2.124516319]}
 
-    CP2 = {"ao": 4.33944,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [9.44893, 6.89406, 24.4618, 14.7824],
-           "hyp": [1.101487798*Tc, 0.43195766*Tc, 4.502440459*Tc, 2.124516319*Tc]}
-
-    CP3 = {"ao": 4.240207,
-           "an": [], "pow": [],
+    Fi3 = {"ao_log": [1, 3.240207],
+           "pow": [0, 1],
+           "ao_pow": [-5.404217, 4.91136],
            "ao_exp": [5.513671, 7.388450, 10.250630, 11.061010],
-           "exp": [327.55988, 1319.06935, 4138.63184, 1864.36783],
+           "titao": [327.55988/Tc, 1319.06935/Tc, 4138.63184/Tc, 1864.36783/Tc], 
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": -1.3491511376e1,
@@ -56,12 +51,6 @@ class nC4(MEoS):
            "pow": [-3, -2, -1.001, 1, 2, 3],
            "ao_exp": [-8.3933423467], "exp": [3000],
            "ao_hyp": [], "hyp": []}
-
-    CP5 = {"ao": 4.33944,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [0.2071931e7, 0.2324827e6, 0.8962262e8, 0.1205864e8],
-           "hyp": [0.46827e3, 0.183636e3, 0.19141e4, 0.903185e3]}
 
     CP6 = {"ao": 0.801601/8.3143*58.124,
            "an": [0.655936e-3/8.3143*58.124, 0.12277e-4/8.3143*58.124,
@@ -272,9 +261,13 @@ class nC4(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Miyamoto and Watanabe (2001)",
-        "__doc__":  u"""Miyamoto, H. and Watanabe, K. "A Thermodynamic Property Model for Fluid-Phase n-Butane," Int. J. Thermophys., 22(2):459-475, 2001.""",
+        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase n-Butane", 
+                    "ref": "Int. J. Thermophys., 22(2):459-475, 2001.",
+                    "doi": "10.1023/A:1010722814682"}, 
         "R": 8.314472,
-        "cp": CP3,
+        "cp": Fi3,
+        "ref": "IIR", 
 
         "Tmin": 134.87, "Tmax": 589., "Pmax": 69000.0, "rhomax": 13.15, 
         "Pmin": 0.000688, "rhomin": 12.652, 
