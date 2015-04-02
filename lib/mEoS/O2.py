@@ -49,9 +49,13 @@ class O2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for oxygen of Schmidt and Wagner (1985).",
-        "__doc__":  u"""Schmidt, R., Wagner, W. A new form of the equation of state for pure substances and its application to oxygen. Fluid Phase Equuilibria. 19 (1985), 175 – 200.""",
+        "__doi__": {"autor": "Schmidt, R., Wagner, W.",
+                    "title": "A new form of the equation of state for pure substances and its application to oxygen", 
+                    "ref": "Fluid Phase Equuilibria. 19 (1985), 175-200.",
+                    "doi": "10.1016/0378-3812(85)87016-3"}, 
         "R": 8.31434,
         "cp": CP1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 82000.0, "rhomax": 43.348, 
         "Pmin": 0.14628, "rhomin": 40.816, 
@@ -80,7 +84,7 @@ class O2(MEoS):
         "__name__": "Helmholtz equation of state for oxygen of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
@@ -142,6 +146,7 @@ class O2(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 43.348, 
         "Pmin": 0.14603, "rhomin": 40.885, 
@@ -349,3 +354,12 @@ class O2(MEoS):
                "Xio": 1.6e-10, "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
 
     _thermal = thermo0, thermo1, thermo2
+
+
+if __name__ == "__main__":
+    for eq in (0, 2, 3):
+        st=O2(T=100, x=0.5, eq=eq)
+        print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+            st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+            st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+            st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
