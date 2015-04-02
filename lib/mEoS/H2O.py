@@ -143,11 +143,10 @@ class H2O(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for water of Wagner and Pruß (2002).",
-        "__doi__": {"autor": "Wagner, W., Pruß, A.",
-                    "title": "The IAPWS Formulation 1995 for the Thermodynamic \
-                    Properties of Ordinary Water Substance for General and Scientific Use", 
+        "__doi__": {"autor": u"Wagner, W., Pruß, A.",
+                    "title": "The IAPWS Formulation 1995 for the Thermodynamic Properties of Ordinary Water Substance for General and Scientific Use", 
                     "ref": "J. Phys. Chem. Ref. Data 31, 387 (2002)",
-                    "doi":  "10.1063/1.1461829"}, 
+                    "doi": "10.1063/1.1461829"}, 
         "__test__": 
             # Table 6.6, Pag 436
             """
@@ -299,9 +298,8 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
         "cp": Fi2,
@@ -328,13 +326,12 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and Wagner-58 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
-                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25 000 MPa", 
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa", 
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
-                    "doi":  "10.1063/1.555836"}, 
+                    "doi": "10.1063/1.555836"}, 
         "R": 8.31434,
         "cp": Fi3,
-        "ref": {"name": "CUSTOM",
-            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
         "Pmin": 0.61166, "rhomin": 55.497, 
@@ -378,13 +375,12 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and Wagner-38 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
-                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25 000 MPa", 
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa", 
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
                     "doi":  "10.1063/1.555836"}, 
         "R": 8.31434,
         "cp": Fi4,
-        "ref": {"name": "CUSTOM",
-            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
         "Pmin": 0.61166, "rhomin": 55.497, 
@@ -468,8 +464,12 @@ class H2O(MEoS):
               "__code__": (_Viscosity, )}
 
     visco1 = {"eq": 4, "omega": 1,
-              "__doc__": u"""S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
               "__name__": u"Quiñones-Cisneros (2006)",
+              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
+                          "doi": "10.1021/jp0618577"}, 
+
               "Tref": 647.096, "muref": 1.0,
               "ek": 809.1, "sigma": 0.2641, "n_chapman": 0,
               "n_ideal": [151.138, -444.318, 398.262, -81.7008],

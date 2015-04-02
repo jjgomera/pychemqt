@@ -444,8 +444,12 @@ class C3(MEoS):
               "rhoc": 5.0}
 
     visco2 = {"eq": 4, "omega": 1,
-              "__doc__": """S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
-              "__name__": "Quiñones-Cisneros (2006)",
+              "__name__": u"Quiñones-Cisneros (2006)",
+              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
+                          "doi": "10.1021/jp0618577"}, 
+
               "Tref": 369.825, "muref": 1.0,
               "ek": 358.9, "sigma": 0.47, "n_chapman": 0,
               "n_ideal": [12.3057, -42.5793, 40.3486],
