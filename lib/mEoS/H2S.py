@@ -157,9 +157,13 @@ class H2S(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Starling (1973)",
-        "__doc__":  u"""Starling, K.E., "Fluid Thermodynamic Properties for Light Petroleum Systems," Gulf Publishing Company, 1973.""",
+        "__doi__": {"autor": "Starling, K.E.",
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "ref": "Gulf Publishing Company, 1973.",
+                    "doi": ""}, 
         "R": 8.3159524,
         "cp": CP4,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 29.578, 
         "Pmin": 23.85, "rhomin": 29.07, 

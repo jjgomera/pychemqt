@@ -148,9 +148,13 @@ class iC5(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Starling (1973)",
-        "__doc__":  u"""Starling, K.E., "Fluid Thermodynamic Properties for Light Petroleum Systems," Gulf Publishing Company, 1973.""",
+        "__doi__": {"autor": "Starling, K.E.",
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "ref": "Gulf Publishing Company, 1973.",
+                    "doi": ""}, 
         "R": 8.3159524,
         "cp": CP4,
+        "ref": "NBP", 
 
         "Tmin": 199.82, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 9.9258626, 
         "Pmin": 0.34375, "rhomin": 9.9259, 

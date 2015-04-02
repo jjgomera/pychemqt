@@ -23,25 +23,19 @@ class nC8(MEoS):
     _Tr = unidades.Temperature(565.427917)
     _rhor = unidades.Density(234.605116)
     _w = 0.402698435
-    
-    Fi2 = {"ao_log": [1, 3.0],
-           "pow": [0, 1],
-           "ao_pow": [15.864687161, -97.370667555],
-           "ao_exp": [], "titao": [], 
-           "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
-           "hyp": [0.27914354, 1.431644769, 2.973845992, 0]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
            "ao_hyp": [0.3961814e6, 0.2245626e8, 0.1380875e9, 0],
            "hyp": [0.1589220e3, 0.8150640e3, 0.1693070e4, 0]}
-
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
+           
+    Fi1 = {"ao_log": [1, 3.0],
+           "pow": [0, 1],
+           "ao_pow": [15.864687161, -97.370667555],
+           "ao_exp": [], "titao": [], 
            "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
-           "hyp": [0.27914354*Tc, 1.431644769*Tc, 2.973845992*Tc, 0]}
+           "hyp": [0.27914354, 1.431644769, 2.973845992, 0]}
 
     CP3 = {"ao": 3.018753,
            "an": [0.7297005e-1, -0.14171168e-4, -0.1225317e-7,  0.12912645e-11],
@@ -98,7 +92,7 @@ class nC8(MEoS):
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi": "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": Fi2,
+        "cp": Fi1,
         "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
@@ -149,9 +143,13 @@ class nC8(MEoS):
     helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Starling (1973)",
-        "__doc__":  u"""Starling, K.E., "Fluid Thermodynamic Properties for Light Petroleum Systems," Gulf Publishing Company, 1973.""",
+        "__doi__": {"autor": "Starling, K.E.",
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "ref": "Gulf Publishing Company, 1973.",
+                    "doi": ""}, 
         "R": 8.3159524,
         "cp": CP4,
+        "ref": "NBP", 
 
         "Tmin": 255.372, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 6.36203, 
         "Pmin": 0.099571, "rhomin": 6.3620, 
@@ -178,6 +176,7 @@ class nC8(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
