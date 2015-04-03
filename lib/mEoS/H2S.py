@@ -6,17 +6,7 @@ from lib import unidades
 
 
 class H2S(MEoS):
-    """Multiparameter equation of state for hydrogen sulfide
-
-#    >>> sulfuro=H2S(T=500, P=0.1)
-#    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (sulfuro.T, sulfuro.rho, sulfuro.u.kJkg, sulfuro.h.kJkg, sulfuro.s.kJkgK, sulfuro.cv.kJkgK, sulfuro.cp.kJkgK, sulfuro.w)
-#    500.0 0.82094 723.06 844.868 3.45347 0.8487 1.0944 396.06
-#
-#    >>> acet=Acetone(T=510, rho=4*58.07914)
-#    >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (acet.T, acet.rhoM, acet.P.kPa, acet.hM.kJkmol, acet.sM.kJkmolK, acet.cvM.kJkmolK, acet.cpM.kJkmolK, acet.w)
-#    510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
-#
-    """
+    """Multiparameter equation of state for hydrogen sulfide"""
     name = "hydrogen sulfide"
     CASNumber = "7783-06-4"
     formula = "H2S"
@@ -37,23 +27,15 @@ class H2S(MEoS):
            "ao_exp": [1.1364, 1.9721],
            "titao": [1823/Tc, 3965/Tc]}
 
-    Fi2 = {"ao_log": [1, 3.0],
-           "pow": [0, 1],
-           "ao_pow": [9.336197742, -16.266508995],
+    Fi2 = {"ao_log": [1, 3],
+           "pow": [0, 1],"ao_pow": [9.336197742, -16.266508995],
            "ao_exp": [], "titao": [], 
            "ao_hyp": [3.11942, 1.00243, 0, 0],
            "hyp": [4.914580541, 2.27065398, 0, 0]}
 
-    CP1 = {"ao": 4,
-           "an": [0.14327e-5], "pow": [1.5],
-           "ao_exp": [1.1364, 1.9721],
-           "exp": [1823, 3965],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [0.9767422, 2.151898],
-           "exp": [4.506266*Tc, -10.15526*Tc],
+    Fi3 = {"ao_log": [1, 3.],
+           "pow": [0, 1], "ao_pow": [7.881037, -3.20986],
+           "ao_exp": [0.9767422, 2.151898], "titao": [4.506266, 10.15526], 
            "ao_hyp": [], "hyp": []}
 
     CP3 = {"ao": 4.1012105,
@@ -102,9 +84,13 @@ class H2S(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Sakoda and Uematsu (2004)",
-        "__doc__":  u"""Sakoda, N., Uematsu, M. "A Thermodynamic Property Model for Fluid Phase Hydrogen Sulfide," Int. J. Thermophys., 25(3):709-737, 2004.""",
+        "__doi__": {"autor": "Sakoda, N., Uematsu, M.",
+                    "title": "A Thermodynamic Property Model for Fluid Phase Hydrogen Sulfide", 
+                    "ref": "Int. J. Thermophys., 25(3):709-737, 2004",
+                    "doi": "10.1023/B:IJOT.0000034234.06341.8a"}, 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi3,
+        "ref": {"Tref": 298.15, "Pref": 100., "ho": 0, "so": 0}, 
 
         "Tmin": 187.67, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.13, 
         "Pmin": 23.3, "rhomin": 29.12, 
@@ -271,7 +257,7 @@ class H2S(MEoS):
     _thermal = thermo0,
 
 if __name__ == "__main__":
-    for eq in (0, 4):
-        st=H2S(T=500, P=1e5, eq=eq)
+    for eq in (0, 1, 4):
+        st=H2S(T=300, P=1e5, eq=eq)
         print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
             st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
