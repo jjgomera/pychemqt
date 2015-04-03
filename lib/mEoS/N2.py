@@ -270,9 +270,129 @@ class N2(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Jacobsen et al. (1986).",
-        "__doc__":  u"""Jacobsen, R.T, Stewart, R.B., and Jahangiri, M., "Thermodynamic properties of nitrogen from the freezing line to 2000 K at pressures to 1000 MPa," J. Phys. Chem. Ref. Data, 15(2):735-909, 1986.""",
+        "__doi__": {"autor": "Jacobsen, R.T, Stewart, R.B., and Jahangiri, M.",
+                    "title": "Thermodynamic properties of nitrogen from the freezing line to 2000 K at pressures to 1000 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data, 15(2):735-909, 1986",
+                    "doi": "10.1007/BF00502385"}, 
+        "__test__": 
+            #Table 21, Pag 795
+            """
+            >>> st=N2(T=63.15, x=0.5, eq=3)
+            >>> print "%0.6g %0.4g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            63.15 0.01253 31.046 0.02412 -4227.5 1806.3 67.89 163.43 31.29 23.94 56.56 33.27 1022 159
+            >>> st=N2(T=70, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            70 0.03857 29.98 0.06784 -3840.3 1980.5 73.70 156.85 30.64 25.24 56.46 35.36 933 166
+            >>> st=N2(T=80, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            80 0.13699 28.351 0.21801 -3268.9 2202.7 81.28 149.67 29.63 26.52 57.65 38.34 821 174
+            >>> st=N2(T=90, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            90 0.36066 26.581 0.53967 -2677.4 2368.8 88.15 144.22 28.64 27.02 60.18 41.59 713 179
+            >>> st=N2(T=100, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            100 0.77881 24.584 1.1436 -2050.5 2451.0 94.58 139.59 27.84 27.43 65.09 47.46 601 181
+            >>> st=N2(T=110, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g %0.4g %0.4g %0.3g %0.3g" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, \
+                st.Liquido.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            110 1.4672 22.172 2.2377 -1357.1 2401.3 100.9 135.07 27.55 28.57 76.90 62.45 473 178
+            >>> st=N2(T=120, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK,\
+                st.Liquido.cpM.JmolK, st.Gas.cpM.JmolK, st.Liquido.w, st.Gas.w)
+            120 2.5125 18.643 4.4632 -493.19 2082.1 107.95 129.41 29.06 31.78 128.9 131.2 309 171
+            >>> st=N2(T=126, x=0.5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.1f %0.1f %0.2f %0.2f %0.2f %0.2f %0.0f %0.0f" % (\
+                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.Jmol, st.Gas.hM.Jmol, \
+                st.Liquido.sM.JmolK, st.Gas.sM.JmolK, st.Liquido.cvM.JmolK, st.Gas.cvM.JmolK, st.Liquido.w, st.Gas.w)
+            126 3.3664 13.304 9.1698 495.38 1194.9 115.53 121.08 37.66 39.64 168 159
+            """
+            #Table 22, Pag 799
+            """
+            >>> st=N2(T=84, P=2e4, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            84 0.02882 1729.5 2423.6 168.03 20.84 29.33 186
+            >>> st=N2(T=1200, P=8e4, eq=3)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            1200 0.00802 26800 36780 236.08 25.41 33.73 688
+            >>> st=N2(T=70, P=1e5, eq=3)
+            >>> print "%0.6g %0.5f %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            70 29.984 -3842.3 -3839.0 73.68 30.64 56.45 934
+            >>> st=N2(T=150, P=1.5e5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 0.12133 3085.8 4322.1 168.09 20.87 29.50 249
+            >>> st=N2(T=300, P=5e5, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            300 0.20064 6199.8 8691.9 178.31 20.85 29.35 354
+            >>> st=N2(T=102, P=1e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            102 24.173 -1960.1 -1918.8 95.79 27.71 66.39 580
+            >>> st=N2(T=150, P=2e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 1.8268 2764.8 3859.6 144.38 21.98 36.31 237
+            >>> st=N2(T=122, P=3e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            122 18.077 -492.64 -326.68 109.11 29.03 136.2 297
+            >>> st=N2(T=150, P=3e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.2f %0.2f %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 2.9663 2557.5 3568.8 139.59 22.73 42.46 232
+            >>> st=N2(T=144, P=4e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            144 4.8655 2080.2 2902.4 133.24 24.38 61.11 217
+            >>> st=N2(T=150, P=5e6, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 6.0248 2030.6 2860.5 131.7 24.53 66.06 227
+            >>> st=N2(T=1000, P=1e7, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            1000 1.1622 21730 30334 189.8 24.47 32.95 654
+            >>> st=N2(T=80, P=5e7, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            80 31.566 -3758.4 -2174.4 74.29 32.88 51.17 1117
+            >>> st=N2(T=150, P=1e8, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            150 28.212 -1230.3 2314.4 99.76 28.02 44.74 1053
+            >>> st=N2(T=700, P=5e8, eq=3)
+            >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
+                st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
+            700 26.085 13376 32544 143.38 26.67 35.08 1544
+            """, 
+
         "R": 8.31434,
         "cp": CP2,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8669, "so": 191.502}, 
+        "Tc": 126.193, "Pc": 3397.8, "rhoc": 11.177, "Tt": 63.148, "M": 28.0134, 
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 30.96, 
         "Pmin": 12.52, "rhomin": 31.046, 

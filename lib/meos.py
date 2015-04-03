@@ -2685,23 +2685,6 @@ class MEoS(_fase):
             k = None
         return unidades.ThermalConductivity(k)
 
-    @classmethod
-    def __test__(cls):
-        """Implement test unit"""
-        pruebas = {}
-        for i, test in enumerate(cls._test):
-            prueba = ">>> for value1 in {}:".format(test["value1"])+os.linesep
-            prueba += "...  for value2 in {}:".format(test["value2"])+os.linesep
-            prueba += "...   fluido={}({}=value1, {}=value2)".format(
-                cls.__name__, test["var1"], test["var2"])+os.linesep
-            prueba += "...   print("+"'"+"{: .5g} "*len(test["prop"])+"'"+".format("
-            for propiedad, unidad in zip(test["prop"], test["unit"]):
-                prueba += "fluido.{}.{}, ".format(propiedad, unidad)
-            prueba += "))"+os.linesep
-            prueba += test["result"]
-        pruebas[str(i)] = prueba
-        return pruebas
-
     def txt(self):
         """Return a text repr of class with all properties"""
         txt = "#---------------"
