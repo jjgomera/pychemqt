@@ -144,7 +144,7 @@ class R143a(MEoS):
 
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.0549], "exp": [1.26]}
+    _surface = {"sigma": [0.05416], "exp": [1.255]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.73938e1, 0.19948e1, -0.18487e1, -0.41927e1, 0.14862e1],

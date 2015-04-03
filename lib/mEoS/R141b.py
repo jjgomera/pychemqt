@@ -66,7 +66,7 @@ class R141b(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.06087], "exp": [1.235]}
+    _surface = {"sigma": [7.3958e-5, 0.059941], "exp": [0.066331, 1.2214]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.73784e1, 0.52955e1, -0.46639e1, -0.31122e1, -0.18972e1],

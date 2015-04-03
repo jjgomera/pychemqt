@@ -139,7 +139,7 @@ class Propylene(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.0562], "exp": [1.26]}
+    _surface = {"sigma": [0.05268], "exp": [1.186]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
                 "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [-6593000000, 6593000001], "exp1": [0, 2.821],

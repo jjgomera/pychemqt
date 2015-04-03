@@ -123,7 +123,7 @@ class R41(MEoS):
 
     eq = helmholtz1, helmholtz2, MBWR
 
-    _surface = {"sigma": [0.0633], "exp": [1.26]}
+    _surface = {"sigma": [0.05049], "exp": [1.242]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.70970e1, 0.17409e1, -0.11668e1, -0.31830e1, 0.93827],

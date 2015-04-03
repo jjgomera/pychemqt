@@ -55,7 +55,7 @@ class C4F10(MEoS):
 
     eq = ecs,
 
-    _surface = {"sigma": [0.04297], "exp": [1.21]}
+    _surface = {"sigma": [0.04429], "exp": [1.242]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.72217e1, -0.18886e2, 0.47288e2, -0.29794e2, -0.50457e1],

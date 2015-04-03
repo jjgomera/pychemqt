@@ -65,7 +65,7 @@ class iC6(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.053], "exp": [1.26]}
+    _surface = {"sigma": [0.05024], "exp": [1.194]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.74130e1, 0.16267e1, -0.22311e1, -0.26040e1, -0.29490e1],

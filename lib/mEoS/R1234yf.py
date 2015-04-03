@@ -63,7 +63,7 @@ class R1234yf(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.05983], "exp": [1.367]}
+    _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.74697e1, 0.27915e1, -0.21312e1, -0.29531e1],

@@ -203,7 +203,7 @@ class Ethylene(MEoS):
 
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
 
-    _surface = {"sigma": [0.050195], "exp": [1.26]}
+    _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [10.725], "expt1": [0], "expd1": [1],

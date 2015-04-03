@@ -193,7 +193,7 @@ class H2S(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4, GERG
 
-    _surface = {"sigma": [0.082], "exp": [1.26]}
+    _surface = {"sigma": [0.078557], "exp": [1.2074]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-6.5884, 2.1582, -1.6054, -2.3870],

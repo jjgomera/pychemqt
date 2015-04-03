@@ -173,7 +173,7 @@ class R32(MEoS):
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.00585
 
-    _surface = {"sigma": [0.07216], "exp": [1.252]}
+    _surface = {"sigma": [0.07147], "exp": [1.246]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.74883e1, 0.19697e1, -0.17496e1, -0.40224e1, 0.15209e1],

@@ -130,8 +130,8 @@ class Benzene(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.0766304, -0.0157455, 0.0150819],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.07298, -0.0007802, -0.0001756],
+                "exp": [1.232, 0.8635, 0.3065]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.71661e1, 0.21551e1, -0.20297e1, -0.40668e1, 0.38092],

@@ -177,7 +177,7 @@ class R134a(MEoS):
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.001032
 
-    _surface = {"sigma": [0.06016], "exp": [1.26]}
+    _surface = {"sigma": [0.05801], "exp": [1.241]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.77513e1, 0.29263e1, -0.26622e1, -0.39711e1],

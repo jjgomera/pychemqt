@@ -156,8 +156,8 @@ class Methanol(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.1226257, -0.1994044, 0.1533744],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.22421, -0.21408, 0.083233],
+                "exp": [1.3355, 1.677, 4.4402]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.187e-3,
                 "Tmin": Tt, "Tmax": 620.,
                 "a1": [1], "exp1": [0],

@@ -168,8 +168,8 @@ class He(MEoS):
     eq = helmholtz1, helmholtz2, MBWR, GERG
     _PR = -0.005886
 
-    _surface = {"sigma": [389.057e-6, 521.410e-6, -579.737e-6],
-                "exp": [1, 2, 3]}
+    _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
+                "exp": [1.04, 2.468, 2.661]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [0.517254], "expt1": [0], "expd1": [1],

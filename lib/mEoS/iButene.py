@@ -68,7 +68,7 @@ class iButene(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.0551], "exp": [1.24]}
+    _surface = {"sigma": [0.0545], "exp": [1.23]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.68973e1, 0.12475e1, -0.25441e1, -0.29282e1, 0.15778e1],

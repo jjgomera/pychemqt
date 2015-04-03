@@ -127,7 +127,7 @@ class R11(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.062], "exp": [1.25]}
+    _surface = {"sigma": [0.06212], "exp": [1.247]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.70742e1, 0.38118e1, -0.32850e1, -0.76340e1, 0.50598e1],

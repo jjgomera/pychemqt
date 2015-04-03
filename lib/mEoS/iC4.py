@@ -374,7 +374,7 @@ class iC4(MEoS):
 
     eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5, helmholtz6
 
-    _surface = {"sigma": [0.05756, -0.009554], "exp": [1.29, 2.29]}
+    _surface = {"sigma": [-0.01639, 0.06121], "exp": [2.102, 1.304]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.388417],  "expt0": [-1.], "expd0": [1.],
                    "a1": [20.534, 0.02], "expt1": [0, 1], "expd1": [1, 1],

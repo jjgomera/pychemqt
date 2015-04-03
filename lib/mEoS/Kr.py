@@ -95,7 +95,7 @@ class Kr(MEoS):
 
     eq = helmholtz1, helmholtz2
 
-    _surface = {"sigma": [0.0431], "exp": [1.2]}
+    _surface = {"sigma": [0.0447], "exp": [1.245]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [6.273], "expt1": [0], "expd1": [1],

@@ -200,8 +200,7 @@ class nC6(MEoS):
 
     eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5
 
-    _surface = {"sigma": [0.0522937, 0.0061685, -0.0035869],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.210952, -0.158485], "exp": [1.0962, 1.05893]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
                    "a1": [30.18, 0.03], "expt1": [0, 1], "expd1": [1, 1],

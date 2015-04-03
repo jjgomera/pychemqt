@@ -62,7 +62,12 @@ class R1234ze(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.05681], "exp": [1.23]}
+    _surface = {"__doi__": 
+                    {"autor": "Tanaka, K., Higashi, Y.",
+                     "title": "Surface Tension of trans-1,3,3,3-Tetrafluoropropene and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane Mixture", 
+                     "ref": "J. Chem. Eng. Japan, 2013",
+                     "doi": "10.1252/jcej.13we021"}, 
+                "sigma": [0.05681], "exp": [1.23]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.76813e1, 0.31759e1, -0.26397e1, -0.35234e1],

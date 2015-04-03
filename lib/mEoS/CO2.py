@@ -383,7 +383,7 @@ class CO2(MEoS):
 
     eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
 
-    _surface = {"sigma": [0.084497], "exp": [1.28]}
+    _surface = {"sigma": [0.07863], "exp": [1.254]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [7.3455, 0.00335], "expt1": [0, 1], "expd1": [1, 1],

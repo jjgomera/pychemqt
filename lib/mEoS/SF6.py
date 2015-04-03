@@ -334,7 +334,7 @@ class SF6(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
-    _surface = {"sigma": [0.05488, -1.62445e-3], "exp": [1.289, 1.799]}
+    _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
                 "Tmin": Tt, "Tmax": 800.0,
                 "a1": [1., -30.0468473, 30.0468473, 359.771253, -359.771253],

@@ -128,7 +128,7 @@ class Toluene(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3
 
-    _surface = {"sigma": [0.0689], "exp": [1.29]}
+    _surface = {"sigma": [0.06897], "exp": [1.291]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-7.45201, 2.03681, -1.43777, -3.51652, -1.75818],

@@ -90,7 +90,7 @@ class nC9(MEoS):
 
     eq = helmholtz1, GERG
 
-    _surface = {"sigma": [0.0539], "exp": [1.26]}
+    _surface = {"sigma": [0.053388], "exp": [1.262]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
                    "a1": [44.53, 0.045], "expt1": [0, 1], "expd1": [1, 1],

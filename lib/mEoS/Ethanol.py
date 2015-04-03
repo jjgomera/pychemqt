@@ -112,7 +112,7 @@ class Ethanol(MEoS):
     eq = helmholtz1, helmholtz2
     _PR = 0.0043733
 
-    _surface = {"sigma": [0.065], "exp": [1.26]}
+    _surface = {"sigma": [0.05], "exp": [0.952]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.81829e1, -0.62767, -0.33289e1, -0.35278e1, 0.93103e1],

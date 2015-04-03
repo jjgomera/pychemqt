@@ -485,7 +485,7 @@ class N2(MEoS):
     eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
     _PR = -0.004032
 
-    _surface = {"sigma": [0.029324108], "exp": [1.259]}
+    _surface = {"sigma": [0.02898], "exp": [1.246]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [4.3872, 0.00226], "expt1": [0, 1], "expd1": [1, 1],

@@ -172,8 +172,7 @@ class nC7(MEoS):
 
     eq = helmholtz1, GERG, helmholtz3, helmholtz4
 
-    _surface = {"sigma": [0.0541778, -0.00075856, 0.0039897],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.07765, -0.02599], "exp": [1.319, 1.6]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
                    "a1": [34.96, 0.035], "expt1": [0, 1], "expd1": [1, 1],

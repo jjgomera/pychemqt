@@ -55,4 +55,4 @@ class CF3I(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.057306], "exp": [1.2933]}
+    _surface = {"sigma": [0.05767], "exp": [1.298]}

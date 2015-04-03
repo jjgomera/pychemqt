@@ -596,8 +596,8 @@ class CH4(MEoS):
 
     eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
 
-    _surface = {"sigma": [0.0308936, 0.0249105, -0.0068276],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
+                "exp": [1.191, 5.422, 0.6161]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [6.5443, 0.0133], "expt1": [0, 1], "expd1": [1, 1],

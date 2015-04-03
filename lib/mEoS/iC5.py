@@ -174,7 +174,7 @@ class iC5(MEoS):
 
     eq = helmholtz1, GERG, helmholtz3, helmholtz4
 
-    _surface = {"sigma": [0.05106], "exp": [1.21]}
+    _surface = {"sigma": [0.051], "exp": [1.209]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.26977],  "expt0": [-1.], "expd0": [1.],
                    "a1": [25.31, 0.025], "expt1": [0, 1], "expd1": [1, 1],

@@ -88,8 +88,7 @@ class Xe(MEoS):
 
     eq = helmholtz1, MBWR
 
-    _surface = {"sigma": [0.0491907, 0.0132643, -0.0104283],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [10.122], "expt1": [0], "expd1": [1],

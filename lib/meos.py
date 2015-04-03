@@ -238,6 +238,12 @@ class MEoS(_fase):
               "recursion": True}
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown Variables")
+    __doi__ = {"surface":
+        {"autor": "Mulero, A., Cachadiña, I., and Parra, M.I.",
+         "title": "Recommended Correlations for the Surface Tension of Common Fluids", 
+         "ref": "J. Phys. Chem. Ref. Data 41, 043105 (2012)",
+         "doi": "10.1063/1.4768782"}, 
+        }
 
     def __init__(self, **kwargs):
         """Incoming properties:
@@ -343,6 +349,10 @@ class MEoS(_fase):
 
         self.kwargs = MEoS.kwargs.copy()
         self.__call__(**kwargs)
+        
+        # Define general documentation
+        if self._surface and "__doi__" not in self._surface:
+            self._surface["__doi__"] = __doi__["surface"]
 
     def __call__(self, **kwargs):
         self.cleanOldValues(**kwargs)

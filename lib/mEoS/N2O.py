@@ -66,7 +66,7 @@ class N2O(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.0745], "exp": [1.26]}
+    _surface = {"sigma": [0.07087], "exp": [1.204]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.69078e1, 0.26620e1, -0.22386e1, -0.38002e1, 0.76922],

@@ -373,7 +373,7 @@ class C3(MEoS):
 
     eq = helmholtz1, MBWR, helmholtz2, GERG, helmholtz4, helmholtz5, helmholtz6
 
-    _surface = {"sigma": [0.05666, -0.005291], "exp": [1.265, 1.265]}
+    _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
     _dielectric = {"eq": 4, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.1573071],  "expt0": [-1.], "expd0": [1.],
                    "a1": [15.85, 0.036], "expt1": [0, 1], "expd1": [1, 1],

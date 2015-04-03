@@ -75,7 +75,7 @@ class D2O(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.238, -0.152082], "exp": [1.25, 2.25]}
+    _surface = {"sigma": [0.1423, 0.2094], "exp": [2.645, 1.214]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.80236e1, 0.23957e1, -0.42639e2, 0.99569e2, -0.62135e2],

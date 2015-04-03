@@ -87,7 +87,7 @@ class R13(MEoS):
 
     eq = MBWR, helmholtz1,
 
-    _surface = {"sigma": [0.0506], "exp": [1.28]}
+    _surface = {"sigma": [0.05045], "exp": [1.269]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.69311e1, 0.18281e1, -0.21901e1, -0.38177e1, 0.20803e1],

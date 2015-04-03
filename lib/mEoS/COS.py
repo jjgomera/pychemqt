@@ -59,7 +59,7 @@ class COS(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.06], "exp": [1.26]}
+    _surface = {"sigma": [0.07246], "exp": [1.407]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.67055e1, 0.34248e1, -0.26677e1, -0.24717e1],

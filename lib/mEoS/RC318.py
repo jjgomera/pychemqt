@@ -58,7 +58,7 @@ class RC318(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.05145], "exp": [1.26]}
+    _surface = {"sigma": [0.0507], "exp": [1.25]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.78467e1, 0.24555e1, -0.30824e1, -0.58263e1, 0.35483e1],

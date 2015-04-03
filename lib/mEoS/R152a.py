@@ -172,7 +172,7 @@ class R152a(MEoS):
 
     eq = MBWR, helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
-    _surface = {"sigma": [0.05906], "exp": [1.221]}
+    _surface = {"sigma": [0.05808], "exp": [1.2115]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.74821e1, 0.21105e1, -0.20761e1, -0.35539e1, 0.58004],

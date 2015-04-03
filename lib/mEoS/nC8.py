@@ -195,8 +195,8 @@ class nC8(MEoS):
 
     eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5
 
-    _surface = {"sigma": [0.0565399, -0.0104928, 0.0084723],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.34338, -0.50634, 0.2238],
+                "exp": [1.6607, 1.9632, 2.3547]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
                    "a1": [39.74, 0.04], "expt1": [0, 1], "expd1": [1, 1],

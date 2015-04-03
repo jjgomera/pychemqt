@@ -243,7 +243,7 @@ class R125(MEoS):
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4, helmholtz5, helmholtz6
     _PR = -0.00247
 
-    _surface = {"sigma": [0.05260], "exp": [1.24]}
+    _surface = {"sigma": [0.05252], "exp": [1.237]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-7.5295, 1.9026, -2.2966, -3.448],

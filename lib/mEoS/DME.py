@@ -95,7 +95,7 @@ class DME(MEoS):
 
     eq = helmholtz1, helmholtz2
 
-    _surface = {"sigma": [0.061023], "exp": [1.26]}
+    _surface = {"sigma": [0.063157], "exp": [1.2595]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.70647e1, 0.17709e1, -0.21544e1, -0.22098e1],

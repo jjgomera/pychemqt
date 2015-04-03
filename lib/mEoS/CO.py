@@ -121,8 +121,8 @@ class CO(MEoS):
 
     eq = helmholtz1, MBWR, GERG
 
-    _surface = {"sigma": [0.0350998, -0.0093076, -0.0017393],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.02843],
+                "exp": [1.148]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 1000,
                 "Tmin": Tt, "Tmax": 1000.0,
                 "a1": [-142.941, 0.0195608], "exp1": [0, 2.10747],

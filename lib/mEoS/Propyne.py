@@ -58,8 +58,7 @@ class Propyne(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.0590221, 0.0107105, -0.0179898],
-                "exp": [1.25, 2.25, 3.25]}
+    _surface = {"sigma": [0.05801], "exp": [1.205]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.69162e1, 0.10904e1, -0.74791, 0.75926e1, -0.25926e2],

@@ -117,7 +117,7 @@ class pH2(MEoS):
 
     eq = helmholtz1, MBWR
 
-    _surface = {"sigma": [0.005328], "exp": [1.065]}
+    _surface = {"sigma": [0.005314], "exp": [1.06]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [],  "expt0": [], "expd0": [],
                    "a1": [2.0297, 0.0069], "expt1": [0, 1], "expd1": [1, 1],

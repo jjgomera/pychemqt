@@ -437,7 +437,7 @@ class H2O(MEoS):
     eq = helmholtz1, GERG, helmholtz2, helmholtz3, helmholtz4
     _PR = 0.0043451
 
-    _surface = {"sigma": [0.2358, -0.147375], "exp": [1.256, 2.256]}
+    _surface = {"sigma": [-0.1306, 0.2151], "exp": [2.471, 1.233]}
     _melting = {"Tmin": 251.165, "Tmax": 370.0}
     _sublimation = {"Tmin": 50.0, "Tmax": Tt}
 #    _sublimation={"eq": 2, "Tref": 1, "Pref": 0.133332237, "a1": [-0.212144006e2, 0.273203819e2, -0.61059813e1], "exp1": [-0.9933333333, 0.206667, 0.703333], "a2": [], "exp2": [], "a3": [], "exp3": []}

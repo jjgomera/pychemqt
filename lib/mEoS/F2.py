@@ -99,7 +99,7 @@ class F2(MEoS):
 
     eq = helmholtz1, helmholtz2
 
-    _surface = {"sigma": [0.0409], "exp": [1.26]}
+    _surface = {"sigma": [0.03978], "exp": [1.218]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
                 "Tmin": Tt, "Tmax": 300.0, 
                 "a1": [0.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],

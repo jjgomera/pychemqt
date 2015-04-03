@@ -60,7 +60,7 @@ class Acetone(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.07], "exp": [1.26]}
+    _surface = {"sigma": [0.0633], "exp": [1.16]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.76214e1, 0.17441e1, -0.20514e1, -0.26644e1, -0.69437],

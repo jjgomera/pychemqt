@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class D2(MEoS):
-    """Multiparameter equation of state for deuterium
-
-    >>> deuterio=D2(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.3f %0.5f %0.4f %0.4f %0.2f" % (deuterio.T, deuterio.rho, deuterio.u.kJkg, deuterio.h.kJkg, deuterio.s.kJkgK, deuterio.cv.kJkgK, deuterio.cp.kJkgK, deuterio.w)
-    300.0 0.16039 -613.532 9.947 0.05958 3.1162 5.1932 1019.58
-    """
+    """Multiparameter equation of state for deuterium"""
     name = "deuterium"
     CASNumber = "7782-39-0"
     formula = "D2"
@@ -58,7 +53,7 @@ class D2(MEoS):
 
     eq = MBWR,
 
-    _surface = {"sigma": [0.00795], "exp": [1.]}
+    _surface = {"sigma": [0.009376], "exp": [1.258]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.31333e1, -0.53100e1, 0.26450e2, -0.51890e2, 0.31468e2],
