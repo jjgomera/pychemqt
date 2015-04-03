@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class F2(MEoS):
-    """Multiparameter equation of state for fluorine
-
-    >>> fluor=F2(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (fluor.T, fluor.rho, fluor.u.kJkg, fluor.h.kJkg, fluor.s.kJkgK, fluor.cv.kJkgK, fluor.cp.kJkgK, fluor.w)
-    300.0 1.28367 -77.28 0.617 -0.00121 0.6587 0.9199 329.72
-    """
+    """Multiparameter equation of state for fluorine"""
     name = "fluorine"
     CASNumber = "7782-41-4"
     formula = "F2"
@@ -42,9 +37,13 @@ class F2(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of de Reuck (1990).",
-        "__doc__":  u"""de Reuck, K.M. International thermodynamic tables of the fluid state: Vol. 11 – fluorine. Pergamon Press, Oxford, 1990.""",
+        "__doi__": {"autor": "de Reuck, K.M.",
+                    "title": "International thermodynamic tables of the fluid state: Vol. 11 – fluorine", 
+                    "ref": "Pergamon Press, Oxford, 1990.",
+                    "doi": ""}, 
         "R": 8.31448,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 300.0, "Pmax": 20000.0, "rhomax": 45.47, 
         "Pmin": 0.23881, "rhomin": 44.917, 
