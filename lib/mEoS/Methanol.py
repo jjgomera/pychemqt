@@ -47,11 +47,15 @@ class Methanol(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of de Reuck and Craven (1993)",
-        "__doc__":  u"""de Reuck, K.M. and Craven, R.J.B., "Methanol, International Thermodynamic Tables of the Fluid State - 12," IUPAC, Blackwell Scientific Publications, London, 1993.""",
+        "__doi__": {"autor": "de Reuck, K.M. and Craven, R.J.B.",
+                    "title": "Methanol, International Thermodynamic Tables of the Fluid State - 12", 
+                    "ref": "IUPAC, Blackwell Scientific Publications, London, 1993.",
+                    "doi": ""}, 
         "R": 8.31448,
         "cp": CP1,
-        "Tref": 513.38,
-        "rhoref": 8.78517*M,
+        "ref": "NBP", 
+        
+        "Tref": 513.38, "rhoref": 8.78517*M,
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57, 
         "Pmin": 0.18629e-3, "rhomin": 28.23, 
@@ -104,6 +108,7 @@ class Methanol(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.3143,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -236,7 +241,3 @@ class Methanol(MEoS):
         f = 1/(1+exp(5*(rhor-1)))
         n = no * (f*ng + (1-f)*ne)
         return unidades.Viscosity(n)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
