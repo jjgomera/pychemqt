@@ -25,8 +25,8 @@ class Reaction(object):
     msg = QApplication.translate("pychemqt", "undefined")
     error = 0
 
-    kwargs = {"componentes": [],
-              "coeficientes": [],
+    kwargs = {"comp": [],
+              "coef": [],
               "tipo": 0,
               "fase": 0,
               "key": 0,
@@ -34,7 +34,7 @@ class Reaction(object):
               "customHr": False,
               "Hr": 0.0,
               "formula": False,
-              "estequiometria": [],
+              "conversion": None,
               "keq": None}
     kwargsValue = ("Hr",)
     kwargsList = ("tipo", "fase", "key", "base")
@@ -55,14 +55,8 @@ class Reaction(object):
 
     def __init__(self, **kwargs):
         """constructor, kwargs keys can be:
-            componentes: array with index of reaction components
-            coeficientes: array with stequiometric coefficient for each component
-            tipo: Kind of reaction
-                0   -   Stequiometric, without equilibrium or kinetic calculations
-                1   -   Equilibrium, without kinetic calculation
-                2   -   Equilibrium by minimization of Gibbs free energy
-                3   -   Kinetic
-                4   -   Catalytic
+            comp: array with index of reaction components
+            coef: array with stequiometric coefficient for each component
             fase: Phase where reaction work
                 0   -   Global
                 1   -   Liquid
@@ -74,8 +68,14 @@ class Reaction(object):
                 2   -   Partial pressure
             Hr: Heat of reaction, calculate from heat of formation if no input
             formula: boolean to show compound names in formules
-            estequiometria: array with conversion reaction values
-            keq: equilibrium constant
+            tipo: Kind of reaction
+                0   -   Stequiometric, without equilibrium or kinetic calculations
+                1   -   Equilibrium, without kinetic calculation
+                2   -   Equilibrium by minimization of Gibbs free energy
+                3   -   Kinetic
+                4   -   Catalytic
+            conversion: conversion value for reaction with tipo=0
+            keq: equilibrium constant for reation with tipo=1
                 -it is float if it don't depend with temperature
                 -it is array if it depends with temperature
         """
@@ -92,27 +92,38 @@ class Reaction(object):
 
     @property
     def isCalculable(self):
-        if not self.kwargs["componentes"]:
+        self.msg = ""
+        self.status = 1
+        if not self.kwargs["comp"]:
             self.msg = QApplication.translate("pychemqt", "undefined components")
             self.status = 0
             return
-        if not self.kwargs["coeficientes"]:
+        if not self.kwargs["coef"]:
             self.msg = QApplication.translate("pychemqt", "undefined stequiometric")
             self.status = 0
             return
+        if self.kwargs["tipo"] == 0:
+            if self.kwargs["conversion"] is None:
+                self.msg = QApplication.translate("pychemqt", "undefined conversion")
+                self.status = 3
+        elif self.kwargs["tipo"] == 1:
+            if self.kwargs["keq"] is None:
+                self.msg = QApplication.translate("pychemqt", "undefined equilibrium constants")
+                self.status = 3
+        elif self.kwargs["tipo"] == 2:
+            pass
+        elif self.kwargs["tipo"] == 3:
+            pass
 
-        self.msg = ""
-        self.status = 1
         return True
 
     def calculo(self):
-        self.componentes = self.kwargs["componentes"]
-        self.coeficientes = self.kwargs["coeficientes"]
+        self.componentes = self.kwargs["comp"]
+        self.coef = self.kwargs["coef"]
 
         self.tipo = self.kwargs["tipo"]
         self.base = self.kwargs["base"]
         self.fase = self.kwargs["fase"]
-        self.estequiometria = self.kwargs["estequiometria"]
         self.calor = self.kwargs["Hr"]
         self.formulas = self.kwargs["formula"]
         self.keq = self.kwargs["keq"]
@@ -130,8 +141,8 @@ class Reaction(object):
             nombre.append(compuesto[0])
             peso_molecular.append(compuesto[1])
             formula.append(compuesto[2])
-            calor_reaccion += compuesto[3]*self.coeficientes[i]
-            check_estequiometria += self.coeficientes[i]*compuesto[1]
+            calor_reaccion += compuesto[3]*self.coef[i]
+            check_estequiometria += self.coef[i]*compuesto[1]
         self.nombre = nombre
         self.peso_molecular = peso_molecular
         self.formula = formula
@@ -139,7 +150,7 @@ class Reaction(object):
             self.Hr = self.kwargs.get("Hr", 0)
         else:
             self.Hr = unidades.MolarEnthalpy(calor_reaccion/abs(
-                self.coeficientes[self.base]), "Jkmol")
+                self.coef[self.base]), "Jkmol")
         self.error = round(check_estequiometria, 1)
         self.state = self.error == 0
         self.text = self._txt(self.formulas)
@@ -150,11 +161,7 @@ class Reaction(object):
         T: Temperature of reaction"""
         if self.tipo == 0:
             # Material balance without equilibrium or kinetics considerations
-            alfa = polyval(self.estequiometria, T)
-            if alfa < 0:
-                alfa = 0
-            elif alfa > 1:
-                alfa = 1
+            alfa = self.kwargs["conversion"]
 
         elif self.tipo == 1:
             # Chemical equilibrium without kinetics
@@ -166,30 +173,31 @@ class Reaction(object):
 
             def f(alfa):
                 conc_out = [
-                    (corriente.caudalunitariomolar[i]+alfa*self.coeficientes[i])
+                    (corriente.caudalunitariomolar[i]+alfa*self.coef[i])
                     / corriente.Q.m3h for i in range(len(self.componentes))]
                 productorio = 1
                 for i in range(len(self.componentes)):
-                    productorio *= conc_out[i]**self.coeficientes[i]
+                    productorio *= conc_out[i]**self.coef[i]
                 return keq-productorio
 
             alfa = fsolve(f, 0.5)
             print alfa, f(alfa)
-
-        avance = alfa*self.coeficientes[self.base]*corriente.caudalunitariomolar[self.base]
-        Q_out = [corriente.caudalunitariomolar[i]+avance*self.coeficientes[i] /
-                 self.coeficientes[self.base] for i in range(len(self.componentes))]
+ 
+        avance = alfa*self.coef[self.base]*corriente.caudalunitariomolar[self.base]
+        Q_out = [corriente.caudalunitariomolar[i]+avance*self.coef[i] /
+                 self.coef[self.base] for i in range(len(self.componentes))]
         minimo = min(Q_out)
         if minimo < 0:
             # The key component is not correct, redo the result
             indice = Q_out.index(minimo)
-            avance = self.coeficientes[indice]*corriente.caudalunitariomolar[indice]
-            Q_out = [corriente.caudalunitariomolar[i]+avance*self.coeficientes[i] /
-                     self.coeficientes[indice] for i in range(len(self.componentes))]
-            h = unidades.Power(self.Hr*self.coeficientes[self.base] /
-                               self.coeficientes[indice]*avance, "Jh")
+            avance = self.coef[indice]*corriente.caudalunitariomolar[indice]
+            Q_out = [corriente.caudalunitariomolar[i]+avance*self.coef[i] /
+                     self.coef[indice] for i in range(len(self.componentes))]
+            h = unidades.Power(self.Hr*self.coef[self.base] /
+                               self.coef[indice]*avance, "Jh")
         else:
             h = unidades.Power(self.Hr*avance, "Jh")
+        print alfa, avance
 
         caudal = sum(Q_out)
         fraccion = [caudal_i/caudal for caudal_i in Q_out]
@@ -210,20 +218,20 @@ class Reaction(object):
         reactivos = []
         productos = []
         for i in range(len(self.componentes)):
-            if self.coeficientes[i] == int(self.coeficientes[i]):
-                self.coeficientes[i] = int(self.coeficientes[i])
-            if self.coeficientes[i] < -1:
-                reactivos.append(str(-self.coeficientes[i])+txt[i])
-            elif self.coeficientes[i] == -1:
+            if self.coef[i] == int(self.coef[i]):
+                self.coef[i] = int(self.coef[i])
+            if self.coef[i] < -1:
+                reactivos.append(str(-self.coef[i])+txt[i])
+            elif self.coef[i] == -1:
                 reactivos.append(txt[i])
-            elif -1 < self.coeficientes[i] < 0:
-                reactivos.append(str(-self.coeficientes[i])+txt[i])
-            elif 0 < self.coeficientes[i] < 1:
-                productos.append(str(self.coeficientes[i])+txt[i])
-            elif self.coeficientes[i] == 1:
+            elif -1 < self.coef[i] < 0:
+                reactivos.append(str(-self.coef[i])+txt[i])
+            elif 0 < self.coef[i] < 1:
+                productos.append(str(self.coef[i])+txt[i])
+            elif self.coef[i] == 1:
                 productos.append(txt[i])
-            elif self.coeficientes[i] > 1:
-                productos.append(str(self.coeficientes[i])+txt[i])
+            elif self.coef[i] > 1:
+                productos.append(str(self.coef[i])+txt[i])
         return " + ".join(reactivos)+" ---> "+" + ".join(productos)
 
     def __repr__(self):
@@ -237,10 +245,9 @@ class Reaction(object):
 if __name__ == "__main__":
 #    from lib.corriente import Corriente, Mezcla
 #    mezcla=Corriente(300, 1, 1000, Mezcla([1, 46, 47, 62], [0.03, 0.01, 0.96, 0]))
-#    reaccion=Reaction([1, 46, 47, 62], [-2, 0, -1, 2], base=2, estequiometria=[0, 0, 0.5])
+#    reaccion=Reaction([1, 46, 47, 62], [-2, 0, -1, 2], base=2)
 #    reaccion.conversion(mezcla)
 #    print reaccion
 
-    reaccion = Reaction(componentes=[1, 47, 62], coeficientes=[-1, -0.5, 1],
-                        base=0, estequiometria=[0, 0, 0.5])
+    reaccion = Reaction(comp=[1, 47, 62], coef=[-2, -1, 2])
     print reaccion

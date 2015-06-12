@@ -244,7 +244,6 @@ class UI_pychemqt(QtGui.QMainWindow):
         l3.addWidget(botonFireHeater)
         actionReactor, botonReactor=createAction(icon=os.environ["pychemqt"]+"/images/equipment/reactor", text=QtGui.QApplication.translate("pychemqt", "Reactor"), slot=partial(self.addEquipment, UI_reactor), button=True, parent=toolboxContenido)
         l3.addWidget(botonReactor)
-        botonReactor.setEnabled(False)
         layouttoolbox.addItem(l3)
         layouttoolbox.addStretch(1)
 

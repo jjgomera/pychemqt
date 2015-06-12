@@ -49,42 +49,33 @@ class Reactor(equipment):
                     "material": 0, 
                     "P_dis": 0.0}
     
+    kwargsInput=("entrada", )
 
-    def __call__(self, **kwargs):
-        """
-        entrada: Instancia de clase corriente que define la corriente que fluye por la tubería
-        thermal: Comportamiento térmico
-            0   -   Adiabático
-            1   -   Isotérmico
-            2   -   Flujo de calor
-            3   -   Calcular el intercambio de calor conocidas U y Tª externa
-        reaccion: lista con instanacias de clase Reaction
-        P: Presión en el reactor
-        T: temperatura en el reactor
-        Q: Calor transmitido a través de las paredes de la tubería
-        Text: Temperatura en el exterior de la tubería
-        U: Coeficiente global de transimisión de calor entre la tubería y el exterior
-        """
-        self.entrada=kwargs.get("entrada", None)
-        self.thermal=kwargs.get("thermal", 0)
+    @property
+    def isCalculable(self):
+        return True
+        
+    def calculo(self):
+        self.entrada=self.kwargs.get("entrada", None)
+        self.thermal=self.kwargs.get("thermal", 0)
         
         #TODO: implementar para más de una reacción
-        self.reaccion=kwargs.get("reaccion", 0)[0]
+        self.reaccion=self.kwargs.get("reaccion", 0)[0]
         
         
-        P=kwargs.get("P", 0)
-        if P:
-            self.entrada=Corriente(self.entrada.T, P, self.entrada.caudalmasico.kgh, self.entrada.mezcla, self.entrada.solido)
-        T=kwargs.get("T", 0)
+#        P=self.kwargs.get("P", 0)
+#        if P:
+#            self.entrada=Corriente(self.entrada.T, P, self.entrada.caudalmasico.kgh, self.entrada.mezcla, self.entrada.solido)
+        T=self.kwargs.get("T", 0)
         if T:
             self.T=unidades.Temperature(T)
         else:
             self.T=self.entrada.T
         
-        self.Q=unidades.Power(kwargs.get("Q", 0))
+        self.Q=unidades.Power(self.kwargs.get("Q", 0))
         
-        self.Text=kwargs.get("Text", 0)
-        self.U=unidades.HeatTransfCoef(kwargs.get("U", 0))
+        self.Text=self.kwargs.get("Text", 0)
+        self.U=unidades.HeatTransfCoef(self.kwargs.get("U", 0))
         
         if self.thermal in [0, 2]:
             
@@ -101,7 +92,8 @@ class Reactor(equipment):
             
         elif self.thermal==3:
             pass
-            
+        
+        print fracciones
         self.Salida=Corriente(T=T, P=self.entrada.P, caudalMasico=self.entrada.caudalmasico, fraccionMolar=fracciones, solido=self.entrada.solido)
         self.Heat=unidades.Power(self.Salida.h-self.entrada.h-h)
         
@@ -110,8 +102,9 @@ class Reactor(equipment):
 if __name__ == '__main__':
     from math import exp, log
     mezcla=Corriente(T=300, P=101325., caudalMasico=1.0, ids=[1, 46, 47, 62], fraccionMolar=[0.03, 0.96, 0.01, 0.])
-    reaccion=Reaction([1, 46, 47, 62], [-2, 0, -1, 2], tipo=1, base=0, keq=[1, 0, 0, 0, 0, 0, 0, 0])
-
+    reaccion=Reaction(comp=[1, 46, 47, 62], coef=[-2, 0, -1, 2], tipo=0, base=0, conversion=0.9)
+    print reaccion
     reactor=Reactor(entrada=mezcla, reaccion=[reaccion], thermal=1)
+    print reactor.status
     print reactor.Salida.fraccion, reactor.Salida.T, reactor.Heat.MJh
-    print reactor.Salida.Molaridad
+

@@ -46,7 +46,7 @@ import UI_tower
 import UI_reactor
 
 
-UI_equipments=[UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor, UI_turbine, UI_pipe, UI_flash, UI_columnFUG, UI_heatExchanger, UI_shellTube, UI_hairpin, UI_fireHeater, UI_ciclon, UI_gravityChamber, UI_baghouse, UI_electricPrecipitator, UI_dryer, UI_scrubber, UI_spreadsheet]
+UI_equipments=[UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor, UI_turbine, UI_pipe, UI_flash, UI_columnFUG, UI_heatExchanger, UI_shellTube, UI_hairpin, UI_fireHeater, UI_ciclon, UI_gravityChamber, UI_baghouse, UI_electricPrecipitator, UI_dryer, UI_scrubber, UI_spreadsheet, UI_reactor]
 #, UI_tower, UI_reactor, UI_centrifuge, UI_grinder, UI_solidWasher, UI_vacuum, ]
 
 equipments=[ui.UI_equipment.Equipment.__class__ for ui in UI_equipments]

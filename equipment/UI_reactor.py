@@ -436,7 +436,7 @@ class UI_equipment(UI_equip):
     Equipment=Reactor()
     def __init__(self, equipment=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en el reactor"""
-        super(UI_equipment, self).__init__(Reactor, entrada=False, costos=False, salida=False, parent=parent)
+        super(UI_equipment, self).__init__(Reactor, entrada=False, salida=False, parent=parent)
         
         #Pestaña reacciones
         self.Reacciones= widgetReacciones()
@@ -569,46 +569,46 @@ class UI_equipment(UI_equip):
         if dialog.exec_():
             self.profile_T=dialog.data
         
-    def cambiar_entrada(self, corriente):
-        self.entrada=corriente
-        self.calculo()
-        
-    def todos_datos(self):
-        if self.checkAdiabatico.isChecked():
-            heat=True
-        elif self.checkIsotermico.isChecked():
-            heat=self.T.value
-        elif self.checkFlux.isChecked():
-            heat=self.Q.value
-        else: heat=self.T_ext.value and self.U.value
-        return  self.Reacciones.reacciones and heat
+#    def cambiar_entrada(self, corriente):
+#        self.entrada=corriente
+#        self.calculo()
+#        
+#    def todos_datos(self):
+#        if self.checkAdiabatico.isChecked():
+#            heat=True
+#        elif self.checkIsotermico.isChecked():
+#            heat=self.T.value
+#        elif self.checkFlux.isChecked():
+#            heat=self.Q.value
+#        else: heat=self.T_ext.value and self.U.value
+#        return  self.Reacciones.reacciones and heat
 
-    def calculo(self):
-        if self.todos_datos():
-            self.status.setState(4)
-            if self.checkAdiabatico.isChecked():
-                thermal=0
-            elif self.checkIsotermico.isChecked():
-                thermal=1
-            elif self.checkFlux.isChecked():
-                thermal=2
-            else: thermal=3
-        
-            if self.P.value:
-                P=self.P.value.atm
-            else:
-                P=None
-
-            self.Equipment(entrada=self.entrada, thermal=thermal, reaccion=self.Reacciones.reacciones, P=P, T=self.T.value, Q=self.Q.value, Text=self.T_ext.value, U=self.U.value)
-
-            self.rellenoSalida()
-            self.status.setState(1)
-
-
-    def rellenoSalida(self):
-        self.TCalc.setValue(self.Equipment.Salida.T)
-        self.HeatCalc.setValue(self.Equipment.Heat)
-        self.Salida.rellenar(self.Equipment.Salida)
+#    def calculo(self):
+#        if self.todos_datos():
+#            self.status.setState(4)
+#            if self.checkAdiabatico.isChecked():
+#                thermal=0
+#            elif self.checkIsotermico.isChecked():
+#                thermal=1
+#            elif self.checkFlux.isChecked():
+#                thermal=2
+#            else: thermal=3
+#        
+#            if self.P.value:
+#                P=self.P.value.atm
+#            else:
+#                P=None
+#
+#            self.Equipment(entrada=self.entrada, thermal=thermal, reaccion=self.Reacciones.reacciones, P=P, T=self.T.value, Q=self.Q.value, Text=self.T_ext.value, U=self.U.value)
+#
+#            self.rellenoSalida()
+#            self.status.setState(1)
+#
+#
+#    def rellenoSalida(self):
+#        self.TCalc.setValue(self.Equipment.Salida.T)
+#        self.HeatCalc.setValue(self.Equipment.Heat)
+#        self.Salida.rellenar(self.Equipment.Salida)
         
 
 if __name__ == "__main__":
