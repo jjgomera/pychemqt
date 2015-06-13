@@ -2700,7 +2700,10 @@ class MEoS(_fase):
         txt = "#---------------"
         txt += QApplication.translate("pychemqt", "Advanced MEoS properties")
         txt += "-------------------#"+os.linesep
-        txt += os.linesep + self._constants["__doc__"] + os.linesep
+        doc = self._constants["__doi__"]["autor"] + "; " + \
+              self._constants["__doi__"]["title"] + "; " + \
+              self._constants["__doi__"]["ref"]
+        txt += os.linesep + doc + os.linesep
         
         if 0 < self.x < 1:
             param = "%-40s\t%20s\t%20s"

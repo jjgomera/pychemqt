@@ -1895,7 +1895,7 @@ class Corriente(config.Entity):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
         
-        if self._thermo == "meos":
+        if self.calculable and self._thermo == "meos":
             txt += os.linesep+self.cmp.txt()
 
         return txt

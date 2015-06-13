@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#####################################
-###      Diálogo de definición de divisores, UI_divider     ###
-#####################################
+###############################################################################
+# Divider equipment dialog
+###############################################################################
 
 from functools import partial
 
@@ -11,7 +11,7 @@ from PyQt4 import QtCore, QtGui
 
 from lib.unidades import Pressure, MassFlow
 from equipment.parents import UI_equip
-from equipment.flux import Divider 
+from equipment.flux import Divider
 from UI import UI_corriente
 from UI.widgets import Entrada_con_unidades, Tabla
 from UI.delegate import CellEditor
@@ -19,77 +19,87 @@ from UI.delegate import CellEditor
 
 class UI_equipment(UI_equip):
     """Diálogo de definición de divisores"""
-    Equipment=Divider()
+    Equipment = Divider()
+
     def __init__(self, equipment=None, salidas=0, parent=None):
         """
         equipment: instancia de equipo inicial
         salidas: Numero de salidas
         """
-        super(UI_equipment, self).__init__(Divider, costos=False, entrada=False, parent=parent)
+        super(UI_equipment, self).__init__(Divider, entrada=False, parent=parent)
 
-        #Pestaña calculo
-        self.gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
-        self.gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Separation")),1,1,1,1)
-        self.criterio=QtGui.QComboBox()
+        # Calculate tab
+        lyt_Calc = QtGui.QGridLayout(self.tabCalculo)
+        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Separation")), 1, 1, 1, 1)
+        self.criterio = QtGui.QComboBox()
         for txt in self.Equipment.TEXT_CRITERIO:
             self.criterio.addItem(txt)
         self.criterio.currentIndexChanged.connect(self.criterio_Changed)
-        self.gridLayout_Calculo.addWidget(self.criterio,1,2,1,1)
-        
-        self.fracciones=Tabla(1, horizontalHeader=[True], stretch=False)
+        lyt_Calc.addWidget(self.criterio, 1, 2, 1, 1)
+
+        self.fracciones = Tabla(1, horizontalHeader=[True], stretch=False)
         self.fracciones.setItemDelegateForColumn(0, CellEditor(self))
-        self.gridLayout_Calculo.addWidget(self.fracciones,2,1,1,2)
-        
-        self.gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure lost")),3,1,1,1)
-        self.deltaP=Entrada_con_unidades(Pressure, value=0)
+        lyt_Calc.addWidget(self.fracciones, 2, 1, 1, 2)
+
+        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Pressure lost")), 3, 1, 1, 1)
+        self.deltaP = Entrada_con_unidades(Pressure, value=0)
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
-        self.gridLayout_Calculo.addWidget(self.deltaP,3,2,1,1)
-        
+        lyt_Calc.addWidget(self.deltaP, 3, 2, 1, 1)
+
         if equipment and salidas:
             equipment(salidas=salidas)
         elif equipment:
-            salidas=equipment.kwargs["salidas"]
+            salidas = equipment.kwargs["salidas"]
         else:
-            self.Equipment=Divider(salidas=salidas)
-            
+            self.Equipment = Divider(salidas=salidas)
+
         self.fracciones.setRowCount(salidas)
         for i in range(salidas):
             self.fracciones.setItem(0, i, QtGui.QTableWidgetItem(""))
-            self.fracciones.item(0, i).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+            self.fracciones.item(0, i).setTextAlignment(QtCore.Qt.AlignRight |
+                                                        QtCore.Qt.AlignVCenter)
             self.fracciones.setRowHeight(i, 20)
-            self.Salida.addTab(UI_corriente.Ui_corriente(readOnly=True), str(i+1))
-            
-        self.criterio_Changed(0)
-        self.fracciones.editingFinished.connect(partial(self.changeParams, "split", None))
-        self.setEquipment(equipment)
+            widget = UI_corriente.Ui_corriente(readOnly=True)
+            self.Salida.addTab(widget, str(i+1))
 
+        self.criterio_Changed(0)
+        self.fracciones.editingFinished.connect(partial(self.changeParams,
+                                                        "split"))
+        self.setEquipment(equipment)
 
     def criterio_Changed(self, int):
         if int:
-            self.fracciones.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem(QtGui.QApplication.translate("pychemqt", "Flow")+", "+MassFlow.text()))
-            self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+            item = QtGui.QTableWidgetItem(QtGui.QApplication.translate(
+                "pychemqt", "Flow")+", "+MassFlow.text())
+            self.fracciones.setHorizontalHeaderItem(0, item)
+            self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
+                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled |
+                QtCore.Qt.ItemIsSelectable)
         else:
-            self.fracciones.setHorizontalHeaderItem(0, QtGui.QTableWidgetItem(QtGui.QApplication.translate("pychemqt", "Fraction")))
-            self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(QtCore.Qt.NoItemFlags)
+            item = QtGui.QTableWidgetItem(QtGui.QApplication.translate(
+                "pychemqt", "Flow")+", "+MassFlow.text())
+            self.fracciones.setHorizontalHeaderItem(0, item)
+            self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
+                QtCore.Qt.NoItemFlags)
         self.changeParams("criterio", int)
 
-        
-    def changeParams(self, parametro, valor):
-        if parametro=="split":
-            valor=self.fracciones.getColumn(0, False)
-            if self.criterio.currentIndex()==0:
-                if len(valor)+1<self.fracciones.rowCount():
+    def changeParams(self, parametro, valor=None):
+        if parametro == "split":
+            valor = self.fracciones.getColumn(0, False)
+            if self.criterio.currentIndex() == 0:
+                if len(valor)+1 < self.fracciones.rowCount():
                     return
-                elif len(valor)+1==self.fracciones.rowCount():
+                elif len(valor)+1 == self.fracciones.rowCount():
                     valor.append(1-sum(valor))
-                elif len(valor)==self.fracciones.rowCount():
-                    valor[-1]=1-sum(valor[:-1])
+                elif len(valor) == self.fracciones.rowCount():
+                    valor[-1] = 1-sum(valor[:-1])
         self.calculo(**{parametro: valor})
-
 
     def rellenar(self):
         UI_equip.rellenar(self)
-        if self.Equipment.status==1 and self.criterio.currentIndex()==1:
+        if self.Equipment.status == 1 and self.criterio.currentIndex() == 1:
                 self.entrada.setCorriente(self.Equipment.entrada)
 
     def rellenarInput(self):
@@ -98,11 +108,11 @@ class UI_equipment(UI_equip):
 
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente
     app = QtGui.QApplication(sys.argv)
-    agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[0.1])
-    divisor=Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
+    agua = Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[0.1])
+    divisor = Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
     dialogo = UI_equipment(divisor)
     dialogo.show()
     sys.exit(app.exec_())
