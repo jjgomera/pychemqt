@@ -30,7 +30,7 @@ class RE245fa2(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for RE347mcc of Zhou et al. (2012)",
+        "__name__": "Helmholtz equation of state for RE245fa2 of Zhou et al. (2012)",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
                     "title": "preliminary equation, 2012.", 
                     "ref": "",
