@@ -18,13 +18,13 @@ from UI.delegate import CellEditor
 
 
 class UI_equipment(UI_equip):
-    """Diálogo de definición de divisores"""
+    """Divider equipment edition dialog"""
     Equipment = Divider()
 
     def __init__(self, equipment=None, salidas=0, parent=None):
         """
-        equipment: instancia de equipo inicial
-        salidas: Numero de salidas
+        equipment: Initial equipment instance to model
+        salidas: Stream Output number to equipment
         """
         super(UI_equipment, self).__init__(Divider, entrada=False, parent=parent)
 

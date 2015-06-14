@@ -646,7 +646,7 @@ class GravityChamber(Separador_SolidGas):
                 (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
                 (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
                 (QApplication.translate("pychemqt", "Height"), "HCalc", Length),
-                (QApplication.translate("pychemqt", "Width"), "VCalc", Length),
+                (QApplication.translate("pychemqt", "Width"), "WCalc", Length),
                 (QApplication.translate("pychemqt", "Length"), "LCalc", Length),
                 (QApplication.translate("pychemqt", "Gas Speed"), "Vgas", Speed),
                 (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),

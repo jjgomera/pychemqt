@@ -17,13 +17,13 @@ from UI.widgets import Entrada_con_unidades
 
 
 class UI_equipment(UI_equip):
-    """Diálogo de definición de mezcladores"""
+    """Mixer equipment edition dialog"""
     Equipment = Mixer()
 
     def __init__(self, equipment=None, entradas=1, parent=None):
         """
-        equipment: instancia de equipo inicial
-        entradas: Numero de entradas
+        equipment: Initial equipment instance to model
+        entradas: Stream Input number to equipment
         """
         super(UI_equipment, self).__init__(Mixer, salida=False, parent=parent)
 

@@ -16,12 +16,12 @@ from UI.widgets import Entrada_con_unidades
 
 
 class UI_equipment (UI_equip):
-    """Diálogo de definición de válvulas"""
+    """Valve equipment edition dialog"""
     Equipment = Valve()
 
     def __init__(self, equipment=None, parent=None):
         """
-        equipment: instancia de equipo inicial
+        equipment: Initial equipment instance to model
         """
         super(UI_equipment, self).__init__(Valve, entrada=False,
                                            salida=False, parent=parent)
