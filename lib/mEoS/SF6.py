@@ -47,7 +47,7 @@ class SF6(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for sulfur hexafluoride of Guder and Wagner (2007)",
+        "__name__": "Helmholtz equation of state for sulfur hexafluoride of Guder and Wagner (2009)",
         "__doi__": {"autor": "Guder, C. and Wagner, W.",
                     "title": "A Reference Equation of State for the Thermodynamic Properties of Sulfur Hexafluoride for Temperatures from the Melting Line to 625 K and Pressures up to 150 MPa", 
                     "ref": "J. Phys. Chem. Ref. Data 38, 33 (2009)",
