@@ -37,7 +37,7 @@ class RE347mcc(MEoS):
                     "doi":  ""}, 
             
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": CP1,
         "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 20000.0, "rhomax": 7.662, 
@@ -76,3 +76,12 @@ class RE347mcc(MEoS):
         "ao": [-2.0640, -6.4226, -18.982, -58.689, -117.64, -253.93],
         "exp": [0.321, 0.96, 2.75, 5.9, 12., 22.]}
 
+    visco0 = {"eq": 5, "omega": 3,
+              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
+                          "doi": "10.1021/ie00076a024"}, 
+              "__name__": "Chung (1988)",
+              "w": 0.411, "mur": 0.0, "k": 0.0}
+
+    _viscosity = visco0,
