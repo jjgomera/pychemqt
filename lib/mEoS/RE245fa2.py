@@ -86,4 +86,4 @@ class RE245fa2(MEoS):
               "__name__": "Chung (1988)",
               "w": 0.387, "mur": 0.0, "k": 0.0}
 
-    _viscosity = visco0, visco1
+    _viscosity = visco0,

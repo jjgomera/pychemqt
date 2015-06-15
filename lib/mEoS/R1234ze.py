@@ -56,6 +56,7 @@ class R1234ze(MEoS):
                     
         "R": 8.314472,
         "cp": CP1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26, 
         "Pmin": 0.2187, "rhomin": 13.26, 
@@ -89,6 +90,7 @@ class R1234ze(MEoS):
                     
         "R": 8.314472,
         "cp": CP2,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
         "Pmin": 0.23, "rhomin": 13.19, 
@@ -121,6 +123,7 @@ class R1234ze(MEoS):
                     "doi": ""}, 
         "R": 8.314472,
         "cp": CP3,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
         "Pmin": 0.23, "rhomin": 13.19, 
@@ -191,30 +194,40 @@ class R1234ze(MEoS):
         "exp": [0.24, 0.72, 2.1, 4.8, 9.5]}
 
     thermo0 = {"eq": 1,
-               "__name__": "Perkins (2010)",
-               "__doc__": """Perkins, R.A. and Huber, M.L., unpublished work, 2010.""",
+               "__name__": "Perkins (2011)",
+               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
+                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))", 
+                            "ref": "J. Chem. Eng. Data, 2011, 56 (12), pp 4868–4874",
+                            "doi": "10.1021/je200811n"}, 
+               "__test__": """
+                    >>> st=R1234ze(T=250, P=5e4, eq=1)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    2.80451 0.0098503
+                    >>> st=R1234ze(T=300, P=1e5, eq=1)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    4.67948 0.013933
+                    >>> st=R1234ze(T=250, P=2e7, eq=1)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    1349.37 0.100066
+                    >>> st=R1234ze(T=300, P=2e7, eq=1)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    1233.82 0.085389
+                    """, # Table 2, Pag 4872
 
                "Tref": 382.52, "kref": 1,
-               "no": [0.285145e-2, -0.439091e-2, 0.232616e-1],
+               "no": [-0.0103589, 0.0308929, 0.000230348],
                "co": [0, 1, 2],
 
-               "Trefb": 367.85, "rhorefb": 4.17, "krefb": 1.,
-               "nb": [-0.10750600e-2, -0.11560800e-1, 0.76230400e-2, 0.0, 0.0,
-                      0.0, 0.10181100e-1, -0.22450100e-2, 0.0, 0.0],
+               "Trefb": 382.52, "rhorefb": 4.29, "krefb": 1.,
+               "nb": [-0.428296e-1, 0.927099e-1, -0.702107e-1, 0.249708e-1,
+                      -0.301838e-2, 0.434288e-1, -0.605844e-1, 0.440187e-1,
+                      -0.155082e-1, 0.210190e-2],
                "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
                "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
                "cb": [0]*10,
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.285e-10, "Tcref": 573.78}
+               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 573.78}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=R1234ze(T=300., rho=5.0)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)

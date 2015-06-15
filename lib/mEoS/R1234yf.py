@@ -113,32 +113,41 @@ class R1234yf(MEoS):
         "exp": [0.355, 2.45, 1.0, 5.1]}
 
     thermo0 = {"eq": 1,
-               "__name__": "Perkins (2010)",
-               "__doc__": """Perkins, R.A. and Huber, M.L., unpublished work, 2010.""",
+               "__name__": "Perkins (2011)",
+               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
+                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))", 
+                            "ref": "J. Chem. Eng. Data, 2011, 56 (12), pp 4868–4874",
+                            "doi": "10.1021/je200811n"}, 
+               "__test__": """
+                    >>> st=R1234yf(T=250, P=5e4)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    2.80006 0.0098481
+                    >>> st=R1234yf(T=300, P=1e5)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    4.671556 0.013996
+                    >>> st=R1234yf(T=250, P=2e7)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    1299.5 0.088574
+                    >>> st=R1234yf(T=300, P=2e7)
+                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
+                    1182.05 0.075245
+                    """, # Table 2, Pag 4872
 
                "Tref": 367.85, "kref": 1,
-               "no": [-0.237681e-2, 0.781106e-2, 0.147206e-1],
+               "no": [-0.0102778, 0.0291098, 0.000860643],
                "co": [0, 1, 2],
 
+ 
                "Trefb": 367.85, "rhorefb": 4.17, "krefb": 1.,
-               "nb": [0.223071e-2, -0.278314e-1, 0.149657e-1, 0.0,
-                      -0.252976e-3, 0.0, 0.188873e-1, -0.608795e-2, 0.0, 0.0],
+               "nb": [-0.368219e-1, 0.883226e-1, -0.705909e-1, 0.259026e-1,
+                      -0.32295e-2, 0.397166e-1, -0.772390e-1, 0.664707e-1,
+                      -0.249071e-1, 0.336228e-2],
                "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
                "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
                "cb": [0]*10,
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.285e-10, "Tcref": 551.775}
+               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 551.775}
 
-#    _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=R1234yf(T=300., rho=5.0)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-
-
+    _thermal = thermo0,
