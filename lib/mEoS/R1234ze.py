@@ -21,11 +21,18 @@ class R1234ze(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.27, "Debye")
     id = 671
 
-    CP1 = {"ao": 6.259,
+    CP2 = {"ao": 6.259,
            "an": [], "pow": [],
-           "ao_exp": [7.303, 8.597, 2.333], "exp": [691, 1705, 4216],
+           "ao_exp": [7.303, 8.597, 2.333], 
+           "exp": [691, 1705, 4216],
            "ao_hyp": [], "hyp": []}
            
+    CP3 = {"ao": 5.8887,
+           "an": [], "pow": [],
+           "ao_exp": [7.0804, 9.3371, 2.5577],
+           "exp": [620, 1570, 3953],
+           "ao_hyp": [], "hyp": []}
+
     Fi2 = {"ao_log": [1, 3],
            "pow": [0, 1],
            "ao_pow": [-10.8724711, -30.1326538],
@@ -36,9 +43,45 @@ class R1234ze(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
-        "__doc__":  u"""McLinden, M.O., Thol, M., and Lemmon, E.W. "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State," International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.""",
+        "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State", 
+                    "ref": "International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.",
+                    "doi": "10.0000_docs.lib.purdue.edu_generic-99DA7EA2C877"}, 
+                    
         "R": 8.314472,
-        "cp": CP1,
+        "cp": CP2,
+        
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
+        "Pmin": 0.23, "rhomin": 13.19, 
+
+        "nr1": [0.055563, 1.66927, -2.53408, -0.475075, 0.190055],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1.0, 0.34, 0.91, 1.23, 0.46],
+
+        "nr2": [-1.25154, -0.742195, 0.537902, -0.741246, -0.0355064],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.26, 2.50, 2.0, 2.24, 0.9],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [1.58506, -0.502086, -0.19136, -0.975576],
+        "d3": [1, 1, 3, 3],
+        "t3": [1.06, 1.79, 3.75, 0.92],
+        "alfa3": [1.02, 1.34, 1.08, 6.41],
+        "beta3": [1.19, 2.29, 1.15, 131.8],
+        "gamma3": [1.14, 0.667, 0.505, 1.22],
+        "epsilon3": [0.711, 0.914, 0.694, 0.731],
+        "nr4": []}
+
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
+        "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State", 
+                    "ref": "unpublished equation, similar to helmholtz2",
+                    "doi": ""}, 
+        "R": 8.314472,
+        "cp": CP3,
         
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
         "Pmin": 0.23, "rhomin": 13.19, 
@@ -62,7 +105,7 @@ class R1234ze(MEoS):
         "epsilon3": [0.711, 0.856, 0.753, 0.772, 1.88],
         "nr4": []}
 
-    helmholtz3 = {
+    helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
         "__doi__": {"autor": "Akasaka, R.",
@@ -87,7 +130,7 @@ class R1234ze(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
     _surface = {"__doi__": 
                     {"autor": "Tanaka, K., Higashi, Y.",
@@ -97,16 +140,16 @@ class R1234ze(MEoS):
                 "sigma": [0.05681], "exp": [1.23]}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.76813e1, 0.31759e1, -0.26397e1, -0.35234e1],
-        "exp": [1.0, 1.5, 1.8, 3.9]}
+        "ao": [-7.5888, 1.9696, -2.0827, -4.1238],
+        "exp": [1.0, 1.5, 2.2, 4.6]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.16130e1, 0.46976e1, -0.68759e1, 0.34227e1],
-        "exp": [0.31, 0.94, 1.2, 1.5]}
+        "ao": [1.1913, 2.2456, -1.7747, 1.3096],
+        "exp": [0.27, 0.7, 1.25, 1.9]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.24897e1, -0.63324e1, -0.20262e2, -0.62612e2],
-        "exp": [0.36, 1.07, 3.0, 6.8]}
+        "ao": [-1.0308, -5.0422, -11.5, -37.499, -77.945],
+        "exp": [0.24, 0.72, 2.1, 4.8, 9.5]}
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2010)",
