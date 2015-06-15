@@ -352,7 +352,7 @@ class MEoS(_fase):
         
         # Define general documentation
         if self._surface and "__doi__" not in self._surface:
-            self._surface["__doi__"] = __doi__["surface"]
+            self._surface["__doi__"] = self.__doi__["surface"]
 
     def __call__(self, **kwargs):
         self.cleanOldValues(**kwargs)

@@ -113,6 +113,12 @@ import R365mfc
 import RC318
 import R1234yf
 import R1234ze
+import R1216
+import R1233zd
+import RE143a
+import RE245cb2
+import RE245fa2
+import RE347mcc
 
 # Siloxanes
 import D4

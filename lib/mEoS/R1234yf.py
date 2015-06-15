@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R1234yf(MEoS):
-    """Multiparameter equation of state for R1234yf
-
-    >>> r227ea=R1234yf(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r227ea.T, r227ea.rho, r227ea.u.kJkg, r227ea.h.kJkg, r227ea.s.kJkgK, r227ea.cv.kJkgK, r227ea.cp.kJkgK, r227ea.w)
-    300.0 7.0020 71.96 86.24 0.4638 0.75948 0.81568 122.13
-    """
+    """Multiparameter equation of state for R1234yf"""
     name = "2,3,3,3-tetrafluoropropene"
     CASNumber = "754-12-1"
     formula = "CF3CF=CH2"
@@ -23,22 +18,34 @@ class R1234yf(MEoS):
     Tt = unidades.Temperature(220.)
     Tb = unidades.Temperature(243.7)
     f_acent = 0.276
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 671
+    momentoDipolar = unidades.DipoleMoment(2.48, "Debye")
+#    id = 671
 
-    CP1 = {"ao": 5.944,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 4.944],
+           "pow": [0, 1],
+           "ao_pow": [-12.837928, 8.042605],
            "ao_exp": [7.549, 1.537, 2.03, 7.455],
-           "exp": [718, 877, 4465, 1755],
+           "titao": [718/Tc, 877/Tc, 4465/Tc, 1755/Tc], 
+           "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-11.412027, -52.9180363],
+           "ao_exp": [5.2829, 6.96022, 7.04266],
+           "titao": [354/Tc, 965/Tc, 1981/Tc], 
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234yf of Richter et al. (2010)",
-        "__doc__":  u"""Richter, M., McLinden, M.O., and Lemmon, E.W. "Thermodynamic Properties of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf): p-rho-T Measurements and an Equation of State," submitted to J. Chem. Eng. Data, 2010.""",
+        "__name__": "Helmholtz equation of state for R1234yf of Richter et al. (2011).",
+        "__doi__": {"autor": "Richter, M., McLinden, M.O., and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf): Vapor Pressure and p-rho-T Measurements and an Equation of State", 
+                    "ref": "J. Chem. Eng. Data, 2011, 56 (7), pp 3254–3264",
+                    "doi": "10.1021/je200369m"}, 
         "R": 8.314472,
-        "cp": CP1,
-        
+        "cp": Fi1,
+        "ref": "IIR", 
+
         "Tmin": Tt, "Tmax": 410.0, "Pmax": 30000.0, "rhomax": 11.64, 
         "Pmin": 31.5, "rhomin": 11.63, 
 
@@ -61,7 +68,35 @@ class R1234yf(MEoS):
         "epsilon3": [0.712, 0.910, 0.677, 0.718, 1.64],
         "nr4": []}
 
-    eq = helmholtz1,
+    helmholtz2 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
+        "__doi__": {"autor": "Akasaka, R.",
+                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))", 
+                    "ref": "Int J Thermophys (2011) 32:1125–1147",
+                    "doi": "10.1007/s10765-011-0992-0"}, 
+        "R": 8.314472,
+        "cp": Fi2,
+        "ref": "IIR", 
+
+        "Tmin": 240., "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 11.64, 
+        "Pmin": 31.5, "rhomin": 11.63, 
+
+        "nr1": [0.83266757e1, -0.92588001e1, -0.24906043, 0.14422208,
+                0.11679917e-1],
+        "d1": [1, 1, 1, 2, 5],
+        "t1": [0.66886, 0.83392, 1.6982, 1.8030, 0.36657],
+
+        "nr2": [-0.16465103, 0.10580795, 0.17135586e-1, -0.16764798e-1,
+                -0.12781115e-1, 0.36440802, -0.28535370, -0.96835199e-1,
+                0.88063705e-1, 0.18736343e-1, -0.16872191e-1, 0.70032274e-2],
+        "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
+        "t2": [3.8666, 1.0194, 0, 1.1655, 8.3101, 6.1459, 8.3495, 6.0422,
+               7.444, 15.433, 21.543, 15.499],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
+        "gamma2": [1]*12}
+
+    eq = helmholtz1, helmholtz2
 
     _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {

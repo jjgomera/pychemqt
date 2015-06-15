@@ -6,32 +6,34 @@ from lib import unidades
 
 
 class R1234ze(MEoS):
-    """Multiparameter equation of state for R1234ze
-
-    >>> r227ea=R1234ze(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r227ea.T, r227ea.rho, r227ea.u.kJkg, r227ea.h.kJkg, r227ea.s.kJkgK, r227ea.cv.kJkgK, r227ea.cp.kJkgK, r227ea.w)
-    300.0 7.0020 71.96 86.24 0.4638 0.75948 0.81568 122.13
-    """
+    """Multiparameter equation of state for R1234ze"""
     name = "trans-1,3,3,3-tetrafluoropropene"
-    CASNumber = "1645-83-6"
+    CASNumber = "29118-24-9"
     formula = "CHF=CHCF3"
     synonym = "R-1234ze"
-    rhoc = unidades.Density(489.238433112)
-    Tc = unidades.Temperature(382.52)
-    Pc = unidades.Pressure(3636.25, "kPa")
-    M = 114.0415928  # g/mol
+    rhoc = unidades.Density(489.238464)
+    Tc = unidades.Temperature(382.513)
+    Pc = unidades.Pressure(3634.9, "kPa")
+    M = 114.0416  # g/mol
     Tt = unidades.Temperature(168.62)
-    Tb = unidades.Temperature(254.2)
+    Tb = unidades.Temperature(254.177)
     f_acent = 0.313
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
+    momentoDipolar = unidades.DipoleMoment(1.27, "Debye")
     id = 671
 
     CP1 = {"ao": 6.259,
            "an": [], "pow": [],
            "ao_exp": [7.303, 8.597, 2.333], "exp": [691, 1705, 4216],
            "ao_hyp": [], "hyp": []}
+           
+    Fi2 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-10.8724711, -30.1326538],
+           "ao_exp": [6.07536, 9.95795],
+           "titao": [289/Tc, 1303/Tc], 
+           "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
         "__doc__":  u"""McLinden, M.O., Thol, M., and Lemmon, E.W. "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State," International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.""",
@@ -60,7 +62,32 @@ class R1234ze(MEoS):
         "epsilon3": [0.711, 0.856, 0.753, 0.772, 1.88],
         "nr4": []}
 
-    eq = helmholtz1,
+    helmholtz3 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
+        "__doi__": {"autor": "Akasaka, R.",
+                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))", 
+                    "ref": "Int J Thermophys (2011) 32:1125–1147",
+                    "doi": "10.1007/s10765-011-0992-0"}, 
+        "R": 8.314472,
+        "cp": Fi2,
+        "ref": "IIR", 
+
+        "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20, 
+        "Pmin": 0.23, "rhomin": 13.19, 
+
+        "nr1": [0.85579765e1, -0.94701332e1, -0.25013623, 0.13789870, 0.12177113e-1],
+        "d1": [1, 1, 1, 2, 5],
+        "t1": [0.66886, 0.83392, 1.6982, 1.8030, 0.36657],
+ 
+        "nr2": [-0.14227996, 0.10096648, 0.17504319e-1, -0.17627303e-1, -0.14705120e-1, 0.37202269, -0.30138266, -0.92927274e-1, 0.87051177e-1, 0.18113770e-1, -0.16018424e-1, 0.53809860e-2],
+        "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
+        "t2": [3.8666, 1.0194, 0, 1.1655, 8.3101, 6.1459, 8.3495, 6.0422,
+               7.444, 15.433, 21.543, 15.499],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
+        "gamma2": [1]*12}
+
+    eq = helmholtz1, helmholtz2, helmholtz3
 
     _surface = {"__doi__": 
                     {"autor": "Tanaka, K., Higashi, Y.",
