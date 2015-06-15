@@ -17,25 +17,64 @@ class R245ca(MEoS):
     CASNumber = "679-86-7"
     formula = "CHF2CF2CH2F"
     synonym = "R245ca"
-    rhoc = unidades.Density(523.6)
+    rhoc = unidades.Density(525.4679248)
     Tc = unidades.Temperature(447.57)
-    Pc = unidades.Pressure(3925.0, "kPa")
-    M = 134.04882  # g/mol
+    Pc = unidades.Pressure(3940.7, "kPa")
+    M = 134.04794  # g/mol
     Tt = unidades.Temperature(191.5)
-    Tb = unidades.Temperature(298.28)
-    f_acent = 0.3536
+    Tb = unidades.Temperature(298.412)
+    f_acent = 0.355
     momentoDipolar = unidades.DipoleMoment(1.740, "Debye")
     id = 693
 
-    CP1 = {"ao": -3.8444,
+    CP1 = {"ao": 8.888,
+           "an": [], "pow": [],
+           "ao_exp": [0.8843, 5.331, 14.46],
+           "exp": [865, 2830, 1122],
+           "ao_hyp": [], "hyp": []}
+           
+    CP2 = {"ao": -3.8444,
            "an": [5.24008e-1, -3.74976e-4], "pow": [1, 2],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
+    helmholtz1 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-245ca of Zhou and Lemmon (2013).",
+        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
+                    "title": "unpublished equation, 2013.", 
+                    "ref": "",
+                    "doi": ""}, 
+
+        "R": 8.314472,
+        "cp": CP1,
+        "ref": "OTO", 
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 10000.0, "rhomax": 12.21, 
+        "Pmin": 0.0708, "rhomin": 12.21, 
+
+        "nr1": [0.04489247, 1.526476, -2.408320, -0.5288088, 0.18222346],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.26, 1., 1.2, 0.67],
+
+        "nr2": [-1.063228, -0.223149, 1.18738, -0.9772383, -0.02296938],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [1.92, 2., 1.5, 1.93, 1.06],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+ 
+        "nr3": [1.364444, -0.5080666, -0.06649496, -1.128359],
+        "d3": [1, 1, 3, 3],
+        "t3": [0.17, 3.9, 1., 1.],
+        "alfa3": [1.16, 1.1, 1.64, 13.8],
+        "beta3": [2.4, 1.5, 4.2, 379],
+        "gamma3": [1.265, 0.42, 0.864, 1.15],
+        "epsilon3": [0.55, 0.724, 0.524, 0.857]}
+
     ecs = {"__type__": "ECS",
            "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
            "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
-           "cp": CP1,
+           "cp": CP2,
            "ref": R134a,
            "eq": "helmholtz1",
            "R": 8.314471,
@@ -50,21 +89,21 @@ class R245ca(MEoS):
            "ht_add": [], "ht_add_exp": [],
            "hd": [], "hd_exp": []}
 
-    eq = ecs,
+    eq = helmholtz1,
 
     _surface = {"sigma": [0.069297, -0.022419], "exp": [1.2795, 3.1368]}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.77617e1, 0.15867e1, -0.48984e2, 0.12055e3, -0.77763e2],
-        "exp": [1.0, 1.5, 3.5, 3.8, 4.0]}
+        "ao": [-7.8807, 2.1026, -3.0768, -4.9894],
+        "exp": [1.0, 1.5, 2.5, 4.95]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [-.57615e3, .20016e4, -.30523e4, .33777e4, -.29692e4, .12236e4],
-        "exp": [0.79, 0.91, 1.1, 1.4, 1.7, 1.9]}
+        "ao": [4.0176, -4.7916, 7.8662, -7.1049, 3.1949],
+        "exp": [0.48, 1.0, 1.62, 2.3, 3.1]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [.67777, -.53374e1, -.1124e2, -.13244e2, .38054e2, -.10678e3],
-        "exp": [0.082, 0.41, 2.0, 3.0, 5.0, 6.0]}
+        "ao": [-4.65885, -1.03328, -13.5047, -48.4225, -104.097],
+        "exp": [0.5, 1.09, 2.1, 5.1, 10.4]}
 
     trnECS = {"eq": "ecs",
               "__name__": "Extended Corresponding States model",

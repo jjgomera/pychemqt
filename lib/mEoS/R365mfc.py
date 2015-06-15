@@ -11,14 +11,14 @@ class R365mfc(MEoS):
     CASNumber = "406-58-6"
     formula = "CF3CH2CF2CH3"
     synonym = "R365mfc"
-    rhoc = unidades.Density(473.83846)
+    rhoc = unidades.Density(473.838464)
     Tc = unidades.Temperature(460.0)
     Pc = unidades.Pressure(3266.0, "kPa")
     M = 148.07452  # g/mol
     Tt = unidades.Temperature(239.0)
     Tb = unidades.Temperature(313.3)
-    f_acent = 0.38
-    momentoDipolar = None
+    f_acent = 0.377
+    momentoDipolar = unidades.DipoleMoment(3.807, "Debye")
     id = 671
     # id = None
 
@@ -29,13 +29,18 @@ class R365mfc(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-365mfc of Lemmon et al. (2007)",
-        "__doc__":  u"""Lemmon, E.W., McLinden, M.O., and Meier, K. to be published in J. Chem. Eng. Data, 2007.""",
+        "__name__": "Helmholtz equation of state for R-365mfc of McLinden and Lemmon. (2013)",
+        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "ref": "to be submitted to J. Chem. Eng. Data, 2013",
+                    "doi":  ""}, 
+                    
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 35000.0, "rhomax": 9.3, 
-        "Pmin": 2.5, "rhomin": 9.3, 
+        "Pmin": 2.478, "rhomin": 9.3, 
 
         "nr1": [2.20027, -2.86240, 0.384559, -0.621227, 0.066596],
         "d1": [1, 1, 2, 2, 4],
