@@ -40,6 +40,7 @@ class R236ea(MEoS):
                     "title": "An Equation of State for Thermodynamic Properties of 1,1,1,2,3,3-Hexafluoropropane (R236ea)", 
                     "ref": "Fluid Phase Equilibria, Volume 348, 25 June 2013, Page 83",
                     "doi": "10.1016/j.fluid.2012.12.026"}, 
+                    
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1.,
