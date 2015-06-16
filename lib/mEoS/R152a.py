@@ -295,11 +295,16 @@ class R152a(MEoS):
         "ao": [-.33621e1, -.85985e1, -.2683e1, -.2414e2, -.43159e2, -.28045e2],
         "exp": [0.406, 1.42, 3.6, 3.9, 8.0, 9.0]}
 
+#TODO: Add test for transport properties from file pag 750
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.4425728, -0.5138403, 0.1547566, -0.2821844e-1,
                             0.1578286e-2],
               "__name__": "Krauss (1996)",
-              "__doc__": """Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K., "Transport properties of 1,1-Difluoroethane (R152a)," Int. J. Thermophysics 17:731-757, 1996.""",
+              "__doi__": {"autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K.",
+                          "title": "Transport properties of 1,1-Difluoroethane (R152a)", 
+                          "ref": "Int. J. Thermophysics 17:731-757, 1996.",
+                          "doi": "10.1007/BF01439187"}, 
+
               "ek": 354.84, "sigma": 0.46115,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.2169614/M**0.5,
@@ -325,7 +330,10 @@ class R152a(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Krauss (1996)",
-               "__doc__": """Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K., "Transport properties of 1,1-Difluoroethane (R152a)," Int. J. Thermophysics 17:731-757, 1996""",
+               "__doi__": {"autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K.",
+                           "title": "Transport properties of 1,1-Difluoroethane (R152a)", 
+                           "ref": "Int. J. Thermophysics 17:731-757, 1996.",
+                           "doi": "10.1007/BF01439187"}, 
 
                "Tref": 1., "kref": 1e-3,
                "no": [-1.49420e1, 9.73283-2],
