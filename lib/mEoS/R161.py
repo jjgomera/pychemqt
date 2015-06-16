@@ -34,7 +34,10 @@ class R161(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-161 of Lemmon (2005).",
-        "__doc__":  u"""""",
+        "__doi__": {"autor": "Lemmon, E.W.",
+                    "title": "preliminary equation, 2005.", 
+                    "ref": "",
+                    "doi": ""}, 
         "R": 8.314472,
         "cp": CP1,
         
@@ -66,10 +69,3 @@ class R161(MEoS):
         "eq": 3,
         "ao": [-0.62548e1, 0.10499e2, -0.20353e2, -0.36709e2, -0.86781e2],
         "exp": [0.56, 1.3, 1.7, 5.0, 11.0]}
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=R161(T=300., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)

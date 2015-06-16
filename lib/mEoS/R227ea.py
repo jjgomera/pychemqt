@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R227ea(MEoS):
-    """Multiparameter equation of state for R227ea
-
-    >>> r227ea=R227ea(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r227ea.T, r227ea.rho, r227ea.u.kJkg, r227ea.h.kJkg, r227ea.s.kJkgK, r227ea.cv.kJkgK, r227ea.cp.kJkgK, r227ea.w)
-    300.0 7.0020 71.96 86.24 0.4638 0.75948 0.81568 122.13
-    """
+    """Multiparameter equation of state for R227ea"""
     name = "1,1,1,2,3,3,3-heptafluoropropane"
     CASNumber = "431-89-0"
     formula = "CF3CHFCF3"
@@ -34,8 +29,11 @@ class R227ea(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-227ea of Lemmon et al. (2007)",
-        "__doc__":  u"""Lemmon, E.W., McLinden, M.O., and Meier, K. to be published in J. Chem. Eng. Data, 2007.""",
+        "__name__": "short Helmholtz equation of state for R-227ea of McLinden and Lemmon (2013).",
+        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
+                    "doi": ""}, 
         "R": 8.314472,
         "cp": CP1,
         
