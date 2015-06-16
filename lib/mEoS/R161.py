@@ -6,25 +6,26 @@ from lib import unidades
 
 
 class R161(MEoS):
-    """Multiparameter equation of state for R161
-
-    >>> r227ea=R161(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r227ea.T, r227ea.rho, r227ea.u.kJkg, r227ea.h.kJkg, r227ea.s.kJkgK, r227ea.cv.kJkgK, r227ea.cp.kJkgK, r227ea.w)
-    300.0 7.0020 71.96 86.24 0.4638 0.75948 0.81568 122.13
-    """
+    """Multiparameter equation of state for R161"""
     name = "fluoroethane"
-    CASNumber = "48.0595"
+    CASNumber = "353-36-6"
     formula = "C2H5F"
-    synonym = "R227ea"
+    synonym = "R161"
     rhoc = unidades.Density(301.81366)
-    Tc = unidades.Temperature(375.3)
-    Pc = unidades.Pressure(5091.0, "kPa")
+    Tc = unidades.Temperature(375.25)
+    Pc = unidades.Pressure(5010.0, "kPa")
     M = 48.0595  # g/mol
     Tt = unidades.Temperature(130.0)
     Tb = unidades.Temperature(235.6)
-    f_acent = 0.217
+    f_acent = 0.216
     momentoDipolar = unidades.DipoleMoment(1.9397, "Debye")
     id = 247
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-6.9187, 5.4788],
+           "ao_exp": [2.059, 9.253, 6.088],
+           "titao": [420/Tc, 1548/Tc, 3882/Tc]}
 
     CP1 = {"ao": 3.985,
            "an": [], "pow": [],
@@ -32,6 +33,38 @@ class R161(MEoS):
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
+        "__type__": "Helmholtz",
+        "__name__": "short Helmholtz equation of state for R-161 of Wu and Zhou (2012).",
+        "__doi__": {"autor": "Wu, J. and Zhou, Y.",
+                    "title": "An Equation of State for Fluoroethane (R161)", 
+                    "ref": "Int. J. Thermophys. 33:220-234, 2012.",
+                    "doi": "10.1007/s10765-011-1151-3"}, 
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205}, 
+        
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0, 
+        "Pmin": 0.005512, "rhomin": 19.91, 
+
+        "nr1": [1.511, -2.3 , -0.457, 0.1683, 0.04133],
+        "d1": [1, 1, 2, 3, 4],
+        "t1": [0.37, 0.97, 1.14, 0.744, 1.],
+
+        "nr2": [0.62187, -0.0265, -1.03, -0.285, -0.476],
+        "d2": [2, 7, 1, 2, 3],
+        "t2": [1.26, 1., 1.8, 3., 2.25],
+        "c2": [1, 1, 2, 2, 2],
+        "gamma2": [1]*5,
+
+        "nr3": [0.82, -0.3532, -0.116, -0.0220583, -1.63148],
+        "d3": [11, 1, 3, 3, 3],
+        "t3": [1, 1.2, 5.3, 1, 4],
+        "alfa3": [0.96, 1.35, 1.26, 1.23, 16.8],
+        "beta3": [2.7, 5.2, 3.9, 4.7, 413],
+        "gamma3": [0.9, 0.69, 0.67, 0.67, 1.15],
+        "epsilon3": [0.683, 0.892, 0.785, 1.33, 0.86]}
+
+    helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-161 of Lemmon (2005).",
         "__doi__": {"autor": "Lemmon, E.W.",
@@ -54,7 +87,7 @@ class R161(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 2],
         "gamma2": [1]*7}
 
-    eq = helmholtz1,
+    eq = helmholtz1, helmholtz2
 
     _surface = {"sigma": [0.05385], "exp": [1.111]}
     _vapor_Pressure = {
