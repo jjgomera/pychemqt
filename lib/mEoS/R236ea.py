@@ -7,30 +7,64 @@ from R134a import R134a
 
 
 class R236ea(MEoS):
-    """Multiparameter equation of state for R236ea
-
-    >>> c4f10=R236ea(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.4f %0.4f %0.2f" % (c4f10.T, c4f10.rho, c4f10.h.kJkg, c4f10.s.kJkgK, c4f10.cv.kJkgK, c4f10.cp.kJkgK, c4f10.w)
-    300.0 0.08077 27.469 0.14617 10.7187 14.8450 1309.82
-    """
+    """Multiparameter equation of state for R236ea"""
     name = "1,1,1,2,3,3-hexafluoropropane"
     CASNumber = "431-63-0"
     formula = "CF3CHFCHF2"
     synonym = "R236ea"
-    rhoc = unidades.Density(563.0044946256)
+    rhoc = unidades.Density(565.)
     Tc = unidades.Temperature(412.44)
-    Pc = unidades.Pressure(3501.98, "kPa")
-    M = 152.03928  # g/mol
+    Pc = unidades.Pressure(3420.0, "kPa")
+    M = 152.0384  # g/mol
     Tt = unidades.Temperature(170.0)
-    Tb = unidades.Temperature(279.34)
-    f_acent = 0.3794
+    Tb = unidades.Temperature(279.322)
+    f_acent = 0.369
     momentoDipolar = unidades.DipoleMoment(1.129, "Debye")
     id = 693
+
+    Fi1 = {"ao_log": [1, 2.762],
+           "pow": [0, 1],
+           "ao_pow": [-14.121424135, 10.2355589225],
+           "ao_exp": [0.7762, 10.41, 12.18, 3.332],
+           "titao": [144/Tc, 385/Tc, 1536/Tc, 7121/Tc]}
 
     CP1 = {"ao": 5.30694,
            "an": [0.03973, -1.859e-5], "pow": [1, 2],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
+           
+    helmholtz1 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R236ea of Rui et al. (2013).",
+        "__doi__": {"autor": "Rui, X., Pan, J., Wang, Y.",
+                    "title": "An Equation of State for Thermodynamic Properties of 1,1,1,2,3,3-Hexafluoropropane (R236ea)", 
+                    "ref": "Fluid Phase Equilibria, Volume 348, 25 June 2013, Page 83",
+                    "doi": "10.1016/j.fluid.2012.12.026"}, 
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1.,
+                "ho": 56317.4970978844, "so": 282.8465334259}, 
+        
+        "Tmin": 240.0, "Tmax": 412.0, "Pmax": 6000.0, "rhomax": 10.5, 
+        "Pmin": 0.02, "rhomin": 11.7, 
+
+        "nr1": [0.051074, 2.5584, -2.9180, -0.71485, 0.15534],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1., 0.264, 0.5638, 1.306, 0.2062],
+
+        "nr2": [-1.5894, -0.784, 0.85767, -0.67235, -0.017953],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.207, 2.283, 1.373, 2.33, 0.6376],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+ 
+        "nr3": [1.3165, -0.42023, -0.28053, -1.4134, -0.0000062617],
+        "d3": [1, 1, 3, 3, 2],
+        "t3": [1.08, 1.67, 3.502, 4.357, 0.6945],
+        "alfa3": [1.019, 1.341, 1.034, 5.264, 24.44],
+        "beta3": [1.3, 2.479, 1.068, 79.85, 49.06],
+        "gamma3": [1.13, 0.6691, 0.465, 1.28, 0.8781],
+        "epsilon3": [0.7119, 0.9102, 0.678, 0.7091, 1.727]}
 
     ecs = {"__type__": "ECS",
            "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
@@ -51,21 +85,21 @@ class R236ea(MEoS):
            "ht_add": [0.195298641e-1], "ht_add_exp": [1],
            "hd": [], "hd_exp": []}
 
-    eq = ecs,
+    eq = helmholtz1, ecs
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.22360e2, 0.60938e3, -0.15037e4, 0.10657e4, -0.16142e3],
-        "exp": [1, 1.5, 1.65, 1.8, 2.2]}
+        "ao": [-7.9095, 2.3374, -2.6453, -5.7058],
+        "exp": [1, 1.5, 2.15, 4.75]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.20433e1, -0.66050e1, 0.10613e2, -0.38994e1, 0.88965],
-        "exp": [0.11, 0.3, 0.5, 0.8, 2.1]}
+        "ao": [1.6074, 1.5021, -1.106, 0.91146],
+        "exp": [0.31, 0.75, 1.3, 1.9]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.83044, -.99128e1, .1279e3, -.2739e4, .88175e4, -.85578e4],
-        "exp": [0.08, 1.0, 5.0, 6.0, 7.0, 8.0]}
+        "ao": [-2.7426, -6.2268, -15.109, -49.524, -114.11],
+        "exp": [0.376, 1.1, 2.7, 5.5, 11]}
 
     trnECS = {"eq": "ecs",
               "__name__": "Extended Corresponding States model",
@@ -86,10 +120,3 @@ class R236ea(MEoS):
 
 #    _viscosity=trnECS,
 #    _thermal=trnECS,
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=R236ea(T=300., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
