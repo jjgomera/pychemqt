@@ -28,11 +28,6 @@ class R141b(MEoS):
            "ao_exp": [6.8978, 7.8157, 3.2039],
            "titao": [502/Tc, 1571/Tc, 4603/Tc]}
 
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
-           "ao_exp": [6.8978, 7.8157, 3.2039], "exp": [502, 1571, 4603],
-           "ao_hyp": [], "hyp": []}
-
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-141b of Lemmon and Span (2006)",

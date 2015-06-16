@@ -39,6 +39,7 @@ class R13(MEoS):
         "__doc__":  u"""Magee, J.W., Outcalt, S.L., and Ely, J.F., "Molar heat capacity C(v), vapor pressure, and (p, rho, T) measurements from 92 to 350 K at pressures to 35 MPa and a new equation of state for chlorotrifluoromethane (R13)," Int. J. Thermophys., 21(5):1097-1121, 2000.""",
         "R": 8.314471,
         "cp": CP1,
+        "ref": "OTO", 
         
         "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85, 
         "Pmin": 0.00033, "rhomin": 17.84, 
@@ -64,7 +65,7 @@ class R13(MEoS):
                     "doi": ""}, 
         "R": 8.31451,
         "cp": CP2,
-        "ref": "NBP", 
+        "ref": "OTO", 
         
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806, 
         "Pmin": 0.0009047, "rhomin": 17.6998, 
@@ -119,11 +120,11 @@ class R13(MEoS):
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
 
     _viscosity = trnECS,
-#    _thermal=trnECS,
+    _thermal=trnECS,
 
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
 
-    cyc5=R13(T=200., P=0.1, eq="helmholtz1")
+    cyc5=R13(T=300, P=1e6, eq=1)
     print cyc5.T, cyc5.rho, cyc5.k, cyc5.mu

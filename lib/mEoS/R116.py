@@ -73,7 +73,11 @@ class R116(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-116 of Kozlov (1996).",
-        "__doc__":  u"""private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru""",
+        "__doi__": {"autor": "Kozlov A.D.",
+                    "title": "private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru", 
+                    "ref": "",
+                    "doi":  ""}, 
+                    
         "R": 8.31451,
         "cp": CP2,
         
@@ -170,8 +174,3 @@ class R116(MEoS):
 
     _thermal = thermo0,
 
-
-if __name__ == "__main__":
-    r116=R116(T=300, P=0.1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r116.T, r116.rho, r116.u.kJkg, r116.h.kJkg, r116.s.kJkgK, r116.cv.kJkgK, r116.cp.kJkgK, r116.w)
-    print r116.k, r116.mu

@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R123(MEoS):
-    """Multiparameter equation of state for R123
-
-    >>> r123=R123(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r123.T, r123.rho, r123.u.kJkg, r123.h.kJkg, r123.s.kJkgK, r123.cv.kJkgK, r123.cp.kJkgK, r123.w)
-    300.0 5.5897 286.68 304.57 1.5380 0.71520 0.77847 138.83
-    """
+    """Multiparameter equation of state for R123"""
     name = "2,2-dichloro-1,1,1-trifluoroethane"
     CASNumber = "306-83-2"
     formula = "CHCl2CF3"
@@ -36,7 +31,12 @@ class R123(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-123 of Younglove and McLinden (1994).",
-        "__doc__":  u"""Younglove, B.A. and McLinden, M.O., "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)," J. Phys. Chem. Ref. Data, 23:731-779, 1994.""",
+        "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
+                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)", 
+                    "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
+                    "doi":  "10.1063/1.555950"}, 
+        #TODO: Add test from file
+        #FIXME: The file include derived heltmholtz expresion for MBWR equations
         "R": 8.31451,
         "cp": CP1,
         
@@ -58,7 +58,11 @@ class R123(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz transform of MBWR EOS for R-123 of Younglove & McLinden (1994)",
-        "__doc__":  u"""Younglove, B.A. and McLinden, M.O., "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)," J. Phys. Chem. Ref. Data, 23:731-779, 1994.""",
+        "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
+                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)", 
+                    "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
+                    "doi":  "10.1063/1.555950"}, 
+                    
         "R": 8.31451,
         "cp": CP1,
         
