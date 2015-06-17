@@ -1,98 +1,118 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-####################################################
-###  Diálogo de definición de cambiadores de calor sencillos, UI_heatExchanger ###
-####################################################
+###############################################################################
+# Generic heat exchanger equipment dialog
+###############################################################################
 
 from functools import partial
 import os
 
-from matplotlib import image,  transforms
-from PyQt4 import QtCore, QtGui
-from scipy import arange, arctan, logspace, log10, pi, concatenate, r_
-from scipy.optimize import fsolve
+from matplotlib import image
+from PyQt4 import QtGui
+from scipy import arange, arctan, logspace, pi
 
-from lib.unidades import  Temperature, DeltaT, DeltaP, Power, Area, HeatTransfCoef
+from lib.unidades import Temperature, DeltaT, DeltaP, Power, Area, HeatTransfCoef
 from lib.plot import mpl
 from UI.widgets import Entrada_con_unidades
-from UI import UI_corriente
 from equipment.heatExchanger import Heat_Exchanger, Heat_ExchangerDesign
 from equipment.parents import UI_equip
 
 
 class UI_equipment(UI_equip):
-    """Diálogo de definición de cambiadores de calor generales"""
-    Equipment=Heat_Exchanger()
+    """Generic heat exchanger equipment edition dialog"""
+    Equipment = Heat_Exchanger()
+
     def __init__(self, equipment=None, parent=None):
         """
-        equipment: instancia de equipo inicial
+        equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Heat_Exchanger, entrada=False, salida=False, parent=parent)
+        super(UI_equipment, self).__init__(Heat_Exchanger, entrada=False,
+                                           salida=False, parent=parent)
 
-        #Pestaña calculo
-        gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
-        gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output temperature")),1,1)
-        self.Tout=Entrada_con_unidades(Temperature)
+        # Calculate tab
+        lyt = QtGui.QGridLayout(self.tabCalculo)
+        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Output temperature")), 1, 1)
+        self.Tout = Entrada_con_unidades(Temperature)
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
-        gridLayout_Calculo.addWidget(self.Tout,1,2)
-        gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Temperature increase")),2,1)
-        self.DeltaT=Entrada_con_unidades(DeltaT)
+        lyt.addWidget(self.Tout, 1, 2)
+        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Temperature increase")), 2, 1)
+        self.DeltaT = Entrada_con_unidades(DeltaT)
         self.DeltaT.valueChanged.connect(partial(self.changeParams, "DeltaT"))
-        gridLayout_Calculo.addWidget(self.DeltaT,2,2)
-        gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Heat Duty")),3,1)
-        self.Heat=Entrada_con_unidades(Power)
+        lyt.addWidget(self.DeltaT, 2, 2)
+        lyt.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Heat Duty")), 3, 1)
+        self.Heat = Entrada_con_unidades(Power)
         self.Heat.valueChanged.connect(partial(self.changeParams, "Heat"))
-        gridLayout_Calculo.addWidget(self.Heat,3,2)
-        group=QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Heat Transfer"))
-        gridLayout_Calculo.addWidget(group,4,1,1,2)
-        lyt=QtGui.QGridLayout(group)
-        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Area")),1,1)
-        self.A=Entrada_con_unidades(Area)
+        lyt.addWidget(self.Heat, 3, 2)
+        group = QtGui.QGroupBox(
+            QtGui.QApplication.translate("pychemqt", "Heat Transfer"))
+        lyt.addWidget(group, 4, 1, 1, 2)
+        lyt = QtGui.QGridLayout(group)
+        lyt.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Area")), 1, 1)
+        self.A = Entrada_con_unidades(Area)
         self.A.valueChanged.connect(partial(self.changeParams, "A"))
-        lyt.addWidget(self.A,1,2)
-        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Heat Transfer Coefficient")),2,1)
-        self.U=Entrada_con_unidades(HeatTransfCoef)
+        lyt.addWidget(self.A, 1, 2)
+        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Heat Transfer Coefficient")), 2, 1)
+        self.U = Entrada_con_unidades(HeatTransfCoef)
         self.U.valueChanged.connect(partial(self.changeParams, "U"))
-        lyt.addWidget(self.U,2,2)
-        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "External Temperature")),3,1)
-        self.Text=Entrada_con_unidades(Temperature)
+        lyt.addWidget(self.U, 2, 2)
+        lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "External Temperature")), 3, 1)
+        self.Text = Entrada_con_unidades(Temperature)
         self.Text.valueChanged.connect(partial(self.changeParams, "Text"))
-        lyt.addWidget(self.Text,3,2)
+        lyt.addWidget(self.Text, 3, 2)
 
-        gridLayout_Calculo.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),5,0,1,3)
-        gridLayout_Calculo.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pressure loss")),6,1)
-        self.DeltaP=Entrada_con_unidades(DeltaP, value=0)
+        lyt.addItem(QtGui.QSpacerItem(
+            10, 10, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed),
+            5, 0, 1, 3)
+        lyt.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Pressure loss")), 6, 1)
+        self.DeltaP = Entrada_con_unidades(DeltaP, value=0)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
-        gridLayout_Calculo.addWidget(self.DeltaP,6,2)
-        gridLayout_Calculo.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),7,0,1,3)
+        lyt.addWidget(self.DeltaP, 6, 2)
+        lyt.addItem(QtGui.QSpacerItem(
+            20, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding),
+            7, 0, 1, 3)
 
-        self.groupBox_Calculo = QtGui.QGroupBox(QtGui.QApplication.translate("pychemqt", "Results"))
-        gridLayout_Calculo.addWidget(self.groupBox_Calculo,8,1,1,5)
-        gridLayout_1 = QtGui.QGridLayout(self.groupBox_Calculo)
-        gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Heat Duty")),0,1)
-        self.HeatCalc=Entrada_con_unidades(Power, retornar=False, readOnly=True)
-        gridLayout_1.addWidget(self.HeatCalc,0,2)
-        gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Output Temperature")),1,1)
-        self.ToutCalc=Entrada_con_unidades(Temperature, retornar=False, readOnly=True)
-        gridLayout_1.addWidget(self.ToutCalc,1,2)
+        group = QtGui.QGroupBox(
+            QtGui.QApplication.translate("pychemqt", "Results"))
+        lyt.addWidget(group, 8, 1, 1, 5)
+        layout = QtGui.QGridLayout(group)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Heat Duty")), 0, 1)
+        self.HeatCalc = Entrada_con_unidades(Power, retornar=False)
+        self.HeatCalc.setReadOnly(True)
+        layout.addWidget(self.HeatCalc, 0, 2)
+        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+            "pychemqt", "Output Temperature")), 1, 1)
+        self.ToutCalc = Entrada_con_unidades(Temperature, retornar=False)
+        self.ToutCalc.setReadOnly(True)
+        layout.addWidget(self.ToutCalc, 1, 2)
 
-        gridLayout_Calculo.addItem(QtGui.QSpacerItem(0,0,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),9,0,1,3)
+        lyt.addItem(QtGui.QSpacerItem(
+            0, 0, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed),
+            9, 0, 1, 3)
 
         if equipment:
             self.setEquipment(equipment)
 
     def changeParams(self, parametro, valor):
-        if parametro=="Tout":
+        if parametro == "Tout":
             self.Heat.clear()
             self.DeltaT.clear()
-        elif parametro=="DeltaT":
+        elif parametro == "DeltaT":
             self.Heat.clear()
             self.Tout.clear()
-        elif parametro=="Heat":
+        elif parametro == "Heat":
             self.DeltaT.clear()
             self.Tout.clear()
         self.calculo(**{parametro: valor})
+
 
 class Chart(QtGui.QDialog):
     """Implementa la funcionalidad comun de los dialogos de graficos"""
