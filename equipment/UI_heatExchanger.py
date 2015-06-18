@@ -115,14 +115,16 @@ class UI_equipment(UI_equip):
 
 
 class Chart(QtGui.QDialog):
-    """Implementa la funcionalidad comun de los dialogos de graficos"""
+    """Dialog to implement general heat exchanger plot"""
     PosImage=None
 
     def resizeEvent(self, event):
+        """Implement resizeEvent to precalculate the new position of image"""
         self.refixImage()
         QtGui.QDialog.resizeEvent(self, event)
 
     def refixImage(self, event=None):
+        """Recalculate image position as resize/move window"""
         xmin, xmax=self.diagrama.axes2D.get_xlim()
         ymin, ymax=self.diagrama.axes2D.get_ylim()
         a=self.PosLogo[0]*xmax+(1-self.PosLogo[0])*xmin
@@ -162,39 +164,51 @@ class Chart(QtGui.QDialog):
         self.diagrama.draw()
 
     def save(self):
-        fname=unicode(QtGui.QFileDialog.getSaveFileName(self, QtGui.QApplication.translate("pychemqt", "Save chart to file"), "./", "Portable Network Graphics (*.png)"))
+        """Show the dialog to select name to save the image as file"""
+        fname=unicode(QtGui.QFileDialog.getSaveFileName(
+            self, QtGui.QApplication.translate("pychemqt", "Save chart to file"),
+            "./", "Portable Network Graphics (*.png)"))
         self.diagrama.fig.savefig(fname, facecolor='#eeeeee')
 
 
 class Efectividad(Chart):
-    title=QtGui.QApplication.translate("pychemqt", "Heat Exchanger effectiveness")
-    flujo=[(QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"),
-                (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
-                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-                (QtGui.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+    """Heat Exchanger effectiveness plot"""
+    title = QtGui.QApplication.translate("pychemqt",
+                                         "Heat Exchanger effectiveness")
+    flujo = [
+        (QtGui.QApplication.translate("pychemqt", "Counterflow"), "CF"),
+        (QtGui.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
+        (QtGui.QApplication.translate(
+            "pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (QtGui.QApplication.translate(
+            "pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+        (QtGui.QApplication.translate(
+            "pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+        (QtGui.QApplication.translate(
+            "pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
-    mezclado=("Cmin", "Cmax")
-    PosLogo=(0, 1)
-    PosImage=(1, 0)
+    mezclado = ("Cmin", "Cmax")
+    PosLogo = (0, 1)
+    PosImage = (1, 0)
 
     def __init__(self, parent=None):
         super(Efectividad, self).__init__(parent)
         self.setWindowTitle(self.title)
         layout=QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
+        layout.addWidget(QtGui.QLabel(
+            QtGui.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
         self.flow=QtGui.QComboBox()
         for text, flow in self.flujo:
             self.flow.addItem(text)
         self.flow.currentIndexChanged.connect(self.plot)
-        layout.addWidget(self.flow,1,2)
+        layout.addWidget(self.flow, 1, 2)
         self.mixed=QtGui.QComboBox()
         for text in self.mezclado:
             self.mixed.addItem(text)
         self.mixed.currentIndexChanged.connect(self.changeMixed)
-        layout.addWidget(self.mixed,1,3)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed),1,4)
+        layout.addWidget(self.mixed, 1, 3)
+        layout.addItem(QtGui.QSpacerItem(
+            10, 10, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed), 1, 4)
 
         self.diagrama = mpl(self, width=10, height=10)
         self.image=self.diagrama.fig.figimage([[0]], 0, 0, zorder=1)
@@ -219,26 +233,29 @@ class Efectividad(Chart):
         modelo=self.flow.currentIndex()
         self.plot(modelo)
 
-
     def plot(self, indice):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0, 6)
         self.diagrama.axes2D.set_ylim(0, 1)
-        self.diagrama.axes2D.set_title(QtGui.QApplication.translate("pychemqt", "Heat Transfer effectiveness"), size='12')
+        title = QtGui.QApplication.translate("pychemqt",
+                                             "Heat Transfer effectiveness")
+        self.diagrama.axes2D.set_title(title, size='12')
         self.diagrama.axes2D.set_xlabel("NTU", size='12')
         self.diagrama.axes2D.set_ylabel(u"ε", size='14')
 
         flujo=self.flujo[indice][1]
         self.mixed.setVisible(flujo=="CrFSMix")
-        kwargs={}
+        kw={}
         if flujo=="CrFSMix":
-            kwargs["mixed"]=str(self.mixed.currentText())
+            kw["mixed"]=str(self.mixed.currentText())
 
         C=[0, 0.2, 0.4, 0.6, 0.8, 1.]
 
         NTU=arange(0, 6.1, 0.1)
         for  ci in C:
-            e=[0]+[Heat_ExchangerDesign.efectividad(N, ci, flujo, **kwargs) for N in NTU[1:]]
+            e=[0]
+            for N in NTU[1:]:
+                e.append(Heat_ExchangerDesign.efectividad(N, ci, flujo, **kw))
             self.diagrama.plot(NTU, e, "k")
 
             fraccionx=(NTU[40]-NTU[30])/6
@@ -247,7 +264,10 @@ class Efectividad(Chart):
                 angle=arctan(fracciony/fraccionx)*360/2/pi
             except ZeroDivisionError:
                 angle=90
-            self.diagrama.axes2D.annotate("C*=%0.1f" %ci, (NTU[29], e[30]), rotation=angle, size="medium", horizontalalignment="left", verticalalignment="bottom")
+            
+            self.diagrama.axes2D.annotate(
+                "C*=%0.1f" %ci, (NTU[29], e[30]), rotation=angle, size="medium",
+                horizontalalignment="left", verticalalignment="bottom")
 
         self.diagrama.draw()
 
