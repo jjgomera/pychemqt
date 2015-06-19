@@ -1537,14 +1537,20 @@ class Hairpin(Heat_ExchangerDesign):
     calculateCostos=("C_adq", "C_inst")
     indiceCostos=2
 
-    TEXT_MODO=[QApplication.translate("pychemqt", "Design"),
-                            QApplication.translate("pychemqt", "Rating")]
-    TEXT_FLUJO=[QApplication.translate("pychemqt", "Counterflow"),
-                            QApplication.translate("pychemqt", "Parallelflow")]
-    TEXT_ORIENTACION=[QApplication.translate("pychemqt", "Horizontal"),
-                            QApplication.translate("pychemqt", "Vertical, (in down)"),
-                            QApplication.translate("pychemqt", "Vertical, (in up)")]
-
+    TEXT_MODO=[
+        QApplication.translate("pychemqt", "Design"),
+        QApplication.translate("pychemqt", "Rating")]
+    TEXT_FLUJO=[
+        QApplication.translate("pychemqt", "Counterflow"),
+        QApplication.translate("pychemqt", "Parallelflow")]
+    TEXT_ORIENTACION=[
+        QApplication.translate("pychemqt", "Horizontal"),
+        QApplication.translate("pychemqt", "Vertical, (in down)"),
+        QApplication.translate("pychemqt", "Vertical, (in up)")]
+    TEXT_MATERIAL=[
+        QApplication.translate("pychemqt", "Carbon steel/carbon steel"),
+        QApplication.translate("pychemqt", "Carbon steel/304 stainless"),
+        QApplication.translate("pychemqt", "Carbon steel/316 stainless")]
     CODE_FLUJO=("CF", "PF")
 
     @property
@@ -1939,7 +1945,6 @@ class Hairpin(Heat_ExchangerDesign):
 
         return unidades.HeatTransfCoef(Nu*k/self.Di)
 
-
     def coste(self):
         self.material=self.kwargs["material"]
 
@@ -1961,8 +1966,6 @@ class Hairpin(Heat_ExchangerDesign):
         C=Fm*Fp*900*self.A.ft2**0.18
         self.C_adq=unidades.Currency(C * self.kwargs["Current_index"] / self.kwargs["Base_index"])
         self.C_inst=unidades.Currency(self.C_adq * self.kwargs["f_install"])
-
-
 
     def propTxt(self):
         txt="#---------------"+QApplication.translate("pychemqt", "Catalog")+"-----------------#"+os.linesep
@@ -2021,6 +2024,7 @@ class Hairpin(Heat_ExchangerDesign):
             txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
             txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
             txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
+            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Material"), self.TEXT_MATERIAL[self.kwargs["material"]])+os.linesep
             txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Design Pressure"), self.P_dis.str)+os.linesep
             txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
             txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
@@ -2063,6 +2067,7 @@ class Hairpin(Heat_ExchangerDesign):
                 (QApplication.translate("pychemqt", "U"), "U", unidades.HeatTransfCoef),
                 (QApplication.translate("pychemqt", "Clean Factor"), "CF", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Over Surface"), "OS", unidades.Dimensionless),
+                (QApplication.translate("pychemqt", "Material"), ("TEXT_MATERIAL", "material"), str),
                 (QApplication.translate("pychemqt", "Design Pressure"), "P_dis", unidades.Pressure),
                 (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
