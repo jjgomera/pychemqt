@@ -304,14 +304,8 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.C_inst, 2, 5)
 
         # Output tab
-        self.SalidaDestilado = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaDestilado,
-            QtGui.QApplication.translate("pychemqt", "Destilate"))
-        self.SalidaResiduo = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaResiduo,
-            QtGui.QApplication.translate("pychemqt", "Residue"))
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Destilate"))
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Residue"))
 
         self.mostrarSubclasificacion(0)
         if equipment:
@@ -326,12 +320,8 @@ class UI_equipment(UI_equip):
         self.changeParamsCoste("tipo", ind)
 
     def rellenar(self):
-        self.rellenarInput()
         self.buttonMcCabe.setEnabled(self.Equipment.statusMcCabe)
-        if self.Equipment.status == 1:
-            UI_equip.rellenar(self)
-            self.SalidaDestilado.setCorriente(self.Equipment.salida[0])
-            self.SalidaResiduo.setCorriente(self.Equipment.salida[1])
+        UI_equip.rellenar(self)
 
 
 if __name__ == "__main__":

@@ -147,25 +147,11 @@ class UI_equipment (UI_equip):
             13, 0, 1, 6)
 
         # Output tab
-        self.SalidaVapor = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaVapor,
-            QtGui.QApplication.translate("pychemqt", "Gas"))
-        self.SalidaLiquido = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaLiquido,
-            QtGui.QApplication.translate("pychemqt", "Liquid"))
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Destilate"))
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Residue"))
 
         if equipment:
             self.setEquipment(equipment)
-
-    def rellenar(self):
-        self.rellenarInput()
-        if self.Equipment.status == 1:
-            UI_equip.rellenar(self)
-
-            self.SalidaVapor.setCorriente(self.Equipment.salida[0])
-            self.SalidaLiquido.setCorriente(self.Equipment.salida[1])
 
 
 if __name__ == "__main__":
