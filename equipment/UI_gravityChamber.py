@@ -10,12 +10,12 @@ from functools import partial
 from PyQt4 import QtGui
 
 from lib.unidades import Length, Speed, VolFlow, DeltaP
-from gas_solid import GravityChamber, UI_equipment_Solid
-from UI import UI_corriente
+from gas_solid import GravityChamber
+from equipment.parents import UI_equip
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(UI_equipment_Solid):
+class UI_equipment(UI_equip):
     """Gravity chamber equipment edition dialog"""
     Equipment = GravityChamber()
 
@@ -120,12 +120,9 @@ class UI_equipment(UI_equipment_Solid):
             12, 1, 1, 6)
 
         # Output tab
-        self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaGas, QtGui.QApplication.translate(
-            "pychemqt", "Filtered gas"))
-        self.SalidaSolido = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaSolido, QtGui.QApplication.translate(
-            "pychemqt", "Collected solids"))
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
+            QtGui.QApplication.translate("pychemqt", "Collected solids"))
 
         self.tipoCalculoCambiado(0)
         if equipment:

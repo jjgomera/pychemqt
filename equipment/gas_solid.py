@@ -16,21 +16,11 @@ from scipy import exp, sqrt, ceil, roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
 
-from lib.unidades import Length, Pressure, DeltaP, Speed, Time, Area, PotencialElectric, Currency, Dimensionless, MassFlow
+from lib.unidades import (Length, Pressure, DeltaP, Speed, Time, Area,
+                          PotencialElectric, Currency, Dimensionless, MassFlow)
 # from lib.datasheet import pdf
 from lib.corriente import Corriente, Solid
 from parents import equipment, UI_equip
-
-
-class UI_equipment_Solid(UI_equip):
-    """Clase generica con la funcionalidad comun de los dialogos en los equipos de separacion gas-solido"""
-
-    def rellenar(self):
-        self.rellenarInput()
-        if self.Equipment.status:
-            UI_equip.rellenar(self)
-            self.SalidaGas.setCorriente(self.Equipment.salida[0])
-            self.SalidaSolido.setCorriente(self.Equipment.salida[1])
 
 
 class Separador_SolidGas(equipment):

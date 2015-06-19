@@ -10,12 +10,12 @@ from functools import partial
 from PyQt4 import QtGui
 
 from lib.unidades import DeltaP, PotencialElectric, Area
-from equipment.gas_solid import ElectricPrecipitator, UI_equipment_Solid
-from UI import UI_corriente
+from equipment.gas_solid import ElectricPrecipitator
+from equipment.parents import UI_equip
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(UI_equipment_Solid):
+class UI_equipment(UI_equip):
     """Electric precipitator equipment edition dialog"""
     Equipment = ElectricPrecipitator()
 
@@ -98,13 +98,8 @@ class UI_equipment(UI_equipment_Solid):
             12, 1, 1, 6)
 
         # Output tab
-        self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaGas,
-            QtGui.QApplication.translate("pychemqt", "Filtered gas"))
-        self.SalidaSolido = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaSolido,
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
             QtGui.QApplication.translate("pychemqt", "Collected solids"))
 
         if equipment:

@@ -11,12 +11,12 @@ from PyQt4 import QtGui
 from numpy import any
 
 from lib.unidades import Time, Pressure, Length, Area, Speed
-from equipment.gas_solid import Baghouse, UI_equipment_Solid
-from UI import UI_corriente
+from equipment.gas_solid import Baghouse
+from equipment.parents import UI_equip
 from UI.widgets import Entrada_con_unidades, Tabla
 
 
-class UI_equipment(UI_equipment_Solid):
+class UI_equipment(UI_equip):
     """Baghouse equipment edition dialog"""
     Equipment = Baghouse()
 
@@ -148,13 +148,8 @@ class UI_equipment(UI_equipment_Solid):
             12, 1, 1, 6)
 
         # Output tab
-        self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True)
-        self.SalidaSolido = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaGas,
-            QtGui.QApplication.translate("pychemqt", "Filtered gas"))
-        self.Salida.addTab(
-            self.SalidaSolido,
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
             QtGui.QApplication.translate("pychemqt", "Collected solids"))
 
         if equipment:
@@ -188,7 +183,7 @@ class UI_equipment(UI_equipment_Solid):
         self.changeParams("metodo", tipo_calculo)
 
     def rellenarInput(self):
-        UI_equipment_Solid.rellenarInput(self)
+        UI_equip.rellenarInput(self)
         if self.Equipment.kwargs["entrada"].solido:
             diametros = []
             for d in self.Equipment.kwargs["entrada"].solido.diametros:

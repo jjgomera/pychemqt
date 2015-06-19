@@ -12,12 +12,12 @@ from PyQt4 import QtGui
 
 from lib.unidades import Length, Pressure, DeltaP, Speed, VolFlow, Currency
 from tools.costIndex import CostData
-from equipment.gas_solid import Ciclon, UI_equipment_Solid
-from UI import UI_corriente
+from equipment.gas_solid import Ciclon
+from equipment.parents import UI_equip
 from UI.widgets import Entrada_con_unidades
 
 
-class UI_equipment(UI_equipment_Solid):
+class UI_equipment(UI_equip):
     """Cyclone equipment edition dialog"""
     Equipment = Ciclon()
 
@@ -215,13 +215,8 @@ class UI_equipment(UI_equipment_Solid):
         lyt.addWidget(self.C_inst, 1, 4)
 
         # Output tab
-        self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True)
-        self.SalidaSolido = UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(
-            self.SalidaGas,
-            QtGui.QApplication.translate("pychemqt", "Filtered gas"))
-        self.Salida.addTab(
-            self.SalidaSolido,
+        self.addSalida(QtGui.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
             QtGui.QApplication.translate("pychemqt", "Collected solids"))
 
         self.on_tipoCalculo_currentIndexChanged(0)
