@@ -187,7 +187,7 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente, Mezcla
     app = QtGui.QApplication(sys.argv)
-    agua=Corriente(300, 1, 3600, Mezcla([62], [1]))
+    agua=Corriente(T=300, P=101325, caudalMasico=3600, ids=[62], fraccion=[1])
     dialogo = UI_equipment(agua)
     dialogo.show()
     sys.exit(app.exec_())

@@ -12,7 +12,6 @@ from PyQt4 import QtGui
 from lib.unidades import (Temperature, Pressure, DeltaP, Power, Length, Area,
                           ThermalConductivity, HeatTransfCoef, Currency)
 from UI.widgets import Entrada_con_unidades
-from UI import UI_corriente
 from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import Catalogo_Materiales_Dialog
 from equipment.parents import UI_equip
@@ -31,17 +30,10 @@ class UI_equipment(UI_equip):
         super(UI_equipment, self).__init__(Hairpin, parent=parent)
 
         # Input tab
-        self.entradaTubo = UI_corriente.Ui_corriente()
-        self.entradaTubo.Changed.connect(
-            partial(self.changeParams, "entradaTubo"))
-        self.entrada.addTab(
-            self.entradaTubo, QtGui.QApplication.translate("pychemqt", "Tube"))
-        self.entradaExterior = UI_corriente.Ui_corriente()
-        self.entradaExterior.Changed.connect(
-            partial(self.changeParams, "entradaExterior"))
-        self.entrada.addTab(
-            self.entradaExterior,
-            QtGui.QApplication.translate("pychemqt", "Annulli"))
+        self.addEntrada(QtGui.QApplication.translate("pychemqt", "Tube"),
+                        "entradaTubo")
+        self.addEntrada(QtGui.QApplication.translate("pychemqt", "Annulli"),
+                        "entradaExterior")
 
         # Pipe catalog tab
         tabCatalogo = QtGui.QWidget()
@@ -319,7 +311,8 @@ if __name__ == "__main__":
     fria = Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62],
                      fraccionMolar=[1.])
     Cambiador = Hairpin(
-        entradaTubo=caliente, entradaExterior=fria, modo=1, DiTube=0.0525,
+        entradaTubo=caliente, entradaExterior=fria,
+        modo=1, DiTube=0.0525,
         DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
         annulliFouling=0.000352, tubeFouling=0.000176, LTube=2.5)
     dialogo = UI_equipment(Cambiador)

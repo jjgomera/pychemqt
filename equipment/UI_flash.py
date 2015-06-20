@@ -13,7 +13,6 @@ from lib.unidades import Length, Mass, Volume, Density, Currency
 from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.distillation import Flash
-from UI import UI_corriente
 from UI.widgets import Entrada_con_unidades
 
 

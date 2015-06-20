@@ -15,7 +15,6 @@ from lib.unidades import Pressure, Volume, Length, Power, Density, Currency
 from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.distillation import ColumnFUG
-from UI import UI_corriente
 from UI.widgets import Entrada_con_unidades
 
 

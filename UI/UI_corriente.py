@@ -124,16 +124,18 @@ class Ui_corriente(QtGui.QWidget):
         # Parameter to avoid recursive repaint
         if self.semaforo.available() > 0:
             self.semaforo.acquire(1)
-        self.pageDefinition.setStream(self.corriente)
-        if psychro and self.psychro:
-            psystream = self.corriente.psystream
-            self.pagePsychro.setStream(psystram)
-        self.pageSolids.setSolido(self.corriente.solido)
-        self.PageNotas.setText(self.corriente.notas)
-        self.pageProperties.fill(self.corriente)
-        if isinstance(self, QtGui.QDialog):
-            self.status.setState(self.corriente.status, self.corriente.msg)
-        self.semaforo.release(1)
+            self.pageDefinition.setStream(self.corriente)
+            if psychro and self.psychro:
+                psystream = self.corriente.psystream
+                self.pagePsychro.setStream(psystram)
+            self.pageSolids.setSolido(self.corriente.solido)
+            self.PageNotas.setText(self.corriente.notas)
+            self.pageProperties.fill(self.corriente)
+            if isinstance(self, QtGui.QDialog):
+                self.status.setState(self.corriente.status, self.corriente.msg)
+            if self.corriente.status == 1:
+                self.Changed.emit(self.corriente)
+            self.semaforo.release(1)
 
     def calculo(self, variable, valor):
         if self.semaforo.available() > 0:
@@ -338,6 +340,7 @@ class StreamDefinition(QtGui.QWidget):
             if prop:
                 for value, widget in zip(prop, self.xi):
                     widget.setValue(value)
+            if stream.tipoFlujo:
                 self.caudalMolar.setValue(stream.mezcla.caudalmolar)
                 self.caudalMasico.setValue(stream.mezcla.caudalmasico)
 
@@ -853,7 +856,7 @@ class SolidDefinition(QtGui.QWidget):
 
 class SolidDistribution(QtGui.QDialog):
     """
-    Dialog to specified paramter to model particle solid distribution
+    Dialog to specified parameter to model particle solid distribution
     Teoretical model implemented:
         Rosin, Rammler, Sperling (Weibull distribution)
         Gates, Gaudin, Shumann
@@ -1057,8 +1060,8 @@ if __name__ == "__main__":
 
 #    corriente=Corriente(T=273.15+30, P=101325, caudalMasico=0.01, ids=[475, 62], fraccionMolar=[1, 0])
 #    corriente=Corriente(caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
-    dialogo = Corriente_Dialog(psychro=True)
-    dialogo.show()
+#    dialogo = Corriente_Dialog(psychro=True)
+#    dialogo.show()
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 #    corriente=PsychroDefinition(aire)
@@ -1074,8 +1077,8 @@ if __name__ == "__main__":
 #    corriente.show()
 
 #    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.])
-#    dialogo = Ui_corriente(corriente)
-#    dialogo.show()
+    dialogo = Corriente_Dialog()
+    dialogo.show()
 
 #    corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
 #    corriente=Corriente(P=101325)

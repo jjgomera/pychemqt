@@ -12,7 +12,8 @@ from matplotlib import image
 from PyQt4 import QtGui
 from scipy import arange, arctan, logspace, pi
 
-from lib.unidades import Temperature, DeltaT, DeltaP, Power, Area, HeatTransfCoef
+from lib.unidades import (Temperature, DeltaT, DeltaP, Power, Area,
+                          HeatTransfCoef)
 from lib.plot import mpl
 from UI.widgets import Entrada_con_unidades
 from equipment.heatExchanger import Heat_Exchanger, Heat_ExchangerDesign
@@ -264,7 +265,7 @@ class Efectividad(Chart):
                 angle=arctan(fracciony/fraccionx)*360/2/pi
             except ZeroDivisionError:
                 angle=90
-            
+
             self.diagrama.axes2D.annotate(
                 "C*=%0.1f" %ci, (NTU[29], e[30]), rotation=angle, size="medium",
                 horizontalalignment="left", verticalalignment="bottom")
@@ -579,7 +580,7 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
 #    agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
 #    cambiador=Heat_Exchanger(entrada=agua, Tout=90+273.15)
-#    dialogo = UI_equipment(cambiador)
-    dialogo = Fi()
+    dialogo = UI_equipment()
+#    dialogo = Fi()
     dialogo.show()
     sys.exit(app.exec_())

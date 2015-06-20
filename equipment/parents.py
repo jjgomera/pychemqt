@@ -98,9 +98,18 @@ class equipment(Entity):
         """All equipment are callables, so we can instance or add/change
         input value with flexibility"""
         Entity.__call__(self, **kwargs)
-        if self._oldkwargs != self.kwargs and self.isCalculable:
+        input = False
+        for key in kwargs:
+            if key in self.kwargsInput:
+                input = True 
+                break
+        if self.isCalculable and (self._oldkwargs != self.kwargs or input):
             logging.info('Calculate EQUIPMENT: %s' %self.__class__.__name__)
-            logging.debug('kwarg; %s' %kwargs)
+            kw_new = {}
+            for key, value in kwargs.iteritems():
+                if self.__class__.kwargs[key] != value:
+                    kw_new[key] = value
+            logging.debug('kwarg; %s' %kw_new)
             QtGui.QApplication.processEvents()
             self.calculo()
             if self.statusCoste:
@@ -208,18 +217,18 @@ class UI_equip(QtGui.QDialog):
 
         # Input tab
         if entrada:
-            self.entrada = QtGui.QTabWidget()
+            self.Entrada = QtGui.QTabWidget()
             self.tabWidget.addTab(
-                self.entrada, QtGui.QIcon(os.environ["pychemqt"] +
+                self.Entrada, QtGui.QIcon(os.environ["pychemqt"] +
             "/images/equipment/in.svg"), 
             QtGui.QApplication.translate("pychemqt", "Input"))
         elif entrada is None:
             pass
         else:
-            self.entrada = UI_corriente.Ui_corriente()
-            self.entrada.Changed.connect(partial(self.changeParams, "entrada"))
+            self.Entrada = UI_corriente.Ui_corriente()
+            self.Entrada.Changed.connect(partial(self.changeParams, "entrada"))
             self.tabWidget.addTab(
-                self.entrada, QtGui.QIcon(os.environ["pychemqt"] +
+                self.Entrada, QtGui.QIcon(os.environ["pychemqt"] +
             "/images/equipment/in.svg"),
             QtGui.QApplication.translate("pychemqt", "Input"))
 
@@ -261,9 +270,14 @@ class UI_equip(QtGui.QDialog):
             QtGui.QApplication.translate("pychemqt", "Notes"))
         self.tabNotas.notas.textChanged.connect(self.cambiar_notas)
 
-    def addSalida(self, title):
-        widget = UI_corriente.Ui_corriente(readOnly=True)
+    def addSalida(self, title, **kw):
+        widget = UI_corriente.Ui_corriente(readOnly=True, **kw)
         self.Salida.addTab(widget, title)
+    
+    def addEntrada(self, title, key, **kw):
+        widget = UI_corriente.Ui_corriente(**kw)
+        widget.Changed.connect(partial(self.changeParams, key))
+        self.Entrada.addTab(widget, title)
 
     def ignorar(self, bool):
         """Ignore the equipment"""
@@ -330,11 +344,17 @@ class UI_equip(QtGui.QDialog):
     def rellenarInput(self):
         """Fill widget with input value of equipment"""
         self.blockSignals(True)
-        for entrada in self.Equipment.kwargsInput:
-            self.__getattribute__(entrada).blockSignals(True)
-            self.__getattribute__(entrada).setCorriente(
-                self.Equipment.kwargs[entrada])
-            self.__getattribute__(entrada).blockSignals(False)
+        if len(self.Equipment.kwargsInput) == 1:
+            self.Entrada.blockSignals(True)
+            entrada = self.Equipment.kwargsInput[0]
+            self.Entrada.setCorriente(self.Equipment.kwargs[entrada])
+            self.Entrada.blockSignals(False)
+        else:
+            for i, entrada in enumerate(self.Equipment.kwargsInput):
+                widget = self.Entrada.widget(i)
+                widget.blockSignals(True)
+                widget.setCorriente(self.Equipment.kwargs[entrada])
+                widget.blockSignals(False)
         for variable in self.Equipment.kwargsValue:
             self.__getattribute__(variable).setValue(
                 self.Equipment.kwargs[variable])
@@ -348,4 +368,4 @@ class UI_equip(QtGui.QDialog):
             self.Costos.setBase(self.Equipment.kwargs["Base_index"])
             self.Costos.setActual(self.Equipment.kwargs["Current_index"])
         self.blockSignals(False)
-        self.status.setState(self.Equipment.status, self.Equipment.msg)
+#        self.status.setState(self.Equipment.status, self.Equipment.msg)

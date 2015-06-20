@@ -231,6 +231,8 @@ with support for class unidad operations: txt, config. func."""
 
     def __new__(cls, data, txt=""):
         """Discard superfluous parameters for this class"""
+        if data is None:
+            data = 0
         return float.__new__(cls, data)
 
     @classmethod
@@ -2660,3 +2662,6 @@ if __name__ == "__main__":
 
     T=Temperature(5)
     print T, type(T.K), T.C
+    
+    c = Dimensionless(None)
+    print c
