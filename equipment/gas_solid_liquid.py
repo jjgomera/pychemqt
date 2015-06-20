@@ -26,8 +26,7 @@ class Dryer(equipment):
     Parámetros:
         entradaSolido: Instancia de clase Corriente que define la entrada de sólidos
         entradaAire: Instancia de clase Psychrometry que define el aire entrante
-        entrada: array con ambas entradas al equipo
-        tipoCalculo: integer que indica el tipo de cálculo
+        mode: integer que indica el tipo de cálculo
             0   -   Cálculo, se calculan la humedad del aire a la salida
             1   -   Diseño, se imponen las condiciones de salida del gas y se calcula el caudal necesario
         HR: Humedad relativa del aire a la salida, por defecto 100%
@@ -41,13 +40,23 @@ class Dryer(equipment):
     help=""
     kwargs={"entradaSolido": None,
             "entradaAire": None,
-            "entrada": [],
-            "tipoCalculo": 0,
+            
+            "mode": 0,
             "HR": 0.0,
             "TemperaturaSolid": 0.0,
             "HumedadResidual": 0.0,
             "Heat": 0.0,
             "deltaP": 0.0}
+
+    kwargsInput = ("entradaAire", "entradaSolido")
+    kwargsValue=("HR", "TemperaturaSolid", "HumedadResidual", "Heat", "deltaP")
+    kwargsList=("mode", )
+    calculateValue=("CombustibleRequerido", "Heat")
+
+    TEXT_MODE=(
+        QApplication.translate("pychemqt", "Rating, calculate output conditions"),
+        QApplication.translate("pychemqt", "Design, calculate air flow necessary"))
+
 
     @property
     def isCalculable(self):
@@ -86,9 +95,9 @@ class Dryer(equipment):
 
         aguaSolidoSalida=self.kwargs["HumedadResidual"]*self.kwargs["entradaSolido"].solido.caudal.kgh
         aguaSolidoEntrada=self.kwargs["entradaSolido"].caudalmasico.kgh
-        if self.kwargs["tipoCalculo"]==0:
-            Caudal_aguaenAireSalida=aguaSolidoEntrada-aguaSolidoSalida+self.entradaAire.caudal.kgh*self.entradaAire.Xw
-            Caudal_airesalida=self.entradaAire.caudal.kgh*self.entradaAire.Xa
+        if self.kwargs["mode"]==0:
+            Caudal_aguaenAireSalida=aguaSolidoEntrada-aguaSolidoSalida+self.entradaAire.caudalMasico.kgh*self.entradaAire.Xw
+            Caudal_airesalida=self.entradaAire.caudalMasico.kgh*self.entradaAire.Xa
             if self.entradaAire.Hs>Caudal_aguaenAireSalida/Caudal_airesalida:
                 H=Caudal_aguaenAireSalida/Caudal_airesalida
             else:
