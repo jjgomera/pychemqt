@@ -210,10 +210,7 @@ class FoulingWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         super(FoulingWidget, self).__init__(parent)
         layout = QtGui.QHBoxLayout(self)
-        margins = layout.contentsMargins()
-        margins.setTop(0)
-        margins.setBottom(0)
-        layout.setContentsMargins(margins)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.list = QtGui.QComboBox()
         self.list.addItem("")
         layout.addWidget(self.list)

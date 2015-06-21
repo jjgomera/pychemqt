@@ -1,9 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#######################################
-###        librería de definición de cambiadores de calor       ###
-#######################################
+###############################################################################
+# library for heat exchanger calculation
+
+# Equipment:
+#   -Heat_Exchanger
+#   -Heat_ExchangerDesign
+#   -Shell_Tube
+#   -Hairpin
+#   -Fired_Heater
+###############################################################################
 
 import os
 from math import factorial
@@ -19,7 +26,7 @@ from lib.physics import Re, Pr, Nu, Gr, Gz, f_friccion
 from parents import equipment
 
 
-#Tuberia Flujo laminar
+# Pipe Laminar flow
 def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
     """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
     Eubank, D. C. and Proctor W. S. - Effect of natural convection on heat transfer with laminar flow in tubes, MS Thesis, Chemical Engineering Department, Massachusetts Institute of Technology, 1951."""
@@ -48,7 +55,7 @@ def h_tubeside_laminar_Sieder_Tate(Gz, Gr):
     return 1.86*Gz**(1./3)+0.87*(1+0.015*Gr**(1./3))
 
 
-#Tuberia Flujo Turbulento
+# Pipe Turbulent flow
 def h_tubeside_turbulent_Sieder_Tate(Re, Pr):
     """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
     Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
@@ -128,7 +135,7 @@ def h_tubeside_turbulent_VDI(Re, Pr, filas_tubos, alineados):
     return a*Re**m*Pr**0.34*F1*F2
 
 
-#Double pipe
+# Double pipe
 def h_anulli_Laminar(Re, Pr, a, dhL=0, boundary=0):
     """VDI Heat Atlas G2 Pag.702"""
     if boundary==0:         #Inner surface heated
@@ -190,7 +197,7 @@ def Nu_Convection_Free_External_Horizontal_Plate(Pr, Ra):
     return Nu
 
 
-#Convection
+# Convection
 def h_tube_Condensation_Akers(fluid, Di):
     """ref Pag 557 Kakac: Boiler..."""
     Ge=fluid.caudalmasico*4/pi/Di**2*((1-fluid.x)+fluid.x*(fluid.Liquido.rho/fluid.Vapor.rho)**0.5)
@@ -240,37 +247,38 @@ def h_tube_Condensation_Traviss(fluid, Di, X):
 
     return fluid.Pr*Re**0.9*F1/F2
 
-#Classes
+# Equipment
 class Heat_Exchanger(equipment):
-    """Clase que define un cambiador de calor simple
+    """Define a simple heat exchanger, only make energy balance
 
-    Parámetros:
-        entrada: Instancia de clase corriente que define la corriente que fluye por la tubería
-        Heat: calor intercambiado
-        Tout: temperatura a la salida
-        DeltaT: incremento de temperatura en el equipo
-        A: area de intercambio de calor
-        U: coeficiente global de transmisión de calor
-        Text: temperatura externa
-        DeltaP: perdida de presión en la tubería
-
+    Parameters:
+        entrada: Corriente instance to dfine input stream
+        Heat: global heat value exchanged
+        Tout: Output temperature
+        DeltaT: Increase temperature in stream
+        A: area for heat exchange
+        U: Global coefficient of heat transmision
+        Text: Ambient external temperature
+        DeltaP: Opcional pressure losses of equipment
     """
     title=QApplication.translate("pychemqt", "Heat Exchanger")
     help=""
-    kwargs={"entrada": None,
-                    "Heat": 0.0,
-                    "Tout": 0.0,
-                    "DeltaT": 0.0,
-                    "A": 0.0,
-                    "U": 0.0,
-                    "Text": 0.0,
-                    "DeltaP": 0.0}
+    kwargs={
+        "entrada": None,
+        "Heat": 0.0,
+        "Tout": 0.0,
+        "DeltaT": 0.0,
+        "A": 0.0,
+        "U": 0.0,
+        "Text": 0.0,
+        "DeltaP": 0.0}
 
     kwargsInput=("entrada", )
     kwargsValue=("Heat", "Tout", "DeltaT", "A", "U", "Text", "DeltaP")
     calculateValue=("HeatCalc", "ToutCalc")
 
     def cleanOldValues(self, **kwargs):
+        """Clean kwargs values for old heat exchanger definition"""
         if kwargs.get("Tout", 0):
             self.kwargs["DeltaT"]=0
             self.kwargs["Heat"]=0
@@ -294,10 +302,10 @@ class Heat_Exchanger(equipment):
     @property
     def isCalculable(self):
         """
-        modo: tipo de cálculo
-            1   -   Conocida temperatura a la salida
-            2   -   Conocido calor intercambiado
-            3   -   Conocida superficie y U, calcular temperatura a la salida
+        modo: unknown variable to calculate
+            1 - Known output temperature, calculate other variables
+            2 - known heat exchange
+            3 - known heat exchanger characteristic, calculate output stream
         """
         if not self.kwargs["entrada"]:
             self.msg=QApplication.translate("pychemqt", "undefined input")
@@ -312,7 +320,8 @@ class Heat_Exchanger(equipment):
         elif self.kwargs["Tout"] or self.kwargs["DeltaT"]:
             self.modo=1
         else:
-            self.msg=QApplication.translate("pychemqt", "undefined output temperature specification")
+            self.msg=QApplication.translate(
+                "pychemqt", "undefined output temperature specification")
             self.status=0
             self.modo=0
 
@@ -852,98 +861,129 @@ class Shell_Tube(Heat_ExchangerDesign):
 
     title=QApplication.translate("pychemqt", "Shell and Tube Heat Exchanger")
     help=""
-    kwargs={"entrada": [],
-                    "entradaTubo": None,
-                    "entradaCarcasa": None,
+    kwargs = {
+        "entrada": [],
+        "entradaTubo": None,
+        "entradaCarcasa": None,
 
-                    "class_": 0,
-                    "frontHead": 0,
-                    "shell": 0,
-                    "rearHead": 0,
-                    "orientation": 0,
+        "class_": 0,
+        "frontHead": 0,
+        "shell": 0,
+        "rearHead": 0,
+        "orientation": 0,
 
-                    "tubesideLaminar": 0,
-                    "tubesideTurbulent": 0,
-                    "shellsideSensible": 0,
+        "tubesideLaminar": 0,
+        "tubesideTurbulent": 0,
+        "shellsideSensible": 0,
 
-                    "NTube": 0,
-                    "NPases": 0,
-                    "LTube": 0.0,
-                    "DeTube": 0.0,
-                    "wTube": 0.0,
-                    "rTube": 0.0,
-                    "kTube": 0.0,
-                    "distribucionTube": 0,
-                    "pitch": 0,
-                    "finned": 0,
-                    "Nfin": 0,
-                    "heightFin": 0.0,
-                    "foulingTube": 0.0,
+        "NTube": 0,
+        "NPases": 0,
+        "LTube": 0.0,
+        "DeTube": 0.0,
+        "wTube": 0.0,
+        "rTube": 0.0,
+        "kTube": 0.0,
+        "distribucionTube": 0,
+        "pitch": 0,
+        "finned": 0,
+        "Nfin": 0,
+        "heightFin": 0.0,
+        "foulingTube": 0.0,
 
-                    "parallel": 0,
-                    "serie": 0,
-                    "DShell": 0.0,
-                    "foulingShell": 0.0,
+        "parallel": 0,
+        "serie": 0,
+        "DShell": 0.0,
+        "foulingShell": 0.0,
 
-                    "typeBaffle": 0,
-                    "baffleSpacingIn": 0.0,
-                    "baffleSpacing": 0.0,
-                    "baffleSpacingOut": 0.0,
-                    "baffleThickness": 0.0,
-                    "BaffleOrientation": 0,
-                    "baffleCut": 0.0,
-                    "baffleCutBase": 0,
+        "baffleType": 0,
+        "baffleSpacingIn": 0.0,
+        "baffleSpacing": 0.0,
+        "baffleSpacingOut": 0.0,
+        "baffleThickness": 0.0,
+        "BaffleOrientation": 0,
+        "baffleCut": 0.0,
+        "baffleCutBase": 0,
 
-                    "nozzleInTubesideDiameter": 0.0,
-                    "nozzleOutTubesideDiameter": 0.0,
-                    "nozzleInShellsideDiameter": 0.0,
-                    "nozzleOutShellsideDiameter": 0.0,
+        "nozzleInTubesideDiameter": 0.0,
+        "nozzleOutTubesideDiameter": 0.0,
+        "nozzleInShellsideDiameter": 0.0,
+        "nozzleOutShellsideDiameter": 0.0,
 
-                    "clearanceTubeBaffle": 0.0,
-                    "clearanceShellBaffle": 0.0,
-                    "clearanceShellBundle": 0.0,
-                    "sealingStrips": 0.0,
+        "clearanceTubeBaffle": 0.0,
+        "clearanceShellBaffle": 0.0,
+        "clearanceShellBundle": 0.0,
+        "sealingStrips": 0.0,
 
-                    "modo": 0,
+        "modo": 0,
 
-                    "f_install": 3.,
-                    "Base_index": 0.0,
-                    "Current_index": 0.0,
-                    "tipoCoste": 0,
-                    "materialCoste": 0,
-                    "P_dis": 0.0
-                }
+        "f_install": 3.,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "tipoCoste": 0,
+        "materialCoste": 0,
+        "P_dis": 0.0}
+        
     indiceCostos=2
 
-
-    TEXT_METHOD_TUBE_LAMINAR=["Eubank-Proctor", "VDI mean Nusselt", "Hausen", "Sieder-Tate"]
-    TEXT_METHOD_TUBE_TURBULENT=["Sieder-Tate", "Colburn", "Dittus-Boelter", "ESDU", "Gnielinski", "VDI mean Nusselt"]
-    TEXT_METHOD_SHELL=["Stream analysis", "Bell-Delaware", "Kern"]
-    TEXT_CLASS=["TEMA R", "TEMA B", "TEMA C"]
-    TEXT_FRONTHEAD=["A - "+QApplication.translate("pychemqt", "Channel & Removable Cover"),
-                                    "B - "+QApplication.translate("pychemqt", "Bonnet"),
-                                    "C - "+QApplication.translate("pychemqt", "Removable Bundle"),
-                                    "D - "+QApplication.translate("pychemqt", "Special High Pressure Closure"),
-                                    "N - "+QApplication.translate("pychemqt", "Channel with Tubesheet & Removable Cover")]
-    TEXT_SHELL=["E - "+QApplication.translate("pychemqt", "One Pass"),
-                            "F - "+QApplication.translate("pychemqt", "Two Pass"),
-                            "G - "+QApplication.translate("pychemqt", "Split Flow"),
-                            "H - "+QApplication.translate("pychemqt", "Double Split Flow"),
-                            "J - "+QApplication.translate("pychemqt", "Divided Flow"),
-                            "K - "+QApplication.translate("pychemqt", "Kettle Reboiler"),
-                            "X - "+QApplication.translate("pychemqt", "Cross Flow")]
-    TEXT_REARHEAD=["L - "+QApplication.translate("pychemqt", "Fixed Tubesheet (A head)"),
-                                    "M - "+QApplication.translate("pychemqt", "Fixed Tubesheet (B head)"),
-                                    "N - "+QApplication.translate("pychemqt", "Fixed Tubesheet (N head)"),
-                                    "P - "+QApplication.translate("pychemqt", "Outside Packed Flt Head"),
-                                    "S - "+QApplication.translate("pychemqt", "Flt Head with Backing Dev"),
-                                    "T - "+QApplication.translate("pychemqt", "Pull Throught Flt Heat"),
-                                    "U - "+QApplication.translate("pychemqt", "U-Tube Bundle"),
-                                    "W - "+QApplication.translate("pychemqt", "Exit Sealed Flt Tubesheet")]
-    TEXT_ORIENTATION=[QApplication.translate("pychemqt", "Horizontal"),
-                        QApplication.translate("pychemqt", "Vertical")]
-
-
+    TEXT_METHOD_TUBE_LAMINAR = ["Eubank-Proctor", "VDI mean Nusselt",
+                                "Hausen", "Sieder-Tate"]
+    TEXT_METHOD_TUBE_TURBULENT = ["Sieder-Tate", "Colburn", "Dittus-Boelter",
+                                  "ESDU", "Gnielinski", "VDI mean Nusselt"]
+    TEXT_METHOD_SHELL = ["Stream analysis", "Bell-Delaware", "Kern"]
+    TEXT_CLASS = ["TEMA R", "TEMA B", "TEMA C"]
+    TEXT_FRONTHEAD = [
+        "A - "+QApplication.translate("pychemqt", "Channel & Removable Cover"),
+        "B - "+QApplication.translate("pychemqt", "Bonnet"),
+        "C - "+QApplication.translate("pychemqt", "Removable Bundle"),
+        "D - "+QApplication.translate("pychemqt", "Special High Pressure Closure"),
+        "N - "+QApplication.translate("pychemqt", "Channel with Tubesheet & Removable Cover")]
+    TEXT_SHELL = [
+        "E - "+QApplication.translate("pychemqt", "One Pass"),
+        "F - "+QApplication.translate("pychemqt", "Two Pass"),
+        "G - "+QApplication.translate("pychemqt", "Split Flow"),
+        "H - "+QApplication.translate("pychemqt", "Double Split Flow"),
+        "J - "+QApplication.translate("pychemqt", "Divided Flow"),
+        "K - "+QApplication.translate("pychemqt", "Kettle Reboiler"),
+        "X - "+QApplication.translate("pychemqt", "Cross Flow")]
+    TEXT_REARHEAD = [
+        "L - "+QApplication.translate("pychemqt", "Fixed Tubesheet (A head)"),
+        "M - "+QApplication.translate("pychemqt", "Fixed Tubesheet (B head)"),
+        "N - "+QApplication.translate("pychemqt", "Fixed Tubesheet (N head)"),
+        "P - "+QApplication.translate("pychemqt", "Outside Packed Flt Head"),
+        "S - "+QApplication.translate("pychemqt", "Flt Head with Backing Dev"),
+        "T - "+QApplication.translate("pychemqt", "Pull Throught Flt Heat"),
+        "U - "+QApplication.translate("pychemqt", "U-Tube Bundle"),
+        "W - "+QApplication.translate("pychemqt", "Exit Sealed Flt Tubesheet")]
+    TEXT_ORIENTATION = [
+        QApplication.translate("pychemqt", "Horizontal"),
+        QApplication.translate("pychemqt", "Vertical")]
+    TEXT_DISTRIBUTION_TUBE = [
+        QApplication.translate("pychemqt", "Triangular")+u", 30º", 
+        QApplication.translate("pychemqt", "Diamond")+u", 45º", 
+        QApplication.translate("pychemqt", "Rotated Triangular")+u", 60º", 
+        QApplication.translate("pychemqt", "Square")+u", 90º"]
+    TEXT_BAFFLE_TYPE = [
+        QApplication.translate("pychemqt", "Single segmental"), 
+        QApplication.translate("pychemqt", "Double segmental"), 
+        QApplication.translate("pychemqt", "Triple segmental"), 
+        QApplication.translate("pychemqt", "No tubes in window"), 
+        QApplication.translate("pychemqt", "Disk & donut"), 
+        QApplication.translate("pychemqt", "Rod")]
+    TEXT_COST_TYPE = [
+        QApplication.translate("pychemqt", "Fixed Head"), 
+        QApplication.translate("pychemqt", "Kettle Reboiler"), 
+        QApplication.translate("pychemqt", "U-Tube")]
+    TEXT_COST_MATERIAL = [
+        QApplication.translate("pychemqt", "Carbon Steel"), 
+        QApplication.translate("pychemqt", "Stainless Steel 316"), 
+        QApplication.translate("pychemqt", "Stainless Steel 304"), 
+        QApplication.translate("pychemqt", "Stainless Steel 347"), 
+        QApplication.translate("pychemqt", "Nickel 200"), 
+        QApplication.translate("pychemqt", "Monel 400"), 
+        QApplication.translate("pychemqt", "Inconel 600"), 
+        QApplication.translate("pychemqt", "Incoloy 825"), 
+        QApplication.translate("pychemqt", "Titanium"), 
+        QApplication.translate("pychemqt", "Hastelloy")]
 
     @property
     def isCalculable(self):
@@ -1486,54 +1526,57 @@ class Hairpin(Heat_ExchangerDesign):
     """
     title=QApplication.translate("pychemqt", "Hairpin Heat Exchanger")
     help=""
-    kwargs={"entradaTubo": None,
-                    "entradaExterior": None,
+    kwargs={
+        "entradaTubo": None,
+        "entradaExterior": None,
 
-                    "modo": 0,
-                    "flujo": 0,
-                    "orientacion": 0,
-                    "tubesideLaminar": 0,
-                    "tubesideTurbulent": 0,
-                    "metodo": 0,
-                    "phase": 0,
+        "modo": 0,
+        "flujo": 0,
+        "orientacion": 0,
+        "tubesideLaminar": 0,
+        "tubesideTurbulent": 0,
+        "metodo": 0,
+        "phase": 0,
 
-                    "DeeTube": 0.0,
-                    "DeTube": 0.0,
-                    "DiTube": 0.0,
-                    "wTube": 0.0,
-                    "rTube": 0.0,
-                    "kTube": 0.0,
-                    "LTube": 0.0,
-                    "nTube": 0.0,
+        "DeeTube": 0.0,
+        "DeTube": 0.0,
+        "DiTube": 0.0,
+        "wTube": 0.0,
+        "rTube": 0.0,
+        "kTube": 0.0,
+        "LTube": 0.0,
+        "nTube": 0.0,
 
-                    "tubeFouling": 0.0,
-                    "annulliFouling": 0.0,
+        "tubeFouling": 0.0,
+        "annulliFouling": 0.0,
 
-                    "tubeFinned": 0,
-                    "hFin": 0.0,
-                    "thicknessBaseFin": 0.0,
-                    "thicknessTopFin": 0.0,
-                    "rootDoFin": 0.0,
-                    "kFin": 0.0,
-                    "nFin": 0,
+        "tubeFinned": 0,
+        "hFin": 0.0,
+        "thicknessBaseFin": 0.0,
+        "thicknessTopFin": 0.0,
+        "rootDoFin": 0.0,
+        "kFin": 0.0,
+        "nFin": 0,
 
-                    "tubeTout": 0.0,
-                    "tubeXout": -1.0,
-                    "annulliTout": 0.0,
-                    "annulliXout": -1.0,
+        "tubeTout": 0.0,
+        "tubeXout": -1.0,
+        "annulliTout": 0.0,
+        "annulliXout": -1.0,
 
-                    "f_install": 3.,
-                    "Base_index": 0.0,
-                    "Current_index": 0.0,
-                    "material": 0,
-                    "P_dis": 0
-                }
+        "f_install": 3.,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "material": 0,
+        "P_dis": 0}
 
     kwargsInput=("entradaTubo", "entradaExterior")
-    kwargsValue=("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube", "nTube", "tubeFouling", "annulliFouling", "P_dis", "tubeTout", "annulliTout")
+    kwargsValue=("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
+                 "nTube", "tubeFouling", "annulliFouling", "P_dis", "tubeTout",
+                 "annulliTout")
     kwargsList=("modo", "flujo", "orientacion")
     kwargsCheck=("tubeFinned", )
-    calculateValue=("Q", "ToutAnnulli", "ToutTube", "U", "A", "L", "deltaPTube", "deltaPAnnulli", "CF")
+    calculateValue=("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
+                    "deltaPTube", "deltaPAnnulli", "CF")
     calculateCostos=("C_adq", "C_inst")
     indiceCostos=2
 
@@ -1561,7 +1604,7 @@ class Hairpin(Heat_ExchangerDesign):
             self.statusCoste=True
         else:
             self.statusCoste=False
-
+        
         if not self.kwargs["entradaTubo"]:
             self.msg=QApplication.translate("pychemqt", "undefined internal stream input")
             self.status=0
@@ -1878,6 +1921,7 @@ class Hairpin(Heat_ExchangerDesign):
             pr=fluido.Prandt
 
             if re_i<2300:
+                L = self.L
                 cp=fluido.cp
                 w=fluido.caudalmasico
                 gz=Gz(w=w, cp=cp, k=k, L=L)
@@ -2453,9 +2497,13 @@ if __name__ == "__main__":
 
     caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
     fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
-    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
-                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
-                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
+    Cambiador=Hairpin(modo=1)
+    print Cambiador.status, Cambiador.msg
+    Cambiador(entradaTubo=caliente)
+    print Cambiador.status, Cambiador.msg
+#    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
+#                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
+#                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
 
 #    from scipy import *
 #    from pylab import *
