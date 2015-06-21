@@ -60,7 +60,7 @@ class Mezcla(config.Entity):
             
         self.kwargs = Mezcla.kwargs.copy()
         self.kwargs.update(kwargs)
-        if "ids" in self.kwargs:
+        if "ids" in self.kwargs and self.kwargs["ids"] is not None:
             self.ids = self.kwargs.get("ids")
         else:
             Config = config.getMainWindowConfig()
@@ -130,18 +130,18 @@ class Mezcla(config.Entity):
             caudalUnitarioMolar = [x*caudalMolar for x in fraccionMolar]
 
         # Clean component with null composition
-#        self.zeros = []
-#        for i, x in enumerate(fraccionMolar):
-#            if not x:
-#                self.zeros.append(i)
-#
-#        for i in self.zeros[::-1]:
-#            del self.ids[i]
-#            del self.componente[i]
-#            del fraccionMolar[i]
-#            del fraccionMasica[i]
-#            del caudalUnitarioMasico[i]
-#            del caudalUnitarioMolar[i]
+        self.zeros = []
+        for i, x in enumerate(fraccionMolar):
+            if not x:
+                self.zeros.append(i)
+
+        for i in self.zeros[::-1]:
+            del self.ids[i]
+            del self.componente[i]
+            del fraccionMolar[i]
+            del fraccionMasica[i]
+            del caudalUnitarioMasico[i]
+            del caudalUnitarioMolar[i]
 
         self.fraccion = [unidades.Dimensionless(f) for f in fraccionMolar]
         self.caudalmasico = unidades.MassFlow(caudalMasico)
@@ -226,7 +226,7 @@ class Mezcla(config.Entity):
         l = lista[:]
         for i in self.zeros:
             l.insert(i, val)
-        return l
+#        return l
 
     def tr(self, T):
         """reduced temperature"""
@@ -1273,6 +1273,7 @@ class Corriente(config.Entity):
     kwargs = {"T": 0.0,
               "P": 0.0,
               "x": None,
+              "ids": None, 
 
               "caudalMasico": 0.0,
               "caudalVolumetrico": 0.0,
@@ -1402,9 +1403,22 @@ class Corriente(config.Entity):
                 self._bool = True
                 break
 
+        logging.info('Calculate STREAM')
+        kw_new = {}
+        for key, value in kwargs.iteritems():
+            if self.__class__.kwargs[key] != value:
+                kw_new[key] = value
+        logging.debug('kwarg; %s' %kw_new)
         if self.calculable:
-            logging.info('Calculate STREAM')
-            logging.debug('kwarg; %s' %kwargs)
+            statusmsg = (
+                QApplication.translate("pychemqt", "Underspecified"),
+                QApplication.translate("pychemqt", "Solved"),
+                QApplication.translate("pychemqt", "Ignored"),
+                QApplication.translate("pychemqt", "Warning"),
+                QApplication.translate("pychemqt", "Calculating..."),
+                QApplication.translate("pychemqt", "Error"))
+            status = statusmsg[self.status]
+            logging.debug('%s %s' %(status, self.msg))
             QApplication.processEvents()
 
             self.status = 1
@@ -1729,7 +1743,7 @@ class Corriente(config.Entity):
         return Corriente(**old_kwargs)
 
     def __repr__(self):
-        if self:
+        if self.status:
             return "Corriente at %0.2fK and %0.2fatm" % (self.T, self.P.atm)
         else:
             return "%s empty" % (self.__class__)
@@ -2358,8 +2372,11 @@ if __name__ == '__main__':
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
-    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
-    print aire.Liquido.sigma.str
+    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.])
+    print agua.rho
+    agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
+    print agua2.rho
+#    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[1., 0])
     
     
 

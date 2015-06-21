@@ -58,7 +58,7 @@ for module, use in optional_modules:
 
 # Logging configuration
 logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
-                    level=loglevel, datefmt='%H:%M:%S', 
+                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S', 
                     format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
 logging.info(QtGui.QApplication.translate("pychemqt", 
                                           "Starting pychemqt"))
