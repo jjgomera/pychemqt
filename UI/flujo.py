@@ -1114,6 +1114,8 @@ class GraphicsScene(QtGui.QGraphicsScene):
 
 
     def readFromFile(self, stream):
+        self.objects = {"txt": [], "square": [], "ellipse": [], "stream": {},
+                        "in": {}, "out": {}, "equip": {}}
         n_txt = stream.readInt32()
         for obj in range(n_txt):
             txt=QtCore.QString()

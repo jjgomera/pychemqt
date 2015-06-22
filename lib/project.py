@@ -139,7 +139,6 @@ class Project(object):
                 lista.append((key, value))
         return lista
 
-
     def run(self, name):
         """Ejecuta el projecto de forma recursiva hasta que encuentra un equipo no resuelto"""
         tipo=name[0]

@@ -832,7 +832,6 @@ class UI_pychemqt(QtGui.QMainWindow):
             self.activeControl(True)
             self.changeStatusThermo(self.config[self.idTab])
 
-
     def fileClose(self, int):
         if self.okToContinue(int):
             self.updateStatus(QtGui.QApplication.translate("pychemqt", "Closed")+" "+ self.currentFilename)
