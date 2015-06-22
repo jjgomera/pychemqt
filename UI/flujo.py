@@ -11,6 +11,7 @@ from datetime import datetime
 import tempfile
 import os
 import subprocess
+from copy import deepcopy
 
 from PyQt4 import QtCore, QtGui, QtXml, QtSvg
 
@@ -1114,8 +1115,9 @@ class GraphicsScene(QtGui.QGraphicsScene):
 
 
     def readFromFile(self, stream):
-        self.objects = {"txt": [], "square": [], "ellipse": [], "stream": {},
-                        "in": {}, "out": {}, "equip": {}}
+        self.objects = deepcopy(GraphicsScene.objects)
+#        {"txt": [], "square": [], "ellipse": [], "stream": {},
+#                        "in": {}, "out": {}, "equip": {}}
         n_txt = stream.readInt32()
         for obj in range(n_txt):
             txt=QtCore.QString()
