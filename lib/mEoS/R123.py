@@ -39,6 +39,7 @@ class R123(MEoS):
         #FIXME: The file include derived heltmholtz expresion for MBWR equations
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
         "Pmin": 0.0042, "rhomin": 11.60, 
@@ -65,7 +66,8 @@ class R123(MEoS):
                     
         "R": 8.31451,
         "cp": CP1,
-        
+        "ref": "NBP", 
+
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
         "Pmin": 0.0042, "rhomin": 11.60, 
 
@@ -109,6 +111,7 @@ class R123(MEoS):
             
         "R": 8.31451,
         "cp": CP1,
+        "ref": "NBP", 
         
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62, 
         "Pmin": 0.0041534, "rhomin": 11.613, 
@@ -144,6 +147,78 @@ class R123(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Tanaka (1996)",
               "__doc__": """Tanaka, Y. and Sotani, T., "Transport Properties (Thermal Conductivity and Viscosity), Int. J. Thermophys., 17(2):293-328, 1996""",
+              "__doi__": {"autor": "Tanaka, Y. and Sotani, T.",
+                          "title": "Thermal Conductivity and Viscosity of 2,2-Dichioro-1,1,1-Trifluoroethane (HCFC-123)", 
+                          "ref": "Int. J. Thermophys., 17(2):293-328, 1996",
+                          "doi":  "10.1007/BF01443394"}, 
+              "__test__": 
+                  # Table VII, Pag 316
+                  """
+                  >>> st=R123(T=260, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  260 0.179 670.0 9.346
+                  >>> st=R123(T=280, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  280 0.449 518.4 10.09
+                  >>> st=R123(T=300, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  300 0.983 408.7 10.8
+                  >>> st=R123(T=3200, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  320 1.929 326.8 11.49
+                  >>> st=R123(T=340, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  340 3.468 264.1 12.17
+                  >>> st=R123(T=360, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  360 5.802 214.9 12.87
+                  >>> st=R123(T=380, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  380 9.152 175.4 13.66
+                  >>> st=R123(T=400, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  400 13.76 142.8 14.69
+                  >>> st=R123(T=420, x=0.5, eq=2)
+                  >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                  420 19.89 114.5 16.33
+                  """ 
+                  # Table IX, Pag 320
+                  """
+                  >>> st=R123(T=260, P=1e5, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  670.6
+                  >>> st=R123(T=280, P=1e6, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  524.5
+                  >>> st=R123(T=300, P=2e6, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  419.3
+                  >>> st=R123(T=320, P=1e5, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  11.54
+                  >>> st=R123(T=360, P=5e5, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  12.87
+                  >>> st=R123(T=420, P=1.5e6, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  15.40
+                  >>> st=R123(T=400, P=6e6, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  165.0
+                  >>> st=R123(T=300, P=5e6, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  435.9
+                  >>> st=R123(T=260, P=1e7, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  747.7
+                  >>> st=R123(T=420, P=2e7, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  188.7
+                  >>> st=R123(T=300, P=1.5e7, eq=2)
+                  >>> print "%0.4g" % st.mu.muPas
+                  491.8
+                  """, 
+                  
               "ek": 275.16, "sigma": 0.5909,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0,
@@ -174,7 +249,40 @@ class R123(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Laesecke (1996)",
-               "__doc__": """Laesecke, A., Perkins, R.A., and Howley, J.B., "An improved correlation for the thermal conductivity of HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)," Int. J. Refrigeration, 19:231-238, 1996""",
+               "__doi__": {"autor": "Laesecke, A., Perkins, R.A., and Howley, J.B.",
+                           "title": "An improved correlation for the thermal conductivity of HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)", 
+                           "ref": "Int. J. Refrigeration, 19:231-238, 1996",
+                           "doi":  "10.1016/0140-7007(96)00019-9"}, 
+               "__test__": """
+                   >>> st=R123(T=180, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   180 0.00002812 1739.0 0.002873 110.9 1.473
+                   >>> st=R123(T=200, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   200 0.0002494 1694.4 0.02295 105.6 3.610
+                   >>> st=R123(T=250, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   250 0.01007 1581.1 0.7467 90.84 6.437
+                   >>> st=R123(T=300, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   300 0.09778 1458.2 6.258 75.91 9.293
+                   >>> st=R123(T=350, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   350 0.4514 1320.8 26.97 63.34 12.50
+                   >>> st=R123(T=400, x=0.5, eq=2)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   400 1.372 1146.9 85.31 52.41 16.87
+                   >>> st=R123(T=440, x=0.5, eq=1)
+                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
+                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                   440 2.790 924.64 215.3 43.11 23.18
+                   """, # Table 2, Pag 237
 
                "Tref": 1., "kref": 1,
                "no": [-0.00778, 5.695e-5],
