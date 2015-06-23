@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R125(MEoS):
-    """Multiparameter equation of state for R125
-
-    >>> r125=R125(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r125.T, r125.rho, r125.u.kJkg, r125.h.kJkg, r125.s.kJkgK, r125.cv.kJkgK, r125.cp.kJkgK, r125.w)
-    300.0 4.8836 342.90 363.38 1.7177 0.72455 0.79910 149.16
-    """
+    """Multiparameter equation of state for R125"""
     name = "pentafluoroethane"
     CASNumber = "354-33-6"
     formula = "CHF2CF3"
@@ -27,16 +22,23 @@ class R125(MEoS):
     id = 236
     # id = 1231
 
-    CP1 = {"ao": 0,
-           "an": [3.063], "pow": [0.1],
-           "ao_exp": [2.303, 5.086, 7.3], "exp": [314, 756, 1707],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, -1],
+           "pow": [0, 1, -0.1],
+           "ao_pow": [37.2674, 8.88404, -49.8651],
+           "ao_exp": [2.303, 5.086, 7.3],
+           "titao": [314/Tc, 756/Tc, 1707/Tc]}
 
-    CP2 = {"ao": 5.911212,
-           "an": [], "pow": [],
+    Fi2 = {"ao_log": [1, 4.911212],
+           "pow": [0, 1],
+           "ao_pow": [-12.9469, 8.512891],
            "ao_exp": [6.856764, 4.885985, 3.292859],
-           "exp": [670.10271, 1626.81842, 1863.11546],
-           "ao_hyp": [], "hyp": []}
+           "titao": [1.9757425, 4.7965398, 5.4932421]}
+
+    Fi3 = {"ao_log": [1, 11.990267052],
+           "pow": [0, 1, 0.25],
+           "ao_pow": [13.79478971, 9.231669075, -27.87317349],
+           "ao_exp": [7.028445731, 4.586635360],
+           "titao": [4.907126427, 2.080818176]}
 
     CP3 = {"ao": 4.3987,
            "an": [0.0242728, -0.4099e-5], "pow": [1, 2],
@@ -54,29 +56,53 @@ class R125(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    CP6 = {"ao": 12.990267052,
-           "an": [-5.2262199/339.165**-0.25], "pow": [-0.25],
-           "ao_exp": [7.028445731, 4.586635360],
-           "exp": [1664.325535, 705.7406967],
-           "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Lemmon and Jacobsen (2005).",
-        "__doc__":  u"""Lemmon, E.W. and Jacobsen, R.T, "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)," J. Phys. Chem. Ref. Data, 34(1):69-108, 2005.""",
+        "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T",
+                    "title": "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)", 
+                    "ref": "J. Phys. Chem. Ref. Data 34, 69 (2005)",
+                    "doi": "10.1063/1.1797813"}, 
+
+        "__test__": 
+            # Table 12, Pag 104
+            """
+            >>> st=R125(T=200, rhom=14)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            200.0 14.0 42.302520 85.816305 123.53641 968.67194
+            >>> st=R125(T=300, rhom=10)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300.0 10.0 2.9023498 99.919660 164.16914 345.91235
+            >>> st=R125(T=300, rhom=0.7)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300.0 0.7 1.3245058 94.823171 124.96009 120.56007
+            >>> st=R125(T=400, rhom=5.0)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            400.0 5.0 9.0495658 114.41819 198.11792 151.53060
+            >>> st=R125(T=339.2, rhom=4.8)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            339.2 4.8 3.6201215 130.63650 274863.02 78.735928
+            """, 
+        # FIXME: Check meos phir calculation with exp != 2
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195}, 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
         "Pmin": 2.914, "rhomin": 14.086, 
 
         "nr1": [0.5280760e1, -0.8676580e1, 0.7501127, 0.7590023, 0.1451899e-1],
         "d1": [1, 1, 1, 2, 4],
-        "t1": [0.669, 1.05, 2.75, 0.956, 1],
+        "t1": [0.669, 1.05, 2.75, 0.956, 1.],
 
-        "nr2": [0.4777189e1, -0.3330988e1, 0.3775673e1, -0.2290919e1,
-                0.8888268, -0.6234864, -0.4127263e-1, -0.8455389e-1,
-                -0.1308752, 0.8344962e-2],
+        "nr2": [0.4777189e1, -0.3330988e1, 0.3775673e1, -0.2290919e1, 0.8888268,
+                -0.6234864, -0.4127263e-1, -0.8455389e-1, -0.1308752, 0.8344962e-2],
         "d2": [1, 1, 2, 2, 3, 4, 5, 1, 5, 1],
         "t2": [2, 2.75, 2.38, 3.37, 3.47, 2.63, 3.45, 0.72, 4.23, 0.2],
         "c2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 3],
@@ -122,9 +148,14 @@ class R125(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Sunaga et al. (1998)",
-        "__doc__":  u"""Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K., "A Thermodynamic Equation of State for Pentafluoroethane (R-125)," Int. J. Thermophys., 19(6):1623-1635, 1998.""",
+        "__doi__": {"autor": "Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K.",
+                    "title": "A Thermodynamic Equation of State for Pentafluoroethane (R-125)", 
+                    "ref": "Int. J. Thermophys., 19(6):1623-1635, 1998.",
+                    "doi": "10.1007/BF03344914"}, 
+
         "R": 8.314471,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
         "Pmin": 2.943, "rhomin": 14.088, 
@@ -144,10 +175,15 @@ class R125(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Piao and Noguchi (1998)",
-        "__doc__":  u"""Piao, C.-C. and Noguchi, M., "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)," J. Phys. Chem. Ref. Data, 27(4):775-806, 1998.""",
+        "__doi__": {"autor": "Piao, C.-C. and Noguchi, M.",
+                    "title": "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)", 
+                    "ref": "J. Phys. Chem. Ref. Data, 27(4):775-806, 1998.",
+                    "doi": "10.1063/1.556021"}, 
+        # Paper with mBWR type equation!!
         "R": 8.314471,
         "cp": CP3,
-        
+        "ref": "IIR", 
+
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.11, 
         "Pmin": 2.9562, "rhomin": 14.1, 
 
@@ -202,9 +238,14 @@ class R125(MEoS):
     helmholtz5 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Astina and Sato (2004)",
-        "__doc__":  u"""Astina, I.M. and Sato, H. "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases," Int. J. Thermophys., 25(1):113-131, 2004.""",
+        "__doi__": {"autor": "Astina, I.M. and Sato, H.",
+                    "title": "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases", 
+                    "ref": "Int. J. Thermophys., 25(1):113-131, 2004.",
+                    "doi": "10.1023/B:IJOT.0000022330.46522.68"}, 
+        
         "R": 8.314472,
-        "cp": CP6,
+        "cp": Fi3,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 70000.0, "rhomax": 14.1, 
         "Pmin": 2.94, "rhomin": 14.1, 
@@ -230,7 +271,8 @@ class R125(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195}, 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
