@@ -87,15 +87,22 @@ class R125(MEoS):
         "d3": [2, 3, 5],
         "alfa3": [1]*3,
         "beta3": [1]*3,
+        "exp1": [2, 3, 3],
+        "exp2": [1.7, 7, 6],
         "gamma3": [0]*3,
         "epsilon3": [0]*3}
 
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-125 of Outcalt and McLinden (1995)",
-        "__doc__":  u"""Outcalt, S.L. and McLinden, M.O., "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)," Int. J. Thermophysics, 16:79-89, 1995.""",
+        "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
+                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)", 
+                    "ref": "Int. J. Thermophysics, 16:79-89, 1995.",
+                    "doi": "10.1007/BF01438959"}, 
+
         "R": 8.314471,
         "cp": CP4,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.10, 
         "Pmin": 2.921, "rhomin": 14.095, 
