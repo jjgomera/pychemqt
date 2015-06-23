@@ -146,7 +146,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "R152a":
+            if module.__module__ != "R123":
                 continue
             print module.__module__
             inst = module()

@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R124(MEoS):
-    """Multiparameter equation of state for R124
-
-    >>> r124=R124(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r124.T, r124.rho, r124.u.kJkg, r124.h.kJkg, r124.s.kJkgK, r124.cv.kJkgK, r124.cp.kJkgK, r124.w)
-    300.0 5.5897 286.68 304.57 1.5380 0.71520 0.77847 138.83
-    """
+    """Multiparameter equation of state for R124"""
     name = "1-chloro-1,2,2,2-tetrafluoroethane"
     CASNumber = "2837-89-0"
     formula = "CHClFCF3"
@@ -42,7 +37,10 @@ class R124(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-124 of de Vries et al. (1995).",
-        "__doc__":  u"""de Vries, B., Tillner-Roth, R., and Baehr, H.D., "Thermodynamic Properties of HCFC 124," 19th International Congress of Refrigeration, The Hague, The Netherlands, International Institute of Refrigeration, IVa:582-589, 1995.""",
+        "__doi__": {"autor": "de Vries, B., Tillner-Roth, R., and Baehr, H.D.",
+                    "title": "Thermodynamic Properties of HCFC 124,", 
+                    "ref": "19th International Congress of Refrigeration, The Hague, The Netherlands, International Institute of Refrigeration, IVa:582-589, 1995",
+                    "doi":  ""}, 
         "R": 8.314471,
         "cp": CP1,
         
@@ -66,7 +64,11 @@ class R124(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-124 of Younglove and McLinden (1994)",
-        "__doc__":  u"""McLinden, M.O., Younglove, B.A., and Sandarusi, J., "Measurement of the PVT properties and formulation of an equation of state for refrigerant 124 (1-chloro-1,2,2,2-tetrafluoroethane)," 1994. (unpublished manuscript).""",
+        "__doi__": {"autor": "McLinden, M.O., Younglove, B.A., and Sandarusi, J.",
+                    "title": "Measurement of the PVT properties and formulation of an equation of state for refrigerant 124 (1-chloro-1,2,2,2-tetrafluoroethane), 1994. (unpublished manuscript).", 
+                    "ref": "",
+                    "doi":  ""}, 
+                    
         "R": 8.314471,
         "cp": CP2,
         
