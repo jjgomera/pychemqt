@@ -289,6 +289,8 @@ class R125(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
+
+    #TODO: Add Vasserman meos, file in meos todo database
     eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4, helmholtz5, helmholtz6
     _PR = -0.00247
 
@@ -308,7 +310,20 @@ class R125(MEoS):
 
     visco0 = {"eq": 1, "omega": 3,
               "__name__": "Huber (2006)",
-              "__doc__": """Huber, M.L., and Laesecke, A. , "Correlation for the Viscosity of Pentafluoroethane (R125) from the Triple Point to 500 K at Pressures up to 60 MPa", Ind. Eng. Chem. Res,2006, 45, 4447-4453""",
+              "__doi__": {"autor": "Huber, M.L., and Laesecke, A.",
+                          "title": "Correlation for the Viscosity of Pentafluoroethane (R125) from the Triple Point to 500 K at Pressures up to 60 MPa", 
+                          "ref": "Ind. Eng. Chem. Res., 2006, 45 (12), pp 4447–4453",
+                          "doi": "10.1021/ie051367l"}, 
+              "__test__":
+                """
+                >>> st=R125(T=300, rhom=10.5969998)
+                >>> print "%0.0f %0.5g" % (st.P.MPa, st.mu.muPas)
+                10 177.37
+                >>> st=R125(T=400, rhom=0.030631)
+                >>> print "%0.6f %0.5g" % (st.P.MPa, st.mu.muPas)
+                0.101325 17.070
+                """, 
+
               "ek": 237.077, "sigma": 0.5235,
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "Tref": 1., "rhoref": 1.*M,
@@ -343,7 +358,10 @@ class R125(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2006)",
-               "__doc__": """Perkins, R.A. and Huber, M.L.,"Measurement and Correlation of the Thermal Conductivity of Pentafluoroethane (R125)from 190 K to 512 K at pressures to 70 MPa", Journal of Chemical and Engineering Data, 2006, 51, 898-904""",
+               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Pentafluoroethane (R125)from 190 K to 512 K at pressures to 70 MPa", 
+                           "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 898–904",
+                           "doi": "10.1021/je050372t"}, 
 
                "Tref": 339.173, "kref": 1.,
                "no": [-0.460820e-2, 0.168688e-1, 0.488345e-2],
