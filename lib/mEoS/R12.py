@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R12(MEoS):
-    """Multiparameter equation of state for R12
-
-    >>> r12=R12(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r12.T, r12.rho, r12.u.kJkg, r12.h.kJkg, r12.s.kJkgK, r12.cv.kJkgK, r12.cp.kJkgK, r12.w)
-    300.0 4.9388 23.52 43.77 0.2205 0.53911 0.61363 150.38
-    """
+    """Multiparameter equation of state for R12"""
     name = "dichlorodifluoromethane"
     CASNumber = "75-69-4"
     formula = "CCl2F2"
@@ -35,7 +30,11 @@ class R12(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-12 of Marx et al. (1992).",
-        "__doc__":  u"""Marx, V., Pruss, A., and Wagner, W., "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113.  Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa," Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.""",
+        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+                    "doi": ""}, 
+
         "R": 8.314471,
         "cp": CP1,
         

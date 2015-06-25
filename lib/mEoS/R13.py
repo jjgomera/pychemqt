@@ -36,7 +36,11 @@ class R13(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-13 of Magee et al. (2000)",
-        "__doc__":  u"""Magee, J.W., Outcalt, S.L., and Ely, J.F., "Molar heat capacity C(v), vapor pressure, and (p, rho, T) measurements from 92 to 350 K at pressures to 35 MPa and a new equation of state for chlorotrifluoromethane (R13)," Int. J. Thermophys., 21(5):1097-1121, 2000.""",
+        "__doi__": {"autor": "Magee, J.W., Outcalt, S.L., and Ely, J.F.",
+                    "title": "Molar Heat Capacity Cv, Vapor Pressure, and (p, ρ, T) Measurements from 92 to 350 K at Pressures to 35 MPa and a New Equation of State for Chlorotrifluoromethane (R13)", 
+                    "ref": "Int. J. Thermophys., 21(5):1097-1121, 2000.",
+                    "doi": "10.1023/A:1026446004383"}, 
+
         "R": 8.314471,
         "cp": CP1,
         "ref": "OTO", 
@@ -104,7 +108,10 @@ class R13(MEoS):
 
     trnECS = {"eq": "ecs",
               "__name__": "Extended Corresponding States model",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
+                          "doi": "10.1021/ie0300880"}, 
 
               "ref": C3,
               "ref_eq": "helmholtz1",
@@ -122,9 +129,3 @@ class R13(MEoS):
     _viscosity = trnECS,
     _thermal=trnECS,
 
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=R13(T=300, P=1e6, eq=1)
-    print cyc5.T, cyc5.rho, cyc5.k, cyc5.mu
