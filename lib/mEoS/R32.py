@@ -27,17 +27,18 @@ class R32(MEoS):
            "ao_exp": [1.160761, 2.645151, 5.794987, 1.129475],
            "titao": [798/Tc, 4185/Tc, 1806/Tc, 11510/Tc]}
 
+    Fi2 = {"ao_log": [1, 2.999660],
+           "pow": [0, 1],
+           "ao_pow": [-8.253834, 6.351918],
+           "ao_exp": [3.12115, 0.9994221, 2.412721, 3.055435],
+           "titao": [4.559777, 2.164788, 1.234687e1, 5.877902]}
+
     CP2 = {"ao": 36.79959/8.314471,
            "an": [-0.06304821/8.314471, 3.757936e-4/8.314471, -3.219812e-7/8.314471],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    CP3 = {"ao": 3.999660,
-           "an": [], "pow": [],
-           "ao_exp": [3.12115, 0.9994221, 2.412721, 3.055435],
-           "exp": [1601.64447, 760.3926, 4336.89982, 2064.64246],
-           "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
@@ -241,14 +242,14 @@ class R32(MEoS):
                     "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
                     "doi": "10.1023/A:1022362231796"}, 
-#        "__test__": """
-#            >>> st=R32(T=700, rho=200, eq=2)
-#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-#            1.1421 30.358 1.8392
-#            >>> st2=R32(T=750, rho=100, eq=2)
-#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-#            235.85 0.59791
-#            """, # Table III, Pag 117
+        "__test__": """
+            >>> st=R32(T=700, rho=200, eq=2)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            1.1421 30.358 1.8392
+            >>> st2=R32(T=750, rho=100, eq=2)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            235.85 0.59791
+            """, # Table III, Pag 117
             
         "R": 8.31451,
         "cp": Fi1,
@@ -271,9 +272,14 @@ class R32(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Astina and Sato (2003)",
-        "__doc__":  u"""Astina, I.M. and Sato, H. "A Rational Helmholtz Fundamental Equation of State for Difluoromethane with an Intermolecular Potential Background," Int. J. Thermophys., 34(4):963-990, 2003.""",
+        "__doi__": {"autor": "Astina, I.M. and Sato, H.",
+                    "title": "A Rational Helmholtz Fundamental Equation of State for Difluoromethane with an Intermolecular Potential Background", 
+                    "ref": "Int. J. Thermophys., 34(4):963-990, 2003.",
+                    "doi": "10.1023/A:1025096716493"}, 
+
         "R": 8.314472,
-        "cp": CP3,
+        "cp": Fi2,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 72000.0, "rhomax": 27.48, 
         "Pmin": 0.0485, "rhomin": 27.47, 
