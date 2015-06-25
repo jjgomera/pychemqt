@@ -27,11 +27,6 @@ class R41(MEoS):
            "ao_exp": [5.6936, 2.9351],
            "titao": [1841/Tc, 4232/Tc]}
 
-    CP1 = {"ao": 4.,
-           "an": [0.00016937], "pow": [1.],
-           "ao_exp": [5.6936, 2.9351], "exp": [1841, 4232],
-           "ao_hyp": [], "hyp": []}
-
     CP2 = {"ao": 38.133739/8.314471,
            "an": [-7.88701e-2/8.314471, 3.29302e-4/8.314471, -2.37475e-7/8.314471],
            "pow": [1, 2, 3],
@@ -102,9 +97,14 @@ class R41(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-41 of Outcalt (1996).",
-        "__doc__":  u"""Haynes, W.M., "Thermophysical properties of HCFC alternatives," National Institute of Standards and Technology, Boulder, Colorado, Final Report for ARTI MCLR Project Number 660-50800, 1996.""",
+        "__doi__": {"autor": "Haynes, W.M.",
+                    "title": "Thermophysical properties of HCFC alternatives", 
+                    "ref": "National Institute of Standards and Technology, Boulder, Colorado, Final Report for ARTI MCLR Project Number 660-50800, 1996. Pag. A-82",
+                    "doi":  ""}, 
+
         "R": 8.314471,
         "cp": CP2,
+        "ref": "IIR", 
 
         "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006, 
         "Pmin": 0.32, "rhomin": 29.66, 
