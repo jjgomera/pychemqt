@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R113(MEoS):
-    """Multiparameter equation of state for R113
-
-    >>> r113=R113(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r113.T, r113.rho, r113.u.kJkg, r113.h.kJkg, r113.s.kJkgK, r113.cv.kJkgK, r113.cp.kJkgK, r113.w)
-    300.0 1558.7841 -33.86 -33.79 0.1152 0.67117 0.91951 693.14
-    """
+    """Multiparameter equation of state for R113"""
     name = "1,1,2-trichloro-1,2,2-trifluoroethane"
     CASNumber = "76-13-1"
     formula = "CCl2FCClF2"
@@ -35,7 +30,11 @@ class R113(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-113 of Marx et al. (1992).",
-        "__doc__":  u"""Marx, V., Pruss, A., and Wagner, W.,"Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113.  Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa," Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.""",
+        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+                    "doi": ""}, 
+                    
         "R": 8.314471,
         "cp": CP1,
         
@@ -109,7 +108,11 @@ class R113(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "__name__": "Huber (2003)",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", Ind. Eng. Chem. Res., 42:3163-3178, 2003.""",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
+                          "doi": "10.1021/ie0300880"}, 
+
               "ek": 376.035, "sigma": 0.6019,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.2509/M**0.5,
@@ -147,7 +150,10 @@ class R113(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
-               "__doc__": """Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L., "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)," NISTIR, 2000.""",
+               "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
+                           "doi": ""}, 
 
                "Tref": 487.21, "kref": 1.1,
                "no": [-0.460820e-2, 0.168688e-1, 0.488345e-2],
@@ -166,9 +172,3 @@ class R113(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.5e-9, "Tcref": 730.8}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-    r113=R113(T=300, P=0.1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r113.T, r113.rho, r113.u.kJkg, r113.h.kJkg, r113.s.kJkgK, r113.cv.kJkgK, r113.cp.kJkgK, r113.w)
-    print r113.k, r113.mu
