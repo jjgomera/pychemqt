@@ -118,7 +118,11 @@ class R116(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "__name__": "Huber (2003)",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", Ind. Eng. Chem. Res., 42:3163-3178, 2003.""",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
+                          "doi": "10.1021/ie0300880"}, 
+
               "ek": 226.16, "sigma": 0.5249,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.2509/M**0.5,
