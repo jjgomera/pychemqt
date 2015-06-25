@@ -160,8 +160,11 @@ class R116(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
-               "__doc__": """Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L., "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)," NISTIR, 2000.""",
-
+               "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
+                           "doi": ""}, 
+    
                "Tref": 1, "kref": 1.05,
                "no": [-1.05248e-2, 8.00982e-5],
                "co": [0, 1],

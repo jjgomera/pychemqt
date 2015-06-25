@@ -508,7 +508,11 @@ class R134a(MEoS):
 
     visco2 = {"eq": 1, "omega": 1,
               "__name__": "Laesecke (2003)",
-              "__doc__": """Laesecke, A., "Data reassessment and full surface correlation of the viscosity of HFC-134a (1,1,1,2-tetrafluoroethane),""",
+              "__doi__": {"autor": "Laesecke, A.",
+                          "title": "Data reassessment and full surface correlation of the viscosity of HFC-134a (1,1,1,2-tetrafluoroethane)", 
+                          "ref": "J. Phys. Chem. Ref. Data.",
+                          "doi": ""}, 
+              "__doc__": """, ",""",
               "ek": 288.82, "sigma": 0.50647,
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "Tref": 1., "rhoref": 1.*M,
@@ -546,7 +550,10 @@ class R134a(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
-               "__doc__": """Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.,"Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)," NISTIR, 2000""",
+               "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
+                           "doi": ""}, 
 
                "Tref": 1., "kref": 1.,
                "no": [-1.05248e-2, 8.00982e-5],
