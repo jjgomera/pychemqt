@@ -6,23 +6,18 @@ from lib import unidades
 
 
 class R115(MEoS):
-    """Multiparameter equation of state for R115
-
-    >>> r115=R115(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r115.T, r115.rho, r115.u.kJkg, r115.h.kJkg, r115.s.kJkgK, r115.cv.kJkgK, r115.cp.kJkgK, r115.w)
-    300.0 6.3057 916.13 931.99 0.4536 0.66422 0.72252 130.14
-    """
+    """Multiparameter equation of state for R115"""
     name = "chloropentafluoroethane"
     CASNumber = "76-15-3"
     formula = "CClF2CF3"
     synonym = "R115"
-    rhoc = unidades.Density(614.776)
+    rhoc = unidades.Density(614.77633568)
     Tc = unidades.Temperature(353.1)
     Pc = unidades.Pressure(3129.0, "kPa")
     M = 154.466416  # g/mol
     Tt = unidades.Temperature(173.75)
     Tb = unidades.Temperature(233.9)
-    f_acent = 0.25
+    f_acent = 0.248
     momentoDipolar = unidades.DipoleMoment(0.52, "Debye")
     id = 229
 
@@ -40,10 +35,15 @@ class R115(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-115 of Lemmon (2006)",
-        "__doc__":  u"""Lemmon, E.W. unpublished equation, 2006.""",
+        "__name__": "short Helmholtz equation of state for R-115 of McLinden and Lemmon (2013)",
+        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
+                    "doi": ""}, 
+                    
         "R": 8.314472,
         "cp": CP1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 11.3, 
         "Pmin": 2.2, "rhomin": 11.3, 
@@ -66,6 +66,7 @@ class R115(MEoS):
                     "title": "Thermophysical properties of refrigerants", 
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""}, 
+                    
         "R": 8.31451,
         "cp": CP2,
         "ref": "NBP", 
