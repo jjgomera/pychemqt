@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R22(MEoS):
-    """Multiparameter equation of state for R22
-
-    >>> r22=R22(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r22.T, r22.rho, r22.u.kJkg, r22.h.kJkg, r22.s.kJkgK, r22.cv.kJkgK, r22.cp.kJkgK, r22.w)
-    300.0 4.9388 23.52 43.77 0.2205 0.53911 0.61363 150.38
-    """
+    """Multiparameter equation of state for R22"""
     name = "chlorodifluoromethane"
     CASNumber = "75-45-6"
     formula = "CHClF2"
@@ -33,18 +28,23 @@ class R22(MEoS):
                    1162.53424, 857.51288, 605.72638, 530.90982],
            "ao_hyp": [], "hyp": []}
 
-    CP2 = {"ao": 4.0067158,
-           "an": [], "pow": [],
-           "ao_exp": [3.9321463, 1.1007467, 1.8712909, 2.2270666],
-           "exp": [1781.4855, 4207.19375, 1044.55334, 574.529],
-           "ao_hyp": [], "hyp": []}
+    Fi2 = {"ao_log": [1, 3.00671581],
+           "pow": [0, 1],
+           "ao_pow": [-11.8829672, 8.09247802],
+           "ao_exp": [3.9321463, 1.10074668, 1.87129085, 2.22706659],
+           "titao": [4.82421333, 11.392964, 2.82862148, 1.55580861]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-22 of Kamei et al. (1995)",
-        "__doc__":  u"""Kamei, A., Beyerlein, S.W., and Jacobsen, R.T, "Application of nonlinear regression in the development of a wide range formulation for HCFC-22," Int. J. Thermophysics, 16:1155-1164, 1995.""",
+        "__doi__": {"autor": "Kamei, A., Beyerlein, S.W., and Jacobsen, R.T.",
+                    "title": "Application of nonlinear regression in the development of a wide range formulation for HCFC-22", 
+                    "ref": "Int. J. Thermophysics, 16:1155-1164, 1995.",
+                    "doi": "10.1007/BF02081283"}, 
+
         "R": 8.31451,
         "cp": CP1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
         "Pmin": 0.0003793, "rhomin": 19.907, 
@@ -73,9 +73,30 @@ class R22(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-22 of Wagner et al. (1993)",
-        "__doc__":  u"""Wagner, W., Marx, V., and Pruss, A., "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa," Int. J. Refrig., 16(6):373-389, 1993.""",
+        "__doi__": {"autor": "Wagner, W., Marx, V., and Pruss, A.",
+                    "title": "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa", 
+                    "ref": "Int. J. Refrig., 16(6):373-389, 1993.",
+                    "doi": "10.1016/0140-7007(93)90055-D"}, 
+
+        "__test__":
+            """
+            >>> st=R22(T=273.15, P=1e6, eq=1)
+            >>> print "%0.2f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f" % ( \
+                st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, \
+                st.s.kJkgK, st.u.kJkg, st.joule.KMPa)
+            273.15 1283.58841 0.67801 1.17239 665.35405 200.10557 0.99895 199.32650 -0.18190
+            >>> st=R22(T=373.15, P=1e6, eq=1)
+            >>> print "%0.2f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f" % ( \
+                st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, \
+                st.s.kJkgK, st.u.kJkg, st.joule.KMPa)
+            323.15 36.58815 0.62447 0.79727 173.92097 434.49209 1.79016 407.16083 18.34747
+            """, 
+            
         "R": 8.31451,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "IIR", 
+        
+        "Tref": 369.28, "rhoref": 520, 
         
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
         "Pmin": 0.00036783, "rhomin": 19.907, 
@@ -111,7 +132,8 @@ class R22(MEoS):
             """, # Table III, Pag 117
             
         "R": 8.31451,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 20.0, 
         "Pmin": 0.00036704, "rhomin": 19.976, 
