@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class R11(MEoS):
-    """Multiparameter equation of state for R11
-
-    >>> r11=R11(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r11.T, r11.rho, r11.u.kJkg, r11.h.kJkg, r11.s.kJkgK, r11.cv.kJkgK, r11.cp.kJkgK, r11.w)
-    300.0 5.7039 13.47 31.00 0.2016 0.53664 0.61009 138.57
-    """
+    """Multiparameter equation of state for R11"""
     name = "trichlorofluoromethane"
     CASNumber = "75-69-4"
     formula = "CCl3F"
@@ -41,9 +36,14 @@ class R11(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-11 of Jacobsen et al. (1992)",
-        "__doc__":  u"""Jacobsen, R.T, Penoncello, S.G., and Lemmon, E.W., "A fundamental equation for trichlorofluoromethane (R-11)," Fluid Phase Equilibria, 80:45-56, 1992.""",
-        "R": 8.314510,
+        "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., and Lemmon, E.W.",
+                    "title": "A fundamental equation for trichlorofluoromethane (R-11)", 
+                    "ref": "Fluid Phase Equilibria, 80:45-56, 1992.",
+                    "doi": "10.1016/0378-3812(92)87054-Q"}, 
+
+        "R": 8.31451,
         "cp": CP1,
+        "ref": {"Tref": Tt, "Pref": 1.0, "ho": 53727.59, "so": 264.0369}, 
 
         "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 12.88, 
         "Pmin": 0.006510, "rhomin": 12.8745, 
@@ -69,9 +69,14 @@ class R11(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-11 of Marx et al. (1992)",
-        "__doc__":  u"""Marx, V., Pruss, A., and Wagner, W., "New Equation of State for R 12, R 22, R 11 and R 113," Fortschr.-Ber. VDI, Dusseldorf: VDI-Verlag, 19(57), 1992.""",
+        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+                    "doi": ""}, 
+
         "R": 8.31451,
         "cp": CP2,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 13.0 , 
         "Pmin": 0.0066057, "rhomin": 12.945, 
@@ -109,6 +114,7 @@ class R11(MEoS):
 
         "R": 8.31451,
         "cp": CP2,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.0, 
         "Pmin": 0.0066915, "rhomin": 12.963, 
