@@ -59,12 +59,6 @@ class C3(MEoS):
            "ao_exp": [3.1907016349], "exp": [1500],
            "ao_hyp": [], "hyp": []}
 
-    CP6 = {"ao": 4.02939,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [0.1521038e7, 0.1290245e6, 0.1751511e8, -0.8835886e7],
-           "hyp": [0.479856e3, 0.2008930e3, 0.9553120e4, 0.1027290e4]}
-
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Lemmon et al. (2009)",
@@ -399,7 +393,19 @@ class C3(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.25104574, -0.47271238, 0, 0.060836515],
               "__name__": "Vogel (1998)",
-              "__doc__": """Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A., "Reference Correlation of the Viscosity of Propane," J. Phys. Chem. Ref. Data, 27(5):947-970, 1998.""",
+              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
+                          "title": "Reference Correlation of the Viscosity of Propane", 
+                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
+                          "doi": "10.1063/1.556025"}, 
+              "__test__": 
+                  
+                  # Table 4, pag 961
+                  """
+                  >>> st=C3(T=90, P=1e4, eq=1)
+                  >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+                  3.2350 21.175 3.5658
+                  """, 
+
               "ek": 263.88, "sigma": 0.49748,
               "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
               "n_chapman": 0.141824/M**0.5,
@@ -466,7 +472,10 @@ class C3(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Marsh (2002)",
-               "__doc__": """Marsh, K., Perkins, R., and Ramires, M.L.V., "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(4):932-940, 2002""",
+               "__doi__": {"autor": "Marsh, K., Perkins, R., and Ramires, M.L.V.",
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa", 
+                           "ref": "J. Chem. Eng. Data, 2002, 47 (4), pp 932–940",
+                           "doi": "10.1021/je010001m"}, 
 
                "Tref": 369.85, "kref": 1.,
                "no": [-1.24778e-3, 8.16371e-3, 1.99374e-2],
@@ -498,10 +507,4 @@ class C3(MEoS):
                "X": [3.98, 5.45, 0.468067, 1.08],
                "Z": 8.117e-10}
 
-    _thermal = thermo0, thermo1
-
-if __name__ == "__main__":
-    for eq in (0, 2, 3, 4, 5, 6):
-        st=C3(T=298.15, P=101325, eq=eq)
-        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+    _thermal = thermo0, thermo1    
