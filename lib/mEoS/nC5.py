@@ -24,32 +24,20 @@ class nC5(MEoS):
     _rhor = unidades.Density(233.873368)
     _w = 0.247058753
 
-    CP1 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [0.2857243e6, 0.1542722e8, 0.1051520e9, 0],
-           "hyp": [0.17867e3, 0.840538e3, 0.177425e4, 0]}
-           
-    Fi2 = {"ao_log": [1, 3.0],
+    Fi1 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [],
            "ao_exp": [], "titao": [], 
            "ao_hyp": [8.95043, 21.836, 33.4032, 0],
            "hyp": [0.380391739, 1.789520971, 3.777411113, 0]}
 
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [8.95043, 21.836, 33.4032, 0],
-           "hyp": [0.380391739*Tc, 1.789520971*Tc, 3.777411113*Tc, 0]}
-
-    CP3 = {"ao": 10.288132,
+    CP1 = {"ao": 10.288132,
            "an": [-0.2695377e-1, 0.20951065e-3, -0.27910773e-6, 0.12266269e-9],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    CP4 = {"ao": 22.5012/8.3159524*4.184,
+    CP2 = {"ao": 22.5012/8.3159524*4.184,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
            "ao_hyp": [2.057417e8/8.3159524*4.184, 2.972927e7/8.3159524*4.184, 0, 0],
@@ -72,7 +60,7 @@ class nC5(MEoS):
             """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": Fi2,
+        "cp": Fi1,
         "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2, 
@@ -98,7 +86,7 @@ class nC5(MEoS):
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
                     "doi":  "10.1021/je300655b"}, 
         "R": 8.314472,
-        "cp": Fi2,
+        "cp": Fi1,
         "ref": "OTO", 
 
         "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57, 
@@ -124,7 +112,7 @@ class nC5(MEoS):
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""}, 
         "R": 8.3143,
-        "cp": CP3,
+        "cp": CP1,
         "ref": "NBP", 
 
         "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819, 
@@ -153,7 +141,7 @@ class nC5(MEoS):
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""}, 
         "R": 8.3159524,
-        "cp": CP4,
+        "cp": CP2,
         "ref": "NBP", 
 
         "Tmin": 177.0, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 10.2534, 
@@ -180,7 +168,8 @@ class nC5(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
@@ -197,7 +186,34 @@ class nC5(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5
+    MBWR = {
+        "__type__": "MBWR",
+        "__name__": " MBWR equation of state for pentane of Ratanapisit (1999).",
+        "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
+                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties", 
+                    "ref": "Int. J. Thermophys., 20(6):1721-1735, 1999.",
+                    "doi": "10.1023/A:1022610013596"}, 
+                    
+        "R": 8.31434,
+        "cp": Fi1,
+        "ref": "OTO", 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2, 
+        "Pmin": 0.0000815, "rhomin": 10.558, 
+
+        "b": [None, -7.41533782499e-2, 7.54044021950, -1.93328401588e2, 
+              3.39428034054e4, -5.12571561595e6, 1.51195406963e-3,
+              -7.12225059892, 4.12664185793e3, 8.40258305443e5,
+              -4.68416651753e-4, 3.03565637672, -1.42146321204e3,
+              -1.10170659283e-1, -9.80664356304, 1.10979804446e3, 2.98029604130,
+              -1.41484307201e-1, -3.39208006239e1, 2.08782048763,
+              5.38055429992e5, -6.40401885304e8, -1.19676622034e5,
+              1.71973349582e10, -3.06383363882e3, 1.43168348944e6,
+              1.41452433419e1, -2.52955687564e7, -3.85316416299,
+              2.65416349789e3, 4.76643876980e-3, -8.37595968663,
+              -1.35160880503e3]}
+
+    eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5, MBWR
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}
@@ -225,7 +241,11 @@ class nC5(MEoS):
 
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST14",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+                           
               "ek": 341.10, "sigma": 0.5784,
               "n_chapman": 0.226720214/M**0.5,
               "F": [0, 0, 0, 100],
@@ -257,7 +277,10 @@ class nC5(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 341.1, "kref": 1e-3,
                "no": [1.35558587, -0.15569137, 1],

@@ -170,7 +170,33 @@ class nC7(MEoS):
         "c2": [2]*2,
         "gamma2": [0.51794447]*2}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4
+    MBWR = {
+        "__type__": "MBWR",
+        "__name__": " MBWR equation of state for pentane of Ratanapisit (1999).",
+        "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
+                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties", 
+                    "ref": "Int. J. Thermophys., 20(6):1721-1735, 1999.",
+                    "doi": "10.1023/A:1022610013596"}, 
+                    
+        "R": 8.31434,
+        "cp": Fi2,
+        "ref": "OTO", 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2, 
+        "Pmin": 0.0000815, "rhomin": 10.558, 
+
+        "b": [None, -9.53769631187e-3, 9.72551866385e-1, -2.60081304889e1, 
+              5.20865382062e3, -1.07729056282e6, -6.20474297014e-4,
+              2.08733258744, - 1.37572781583e3, 6.95627225584e4,
+              1.90615930406e-4, -5.61551412281e-1, 2.73983005070e2,
+              6.28902715950e-2, -1.11012478028e1, 6.22600247144e2,
+              1.57273923084, -6.63204129629e-2, -1.79732347053e1, 1.24881866033, 
+              3.81777590060e5, - 3.56280298214e7, 1.7565835641e4,
+              4.54695406896e9, 2.05985406654e3, 8.72406003683e5,
+              5.62265877351e1, -3.20150071052e7, 3.57524917645, 3.27649699126e3, 
+              -1.15729200586e-1, 3.93007045330e1, 3.88225605345e3]}
+
+    eq = helmholtz1, GERG, helmholtz3, helmholtz4, MBWR
 
     _surface = {"sigma": [0.07765, -0.02599], "exp": [1.319, 1.6]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
