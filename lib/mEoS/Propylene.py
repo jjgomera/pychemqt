@@ -16,25 +16,25 @@ class Propylene(MEoS):
     Pc = unidades.Pressure(4555.0, "kPa")
     M = 42.07974  # g/mol
     Tt = unidades.Temperature(87.953)
-    Tb = unidades.Temperature(225.53)
+    Tb = unidades.Temperature(225.531)
     f_acent = 0.146
     momentoDipolar = unidades.DipoleMoment(0.366, "Debye")
     id = 23
 
-    CP0 = {"ao": 4.,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-5.1823279651, 4.3639902765],
            "ao_exp": [1.544, 4.013, 8.923, 6.020],
-           "exp": [324.0, 973.0, 1932.0, 4317.0],
-           "ao_hyp": [], "hyp": []}
+           "titao": [324/Tc, 973/Tc, 1932/Tc, 4317/Tc]}
 
-    CP1 = {"ao": 4.07317535,
-           "an": [], "pow": [],
+    Fi2 = {"ao_log": [1, 3.07317535],
+           "pow": [0, 1],
+           "ao_pow": [9.48120502357782, -4.47976952867319],
            "ao_exp": [1.7018443, 3.61342025, 8.83689058, 6.27183616],
-           "exp": [1.01164134251849*Tc, 2.75278088800174*Tc, 5.16557061703243*Tc,
-                   11.68984352477*Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [1.01164134251849, 2.75278088800174, 5.16557061703243,
+                     11.68984352477]}
 
-    CP2 = {"ao": 0.65591381,
+    CP1 = {"ao": 0.65591381,
            "an": [0.44359641e-1, -.36650786e-4, 0.16822223e-7, -.32651013e-11,
                   0.33747826e4],
            "pow": [1, 2, 3, 4, -2],
@@ -43,10 +43,15 @@ class Propylene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propylene of Lemmon et al. (2010).",
-        "__doc__":  u"""Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W. to be submitted to J. Phys. Chem. Ref. Data, 2010.""",
+        "__name__": "Helmholtz equation of state for propylene of Lemmon et al. (2013).",
+        "__doi__": {"autor": "Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W.",
+                    "title": "A reference equation of state for the thermodynamic properties of propene for temperatures from the melting line to 575 K and pressures up to 1000 MPa", 
+                    "ref": "to be submitted to J. Phys. Chem. Ref. Data",
+                    "doi": ""}, 
+                    
         "R": 8.314472,
-        "cp": CP0,
+        "cp": Fi1,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.1, 
         "Pmin": 0.00000075, "rhomin": 18.255, 
@@ -75,9 +80,14 @@ class Propylene(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propylene of Overhoff (2006).",
-        "__doc__":  u"""Overhoff, U. Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.""",
+        "__doi__": {"autor": "Overhoff, U.",
+                    "title": "Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids", 
+                    "ref": "Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.",
+                    "doi": ""}, 
+                    
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi2,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.4, 
         "Pmin": 0.00000074, "rhomin": 18.26, 
@@ -113,10 +123,15 @@ class Propylene(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propylene of Angus et al. (1980)",
-        "__doc__":  u"""Angus, S., Armstrong, B., and de Reuck, K.M., "International Thermodynamic Tables of the Fluid State-7 Propylene," International Union of Pure and Applied Chemistry, Pergamon Press, Oxford, 1980.""",
+        "__doi__": {"autor": "Angus, S., Armstrong, B., and de Reuck, K.M.",
+                    "title": "International Thermodynamic Tables of the Fluid State-7 Propylene", 
+                    "ref": "International Union of Pure and Applied Chemistry, Pergamon Press, Oxford, 1980.",
+                    "doi": ""}, 
+                    
         "R": 8.31434,
-        "cp": CP2,
-
+        "cp": CP1,
+        "ref": "IIR", 
+        
         "Tmin": 100.0, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 9.73, 
         "Pmin": 0.48475e-4, "rhomin": 17.938, 
 
@@ -156,12 +171,3 @@ class Propylene(MEoS):
         "eq": 3,
         "ao": [-1.59841, -4.73840, -10.8886, -31.0312, -56.9431, -143.544],
         "exp": [0.309, 0.853, 2.37, 5.2, 10., 20.]}
-
-
-if __name__ == "__main__":
-    propileno=Propylene(T=400, P=0.1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
-    propileno=Propylene(T=400, P=0.1, eq=1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
-    propileno=Propylene(T=400, P=0.1, eq=2)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (propileno.T, propileno.rho, propileno.u.kJkg, propileno.h.kJkg, propileno.s.kJkgK, propileno.cv.kJkgK, propileno.cp.kJkgK, propileno.w)
