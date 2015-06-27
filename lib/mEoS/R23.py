@@ -8,12 +8,7 @@ from lib import unidades
 
 
 class R23(MEoS):
-    """Multiparameter equation of state for R23
-
-    >>> r23=R23(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (r23.T, r23.rho, r23.u.kJkg, r23.h.kJkg, r23.s.kJkgK, r23.cv.kJkgK, r23.cp.kJkgK, r23.w)
-    300.0 2.8280 363.07 398.44 2.0717 0.61588 0.73906 205.22
-    """
+    """Multiparameter equation of state for R23"""
     name = "trifluoromethane"
     CASNumber = "75-46-7"
     formula = "CHF3"
@@ -51,9 +46,15 @@ class R23(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-23 of Penoncello et al. (2003)",
-        "__doc__":  u"""Penoncello, S.G., Lemmon, E.W., Jacobsen, R.T, Shan, Z., "A Fundamental Equation for Triflurormethane (R-23)," J. Phys. Chem. Ref. Data, 32(4):1473-1499, 2003.""",
+        "__doi__": {"autor": "Penoncello, S.G., Lemmon, E.W., Jacobsen, R.T, Shan, Z.",
+                    "title": "A Fundamental Equation for Trifluoromethane (R-23)", 
+                    "ref": "J. Phys. Chem. Ref. Data 32, 1473 (2003).",
+                    "doi":  "10.1063/1.1559671"}, 
+        # TODO: Find paper to search test
+        
         "R": 8.314472,
         "cp": CP1,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 475.0, "Pmax": 120000.0, "rhomax": 24.31, 
         "Pmin": 0.058, "rhomin": 24.31, 
@@ -73,9 +74,14 @@ class R23(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-23 of Penoncello et al. (2000)",
-        "__doc__":  u"""Penoncello, S.G., Shan, Z., and Jacobsen, R.T, "A fundamental equation for the calculation of the thermodynamic properties of trifluoromethane (R23)," ASHRAE Trans. 106(Part 1), 2000.""",
+        "__doi__": {"autor": "Penoncello, S.G., Shan, Z., and Jacobsen, R.T.",
+                    "title": "A fundamental equation for the calculation of the thermodynamic properties of trifluoromethane (R23)", 
+                    "ref": "ASHRAE Trans. 106(Part 1), 2000.",
+                    "doi":  ""}, 
+
         "R": 8.31451,
         "cp": CP2,
+        "ref": "IIR", 
         
         "Tmin": Tt, "Tmax": 473.15, "Pmax": 120000.0, "rhomax": 23.0, 
         "Pmin": 0.05888, "rhomin": 22.851535, 
@@ -146,6 +152,11 @@ class R23(MEoS):
     visco0 = {"eq": 0, "omega": 1,
               "method": "_visco0",
               "__name__": "Shan (2000)",
+              "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
+                          "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)", 
+                          "ref": "ASHRAE Transactions, Volume 106:1-11, 2000.",
+                          "doi": ""}, 
+
               "ek": 243.91, "sigma": 0.4278,
               "n_chapman": 0.2233755/M**0.5,
               "collision": [0.4425728, -0.5138403, 0.1547566, -0.02821844,
@@ -154,7 +165,6 @@ class R23(MEoS):
     _viscosity = visco0,
 
     def _visco0(self):
-        """Shan, Z., Penoncello, S.G., and Jacobsen, R.T, "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)," ASHRAE Transactions, Volume 106:1-11, 2000."""
         rhol = 32.174
         C1 = 1.3163
         C2 = 0.1832
@@ -173,12 +183,15 @@ class R23(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "Shan (2000)"}
+               "__name__": "Shan (2000)", 
+               "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
+                           "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)", 
+                           "ref": "ASHRAE Transactions, Volume 106:1-11, 2000.",
+                           "doi": ""}}
 
     _thermal = thermo0,
 
     def _thermo0(self):
-        """Shan, Z., Penoncello, S.G., and Jacobsen, R.T, "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)," ASHRAE Transactions, Volume 106:1-11, 2000."""
         rhol = 68.345
         B1 = -2.5370
         B2 = 0.05366
