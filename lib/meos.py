@@ -238,11 +238,22 @@ class MEoS(_fase):
               "recursion": True}
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown Variables")
-    __doi__ = {"surface":
-        {"autor": "Mulero, A., Cachadiña, I., and Parra, M.I.",
-         "title": "Recommended Correlations for the Surface Tension of Common Fluids", 
-         "ref": "J. Phys. Chem. Ref. Data 41, 043105 (2012)",
-         "doi": "10.1063/1.4768782"}, 
+    __doi__ = {
+        "surface":
+            {"autor": "Mulero, A., Cachadiña, I., and Parra, M.I.",
+             "title": "Recommended Correlations for the Surface Tension of Common Fluids", 
+             "ref": "J. Phys. Chem. Ref. Data 41, 043105 (2012)",
+             "doi": "10.1063/1.4768782"}, 
+        "melting":
+            {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
+             "title": "Melting Curves of Pressure‐Transmitting Fluids ", 
+             "ref": "J. Chem. Phys. 40, 3662 (1964)",
+             "doi": "10.1063/1.1725068"}, 
+        "dielectric":
+            {"autor": "Harvey, A.H. and Lemmon, E.W.",
+             "title": "Method for Estimating the Dielectric Constant of Natural Gas Mixtures ", 
+             "ref": "Int. J. Thermophys., 26(1):31-46, 2005.",
+             "doi": "10.1007/s10765-005-2351-5"}
         }
 
     def __init__(self, **kwargs):
@@ -1948,8 +1959,6 @@ class MEoS(_fase):
         return (dv[z]*dT[y]-dT[z]*dv[y])/(dv[x]*dT[y]-dT[x]*dv[y])
 
     def _Dielectric(self, rho, T):
-        """Harvey, A.H. and Lemmon, E.W. "Method for Estimating the Dielectric Constant of Natural Gas Mixtures," Int. J. Thermophys., 26(1):31-46, 2005.
-        http://dx.doi.org/10.1007/s10765-005-2351-5"""
         if self._dielectric:
             if rho < 1e-12:
                 e = 1.
