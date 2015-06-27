@@ -216,9 +216,14 @@ class C2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely (1987)",
-        "__doc__":  u"""Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "doi": "10.1063/1.555785"}, 
+                    
         "R": 8.31434,
         "cp": CP5,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874.2, "so": 229.116}, 
 
         "Tmin": 90.348, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 21.68, 
         "Pmin": 1.1308e-3, "rhomin": 21.68, 
@@ -542,7 +547,11 @@ class C2(MEoS):
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doc__": """Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
+                          "title": "Reference Correlation of the Viscosity of Propane", 
+                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
+                          "doi": "10.1063/1.556025"}, 
+
               "ek": 240.0, "sigma": 0.440110,
               "n_chapman": 0.146388493/M**0.5,
               "F": [0.2102436247e1, -0.1065920192e1, 1.4, 305.33],
@@ -596,23 +605,3 @@ class C2(MEoS):
                "Xio": 0.19e-9, "gam0": 0.0563, "qd": -0.545e-9, "Tcref": 610.66}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    for eq in (0, 2, 3, 4, 5):
-#        try:
-#            st=C2(T=298.15, P=101325., eq=eq)
-#            print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-#        except:
-#            pass
-
-#    st=C2(T=500, P=1e5, eq=3)
-#    print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#        st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK, st.mu.muPas, st.k.mWmK)
-
-    st = C2(eq=3)
-    print st._Vapor_Pressure(292).MPa
-#    print "%0.6g %0.2g %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-#                st.T, st.P.MPa, st.Liquido.rhoM, st.Liquido.cpM.JmolK, st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-#_Vapor_Pressure

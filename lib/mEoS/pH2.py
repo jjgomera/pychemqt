@@ -67,10 +67,6 @@ class pH2(MEoS):
         "cp": Fi1,
         "ref": "NBP", 
 
-#        "__doc__":  u""". J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748.""",
-#        "R": 8.314472,
-        "cp": CP1,
-
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 104.0, 
         "Pmin": 7.041, "rhomin": 38.185, 
 
@@ -96,7 +92,11 @@ class pH2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for parahydrogen of Younglove (1982).",
-        "__doc__": u"""Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
+                    
         "R": 8.31434,
         "cp": CP2,
 

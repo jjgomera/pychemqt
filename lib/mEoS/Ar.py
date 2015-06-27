@@ -445,7 +445,11 @@ class Ar(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "BWR  MBWR equation of state for argon of Younglove (1982).",
-        "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
+
         "R": 8.31434,
         "cp": CP1,
 
@@ -482,7 +486,7 @@ class Ar(MEoS):
         "a1": [], "exp1": [],
         "a2": [-11.1307], "exp2": [1],
         "a3": [], "exp3": []}
-    _surface = {"sigma": [0.037898063], "exp": [1.278]}
+    _surface = {"sigma": [0.037], "exp": [1.25]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-5.9409785, 1.3553888, -0.4649761, -1.5399043],
@@ -531,8 +535,17 @@ class Ar(MEoS):
               "c_poly": [0, 0, 0, 2, 4, 4]}
 
     visco1 = {"eq": 3,
-              "__doc__": """Younglove, B.A. and Hanley, H.J.M., The Viscosity and Thermal Conductivity Coefficients of Gaseous and Liquid Argon," J. Phys. Chem. Ref. Data, 15(4):1323-1337, 1986.""",
               "__name__": "Younglove (1986)",
+              "__doi__": {"autor": "Younglove, B.A. and Hanley, H.J.M.",
+                           "title": "The Viscosity and Thermal Conductivity Coefficients of Gaseous and Liquid Argon", 
+                           "ref": "J. Phys. Chem. Ref. Data 15, 1323 (1986)",
+                           "doi": "10.1063/1.555765"}, 
+              "__test__": """
+                   >>> st=Ar(T=86, P=1e5, visco=1)
+                   >>> print "%0.1f" % st.mu.muPas
+                   270.0
+                   """, # Table V, Pag 28
+
               "Tref": 1, "muref": 1.0,
               "n_poly": [-0.8973188257e5, 0.8259113473e5, -0.2766475915e5,
                          0.3068539784e4, 0.4553103615e3, -0.1793443839e3,
@@ -554,7 +567,11 @@ class Ar(MEoS):
                             -1452.04353466585, 1467.17535558104, -870.164951237067,
                             313.024934147423, -61.2072628957372, 5.07700488990665],
               "__name__": "Younglove (1982)",
-              "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+              "__doi__": {"autor": "Younglove, B.A.",
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                          "doi": ""}, 
+
               "ek": 152.8, "sigma": 0.3297,
               "n_chapman": 0.16871158559818,
               "t_chapman": 0,
@@ -609,7 +626,10 @@ class Ar(MEoS):
 
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
-               "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+               "__doi__": {"autor": "Younglove, B.A.",
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                           "doi": ""}, 
 
                "ek": 152.8, "sigma": 0.3297,
                "Nchapman": 0.16871158559818,

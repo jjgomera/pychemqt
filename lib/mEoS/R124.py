@@ -67,7 +67,7 @@ class R124(MEoS):
         "__doi__": {"autor": "McLinden, M.O., Younglove, B.A., and Sandarusi, J.",
                     "title": "Measurement of the PVT properties and formulation of an equation of state for refrigerant 124 (1-chloro-1,2,2,2-tetrafluoroethane), 1994. (unpublished manuscript).", 
                     "ref": "",
-                    "doi":  ""}, 
+                    "doi": ""}, 
                     
         "R": 8.314471,
         "cp": CP2,

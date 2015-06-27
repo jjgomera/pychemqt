@@ -556,7 +556,11 @@ class N2(MEoS):
                             2062.67809686969, -1579.52439123889, 777.942880032361,
                             -232.996787901831, 40.0691427576552, -2.99482706239363],
               "__name__": "Younglove (1982)",
-              "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+              "__doi__": {"autor": "Younglove, B.A.",
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                          "doi": ""}, 
+
               "ek": 118., "sigma": 0.354,
               "n_chapman": 0.141286429751707,
               "t_chapman": 0.0,
@@ -635,7 +639,10 @@ class N2(MEoS):
 
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
-               "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+               "__doi__": {"autor": "Younglove, B.A.",
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                           "doi": ""}, 
 
                "ek": 118, "sigma": 0.354,
                "Nchapman": 0.141286429751707,

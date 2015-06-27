@@ -213,9 +213,14 @@ class iC4(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for isobutane of Younglove and Ely (1987)",
-        "__doc__":  u"""Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "doi": "10.1063/1.555785"}, 
+                    
         "R": 8.31434,
         "cp": CP4,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 17932.6, "so": 295.390}, 
 
         "Tmin": 113.55, "Tmax": 600.0, "Pmax": 35000.0, "rhomax": 12.89, 
         "Pmin": 1.948e-5, "rhomin": 12.755, 
@@ -436,7 +441,12 @@ class iC4(MEoS):
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doc__": """Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+              "__doc__": """Vogel, E., Kuechenmeister, C., and Bich, E., "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region," Int. J. Thermophys, 21(2):343-356, 2000.""",
+              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
+                          "title": "Reference Correlation of the Viscosity of Propane", 
+                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
+                          "doi": "10.1063/1.556025"}, 
+
               "ek": 418.0, "sigma": 0.509217,
               "n_chapman": 0.203525266/M**0.5,
               "F": [1.687838652, 0.0, 1.40, 407.85],
@@ -469,7 +479,11 @@ class iC4(MEoS):
 
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
-               "__doc__": """Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                           "doi": "10.1063/1.555785"}, 
+
                "visco": visco1,
                "n_chapman": 2.0352526600e-1,
                "G": [0.1449797353e1, -0.1685643887],

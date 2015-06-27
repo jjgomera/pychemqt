@@ -33,7 +33,11 @@ class NF3(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for nitrogen trifluoride of Younglove (1982)",
-        "__doc__":  u"""Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene,Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
+
         "R": 8.314471,
         "cp": CP1,
 

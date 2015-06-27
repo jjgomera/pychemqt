@@ -232,9 +232,14 @@ class C3(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for propane of Younglove and Ely (1987)",
-        "__doc__":  u"""Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane", 
+                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "doi": "10.1063/1.555785"}, 
+                    
         "R": 8.31434,
         "cp": CP5,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 14740.2, "so": 270.203}, 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
         "Pmin": 1.685e-7, "rhomin": 16.617, 
@@ -309,18 +314,16 @@ class C3(MEoS):
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-#        "__test__": """
-#            >>> st=C3(T=700, rho=200, eq=5)
-#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-#            3.2350 21.175 3.5658
-#            >>> st2=C3(T=750, rho=100, eq=5)
-#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-#            212.66 0.41879
-#            """, # Table III, Pag 46
+        "__test__": """
+            >>> st=C3(T=700, rho=200, eq=5)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            3.2350 21.175 3.5658
+            >>> st2=C3(T=750, rho=100, eq=5)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            212.66 0.41879
+            """, # Table III, Pag 46
 
         "R": 8.31451,
-#        "cp": CP6,
-#        "ref": "OTO", 
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
 
@@ -441,7 +444,11 @@ class C3(MEoS):
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doc__": """Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                          "doi": "10.1063/1.555785"}, 
+
               "ek": 358.9, "sigma": 0.47,
               "n_chapman": 0.177273976/M**0.5,
               "F": [0, 0, 1.12, 359.],
@@ -495,7 +502,11 @@ class C3(MEoS):
 
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
-               "__doc__": """Younglove, B.A. and Ely, J.F.,"Thermophysical properties of fluids. II. Methane, ethane, propane, isobutane and normal butane," J. Phys. Chem. Ref. Data, 16:577-798, 1987.""",
+               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                           "doi": "10.1063/1.555785"}, 
+
                "visco": visco1,
                "n_chapman": 1.77273976e-1,
                "G": [0.1422605e1, -0.179749],

@@ -111,7 +111,11 @@ class O2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for oxygen of Younglove (1982).",
-        "__doc__": u"""Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
+
         "R": 8.31411,
         "cp": CP2,
 
@@ -240,7 +244,11 @@ class O2(MEoS):
                             166.828729537446, 143.163477478684, -191.767060368781,
                             98.4332230147836, -22.9410694301649, 2.12402264924749],
               "__name__": "Younglove (1982)",
-              "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+              "__doi__": {"autor": "Younglove, B.A.",
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                          "doi": ""}, 
+            
               "ek": 113., "sigma": 0.3437,
               "n_chapman": 0.15099557923496,
               "t_chapman": 0.0,
@@ -320,7 +328,10 @@ class O2(MEoS):
 
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
-               "__doc__": """Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+               "__doi__": {"autor": "Younglove, B.A.",
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                           "doi": ""}, 
 
                "ek": 113, "sigma": 0.3437,
                "Nchapman": 0.15099557923496,
