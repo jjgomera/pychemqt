@@ -73,9 +73,11 @@ import Methanol
 import Ethanol
 import Acetone
 import DME
+import DEE
 import DMC
 import NF3
 import SF6
+import HCl
 
 # CFCs
 import CF3I
@@ -89,6 +91,7 @@ import R21
 import R22
 import R23
 import R32
+import R40
 import R41
 import R113
 import R114
@@ -146,7 +149,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "R123":
+            if module.__module__ != "DEE":
                 continue
             print module.__module__
             inst = module()
