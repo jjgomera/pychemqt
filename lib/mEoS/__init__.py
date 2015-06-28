@@ -144,6 +144,8 @@ import R407c
 import R410a
 import R507a
 
+# TODO: Add Novec 649 from REFPROP
+
 __all__ = MEoS.__subclasses__()[1:] + MEoSBlend.__subclasses__()
 id_mEoS = [i.id for i in __all__]
 

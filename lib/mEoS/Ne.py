@@ -94,12 +94,15 @@ class Ne(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Rabinovich (1988)"}
+              "__name__": "Rabinovich (1988)", 
+              "__doi__": {"autor": "Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I. and Veksler, L.S.",
+                          "title": "Thermophysical Properties of Neon, Argon, Krypton, and Xenon", 
+                          "ref": "Hemisphere Publishing Corp., 1988.",
+                          "doi": ""}}
 
     _viscosity = visco0,
 
     def _visco0(self):
-        """Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I. and Veksler, L.S. "Thermophysical Properties of Neon, Argon, Krypton, and Xenon," Hemisphere Publishing Corp., 1988."""
         # FIXME: Da buenos resultados, pero los resultados difierente en la tercera cifra significativa.
         a = [17.67484, -2.78751, 311498.7, -48826500, 3938774000, -1.654629e11, 2.86561e12]
         Tr = self.T/0.29944
@@ -114,8 +117,3 @@ class Ne(MEoS):
         d = [1, 0.27676, 0.014355, 2.6480, -1.9643, 0.89161]
         nd = sum([di*brho**i for i, di in enumerate(d)])
         return unidades.Viscosity(nd*nt/100, "muPas")
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
