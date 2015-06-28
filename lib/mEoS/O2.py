@@ -261,7 +261,84 @@ class O2(MEoS):
     visco2 = {"eq": 1, "omega": 1,
               "collision": [0.46649, -0.57015, 0.19164, -0.03708, 0.00241],
               "__name__": "Laesecke (1990)",
-              "__doc__": """Laesecke, A., Krauss, R., Stephan, K., and Wagner, W., "Transport Properties of Fluid Oxygen," J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.""",
+              "__doi__": {"autor": "Laesecke, A., Krauss, R., Stephan, K., and Wagner, W.",
+                          "title": "Transport Properties of Fluid Oxygen", 
+                          "ref": "J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.",
+                          "doi": "10.1063/1.555863"}, 
+               "__test__": """
+                    >>> st=O2(T=70, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    355.0 4.776
+                    >>> st=O2(T=80, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    248.4 5.661
+                    >>> st=O2(T=90, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    186.9 6.544
+                    >>> st=O2(T=100, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    146.4 7.436
+                    >>> st=O2(T=110, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    117.4 8.359
+                    >>> st=O2(T=120, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    94.96 9.355
+                    >>> st=O2(T=130, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    76.58 10.52
+                    >>> st=O2(T=140, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    60.25 12.10
+                    >>> st=O2(T=150, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    43.13 15.23
+                    >>> st=O2(T=154.581, x=0.5, visco=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
+                    24.91 24.91
+                    """ # Table 3, Pag 1100
+                    """
+                    >>> st=O2(T=70, P=1e5, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    352.1
+                    >>> st=O2(T=180, P=1e5, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    13.4
+                    >>> st=O2(T=110, P=1e6, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    118.0
+                    >>> st=O2(T=70, P=1e7, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    401.1
+                    >>> st=O2(T=120, P=2e7, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    124.3
+                    >>> st=O2(T=70, P=1e8, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    166.9
+                    >>> st=O2(T=400, P=1e5, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    25.90
+                    >>> st=O2(T=200, P=1e8, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    105.4
+                    >>> st=O2(T=500, P=1e6, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    30.56
+                    >>> st=O2(T=800, P=1e5, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    42.27
+                    >>> st=O2(T=500, P=1e8, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    49.74
+                    >>> st=O2(T=1400, P=1e6, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    61.27
+                    >>> st=O2(T=1000, P=1e7, visco=2)
+                    >>> print "%0.4g" % st.mu.muPas
+                    49.44
+                    """, # Table 4, Pag 1101
+
               "ek": 116.2, "sigma": 0.34318867,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.151006/M**0.5,
@@ -348,7 +425,83 @@ class O2(MEoS):
 
     thermo2 = {"eq": 1,
                "__name__": "Laesecke (1990)",
-               "__doc__": """Laesecke, A., Krauss, R., Stephan, K., and Wagner, W., "Transport Properties of Fluid Oxygen," J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.""",
+               "__doi__": {"autor": "Laesecke, A., Krauss, R., Stephan, K., and Wagner, W.",
+                           "title": "Transport Properties of Fluid Oxygen", 
+                           "ref": "J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.",
+                           "doi": "10.1063/1.555863"}, 
+               "__test__": """
+                    >>> st=O2(T=70, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    181.3 5.981
+                    >>> st=O2(T=80, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    167.2 7.105
+                    >>> st=O2(T=90, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    153.1 8.258
+                    >>> st=O2(T=100, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    139.0 9.477
+                    >>> st=O2(T=110, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    124.8 10.82
+                    >>> st=O2(T=120, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    110.3 12.41
+                    >>> st=O2(T=130, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    95.44 14.44
+                    >>> st=O2(T=140, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    79.48 17.41
+                    >>> st=O2(T=150, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    60.11 23.16
+                    >>> st=O2(T=154.581, x=0.5, thermo=2)
+                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
+                    37.47 37.47
+                    """ # Table 3, Pag 1100
+                    """
+                    >>> st=O2(T=70, P=1e5, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    181.0
+                    >>> st=O2(T=180, P=1e5, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    16.80
+                    >>> st=O2(T=110, P=1e6, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    125.1
+                    >>> st=O2(T=70, P=1e7, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    184.2
+                    >>> st=O2(T=120, P=2e7, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    129.2
+                    >>> st=O2(T=50, P=1e8, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    201.6
+                    >>> st=O2(T=400, P=1e5, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    33.24
+                    >>> st=O2(T=200, P=1e8, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    120.9
+                    >>> st=O2(T=500, P=1e6, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    40.29
+                    >>> st=O2(T=800, P=1e5, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    59.15
+                    >>> st=O2(T=500, P=1e8, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    70.64
+                    >>> st=O2(T=1400, P=1e6, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    90.84
+                    >>> st=O2(T=1000, P=1e7, thermo=2)
+                    >>> print "%0.4g" % st.k.mWmK
+                    71.59
+                    """, # Table 5, Pag 1109
 
                "Tref": 1, "kref": 1e-3,
                "no": [0.5825413, 0.0321266],
@@ -365,12 +518,3 @@ class O2(MEoS):
                "Xio": 1.6e-10, "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
 
     _thermal = thermo0, thermo1, thermo2
-
-
-if __name__ == "__main__":
-    for eq in (0, 2, 3):
-        st=O2(T=100, x=0.5, eq=eq)
-        print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-            st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-            st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-            st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
