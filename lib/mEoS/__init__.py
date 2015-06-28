@@ -55,6 +55,10 @@ import C3Cyclohexane
 # Alkenes
 import Benzene
 import Toluene
+import oXylene
+import pXylene
+import pXylene
+import EthylBenzene
 import Ethylene
 import Propylene
 import Butene_1
