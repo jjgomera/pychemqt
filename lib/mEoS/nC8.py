@@ -17,7 +17,7 @@ class nC8(MEoS):
     M = 114.2285  # g/mol
     Tt = unidades.Temperature(216.37)
     Tb = unidades.Temperature(398.77)
-    f_acent = 0.393
+    f_acent = 0.395
     momentoDipolar = unidades.DipoleMoment(0.07, "Debye")
     id = 12
     _Tr = unidades.Temperature(565.427917)
@@ -219,9 +219,9 @@ class nC8(MEoS):
               "collision": [0.335103, -0.467898],
               "__name__": "Huber (2004)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
-                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
-                        "ref": "Fluid Phase Equilibria 224(2004)263-270.",
-                        "doi": "10.1016/j.fluid.2004.07.012"}, 
+                          "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                          "ref": "Fluid Phase Equilibria 224(2004)263-270.",
+                          "doi": "10.1016/j.fluid.2004.07.012"}, 
               "__test__": """
                   >>> st=nC8(T=300, rhom=6.1772)
                   >>> print "%0.2f" % st.mu.muPas

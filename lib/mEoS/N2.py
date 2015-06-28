@@ -212,8 +212,11 @@ class N2(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for deuterium of McCarty (1989)",
-        "__doc__": u"""McCarty, R.D., "Correlations for the Thermophysical Properties of Deuterium," National Institute of Standards and Technology, Boulder, CO, 1989.""",
+        "__name__": "MBWR equation of state for nitrogen of Younglove (1982).",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
         "R": 8.31434,
         "cp": CP1,
 
@@ -571,8 +574,38 @@ class N2(MEoS):
 
     visco2 = {"eq": 1, "omega": 1,
               "collision": [0.46649, -0.57015,  0.19164, -0.03708,  0.00241],
-              "__name__": "Stephan (2004)",
-              "__doc__": """Stephan, K., Krauss, R., and Laesecke, A., "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States," J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987""",
+              "__name__": "Stephan (1987)",
+              "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
+                          "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States", 
+                          "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
+                          "doi": "10.1063/1.555798"}, 
+               "__test__": """
+                    >>> st=N2(T=80, P=1e5, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    5.24
+                    >>> st=N2(T=80, P=1e7, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    153.45
+                    >>> st=N2(T=300, P=1e6, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    18.03
+                    >>> st=N2(T=1100, P=1e7, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    44.67
+                    >>> st=N2(T=100, P=4.5e7, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    155.58
+                    >>> st=N2(T=80, P=2e7, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    28.37
+                    >>> st=N2(T=200, P=5e7, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    49.34
+                    >>> st=N2(T=1100, P=1e8, visco=2)
+                    >>> print "%0.2f" % st.mu.muPas
+                    50.20
+                    """, # Table A1, Pag 1013
+
               "Tref": 1., "etaref": 1,
               "ek": 100.01654, "sigma": 0.36502496,
               "n_chapman": 0.141290/M**0.5,
@@ -658,8 +691,37 @@ class N2(MEoS):
                "rm": 0.00000003933}
 
     thermo2 = {"eq": 1, "critical": 0,
-               "__name__": "Stephan (2004)",
-               "__doc__": """Stephan, K., Krauss, R., and Laesecke, A., "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States," J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987""",
+               "__name__": "Stephan (1987)",
+               "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
+                           "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States", 
+                           "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
+                           "doi": "10.1063/1.555798"}, 
+               "__test__": """
+                    >>> st=N2(T=80, P=1e5, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    7.73
+                    >>> st=N2(T=80, P=1e7, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    153.7
+                    >>> st=N2(T=300, P=1e6, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    26.51
+                    >>> st=N2(T=1100, P=1e7, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    72.32
+                    >>> st=N2(T=100, P=4.5e7, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    166.13
+                    >>> st=N2(T=80, P=2e7, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    162.75
+                    >>> st=N2(T=200, P=5e7, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    80.58
+                    >>> st=N2(T=1100, P=1e8, thermo=2)
+                    >>> print "%0.2f" % st.k.mWmK
+                    83.68
+                    """, # Table B1, Pag 1018
 
                "Tref": 1, "kref": 1e-3,
                "no": [0.6950401, 0.03643102],
@@ -672,20 +734,3 @@ class N2(MEoS):
                "cb": [0, 0, 0, 0]}
 
     _thermal = thermo0, thermo1, thermo2
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-    
-#
-#    n2 = N2()
-#    print n2._Cp0(70)/n2.R
-#    print n2._prop0(0, 70).cp/n2.R
-
-#    st=N2(T=125, P=3.5e6)
-#    print st.status, st.msg
-    
-    for eq in (0, 2, 4, 5):
-        st=N2(T=300, P=1e6, eq=eq)
-        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
