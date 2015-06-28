@@ -27,12 +27,6 @@ class N2O(MEoS):
            "ao_exp": [2.1769, 1.6145, 0.48393],
            "titao": [879/Tc, 2372/Tc, 5447/Tc]}
 
-    CP1 = {"ao": 3.5,
-           "an": [], "pow": [],
-           "ao_exp": [2.1769, 1.6145, 0.48393],
-           "exp": [879, 2372, 5447],
-           "ao_hyp": [], "hyp": []}
-
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nitrous oxide of Lemmon and Span (2006)",

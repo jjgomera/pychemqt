@@ -18,14 +18,8 @@ class MM(MEoS):
     Tt = unidades.Temperature(204.93)
     Tb = unidades.Temperature(373.401)
     f_acent = 0.418
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 39
-    # id=1376
-
-    CP1 = {"ao": 51.894,
-           "an": [741.34e-3, -416e-6, 70e-9], "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+    momentoDipolar = unidades.DipoleMoment(0.801, "Debye")
+    id=1376
 
     Fi1 = {"ao_log": [1, 50.894],
            "pow": [0, 1, -1, -2, -3],
@@ -47,7 +41,7 @@ class MM(MEoS):
             """, # Table 16, Pag 202
             
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
         "ref": "NBP", 
 
         "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21, 
@@ -79,11 +73,3 @@ class MM(MEoS):
         "eq": 3,
         "ao": [-0.35719e1, -0.14740e3, 0.40699e3, -0.69676e3, 0.12541e4, -0.91199e3],
         "exp": [0.373, 2.15, 2.6, 3.3, 4.2, 4.6]}
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    mm=MM(T=400, P=1e6)
-    print mm.rho, mm.h, mm.s

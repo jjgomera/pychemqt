@@ -18,7 +18,7 @@ class C1Linoleate(MEoS):
     Tt = unidades.Temperature(238.1)
     Tb = unidades.Temperature(628.84)
     f_acent = 0.805
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
+    momentoDipolar = unidades.DipoleMoment(1.79, "Debye")
     id = 39
 
     CP1 = {"ao": 0.0,
@@ -79,7 +79,21 @@ class C1Linoleate(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2010)",
-               "__doc__": """Perkins, R.A. and Huber, M.L., unpublished work, 2010.""",
+               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
+                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate", 
+                           "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
+                           "doi": "10.1021/ef200417x"}, 
+               "__test__": """
+                    >>> st=C1Linoleate(T=450, P=1e2)
+                    >>> print "%0.0f %0.4f %0.6g %0.6g" % (st.T, st.P.MPa, st.rho, st.k.WmK)
+                    450 0.0001 0.00787223 0.0122743
+                    >>> st=C1Linoleate(T=450, P=1e6)
+                    >>> print "%0.0f %0.0f %0.6g %0.6g" % (st.T, st.P.MPa, st.rho, st.k.WmK)
+                    450 1 778.176 0.122742
+                    >>> st=C1Linoleate(T=450, P=2e7)
+                    >>> print "%0.0f %0.0f %0.6g %0.6g" % (st.T, st.P.MPa, st.rho, st.k.WmK)
+                    450 20 799.16 0.131867
+                    """, # Table 3, Pag 2386
 
                "Tref": 799.0, "kref": 1,
                "no": [-0.10904200e-3,  0.24054300e-2,  0.40736400e-1, -0.10592800e-1],
@@ -97,8 +111,11 @@ class C1Linoleate(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1198.5}
 
     thermo1 = {"eq": 5, "omega": 3,
-               "__doc__": """T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E. "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties" Ind. Eng. Chem. Res. 1998, 27, 671-679""",
                "__name__": "Chung (1988)",
+               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E.",
+                           "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
+                           "doi": "10.1021/ie00076a024"}, 
                "w": 0.805, "mur": 0.0, "k": 0.0}
 
     _thermal = thermo0, thermo1
