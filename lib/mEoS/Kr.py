@@ -10,17 +10,16 @@ class Kr(MEoS):
     name = "krypton"
     CASNumber = "7439-90-9"
     formula = "Kr"
-    synonym = ""
+    synonym = "R-784"
     rhoc = unidades.Density(909.2083)
     Tc = unidades.Temperature(209.48)
     Pc = unidades.Pressure(5525.0, "kPa")
     M = 83.798  # g/mol
     Tt = unidades.Temperature(115.775)
     Tb = unidades.Temperature(119.73)
-    f_acent = -0.00089
+    f_acent = -0.000894
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     # id = 971
-    id = 1
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
