@@ -13,7 +13,7 @@ class iC4(MEoS):
     synonym = "R-600a"
     rhoc = unidades.Density(225.5)
     Tc = unidades.Temperature(407.81)
-    Pc = unidades.Pressure(3629.0 , "kPa")
+    Pc = unidades.Pressure(3629.0, "kPa")
     M = 58.1222  # g/mol
     Tt = unidades.Temperature(113.73)
     Tb = unidades.Temperature(261.401)
@@ -405,7 +405,11 @@ class iC4(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.53583008, -0.45629630, 0.049911282],
               "__name__": "Vogel (2000)",
-              "__doc__": """Vogel, E., Kuechenmeister, C., and Bich, E., "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region," Int. J. Thermophys, 21(2):343-356, 2000.""",
+              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
+                          "title": "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region", 
+                          "ref": "Int. J. Thermophys, 21(2):343-356, 2000.",
+                          "doi": "10.1023/A:1006623310780"}, 
+
               "ek": 307.55, "sigma": 0.46445,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.1628213/M**0.5,
@@ -441,11 +445,10 @@ class iC4(MEoS):
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doc__": """Vogel, E., Kuechenmeister, C., and Bich, E., "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region," Int. J. Thermophys, 21(2):343-356, 2000.""",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane", 
-                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"}, 
+              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                          "doi": "10.1063/1.555785"}, 
 
               "ek": 418.0, "sigma": 0.509217,
               "n_chapman": 0.203525266/M**0.5,
@@ -459,7 +462,10 @@ class iC4(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2002)",
-               "__doc__": """Perkins, R.A., "Measurement and Correlation of the Thermal Conductivity of Isobutane from 114 K to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(5):1272-1279, 2002.""",
+               "__doi__": {"autor": "Perkins, R.A.",
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Isobutane from 114 K to 600 K at Pressures to 70 MPa", 
+                           "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1272–1279",
+                           "doi": "10.1021/je010121u"}, 
 
                "Tref": 407.85, "kref": 1,
                "no": [-2.37901e-3, 1.06601e-2, 2.15811e-2],

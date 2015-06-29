@@ -366,12 +366,12 @@ class CH4(MEoS):
                     "doi": "10.1063/1.555828"}, 
         "__test__":
             # Table A1, Pag 630
-#            """
-#            >>> st=CH4(T=100, P=1e5, eq=3)
-#            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
-#            100 -12.479 3.311 149.58 33.277
-#            """
+            """
+            >>> st=CH4(T=100, P=1e5, eq=3)
+            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
+            100 -12.479 3.311 149.58 33.277
+            """
             # Table A2, Pag 337
             """
             >>> st=CH4(T=92, x=0.5, eq=3)
@@ -632,8 +632,12 @@ class CH4(MEoS):
         "exp": [1.062, 2.5, 4.5, 7.5, 12.5, 23.5]}
 
     visco0 = {"eq": 4, "omega": 1,
-              "__doc__": """S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters, "Reference Correlation for the Viscosity of Methane," in preparation, for submission to J. Phys. Chem. Reference Data, 2007.""",
-              "__name__": "Quiñones-Cisneros (2007)",
+              "__name__": "Quiñones-Cisneros (2011)",
+              "__doi__": {"autor": "S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters",
+                  "title": "Reference Correlation for the Viscosity of Methane", 
+                  "ref": "High Temperatures - High Pressures 32(1) 73 – 81",
+                  "doi": ""}, 
+
               "Tref": 190.564, "muref": 1.0,
               "ek": 174., "sigma": 0.36652, "n_chapman": 0,
               "n_ideal": [0.028790445329809258e3, -0.08883896490106571e3,
@@ -652,7 +656,11 @@ class CH4(MEoS):
               "collision": [0.215309028, -0.46256942, 0.051313823,
                             0.030320660, -0.0070047029],
               "__name__": "Vogel (2000)",
-              "__doc__": """Vogel, E., Wilhelm, J., Kuechenmeister, C., and Jaesche, M., "High-precision viscosity measurements on methane," High Temp. - High Pressures, 32(1):73-81, 2000.""",
+              "__doi__": {"autor": "Vogel, E., Wilhelm, J., Kuechenmeister, C., and Jaesche, M.",
+                  "title": "High-precision viscosity measurements on methane", 
+                  "ref": "High Temperatures - High Pressures 32(1) 73 – 81",
+                  "doi": "10.1068/htwu359"}, 
+
               "ek": 160.78, "sigma": 0.37333,
               "n_chapman": 0.0855422/M**0.5,
 
@@ -685,10 +693,10 @@ class CH4(MEoS):
 
     visco2 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane", 
-                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"}, 
+              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                          "doi": "10.1063/1.555785"}, 
 
               "ek": 168., "sigma": 0.368,
               "n_chapman": 0.1069188/M**0.5,
@@ -762,13 +770,3 @@ class CH4(MEoS):
                "Z": 6.512707e-10}
 
     _thermal = thermo0, thermo1
-
-if __name__ == "__main__":
-
-#    for eq in (0, 2, 3, 4, 5):
-#        st=CH4(T=298.15, P=101325, eq=eq)
-#        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-
-    st=CH4(T=100, x=0.5)
-    print st.Liquido.cps, st.Gas.cps
