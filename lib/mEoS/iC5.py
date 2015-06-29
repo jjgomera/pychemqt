@@ -34,18 +34,6 @@ class iC5(MEoS):
            "ao_hyp": [11.7618, 20.1101, 33.1688, 0],
            "hyp": [0.635392636, 1.977271641, 4.169371131, 0]}
 
-    CP1 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [7.4056, 9.5772, 15.765, 12.119],
-           "exp": [442, 1109, 2069, 4193],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [11.7618, 20.1101, 33.1688, 0],
-           "hyp": [0.635392636*Tc, 1.977271641*Tc, 4.169371131*Tc, 0]}
-
     CP3 = {"ao": 0.396504/8.3143*72.151,
            "an": [0.260678e-2/8.3143*72.151, 0.93677e-5/8.3143*72.151,
                   -0.158286e-7/8.3143*72.151,  0.76525e-11/8.3143*72.151],
@@ -199,7 +187,11 @@ class iC5(MEoS):
 
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+
               "ek": 341.06, "sigma": 0.56232,
               "n_chapman": 0.2267237/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -211,7 +203,10 @@ class iC5(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 341.06, "kref": 1e-3,
                "no": [1.35558587, -0.152666315743857, 1],
