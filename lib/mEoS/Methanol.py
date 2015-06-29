@@ -179,33 +179,80 @@ class Methanol(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Xiang (2006)"}
+              "__name__": "Xiang (2006)",
+              "__doi__": {"autor": "Xiang, H.W., Huber, M.L. and Laesecke, A.",
+                          "title": "A New Reference Correlation for the Viscosity of Methanol", 
+                          "ref": "J. Phys. Chem. Ref. Data 35, 1597 (2006)",
+                          "doi": "10.1063/1.2360605"}, 
+              "__test__": 
+                  # Table 5, Pag 15
+                  """
+                  >>> st=Methanol(T=175.63, x=0.5)
+                  >>> print "%0.2f %0.3g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  175.63 1.86e-7 4.09e-6 0.005822 904.56 12.80
+                  >>> st=Methanol(T=200, x=0.5)
+                  >>> print "%0.0f %0.4g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  200 6.098e-6 1.1754e-4 0.006563 880.28 4.506
+                  >>> st=Methanol(T=250, x=0.5)
+                  >>> print "%0.0f %0.4g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  250 0.0008103 0.012577 0.008112 831.52 1.236
+                  >>> st=Methanol(T=300, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  300 0.018682 0.24623 0.009678 784.51 0.5291
+                  >>> st=Methanol(T=350, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  350 0.16172 1.9053 0.01118 735.84 0.2838
+                  >>> st=Methanol(T=400, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  400 0.77374 8.7343 0.01251 678.59 0.1714
+                  >>> st=Methanol(T=450, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  450 2.5433 30.831 0.01388 600.49 0.1058
+                  >>> st=Methanol(T=500, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  500 6.5250 109.88 0.01891 451.53 0.05748
+                  >>> st=Methanol(T=512, x=0.5)
+                  >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
+                      st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
+                  512 8.0195 202.99 0.02838 341.17 0.04174
+                  """ 
+                  # Table 6, Pag 16
+                  """
+                  >>> st=Methanol(T=180, P=1e4)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  0.01 900.27 10.44
+                  >>> st=Methanol(T=200, P=1e5)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  0.10 880.34 4.510
+                  >>> st=Methanol(T=220, P=4e5)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  0.40 860.76 2.460
+                  >>> st=Methanol(T=280, P=1e6)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  1.00 804.12 0.7228
+                  >>> st=Methanol(T=300, P=1e4)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  0.01 0.12955 0.009696
+                  >>> st=Methanol(T=400, P=1e8)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  100 784.82 0.2846
+                  >>> st=Methanol(T=500, P=8e8)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  800 954.52 0.3908
+                  >>> st=Methanol(T=600, P=3e6)
+                  >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
+                  3.00 20.717 0.01971
+                  """}
 
-    _viscosity = visco0,
-
-    thermo0 = {"eq": 1,
-               "__name__": "NIST",
-               "__doc__": """unpublished preliminary correlation, NIST, MLH, Aug. 2006""",
-
-               "Tref": 1., "kref": 1,
-               "no": [5.7992e-7],
-               "co": [1.7862],
-
-               "Trefb": 513.38, "rhorefb": 8.78517, "krefb": 1.,
-               "nb": [0.405435, -0.293791, -0.289002, 0.226890, 0.579019e-1,
-                      -0.399576e-1],
-               "tb": [0, 1]*3,
-               "db": [1, 1, 2, 2, 3, 3],
-               "cb": [0]*6,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.342e-9, "Tcref": 768.9}
-
-    _thermal = thermo0,
-
-    def _visco0(self):
-        """Xiang, H.W., Huber, M.L. and Laesecke, A., "A New Reference Correlation for the Viscosity of Methanol", submitted to J. Phys. Chem. Ref. Data (2006)"""
+    def _visco0(self, rho, T, fase):
         # FIXME: No sale
         rhoc = 273.
         ek = 577.87
@@ -228,16 +275,42 @@ class Methanol(MEoS):
         no = 5.*(self.M/Avogadro*Boltzmann*self.T/pi)**0.5/(16*sigma0**2*OmegaSM)
         B = (sum([b[i]/T_**(0.25*i) for i in range(7)])+b[7]/T_**2.5+b[8]/T_**5.5)*Avogadro*sigma0**3
         C = 1.86222085e-3*T_**3*exp(9.990338/T_**0.5)*(Avogadro*sigma0**3)**2
-        ng = 1+B*self.rho/self.M*1000+C*(self.rho/self.M*1000)**2
+        ng = 1+B*rho/self.M*1000+C*(rho/self.M*1000)**2
 
         Tr = self.T/self.Tc
-        rhor = self.rho/rhoc
+        rhor = rho/rhoc
         sigmaHS = sigmac*(sum([d[i]/Tr**i for i in range(7)])+sum([e[i]*rhor**(i) for i in range(1, 10)]))
         b = 2*pi*Avogadro*sigmaHS**3/3
-        Xi = b*self.rho/self.M*1000/4
+        Xi = b*rho/self.M*1000/4
         g = (1-0.5*Xi)/(1-Xi)**3
-        ne = 1./g+0.8*b*self.rho/self.M*1000+0.761*g*sigmaHS*b**2*(self.rho/self.M*1000)**2
+        ne = 1./g+0.8*b*rho/self.M*1000+0.761*g*sigmaHS*b**2*(rho/self.M*1000)**2
 
         f = 1/(1+exp(5*(rhor-1)))
         n = no * (f*ng + (1-f)*ne)
         return unidades.Viscosity(n)
+
+    _viscosity = visco0,
+
+    thermo0 = {"eq": 1,
+               "__name__": "Perkins (2002)",
+               "__doi__": {"autor": "",
+                           "title": "", 
+                           "ref": "unpublished preliminary correlation, NIST, MLH, Aug. 2006",
+                           "doi": ""}, 
+
+               "Tref": 1., "kref": 1,
+               "no": [5.7992e-7],
+               "co": [1.7862],
+
+               "Trefb": 513.38, "rhorefb": 8.78517, "krefb": 1.,
+               "nb": [0.405435, -0.293791, -0.289002, 0.226890, 0.579019e-1,
+                      -0.399576e-1],
+               "tb": [0, 1]*3,
+               "db": [1, 1, 2, 2, 3, 3],
+               "cb": [0]*6,
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.342e-9, "Tcref": 768.9}
+
+    _thermal = thermo0,
