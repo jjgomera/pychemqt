@@ -18,7 +18,7 @@ class iC6(MEoS):
     Tt = unidades.Temperature(119.6)
     Tb = unidades.Temperature(333.36)
     f_acent = 0.2797
-    momentoDipolar = None
+    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 52
 
     Fi1 = {"ao_log": [1, 3.],
@@ -26,12 +26,6 @@ class iC6(MEoS):
            "ao_pow": [6.9259123919, -0.3128629679],
            "ao_exp": [7.9127, 16.871, 19.257, 14.075],
            "titao": [325/Tc, 1150/Tc, 2397/Tc, 5893/Tc]}
-
-    CP1 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [7.9127, 16.871, 19.257, 14.075],
-           "exp": [325, 1150, 2397, 5893],
-           "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
@@ -81,7 +75,11 @@ class iC6(MEoS):
 
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+
               "ek": 368.52, "sigma": 0.61222,
               "n_chapman": 0.2267237/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -93,7 +91,10 @@ class iC6(MEoS):
 
     thermo0 = {"eq": 1, "critical": 0,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 368.52, "kref": 1e-3,
                "no": [1.35558587, -0.152808259573429, 1],
