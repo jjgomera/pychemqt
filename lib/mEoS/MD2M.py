@@ -18,7 +18,7 @@ class MD2M(MEoS):
     Tt = unidades.Temperature(205.2)
     Tb = unidades.Temperature(467.51)
     f_acent = 0.668
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
+    momentoDipolar = unidades.DipoleMoment(1.12, "Debye")
     id = 39
     # id = 1837
 
@@ -70,12 +70,3 @@ class MD2M(MEoS):
         "ao": [-0.24684e1, -0.71262e1, -0.27601e2, -0.49458e2, -0.24106e2,
                -0.19370e3],
         "exp": [0.376, 0.94, 2.9, 5.9, 6.2, 13.0]}
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=DecaC1_4Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas

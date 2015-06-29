@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class MD4M(MEoS):
-    """Multiparameter equation of state for tetradecamethylhexasiloxane
-#
-#    >>> metilciclohexano=MD4M(T=300, P=0.1)
-#    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-#    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for tetradecamethylhexasiloxane"""
     name = "tetradecamethylhexasiloxane"
     CASNumber = "107-52-8"
     formula = "C14H42O5Si6"
@@ -22,9 +17,8 @@ class MD4M(MEoS):
     M = 458.99328  # g/mol
     Tt = unidades.Temperature(214.15)
     Tb = unidades.Temperature(532.723)
-    f_acent = 0.836
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 39
+    f_acent = 0.825
+    momentoDipolar = unidades.DipoleMoment(1.308, "Debye")
 
     CP1 = {"ao": -20.071,
            "an": [2228.5e-3, -1311.4e-6, 286.2e-9],
@@ -78,4 +72,3 @@ class MD4M(MEoS):
         "eq": 3,
         "ao": [-0.10890e1, -0.84374e1, -0.35615e2, -0.73478e3, 0.19915e4, -0.16317e4],
         "exp": [0.231, 0.8, 2.9, 7.7, 9.0, 10.0]}
-

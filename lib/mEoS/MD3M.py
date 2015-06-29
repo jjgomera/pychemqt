@@ -17,8 +17,8 @@ class MD3M(MEoS):
     M = 384.839  # g/mol
     Tt = unidades.Temperature(192.0)
     Tb = unidades.Temperature(503.03)
-    f_acent = 0.7218
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
+    f_acent = 0.722
+    momentoDipolar = unidades.DipoleMoment(1.223, "Debye")
     id = 39
 
     CP1 = {"ao": 463.2,
@@ -69,12 +69,3 @@ class MD3M(MEoS):
         "ao": [-0.19054e1, -0.74526e1, -0.10520e3, 0.24548e3, -0.23783e3,
                -0.21226e3],
         "exp": [0.332, 0.88, 3.25, 4.0, 4.6, 12.0]}
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=DodecaC1_5Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas

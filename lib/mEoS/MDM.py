@@ -17,9 +17,8 @@ class MDM(MEoS):
     M = 236.531  # g/mol
     Tt = unidades.Temperature(187.2)
     Tb = unidades.Temperature(425.66)
-    f_acent = 0.5297
+    f_acent = 0.529
     momentoDipolar = unidades.DipoleMoment(1.079, "Debye")
-    id = 39
     # id = 1893
 
     CP1 = {"ao": 275.1,
@@ -79,13 +78,3 @@ class MDM(MEoS):
               "w": 0.531, "mur": 0.0, "k": 0.0}
 
     _viscosity = visco0,
-#    _thermal=visco0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=MDM(T=400., P=1e5)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.w)
-    print cyc5.k.mWmK, cyc5.mu.muPas
