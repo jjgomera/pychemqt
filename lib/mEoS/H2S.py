@@ -209,7 +209,11 @@ class H2S(MEoS):
 
     visco0 = {"eq": 2, "omega": 1,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+                           
               "ek": 301.1, "sigma": 0.36237,
               "n_chapman": 0.1558117/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -218,8 +222,12 @@ class H2S(MEoS):
               "rhoc": 10.2}
 
     visco1 = {"eq": 4, "omega": 1,
-              "__doc__": """K. A. G. Schmidt, J.J.Carroll, S.E.Quinones-Cisneros and B. Kvamme, "Hydrogen Sulphide Viscosity Model", proceedings of the 86th Annual GPA Convention, March 11-14,2007, San Antonio,TX.""",
               "__name__": "Schmidt (2007)",
+              "__doi__": {"autor": "Schmidt, K.A.G., Carroll, J.J., Quinones-Cisneros, S.E., and Kvamme, B.",
+                          "title": "Hydrogen Sulfide Viscosity Modeling", 
+                          "ref": "Energy Fuels, 2008, 22 (5), pp 3424–3434",
+                          "doi": "10.1021/ef700701h"}, 
+                          
               "Tref": 373.1, "muref": 1.0,
               "ek": 301.1, "sigma": 0.36237, "n_chapman": 0,
               "n_ideal": [4.36694e1, -12.1530e1, 9.35279e1],
@@ -237,7 +245,10 @@ class H2S(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 301.1, "kref": 1e-3,
                "no": [1.35558587, -0.1402163, 1],
@@ -255,9 +266,3 @@ class H2S(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.3211e-9, "Tcref": 559.65}
 
     _thermal = thermo0,
-
-if __name__ == "__main__":
-    for eq in (0, 1, 4):
-        st=H2S(T=300, P=1e5, eq=eq)
-        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
