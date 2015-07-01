@@ -37,12 +37,6 @@ class nC6(MEoS):
            "ao_hyp": [0.3888640e6, 0.1979523e8, 0.1288410e9, 0],
            "hyp": [0.182326e3, 0.8592070e3, 0.1826590e4, 0]}
 
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [11.6977, 26.8142, 38.6164, 0],
-           "hyp": [0.359036667*Tc, 1.691951873*Tc, 3.596924107*Tc, 0]}
-
     CP3 = {"ao": 2.5200507,
            "an": [0.52806530e-1, -0.57861557e-5, -0.10899040e-7, -0.18988742e-12],
            "pow": [1, 2, 3, 4],
@@ -221,7 +215,11 @@ class nC6(MEoS):
 
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+                           
               "ek": 399.3, "sigma": 0.5949,
               "n_chapman": 0.247780666/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -252,8 +250,50 @@ class nC6(MEoS):
     _viscosity = visco0, visco1
 
     thermo0 = {"eq": 1,
+               "__name__": "Assael (2013)",
+               "__doi__": {"autor": "M. J. Assael, S. K. Mylona, Ch. A. Tsiglifisi, M. L. Huber, and R. A. Perkins",
+                           "title": "Reference Correlation of the Thermal Conductivity of n-Hexane from the Triple Point to 600 K and up to 500 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 42, 013106 (2013)",
+                           "doi": "10.1063/1.4793335"}, 
+               "__test__": """
+                   >>> st=nC6(T=250, rho=700)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   250.00 700.00 137.62
+                   >>> st=nC6(T=400, rho=2)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   400.00 2.00 23.558
+                   >>> st=nC6(T=400, rho=650)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   400.00 650.00 129.28
+                   >>> st=nC6(T=510, rho=2)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   510.00 2.00 36.772
+                   >>> st=nC6(T=510, rho=2)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   510.00 2.00 37.105
+                   """, # Table 4, Pag 8
+
+               "Tref": Tc, "kref": 1e-3,
+               "no": [6.6742, -23.7619, 72.0155, -18.3714],
+               "co": [0, 1, 2, 3],
+               
+               "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
+               "nb": [-.301408e-1, .167975, -.129739, .382833e-1, -.370294e-2,
+                      .218208e-1, -.100833, .77418e-1, -.215945e-1, .212487e-2],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
+               
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.2364e-9, "gam0": 0.05803, "qd": 0.737e-9, "Tcref": 761.73}
+
+    thermo1 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 399.3, "kref": 1e-3,
                "no": [1.35558587, -0.143662461021788, 1],
@@ -270,10 +310,4 @@ class nC6(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.0327e-9, "Tcref": 761.73}
 
-    _thermal = thermo0,
-
-if __name__ == "__main__":
-    for eq in (0, 1, 4):
-        st=nC6(T=300, P=1e5, eq=eq)
-        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+    _thermal = thermo0, thermo1
