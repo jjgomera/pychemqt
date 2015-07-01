@@ -37,12 +37,6 @@ class nC7(MEoS):
            "ao_hyp": [0.3957146e6, 0.2130579e8, 0.1349899e9, 0],
            "hyp": [0.1697890e3, 0.8361950e3, 0.1760460e4, 0]}
 
-    CP2 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [13.7266, 30.4707, 43.5561, 0],
-           "hyp": [0.314348398*Tc, 1.54813656*Tc, 3.259326458*Tc, 0]}
-
     CP3 = {"ao": 1.157528,
            "an": [0.70489617e-1, -0.23419686e-4, -0.14768221e-8, -0.20117611e-11],
            "pow": [1, 2, 3, 4],
@@ -73,6 +67,7 @@ class nC7(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75, 
         "Pmin": 0.17549e-3, "rhomin": 7.7457, 
@@ -219,7 +214,11 @@ class nC7(MEoS):
 
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+                          
               "ek": 400., "sigma": 0.64947,
               "n_chapman": 0.26718615/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -250,8 +249,53 @@ class nC7(MEoS):
     _viscosity = visco0, visco1
 
     thermo0 = {"eq": 1,
+               "__name__": "Assael (2013)",
+               "__doi__": {"autor": "M. J. Assael, I. Bogdanou, S. K. Mylona, M. L. Huber, R. A. Perkins and V. Vesovic",
+                           "title": "Reference Correlation of the Thermal Conductivity of n-Heptane from the Triple Point to 600 K and up to 250 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 42, 023101 (2013)",
+                           "doi": "10.1063/1.4794091"}, 
+               "__test__": """
+                   >>> st=nC7(T=250, rho=720)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   250.00 720.00 137.09
+                   >>> st=nC7(T=400, rho=2)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   400.00 2.00 21.794
+                   >>> st=nC7(T=400, rho=650)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   400.00 650.00 120.75
+                   >>> st=nC7(T=535, rho=100)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   535.00 100.00 51.655
+                   >>> st=nC7(T=535, rho=100)
+                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
+                   535.00 100.00 49.681
+                   """, # Table 4, Pag 8
+
+               "Tref": Tc, "kref": 1e-3,
+               "no": [-1.83367, 16.2572, -39.0996, 47.8594, 15.1925, -3.39115],
+               "co": [0, 1, 2, 3, 4, 5],
+               "noden": [0.250611, -0.320871, 1.0], 
+               "toden": [0, 1, 2], 
+               
+               "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
+               "nb": [.51778500e-1, -.92405200e-1, .51148400e-1, -.77689600e-2,
+                      .12163700e-3, -.77243300e-2, .21889900e-1, .17172500e-2,
+                      -.79164200e-2, .18337900e-2],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.1246e-9, "Tcref": 810.195}
+
+    thermo1 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 400.0, "kref": 1e-3,
                "no": [1.35558587, -0.152682526035, 1],
@@ -268,9 +312,4 @@ class nC7(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.1246e-9, "Tcref": 810.195}
 
-    _thermal = thermo0,
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    _thermal = thermo0, thermo1
