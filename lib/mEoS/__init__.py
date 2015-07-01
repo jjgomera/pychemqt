@@ -155,7 +155,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "DEE":
+            if module.__module__ != "nC6":
                 continue
             print module.__module__
             inst = module()

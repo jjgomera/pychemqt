@@ -21,12 +21,6 @@ class DME(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.301, "Debye")
     id = 133
 
-    CP1 = {"ao": 4.039,
-           "an": [], "pow": [],
-           "ao_exp": [2.641, 2.123, 8.992, 6.191],
-           "exp": [361, 974, 1916, 4150],
-           "ao_hyp": [], "hyp": []}
-
     Fi1 = {"ao_log": [1, 3.039],
            "pow": [0, 1],
            "ao_pow": [-1.928925, 3.150284],
@@ -42,7 +36,7 @@ class DME(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 40, 023104 (2011)",
                     "doi":  "10.1063/1.3582533"}, 
         "R": 8.314472,
-        "cp": CP1,
+        "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883}, 
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15, 
@@ -74,11 +68,11 @@ class DME(MEoS):
         "__name__": "Helmholtz equation of state for DME of Ihmels and Lemmon (2007)",
         "__doi__": {"autor": "Ihmels, E.C. and Lemmon, E.W.",
                     "title": "Experimental densities, vapor pressures, and critical point, and a fundamental equation of state for dimethyl ether", 
-                    "ref": " Fluid Phase Equilibria (Impact Factor: 2.24). 10/2007; 260(1):36-48",
+                    "ref": "Fluid Phase Equilibria. 10/2007; 260(1):36-48",
                     "doi":  "10.1016/j.fluid.2006.09.016"}, 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883}, 
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
         "Pmin": 0.61166, "rhomin": 55.497, 
@@ -98,14 +92,39 @@ class DME(MEoS):
     _surface = {"sigma": [0.063157], "exp": [1.2595]}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.70647e1, 0.17709e1, -0.21544e1, -0.22098e1],
-        "exp": [1, 1.5, 2.6, 5]}
+        "ao": [-7.112782, 1.971239, -2.276083, -2.215774],
+        "exp": [1, 1.5, 2.5, 5]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [-0.13362e-1, 0.75723e1, -0.10108e2, 0.52885e1, 0.53918e-1],
-        "exp": [0.188, 0.53, 0.73, 0.93, 4.0]}
+        "ao": [7.884834, -10.516328, 5.39142, 0.40489],
+        "exp": [0.54, 0.74, 0.95, 11.43]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.408630565713e1, -0.441287217274e1, -0.122912228629e2,
-               -0.393407197305e2, -0.159976585292e1, -0.864097952455e2],
-        "exp": [0.486, 1.39, 2.7, 5.7, 10., 12.]}
+        "eq": 4,
+        "ao": [-4.136444, -4.302025, -12.03214, -39.527936, -89.4768],
+        "exp": [1.467, 4.2, 8.0, 17.0, 36.0]}
+
+    visco0 = {"eq": 1, "omega": 1, 
+              "__name__": "Meng (2012)", 
+              "__doi__": {"autor": "Meng, X., Zhang, J., Wu, J., Liu, Z.",
+                          "title": "Experimental Measurement and Modeling of the Viscosity of Dimethyl Ether", 
+                          "ref": "J. Chem. Eng. Data, 2012, 57 (3), pp 988–993",
+                          "doi":  "10.1021/je201297j"}, 
+                          
+              "ek": 317.937, "sigma": 0.446704,
+              "Tref": 1., "rhoref": 1.*M, 
+              "n_chapman": 0.14508011,
+              "n_ideal": [0.294261, -0.377826, -0.491673], 
+              "t_ideal": [0, 1, 2], 
+ 
+              "Tref_res": 400.378, "rhoref_res": 5.94*M, "etaref_res": 1, 
+              "n_packed": [], 
+              "t_packed": [], 
+              "n_poly": [-2.70002, 4.44583, -104.998, 78.27474, 41.3751,
+                         -175.055, 62.81975, 0.21302, 112.3219, 6.50681], 
+              "t_poly": [-5.92, -4.36, -2.93, -1.64, -7.86, -4.25, -4.79,
+                         -5.87, -3.11, -0.45], 
+              "d_poly": [3, 3, 3, 4, 5, 2, 2, 5, 2, 1], 
+              "g_poly": [0]*10, 
+              "c_poly": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
+
+    _viscosity = visco0,

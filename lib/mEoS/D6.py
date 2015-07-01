@@ -16,10 +16,9 @@ class D6(MEoS):
     Pc = unidades.Pressure(961.0, "kPa")
     M = 444.924  # g/mol
     Tt = unidades.Temperature(270.2)
-    Tb = unidades.Temperature(518.14)
-    f_acent = 0.7361
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 39
+    Tb = unidades.Temperature(518.11)
+    f_acent = 0.736
+    momentoDipolar = unidades.DipoleMoment(1.559, "Debye")
     # id=1674
 
     CP1 = {"ao": 468.7,
@@ -70,12 +69,3 @@ class D6(MEoS):
         "ao": [-0.20930e1, -0.94442e1, -0.44731e2, -0.57898e2, -0.35144e2,
                -0.29661e3],
         "exp": [0.338, 1.02, 3.46, 7.1, 7.4, 15.0]}
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=DodecaC1Cyc6Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas

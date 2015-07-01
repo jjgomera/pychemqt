@@ -6,7 +6,7 @@ from lib import unidades
 
 
 class DEE(MEoS):
-    """Multiparameter equation of state for diethyl ether """
+    """Multiparameter equation of state for diethyl ether"""
     name = "diethyl ether "
     CASNumber = "60-29-7"
     formula = "C4H10O"

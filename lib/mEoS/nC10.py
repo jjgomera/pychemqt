@@ -34,19 +34,6 @@ class nC10(MEoS):
            "ao_hyp": [21.0069, 43.4931, 58.3657, 0],
            "hyp": [0.267034159, 1.353835195, 2.833479035, 0]}
 
-    CP1 = {"ao": 19.109,
-           "an": [],
-           "pow": [],
-           "ao_exp": [25.685, 28.233, 12.417, 10.035],
-           "exp": [1193, 2140, 4763, 10862],
-           "ao_hyp": [], "hyp": []}
-
-    CP2 = {"ao": 4.0,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [21.0069, 43.49310, 58.36570, 0],
-           "hyp": [0.267034159*Tc, 1.353835195*Tc, 2.833479035*Tc, 0]}
-
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for decane of Lemmon and Span (2006)",

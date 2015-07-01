@@ -13,13 +13,12 @@ class D5(MEoS):
     synonym = "D5"
     rhoc = unidades.Density(292.570762680819)
     Tc = unidades.Temperature(619.23462341)
-    Pc = unidades.Pressure(1161.46, "kPa")
+    Pc = unidades.Pressure(1160, "kPa")
     M = 370.7697  # g/mol
     Tt = unidades.Temperature(226.0)
     Tb = unidades.Temperature(484.05)
     f_acent = 0.658
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 39
+    momentoDipolar = unidades.DipoleMoment(1.349, "Debye")
     # id=1671
 
     CP1 = {"ao": -34.898,
@@ -75,12 +74,3 @@ class D5(MEoS):
         "ao": [-0.37577e1, -0.47669e1, -0.24233e2, -0.29872e3, 0.34441e3,
                -0.32498e3],
         "exp": [0.459, 1.02, 2.6, 6.7, 7.7, 11.0]}
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=DecaC1Cyc5Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas

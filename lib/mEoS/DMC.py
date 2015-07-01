@@ -18,16 +18,8 @@ class DMC(MEoS):
     Tt = unidades.Temperature(277.06)
     Tb = unidades.Temperature(363.256)
     f_acent = 0.346
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 184
+    momentoDipolar = unidades.DipoleMoment(0.899, "Debye")
     # id=1798
-
-    CP1 = {"ao": 9.28421,
-           "an": [],
-           "pow": [],
-           "ao_exp": [0.69884, 0.13132e2, 0.69241, 0.83174e1],
-           "exp": [1150., 1339., 1590., 3111.],
-           "ao_hyp": [], "hyp": []}
            
     Fi1 = {"ao_log": [1, 8.28421],
            "pow": [0, 1],
@@ -38,7 +30,7 @@ class DMC(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2010).",
+        "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2011).",
         "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
                     "title": "Thermodynamic Properties of Dimethyl Carbonate", 
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
@@ -87,7 +79,11 @@ class DMC(MEoS):
 
     visco0 = {"eq": 1, "omega": 3,
               "__name__": "Zhou (2010)",
-              "__doc__":  u"""Zhou, Y., Wu, J., and Lemmon, E.W. "Equations for the Thermophysical Properties of Dimethyl Carbonate," submitted to J. Phys. Chem. Ref. Data, 2010.""",
+              "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
+                          "title": "Equations for the Thermophysical Properties of Dimethyl Carbonate", 
+                          "ref": "AICHE Proceedings, 2009 Annual Meeting",
+                          "doi": ""}, 
+
               "ek": 442.3, "sigma": 0.510747,
               "Tref": 557.376, "rhoref": 3.9749*M,
               "n_chapman": 0.20555,
@@ -103,11 +99,3 @@ class DMC(MEoS):
 
     _viscosity = visco0,
 
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=DMC(T=298.15, P=1000)
-    print "%0.1f %0.5f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.h, cyc5.s

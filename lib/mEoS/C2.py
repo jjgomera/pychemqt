@@ -13,7 +13,7 @@ class C2(MEoS):
     synonym = "R-170"
     rhoc = unidades.Density(206.18)
     Tc = unidades.Temperature(305.322)
-    Pc = unidades.Pressure(4251.2, "kPa")
+    Pc = unidades.Pressure(4872.2, "kPa")
     M = 30.06904  # g/mol
     Tt = unidades.Temperature(90.368)
     Tb = unidades.Temperature(184.569)
@@ -278,12 +278,12 @@ class C2(MEoS):
                     "doi": "10.1063/1.555881"}, 
         "__test__":
             # Table A1, Pag 336
-#            """
-#            >>> st=C2(T=500, P=1e5, eq=3)
-#            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
-#            500 -110.311 25.059 262.43 77.987
-#            """
+            """
+            >>> st=C2(T=500, P=1e5, eq=3)
+            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
+                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
+            500 -110.311 25.059 262.43 77.987
+            """
             # Table A2, Pag 337
             """
             >>> st=C2(T=92, x=0.5, eq=3)
@@ -527,6 +527,7 @@ class C2(MEoS):
                           "title": "Thermophysical Properties of Ethane", 
                           "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
                           "doi": "10.1063/1.555881"}, 
+                          
               "ek": 245.0, "sigma": 0.43682,
               "Tref": 1, "rhoref": 1.*M,
               "n_chapman": 0.1463897/M**0.5,
@@ -547,10 +548,10 @@ class C2(MEoS):
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane", 
-                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"}, 
+              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                          "doi": "10.1063/1.555785"}, 
 
               "ek": 240.0, "sigma": 0.440110,
               "n_chapman": 0.146388493/M**0.5,
