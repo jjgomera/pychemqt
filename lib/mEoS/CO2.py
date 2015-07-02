@@ -235,9 +235,14 @@ class CO2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon dioxide of Ely et al. (1987)",
-        "__doc__":  u"""Ely, J.F., Magee, J.W., and Haynes, W.M., "Thermophysical properties for special high CO2 content mixtures," Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.""",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+                    "title": "Thermophysical properties for special high CO2 content mixtures", 
+                    "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
+                    "doi": ""}, 
+
         "R": 8.31434,
         "cp": CP3,
+        "ref": "OTO", 
 
         "Tmin": 216.58, "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778, 
         "Pmin": 518.2, "rhomin": 26.778, 
