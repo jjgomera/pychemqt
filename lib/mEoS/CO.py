@@ -74,7 +74,11 @@ class CO(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon monoxide of McCarty (1989)",
-        "__doc__":  u"""McCarty, R.D., "Correlations for the Thermophysical Properties of Carbon Monoxide," National Institute of Standards and Technology, Boulder, CO, 1989.""",
+        "__doi__": {"autor": "McCarty, R.D.",
+                    "title": "Correlations for the Thermophysical Properties of Carbon Monoxide", 
+                    "ref": "National Institute of Standards and Technology, Boulder, CO, 1989.",
+                    "doi":  ""}, 
+
         "R": 8.31434,
         "cp": CP3,
 
@@ -142,7 +146,10 @@ class CO(MEoS):
 
     visco0 = {"eq": 2, "omega": 2,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08 Estimated uncertainty is 2 %.""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
               "ek": 91.7, "sigma": 0.369,
               "n_chapman": 0.141374566/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -154,7 +161,10 @@ class CO(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08 Critical enhancement model of Olchowy and Sengers added""",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
 
                "Tref": 91.7, "kref": 1e-3,
                "no": [1.35558587, -0.16380500617, 1],
