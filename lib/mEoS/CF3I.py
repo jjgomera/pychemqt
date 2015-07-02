@@ -33,13 +33,18 @@ class CF3I(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for CF3I of Lemmon (2006).",
-        "__doc__":  u"""Lemmon, E.W. preliminary equation""",
+        "__name__": "short Helmholtz equation of state for CF3I of McLinden and Lemmon (2013)",
+        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
+                    "doi": ""}, 
+
         "R": 8.314472,
         "cp": CP1,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 420., "Pmax": 20000.0, "rhomax": 14.1, 
-        "Pmin": 0.0005, "rhomin": 14.1, 
+        "Pmin": 0.0004623, "rhomin": 14.05, 
 
         "nr1": [0.112191e1, -0.308087e1, 0.111307e1, -0.184885, 0.110971,
                 0.325005e-3],
@@ -56,3 +61,15 @@ class CF3I(MEoS):
     eq = helmholtz1,
 
     _surface = {"sigma": [0.05767], "exp": [1.298]}
+    _vapor_Pressure = {
+        "eq": 5,
+        "ao": [-6.8642, 1.7877, -1.0619, -2.1677],
+        "exp": [1.0, 1.5, 1.9, 3.8]}
+    _liquid_Density = {
+        "eq": 1,
+        "ao": [2.0711, 1.562, -2.599, 1.7177],
+        "exp": [0.38, 1.3, 1.9, 2.5]}
+    _vapor_Density = {
+        "eq": 3,
+        "ao": [-3.0987, -6.8771, -19.701, -46.86, -100.02],
+        "exp": [0.41, 1.33, 3.5, 7.4, 16.0]}
