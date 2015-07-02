@@ -15,7 +15,7 @@ class Cyclohexane(MEoS):
     Tc = unidades.Temperature(553.6)
     Pc = unidades.Pressure(4080.5, "kPa")
     M = 84.15948  # g/mol
-    Tt = unidades.Temperature(279.86)
+    Tt = unidades.Temperature(279.47)
     Tb = unidades.Temperature(353.865)
     f_acent = 0.2096
     momentoDipolar = unidades.DipoleMoment(0.3, "Debye")
@@ -80,8 +80,8 @@ class Cyclohexane(MEoS):
         "cp": Fi1,
         "ref": {"Tref": 300, "Pref": 1., "ho": 23949.01, "so": 104.2926004}, 
         
-        "Tmin": 279.86, "Tmax": 700.0, "Pmax": 250000.0,# "rhomax": 9.77, 
-        #"Pmin": 5.2538, "rhomin": 9.4045, 
+        "Tmin": 279.86, "Tmax": 700.0, "Pmax": 250000.0, "rhomax": 10.3, 
+        "Pmin": 5.2402, "rhomin": 9.403, 
 
         "nr1": [0.05483581, 1.607734, -2.375928, -0.5137709, 0.1858417],
         "d1": [4, 1, 1, 2, 3],
@@ -141,14 +141,14 @@ class Cyclohexane(MEoS):
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-#        "__test__": """
-#            >>> st=Cyclohexane(T=700, rho=200, eq=2)
-#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-#            3.0278 9.007 3.5927
-#            >>> st2=Cyclohexane(T=750, rho=100, eq=2)
-#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-#            206.82 0.31448
-#            """, # Table III, Pag 46
+        "__test__": """
+            >>> st=Cyclohexane(T=700, rho=200, eq=2)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            3.0278 9.007 3.5927
+            >>> st2=Cyclohexane(T=750, rho=100, eq=2)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            206.82 0.31448
+            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
@@ -205,20 +205,13 @@ class Cyclohexane(MEoS):
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.70408e1, 0.19110e1, -0.18308e1, -0.16218e2, 0.20237e2],
-        "exp": [1., 1.5, 2.13, 5.9, 7.2]}
+        "ao": [-7.0342, 1.7311, -1.7572, -3.3406],
+        "exp": [1., 1.5, 2.3, 4.6]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.17177, 0.25797e3, -0.73723e3, 0.11669e4, -0.13041e4, 0.62129e3],
-        "exp": [0.093, 1.14, 1.34, 1.67, 2.0, 2.2]}
+        "ao": [5.5081, -14.486, 38.241, -64.589, 57.919, -20.55],
+        "exp": [0.51, 0.94, 1.4, 1.9, 2.4, 3.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.12016, -0.57983e1, -0.95451e2, 0.22937e3, -0.22100e3, 0.34023e2],
-        "exp": [0.102, 0.63, 3.0, 3.6, 4.2, 4.5]}
-
-
-if __name__ == "__main__":
-    for eq in (0, 1, 2, 3):
-        st=Cyclohexane(T=298.15, P=101325, eq=eq)
-        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+        "ao": [-3.69006, -41.4239, 220.914, -443.72, 491.49, -296.373],
+        "exp": [0.446, 1.98, 2.75, 3.3, 4.1, 4.8]}

@@ -18,8 +18,7 @@ class D4(MEoS):
     Tt = unidades.Temperature(290.25)
     Tb = unidades.Temperature(448.504)
     f_acent = 0.592
-    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 39
+    momentoDipolar = unidades.DipoleMoment(1.090, "Debye")
     # id=1430
 
     CP1 = {"ao": -18.256,
@@ -84,12 +83,3 @@ class D4(MEoS):
 
     _viscosity = visco0,
 #    _thermal=visco0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=OctaC1Cyc4Siloxane(T=400., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
