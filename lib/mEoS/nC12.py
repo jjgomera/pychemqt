@@ -89,7 +89,6 @@ class nC12(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.382987, -0.561050, 0.313962e-1],
               "__name__": "Huber (2004)",
-              "__doc__": """, , Energy & Fuels, 18:968-975, 2004.""",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
                           "title": "Transport Properties of n-Dodecane", 
                           "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",

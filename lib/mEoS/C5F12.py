@@ -7,12 +7,7 @@ from R113 import R113
 
 
 class C5F12(MEoS):
-    """Multiparameter equation of state for perfluropentane
-
-    >>> c4f10=C5F12(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.3f %0.5f %0.4f %0.4f %0.2f" % (c4f10.T, c4f10.rho, c4f10.h.kJkg, c4f10.s.kJkgK, c4f10.cv.kJkgK, c4f10.cp.kJkgK, c4f10.w)
-    300.0 0.08077 27.469 0.14617 10.7187 14.8450 1309.82
-    """
+    """Multiparameter equation of state for perfluropentane"""
     name = "perfluoropentane"
     CASNumber = "678-26-2"
     formula = "678-26-2"

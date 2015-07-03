@@ -6,12 +6,7 @@ from lib import unidades
 
 
 class Benzene(MEoS):
-    """Multiparameter equation of state for benzene
-
-    >>> benceno=Benzene(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (benceno.T, benceno.rho, benceno.u.kJkg, benceno.h.kJkg, benceno.s.kJkgK, benceno.cv.kJkgK, benceno.cp.kJkgK, benceno.w)
-    300.0 860.51 -155.13 -155.01 -0.45421 1.2679 1.7070 1295.0
-    """
+    """Multiparameter equation of state for benzene"""
     name = "benzene"
     CASNumber = "71-43-2"
     formula = "C6H6"
@@ -44,6 +39,39 @@ class Benzene(MEoS):
         "__name__": "Helmholtz equation of state for benzene of Thol et al. (2010).",
         "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
                     "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
+                    "ref": "to be published, 2013",
+                    "doi": ""}, 
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": "NBP", 
+
+        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45, 
+        "Pmin": 4.78, "rhomin": 11.45, 
+
+        "nr1": [0.03512459, 2.2338, -3.10542612, -0.577233, 0.25101],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.29, 0.696, 1.212, 0.595],
+
+        "nr2": [-0.705518, -0.139648, 0.83494, -0.331456, -0.0279953],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.51, 3.96, 1.24, 1.83, 0.82],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1.]*5,
+
+        "nr3": [0.7099766, -0.3732185, -0.0629985, -0.803041],
+        "d3": [1, 1, 3, 3],
+        "t3": [0.57, 2.04, 3.2, 0.78],
+        "alfa3": [1.032, 1.423, 1.071, 14.2],
+        "beta3": [1.864, 1.766, 1.825, 297.9],
+        "gamma3": [1.118, 0.639, 0.654, 1.164],
+        "epsilon3": [0.729, 0.907, 0.765, 0.87],
+        "nr4": []}
+
+    helmholtz2 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for benzene of Thol et al. (2010).",
+        "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
+                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
                     "ref": "High Temperatures-High Pressures 01/2012; 41:81.",
                     "doi": ""}, 
         "R": 8.314472,
@@ -72,7 +100,7 @@ class Benzene(MEoS):
         "epsilon3": [0.7289, 0.9074, 0.7655, 0.8711],
         "nr4": []}
 
-    helmholtz2 = {
+    helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -102,7 +130,7 @@ class Benzene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.95481]*6}
 
-    helmholtz3 = {
+    helmholtz4 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -128,7 +156,7 @@ class Benzene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
     _surface = {"sigma": [0.07298, -0.0007802, -0.0001756],
                 "exp": [1.232, 0.8635, 0.3065]}
