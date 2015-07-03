@@ -21,11 +21,10 @@ class NH3(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.470, "Debye")
     id = 63
 
-    CP1 = {"ao": 0,
-           "an": [2.54985265683/405.40**-0.333, 4.86079045595/405.40**1.5,
-                  -2.74637680305/405.40**1.75],
-           "pow": [-1./3, 1.5, 1.75],
-           "ao_exp": [], "exp": [],
+    Fi1 = {"ao_log": [1, -1],
+           "pow": [0, 1, 1./3, -1.5, -1.75],
+           "ao_pow": [-15.81502, 4.255726, 11.47434, -1.296211, 0.5706757],
+           "ao_exp": [], "titao": [], 
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 5.111814,
@@ -37,10 +36,108 @@ class NH3(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ammonia of Tillner-Roth et al. (1993)",
-        "__doc__":  u"""Tillner-Roth, R., Harms-Watzenberg, F., Baehr, H.D. Eine neue Fundamentalgleichung für Ammoniak. DKV-Tagungsbericht 20 (1993), 167 – 181.""",
+        "__name__": "Helmholtz equation of state for ammonia of Baehr and Tillner-Roth (1993)",
+        "__doi__": {"autor": "Baehr, H.D. and Tillner-Roth, R.",
+                    "title": "Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123", 
+                    "ref": "Springer-Verlag, Berlin, 1994.",
+                    "doi": ""}, 
+        "__test__": 
+            # Table, Pag 42
+            """
+            >>> st=NH3(T=-77.65+273.15, x=0.5)
+            >>> print "%0.2f %0.5f %0.5g %0.3g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            -77.65 0.00609 732.9 0.0641 -143.14 1484.4 1341.2 -0.4715 7.5928 7.1213
+            >>> st=NH3(T=-50+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.4g %0.4g %0.5g %0.5g %0.3g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            -50 0.04084 702.09 0.3806 -24.73 1415.9 1391.2 0.0945 6.3451 6.4396
+            >>> st=NH3(T=-25+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.4g %0.5g %0.5g %0.4g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            -25 0.15147 671.53 1.2959 86.01 1344.6 1430.7 0.5641 5.4187 5.9827
+            >>> st=NH3(T=273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            0 0.42938 638.57 3.4567 200 1262.2 1462.2 1 4.621 5.621
+            >>> st=NH3(T=25+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            25 1.00324 602.76 7.8069 317.67 1165.8 1483.4 1.4089 3.91 5.3188
+            >>> st=NH3(T=50+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            50 2.03403 562.86 15.785 440.62 1050.5 1491.1 1.799 3.2507 5.0497
+            >>> st=NH3(T=75+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            75 3.71045 516.23 29.923 572.38 907.35 1479.7 2.1823 2.6062 4.7885
+            >>> st=NH3(T=100+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            100 6.25527 456.63 56.117 721 715.63 1436.6 2.5797 1.9178 4.4975
+            >>> st=NH3(T=125+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            125 9.97022 357.8 120.73 919.68 389.44 1309.1 3.0702 0.9781 4.0483
+            >>> st=NH3(T=132+273.15, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.5g" % (\
+                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
+                st.Hvap.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Svap.kJkgK, st.Gas.s.kJkgK)
+            132 11.28976 262.7 193.88 1063 108.59 1171.6 3.416 0.268 3.684
+            """
+            # Table, Pag 51
+            """
+            >>> st=NH3(T=-75+273.15, P=1e4)
+            >>> print "%0.0f %0.2f %0.5g %0.4g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -75 730.10 -131.97 -0.4148
+            >>> st=NH3(T=-30+273.15, P=2e4)
+            >>> print "%0.0f %0.4f %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -30 0.1693 1436.9 6.9812
+            >>> st=NH3(T=273.15, P=3e4)
+            >>> print "%0.0f %0.4f %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            0 0.2260 1498.3 7.0226
+            >>> st=NH3(T=175+273.15, P=5e4)
+            >>> print "%0.0f %0.4f %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            175 0.2288 1884.8 7.8612
+            >>> st=NH3(T=-50+273.15, P=1e5)
+            >>> print "%0.0f %0.2f %0.4g %0.3g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -50 702.11 -24.67 0.0944
+            >>> st=NH3(T=-30+273.15, P=1e5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -30 0.8641 1426.1 6.1607
+            >>> st=NH3(T=273.15, P=2e5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            0 1.5468 1483.8 6.0557
+            >>> st=NH3(T=125+273.15, P=3e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            125 1.5597 1762.6 6.7009
+            >>> st=NH3(T=-50+273.15, P=5e5)
+            >>> print "%0.0f %0.5g %0.4g %0.3g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -50 702.28 -24.32 0.0934
+            >>> st=NH3(T=273.15, P=1e6)
+            >>> print "%0.0f %0.5g %0.5g %0.4g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            0 638.97 200.37 0.9981
+            >>> st=NH3(T=273.15, P=2e6)
+            >>> print "%0.0f %0.5g %0.5g %0.4g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            0 639.67 201.01 0.9947
+            >>> st=NH3(T=-50+273.15, P=3e6)
+            >>> print "%0.0f %0.5g %0.4g %0.3g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
+            -50 703.33 -22.08 0.0875
+            """, 
+
         "R": 8.314471,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 52.915, 
         "Pmin": 6.09, "rhomin": 43.035, 
@@ -62,9 +159,14 @@ class NH3(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts and Baehr (1979)",
-        "__doc__":  u"""Ahrendts, J. and Baehr, H.D. "The Thermodynamic Properties of Ammonia," VDI-Forsch., Number 596, 1979.""",
+        "__doi__": {"autor": "Ahrendts, J. and Baehr, H.D.",
+                    "title": "The Thermodynamic Properties of Ammonia", 
+                    "ref": "VDI-Forsch., Number 596, 1979.",
+                    "doi": ""}, 
+                    
         "R": 8.31434,
         "cp": CP2,
+        "ref": "IIR",
 
         "Tmin": 195.486, "Tmax": 600., "Pmax": 400000.0, "rhomax": 44.0, 
         "Pmin": 6.0339, "rhomin": 43.137, 
@@ -106,7 +208,8 @@ class NH3(MEoS):
             """, # Table III, Pag 117
             
         "R": 8.314471,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 52.915, 
         "Pmin": 6.0531, "rhomin": 43.158, 
@@ -130,7 +233,8 @@ class NH3(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.3143,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 

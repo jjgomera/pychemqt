@@ -8,7 +8,7 @@ from lib import unidades
 
 
 class Air(MEoSBlend):
-    """Multiparameter equqtion of state for Air as pseudocomponent"""
+    """Multiparameter equation of state for Air as pseudocomponent"""
     name = "air"
     CASNumber = "1"
     formula = "N2+Ar+O2"
@@ -274,14 +274,3 @@ class Air(MEoSBlend):
                "Xio": 0.11e-9, "gam0": 0.55e-1, "qd": 0.31e-9, "Tcref": 265.262}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    for eq in (0, 1):
-#        st=Air(T=300, P=1e6, eq=eq)
-#        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-#            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-
-    st=Air(T=132.64, rhom=10.4)
-    print "%0.3f" % st.k.mWmK
-#                    119.221
