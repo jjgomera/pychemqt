@@ -3,6 +3,7 @@
 
 from lib.meos import MEoS
 from lib import unidades
+from C3 import C3
 
 
 class Butene_1(MEoS):
@@ -81,3 +82,28 @@ class Butene_1(MEoS):
         "eq": 3,
         "ao": [-0.31106e1, -0.63103e1, -0.19272e2, -0.48739e2, -0.99898e2, -0.19001e3],
         "exp": [0.415, 1.27, 3.34, 7.0, 14.5, 28.0]}
+
+    trnECS = {"eq": "ecs",
+              "__name__": "Extended Corresponding States model",
+              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
+                          "doi": "10.1021/ie0300880"}, 
+
+              "ref": C3,
+              "ref_eq": "helmholtz1",
+              "eq_visco": "visco1",
+              "eq_thermo": "thermo0",
+              
+              "sigma": 0.4998, "ek": 332.95, 
+              "fint": [1.32e-3], "fint_t": [0], 
+              "psi": [1.0], "psi_t": [0], "psi_d": [0],
+              "phi": [1.0], "phi_t": [0], "phi_d": [0]}
+
+    _viscosity=trnECS,
+    _thermal=trnECS,
+
+
+if __name__ == "__main__":
+    st=Butene_1(T=300, P=1e5, )
+    print "%0.6g %0.6g" % (st.mu.muPas, st.k.mWmK)
