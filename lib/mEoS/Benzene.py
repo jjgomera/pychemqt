@@ -36,9 +36,9 @@ class Benzene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for benzene of Thol et al. (2010).",
+        "__name__": "Helmholtz equation of state for benzene of Thol et al. (2013).",
         "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
-                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
+                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa (final)", 
                     "ref": "to be published, 2013",
                     "doi": ""}, 
         "R": 8.314472,
@@ -69,7 +69,7 @@ class Benzene(MEoS):
 
     helmholtz2 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for benzene of Thol et al. (2010).",
+        "__name__": "Helmholtz equation of state for benzene of Thol et al. (2012).",
         "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
                     "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
                     "ref": "High Temperatures-High Pressures 01/2012; 41:81.",
@@ -173,8 +173,39 @@ class Benzene(MEoS):
         "ao": [-0.31147e1, -0.46689e1, -0.16161e2, -0.14650e3, 0.51887e3, -0.82772e3],
         "exp": [0.419, 1.12, 2.8, 7.3, 10., 12.]}
 
-if __name__ == "__main__":
-    for eq in (0, 2):
-        st=Benzene(T=353.22, P=101325., eq=eq)
-        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+    visco0 = {"eq": 5, "omega": 3,
+              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
+                          "doi": "10.1021/ie00076a024"}, 
+              "__name__": "Chung (1988)",
+              "w": 0.5693, "mur": 0.3209, "k": 0.0642}
+
+    _viscosity = visco0,
+
+    thermo0 = {"eq": 1,
+               "__name__": "Assael (2012)",
+               "__doi__": {"autor": "Assael, M.J., Mihailidou, E., Huber, M.L. and Perkins, R.A.",
+                           "title": "Reference Correlation of the Thermal Conductivity of Benzene from the Triple Point to 725 K and up to 500 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 41, 043102 (2012)",
+                           "doi": "10.1063/1.4755781"}, 
+
+               "Tref": 1., "kref": 1e-3,
+               "no": [56991.07, -521.44, 1.5449],
+               "co": [0, 1, 2],
+               "noden": [562.02, 9.714, 0.0026102], 
+               "coden": [0, 1, 2], 
+ 
+               "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
+               "nb": [.282489e-1, -.773415e-1, .714001e-1, -.236798e-1,
+                      .300875e-2, -.119268e-1, .833389e-1, -.898176e-1,
+                      .363025e-1, -.490052e-2],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.216-9, "gam0": 0.0569, "qd": 0.62e-9, "Tcref": 843}
+
+    _thermal = thermo0,
