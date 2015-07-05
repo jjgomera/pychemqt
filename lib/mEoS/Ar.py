@@ -452,6 +452,7 @@ class Ar(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732}, 
 
         "Tmin": 83.80, "Tmax": 400., "Pmax": 101000.0, "rhomax": 50.65, 
         "Pmin": 68.906, "rhomin": 35.4, 
@@ -646,7 +647,10 @@ class Ar(MEoS):
 
     thermo2 = {"eq": 1,
                "__name__": "Perkins (1991)",
-               "__doc__": """Perkins, R.A., Friend, D.G., Roder, H.M., and Nieto de Castro, C.A., "Thermal Conductivity Surface of Argon:  A Fresh Analysis," Int. J. Thermophys., 12(6):965-984, 1991""",
+               "__doi__": {"autor": "Perkins, R.A., Friend, D.G., Roder, H.M., and Nieto de Castro, C.A.",
+                           "title": "Thermal Conductivity Surface of Argon:  A Fresh Analysis", 
+                           "ref": "Int. J. Thermophys., 12(6):965-984, 1991.",
+                           "doi": "10.1007/BF00503513"}, 
 
                "Tref": 1.0, "kref": 1e-3,
                "no": [.1225067272e5, -.9096222831e4, .2744958263e4,
@@ -666,11 +670,3 @@ class Ar(MEoS):
                "expo": 0.46807, "alfa": 39.8, "beta": 5.45, "Xio": 6.0795e-1}
 
     _thermal = thermo0, thermo1, thermo2
-
-
-if __name__ == "__main__":
-    for eq in (0, 2, 3, 4):
-        st=Ar(T=300, P=1e6, eq=eq)
-        print "%0.6g %0.5g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-
