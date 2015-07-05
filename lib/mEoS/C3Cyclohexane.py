@@ -6,23 +6,18 @@ from lib import unidades
 
 
 class C3Cyclohexane(MEoS):
-    """Multiparameter equation of state for propylcyclohexane
-
-    >>> metilciclohexano=C3Cyclohexane(T=300, P=0.1)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.5f %0.4f %0.4f %0.1f" % (ciclohexano.T, ciclohexano.rho, ciclohexano.u.kJkg, ciclohexano.h.kJkg, ciclohexano.s.kJkgK, ciclohexano.cv.kJkgK, ciclohexano.cp.kJkgK, ciclohexano.w)
-    500.0 3.56 377.04 405.10 0.89052 2.4600 2.5333 166.4
-    """
+    """Multiparameter equation of state for propylcyclohexane"""
     name = "propylcyclohexane"
     CASNumber = "1678-92-8"
     formula = "C6H11-CH2CH2CH3"
     synonym = ""
     rhoc = unidades.Density(260.0527932)
-    Tc = unidades.Temperature(630.)
+    Tc = unidades.Temperature(630.8)
     Pc = unidades.Pressure(2860.0, "kPa")
     M = 126.23922  # g/mol
     Tt = unidades.Temperature(178.2)
     Tb = unidades.Temperature(429.9)
-    f_acent = 0.33
+    f_acent = 0.326
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 184
 
@@ -36,9 +31,14 @@ class C3Cyclohexane(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for propylcyclohexane of Lemmon (2007).",
-        "__doc__":  """""",
+        "__doi__": {"autor": "Lemmon, E.W.",
+                    "title": "", 
+                    "ref": "unpublished equation, 2007",
+                    "doi": ""}, 
+                    
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 7.03, 
         "Pmin": 0.0000007, "rhomin": 7.03, 
@@ -69,8 +69,12 @@ class C3Cyclohexane(MEoS):
         "exp": [0.6, 1.8, 2.2, 6.0, 14.0]}
 
     visco0 = {"eq": 4, "omega": 1,
-              "__doc__": """regression as in S.E.Quiñones-Cisneros and U.K. Deiters, "Generalization of the Friction Theory for Viscosity Modeling," J. Phys. Chem. B 2006, 110,12820-12834.""",
               "__name__": "Quiñones-Cisneros (2006)",
+              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
+                          "doi": "10.1021/jp0618577"}, 
+                          
               "Tref": 630.8, "muref": 1.0,
               "ek": 507.54, "sigma": 0.6321,
               "n_ideal": [0.528175e2, -0.170572e3,  0.171218e3, -0.402745e2],
@@ -88,7 +92,37 @@ class C3Cyclohexane(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2008)",
-               "__doc__": """Perkins, R.A. Hammerschmidt, U. and Huber, M.L., "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa," J. Chem. Eng. Data, 53:2120-2127(2008).""",
+               "__doi__": {"autor": "Perkins, R.A. Hammerschmidt, U. and Huber, M.L.",
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa", 
+                           "ref": "J. Chem. Eng. Data, 2008, 53 (9), pp 2120–2127",
+                           "doi": "10.1021/je800255r"}, 
+               "__test__": 
+                    """
+                    >>> st=C3Cyclohexane(T=300, P=1e5)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    300.00 0.100 788.480445 0.110772385
+                    >>> st=C3Cyclohexane(T=450, P=1e5)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    450.00 0.100 3.52727123 0.0243185705
+                    >>> st=C3Cyclohexane(T=450, P=5e7)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    450.00 50.000 729.367278 0.105375558
+                    >>> st=C3Cyclohexane(T=600, P=1e5)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    600.00 0.100 2.56885356 0.0451537166
+                    >>> st=C3Cyclohexane(T=600, P=4.744e6)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    600.00 4.744 501.697589 0.0743155503
+                    >>> st=C3Cyclohexane(T=600, P=5e7)
+                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
+                        st.T, st.P.MPa, st.rho, st.k.WmK)
+                    300.00 50.000 644.863706 0.0976809646
+                    """, # Table 5, pag 2125
 
                "Tref": 630.8, "kref": 1,
                "no": [0.107402e-1, -0.609829e-1, 0.138204, -0.381213e-1],
@@ -106,12 +140,3 @@ class C3Cyclohexane(MEoS):
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 6.24e-10, "Tcref": 958.725}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    cyc5=C3Cyclohexane(T=300., P=0.1)
-    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
-    print cyc5.k.mWmK, cyc5.mu.muPas
