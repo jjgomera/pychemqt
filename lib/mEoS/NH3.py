@@ -272,34 +272,112 @@ class NH3(MEoS):
         "exp": [0.218, 0.55, 1.5, 3.7, 5.5, 5.8]}
 
     visco0 = {"eq": 1, "omega": 1,
-             "collision": [4.99318220, -0.61122364, 0.0, 0.18535124, -0.11160946],
-             "__name__": "Fenghour (1995)",
-             "__doc__": """Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, J.T.R., Millat, J., and Vogel, E., "The viscosity of ammonia," J. Phys. Chem. Ref. Data, 24:1649-1667, 1995.""",
-             "ek": 386., "sigma": 0.2957,
-             "Tref": 1., "rhoref": 1.*M,
-             "n_chapman": 8.8135503/M**0.5,
+              "collision": [4.99318220, -0.61122364, 0.0, 0.18535124, -0.11160946],
+              "__name__": "Fenghour (1995)",
+              "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, J.T.R., Millat, J., and Vogel, E.",
+                          "title": "The viscosity of ammonia", 
+                          "ref": "J. Phys. Chem. Ref. Data 24, 1649 (1995)",
+                          "doi": "10.1063/1.555961"}, 
+              "__test__": 
+                    # Appendix II, pag 1664
+                    """
+                    >>> st=NH3(T=200, P=1e5)
+                    >>> print "%0.2f" % st.mu.muPas
+                    507.47
+                    >>> st=NH3(T=290, P=1e6)
+                    >>> print "%0.2f" % st.mu.muPas
+                    142.93
+                    >>> st=NH3(T=250, P=1e7)
+                    >>> print "%0.2f" % st.mu.muPas
+                    233.81
+                    >>> st=NH3(T=300, P=1e5)
+                    >>> print "%0.2f" % st.mu.muPas
+                    10.16
+                    >>> st=NH3(T=350, P=1.8e7)
+                    >>> print "%0.2f" % st.mu.muPas
+                    91.36
+                    >>> st=NH3(T=400, P=5e7)
+                    >>> print "%0.2f" % st.mu.muPas
+                    77.29
+                    >>> st=NH3(T=490, P=1e6)
+                    >>> print "%0.2f" % st.mu.muPas
+                    17.49
+                    >>> st=NH3(T=550, P=1e5)
+                    >>> print "%0.2f" % st.mu.muPas
+                    19.79
+                    >>> st=NH3(T=680, P=5e7)
+                    >>> print "%0.2f" % st.mu.muPas
+                    31.90
+                    """
+                    # Appendix III, pag 1667
+                    """
+                    >>> st=NH3(T=196, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    196 0.0063 0.0039 6.85 43.0041 553.31
+                    >>> st=NH3(T=240, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    240 0.1022 0.0527 8.06 40.0318 254.85
+                    >>> st=NH3(T=280, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    280 0.5509 0.2573 9.27 36.9389 158.12
+                    >>> st=NH3(T=300, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    300 1.0617 0.4845 9.89 35.2298 129.33
+                    >>> st=NH3(T=340, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    340 3.0803 1.4325 11.33 31.2641 88.55
+                    >>> st=NH3(T=360, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    360 4.7929 2.3598 12.35 28.7879 65.49
+                    >>> st=NH3(T=380, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    380 7.1403 3.9558 14.02 25.6059 58.31
+                    >>> st=NH3(T=398, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    398 9.9436 7.0447 17.67 21.0667 43.95
+                    >>> st=NH3(T=402, x=0.5)
+                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
+                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
+                    402 10.6777 8.5479 19.69 19.0642 39.20
+                    """
+                    ,
 
-             "n_virial": [-0.17999496e1, 0.46692621e2, -0.53460794e3,
-                          0.33604074e4, -0.13019164e5, 0.33414230e5,
-                          -0.58711743e5, 0.71426686e5, -0.59834012e5,
-                          0.33652741e5, -0.1202735e5, 0.24348205e4, -0.20807957e3],
-             "t_virial": [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5,
-                          -5.5, -6],
-             "Tref_virial": 386., "etaref_virial": 0.015570557,
+              "ek": 386., "sigma": 0.2957,
+              "Tref": 1., "rhoref": 1.*M,
+              "n_chapman": 8.8135503/M**0.5,
 
-             "Tref_res": 386., "rhoref_res": 1.*M, "etaref_res": 1,
-             "n_poly": [2.19664285e-1, -0.83651107e-1, 0.17366936e-2,
-                        -0.64250359e-2, 1.67668649e-4, -1.49710093e-4, 0.77012274e-4],
-             "t_poly": [-2, -4, -0, -1, -2, -3, -4],
-             "d_poly": [2, 2, 3, 3, 4, 4, 4],
-             "g_poly": [0, 0, 0, 0, 0, 0, 0],
-             "c_poly": [0, 0, 0, 0, 0, 0, 0]}
+              "n_virial": [-0.17999496e1, 0.46692621e2, -0.53460794e3,
+                           0.33604074e4, -0.13019164e5, 0.33414230e5,
+                           -0.58711743e5, 0.71426686e5, -0.59834012e5,
+                           0.33652741e5, -0.1202735e5, 0.24348205e4, -0.20807957e3],
+              "t_virial": [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5,
+                           -5.5, -6],
+              "Tref_virial": 386., "etaref_virial": 0.015570557,
+
+              "Tref_res": 386., "rhoref_res": 1.*M, "etaref_res": 1,
+              "n_poly": [2.19664285e-1, -0.83651107e-1, 0.17366936e-2,
+                         -0.64250359e-2, 1.67668649e-4, -1.49710093e-4, 0.77012274e-4],
+              "t_poly": [-2, -4, -0, -1, -2, -3, -4],
+              "d_poly": [2, 2, 3, 3, 4, 4, 4],
+              "g_poly": [0, 0, 0, 0, 0, 0, 0],
+              "c_poly": [0, 0, 0, 0, 0, 0, 0]}
 
     _viscosity = visco0,
 
     thermo0 = {"eq": 1, "critical": "NH3",
                "__name__": "Tufeu (1984)",
-               "__doc__": """Tufeu, R., Ivanov, D.Y., Garrabos, Y., and Le Neindre, B., "Thermal conductivity of ammonia in a large temperature and pressure range including the critical region," Ber. Bunsenges. Phys. Chem., 88:422-427, 1984""",
+               "__doi__": {"autor": "Tufeu, R., Ivanov, D.Y., Garrabos, Y., and Le Neindre, B.",
+                            "title": "Thermal conductivity of ammonia in a large temperature and pressure range including the critical region", 
+                            "ref": "Ber. Bunsenges. Phys. Chem., 88:422-427, 1984",
+                            "doi": "10.1002/bbpc.19840880421"}, 
 
                "Tref": 1., "kref": 1.,
                "no": [0.3589e-1, -0.1750e-3, 0.4551e-6, 0.1685e-9, -0.4828e-12],
