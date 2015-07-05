@@ -409,7 +409,11 @@ class nC4(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.17067154, -0.48879666, 0.039038856],
               "__name__": "Vogel (1999)",
-              "__doc__": """Vogel, E., Kuechenmeister, C., and Bich, E., "Viscosity for n-Butane in the Fluid Region," High Temp. - High Pressures, 31(2):173-186, 1999.""",
+              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
+                          "title": "Viscosity for n-Butane in the Fluid Region", 
+                          "ref": "High Temp. - High Pressures, 31(2):173-186, 1999.",
+                          "doi": "10.1068/htrt154"}, 
+              
               "ek": 280.51, "sigma": 0.57335,
               "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
               "n_chapman": 0.1628213/M**0.5,
@@ -478,7 +482,10 @@ class nC4(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2002)",
-               "__doc__": """Perkins, R.A, Ramires, M.L.V., Nieto de Castro, C.A. and Cusco, L., "Measurement and Correlation of the Thermal Conductivity of Butane from 135 K to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(5):1263-1271, 2002.""",
+               "__doi__": {"autor": "Perkins, R.A, Ramires, M.L.V., Nieto de Castro, C.A. and Cusco, L.",
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Butane from 135 K to 600 K at Pressures to 70 MPa", 
+                           "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1263–1271",
+                           "doi": "10.1021/je0101202"}, 
 
                "Tref": 425.16, "kref": 1.,
                "no": [1.62676e-3, 9.75703e-4, 2.89887e-2],
@@ -499,7 +506,7 @@ class nC4(MEoS):
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane", 
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
                            "doi": "10.1063/1.555785"}, 
 
@@ -515,9 +522,3 @@ class nC4(MEoS):
                "Z": 9.10218e-10}
 
     _thermal = thermo0, thermo1
-
-if __name__ == "__main__":
-    for eq in (0, 2, 4, 6):
-        st=nC4(T=300, P=1e5, eq=eq)
-        print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
