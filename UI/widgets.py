@@ -17,9 +17,9 @@
 ###############################################################################
 
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI.conversor_unidades import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
@@ -28,15 +28,15 @@ from lib.utilities import representacion
 from lib.corriente import Corriente
 
 
-class Status(QtGui.QLabel):
+class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, QtGui.QApplication.translate("pychemqt", "Underspecified"), "yellow"),
-        (1, QtGui.QApplication.translate("pychemqt", "Solved"), "green"),
-        (2, QtGui.QApplication.translate("pychemqt", "Ignored"), "Light gray"),
-        (3, QtGui.QApplication.translate("pychemqt", "Warning"), "green"),
-        (4, QtGui.QApplication.translate("pychemqt", "Calculating..."), "Cyan"),
-        (5, QtGui.QApplication.translate("pychemqt", "Error"),  "red"))
+        (0, QtCore.QCoreApplication.translate("pychemqt", "Underspecified"), "yellow"),
+        (1, QtCore.QCoreApplication.translate("pychemqt", "Solved"), "green"),
+        (2, QtCore.QCoreApplication.translate("pychemqt", "Ignored"), "Light gray"),
+        (3, QtCore.QCoreApplication.translate("pychemqt", "Warning"), "green"),
+        (4, QtCore.QCoreApplication.translate("pychemqt", "Calculating..."), "Cyan"),
+        (5, QtCore.QCoreApplication.translate("pychemqt", "Error"),  "red"))
 
     def __init__(self, state=0, text="", parent=None):
         """
@@ -51,10 +51,10 @@ class Status(QtGui.QLabel):
         super(Status, self).__init__(parent)
         self.setState(state)
         self.setAlignment(QtCore.Qt.AlignCenter)
-        self.setFrameShadow(QtGui.QFrame.Sunken)
-        self.setFrameShape(QtGui.QFrame.Panel)
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                           QtGui.QSizePolicy.Preferred)
+        self.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.setFrameShape(QtWidgets.QFrame.Panel)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                           QtWidgets.QSizePolicy.Preferred)
         self.oldState = 0
         self.oldText = ""
 
@@ -73,7 +73,7 @@ class Status(QtGui.QLabel):
         else:
             self.setText(self.status[state][1])
         self.setStyleSheet("QLabel { background-color: %s}" % self.status[state][2])
-        QtGui.QApplication.processEvents()
+        QtWidgets.QApplication.processEvents()
         self.state = state
 
     def restaurar(self):
@@ -81,7 +81,7 @@ class Status(QtGui.QLabel):
         self.setState(self.oldState, self.oldText)
 
 
-class Entrada_con_unidades(QtGui.QWidget):
+class Entrada_con_unidades(QtWidgets.QWidget):
     """Clase que define el widget con entrada de datos y boton de dialogo de unidades"""
     valueChanged = QtCore.pyqtSignal(float)
     def __init__(self, unidad, UIconfig=None, retornar=True, \
@@ -156,10 +156,10 @@ class Entrada_con_unidades(QtGui.QWidget):
         else:
             self.UIconfig=self.magnitud
         self.retornar=retornar
-        layout = QtGui.QGridLayout(self)
+        layout = QtWidgets.QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        self.entrada = QtGui.QLineEdit()
+        self.entrada = QtWidgets.QLineEdit()
         self.entrada.setFixedSize(width, 24)
         self.entrada.editingFinished.connect(self.entrada_editingFinished)
         self.entrada.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
@@ -180,21 +180,21 @@ class Entrada_con_unidades(QtGui.QWidget):
             self.setValue(value)
         if self.magnitud:
             if boton:
-                self.unidades = QtGui.QPushButton(".")
+                self.unidades = QtWidgets.QPushButton(".")
                 self.unidades.setFixedSize(12, 24)
                 self.unidades.setVisible(False)
                 self.unidades.clicked.connect(self.unidades_clicked)
                 layout.addWidget(self.unidades,0,1)
 
         if boton:
-            self.botonClear = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editDelete.png")), "")
+            self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editDelete.png")), "")
             self.botonClear.setFixedSize(12, 24)
             self.botonClear.setVisible(False)
             self.botonClear.clicked.connect(self.clear)
             layout.addWidget(self.botonClear,0,3)
 
         if texto:
-            self.texto = QtGui.QLabel()
+            self.texto = QtWidgets.QLabel()
             self.texto.setAlignment(QtCore.Qt.AlignVCenter)
             self.texto.setIndent(5)
             txt=""
@@ -205,7 +205,7 @@ class Entrada_con_unidades(QtGui.QWidget):
             self.texto.setText(txt)
             layout.addWidget(self.texto,0,4)
 
-        layout.addItem(QtGui.QSpacerItem(0,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed),0,5)
+        layout.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),0,5)
         self.setResaltado(resaltado)
 
     def unidades_clicked(self):
@@ -332,7 +332,7 @@ class Entrada_con_unidades(QtGui.QWidget):
             self.entrada.setTextMargins(0, 0, 0, 0)
 
 
-class Tabla(QtGui.QTableWidget):
+class Tabla(QtWidgets.QTableWidget):
     """Clase que genera tablas personalizadas para entrada de datos"""
     editingFinished = QtCore.pyqtSignal()
     rowFinished = QtCore.pyqtSignal(list)
@@ -351,7 +351,7 @@ class Tabla(QtGui.QTableWidget):
         verticalOffset: indice que indica las filas que no se usaran para el rellenado (usadas por widget por ejemplo)
         verticalHeaderModel: Texto que se usa en el caso que la tabla sea dinamica y el verticalHeader visible
         """
-        QtGui.QTableWidget.__init__(self, parent)
+        QtWidgets.QTableWidget.__init__(self, parent)
         self.columnas=columnas
         self.encabezadoHorizontal=horizontalHeader
         self.encabezadoVertical=verticalHeaderLabels
@@ -376,9 +376,9 @@ class Tabla(QtGui.QTableWidget):
 #        self.setAlternatingRowColors(True)
         self.setGridStyle(QtCore.Qt.DotLine)
         if readOnly:
-            self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+            self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         else:
-            self.setEditTriggers(QtGui.QAbstractItemView.AllEditTriggers)
+            self.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.horizontalHeader().setStretchLastSection(stretch)
         if not verticalHeader:
             self.verticalHeader().hide()
@@ -397,7 +397,7 @@ class Tabla(QtGui.QTableWidget):
             self.addRow()
         if self.encabezadoHorizontal:
             for i, titulo in enumerate(self.encabezadoHorizontal):
-                self.setHorizontalHeaderItem(i,QtGui.QTableWidgetItem(titulo))
+                self.setHorizontalHeaderItem(i,QtWidgets.QTableWidgetItem(titulo))
 
     
     def addRow(self, data=None, index=None):
@@ -420,7 +420,7 @@ class Tabla(QtGui.QTableWidget):
         Config=ConfigParser()
         Config.read(config.conf_dir+"pychemqtrc")
         for j in range(self.columnCount()):
-            self.setItem(i, j, QtGui.QTableWidgetItem(data[j]))
+            self.setItem(i, j, QtWidgets.QTableWidgetItem(data[j]))
             self.item(i, j).setTextAlignment(self.orientacion|QtCore.Qt.AlignVCenter)
 
             inactivo=QtGui.QColor(Config.get("General", 'Color_ReadOnly'))
@@ -434,9 +434,9 @@ class Tabla(QtGui.QTableWidget):
 
         if self.verticalHeaderBool:
             if self.encabezadoVertical:
-                self.setVerticalHeaderItem(i,QtGui.QTableWidgetItem(self.encabezadoVertical[i]))
+                self.setVerticalHeaderItem(i,QtWidgets.QTableWidgetItem(self.encabezadoVertical[i]))
             elif self.verticalHeaderModel:
-                self.setVerticalHeaderItem(i,QtGui.QTableWidgetItem(self.verticalHeaderModel+str(i)))
+                self.setVerticalHeaderItem(i,QtWidgets.QTableWidgetItem(self.verticalHeaderModel+str(i)))
         self.blockSignals(False)
 
         if self.dinamica and self.rowCount()>1:
@@ -518,7 +518,7 @@ class Tabla(QtGui.QTableWidget):
             self.addRow()
         for fila in range(self.rowCount()-self.verticalOffset):
             for columna, dato in enumerate(matriz[fila]):
-                self.setItem(fila+self.verticalOffset, columna, QtGui.QTableWidgetItem(representacion(dato)))
+                self.setItem(fila+self.verticalOffset, columna, QtWidgets.QTableWidgetItem(representacion(dato)))
                 self.item(fila+self.verticalOffset, columna).setTextAlignment(self.orientacion|QtCore.Qt.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
             self.setRowHeight(i+self.verticalOffset, 20)
@@ -567,36 +567,36 @@ class Tabla(QtGui.QTableWidget):
 
 
 
-class ClickableLabel(QtGui.QLabel):
+class ClickableLabel(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal()
     def mousePressEvent(self, event):
         self.clicked.emit()
 
-class ColorSelector(QtGui.QWidget):
+class ColorSelector(QtWidgets.QWidget):
     """Clase que define el widget que permite seleccionar colores"""
     valueChanged = QtCore.pyqtSignal('QString')
 
     def __init__(self, color=None, alpha=255, hasAlpha=False, parent=None):
         super(ColorSelector, self).__init__(parent)
         self.alpha=alpha
-        lyt=QtGui.QHBoxLayout(self)
+        lyt=QtWidgets.QHBoxLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
         lyt.setSpacing(0)
-        self.RGB=QtGui.QLineEdit()
+        self.RGB=QtWidgets.QLineEdit()
         self.RGB.editingFinished.connect(self.rgbChanged)
         self.RGB.setFixedSize(80, 24)
         lyt.addWidget(self.RGB)
-        self.button = QtGui.QToolButton()
+        self.button = QtWidgets.QToolButton()
         self.button.setFixedSize(24, 24)
         self.button.clicked.connect(self.ColorButtonClicked)
         lyt.addWidget(self.button)
         if hasAlpha:
-            lyt.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed))
-            lyt.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Alpha")))
+            lyt.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
+            lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Alpha")))
             self.transparencia=Entrada_con_unidades(int, width=50, min=0, max=255, spinbox=True, value=alpha)
             self.transparencia.valueChanged.connect(self.setAlpha)
             lyt.addWidget(self.transparencia)
-        lyt.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed))
+        lyt.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
         if color:
             self.setColor(color)
 
@@ -610,7 +610,7 @@ class ColorSelector(QtGui.QWidget):
 
     def ColorButtonClicked(self):
         """Dialogo de selección de color"""
-        dialog=QtGui.QColorDialog(self.button.palette().color(QtGui.QPalette.Button), self)
+        dialog=QtWidgets.QColorDialog(self.button.palette().color(QtGui.QPalette.Button), self)
         if dialog.exec_():
             self.setColor(dialog.currentColor().name())
             self.valueChanged.emit(dialog.currentColor().name())
@@ -625,7 +625,7 @@ class ColorSelector(QtGui.QWidget):
             self.valueChanged.emit(self.RGB.text())
 
 
-class DragButton(QtGui.QToolButton):
+class DragButton(QtWidgets.QToolButton):
     """Clase que define un botón especial que permite arrastrar"""
 
     def __init__(self, parent=None):
@@ -635,7 +635,7 @@ class DragButton(QtGui.QToolButton):
 
     def mouseMoveEvent(self, event):
         self.startDrag()
-        QtGui.QToolButton.mouseMoveEvent(self, event)
+        QtWidgets.QToolButton.mouseMoveEvent(self, event)
 
 
     def startDrag(self):
@@ -654,7 +654,7 @@ class DragButton(QtGui.QToolButton):
         drag.start(QtCore.Qt.CopyAction)
 
 
-class TreeEquipment(QtGui.QTreeWidget):
+class TreeEquipment(QtWidgets.QTreeWidget):
 
     def __init__(self, parent=None):
         super(TreeEquipment, self).__init__(parent)
@@ -664,11 +664,11 @@ class TreeEquipment(QtGui.QTreeWidget):
 
     def updateList(self, items):
         self.clear()
-        self.Stream = QtGui.QTreeWidgetItem(self, 0)
-        self.Stream.setText(0, QtGui.QApplication.translate("pychemqt", "Streams"))
+        self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
+        self.Stream.setText(0, QtCore.QCoreApplication.translate("pychemqt", "Streams"))
         self.Stream.setExpanded(True)
-        self.Equipment = QtGui.QTreeWidgetItem(self, 0)
-        self.Equipment.setText(0, QtGui.QApplication.translate("pychemqt", "Equipments"))
+        self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
+        self.Equipment.setText(0, QtCore.QCoreApplication.translate("pychemqt", "Equipments"))
         self.Equipment.setExpanded(True)
         ext=[]
         ins=[]
@@ -683,40 +683,40 @@ class TreeEquipment(QtGui.QTreeWidget):
         for key in sorted(items["stream"].keys()):
             id=items["stream"][key].id
             if id in ins:
-                item=QtGui.QTreeWidgetItem(self.Stream, 1)
+                item=QtWidgets.QTreeWidgetItem(self.Stream, 1)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/in.svg")))
             elif id in outs:
-                item=QtGui.QTreeWidgetItem(self.Stream, 2)
+                item=QtWidgets.QTreeWidgetItem(self.Stream, 2)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/out.svg")))
             else:
-                item=QtGui.QTreeWidgetItem(self.Stream, 3)
+                item=QtWidgets.QTreeWidgetItem(self.Stream, 3)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/stream.png")))
 
         for equipment in items["equip"]:
-            item=QtGui.QTreeWidgetItem(self.Equipment, 4)
+            item=QtWidgets.QTreeWidgetItem(self.Equipment, 4)
             item.setText(0, "%i - %s" %(items["equip"][equipment].id, items["equip"][equipment].name))
             item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(items["equip"][equipment].imagen)))
 
 
-class PathConfig(QtGui.QWidget):
+class PathConfig(QtWidgets.QWidget):
     """widget con la funcion de entrada de ruta de archivos, ejecutables..."""
     valueChanged = QtCore.pyqtSignal('QString')
     def __init__(self, title, path="", patron="", msg="", parent=None):
         super(PathConfig, self).__init__(parent)
         self.patron=patron
         self.msg=msg
-        layout = QtGui.QHBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
         layout.setSpacing(0)
-        layout.addWidget(QtGui.QLabel(title))
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed))
-        self.path = QtGui.QLineEdit()
+        layout.addWidget(QtWidgets.QLabel(title))
+        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
+        self.path = QtWidgets.QLineEdit()
         self.path.setFixedHeight(24)
         self.path.textEdited.connect(self.pathEdited)
         layout.addWidget(self.path)
-        self.boton=QtGui.QPushButton(QtGui.QApplication.translate("pychemqt", "Browse"))
+        self.boton=QtWidgets.QPushButton(QtCore.QCoreApplication.translate("pychemqt", "Browse"))
         self.boton.setFixedHeight(24)
         self.boton.clicked.connect(self.select)
         layout.addWidget(self.boton)
@@ -730,20 +730,20 @@ class PathConfig(QtGui.QWidget):
 
     def select(self):
         if not self.patron:
-            patron = QtGui.QApplication.translate("pychemqt", "All files")+"(*)"
+            patron = QtCore.QCoreApplication.translate("pychemqt", "All files")+"(*)"
         elif self.patron=="exe":
             if sys.platform=="win32":
-                patron = QtGui.QApplication.translate("pychemqt", "Executable files")+ "(*.exe *.bat)"
+                patron = QtCore.QCoreApplication.translate("pychemqt", "Executable files")+ "(*.exe *.bat)"
             else:
-                patron = QtGui.QApplication.translate("pychemqt", "All files")+"(*)"
+                patron = QtCore.QCoreApplication.translate("pychemqt", "All files")+"(*)"
         else:
             patron=self.patron
         if not self.msg:
-            msg = QtGui.QApplication.translate("pychemqt", "Select path of file")
+            msg = QtCore.QCoreApplication.translate("pychemqt", "Select path of file")
         else:
             msg=self.msg
         dir=os.path.dirname(str(self.path.text()))
-        ruta = QtGui.QFileDialog.getOpenFileName(self, msg, dir, patron)
+        ruta = QtWidgets.QFileDialog.getOpenFileName(self, msg, dir, patron)[0]
         if ruta:
             self.path.setText(ruta)
             self.valueChanged.emit(ruta)
@@ -753,14 +753,14 @@ class PathConfig(QtGui.QWidget):
             self.valueChanged.emit(path)
 
 
-class LineConfig(QtGui.QGroupBox):
+class LineConfig(QtWidgets.QGroupBox):
 
     def __init__(self, confSection, title, parent=None):
         super(LineConfig, self).__init__(title, parent)
         self.confSection=confSection
 
-        layout= QtGui.QHBoxLayout(self)
-        self.Grosor = QtGui.QDoubleSpinBox()
+        layout= QtWidgets.QHBoxLayout(self)
+        self.Grosor = QtWidgets.QDoubleSpinBox()
         self.Grosor.setFixedWidth(60)
         self.Grosor.setAlignment(QtCore.Qt.AlignRight)
         self.Grosor.setRange(0.1, 5)
@@ -773,7 +773,7 @@ class LineConfig(QtGui.QGroupBox):
         layout.addWidget(self.Marca)
         self.ColorButton = ColorSelector()
         layout.addWidget(self.ColorButton)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed))
+        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
 
     def setConfig(self, config, section="MEOS"):
         self.ColorButton.setColor(config.get(section, self.confSection+'Color'))
@@ -797,7 +797,7 @@ class LineConfig(QtGui.QGroupBox):
         return config
 
 
-class customCombo(QtGui.QComboBox):
+class customCombo(QtWidgets.QComboBox):
     key=None
     image= None
     text=None
@@ -845,7 +845,7 @@ class MarkerCombo(customCombo):
         "x":	"x", "D":	"diamond", "d":	"thin_diamond", "|":	"vline", "_":	"hline"}
 
 
-class InputFond(QtGui.QWidget):
+class InputFond(QtWidgets.QWidget):
 
     textChanged = QtCore.pyqtSignal("QString")
     fontChanged = QtCore.pyqtSignal("QFont")
@@ -854,19 +854,19 @@ class InputFond(QtGui.QWidget):
     def __init__(self, text=None, font=None, parent=None):
         super(InputFond, self).__init__(parent)
 
-        layout= QtGui.QHBoxLayout(self)
+        layout= QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        self.lineEdit=QtGui.QLineEdit()
-        self.lineEdit.setSizePolicy(QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Preferred)
+        self.lineEdit=QtWidgets.QLineEdit()
+        self.lineEdit.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Preferred)
         layout.addWidget(self.lineEdit)
-        self.fontButton = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/font.png")), "")
+        self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/font.png")), "")
         self.fontButton.setFixedSize(24, 24)
         self.fontButton.setIconSize(QtCore.QSize(24, 24))
         self.fontButton.clicked.connect(self.fontButtonClicked)
         layout.addWidget(self.fontButton)
-        self.colorButton = QtGui.QToolButton()
+        self.colorButton = QtWidgets.QToolButton()
         self.colorButton.setFixedSize(24, 24)
         self.colorButton.clicked.connect(self.colorButtonClicked)
         layout.addWidget(self.colorButton)
@@ -885,13 +885,13 @@ class InputFond(QtGui.QWidget):
 
     def colorButtonClicked(self):
         """Dialogo de selección de color"""
-        dialog=QtGui.QColorDialog(self.colorButton.palette().color(QtGui.QPalette.Button), self)
+        dialog=QtWidgets.QColorDialog(self.colorButton.palette().color(QtGui.QPalette.Button), self)
         if dialog.exec_():
             self.setColor(dialog.currentColor())
 
     def fontButtonClicked(self):
         """Dialogo de selección de color"""
-        dialog=QtGui.QFontDialog(self.lineEdit.font())
+        dialog=QtWidgets.QFontDialog(self.lineEdit.font())
         if dialog.exec_():
             self.lineEdit.setFont(dialog.currentFont())
             self.fontChanged.emit(dialog.currentFont())
@@ -899,39 +899,39 @@ class InputFond(QtGui.QWidget):
 
 
 
-class Table_Graphics(QtGui.QWidget):
+class Table_Graphics(QtWidgets.QWidget):
     """Clase que define la tabla mostrada como popups al pasar el raton por encima de una entity"""
     def __init__(self, entity, id, preferences, parent=None):
         super(Table_Graphics, self).__init__(parent)
         self.setWindowFlags(QtCore.Qt.Popup)
-        layout=QtGui.QVBoxLayout(self)
+        layout=QtWidgets.QVBoxLayout(self)
         if isinstance(entity, Corriente):
             title="Stream %i" %id
         else:
             title="Equipment %i" %id
-        label=QtGui.QLabel(title)
+        label=QtWidgets.QLabel(title)
         label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(label)
-        line = QtGui.QFrame()
-        line.setFrameShape(QtGui.QFrame.HLine)
-        line.setFrameShadow(QtGui.QFrame.Sunken)
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
         layout.addWidget(line)
         if entity:
             if entity.status:
                 textos=entity.popup(preferences)
                 for txt, tooltip, j in textos:
-                        label=QtGui.QLabel(txt)
+                        label=QtWidgets.QLabel(txt)
                         label.setToolTip(tooltip)
                         if j:
                             label.setAlignment(QtCore.Qt.AlignRight)
                         layout.addWidget(label)
             else:
-                layout.addWidget(QtGui.QLabel(entity.msg))
+                layout.addWidget(QtWidgets.QLabel(entity.msg))
         else:
-            layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Undefined")))
+            layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Undefined")))
 
 
-class FlowLayout(QtGui.QLayout):
+class FlowLayout(QtWidgets.QLayout):
     def __init__(self, parent=None, margin=0, spacing=0):
         super(FlowLayout, self).__init__(parent)
 
@@ -998,8 +998,8 @@ class FlowLayout(QtGui.QLayout):
 
         for item in self.itemList:
             wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Horizontal)*self.spacing()
-            spaceY = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Vertical)*self.spacing()
+            spaceX = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Horizontal)*self.spacing()
+            spaceY = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Vertical)*self.spacing()
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
@@ -1022,7 +1022,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
                  checkable=False, button=False, parent=None):
     if not tip:
         tip=text
-    action = QtGui.QAction(text, parent)
+    action = QtWidgets.QAction(text, parent)
     if icon:
         action.setIcon(QtGui.QIcon(icon))
     if shortcut:
@@ -1058,16 +1058,16 @@ def okToContinue(parent, dirty, func, parameters):
         parameters: parameter of func"""
     if not dirty:
         return True
-    dialog = QtGui.QMessageBox.question(parent,
-        QtGui.QApplication.translate("pychemqt", "Unsaved changes"),
-        QtGui.QApplication.translate("pychemqt", "Save unsaved changes?"),
-        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel,
-        QtGui.QMessageBox.Yes)
-    if dialog == QtGui.QMessageBox.Cancel:
+    dialog = QtWidgets.QMessageBox.question(parent,
+        QtCore.QCoreApplication.translate("pychemqt", "Unsaved changes"),
+        QtCore.QCoreApplication.translate("pychemqt", "Save unsaved changes?"),
+        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel,
+        QtWidgets.QMessageBox.Yes)
+    if dialog == QtWidgets.QMessageBox.Cancel:
         return False
-    elif dialog == QtGui.QMessageBox.No:
+    elif dialog == QtWidgets.QMessageBox.No:
         return True
-    elif dialog == QtGui.QMessageBox.Yes:
+    elif dialog == QtWidgets.QMessageBox.Yes:
         func(*parameters)
         return True
 
@@ -1076,9 +1076,9 @@ if __name__ == "__main__":
     import sys
     from lib import unidades
 
-    app = QtGui.QApplication(sys.argv)
-    ui = QtGui.QDialog()
-    layout = QtGui.QVBoxLayout(ui)
+    app = QtWidgets.QApplication(sys.argv)
+    ui = QtWidgets.QDialog()
+    layout = QtWidgets.QVBoxLayout(ui)
     widget = Entrada_con_unidades(unidades.Pressure)
     layout.addWidget(widget)
     ui.show()

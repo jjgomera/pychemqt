@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import cPickle
-from ConfigParser import ConfigParser
+import pickle
+from configparser import ConfigParser
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 import scipy.constants as k
 
 from lib.config import conf_dir, getMainWindowConfig
@@ -276,7 +276,7 @@ class Temperature(unidad):
     298.15 25.0 77.0
     """
     __title__ = QApplication.translate("pychemqt", "Temperature")
-    __text__ = ['K', u'ºC', u'ºR', u'ºF', u'ºRe']
+    __text__ = ['K', 'ºC', 'ºR', 'ºF', 'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
@@ -366,7 +366,7 @@ class DeltaT(unidad):
              "F": k.Rankine,
              "R": k.Rankine,
              "Re": k.Reaumur}
-    __text__ = ['K', u'ºC', u'ºR', u'ºF', u'ºRe']
+    __text__ = ['K', 'ºC', 'ºR', 'ºF', 'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
@@ -393,7 +393,7 @@ class Angle(unidad):
              "min": 2*k.pi/360/60,
              "sec": 2*k.pi/360/3600,
              "grad": 2*k.pi/400}
-    __text__ = ["rad", u"º deg", "'", '"', "grad"]
+    __text__ = ["rad", "º deg", "'", '"', "grad"]
     __units__ = ["rad", "deg", "min", "sec", "grad"]
     __tooltip__ = [QApplication.translate("pychemqt", "Radian"),
                    QApplication.translate("pychemqt", "Degree"),
@@ -437,8 +437,8 @@ class Length(unidad):
              "milla_nau": k.milla_nau,
              "pm": k.pico,
              "A": 1e-10}
-    __text__ = ['m', 'cm', 'mm', u'µm', 'km', 'inch', 'ft', 'yard', 'milla',
-                "M", "pm", u"Å"]
+    __text__ = ['m', 'cm', 'mm', 'µm', 'km', 'inch', 'ft', 'yard', 'milla',
+                "M", "pm", "Å"]
     __units__ = ['m', 'cm', 'mm', 'micra', 'km', 'inch', 'ft', 'yd', 'milla',
                  "milla_nau", "pm", "A"]
     __tooltip__ = [QApplication.translate("pychemqt", "meter"),
@@ -451,7 +451,7 @@ class Length(unidad):
                    QApplication.translate("pychemqt", "yard"),
                    QApplication.translate("pychemqt", "mile"),
                    QApplication.translate("pychemqt", "nautical mile"),
-                   QApplication.translate("pychemqt", "icometer"), u"Ångström"]
+                   QApplication.translate("pychemqt", "icometer"), "Ångström"]
     _magnitudes = [
         ("Length", QApplication.translate("pychemqt", "Length")),
         ("ParticleDiameter", QApplication.translate("pychemqt",
@@ -499,8 +499,8 @@ class Area(unidad):
              "yd2": k.yard**2,
              "ha": k.hecto**2,
              "acre": k.acre}
-    __text__ = [u'm²', u'cm²', u'mm²', u"km2", u'inch²', u'ft²', u'yd²',
-                'ha', u'acre']
+    __text__ = ['m²', 'cm²', 'mm²', "km2", 'inch²', 'ft²', 'yd²',
+                'ha', 'acre']
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha', "acre"]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
@@ -549,13 +549,13 @@ class Volume(unidad):
              "onzUK": k.fluid_ounce_imp,
              "bblUK": 36*k.gallon_imp,
              "bblUS": 31.5*k.gallon}
-    __text__ = [u'm³', u'cm³', 'liter', u'yd³', u'ft³', u'inch³', 'galon US',
+    __text__ = ['m³', 'cm³', 'liter', 'yd³', 'ft³', 'inch³', 'galon US',
                 'galon UK', 'oil', 'bbl', 'bblUK', 'onza', 'onza UK']
     __units__ = ['m3', 'cc', 'l', 'yd3', 'ft3', 'inch3', 'galUS', 'galUK',
                  'bbl', 'bblUS', "bblUK", 'onz', 'onzUK']
-    __tooltip__ = [u'm³', u'cm³',
+    __tooltip__ = ['m³', 'cm³',
                    QApplication.translate("pychemqt", "liter"),
-                   u'yd³', u'ft³', u'inch³',
+                   'yd³', 'ft³', 'inch³',
                    QApplication.translate("pychemqt", "US liquid gallon"),
                    QApplication.translate("pychemqt", "Imperial gallon"),
                    QApplication.translate("pychemqt", "US fluid barrel"),
@@ -716,8 +716,8 @@ class Acceleration(unidad):
              "ftmin2": k.foot/k.minute**2,
              "inchmin2": k.inch/k.minute**2,
              "ydmin2": k.yard/k.minute**2}
-    __text__ = [u"m/s²", u"cm/s²", u"ft/s²", u"inch/s²", u"yd/s²", u"m/min²",
-                u"cm/min²", u"ft/min²", u"inch/min²"]
+    __text__ = ["m/s²", "cm/s²", "ft/s²", "inch/s²", "yd/s²", "m/min²",
+                "cm/min²", "ft/min²", "inch/min²"]
     __units__ = ["ms2", "cms2", "fts2", "inchs2", "yds2", "mmin2", "cmmin2",
                  "ftmin2", "inchmin2"]
     __units_set__ = {"altsi": "ms2", "si": "ms2", "metric": "ms2",
@@ -842,10 +842,10 @@ class SpecificVolume(unidad):
              "in3oz": k.inch**3/k.oz,
              "galUKoz": k.gallon_imp/k.oz,
              "galUSoz": k.gallon/k.oz}
-    __text__ = [u'm³/kg', u'cm³/g', u'ml/g', u'm³/g', u'cm³/kg', u'ft³/lb',
-                u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
-                u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza',
-                u'in³/onza', 'gallon UK/onza', 'gallon US/onza']
+    __text__ = ['m³/kg', 'cm³/g', 'ml/g', 'm³/g', 'cm³/kg', 'ft³/lb',
+                'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
+                'ft³/ton UK', 'ft³/ton US', 'ft³/slug', 'ft³/onza',
+                'in³/onza', 'gallon UK/onza', 'gallon US/onza']
     __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
                  'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
@@ -897,10 +897,10 @@ class SpecificVolume_square(unidad):
              "in3oz": k.inch**6/k.oz**2,
              "galUKoz": k.gallon_imp**2/k.oz**2,
              "galUSoz": k.gallon**2/k.oz**2}
-    __text__ = [u'm⁶/kg²', u'cm⁶/g²', u'ml²/g²', u'm⁶/g²', u'cm⁶/kg²', u'ft⁶/lb²',
-                u'in⁶/lb²', u'gallon UK²/lb²', u'gallon US²/lb²', u'barril²/lb²',
-                u'ft⁶/ton UK²', u'ft⁶/ton US²', u'ft⁶/slug²', u'ft⁶/onza²',
-                u'in⁶/onza²', u'gallon UK²/onza²', u'gallon US²/onza²']
+    __text__ = ['m⁶/kg²', 'cm⁶/g²', 'ml²/g²', 'm⁶/g²', 'cm⁶/kg²', 'ft⁶/lb²',
+                'in⁶/lb²', 'gallon UK²/lb²', 'gallon US²/lb²', 'barril²/lb²',
+                'ft⁶/ton UK²', 'ft⁶/ton US²', 'ft⁶/slug²', 'ft⁶/onza²',
+                'in⁶/onza²', 'gallon UK²/onza²', 'gallon US²/onza²']
     __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
                  'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
                  'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
@@ -933,8 +933,8 @@ class MolarVolume(unidad):
              "cckmol": k.micro,
              "ft3lbmol": k.foot**3/k.pound,
              "inch3lbmol": k.inch**3/k.pound}
-    __text__ = [u'm³/kmol', u'l/mol', u'l/kmol', u'cm³/mol', u'ml/mol',
-                u'm³/mol', u'cm³/kmol', u'ft³/lbmol', u'in³/lbmol']
+    __text__ = ['m³/kmol', 'l/mol', 'l/kmol', 'cm³/mol', 'ml/mol',
+                'm³/mol', 'cm³/kmol', 'ft³/lbmol', 'in³/lbmol']
     __units__ = ['m3kmol', 'lmol', 'lkmol', 'ccmol', 'mlmol', 'm3mol',
                  'cckmol', 'ft3lbmol', 'inch3lbmol']
     __units_set__ = {"altsi": "m3kmol", "si": "m3kmol", "metric": "m3kmol",
@@ -986,9 +986,9 @@ class Density(unidad):
              "ozin3": k.oz/k.inch**3,
              "ozgalUK": k.oz/k.gallon_imp,
              "ozgalUS": k.oz/k.gallon}
-    __text__ = [u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³', u'lb/inch³',
-                'lb/galon UK', 'lb/galon US', 'lb/barril', u'ton UK/ft³',
-                u'ton US/ft³', u'slug/ft³', u'onza/ft³', u'onza/inch³',
+    __text__ = ['kg/m³', 'g/cm³', 'g/m³', 'kg/cm³', 'lb/ft³', 'lb/inch³',
+                'lb/galon UK', 'lb/galon US', 'lb/barril', 'ton UK/ft³',
+                'ton US/ft³', 'slug/ft³', 'onza/ft³', 'onza/inch³',
                 'onza/galon UK', 'onza/galon US']
     __units__ = ['kgm3', 'gcc', 'gm3', 'kgcc', 'lbft3', 'lbin3', 'lbgalUK',
                  'lbgalUS', 'lbbbl', 'tonUKft3', 'tonUSft3', 'slugft3',
@@ -1023,14 +1023,15 @@ class MolarDensity(unidad):
     """
     __title__ = QApplication.translate("pychemqt", "Molar Density")
     rates = {"kmolm3": 1.,
-             "molcc": 1.,
+             "moll": 1.,
+             "molcc": 1./k.liter,
              "kmoll": 1./k.liter,
              "molm3": 1./k.gram,
              "kmolcc": 1./k.micro,
              "lbmolft3": k.pound/k.foot**3,
              "lbmolin3": k.pound/k.inch**3}
-    __text__ = [u'kmol/m³', u'mol/cm³', u'mol/m³', u'kmol/cm³', u'lbmol/ft³',
-                u'lbmol/inch³']
+    __text__ = ['kmol/m³', 'mol/cm³', 'mol/m³', 'kmol/cm³', 'lbmol/ft³',
+                'lbmol/inch³']
     __units__ = ['kmolm3', 'molcc', 'molm3', 'kmolcc', 'lbmolft3', 'lbmolin3']
     __units_set__ = {"altsi": "kmolm3", "si": "kmolm3", "metric": "kmolm3",
                      "cgs": "molcc", "english": "lbmolft3"}
@@ -1133,9 +1134,9 @@ class Pressure(unidad):
              "lbft2": k.g*k.pound/k.foot**2,
              "dyncm2": k.dyn/k.centi**2}
     __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi',
-                'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O',
+                'psi g', 'atm', 'kg/cm²', 'kg/cm² g', 'mmH2O', 'cmH2O',
                 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
-                u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+                'lb/cm²', 'lb/ft²', 'dyn/cm²']
     __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
@@ -1264,9 +1265,9 @@ class DeltaP(unidad):
              "lbft2": k.g*k.pound/k.foot**2,
              "dyncm2": k.dyn/k.centi**2}
     __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi',
-                'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O',
+                'psi g', 'atm', 'kg/cm²', 'kg/cm² g', 'mmH2O', 'cmH2O',
                 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
-                u'lb/cm²', u'lb/ft²', u'dyn/cm²']
+                'lb/cm²', 'lb/ft²', 'dyn/cm²']
     __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
@@ -1498,8 +1499,8 @@ class SpecificHeat(unidad):
     _magnitudes = [
         ("SpecificHeat", QApplication.translate("pychemqt", "Specific Heat")),
         ("SpecificEntropy", QApplication.translate("pychemqt", "Specific Entropy"))]
-    __text__ = [u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'cal/g·K', u'kcal/g·K',
-                u'kWh/kg·K', u'Btu/lb·F']
+    __text__ = ['J/kg·K', 'kJ/kg·K', 'kcal/kg·K', 'cal/g·K', 'kcal/g·K',
+                'kWh/kg·K', 'Btu/lb·F']
     __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK',
                  'BtulbF']
     __units_set__ = {
@@ -1535,8 +1536,8 @@ class MolarSpecificHeat(unidad):
              "kcalmolK": k.calorie*k.kilo**2,
              "kWhkmolK": k.kilo*k.hour,
              "BtulbmolF": k.Btu/k.lb/k.Rankine}
-    __text__ = [u'J/kmol·K', u'kJ/kmol·K', u'kcal/kmol·K', u'cal/mol·K', u'kcal/mol·K',
-                u'kWh/kmol·K', u'Btu/lbmol·F']
+    __text__ = ['J/kmol·K', 'kJ/kmol·K', 'kcal/kmol·K', 'cal/mol·K', 'kcal/mol·K',
+                'kWh/kmol·K', 'Btu/lbmol·F']
     __units__ = ['JkmolK', 'kJkmolK', 'kcalkmolK', 'calmolK', 'kcalmolK', 'kWhkmolK',
                  'BtulbmolF']
     __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
@@ -1589,7 +1590,7 @@ class Power(unidad):
              "ftlbfh": k.foot*k.lb*k.g/k.hour}
     __text__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cal/s', 'kcal/h', 'J/h', 'kJ/h',
                 'MJ/h', 'erg/s', 'Btu/s', 'Btu/min', 'Btu/h', 'MBtu/h',
-                u'ft/lbf·s', u'ft/lbf·min', u'ft/lbf·h']
+                'ft/lbf·s', 'ft/lbf·min', 'ft/lbf·h']
     __units__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cals', 'kcalh', 'Jh', 'kJh',
                  'MJh', 'ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs',
                  'ftlbfmin', 'ftlbfh']
@@ -1760,9 +1761,9 @@ class VolFlow(unidad):
              "bblmin": k.bbl/k.minute,
              "bblh": k.bbl/k.hour,
              "bblday": k.bbl/k.day}
-    __text__ = [u'm³/s', u'm³/min', u'm³/h', 'l/s', 'l/min', 'l/h', u'cm³/s',
-                u'cm³/min', u'cm³/h', u'ft³/s', u'ft³/min', u'kft³/min',
-                u'ft³/h', u'Mft³/day', 'galon UK/h', 'galon US/h',
+    __text__ = ['m³/s', 'm³/min', 'm³/h', 'l/s', 'l/min', 'l/h', 'cm³/s',
+                'cm³/min', 'cm³/h', 'ft³/s', 'ft³/min', 'kft³/min',
+                'ft³/h', 'Mft³/day', 'galon UK/h', 'galon US/h',
                 'galon UK/min', 'galon US/min', 'galon UK/s', 'galon US/s',
                 'barril/s', 'barril/min', 'barril/h', 'barril/day']
     __units__ = ['m3s', 'm3min', 'm3h', 'ls', 'lmin', 'lh', 'ccs', 'ccmin',
@@ -1812,8 +1813,8 @@ class Diffusivity(unidad):
              "inch2h": k.inch**2/k.hour,
              "St": k.centi**2,
              "cSt": k.milli**2}
-    __text__ = [u"m²/s", u"cm²/s", u"mm²/s", u"ft²/s", u"inch²/s", u"m²/h",
-                u"ft²/h", u"inch²/h", "St", "cSt"]
+    __text__ = ["m²/s", "cm²/s", "mm²/s", "ft²/s", "inch²/s", "m²/h",
+                "ft²/h", "inch²/h", "St", "cSt"]
     __units__ = ["m2s", "cm2s", "mm2s", "ft2s", "inch2s", "m2h", "ft2h",
                  "inch2h", "St", "cSt"]
     _magnitudes = [
@@ -1851,8 +1852,8 @@ class HeatFlux(unidad):
              "calscm2": k.calorie/k.centi**2,
              "kcalhm2": k.kilo*k.calorie/k.hour,
              "Btuhft2": k.Btu/k.hour/k.foot**2, "Btusft2": k.Btu/k.foot**2}
-    __text__ = [u"W/m²", u"kW/m²", u"cal/hm²", u"cal/sm²", u"cal/scm²",
-                u"kcal/hm²", u"Btu/hft²", u"Btu/sft²"]
+    __text__ = ["W/m²", "kW/m²", "cal/hm²", "cal/sm²", "cal/scm²",
+                "kcal/hm²", "Btu/hft²", "Btu/sft²"]
     __units__ = ["Wm2", "kWm2", "calhm2", "calsm2", "calscm2", "kcalhm2",
                  "Btuhft2", "Btusft2"]
     __units_set__ = {"altsi": "Wm2", "si": "Wm2", "metric": "Wm2",
@@ -1891,9 +1892,9 @@ class ThermalConductivity(unidad):
              "lbfsF": k.lbf/k.Rankine,
              "lbfts3F": k.lb*k.foot/k.Rankine,
              "BtuhftF": k.Btu/k.hour/k.foot/k.Rankine}
-    __text__ = [u'W/m·K', u'mW/m·K', u"kW/m·K", u'J/h·m·K', u'cal/s·cm·K',
-                u'cal/h·cm·K', u'kcal/h·m·K', u'lbf/s·F', u'lb/ft·s³·F',
-                u'Btu/h·ft·F']
+    __text__ = ['W/m·K', 'mW/m·K', "kW/m·K", 'J/h·m·K', 'cal/s·cm·K',
+                'cal/h·cm·K', 'kcal/h·m·K', 'lbf/s·F', 'lb/ft·s³·F',
+                'Btu/h·ft·F']
     __units__ = ['WmK', 'mWmK', "kWmK", 'JhmK', 'calscmK', 'calhcmK',
                  'kcalhmK', 'lbfsF', 'lbfts3F', 'BtuhftF']
     __units_set__ = {"altsi": "mWmK", "si": "WmK", "metric": "WmK",
@@ -1932,8 +1933,8 @@ class UA(unidad):
              "kcalsK": k.calorie*k.kilo,
              "BtuhF": k.Btu/k.hour/k.foot**2/k.Rankine,
              "BtusF": k.Btu/k.foot**2/k.Rankine}
-    __text__ = [u'W/K', u'kW/K', u'mW/K', u'J/h·K', u'kJ/h·K', u'cal/h·K',
-                u'kcal/h·K', u'cal/s·K', u'kcal/s·K', u'Btu/h·F', u'Btu/s·F']
+    __text__ = ['W/K', 'kW/K', 'mW/K', 'J/h·K', 'kJ/h·K', 'cal/h·K',
+                'kcal/h·K', 'cal/s·K', 'kcal/s·K', 'Btu/h·F', 'Btu/s·F']
     __units__ = ['WK', 'kWK', 'mWK', 'JhK', 'kJhK', 'calhK', 'kcalhK',
                  'calsK', 'kcalsK', 'BtuhF', 'BtusF']
     __units_set__ = {"altsi": "mWK", "si": "WK", "metric": "WK",
@@ -1974,9 +1975,9 @@ class HeatTransfCoef(unidad):
              "kcalscm2K": k.calorie*k.kilo/k.centi**2,
              "Btuhft2F": k.Btu/k.hour/k.foot**2/k.Rankine,
              "Btusft2F": k.Btu/k.foot**2/k.Rankine}
-    __text__ = [u'W/m²·K', u'kW/m²·K', u'J/h·m²·K', u'kJ/h·m²·K', u'cal/h·m³·K',
-                u'kcal/h·m²·K', u'cal/s·m²·K', u'kcal/s·m²·K', u'cal/s·cm²·K',
-                u'kcal/s·cm²·K', u'Btu/h·ft²·F', u'Btu/s·ft²·F']
+    __text__ = ['W/m²·K', 'kW/m²·K', 'J/h·m²·K', 'kJ/h·m²·K', 'cal/h·m³·K',
+                'kcal/h·m²·K', 'cal/s·m²·K', 'kcal/s·m²·K', 'cal/s·cm²·K',
+                'kcal/s·cm²·K', 'Btu/h·ft²·F', 'Btu/s·ft²·F']
     __units__ = ['Wm2K', 'kWm2K', 'Jhm2K', 'kJhm2K', 'calhm2K', 'kcalhm2K',
                  'calsm2K', 'kcalsm2K', 'calscm2K', 'kcalscm2K', 'Btuhft2F',
                  'Btusft2F']
@@ -2019,9 +2020,9 @@ class Fouling(unidad):
              "scm2Kkcal": k.centi**2/k.calorie/k.kilo,
              "hft2FBtu": k.hour*k.foot**2*k.Rankine/k.Btu,
              "sft2FBtu": k.foot**2*k.Rankine/k.Btu}
-    __text__ = [u'm²·K/W', u'm²·K/kW', u'h·m²·K/J', u'h·m²·K/kJ',
-                u'h·m³·K/cal', u'h·m²·K/kcal', u's·m²·K/cal', u's·m²·K/kcal',
-                u's·cm²·K/cal', u's·cm²·K/kcal', u'h·ft²·F/Btu', u's·ft²·F/Btu']
+    __text__ = ['m²·K/W', 'm²·K/kW', 'h·m²·K/J', 'h·m²·K/kJ',
+                'h·m³·K/cal', 'h·m²·K/kcal', 's·m²·K/cal', 's·m²·K/kcal',
+                's·cm²·K/cal', 's·cm²·K/kcal', 'h·ft²·F/Btu', 's·ft²·F/Btu']
     __units__ = ['m2KW', 'm2KkW', 'hm2KJ', 'hm2KkJ', 'hm2Kcal', 'hm2Kkcal',
                  'sm2Kcal', 'sm2Kkcal', 'scm2Kcal', 'scm2Kkcal', 'hft2FBtu',
                  'sft2FBtu']
@@ -2085,8 +2086,8 @@ class Viscosity(unidad):
              "lbfft2": k.pound/k.foot,
              "lbfinch2": k.g*k.pound/k.inch**2,
              "lbfth": k.pound/k.foot/k.hour}
-    __text__ = [u'Pa·s', u'mPa·s', u'µPa·s', 'P', 'cP', u'dyn/s·cm²', u'µP',
-                'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h']
+    __text__ = ['Pa·s', 'mPa·s', 'µPa·s', 'P', 'cP', 'dyn/s·cm²', 'µP',
+                'reyn', 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP',
                  'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
     __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas",
@@ -2109,7 +2110,7 @@ class SolubilityParameter(unidad):
     rates = {"Jm3": 1.,
              "calcc": (k.calorie*k.mega)**0.5,
              "Btuft3": (k.Btu*k.foot**-3)**0.5}
-    __text__ = [u"(J/m³)^0.5", u"(cal/cm³)^0.5", u"(Btu/ft³)^0.5"]
+    __text__ = ["(J/m³)^0.5", "(cal/cm³)^0.5", "(Btu/ft³)^0.5"]
     __units__ = ["Jm3", "calcc", "Btuft3"]
     __units_set__ = {"altsi": "Jm3", "si": "Jm3", "metric": "Jm3",
                      "cgs": "calcc", "english": "Btuft3"}
@@ -2160,7 +2161,7 @@ class DipoleMoment(unidad):
     __title__ = QApplication.translate("pychemqt", "Dipole Moment")
     rates = {"Cm": 1.,
              "Debye": k.debye}
-    __text__ = [u'C·m', 'Debye']
+    __text__ = ['C·m', 'Debye']
     __units__ = ['Cm', 'Debye']
     __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
                      "english": "Debye"}
@@ -2224,7 +2225,7 @@ class V2V(unidad):
              "ft3ft3": 1.,
              "ll": 1.,
              "ft3bbl": k.foot**3/k.bbl}
-    __text__ = [u"m³m³", u"ft/bbl"]
+    __text__ = ["m³m³", "ft/bbl"]
     __units__ = ["m3m3", "ft3bbl"]
     __units_set__ = {"altsi": "m3m3", "si": "m3m3", "metric": "m3m3",
                      "cgs": "m3m3", "english": "ft3bbl"}
@@ -2250,7 +2251,7 @@ class InvTemperature(unidad):
              "F": 1./k.Rankine,
              "R": 1./k.Rankine,
              "Re": 1./k.Reaumur}
-    __text__ = ['1/K', u'1/ºC', u'1/ºR', u'1/ºF', u'1/ºRe']
+    __text__ = ['1/K', '1/ºC', '1/ºR', '1/ºF', '1/ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
@@ -2318,10 +2319,10 @@ class InvPressure(unidad):
              "lbft2": k.foot**2/k.g/k.pound,
              "dyncm2": k.centi**2/k.dyn}
     __text__ = ['1/Pa', '1/hPa', '1/kPa', '1/MPa', '1/bar', '1/bar g',
-                '1/mbar', '1/psi', '1/psi g', '1/atm', u'1/kg/cm²',
-                u'1/kg/cm² g', '1/mmH2O', '1/cmH2O', '1/mH2O', '1/inH2O',
-                '1/ftH2O', '1/mmHg', '1/cmHg', '1/inHg', '1/ftHg', u'1/lb/cm²',
-                u'1/lb/ft²', u'1/dyn/cm²']
+                '1/mbar', '1/psi', '1/psi g', '1/atm', '1/kg/cm²',
+                '1/kg/cm² g', '1/mmH2O', '1/cmH2O', '1/mH2O', '1/inH2O',
+                '1/ftH2O', '1/mmHg', '1/cmHg', '1/inHg', '1/ftHg', '1/lb/cm²',
+                '1/lb/ft²', '1/dyn/cm²']
     __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
@@ -2370,7 +2371,7 @@ class EnthalpyDensity(unidad):
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo,
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
-    __text__ = [u'J/kgkgm³', u'kJ/kgkgm³', u"Btulb/lbft³"]
+    __text__ = ['J/kgkgm³', 'kJ/kgkgm³', "Btulb/lbft³"]
     __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
                      "cgs": "kJkgkgm3", "english": "Btulb2ft3"}
@@ -2450,8 +2451,8 @@ class PressureDensity(unidad):
              "MPakgm3": k.mega,
              "atmkgm3": 101325.,
              "psilbft3": k.psi/k.pound*k.foot**3}
-    __text__ = [u'Pa/kgm³', u'kPa/kgm³', u'bar/kgm³', u'MPa/kgm³', u"atm/kgm³",
-                u"Pa/gcm³", u"psi/lbft³"]
+    __text__ = ['Pa/kgm³', 'kPa/kgm³', 'bar/kgm³', 'MPa/kgm³', "atm/kgm³",
+                "Pa/gcm³", "psi/lbft³"]
     __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3",
                  "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
@@ -2479,8 +2480,8 @@ class DensityPressure(unidad):
              "kgm3MPa": k.micro,
              "kgm3atm": 1/101325.,
              "lbft3psi": k.pound/k.foot**3/k.psi}
-    __text__ = [u'kg/m³Pa', u'kg/m³kPa', u'kg/m³MPa', u"kg/m³bar", u'kg/m³atm',
-                u"gcm³/Pa", u"lb/ft³psi"]
+    __text__ = ['kg/m³Pa', 'kg/m³kPa', 'kg/m³MPa', "kg/m³bar", 'kg/m³atm',
+                "gcm³/Pa", "lb/ft³psi"]
     __units__ = ['kgm3Pa', 'kgm3kPa', 'kgm3MPa', "kgm3bar", "kgm3atm", "gccPa",
                  "lbft3psi"]
     __units_set__ = {"altsi": "kgm3kPa", "si": "kgm3Pa", "metric": "kgm3kPa",
@@ -2503,7 +2504,7 @@ class DensityTemperature(unidad):
     rates = {"kgm3K": 1.,
              "gccK": 1./k.liter,
              "lbft3F": k.pound/k.foot**3/k.Rankine}
-    __text__ = [u'kg/m³K', u'g/cm³K', u"lb/ft³F"]
+    __text__ = ['kg/m³K', 'g/cm³K', "lb/ft³F"]
     __units__ = ['kgm3K', 'gccK', "lbft3F"]
     __units_set__ = {"altsi": "kgm3K", "si": "kgm3K", "metric": "kgm3K",
                      "cgs": "gccK", "english": "lbft3F"}
@@ -2522,20 +2523,20 @@ class Currency(unidad):
     >>> S=Currency(5, "eur")
     """
     try:
-        archivo = open(conf_dir+"moneda.dat", "r")
+        archivo = open(conf_dir+"moneda.dat", "rb")
     except:
         getrates()
-        archivo = open(conf_dir+"moneda.dat", "r")
-    rates = cPickle.load(archivo)
+        archivo = open(conf_dir+"moneda.dat", "rb")
+    rates = pickle.load(archivo)
     archivo.close
     fecha = rates.pop("date")
     __title__ = QApplication.translate("pychemqt", "Currency")
-    __text__ = ['$', u'€', u'£', u'¥', u'¥', u'руб', 'A$', 'R$', 'C$', 'Fr.',
-                'kr', 'HK$', u'₨', u'₩', u'₨', 'RM', 'NZ$', 'S$', 'NT$',
-                'R', u'฿', 'kr', 'kr', '$', u'Kč', u'Ft', u'zł', 'RON', u'Íkr',
-                'kn',  'TL', 'PhP.', '$', '$', '$', u'د.ت', u'درهم', '$', 'L',
-                u'฿', 'S/.', 'Rs', 'EC$', 'Dhs',  u'NAƒ', '$', 'F', 'Bs.', 'Q',
-                'FCFA', u'₫',  'K', 'B$', u'дин.', u'GH₵', 'Rp', 'FJ$', u'₪']
+    __text__ = ['$', '€', '£', '¥', '¥', 'руб', 'A$', 'R$', 'C$', 'Fr.',
+                'kr', 'HK$', '₨', '₩', '₨', 'RM', 'NZ$', 'S$', 'NT$',
+                'R', '฿', 'kr', 'kr', '$', 'Kč', 'Ft', 'zł', 'RON', 'Íkr',
+                'kn',  'TL', 'PhP.', '$', '$', '$', 'د.ت', 'درهم', '$', 'L',
+                '฿', 'S/.', 'Rs', 'EC$', 'Dhs',  'NAƒ', '$', 'F', 'Bs.', 'Q',
+                'FCFA', '₫',  'K', 'B$', 'дин.', 'GH₵', 'Rp', 'FJ$', '₪']
     __units__ = ['usd', 'eur', 'gbp', 'jpy', 'cny', 'rub', 'aud', 'brl', 'cad',
                  'chf', 'dkk', 'hkd', 'inr', 'krw', 'lkr', 'myr', 'nzd', 'sgd',
                  'twd', 'zar', 'thb', 'sek', 'nok', 'mxn', 'czk', 'huf', 'pln',
@@ -2658,10 +2659,10 @@ if __name__ == "__main__":
     doctest.testmod()
 
     P=Pressure(5, "MPa")
-    print P
+    print(P)
 
     T=Temperature(5)
-    print T, type(T.K), T.C
+    print(T, type(T.K), T.C)
     
     c = Dimensionless(None)
-    print c
+    print(c)

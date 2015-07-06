@@ -5,23 +5,23 @@
 # Tools with units converter
 ###############################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
 from lib import unidades
 from UI.conversor_unidades import UI_conversorUnidades, moneda
 
 
-class UI_unitConverter(QtGui.QDialog):
+class UI_unitConverter(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(UI_unitConverter, self).__init__(parent)
         self.setWindowTitle(
-            QtGui.QApplication.translate("pychemqt", "Units converter"))
+            QtWidgets.QApplication.translate("pychemqt", "Units converter"))
 
-        self.verticalLayout = QtGui.QVBoxLayout(self)
-        self.lista = QtGui.QListWidget()
+        self.verticalLayout = QtWidgets.QVBoxLayout(self)
+        self.lista = QtWidgets.QListWidget()
         self.lista.itemDoubleClicked.connect(self.mostrar_ventana_hijo)
         self.verticalLayout.addWidget(self.lista)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         self.verticalLayout.addWidget(self.buttonBox)
         for unidad in unidades._all:
@@ -39,7 +39,7 @@ class UI_unitConverter(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     conversion_unidades = UI_unitConverter()
     conversion_unidades.show()
     sys.exit(app.exec_())

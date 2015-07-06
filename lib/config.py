@@ -72,18 +72,18 @@ where id == %s" % str(componente))
 def getMainWindowConfig():
     """Return config of current project"""
     # FIXME: For now need pychemqtrc_temporal for save config of last project
-    widget = QtGui.QApplication.activeWindow()
+    widget = QtWidgets.QApplication.activeWindow()
     config = None
     if not widget:
         config = ConfigParser()
         config.read(conf_dir+"pychemqtrc_temporal")
-    if isinstance(widget, QtGui.QMainWindow) and \
+    if isinstance(widget, QtWidgets.QMainWindow) and \
        widget.__class__.__name__ == "UI_pychemqt":
         config = widget.currentConfig
     else:
-        lista = QtGui.QApplication.topLevelWidgets()
+        lista = QtWidgets.QApplication.topLevelWidgets()
         for widget in lista:
-            if isinstance(widget, QtGui.QMainWindow) and \
+            if isinstance(widget, QtWidgets.QMainWindow) and \
                widget.__class__.__name__ == "UI_pychemqt":
                 config = widget.currentConfig
                 break
@@ -125,7 +125,7 @@ class Entity(object):
         # Values defined as integer Entrada_con_unidades return as float
         # and it must be corrected
         self.kwargsInteger = []
-        for key, value in self.kwargs.iteritems():
+        for key, value in self.kwargs.items():
             if isinstance(value, int):
                 self.kwargsInteger.append(key)
 
@@ -159,13 +159,13 @@ class Entity(object):
         self.__dict__.clear()
         self._bool = False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._bool
 
     def show(self):
         """General function to show entity properties as key: value text"""
         for key in sorted(self.__dict__):
-            print key, ": ", self.__dict__[key]
+            print(key, ": ", self.__dict__[key])
 
     def setNotas(self, html, txt):
         self.notas = html
@@ -177,7 +177,7 @@ class Entity(object):
     def numInputs(self):
         """Input count in kwargs"""
         count = 0
-        for key, value in self.kwargs.iteritems():
+        for key, value in self.kwargs.items():
             if key not in self.kwargs_forbidden and value:
                 count += 1
         return count
@@ -186,7 +186,7 @@ class Entity(object):
     def writeToStream(self, stream):
         """Save kwargs properties of entity to file"""
         stream.writeInt32(self.numInputs)
-        for key, value in self.kwargs.iteritems():
+        for key, value in self.kwargs.items():
             if key not in self.kwargs_forbidden and value:
                 stream.writeString(key)
                 if isinstance(value, float):
@@ -305,3 +305,4 @@ class Fluid(dict):
     cv = 0
     cp_cv = 0
     cp0 = 0
+

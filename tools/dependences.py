@@ -7,41 +7,41 @@
 
 import os
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 optional_modules = (
-    ("freesteam", QtGui.QApplication.translate(
+    ("freesteam", QtWidgets.QApplication.translate(
         "pychemqt", "freesteam thermal option disabled")),
-    ("oasa", QtGui.QApplication.translate(
+    ("oasa", QtWidgets.QApplication.translate(
         "pychemqt", "graphic formula disabled")),
-    ("Elemental", QtGui.QApplication.translate(
+    ("Elemental", QtWidgets.QApplication.translate(
         "pychemqt", "periodic table don´t available")),
-    ("CoolProp", QtGui.QApplication.translate(
+    ("CoolProp", QtWidgets.QApplication.translate(
         "pychemqt", "coolprop thermal option disabled")),
-    ("refprop", QtGui.QApplication.translate(
+    ("refprop", QtWidgets.QApplication.translate(
         "pychemqt", "refprop thermal option disabled")),
-    ("ezodf", QtGui.QApplication.translate(
+    ("ezodf", QtWidgets.QApplication.translate(
         "pychemqt", "openoffice/libreoffice interaction disabled")),
-    ("openpyxl", QtGui.QApplication.translate(
+    ("openpyxl", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 2007/2010 interaction disabled")),
-    ("xlwt", QtGui.QApplication.translate(
+    ("xlwt", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
     )
 
 
-class ShowDependences(QtGui.QDialog):
+class ShowDependences(QtWidgets.QDialog):
     """Dialog to show optional dependences availability"""
     def __init__(self, parent=None):
         super(ShowDependences, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/showPrograms.png")))
         self.setWindowTitle(
-            QtGui.QApplication.translate("pychemqt", "External program"))
-        layout = QtGui.QVBoxLayout(self)
-        self.tree = QtGui.QTreeWidget()
-        header = QtGui.QTreeWidgetItem(
-            [QtGui.QApplication.translate("pychemqt", "Module"),
-             QtGui.QApplication.translate("pychemqt", "Status")])
+            QtWidgets.QApplication.translate("pychemqt", "External program"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.tree = QtWidgets.QTreeWidget()
+        header = QtWidgets.QTreeWidgetItem(
+            [QtWidgets.QApplication.translate("pychemqt", "Module"),
+             QtWidgets.QApplication.translate("pychemqt", "Status")])
         self.tree.setHeaderItem(header)
 
         for module, txt in optional_modules:
@@ -49,12 +49,12 @@ class ShowDependences(QtGui.QDialog):
                 mod = __import__(module)
                 estado = mod.__file__
             else:
-                estado = QtGui.QApplication.translate("pychemqt", "not found")
-            item = QtGui.QTreeWidgetItem([module, estado])
+                estado = QtWidgets.QApplication.translate("pychemqt", "not found")
+            item = QtWidgets.QTreeWidgetItem([module, estado])
             self.tree.addTopLevelItem(item)
 
         layout.addWidget(self.tree)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     os.environ["ezodf"] = "False"
     os.environ["openpyxl"] = "False"
     os.environ["xlwt"] = "False"
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialog = ShowDependences()
     dialog.show()
     app.exec_()

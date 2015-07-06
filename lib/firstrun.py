@@ -8,9 +8,9 @@
 ###############################################################################
 
 import sys
-from ConfigParser import ConfigParser
-import urllib2
-import cPickle
+from configparser import ConfigParser
+import urllib.request
+import pickle
 
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
@@ -287,7 +287,7 @@ def getrates(archivo):  # From Python Cookbook
     """Procedure to update change rates"""
     rates = {}
     url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
-    fh = urllib2.urlopen(url)
+    fh = urllib.request.urlopen(url)
     for line in fh:
         line = line.rstrip()
         if not line or line.startswith(("#", "Closing ")):
@@ -306,4 +306,4 @@ def getrates(archivo):  # From Python Cookbook
     for rate in rates:
         rates[rate] = rates[rate] / rates["usd"]
     rates["date"] = date
-    cPickle.dump(rates, open(archivo, "w"))
+    pickle.dump(rates, open(archivo, "w"))

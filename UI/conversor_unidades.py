@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib.unidades import Currency, getrates
 from UI.delegate import CellEditor
 
 
-class UI_conversorUnidades(QtGui.QDialog):
+class UI_conversorUnidades(QtWidgets.QDialog):
     def __init__(self, unidad, valor=None, parent=None):
         super(UI_conversorUnidades, self).__init__(parent)
         self.unidad = unidad
@@ -21,8 +21,8 @@ class UI_conversorUnidades(QtGui.QDialog):
             self.tooltip = unidad.__text__
         self.value = self.unidad(valor)
         self.setWindowTitle(unidad.__title__)
-        self.gridLayout = QtGui.QGridLayout(self)
-        self.tabla = QtGui.QTableWidget()
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.tabla = QtWidgets.QTableWidget()
         self.tabla.setRowCount(len(self.texto))
         self.tabla.setColumnCount(1)
         self.tabla.setItemDelegateForColumn(0, CellEditor(self))
@@ -43,17 +43,17 @@ class UI_conversorUnidades(QtGui.QDialog):
             x = 5
         else:
             x = 0
-        self.gridLayout.addItem(QtGui.QSpacerItem(x,15,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,0)
-        self.gridLayout.addItem(QtGui.QSpacerItem(x,15,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,2)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(x,15,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,0)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(x,15,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,2)
 
         for i in range(len(self.texto)):
-            self.tabla.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(self.texto[i]))
+            self.tabla.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(self.texto[i]))
             self.tabla.setRowHeight(i,24)
-            self.tabla.setItem(i, 0, QtGui.QTableWidgetItem(""))
+            self.tabla.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.tabla.item(i, 0).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
         for i in range(len(self.tooltip)):
-            self.tabla.item(i, 0).setToolTip(QtGui.QApplication.translate("pychemqt", self.tooltip[i]))
+            self.tabla.item(i, 0).setToolTip(QtCore.QCoreApplication.translate("pychemqt", self.tooltip[i]))
 
         if valor:
             self.rellenarTabla(self.value)
@@ -63,7 +63,7 @@ class UI_conversorUnidades(QtGui.QDialog):
         self.gridLayout.addWidget(self.tabla, 2, 1, 1, 1)
         self.tabla.cellChanged.connect(self.actualizar)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -85,11 +85,11 @@ class moneda(UI_conversorUnidades):
     def __init__(self, valor=None, parent=None):
         super(moneda, self).__init__(Currency, valor=valor, parent=parent)
 
-        self.fecha = QtGui.QLabel(QtGui.QApplication.translate(
+        self.fecha = QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Date::") + self.value.fecha)
         self.gridLayout.addWidget(self.fecha, 0, 1)
-        self.botonActualizar = QtGui.QPushButton(
-            QtGui.QApplication.translate("pychemqt", "Update"))
+        self.botonActualizar = QtWidgets.QPushButton(
+            QtCore.QCoreApplication.translate("pychemqt", "Update"))
         self.botonActualizar.clicked.connect(self.getrates)
         self.gridLayout.addWidget(self.botonActualizar, 1, 1)
 
@@ -100,7 +100,7 @@ class moneda(UI_conversorUnidades):
     def getrates(self):
         getrates()
         self.value = self.unidad(self.value)
-        self.fecha.setText(QtGui.QApplication.translate("pychemqt", "Date:") +
+        self.fecha.setText(QtCore.QCoreApplication.translate("pychemqt", "Date:") +
                            self.value.fecha)
         if self.value != 0:
             self.actualizar(0, 0)
@@ -108,7 +108,7 @@ class moneda(UI_conversorUnidades):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialogo = moneda(300)
     dialogo.show()
     sys.exit(app.exec_())
