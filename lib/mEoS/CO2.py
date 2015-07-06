@@ -27,7 +27,6 @@ class CO2(MEoS):
            "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
            "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792], 
            "ao_hyp": [], "hyp": []}
-
            
     Fi2 = {"ao_log": [1, 2.50002],
            "pow": [0, 1],
@@ -35,12 +34,6 @@ class CO2(MEoS):
            "ao_exp": [], "titao": [], 
            "ao_hyp": [2.04452, -1.06044, 2.03366, 0.01393],
            "hyp": [3.022758166, -2.844425476, 1.589964364, 1.12159609]}
-
-    CP2 = {"ao": 3.50002,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [2.04452, -1.06044, 2.03366, 0.01393],
-           "hyp": [3.022758166*Tc, -2.844425476*Tc, 1.589964364*Tc, 1.12159609*Tc]}
 
     CP3 = {"ao": 3.5,
            "an": [], "pow": [],
@@ -422,7 +415,11 @@ class CO2(MEoS):
               "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
                             -1.537102e-2],
               "__name__": "Fenghour (1998)",
-              "__doc__": """Fenghour, A., Wakeham, W.A., Vesovic, V., "The Viscosity of Carbon Dioxide," J. Phys. Chem. Ref. Data, 27:31-44, 1998.""",
+              "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
+                          "title": "The Viscosity of Carbon Dioxide", 
+                          "ref": "J. Phys. Chem. Ref. Data 27, 31 (1998)",
+                          "doi": "10.1063/1.556013"}, 
+                          
               "bmega_b": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
                           -1.537102e-2],
               "ek": 251.196, "sigma": 1.,
@@ -458,11 +455,39 @@ class CO2(MEoS):
               "C": [1.03255e-6, -8.56207e-7, 3.84384e-7],
               "D": [0.0, 0.0, 0.0]}
 
+    # TODO: Add visco correlation from vesovic
+    
     _viscosity = visco0, visco1
 
     thermo0 = {"eq": 1,
                "__name__": "Vesovic (1990)",
-               "__doc__": """Vesovic, V., Wakeham, W.A., Olchowy, G.A., Sengers, J.V., Watson, J.T.R., and Millat, J., "The transport properties of carbon dioxide," J. Phys. Chem. Ref. Data, 19:763-808, 1990""",
+               "__doi__": {"autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., Sengers, J.V., Watson, J.T.R., and Millat, J.",
+                           "title": "The transport properties of carbon dioxide", 
+                           "ref": "J. Phys. Chem. Ref. Data 19, 763 (1990)",
+                           "doi": "10.1063/1.555875"}, 
+               "__test__": """
+                   >>> st=CO2(T=222, P=1e5)
+                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   220 0.1 2.440 10.90
+                   >>> st=CO2(T=300, P=1e5)
+                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   300 0.1 1.773 16.77
+                   >>> st=CO2(T=800, P=1e5)
+                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   800 0.1 0.662 56.65
+                   >>> st=CO2(T=304, P=7e6)
+                   >>> print "%0.0f %0.0f %0.4f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   304 7 254.3205 42.52
+                   >>> st=CO2(T=220, P=1.5e6)
+                   >>> print "%0.0f %0.0f %0.2f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   220 15 1194.86 187.50
+                   >>> st=CO2(T=300, P=5e7)
+                   >>> print "%0.0f %0.0f %0.2f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   300 50 1029.27 137.61
+                   >>> st=CO2(T=800, P=7.5e7)
+                   >>> print "%0.0f %0.0f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
+                   800 75 407.828 78.47
+                   """, # Appendix IV, Pag 808
 
                "Tref": 251.196, "kref": 1e-3,
                "no": [7.5378307, 4.8109652e-2],
@@ -482,10 +507,3 @@ class CO2(MEoS):
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
 
     _thermal = thermo0,
-
-if __name__ == "__main__":
-
-    for eq in (0, 2, 3, 4, 5):
-        st=CO2(T=500, P=101325, eq=eq)
-        print "%0.6g %0.5f %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-            st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)

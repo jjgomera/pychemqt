@@ -37,6 +37,7 @@ class R123(MEoS):
                     "doi":  "10.1063/1.555950"}, 
         #TODO: Add test from file
         #FIXME: The file include derived heltmholtz expresion for MBWR equations
+        # too in Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123
         "R": 8.31451,
         "cp": CP1,
         "ref": "NBP", 
