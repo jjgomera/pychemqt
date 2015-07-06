@@ -12,9 +12,9 @@
 
 import random
 import os
-from string import maketrans
+#from string import maketrans
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 
 def format2txt(formato):
@@ -109,7 +109,7 @@ def exportTable(matrix, fname, format, title=None):
             csv | ods | xls | xlsx
         title: column title array, optional
     """
-    sheetTitle = unicode(QApplication.translate("pychemqt", "Table"))
+    sheetTitle = str(QApplication.translate("pychemqt", "Table"))
     if fname.split(".")[-1] != format:
         fname+=".%s" % format
 
@@ -117,7 +117,7 @@ def exportTable(matrix, fname, format, title=None):
     if title:
         header = []
         for ttl in title:
-            line = unicode(ttl).split(os.linesep)
+            line = str(ttl).split(os.linesep)
             if line[-1] != "[-]":
                 line[-1] = "["+line[-1]+"]"
             header.append(" ".join(line))
@@ -220,4 +220,4 @@ if __name__ == "__main__":
 #    print repr(Configuracion("Density", "DenGas").text())
 #    print representacion("3232326262")
 
-    print spreadsheetColumn(55)
+    print(spreadsheetColumn(55))
