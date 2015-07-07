@@ -249,9 +249,72 @@ class Ethylene(MEoS):
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Jahangiri et al. (1986)",
-        "__doc__":  u"""Jahangiri, M., Jacobsen, R.T, Stewart, R.B., and McCarty, R.D., "Thermodynamic properties of ethylene from the freezing line to 450 K at pressures to 260 MPa," J. Phys. Chem. Ref. Data, 15(2):593-734, 1986.""",
+        "__doi__": {"autor": "Jahangiri, M., Jacobsen, R.T, Stewart, R.B., and McCarty, R.D.",
+                    "title": "Thermodynamic properties of ethylene from the freezing line to 450 K at pressures to 260 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 15, 593 (1986)",
+                    "doi": "10.1063/1.555753"}, 
+        "__test__": 
+            # Table 18, Pag 613
+            """
+            >>> st=Ethylene(T=200, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            200.0 35.352 -3801.885 -15.367
+            >>> st=Ethylene(T=250, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            250.0 38.624 -1958.438 -7.153
+            >>> st=Ethylene(T=300, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            300.0   43.027  79.437  0.266
+            >>> st=Ethylene(T=350, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            350.0 47.964 2353.064 7.265
+            >>> st=Ethylene(T=400, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            400.0 52.989 4877.189 13.999
+            >>> st=Ethylene(T=450, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            450.0 57.844 7649.04 20.523
+            >>> st=Ethylene(T=500, x=0.5, eq=2)
+            >>> print "%0.1f %0.5f %0.3f %0.3f" % (st.T, st.cpM0.kJkmolK, st.hM0.kJkmol, st.sM0.kJkmolK)
+            500.0 62.411 10656.721 26.856
+            """
+            # Table 24, Pag 635
+            """
+            >>> st=Ethylene(T=200.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            200.15 -310.248
+            >>> st=Ethylene(T=250.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            250.15 -199.921
+            >>> st=Ethylene(T=300.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            300.15 -138.087
+            >>> st=Ethylene(T=350.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            350.15 -98.356
+            >>> st=Ethylene(T=400.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            400.15 -66.019
+            >>> st=Ethylene(T=450.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f" % (st.T, st.virialB.ccg*st.M)
+            450.15 -50.099
+            """
+            # Table 25, Pag 637
+            """
+            >>> st=Ethylene(T=238.18, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f %0.1f %0.1f" % (st.T, st,P.MPa, st.Liquido.hM.Jmol, st.Gas.hM.Jmol)
+            238.18 1.681 16108.4 25739.7
+            >>> st=Ethylene(T=273.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f %0.1f %0.1f" % (st.T, st,P.MPa, st.Liquido.hM.Jmol, st.Gas.hM.Jmol)
+            273.15 4.099 19639.9 24839.8
+            >>> st=Ethylene(T=282.15, x=0.5, eq=2)
+            >>> print "%0.2f %0.3f %0.1f %0.1f" % (st.T, st,P.MPa, st.Liquido.hM.Jmol, st.Gas.hM.Jmol)
+            282.15 5.018 24644.4 23021.6
+            """, 
+
         "R": 8.31434,
         "cp": CP1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225}, 
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 260000.0, "rhomax": 26.67, 
         "Pmin": 0.1225, "rhomin": 23.348, 
@@ -317,9 +380,14 @@ class Ethylene(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethylene of McCarty and Jacobsen (1981)",
-        "__doc__":  u"""Younglove, B.A., "Thermophysical Properties of Fluids.  I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen," J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.""",
+        "__doi__": {"autor": "Younglove, B.A.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "doi": ""}, 
+                    
         "R": 8.31434,
         "cp": CP2,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 23.343, 
         "Pmin": 0.1213, "rhomin": 23.343, 
@@ -345,6 +413,7 @@ class Ethylene(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"}, 
         "R": 8.31451,
         "cp": CP1,
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225}, 
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
         "Pmin": 0.1, "rhomin": 40., 
