@@ -349,14 +349,14 @@ class Ethylene(MEoS):
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-#        "__test__": """
-#            >>> st=Ethylene(T=700, rho=200, eq=3)
-#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-#            2.7683 48.416 3.0651
-#            >>> st2=Ethylene(T=750, rho=100, eq=3)
-#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-#            174.1 0.47682
-#            """, # Table III, Pag 46
+        "__test__": """
+            >>> st=Ethylene(T=700, rho=200, eq=3)
+            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+            2.7683 48.416 3.0651
+            >>> st2=Ethylene(T=750, rho=100, eq=3)
+            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+            174.1 0.47682
+            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": Fi1,
@@ -380,11 +380,42 @@ class Ethylene(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethylene of McCarty and Jacobsen (1981)",
-        "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+        "__doi__": {"autor": "McCarty, R.D., Jacobsen, R.T.",
+                    "title": "An Equation of State for Fluid Ethylene", 
+                    "ref": "Natl. Bur. Stand., Tech. Note 1045, 1981.",
                     "doi": ""}, 
-                    
+        "__test__": 
+            # Table, Pag 138
+            """
+            >>> st=Ethylene(T=110, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 23.2516 110 7369.71 87.438 43.54 72.05 1706.12
+            >>> st=Ethylene(T=150, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 21.4687 150 10056.28 108.312 40.64 65.72 1507.50
+            >>> st=Ethylene(T=200, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 19.0802 200 13387.64 127.463 37.33 68.11 1172.01
+            >>> st=Ethylene(T=250, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 16.1946 250 16970.99 143.418 38.08 77.31 811.65
+            >>> st=Ethylene(T=300, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 11.5343 300 21586.21 160.141 42.53 118.76 418.90
+            >>> st=Ethylene(T=350, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 5.3640 350 27794.36 179.364 44.3 92.15 309.36
+            >>> st=Ethylene(T=400, P=1e7, eq=1)
+            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
+                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
+            10 3.7626 400 31676.15 189.761 46.49 70.37 347.16
+            """, 
         "R": 8.31434,
         "cp": CP2,
         "ref": "IIR", 
@@ -459,11 +490,63 @@ class Ethylene(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Holland (1983)"}
+              "__name__": "Holland (1983)",
+              "__doi__": {"autor": "Holland, P.M., Eaton, B.E., and Hanley, H.J.M.",
+                          "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene", 
+                          "ref": "J. Phys. Chem. Ref. Data 12, 917 (1983)",
+                          "doi": "10.1063/1.555701"}, 
+              "__test__":
+                  # Table 5, pag 924
+                  """
+                  >>> st=Ethylene(T=110, P=1e5)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  5660.5
+                  >>> st=Ethylene(T=140, P=1e6)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  2769.8
+                  >>> st=Ethylene(T=200, P=5e6)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  1223.7
+                  >>> st=Ethylene(T=300, P=1e5)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  103.8
+                  >>> st=Ethylene(T=130, P=1e7)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  3278.5
+                  >>> st=Ethylene(T=300, P=5e7)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  759.0
+                  >>> st=Ethylene(T=500, P=1e5)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  165.1
+                  >>> st=Ethylene(T=500, P=5e7)
+                  >>> print "%0.1f" % st.mu.muPas*10
+                  394.1
+                  """}
+
+    def _visco0(self, rho, T, fase):
+        GV = [-3.5098225018e6, 2.5008406184e6, -5.8365540744e5, 4.5549146583e3,
+              2.2881683403e4, -4.7318682077e3, 4.5022249258e2, -2.1490688088e1,
+              4.1649263233e-1]
+        muo = 0
+        for i in range(-3, 6):
+            muo += GV[i+3]*T**(i/3.)
+
+        mu1 = 0
+        tita = (rho-self.rhoc)/self.rhoc
+        j = [0, -4.8544486732, 1.3033585236e1, 2.7808928908e4, -1.8241971308e3,
+             1.5913024509, -2.0513573927e2, -3.9478454708e4]
+        deltamu = exp(j[1]+j[4]/T)*(exp(rho.gcc**0.1*(j[2]+j[3]/T**1.5)+tita*rho.gcc**0.5*(j[5]+j[6]/T+j[7]/T**2))-1.)
+
+        return unidades.Viscosity((muo+mu1+deltamu)*1e-7, "Pas")
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "NIST",
-              "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
+              "__doi__": {"autor": "",
+                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "ref": "",
+                          "doi": ""}, 
+
               "ek": 224.7, "sigma": 0.4163,
               "n_chapman": 0.141374566253583/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -473,57 +556,54 @@ class Ethylene(MEoS):
 
     _viscosity = visco0, visco1
 
-    def _visco0(self):
-        """Holland, P.M., Eaton, B.E., and Hanley, H.J.M., "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene," J. Phys. Chem. Ref. Data, 12(4):917-932, 1983."""
-        GV = [-3.5098225018e6, 2.5008406184e6, -5.8365540744e5, 4.5549146583e3,
-              2.2881683403e4, -4.7318682077e3, 4.5022249258e2, -2.1490688088e1,
-              4.1649263233e-1]
-        muo = 0
-        for i in range(-3, 6):
-            muo += GV[i+3]*self.T**(i/3.)
-
-        mu1 = 0
-        tita = (self.rho-self.rhoc)/self.rhoc
-        j = [0, -4.8544486732, 1.3033585236e1, 2.7808928908e4, -1.8241971308e3,
-             1.5913024509, -2.0513573927e2, -3.9478454708e4]
-        deltamu = exp(j[1]+j[4]/self.T)*(exp(self.rho.gcc**0.1*(j[2]+j[3]/self.T**1.5)+tita*self.rho.gcc**0.5*(j[5]+j[6]/self.T+j[7]/self.T**2))-1.)
-
-        return unidades.Viscosity((muo+mu1+deltamu)*1e-7, "Pas")
-
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "Holland (1983)"}
+               "__name__": "Holland (1983)",
+               "__doi__": {"autor": "Holland, P.M., Eaton, B.E., and Hanley, H.J.M.",
+                           "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene", 
+                           "ref": "J. Phys. Chem. Ref. Data 12, 917 (1983)",
+                           "doi": "10.1063/1.555701"}, 
+               "__test__":
+                   # Table 6, pag 927
+                   """
+                   >>> st=Ethylene(T=110, P=1e5)
+                   >>> print "%0.2f" % st.k.mWmK
+                   261.77
+                   >>> st=Ethylene(T=140, P=1e6)
+                   >>> print "%0.2f" % st.k.mWmK
+                   223.14
+                   >>> st=Ethylene(T=200, P=5e6)
+                   >>> print "%0.2f" % st.k.mWmK
+                   158.50
+                   >>> st=Ethylene(T=300, P=1e5)
+                   >>> print "%0.2f" % st.k.mWmK
+                   20.56
+                   >>> st=Ethylene(T=130, P=1e7)
+                   >>> print "%0.2f" % st.k.mWmK
+                   244.97
+                   >>> st=Ethylene(T=300, P=5e7)
+                   >>> print "%0.2f" % st.k.mWmK
+                   129.32
+                   >>> st=Ethylene(T=500, P=1e5)
+                   >>> print "%0.2f" % st.k.mWmK
+                   49.95
+                   >>> st=Ethylene(T=500, P=5e7)
+                   >>> print "%0.2f" % st.k.mWmK
+                   93.57
+                   """}
 
-    thermo1 = {"eq": 1, "critical": 0,
-               "__name__": "NIST14",
-               "__doc__": """Coefficients are taken from NIST14, Version 9.08""",
-
-               "Tref": 224.7, "kref": 1e-3,
-               "no": [1.35558587, -0.14207565869509, 1],
-               "co": [0, -1, -96],
-
-               "Trefb": 282.350007277, "rhorefb": 7.63299886259, "krefb": 1e-3,
-               "nb": [15.3064493136, 25.0280721432, -15.4526955192,
-                      0.8590418672, 3.32700049633, -0.333048907849],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6}
-
-    _thermal = thermo0, thermo1
-
-    def _thermo0(self):
-        """Holland, P.M., Eaton, B.E., and Hanley, H.J.M., "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene," J. Phys. Chem. Ref. Data, 12(4):917-932, 1983."""
+    def _thermo0(self, rho, T, fase):
         GT = [-2.903423528e5, 4.680624952e5, -1.8954783215e5, -4.8262235392e3,
               2.243409372e4, -6.6206354818e3, 8.9937717078e2, -6.0559143718e1,
               1.6370306422]
         lo = 0
         for i in range(-3, 6):
-            lo += GT[i+3]*self.T**(i/3.)
+            lo += GT[i+3]*T**(i/3.)
 
-        tita = (self.rho.gcc-0.221)/0.221
+        tita = (rho.gcc-0.221)/0.221
         j = [0, -1.304503323e1, 1.8214616599e1, 9.903022496e3, 7.420521631e2,
              -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
-        l1 = exp(j[1]+j[4]/self.T)*(exp(self.rho.gcc**0.1*(j[2]+j[3]/self.T**1.5)+tita*self.rho.gcc**0.5*(j[5]+j[6]/self.T+j[7]/self.T**2))-1.)
+        l1 = exp(j[1]+j[4]/T)*(exp(rho.gcc**0.1*(j[2]+j[3]/self.T**1.5)+tita*rho.gcc**0.5*(j[5]+j[6]/T+j[7]/T**2))-1.)
 
         lc = 0
         # FIXME: no sale
@@ -540,3 +620,23 @@ class Ethylene(MEoS):
 #        print lo, l1
         return unidades.ThermalConductivity(lo+l1+lc, "mWmK")
 
+
+    thermo1 = {"eq": 1, "critical": 0,
+               "__name__": "NIST14",
+               "__doi__": {"autor": "",
+                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "ref": "",
+                           "doi": ""}, 
+
+               "Tref": 224.7, "kref": 1e-3,
+               "no": [1.35558587, -0.14207565869509, 1],
+               "co": [0, -1, -96],
+
+               "Trefb": 282.350007277, "rhorefb": 7.63299886259, "krefb": 1e-3,
+               "nb": [15.3064493136, 25.0280721432, -15.4526955192,
+                      0.8590418672, 3.32700049633, -0.333048907849],
+               "tb": [0, 0, 0, -1, 0, -1],
+               "db": [1, 3, 4, 4, 5, 5],
+               "cb": [0]*6}
+
+    _thermal = thermo0, thermo1
