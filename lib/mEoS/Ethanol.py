@@ -10,16 +10,22 @@ class Ethanol(MEoS):
     name = "ethanol"
     CASNumber = "64-17-5"
     formula = "C2H6O"
-    synonym = "R-170"
-    rhoc = unidades.Density(275.9906)
-    Tc = unidades.Temperature(513.9)
-    Pc = unidades.Pressure(6148., "kPa")
+    synonym = ""
+    rhoc = unidades.Density(273.1858492)
+    Tc = unidades.Temperature(514.71)
+    Pc = unidades.Pressure(6268., "kPa")
     M = 46.06844  # g/mol
     Tt = unidades.Temperature(159)
-    Tb = unidades.Temperature(351.39)
-    f_acent = 0.644
+    Tb = unidades.Temperature(351.57)
+    f_acent = 0.646
     momentoDipolar = unidades.DipoleMoment(1.6909, "Debye")
     id = 134
+
+    Fi1 = {"ao_log": [1, 3.43069],
+           "pow": [0, 1],
+           "ao_pow": [-12.7531, 9.39094],
+           "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
+           "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
     CP1 = {"ao": 6.4112,
            "an": [], "pow": [],
@@ -29,31 +35,88 @@ class Ethanol(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for ethanol of Schroeder (2011).",
+        "__doi__": {"autor": "Schroeder, J. A.; Penoncello, S. G.; Schroeder, J. S.",
+                    "title": "A Fundamental Equation of State for Ethanol", 
+                    "ref": "J. Phys. Chem. Ref. Data 43, 043102 (2014)",
+                    "doi": "10.1063/1.4895394"}, 
+        "__test__": """
+            >>> st=Ethanol(T=300, rhom=18)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            300.0 18.0 65.640781 94.211739 110.34295 1454.836
+            >>> st=Ethanol(T=450, rhom=13.2)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            450.0 13.2 2.921546 137.3679 191.28901 588.67833
+            >>> st=Ethanol(T=450, rhom=0.5)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            450.0 0.5 1.5540771 97.346133 125.53109 263.57231
+            >>> st=Ethanol(T=550, rhom=6)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            550.0 6.0 10.315533 151.00169 440.13187 207.74032
+            >>> st=Ethanol(T=514.8, rhom=6)
+            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
+                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            514.8 6.0 6.2784176 163.95041 115623.88 159.34583
+            """, # Table 30, Pag 38
+            
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 52811.79, "so": 209.583}, 
+        
+        "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74, 
+        "Pmin": 0.00000088, "rhomin": 19.731, 
+
+        "nr1": [0.58200796e-1, 0.94391227, -0.80941908, 0.55359038,
+                -0.14269032e1, 0.13448717],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1, 1.04, 2.72, 1.174, 1.329, 0.195],
+
+        "nr2": [0.42671978, -0.11700261e1, -0.92405872, 0.34891808,
+                -0.9132772, 0.22629481e-1, -0.15513423, 0.21055146,
+                -0.2199769, -0.65857238e-2],
+        "d2": [1, 1, 1, 3, 3, 2, 2, 6, 6, 8],
+        "t2": [2.43, 1.274, 4.16, 3.3, 4.177, 2.5, 0.81, 2.02, 1.606, 0.86],
+        "c2": [1, 1, 2, 1, 2, 1, 2, 1, 1, 1],
+        "gamma2": [1]*10, 
+        
+        "nr3": [.75564749, .1069411, -.69533844e-1, -.24947395, .27177891e-1,
+                -0.9053953e-3, -0.12310953, -0.8977971e-1, -0.39512601],
+        "d3": [1, 1, 2, 3, 3, 2, 2, 2, 1],
+        "t3": [2.5, 3.72, 1.19, 3.25, 3, 2, 2, 1, 1],
+        "alfa3": [1.075, .463, .876, 1.108, .741, 4.032, 2.453, 2.3, 3.143],
+        "beta3": [1.207, .0895, .581, .947, 2.356, 27.01, 4.542, 1.287, 3.09],
+        "gamma3": [1.194, 1.986, 1.583, .756, .495, 1.002, 1.077, 1.493, 1.542],
+        "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313],
+        "nr4": []}
+        
+    helmholtz2 = {
+        "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Dillon and Penoncello (2004)",
         "__doi__": {"autor": "Dillon, H.E. and Penoncello, S.G.",
                     "title": "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol", 
                     "ref": "Int. J. Thermophys., 25(2):321-335, 2004.",
                     "doi": "10.1023/B:IJOT.0000028470.49774.14"}, 
         "__test__": """
-            >>> st=Ethanol(T=350, P=1e5)
+            >>> st=Ethanol(T=350, P=1e5, eq=1)
             >>> print "%0.1f %0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             0.1 350 737.85 259.95 1.0363 2.6542 3.1707 964.32
-            >>> st=Ethanol(T=650, P=1e5)
+            >>> st=Ethanol(T=650, P=1e5, eq=1)
             >>> print "%0.1f %0.0f %0.4g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             0.1 650 0.8534 1771.7 4.8011 2.3679 2.5512 355.1
-            
-            >>> st=Ethanol(T=450, P=1e6)
+            >>> st=Ethanol(T=450, P=1e6, eq=1)
             >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             1 450 13.736 1270.3 3.4711 2.0217 2.3954 276.5
-            
-            >>> st=Ethanol(T=250, P=1e7)
+            >>> st=Ethanol(T=250, P=1e7, eq=1)
             >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             10 250 831.84 9.4714 0.1625 1.6724 2.0325 1372.8
-            >>> st=Ethanol(T=600, P=1e7)
+            >>> st=Ethanol(T=600, P=1e7, eq=1)
             >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             10 600 129 1474.5 3.5258 2.7347 4.0688 273.66
-            
-            >>> st=Ethanol(T=400, P=1e8)
+            >>> st=Ethanol(T=400, P=1e8, eq=1)
             >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             100 400 784.52 500.06 1.3279 2.8005 3.2736 1348.2
             """, # Table IV, Pag 329
@@ -61,7 +124,8 @@ class Ethanol(MEoS):
         "R": 8.314472,
         "cp": CP1,
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
-
+        "Tc": 513.9, "rhoc": 5.991, 
+        
         "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4, 
         "Pmin": 0.00000088, "rhomin": 19.4, 
 
@@ -81,7 +145,7 @@ class Ethanol(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 4, 4],
         "gamma2": [1]*8}
 
-    helmholtz2 = {
+    helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely (2004).",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -109,7 +173,7 @@ class Ethanol(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2
+    eq = helmholtz1, helmholtz2, helmholtz3
     _PR = 0.0043733
 
     _surface = {"sigma": [0.05], "exp": [0.952]}
