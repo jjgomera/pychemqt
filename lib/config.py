@@ -16,19 +16,19 @@
 import os
 
 # TODO: Delete when it isn´t necessary debug
-#os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-#os.environ["freesteam"]="True"
-#os.environ["oasa"]="True"
-#os.environ["Elemental"]="True"
-#os.environ["CoolProp"]="True"
-#os.environ["refprop"]="True"
-#os.environ["ezodf"]="True"
-#os.environ["openpyxl"]="True"
-#os.environ["xlwt"]="True"
+os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
+os.environ["freesteam"]="True"
+os.environ["oasa"]="True"
+os.environ["Elemental"]="True"
+os.environ["CoolProp"]="True"
+os.environ["refprop"]="True"
+os.environ["ezodf"]="True"
+os.environ["openpyxl"]="True"
+os.environ["xlwt"]="True"
 
 
-from ConfigParser import ConfigParser
-from PyQt4 import QtGui
+from configparser import ConfigParser
+from PyQt5 import QtWidgets
 from lib.sql import databank
 
 
