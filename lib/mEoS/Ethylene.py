@@ -8,17 +8,12 @@ from lib import unidades
 
 
 class Ethylene(MEoS):
-    """Multiparameter equation of state for ehylene
-
-    >>> etileno=Ethylene(T=315, P=200.)
-    >>> print "%0.1f %0.2f %0.2f %0.2f %0.4f %0.4f %0.4f %0.1f" % (etileno.T, etileno.rho, etileno.u.kJkg, etileno.h.kJkg, etileno.s.kJkgK, etileno.cv.kJkgK, etileno.cp.kJkgK, etileno.w)
-    315.0 579.15 -453.64 -108.31 -2.7619 1.6569 2.2448 1679.8
-    """
+    """Multiparameter equation of state for ehylene"""
     name = "ethylene"
     CASNumber = "74-85-1"
     formula = "CH2=CH2"
     synonym = "R-1150"
-    rhoc = unidades.Density(214.24656512)
+    rhoc = unidades.Density(214.23999998)
     Tc = unidades.Temperature(282.35)
     Pc = unidades.Pressure(5041.8, "kPa")
     M = 28.05376  # g/mol
@@ -30,6 +25,12 @@ class Ethylene(MEoS):
     _Tr = unidades.Temperature(273.316763)
     _rhor = unidades.Density(216.108926)
     _w = 0.085703183
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [8.68815523, -4.47960564],
+           "ao_exp": [2.49395851, 3.0027152, 2.5126584, 3.99064217],
+           "titao": [4.43266896, 5.74840149, 7.8027825, 15.5851154]}
 
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
@@ -50,9 +51,167 @@ class Ethylene(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Smukala et al. (2000)",
-        "__doc__":  u"""Smukala, J., Span, R., Wagner, W. New equation of state for ethylene covering the fluid region from the melting line to 450 K at pressures up to 300 MPa. J. Phys. Chem. Ref. Data 29 (2000), 1053 – 1121.""",
+        "__doi__": {"autor": "Smukala, J., Span, R., Wagner, W.",
+                    "title": "New equation of state for ethylene covering the fluid region from the melting line to 450 K at pressures up to 300 MPa", 
+                    "ref": "J. Phys. Chem. Ref. Data 29, 1053 (2000)",
+                    "doi": "10.1063/1.1329318"}, 
+        "__test__": 
+            # Table 32, Pag 1093
+            """
+            >>> st=Ethylene(T=103.989, x=0.5)
+            >>> print "%0.3f %0.6f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            103.989 0.000122 654.6 0.00396 -819.13 -251.60 -4.8014 0.6561 1.622 0.89014 2.4295 1.1868 1766.6 202.68
+            >>> st=Ethylene(T=120, x=0.5)
+            >>> print "%0.0f %0.6f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            120 0.001368 634.17 0.03852 -780.21 -232.74 -4.4533 0.10889 1.553 0.89369 2.4271 1.192 1660.4 217.52
+            >>> st=Ethylene(T=140, x=0.5)
+            >>> print "%0.0f %0.6f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            140 0.01185 608.02 0.28758 -731.85 -209.71 -4.0807 -0.35111 1.4655 0.90645 2.4081 1.2125 1520.9 233.95
+            >>> st=Ethylene(T=160, x=0.5)
+            >>> print "%0.0f %0.6f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            160 0.056236 580.87 1.2123 -683.70 -188.03 -3.7597 -0.66179 1.3948 0.93356 2.4067 1.2599 1376.7 247.39
+            >>> st=Ethylene(T=180, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            180 0.18185 552.20 3.5889 -635.17 -168.72 -3.4752 -0.88387 1.3465 0.97832 2.4413 1.3468 1227 256.99
+            >>> st=Ethylene(T=200, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            200 0.45549 521.22 8.4936 -585.35 -152.89 -3.2155 -1.0533 1.3214 1.0431 2.5287 1.492 1070 261.95
+            >>> st=Ethylene(T=220, x=0.5)
+            >>> print "%0.0f %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            220 0.95664 486.67 17.452 -533 -141.96 -2.9709 -1.1935 1.3196 1.132 2.7003 1.7383 903.5 241.54
+            >>> st=Ethylene(T=240, x=0.5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            240 1.7731 446.11 33.066 -476.16 -138.29 -2.7314 -1.3236 1.3435 1.254 3.0431 2.2112 724.4 254.88
+            >>> st=Ethylene(T=260, x=0.5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            260 3.0036 393.47 61.542 -410.63 -147.57 -2.4812 -1.4695 1.4069 1.4388 3.9458 3.5116 524.13 240.47
+            >>> st=Ethylene(T=280, x=0.5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            280 4.7836 290.7 140.7 -313.28 -203.54 -2.1411 -1.7492 1.7785 1.9809 19.563 29.261 246.68 208.88
+            >>> st=Ethylene(T=282, x=0.5)
+            >>> print "%0.0f %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
+                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
+                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+            282 5.0023 253.12 175.8 -287.09 -232.15 -2.0508 -1.856 2.2089 2.3981 146.97 225.24 188.90 191.32
+            """
+            # Table 33, Pag 1097
+            """
+            >>> st=Ethylene(T=120, P=1e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            120 627.76 -768.13 -767.97 -4.3546 1.5303 2.422 1626.6
+            >>> st=Ethylene(T=450, P=1e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 0.75081 138.75 271.94 0.73428 1.7662 2.065 394.35
+            >>> st=Ethylene(T=200, P=5e5)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            200 521.3 -586.28 -585.32 -3.2158 1.3214 2.528 1070.5
+            >>> st=Ethylene(T=300, P=1e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 11.932 -97.036 -13.23 -0.70588 1.264 1.6432 320.09
+            >>> st=Ethylene(T=120, P=1.5e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            120 635.02 -780.78 -778.42 -4.4581 1.554 2.424 1669
+            >>> st=Ethylene(T=400, P=2e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            400 17.627 41.788 155.25 -0.41873 1.6102 1.9804 365.48
+            >>> st=Ethylene(T=255, P=3e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            255 411.09 -436.46 -429.17 -2.5531 1.381 3.515 591.37
+            >>> st=Ethylene(T=120, P=4e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            105 655.24 -817.9 -811.79 -4.7896 1.6188 2.4244 1781.9
+            >>> st=Ethylene(T=280, P=5e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            280 311.34 -340.71 -324.65 -2.1843 1.5996 9.1274 306.79
+            >>> st=Ethylene(T=105, P=6e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            105 656.17 -818.49 -809.35 -4.7954 1.6194 2.4215 1792.4
+            >>> st=Ethylene(T=450, P=7e6)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 57.569 98.708 220.3 -0.61249 1.8068 2.3187 379.44
+            >>> st=Ethylene(T=200, P=1e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            200 535.31 -596.46 -577.78 -3.268 1.3312 2.4163 1174.5
+            >>> st=Ethylene(T=450, P=1.5e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 132 50.02 163.66 -0.93729 1.8444 2.6487 392.55
+            >>> st=Ethylene(T=110, P=2e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            110 656.51 -810.64 -780.17 -4.7224 1.609 2.4043 1827.8
+            >>> st=Ethylene(T=300, P=2.5e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            300 417 -377.14 -317.19 -2.3407 1.4528 2.6835 756.22
+            >>> st=Ethylene(T=130, P=5e7)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            130 647.55 -773.34 -696.13 -4.4046 1.5638 2.3411 1826.4
+            >>> st=Ethylene(T=150, P=1e8)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            150 649.39 -743.25 -589.25 -4.1916 1.5535 2.2574 1891.7
+            >>> st=Ethylene(T=450, P=2e8)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 512.76 -174.18 215.86 -1.9089 2.0216 2.5659 1444.4
+            >>> st=Ethylene(T=310, P=3e8)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            310 621.79 -479.7 2.7729 -2.9385 1.7006 2.2342 1964.4
+            >>> st=Ethylene(T=450, P=3e8)
+            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
+                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
+            450 562.26 -195.31 338.25 -2.0494 2.0671 2.5681 1740.6
+            """,
+
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 300000.0, "rhomax": 27.03, 
         "Pmin": 0.12196, "rhomin": 23.334, 
@@ -67,17 +226,17 @@ class Ethylene(MEoS):
                 0.15236081265419e-3, -0.24505335342756e-4, 0.28970524924022,
                 -0.18075836674288, 0.15057272878461, -0.14093151754458,
                 0.22755109070253e-1, 0.14026070529061e-1, 0.61697454296214e-2,
-                -0.41286083451333e-3, 0.12885388714785e-1, -0.69128692157093e-1,
+                -0.41286083451333e-3, .12885388714785e-1, -.69128692157093e-1,
                 0.10936225568483, -0.81818875271794e-2, -0.56418472117170e-1,
-                0.16517867750633e-2, 0.95904006517001e-2, -0.26236572984886e-2],
-        "d2": [1, 1, 3, 4, 5, 7, 10, 11, 1, 1, 2, 2, 4, 4, 6, 7, 4, 5, 6, 6, 7,
-               8, 9, 10],
+                0.16517867750633e-2, .95904006517001e-2, -.26236572984886e-2],
+        "d2": [1, 1, 3, 4, 5, 7, 10, 11, 1, 1, 2, 2, 4, 4, 6, 7, 4, 5, 6, 6,
+               7, 8, 9, 10],
         "t2": [1., 4., 1.25, 2.75, 2.25, 1., 0.75, 0.5, 2.5, 3.5, 4., 6., 1.5,
                5., 4.5, 15., 20., 23., 22., 29., 19., 15., 13., 10.],
         "c2": [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4,
                4, 4, 4],
         "gamma2": [1]*24,
-
+ 
         "nr3": [-0.50242414011355e2, 0.74846420119299e4, -0.68734299232625e4,
                 -0.93577982814338e3, 0.94133024786113e3],
         "d3": [2, 2, 2, 3, 3],
@@ -127,17 +286,18 @@ class Ethylene(MEoS):
                     "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
                     "doi": "10.1023/A:1022310214958"}, 
-        "__test__": """
-            >>> st=Ethylene(T=700, rho=200, eq=3)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            2.7683 48.416 3.0651
-            >>> st2=Ethylene(T=750, rho=100, eq=3)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            174.1 0.47682
-            """, # Table III, Pag 46
+#        "__test__": """
+#            >>> st=Ethylene(T=700, rho=200, eq=3)
+#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
+#            2.7683 48.416 3.0651
+#            >>> st2=Ethylene(T=750, rho=100, eq=3)
+#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
+#            174.1 0.47682
+#            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": "OTO", 
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.03, 
         "Pmin": 0.12123, "rhomin": 23.34, 
@@ -223,7 +383,7 @@ class Ethylene(MEoS):
         "ao": [1.8673079, -0.61533892, -0.058973772, 0.10744720],
         "exp": [1.029, 1.5, 4.0, 6.0]}
     _vapor_Density = {
-        "eq": 3,
+        "eq": 4,
         "ao": [-1.9034556, -0.75837929, -3.7717969, -8.7478586, -23.885296,
                -54.197979],
         "exp": [1.047, 2.0, 3.0, 7.0, 14.5, 28.0]}
