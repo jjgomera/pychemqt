@@ -8,27 +8,17 @@ from lib import unidades
 
 
 class He(MEoS):
-    """Multiparameter equation of state for helium
-
-    >>> helio=He(T=300, P=0.1, eq=1)
-    >>> print "%0.1f %0.5f %0.4f %0.4f %0.4f %0.2f" % (helio.T, helio.rho, helio.h.kJkg, helio.s.kJkgK, helio.cp.kJkgK, helio.w)
-    300.0 0.16039 9.9441 0.0596 5.1932 1019.58
-
-    >>> P=He._Melting_Pressure(4)
-    >>> fluido=He(T=4, P=P.MPa, eq=1)
-    >>> print "%0.2f %0.8f %0.3f %0.1f %0.1f" % (fluido.T, fluido.P.MPa, fluido.rho, fluido.h.kJkg, fluido.s.kJkgK)
-    4.00 12.92289015 216.975 -1492.8 -29.9
-    """
+    """Multiparameter equation of state for helium"""
     name = "helium"
     CASNumber = "7440-59-7"
     formula = "He"
     synonym = "R-704"
-    rhoc = unidades.Density(72.56717426)
+    rhoc = unidades.Density(69.5800323874)
     Tc = unidades.Temperature(5.1953)
-    Pc = unidades.Pressure(227.6, "kPa")
+    Pc = unidades.Pressure(227.61, "kPa")
     M = 4.002602  # g/mol
     Tt = unidades.Temperature(2.1768)
-    Tb = unidades.Temperature(4.222)
+    Tb = unidades.Temperature(4.2226)
     f_acent = -0.385
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 212
@@ -45,10 +35,57 @@ class He(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2010).",
-        "__doc__":  u"""Ortiz-Vega, D.O., Hall, K.R., Arp, V.D., and Lemmon, E.W., Interim equation, to be published in Int. J. Thermophys., 2010.""",
+        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2013).",
+        "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
+                    "title": "Interim equation", 
+                    "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
+                    "doi":  ""}, 
+                    
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP", 
+
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22, 
+        "Pmin": 5.0335, "rhomin": 36.48, 
+
+        "nr1": [0.014799269, 3.06281562, -4.25338698, 0.05192797,
+                -0.165087335, 0.087236897],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1.0, 0.426, 0.631, 0.596, 1.705, 0.568],
+
+        "nr2": [2.10653786, -0.62835030, -0.28200301, 1.04234019, -0.07620555,
+                 -1.35006365],
+        "d2": [1, 1, 3, 2, 2, 1],
+        "t2": [0.9524, 1.471, 1.48, 1.393, 3.863, 0.803],
+        "c2": [1, 2, 2, 1, 2, 1],
+        "gamma2": [1]*6,
+
+        "nr3": [0.11997252, 0.10724500, -0.35374839, 0.75348862, 0.00701871,
+                0.226283167, -0.22464733, 0.12413584, 0.00901399],
+        "d3": [1, 1, 1, 2, 2, 2, 3, 2, 2],
+        "t3": [3.273, 0.66, 2.629, 1.4379, 3.317, 2.3676, 0.7545, 1.353,
+                1.982],
+        "alfa3": [8.674, 4.006, 8.1099, 0.1449, 0.1784, 2.432, 0.0414, 0.421,
+                   5.8575],
+        "beta3": [8.005, 1.15, 2.143, 0.147, 0.154, 0.701, 0.21, 0.134,
+                   19.256],
+        "gamma3": [1.1475, 1.7036, 1.6795, 0.9512, 4.475, 2.7284, 1.7167,
+                    1.5237, 0.7649],
+        "epsilon3": [0.912, 0.79, 0.90567, 5.1136, 3.6022, 0.6488, 4.2753,
+                      2.744, 0.8736],
+        "nr4": []}
+
+    helmholtz2 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2010).",
+        "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
+                    "title": "Interim equation", 
+                    "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
+                    "doi":  ""}, 
+                    
+        "R": 8.314472,
+        "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22, 
         "Pmin": 5.043, "rhomin": 36.46, 
@@ -80,12 +117,17 @@ class He(MEoS):
                      0.5680, 1.6412],
         "nr4": []}
 
-    helmholtz2 = {
+    helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Fundamental equation of state for helium of McCarty and Arp (1990).",
-        "__doc__": u"""McCarty, R.D. and Arp, V.D., "A New Wide Range Equation of State for Helium," Adv. Cryo. Eng., 35:1465-1475, 1990.""",
+        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+                    "title": "A New Wide Range Equation of State for Helium", 
+                    "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
+                    "doi":  ""}, 
+                    
         "R": 8.31431,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
         "Pmin": 4.8565, "rhomin": 36.537, 
@@ -115,10 +157,14 @@ class He(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for helium of McCarty and Arp (1990).",
-        "__doc__": u"""McCarty, R.D. and Arp, V.D., "A New Wide Range Equation of State for Helium," Adv. Cryo. Eng., 35:1465-1475, 1990.""",
-        "__doi__": "http://dx.doi.org/Arp, V.D. McCarty, R.D., and Friend, D.G., Thermophysical Properties of Helium-4 from 0.8 to 1500 K with Pressures to 2000 MPa",
+        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+                    "title": "A New Wide Range Equation of State for Helium", 
+                    "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
+                    "doi":  ""}, 
+                    
         "R": 8.31431,
         "cp": CP1,
+        "ref": "NBP", 
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
         "Pmin": 4.8565, "rhomin": 36.537, 
@@ -165,7 +211,7 @@ class He(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, helmholtz2, MBWR, GERG
+    eq = helmholtz1, helmholtz2, helmholtz3, MBWR, GERG
     _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
@@ -181,29 +227,27 @@ class He(MEoS):
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.399865e1, 0.870145, 0.171451, 0.120927e1],
-        "exp": [1, 1.5, 1.85, 2.7]}
+        "ao": [-3.8357, 1.7062, -0.71231, 1.0862],
+        "exp": [1, 1.5, 1.25, 2.8]}
     _liquid_Density = {
-        "eq": 2,
-        "ao": [0.140808e1, -0.543843, 0.177220e1, -0.344056e1],
-        "exp": [1.17, 7.0, 15.0, 20.0]}
+        "eq": 1,
+        "ao": [-1.5789, -10.749, 17.711, -15.413, -14.352],
+        "exp": [0.333, 1.5, 2.1, 2.7, 9.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.126074e1, -0.363425e1, -0.487998e1, -0.130581e2],
-        "exp": [0.263, 1.04, 3.25, 8.5]}
+        "ao": [-1.5789, -10.749, 17.711, -15.413, -14.352],
+        "exp": [0.333, 1.5, 2.1, 2.7, 9.0]}
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Arp,V.D (1998)"}
-    _viscosity = visco0,
-
-    def _visco0(self, coef=False):
-        """Arp, V.D. McCarty, R.D., and Friend, D.G., "Thermophysical Properties of Helium-4 from 0.8 to 1500 K with Pressures to 2000 MPa," NIST Technical Note 1334 (revised). 1998
-
-        >>> helio=He(T=300, P=0.1, eq=1)
-        >>> print "%0.1f %0.5f %0.4f" % (helio.T, helio.rho, helio.mu.muPas)
-        300.0 0.16039 19.9297
-        """
+              "__name__": "Arp,V.D (1998)", 
+              "__doi__": {"autor": "Arp, V.D. McCarty, R.D., and Friend, D.G.",
+                          "title": "Thermophysical properties of Helium-4 from 0.8 to 1500 K with pressures to 2000 Mpa", 
+                          "ref": "NIST Technical Note 1334",
+                          "doi": ""}}
+    
+    def _visco0(self, rho, T, fase=None, coef=False):
+            
         Visco0 = lambda T: -0.135311743/log(T) + 1.00347841 + \
             1.20654649*log(T) - 0.149564551*log(T)**2 + 0.0125208416*log(T)**3
 
@@ -214,33 +258,34 @@ class He(MEoS):
             D = -1684.39324/x+3331.08630-1632.19172*x+308.804413*x**2-20.2936367*x**3
             return rho.gcc*B+rho.gcc**2*C+rho.gcc**3*D
 
-        if self.T < 100:
-            no = Visco0(self.T)
-            ne = ViscoE(self.T, self.rho)
-            nu = exp(no+ne)
+
+        if T < 100:
+            # Section 4.2.1 for 3.5 < T < 100
+            no = Visco0(T)
+            ne = ViscoE(T, rho)
+            n = exp(no+ne)
         else:
-            no = 196*self.T**0.71938*exp(12.451/self.T-295.67/self.T**2-4.1249)
-            ne = exp(Visco0(self.T)+ViscoE(self.T, self.rho))-exp(Visco0(self.T)+ViscoE(self.T, unidades.Density(0)))
-            nu = no+ne
+            # Section 4.2.1 for T > 100
+            no = 196*T**0.71938*exp(12.451/T-295.67/T**2-4.1249)
+            ne = exp(Visco0(T)+ViscoE(T, rho))-exp(Visco0(T)+ViscoE(T, unidades.Density(0)))
+            n = no+ne
 
         if coef:
             return ne
         else:
-            return unidades.Viscosity(nu*1e-6, "P")
+            return unidades.Viscosity(n*1e-6, "P")
+
+    _viscosity = visco0,
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "Hands (1981)",
-               "__doi__": "http://dx.doi.org/10.1016/0011-2275(81)90211-3", 
-               "__code__": (_visco0, )}
-    thermo1 = {"eq": 0,
-               "method": "_thermo1",
-               "__name__": "Peterser (1970)"}
+               "__doi__": {"autor": "Hands, B.A. and Arp, V.D.",
+                           "title": "A Correlation of Thermal Conductivity Data for Helium", 
+                           "ref": "Cryogenics, 21(12):697-703, 1981",
+                           "doi": "10.1016/0011-2275(81)90211-3"}}
 
-    _thermal = thermo0, thermo1
-
-    def _thermo0(self):
-        """Hands, B.A. and Arp, V.D., "A Correlation of Thermal Conductivity Data for Helium," Cryogenics, 21(12):697-703, 1981"""
+    def _thermo0(self, rho, T, fase=None):
         bkt = 0.0
         n0 = [3.739232544, -26.20316969, 59.82252246, -49.26397634]
         suma = sum([ni*self.T**(-i-1) for i, ni in enumerate(n0)])
@@ -268,7 +313,7 @@ class He(MEoS):
             e1 = 2.8461
             e2 = .27156
             delta = 4.304
-            pcc = 227460.
+#            pcc = 227460.
 
             if self.rho > 0.0:
                 bkt = 1.0/self.derivative("P", "rho", "T")/self.rho/1000.
@@ -294,15 +339,16 @@ class He(MEoS):
 
         return unidades.ThermalConductivity(lg+lk+lc)
 
-    def _thermo1(self):
-        """Peterser, H. "The Properties of Helium: Density, Specific Heats. Viscosity, and Thermal Conductivity at Pressures from 1 to 100 bar and from Room Temperature to about 1800 K". Danish Atomic Energy Commission"""
-        k = 2.682e-3*(1+1.123e-3*self.P.bar)*self.T**(0.71*(1-2e-4*self.P.bar))
+    thermo1 = {"eq": 0,
+               "method": "_thermo1",
+               "__name__": "Peterser (1970)", 
+               "__doi__": {"autor": "Peterser, H.",
+                           "title": "The Properties of Helium: Density, Specific Heats. Viscosity, and Thermal Conductivity at Pressures from 1 to 100 bar and from Room Temperature to about 1800 K", 
+                           "ref": "Denmark. Forskningscenter Risoe. Risoe-R; No. 224",
+                           "doi": ""}}
+
+    def _thermo1(self, rho, T, fase=None):
+        k = 2.682e-3*(1+1.123e-3*self.P.bar)*T**(0.71*(1-2e-4*self.P.bar))
         return unidades.ThermalConductivity(k)
 
-
-if __name__ ==  "__main__":
-    import doctest
-    doctest.testmod()
-
-    helio=He(T=300, P=0.1, eq=1)
-    print "%0.1f %0.5f %0.4f %0.4f %0.4f %0.2f" % (helio.T, helio.rho, helio.h.kJkg, helio.s.kJkgK, helio.cp.kJkgK, helio.w)
+    _thermal = thermo0, thermo1
