@@ -215,13 +215,51 @@ class H2(MEoS):
 
     visco0 = {"eq": 0,
              "method": "_visco0",
-             "__name__": "McCarty (1972)"}
-
-    _viscosity = visco0,
+             "__name__": "Muzny (2013)", 
+             "__doi__": {"autor": "Muzny, C.D., Huber, M.L., and Kazakov, A.F.",
+                         "title": "Correlation for the Viscosity of Normal Hydrogen Obtained from Symbolic Regression", 
+                         "ref": "J. Chem. Eng. Data, 2013, 58 (4), pp 969–979",
+                         "doi": "10.1021/je301273j"}}
 
     def _visco0(self, rho, T, fase):
-        """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
+        sigma = 0.297
+        ek = 30.41
+        
+        # Zero-Density Limit, Eq. 3-4
+        T_ = T/ek
+        ai = [2.0963e-1, -4.55274e-1, 1.43602e-1, -3.35325e-2, 2.76981e-3]
+        suma = 0
+        for i, a in enumerate(ai):
+            suma += a*log(T_)**i
+        S = exp(suma)
+        no=0.021357*(self.M*T)**0.5/sigma/S
+        
+        # Excess Contribution, Eq. 5-7
+        bi = [-0.187, 2.4871, 3.7151, -11.0972, 9.0965, -3.8292, 0.5166]
+        B_ = 0
+        for i, b in enumerate(bi):
+            B_ += b/T**i
+        B = B_*sigma**3
+        n1=B*no
+        
+        # Simbolic Regression, Eq. 9
+        rhor = rho/90.5
+        Tr = T/self.Tc
+        c = [6.43449673, 4.56334068e-2, 2.32797868e-1, 9.5832612e-1,
+             1.27941189e-1, 3.63576595e-1]
+        nc=c[0]*rhor**2*exp(c[1]*Tr+c[2]/Tr+c[3]*rhor**2/(c[4]+Tr)+c[5]*rhor**6)
+        
+        return unidades.Viscosity(no+n1+nc, "muPas")
+        
+    visco1 = {"eq": 0,
+             "method": "_visco1",
+             "__name__": "McCarty (1972)", 
+             "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
+                         "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 Psia", 
+                         "ref": "NBS Technical Note 617",
+                         "doi": ""}}
 
+    def _visco1(self, rho, T, fase):
         DELV = lambda rho1, T1, rho2, T2: DILV(T1) + EXCESV(rho1, T2) \
             - DILV(T2)-EXCESV(rho2, T2)
 
@@ -255,22 +293,123 @@ class H2(MEoS):
             n = DILV(T)+EXVDIL(rho, T)
         return unidades.Viscosity(n, "muPas")
 
-    thermo0 = {"eq": 0,
-               "method": "_thermo0",
-               "__name__": "McCarty (1972)"}
+    visco2 = {"eq": 4, "omega": 1,
+              "__name__": "Quiñones-Cisneros (2011)",
+              "__doi__": {"autor": "S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters",
+                  "title": "model of 1-march-2011", 
+                  "ref": "unpublished",
+                  "doi": ""}, 
 
+              "Tref": 33.145, "muref": 1.0,
+              "ek": 59.7, "sigma": 0.2827, "n_chapman": 0,
+              "n_ideal": [72.46400680522131e-1, -352.3929484813708e-1,
+                          664.5332385860778e-1, -566.74979475607415e-1,
+                          265.66570031561248e-1, -54.81307488054635e-1,
+                          4.595978383724549e-1],
+              "t_ideal": [0, 0.5, 0.75, 1, 1.25, 1.5],
+              "n_poly": [1],
+              "t_poly": [0.75],
+              "n_polyden": [1, 1],
+              "t_polyden": [0, 1],
+              
+              "nb": [1.0, -0.187, 75.6327, 3435.61, -312078, 7.77929e6,
+                    -9.95841e7, 4.08557e8], 
+              "tb": [0.0157768, 0, -1, -2, -3, -4, -5, -6], 
+
+              "a": [-0.00002348389676311179e3, 0.00002197232806029717e3,
+                    2.4547322430816313e-3, 3.9791170684039065e-8,
+                    4.581319859008102e-3],
+              "b": [0.000026869839733943842e3, 0.000027387647542474032e3,
+                    0.000013065230652860072e3, 3.0723581102227345e-7,
+                    -0.00007033089468735152e3],
+              "c": [0, 0, 0, 0, 0],
+              "A": [-3.912305916140789e-5, -2.1198288980972056e-6,
+                    4.690087618888682e-6, 1.6938783854559677e-11,
+                    9.39021777998824e-5],
+              "B": [-6.381148168720446e-5, 5.178086941554603e-4, 
+                    -4.5508093750991845e-5 -1.3780811004280076e-9
+                    -3.7679840470735697e-4],
+              "C": [0, 0, 0, 0, 0],
+              "D": [4.3699367404316626e-7, 0.0, -1.1321685281996792e-8, 0, 0]}
+
+    visco3 = {"eq": 1, "omega": 1,
+              "__name__": "Vargaftik (1996)",
+              "__doi__": {"autor": "Vargaftik, N.B., Vinogradov, Y.K. and Yargin, V.S.",
+                          "title": "Handbook of Physical Properties of Liquids and Gases", 
+                          "ref": "Hemisphere Publishing Corporation,New York, NY",
+                          "doi": ""}, 
+
+              "ek": 59.7, "sigma": 0.2827,
+              "Tref": 32.938, "rhoref": 1.*M,
+              "n_virial": [-2.1505e-1, 10.727e-1, -16.935e-1, 0.0, 22.702e-1,
+                           2.2123e-1, 0.34163e-1, -0.043206e-1],
+              "t_virial": [-1.5, -1, -0.5, 0, 0.5, 1.5, 2.],
+              "Tref_virial": 32.938, "etaref_virial": 1.*M,
+
+              "Tref_res": 32.938, "rhoref_res": 15.556*M, "etaref_res": 1.,
+              "n_packed": [], "t_packed": [], 
+              "n_poly": [-9.22703e-1, 6.41602, -5.98018, 2.89715e-1, 2.36429,
+                         -2.78870e-1, -1.10595e1, 1.11582e1, 7.18928,
+                         -7.76971, -1.21827,  1.47193],
+              "t_poly": [0, -1, -2, -3, 0, 0, -1, -2, -1, -2, -1, -2],
+              "d_poly": [1, 1, 1, 1, 2, 3, 3, 3, 4, 4, 5, 5],
+              "g_poly": [0]*12,
+              "c_poly": [0]*12,
+              "n_num": [], "t_num": [], "d_num": [], "g_num": [], "c_num": [],
+              "n_den": [], "t_den": [], "d_den": [], "g_den": [], "c_den": []}
+
+    _viscosity = visco0, visco1, visco2, visco3
+
+    thermo0 = {"eq": 1,
+               "__name__": "Assael (2011)",
+               "__doi__": {"autor": " Assael, M.J., Assael. J.-A.M., Huber, M.L., Perkins, R.A. and Takata, Y.",
+                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 40, 033101 (2011)",
+                           "doi": "10.1063/1.3606499"}, 
+               "__test__": """
+                   >>> st=H2(T=298.15, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   185.67
+                   >>> st=H2(T=298.15, rho=0.80844)
+                   >>> print "%0.5g" % st.k.mWmK
+                   186.97
+                   >>> st=H2(T=298.15, rho=14.4813)
+                   >>> print "%0.5g" % st.k.mWmK
+                   201.35
+                   >>> st=H2(T=35, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   26.988
+                   >>> st=H2(T=35, rho=30)
+                   >>> print "%0.5g" % st.k.mWmK
+                   75.594
+                   >>> st=H2(T=35, rho=30)
+                   >>> print "%0.5g" % st.k.mWmK
+                   71.854
+                   >>> st=H2(T=18, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   13.875
+                   >>> st=H2(T=18, rho=75)
+                   >>> print "%0.5g" % st.k.mWmK
+                   104.48
+                   """, # Table 4, Pag 8
+
+               "Tref": 1.0, "kref": 1e-3,
+               "no": [-1.24159e7, 5.04056e6, -4.80868e4, 3.26394e2,
+                      9.56218e-2, 1.73488e-4, -3.12802e-8],
+               "co": [0, 1, 2, 3, 4, 5, 6],
+               "noden": [5.04305e6, -2.43753e4, 1.51523e2, 1.0], 
+               "coden": [0, 1, 2, 3], 
+ 
+               "Trefb": 33.145, "rhorefb": 15.508, "krefb": 1.,
+               "nb": [.363081e-1, -.207629e-1, .31481e-1, -.143097e-1,
+                      .17498e-2, .18337e-2, -.886716e-2, .15826e-1,
+                      -.106283e-1, .280673e-2],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
+               "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 49.7175}
+               
     _thermal = thermo0,
-
-    def _thermo0(self, rho, T, fase):
-        """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
-        # TODO:
-        return unidades.ThermalConductivity(0)
-
-
-if __name__ == "__main__":
-    hidrogeno=H2(T=300, P=0.1)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (hidrogeno.T, hidrogeno.rho, hidrogeno.u.kJkg, hidrogeno.h.kJkg, hidrogeno.s.kJkgK, hidrogeno.cv.kJkgK, hidrogeno.cp.kJkgK, hidrogeno.w)
-    hidrogeno=H2(T=300, P=0.1, eq=2)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (hidrogeno.T, hidrogeno.rho, hidrogeno.u.kJkg, hidrogeno.h.kJkg, hidrogeno.s.kJkgK, hidrogeno.cv.kJkgK, hidrogeno.cp.kJkgK, hidrogeno.w)
-    hidrogeno=H2(T=300, P=0.1, eq=3)
-    print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (hidrogeno.T, hidrogeno.rho, hidrogeno.u.kJkg, hidrogeno.h.kJkg, hidrogeno.s.kJkgK, hidrogeno.cv.kJkgK, hidrogeno.cp.kJkgK, hidrogeno.w)
