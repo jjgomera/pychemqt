@@ -6,7 +6,7 @@ from lib import unidades
 
 
 class oH2(MEoS):
-    """Multiparamente equation of state for hydrogen (orto)"""
+    """Multiparameter equation of state for hydrogen (orto)"""
     name = "ortohydrogen"
     CASNumber = "1333-74-0o"
     formula = "H2"
@@ -25,14 +25,7 @@ class oH2(MEoS):
            "pow": [0, 1],
            "ao_pow": [-1.4675442336, 1.8845068862],
            "ao_exp": [2.54151, -2.3661, 1.00365, 1.22447],
-           "titao": [25.7676098736, 43.4677904877, 66.044551475,
-                     209.7531607465]}
-
-    CP1 = {"ao": 2.5,
-           "an": [], "pow": [],
-           "ao_exp": [2.54151, -2.3661, 1.00365, 1.22447],
-           "exp": [856, 1444, 2194, 6968],
-           "ao_hyp": [], "hyp": []}
+           "titao": [856/Tc, 1444/Tc, 2194/Tc, 6968/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
@@ -78,11 +71,6 @@ class oH2(MEoS):
 
     eq = helmholtz1,
 
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [2.0297, 0.0069], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [0.181, 0.021, -7.4],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.488684e1, 0.105310e1, 0.856947, -0.185355],

@@ -8,7 +8,7 @@ from lib import unidades
 
 
 class pH2(MEoS):
-    """Multiparamenter equation of state for hydrogen (para)"""
+    """Multiparameter equation of state for hydrogen (para)"""
     name = "parahydrogen"
     CASNumber = "1333-74-0p"
     formula = "H2"
@@ -23,13 +23,6 @@ class pH2(MEoS):
     momentoipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 1
 
-    CP1 = {"ao": 2.5,
-           "an": [], "pow": [],
-           "ao_exp": [4.30256, 13.0289, -47.7365, 50.0013, -18.6261, 0.993973,
-                      0.536078],
-           "exp": [499, 826.5, 970.8, 1166.2, 1341.4, 5395, 10185],
-           "ao_hyp": [], "hyp": []}
-
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [-1.4485891134, 1.884521239],
@@ -39,7 +32,7 @@ class pH2(MEoS):
                      35.4059141417, 40.724998482, 163.7925799988,
                      309.2173173842]}
 
-    CP2 = {"ao": 2.4995169,
+    CP1 = {"ao": 2.4995169,
            "an": [-0.11125185e-2, 0.27491461e-3, -0.10005269e-4, 0.22695404e-8,
                   -0.21031029e-12],
            "pow": [1, 1.5, 2, 3, 4],
@@ -55,7 +48,7 @@ class pH2(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
                     "doi": "10.1063/1.3160306"}, 
         "__test__": """
-            >>> st=oH2(T=13.8033, x=0.5)
+            >>> st=pH2(T=13.8033, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
@@ -98,7 +91,8 @@ class pH2(MEoS):
                     "doi": ""}, 
                     
         "R": 8.31434,
-        "cp": CP2,
+        "cp": CP1,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 44.0, 
         "Pmin": 7.042, "rhomin": 38.21, 
@@ -143,13 +137,15 @@ class pH2(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "McCarty (1972)"}
+              "__name__": "McCarty (1972)", 
+              "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
+                          "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia", 
+                          "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
+                          "doi": ""}}
 
     _viscosity = visco0,
 
     def _visco0(self, rho, T, fase):
-        """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
-
         DELV = lambda rho1, T1, rho2, T2: DILV(T1)+EXCESV(rho1, T2)-DILV(T2)-EXCESV(rho2, T2)
 
         def EXVDIL(rho, T):
@@ -186,8 +182,8 @@ class pH2(MEoS):
         Tref = 1
         Pref = 1000
         Tita = T/Tref
-        a = [-0.265289115e2, 0.248578596, -0.21272389e2, 0.125746643]
-        expo = [0, 0.1764739e1, 0, 0.1955e1]
+#        a = [-0.265289115e2, 0.248578596, -0.21272389e2, 0.125746643]
+#        expo = [0, 0.1764739e1, 0, 0.1955e1]
         if T > 22:
             suma = -0.265289115e2+0.248578596*Tita**0.1764739e1
         else:
@@ -195,21 +191,69 @@ class pH2(MEoS):
 
         return unidades.Pressure(suma*Pref, "kPa")
 
-    thermo0 = {"eq": 0,
-               "method": "_thermo0",
-               "__name__": "McCarty (1972)"}
+    thermo0 = {"eq": 1,
+               "__name__": "Assael (2011)",
+               "__doi__": {"autor": " Assael, M.J., Assael. J.-A.M., Huber, M.L., Perkins, R.A. and Takata, Y.",
+                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 40, 033101 (2011)",
+                           "doi": "10.1063/1.3606499"}, 
+               "__test__": """
+                   >>> st=pH2(T=298.15, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   192.38
+                   >>> st=pH2(T=298.15, rho=0.80844)
+                   >>> print "%0.5g" % st.k.mWmK
+                   192.81
+                   >>> st=pH2(T=298.15, rho=14.4813)
+                   >>> print "%0.5g" % st.k.mWmK
+                   207.85
+                   >>> st=pH2(T=35, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   27.222
+                   >>> st=pH2(T=35, rho=30)
+                   >>> print "%0.5g" % st.k.mWmK
+                   70.335
+                   >>> st=pH2(T=35, rho=30)
+                   >>> print "%0.5g" % st.k.mWmK
+                   68.611
+                   >>> st=pH2(T=18, rho=0)
+                   >>> print "%0.5g" % st.k.mWmK
+                   13.643
+                   >>> st=pH2(T=18, rho=75)
+                   >>> print "%0.5g" % st.k.mWmK
+                   100.52
+                   """, # Table 4, Pag 8
 
-    _thermal = thermo0,
+               "Tref": 1.0, "kref": 1e-3,
+               "no": [-1.24500e3, 9.41806e3, -3.05098e2, 6.88449,
+                      -5.58871e-2, 2.79243e-4, -4.06944e-7, 3.42309e-10],
+               "co": [0, 1, 2, 3, 4, 5, 6, 7],
+               "noden": [1.42304e4, -5.88749e2, 1.45983e1, -1.34830e-1,
+                         6.19047e-4, -9.21777e-7, 7.83099e-10], 
+               "coden": [0, 1, 2, 3, 4, 5, 6], 
+ 
+               "Trefb": 32.938, "rhorefb": 15.538, "krefb": 1.,
+               "nb": [0.265975e-1, -0.133826e-2, 0.130219e-1, -0.567678e-2,
+                      -0.92338e-4, -0.121727e-2, 0.366663e-2, 0.388715e-2,
+                      -0.921055e-2, 0.400723e-2],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
 
-    def _thermo0(self, rho, T, fase):
-        """McCarty, R.D. and Weber, L.A., "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia," Natl. Bur. Stand., Tech. Note 617, 1972."""
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
+               "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.5e-9, "Tcref": 49.407}
+
+    thermo1 = {"eq": 0,
+               "method": "_thermo1",
+               "__name__": "McCarty (1972)", 
+               "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
+                           "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia", 
+                           "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
+                           "doi": ""}}
+                           
+    def _thermo1(self, rho, T, fase):
         # TODO:
         return unidades.ThermalConductivity(0)
 
-
-if __name__ == "__main__":
-    st=pH2(T=20.271, x=0.5)
-    print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (
-        st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg,
-        st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, 
-        st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
+    _thermal = thermo0, thermo1
