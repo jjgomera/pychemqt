@@ -863,8 +863,10 @@ class MEoS(_fase):
             
         if self.Tt <= T <= self.Tc:
             self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
+            self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
         else:
             self.Hvap = unidades.Enthalpy(None)
+            self.Svap = unidades.SpecificHeat(None)
         self.invT = unidades.InvTemperature(-1/self.T)
 
 
@@ -1594,6 +1596,13 @@ class MEoS(_fase):
         fiot=Fi0["ao_log"][1]/tau
         fiott=-Fi0["ao_log"][1]/tau**2
 
+        if delta:
+            fiod = 1/delta
+            fiodd = -1/delta**2
+        else:
+            fiod, fiodd = 0, 0
+        fiodt = 0
+
         for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
             fio += n*tau**t
             if t != 0:
@@ -1605,6 +1614,18 @@ class MEoS(_fase):
             fio += n*log(1-exp(-g*tau))
             fiot += n*g*((1-exp(-g*tau))**-1-1)
             fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
+            
+        if "tau*logtau" in Fi0:
+            fio += Fi0["tau*logtau"]*tau*log(tau)
+            fiot += Fi0["tau*logtau"]*(log(tau)+1)
+            fiot += Fi0["tau*logtau"]/tau
+        if "tau*logdelta" in Fi0 and delta:
+            fio += Fi0["tau*logdelta"]*tau*log(delta)
+            fiot += Fi0["tau*logdelta"]*log(delta)
+            fiod += Fi0["tau*logdelta"]*tau/delta
+            fiodd -= Fi0["tau*logdelta"]*tau/delta**2
+            fiodt += Fi0["tau*logdelta"]/delta
+            
         if "ao_exp2" in Fi0:
             for n, g, sum in zip(Fi0["ao_exp2"], Fi0["titao2"], Fi0["sum2"]):
                 fio += n*log(sum+exp(g*tau))
@@ -1622,12 +1643,6 @@ class MEoS(_fase):
                 fiot -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]*tanh(Fi0["hyp"][i]*tau)
                 fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/cosh(Fi0["hyp"][i]*tau)**2
 
-        if delta:
-            fiod = 1/delta
-            fiodd = -1/delta**2
-        else:
-            fiod, fiodd = 0, 0
-        fiodt = 0
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
         if delta:
@@ -1743,7 +1758,7 @@ class MEoS(_fase):
                     exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
                 fird += n*delta**d*tau**t * \
                     exp(-a*(delta-e)**ex1-b*(tau-g)**ex2) * \
-                    (d/delta-2*a*(delta-e))
+                    (d/delta-ex1*a*(delta-e)**(ex1-1))
                 firdd += n*tau**t*exp(-a*(delta-e)**ex1-b *
                     (tau-g)**ex2)*(-2*a*delta**d+4*a**2 *
                     delta**d*(delta-e)**ex1-4*d*a*delta**(d-1) *
@@ -2232,6 +2247,15 @@ class MEoS(_fase):
                 tau = self.T/self._viscosity["Tref"]
                 for n, t in zip(self._viscosity["n_ideal"], self._viscosity["t_ideal"]):
                     muo += n*tau**t
+            if "n_poly" in self._viscosity:
+                for n, t in zip(self._viscosity["n_poly"], self._viscosity["t_poly"]):
+                    muo += n*tau**t
+            if "n_polyden" in self._viscosity:
+                den = 1
+                for n, t, d in zip(self._viscosity["n_polyden"], self._viscosity["t_polyden"]):
+                    den *= n*tau**t
+                    muo /= den
+
         return muo
 
     def _Viscosity(self, rho, T, fase):

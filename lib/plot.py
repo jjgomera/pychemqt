@@ -45,9 +45,9 @@ class mpl(FigureCanvasQTAgg):
     def plot(self, *args, **kwargs):
         self.axes2D.plot(*args, **kwargs)
 
-#    def data(self, *args, **kwargs):
-#        self.axes2D.plot(*args, **kwargs)
-#        self.draw()
+    def data(self, *args, **kwargs):
+        self.axes2D.plot(*args, **kwargs)
+        self.draw()
 
 
 class matplotlib(FigureCanvasQTAgg):

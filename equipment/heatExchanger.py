@@ -2485,22 +2485,22 @@ if __name__ == "__main__":
 #    Cambiador=Heat_Exchanger(entrada=agua, Tout=350)
 #    print Cambiador.Heat.MJh
 
-#    aguaTubo=Corriente(T=283.15, P=101325., caudalMasico=10., fraccionMolar=[1.])
-#    aguaCarcasa=Corriente(T=370, P=101325., caudalMasico=1000., fraccionMolar=[1.])
-#    Ds=unidades.Length(19.25, "inch")
-#    Do=unidades.Length(1, "inch")
-#    L=unidades.Length(14, "ft")
-#    pt=unidades.Length(1.25, "inch")
-#    B=unidades.Length(3.85, "inch")
-#    dotl=unidades.Length(0.5*(19.25-17.91), "inch")
-#    Shell_Tube(entradaTubo=aguaTubo, entradaCarcasa=aguaCarcasa, shellsideSensible=1, DShell=Ds, NTube=124, DeTube=Do, wTube=0.006, LTube=L, pitch=pt, distribucionTube=3, baffleSpacing=B, baffleSpacingIn=B, baffleSpacingOut=B, baffleCut=0.2, clearanceTubeBaffle=0.0004, clearanceShellBaffle=0.0025279, clearanceShellBundle=dotl, sealingStrips=0.1*9.24)
+    aguaTubo=Corriente(T=283.15, P=101325., ids=[62], caudalMasico=10., fraccionMolar=[1.])
+    aguaCarcasa=Corriente(T=370, P=101325., ids=[62], caudalMasico=1000., fraccionMolar=[1.])
+    Ds=unidades.Length(19.25, "inch")
+    Do=unidades.Length(1, "inch")
+    L=unidades.Length(14, "ft")
+    pt=unidades.Length(1.25, "inch")
+    B=unidades.Length(3.85, "inch")
+    dotl=unidades.Length(0.5*(19.25-17.91), "inch")
+    cambiador = Shell_Tube(entradaTubo=aguaTubo, entradaCarcasa=aguaCarcasa, shellsideSensible=1, DShell=Ds, NTube=124, DeTube=Do, wTube=0.006, LTube=L, pitch=pt, distribucionTube=3, baffleSpacing=B, baffleSpacingIn=B, baffleSpacingOut=B, baffleCut=0.2, clearanceTubeBaffle=0.0004, clearanceShellBaffle=0.0025279, clearanceShellBundle=dotl, sealingStrips=0.1*9.24)
 
-    caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
-    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
-    Cambiador=Hairpin(modo=1)
-    print Cambiador.status, Cambiador.msg
-    Cambiador(entradaTubo=caliente)
-    print Cambiador.status, Cambiador.msg
+#    caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
+#    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
+#    Cambiador=Hairpin(modo=1)
+#    print Cambiador.status, Cambiador.msg
+#    Cambiador(entradaTubo=caliente)
+#    print Cambiador.status, Cambiador.msg
 #    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
 #                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
 #                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)

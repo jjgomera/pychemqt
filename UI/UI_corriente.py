@@ -1077,12 +1077,12 @@ if __name__ == "__main__":
 #    corriente.show()
 
 #    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.])
-    dialogo = Corriente_Dialog()
-    dialogo.show()
-
-#    corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
-#    corriente=Corriente(P=101325)
-#    dialogo = StreamDefinition(corriente)
+#    dialogo = Corriente_Dialog()
 #    dialogo.show()
+
+    corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.0, 0.5, 0.35, 0.15])
+    corriente=Corriente(P=101325)
+    dialogo = StreamDefinition(corriente)
+    dialogo.show()
 
     sys.exit(app.exec_())
