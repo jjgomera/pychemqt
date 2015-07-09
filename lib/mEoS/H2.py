@@ -23,12 +23,6 @@ class H2(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 1
 
-    CP1 = {"ao": 2.5,
-           "an": [], "pow": [],
-           "ao_exp": [1.616, -0.4117, -0.792, 0.758, 1.217],
-           "exp": [531., 751., 1989., 2484., 6859.],
-           "ao_hyp": [], "hyp": []}
-
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [-1.4579856475, 1.888076782],
@@ -43,7 +37,7 @@ class H2(MEoS):
            "ao_hyp": [0.95806, 0.45444, 1.56039, -1.3756],
            "hyp": [6.891654113, 9.84763483, 49.76529075, 50.367279301]}
 
-    CP2 = {"ao": 0.72480209e3,
+    CP1 = {"ao": 0.72480209e3,
            "an": [0.12155215e11, -0.36396763e10, 0.43375265e9, -0.23085817e8,
                   -0.38680927e4, 0.88240136e5, -0.78587085e4, -0.18426806e3,
                   0.21801550e2, -0.13051820e1, 0.21003175e-1, 0.23911604e-2,
@@ -55,7 +49,7 @@ class H2(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for normal hydrogen of Leachman et al. (2007).",
+        "__name__": "Helmholtz equation of state for normal hydrogen of Leachman et al. (2009).",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
                     "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
                     "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
@@ -104,7 +98,8 @@ class H2(MEoS):
                     "doi": ""}, 
         
         "R": 8.31434,
-        "cp": CP2,
+        "cp": CP1,
+        "ref": "IIR", 
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
         "Pmin": 7.70, "rhomin": 38.3, 
@@ -154,9 +149,14 @@ class H2(MEoS):
     helmholtz3 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Bender (1982).",
-        "__doc__":  u"""Bender, E. "Equation of state of normal hydrogen in the range 18 to 700 K and 1 to 500 bar," VDI Forschungsheft N 609, pp. 15-20, 1982.""",
+        "__doi__": {"autor": "Bender, E.",
+                    "title": "Equation of state of normal hydrogen in the range 18 to 700 K and 1 to 500 bar", 
+                    "ref": "VDI-Forschungsheft, no. 609, 1982, p. 15-20",
+                    "doi": ""}, 
+                    
         "R": 8.3143,
         "cp": CP1,
+        "ref": "IIR", 
 
         "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74, 
         "Pmin": 8.736, "rhomin": 38.7, 

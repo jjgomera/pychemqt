@@ -86,6 +86,7 @@ import HCl
 # CFCs
 import CF3I
 import C4F10
+
 import C5F12
 import R11
 import R12
@@ -155,11 +156,11 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "nC6":
+            if module.__module__ != "Ethanol":
                 continue
             print module.__module__
             inst = module()
-            for eq in inst.eq:
+            for eq in inst.eq[0:1]:
                 if "__test__" in eq:
                     inst.__doc__ += eq["__test__"]
             if inst._viscosity is not None:
