@@ -18,7 +18,7 @@ class Cis_2_butene(MEoS):
     Tt = unidades.Temperature(134.3)
     Tb = unidades.Temperature(276.87)
     f_acent = 0.202
-    momentoDipolar = None
+    momentoDipolar = unidades.DipoleMoment(0.3, "Debye")
     id = 25
 
     Fi1 = {"ao_log": [1, 2.9687],

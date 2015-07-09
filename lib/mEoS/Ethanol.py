@@ -179,20 +179,26 @@ class Ethanol(MEoS):
     _surface = {"sigma": [0.05], "exp": [0.952]}
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.81829e1, -0.62767, -0.33289e1, -0.35278e1, 0.93103e1],
-        "exp": [1, 1.5, 3, 5.6, 7.]}
+        "ao": [-0.91043e1, 0.47263e1, -0.97145e1, 0.41536e1, -0.20739e1],
+        "exp": [1, 1.5, 2.0, 2.55, 4.0]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.11818e1, -0.36120e1, 0.54325e1, -0.47789, -0.17766e-1],
-        "exp": [0.098, 0.22, 0.35, 0.7, 2.0]}
+        "ao": [0.11632e2, -0.21866e3, 0.82694e3, -0.13512e4, 0.10517e4,
+               -0.31809e3],
+        "exp": [0.66, 1.5, 1.9, 2.3, 2.7, 3.1]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.93315, -0.40761e2, 0.6325e2, -0.45195e2, 0.15114e1, -0.56666e2],
-        "exp": [0.09, 1.07, 1.3, 1.7, 4.0, 5.0]}
+        "ao": [0.22543e1, -0.24734e2, 0.48993e2, -0.41689e2, -0.45104e2,
+               -0.10732e3],
+        "exp": [0.18, 0.44, 0.68, 0.95, 4.0, 10.0]}
 
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Kiselev (2005)",
-              "__doc__": """Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.,"Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols", Ind. Eng. Chem. Res., 2005, 44, 6916-6927""",
+              "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
+                          "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols", 
+                          "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
+                          "doi": "10.1021/ie050010e"}, 
+                          
               "ek": 362.6, "sigma": 0.453,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0,
@@ -228,24 +234,68 @@ class Ethanol(MEoS):
     _viscosity = visco0,
 
     thermo0 = {"eq": 1,
-               "__name__": "Marsh (2002)",
-               "__doc__": """Marsh, K., Perkins, R., and Ramires, M.L.V., "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(4):932-940, 2002""",
+               "__name__": "Assael (2013)",
+               "__doi__": {"autor": "M. J. Assael, E. A. Sykioti, M. L. Huber, and R. A. Perkins",
+                           "title": "Reference Correlation of the Thermal Conductivity of Ethanol from the Triple Point to 600 K and up to 245 MPa", 
+                           "ref": "J. Phys. Chem. Ref. Data 42, 023102 (2013)",
+                           "doi": "10.1063/1.4797368"}, 
+               "__test__": """
+                   >>> st=Ethanol(T=300, rho=850)
+                   >>> print "%0.5g" % st.k.mWmK
+                   209.68
+                   >>> st=Ethanol(T=400, rho=2)
+                   >>> print "%0.5g" % st.k.mWmK
+                   26.108
+                   >>> st=Ethanol(T=400, rho=690)
+                   >>> print "%0.5g" % st.k.mWmK
+                   149.21
+                   >>> st=Ethanol(T=500, rho=10)
+                   >>> print "%0.5g" % st.k.mWmK
+                   39.594
+                   >>> st=Ethanol(T=500, rho=10)
+                   >>> print "%0.5g" % st.k.mWmK
+                   40.755
+                   """, # Table 4, Pag 8
 
-               "Tref": 513.9, "kref": 1,
-               "no": [0.123120e-1, -0.153612e-1, 0.426611e-1],
-               "co": [0, 1, 2],
+               "Tref": 514.71, "kref": 1e-3,
+               "no": [-2.09575, 1.99045e1, -5.39640e1, 8.21223e1, -1.98864, -0.495513],
+               "co": [0, 1, 2, 3, 4, 5],
+               "noden": [0.17223, -0.078273, 1.0], 
+               "coden": [0, 1, 2], 
+
+               "Trefb": 514.71, "rhorefb": 5.93, "krefb": 1.,
+               "nb": [.267222E-01, .148279, -.130429, .346232E-01,
+                      -.244293E-02, .0, .177166E-01, -.893088E-01,
+                      .684664E-01, -.145702E-01, .809189E-03, .0],
+               "tb": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
+               "cb": [0]*12,
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.164296e-9, "gam0": 0.05885, "qd": 0.53e-9, "Tcref": 770.85}
+
+    thermo1 = {"eq": 1,
+               "__name__": "Kiselev (2005)",
+               "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
+                           "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols", 
+                           "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
+                           "doi": "10.1021/ie050010e"}, 
+
+               "Tref": 1, "kref": 1,
+               "no": [-10.109e-3],
+               "co": [0.6475],
+               "noden": [1.0, -7.332e3, -2.68e5], 
+               "coden": [0, -1, -2], 
 
                "Trefb": 513.9, "rhorefb": 5.991, "krefb": 1.,
-               "nb": [0.266894e-1, 0.0, -0.482953e-1, 0.414022e-1, 0.172939e-1,
-                      -0.977825e-2, 0.0, 0.0, 0.0, 0.0],
+               "nb": [1.06917458e-1, -5.95897870e-2, -8.65012441e-2,
+                      6.14073818e-2, 2.12220237e-2, -1.00317135e-2, 0, 0, 0, 0],
                "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
                "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
                "cb": [0]*10,
 
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 2.307981e-10, "Tcref": 770.85}
+               # TODO: Add critical crossover model from paper
+               "critical": 0}
 
-    _thermal = thermo0,
-
-# TODO: Add discard eq and thermal in refprop
+    _thermal = thermo0, thermo1
