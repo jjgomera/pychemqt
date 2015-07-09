@@ -44,6 +44,7 @@ import nC8
 import iC8
 import nC9
 import nC10
+import nC11
 import nC12
 
 # Naphthenes
