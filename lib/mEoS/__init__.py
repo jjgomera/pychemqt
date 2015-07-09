@@ -156,7 +156,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "Ethanol":
+            if module.__module__ != "D2O":
                 continue
             print module.__module__
             inst = module()

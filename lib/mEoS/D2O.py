@@ -8,25 +8,28 @@ from lib import unidades
 
 
 class D2O(MEoS):
-    """Multiparameter equation of state for heavy water
-
-    >>> water=D2O(T=300, rho=996.5560)
-    >>> print "%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK)
-    0.0992418352 4.13018112 1501.51914 0.393062643
-    """
+    """Multiparameter equation of state for heavy water"""
     name = "heavy water"
     CASNumber = "7789-20-0"
     formula = "D2O"
     synonym = "deuterium oxide"
-    Tc = unidades.Temperature(643.89)
-    rhoc = unidades.Density(357.992)
+    Tc = unidades.Temperature(643.847)
+    rhoc = unidades.Density(358)
     Pc = unidades.Pressure(21671.0, "kPa")
-    M = 20.0275  # g/mol
+    M = 20.027508  # g/mol
     Tt = unidades.Temperature(276.97)
     Tb = unidades.Temperature(374.563)
     f_acent = 0.364
     momentoDipolar = unidades.DipoleMoment(1.9, "Debye")
-    id = 62
+
+    Fi1 = {"ao_log": [0.5399322597e-2, 0],
+           "pow": [0, 1, 2, 3, 4, 5],
+           "ao_pow": [0.3087155964e2, -.3827264031e2, 0.4424799189,
+                      -.1256336874e1, 0.2843343470, -.2401555088e-1],
+           "tau*logtau": -.1288399716e2, 
+           "tau*logdelta": 0.4415884023e1, 
+           "ao_exp": [], "titao": [], 
+           "ao_hyp": [], "hyp": []}
 
     CP1 = {"ao": 0.39176485e1,
            "an": [-0.31123915e-3, 0.41173363e-5, -0.28943955e-8,
@@ -39,9 +42,42 @@ class D2O(MEoS):
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for heavy water of Hill et al. (1982).",
-        "__doc__":  u"""Hill, P.G., MacMillan, R.D.C., and Lee, V., "A Fundamental Equation of State for Heavy Water," J. Phys. Chem. Ref. Data, 11(1):1-14, 1982.""",
+        "__doi__": {"autor": "Hill, P.G., MacMillan, R.D.C., and Lee, V.",
+                    "title": "A Fundamental Equation of State for Heavy Water", 
+                    "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
+                    "doi": "10.1063/1.555661"}, 
+        "__test__": 
+            # Pag 17 of IAPWS 2007 update paper
+            """
+            >>> st=D2O(T=0.5*D2O.Tc, rho=0.0002*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -2.644979 0.0004402 14.2768
+            >>> st=D2O(T=0.5*D2O.Tc, rho=3.18*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -0.217388 4.3549719 41.4463
+            >>> st=D2O(T=0.75*D2O.Tc, rho=0.0295*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -7.272543 0.0870308 20.1586
+            >>> st=D2O(T=0.75*D2O.Tc, rho=2.83*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -4.292707 4.4752958 33.4367
+            >>> st=D2O(T=D2O.Tc, rho=0.3*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -15.163326 0.8014044 30.8587
+            >>> st=D2O(T=D2O.Tc, rho=1.55*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -12.643811 1.0976283 33.0103
+            >>> st=D2O(T=1.2*D2O.Tc, rho=0.4*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -25.471535 1.4990994 23.6594
+            >>> st=D2O(T=1.2*D2O.Tc, rho=1.61*D2O.rhoc)
+            >>> print "%0.6f %0.7f %0.4f" % (st.a*D2O.rhoc/D2O.Pc, st.Pr, st.cv.kJkgK*D2O.rhoc*D2O.Tc/D2O.Pc.kPa)
+            -21.278164 4.5643798 25.4800
+            """,
+
         "R": 8.3143565, "rhoref": 17.875414*M, 
-        "cp": CP1,
+        "cp": Fi1,
+        "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0}, 
 
         "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65., 
         "Pmin": 0.66103, "rhomin": 55.198, 
@@ -75,7 +111,7 @@ class D2O(MEoS):
 
     eq = helmholtz1,
 
-    _surface = {"sigma": [0.1423, 0.2094], "exp": [2.645, 1.214]}
+    _surface = {"sigma": [0.238, -0.152082], "exp": [1.25, 2.25]}
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.80236e1, 0.23957e1, -0.42639e2, 0.99569e2, -0.62135e2],
@@ -91,12 +127,38 @@ class D2O(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "IAPWS (1994)"}
+              "__name__": "IAPWS (2007)", 
+              "__doi__": {"autor": "J. Kestin, J. V. Sengers, B. Kamgar‐Parsi and J. M. H. Levelt Sengers",
+                          "title": "Thermophysical Properties of Fluid D2O", 
+                          "ref": "J. Phys. Chem. Ref. Data 13, 601 (1984)",
+                          "doi": "10.1063/1.555714"}, 
+              "__test__": 
+                  # Pag 17 of IAPWS 2007 update paper
+                  """
+                  >>> st=D2O(T=0.431*D2O.Tc, rho=3.09*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  36.9123166244
+                  >>> st=D2O(T=0.431*D2O.Tc, rho=3.23*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  34.1531546602
+                  >>> st=D2O(T=0.6*D2O.Tc, rho=2.95*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  5.2437249935
+                  >>> st=D2O(T=D2O.Tc, rho=0.7*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  0.5528693914
+                  >>> st=D2O(T=0.9*D2O.Tc, rho=0.08*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  0.3685472578
+                  >>> st=D2O(T=1.1*D2O.Tc, rho=0.98*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  0.7816387903
+                  >>> st=D2O(T=1.2*D2O.Tc, rho=0.8*D2O.rhoc)
+                  >>> print "%0.10f" % (st.mu.muPas/55.2651)
+                  0.7651099154
+                  """, }
 
-    _viscosity = visco0,
-
-    def _visco(self, rho, T, fase=None):
-        """International Association for the Properties of Water and Steam, "Viscosity and Thermal Conductivity of Heavy Water Substance," Physical Chemistry of Aqueous Systems:  Proceedings of the 12th International Conference on the Properties of Water and Steam, Orlando, Florida, September 11-16, A107-A138, 1994"""
+    def _visco0(self, rho, T, fase=None):
         Tr = T/643.847
         rhor = rho/358.0
 
@@ -118,36 +180,42 @@ class D2O(MEoS):
 
         return unidades.Viscosity(55.2651*fi0*fi1, "muPas")
 
-#    def _visco0(self):
-#        """International Association for the Properties of Water and Steam, "Viscosity and Thermal Conductivity of Heavy Water Substance," Physical Chemistry of Aqueous Systems:  Proceedings of the 12th International Conference on the Properties of Water and Steam, Orlando, Florida, September 11-16, A107-A138, 1994"""
-#        Tr = self.T/643.89
-#        rhor = self.rho/self.M/17.87542
-#
-#        no = [1.0, 0.940695, 0.578377, -0.202044]
-#        fi0 = Tr**0.5/sum([n/Tr**i for i, n in enumerate(no)])
-#
-#        Li = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 0, 1, 2, 5, 0, 1, 2, 3, 0, 1, 3,
-#              5, 0, 1, 5, 3]
-#        Lj = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4,
-#              4, 5, 5, 5, 6]
-#        Lij = [0.4864192, -0.2448372, -0.8702035, 0.8716056, -1.051126,
-#               0.3458395, 0.3509007, 1.315436, 1.297752, 1.353448, -0.2847572,
-#               -1.037026, -1.287846, -0.02148229, 0.07013759, 0.4660127,
-#               0.2292075, -0.4857462, 0.01641220, -0.02884911, 0.1607171,
-#               -0.009603846, -0.01163815, -0.008239587, 0.004559914, -0.003886659]
-#        array = [lij*(1./Tr-1)**i*(rhor-1)**j for i, j, lij in zip(Li, Lj, Lij)]
-#        fi1 = exp(rhor*sum(array))
-#
-#        return unidades.Viscosity(55.2651*fi0*fi1, "muPas")
+    _viscosity = visco0,
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "IAPWS (1994)"}
-
-    _thermal = thermo0,
+               "__name__": "IAPWS (1994)", 
+               "__doi__": {"autor": "J. Kestin, J. V. Sengers, B. Kamgar‐Parsi and J. M. H. Levelt Sengers",
+                           "title": "Thermophysical Properties of Fluid D2O", 
+                           "ref": "J. Phys. Chem. Ref. Data 13, 601 (1984)",
+                           "doi": "10.1063/1.555714"}, 
+               "__test__": 
+                   # Pag 17 of IAPWS 2007 update paper
+                   """
+                   >>> st=D2O(T=0.431*D2O.Tc, rho=3.09*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   762.915707396
+                   >>> st=D2O(T=0.431*D2O.Tc, rho=3.23*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   833.912049618
+                   >>> st=D2O(T=0.6*D2O.Tc, rho=2.95*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   861.240794445
+                   >>> st=D2O(T=D2O.Tc, rho=0.7*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   469.015122112
+                   >>> st=D2O(T=0.9*D2O.Tc, rho=0.08*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   74.522283066
+                   >>> st=D2O(T=1.1*D2O.Tc, rho=0.98*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   326.652382218
+                   >>> st=D2O(T=1.2*D2O.Tc, rho=0.8*D2O.rhoc)
+                   >>> print "%0.9f" % (st.k/0.742128)
+                   259.605241187
+                   """, }
 
     def _thermo0(self, rho, T, fase=None):
-        """International Association for the Properties of Water and Steam, "Viscosity and Thermal Conductivity of Heavy Water Substance," Physical Chemistry of Aqueous Systems:  Proceedings of the 12th International Conference on the Properties of Water and Steam, Orlando, Florida, September 11-16, A107-A138, 1994."""
         rhor = rho/358
         Tr = T/643.847
         tau = Tr/(abs(Tr-1.1)+1.1)
@@ -168,29 +236,4 @@ class D2O(MEoS):
 
         return unidades.ThermalConductivity(0.742128e-3*(Lo+Lr+Lc+Ll))
 
-#    def _thermo0(self):
-#        """International Association for the Properties of Water and Steam, "Viscosity and Thermal Conductivity of Heavy Water Substance," Physical Chemistry of Aqueous Systems:  Proceedings of the 12th International Conference on the Properties of Water and Steam, Orlando, Florida, September 11-16, A107-A138, 1994."""
-#        rhor = self.rho/self.M/17.87542
-#        Tr = self.T/643.89
-#        tau = Tr/(abs(Tr-1.1)+1.1)
-#
-#        no = [1.0, 37.3223, 22.5485, 13.0465, 0.0, -2.60735]
-#        Lo = sum([Li*Tr**i for i, Li in enumerate(no)])
-#        nr = [483.656, -191.039, 73.0358, -7.57467]
-#        Lr = sum([Li*rhor**i for i, Li in enumerate(nr)])
-#
-#        b = [-2.506, -167.310, 0.354296e5, 0.5e10, 0.144847, -5.64493, -2.8,
-#             -0.080738543, -17.943, 0.125698, -741.112]
-#        f1 = exp(b[4]*Tr+b[5]*Tr**2)
-#        f2 = exp(b[6]*(rhor-1)**2)+b[7]*exp(b[8]*(rhor-b[9])**2)
-#        f3 = 1+exp(60*(tau-1.)+20)
-#        f4 = 1+exp(100*(tau-1)+15)
-#        Lr += b[1]*(1-exp(b[0]*rhor))
-#        Lc = b[2]*f1*f2*(1+f2**2*(b[3]*f1**4/f3+3.5*f2/f4))
-#        Ll = b[10]*f1**1.2*(1-exp(-(rhor/2.5)**10))
-#
-#        return unidades.ThermalConductivity(0.742128e-3*(Lo*Lr+Lc+Ll))
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    _thermal = thermo0,
