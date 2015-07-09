@@ -41,6 +41,7 @@ import nC6
 import iC6
 import nC7
 import nC8
+import iC8
 import nC9
 import nC10
 import nC12
