@@ -6,44 +6,44 @@
 #Inicializa importando las interfaces gráficas de los equipos
 
 #flow
-import UI_divider
-import UI_valve
-import UI_mixer
-import UI_compressor
-import UI_turbine
-import UI_pump
-import UI_pipe
+from . import UI_divider
+from . import UI_valve
+from . import UI_mixer
+from . import UI_compressor
+from . import UI_turbine
+from . import UI_pump
+from . import UI_pipe
 
 #Operaciones
-import UI_flash
-import UI_columnFUG
-import UI_heatExchanger
-import UI_hairpin
-import UI_shellTube
-import UI_fireHeater
+from . import UI_flash
+from . import UI_columnFUG
+from . import UI_heatExchanger
+from . import UI_hairpin
+from . import UI_shellTube
+from . import UI_fireHeater
 
 #solids
-import UI_ciclon
-import UI_gravityChamber
-import UI_baghouse
-import UI_electricPrecipitator
-import UI_dryer
+from . import UI_ciclon
+from . import UI_gravityChamber
+from . import UI_baghouse
+from . import UI_electricPrecipitator
+from . import UI_dryer
 
 #Tools
-import UI_spreadsheet
+from . import UI_spreadsheet
 
 #No funcionales
-import UI_centrifuge
-import UI_crystallizer
-import UI_filter
-import UI_grinder
-import UI_screen
-import UI_solidWasher
-import UI_vacuum
-import UI_scrubber
-import UI_tank
-import UI_tower
-import UI_reactor
+from . import UI_centrifuge
+from . import UI_crystallizer
+from . import UI_filter
+from . import UI_grinder
+from . import UI_screen
+from . import UI_solidWasher
+from . import UI_vacuum
+from . import UI_scrubber
+from . import UI_tank
+from . import UI_tower
+from . import UI_reactor
 
 
 UI_equipments=[UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor, UI_turbine, UI_pipe, UI_flash, UI_columnFUG, UI_heatExchanger, UI_shellTube, UI_hairpin, UI_fireHeater, UI_ciclon, UI_gravityChamber, UI_baghouse, UI_electricPrecipitator, UI_dryer, UI_scrubber, UI_spreadsheet, UI_reactor]

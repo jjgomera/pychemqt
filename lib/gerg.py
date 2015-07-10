@@ -12,15 +12,15 @@
 
 # TODO: Not implemented gas-liquid equilibrium yet
 
-import cPickle
+import pickle
 import os
 
 from scipy import exp, log, zeros, r_
 from scipy.constants import R
 from scipy.optimize import fsolve
 
-import unidades
-from physics import R_atml
+from . import unidades
+from .physics import R_atml
 from lib import mEoS
 from lib.config import Fluid
 
@@ -52,8 +52,8 @@ class GERG(object):
                    mEoS.He.He, mEoS.Ar.Ar, mEoS.H2S.H2S, mEoS.nC9.nC9,
                    mEoS.nC10.nC10]
 
-    Fij = cPickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Fij.pkl"))
-    Prop_c = cPickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Tc.pkl"))
+    Fij = pickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Fij.pkl", "rb"))
+    Prop_c = pickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Tc.pkl", "rb"))
 
     fir_ij = {
         "0-1": {

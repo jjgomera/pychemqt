@@ -7,7 +7,8 @@
 
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 try:
     import ezodf
     import openpyxl
@@ -19,7 +20,7 @@ from equipment.parents import UI_equip
 from equipment.spreadsheet import Spreadsheet
 
 
-class TableDelegate(QtGui.QItemDelegate):
+class TableDelegate(QtWidgets.QItemDelegate):
     """Delegate table with combobox options"""
     def __init__(self, owner, items=None):
         super(TableDelegate, self).__init__(owner)
@@ -37,10 +38,10 @@ class TableDelegate(QtGui.QItemDelegate):
 
     def createEditor(self, parent, option, index):
         if index.column() < 4:
-            self.editor = QtGui.QComboBox(parent)
+            self.editor = QtWidgets.QComboBox(parent)
             self.editor.addItems(self.items[index.column()])
         else:
-            self.editor = QtGui.QLineEdit(parent)
+            self.editor = QtWidgets.QLineEdit(parent)
             regExp = QtCore.QRegExp("[A-Z]|[a-z]{1,3}\\d{1,5}")
             validator = QtGui.QRegExpValidator(regExp)
             self.editor.setValidator(validator)
@@ -79,28 +80,28 @@ class UI_equipment(UI_equip):
         self.project = project
 
         # Calculate tab
-        layout = QtGui.QGridLayout(self.entrada)
-        label = QtGui.QApplication.translate("pychemqt", "Spreadsheet path")+":"
-        msg = QtGui.QApplication.translate("pychemqt", "Select Spreadsheet")
+        layout = QtWidgets.QGridLayout(self.entrada)
+        label = QtCore.QCoreApplication.translate("pychemqt", "Spreadsheet path")+":"
+        msg = QtCore.QCoreApplication.translate("pychemqt", "Select Spreadsheet")
         patrones = QtCore.QStringList()
         if os.environ["ezodf"]:
-            patrones.append(QtGui.QApplication.translate(
+            patrones.append(QtCore.QCoreApplication.translate(
                 "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
 #        if os.environ["xlwt"]:
 #            patrones.append(QtGui.QApplication.translate(
 #                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(QtGui.QApplication.translate(
+            patrones.append(QtCore.QCoreApplication.translate(
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
         patron = patrones.join(";;")
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename, 1, 1)
-        header = [QtGui.QApplication.translate("pychemqt", "Entity"),
-                  QtGui.QApplication.translate("pychemqt", "Variable"),
-                  QtGui.QApplication.translate("pychemqt", "Unit value"),
-                  QtGui.QApplication.translate("pychemqt", "Sheet"),
-                  QtGui.QApplication.translate("pychemqt", "Cell")]
+        header = [QtCore.QCoreApplication.translate("pychemqt", "Entity"),
+                  QtCore.QCoreApplication.translate("pychemqt", "Variable"),
+                  QtCore.QCoreApplication.translate("pychemqt", "Unit value"),
+                  QtCore.QCoreApplication.translate("pychemqt", "Sheet"),
+                  QtCore.QCoreApplication.translate("pychemqt", "Cell")]
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
             verticalHeader=False, orientacion=QtCore.Qt.AlignLeft,
@@ -109,8 +110,8 @@ class UI_equipment(UI_equip):
         self.datamap.cellChanged.connect(self.cellChanged)
         self.datamap.rowFinished.connect(self.addRow)
         layout.addWidget(self.datamap, 2, 1)
-        layout.addItem(QtGui.QSpacerItem(
-            10, 10, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding),
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
             10, 1)
 
         entitys = []
@@ -154,15 +155,15 @@ class UI_equipment(UI_equip):
                 self.datamap.itemDelegateForRow(i).setItemsByIndex(
                     3, self.Equipment.sheets)
                 self.datamap.setItem(i, 0,
-                                     QtGui.QTableWidgetItem(data["entity"]))
+                                     QtWidgets.QTableWidgetItem(data["entity"]))
                 self.datamap.setItem(i, 1,
-                                     QtGui.QTableWidgetItem(data["property"]))
+                                     QtWidgets.QTableWidgetItem(data["property"]))
                 self.datamap.setItem(i, 2,
-                                     QtGui.QTableWidgetItem(data["unit"]))
+                                     QtWidgets.QTableWidgetItem(data["unit"]))
                 self.datamap.setItem(i, 3,
-                                     QtGui.QTableWidgetItem(data["sheet"]))
+                                     QtWidgets.QTableWidgetItem(data["sheet"]))
                 self.datamap.setItem(i, 4,
-                                     QtGui.QTableWidgetItem(data["cell"]))
+                                     QtWidgets.QTableWidgetItem(data["cell"]))
             self.datamap.itemDelegateForRow(
                 self.datamap.rowCount()-1).setItemsByIndex(0, self.entitys)
             self.datamap.itemDelegateForRow(
@@ -179,7 +180,7 @@ class UI_equipment(UI_equip):
         properties = [prop[0] for prop in obj.propertiesNames()]
         if j == 0:  # Entity cambiado, cambiar variables disponibles
             self.datamap.itemDelegateForRow(i).setItemsByIndex(1, properties)
-            editor = QtGui.QComboBox()
+            editor = QtWidgets.QComboBox()
             editor.addItems(self.datamap.itemDelegateForRow(i).items[1])
             self.datamap.setColumnWidth(1, editor.sizeHint().width())
         elif j == 1:   # Variable cambiada, cambiar unidades disponibles
@@ -228,7 +229,7 @@ if __name__ == "__main__":
 
     spreadsheet = Spreadsheet(filename="/media/datos/ejemplo.xlsx",
                               project=project)
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialogo = UI_equipment(spreadsheet, project=project)
     dialogo.show()
     sys.exit(app.exec_())

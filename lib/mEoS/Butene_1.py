@@ -3,7 +3,7 @@
 
 from lib.meos import MEoS
 from lib import unidades
-from C3 import C3
+from .C3 import C3
 
 
 class Butene_1(MEoS):
@@ -106,4 +106,4 @@ class Butene_1(MEoS):
 
 if __name__ == "__main__":
     st=Butene_1(T=300, P=1e5, )
-    print "%0.6g %0.6g" % (st.mu.muPas, st.k.mWmK)
+    print("%0.6g %0.6g" % (st.mu.muPas, st.k.mWmK))

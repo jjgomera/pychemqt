@@ -5,15 +5,15 @@
 # IAPWS-IF97 pure python implementation
 ###############################################################################
 
-from __future__ import division
+
 from math import sqrt, log, exp, tan, atan, acos, sin, pi
 from cmath import log as log_c
 
 from scipy.optimize import fsolve
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
-from config import Fluid
+from .config import Fluid
 
 properties = {
     "P": QApplication.translate("pychemqt", "Pressure"),

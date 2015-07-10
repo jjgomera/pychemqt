@@ -9,7 +9,7 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy import pi, exp, sqrt, log
 
 from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless, Length,

@@ -5,14 +5,14 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy import log, exp
 from scipy.constants import R
 from scipy.optimize import fsolve
 
 from lib.unidades import DeltaT, DeltaP, Temperature, Pressure, MassFlow, Power, Currency, Dimensionless
 from lib.corriente import Corriente
-from parents import equipment
+from .parents import equipment
 
 
 class Compressor(equipment):
@@ -624,9 +624,9 @@ if __name__ == '__main__':
 
     corriente=Corriente(T=873.15, P=1013250, caudalMasico=0.1, fraccionMasica=[1.])
     turbina=Turbine(entrada=corriente, metodo=1, razon=0.3, rendimiento=0.5)
-    print turbina.power.MJh
-    print turbina.C_inst
-    print turbina.salida[0].T
+    print(turbina.power.MJh)
+    print(turbina.C_inst)
+    print(turbina.salida[0].T)
 
 #    agua=Corriente(T=500, P=101325., caudalMasico=1, fraccionMasica=[1.])
 #    print agua.P*2

@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import cPickle
+import pickle
 from functools import partial
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 #import matplotlib.gridspec as gridspec #necesita matplotlib >=1.0
 from pylab import Figure
@@ -13,7 +14,7 @@ from numpy import transpose
 from lib.unidades import Length, VolFlow, Power
 from lib import config
 from lib.utilities import representacion
-from widgets import Entrada_con_unidades, Tabla
+from .widgets import Entrada_con_unidades, Tabla
 
 
 class Plot(FigureCanvasQTAgg):
@@ -22,69 +23,69 @@ class Plot(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
-        FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
         
-class Ui_bombaCurva(QtGui.QDialog):
+class Ui_bombaCurva(QtWidgets.QDialog):
     def __init__(self, curva=[], parent=None):
         """curva: Parametro opcional indicando la curva de la bomba"""
         super(Ui_bombaCurva, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Pump curves dialog"))
+        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Pump curves dialog"))
         self.showMaximized()
 
-        self.gridLayout = QtGui.QGridLayout(self)
-        self.botones = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Apply|QtGui.QDialogButtonBox.Open|QtGui.QDialogButtonBox.Save|QtGui.QDialogButtonBox.Reset, QtCore.Qt.Vertical)
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.botones = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Open|QtWidgets.QDialogButtonBox.Save|QtWidgets.QDialogButtonBox.Reset, QtCore.Qt.Vertical)
         self.botones.clicked.connect(self.botones_clicked)
         self.gridLayout.addWidget(self.botones,1,1,3,1)
-        self.gridLayout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),1,2,3,1)
-        self.gridLayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Curves")),1,3)
-        self.lista=QtGui.QComboBox()
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,2,3,1)
+        self.gridLayout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Curves")),1,3)
+        self.lista=QtWidgets.QComboBox()
         self.lista.currentIndexChanged.connect(self.cambiarCurvaVista)
         self.gridLayout.addWidget(self.lista,1,4)
-        self.gridLayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Diameter")),2,3)
+        self.gridLayout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Diameter")),2,3)
         self.diametro=Entrada_con_unidades(int, width=60, textounidad='"')
         self.gridLayout.addWidget(self.diametro,2,4)
-        self.gridLayout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "RPM")),3,3)
+        self.gridLayout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "RPM")),3,3)
         self.rpm=Entrada_con_unidades(int, width=60, textounidad="rpm")
         self.gridLayout.addWidget(self.rpm,3,4)
-        self.gridLayout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),4,1,1,4)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,1,1,4)
 
-        self.Tabla=Tabla(4, horizontalHeader=[QtGui.QApplication.translate("pychemqt", "Flowrate"), QtGui.QApplication.translate("pychemqt", "Head"), QtGui.QApplication.translate("pychemqt", "Power"), QtGui.QApplication.translate("pychemqt", "NPSH")], verticalOffset=1, filas=1, stretch=False)
+        self.Tabla=Tabla(4, horizontalHeader=[QtCore.QCoreApplication.translate("pychemqt", "Flowrate"), QtCore.QCoreApplication.translate("pychemqt", "Head"), QtCore.QCoreApplication.translate("pychemqt", "Power"), QtCore.QCoreApplication.translate("pychemqt", "NPSH")], verticalOffset=1, filas=1, stretch=False)
         self.Tabla.setColumnWidth(0, 100)
-        self.unidadesCaudal = QtGui.QComboBox()
+        self.unidadesCaudal = QtWidgets.QComboBox()
         self.Tabla.setCellWidget(0, 0, self.unidadesCaudal)
         self.Tabla.setColumnWidth(1, 80)
-        self.unidadesCarga = QtGui.QComboBox()
+        self.unidadesCarga = QtWidgets.QComboBox()
         self.Tabla.setCellWidget(0, 1, self.unidadesCarga)
         self.Tabla.setColumnWidth(2, 80)
-        self.unidadesPotencia = QtGui.QComboBox()
+        self.unidadesPotencia = QtWidgets.QComboBox()
         self.Tabla.setCellWidget(0, 2, self.unidadesPotencia)
         self.Tabla.setColumnWidth(3, 80)
-        self.unidadesNPSH = QtGui.QComboBox()
+        self.unidadesNPSH = QtWidgets.QComboBox()
         self.Tabla.setCellWidget(0, 3, self.unidadesNPSH)
         self.Tabla.setRowHeight(0, 24)
         self.Tabla.setFixedWidth(360)
         self.Tabla.setConnected()
         self.Tabla.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.gridLayout.addWidget(self.Tabla,5,1,1,4)
-        self.gridLayout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),1,5,5,1)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,5,5,1)
 
-        self.checkCarga = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Heat"))
+        self.checkCarga = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate("pychemqt", "Heat"))
         self.gridLayout.addWidget(self.checkCarga,1,6)
-        self.checkPotencia = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Power"))
+        self.checkPotencia = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate("pychemqt", "Power"))
         self.gridLayout.addWidget(self.checkPotencia,1,7)
-        self.checkNPSH = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "NPSH"))
+        self.checkNPSH = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate("pychemqt", "NPSH"))
         self.gridLayout.addWidget(self.checkNPSH,1,8)
-        self.rejilla = QtGui.QCheckBox(QtGui.QApplication.translate("pychemqt", "Grid"))
+        self.rejilla = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate("pychemqt", "Grid"))
         self.rejilla.toggled.connect(self.rejilla_toggled)
         self.gridLayout.addWidget(self.rejilla,1,9)
-        self.gridLayout.addItem(QtGui.QSpacerItem(1000,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed),1,10)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(1000,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1,10)
         self.Plot = Plot(self, width=5, height=1, dpi=100)
         self.gridLayout.addWidget(self.Plot,2,6,4,5)
         
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok|QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox,6,9,1,2)
@@ -131,7 +132,7 @@ class Ui_bombaCurva(QtGui.QDialog):
 
 
     def botones_clicked(self, boton):
-        if boton == self.botones.button(QtGui.QDialogButtonBox.Reset):
+        if boton == self.botones.button(QtWidgets.QDialogButtonBox.Reset):
             self.diametro.clear()
             self.rpm.clear()
             self.Tabla.clear()
@@ -140,11 +141,11 @@ class Ui_bombaCurva(QtGui.QDialog):
             self.checkNPSH.setChecked(False)
             self.rejilla.setChecked(False)
             
-        elif boton == self.botones.button(QtGui.QDialogButtonBox.Open):
-            fname = unicode(QtGui.QFileDialog.getOpenFileName(self, QtGui.QApplication.translate("pychemqt", "Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)"))
+        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Open):
+            fname = str(QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate("pychemqt", "Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)")[0])
             if fname:
                 with open(fname, "r") as archivo:
-                    curvas=cPickle.load(archivo)
+                    curvas=pickle.load(archivo)
                 self.curvas=curvas
                 self.curva=curvas[-1]
                 self.lista.clear()
@@ -156,7 +157,7 @@ class Ui_bombaCurva(QtGui.QDialog):
                 self.cambiarCurvaVista(self.lista.count()-1)
                 self.actualizarPlot()
                 
-        elif boton == self.botones.button(QtGui.QDialogButtonBox.Apply):
+        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Apply):
             txt=str(self.diametro.value)+'", '+str(self.rpm.value)+" rpm"
             indice=self.lista.findText(txt)
             if indice ==-1:
@@ -172,11 +173,11 @@ class Ui_bombaCurva(QtGui.QDialog):
                 self.actualizarPlot()
                 
         else:
-            fname = unicode(QtGui.QFileDialog.getSaveFileName(self, QtGui.QApplication.translate("pychemqt", "Save curve to file"), "./", "cpickle file (*.pkl)"))
+            fname = str(QtWidgets.QFileDialog.getSaveFileName(self, QtCore.QCoreApplication.translate("pychemqt", "Save curve to file"), "./", "cpickle file (*.pkl)")[0])
             if fname:
                 if fname.split(".")[-1]!="pkl":
                     fname+=".pkl"
-                cPickle.dump(self.curvas, open(fname, "w"))
+                pickle.dump(self.curvas, open(fname, "w"))
 
     def CalcularCurva(self):
         caudal=[]
@@ -294,7 +295,7 @@ class Ui_bombaCurva(QtGui.QDialog):
 if __name__ == "__main__":
     import sys
     from numpy import r_, zeros, arange
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Q=arange(0, 21, 1.)
     h=[15.5, 15.468115, 15.40372, 15.319705, 15.23896, 15.154375, 15.06884, 14.945245, 14.84648, 14.725435, 14.605, 14.418065, 14.18752, 13.906255, 13.56716, 13.163125, 12.68704, 12.131795, 11.49028, 10.755385, 9.92]
 #    h=r_[15.5, 15.49, 15.45, 15.4, 15.3, 15.2, 15.1, 15., 14.8, 14.65, 14.505, 14.35, 14.15, 13.9, 13.55, 13.2, 12.75, 12.3, 11.6, 10.85, 9.7]

@@ -9,28 +9,29 @@
 
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 from numpy import loadtxt
 
-from widgets import Tabla
+from .widgets import Tabla
 from tools.HelpView import HelpView
 from UI.widgets import Entrada_con_unidades
 from lib.unidades import Temperature
 
 
-class eqDIPPR(QtGui.QWidget):
+class eqDIPPR(QtWidgets.QWidget):
     """Custom widget to define DIPPR equation input"""
     def __init__(self, value, parent=None):
         super(eqDIPPR, self).__init__(parent)
-        layout = QtGui.QHBoxLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Eq DIPPR") + " "))
-        self.eqDIPPR = QtGui.QSpinBox()
+        self.eqDIPPR = QtWidgets.QSpinBox()
         self.eqDIPPR.setValue(value)
         self.eqDIPPR.setRange(1, 9)
         self.eqDIPPR.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
-        txt = u"""
+        txt = """
     1:     Y = A+B*T+C*T²+D*T³+E*T⁴
     2:     Y = exp(A+B*T+C*ln(T)+D*T^E)
     3:     Y = A*T^(B/(1+C*T+D*T^2))
@@ -41,12 +42,12 @@ class eqDIPPR(QtGui.QWidget):
     8:     Y = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²
     9:     Y = A²/Tr + B - 2ACTr - ADTr² - C²Tr³/3 - CDTr⁴/2 - D²Tr⁵/5
         """
-        var = QtGui.QApplication.translate("pychemqt", """where:
+        var = QtCore.QCoreApplication.translate("pychemqt", """where:
                     Y Property to fit
                     T temperature in Kelvin
                     Tr: reduced temperature T/Tc
                     A,B,C,D,E parameters""")
-        self.eqDIPPR.setToolTip(QtGui.QApplication.translate(
+        self.eqDIPPR.setToolTip(QtCore.QCoreApplication.translate(
             "pychemqt", "Equation") + txt + var)
         layout.addWidget(self.eqDIPPR)
         layout.addStretch()
@@ -62,7 +63,7 @@ class eqDIPPR(QtGui.QWidget):
         self.eqDIPPR.clear()
 
 
-class Entrada_Datos(QtGui.QDialog):
+class Entrada_Datos(QtWidgets.QDialog):
     """Table data input dialog"""
     def __init__(self, data=None, t=[], property=[], horizontalHeader=[],
                  title="", help=False, helpFile="", DIPPR=False, tc=0,
@@ -86,24 +87,24 @@ class Entrada_Datos(QtGui.QDialog):
         self.horizontalHeader = horizontalHeader
         self.title = title
         self.helpFile = helpFile
-        gridLayout = QtGui.QGridLayout(self)
-        self.botonAbrir = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+        gridLayout = QtWidgets.QGridLayout(self)
+        self.botonAbrir = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")),
-            QtGui.QApplication.translate("pychemqt", "Open"))
+            QtCore.QCoreApplication.translate("pychemqt", "Open"))
         self.botonAbrir.clicked.connect(self.Abrir)
         gridLayout.addWidget(self.botonAbrir, 1, 1)
-        self.botonGuardar = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+        self.botonGuardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")),
-            QtGui.QApplication.translate("pychemqt", "Save"))
+            QtCore.QCoreApplication.translate("pychemqt", "Save"))
         self.botonGuardar.clicked.connect(self.Guardar)
         gridLayout.addWidget(self.botonGuardar, 1, 2)
-        self.botonDelete = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+        self.botonDelete = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/clear.png")),
-            QtGui.QApplication.translate("pychemqt", "Clear"))
+            QtCore.QCoreApplication.translate("pychemqt", "Clear"))
         self.botonDelete.clicked.connect(self.Borrar)
         gridLayout.addWidget(self.botonDelete, 1, 3)
-        gridLayout.addItem(QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding,
-                                             QtGui.QSizePolicy.Expanding), 1, 4)
+        gridLayout.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
+                                             QtWidgets.QSizePolicy.Expanding), 1, 4)
 
         self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
@@ -122,22 +123,22 @@ class Entrada_Datos(QtGui.QDialog):
             self.eqDIPPR.eqDIPPR.valueChanged.connect(self.showTc)
 
         if tc:
-            lyt = QtGui.QHBoxLayout()
-            self.labelTc = QtGui.QLabel("Tc: ", self)
+            lyt = QtWidgets.QHBoxLayout()
+            self.labelTc = QtWidgets.QLabel("Tc: ", self)
             lyt.addWidget(self.labelTc)
             self.tc = Entrada_con_unidades(Temperature, value=tcValue)
             lyt.addWidget(self.tc)
-            lyt.addItem(QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding,
-                                          QtGui.QSizePolicy.Expanding))
+            lyt.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
+                                          QtWidgets.QSizePolicy.Expanding))
             gridLayout.addItem(lyt, 4, 1, 1, 4)
             self.showTc(1)
 
         if help:
-            botones = QtGui.QDialogButtonBox.Help | \
-                QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok
+            botones = QtWidgets.QDialogButtonBox.Help | \
+                QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
         else:
-            botones = QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok
-        self.boton = QtGui.QDialogButtonBox(botones)
+            botones = QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        self.boton = QtWidgets.QDialogButtonBox(botones)
         self.boton.accepted.connect(self.accept)
         self.boton.rejected.connect(self.reject)
         self.boton.helpRequested.connect(self.ayuda)
@@ -148,16 +149,16 @@ class Entrada_Datos(QtGui.QDialog):
         self.tc.setVisible(value in (7, 9))
 
     def Abrir(self):
-        fname = unicode(QtGui.QFileDialog.getOpenFileName(
-            self, QtGui.QApplication.translate("pychemqt", "Open text file"), "./"))
+        fname = str(QtWidgets.QFileDialog.getOpenFileName(
+            self, QtWidgets[0].QCoreApplication.translate("pychemqt", "Open text file"), "./"))
         if fname:
             data = loadtxt(fname)
             self.tabla.setMatrix(data)
             self.tabla.addRow()
 
     def Guardar(self):
-        fname = unicode(QtGui.QFileDialog.getSaveFileName(
-            self, QtGui.QApplication.translate("pychemqt", "Save data to file"), "./"))
+        fname = str(QtWidgets.QFileDialog.getSaveFileName(
+            self, QtWidgets[0].QCoreApplication.translate("pychemqt", "Save data to file"), "./"))
         if fname:
             with open(fname, 'w') as file:
                 file.write("#"+self.title+"\n")
@@ -191,9 +192,9 @@ class Entrada_Datos(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
-    titulo = u"Distribución de tamaño de sólidos"
-    encabezado = [u"Diametro, μm", u"Fracción másica", "acumulado"]
+    app = QtWidgets.QApplication(sys.argv)
+    titulo = "Distribución de tamaño de sólidos"
+    encabezado = ["Diametro, μm", "Fracción másica", "acumulado"]
     ui = Entrada_Datos(horizontalHeader=encabezado, title=titulo, help=True,
                        DIPPR=True, helpFile=os.environ["pychemqt"] +
                        "doc/doc/pychemqt.UI.entrada_datos.html")

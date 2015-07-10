@@ -4,7 +4,7 @@
 ###Modulo que define los equipos de almacenamiento
 
 from scipy import log, exp, pi
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 
 from lib.unidades import Density, Length, Currency, Volume
 from lib.corriente import Corriente

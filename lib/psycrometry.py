@@ -6,9 +6,9 @@
 ###############################################################################
 
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy.optimize import fsolve
 from scipy import log, exp, arange, concatenate, linspace
 
@@ -261,7 +261,7 @@ def _tdp(Pw):
     elif Tdp2 < 0:
         t = Tdp2
     else:
-        print Pw, Tdp1, Tdp2
+        print(Pw, Tdp1, Tdp2)
         raise NotImplementedError("Incoming out of bound")
 
     return t+273.15
@@ -882,10 +882,10 @@ else:
 
 if __name__ == '__main__':
     aire = PsyIdeal(tdb=40+273.15, w=0.001)
-    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+    print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
 
     aire = PsyCoolprop(tdb=40+273.15, w=0.001)
-    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws
+    print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
 
 #    aire = PsyIdeal(tdb=40+273.15, HR=10)
 #    print aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa

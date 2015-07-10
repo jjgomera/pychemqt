@@ -7,7 +7,7 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy.constants import g, pi
 
 from lib import unidades
@@ -320,11 +320,11 @@ class Pipe(equipment):
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Method"), self.TEXT_METODO[self.kwargs["metodo"]])+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Total", None, QApplication.UnicodeUTF8), self.DeltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP friction", None, QApplication.UnicodeUTF8), self.DeltaP_f.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP fittings", None, QApplication.UnicodeUTF8), self.DeltaP_ac.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP elevation", None, QApplication.UnicodeUTF8), self.DeltaP_h.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP acceleration", None, QApplication.UnicodeUTF8), self.DeltaP_v.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Total", None), self.DeltaP.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP friction", None), self.DeltaP_f.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP fittings", None), self.DeltaP_ac.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP elevation", None), self.DeltaP_h.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP acceleration", None), self.DeltaP_v.str)+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Thermal Condition"), self.TEXT_THERMAL[self.kwargs["thermal"]])+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Fluid Speed"), self.V.str)+os.linesep
         txt+="%-25s\t %s" %("Reynolds", self.Re)+os.linesep
@@ -363,11 +363,11 @@ class Pipe(equipment):
                 (QApplication.translate("pychemqt", "Method"), ("TEXT_METODO", "metodo"),  str),
                 (QApplication.translate("pychemqt", "Input Pressure"), "Pin", unidades.Pressure),
                 (QApplication.translate("pychemqt", "Output Pressure"), "Pout", unidades.Pressure),
-                (QApplication.translate("pychemqt", "ΔP Total", None, QApplication.UnicodeUTF8), "DeltaP", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP friction", None, QApplication.UnicodeUTF8), "DeltaP_f", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP fittings", None, QApplication.UnicodeUTF8), "DeltaP_ac", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP elevation", None, QApplication.UnicodeUTF8), "DeltaP_h", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP acceleration", None, QApplication.UnicodeUTF8), "DeltaP_v", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP Total", None), "DeltaP", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP friction", None), "DeltaP_f", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP fittings", None), "DeltaP_ac", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP elevation", None), "DeltaP_h", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP acceleration", None), "DeltaP_v", unidades.DeltaP),
                 (QApplication.translate("pychemqt", "Thermal Condition"), ("TEXT_THERMAL", "thermal"),  str),
                 (QApplication.translate("pychemqt", "Fluid Speed"), "V", unidades.Speed),
                 (QApplication.translate("pychemqt", "Reynolds number"), "Re", unidades.Dimensionless),

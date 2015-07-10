@@ -6,7 +6,7 @@
 ###############################################################################
 
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 from pygraph.classes.graph import graph
 from pygraph.algorithms.cycles import find_cycle
@@ -59,7 +59,7 @@ class Project(object):
         grafo = graph()
         for item in self.items:
             grafo.add_node(item, attrs = [("splines",  "")])
-        for key, stream in self.streams.iteritems():
+        for key, stream in self.streams.items():
             grafo.add_edge((stream[0], stream[1]), attrs = [("splines",  "")])
         return grafo
 
@@ -105,7 +105,7 @@ class Project(object):
             obj=self.items[up]
 
         stream=(up, down, ind_up, ind_down, obj)
-        if id not in self.streams.keys():
+        if id not in list(self.streams.keys()):
             self.streams[id]=stream
             self.graph.add_edge((up, down))
 
@@ -134,7 +134,7 @@ class Project(object):
 
     def getDownToEquip(self, str):
         lista=[]
-        for key, value in self.streams.iteritems():
+        for key, value in self.streams.items():
             if value[0]==str:
                 lista.append((key, value))
         return lista
@@ -185,7 +185,7 @@ class Project(object):
 
         # write equipments
         stream.writeInt32(len(self.items))
-        for key, item in self.items.iteritems():
+        for key, item in self.items.items():
             stream.writeString(key)
             if key[0] == "e":
                 stream.writeInt32(equipments.index(item.__class__))
@@ -193,7 +193,7 @@ class Project(object):
 
         # write streams
         stream.writeInt32(len(self.streams))
-        for id, item in self.streams.iteritems():
+        for id, item in self.streams.items():
             stream.writeInt32(id)
             stream.writeString(item[0])
             stream.writeString(item[1])
@@ -283,7 +283,7 @@ class Project(object):
 
 if __name__ == '__main__':
 
-    from corriente import Corriente, Mezcla
+    from .corriente import Corriente, Mezcla
 
 #    project=Project()
 #    project.addItem("i1", Corriente())

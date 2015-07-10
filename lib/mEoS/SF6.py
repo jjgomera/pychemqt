@@ -357,12 +357,3 @@ class SF6(MEoS):
         "ao": [23.68063442, 0.513062232, -24.4706238, -4.6715244, -1.7536843,
                -6.65585369],
         "exp": [1.044, 0.5, 1.0, 2.0, 8.0, 17.]}
-
-
-if __name__ == "__main__":
-    for eq in (0, 1, 2, 3):
-        st=SF6(T=300, x=0.5,  eq=eq)
-        print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-            st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-            st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-            st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)

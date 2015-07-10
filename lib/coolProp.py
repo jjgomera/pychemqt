@@ -7,7 +7,7 @@
 # optional method to meos tools calculations and to unicomponent streams
 ###############################################################################
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
 
 try:
@@ -18,7 +18,7 @@ except:
     pass
 
 from lib import unidades
-from config import Fluid
+from .config import Fluid
 
 
 class CoolProp(object):
@@ -69,21 +69,21 @@ class CoolProp(object):
 
         self._thermo = ""
         if self.kwargs["T"] and self.kwargs["P"]:
-            self._thermo = u"PT"
+            self._thermo = "PT"
         elif self.kwargs["T"] and self.kwargs["x"] is not None:
-            self._thermo = u"TQ"
+            self._thermo = "TQ"
         elif self.kwargs["P"] and self.kwargs["x"] is not None:
-            self._thermo = u"PQ"
+            self._thermo = "PQ"
         elif self.kwargs["T"] and self.kwargs["rho"]:
-            self._thermo = u"TD"
+            self._thermo = "TD"
         elif self.kwargs["P"] and self.kwargs["rho"]:
-            self._thermo = u"PD"
+            self._thermo = "PD"
         elif self.kwargs["P"] and self.kwargs["H"]:
-            self._thermo = u"PH"
+            self._thermo = "PH"
         elif self.kwargs["P"] and self.kwargs["S"]:
-            self._thermo = u"PS"
+            self._thermo = "PS"
         elif self.kwargs["H"] and self.kwargs["S"]:
-            self._thermo = u"HS"
+            self._thermo = "HS"
         return self._definition and self._thermo
 
     def args(self):
@@ -347,5 +347,5 @@ if __name__ == '__main__':
 #    fluido=IAPWS97_PT(101325, 300)
 #    print fluido.cp
     fluido = CoolProp(fluido=0, T=300, P=101325)
-    print fluido.M
+    print(fluido.M)
 

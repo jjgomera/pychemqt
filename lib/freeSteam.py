@@ -14,7 +14,7 @@
 
 from math import exp
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
 try:
     import freesteam
@@ -22,7 +22,7 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from config import Fluid
+from .config import Fluid
 
 
 class Freesteam(object):
@@ -218,7 +218,7 @@ if __name__ == '__main__':
 #    fluido=Freesteam(T=373.15, x=1)
 #    print fluido.h.kJkg, fluido.P
     vapor = freesteam.steam_Tx(370, 1)
-    for key, value in vapor.__dict__.iteritems():
-        print key, value
-    print dir(vapor)
-    print ord(vapor.region)
+    for key, value in vapor.__dict__.items():
+        print(key, value)
+    print(dir(vapor))
+    print(ord(vapor.region))

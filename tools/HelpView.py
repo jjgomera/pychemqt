@@ -6,44 +6,45 @@
 ###############################################################################
 
 import os
-from PyQt4 import QtCore, QtGui, QtWebKit
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebKitWidgets
 
 
-class HelpView(QtGui.QDialog):
+
+class HelpView(QtWidgets.QDialog):
     """HTML viewer to show help files"""
     def __init__(self, titulo, archivo, parent=None):
         super(HelpView, self).__init__(parent)
         self.setWindowState(QtCore.Qt.WindowMaximized)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Help") +
+        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Help") +
                             " - " + titulo)
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
 
-        backAction = QtGui.QAction(QtGui.QIcon(
+        backAction = QtWidgets.QAction(QtGui.QIcon(
             os.environ["pychemqt"]+"/images/button/back.png"), "&Back", self)
         backAction.setShortcut(QtGui.QKeySequence.Back)
-        homeAction = QtGui.QAction(QtGui.QIcon(
+        homeAction = QtWidgets.QAction(QtGui.QIcon(
             os.environ["pychemqt"]+"/images/button/home.png"), "&Home", self)
         homeAction.setShortcut("Home")
-        self.pageLabel = QtGui.QLabel()
+        self.pageLabel = QtWidgets.QLabel()
 
-        toolBar = QtGui.QToolBar()
+        toolBar = QtWidgets.QToolBar()
         toolBar.addAction(backAction)
         toolBar.addAction(homeAction)
         toolBar.addWidget(self.pageLabel)
         layout.addWidget(toolBar)
 
-        self.Viewer = QtWebKit.QWebView()
+        self.Viewer = QtWebKitWidgets.QWebView()
         self.Viewer.setUrl(archivo)
         layout.addWidget(self.Viewer)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialog = HelpView("Ciclón", QtCore.QUrl("help/index.html"))
     dialog.show()
     sys.exit(app.exec_())

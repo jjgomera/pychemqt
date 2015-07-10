@@ -10,7 +10,7 @@
 
 from time import sleep
 
-from PyQt4.QtCore import QThread, QMutex
+from PyQt5.QtCore import QThread, QMutex
 
 
 class WaitforClick(QThread):

@@ -11,7 +11,7 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy import exp, sqrt, ceil, roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
@@ -126,16 +126,16 @@ class Ciclon(Separador_SolidGas):
     calculateCostos = ("C_adq", "C_inst", "num_ciclonesCoste", "Q")
     indiceCostos = 2
 
-    TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate ΔP and efficiency", None, QApplication.UnicodeUTF8),
+    TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate ΔP and efficiency", None),
                  QApplication.translate("pychemqt", "Design: Calculate cyclone dimensions")]
     TEXT_MODEL = ["Rossin, Rammler & Intelmann", "Leith & Licht"]
     TEXT_MODEL_DELTAP = [QApplication.translate("pychemqt", "Standart"),
                          "Casal & Martinez-Benet", "Leith & Licht", "Sheferd, Lapple & Ter Linden"]
-    TEXT_MODEL_CICLON = ["Stairmand ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
-                         "Swift ("+QApplication.translate("pychemqt", "High η", None, QApplication.UnicodeUTF8)+")",
-                         "Lapple ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
-                         "Swift ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
-                         "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η", None, QApplication.UnicodeUTF8)+")",
+    TEXT_MODEL_CICLON = ["Stairmand ("+QApplication.translate("pychemqt", "High η", None)+")",
+                         "Swift ("+QApplication.translate("pychemqt", "High η", None)+")",
+                         "Lapple ("+QApplication.translate("pychemqt", "Low η", None)+")",
+                         "Swift ("+QApplication.translate("pychemqt", "Low η", None)+")",
+                         "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η", None)+")",
                          "Lorenz I", "Lorenz II", "Lorenz III",
                          QApplication.translate("pychemqt", "Custom")]
     TEXT_COST = [QApplication.translate("pychemqt", "Heavy duty"),

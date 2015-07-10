@@ -3,7 +3,7 @@
 
 from lib.meos import MEoS
 from lib import unidades
-from R134a import R134a
+from .R134a import R134a
 
 
 class R236ea(MEoS):

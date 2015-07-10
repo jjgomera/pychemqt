@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 from matplotlib import rcParams
 rcParams['backend'] = 'QT4Agg'  #Fija el backend de las ventanas de matplotlib a qt4
 rcParams['font.size'] = '9'
@@ -11,8 +12,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.optimize import fsolve
 from scipy import arange, linspace
 
-from compuestos import Componente
-from corriente import Corriente, Mezcla
+from .compuestos import Componente
+from .corriente import Corriente, Mezcla
 
 class mpl(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=15, height=5, dpi=100):
@@ -20,7 +21,7 @@ class mpl(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         self.axes2D = self.fig.add_subplot(111)
-        FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
     
@@ -57,7 +58,7 @@ class matplotlib(FigureCanvasQTAgg):
         self.dim = dim
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
-        FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
         
         if dim==2:
@@ -68,7 +69,7 @@ class matplotlib(FigureCanvasQTAgg):
             self.ax = Axes3D(self.fig)
             self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
 
-        FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
     def plot_3D(self, labels, xdata, ydata, zdata, config=None):
@@ -97,17 +98,17 @@ class matplotlib(FigureCanvasQTAgg):
 #        layout.addWidget(self.toolbar)
 #        
 
-class Plot(QtGui.QDialog):
+class Plot(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(Plot, self).__init__(parent)
-        gridLayout = QtGui.QGridLayout(self)
+        gridLayout = QtWidgets.QGridLayout(self)
 
         self.plot=matplotlib()
         gridLayout.addWidget(self.plot,1,1,1,2)
         self.toolbar=NavigationToolbar2QT(self.plot, self.plot)
         gridLayout.addWidget(self.toolbar,2,1)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
-        self.buttonBox.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        self.buttonBox.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         self.buttonBox.rejected.connect(self.reject)
         gridLayout.addWidget(self.buttonBox,2,2)
         
@@ -126,7 +127,7 @@ if __name__ == '__main__':
     t=[0.3, 0.45, 1., 1.5, 3.5, 7.5, 11.0, 24.0]
     k=[0.5, 0.6, 0.75, 0.8, 0.9, 0.95, 0.97, 0.99]
     
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     grafico=Plot()
     grafico.data(t, k, 'ro')
     grafico.show()

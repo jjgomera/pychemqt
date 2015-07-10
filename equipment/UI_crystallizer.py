@@ -5,7 +5,8 @@
 ###                                           Diálogo de definición de cristalizadores, UI_crystallizer                                      ###
 #######################################################################
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 
 from equipment.liquid_solid import Crystallizer
 from UI import UI_corriente
@@ -25,60 +26,60 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada,QtGui.QApplication.translate("equipment", "Entrada", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.insertTab(0, self.Entrada,QtCore.QCoreApplication.translate("equipment", "Entrada", None))
 
         #Pestaña calculo
-        gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
+        gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
-        gridLayout_Costos = QtGui.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1)
-        self.tipo=QtGui.QComboBox()
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Recirculación externa forzada", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Internos de tubo forzado", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Discontinuos a vacío", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Tipo:", None)), 1, 1)
+        self.tipo=QtWidgets.QComboBox()
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Recirculación externa forzada", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Internos de tubo forzado", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Discontinuos a vacío", None))
         self.tipo.currentIndexChanged.connect(self.mostrarSubclasificacion)
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 2, 1, 3)
-        gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Material:", None, QtGui.QApplication.UnicodeUTF8)), 2, 1)
-        self.materialvacio=QtGui.QComboBox()
-        self.materialvacio.addItem(QtGui.QApplication.translate("equipment", "Acero dulce", None, QtGui.QApplication.UnicodeUTF8))
-        self.materialvacio.addItem(QtGui.QApplication.translate("equipment", "Acero recubierto de caucho", None, QtGui.QApplication.UnicodeUTF8))
-        self.materialvacio.addItem(QtGui.QApplication.translate("equipment", "Acero inoxidable 304", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Material:", None)), 2, 1)
+        self.materialvacio=QtWidgets.QComboBox()
+        self.materialvacio.addItem(QtCore.QCoreApplication.translate("equipment", "Acero dulce", None))
+        self.materialvacio.addItem(QtCore.QCoreApplication.translate("equipment", "Acero recubierto de caucho", None))
+        self.materialvacio.addItem(QtCore.QCoreApplication.translate("equipment", "Acero inoxidable 304", None))
         self.materialvacio.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.materialvacio, 2, 2, 1, 3)
-        self.materialotros=QtGui.QComboBox()
-        self.materialotros.addItem(QtGui.QApplication.translate("equipment", "Acero dulce", None, QtGui.QApplication.UnicodeUTF8))
-        self.materialotros.addItem(QtGui.QApplication.translate("equipment", "Acero inoxidable 304", None, QtGui.QApplication.UnicodeUTF8))
+        self.materialotros=QtWidgets.QComboBox()
+        self.materialotros.addItem(QtCore.QCoreApplication.translate("equipment", "Acero dulce", None))
+        self.materialotros.addItem(QtCore.QCoreApplication.translate("equipment", "Acero inoxidable 304", None))
         self.materialotros.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.materialotros, 2, 2, 1, 3)
-        gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Volumen:", None, QtGui.QApplication.UnicodeUTF8)), 4, 4)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Volumen:", None)), 4, 4)
         self.Volumen=Entrada_con_unidades(unidades.Volume, "VolLiq", width=80)
         gridLayout_Costos.addWidget(self.Volumen,4,5,1,1)
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),3,0,1,6)
-        self.label4=QtGui.QLabel()
-        self.label4.setText(QtGui.QApplication.translate("equipment", "Caudal calculado:", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),3,0,1,6)
+        self.label4=QtWidgets.QLabel()
+        self.label4.setText(QtCore.QCoreApplication.translate("equipment", "Caudal calculado:", None))
         gridLayout_Costos.addWidget(self.label4, 4, 1, 1, 1)
         self.caudalcalculado=Entrada_con_unidades(unidades.MassFlow, readOnly=True, retornar=False)
         gridLayout_Costos.addWidget(self.caudalcalculado,4,2,1,1)
-        gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Caudal de diseño:", None, QtGui.QApplication.UnicodeUTF8)), 5, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Caudal de diseño:", None)), 5, 1)
         self.caudaldiseno=Entrada_con_unidades(unidades.MassFlow)
         gridLayout_Costos.addWidget(self.caudaldiseno,5,2,1,1)
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),6,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),6,0,1,6)
 
         self.Costos=costIndex.CostData(1.9, 2)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,7,1,2,5)
 
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),11,0,1,6)
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),9,0,1,6)
-        self.groupBox_Costos = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Costos calculados", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),11,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),9,0,1,6)
+        self.groupBox_Costos = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,10,1,1,5)
-        gridLayout_5 = QtGui.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Adquisición:", None, QtGui.QApplication.UnicodeUTF8)),0,1,1,1)
+        gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Adquisición:", None)),0,1,1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,0,2,1,1)
-        gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Instalación:", None, QtGui.QApplication.UnicodeUTF8)),1,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Instalación:", None)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
 
@@ -130,7 +131,7 @@ class UI_equipment(parents.UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente, Mezcla, Solid
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))
     dialogo = UI_equipment(agua)
     dialogo.show()

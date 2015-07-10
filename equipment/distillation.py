@@ -7,7 +7,7 @@ import os
 
 from scipy import log, exp, pi, log10, linspace
 from scipy.optimize import fsolve
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 
 from lib import unidades
 from lib.corriente import Corriente

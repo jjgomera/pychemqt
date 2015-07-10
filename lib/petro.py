@@ -1,19 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import time
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy import exp, sqrt, log10, log
 from scipy.optimize import fsolve, leastsq
 from numpy.linalg import solve
 from numpy import array
 
-import unidades
-from physics import R_atml, R_Btu
-from compuestos import Componente, newComponente
-from config import conf_dir
+from . import unidades
+from .physics import R_atml, R_Btu
+from .compuestos import Componente, newComponente
+from .config import conf_dir
 
 
 def prop_Ahmed(propiedad, n_carbonos):
@@ -3264,4 +3264,4 @@ if __name__ == '__main__':
 #    print petroleo.API
     
     petroleo=Petroleo(API=22.5, M=339.7)
-    print petroleo.API, petroleo.M
+    print(petroleo.API, petroleo.M)

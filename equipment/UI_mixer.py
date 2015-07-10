@@ -7,7 +7,8 @@
 
 from functools import partial
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
+
 
 from lib.unidades import Pressure
 from equipment.parents import UI_equip
@@ -34,25 +35,25 @@ class UI_equipment(UI_equip):
             self.entrada.addTab(entrada, str(i+1))
 
         # Calculate tab
-        lyt_Calc = QtGui.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Output Pressure Method")), 1, 1)
-        self.criterio = QtGui.QComboBox()
+        self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
             self.criterio.addItem(txt)
         self.criterio.currentIndexChanged.connect(self.criterio_Changed)
         lyt_Calc.addWidget(self.criterio, 1, 2)
 
-        lyt_Calc.addItem(QtGui.QSpacerItem(
-            20, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed),
+        lyt_Calc.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             2, 1, 1, 3)
-        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Output Pressure")), 3, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 3, 2)
-        lyt_Calc.addItem(QtGui.QSpacerItem(
-            20, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding),
+        lyt_Calc.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
             4, 1, 1, 3)
 
         self.criterio_Changed(0)
@@ -79,7 +80,7 @@ class UI_equipment(UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     agua = Corriente(T=300, P=101325., caudalMasico=1, fraccionMasica=[1.])
     agua2 = Corriente(T=300, P=101325.*2, caudalMasico=2, fraccionMasica=[1.])
     mezclador = Mixer(entrada=[agua, agua2], criterio=0)

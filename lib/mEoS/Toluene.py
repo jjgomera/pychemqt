@@ -183,11 +183,3 @@ class Toluene(MEoS):
                "Tcref": 1183.5}
 
     _thermal = thermo0,
-
-
-if __name__ == "__main__":
-    st=Toluene(T=593, rho=3*92.13842)
-    print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-    st=Toluene(T=593, rho=3*92.13842, eq=2)
-    print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-

@@ -5,7 +5,8 @@
 ###                                                  Diálogo de definición de filtros, UI_filter                                                     ###
 #######################################################################
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 
 from equipment.liquid_solid import Filter
 from UI import UI_corriente
@@ -25,38 +26,38 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada, QtGui.QApplication.translate("equipment", "Entrada", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.insertTab(0, self.Entrada, QtCore.QCoreApplication.translate("equipment", "Entrada", None))
 
         #Pestaña calculo
-        gridLayout_Calculo = QtGui.QGridLayout(self.tabCalculo)
+        gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
-        gridLayout_Costos = QtGui.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Tipo:", None, QtGui.QApplication.UnicodeUTF8)), 1, 0, 1, 1)
-        self.tipo=QtGui.QComboBox()
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Rotary vacuum belt discharge", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Rotary vacuum drum scraper discharge", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Rotary vacuum disk", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Horizontal vacuum belt", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Pressure leaf", None, QtGui.QApplication.UnicodeUTF8))
-        self.tipo.addItem(QtGui.QApplication.translate("equipment", "Plate and frame", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Tipo:", None)), 1, 0, 1, 1)
+        self.tipo=QtWidgets.QComboBox()
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum belt discharge", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum drum scraper discharge", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum disk", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Horizontal vacuum belt", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Pressure leaf", None))
+        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Plate and frame", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 1, 1, 3)
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed),2,0,1,2)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,0,1,2)
 
         self.Costos=costIndex.CostData(1.3, 2)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,4,0,2,5)
 
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),6,0,1,6)
-        gridLayout_Costos.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding),10,0,1,6)
-        self.groupBox_Costos = QtGui.QGroupBox(QtGui.QApplication.translate("equipment", "Costos calculados", None, QtGui.QApplication.UnicodeUTF8))
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),6,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,6)
+        self.groupBox_Costos = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,0,1,4)
-        gridLayout_5 = QtGui.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Adquisición:", None, QtGui.QApplication.UnicodeUTF8)),1,1)
+        gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Adquisición:", None)),1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,1,2)
-        gridLayout_5.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Coste Instalación:", None, QtGui.QApplication.UnicodeUTF8)),2,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Instalación:", None)),2,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,2,2)
 
@@ -64,8 +65,8 @@ class UI_equipment(parents.UI_equip):
         #Pestaña salida
         self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaGas,QtGui.QApplication.translate("equipment", "Gas filtrado", None, QtGui.QApplication.UnicodeUTF8))
-        self.Salida.addTab(self.SalidaSolido,QtGui.QApplication.translate("equipment", "Sólidos recogidos", None, QtGui.QApplication.UnicodeUTF8))
+        self.Salida.addTab(self.SalidaGas,QtCore.QCoreApplication.translate("equipment", "Gas filtrado", None))
+        self.Salida.addTab(self.SalidaSolido,QtCore.QCoreApplication.translate("equipment", "Sólidos recogidos", None))
 
         self.tabWidget.setCurrentIndex(0)
 
@@ -98,7 +99,7 @@ class UI_equipment(parents.UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente, Mezcla, Solid
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     distribucion=[[17.5, 0.02],
                                 [22.4, 0.03],
                                 [26.2,  0.05],

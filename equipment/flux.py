@@ -5,12 +5,12 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy.optimize import fsolve
 
 from lib.corriente import Corriente
 from lib import unidades
-from parents import equipment
+from .parents import equipment
 
 
 class Divider(equipment):
@@ -179,7 +179,7 @@ class Mixer(equipment):
             return True
 
     def cleanOldValues(self, **kwargs):
-        if kwargs.has_key("entrada"):
+        if "entrada" in kwargs:
             if isinstance(kwargs["entrada"], list):
                 kwargs["id_entrada"]=None
             else:
@@ -339,19 +339,19 @@ class Valve(equipment):
                 return True
 
     def cleanOldValues(self, **kwargs):
-        if kwargs.has_key("Pout"):
+        if "Pout" in kwargs:
             self.kwargs["DeltaP"]=0
             self.kwargs["Dew"]=0
             self.kwargs["Bubble"]=0
-        elif kwargs.has_key("DeltaP"):
+        elif "DeltaP" in kwargs:
             self.kwargs["Pout"]=0
             self.kwargs["Dew"]=0
             self.kwargs["Bubble"]=0
-        elif kwargs.has_key("Dew"):
+        elif "Dew" in kwargs:
             self.kwargs["Pout"]=0
             self.kwargs["DeltaP"]=0
             self.kwargs["Bubble"]=0
-        elif kwargs.has_key("Bubble"):
+        elif "Bubble" in kwargs:
             self.kwargs["Pout"]=0
             self.kwargs["DeltaP"]=0
             self.kwargs["Dew"]=0
@@ -414,7 +414,7 @@ if __name__ == '__main__':
 #    agua2=Corriente(T=300, P=101325*2, caudalMasico=2, fraccionMasica=[1.])
     mezclador=Mixer(entrada=[agua, Corriente()], criterio=0)
 #    print mezclador.status, mezclador.msg
-    print mezclador.salida[0].kwargs
+    print(mezclador.salida[0].kwargs)
 #    print mezclador.salida[0].caudalmasico, 
 #    agua3=Corriente(T=300, P=101325, caudalMasico=4, fraccionMasica=[1., 0, 0, 0])
 #    mezclador(id_entrada=2, entrada=agua3)

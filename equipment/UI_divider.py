@@ -7,7 +7,8 @@
 
 from functools import partial
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 
 from lib.unidades import Pressure, MassFlow
 from equipment.parents import UI_equip
@@ -29,10 +30,10 @@ class UI_equipment(UI_equip):
         super(UI_equipment, self).__init__(Divider, entrada=False, parent=parent)
 
         # Calculate tab
-        lyt_Calc = QtGui.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Separation")), 1, 1, 1, 1)
-        self.criterio = QtGui.QComboBox()
+        self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_CRITERIO:
             self.criterio.addItem(txt)
         self.criterio.currentIndexChanged.connect(self.criterio_Changed)
@@ -42,7 +43,7 @@ class UI_equipment(UI_equip):
         self.fracciones.setItemDelegateForColumn(0, CellEditor(self))
         lyt_Calc.addWidget(self.fracciones, 2, 1, 1, 2)
 
-        lyt_Calc.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
             "pychemqt", "Pressure lost")), 3, 1, 1, 1)
         self.deltaP = Entrada_con_unidades(Pressure, value=0)
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
@@ -57,7 +58,7 @@ class UI_equipment(UI_equip):
 
         self.fracciones.setRowCount(salidas)
         for i in range(salidas):
-            self.fracciones.setItem(0, i, QtGui.QTableWidgetItem(""))
+            self.fracciones.setItem(0, i, QtWidgets.QTableWidgetItem(""))
             self.fracciones.item(0, i).setTextAlignment(QtCore.Qt.AlignRight |
                                                         QtCore.Qt.AlignVCenter)
             self.fracciones.setRowHeight(i, 20)
@@ -71,14 +72,14 @@ class UI_equipment(UI_equip):
 
     def criterio_Changed(self, int):
         if int:
-            item = QtGui.QTableWidgetItem(QtGui.QApplication.translate(
+            item = QtWidgets.QTableWidgetItem(QtCore.QCoreApplication.translate(
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
                 QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled |
                 QtCore.Qt.ItemIsSelectable)
         else:
-            item = QtGui.QTableWidgetItem(QtGui.QApplication.translate(
+            item = QtWidgets.QTableWidgetItem(QtCore.QCoreApplication.translate(
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
@@ -110,7 +111,7 @@ class UI_equipment(UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     agua = Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[0.1])
     divisor = Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
     dialogo = UI_equipment(divisor)

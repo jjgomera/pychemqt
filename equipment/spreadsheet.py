@@ -14,7 +14,7 @@ try:
 except:
     pass
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 
 from parents import equipment
 

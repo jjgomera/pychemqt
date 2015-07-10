@@ -15,7 +15,7 @@
 import os
 from math import factorial
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy import sqrt, exp, log, pi, arccos, sin, cos, log10, tanh
 from scipy.optimize import fsolve
 from scipy.constants import g
@@ -2048,7 +2048,7 @@ class Hairpin(Heat_ExchangerDesign):
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube In Quality"), self.kwargs["entradaTubo"].x.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Temperature"), self.ToutTube.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Quality"), self.XoutTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Tube", None, QApplication.UnicodeUTF8), self.deltaPTube.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Tube", None), self.deltaPTube.str)+os.linesep
 
         txt+=os.linesep+"%-25s\t %s" %(QApplication.translate("pychemqt", "Annulli Mechanism"), self.phaseAnnulli)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Fluid Speed"), self.VAnnulli.str)+os.linesep
@@ -2057,7 +2057,7 @@ class Hairpin(Heat_ExchangerDesign):
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli In Quality"), self.kwargs["entradaExterior"].x.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Temperature"), self.ToutAnnulli.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Quality"), self.XoutAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Annulli", None, QApplication.UnicodeUTF8), self.deltaPAnnulli.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Annulli", None), self.deltaPAnnulli.str)+os.linesep
 
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "U"), self.U.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Factor"), self.CF.str)+os.linesep
@@ -2099,7 +2099,7 @@ class Hairpin(Heat_ExchangerDesign):
                 (QApplication.translate("pychemqt", "Tube In Quality"), "XinTube", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Tube Out Temperature"), "ToutTube", unidades.Temperature),
                 (QApplication.translate("pychemqt", "Tube Out Quality"), "XoutTube", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", u"ΔP Tube", None, QApplication.UnicodeUTF8), "deltaPTube", unidades.DeltaP),
+                (QApplication.translate("pychemqt", u"ΔP Tube", None), "deltaPTube", unidades.DeltaP),
                 (QApplication.translate("pychemqt", "Annulli Mechanism"), "phaseAnnulli", str),
                 (QApplication.translate("pychemqt", "Annulli Fluid Speed"), "VAnnulli", unidades.Speed),
                 (QApplication.translate("pychemqt", "Annulli Reynolds"), "ReAnnulli", unidades.Dimensionless),
@@ -2107,7 +2107,7 @@ class Hairpin(Heat_ExchangerDesign):
                 (QApplication.translate("pychemqt", "Annulli In Quality"), "XinAnnulli", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Annulli Out Temperature"), "ToutAnnulli", unidades.Temperature),
                 (QApplication.translate("pychemqt", "Annulli Out Quality"), "XoutAnnulli", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", u"ΔP Annulli", None, QApplication.UnicodeUTF8), "deltaPAnnulli", unidades.DeltaP),
+                (QApplication.translate("pychemqt", u"ΔP Annulli", None), "deltaPAnnulli", unidades.DeltaP),
                 (QApplication.translate("pychemqt", "U"), "U", unidades.HeatTransfCoef),
                 (QApplication.translate("pychemqt", "Clean Factor"), "CF", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Over Surface"), "OS", unidades.Dimensionless),

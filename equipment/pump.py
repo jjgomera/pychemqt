@@ -7,7 +7,7 @@
 
 import os
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import  QApplication
 from scipy import log, exp, sqrt, optimize, polyval
 from scipy.constants import g
 #import xlwt
@@ -15,7 +15,7 @@ from scipy.constants import g
 from lib.unidades import Pressure, Length, Power, Temperature, VolFlow, Currency, Dimensionless
 from lib.corriente import Corriente, Mezcla
 #from lib.datasheet import pdf
-from parents import equipment
+from .parents import equipment
 
 
 class Pump(equipment):
@@ -448,7 +448,7 @@ class Pump(equipment):
         font0 = xlwt.Font()
         font0.bold = True
         font0.height = 300
-        print font0.height
+        print(font0.height)
         
 
         style0 = xlwt.XFStyle()

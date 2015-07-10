@@ -10,7 +10,7 @@
 
 #TODO: Don't work when it's used in qt loop, as library work great
 
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 try:
     import refprop
@@ -18,7 +18,7 @@ except:
     pass
 
 from lib import unidades
-from config import Fluid
+from .config import Fluid
 
 
 class RefProp(object):
@@ -38,7 +38,7 @@ class RefProp(object):
         -U: Internal energy, J/kg
         -x: Quality, -
     """
-    kwargs = {"ref": u"def",
+    kwargs = {"ref": "def",
               "fluido": None,
               "fraccionMolar": None,
 
@@ -76,37 +76,37 @@ class RefProp(object):
 
         self._thermo = ""
         if self.kwargs["T"] and self.kwargs["P"]:
-            self._thermo = u"TP"
+            self._thermo = "TP"
         elif self.kwargs["T"] and self.kwargs["x"] is not None:
-            self._thermo = u"TQ"
+            self._thermo = "TQ"
         elif self.kwargs["P"] and self.kwargs["x"] is not None:
-            self._thermo = u"PQ"
+            self._thermo = "PQ"
         elif self.kwargs["T"] and self.kwargs["rho"]:
-            self._thermo = u"TD"
+            self._thermo = "TD"
         elif self.kwargs["P"] and self.kwargs["rho"]:
-            self._thermo = u"PD"
+            self._thermo = "PD"
         elif self.kwargs["P"] and self.kwargs["H"]:
-            self._thermo = u"PH"
+            self._thermo = "PH"
         elif self.kwargs["P"] and self.kwargs["S"]:
-            self._thermo = u"PS"
+            self._thermo = "PS"
         elif self.kwargs["H"] and self.kwargs["S"]:
-            self._thermo = u"HS"
+            self._thermo = "HS"
         elif self.kwargs["T"] and self.kwargs["H"]:
-            self._thermo = u"TH"
+            self._thermo = "TH"
         elif self.kwargs["T"] and self.kwargs["S"]:
-            self._thermo = u"TS"
+            self._thermo = "TS"
         elif self.kwargs["T"] and self.kwargs["U"]:
-            self._thermo = u"TE"
+            self._thermo = "TE"
         elif self.kwargs["P"] and self.kwargs["U"]:
-            self._thermo = u"PE"
+            self._thermo = "PE"
         elif self.kwargs["S"] and self.kwargs["U"]:
-            self._thermo = u"ES"
+            self._thermo = "ES"
         elif self.kwargs["H"] and self.kwargs["rho"]:
-            self._thermo = u"DH"
+            self._thermo = "DH"
         elif self.kwargs["S"] and self.kwargs["rho"]:
-            self._thermo = u"DS"
+            self._thermo = "DS"
         elif self.kwargs["U"] and self.kwargs["rho"]:
-            self._thermo = u"DE"
+            self._thermo = "DE"
 
         return self._definition and self._thermo
 
@@ -174,7 +174,7 @@ class RefProp(object):
                 liquido_transport = refprop.trnprp(flash["t"], flash["Dliq"],
                                                    flash["xliq"])
             except refprop.RefpropError as e:
-                print e
+                print(e)
                 liquido_transport = None
             liquido_dielec = refprop.dielec(flash["t"], flash["Dliq"],
                                             flash["xliq"])
@@ -191,7 +191,7 @@ class RefProp(object):
                 vapor_transport = refprop.trnprp(flash["t"], flash["Dvap"],
                                                  flash["xvap"])
             except refprop.RefpropError as e:
-                print e
+                print(e)
                 vapor_transport = None
             vapor_dielec = refprop.dielec(flash["t"], flash["Dvap"],
                                           flash["xvap"])
@@ -353,111 +353,111 @@ class RefProp(object):
         """Return fluid phase
         Override refprop original function with translation support"""
         # check if fld above critical pressure
-        if fld[u'p'] > self.Pc.kPa:
+        if fld['p'] > self.Pc.kPa:
             # check if fld above critical pressure
-            if fld[u't'] > self.Tc:
+            if fld['t'] > self.Tc:
                 return QApplication.translate("pychemqt", "Supercritical fluid"), 1.
             else:
                 return QApplication.translate("pychemqt", "Compressible liquid"), 1.
         # check if fld above critical pressure
-        elif fld[u't'] > self.Tc:
+        elif fld['t'] > self.Tc:
             return QApplication.translate("pychemqt", "Gas"), 1.
         # check if ['q'] in fld
-        if u'q' not in fld.keys():
-            if u'h' in fld.keys():
-                fld[u'q'] = refprop.flsh(u'ph', fld[u'p'], fld[u'h'], fld[u'x'])[u'q']
-            elif u's' in fld.keys():
-                fld[u'q'] = refprop.flsh(u'ps', fld[u'p'], fld[u's'], fld[u'x'])[u'q']
+        if 'q' not in list(fld.keys()):
+            if 'h' in list(fld.keys()):
+                fld['q'] = refprop.flsh('ph', fld['p'], fld['h'], fld['x'])['q']
+            elif 's' in list(fld.keys()):
+                fld['q'] = refprop.flsh('ps', fld['p'], fld['s'], fld['x'])['q']
         # check q
-        if fld[u'q'] > 1:
+        if fld['q'] > 1:
             return QApplication.translate("pychemqt", "Vapor"), 1.
-        elif fld[u'q'] == 1:
+        elif fld['q'] == 1:
             return QApplication.translate("pychemqt", "Saturated vapor"), 1.
-        elif 0 < fld[u'q'] < 1:
-            return QApplication.translate("pychemqt", "Two phases"), fld[u'q']
-        elif fld[u'q'] == 0:
+        elif 0 < fld['q'] < 1:
+            return QApplication.translate("pychemqt", "Two phases"), fld['q']
+        elif fld['q'] == 0:
             return QApplication.translate("pychemqt", "Saturated liquid"), 0.
-        elif fld[u'q'] < 0:
+        elif fld['q'] < 0:
             return QApplication.translate("pychemqt", "Liquid"), 0.
 
 
-__all__ = {212: u"helium",
-           107: u"neon",
-           98: u"argon",
-           1: u"hydrogen",
-           46: u"nitrogen",
-           47: u"oxygen",
-           208: u"fluorine",
-           62: u"water",
-           49: u"co2",
-           48: u"co",
-           110: u"n2o",
-           51: u"so2",
-           219: u"cos",
-           63: u"ammonia",
-           50: u"h2s",
-           2: u"methane",
-           3: u"ethane",
-           4: u"propane",
-           6: u"butane",
-           5: u"isobutan",
-           8: u"pentane",
-           9: u"neopentn",
-           7: u"ipentane",
-           10: u"hexane",
-           52: u"ihexane",
-           11: u"heptane",
-           12: u"octane",
-           13: u"nonane",
-           14: u"decane",
-           16: u"c12",
-           258: u"cyclopro",
-           38: u"cyclohex",
-           40: u"benzene",
-           41: u"toluene",
-           22: u"ethylene",
-           23: u"propylen",
-           24: u"1butene",
-           27: u"ibutene",
-           25: u"c2butene",
-           26: u"t2butene",
-           66: u"propyne",
-           117: u"methanol",
-           134: u"ethanol",
-           140: u"acetone",
-           133: u"dme",
-           951: u"nf3",
-           971: u"krypton",
-           994: u"xenon",
-           953: u"sf6",
-           645: u"cf3i",
-           217: u"r11",
-           216: u"r12",
-           215: u"r13",
-           218: u"r14",
-           642: u"r21",
-           220: u"r22",
-           643: u"r23",
-           645: u"r32",
-           225: u"r41",
-           232: u"r113",
-           231: u"r114",
-           229: u"r115",
-           236: u"r116",
-           1631: u"r123",
-           1629: u"r124",
-           1231: u"r125",
-           1235: u"r134a",
-           1633: u"r141b",
-           241: u"r142b",
-           243: u"r143a",
-           245: u"r152a",
-           671: u"r218",
-           1872: u"r227ea",
-           1873: u"r236fa",
-           1817: u"r245fa",
-           692: u"rc318",
-           475: u"air"}
+__all__ = {212: "helium",
+           107: "neon",
+           98: "argon",
+           1: "hydrogen",
+           46: "nitrogen",
+           47: "oxygen",
+           208: "fluorine",
+           62: "water",
+           49: "co2",
+           48: "co",
+           110: "n2o",
+           51: "so2",
+           219: "cos",
+           63: "ammonia",
+           50: "h2s",
+           2: "methane",
+           3: "ethane",
+           4: "propane",
+           6: "butane",
+           5: "isobutan",
+           8: "pentane",
+           9: "neopentn",
+           7: "ipentane",
+           10: "hexane",
+           52: "ihexane",
+           11: "heptane",
+           12: "octane",
+           13: "nonane",
+           14: "decane",
+           16: "c12",
+           258: "cyclopro",
+           38: "cyclohex",
+           40: "benzene",
+           41: "toluene",
+           22: "ethylene",
+           23: "propylen",
+           24: "1butene",
+           27: "ibutene",
+           25: "c2butene",
+           26: "t2butene",
+           66: "propyne",
+           117: "methanol",
+           134: "ethanol",
+           140: "acetone",
+           133: "dme",
+           951: "nf3",
+           971: "krypton",
+           994: "xenon",
+           953: "sf6",
+           645: "cf3i",
+           217: "r11",
+           216: "r12",
+           215: "r13",
+           218: "r14",
+           642: "r21",
+           220: "r22",
+           643: "r23",
+           645: "r32",
+           225: "r41",
+           232: "r113",
+           231: "r114",
+           229: "r115",
+           236: "r116",
+           1631: "r123",
+           1629: "r124",
+           1231: "r125",
+           1235: "r134a",
+           1633: "r141b",
+           241: "r142b",
+           243: "r143a",
+           245: "r152a",
+           671: "r218",
+           1872: "r227ea",
+           1873: "r236fa",
+           1817: "r245fa",
+           692: "rc318",
+           475: "air"}
 
 noId = ["d2", "parahyd", "d2o", "r365mfc", "r404a", "r410a", "r407c", "r507a"]
 
@@ -470,7 +470,7 @@ if __name__ == '__main__':
 #    fluido=RefProp(fluido=[u"water"], T=303.15, P=101325.)
 #    print fluido.Liquido.rho, fluido.Liquido.h, fluido.Liquido.s, fluido.Liquido.cv, fluido.Liquido.cp, fluido.Liquido.Z, fluido.Liquido.G
 
-    prop = refprop.setup(u'def', u'air')
+    prop = refprop.setup('def', 'air')
 #    print prop
 #    prop = refprop.wmol(prop[u'x'])
 #    print prop
