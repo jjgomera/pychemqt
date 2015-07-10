@@ -10,9 +10,9 @@ from scipy import roots, r_
 from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
-import unidades
-import config
-from physics import R_atml, factor_acentrico_octano
+from . import unidades
+from . import config
+from .physics import R_atml, factor_acentrico_octano
 
 #from EoS import *
 
@@ -115,7 +115,7 @@ class EoS(object):
                 xo=x
                 solucion=fsolve(Rachford, x, full_output=True)
                 if solucion[2]!=1:
-                    print solucion
+                    print(solucion)
                     break
                 else:
                     x=solucion[0][0]
@@ -185,7 +185,7 @@ class EoS(object):
 
 def PT_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Patel-Teja"""
-    if compuesto.Tc<>0 and compuesto.Pc<>0 and compuesto.vc<>0:
+    if compuesto.Tc!=0 and compuesto.Pc!=0 and compuesto.vc!=0:
         Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
     else:
         Zc=0.329032+0.076799*compuesto.f_acent-0.0211947*compuesto.f_acent**2
@@ -207,7 +207,7 @@ def PT_lib(compuesto, T):
 
 def PTC_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Patel-Teja-Crause"""
-    if compuesto.Tc<>0 and compuesto.Pc<>0 and compuesto.vc<>0:
+    if compuesto.Tc!=0 and compuesto.Pc!=0 and compuesto.vc!=0:
         Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
     else:
         Zc=0.253168556+0.09253329*exp(-0.0048018*compuesto.peso_molecular)
@@ -229,7 +229,7 @@ def PTC_lib(compuesto, T):
 
 def PTV_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Patel-Teja-Valderrama (1990)"""
-    if compuesto.Tc<>0 and compuesto.Pc<>0 and compuesto.vc<>0:
+    if compuesto.Tc!=0 and compuesto.Pc!=0 and compuesto.vc!=0:
         Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
     else:
         Zc=0.329032-0.076799*compuesto.f_acent+0.0211947*compuesto.f_acent**2
@@ -246,7 +246,7 @@ def PTV_lib(compuesto, T):
 
 def PTVC_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Patel-Teja-Valderrama-Cisternas (1986)"""
-    if compuesto.Tc<>0 and compuesto.Pc<>0 and compuesto.vc<>0:
+    if compuesto.Tc!=0 and compuesto.Pc!=0 and compuesto.vc!=0:
         Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
     else:
         Zc=0.329032-0.076799*compuesto.f_acent+0.0211947*compuesto.f_acent**2
@@ -272,7 +272,7 @@ def HPW_lib(compuesto, T, P, alfa):
 
 def TB_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Trebble-Bishnoi"""
-    if compuesto.Tc<>0.0 and compuesto.Pc.atm<>0.0 and compuesto.vc<>0.0:
+    if compuesto.Tc!=0.0 and compuesto.Pc.atm!=0.0 and compuesto.vc!=0.0:
         Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
     else:
         if compuesto.f_acent<0.225:
@@ -644,7 +644,7 @@ def Z_TB(self):
 
 
 if __name__ == "__main__":
-    from corriente import Mezcla
+    from .corriente import Mezcla
 
 #    eq=SRK_API(340, 1, Mezcla([10, 38, 22, 61], [0.3, 0.5, 0.05, 0.15]))
 #    print eq.x
@@ -668,4 +668,4 @@ if __name__ == "__main__":
 #        eq=SRK(t, 1., mezcla )
 #        print t, eq.x
     eq=SRK(340, 1., mezcla )
-    print eq.x
+    print(eq.x)

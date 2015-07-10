@@ -8,10 +8,10 @@
 #   o   Ecuación Peng-Robinson con translación de Peneloux
 #############################################################################
 
-import cPickle
+import pickle
 import os
 from itertools import product
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy import exp, log, log10, sin, sinh, cosh, tanh, arctan, __version__
 if int(__version__.split(".")[1]) < 10:
     from scipy.constants import Bolzmann as Boltzmann
@@ -21,8 +21,8 @@ from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
 from lib import unidades, compuestos
-from physics import R_atml
-from config import Fluid
+from .physics import R_atml
+from .config import Fluid
 
 data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
         (QApplication.translate("pychemqt", "Reduced temperature"), "Tr", unidades.Dimensionless),
@@ -93,7 +93,7 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temper
 propiedades = [p[0] for p in data]
 keys = [p[1] for p in data]
 units = [p[2] for p in data]
-properties = dict(zip(keys, propiedades))
+properties = dict(list(zip(keys, propiedades)))
 inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
 
 class _fase(object):
@@ -394,7 +394,7 @@ class MEoS(_fase):
                 if not converge:
                     self.status = 5
                     self.msg = QApplication.translate("pychemqt", "Solution don´t converge", None, QApplication.UnicodeUTF8)
-                    print "dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)            
+                    print(("dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)))
             
     def cleanOldValues(self, **kwargs):
         """Convert alternative rho input to correct rho value"""
@@ -971,7 +971,7 @@ class MEoS(_fase):
                                 pass
                             else:
                                 f1, f2 = function2phase([rho, T])
-                                print rho, T, f1, f2
+                                print(rho, T, f1, f2)
                                 if (rho != r or T != t) and 0 < rho < self._constants["rhomax"]*self.M and abs(f1) < 1e-3 and abs(f2) < 1e-3:
                                     break
                                     
@@ -2188,7 +2188,7 @@ class MEoS(_fase):
             T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E. "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties" Ind. Eng. Chem. Res. 1998, 27, 671-679,
         """
         if self._viscosity["omega"] == 1:
-            if self._viscosity.has_key("collision"):
+            if "collision" in self._viscosity:
                 b = self._viscosity["collision"]
             else:
                 b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
@@ -2273,7 +2273,7 @@ class MEoS(_fase):
                     etar = self._viscosity.get("etaref_virial", 1.)
                     tau = T/Tc
                     mud = 0
-                    if self._viscosity.has_key("n_virial"):
+                    if "n_virial" in self._viscosity:
                         muB = 0
                         for n, t in zip(self._viscosity["n_virial"],
                                         self._viscosity["t_virial"]):
@@ -3101,7 +3101,7 @@ if __name__ == "__main__":
 #    print  agua.P.MPa, agua.rho
 
     dme=MEoS(T=400, P=0.1, eq=1)
-    print "%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (dme.T, dme.rho, dme.h.kJkg, dme.s.kJkgK, dme.cv.kJkgK, dme.cp.kJkgK, dme.w)
+    print("%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (dme.T, dme.rho, dme.h.kJkg, dme.s.kJkgK, dme.cv.kJkgK, dme.cp.kJkgK, dme.w))
 
 #300,00	0,10000	1,6025	0,31238	0,52152	0,52033	3,6153	-0,00038001	0,00000066198	17,837	22,741
 

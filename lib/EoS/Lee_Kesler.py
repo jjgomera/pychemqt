@@ -107,4 +107,4 @@ if __name__ == "__main__":
     mezcla = Mezcla(1, ids=[98], caudalUnitarioMasico=[1.])
     for T in [125, 135, 145, 165, 185, 205]:
         eq = Virial(T, 1, mezcla)
-        print eq.H_exc
+        print(eq.H_exc)

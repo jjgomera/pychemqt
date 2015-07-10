@@ -93,7 +93,7 @@ class Grayson_Streed(EoS):
                 xo=x
                 solucion=fsolve(Rachford, x, full_output=True)
                 if solucion[2]!=1:
-                    print solucion
+                    print(solucion)
                     break
                 else:
                     x=solucion[0]
@@ -146,4 +146,4 @@ if __name__ == "__main__":
 #        eq=SRK(t, 1., mezcla )
 #        print t, eq.x
     eq=SRK(340, 1., mezcla )
-    print eq.x
+    print(eq.x)

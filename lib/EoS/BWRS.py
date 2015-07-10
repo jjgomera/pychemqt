@@ -172,4 +172,4 @@ if __name__ == "__main__":
     from lib.corriente import Mezcla
     mezcla = Mezcla(ids=[10, 38, 22, 61], fraccionMolar=[0.3, 0.5, 0.05, 0.15])
     eq = BWRS(340, 1., mezcla)
-    print eq.x
+    print(eq.x)

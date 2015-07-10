@@ -1,16 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from string import lowercase, digits
+from string import ascii_lowercase, digits
 import sqlite3, tempfile, time
 
 from scipy import exp, cosh, sinh, log, log10, power, roots, minimum, absolute, real, tanh, arctan, sqrt, linspace
 from scipy.optimize import fsolve
 from scipy.constants import R, calorie as cal, pi, Avogadro
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
-from physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
-import unidades, config, eos, sql
+from .physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
+from . import unidades, config, eos, sql
 
 
 class Componente(object):
@@ -35,15 +35,15 @@ class Componente(object):
         self.Pc=unidades.Pressure(componente[5], "atm")
         self.Tb=unidades.Temperature(componente[131])
         self.Tf=unidades.Temperature(componente[132])
-        if componente[125]<>0:
+        if componente[125]!=0:
             self.f_acent=componente[125]
-        elif self.Pc<>0 and self.Tc<>0:
+        elif self.Pc!=0 and self.Tc!=0:
             self.f_acent=self.factor_acentrico_Lee_Kesler()
         else:
             self.f_acent=0
-        if componente[6]<>0:
+        if componente[6]!=0:
             self.Vc=unidades.SpecificVolume(componente[6])
-        elif self.f_acent<>0 and self.Tc<>0 and self.Pc<>0:
+        elif self.f_acent!=0 and self.Tc!=0 and self.Pc!=0:
             self.Vc=self.vc_Riedel()
         else:
             self.Vc=0
@@ -51,9 +51,9 @@ class Componente(object):
             self.Zc=self.Pc*self.Vc/R/self.Tc
         else:
             self.Zc=0
-        if componente[7]<>0:
+        if componente[7]!=0:
             self.API=componente[7]
-        elif componente[124]<>0:
+        elif componente[124]!=0:
             self.API=141.5/componente[124]-131.5
         else:
             self.API=0
@@ -75,11 +75,11 @@ class Componente(object):
         self.conductividad_gas=componente[105:113]
         self.tension_superficial=componente[113:121]
         self.momento_dipolar=unidades.DipoleMoment(componente[121])
-        if componente[123]<>0.0:
+        if componente[123]!=0.0:
             self.rackett=componente[123]
         else:
             self.rackett=self.Rackett()
-        if componente[122]<>0.0:
+        if componente[122]!=0.0:
             self.Vliq=componente[122]
 #        elif self.Pc!=0 and self.Tc>298.15 :
 #            self.Vliq=self.Volumen_Liquido_Constante()
@@ -92,7 +92,7 @@ class Componente(object):
             self.parametro_solubilidad=self.Parametro_Solubilidad()
         self.Kw=componente[127]
         self.MSRK=componente[128:130]
-        if componente[130]<>0.0:
+        if componente[130]!=0.0:
             self.stiehl=componente[130]
         else:
             self.stiehl=0
@@ -229,7 +229,7 @@ class Componente(object):
 
     def factor_acentrico_Lee_Kesler(self):
         """Estimación del factor acéntrico en componentes que no dispongan de ese valor, API,procedure 2A1.1 pag.210 """
-        if self.Tb<>0:
+        if self.Tb!=0:
             Tr=self.Tb/self.Tc
             Pr=1/self.Pc.atm
         else:
@@ -241,7 +241,7 @@ class Componente(object):
     def factor_acentrico_Ambrose(self):
         """Estimación del factor acéntrico en componentes que no dispongan de ese valor,
        ref. propiedades físicas de líquidos y gases, pag.235 """
-        if self.Tb<>0:
+        if self.Tb!=0:
             Tr=self.Tb/self.Tc
             Pr=1/self.Pc.atm
         else:
@@ -406,18 +406,18 @@ class Componente(object):
         if P<1013250:
             if rhoL==0 and self.densidad_liquido and self.densidad_liquido[6]<=T<=self.densidad_liquido[7]:
                 return self.RhoL_DIPPR(T)
-            elif rhoL==1 and self.rackett<>0 and T<self.Tc:
+            elif rhoL==1 and self.rackett!=0 and T<self.Tc:
                 return self.RhoL_Rackett(T)
-            elif rhoL==2 and self.Vliq<>0:
+            elif rhoL==2 and self.Vliq!=0:
                 return self.RhoL_Cavett(T)
             elif rhoL==3:
                 return self.RhoL_Costald(T)
             else:
                 if self.densidad_liquido and self.densidad_liquido[6]<=T<=self.densidad_liquido[7]:
                     return self.RhoL_DIPPR(T)
-                elif self.rackett<>0 and T<self.Tc:
+                elif self.rackett!=0 and T<self.Tc:
                     return self.RhoL_Rackett(T)
-                elif self.Vliq<>0:
+                elif self.Vliq!=0:
                     return self.RhoL_Cavett(T)
                 else:
                     return self.RhoL_Costald(T)
@@ -529,7 +529,7 @@ class Componente(object):
             elif self.wagner and self.wagner[4]<=T.R<=self.wagner[5]:
                 return self.Pv_Wagner(T)
             else:
-                print "Ningún método disponible"
+                print("Ningún método disponible")
 
     def Pv_DIPPR(self,T):
         """Cálculo de la presión de vapor usando las ecuaciones DIPPR
@@ -875,7 +875,7 @@ class Componente(object):
                     return self.Mu_Liquido_Letsou_Steil(T)
                 elif self.Van_Veltzen:
                     return self.Mu_Liquido_Van_Veltzen(T)
-                else: print "Ningún método disponible"
+                else: print("Ningún método disponible")
         else:
             if corr==0 and self.Tb<650:
             #En realidad el criterio de corte es los hidrocarburos de menos de 20 átomos de carbono (hidrocarburos de bajo peso molecular), pero aprovechando que la temperatura de ebullición es proporcional al peso molecular podemos usar esta
@@ -958,7 +958,7 @@ class Componente(object):
 
         mur=mur0+self.f_acent*mur1
         #TODO: Para implementar correctamente este método hay que añadir a la base de datos los datos de la viscosidad en el punto crítico. De momento usaremos el procedimiento DIPPR como alternativa para obtener un valor de viscosidad en las condiciones estandart y una minitabla para los elementos que aparecen en la tabla 11A5.4 del API Databook
-        if 1<self.indice<=21 and self.indice<>7:
+        if 1<self.indice<=21 and self.indice!=7:
             muc=[0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350, 0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315, 0.0328, 0.0337, 0.0348, 0.0355, 0.0362][self.indice]
         elif self.indice==90:
             muc=0.0370
@@ -1398,9 +1398,9 @@ class GroupContribution(newComponente):
         else:
             self.name=self.__class__.__name__+"_"+time.strftime("%d/%m/%Y-%H:%M:%S")
 
-        if not self.__dict__.has_key("f_acent"):
+        if "f_acent" not in self.__dict__:
             self.f_acent=self._factor_acentrico_Lee_Kesler()
-        if not self.__dict__.has_key("Hv"):
+        if "Hv" not in self.__dict__:
             self.Hv=self._Calor_vaporizacion()
 
         self.rackett=self._Rackett()
@@ -1410,15 +1410,15 @@ class GroupContribution(newComponente):
             self.SG=self.kwargs["SG"]
         else:
             self.SG=self._Gravedad_especifica()
-        if not self.__dict__.has_key("Vc"):
+        if "Vc" not in self.__dict__:
             self.Vc=self._Vc()
         self.watson=self._Watson()
-        if not self.__dict__.has_key("cp"):
+        if "cp" not in self.__dict__:
             self.cp=self._cp()
         self.API=141.5/self.SG-131.5
         self.txt, self.formula=self.EmpiricFormula()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._bool
 
     def clear(self):
@@ -1484,7 +1484,7 @@ class GroupContribution(newComponente):
         return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
 
     def EmpiricFormula(self):
-        if not self.coeff.has_key("txt"):
+        if "txt" not in self.coeff:
             return "", ""
         C=H=N=O=S=F=Cl=Br=I=0
         for i, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
@@ -1558,8 +1558,8 @@ class Joback(GroupContribution):
                         ("=CH", {"C": 1, "H": 1}),
                         ("=C", {"C": 1}),
                         ("=C=", {"C": 1}),
-                        (u"≡CH", {"C": 1, "H": 1}),
-                        (u"≡C", {"C": 1}),
+                        ("≡CH", {"C": 1, "H": 1}),
+                        ("≡C", {"C": 1}),
                         ("CH2 (cyclic)", {"C": 1, "H": 2}),
                         ("CH (cyclic)", {"C": 1, "H": 1}),
                         ("C (cyclic)", {"C": 1,}),
@@ -1724,8 +1724,8 @@ class Constantinou_Gani(GroupContribution):
                         ("CH2SH", {"C": 1, "H": 3, "S": 1}),
                         ("I", {"I": 1}),
                         ("Br", {"Br": 1}),
-                        (u"CH≡C", {"C": 2, "H": 1}),
-                        (u"C≡C", {"C": 2}),
+                        ("CH≡C", {"C": 2, "H": 1}),
+                        ("C≡C", {"C": 2}),
                         ("Cl-C=C", {"C": 2, "Cl": 1}),
                         ("=CF (Aromatic)", {"C": 1, "F": 1}),
                         ("HCON(CH2)2", {"C": 3, "H": 5, "O": 1, "N": 1}),
@@ -1976,7 +1976,7 @@ class Marrero_Pardillo(GroupContribution):
                     ("CH3- & >C<",),
                     ("CH3- & =CH-",),
                     ("CH3- & =C<",),
-                    (u"CH3- & ≡C-",),
+                    ("CH3- & ≡C-",),
                     ("CH3- & >CH- [r]",),
                     ("CH3- & >C< [r]",),
                     ("CH3- & =C< [r]",),
@@ -2003,7 +2003,7 @@ class Marrero_Pardillo(GroupContribution):
                     ("-CH2- & >C<",),
                     ("-CH2- & =CH-",),
                     ("-CH2- & =C<",),
-                    (u"-CH2- & ≡C-",),
+                    ("-CH2- & ≡C-",),
                     ("-CH2- & >CH- [r]",),
                     ("-CH2- & >C< [r]",),
                     ("-CH2- & =C< [r]",),
@@ -2062,7 +2062,7 @@ class Marrero_Pardillo(GroupContribution):
                     ("-CH[=] & =C[=]",),
                     ("=CH- & =CH-",),
                     ("=CH- & =C<",),
-                    (u"=CH- & ≡C-",),
+                    ("=CH- & ≡C-",),
                     ("=CH- & =C< [r]",),
                     ("=CH- & F-",),
                     ("=CH- & Cl-",),
@@ -2078,9 +2078,9 @@ class Marrero_Pardillo(GroupContribution):
                     ("=C< & F-",),
                     ("=C< & Cl-",),
                     ("=C[=] & O[=]",),
-                    (u"CH[≡] & CH[≡]",),
-                    (u"CH[≡] & -C[≡]",),
-                    (u"-C[≡] & -C[≡]",),
+                    ("CH[≡] & CH[≡]",),
+                    ("CH[≡] & -C[≡]",),
+                    ("-C[≡] & -C[≡]",),
                     ("-CH2- [r] & -CH2- [r]",),
                     ("-CH2- [r] & >CH- [r]",),
                     ("-CH2- [r] & >C< [r]",),
@@ -2374,8 +2374,8 @@ class Ambrose(GroupContribution):
                     ("=CH-", {"C": 1, "H": 1}),
                     ("=C", {"C": 1}),
                     ("=C=", {"C": 1}),
-                    (u"≡CH", {"C": 1, "H": 1}),
-                    (u"≡C-", {"C": 1}),
+                    ("≡CH", {"C": 1, "H": 1}),
+                    ("≡C-", {"C": 1}),
                     ("-CH2- (Cyclic)", {"C": 1, "H": 2}),
                     ("-CH< (Ciclic)", {"C": 1, "H": 1}),
                     ("-CH< (in fused ring)", {"C": 1, "H": 1}),

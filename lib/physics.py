@@ -19,7 +19,7 @@ from scipy.constants import g, R, calorie, liter, atm, Btu, lb
 from scipy.special import cbrt
 from scipy.optimize import fsolve
 
-from unidades import Dimensionless
+from .unidades import Dimensionless
 
 
 # Constants don't availables in scipy.constants
@@ -513,20 +513,20 @@ def Cunningham(l, Kn, method=0):
 
 
 if __name__ == "__main__":
-    print f_colebrook(1e7, 0.0002)
-    print f_chen(1e7, 0.0002)
-    print f_goudar(1e7, 0.0002)
-    print f_romeo(1e7, 0.0002)
-    print f_manadilli(1e7, 0.0002)
-    print f_serghides(1e7, 0.0002)
-    print f_churchill(1e7, 0.0002)
-    print f_zigrang(1e7, 0.0002)
-    print f_swamee(1e7, 0.0002)
-    print f_wood(1e7, 0.0002)
-    print f_haaland(1e7, 0.0002)
-    print f_barr(1e7, 0.0002)
-    print f_round(1e7, 0.0002)
-    print f_moody(1e7, 0.0002)
+    print(f_colebrook(1e7, 0.0002))
+    print(f_chen(1e7, 0.0002))
+    print(f_goudar(1e7, 0.0002))
+    print(f_romeo(1e7, 0.0002))
+    print(f_manadilli(1e7, 0.0002))
+    print(f_serghides(1e7, 0.0002))
+    print(f_churchill(1e7, 0.0002))
+    print(f_zigrang(1e7, 0.0002))
+    print(f_swamee(1e7, 0.0002))
+    print(f_wood(1e7, 0.0002))
+    print(f_haaland(1e7, 0.0002))
+    print(f_barr(1e7, 0.0002))
+    print(f_round(1e7, 0.0002))
+    print(f_moody(1e7, 0.0002))
 
 #    from pylab import arange, plot,  grid, show
 #    x=arange(0, 2.5, 0.1)

@@ -17,11 +17,11 @@ from scipy.special import erf
 from scipy.linalg import det
 from scipy import roots, log, sqrt, log10, exp, sin, r_, zeros
 from pylab import triu
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
-from compuestos import Componente
-from bip import srk
-from physics import R_atml, R
+from .compuestos import Componente
+from .bip import srk
+from .physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 from lib.psycrometry import PsychroState
@@ -520,7 +520,7 @@ class Mezcla(config.Entity):
             ppmnh3 = log10(self.fraccion_masica[indice_amoniaco]*1e6)
             ppmh2s = log10(self.fraccion_masica[indice_sulfuro]*1e6)
             ratio = self.fraccion[indice_amoniaco]/self.fraccion[indice_sulfuro]
-            print 10**ppmh2s, ratio
+            print((10**ppmh2s, ratio))
 
             def Z(ind, M=ratio):
                 """Subrutina que nos devuelve el valor de Zm"""
@@ -1398,14 +1398,14 @@ class Corriente(config.Entity):
             
         self.kwargs.update(kwargs)
 
-        for key, value in self.kwargs.iteritems():
+        for key, value in list(self.kwargs.items()):
             if value:
                 self._bool = True
                 break
 
         logging.info('Calculate STREAM')
         kw_new = {}
-        for key, value in kwargs.iteritems():
+        for key, value in list(kwargs.items()):
             if self.__class__.kwargs[key] != value:
                 kw_new[key] = value
         logging.debug('kwarg; %s' %kw_new)
@@ -1753,7 +1753,7 @@ class Corriente(config.Entity):
         txt += "#---------------"
         txt += QApplication.translate("pychemqt", "Input properties")
         txt += "-----------------#"+os.linesep
-        for key, value in self.kwargs.iteritems():
+        for key, value in list(self.kwargs.items()):
             if value:
                 txt += key+": "+str(value)+os.linesep
 
@@ -1992,7 +1992,7 @@ class PsyStream(config.Entity):
 
         self.kwargs.update(kwargs)
 
-        for key, value in self.kwargs.iteritems():
+        for key, value in list(self.kwargs.items()):
             if value:
                 self._bool = True
                 break
@@ -2373,9 +2373,9 @@ if __name__ == '__main__':
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
     agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.])
-    print agua.rho
+    print((agua.rho))
     agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
-    print agua2.rho
+    print((agua2.rho))
 #    aire=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[1., 0])
     
     
