@@ -15,8 +15,9 @@
 ###############################################################################
 
 import sys
-from PyQt4 import QtGui
-from PyQt4.Qsci import QsciScintilla, QsciLexerPython
+from PyQt5 import QtGui, QtWidgets
+
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython
 
 
 class SimplePythonEditor(QsciScintilla):
@@ -81,7 +82,7 @@ class SimplePythonEditor(QsciScintilla):
             self.markerAdd(nline, self.ARROW_MARKER_NUM)
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     editor = SimplePythonEditor()
     editor.show()
     editor.setText(open(sys.argv[0]).read())

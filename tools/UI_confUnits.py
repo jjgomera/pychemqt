@@ -7,51 +7,52 @@
 
 import os
 from functools import partial
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
+
 
 from lib import unidades
 from lib.config import conf_dir
 
 
-class UI_confUnits_widget(QtGui.QWidget):
+class UI_confUnits_widget(QtWidgets.QWidget):
     """Units widget, to use in whatever need, dialog, wizard..."""
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config paramater with project config"""
         super(UI_confUnits_widget, self).__init__(parent)
 
-        layout = QtGui.QGridLayout(self)
-        systems = QtGui.QGroupBox(
-            QtGui.QApplication.translate("pychemqt", "Systems of measurement"))
-        systems.setSizePolicy(QtGui.QSizePolicy.Preferred,
-                              QtGui.QSizePolicy.Fixed)
+        layout = QtWidgets.QGridLayout(self)
+        systems = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "Systems of measurement"))
+        systems.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
+                              QtWidgets.QSizePolicy.Fixed)
         layout.addWidget(systems, 1, 1, 1, 2)
-        lytSystems = QtGui.QHBoxLayout(systems)
-        self.SI = QtGui.QRadioButton(
-            QtGui.QApplication.translate("pychemqt", "SI"))
+        lytSystems = QtWidgets.QHBoxLayout(systems)
+        self.SI = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "SI"))
         self.SI.toggled.connect(partial(self.load, "si"))
         lytSystems.addWidget(self.SI)
-        self.AltSI = QtGui.QRadioButton(
-            QtGui.QApplication.translate("pychemqt", "Alt SI"))
+        self.AltSI = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "Alt SI"))
         self.AltSI.toggled.connect(partial(self.load, "altsi"))
         lytSystems.addWidget(self.AltSI)
-        self.English = QtGui.QRadioButton(
-            QtGui.QApplication.translate("pychemqt", "English"))
+        self.English = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "English"))
         self.English.toggled.connect(partial(self.load, "english"))
         lytSystems.addWidget(self.English)
-        self.Metric = QtGui.QRadioButton(
-            QtGui.QApplication.translate("pychemqt", "Metric"))
+        self.Metric = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "Metric"))
         self.Metric.toggled.connect(partial(self.load, "metric"))
         lytSystems.addWidget(self.Metric)
-        self.CGS = QtGui.QRadioButton(
-            QtGui.QApplication.translate("pychemqt", "CGS"))
+        self.CGS = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "CGS"))
         self.CGS.toggled.connect(partial(self.load, "cgs"))
         lytSystems.addWidget(self.CGS)
-        layout.addItem(QtGui.QSpacerItem(
-            10, 10, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed), 2, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 2)
 
-        self.tabla = QtGui.QTableWidget()
+        self.tabla = QtWidgets.QTableWidget()
         layout.addWidget(self.tabla, 3, 1, 5, 1)
         self.tabla.setRowCount(len(unidades._magnitudes)-1)
         self.tabla.setColumnCount(1)
@@ -60,9 +61,9 @@ class UI_confUnits_widget(QtGui.QWidget):
         self.combos = []
         for i, magnitud in enumerate(unidades._magnitudes[:-1]):
             self.tabla.setVerticalHeaderItem(
-                i, QtGui.QTableWidgetItem(magnitud[1]))
+                i, QtWidgets.QTableWidgetItem(magnitud[1]))
             self.tabla.setRowHeight(i, 24)
-            combo = QtGui.QComboBox()
+            combo = QtWidgets.QComboBox()
             if magnitud[0] == "Currency":
                 for texto, unidad in zip(magnitud[2].__text__,
                                          magnitud[2].__units__):
@@ -79,20 +80,20 @@ class UI_confUnits_widget(QtGui.QWidget):
         self.tabla.setFixedWidth(self.tabla.verticalHeader().sizeHint().width()
                                  + self.tabla.columnWidth(0) + 20)
 
-        self.nombre = QtGui.QLineEdit()
+        self.nombre = QtWidgets.QLineEdit()
         self.nombre.textChanged.connect(self.nameChanged)
         layout.addWidget(self.nombre, 3, 2)
-        self.Guardar = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+        self.Guardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")),
-            QtGui.QApplication.translate("pychemqt", "Save profile"))
+            QtWidgets.QApplication.translate("pychemqt", "Save profile"))
         self.Guardar.setEnabled(False)
         self.Guardar.clicked.connect(self.guardar)
         layout.addWidget(self.Guardar, 4, 2)
-        self.perfiles = QtGui.QComboBox()
+        self.perfiles = QtWidgets.QComboBox()
         layout.addWidget(self.perfiles, 6, 2)
-        self.Cargar = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+        self.Cargar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")),
-            QtGui.QApplication.translate("pychemqt", "Load profile"))
+            QtWidgets.QApplication.translate("pychemqt", "Load profile"))
         self.Cargar.clicked.connect(self.load)
         layout.addWidget(self.Cargar, 7, 2)
 
@@ -124,7 +125,7 @@ class UI_confUnits_widget(QtGui.QWidget):
             Config = ConfigParser()
             Config.read(conf_dir+"unitrc")
             for i in Config.options("units"):
-                self.perfiles.addItem(QtGui.QApplication.translate("pychemqt", i))
+                self.perfiles.addItem(QtWidgets.QApplication.translate("pychemqt", i))
             self.perfiles.setEnabled(True)
             self.Cargar.setEnabled(True)
         else:
@@ -194,16 +195,16 @@ class UI_confUnits_widget(QtGui.QWidget):
         return config
 
 
-class Dialog(QtGui.QDialog):
+class Dialog(QtWidgets.QDialog):
     """Units configuration dialog"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Units"))
-        layout = QtGui.QVBoxLayout(self)
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Units"))
+        layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confUnits_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel |
-                                                QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
+                                                QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -216,7 +217,7 @@ class Dialog(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
     sys.exit(app.exec_())

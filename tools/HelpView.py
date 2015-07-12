@@ -17,7 +17,7 @@ class HelpView(QtWidgets.QDialog):
         self.setWindowState(QtCore.Qt.WindowMaximized)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
-        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Help") +
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Help") +
                             " - " + titulo)
         layout = QtWidgets.QVBoxLayout(self)
 

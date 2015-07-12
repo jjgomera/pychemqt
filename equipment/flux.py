@@ -414,7 +414,7 @@ if __name__ == '__main__':
 #    agua2=Corriente(T=300, P=101325*2, caudalMasico=2, fraccionMasica=[1.])
     mezclador=Mixer(entrada=[agua, Corriente()], criterio=0)
 #    print mezclador.status, mezclador.msg
-    print(mezclador.salida[0].kwargs)
+    print((mezclador.salida[0].kwargs))
 #    print mezclador.salida[0].caudalmasico, 
 #    agua3=Corriente(T=300, P=101325, caudalMasico=4, fraccionMasica=[1., 0, 0, 0])
 #    mezclador(id_entrada=2, entrada=agua3)

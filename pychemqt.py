@@ -157,7 +157,9 @@ logging.info(QtWidgets.QApplication.translate("pychemqt", "Loading project files
 pychemqt.show()
 
 if pychemqt.Preferences.getboolean("General", 'Load_Last_Project'):
-    filename = pychemqt.settings.value("LastFile").toStringList()
+    filename = pychemqt.settings.value("LastFile")
+    if filename is None:
+        filename = []
     for file in args:
         filename.append(file)
     for fname in filename:

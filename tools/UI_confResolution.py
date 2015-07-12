@@ -5,40 +5,41 @@
 # PFD resolution tools
 ###############################################################################
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
+
 
 from UI.widgets import Entrada_con_unidades
 from lib.config import conf_dir
 
 
-class UI_confResolution_widget(QtGui.QWidget):
+class UI_confResolution_widget(QtWidgets.QWidget):
     """PFD resolution widget"""
     def __init__(self, config=None, parent=None):
         self.standards = [(600, 400), (640, 480), (720, 400), (800, 600),
                           (832, 624), (1024, 768), (1152, 864), (1280, 1024),
                           (1700, 1250), (1900, 1425), (2400, 1800), (4000, 3000)]
         super(UI_confResolution_widget, self).__init__(parent)
-        layout = QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Use default resolution:")), 0, 0)
-        self.standard = QtGui.QComboBox()
+        self.standard = QtWidgets.QComboBox()
         self.standard.addItem("")
         for resolucion in self.standards:
             self.standard.addItem("%ix%i" % resolucion)
         self.standard.currentIndexChanged.connect(self.changeResolution)
         layout.addWidget(self.standard, 0, 1)
 
-        self.checkCustom = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.checkCustom = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use Custom resolution"))
         layout.addWidget(self.checkCustom, 1, 0, 1, 2)
-        label = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Width:"))
+        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Width:"))
         label.setIndent(50)
         layout.addWidget(label, 2, 0)
         self.x = Entrada_con_unidades(int, width=60, spinbox=True, step=1)
         layout.addWidget(self.x, 2, 1)
-        label = QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Height:"))
+        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Height:"))
         label.setIndent(50)
         layout.addWidget(label, 3, 0)
         self.y = Entrada_con_unidades(int, width=60, spinbox=True, step=1)
@@ -85,17 +86,17 @@ class UI_confResolution_widget(QtGui.QWidget):
         return config
 
 
-class Dialog(QtGui.QDialog):
+class Dialog(QtWidgets.QDialog):
     """PFD resolution dialog"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
         self.setWindowTitle(
-            QtGui.QApplication.translate("pychemqt", "Define PFD resolution"))
-        layout = QtGui.QVBoxLayout(self)
+            QtWidgets.QApplication.translate("pychemqt", "Define PFD resolution"))
+        layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confResolution_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel |
-                                                QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
+                                                QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -108,7 +109,7 @@ class Dialog(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
     sys.exit(app.exec_())

@@ -4,7 +4,8 @@
 import os
 import inspect
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 from lib import mEoS
 from equipment import equipments
@@ -24,23 +25,23 @@ for nombre, objeto in objects:
 #print glob.glob(os.path.curdir+"/*/*.py")
 
 
-class ShowReference(QtGui.QDialog):
+class ShowReference(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(ShowReference, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
-        self.setWindowTitle(QtGui.QApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Reference Paper Show Dialog"))
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
 
-        self.tree = QtGui.QTreeWidget()
-        header = QtGui.QTreeWidgetItem(
-            [QtGui.QApplication.translate("pychemqt", "File"),
-             QtGui.QApplication.translate("pychemqt", "Description")])
+        self.tree = QtWidgets.QTreeWidget()
+        header = QtWidgets.QTreeWidgetItem(
+            [QtWidgets.QApplication.translate("pychemqt", "File"),
+             QtWidgets.QApplication.translate("pychemqt", "Description")])
         self.tree.setHeaderItem(header)
         layout.addWidget(self.tree)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
 
@@ -50,14 +51,14 @@ class ShowReference(QtGui.QDialog):
     def fill(self):
         """Fill tree with documentation entries"""
         # Equipment
-        itemEquipment = QtGui.QTreeWidgetItem([QtGui.QApplication.translate(
+        itemEquipment = QtWidgets.QTreeWidgetItem([QtWidgets.QApplication.translate(
             "pychemqt", "Equipments")])
         self.tree.addTopLevelItem(itemEquipment)
         for equip in equipments:
-            itemequip = QtGui.QTreeWidgetItem([equip.__name__])
+            itemequip = QtWidgets.QTreeWidgetItem([equip.__name__])
             itemEquipment.addChild(itemequip)
             for link in equip.__doi__:
-                item = QtGui.QTreeWidgetItem([link["doi"], "%s: %s. %s" %(
+                item = QtWidgets.QTreeWidgetItem([link["doi"], "%s: %s. %s" %(
                     link["autor"], link["title"], link["ref"])])
                 itemequip.addChild(item)
 
@@ -66,7 +67,7 @@ class ShowReference(QtGui.QDialog):
         objects = [mEoS.MEoS]+mEoS.__all__
 
         for objeto in objects:
-            item = QtGui.QTreeWidgetItem([objeto.__name__, ""])
+            item = QtWidgets.QTreeWidgetItem([objeto.__name__, ""])
             self.tree.addTopLevelItem(item)
             functions = inspect.getmembers(objeto)
             for name, function in functions:
@@ -76,14 +77,14 @@ class ShowReference(QtGui.QDialog):
                     if lastline[:17] == "http://dx.doi.org" and \
                             lastline not in link:
                         link.append(lastline)
-                        item.addChild(QtGui.QTreeWidgetItem([name, lastline]))
+                        item.addChild(QtWidgets.QTreeWidgetItem([name, lastline]))
 
             listas = ["eq", "_viscosity", "_thermal"]
             for lista in listas:
                 if lista in objeto.__dict__:
                     for eq in objeto.__dict__[lista]:
                         if eq and "__doi__" in eq:
-                            item.addChild(QtGui.QTreeWidgetItem(
+                            item.addChild(QtWidgets.QTreeWidgetItem(
                                 [eq["__name__"], eq["__doi__"]]))
 
     def open(self, item, int):
@@ -102,7 +103,7 @@ class ShowReference(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     dialog = ShowReference()
     dialog.show()
     sys.exit(app.exec_())

@@ -58,19 +58,19 @@ class SelectStreamProject(QtWidgets.QDialog):
     project=None
     def __init__(self, parent=None):
         super(SelectStreamProject, self).__init__(parent)
-        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Select stream from file"))
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Select stream from file"))
 
         layout = QtWidgets.QGridLayout(self)
-        label=QtCore.QCoreApplication.translate("pychemqt", "Project path")+":"
-        msg=QtCore.QCoreApplication.translate("pychemqt", "Select pychemqt project file")
+        label=QtWidgets.QApplication.translate("pychemqt", "Project path")+":"
+        msg=QtWidgets.QApplication.translate("pychemqt", "Select pychemqt project file")
         patrones=QtCore.QStringList()
-        patrones.append(QtCore.QCoreApplication.translate("pychemqt", "pychemqt project file")+" (*.pcq)")
+        patrones.append(QtWidgets.QApplication.translate("pychemqt", "pychemqt project file")+" (*.pcq)")
         patron=patrones.join(";;")
         self.filename=PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeproject)
         layout.addWidget(self.filename,1,1,1,3)
 
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Streams")),2,1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Streams")),2,1)
         self.stream=QtWidgets.QComboBox()
         layout.addWidget(self.stream,2,2)
         layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),3,3)
@@ -84,12 +84,12 @@ class SelectStreamProject(QtWidgets.QDialog):
         layout.addWidget(self.buttonBox,10,2,1,2)
 
     def changeproject(self, path):
-        self.status.setText(QtCore.QCoreApplication.translate("pychemqt", "Loading project..."))
+        self.status.setText(QtWidgets.QApplication.translate("pychemqt", "Loading project..."))
         QtWidgets.QApplication.processEvents()
 #        try:
         self.project=loadFromFile(path)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
-        self.status.setText(QtCore.QCoreApplication.translate("pychemqt", "Project loaded succesfully"))
+        self.status.setText(QtWidgets.QApplication.translate("pychemqt", "Project loaded succesfully"))
 #        except Exception as e:
 #            print e
 #            self.status.setText(QtGui.QApplication.translate("pychemqt", "Failed to loading project..."))
@@ -103,7 +103,7 @@ class ConfLineDialog(QtWidgets.QDialog, ConfLine):
     """Dialogo de definición de formatos de líneas"""
     def __init__(self, pen=None, parent=None):
         super(ConfLineDialog, self).__init__(pen)
-        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Edit format line"))
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Edit format line"))
         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
@@ -125,7 +125,7 @@ class TextItemDlg(QtWidgets.QDialog):
         self.editor.notas.setFocus()
         if text:
             self.editor.setText(text)
-        self.setWindowTitle(QtCore.QCoreApplication.translate("pychemqt", "Edit text"))
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Edit text"))
         self.updateUi()
 
     def updateUi(self):
@@ -164,9 +164,9 @@ class GeometricItem(object):
     def contextMenu(self):
         contextMenu= QtWidgets.QMenu("%s Item" % self.type, self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
-        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtCore.QCoreApplication.translate("pychemqt", "Delete"), self.delete)
+        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtWidgets.QApplication.translate("pychemqt", "Delete"), self.delete)
         contextMenu.addSeparator()
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Appearance"), self.format)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Appearance"), self.format)
         return contextMenu
 
     def itemChange(self, change, variant):
@@ -258,9 +258,9 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
     def contextMenu(self):
         if self.selectable:
-            contextMenu= QtWidgets.QMenu(QtCore.QCoreApplication.translate("pychemqt", "Text Item: %s" %self.toPlainText()), self.scene().parent())
+            contextMenu= QtWidgets.QMenu(QtWidgets.QApplication.translate("pychemqt", "Text Item: %s" %self.toPlainText()), self.scene().parent())
             contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/text.png")))
-            contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtCore.QCoreApplication.translate("pychemqt", "Delete"), self.delete)
+            contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtWidgets.QApplication.translate("pychemqt", "Delete"), self.delete)
             contextMenu.addSeparator()
             contextMenu.addAction("Edit", self.mouseDoubleClickEvent)
             return contextMenu
@@ -296,26 +296,26 @@ class GraphicsEntity(object):
 
     def view(self):
         with tempfile.NamedTemporaryFile("w+r", delete=False, suffix=".txt") as temp:
-            temp.write(QtCore.QCoreApplication.translate("pychemqt","Project Name")+": "+self.scene().parent().currentFilename+os.linesep)
+            temp.write(QtWidgets.QApplication.translate("pychemqt","Project Name")+": "+self.scene().parent().currentFilename+os.linesep)
             if isinstance(self.entity, Corriente):
-                temp.write(QtCore.QCoreApplication.translate("pychemqt","Stream Id"))
+                temp.write(QtWidgets.QApplication.translate("pychemqt","Stream Id"))
             else:
-                temp.write(QtCore.QCoreApplication.translate("pychemqt","Equipment Id"))
+                temp.write(QtWidgets.QApplication.translate("pychemqt","Equipment Id"))
             temp.write(": %i" %self.id+os.linesep)
             ahora=datetime.today()
-            temp.write(QtCore.QCoreApplication.translate("pychemqt","Report generated at")+ " %s - %s" %(ahora.strftime("%H:%M:%S"), ahora.strftime("%d/%m/%Y"))+os.linesep)
+            temp.write(QtWidgets.QApplication.translate("pychemqt","Report generated at")+ " %s - %s" %(ahora.strftime("%H:%M:%S"), ahora.strftime("%d/%m/%Y"))+os.linesep)
             temp.write(self.entity.txt())
             subprocess.Popen([Preferences.get("Applications", 'TextViewer'), temp.name])
 
     def exportExcel(self):
-        msg=QtCore.QCoreApplication.translate("pychemqt", "Select Spreadsheet")
+        msg=QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
         patrones=QtCore.QStringList()
         if os.environ["ezodf"]:
-            patrones.append(QtCore.QCoreApplication.translate("pychemqt", "Libreoffice spreadsheet files")+ " (*.ods)")
+            patrones.append(QtWidgets.QApplication.translate("pychemqt", "Libreoffice spreadsheet files")+ " (*.ods)")
         if os.environ["xlwt"]:
-            patrones.append(QtCore.QCoreApplication.translate("pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
+            patrones.append(QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(QtCore.QCoreApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML")+ " (*.xlsx)")
+            patrones.append(QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML")+ " (*.xlsx)")
         patron=patrones.join(";;")
         dir=os.path.dirname(str(self.scene().parent().currentFilename))
         ruta = str(QtWidgets.QFileDialog.getSaveFileName(self.scene().parent(), msg, dir, patron)[0])
@@ -455,8 +455,8 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 #        self.tabla.show()
 
     def contextMenu(self):
-        ViewAction=createAction(QtCore.QCoreApplication.translate("pychemqt", "View Properties"), slot=self.view, parent=self.scene())
-        SolidDistributionAction=createAction(QtCore.QCoreApplication.translate("pychemqt", "Solid Distribution Fit"), slot=self.solidFit, parent=self.scene())
+        ViewAction=createAction(QtWidgets.QApplication.translate("pychemqt", "View Properties"), slot=self.view, parent=self.scene())
+        SolidDistributionAction=createAction(QtWidgets.QApplication.translate("pychemqt", "Solid Distribution Fit"), slot=self.solidFit, parent=self.scene())
         if self.corriente:
             if not self.corriente.solido:
                 SolidDistributionAction.setEnabled(False)
@@ -466,15 +466,15 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
         contextMenu= QtWidgets.QMenu("Stream %i" %self.id, self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/stream.png")))
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Copy from another project"), self.copyFromProject)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Copy from another project"), self.copyFromProject)
         contextMenu.addAction(SolidDistributionAction)
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
-        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtCore.QCoreApplication.translate("pychemqt", "Delete"), self.delete)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
+        contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtWidgets.QApplication.translate("pychemqt", "Delete"), self.delete)
         contextMenu.addSeparator()
         contextMenu.addAction(ViewAction)
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
-        contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Appearance"), self.format)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
+        contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Appearance"), self.format)
         return contextMenu
 
 
@@ -780,17 +780,17 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
     def contextMenu(self):
         if self.dialogoId!=None:
-            ViewAction=createAction(QtCore.QCoreApplication.translate("pychemqt", "View Properties"), slot=self.view, parent=self.scene())
+            ViewAction=createAction(QtWidgets.QApplication.translate("pychemqt", "View Properties"), slot=self.view, parent=self.scene())
             ViewAction.setEnabled(self.equipment.status)
 
             contextMenu= QtWidgets.QMenu("Equipment %i" %self.id, self.scene().parent())
             contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/%s.svg" % self.name)))
-            contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
-            contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtCore.QCoreApplication.translate("pychemqt", "Delete"), self.delete)
+            contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Edit"), self.mouseDoubleClickEvent)
+            contextMenu.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/editDelete.png"), QtWidgets.QApplication.translate("pychemqt", "Delete"), self.delete)
             contextMenu.addSeparator()
             contextMenu.addAction(ViewAction)
-            contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
-            contextMenu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
+            contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Export to spreadsheet"), self.exportExcel)
+            contextMenu.addAction(QtWidgets.QApplication.translate("pychemqt", "Show/Hide Id Label"), self.idLabelVisibility)
 #            contextMenu.addAction(QtGui.QApplication.translate("pychemqt", "Appearance"), self.format)
 #            contextMenu.addSeparator()
 #            contextMenu.addAction("Run", self.mouseDoubleClickEvent)
@@ -800,13 +800,13 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             else:
                 contextMenu=self.up[0].contextMenu()
 
-        self.menuTransform=QtWidgets.QMenu(QtCore.QCoreApplication.translate("pychemqt", "Transform"))
-        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_90.png"), QtCore.QCoreApplication.translate("pychemqt", "Rotate by 90"), partial(self.rotate, 90))
-        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_180.png"), QtCore.QCoreApplication.translate("pychemqt", "Rotate by 180"), partial(self.rotate, 180))
-        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_270.png"), QtCore.QCoreApplication.translate("pychemqt", "Rotate by 270"), partial(self.rotate, 270))
+        self.menuTransform=QtWidgets.QMenu(QtWidgets.QApplication.translate("pychemqt", "Transform"))
+        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_90.png"), QtWidgets.QApplication.translate("pychemqt", "Rotate by 90"), partial(self.rotate, 90))
+        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_180.png"), QtWidgets.QApplication.translate("pychemqt", "Rotate by 180"), partial(self.rotate, 180))
+        self.menuTransform.addAction(QtGui.QIcon(os.environ["pychemqt"]+"/images/button/transform_rotate_270.png"), QtWidgets.QApplication.translate("pychemqt", "Rotate by 270"), partial(self.rotate, 270))
         self.menuTransform.addSeparator()
-        self.menuTransform.addAction(QtCore.QCoreApplication.translate("pychemqt", "Mirror about X"), partial(self.rotate, 270))
-        self.menuTransform.addAction(QtCore.QCoreApplication.translate("pychemqt", "Mirror about Y"), partial(self.rotate, 270))
+        self.menuTransform.addAction(QtWidgets.QApplication.translate("pychemqt", "Mirror about X"), partial(self.rotate, 270))
+        self.menuTransform.addAction(QtWidgets.QApplication.translate("pychemqt", "Mirror about Y"), partial(self.rotate, 270))
         contextMenu.addAction(self.menuTransform.menuAction())
 
         return contextMenu
@@ -933,17 +933,17 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.Pos.append(event.scenePos())
 
     def addActions(self, menu, pos=None):
-        menu.addAction(QtCore.QCoreApplication.translate("pychemqt", "Redraw"), self.update)
+        menu.addAction(QtWidgets.QApplication.translate("pychemqt", "Redraw"), self.update)
         menu.addSeparator()
-        menu.addAction(createAction(QtCore.QCoreApplication.translate("pychemqt", "Select All"), slot=self.selectAll, shortcut=QtGui.QKeySequence.SelectAll, icon=os.environ["pychemqt"]+"/images/button/selectAll", parent=self))
+        menu.addAction(createAction(QtWidgets.QApplication.translate("pychemqt", "Select All"), slot=self.selectAll, shortcut=QtGui.QKeySequence.SelectAll, icon=os.environ["pychemqt"]+"/images/button/selectAll", parent=self))
         menu.addSeparator()
-        actionCut=createAction(QtCore.QCoreApplication.translate("pychemqt", "Cut"), slot=self.cut, shortcut=QtGui.QKeySequence.Cut, icon=os.environ["pychemqt"]+"/images/button/editCut", parent=self)
+        actionCut=createAction(QtWidgets.QApplication.translate("pychemqt", "Cut"), slot=self.cut, shortcut=QtGui.QKeySequence.Cut, icon=os.environ["pychemqt"]+"/images/button/editCut", parent=self)
         menu.addAction(actionCut)
-        actionCopy=createAction(QtCore.QCoreApplication.translate("pychemqt", "Copy"), slot=self.copy, shortcut=QtGui.QKeySequence.Copy, icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
+        actionCopy=createAction(QtWidgets.QApplication.translate("pychemqt", "Copy"), slot=self.copy, shortcut=QtGui.QKeySequence.Copy, icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
         menu.addAction(actionCopy)
-        actionPaste=createAction(QtCore.QCoreApplication.translate("pychemqt", "Paste"), slot=partial(self.paste, pos), shortcut=QtGui.QKeySequence.Paste, icon=os.environ["pychemqt"]+"/images/button/editPaste", parent=self)
+        actionPaste=createAction(QtWidgets.QApplication.translate("pychemqt", "Paste"), slot=partial(self.paste, pos), shortcut=QtGui.QKeySequence.Paste, icon=os.environ["pychemqt"]+"/images/button/editPaste", parent=self)
         menu.addAction(actionPaste)
-        actionDelete=createAction(QtCore.QCoreApplication.translate("pychemqt", "Delete All"), slot=self.delete, shortcut=QtGui.QKeySequence.Delete, icon=os.environ["pychemqt"]+"/images/button/editDelete", parent=self)
+        actionDelete=createAction(QtWidgets.QApplication.translate("pychemqt", "Delete All"), slot=self.delete, shortcut=QtGui.QKeySequence.Delete, icon=os.environ["pychemqt"]+"/images/button/editDelete", parent=self)
         menu.addAction(actionDelete)
         menu.addSeparator()
 
@@ -1018,7 +1018,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.addType=type
         self.addObj=True
         self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
-        self.parent().statusbar.showMessage(QtCore.QCoreApplication.translate("pychemqt", "Click in desire text position in screen"))
+        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate("pychemqt", "Click in desire text position in screen"))
         self.Pos=[]
         self.clickCollector = WaitforClick(numClick, self)
         self.clickCollector.finished.connect(self.click)

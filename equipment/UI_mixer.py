@@ -36,7 +36,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output Pressure Method")), 1, 1)
         self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
@@ -47,7 +47,7 @@ class UI_equipment(UI_equip):
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             2, 1, 1, 3)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output Pressure")), 3, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))

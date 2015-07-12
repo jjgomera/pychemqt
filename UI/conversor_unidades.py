@@ -53,7 +53,7 @@ class UI_conversorUnidades(QtWidgets.QDialog):
             self.tabla.item(i, 0).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
         for i in range(len(self.tooltip)):
-            self.tabla.item(i, 0).setToolTip(QtCore.QCoreApplication.translate("pychemqt", self.tooltip[i]))
+            self.tabla.item(i, 0).setToolTip(QtWidgets.QApplication.translate("pychemqt", self.tooltip[i]))
 
         if valor:
             self.rellenarTabla(self.value)
@@ -85,11 +85,11 @@ class moneda(UI_conversorUnidades):
     def __init__(self, valor=None, parent=None):
         super(moneda, self).__init__(Currency, valor=valor, parent=parent)
 
-        self.fecha = QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        self.fecha = QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Date::") + self.value.fecha)
         self.gridLayout.addWidget(self.fecha, 0, 1)
         self.botonActualizar = QtWidgets.QPushButton(
-            QtCore.QCoreApplication.translate("pychemqt", "Update"))
+            QtWidgets.QApplication.translate("pychemqt", "Update"))
         self.botonActualizar.clicked.connect(self.getrates)
         self.gridLayout.addWidget(self.botonActualizar, 1, 1)
 
@@ -100,7 +100,7 @@ class moneda(UI_conversorUnidades):
     def getrates(self):
         getrates()
         self.value = self.unidad(self.value)
-        self.fecha.setText(QtCore.QCoreApplication.translate("pychemqt", "Date:") +
+        self.fecha.setText(QtWidgets.QApplication.translate("pychemqt", "Date:") +
                            self.value.fecha)
         if self.value != 0:
             self.actualizar(0, 0)

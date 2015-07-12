@@ -448,7 +448,7 @@ class Pump(equipment):
         font0 = xlwt.Font()
         font0.bold = True
         font0.height = 300
-        print(font0.height)
+        print((font0.height))
         
 
         style0 = xlwt.XFStyle()

@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import  QApplication
 
 from lib.unidades import Density, Length, Currency, Volume
 from lib.corriente import Corriente
-from parents import equipment
+from .parents import equipment
 
 
 class Tank(equipment):
@@ -88,8 +88,8 @@ class Tank(equipment):
 if __name__ == '__main__':
 
     tanque=Tank()
-    print tanque.C_inst
-    print tanque.Volumen
+    print((tanque.C_inst))
+    print((tanque.Volumen))
     
     
     

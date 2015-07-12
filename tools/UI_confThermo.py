@@ -7,76 +7,77 @@
 
 import os
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
+
 
 from lib.EoS import K, H
 
 
-class UI_confThermo_widget(QtGui.QWidget):
+class UI_confThermo_widget(QtWidgets.QWidget):
     """Widget to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter with proyect configuration"""
         super(UI_confThermo_widget, self).__init__(parent)
-        layout = QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "K values:")), 0, 0, 1, 2)
-        self.K = QtGui.QComboBox()
+        self.K = QtWidgets.QComboBox()
         for eq in K:
             self.K.addItem(eq.__title__)
         layout.addWidget(self.K, 0, 2)
 
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt   ", "Alfa function:")), 1, 0, 1, 2)
-        self.alfa = QtGui.QComboBox()
-        self.alfa.addItem(QtGui.QApplication.translate("pychemqt", "Original"))
+        self.alfa = QtWidgets.QComboBox()
+        self.alfa.addItem(QtWidgets.QApplication.translate("pychemqt", "Original"))
         self.alfa.addItem("Boston-Mathias")
         self.alfa.addItem("Twu")
         self.alfa.addItem("Doridon")
         layout.addWidget(self.alfa, 1, 2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mix rules:")), 2, 0, 1, 2)
-        self.mixing_rule = QtGui.QComboBox()
+        self.mixing_rule = QtWidgets.QComboBox()
         self.mixing_rule.addItem("van der Waals")
         self.mixing_rule.addItem("Stryjek-Vera")
         self.mixing_rule.addItem("Panagiotopoulos")
         self.mixing_rule.addItem("Melhem")
         layout.addWidget(self.mixing_rule, 2, 2)
-        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
-                                         QtGui.QSizePolicy.Fixed), 3, 0, 1, 4)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
+                                         QtWidgets.QSizePolicy.Fixed), 3, 0, 1, 4)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Enthalpy:")), 4, 0, 1, 2)
-        self.H = QtGui.QComboBox()
+        self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
         layout.addWidget(self.H, 4, 2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Ideal heat capacity:")), 5, 0, 1, 2)
-        self.Cp_ideal = QtGui.QComboBox()
-        self.Cp_ideal.addItem(QtGui.QApplication.translate("pychemqt", "Ideal"))
+        self.Cp_ideal = QtWidgets.QComboBox()
+        self.Cp_ideal.addItem(QtWidgets.QApplication.translate("pychemqt", "Ideal"))
         self.Cp_ideal.addItem("DIPPR")
         layout.addWidget(self.Cp_ideal, 5, 2)
-        layout.addItem(QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed,
-                                         QtGui.QSizePolicy.Fixed), 6, 0, 1, 4)
-        self.MEoS = QtGui.QCheckBox(QtGui.QApplication.translate(
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
+                                         QtWidgets.QSizePolicy.Fixed), 6, 0, 1, 4)
+        self.MEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use MEoS for single compounds if it's available"))
         layout.addWidget(self.MEoS, 7, 0, 1, 3)
-        self.coolProp = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.coolProp = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
         layout.addWidget(self.coolProp, 8, 1, 1, 2)
-        self.refprop = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.refprop = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 9, 1, 1, 2)
 
-        self.iapws = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.iapws = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use IAPWS97 for water"))
         layout.addWidget(self.iapws, 10, 0, 1, 3)
-        self.freesteam = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.freesteam = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
         layout.addWidget(self.freesteam, 11, 1, 1, 2)
-        self.GERG = QtGui.QCheckBox(QtGui.QApplication.translate(
+        self.GERG = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 3)
 
@@ -138,17 +139,17 @@ class UI_confThermo_widget(QtGui.QWidget):
         return config
 
 
-class Dialog(QtGui.QDialog):
+class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Define project thermodynamic methods"))
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confThermo_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel |
-                                                QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
+                                                QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -161,7 +162,7 @@ class Dialog(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
     sys.exit(app.exec_())

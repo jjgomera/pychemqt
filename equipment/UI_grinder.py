@@ -110,13 +110,13 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada, QtCore.QCoreApplication.translate("equipment", "Entrada", None))
+        self.tabWidget.insertTab(0, self.Entrada, QtWidgets.QApplication.translate("equipment", "Entrada", None))
 
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
-        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Índice de trabajo de bond:", None)), 1, 0, 1, 1)
+        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Índice de trabajo de bond:", None)), 1, 0, 1, 1)
         self.Material=QtWidgets.QComboBox()
-        self.Material.addItem(QtCore.QCoreApplication.translate("equipment", "Definido por el usuario", None))
+        self.Material.addItem(QtWidgets.QApplication.translate("equipment", "Definido por el usuario", None))
         for key in sorted(BondIndex.keys()):
             self.Material.addItem(key)
         self.Material.currentIndexChanged[str].connect(self.cambiarBondWordIndex)
@@ -127,14 +127,14 @@ class UI_equipment(parents.UI_equip):
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Tipo:", None)), 1, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Tipo:", None)), 1, 1, 1, 1)
         self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "De cono", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Giratorio", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Dentado", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "De martillo", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "De bolas", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Pulverizador", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "De cono", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Giratorio", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Dentado", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "De martillo", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "De bolas", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Pulverizador", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 2, 1, 1)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,1,1,2)
@@ -145,19 +145,19 @@ class UI_equipment(parents.UI_equip):
 
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),6,1,1,6)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("equipment", "Costos calculados", None))
+        self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,1,1,6)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Adquisición:", None)),0,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste Adquisición:", None)),0,1,1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,0,2,1,1)
-        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Instalación:", None)),1,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste Instalación:", None)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
 
         #Pestaña salida
         self.Salida= UI_corriente.Ui_corriente(readOnly=True)
-        self.tabWidget.insertTab(3, self.Salida,QtCore.QCoreApplication.translate("equipment", "Salida", None))
+        self.tabWidget.insertTab(3, self.Salida,QtWidgets.QApplication.translate("equipment", "Salida", None))
 
         self.tabWidget.setCurrentIndex(0)
 

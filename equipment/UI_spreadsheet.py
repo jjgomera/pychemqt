@@ -48,7 +48,7 @@ class TableDelegate(QtWidgets.QItemDelegate):
         return self.editor
 
     def setEditorData(self, editor, index):
-        value = unicode(index.data(QtCore.Qt.DisplayRole).toString())
+        value = str(index.data(QtCore.Qt.DisplayRole).toString())
         if index.column() < 4:
             try:
                 num = self.items[index.column()].index(value)
@@ -81,27 +81,27 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.entrada)
-        label = QtCore.QCoreApplication.translate("pychemqt", "Spreadsheet path")+":"
-        msg = QtCore.QCoreApplication.translate("pychemqt", "Select Spreadsheet")
+        label = QtWidgets.QApplication.translate("pychemqt", "Spreadsheet path")+":"
+        msg = QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
         patrones = QtCore.QStringList()
         if os.environ["ezodf"]:
-            patrones.append(QtCore.QCoreApplication.translate(
+            patrones.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
 #        if os.environ["xlwt"]:
 #            patrones.append(QtGui.QApplication.translate(
 #                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(QtCore.QCoreApplication.translate(
+            patrones.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
         patron = patrones.join(";;")
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename, 1, 1)
-        header = [QtCore.QCoreApplication.translate("pychemqt", "Entity"),
-                  QtCore.QCoreApplication.translate("pychemqt", "Variable"),
-                  QtCore.QCoreApplication.translate("pychemqt", "Unit value"),
-                  QtCore.QCoreApplication.translate("pychemqt", "Sheet"),
-                  QtCore.QCoreApplication.translate("pychemqt", "Cell")]
+        header = [QtWidgets.QApplication.translate("pychemqt", "Entity"),
+                  QtWidgets.QApplication.translate("pychemqt", "Variable"),
+                  QtWidgets.QApplication.translate("pychemqt", "Unit value"),
+                  QtWidgets.QApplication.translate("pychemqt", "Sheet"),
+                  QtWidgets.QApplication.translate("pychemqt", "Cell")]
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
             verticalHeader=False, orientacion=QtCore.Qt.AlignLeft,
@@ -115,9 +115,9 @@ class UI_equipment(UI_equip):
             10, 1)
 
         entitys = []
-        for stream in self.project.streams.keys():
+        for stream in list(self.project.streams.keys()):
             entitys.append("s%i" % stream)
-        for equip in self.project.items.keys():
+        for equip in list(self.project.items.keys()):
             if equip[0] == "e":
                 entitys.append(equip)
         self.datamap.itemDelegateForRow(0).setItemsByIndex(0, entitys)
@@ -199,9 +199,9 @@ class UI_equipment(UI_equip):
         datamap = self.Equipment.kwargs["datamap"][:]
         data = {}
         data["entity"] = str(fila[0])
-        data["property"] = unicode(fila[1])
-        data["unit"] = unicode(fila[2])
-        data["sheet"] = unicode(fila[3])
+        data["property"] = str(fila[1])
+        data["unit"] = str(fila[2])
+        data["sheet"] = str(fila[3])
         data["cell"] = str(fila[4])
         datamap.append(data)
         self.changeParams("datamap", datamap)

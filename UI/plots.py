@@ -3,7 +3,8 @@
 
 ###Módulo que define los dialogos de definición de gráficos
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 from scipy import arange
 from numpy import transpose
 
@@ -12,17 +13,17 @@ from lib.plot import mpl
 from lib import config, unidades
 from lib.corriente import Corriente, Mezcla
 
-class Binary_distillation(QtGui.QDialog):
-    title=QtGui.QApplication.translate("pychemqt", "x-y Distillation")
+class Binary_distillation(QtWidgets.QDialog):
+    title=QtWidgets.QApplication.translate("pychemqt", "x-y Distillation")
     def __init__(self, indices=None, nombres=None, x=None, y=None, parent=None):
         super(Binary_distillation, self).__init__(parent)
         self.setWindowTitle(self.title)
-        layout=QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Component 1:")),1,1)
-        self.Comp1=QtGui.QComboBox()
+        layout=QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Component 1:")),1,1)
+        self.Comp1=QtWidgets.QComboBox()
         layout.addWidget(self.Comp1,1,2)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("equipment", "Component 2:")),1,4)
-        self.Comp2=QtGui.QComboBox()
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Component 2:")),1,4)
+        self.Comp2=QtWidgets.QComboBox()
         layout.addWidget(self.Comp2,1,5)
         
         self.indices=indices
@@ -31,12 +32,12 @@ class Binary_distillation(QtGui.QDialog):
             self.Comp1.addItem("%i - %s" %(i+1, nombre))
             self.Comp2.addItem("%i - %s" %(i+1, nombre))
         self.Comp2.setCurrentIndex(1)
-        tab=QtGui.QTabWidget()
+        tab=QtWidgets.QTabWidget()
         layout.addWidget(tab,2,1,1,5)
         self.plot=mpl()
-        tab.addTab(self.plot, QtGui.QApplication.translate("equipment", "Plot"))
+        tab.addTab(self.plot, QtWidgets.QApplication.translate("equipment", "Plot"))
         self.tabla=Tabla(2, horizontalHeader=["x", "y"], stretch=False, readOnly=True)
-        tab.addTab(self.tabla, QtGui.QApplication.translate("equipment", "Table"))
+        tab.addTab(self.tabla, QtWidgets.QApplication.translate("equipment", "Table"))
         
         self.Comp1.currentIndexChanged.connect(self.calculo)
         self.Comp2.currentIndexChanged.connect(self.calculo)
@@ -107,15 +108,15 @@ class Binary_distillation(QtGui.QDialog):
 
 
 class Plot_Distribucion(mpl):
-    title=QtGui.QApplication.translate("pychemqt", "Solid Distribution")
+    title=QtWidgets.QApplication.translate("pychemqt", "Solid Distribution")
     def __init__(self, id, solido, parent=None):
         super(Plot_Distribucion, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("pychemqt", "Stream")+" "+str(id)+" - "+self.title)
+        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Stream")+" "+str(id)+" - "+self.title)
         self.fill(solido)
         self.axes2D.legend(loc=4)
         self.axes2D.set_ylim(0, 1)
         self.axes2D.set_xlabel("Dp, "+unidades.Length(None).text("ParticleDiameter"), horizontalalignment='right', size='12')
-        self.axes2D.set_ylabel(QtGui.QApplication.translate("pychemqt", "Accumulated fraction"), horizontalalignment='right', size='12')
+        self.axes2D.set_ylabel(QtWidgets.QApplication.translate("pychemqt", "Accumulated fraction"), horizontalalignment='right', size='12')
 
 
     def fill(self, solido):
@@ -134,7 +135,7 @@ if __name__ == "__main__":
     configuracion=ConfigParser()
     configuracion.read(config.conf_dir+"pychemqtrc")
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = Binary_distillation(configuracion)
     Dialog.show()
     sys.exit(app.exec_())

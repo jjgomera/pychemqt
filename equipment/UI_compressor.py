@@ -30,7 +30,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Method:")), 1, 1)
         self.metodo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
@@ -42,7 +42,7 @@ class UI_equipment(UI_equip):
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             2, 0, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Thermodynamic:")), 3, 1)
         self.termodinamica = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TERMODINAMICA:
@@ -53,28 +53,28 @@ class UI_equipment(UI_equip):
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             4, 0, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Out Pressure")), 5, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 5, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure ratio")), 6, 1)
         self.razon = Entrada_con_unidades(float)
         self.razon.valueChanged.connect(partial(self.changeParams, "razon"))
         lyt_Calc.addWidget(self.razon, 6, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Efficiency")), 7, 1)
         self.rendimiento = Entrada_con_unidades(float)
         self.rendimiento.valueChanged.connect(
             partial(self.changeParams, "rendimiento"))
         lyt_Calc.addWidget(self.rendimiento, 7, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Actual Power")), 8, 1)
         self.trabajo = Entrada_con_unidades(Power)
         self.trabajo.valueChanged.connect(partial(self.changeParams, "trabajo"))
         lyt_Calc.addWidget(self.trabajo, 8, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Stages")), 9, 1)
         self.etapas = Entrada_con_unidades(int, spinbox=True, min=1, value=1,
                                            step=1)
@@ -83,30 +83,30 @@ class UI_equipment(UI_equip):
         lyt_Calc.setRowStretch(10, 1)
 
         group = QtWidgets.QGroupBox()
-        group.setTitle(QtCore.QCoreApplication.translate("pychemqt", "Results"))
+        group.setTitle(QtWidgets.QApplication.translate("pychemqt", "Results"))
         lyt_Calc.addWidget(group, 12, 1, 1, 2)
         lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Power")), 1, 1)
         self.power = Entrada_con_unidades(Power, retornar=False, readOnly=True)
         lyt.addWidget(self.power, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Cp/Cv ratio")), 2, 1)
         self.cp_cv = Entrada_con_unidades(float, retornar=False, readOnly=True)
         lyt.addWidget(self.cp_cv, 2, 2)
         lyt.setColumnStretch(3, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure ratio")), 1, 4)
         self.razonCalculada = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.razonCalculada, 1, 5)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Efficiency")), 2, 4)
         self.rendimientoCalculado = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimientoCalculado, 2, 5)
 
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Compressor:")), 1, 1)
         self.compresor = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_COMPRESOR:
@@ -114,7 +114,7 @@ class UI_equipment(UI_equip):
         self.compresor.currentIndexChanged.connect(
             partial(self.changeParamsCoste, "compresor"))
         lyt_Cost.addWidget(self.compresor, 1, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Driver:")), 2, 1)
         self.transmision = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TRANSMISION:
@@ -122,7 +122,7 @@ class UI_equipment(UI_equip):
         self.transmision.currentIndexChanged.connect(
             partial(self.changeParamsCoste, "transmision"))
         lyt_Cost.addWidget(self.transmision, 2, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Motor:")), 3, 1)
         self.motor = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MOTOR:
@@ -130,7 +130,7 @@ class UI_equipment(UI_equip):
         self.motor.currentIndexChanged.connect(
             partial(self.changeParamsCoste, "motor"))
         lyt_Cost.addWidget(self.motor, 3, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "RPM:")), 4, 1)
         self.rpm = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_RPM:
@@ -153,34 +153,34 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
             10, 1, 1, 6)
         group = QtWidgets.QGroupBox()
-        group.setTitle(QtCore.QCoreApplication.translate("pychemqt", "Stimated Costs"))
+        group.setTitle(QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 9, 1, 1, 5)
         lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Compressor")), 0, 0)
         self.C_comp = Entrada_con_unidades(Currency, retornar=False,
                                            tolerancia=8, decimales=2)
         self.C_comp.setReadOnly(True)
         lyt.addWidget(self.C_comp, 0, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Drive")), 1, 0)
         self.C_trans = Entrada_con_unidades(Currency, retornar=False,
                                             tolerancia=8, decimales=2)
         self.C_trans.setReadOnly(True)
         lyt.addWidget(self.C_trans, 1, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Motor")), 2, 0)
         self.C_motor = Entrada_con_unidades(Currency, retornar=False,
                                             tolerancia=8, decimales=2)
         self.C_motor.setReadOnly(True)
         lyt.addWidget(self.C_motor, 2, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Purchase cost")), 0, 4)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False,
                                           tolerancia=8, decimales=2)
         self.C_adq.setReadOnly(True)
         lyt.addWidget(self.C_adq, 0, 5)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Installed cost")), 1, 4)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False,
                                            tolerancia=8, decimales=2)

@@ -33,7 +33,7 @@ class newComponent(QtWidgets.QDialog):
         self.status = Status()
         layoutBottom.addWidget(self.status)
         self.buttonShowDetails = QtWidgets.QPushButton(
-            QtCore.QCoreApplication.translate("pychemqt", "Show Details"))
+            QtWidgets.QApplication.translate("pychemqt", "Show Details"))
         self.buttonShowDetails.clicked.connect(self.showDetails)
         self.buttonShowDetails.setEnabled(False)
         layoutBottom.addWidget(self.buttonShowDetails)
@@ -85,7 +85,7 @@ class Ui_Contribution(newComponent):
             Ambrose
         """
         super(Ui_Contribution, self).__init__(parent)
-        self.setWindowTitle(QtCore.QCoreApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Select the component group for method") +" "+ metodo)
 
         self.grupo = []
@@ -99,7 +99,7 @@ class Ui_Contribution(newComponent):
         self.Grupos.setColumnCount(2)
         self.Grupos.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Nk"))
         self.Grupos.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
-            QtCore.QCoreApplication.translate("pychemqt", "Group")))
+            QtWidgets.QApplication.translate("pychemqt", "Group")))
         self.Grupos.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.Grupos.setSortingEnabled(True)
         self.Grupos.horizontalHeader().setStretchLastSection(True)
@@ -118,12 +118,12 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.Formula, 0, 3)
         self.botonBorrar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editDelete.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Delete"))
+            QtWidgets.QApplication.translate("pychemqt", "Delete"))
         self.botonBorrar.clicked.connect(self.borrar)
         layout.addWidget(self.botonBorrar, 1, 3)
         self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/clear.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Clear"))
+            QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonClear.clicked.connect(self.clear)
         layout.addWidget(self.botonClear, 2, 3)
 
@@ -138,7 +138,7 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.TablaContribuciones, 4, 0, 7, 3)
         self.botonAdd = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/add.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Add"))
+            QtWidgets.QApplication.translate("pychemqt", "Add"))
         self.botonAdd.setDisabled(True)
         self.botonAdd.clicked.connect(self.add)
         layout.addWidget(self.botonAdd, 4, 3)
@@ -148,33 +148,33 @@ class Ui_Contribution(newComponent):
         # Show widget for specific method
         if metodo in ["Constantinou", "Wilson"]:
             self.Order1 = QtWidgets.QRadioButton(
-                QtCore.QCoreApplication.translate("pychemqt", "1st order"))
+                QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
             self.Order1.toggled.connect(self.Order)
             layout.addWidget(self.Order1, 6, 3)
             self.Order2 = QtWidgets.QRadioButton(
-                QtCore.QCoreApplication.translate("pychemqt", "2nd order"))
+                QtWidgets.QApplication.translate("pychemqt", "2nd order"))
             layout.addWidget(self.Order2, 7, 3)
 
         if metodo == "Wilson":
             layout.addWidget(QtWidgets.QLabel(
-                QtCore.QCoreApplication.translate("pychemqt", "Rings")), 8, 3)
+                QtWidgets.QApplication.translate("pychemqt", "Rings")), 8, 3)
             self.anillos = QtWidgets.QSpinBox()
             self.anillos.valueChanged.connect(partial(self.changeParams, "ring"))
             layout.addWidget(self.anillos, 9, 3)
 
         if metodo == "Marrero":
             layout.addWidget(QtWidgets.QLabel(
-                QtCore.QCoreApplication.translate("pychemqt", "Atoms")), 8, 3)
+                QtWidgets.QApplication.translate("pychemqt", "Atoms")), 8, 3)
             self.Atomos = QtWidgets.QSpinBox()
             self.Atomos.valueChanged.connect(partial(self.changeParams, "atomos"))
             layout.addWidget(self.Atomos, 9, 3)
 
         if metodo == "Ambrose":
             layout.addWidget(QtWidgets.QLabel(
-                QtCore.QCoreApplication.translate("pychemqt", "Platt number")), 8, 3)
+                QtWidgets.QApplication.translate("pychemqt", "Platt number")), 8, 3)
             self.Platt = QtWidgets.QSpinBox()
-            self.Platt.setToolTip(QtCore.QCoreApplication.translate(
+            self.Platt.setToolTip(QtWidgets.QApplication.translate(
                 "pychemqt", "The Platt number is the number of pairs of carbon \
                 atoms which are separated \nby three carbon-carbon bonds and \
                 is an indicator of the degree of branching in the molecule.\n\
@@ -188,21 +188,21 @@ class Ui_Contribution(newComponent):
         layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
                                          QtWidgets.QSizePolicy.Expanding), 11, 0, 1, 4)
         layout.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Name")), 12, 0)
+            QtWidgets.QApplication.translate("pychemqt", "Name")), 12, 0)
         self.nombre = QtWidgets.QLineEdit()
         self.nombre.textChanged.connect(partial(self.changeParams, "name"))
         layout.addWidget(self.nombre, 12, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Molecular Weight")), 13, 0)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         self.M.valueChanged.connect(partial(self.changeParams, "M"))
         layout.addWidget(self.M, 13, 1)
         layout.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Boiling point")), 14, 0)
+            QtWidgets.QApplication.translate("pychemqt", "Boiling point")), 14, 0)
         self.Tb = Entrada_con_unidades(Temperature)
         self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
         layout.addWidget(self.Tb, 14, 1)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Specific Gravity")), 15, 0)
         self.SG = Entrada_con_unidades(float)
         self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
@@ -305,32 +305,32 @@ class Definicion_Petro(newComponent):
 
     def __init__(self, parent=None):
         super(Definicion_Petro, self).__init__(parent)
-        self.setWindowTitle(QtCore.QCoreApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Petrol component definition"))
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Name")), 1, 1)
         self.nombre = QtWidgets.QLineEdit()
         self.nombre.textChanged.connect(partial(self.changeParams, "name"))
         layout.addWidget(self.nombre, 1, 2, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
                                          QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Boiling point")), 3, 1)
         self.Tb = Entrada_con_unidades(Temperature)
         self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
         layout.addWidget(self.Tb, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Molecular Weight")), 4, 1)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         self.M.valueChanged.connect(partial(self.changeParams, "M"))
         layout.addWidget(self.M, 4, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Specific Gravity")), 5, 1)
         self.SG = Entrada_con_unidades(float)
         self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
         layout.addWidget(self.SG, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "API gravity")), 6, 1)
         self.API = Entrada_con_unidades(float)
         self.API.valueChanged.connect(partial(self.changeParams, "API"))
@@ -351,12 +351,12 @@ class Definicion_Petro(newComponent):
         self.v210 = Entrada_con_unidades(Diffusivity)
         self.v210.valueChanged.connect(partial(self.changeParams, "v210"))
         layout.addWidget(self.v210, 10, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Refraction index")), 11, 1)
         self.n = Entrada_con_unidades(float)
         self.n.valueChanged.connect(partial(self.changeParams, "n"))
         layout.addWidget(self.n, 11, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Huang parameter")), 12, 1)
         self.I = Entrada_con_unidades(float)
         self.I.valueChanged.connect(partial(self.changeParams, "I"))
@@ -374,7 +374,7 @@ class Definicion_Petro(newComponent):
         self.N.valueChanged.connect(partial(self.changeParams, "N"))
         layout.addWidget(self.N, 15, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Carbons number")), 19, 1)
         self.carbonos = Entrada_con_unidades(int, width=50, spinbox=True,
                                              step=1, start=7, min=5, max=100)
@@ -383,7 +383,7 @@ class Definicion_Petro(newComponent):
 
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Expanding,
                                          QtWidgets.QSizePolicy.Expanding), 3, 3, 15, 1)
-        self.checkCurva = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate(
+        self.checkCurva = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Define destillation curve"))
         layout.addWidget(self.checkCurva, 3, 4, 1, 2)
         self.tipoCurva = QtWidgets.QComboBox()
@@ -395,7 +395,7 @@ class Definicion_Petro(newComponent):
         self.tipoCurva.setEnabled(False)
         layout.addWidget(self.tipoCurva, 4, 4, 1, 2)
         self.textoPresion = QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Pressure"))
+            QtWidgets.QApplication.translate("pychemqt", "Pressure"))
         self.textoPresion.setEnabled(False)
         layout.addWidget(self.textoPresion, 5, 4)
         self.presion = Entrada_con_unidades(Pressure, value=101325.)
@@ -408,7 +408,7 @@ class Definicion_Petro(newComponent):
         self.curvaDestilacion.setEnabled(False)
         self.curvaDestilacion.editingFinished.connect(self.changeCurva)
         layout.addWidget(self.curvaDestilacion, 6, 4, 13, 2)
-        self.checkBlend = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate(
+        self.checkBlend = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Blend if its necessary"))
         layout.addWidget(self.checkBlend, 19, 4, 1, 2)
 
@@ -419,7 +419,7 @@ class Definicion_Petro(newComponent):
 
         layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
                                          QtWidgets.QSizePolicy.Fixed), 20, 1, 1, 2)
-        self.checkCrudo = QtWidgets.QCheckBox(QtCore.QCoreApplication.translate(
+        self.checkCrudo = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use petrol fraction from list"))
         self.checkCrudo.toggled.connect(self.changeUnknown)
         layout.addWidget(self.checkCrudo, 21, 1, 1, 2)

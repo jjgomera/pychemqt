@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import  QApplication
 from lib import unidades
 from lib.corriente import Corriente
 from lib.reaction import Reaction
-from parents import equipment
+from .parents import equipment
 
 
 class Reactor(equipment):
@@ -93,7 +93,7 @@ class Reactor(equipment):
         elif self.thermal==3:
             pass
         
-        print fracciones
+        print(fracciones)
         self.Salida=Corriente(T=T, P=self.entrada.P, caudalMasico=self.entrada.caudalmasico, fraccionMolar=fracciones, solido=self.entrada.solido)
         self.Heat=unidades.Power(self.Salida.h-self.entrada.h-h)
         
@@ -103,8 +103,8 @@ if __name__ == '__main__':
     from math import exp, log
     mezcla=Corriente(T=300, P=101325., caudalMasico=1.0, ids=[1, 46, 47, 62], fraccionMolar=[0.03, 0.96, 0.01, 0.])
     reaccion=Reaction(comp=[1, 46, 47, 62], coef=[-2, 0, -1, 2], tipo=0, base=0, conversion=0.9)
-    print reaccion
+    print(reaccion)
     reactor=Reactor(entrada=mezcla, reaccion=[reaccion], thermal=1)
-    print reactor.status
-    print reactor.Salida.fraccion, reactor.Salida.T, reactor.Heat.MJh
+    print(reactor.status)
+    print(reactor.Salida.fraccion, reactor.Salida.T, reactor.Heat.MJh)
 

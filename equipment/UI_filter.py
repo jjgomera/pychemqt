@@ -26,21 +26,21 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada, QtCore.QCoreApplication.translate("equipment", "Entrada", None))
+        self.tabWidget.insertTab(0, self.Entrada, QtWidgets.QApplication.translate("equipment", "Entrada", None))
 
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Tipo:", None)), 1, 0, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Tipo:", None)), 1, 0, 1, 1)
         self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum belt discharge", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum drum scraper discharge", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Rotary vacuum disk", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Horizontal vacuum belt", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Pressure leaf", None))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("equipment", "Plate and frame", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Rotary vacuum belt discharge", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Rotary vacuum drum scraper discharge", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Rotary vacuum disk", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Horizontal vacuum belt", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Pressure leaf", None))
+        self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Plate and frame", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 1, 1, 3)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,0,1,2)
@@ -51,13 +51,13 @@ class UI_equipment(parents.UI_equip):
 
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),6,0,1,6)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("equipment", "Costos calculados", None))
+        self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,0,1,4)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Adquisición:", None)),1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste Adquisición:", None)),1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,1,2)
-        gridLayout_5.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("equipment", "Coste Instalación:", None)),2,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste Instalación:", None)),2,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,2,2)
 
@@ -65,8 +65,8 @@ class UI_equipment(parents.UI_equip):
         #Pestaña salida
         self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaGas,QtCore.QCoreApplication.translate("equipment", "Gas filtrado", None))
-        self.Salida.addTab(self.SalidaSolido,QtCore.QCoreApplication.translate("equipment", "Sólidos recogidos", None))
+        self.Salida.addTab(self.SalidaGas,QtWidgets.QApplication.translate("equipment", "Gas filtrado", None))
+        self.Salida.addTab(self.SalidaSolido,QtWidgets.QApplication.translate("equipment", "Sólidos recogidos", None))
 
         self.tabWidget.setCurrentIndex(0)
 

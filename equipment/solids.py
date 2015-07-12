@@ -10,7 +10,7 @@
 
 from lib import unidades
 from lib.corriente import Corriente
-from parents import equipment
+from .parents import equipment
 
 class Screen(equipment):
     """Clase que define los tamices"""

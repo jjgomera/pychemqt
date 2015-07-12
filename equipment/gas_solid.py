@@ -20,7 +20,7 @@ from lib.unidades import (Length, Pressure, DeltaP, Speed, Time, Area,
                           PotencialElectric, Currency, Dimensionless, MassFlow)
 # from lib.datasheet import pdf
 from lib.corriente import Corriente, Solid
-from parents import equipment, UI_equip
+from .parents import equipment, UI_equip
 
 
 class Separador_SolidGas(equipment):
@@ -196,7 +196,7 @@ class Ciclon(Separador_SolidGas):
         self.DeltaPAdmisible=Pressure(self.kwargs["DeltaPAdmisible"])
 
         if self.kwargs["tipo_calculo"]==0: #Calculo
-            if self.kwargs["modelo_ciclon"]<>8:
+            if self.kwargs["modelo_ciclon"]!=8:
                 self.dimensiones=self.dimensionado(Dc=self.Dc)  #Hc, Bc, Jc, Lc, Zc, De, Sc,kf, G
             else:
                 self.dimensiones=self.dimensionado(dimensiones=self.dimensiones)
@@ -407,7 +407,7 @@ class Ciclon(Separador_SolidGas):
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
         if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %(u"Dp(µm)", "Xi", u"ηi", "Xis", "Xig")+os.linesep
+            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
             for i in range(len(self.rendimiento_parcial)):
                 txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
@@ -616,7 +616,7 @@ class GravityChamber(Separador_SolidGas):
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
         if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %(u"Dp(µm)", "Xi", u"ηi", "Xis", "Xig")+os.linesep
+            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
             for i in range(len(self.rendimiento_parcial)):
                 txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
@@ -861,7 +861,7 @@ class Baghouse(Separador_SolidGas):
                 if not any(self.kwargs["rendimientos"]):
                     txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
 
-                txt+=os.linesep+"%10s %8s %10s %10s %10s" %(u"Dp("+Length.text("ParticleDiameter")+")", "Xi", u"ŋi", "Xis", "Xig")+os.linesep
+                txt+=os.linesep+"%10s %8s %10s %10s %10s" %("Dp("+Length.text("ParticleDiameter")+")", "Xi", "ŋi", "Xis", "Xig")+os.linesep
                 for i in range(len(self.rendimiento_parcial)):
                     txt+="%10.4f %10.4f %10.4f %10.4f %10.4f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
@@ -1042,7 +1042,7 @@ class ElectricPrecipitator(Separador_SolidGas):
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
         if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %(u"Dp(µm)", "Xi", u"ηi", "Xis", "Xig")+os.linesep
+            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
             for i in range(len(self.rendimiento_parcial)):
                 txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
@@ -1091,7 +1091,7 @@ if __name__ == '__main__':
 
 #
     filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
-    print filtro.floorArea, filtro.Vgas.ftmin
+    print((filtro.floorArea, filtro.Vgas.ftmin))
 
 
 #    precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)

@@ -12,7 +12,7 @@ import sqlite3
 
 from numpy import polyval
 from scipy.optimize import fsolve
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
 from lib.sql import databank_name
@@ -181,7 +181,7 @@ class Reaction(object):
                 return keq-productorio
 
             alfa = fsolve(f, 0.5)
-            print alfa, f(alfa)
+            print(alfa, f(alfa))
  
         avance = alfa*self.coef[self.base]*corriente.caudalunitariomolar[self.base]
         Q_out = [corriente.caudalunitariomolar[i]+avance*self.coef[i] /
@@ -197,7 +197,7 @@ class Reaction(object):
                                self.coef[indice]*avance, "Jh")
         else:
             h = unidades.Power(self.Hr*avance, "Jh")
-        print alfa, avance
+        print(alfa, avance)
 
         caudal = sum(Q_out)
         fraccion = [caudal_i/caudal for caudal_i in Q_out]
@@ -250,4 +250,4 @@ if __name__ == "__main__":
 #    print reaccion
 
     reaccion = Reaction(comp=[1, 47, 62], coef=[-2, -1, 2])
-    print reaccion
+    print(reaccion)

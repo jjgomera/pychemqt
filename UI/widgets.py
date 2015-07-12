@@ -31,12 +31,12 @@ from lib.corriente import Corriente
 class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, QtCore.QCoreApplication.translate("pychemqt", "Underspecified"), "yellow"),
-        (1, QtCore.QCoreApplication.translate("pychemqt", "Solved"), "green"),
-        (2, QtCore.QCoreApplication.translate("pychemqt", "Ignored"), "Light gray"),
-        (3, QtCore.QCoreApplication.translate("pychemqt", "Warning"), "green"),
-        (4, QtCore.QCoreApplication.translate("pychemqt", "Calculating..."), "Cyan"),
-        (5, QtCore.QCoreApplication.translate("pychemqt", "Error"),  "red"))
+        (0, QtWidgets.QApplication.translate("pychemqt", "Underspecified"), "yellow"),
+        (1, QtWidgets.QApplication.translate("pychemqt", "Solved"), "green"),
+        (2, QtWidgets.QApplication.translate("pychemqt", "Ignored"), "Light gray"),
+        (3, QtWidgets.QApplication.translate("pychemqt", "Warning"), "green"),
+        (4, QtWidgets.QApplication.translate("pychemqt", "Calculating..."), "Cyan"),
+        (5, QtWidgets.QApplication.translate("pychemqt", "Error"),  "red"))
 
     def __init__(self, state=0, text="", parent=None):
         """
@@ -592,7 +592,7 @@ class ColorSelector(QtWidgets.QWidget):
         lyt.addWidget(self.button)
         if hasAlpha:
             lyt.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
-            lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Alpha")))
+            lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Alpha")))
             self.transparencia=Entrada_con_unidades(int, width=50, min=0, max=255, spinbox=True, value=alpha)
             self.transparencia.valueChanged.connect(self.setAlpha)
             lyt.addWidget(self.transparencia)
@@ -665,10 +665,10 @@ class TreeEquipment(QtWidgets.QTreeWidget):
     def updateList(self, items):
         self.clear()
         self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Stream.setText(0, QtCore.QCoreApplication.translate("pychemqt", "Streams"))
+        self.Stream.setText(0, QtWidgets.QApplication.translate("pychemqt", "Streams"))
         self.Stream.setExpanded(True)
         self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Equipment.setText(0, QtCore.QCoreApplication.translate("pychemqt", "Equipments"))
+        self.Equipment.setText(0, QtWidgets.QApplication.translate("pychemqt", "Equipments"))
         self.Equipment.setExpanded(True)
         ext=[]
         ins=[]
@@ -716,7 +716,7 @@ class PathConfig(QtWidgets.QWidget):
         self.path.setFixedHeight(24)
         self.path.textEdited.connect(self.pathEdited)
         layout.addWidget(self.path)
-        self.boton=QtWidgets.QPushButton(QtCore.QCoreApplication.translate("pychemqt", "Browse"))
+        self.boton=QtWidgets.QPushButton(QtWidgets.QApplication.translate("pychemqt", "Browse"))
         self.boton.setFixedHeight(24)
         self.boton.clicked.connect(self.select)
         layout.addWidget(self.boton)
@@ -730,16 +730,16 @@ class PathConfig(QtWidgets.QWidget):
 
     def select(self):
         if not self.patron:
-            patron = QtCore.QCoreApplication.translate("pychemqt", "All files")+"(*)"
+            patron = QtWidgets.QApplication.translate("pychemqt", "All files")+"(*)"
         elif self.patron=="exe":
             if sys.platform=="win32":
-                patron = QtCore.QCoreApplication.translate("pychemqt", "Executable files")+ "(*.exe *.bat)"
+                patron = QtWidgets.QApplication.translate("pychemqt", "Executable files")+ "(*.exe *.bat)"
             else:
-                patron = QtCore.QCoreApplication.translate("pychemqt", "All files")+"(*)"
+                patron = QtWidgets.QApplication.translate("pychemqt", "All files")+"(*)"
         else:
             patron=self.patron
         if not self.msg:
-            msg = QtCore.QCoreApplication.translate("pychemqt", "Select path of file")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Select path of file")
         else:
             msg=self.msg
         dir=os.path.dirname(str(self.path.text()))
@@ -928,7 +928,7 @@ class Table_Graphics(QtWidgets.QWidget):
             else:
                 layout.addWidget(QtWidgets.QLabel(entity.msg))
         else:
-            layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Undefined")))
+            layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Undefined")))
 
 
 class FlowLayout(QtWidgets.QLayout):
@@ -1059,8 +1059,8 @@ def okToContinue(parent, dirty, func, parameters):
     if not dirty:
         return True
     dialog = QtWidgets.QMessageBox.question(parent,
-        QtCore.QCoreApplication.translate("pychemqt", "Unsaved changes"),
-        QtCore.QCoreApplication.translate("pychemqt", "Save unsaved changes?"),
+        QtWidgets.QApplication.translate("pychemqt", "Unsaved changes"),
+        QtWidgets.QApplication.translate("pychemqt", "Save unsaved changes?"),
         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel,
         QtWidgets.QMessageBox.Yes)
     if dialog == QtWidgets.QMessageBox.Cancel:

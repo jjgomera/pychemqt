@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from csv import writer
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 #from freesteam import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib import pyplot
@@ -29,7 +30,7 @@ class Plot(FigureCanvasQTAgg):
         else:
             self.axes3D = Axes3D(self.fig)
         
-        FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
 
@@ -117,46 +118,46 @@ class Plot(FigureCanvasQTAgg):
         elif tipo =="X":
             self.IsoX=linea
 
-class Ventana_Lista_Puntos(QtGui.QDialog):
+class Ventana_Lista_Puntos(QtWidgets.QDialog):
     """Dialogo que muestra la lísta de puntos especificados por el usuario así como sus propiedades"""
     def __init__(self, puntos, parent=None):
         super(Ventana_Lista_Puntos, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Puntos individuales", None, QtGui.QApplication.UnicodeUTF8))
+        self.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Puntos individuales", None))
         self.puntos=puntos
-        self.gridLayout = QtGui.QGridLayout(self)
-        self.listWidget = QtGui.QListWidget()
+        self.gridLayout = QtWidgets.QGridLayout(self)
+        self.listWidget = QtWidgets.QListWidget()
         self.gridLayout.addWidget(self.listWidget, 0, 0, 3, 1)
-        self.tablaPropiedades=QtGui.QTableWidget()
+        self.tablaPropiedades=QtWidgets.QTableWidget()
         self.tablaPropiedades.setVisible(False)
-        self.tablaPropiedades.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.tablaPropiedades.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tablaPropiedades.setRowCount(16)
-        self.tablaPropiedades.setVerticalHeaderItem(0, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(1, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(2, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Volumen", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificVolume").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(3, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(4, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(5, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", u"Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8)))
-        self.tablaPropiedades.setVerticalHeaderItem(6, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(7, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(8, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(9, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Density").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(10, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(11, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(12, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Conductividad", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("ThermalConductivity").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(13, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Viscosity").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(14, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Speed").text()))
-        self.tablaPropiedades.setVerticalHeaderItem(15, QtGui.QTableWidgetItem(QtGui.QApplication.translate("SteamTables", "Región", None, QtGui.QApplication.UnicodeUTF8)))
+        self.tablaPropiedades.setVerticalHeaderItem(0, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Presión", None)+", %s" %config.Configuracion("Pressure").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(1, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None)+", %s" %config.Configuracion("Temperature").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(2, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Volumen", None)+", %s" %config.Configuracion("SpecificVolume").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(3, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Entalpía", None)+", %s" %config.Configuracion("Enthalpy").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(4, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Entropía", None)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(5, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None)))
+        self.tablaPropiedades.setVerticalHeaderItem(6, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Energía interna", None)+", %s" %config.Configuracion("Enthalpy").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(7, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None)+", %s" %config.Configuracion("Enthalpy").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(8, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None)+", %s" %config.Configuracion("Enthalpy").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(9, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Densidad", None)+", %s" %config.Configuracion("Density").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(10, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Cp", None)+", %s" %config.Configuracion("SpecificHeat").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(11, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Cv", None)+", %s" %config.Configuracion("SpecificHeat").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(12, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Conductividad", None)+", %s" %config.Configuracion("ThermalConductivity").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(13, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None)+", %s" %config.Configuracion("Viscosity").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(14, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None)+", %s" %config.Configuracion("Speed").text()))
+        self.tablaPropiedades.setVerticalHeaderItem(15, QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate("SteamTables", "Región", None)))
         self.gridLayout.addWidget(self.tablaPropiedades, 3, 0, 1, 2)
-        self.botonBorrar = QtGui.QPushButton()
-        self.botonBorrar.setText(QtGui.QApplication.translate("SteamTables", "Borrar", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonBorrar = QtWidgets.QPushButton()
+        self.botonBorrar.setText(QtWidgets.QApplication.translate("SteamTables", "Borrar", None))
         self.botonBorrar.clicked.connect(self.on_botonBorrar_clicked)
         self.gridLayout.addWidget(self.botonBorrar, 0, 1, 1, 1)
-        self.botonPropiedades = QtGui.QPushButton()
+        self.botonPropiedades = QtWidgets.QPushButton()
         self.botonPropiedades.setCheckable(True)
-        self.botonPropiedades.setText(QtGui.QApplication.translate("SteamTables", "Propiedades", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonPropiedades.setText(QtWidgets.QApplication.translate("SteamTables", "Propiedades", None))
         self.botonPropiedades.toggled.connect(self.tablaPropiedades.setVisible)
         self.gridLayout.addWidget(self.botonPropiedades, 1, 1, 1, 1)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok, QtCore.Qt.Vertical)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok, QtCore.Qt.Vertical)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
@@ -187,35 +188,35 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
         for i, punto in enumerate(self.puntos):
             pixmap=QtGui.QPixmap(10, 10)
             pixmap.fill(QtGui.QColor(self.colores[i]))
-            self.tablaPropiedades.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(QtGui.QIcon(pixmap), str(i+1)))
-            self.tablaPropiedades.setItem(0, i, QtGui.QTableWidgetItem(representacion(unidades.Pressure(punto.p).config())))
-            self.tablaPropiedades.setItem(1, i, QtGui.QTableWidgetItem(representacion(unidades.Temperature(punto.T).config())))
-            self.tablaPropiedades.setItem(2, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificVolume(punto.v).config())))
-            self.tablaPropiedades.setItem(3, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.h).config())))
-            self.tablaPropiedades.setItem(4, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.s).config("Entropy"))))
-            self.tablaPropiedades.setItem(5, i, QtGui.QTableWidgetItem(representacion(punto.x)))
-            self.tablaPropiedades.setItem(6, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.u).config())))
-            self.tablaPropiedades.setItem(7, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
-            self.tablaPropiedades.setItem(8, i, QtGui.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
-            self.tablaPropiedades.setItem(9, i, QtGui.QTableWidgetItem(representacion(unidades.Density(punto.rho).config())))
-            self.tablaPropiedades.setItem(10, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cp).config())))
-            self.tablaPropiedades.setItem(11, i, QtGui.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cv).config())))
-            self.tablaPropiedades.setItem(12, i, QtGui.QTableWidgetItem(representacion(unidades.ThermalConductivity(punto.k).config())))
-            self.tablaPropiedades.setItem(13, i, QtGui.QTableWidgetItem(representacion(unidades.Viscosity(punto.mu).config())))
+            self.tablaPropiedades.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(QtGui.QIcon(pixmap), str(i+1)))
+            self.tablaPropiedades.setItem(0, i, QtWidgets.QTableWidgetItem(representacion(unidades.Pressure(punto.p).config())))
+            self.tablaPropiedades.setItem(1, i, QtWidgets.QTableWidgetItem(representacion(unidades.Temperature(punto.T).config())))
+            self.tablaPropiedades.setItem(2, i, QtWidgets.QTableWidgetItem(representacion(unidades.SpecificVolume(punto.v).config())))
+            self.tablaPropiedades.setItem(3, i, QtWidgets.QTableWidgetItem(representacion(unidades.Enthalpy(punto.h).config())))
+            self.tablaPropiedades.setItem(4, i, QtWidgets.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.s).config("Entropy"))))
+            self.tablaPropiedades.setItem(5, i, QtWidgets.QTableWidgetItem(representacion(punto.x)))
+            self.tablaPropiedades.setItem(6, i, QtWidgets.QTableWidgetItem(representacion(unidades.Enthalpy(punto.u).config())))
+            self.tablaPropiedades.setItem(7, i, QtWidgets.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
+            self.tablaPropiedades.setItem(8, i, QtWidgets.QTableWidgetItem(representacion(unidades.Enthalpy(punto.s).config())))
+            self.tablaPropiedades.setItem(9, i, QtWidgets.QTableWidgetItem(representacion(unidades.Density(punto.rho).config())))
+            self.tablaPropiedades.setItem(10, i, QtWidgets.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cp).config())))
+            self.tablaPropiedades.setItem(11, i, QtWidgets.QTableWidgetItem(representacion(unidades.SpecificHeat(punto.cv).config())))
+            self.tablaPropiedades.setItem(12, i, QtWidgets.QTableWidgetItem(representacion(unidades.ThermalConductivity(punto.k).config())))
+            self.tablaPropiedades.setItem(13, i, QtWidgets.QTableWidgetItem(representacion(unidades.Viscosity(punto.mu).config())))
             if punto.region !='\x04' and  punto.region !='\x03':
-                self.tablaPropiedades.setItem(14, i, QtGui.QTableWidgetItem(representacion(unidades.Speed(punto.w).config())))
+                self.tablaPropiedades.setItem(14, i, QtWidgets.QTableWidgetItem(representacion(unidades.Speed(punto.w).config())))
             else:
-                self.tablaPropiedades.setItem(14, i, QtGui.QTableWidgetItem('nan'))
+                self.tablaPropiedades.setItem(14, i, QtWidgets.QTableWidgetItem('nan'))
             if punto.region =='\x01':
-                self.tablaPropiedades.setItem(15, i, QtGui.QTableWidgetItem('1'))
+                self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('1'))
             elif punto.region =='\x02':
-                self.tablaPropiedades.setItem(15, i, QtGui.QTableWidgetItem('2'))
+                self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('2'))
             elif punto.region =='\x03':
-                self.tablaPropiedades.setItem(15, i, QtGui.QTableWidgetItem('3'))
+                self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('3'))
             elif punto.region =='\x04':
-                self.tablaPropiedades.setItem(15, i, QtGui.QTableWidgetItem('4'))
+                self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('4'))
             elif punto.region =='\x05':
-                self.tablaPropiedades.setItem(15, i, QtGui.QTableWidgetItem('5'))
+                self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('5'))
             for j in range(16):
                 self.tablaPropiedades.item(j, i).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
                 
@@ -230,84 +231,84 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
 
 
 
-class Ui_SteamTables(QtGui.QMainWindow):
+class Ui_SteamTables(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(Ui_SteamTables, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/steamTables.png")))
-        self.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Tablas de Vapor", None, QtGui.QApplication.UnicodeUTF8))
+        self.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Tablas de Vapor", None))
         self.Config=ConfigParser()
         self.Config.read("UI_steamTablesrc")
 
         self.showMaximized()
-        self.centralwidget = QtGui.QWidget()
+        self.centralwidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralwidget)
         
         #menus
-        self.menubar = QtGui.QMenuBar()
+        self.menubar = QtWidgets.QMenuBar()
         self.menubar.setGeometry(QtCore.QRect(0,0,700,30))
-        self.menuArchivo = QtGui.QMenu(self.menubar)
-        self.menuArchivo.setTitle(QtGui.QApplication.translate("SteamTables", "Archivo", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuGrafico = QtGui.QMenu(self.menubar)
-        self.menuGrafico.setTitle(QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuAyuda = QtGui.QMenu(self.menubar)
-        self.menuAyuda.setTitle(QtGui.QApplication.translate("SteamTables", "Ayuda", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuArchivo = QtWidgets.QMenu(self.menubar)
+        self.menuArchivo.setTitle(QtWidgets.QApplication.translate("SteamTables", "Archivo", None))
+        self.menuGrafico = QtWidgets.QMenu(self.menubar)
+        self.menuGrafico.setTitle(QtWidgets.QApplication.translate("SteamTables", "Gráfico", None))
+        self.menuAyuda = QtWidgets.QMenu(self.menubar)
+        self.menuAyuda.setTitle(QtWidgets.QApplication.translate("SteamTables", "Ayuda", None))
         self.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar()
+        self.statusbar = QtWidgets.QStatusBar()
         self.setStatusBar(self.statusbar)
-        self.progresbar=QtGui.QProgressBar()
+        self.progresbar=QtWidgets.QProgressBar()
         self.progresbar.setVisible(False)
         self.progresbar.setFixedSize(80, 15)
         self.statusbar.addPermanentWidget(self.progresbar)
-        self.Preferencias = QtGui.QAction(self)
-        self.Preferencias.setText(QtGui.QApplication.translate("SteamTables", "Preferencias", None, QtGui.QApplication.UnicodeUTF8))
+        self.Preferencias = QtWidgets.QAction(self)
+        self.Preferencias.setText(QtWidgets.QApplication.translate("SteamTables", "Preferencias", None))
         self.Preferencias.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/configure.png")))
         self.Preferencias.triggered.connect(self.preferencias)
-        self.actionCSV = QtGui.QAction(self)
-        self.actionCSV.setText(QtGui.QApplication.translate("SteamTables", "Guardar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCSV = QtWidgets.QAction(self)
+        self.actionCSV.setText(QtWidgets.QApplication.translate("SteamTables", "Guardar", None))
         self.actionCSV.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/filesave.png")))
         self.actionCSV.setShortcut("Ctrl+E")
         self.actionCSV.setEnabled(False)
         self.actionCSV.triggered.connect(self.exporttoCSV)
-        self.actionSalir = QtGui.QAction(self)
+        self.actionSalir = QtWidgets.QAction(self)
         self.actionSalir.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/button/exit.png")))
         self.actionSalir.setShortcut("Alt+F4")
-        self.actionSalir.setText(QtGui.QApplication.translate("SteamTables", "Salir", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSalir.setText(QtWidgets.QApplication.translate("SteamTables", "Salir", None))
         self.actionSalir.triggered.connect(self.close)
-        self.actionTipoGrafico=QtGui.QActionGroup(self)
-        self.action2D = QtGui.QAction(self.actionTipoGrafico)
+        self.actionTipoGrafico=QtWidgets.QActionGroup(self)
+        self.action2D = QtWidgets.QAction(self.actionTipoGrafico)
         self.action2D.setCheckable(True)
         self.action2D.setShortcut("Ctrl+2")
-        self.action2D.setText(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8))
+        self.action2D.setText(QtWidgets.QApplication.translate("SteamTables", "Gráfico 2D", None))
         self.action2D.toggled.connect(self.d2)
-        self.action3D = QtGui.QAction(self.actionTipoGrafico)
+        self.action3D = QtWidgets.QAction(self.actionTipoGrafico)
         self.action3D.setCheckable(True)
         self.action3D.setChecked(True)
         self.action3D.setShortcut("Ctrl+3")
-        self.action3D.setText(QtGui.QApplication.translate("SteamTables", "Gráfico 3D", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMostrarBarra = QtGui.QAction(self)
+        self.action3D.setText(QtWidgets.QApplication.translate("SteamTables", "Gráfico 3D", None))
+        self.actionMostrarBarra = QtWidgets.QAction(self)
         self.actionMostrarBarra.setCheckable(True)
         self.actionMostrarBarra.setChecked(False)
         self.actionMostrarBarra.setShortcut("Ctrl+T")
         self.actionMostrarBarra.triggered.connect(self.mostrarBarra)
-        self.actionMostrarBarra.setText(QtGui.QApplication.translate("SteamTables", "Mostrar barra de herramientas", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionDibujarSaturacion = QtGui.QAction(self)
+        self.actionMostrarBarra.setText(QtWidgets.QApplication.translate("SteamTables", "Mostrar barra de herramientas", None))
+        self.actionDibujarSaturacion = QtWidgets.QAction(self)
         self.actionDibujarSaturacion.setCheckable(True)
         self.actionDibujarSaturacion.setChecked(True)
         self.actionDibujarSaturacion.setShortcut("Ctrl+S")
         self.actionDibujarSaturacion.triggered.connect(self.mostrarSaturacion)
-        self.actionDibujarSaturacion.setText(QtGui.QApplication.translate("SteamTables", "Dibujar línea de saturación", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMostrarPuntos = QtGui.QAction(self)
+        self.actionDibujarSaturacion.setText(QtWidgets.QApplication.translate("SteamTables", "Dibujar línea de saturación", None))
+        self.actionMostrarPuntos = QtWidgets.QAction(self)
         self.actionMostrarPuntos.setCheckable(True)
         self.actionMostrarPuntos.setChecked(True)
         self.actionMostrarPuntos.setShortcut("Ctrl+P")
         self.actionMostrarPuntos.triggered.connect(self.mostrarPuntos)
-        self.actionMostrarPuntos.setText(QtGui.QApplication.translate("SteamTables", "Mostrar puntos definidos por el usuario", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAcerca_de = QtGui.QAction(self)
-        self.actionAcerca_de.setText(QtGui.QApplication.translate("SteamTables", "Acerca de freesteam", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMostrarPuntos.setText(QtWidgets.QApplication.translate("SteamTables", "Mostrar puntos definidos por el usuario", None))
+        self.actionAcerca_de = QtWidgets.QAction(self)
+        self.actionAcerca_de.setText(QtWidgets.QApplication.translate("SteamTables", "Acerca de freesteam", None))
         self.actionAcerca_de.triggered.connect(self.acerca)
-        self.actionAcerca_deQt= QtGui.QAction(self)
+        self.actionAcerca_deQt= QtWidgets.QAction(self)
         self.actionAcerca_deQt.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/AboutQt.png")))
-        self.actionAcerca_deQt.setText(QtGui.QApplication.translate("SteamTables", "Acerca de Qt", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAcerca_deQt.setText(QtWidgets.QApplication.translate("SteamTables", "Acerca de Qt", None))
         self.actionAcerca_deQt.triggered.connect(self.acercaQt)
         self.menuArchivo.addAction(self.Preferencias)
         self.menuArchivo.addAction(self.actionCSV)
@@ -326,45 +327,45 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.menubar.addAction(self.menuAyuda.menuAction())
                 
         #Ventana principal
-        self.gridLayout = QtGui.QGridLayout(self.centralwidget)
-        self.toolBox = QtGui.QToolBox()
-        self.page_1 = QtGui.QWidget()
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.toolBox = QtWidgets.QToolBox()
+        self.page_1 = QtWidgets.QWidget()
         self.page_1.setGeometry(QtCore.QRect(0,0,302,390))
-        self.gridLayout_2 = QtGui.QGridLayout(self.page_1)
-        self.tabla = QtGui.QTableWidget(self.page_1)
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.page_1)
+        self.tabla = QtWidgets.QTableWidget(self.page_1)
         self.gridLayout_2.addWidget(self.tabla,0, 0, 1, 1)
         self.toolBox.addItem(self.page_1,"")
-        self.page_Plot = QtGui.QWidget()
+        self.page_Plot = QtWidgets.QWidget()
         self.page_Plot.setGeometry(QtCore.QRect(0,0,274,406))
-        self.gridLayout_3 = QtGui.QGridLayout(self.page_Plot)
-        self.checkIsoTherm=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoTherm.setText(QtGui.QApplication.translate("SteamTables", "Isotérmicas", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoTherm.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas isotérmicas", None, QtGui.QApplication.UnicodeUTF8))
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.page_Plot)
+        self.checkIsoTherm=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoTherm.setText(QtWidgets.QApplication.translate("SteamTables", "Isotérmicas", None))
+        self.checkIsoTherm.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas isotérmicas", None))
         self.gridLayout_3.addWidget(self.checkIsoTherm,0,0,1,1)
-        self.checkIsoBar=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoBar.setText(QtGui.QApplication.translate("SteamTables", "Isobáricas", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoBar.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas isobáricas", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoBar=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoBar.setText(QtWidgets.QApplication.translate("SteamTables", "Isobáricas", None))
+        self.checkIsoBar.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas isobáricas", None))
         self.gridLayout_3.addWidget(self.checkIsoBar,0,1,1,1)
-        self.checkIsoEnth=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoEnth.setText(QtGui.QApplication.translate("SteamTables", "Isoentálpicas", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoEnth.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas isoentálpicas", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoEnth=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoEnth.setText(QtWidgets.QApplication.translate("SteamTables", "Isoentálpicas", None))
+        self.checkIsoEnth.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas isoentálpicas", None))
         self.gridLayout_3.addWidget(self.checkIsoEnth,0,2,1,1)
-        self.checkIsoEntr=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoEntr.setText(QtGui.QApplication.translate("SteamTables", "Isoentrópicas", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoEntr.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas isoentrópicas", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoEntr=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoEntr.setText(QtWidgets.QApplication.translate("SteamTables", "Isoentrópicas", None))
+        self.checkIsoEntr.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas isoentrópicas", None))
         self.gridLayout_3.addWidget(self.checkIsoEntr,0,3,1,1)
-        self.checkIsoVol=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoVol.setText(QtGui.QApplication.translate("SteamTables", "Isocóricas", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoVol.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas isocóricas", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoVol=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoVol.setText(QtWidgets.QApplication.translate("SteamTables", "Isocóricas", None))
+        self.checkIsoVol.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas isocóricas", None))
         self.gridLayout_3.addWidget(self.checkIsoVol,0,4,1,1)
-        self.checkIsoX=QtGui.QCheckBox(self.page_Plot)
-        self.checkIsoX.setText(QtGui.QApplication.translate("SteamTables", "Isocalidad", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkIsoX.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas con igual fracción de vapor", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoX=QtWidgets.QCheckBox(self.page_Plot)
+        self.checkIsoX.setText(QtWidgets.QApplication.translate("SteamTables", "Isocalidad", None))
+        self.checkIsoX.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Dibujar curvas con igual fracción de vapor", None))
         self.gridLayout_3.addWidget(self.checkIsoX,0,5,1,1)
         self.diagrama2D = Plot(self.page_Plot, dpi=self.Config.getfloat("General","Dpi"), dim=2)
         self.gridLayout_3.addWidget(self.diagrama2D,1,0,1,6)
         self.diagrama3D = Plot(self.page_Plot, dpi=self.Config.getfloat("General","Dpi"), dim=3)
-        self.diagrama3D.setStatusTip(QtGui.QApplication.translate("SteamTables", "Pinchar y arrastrar para mover la orientación del gráfico", None, QtGui.QApplication.UnicodeUTF8))
+        self.diagrama3D.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Pinchar y arrastrar para mover la orientación del gráfico", None))
         self.gridLayout_3.addWidget(self.diagrama3D,1,0,1,6)
         self.toolbar2D=NavigationToolbar2QT(self.diagrama2D, self.diagrama2D)
         self.gridLayout_3.addWidget(self.toolbar2D,3,0,1,6)
@@ -372,283 +373,283 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.gridLayout_3.addWidget(self.toolbar3D,3,0,1,6)
         self.toolBox.addItem(self.page_Plot,"")
         self.gridLayout.addWidget(self.toolBox,0,0,1,1)
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_1), QtGui.QApplication.translate("SteamTables", "Tablas", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_Plot), QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.page_1), QtWidgets.QApplication.translate("SteamTables", "Tablas", None))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.page_Plot), QtWidgets.QApplication.translate("SteamTables", "Gráfico", None))
 
         #Toolbox parámetros Tabla
         self.setTabPosition(QtCore.Qt.DockWidgetArea(1), 0)
-        self.dockWidget_Tabla = QtGui.QDockWidget()
-        self.dockWidget_Tabla.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Tabla", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidgetContents = QtGui.QWidget()
-        self.gridLayout_4 = QtGui.QGridLayout(self.dockWidgetContents)
-        self.label = QtGui.QLabel()
-        self.label.setText(QtGui.QApplication.translate("SteamTables", "Ejes", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_Tabla = QtWidgets.QDockWidget()
+        self.dockWidget_Tabla.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Tabla", None))
+        self.dockWidgetContents = QtWidgets.QWidget()
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.dockWidgetContents)
+        self.label = QtWidgets.QLabel()
+        self.label.setText(QtWidgets.QApplication.translate("SteamTables", "Ejes", None))
         self.gridLayout_4.addWidget(self.label,0,0,1,1)
-        self.ejesTabla = QtGui.QComboBox()
+        self.ejesTabla = QtWidgets.QComboBox()
         self.ejesTabla.setFixedSize(QtCore.QSize(100,20))
-        self.ejesTabla.setToolTip(QtGui.QApplication.translate("SteamTables", "p\tPresión\nT\tTemperatura\nh\tEntalpía\ns\tEntropía\nv\tVolumen específico\nx\tCalidad (cuando es vapor saturado)", None, QtGui.QApplication.UnicodeUTF8))
-        self.ejesTabla.setStatusTip(QtGui.QApplication.translate("SteamTables", "Definir variables impuestas", None, QtGui.QApplication.UnicodeUTF8))
+        self.ejesTabla.setToolTip(QtWidgets.QApplication.translate("SteamTables", "p\tPresión\nT\tTemperatura\nh\tEntalpía\ns\tEntropía\nv\tVolumen específico\nx\tCalidad (cuando es vapor saturado)", None))
+        self.ejesTabla.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Definir variables impuestas", None))
         self.gridLayout_4.addWidget(self.ejesTabla,0,1,1,2)
-        self.label_14 = QtGui.QLabel()
-        self.label_14.setText(QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_14 = QtWidgets.QLabel()
+        self.label_14.setText(QtWidgets.QApplication.translate("SteamTables", "Calcular", None))
         self.gridLayout_4.addWidget(self.label_14,1,0,1,1)
-        self.variableTabla = QtGui.QComboBox()
+        self.variableTabla = QtWidgets.QComboBox()
         self.variableTabla.setFixedWidth(150)
-        self.variableTabla.setStatusTip(QtGui.QApplication.translate("SteamTables", "Definir variables a calcular", None, QtGui.QApplication.UnicodeUTF8))
+        self.variableTabla.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Definir variables a calcular", None))
         self.gridLayout_4.addWidget(self.variableTabla,1,1,1,2)
-        self.gridLayout_4.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Minimum),2,0,4,1)
-        self.label_26 = QtGui.QLabel()
+        self.gridLayout_4.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Minimum),2,0,4,1)
+        self.label_26 = QtWidgets.QLabel()
         self.gridLayout_4.addWidget(self.label_26,3,1,1,1)
         self.label_26.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_27 = QtGui.QLabel()
+        self.label_27 = QtWidgets.QLabel()
         self.gridLayout_4.addWidget(self.label_27,3,2,1,1)
         self.label_27.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_17 = QtGui.QLabel()
-        self.label_17.setText(QtGui.QApplication.translate("SteamTables", "Intervalo", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_17 = QtWidgets.QLabel()
+        self.label_17.setText(QtWidgets.QApplication.translate("SteamTables", "Intervalo", None))
         self.gridLayout_4.addWidget(self.label_17,6,0,1,1)
-        self.abscisaInicio = QtGui.QLineEdit()
+        self.abscisaInicio = QtWidgets.QLineEdit()
         self.abscisaInicio.setMaximumSize(QtCore.QSize(80,16777215))
         self.abscisaInicio.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.abscisaInicio,4,1,1,1)
-        self.ordenadaInicio = QtGui.QLineEdit()
+        self.ordenadaInicio = QtWidgets.QLineEdit()
         self.ordenadaInicio.setMaximumSize(QtCore.QSize(80,16777215))
         self.ordenadaInicio.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.ordenadaInicio,4,2,1,1)
-        self.label_15 = QtGui.QLabel()
-        self.label_15.setText(QtGui.QApplication.translate("SteamTables", "Inicio", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_15 = QtWidgets.QLabel()
+        self.label_15.setText(QtWidgets.QApplication.translate("SteamTables", "Inicio", None))
         self.gridLayout_4.addWidget(self.label_15,4,0,1,1)
-        self.label_16 = QtGui.QLabel()
-        self.label_16.setText(QtGui.QApplication.translate("SteamTables", "Fin", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_16 = QtWidgets.QLabel()
+        self.label_16.setText(QtWidgets.QApplication.translate("SteamTables", "Fin", None))
         self.gridLayout_4.addWidget(self.label_16,5,0,1,1)
-        self.abscisaFin = QtGui.QLineEdit()
+        self.abscisaFin = QtWidgets.QLineEdit()
         self.abscisaFin.setMaximumSize(QtCore.QSize(80,16777215))
         self.abscisaFin.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.abscisaFin,5,1,1,1)
-        self.ordenadaFin = QtGui.QLineEdit()
+        self.ordenadaFin = QtWidgets.QLineEdit()
         self.ordenadaFin.setMaximumSize(QtCore.QSize(80,16777215))
         self.ordenadaFin.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.ordenadaFin,5,2,1,1)
-        self.abscisaIntervalo = QtGui.QLineEdit()
+        self.abscisaIntervalo = QtWidgets.QLineEdit()
         self.abscisaIntervalo.setMaximumSize(QtCore.QSize(80,16777215))
         self.abscisaIntervalo.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.abscisaIntervalo,6,1,1,1)
-        self.ordenadaIntervalo = QtGui.QLineEdit()
+        self.ordenadaIntervalo = QtWidgets.QLineEdit()
         self.ordenadaIntervalo.setMaximumSize(QtCore.QSize(80,16777215))
         self.ordenadaIntervalo.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.ordenadaIntervalo,6,2,1,1)
-        self.botonCalcular = QtGui.QPushButton()
+        self.botonCalcular = QtWidgets.QPushButton()
         self.botonCalcular.setMaximumWidth(80)
-        self.botonCalcular.setText(QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonCalcular.setText(QtWidgets.QApplication.translate("SteamTables", "Calcular", None))
         self.botonCalcular.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/calculate.png")))
         self.botonCalcular.clicked.connect(self.botonCalcular_clicked)
         self.gridLayout_4.addWidget(self.botonCalcular,7,2,1,1)
         self.dockWidget_Tabla.setWidget(self.dockWidgetContents)
         self.dockWidget_Tabla.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Tabla)
-        self.dockWidget_Tabla.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+        self.dockWidget_Tabla.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
 
         #Toolbox graficos 2D
-        self.dockWidget_2D = QtGui.QDockWidget()
-        self.dockWidget_2D.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8))
-        self.Dock_2D= QtGui.QWidget()
-        self.gridLayout_13 = QtGui.QGridLayout(self.Dock_2D)
-        self.label_28=QtGui.QLabel()
-        self.label_28.setText(QtGui.QApplication.translate("SteamTables", "Variable", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_2D = QtWidgets.QDockWidget()
+        self.dockWidget_2D.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Gráfico 2D", None))
+        self.Dock_2D= QtWidgets.QWidget()
+        self.gridLayout_13 = QtWidgets.QGridLayout(self.Dock_2D)
+        self.label_28=QtWidgets.QLabel()
+        self.label_28.setText(QtWidgets.QApplication.translate("SteamTables", "Variable", None))
         self.gridLayout_13.addWidget(self.label_28,0,0,1,1)
-        self.ejeX = QtGui.QComboBox()
+        self.ejeX = QtWidgets.QComboBox()
         self.ejeX.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeX,0,1,1,1)
-        self.label_36=QtGui.QLabel()
-        self.label_36.setText(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_36=QtWidgets.QLabel()
+        self.label_36.setText(QtWidgets.QApplication.translate("SteamTables", "Mínimo", None))
         self.gridLayout_13.addWidget(self.label_36,1,0,1,1)
         self.ejeX_min = Entrada_con_unidades(float)
         self.ejeX_min.entrada.editingFinished.connect(self.diagrama2D_ejeX)
         self.gridLayout_13.addWidget(self.ejeX_min,1,1,1,1)
-        self.label_37=QtGui.QLabel()
-        self.label_37.setText(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_37=QtWidgets.QLabel()
+        self.label_37.setText(QtWidgets.QApplication.translate("SteamTables", "Máximo", None))
         self.gridLayout_13.addWidget(self.label_37,1,2,1,1)
         self.ejeX_max = Entrada_con_unidades(float)
         self.ejeX_max.entrada.editingFinished.connect(self.diagrama2D_ejeX)
         self.gridLayout_13.addWidget(self.ejeX_max,1,3,1,1)
-        self.ejeX_escala=QtGui.QCheckBox()
-        self.ejeX_escala.setText(QtGui.QApplication.translate("SteamTables", "Escala logarítmica", None, QtGui.QApplication.UnicodeUTF8))
+        self.ejeX_escala=QtWidgets.QCheckBox()
+        self.ejeX_escala.setText(QtWidgets.QApplication.translate("SteamTables", "Escala logarítmica", None))
         self.ejeX_escala.toggled.connect(self.ejeX_log)
         self.gridLayout_13.addWidget(self.ejeX_escala,2,0,1,4)
-        self.label_29=QtGui.QLabel()
-        self.label_29.setText(QtGui.QApplication.translate("SteamTables", "Variable", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_29=QtWidgets.QLabel()
+        self.label_29.setText(QtWidgets.QApplication.translate("SteamTables", "Variable", None))
         self.gridLayout_13.addWidget(self.label_29,3,0,1,1)
-        self.ejeY = QtGui.QComboBox()
+        self.ejeY = QtWidgets.QComboBox()
         self.ejeY.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeY,3,1,1,1)
-        self.label_38=QtGui.QLabel()
-        self.label_38.setText(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_38=QtWidgets.QLabel()
+        self.label_38.setText(QtWidgets.QApplication.translate("SteamTables", "Mínimo", None))
         self.gridLayout_13.addWidget(self.label_38,4,0,1,1)
         self.ejeY_min = Entrada_con_unidades(float)
         self.ejeY_min.entrada.editingFinished.connect(self.diagrama2D_ejeY)
         self.gridLayout_13.addWidget(self.ejeY_min,4,1,1,1)
-        self.label_39=QtGui.QLabel()
-        self.label_39.setText(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_39=QtWidgets.QLabel()
+        self.label_39.setText(QtWidgets.QApplication.translate("SteamTables", "Máximo", None))
         self.gridLayout_13.addWidget(self.label_39,4,2,1,1)
         self.ejeY_max = Entrada_con_unidades(float)
         self.ejeY_max.entrada.editingFinished.connect(self.diagrama2D_ejeY)
         self.gridLayout_13.addWidget(self.ejeY_max,4,3,1,1)
-        self.ejeY_escala=QtGui.QCheckBox()
-        self.ejeY_escala.setText(QtGui.QApplication.translate("SteamTables", "Escala logarítmica", None, QtGui.QApplication.UnicodeUTF8))
+        self.ejeY_escala=QtWidgets.QCheckBox()
+        self.ejeY_escala.setText(QtWidgets.QApplication.translate("SteamTables", "Escala logarítmica", None))
         self.ejeY_escala.toggled.connect(self.ejeY_log)
         self.gridLayout_13.addWidget(self.ejeY_escala,5,0,1,4)
-        self.rejilla=QtGui.QCheckBox()
-        self.rejilla.setText(QtGui.QApplication.translate("SteamTables", "Rejilla", None, QtGui.QApplication.UnicodeUTF8))
+        self.rejilla=QtWidgets.QCheckBox()
+        self.rejilla.setText(QtWidgets.QApplication.translate("SteamTables", "Rejilla", None))
         self.rejilla.toggled.connect(self.rejilla_toggled)
         self.gridLayout_13.addWidget(self.rejilla,6,0,1,2)
-        self.botonCalcular2 = QtGui.QPushButton()
+        self.botonCalcular2 = QtWidgets.QPushButton()
         self.botonCalcular2.setMaximumWidth(80)
-        self.botonCalcular2.setText(QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonCalcular2.setText(QtWidgets.QApplication.translate("SteamTables", "Calcular", None))
         self.botonCalcular2.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/calculate.png")))
         self.botonCalcular2.clicked.connect(self.botonCalcular_clicked)
         self.gridLayout_13.addWidget(self.botonCalcular2,6,3,1,1)
         self.dockWidget_2D.setWidget(self.Dock_2D)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2D)
         self.dockWidget_2D.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        self.dockWidget_2D.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+        self.dockWidget_2D.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
         
         #Toolbox parámetros Puntos individuales
-        self.dockWidget_Puntos = QtGui.QDockWidget()
-        self.dockWidget_Puntos.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Puntos específicos", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidgetContents_2 = QtGui.QWidget()
-        self.gridLayout_1 = QtGui.QGridLayout(self.dockWidgetContents_2)
-        self.label_1 = QtGui.QLabel()
-        self.label_1.setText(QtGui.QApplication.translate("SteamTables", "Datos conocidos", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_Puntos = QtWidgets.QDockWidget()
+        self.dockWidget_Puntos.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Puntos específicos", None))
+        self.dockWidgetContents_2 = QtWidgets.QWidget()
+        self.gridLayout_1 = QtWidgets.QGridLayout(self.dockWidgetContents_2)
+        self.label_1 = QtWidgets.QLabel()
+        self.label_1.setText(QtWidgets.QApplication.translate("SteamTables", "Datos conocidos", None))
         self.gridLayout_1.addWidget(self.label_1,0,0,1,1)
-        self.variablesCalculo = QtGui.QComboBox()
+        self.variablesCalculo = QtWidgets.QComboBox()
         self.variablesCalculo.setFixedWidth(100)
-        self.variablesCalculo.setToolTip(QtGui.QApplication.translate("SteamTables", "p\tPresión\nT\tTemperatura\nh\tEntalpía\ns\tEntropía\nv\tVolumen específico\nx\tCalidad (cuando es vapor saturado)", None, QtGui.QApplication.UnicodeUTF8))
-        self.variablesCalculo.setStatusTip(QtGui.QApplication.translate("SteamTables", "Definir variables impuestas", None, QtGui.QApplication.UnicodeUTF8))
+        self.variablesCalculo.setToolTip(QtWidgets.QApplication.translate("SteamTables", "p\tPresión\nT\tTemperatura\nh\tEntalpía\ns\tEntropía\nv\tVolumen específico\nx\tCalidad (cuando es vapor saturado)", None))
+        self.variablesCalculo.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Definir variables impuestas", None))
         self.gridLayout_1.addWidget(self.variablesCalculo,0,1,1,2)
-        self.gridLayout_1.addItem(QtGui.QSpacerItem(50, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed), 1, 0, 1, 3)
-        self.label_2 = QtGui.QLabel()
-        self.label_2.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8))
+        self.gridLayout_1.addItem(QtWidgets.QSpacerItem(50, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed), 1, 0, 1, 3)
+        self.label_2 = QtWidgets.QLabel()
+        self.label_2.setText(QtWidgets.QApplication.translate("SteamTables", "Presión", None))
         self.gridLayout_1.addWidget(self.label_2,6,0,1,1)
         self.presion=Entrada_con_unidades(unidades.Pressure, color=self.Config.get("General","Color"))
-        self.presion.setStatusTip(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8))
+        self.presion.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Presión", None))
         self.presion.entrada.editingFinished.connect(self.presion_editingFinished)
         self.gridLayout_1.addWidget(self.presion,6,1,1,2)
-        self.label_3 = QtGui.QLabel()
-        self.label_3.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_3 = QtWidgets.QLabel()
+        self.label_3.setText(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None))
         self.gridLayout_1.addWidget(self.label_3,7,0,1,1)
         self.temperatura=Entrada_con_unidades(unidades.Temperature, color=self.Config.get("General","Color"))
-        self.temperatura.setStatusTip(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8))
+        self.temperatura.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None))
         self.temperatura.entrada.editingFinished.connect(self.temperatura_editingFinished)
         self.gridLayout_1.addWidget(self.temperatura,7,1,1,2)
-        self.label_8 = QtGui.QLabel()
-        self.label_8.setText(QtGui.QApplication.translate("SteamTables", "Volumen", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8 = QtWidgets.QLabel()
+        self.label_8.setText(QtWidgets.QApplication.translate("SteamTables", "Volumen", None))
         self.gridLayout_1.addWidget(self.label_8,8,0,1,1)
         self.volumen=Entrada_con_unidades(unidades.SpecificVolume, color=self.Config.get("General","Color"))
-        self.volumen.setStatusTip(QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8))
+        self.volumen.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None))
         self.volumen.entrada.editingFinished.connect(self.volumen_editingFinished)
         self.gridLayout_1.addWidget(self.volumen,8,1,1,2)
-        self.label_4 = QtGui.QLabel()
-        self.label_4.setText(QtGui.QApplication.translate("SteamTables", "Entalpia", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_4 = QtWidgets.QLabel()
+        self.label_4.setText(QtWidgets.QApplication.translate("SteamTables", "Entalpia", None))
         self.gridLayout_1.addWidget(self.label_4,9,0,1,1)
         self.entalpia=Entrada_con_unidades(unidades.Enthalpy, color=self.Config.get("General","Color"))
-        self.entalpia.setStatusTip(QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8))
+        self.entalpia.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Entalpía", None))
         self.entalpia.entrada.editingFinished.connect(self.entalpia_editingFinished)
         self.gridLayout_1.addWidget(self.entalpia,9,1,1,2)
-        self.label_5 = QtGui.QLabel()
-        self.label_5.setText(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_5 = QtWidgets.QLabel()
+        self.label_5.setText(QtWidgets.QApplication.translate("SteamTables", "Entropía", None))
         self.gridLayout_1.addWidget(self.label_5,10,0,1,1)
         self.entropia=Entrada_con_unidades(unidades.SpecificHeat, "Entropy", color=self.Config.get("General","Color"))
-        self.entropia.setStatusTip(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8))
+        self.entropia.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Entropía", None))
         self.entropia.entrada.editingFinished.connect(self.entropia_editingFinished)
         self.gridLayout_1.addWidget(self.entropia,10,1,1,2)
-        self.label_12 = QtGui.QLabel()
-        self.label_12.setText(QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_12 = QtWidgets.QLabel()
+        self.label_12.setText(QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None))
         self.gridLayout_1.addWidget(self.label_12,11,0,1,1)
         self.fraccionVapor = Entrada_con_unidades(float, color=self.Config.get("General","Color"))
-        self.fraccionVapor.setStatusTip(QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8))
+        self.fraccionVapor.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None))
         self.fraccionVapor.entrada.editingFinished.connect(self.fraccionVapor_editingFinished)
         self.gridLayout_1.addWidget(self.fraccionVapor,11,1,1,1)
-        self.label_13 = QtGui.QLabel()
-        self.label_13.setText(QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_13 = QtWidgets.QLabel()
+        self.label_13.setText(QtWidgets.QApplication.translate("SteamTables", "Energía interna", None))
         self.gridLayout_1.addWidget(self.label_13,12,0,1,1)
         self.energiaInterna=Entrada_con_unidades(unidades.Enthalpy, readOnly=True, retornar=False)
-        self.energiaInterna.setStatusTip(QtGui.QApplication.translate("SteamTables", "Energía Interna", None, QtGui.QApplication.UnicodeUTF8))
+        self.energiaInterna.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Energía Interna", None))
         self.gridLayout_1.addWidget(self.energiaInterna,12,1,1,1)
-        self.label_18 = QtGui.QLabel()
-        self.label_18.setText(QtGui.QApplication.translate("SteamTables", "E. Gibbs", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_18 = QtWidgets.QLabel()
+        self.label_18.setText(QtWidgets.QApplication.translate("SteamTables", "E. Gibbs", None))
         self.gridLayout_1.addWidget(self.label_18,13,0,1,1)
         self.energiaGibbs=Entrada_con_unidades(unidades.Enthalpy, readOnly=True, retornar=False)
-        self.energiaGibbs.setStatusTip(QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8))
+        self.energiaGibbs.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None))
         self.gridLayout_1.addWidget(self.energiaGibbs,13,1,1,1)
-        self.label_19 = QtGui.QLabel()
-        self.label_19.setText(QtGui.QApplication.translate("SteamTables", "E. Helmholtz", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_19 = QtWidgets.QLabel()
+        self.label_19.setText(QtWidgets.QApplication.translate("SteamTables", "E. Helmholtz", None))
         self.gridLayout_1.addWidget(self.label_19,14,0,1,1)
         self.energiaHelmholtz=Entrada_con_unidades(unidades.Enthalpy, readOnly=True, retornar=False)
-        self.energiaHelmholtz.setStatusTip(QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8))
+        self.energiaHelmholtz.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None))
         self.gridLayout_1.addWidget(self.energiaHelmholtz,14,1,1,1)
-        self.label_20 = QtGui.QLabel()
-        self.label_20.setText(QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_20 = QtWidgets.QLabel()
+        self.label_20.setText(QtWidgets.QApplication.translate("SteamTables", "Densidad", None))
         self.gridLayout_1.addWidget(self.label_20,15,0,1,1)
         self.densidad=Entrada_con_unidades(unidades.Density, readOnly=True, retornar=False)
-        self.densidad.setStatusTip(QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8))
+        self.densidad.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Densidad", None))
         self.gridLayout_1.addWidget(self.densidad,15,1,1,1)
-        self.label_21 = QtGui.QLabel()
-        self.label_21.setText(QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_21 = QtWidgets.QLabel()
+        self.label_21.setText(QtWidgets.QApplication.translate("SteamTables", "Cp", None))
         self.gridLayout_1.addWidget(self.label_21,16,0,1,1)
         self.cp=Entrada_con_unidades(unidades.SpecificHeat, readOnly=True, retornar=False)
-        self.cp.setStatusTip(QtGui.QApplication.translate("SteamTables", "Capacidad calorífica a presión constante", None, QtGui.QApplication.UnicodeUTF8))
+        self.cp.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Capacidad calorífica a presión constante", None))
         self.gridLayout_1.addWidget(self.cp,16,1,1,1)
-        self.label_22 = QtGui.QLabel()
-        self.label_22.setText(QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_22 = QtWidgets.QLabel()
+        self.label_22.setText(QtWidgets.QApplication.translate("SteamTables", "Cv", None))
         self.gridLayout_1.addWidget(self.label_22,17,0,1,1)
         self.cv=Entrada_con_unidades(unidades.SpecificHeat, readOnly=True, retornar=False)
-        self.cv.setStatusTip(QtGui.QApplication.translate("SteamTables", "Capacidad calorífica a volumen constante", None, QtGui.QApplication.UnicodeUTF8))
+        self.cv.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Capacidad calorífica a volumen constante", None))
         self.gridLayout_1.addWidget(self.cv,17,1,1,1)
-        self.label_23 = QtGui.QLabel()
-        self.label_23.setText(QtGui.QApplication.translate("SteamTables", "Conductividad", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_23 = QtWidgets.QLabel()
+        self.label_23.setText(QtWidgets.QApplication.translate("SteamTables", "Conductividad", None))
         self.gridLayout_1.addWidget(self.label_23,18,0,1,1)
         self.conductividad=Entrada_con_unidades(unidades.ThermalConductivity, readOnly=True, retornar=False)
-        self.conductividad.setStatusTip(QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8))
+        self.conductividad.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None))
         self.gridLayout_1.addWidget(self.conductividad,18,1,1,1)
-        self.label_24 = QtGui.QLabel()
-        self.label_24.setText(QtGui.QApplication.translate("SteamTables", u"Viscosidad", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_24 = QtWidgets.QLabel()
+        self.label_24.setText(QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None))
         self.gridLayout_1.addWidget(self.label_24,19,0,1,1)
         self.viscosidad=Entrada_con_unidades(unidades.Viscosity, readOnly=True, retornar=False)
-        self.viscosidad.setStatusTip(QtGui.QApplication.translate("SteamTables", "Viscosidad dinámica", None, QtGui.QApplication.UnicodeUTF8))
+        self.viscosidad.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Viscosidad dinámica", None))
         self.gridLayout_1.addWidget(self.viscosidad, 19,1,1,1)
-        self.label_25 = QtGui.QLabel()
-        self.label_25.setText(QtGui.QApplication.translate("SteamTables", "V sonido", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_25 = QtWidgets.QLabel()
+        self.label_25.setText(QtWidgets.QApplication.translate("SteamTables", "V sonido", None))
         self.gridLayout_1.addWidget(self.label_25,20,0,1,1)
         self.velocidad=Entrada_con_unidades(unidades.Speed, readOnly=True, retornar=False)
-        self.velocidad.setStatusTip(QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8))
+        self.velocidad.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None))
         self.gridLayout_1.addWidget(self.velocidad,20,1,1,1)
-        self.label_30 = QtGui.QLabel()
-        self.label_30.setText(QtGui.QApplication.translate("SteamTables", "Región", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_30 = QtWidgets.QLabel()
+        self.label_30.setText(QtWidgets.QApplication.translate("SteamTables", "Región", None))
         self.gridLayout_1.addWidget(self.label_30,21,0,1,1)
-        self.region = QtGui.QLineEdit()
+        self.region = QtWidgets.QLineEdit()
         self.region.setFixedSize(QtCore.QSize(85,24))
         self.region.setReadOnly(True)
         self.region.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_1.addWidget(self.region,21,1,1,1)
-        self.botonAdd=QtGui.QPushButton()
+        self.botonAdd=QtWidgets.QPushButton()
         self.botonAdd.setEnabled(False)
-        self.botonAdd.setText(QtGui.QApplication.translate("SteamTables", "Añadir", None, QtGui.QApplication.UnicodeUTF8))
-        self.botonAdd.setStatusTip(QtGui.QApplication.translate("SteamTables", "Añadir a la lista de puntos representados en la gráfica", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonAdd.setText(QtWidgets.QApplication.translate("SteamTables", "Añadir", None))
+        self.botonAdd.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Añadir a la lista de puntos representados en la gráfica", None))
         self.botonAdd.clicked.connect(self.botonAdd_clicked)
         self.gridLayout_1.addWidget(self.botonAdd,22,0,1,1)
-        self.botonLista=QtGui.QPushButton()
+        self.botonLista=QtWidgets.QPushButton()
         self.botonLista.setMaximumWidth(80)
-        self.botonLista.setText(QtGui.QApplication.translate("SteamTables", "Lista", None, QtGui.QApplication.UnicodeUTF8))
-        self.botonLista.setStatusTip(QtGui.QApplication.translate("SteamTables", "Mostrar lista de puntos específicos representados en la gráfica", None, QtGui.QApplication.UnicodeUTF8))
+        self.botonLista.setText(QtWidgets.QApplication.translate("SteamTables", "Lista", None))
+        self.botonLista.setStatusTip(QtWidgets.QApplication.translate("SteamTables", "Mostrar lista de puntos específicos representados en la gráfica", None))
         self.botonLista.clicked.connect(self.botonLista_clicked)
         self.gridLayout_1.addWidget(self.botonLista,22,1,1,2)
-        spacerItem = QtGui.QSpacerItem(72, 34, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(72, 34, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_1.addItem(spacerItem, 23, 1, 1, 3)
         self.mostrarUnidades()
         self.dockWidget_Puntos.setWidget(self.dockWidgetContents_2)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Puntos)
-        self.dockWidget_Puntos.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+        self.dockWidget_Puntos.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
         self.dockWidget_Puntos.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         
         #Iniciar valores de widgets
@@ -716,7 +717,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.puntos=[]
             while True:
                 try:
-                    punto=map(float, self.Config.get("Points", str(i)).split(","))
+                    punto=list(map(float, self.Config.get("Points", str(i)).split(",")))
                 except: break
                 if punto[0]==0.0:
                     self.puntos.append(steam_Tx(punto[1], punto[2]))
@@ -748,14 +749,14 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
 
     def acerca(self):
-        QtGui.QMessageBox.information(self,"Acerca de" ,"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:'Nimbus Sans L'; font-size:9pt; font-weight:400; font-style:normal;">\n<table border="0" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;" cellspacing="2" cellpadding="0">\n<tr>\n<td style=" vertical-align:top;">\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">freesteam</span> is an open source implementation of international-standard IAPWS-IF97 steam tables from the <a href="http://www.iapws.org"><span style=" text-decoration: underline; color:#0000ff;">International Association for the Properties of Water and Steam</span></a> (IAPWS). <span style=" font-weight:600;">freesteam</span> lets you compute water and steam properties for a wide range of pressures and temperatures: you can specify the state of the steam in terms of a variety of combinations of 'known' properties, then freesteam will solve and allow you to query to find the values of the 'unknown' properties.</p>\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Website: <a href="http://freesteam.sourceforge.net/"><span style=" text-decoration: underline; color:#0000ff;">http://freesteam.sourceforge.net/</span></a></p></td></tr></table></body></html>""")
+        QtWidgets.QMessageBox.information(self,"Acerca de" ,"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:'Nimbus Sans L'; font-size:9pt; font-weight:400; font-style:normal;">\n<table border="0" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;" cellspacing="2" cellpadding="0">\n<tr>\n<td style=" vertical-align:top;">\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">freesteam</span> is an open source implementation of international-standard IAPWS-IF97 steam tables from the <a href="http://www.iapws.org"><span style=" text-decoration: underline; color:#0000ff;">International Association for the Properties of Water and Steam</span></a> (IAPWS). <span style=" font-weight:600;">freesteam</span> lets you compute water and steam properties for a wide range of pressures and temperatures: you can specify the state of the steam in terms of a variety of combinations of 'known' properties, then freesteam will solve and allow you to query to find the values of the 'unknown' properties.</p>\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Website: <a href="http://freesteam.sourceforge.net/"><span style=" text-decoration: underline; color:#0000ff;">http://freesteam.sourceforge.net/</span></a></p></td></tr></table></body></html>""")
         
     def acercaQt(self):
-        QtGui.QMessageBox.aboutQt(self,"Acerca de Qt" )
+        QtWidgets.QMessageBox.aboutQt(self,"Acerca de Qt" )
 
     def exporttoCSV(self):
         """Guarda los datos de la tabla en un archivo csv"""
-        fname = QtGui.QFileDialog.getSaveFileName(self, QtGui.QApplication.translate("SteamTables", u"Exportar datos", None, QtGui.QApplication.UnicodeUTF8), "./", "CSV (*.csv);;All archives (*.*)")
+        fname = QtWidgets.QFileDialog.getSaveFileName(self, QtWidgets.QApplication.translate("SteamTables", "Exportar datos", None), "./", "CSV (*.csv);;All archives (*.*)")[0]
         if fname:
             texto = writer(open(fname, 'wb'), delimiter='\t')
             texto.writerow([""]+[str(i) for i in self.xdata[0]])
@@ -828,8 +829,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             Actualiza los checkbox de isolineas habilitados (todos menos los de los ejes x e y)"""
         if indice==0:
             self.rellenar_variableTabla(0, 1)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text())
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Presión", None)+", %s" %config.Configuracion("Pressure").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None)+", %s" %config.Configuracion("Temperature").text())
             self.checkIsoBar.setEnabled(False)
             self.checkIsoTherm.setEnabled(False)
             self.checkIsoBar.setChecked(False)
@@ -839,8 +840,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoVol.setEnabled(True)
         elif indice==1:
             self.rellenar_variableTabla(0, 3)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text())
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Presión", None)+", %s" %config.Configuracion("Pressure").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Entalpía", None)+", %s" %config.Configuracion("Enthalpy").text())
             self.checkIsoBar.setEnabled(False)
             self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
@@ -850,8 +851,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoVol.setEnabled(True)
         elif indice==2:
             self.rellenar_variableTabla(0, 4)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Presión", None)+", %s" %config.Configuracion("Pressure").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Entropía", None)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
             self.checkIsoBar.setEnabled(False)
             self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
@@ -861,8 +862,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoVol.setEnabled(True)
         elif indice==3:
             self.rellenar_variableTabla(0, 2)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Volumen", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificVolume").text())
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Presión", None)+", %s" %config.Configuracion("Pressure").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Volumen", None)+", %s" %config.Configuracion("SpecificVolume").text())
             self.checkIsoBar.setEnabled(False)
             self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
@@ -872,8 +873,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoVol.setChecked(False)
         elif indice==4:
             self.rellenar_variableTabla(1, 4)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None)+", %s" %config.Configuracion("Temperature").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Entropía", None)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
             self.checkIsoBar.setEnabled(True)
             self.checkIsoTherm.setEnabled(False)
             self.checkIsoTherm.setChecked(False)
@@ -883,8 +884,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoVol.setEnabled(True)
         elif indice==5:
             self.rellenar_variableTabla(1, 13)
-            self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text())
-            self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Calidad", None, QtGui.QApplication.UnicodeUTF8))
+            self.label_26.setText(QtWidgets.QApplication.translate("SteamTables", "Temperatura", None)+", %s" %config.Configuracion("Temperature").text())
+            self.label_27.setText(QtWidgets.QApplication.translate("SteamTables", "Calidad", None))
             self.checkIsoBar.setEnabled(True)
             self.checkIsoTherm.setEnabled(False)
             self.checkIsoTherm.setChecked(False)
@@ -1070,17 +1071,17 @@ class Ui_SteamTables(QtGui.QMainWindow):
     def botonCalcular_clicked(self):
         """Método que calcula todos los datos de las tablas y gráficos"""
         self.progresbar.setVisible(True)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando matriz...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando matriz...", None))
         self.progresbar.setValue(0)
-        QtGui.QApplication.processEvents()
+        QtWidgets.QApplication.processEvents()
         self.calcularMatriz(0, 30)
         self.Calcular_Propiedades(35, 5)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando línea de saturación...", None, QtGui.QApplication.UnicodeUTF8))
-        QtGui.QApplication.processEvents()
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando línea de saturación...", None))
+        QtWidgets.QApplication.processEvents()
         self.calcularSaturacion()
         if len(self.puntos)>0:
-            self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando puntos personalizados...", None, QtGui.QApplication.UnicodeUTF8))
-            QtGui.QApplication.processEvents()
+            self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando puntos personalizados...", None))
+            QtWidgets.QApplication.processEvents()
             self.calcularPuntos()
         self.calcularIsoterma(40, 10)
         self.calcularIsobara(50, 10)
@@ -1089,11 +1090,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.calcularIsocora(80, 10)
         self.calcularIsoX(90, 10)
         self.progresbar.setValue(100)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Dibujando...", None, QtGui.QApplication.UnicodeUTF8))
-        QtGui.QApplication.processEvents()
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Dibujando...", None))
+        QtWidgets.QApplication.processEvents()
         self.dibujar()
         self.progresbar.setVisible(False)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Listo", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Listo", None))
 
     #Opciones gráficos
     def d2(self, activado):
@@ -1204,7 +1205,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
     def rellenar_variableTabla(self, i, j):
         """Actualiza los elementos disponibles para el tercer eje en función de los elejidos como ejes principales i, j"""
         self.variableTabla.clear()
-        variables=[QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8),  QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8),  QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8)]
+        variables=[QtWidgets.QApplication.translate("SteamTables", "Presión", None), QtWidgets.QApplication.translate("SteamTables", "Temperatura", None),  QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None), QtWidgets.QApplication.translate("SteamTables", "Entalpía", None), QtWidgets.QApplication.translate("SteamTables", "Entropía", None), QtWidgets.QApplication.translate("SteamTables", "Energía interna", None), QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None), QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None), QtWidgets.QApplication.translate("SteamTables", "Cp", None), QtWidgets.QApplication.translate("SteamTables", "Cv", None), QtWidgets.QApplication.translate("SteamTables", "Densidad", None), QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None), QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None),  QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None), QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None)]
         del variables[j]
         del variables[i]
         for nombre in variables:
@@ -1221,8 +1222,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
     def dibujar(self):
         """Método que dibuja todos los datos pedidos"""
         self.progresbar.setValue(100)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Dibujando...", None, QtGui.QApplication.UnicodeUTF8))
-        QtGui.QApplication.processEvents()
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Dibujando...", None))
+        QtWidgets.QApplication.processEvents()
         self.diagrama3D.plot_3D(self.etiquetas, self.xdata, self.ydata, self.zdata) 
         if len(self.puntos)>0:
             self.diagrama3D.plot_puntos(self.xi, self.yi, self.zi)
@@ -1270,7 +1271,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.ejeX_log(self.ejeX_escala.isChecked())
         self.ejeY_log(self.ejeY_escala.isChecked())
         self.progresbar.setVisible(False)
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Listo...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Listo...", None))
 
     def rejilla_toggled(self, bool):
         """Muestra o esconde la rejilla del gráfico 2D"""
@@ -1326,7 +1327,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 Isolineas[i].intervalo=self.Config.getfloat(propiedad, 'Step')
                 Isolineas[i].Personalizar=self.Config.getboolean(propiedad, 'Custom')
                 lista=[]
-                if self.Config.get(propiedad, 'List')<>"":
+                if self.Config.get(propiedad, 'List')!="":
                     for j in self.Config.get(propiedad, 'List').split(','):
                         lista.append(float(j))
                 Isolineas[i].Lista=lista
@@ -1425,48 +1426,48 @@ class Ui_SteamTables(QtGui.QMainWindow):
             ordenada2="U, %s" %config.Configuracion("Enthalpy").text()
             self.factory2=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
 
-        if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
+        if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
             texto="P, %s" %config.Configuracion("Pressure").text()
             self.factorz=unidades.Pressure(1, config.Configuracion("Pressure").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
             texto="T, %s" %config.Configuracion("Temperature").text()
             self.factorz=0
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None):
             texto="v, %s" %config.Configuracion("SpecificVolume").text()
             self.factorz=unidades.SpecificVolume(1, config.Configuracion("SpecificVolume").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entalpía", None):
             texto="H, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entropía", None):
             texto="S, %s" %config.Configuracion("SpecificHeat", "Entropy").text()
             self.factorz=unidades.SpecificHeat(1, config.Configuracion("SpecificHeat", "Entropy").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía interna", None):
             texto="U, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cp", None):
             texto="Cp, %s" %config.Configuracion("SpecificHeat").text()
             self.factorz=unidades.SpecificHeat(1, config.Configuracion("SpecificHeat").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cv", None):
             texto="Cv, %s" %config.Configuracion("SpecificHeat").text()
             self.factorz=unidades.SpecificHeat(1, config.Configuracion("SpecificHeat").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8):
-            texto=u"ρ, %s" %config.Configuracion("Density").text()
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Densidad", None):
+            texto="ρ, %s" %config.Configuracion("Density").text()
             self.factorz=unidades.Density(1, config.Configuracion("Density").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None):
             texto="k, %s" %config.Configuracion("ThermalConductivity").text()
             self.factorz=unidades.ThermalConductivity(1, config.Configuracion("ThermalConductivity").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8):
-            texto=u"μ, %s" %config.Configuracion("Viscosity").text()
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None):
+            texto="μ, %s" %config.Configuracion("Viscosity").text()
             self.factorz=unidades.Viscosity(1, config.Configuracion("Viscosity").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None):
             texto="w, %s" %config.Configuracion("Speed").text()
             self.factorz=unidades.Speed(1, config.Configuracion("Speed").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None):
             texto="x"
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None):
             texto="G, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             texto="A, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
             
@@ -1497,11 +1498,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
             yi=concatenate((yi, [yfin]))
 
         for i in range(len(xi)):
-            headerItem = QtGui.QTableWidgetItem()
+            headerItem = QtWidgets.QTableWidgetItem()
             headerItem.setText(str(xi[i]))
             self.tabla.setHorizontalHeaderItem(i,headerItem)
         for i in range(len(yi)):
-            headerItem = QtGui.QTableWidgetItem()
+            headerItem = QtWidgets.QTableWidgetItem()
             headerItem.setText(str(yi[i]))
             self.tabla.setVerticalHeaderItem(i,headerItem)
             
@@ -1510,7 +1511,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
         for i in range(len(xi)):
             self.progresbar.setValue(start+rango*(i+1.)/len(xi))
-            QtGui.QApplication.processEvents()
+            QtWidgets.QApplication.processEvents()
             fila=[]
             for j in range(len(yi)):
                 if self.ejesTabla.currentIndex()==0:
@@ -1544,50 +1545,50 @@ class Ui_SteamTables(QtGui.QMainWindow):
             
             for i, fila in enumerate(self.matriz):
                 self.progresbar.setValue(start+rango*(i+1.)/len(self.matriz))
-                QtGui.QApplication.processEvents()
+                QtWidgets.QApplication.processEvents()
                 for j, vapor in enumerate(fila):
-                    if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
+                    if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
                         dato=vapor.p/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
                         dato=self.conv_T_inv(vapor.T)
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None):
                         dato=vapor.v/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entalpía", None):
                         dato=vapor.h/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entropía", None):
                         dato=vapor.s/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía interna", None):
                         dato=vapor.u/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cp", None):
                         dato=vapor.cp/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cv", None):
                         dato=vapor.cv/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Densidad", None):
                         dato=vapor.rho/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None):
                         dato=vapor.k/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None):
                         dato=vapor.mu/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None):
                         if vapor.region !='\x04' and vapor.region !='\x03':
                             dato=vapor.w/self.factorz
                         else:
                             dato=0.0
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None):
                         dato=vapor.x
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None):
                         dato=(vapor.h-vapor.T*vapor.s)/self.factorz
-                    elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):
+                    elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
                         dato=(vapor.u-vapor.T*vapor.s)/self.factorz
                     zdata[j, i]=dato
 
             for i, fila in enumerate(zdata):
                 for j, dato in enumerate(fila):
-                    self.tabla.setItem(i, j,QtGui.QTableWidgetItem(representacion(dato)))
+                    self.tabla.setItem(i, j,QtWidgets.QTableWidgetItem(representacion(dato)))
                     self.tabla.item(i, j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
 
             self.tabla.resizeColumnsToContents()
-            self.toolBox.setItemText(self.toolBox.indexOf(self.page_1), QtGui.QApplication.translate("SteamTables", "Tabla", None, QtGui.QApplication.UnicodeUTF8)+"   %s - %s - %s" %(self.etiquetas[0], self.etiquetas[1], self.etiquetas[2]))
+            self.toolBox.setItemText(self.toolBox.indexOf(self.page_1), QtWidgets.QApplication.translate("SteamTables", "Tabla", None)+"   %s - %s - %s" %(self.etiquetas[0], self.etiquetas[1], self.etiquetas[2]))
             self.zdata=zdata
 
 
@@ -1615,35 +1616,35 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.xsat=[[self.conv_T_inv(T) for T in TT0], [self.conv_T_inv(T) for T in TT0]]
             self.ysat=[[0]*100, [1]*100]
         
-        if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
+        if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
             self.zsat=[[P/self.factorz for P in psat], [P/self.factorz for P in psat]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
             self.zsat=[[self.conv_T_inv(T) for T in TT0], [self.conv_T_inv(T) for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None):
             self.zsat=[[region4_Tx(T,0).v/self.factorz for T in TT0], [region4_Tx(T,1).v/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entalpía", None):
             self.zsat=[[region4_Tx(T,0).h/self.factorz for T in TT0], [region4_Tx(T,1).h/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entropía", None):
             self.zsat=[[region4_Tx(T,0).s/self.factorz for T in TT0], [region4_Tx(T,1).s/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía interna", None):
             self.zsat=[[region4_Tx(T,0).u/self.factorz for T in TT0], [region4_Tx(T,1).u/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cp", None):
             self.zsat=[[region4_Tx(T,0).cp/self.factorz for T in TT0], [region4_Tx(T,1).cp/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cv", None):
             self.zsat=[[region4_Tx(T,0).cv/self.factorz for T in TT0], [region4_Tx(T,1).cv/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Densidad", None):
             self.zsat=[[region4_Tx(T,0).rho/self.factorz for T in TT0], [region4_Tx(T,1).rho/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None):
             self.zsat=[[region4_Tx(T,0).k/self.factorz for T in TT0], [region4_Tx(T,1).k/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None):
             self.zsat=[[region4_Tx(T,0).mu/self.factorz for T in TT0], [region4_Tx(T,1).mu/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None):
             self.zsat=[[0 for T in TT0], [0 for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None):
             self.zsat=[[0]*len(TT0), [1]*len(TT0)]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None):
             self.zsat=[[(region4_Tx(T,0).h-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).h-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             self.zsat=[[(region4_Tx(T,0).u-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).u-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
         
         for i in range(len(self.xsat)):
@@ -1700,35 +1701,35 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.xi=[self.conv_T_inv(punto.T) for punto in self.puntos]
             self.yi=[punto.x for punto in self.puntos]
             
-        if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
+        if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
             self.zi=[punto.p/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
             self.zi=[self.conv_T_inv(punto.T) for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None):
             self.zi=[punto.v/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entalpía", None):
             self.zi=[punto.h/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entropía", None):
             self.zi=[punto.s/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía interna", None):
             self.zi=[punto.u/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cp", None):
             self.zi=[punto.cp/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cv", None):
             self.zi=[punto.cv/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Densidad", None):
             self.zi=[punto.rho/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None):
             self.zi=[punto.k/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None):
             self.zi=[punto.mu/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None):
             self.zi=[0 for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None):
             self.zi=[punto.x for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8):
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None):
             self.zi=[(punto.h-punto.T*punto.s)/self.factorz for punto in self.puntos]
-        elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):   
+        elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             self.zi=[(punto.u-punto.T*punto.s)/self.factorz for punto in self.puntos]
                 
         if self.ejeX.currentText()=="p":
@@ -1766,7 +1767,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         y2=[]
         for i, propiedad in enumerate(S):
             self.progresbar.setValue(start+rango*(i+1.)/len(S))
-            QtGui.QApplication.processEvents()
+            QtWidgets.QApplication.processEvents()
             if self.ejesTabla.currentIndex()==0:
                 xi=[funcion(i, propiedad).p/self.factorx for i in X]
                 yi=[self.conv_T_inv(funcion(i, propiedad).T) for i in X]
@@ -1786,35 +1787,35 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 xi=[self.conv_T_inv(funcion(i, propiedad).T) for i in X]
                 yi=[funcion(i, propiedad).x for i in X]
                 
-            if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
+            if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
                 zi=[funcion(i, propiedad).p/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
                 zi=[self.conv_T_inv(funcion(i, propiedad).T) for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Volumen específico", None):
                 zi=[funcion(i, propiedad).v/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entalpía", None):
                 zi=[funcion(i, propiedad).h/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Entropía", None):
                 zi=[funcion(i, propiedad).s/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía interna", None):
                 zi=[funcion(i, propiedad).u/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cp", None):
                 zi=[funcion(i, propiedad).cp/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cv", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Cv", None):
                 zi=[funcion(i, propiedad).cv/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Densidad", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Densidad", None):
                 zi=[funcion(i, propiedad).rho/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Conductividad térmica", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Conductividad térmica", None):
                 zi=[funcion(i, propiedad).k/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Viscosidad", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Viscosidad", None):
                 zi=[funcion(i, propiedad).mu/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Velocidad del sonido", None):
                 zi=[0 for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Fracción de vapor", None):
                 zi=[funcion(i, propiedad).x for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Gibbs", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Gibbs", None):
                 zi=[(funcion(i, propiedad).h-funcion(i, propiedad).T*funcion(i, propiedad).s)/self.factorz for i in X]
-            elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):
+            elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
                 zi=[(funcion(i, propiedad).u-funcion(i, propiedad).T*funcion(i, propiedad).s)/self.factorz for i in X]
                 
             if self.ejeX.currentText()=="p":
@@ -1875,7 +1876,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         
     def calcularIsoentropica(self, start=85, rango=5):
         """Método que actualiza los datos de isoentrópicas"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isoentrópicas...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isoentrópicas...", None))
         if self.Isoentropica.Personalizar:
             S=self.Isoentropica.Lista
         else:
@@ -1888,7 +1889,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         x, y, z, x2, y2=self.isolineas(S, X, steam_ps, start, rango)
         for i in range(len(S)-1, -1, -1):
             for j in range(len(X)-1, -1, -1):
-                if bounds_ps(X[j], S[i], 0)<>0:
+                if bounds_ps(X[j], S[i], 0)!=0:
                     del x[i][j]
                     del y[i][j]
                     del z[i][j]
@@ -1918,7 +1919,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def calcularIsoentalpica(self, start=90, rango=5):
         """Método que actualiza los datos de isoentálpicas"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isoentálpicas...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isoentálpicas...", None))
         if self.Isoentalpica.Personalizar:
             H=self.Isoentalpica.Lista
         else:
@@ -1931,7 +1932,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         x, y, z, x2, y2=self.isolineas(H, X, steam_ph, start, rango)
         for i in range(len(H)-1, -1, -1):
             for j in range(len(X)-1, -1, -1):
-                if bounds_ph(X[j], H[i], 0)<>0:
+                if bounds_ph(X[j], H[i], 0)!=0:
                     del x[i][j]
                     del y[i][j]
                     del z[i][j]
@@ -1961,7 +1962,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def calcularIsobara(self, start=80, rango=5):
         """Método que actualiza los datos de isobaras"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isobaras...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isobaras...", None))
         if self.Isobara.Personalizar:
             P=self.Isobara.Lista
         else:
@@ -1999,7 +2000,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def calcularIsoterma(self, start=75, rango=5):
         """Método que actualiza los datos de isotermas"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isotermas...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isotermas...", None))
         if self.Isoterma.Personalizar:
             T=self.Isoterma.Lista
         else:
@@ -2042,7 +2043,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def calcularIsocora(self, start=95, rango=5):
         """Método que actualiza los datos de isocoras"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isocoras...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isocoras...", None))
         if self.Isocora.Personalizar:
             V=self.Isocora.Lista
         else:
@@ -2055,7 +2056,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         x, y, z, x2, y2=self.isolineas(V, X, steam_pv, start, rango)
         for i in range(len(V)-1, -1, -1):
             for j in range(len(x[i])-1, -1, -1):
-                if bounds_pv(X[j], V[i], 0)<>0:
+                if bounds_pv(X[j], V[i], 0)!=0:
                     del x[i][j]
                     del y[i][j]
                     del z[i][j]
@@ -2085,7 +2086,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         
     def calcularIsoX(self, start=95, rango=5):
         """Método que actualiza los datos de isocalidad"""
-        self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isocalidades...", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isocalidades...", None))
         if self.IsoX.Personalizar:
             X=self.IsoX.Lista
         else:
@@ -2137,7 +2138,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 
     def mostrarPropiedades(self):
         """Muestra los valores de las propiedades de la sección de puntos especificados por el usuario"""
-        if self.punto<>0:
+        if self.punto!=0:
             self.presion.setValue(self.punto.p)
             self.temperatura.setValue(self.punto.T)
             self.volumen.setValue(self.punto.v)
@@ -2224,7 +2225,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     locale = QtCore.QLocale.system().name()
     qtTranslator = QtCore.QTranslator()
     if qtTranslator.load("UI_steamTables_" + locale, "i18n"):

@@ -65,7 +65,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Rich oil": 0.00026,
             "Natural gasoline": 0.00026,
             "Liquified petroleum gases": 0.00026},
-        u"Water (T<50C, v<0.9)": {
+        "Water (T<50C, v<0.9)": {
             "Seawater": 0.000088,
             "Brackish water": 0.000352,
             "Cooling tower (treated)": 0.000176,
@@ -79,7 +79,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Distilled, condensate": 0.000088,
             "Distilled, boiler blowdown": 0.000352,
             "Distilled, treated boiler feedwater": 0.000176},
-        u"Water (T<50C, v>0.9)": {
+        "Water (T<50C, v>0.9)": {
             "Seawater": 0.000088,
             "Brackish water": 0.000176,
             "Cooling tower (treated)": 0.000176,
@@ -93,7 +93,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Distilled, condensate": 0.000088,
             "Distilled, boiler blowdown": 0.000352,
             "Distilled, treated boiler feedwater": 0.000088},
-        u"Water (T>50C, v<0.9)": {
+        "Water (T>50C, v<0.9)": {
             "Seawater": 0.000176,
             "Brackish water": 0.000528,
             "Cooling tower (treated)": 0.000352,
@@ -107,7 +107,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Distilled, condensate": 0.000088,
             "Distilled, boiler blowdown": 0.000352,
             "Distilled, treated boiler feedwater": 0.000176},
-        u"Water (T>50C, v>0.9)": {
+        "Water (T>50C, v>0.9)": {
             "Seawater": 0.000176,
             "Brackish water": 0.000352,
             "Cooling tower (treated)": 0.000352,
@@ -121,11 +121,11 @@ class FoulingWidget(QtWidgets.QWidget):
             "Distilled, condensate": 0.000088,
             "Distilled, boiler blowdown": 0.000352,
             "Distilled, treated boiler feedwater": 0.000176},
-        u"Refinery vapors": {
+        "Refinery vapors": {
             "Atmospheric tower overhead vapors": 0.000176,
             "Light naphthas": 0.000176,
             "Vacuum overhead vapors": 0.000352},
-        u"Refinery liq.": {
+        "Refinery liq.": {
             "Crude oil dry T<120C, v<0.6": 0.000528,
             "Crude oil salt T<120C, v<0.6": 0.000528,
             "Crude oil dry T<120C, 0.6<v<1.2": 0.000352,
@@ -156,10 +156,10 @@ class FoulingWidget(QtWidgets.QWidget):
             "Light gas oil": 0.00044,
             "Heavy gas oil": 0.00067,
             "Heavy fuel oils": 0.00105},
-        u"Refinery Asphalt": {
+        "Refinery Asphalt": {
             "Vacuum tower bottoms": 0.001761,
             "Atmosphere tower bottoms": 0.001233},
-        u"Refinery Cracking and caking": {
+        "Refinery Cracking and caking": {
             "Overhead vapors": 0.000352,
             "Light cycle oil": 0.00044,
             "Heavy cycle oil": 0.00061,
@@ -167,7 +167,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Heavy coker gas oil": 0.00079,
             "Bottoms slurry oil": 0.000528,
             "Light liquid products": 0.000176},
-        u"Refinery Reforming": {
+        "Refinery Reforming": {
             "Reformer charge": 0.000264,
             "Reformer effluent": 0.000264,
             "Hydrocracker charge and effluent": 0.000352,
@@ -175,13 +175,13 @@ class FoulingWidget(QtWidgets.QWidget):
             "Overhead vapors": 0.000176,
             "Liquid product >50 API": 0.000176,
             "Liquid product 30-50 API": 0.000352},
-        u"Refinery Light Ends": {
+        "Refinery Light Ends": {
             "Overhead vapors and gases": 0.000176,
             "Liquid products": 0.000176,
             "Absorption oils": 0.00044,
             "Alkylation trace acid streams": 0.000352,
             "Reboiler streams": 0.00044},
-        u"Refinery Lube oil": {
+        "Refinery Lube oil": {
             "Feed stock": 0.000352,
             "Solvent feed mix": 0.000352,
             "Solvent": 0.000176,
@@ -190,21 +190,21 @@ class FoulingWidget(QtWidgets.QWidget):
             "Asphalt": 0.000881,
             "Wax slurries": 0.000528,
             "Refined lube oil": 0.000176},
-        u"Refinery Visbreaker": {
+        "Refinery Visbreaker": {
             "Overhead vapor": 0.000528,
             "Visbreaker bottoms": 0.001761},
-        u"Refinery Naphtha Hydrotreater": {
+        "Refinery Naphtha Hydrotreater": {
             "Feed": 0.000528,
             "Effluent": 0.000352,
             "Naphfthas": 0.000352,
             "Overhead vapors": 0.000264},
-        u"Refinery Catalytic": {
+        "Refinery Catalytic": {
             "Charge": 0.00079,
             "Effluent": 0.000352,
             "H.T. separator": 0.000352,
             "Stripper charge": 0.000528,
             "Liquid products": 0.000352},
-        u"Refinery HF Alky": {
+        "Refinery HF Alky": {
             "Alkylate, deprop. bottons, main fract": 0.000528,
             "Other": 0.000352}}
 
@@ -243,7 +243,7 @@ class Dialog_Finned(QtWidgets.QDialog):
     """Dialog to define finned tube properties"""
     def __init__(self, kwarg=None, parent=None):
         super(Dialog_Finned, self).__init__(parent=parent)
-        self.setWindowTitle(QtCore.QCoreApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Specify tube finned characteristics"))
         layout = QtWidgets.QGridLayout(self)
         self.listTube = QtWidgets.QComboBox()
@@ -252,37 +252,37 @@ class Dialog_Finned(QtWidgets.QDialog):
 
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
                                          QtWidgets.QSizePolicy.Fixed), 1, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Material")), 2, 1)
         self.listMaterial = QtWidgets.QComboBox()
         self.listMaterial.addItem("")
-        self.listMaterial.addItem(QtCore.QCoreApplication.translate(
+        self.listMaterial.addItem(QtWidgets.QApplication.translate(
             "pychemqt", "Carbon Steel"))
         layout.addWidget(self.listMaterial, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Thermal Conductivity")), 3, 1)
         self.kFin = Entrada_con_unidades(ThermalConductivity)
         layout.addWidget(self.kFin, 3, 2)
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
                                          QtWidgets.QSizePolicy.Fixed), 4, 1, 1, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Root diameter")), 5, 1)
         self.RootD = Entrada_con_unidades(Length, "PipeDiameter")
         layout.addWidget(self.RootD, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Fin Height")), 6, 1)
         self.hFin = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.hFin, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Base Fin Thickness")), 7, 1)
         self.BaseThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.BaseThickness, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Top Fin Thickness")), 8, 1)
         self.TopThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.TopThickness, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Number of fins")), 9, 1)
         self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
         layout.addWidget(self.Nfin, 9, 2)

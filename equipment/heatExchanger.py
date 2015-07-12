@@ -23,7 +23,7 @@ from scipy.constants import g
 from lib import unidades
 from lib.corriente import Corriente
 from lib.physics import Re, Pr, Nu, Gr, Gz, f_friccion
-from parents import equipment
+from .parents import equipment
 
 
 # Pipe Laminar flow
@@ -958,10 +958,10 @@ class Shell_Tube(Heat_ExchangerDesign):
         QApplication.translate("pychemqt", "Horizontal"),
         QApplication.translate("pychemqt", "Vertical")]
     TEXT_DISTRIBUTION_TUBE = [
-        QApplication.translate("pychemqt", "Triangular")+u", 30º", 
-        QApplication.translate("pychemqt", "Diamond")+u", 45º", 
-        QApplication.translate("pychemqt", "Rotated Triangular")+u", 60º", 
-        QApplication.translate("pychemqt", "Square")+u", 90º"]
+        QApplication.translate("pychemqt", "Triangular")+", 30º", 
+        QApplication.translate("pychemqt", "Diamond")+", 45º", 
+        QApplication.translate("pychemqt", "Rotated Triangular")+", 60º", 
+        QApplication.translate("pychemqt", "Square")+", 90º"]
     TEXT_BAFFLE_TYPE = [
         QApplication.translate("pychemqt", "Single segmental"), 
         QApplication.translate("pychemqt", "Double segmental"), 
@@ -1958,7 +1958,7 @@ class Hairpin(Heat_ExchangerDesign):
                     X_lockhart=((1-fluidTube.x)/fluidTube.x)**0.9*(fluidTube.Vapor.rho/fluidTube.Liquido.rho)**0.5*(fluidTube.Liquido.mu/fluidTube.Vapor.mu)**0.1
                     G=fluidTube.caudalmasico*4/pi/self.Di**2
                     j=fluidTube.x*G/(g*self.Di*fluidTube.Vapor.rho*(fluidTube.Liquido.rho-fluidTube.Vapor.rho))**0.5
-                    print j, X_lockhart
+                    print((j, X_lockhart))
 
             else:   #condensacion veritcal
                 pass
@@ -2048,7 +2048,7 @@ class Hairpin(Heat_ExchangerDesign):
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube In Quality"), self.kwargs["entradaTubo"].x.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Temperature"), self.ToutTube.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Quality"), self.XoutTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Tube", None), self.deltaPTube.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Tube", None), self.deltaPTube.str)+os.linesep
 
         txt+=os.linesep+"%-25s\t %s" %(QApplication.translate("pychemqt", "Annulli Mechanism"), self.phaseAnnulli)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Fluid Speed"), self.VAnnulli.str)+os.linesep
@@ -2057,7 +2057,7 @@ class Hairpin(Heat_ExchangerDesign):
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli In Quality"), self.kwargs["entradaExterior"].x.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Temperature"), self.ToutAnnulli.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Quality"), self.XoutAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", u"ΔP Annulli", None), self.deltaPAnnulli.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Annulli", None), self.deltaPAnnulli.str)+os.linesep
 
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "U"), self.U.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Factor"), self.CF.str)+os.linesep
@@ -2099,7 +2099,7 @@ class Hairpin(Heat_ExchangerDesign):
                 (QApplication.translate("pychemqt", "Tube In Quality"), "XinTube", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Tube Out Temperature"), "ToutTube", unidades.Temperature),
                 (QApplication.translate("pychemqt", "Tube Out Quality"), "XoutTube", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", u"ΔP Tube", None), "deltaPTube", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP Tube", None), "deltaPTube", unidades.DeltaP),
                 (QApplication.translate("pychemqt", "Annulli Mechanism"), "phaseAnnulli", str),
                 (QApplication.translate("pychemqt", "Annulli Fluid Speed"), "VAnnulli", unidades.Speed),
                 (QApplication.translate("pychemqt", "Annulli Reynolds"), "ReAnnulli", unidades.Dimensionless),
@@ -2107,7 +2107,7 @@ class Hairpin(Heat_ExchangerDesign):
                 (QApplication.translate("pychemqt", "Annulli In Quality"), "XinAnnulli", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Annulli Out Temperature"), "ToutAnnulli", unidades.Temperature),
                 (QApplication.translate("pychemqt", "Annulli Out Quality"), "XoutAnnulli", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", u"ΔP Annulli", None), "deltaPAnnulli", unidades.DeltaP),
+                (QApplication.translate("pychemqt", "ΔP Annulli", None), "deltaPAnnulli", unidades.DeltaP),
                 (QApplication.translate("pychemqt", "U"), "U", unidades.HeatTransfCoef),
                 (QApplication.translate("pychemqt", "Clean Factor"), "CF", unidades.Dimensionless),
                 (QApplication.translate("pychemqt", "Over Surface"), "OS", unidades.Dimensionless),
@@ -2431,7 +2431,7 @@ def unsteady():
     T = zeros(M, dtype = float)
     T[0] = 1.0
     T[-1] = 1.0
-    print "T initial = ", T
+    print(("T initial = ", T))
 #========================================================================
 # I just pick 400 on trial and error for the total array
 #========================================================================
@@ -2456,7 +2456,7 @@ def unsteady():
             T[k] = Tnew[k]
             T_sol[i,k] = T[k]
 
-    print "Tau and T_final =", tau, T_sol[i,:]
+    print(("Tau and T_final =", tau, T_sol[i,:]))
 #========================================================================
 # Set up array for spatial values of x to plot
 #========================================================================

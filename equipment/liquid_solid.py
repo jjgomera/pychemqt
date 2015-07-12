@@ -13,7 +13,7 @@ from math import log, exp
 
 from lib.unidades import Pressure, Power, Temperature
 from lib.corriente import Corriente
-from parents import equipment
+from .parents import equipment
 
 
 class Crystallizer(equipment):

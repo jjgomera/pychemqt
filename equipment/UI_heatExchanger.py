@@ -34,36 +34,36 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output temperature")), 1, 1)
         self.Tout = Entrada_con_unidades(Temperature)
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
         lyt.addWidget(self.Tout, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Temperature increase")), 2, 1)
         self.DeltaT = Entrada_con_unidades(DeltaT)
         self.DeltaT.valueChanged.connect(partial(self.changeParams, "DeltaT"))
         lyt.addWidget(self.DeltaT, 2, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Heat Duty")), 3, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Heat Duty")), 3, 1)
         self.Heat = Entrada_con_unidades(Power)
         self.Heat.valueChanged.connect(partial(self.changeParams, "Heat"))
         lyt.addWidget(self.Heat, 3, 2)
         group = QtWidgets.QGroupBox(
-            QtCore.QCoreApplication.translate("pychemqt", "Heat Transfer"))
+            QtWidgets.QApplication.translate("pychemqt", "Heat Transfer"))
         lyt.addWidget(group, 4, 1, 1, 2)
         lyt = QtWidgets.QGridLayout(group)
         lyt.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Area")), 1, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Area")), 1, 1)
         self.A = Entrada_con_unidades(Area)
         self.A.valueChanged.connect(partial(self.changeParams, "A"))
         lyt.addWidget(self.A, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Heat Transfer Coefficient")), 2, 1)
         self.U = Entrada_con_unidades(HeatTransfCoef)
         self.U.valueChanged.connect(partial(self.changeParams, "U"))
         lyt.addWidget(self.U, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "External Temperature")), 3, 1)
         self.Text = Entrada_con_unidades(Temperature)
         self.Text.valueChanged.connect(partial(self.changeParams, "Text"))
@@ -73,7 +73,7 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             5, 0, 1, 3)
         lyt.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Pressure loss")), 6, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Pressure loss")), 6, 1)
         self.DeltaP = Entrada_con_unidades(DeltaP, value=0)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt.addWidget(self.DeltaP, 6, 2)
@@ -82,15 +82,15 @@ class UI_equipment(UI_equip):
             7, 0, 1, 3)
 
         group = QtWidgets.QGroupBox(
-            QtCore.QCoreApplication.translate("pychemqt", "Results"))
+            QtWidgets.QApplication.translate("pychemqt", "Results"))
         lyt.addWidget(group, 8, 1, 1, 5)
         layout = QtWidgets.QGridLayout(group)
         layout.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Heat Duty")), 0, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Heat Duty")), 0, 1)
         self.HeatCalc = Entrada_con_unidades(Power, retornar=False)
         self.HeatCalc.setReadOnly(True)
         layout.addWidget(self.HeatCalc, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output Temperature")), 1, 1)
         self.ToutCalc = Entrada_con_unidades(Temperature, retornar=False)
         self.ToutCalc.setReadOnly(True)
@@ -167,26 +167,26 @@ class Chart(QtWidgets.QDialog):
 
     def save(self):
         """Show the dialog to select name to save the image as file"""
-        fname=unicode(QtWidgets.QFileDialog.getSaveFil[0]eName(
-            self, QtCore.QCoreApplication.translate("pychemqt", "Save chart to file"),
+        fname=str(QtWidgets[0].QFileDialog.getSaveFileName(
+            self, QtWidgets.QApplication.translate("pychemqt", "Save chart to file"),
             "./", "Portable Network Graphics (*.png)"))
         self.diagrama.fig.savefig(fname, facecolor='#eeeeee')
 
 
 class Efectividad(Chart):
     """Heat Exchanger effectiveness plot"""
-    title = QtCore.QCoreApplication.translate("pychemqt",
+    title = QtWidgets.QApplication.translate("pychemqt",
                                          "Heat Exchanger effectiveness")
     flujo = [
-        (QtCore.QCoreApplication.translate("pychemqt", "Counterflow"), "CF"),
-        (QtCore.QCoreApplication.translate("pychemqt", "Parallelflow"), "PF"),
-        (QtCore.QCoreApplication.translate(
+        (QtWidgets.QApplication.translate("pychemqt", "Counterflow"), "CF"),
+        (QtWidgets.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
+        (QtWidgets.QApplication.translate(
             "pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (QtCore.QCoreApplication.translate(
+        (QtWidgets.QApplication.translate(
             "pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
-        (QtCore.QCoreApplication.translate(
+        (QtWidgets.QApplication.translate(
             "pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-        (QtCore.QCoreApplication.translate(
+        (QtWidgets.QApplication.translate(
             "pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado = ("Cmin", "Cmax")
@@ -198,7 +198,7 @@ class Efectividad(Chart):
         self.setWindowTitle(self.title)
         layout=QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(
-            QtCore.QCoreApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
         self.flow=QtWidgets.QComboBox()
         for text, flow in self.flujo:
             self.flow.addItem(text)
@@ -219,7 +219,7 @@ class Efectividad(Chart):
 
         self.botonGuardar=QtWidgets.QToolButton()
         self.botonGuardar.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")))
-        self.botonGuardar.setToolTip(QtCore.QCoreApplication.translate("pychemqt", "Save chart to file"))
+        self.botonGuardar.setToolTip(QtWidgets.QApplication.translate("pychemqt", "Save chart to file"))
         self.botonGuardar.clicked.connect(self.save)
         layout.addWidget(self.botonGuardar,5,1)
         layout.addWidget(self.diagrama,2,1,1,6)
@@ -239,11 +239,11 @@ class Efectividad(Chart):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0, 6)
         self.diagrama.axes2D.set_ylim(0, 1)
-        title = QtCore.QCoreApplication.translate("pychemqt",
+        title = QtWidgets.QApplication.translate("pychemqt",
                                              "Heat Transfer effectiveness")
         self.diagrama.axes2D.set_title(title, size='12')
         self.diagrama.axes2D.set_xlabel("NTU", size='12')
-        self.diagrama.axes2D.set_ylabel(u"ε", size='14')
+        self.diagrama.axes2D.set_ylabel("ε", size='14')
 
         flujo=self.flujo[indice][1]
         self.mixed.setVisible(flujo=="CrFSMix")
@@ -279,23 +279,23 @@ class Efectividad(Chart):
 
 
 class TemperatureEfectividad(Chart):
-    title=QtCore.QCoreApplication.translate("pychemqt", "Heat Exchanger temperature effectiveness")
-    flujo=[(QtCore.QCoreApplication.translate("pychemqt", "Counterflow"), "CF"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Parallelflow"), "PF"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 TEMA E"), "1-2TEMAE"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-3 TEMA E"), "1-3TEMAE"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-4 TEMA E"), "1-4TEMAE"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-1 TEMA G"), "1-1TEMAG"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 TEMA G"), "1-2TEMAG"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-1 TEMA H"), "1-1TEMAH"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 TEMA H"), "1-2TEMAH"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-1 TEMA J"), "1-1TEMAJ"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 TEMA J"), "1-2TEMAJ"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-4 TEMA J"), "1-4TEMAJ"),
+    title=QtWidgets.QApplication.translate("pychemqt", "Heat Exchanger temperature effectiveness")
+    flujo=[(QtWidgets.QApplication.translate("pychemqt", "Counterflow"), "CF"),
+                (QtWidgets.QApplication.translate("pychemqt", "Parallelflow"), "PF"),
+                (QtWidgets.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 TEMA E"), "1-2TEMAE"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-3 TEMA E"), "1-3TEMAE"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-4 TEMA E"), "1-4TEMAE"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-1 TEMA G"), "1-1TEMAG"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 TEMA G"), "1-2TEMAG"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-1 TEMA H"), "1-1TEMAH"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 TEMA H"), "1-2TEMAH"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-1 TEMA J"), "1-1TEMAJ"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 TEMA J"), "1-2TEMAJ"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-4 TEMA J"), "1-4TEMAJ"),
 
                 ]
 
@@ -306,7 +306,7 @@ class TemperatureEfectividad(Chart):
         super(TemperatureEfectividad, self).__init__(parent)
         self.setWindowTitle(self.title)
         layout=QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
         self.flow=QtWidgets.QComboBox()
         for text, flow in self.flujo:
             self.flow.addItem(text)
@@ -326,7 +326,7 @@ class TemperatureEfectividad(Chart):
 
         self.botonGuardar=QtWidgets.QToolButton()
         self.botonGuardar.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")))
-        self.botonGuardar.setToolTip(QtCore.QCoreApplication.translate("pychemqt", "Save chart to file"))
+        self.botonGuardar.setToolTip(QtWidgets.QApplication.translate("pychemqt", "Save chart to file"))
         self.botonGuardar.clicked.connect(self.save)
         layout.addWidget(self.botonGuardar,5,1)
         layout.addWidget(self.diagrama,2,1,1,6)
@@ -349,7 +349,7 @@ class TemperatureEfectividad(Chart):
         self.diagrama.axes2D.set_ylim(0, 1)
         self.diagrama.axes2D.set_xscale("log")
 
-        self.diagrama.axes2D.set_title(QtCore.QCoreApplication.translate("pychemqt", "Heat Transfer Temperature Effectiveness"), size='12')
+        self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "Heat Transfer Temperature Effectiveness"), size='12')
         self.diagrama.axes2D.set_xlabel("NTU", size='12')
         self.diagrama.axes2D.set_ylabel("P", size='14')
         self.diagrama.axes2D.set_xticklabels(["0.1", "1.0", "10"])
@@ -395,12 +395,12 @@ class TemperatureEfectividad(Chart):
 
 
 class F(Chart):
-    title=QtCore.QCoreApplication.translate("pychemqt", u"ΔT Correction Factor", None)
+    title=QtWidgets.QApplication.translate("pychemqt", "ΔT Correction Factor", None)
 
-    flujo=[(QtCore.QCoreApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+    flujo=[(QtWidgets.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado=("Cmin", "Cmax")
     PosLogo=(1, 1)
@@ -410,7 +410,7 @@ class F(Chart):
         super(F, self).__init__(parent)
         self.setWindowTitle(self.title)
         layout=QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
         self.flow=QtWidgets.QComboBox()
         for text, flow in self.flujo:
             self.flow.addItem(text)
@@ -430,7 +430,7 @@ class F(Chart):
 
         self.botonGuardar=QtWidgets.QToolButton()
         self.botonGuardar.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")))
-        self.botonGuardar.setToolTip(QtCore.QCoreApplication.translate("pychemqt", "Save chart to file"))
+        self.botonGuardar.setToolTip(QtWidgets.QApplication.translate("pychemqt", "Save chart to file"))
         self.botonGuardar.clicked.connect(self.save)
         layout.addWidget(self.botonGuardar,5,1)
         layout.addWidget(self.diagrama,2,1,1,6)
@@ -450,7 +450,7 @@ class F(Chart):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0, 1)
         self.diagrama.axes2D.set_ylim(0, 1)
-        self.diagrama.axes2D.set_title(QtCore.QCoreApplication.translate("pychemqt", u"$\Delta T_{ml}$ Correction Factor", None), size='12')
+        self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "$\Delta T_{ml}$ Correction Factor", None), size='12')
         self.diagrama.axes2D.set_xlabel("$P=\\frac{T_{1o}-T_{1i}}{T_{2i}-T_{1i}}$", size='12')
         self.diagrama.axes2D.set_ylabel("F", size='14')
 
@@ -483,12 +483,12 @@ class F(Chart):
         self.refixImage()
 
 class Fi(Chart):
-    title=QtCore.QCoreApplication.translate("pychemqt", u"ψ", None)
+    title=QtWidgets.QApplication.translate("pychemqt", "ψ", None)
 
-    flujo=[#(QtCore.QCoreApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+    flujo=[#(QtWidgets.QApplication.translate("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
 #                (QtGui.QApplication.translate("pychemqt", "Crossflow, one fluid mixed, other unmixed"), "CrFSMix"),
 #                (QtGui.QApplication.translate("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-                (QtCore.QCoreApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+                (QtWidgets.QApplication.translate("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     mezclado=("Cmin", "Cmax")
     PosLogo=(1, 1)
@@ -497,7 +497,7 @@ class Fi(Chart):
         super(Fi, self).__init__(parent)
         self.setWindowTitle(self.title)
         layout=QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flow Arrangement")), 1, 1)
         self.flow=QtWidgets.QComboBox()
         for text, flow in self.flujo:
             self.flow.addItem(text)
@@ -517,7 +517,7 @@ class Fi(Chart):
 
         self.botonGuardar=QtWidgets.QToolButton()
         self.botonGuardar.setIcon(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")))
-        self.botonGuardar.setToolTip(QtCore.QCoreApplication.translate("pychemqt", "Save chart to file"))
+        self.botonGuardar.setToolTip(QtWidgets.QApplication.translate("pychemqt", "Save chart to file"))
         self.botonGuardar.clicked.connect(self.save)
         layout.addWidget(self.botonGuardar,5,1)
         layout.addWidget(self.diagrama,2,1,1,6)
@@ -537,7 +537,7 @@ class Fi(Chart):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_xlim(0, 1)
         self.diagrama.axes2D.set_ylim(0, 1)
-        self.diagrama.axes2D.set_title(QtCore.QCoreApplication.translate("pychemqt", u"$\Delta T_{ml}$ Correction Factor", None), size='12')
+        self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "$\Delta T_{ml}$ Correction Factor", None), size='12')
         self.diagrama.axes2D.set_xlabel("$P=\\frac{T_{1o}-T_{1i}}{T_{2i}-T_{1i}}$", size='12')
         self.diagrama.axes2D.set_ylabel("F", size='14')
 

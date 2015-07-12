@@ -24,7 +24,7 @@ class eqDIPPR(QtWidgets.QWidget):
     def __init__(self, value, parent=None):
         super(eqDIPPR, self).__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Eq DIPPR") + " "))
         self.eqDIPPR = QtWidgets.QSpinBox()
         self.eqDIPPR.setValue(value)
@@ -42,12 +42,12 @@ class eqDIPPR(QtWidgets.QWidget):
     8:     Y = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²
     9:     Y = A²/Tr + B - 2ACTr - ADTr² - C²Tr³/3 - CDTr⁴/2 - D²Tr⁵/5
         """
-        var = QtCore.QCoreApplication.translate("pychemqt", """where:
+        var = QtWidgets.QApplication.translate("pychemqt", """where:
                     Y Property to fit
                     T temperature in Kelvin
                     Tr: reduced temperature T/Tc
                     A,B,C,D,E parameters""")
-        self.eqDIPPR.setToolTip(QtCore.QCoreApplication.translate(
+        self.eqDIPPR.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Equation") + txt + var)
         layout.addWidget(self.eqDIPPR)
         layout.addStretch()
@@ -90,17 +90,17 @@ class Entrada_Datos(QtWidgets.QDialog):
         gridLayout = QtWidgets.QGridLayout(self)
         self.botonAbrir = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Open"))
+            QtWidgets.QApplication.translate("pychemqt", "Open"))
         self.botonAbrir.clicked.connect(self.Abrir)
         gridLayout.addWidget(self.botonAbrir, 1, 1)
         self.botonGuardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Save"))
+            QtWidgets.QApplication.translate("pychemqt", "Save"))
         self.botonGuardar.clicked.connect(self.Guardar)
         gridLayout.addWidget(self.botonGuardar, 1, 2)
         self.botonDelete = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/clear.png")),
-            QtCore.QCoreApplication.translate("pychemqt", "Clear"))
+            QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonDelete.clicked.connect(self.Borrar)
         gridLayout.addWidget(self.botonDelete, 1, 3)
         gridLayout.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,

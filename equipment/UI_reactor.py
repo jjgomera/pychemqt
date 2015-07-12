@@ -5,7 +5,7 @@
 ###   Diálogo de definición de reactores UI_reactor  ###
 ###################################
 
-import cPickle
+import pickle
 from functools import partial
 import os
 
@@ -37,7 +37,7 @@ class widgetReacciones(QtWidgets.QWidget):
         self.indices, self.nombres, M=getComponents()
         gridLayout = QtWidgets.QGridLayout(self)        
 
-        self.TablaReacciones=Tabla(5, horizontalHeader=[QtCore.QCoreApplication.translate("pychemqt", "Reaction"), u"ΔHr, %s" %unidades.MolarEnthalpy(None).text(), QtCore.QCoreApplication.translate("pychemqt", "Type"), QtCore.QCoreApplication.translate("pychemqt", "Phase"), QtCore.QCoreApplication.translate("pychemqt", "Description")], dinamica=False, verticalHeader=True, orientacion=QtCore.Qt.AlignLeft)
+        self.TablaReacciones=Tabla(5, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Reaction"), "ΔHr, %s" %unidades.MolarEnthalpy(None).text(), QtWidgets.QApplication.translate("pychemqt", "Type"), QtWidgets.QApplication.translate("pychemqt", "Phase"), QtWidgets.QApplication.translate("pychemqt", "Description")], dinamica=False, verticalHeader=True, orientacion=QtCore.Qt.AlignLeft)
         self.TablaReacciones.setMinimumWidth(500)
         self.TablaReacciones.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.TablaReacciones.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -46,28 +46,28 @@ class widgetReacciones(QtWidgets.QWidget):
         self.TablaReacciones.itemSelectionChanged.connect(self.actualizarBotones)
         gridLayout.addWidget(self.TablaReacciones,1,1,6,4)
         
-        self.botonAbrir=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileOpen.png")), QtCore.QCoreApplication.translate("pychemqt", "Open"))
+        self.botonAbrir=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileOpen.png")), QtWidgets.QApplication.translate("pychemqt", "Open"))
         self.botonAbrir.clicked.connect(self.botonAbrirClicked)
         gridLayout.addWidget(self.botonAbrir,1,5)
-        self.botonGuardar=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")), QtCore.QCoreApplication.translate("pychemqt", "Save"))
+        self.botonGuardar=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")), QtWidgets.QApplication.translate("pychemqt", "Save"))
         self.botonGuardar.clicked.connect(self.botonGuardarClicked)
         self.botonGuardar.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
         self.botonGuardar.setEnabled(False)
         gridLayout.addWidget(self.botonGuardar,2,5)
 
-        self.botonNew=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileNew.png")), QtCore.QCoreApplication.translate("pychemqt", "New"))
+        self.botonNew=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileNew.png")), QtWidgets.QApplication.translate("pychemqt", "New"))
         self.botonNew.clicked.connect(self.botonNewClicked)
         gridLayout.addWidget(self.botonNew,3,5)
-        self.botonEdit=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editor.png")), QtCore.QCoreApplication.translate("pychemqt", "Edit"))
+        self.botonEdit=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editor.png")), QtWidgets.QApplication.translate("pychemqt", "Edit"))
         self.botonEdit.setEnabled(False)
         self.botonEdit.setCheckable(True)
         self.botonEdit.clicked.connect(self.botonEditClicked)
         gridLayout.addWidget(self.botonEdit,4,5)
-        self.botonDelete=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editDelete.png")), QtCore.QCoreApplication.translate("pychemqt", "Delete"))
+        self.botonDelete=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editDelete.png")), QtWidgets.QApplication.translate("pychemqt", "Delete"))
         self.botonDelete.setEnabled(False)
         self.botonDelete.clicked.connect(self.botonDeleteClicked)
         gridLayout.addWidget(self.botonDelete,5,5)
-        self.botonClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtCore.QCoreApplication.translate("pychemqt", "Clear"))
+        self.botonClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonClear.clicked.connect(self.botonClearClicked)
         gridLayout.addWidget(self.botonClear,6,5)
         gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1)
@@ -78,11 +78,11 @@ class widgetReacciones(QtWidgets.QWidget):
         self.botonDelete.setEnabled(bool)
 
     def botonAbrirClicked(self):
-        fname = unicode(QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate("pychemqt", "Open reaction file"), "./", QtCore.QCoreApplication.translate("pychemqt", "reaction file")+" (*.rec);;"+QtCore.QCoreApplication.translate("pychemqt", "All files")+" (*.*)")[0])
+        fname = str(QtWidgets.QFileDialog.getOpenFileName(self, QtWidgets.QApplication.translate("pychemqt", "Open reaction file"), "./", QtWidgets.QApplication.translate("pychemqt", "reaction file")+" (*.rec);;"+QtWidgets.QApplication.translate("pychemqt", "All files")+" (*.*)")[0])
         if fname:
             with open(fname, "r") as archivo:
-                reacciones=cPickle.load(archivo)
-            print reacciones
+                reacciones=pickle.load(archivo)
+            print(reacciones)
             self.reacciones=reacciones
             self.botonGuardar.setEnabled(True)
             for fila, reaccion in enumerate(reacciones):
@@ -97,11 +97,11 @@ class widgetReacciones(QtWidgets.QWidget):
         self.changed.emit()
     
     def botonGuardarClicked(self):
-        fname = unicode(QtWidgets.QFileDialog.getSaveFileName(self, QtCore.QCoreApplication.translate("pychemqt", "Save reaction to file"), "./", QtCore.QCoreApplication.translate("pychemqt", "reaction file")+" (*.rec)")[0])
+        fname = str(QtWidgets.QFileDialog.getSaveFileName(self, QtWidgets.QApplication.translate("pychemqt", "Save reaction to file"), "./", QtWidgets.QApplication.translate("pychemqt", "reaction file")+" (*.rec)")[0])
         if fname:
             if fname.split(".")[-1]!="rec":
                 fname+=".rec"
-            cPickle.dump(self.reacciones, open(fname, "w"))
+            pickle.dump(self.reacciones, open(fname, "w"))
 
     def botonNewClicked(self):
         dialog=UI_reacciones(parent=self)
@@ -171,7 +171,7 @@ class UI_reacciones(QtWidgets.QDialog):
         gridLayout = QtWidgets.QGridLayout(self)        
 
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Key component")))        
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Key component")))        
         self.key=QtWidgets.QComboBox()
         for i, nombre in enumerate(self.nombres):
             self.key.addItem("%i - %s" %(i+1, nombre))
@@ -181,7 +181,7 @@ class UI_reacciones(QtWidgets.QDialog):
         gridLayout.addLayout(lyt,1,1,1,5)
 
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Phase")))        
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Phase")))        
         self.fase=QtWidgets.QComboBox()
         for txt in reaction.Reaction.TEXT_PHASE:
             self.fase.addItem(txt)
@@ -196,7 +196,7 @@ class UI_reacciones(QtWidgets.QDialog):
         lyt=QtWidgets.QVBoxLayout()
         title=self.nombres[:]
         title.append("")
-        self.Estequiometria=Tabla(1, verticalHeaderLabels=title, horizontalHeader=[QtCore.QCoreApplication.translate("pychemqt", "Coefficients")], filas=len(self.indices))
+        self.Estequiometria=Tabla(1, verticalHeaderLabels=title, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Coefficients")], filas=len(self.indices))
         self.Estequiometria.setFixedHeight(22*len(self.indices)+22+4+22)
         lyt.addWidget(self.Estequiometria)
         self.Estequiometria.addRow()
@@ -209,13 +209,13 @@ class UI_reacciones(QtWidgets.QDialog):
         
         lyt=QtWidgets.QGridLayout()
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,1)
-        self.formula=QtWidgets.QCheckBox(QtCore.QCoreApplication.translate("pychemqt", "Use name in formula"))
+        self.formula=QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Use name in formula"))
         self.formula.toggled.connect(partial(self.changeParams, "formula"))
         lyt.addWidget(self.formula,1,2,1,2)
-        self.customHr=QtWidgets.QCheckBox(u"ΔHr "+QtCore.QCoreApplication.translate("pychemqt", "user specified"))
+        self.customHr=QtWidgets.QCheckBox("ΔHr "+QtWidgets.QApplication.translate("pychemqt", "user specified"))
         self.customHr.toggled.connect(self.changeHr)
         lyt.addWidget(self.customHr,2,2,1,2)
-        lyt.addWidget(QtWidgets.QLabel(u"ΔHr<sup>o</sup>"),3,2)
+        lyt.addWidget(QtWidgets.QLabel("ΔHr<sup>o</sup>"),3,2)
         self.Hr=Entrada_con_unidades(unidades.MolarEnthalpy, readOnly=True)
         self.Hr.valueChanged.connect(partial(self.changeParams, "Hr"))
         lyt.addWidget(self.Hr,3,3)
@@ -225,14 +225,14 @@ class UI_reacciones(QtWidgets.QDialog):
         gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,2)
 
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Type")))
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Type")))
         self.tipo=QtWidgets.QComboBox()
         for txt in reaction.Reaction.TEXT_TYPE:
             self.tipo.addItem(txt)
         self.tipo.currentIndexChanged.connect(partial(self.changeParams, "tipo"))
         lyt.addWidget(self.tipo)
         lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Concentration")))
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Concentration")))
         self.base=QtWidgets.QComboBox()
         for txt in reaction.Reaction.TEXT_BASE:
             self.base.addItem(txt)
@@ -249,7 +249,7 @@ class UI_reacciones(QtWidgets.QDialog):
         widget=QtWidgets.QWidget()
         self.stacked.addWidget(widget)
         lyt=QtWidgets.QGridLayout(widget)
-        lyt.addWidget(QtWidgets.QLabel("<h3>"+QtCore.QCoreApplication.translate("pychemqt", "Estequiometric reaction")+"</h3>"),1,1,1,4)
+        lyt.addWidget(QtWidgets.QLabel("<h3>"+QtWidgets.QApplication.translate("pychemqt", "Estequiometric reaction")+"</h3>"),1,1,1,4)
         self.Conversion=Tabla(1, verticalHeaderModel="C", filas=3)
         self.Conversion.setConnected()
         self.Conversion.setFixedWidth(100)
@@ -257,7 +257,7 @@ class UI_reacciones(QtWidgets.QDialog):
         label=QtWidgets.QLabel()
         label.setPixmap(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equation/reaction_conversion.png"))
         lyt.addWidget(label,2,2,1,3)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Temperature unit")),3,2)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Temperature unit")),3,2)
         self.unidadesTemperatura=QtWidgets.QComboBox()
         for i in unidades.Temperature.__text__:
             self.unidadesTemperatura.addItem(i)
@@ -269,7 +269,7 @@ class UI_reacciones(QtWidgets.QDialog):
         widget=QtWidgets.QWidget()
         self.stacked.addWidget(widget)
         lyt=QtWidgets.QGridLayout(widget)
-        self.check_KFijo=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Fixed"))
+        self.check_KFijo=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Fixed"))
         self.check_KFijo.toggled.connect(self.KeqChanged)
         lyt.addWidget(self.check_KFijo,1,1,1,2)
         lyt.addWidget(QtWidgets.QLabel("K<sub>eq</sub>"),1,3)
@@ -279,10 +279,10 @@ class UI_reacciones(QtWidgets.QDialog):
         label.setPixmap(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equation/reaction_equilibrium.png"))
         lyt.addWidget(label,1,5,1,4)
 
-        self.check_KEq=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Equation"))
+        self.check_KEq=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Equation"))
         self.check_KEq.toggled.connect(self.KeqChanged)
         lyt.addWidget(self.check_KEq,2,1,1,2)
-        self.check_KTabla=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Table"))
+        self.check_KTabla=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Table"))
         self.check_KTabla.toggled.connect(self.KeqChanged)
         lyt.addWidget(self.check_KTabla,2,5,1,2)
         self.KEq_Dat=Tabla(1, verticalHeaderLabels=["A", "B", "C", "D", "E", "F", "G", "H"], filas=8)
@@ -296,13 +296,13 @@ class UI_reacciones(QtWidgets.QDialog):
         self.KEq_Tab.rowFinished.connect(self.Regresion)
         self.KEq_Tab.setAlternatingRowColors(False)
         lyt.addWidget(self.KEq_Tab,3,5,1,4)
-        lyt.addWidget(QtWidgets.QLabel(u"r²"),4,5)
+        lyt.addWidget(QtWidgets.QLabel("r²"),4,5)
         self.r2=Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.r2,4,6)
-        self.botonTablaPlot=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/plot.png")), QtCore.QCoreApplication.translate("pychemqt", "Plot"))
+        self.botonTablaPlot=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/plot.png")), QtWidgets.QApplication.translate("pychemqt", "Plot"))
         self.botonTablaPlot.clicked.connect(self.Plot)
         lyt.addWidget(self.botonTablaPlot,4,7)
-        self.botonTablaClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtCore.QCoreApplication.translate("pychemqt", "Clear"))
+        self.botonTablaClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonTablaClear.clicked.connect(self.KEq_Tab.clear)
         lyt.addWidget(self.botonTablaClear,4,8)
         label=QtWidgets.QLabel()
@@ -311,7 +311,7 @@ class UI_reacciones(QtWidgets.QDialog):
         lyt.addWidget(label,5,1,1,8)
 
         
-        self.checkGibbs=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "From Gibbs free energy minimization"))
+        self.checkGibbs=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "From Gibbs free energy minimization"))
         lyt.addWidget(self.checkGibbs,6,1,1,4)
         
         self.check_KFijo.setChecked(True)
@@ -442,45 +442,45 @@ class UI_equipment(UI_equip):
         #Pestaña reacciones
         self.Reacciones= widgetReacciones()
         self.Reacciones.changed.connect(self.calculo)
-        self.tabWidget.insertTab(1, self.Reacciones, QtCore.QCoreApplication.translate("pychemqt", "Reactions"))
+        self.tabWidget.insertTab(1, self.Reacciones, QtWidgets.QApplication.translate("pychemqt", "Reactions"))
         
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
-        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Pressure")),2,0,1,1)
+        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pressure")),2,0,1,1)
         self.P=Entrada_con_unidades(unidades.Pressure)
         self.P.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.P,2,1,1,1)
-        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Pressure drop")),3,0,1,1)
+        gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pressure drop")),3,0,1,1)
         self.DeltaP=Entrada_con_unidades(unidades.Pressure)
         self.DeltaP.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.DeltaP,3,1,1,1)
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,0,1,5)
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Type")))
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Type")))
         self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(QtCore.QCoreApplication.translate("pychemqt", "CSTR, continuous stirred-tank"))
-        self.tipo.addItem(QtCore.QCoreApplication.translate("pychemqt", "PFR, plug flow"))
+        self.tipo.addItem(QtWidgets.QApplication.translate("pychemqt", "CSTR, continuous stirred-tank"))
+        self.tipo.addItem(QtWidgets.QApplication.translate("pychemqt", "PFR, plug flow"))
         self.tipo.currentIndexChanged.connect(self.tipoCambiado)
         lyt.addWidget(self.tipo)
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
         gridLayout_Calculo.addLayout(lyt,5,0,1,5)
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),6,0,1,5)
 
-        groupbox=QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("pychemqt", "Thermal mode"))
+        groupbox=QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Thermal mode"))
         layout=QtWidgets.QGridLayout(groupbox)
-        self.checkAdiabatico=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Adiabatic"))
+        self.checkAdiabatico=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Adiabatic"))
         self.checkAdiabatico.toggled.connect(self.heatChanged)
         layout.addWidget(self.checkAdiabatico, 1, 1, 1, 1)
-        self.checkIsotermico=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Isothermal"))
+        self.checkIsotermico=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Isothermal"))
         self.checkIsotermico.toggled.connect(self.heatChanged)
         layout.addWidget(self.checkIsotermico, 2, 1, 1, 1)
-        self.checkFlux=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Heat duty"))
+        self.checkFlux=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Heat duty"))
         self.checkFlux.toggled.connect(self.heatChanged)
         layout.addWidget(self.checkFlux, 3, 1, 1, 1)
-        self.checkIntercambio=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "Heat transfer"))
+        self.checkIntercambio=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Heat transfer"))
         self.checkIntercambio.toggled.connect(self.heatChanged)
         layout.addWidget(self.checkIntercambio, 4, 1, 1, 1)
-        self.checkPerfil=QtWidgets.QRadioButton(QtCore.QCoreApplication.translate("pychemqt", "PFR temperature profile"))
+        self.checkPerfil=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "PFR temperature profile"))
         self.checkPerfil.toggled.connect(self.heatChanged)
         layout.addWidget(self.checkPerfil, 5, 1, 1, 1)
         self.T=Entrada_con_unidades(unidades.Temperature)
@@ -495,55 +495,55 @@ class UI_equipment(UI_equip):
         self.U=Entrada_con_unidades(unidades.HeatTransfCoef)
         self.U.valueChanged.connect(self.calculo)
         layout.addWidget(self.U,4,4)
-        layout.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Flow")),4,5)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flow")),4,5)
         self.direccion=QtWidgets.QComboBox()
-        self.direccion.addItem(QtCore.QCoreApplication.translate("pychemqt", "Countercurrent"))
-        self.direccion.addItem(QtCore.QCoreApplication.translate("pychemqt", "Cocurrent"))
+        self.direccion.addItem(QtWidgets.QApplication.translate("pychemqt", "Countercurrent"))
+        self.direccion.addItem(QtWidgets.QApplication.translate("pychemqt", "Cocurrent"))
         layout.addWidget(self.direccion,4,6)
-        self.botonPerfil=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/table.png")), QtCore.QCoreApplication.translate("pychemqt", "Add Profile"))
+        self.botonPerfil=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/table.png")), QtWidgets.QApplication.translate("pychemqt", "Add Profile"))
         self.botonPerfil.clicked.connect(self.editorPerfil)
         layout.addWidget(self.botonPerfil,5,2,1,1)
         gridLayout_Calculo.addWidget(groupbox, 7, 0, 1, 5)
         
-        self.groupBox_Diseno= QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("pychemqt", "Design"))
+        self.groupBox_Diseno= QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Design"))
         gridLayout_Calculo.addWidget(self.groupBox_Diseno,8,0,1,5)
         lyt = QtWidgets.QGridLayout(self.groupBox_Diseno)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Mode")),1,1)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Mode")),1,1)
         self.modo=QtWidgets.QComboBox()
-        self.modo.addItem(QtCore.QCoreApplication.translate("pychemqt", "Rating: calculate conversión"))
-        self.modo.addItem(QtCore.QCoreApplication.translate("pychemqt", "Design, calculate volumen"))
+        self.modo.addItem(QtWidgets.QApplication.translate("pychemqt", "Rating: calculate conversión"))
+        self.modo.addItem(QtWidgets.QApplication.translate("pychemqt", "Design, calculate volumen"))
         self.modo.currentIndexChanged.connect(self.calculo)
         lyt.addWidget(self.modo,1,2,1,3)
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1,5)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Reactor Volume")),2,1)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Reactor Volume")),2,1)
         self.V=Entrada_con_unidades(unidades.Volume, "VolLiq")
         lyt.addWidget(self.V,2,2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Key Component")),3,1)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Key Component")),3,1)
         self.key=QtWidgets.QComboBox()
 #        for i, nombre in enumerate(self.nombres):
 #            self.key.addItem("%i - %s" %(i+1, nombre))
         lyt.addWidget(self.key,3,2)
         lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),3,3)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Conversion")),3,4)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Conversion")),3,4)
         self.conversion=Entrada_con_unidades(float, max=1)
         lyt.addWidget(self.conversion,3,5)
         
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,5)
         
-        groupBox_Calculo = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate("pychemqt", "Results"))
+        groupBox_Calculo = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(groupBox_Calculo,11,0,1,5)
         gridLayout_1 = QtWidgets.QGridLayout(groupBox_Calculo)
-        gridLayout_1.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "T output")),0,1,1,1)
+        gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "T output")),0,1,1,1)
         self.TCalc=Entrada_con_unidades(unidades.Temperature, retornar=False, readOnly=True)
         gridLayout_1.addWidget(self.TCalc,0,2,1,1)
-        gridLayout_1.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Heat")),1,1,1,1)
+        gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Heat")),1,1,1,1)
         self.HeatCalc=Entrada_con_unidades(unidades.Power, retornar=False, readOnly=True)
         gridLayout_1.addWidget(self.HeatCalc,1,2,1,1)
 
-        gridLayout_1.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Conversion")),0,4)
+        gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Conversion")),0,4)
         self.conversionCalc=Entrada_con_unidades(float, readOnly=True)
         gridLayout_1.addWidget(self.conversionCalc,0,5)
-        gridLayout_1.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate("pychemqt", "Reactor Volume")),1,4)
+        gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Reactor Volume")),1,4)
         self.VCalc=Entrada_con_unidades(unidades.Volume, "VolLiq", readOnly=True)
         gridLayout_1.addWidget(self.VCalc,1,5)
 
@@ -566,7 +566,7 @@ class UI_equipment(UI_equip):
             
         
     def editorPerfil(self):
-        dialog=entrada_datos.Entrada_Datos(data=self.profile_T, title=QtCore.QCoreApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
+        dialog=entrada_datos.Entrada_Datos(data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
         if dialog.exec_():
             self.profile_T=dialog.data
         

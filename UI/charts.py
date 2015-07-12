@@ -3,7 +3,8 @@
 
 ###Módulo que define los dialogos de definición de gráficos
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+
 from scipy import arange, logspace, log10, pi, arctan, concatenate, r_
 from scipy.optimize import fsolve
 from matplotlib.patches import ConnectionPatch
@@ -16,14 +17,14 @@ from lib.utilities import representacion
 from equipment.UI_heatExchanger import chart as chartHE
 
 
-class Standing_Katz(QtGui.QDialog):
-    title=QtGui.QApplication.translate("pychemqt", "Standing Katz chart")
+class Standing_Katz(QtWidgets.QDialog):
+    title=QtWidgets.QApplication.translate("pychemqt", "Standing Katz chart")
     def __init__(self, parent=None):
         super(Standing_Katz, self).__init__(parent)
         self.setWindowTitle(self.title)
-        layout=QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Method:")),1,1)
-        self.metodos=QtGui.QComboBox()
+        layout=QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Method:")),1,1)
+        self.metodos=QtWidgets.QComboBox()
         self.metodos.addItem("Hall Yarborough")
         self.metodos.addItem("Dranchuk Abu-Kassem")
         self.metodos.addItem("Dranchuk Purvis Robinson")
@@ -33,21 +34,21 @@ class Standing_Katz(QtGui.QDialog):
         self.metodos.addItem("Papay")
         self.metodos.currentIndexChanged.connect(self.plot_Z)
         layout.addWidget(self.metodos,1,2)
-        layout.addItem(QtGui.QSpacerItem(10,10,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed),1, 3)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pr<sub>min</sub>")),1,4)
+        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1, 3)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pr<sub>min</sub>")),1,4)
         self.Prmin=Entrada_con_unidades(float, spinbox=True, value=0.0, width=60, decimales=1, step=0.1)
         layout.addWidget(self.Prmin,1,5)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Pr<sub>max</sub>")),1,6)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pr<sub>max</sub>")),1,6)
         self.Prmax=Entrada_con_unidades(float, spinbox=True, value=8.0, width=60, decimales=1, step=0.1)
         layout.addWidget(self.Prmax,1,7)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Tr")),1, 8)
-        self.Tr=QtGui.QLineEdit(", ".join(str(i) for i in [1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.]))
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Tr")),1, 8)
+        self.Tr=QtWidgets.QLineEdit(", ".join(str(i) for i in [1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.]))
         self.Tr.setMinimumWidth(400)
         layout.addWidget(self.Tr,1, 9)
         self.diagrama = mpl(self, dpi=90)
         layout.addWidget(self.diagrama,2,1,1,9)
         
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 5, 1, 1, 6)
 
@@ -67,19 +68,19 @@ class Standing_Katz(QtGui.QDialog):
         P=arange(Prmin, Prmax, 0.1)
         for Tr in Tr:
             self.diagrama.plot(P, [Z(Tr, Pr) for Pr in P], "k")
-        self.diagrama.axes2D.set_title(QtGui.QApplication.translate("pychemqt", "Standing and Katz compressivitity factors chart for natural gas"), size='12')
+        self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "Standing and Katz compressivitity factors chart for natural gas"), size='12')
         self.diagrama.draw()
    
 
-class Moody(QtGui.QDialog):
-    title=QtGui.QApplication.translate("pychemqt", "Moody Diagram")
+class Moody(QtWidgets.QDialog):
+    title=QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
     def __init__(self, parent=None):
         super(Moody, self).__init__(parent)
         self.showMaximized()
         self.setWindowTitle(self.title)
-        layout=QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("pychemqt", "Method:")),1,1)
-        self.metodos=QtGui.QComboBox()
+        layout=QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Method:")),1,1)
+        self.metodos=QtWidgets.QComboBox()
         self.metodos.addItem("Colebrook")
         self.metodos.addItem("Chen (1979")
         self.metodos.addItem("Romeo (2002)")
@@ -95,9 +96,9 @@ class Moody(QtGui.QDialog):
         layout.setColumnStretch(3, 1)
         self.diagrama = mpl(self, dpi=90)
         layout.addWidget(self.diagrama,2,1,1,4)
-        self.diagrama.fig.text(0.95, 0.4, QtGui.QApplication.translate("pychemqt", "Relative roughness")+", "+r"$r=\frac{\epsilon}{D}$", rotation=90, size='14')
+        self.diagrama.fig.text(0.95, 0.4, QtWidgets.QApplication.translate("pychemqt", "Relative roughness")+", "+r"$r=\frac{\epsilon}{D}$", rotation=90, size='14')
         
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 3, 1, 1, 4)
         
@@ -107,14 +108,14 @@ class Moody(QtGui.QDialog):
     def cambiar(self, int):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_autoscale_on(False)
-        self.diagrama.axes2D.set_xlabel(QtGui.QApplication.translate("pychemqt", "Reynolds number")+ ",  " +r"$Re=\frac{V\rho D}{\mu}$" , horizontalalignment='center', size='16')
-        self.diagrama.axes2D.set_ylabel(QtGui.QApplication.translate("pychemqt", "Friction factor")+",  "+r"$f=\frac{2hDg}{LV^2}$", size='14')
+        self.diagrama.axes2D.set_xlabel(QtWidgets.QApplication.translate("pychemqt", "Reynolds number")+ ",  " +r"$Re=\frac{V\rho D}{\mu}$" , horizontalalignment='center', size='16')
+        self.diagrama.axes2D.set_ylabel(QtWidgets.QApplication.translate("pychemqt", "Friction factor")+",  "+r"$f=\frac{2hDg}{LV^2}$", size='14')
         self.diagrama.axes2D.grid(True)
         self.diagrama.axes2D.set_xlim(600, 1e8)
         self.diagrama.axes2D.set_ylim(0.008, 0.1)
         self.diagrama.axes2D.set_xscale("log")
         self.diagrama.axes2D.set_yscale("log")
-        self.diagrama.axes2D.set_title(QtGui.QApplication.translate("pychemqt", "Moody Diagram"), size='12')
+        self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "Moody Diagram"), size='12')
         self.diagrama.axes2D.set_xticks([7e2, 8e2, 9e2, 1e3, 2e3, 3e3, 4e3, 5e3, 6e3, 7e3, 8e3, 9e3, 1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4, 8e4, 9e4, 1e5, 2e5, 3e5, 4e5, 5e5, 6e5, 7e5, 8e5, 9e5, 1e6, 2e6, 3e6, 4e6, 5e6, 6e6, 7e6, 8e6, 9e6, 1e7, 2e7, 3e7, 4e7, 5e7, 6e7, 7e7, 8e7, 9e7], minor=False)
         self.diagrama.axes2D.set_yticks([9e-3, 1e-2, 1.1e-2, 1.2e-2, 1.3e-2, 1.4e-2, 1.5e-2, 1.6e-2, 1.7e-2, 1.8e-2, 1.9e-2, 2e-2, 2.1e-2, 2.2e-2, 2.3e-2, 2.4e-2, 2.5e-2, 2.6e-2, 2.7e-2, 2.8e-2, 2.9e-2, 3e-2, 3.2e-2, 3.4e-2, 3.6e-2, 3.8e-2, 4e-2, 4.2e-2, 4.4e-2, 4.6e-2, 4.8e-2, 5e-2, 5.2e-2, 5.4e-2, 5.6e-2, 5.8e-2, 6e-2, 6.2e-2, 6.4e-2, 6.6e-2, 6.8e-2, 7e-2, 7.5e-2, 8e-2, 8.5e-2, 9e-2, 9.5e-2, 1e-1])
         self.diagrama.axes2D.set_yticks([], minor=True)
@@ -162,24 +163,24 @@ class Moody(QtGui.QDialog):
         self.diagrama.axes2D.add_artist(ConnectionPatch((2400, 0.009), (6000, 0.009), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         self.diagrama.axes2D.add_artist(ConnectionPatch((6000, 0.095), (40000, 0.095), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         self.diagrama.axes2D.add_artist(ConnectionPatch((40000, 0.095), (9.9e7, 0.095), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
-        self.diagrama.axes2D.text(15000, 0.094, QtGui.QApplication.translate("pychemqt", "Transition Zone"), size="small", verticalalignment="top", horizontalalignment="center")
-        self.diagrama.axes2D.text(2e6, 0.094, QtGui.QApplication.translate("pychemqt", "Turbulent flux fully desarrolled"), size="small", verticalalignment="top", horizontalalignment="center")
-        self.diagrama.axes2D.text(4000, 0.0091, QtGui.QApplication.translate("pychemqt", "Critic\nzone"), size="small", verticalalignment="bottom", horizontalalignment="center")
-        self.diagrama.axes2D.text(1200, 0.0091, QtGui.QApplication.translate("pychemqt", "Laminar flux"), size="small", verticalalignment="bottom", horizontalalignment="center")
+        self.diagrama.axes2D.text(15000, 0.094, QtWidgets.QApplication.translate("pychemqt", "Transition Zone"), size="small", verticalalignment="top", horizontalalignment="center")
+        self.diagrama.axes2D.text(2e6, 0.094, QtWidgets.QApplication.translate("pychemqt", "Turbulent flux fully desarrolled"), size="small", verticalalignment="top", horizontalalignment="center")
+        self.diagrama.axes2D.text(4000, 0.0091, QtWidgets.QApplication.translate("pychemqt", "Critic\nzone"), size="small", verticalalignment="bottom", horizontalalignment="center")
+        self.diagrama.axes2D.text(1200, 0.0091, QtWidgets.QApplication.translate("pychemqt", "Laminar flux"), size="small", verticalalignment="bottom", horizontalalignment="center")
 
 
 
 
 
 
-__all__={QtGui.QApplication.translate("pychemqt", "Petro"): (Standing_Katz, ), 
-             QtGui.QApplication.translate("pychemqt", "Fluid Flow"): (Moody, ), 
-             QtGui.QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
+__all__={QtWidgets.QApplication.translate("pychemqt", "Petro"): (Standing_Katz, ), 
+             QtWidgets.QApplication.translate("pychemqt", "Fluid Flow"): (Moody, ), 
+             QtWidgets.QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
 
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = chartHE[2]()
     Dialog.show()
     sys.exit(app.exec_())

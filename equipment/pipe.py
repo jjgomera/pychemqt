@@ -328,7 +328,7 @@ class Pipe(equipment):
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Thermal Condition"), self.TEXT_THERMAL[self.kwargs["thermal"]])+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Fluid Speed"), self.V.str)+os.linesep
         txt+="%-25s\t %s" %("Reynolds", self.Re)+os.linesep
-        txt+="%-25s\t %s" %(u"ε/D", self.eD)+os.linesep
+        txt+="%-25s\t %s" %("ε/D", self.eD)+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Factor Friction"), self.f)+os.linesep
 
         if self.kwargs["thermal"]:
@@ -399,4 +399,4 @@ if __name__ == '__main__':
 
     agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
     tuberia=Pipe(entrada=agua, metodo=0, l=5, material=["Steel (ANSI)", "Sch. 40", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, -1, 2], notas="Tuberia")
-    print tuberia.DeltaP
+    print((tuberia.DeltaP))

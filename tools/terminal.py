@@ -51,12 +51,12 @@ class XTerm(QtGui.QX11EmbedContainer):
 
         self.process.start(term, args)
         if self.process.error() == QtCore.QProcess.FailedToStart:
-            print "xterm not installed"
+            print("xterm not installed")
 
 
 if __name__ == "__main__":
     import sys
-    from ConfigParser import ConfigParser
+    from configparser import ConfigParser
     import os
     app = QtGui.QApplication(sys.argv)
     conf_dir = os.path.expanduser('~') + "/.pychemqt/"

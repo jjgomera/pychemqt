@@ -17,7 +17,7 @@ from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless, Length,
 from lib.physics import Cunningham
 from lib.corriente import Corriente
 from lib.psycrometry import PsychroState
-from parents import equipment
+from .parents import equipment
 
 
 class Dryer(equipment):
@@ -77,7 +77,7 @@ class Dryer(equipment):
 
     def cleanOldValues(self, **kwargs):
         """Actualización de los kwargs con los nuevos introducidos si es necesario para cada equipo"""
-        if kwargs.has_key("entrada"):
+        if "entrada" in kwargs:
             kwargs["entradaSolido"]=kwargs["entrada"][0]
             kwargs["entradaSolido"]=kwargs["entrada"][1]
             del kwargs["entrada"]
@@ -347,7 +347,7 @@ class Scrubber(equipment):
         txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entradaGas.solido.caudal.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entradaGas.solido.diametro_medio.str)+os.linesep
         if len(self.entradaGas.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %(u"Dp(µm)", "Xi", u"ηi", "Xis", "Xig")+os.linesep
+            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
             for i in range(len(self.efficiency_i)):
                 txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entradaGas.solido.diametros[i].config("ParticleDiameter"), self.entradaGas.solido.fracciones[i],  self.efficiency_i[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
 
@@ -396,4 +396,4 @@ if __name__ == '__main__':
     aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475], fraccionMolar=[1.], solido=solido)
     agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
     secador=Scrubber(entradaGas=aire, entradaLiquido=agua, modelo_rendimiento=1, diametro=0.25, f=0.5)
-    print secador.deltaP.bar, secador.efficiencyCalc
+    print((secador.deltaP.bar, secador.efficiencyCalc))

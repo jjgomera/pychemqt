@@ -159,7 +159,7 @@ class qtelemental(QtGui.QDialog):
         self.VolumenAtomico = QtGui.QLabel()
         self.VolumenAtomico.setFont(font8)
         self.VolumenAtomico.setToolTip(QtGui.QApplication.translate(
-            "pychemqt", "Atomic volume")+u", cm³/mol")
+            "pychemqt", "Atomic volume")+", cm³/mol")
         layoutInfo2.addWidget(self.VolumenAtomico, 1, 1)
         self.RadioAtomico = QtGui.QLabel()
         self.RadioAtomico.setFont(font8)
@@ -377,12 +377,12 @@ class ElementDialog(QtGui.QDialog):
         layoutFisica.addWidget(QtGui.QLabel(
             QtGui.QApplication.translate("pychemqt", "Fase:")), 1, 1)
         layoutFisica.addWidget(QtGui.QLabel(elemento.phase.get_string() +
-                                            u" a 0ºC"), 1, 2, 1, 1)
+                                            " a 0ºC"), 1, 2, 1, 1)
         if elemento.density_solid.has_value:
             layoutFisica.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
                 "pychemqt", "Solid Density:")), 2, 1)
             layoutFisica.addWidget(self.drawData(
-                unidades.Density, elemento.density_solid, "gcc", txt=u" @ 20ºC"), 2, 2)
+                unidades.Density, elemento.density_solid, "gcc", txt=" @ 20ºC"), 2, 2)
         if elemento.density_liquid.has_value:
             layoutFisica.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
                 "pychemqt", "Liquid Density:")), 3, 1)
@@ -393,7 +393,7 @@ class ElementDialog(QtGui.QDialog):
             layoutFisica.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
                 "pychemqt", "Gas Density:")), 4, 1)
             layoutFisica.addWidget(self.drawData(
-                unidades.Density, elemento.density_gas, "gl", txt=u" @ 0ºC"), 4, 2)
+                unidades.Density, elemento.density_gas, "gl", txt=" @ 0ºC"), 4, 2)
         layoutFisica.addWidget(QtGui.QLabel(
             QtGui.QApplication.translate("pychemqt", "Appearance:")), 5, 1)
         label = QtGui.QLabel(elemento.appearance.get_string())
@@ -546,9 +546,9 @@ class ElementDialog(QtGui.QDialog):
         self.lados = QtGui.QLabel()
         if elemento.lattice_edges.has_value:
             self.lados.setText(
-                str(elemento.lattice_edges.values[0]*10) + u" Å - " +
-                str(elemento.lattice_edges.values[1]*10) + u" Å - " +
-                str(elemento.lattice_edges.values[2]*10) + u" Å")
+                str(elemento.lattice_edges.values[0]*10) + " Å - " +
+                str(elemento.lattice_edges.values[1]*10) + " Å - " +
+                str(elemento.lattice_edges.values[2]*10) + " Å")
         else:
             self.lados.setText(elemento.lattice_edges.get_string())
         layout_Cristalografia.addWidget(self.lados, 3, 2)
@@ -557,9 +557,9 @@ class ElementDialog(QtGui.QDialog):
         self.angulos = QtGui.QLabel()
         if elemento.lattice_angles.has_value:
             self.angulos.setText(
-                str(elemento.lattice_angles.values[0]) + u"º, " +
-                str(elemento.lattice_angles.values[1]) + u"º, " +
-                str(elemento.lattice_angles.values[2]) + u"º")
+                str(elemento.lattice_angles.values[0]) + "º, " +
+                str(elemento.lattice_angles.values[1]) + "º, " +
+                str(elemento.lattice_angles.values[2]) + "º")
         else:
             self.angulos.setText(elemento.lattice_angles.get_string())
         layout_Cristalografia.addWidget(self.angulos, 4, 2)

@@ -4,7 +4,7 @@
 ###Módulo en el que se definen las tablas que se usarán en diferentes partes del programa
 
 import os
-from PyQt4.QtGui import QApplication
+from PyQt5.QtWidgets import QApplication
 
 #####################################################
 ###   Tuberías normalizadas en función del diámetro nominal y el nº de catálogo   ###

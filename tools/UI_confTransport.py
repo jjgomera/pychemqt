@@ -5,40 +5,41 @@
 # Transport properties config section
 ###############################################################################
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
-class UI_confTransport_widget(QtGui.QWidget):
+
+class UI_confTransport_widget(QtWidgets.QWidget):
     """Transport properties widget, tu use in dialog, wizard..."""
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter with project config"""
         super(UI_confTransport_widget, self).__init__(parent)
-        layout = QtGui.QGridLayout(self)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Density:")), 1, 0)
-        self.RhoL = QtGui.QComboBox()
+        self.RhoL = QtWidgets.QComboBox()
         self.RhoL.addItem("DIPPR")
         self.RhoL.addItem("Rackett")
         self.RhoL.addItem("Cavett")
         self.RhoL.addItem("Costald")
         layout.addWidget(self.RhoL, 1, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Viscosity:")), 2, 0)
-        self.MuL = QtGui.QComboBox()
+        self.MuL = QtWidgets.QComboBox()
         self.MuL.addItem("DIPPR")
         self.MuL.addItem("Parametric")
         self.MuL.addItem("Letsou & Steil")
         layout.addWidget(self.MuL, 2, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Viscosity:")), 3, 0)
-        self.MuG = QtGui.QComboBox()
+        self.MuG = QtWidgets.QComboBox()
         self.MuG.addItem("DIPPR")
         self.MuG.addItem("Chapman & Enskog")
         self.MuG.addItem("Thodos")
         layout.addWidget(self.MuG, 3, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Surface Tension:")), 4, 0)
-        self.Tension = QtGui.QComboBox()
+        self.Tension = QtWidgets.QComboBox()
         self.Tension.addItem("DIPPR")
         self.Tension.addItem("Parametric")
         self.Tension.addItem("Parachor")
@@ -46,47 +47,47 @@ class UI_confTransport_widget(QtGui.QWidget):
         self.Tension.addItem("Hakim")
         self.Tension.addItem("Hydrocarbon")
         layout.addWidget(self.Tension, 4, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Thermal Conductivity:")), 5, 0)
-        self.ThCondL = QtGui.QComboBox()
+        self.ThCondL = QtWidgets.QComboBox()
         self.ThCondL.addItem("DIPPR")
         self.ThCondL.addItem("Pachaiyappan")
         layout.addWidget(self.ThCondL, 5, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Thermal Conductivity:")), 6, 0)
-        self.ThCondG = QtGui.QComboBox()
+        self.ThCondG = QtWidgets.QComboBox()
         self.ThCondG.addItem("DIPPR")
         self.ThCondG.addItem("Misic & Thodos")
         layout.addWidget(self.ThCondG, 6, 1)
-        layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Vapor Pressure:")), 7, 0)
-        self.Pv = QtGui.QComboBox()
+        self.Pv = QtWidgets.QComboBox()
         self.Pv.addItem("DIPPR")
         self.Pv.addItem("Antoine")
         self.Pv.addItem("Lee-Kesler")
         self.Pv.addItem("Maxwell-Bonnel")
         self.Pv.addItem("Wagner")
         layout.addWidget(self.Pv, 7, 1)
-        label_7 = QtGui.QLabel()
+        label_7 = QtWidgets.QLabel()
         label_7.setAlignment(QtCore.Qt.AlignCenter)
-        label_7.setText(QtGui.QApplication.translate(
+        label_7.setText(QtWidgets.QApplication.translate(
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(label_7, 0, 3)
-        self.Corr_RhoL = QtGui.QComboBox()
+        self.Corr_RhoL = QtWidgets.QComboBox()
         self.Corr_RhoL.addItem("Thomson, Brobst & Hankinson")
         self.Corr_RhoL.addItem("API")
         layout.addWidget(self.Corr_RhoL, 1, 3)
-        self.Corr_MuL = QtGui.QComboBox()
+        self.Corr_MuL = QtWidgets.QComboBox()
         self.Corr_MuL.addItem("Graboski & Braun")
         self.Corr_MuL.addItem("Kouzel")
         self.Corr_MuL.addItem("Lucas")
         layout.addWidget(self.Corr_MuL, 2, 3)
-        self.Corr_ThCondL = QtGui.QComboBox()
+        self.Corr_ThCondL = QtWidgets.QComboBox()
         self.Corr_ThCondL.addItem("Lenoir")
         self.Corr_ThCondL.addItem("Kanitkar & Thodos")
         layout.addWidget(self.Corr_ThCondL, 5, 3)
-        layout.addItem(QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding,
-                                         QtGui.QSizePolicy.Expanding), 8, 0, 1, 10)
+        layout.addItem(QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
+                                         QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 10)
 
         if config and config.has_section("Transport"):
             self.RhoL.setCurrentIndex(config.getint("Transport", "RhoL"))
@@ -132,17 +133,17 @@ class UI_confTransport_widget(QtGui.QWidget):
         return config
 
 
-class Dialog(QtGui.QDialog):
+class Dialog(QtWidgets.QDialog):
     """Transport properties dialog"""
     def __init__(self, config, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtGui.QApplication.translate(
+        self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Transport Properties Methods"))
-        layout = QtGui.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confTransport_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel |
-                                                QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
+                                                QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -154,7 +155,7 @@ class Dialog(QtGui.QDialog):
 
 if __name__ == "__main__":
     import sys
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
     sys.exit(app.exec_())

@@ -16,7 +16,7 @@ except:
 
 from PyQt5.QtWidgets import  QApplication
 
-from parents import equipment
+from .parents import equipment
 
 
 class Spreadsheet(equipment):

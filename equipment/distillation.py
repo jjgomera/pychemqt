@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import  QApplication
 from lib import unidades
 from lib.corriente import Corriente
 from lib.plot import Plot
-from parents import equipment
-from heatExchanger import Heat_Exchanger
+from .parents import equipment
+from .heatExchanger import Heat_Exchanger
 
 
 class Flash(equipment):
@@ -346,7 +346,7 @@ class Tower(equipment):
         dialog.plot.ax.set_xticks(linspace(0,1.0,21))
         dialog.plot.ax.set_yticks(linspace(0.05,1.0,20))
         dialog.addData([0,1],[0,1],'b--')
-        dialog.addData(map(x,T),map(y,T))
+        dialog.addData(list(map(x,T)),list(map(y,T)))
         dialog.addData([xB,xB],[0,xB],'r--')
         dialog.addData(xB,xB,'ro',ms=5)
         dialog.addText(xB+0.005,0.02,'xB = {:0.3f}'.format(float(xB)))
@@ -532,9 +532,9 @@ class ColumnFUG(Tower):
 
 
     def cleanOldValues(self, **kwargs):
-        if kwargs.has_key("R"):
+        if "R" in kwargs:
             self.kwargs["R_Rmin"]=0.0
-        elif kwargs.has_key("R_Rmin"):
+        elif "R_Rmin" in kwargs:
             self.kwargs["R_Rmin"]=0.0
         self.kwargs.update(kwargs)
 
@@ -686,7 +686,7 @@ class ColumnFUG(Tower):
 #FIXME: o el ejemplo está mal planteado o este valor es ilógico
         ToutReboiler=residuo.eos._Bubble_T()
         ToutReboiler2=residuo.eos._Dew_T()
-        print ToutReboiler, ToutReboiler2, Tin, Tout
+        print((ToutReboiler, ToutReboiler2, Tin, Tout))
         SalidaResiduo=residuo.clone(T=ToutReboiler)
         self.salida=[SalidaDestilado, SalidaResiduo]
 
@@ -774,7 +774,7 @@ def batch():
     W_int = 100
     x_w_int = 0.5
 
-    t = range(0, 6, 1)
+    t = list(range(0, 6, 1))
 
     # Defining function for integration
     def batch(x_w, t):
@@ -813,7 +813,7 @@ if __name__ == '__main__':
     blend=Corriente(T=T, P=P, caudalMasico=1, fraccionMolar=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
 #    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=3, HKsplit=0.95, R_Rmin=1.2)
 #    print columna.DutyCondenser
-    print blend.mezcla.ids
+    print((blend.mezcla.ids))
 #    entrada=Corriente(T=340, P=101325, caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
 #    flash=Flash(entrada=entrada)
 #    print flash.status, flash.msg

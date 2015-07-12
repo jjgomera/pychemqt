@@ -29,7 +29,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mode")), 1, 1)
         self.metodo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TIPO:
@@ -40,12 +40,12 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             2, 1, 1, 6)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Area")), 3, 1)
         self.area = Entrada_con_unidades(Area, resaltado=True)
         self.area.valueChanged.connect(partial(self.changeParams, "area"))
         lyt_Calc.addWidget(self.area, 3, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Allowable efficiency")), 4, 1)
         self.rendimientoAdmisible = Entrada_con_unidades(float,  readOnly=True)
         self.rendimientoAdmisible.valueChanged.connect(
@@ -55,24 +55,24 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             5, 1, 1, 6)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Dielectric constant")), 6, 1)
         self.epsilon = Entrada_con_unidades(float)
         self.epsilon.valueChanged.connect(partial(self.changeParams, "epsilon"))
         lyt_Calc.addWidget(self.epsilon, 6, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Charging field")), 7, 1)
         self.potencialCarga = Entrada_con_unidades(PotencialElectric)
         self.potencialCarga.valueChanged.connect(
             partial(self.changeParams, "potencialCarga"))
         lyt_Calc.addWidget(self.potencialCarga, 7, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Collecting field")), 8, 1)
         self.potencialDescarga = Entrada_con_unidades(PotencialElectric)
         self.potencialDescarga.valueChanged.connect(
             partial(self.changeParams, "potencialDescarga"))
         lyt_Calc.addWidget(self.potencialDescarga, 8, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure drop")), 9, 1)
         self.deltaP = Entrada_con_unidades(DeltaP)
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
@@ -81,16 +81,16 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
             10, 1, 1, 6)
 
-        groupbox = QtWidgets.QGroupBox(QtCore.QCoreApplication.translate(
+        groupbox = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Result"))
         lyt_Calc.addWidget(groupbox, 11, 1, 1, 5)
         lyt = QtWidgets.QGridLayout(groupbox)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Area")), 0, 1)
         self.areaCalculada = Entrada_con_unidades(Area, retornar=False)
         self.areaCalculada.setReadOnly(True)
         lyt.addWidget(self.areaCalculada, 0, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtCore.QCoreApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Efficiency")), 1, 1)
         self.rendimiento = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimiento, 1, 2)
@@ -99,9 +99,9 @@ class UI_equipment(UI_equip):
             12, 1, 1, 6)
 
         # Output tab
-        self.addSalida(QtCore.QCoreApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
         self.addSalida(
-            QtCore.QCoreApplication.translate("pychemqt", "Collected solids"))
+            QtWidgets.QApplication.translate("pychemqt", "Collected solids"))
 
         if equipment:
             self.setEquipment(equipment)
