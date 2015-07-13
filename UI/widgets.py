@@ -932,7 +932,7 @@ class Table_Graphics(QtWidgets.QWidget):
 
 
 class FlowLayout(QtWidgets.QLayout):
-    def __init__(self, parent=None, margin=0, spacing=0):
+    def __init__(self, margin=0, spacing=0, parent=None):
         super(FlowLayout, self).__init__(parent)
 
         if parent is not None:
@@ -988,7 +988,9 @@ class FlowLayout(QtWidgets.QLayout):
         for item in self.itemList:
             size = size.expandedTo(item.minimumSize())
 
-        size += QtCore.QSize(2 * self.margin(), 2 * self.margin())
+        size = QtCore.QSize(
+            size.width()+self.contentsMargins().left()+self.contentsMargins().right(),
+            size.height()+self.contentsMargins().bottom()+self.contentsMargins().top())
         return size
 
     def doLayout(self, rect, testOnly):
@@ -1014,8 +1016,6 @@ class FlowLayout(QtWidgets.QLayout):
             lineHeight = max(lineHeight, item.sizeHint().height())
 
         return y + lineHeight - rect.y()
-
-
 
 
 def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
