@@ -51,7 +51,7 @@ class CheckEditor(QtWidgets.QItemDelegate):
         return widget
 
     def setEditorData(self, editor, index):
-        value = index.data(QtCore.Qt.DisplayRole).toBool()
+        value = bool(index.data(QtCore.Qt.DisplayRole))
         editor.setChecked(value)
 
     def setModelData(self, editor, model, index):

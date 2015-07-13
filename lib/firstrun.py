@@ -41,7 +41,7 @@ equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
 
 
 def which(program):
-    """Function to detect program availability in systemi and return path"""
+    """Function to detect program availability in system and return path"""
     import os
 
     def is_exe(fpath):

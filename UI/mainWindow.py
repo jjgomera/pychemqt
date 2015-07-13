@@ -1017,8 +1017,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def terminal(self):
         from tools import terminal
-        shell = terminal.XTerm(self.Preferences)
-        shell.show()
+        terminal.XTerm(self.Preferences)
 
     def tablaPeriodica(self):
         from tools import qtelemental

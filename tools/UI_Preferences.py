@@ -31,7 +31,7 @@ from tools import UI_confResolution
 from lib import unidades, corriente
 from lib.utilities import format2txt, representacion
 from equipment import equipments
-from lib.firstrun import calculator, editor, shell
+from lib.firstrun import calculator, editor, shell, which
 
 
 class ConfLine(QtWidgets.QWidget):
@@ -822,9 +822,11 @@ class ConfApplications(QtWidgets.QDialog):
             self.ForegroundColor.setColor(config.get("Applications", 'foregroundColor'))
             self.BackgroundColor.setColor(config.get("Applications", 'backgroundColor'))
 
+        self.ipython.setEnabled(bool(which("ipython3")))
+
         # Habilitar cuando añada soporte para otras terminales
         self.terminal.setEnabled(False)
-
+        
     def value(self, config):
         """Return value for main dialog"""
         if not config.has_section("Applications"):
