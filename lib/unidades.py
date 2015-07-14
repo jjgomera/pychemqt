@@ -1,10 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 import pickle
 from configparser import ConfigParser
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtCore
 import scipy.constants as k
 
 from lib.config import conf_dir, getMainWindowConfig
@@ -135,6 +137,39 @@ class unidad(float):
 
         return float.__new__(cls, data)
     
+    @classmethod
+    def __lt__(cls, other):
+        return cls.__title__ < other.__title__
+
+    @classmethod
+    def __le__(cls, other):
+        return cls.__title__ <= other.__title__
+
+    @classmethod
+    def __eq__(cls, other):
+        return cls.__title__ == other.__title__
+
+    @classmethod
+    def __ge__(cls, other):
+        return cls.__title__ >= other.__title__
+
+    @classmethod
+    def __gt__(cls, other):
+        return cls.__title__ > other.__title__
+
+    @classmethod
+    def __ne__(cls, other):
+        return cls.__title__ != other.__title__
+        
+    @classmethod
+    def __cmp__(self, other):
+        if self.__title__ > other.__title__:
+            return 1
+        elif self.__title__ < other.__title__:
+            return -1
+        else:
+            return 0
+        
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
         if data is None:
@@ -2615,8 +2650,22 @@ class Currency(unidad):
             txt = self.text(self.magnitud)
             return " "+txt+num
 
+if os.environ["icu"]:
+    import icu
+    locale = QtCore.QLocale.system().name()
 
-_all = unidad.__subclasses__()
+    subclasses = unidad.__subclasses__()
+    names = [unit.__title__ for unit in subclasses]
+    collator = icu.Collator.createInstance(icu.Locale(locale))
+    sortfunc = collator.getSortKey
+    title_sorted = sorted(names, key=sortfunc)
+    _all = [0]*len(names)
+    for unit in subclasses:
+        i = title_sorted.index(unit.__title__)
+        _all[i] = unit
+else:
+    sortfunc = lambda item: item.__title__
+    _all = sorted(unidad.__subclasses__(), key=sortfunc)
 
 _magnitudes = []
 for unit in _all:

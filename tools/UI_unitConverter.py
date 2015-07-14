@@ -26,6 +26,7 @@ class UI_unitConverter(QtWidgets.QDialog):
         self.verticalLayout.addWidget(self.buttonBox)
         for unidad in unidades._all:
             self.lista.addItem(unidad.__title__)
+
         self.lista.setCurrentRow(-1)
 
     def mostrar_ventana_hijo(self):
