@@ -136,40 +136,7 @@ class unidad(float):
             data = cls._getBaseValue(data, unit, magnitud)
 
         return float.__new__(cls, data)
-    
-    @classmethod
-    def __lt__(cls, other):
-        return cls.__title__ < other.__title__
-
-    @classmethod
-    def __le__(cls, other):
-        return cls.__title__ <= other.__title__
-
-    @classmethod
-    def __eq__(cls, other):
-        return cls.__title__ == other.__title__
-
-    @classmethod
-    def __ge__(cls, other):
-        return cls.__title__ >= other.__title__
-
-    @classmethod
-    def __gt__(cls, other):
-        return cls.__title__ > other.__title__
-
-    @classmethod
-    def __ne__(cls, other):
-        return cls.__title__ != other.__title__
-        
-    @classmethod
-    def __cmp__(self, other):
-        if self.__title__ > other.__title__:
-            return 1
-        elif self.__title__ < other.__title__:
-            return -1
-        else:
-            return 0
-        
+            
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
         if data is None:
@@ -1181,6 +1148,12 @@ class Pressure(unidad):
 
     def __init__(self, data, unit="Pa", magnitud=""):
         self.Config = getMainWindowConfig()
+        
+        if data is None:
+            data = 0
+            self.code = "n/a"
+        else:
+            self.code = ""
 
         if not magnitud:
             magnitud = self.__class__.__name__
@@ -1197,12 +1170,6 @@ class Pressure(unidad):
             self._data = data*k.g/k.centi**2+k.atm
         else:
             self._data = data * self.__class__.rates[unit]
-
-        if data is None:
-            self._data = 0
-            self.code = "n/a"
-        else:
-            self.code = ""
 
         for key in self.__class__.rates:
             self.__setattr__(key, self._data/self.__class__.rates[key])
@@ -2676,7 +2643,7 @@ _magnitudes.append(("Dimensionless",
                     Dimensionless))
 
 # For get a fresh new list of magnitudes when we add some new, the list can be
-# add start of lib/firstrun.py file:
+# add at start of lib/firstrun.py file:
 #magnitudes=[]
 #for magnitud, title, unit in _magnitudes:
 #    magnitudes.append(magnitud)
@@ -2704,13 +2671,13 @@ units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1,
              'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
              'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 6, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
+#    import doctest
+#    doctest.testmod()
+#
     P=Pressure(5, "MPa")
     print(P)
 
-    T=Temperature(5)
+    T=Temperature(5, "")
     print(T, type(T.K), T.C)
     
     c = Dimensionless(None)

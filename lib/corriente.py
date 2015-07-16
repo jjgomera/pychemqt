@@ -25,6 +25,7 @@ from .physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 from lib.psycrometry import PsychroState
+from lib.elemental import Elemental
 
 
 class Mezcla(config.Entity):
@@ -1005,8 +1006,8 @@ class Mezcla(config.Entity):
             indice = modo1.index(self.indice)
             return 10**(a1[indice]+a2[indice]/t.R+a3[indice]*t.R)
         else:
-            H = self.composicion_molecular[1][self.composicion_molecular[0].index("H")]*Elemental.get_element(1).atomic_mass.value
-            C = self.composicion_molecular[1][self.composicion_molecular[0].index("C")]*Elemental.get_element(6).atomic_mass.value
+            H = self.composicion_molecular[1][self.composicion_molecular[0].index("H")]*Elemental(1).atomic_mass
+            C = self.composicion_molecular[1][self.composicion_molecular[0].index("C")]*Elemental(6).atomic_mass
             return 10**(-(4200*H/C+1050)*(1.8/t.R-0.0016))
 
     def Solubilidad_en_agua(self, T):
