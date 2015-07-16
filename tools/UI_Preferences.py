@@ -804,6 +804,18 @@ class ConfApplications(QtWidgets.QDialog):
         self.maximized=QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Show maximized"))
         layoutTerminal.addWidget(self.maximized,5,1,1,3)
 
+        qtelemental=QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Periodic table"))
+        layout.addWidget(qtelemental,4,1)
+        layoutelemental=QtWidgets.QHBoxLayout(qtelemental)
+        layoutelemental.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Color by element:")))
+        self.ElementalColorby = QtWidgets.QComboBox()
+        self.ElementalColorby.addItem(QtWidgets.QApplication.translate("pychemqt", "Element"))
+        self.ElementalColorby.addItem(QtWidgets.QApplication.translate("pychemqt", "Serie"))
+        self.ElementalColorby.addItem(QtWidgets.QApplication.translate("pychemqt", "Block"))
+        self.ElementalColorby.addItem(QtWidgets.QApplication.translate("pychemqt", "Phase"))
+        layoutelemental.addWidget(self.ElementalColorby)
+        layoutelemental.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+
         layout.addItem(QtWidgets.QSpacerItem(10,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1)
 
         terminalTitle=QtWidgets.QApplication.translate("pychemqt", "Shell")
@@ -821,6 +833,7 @@ class ConfApplications(QtWidgets.QDialog):
             self.maximized.setChecked(config.getboolean("Applications", 'maximized'))
             self.ForegroundColor.setColor(config.get("Applications", 'foregroundColor'))
             self.BackgroundColor.setColor(config.get("Applications", 'backgroundColor'))
+            self.ElementalColorby.setCurrentIndex(config.getint("Applications", 'elementalColorby'))
 
         self.ipython.setEnabled(bool(which("ipython3")))
 
@@ -838,6 +851,7 @@ class ConfApplications(QtWidgets.QDialog):
         config.set("Applications", "maximized", self.maximized.isChecked())
         config.set("Applications", "foregroundColor", self.ForegroundColor.color.name())
         config.set("Applications", "backgroundColor", self.BackgroundColor.color.name())
+        config.set("Applications", "elementalColorby", self.ElementalColorby.currentIndex())
         return config
 
     @classmethod
@@ -850,6 +864,7 @@ class ConfApplications(QtWidgets.QDialog):
         config.set("Applications", "maximized", False)
         config.set("Applications", "foregroundColor", "#ffffff")
         config.set("Applications", "backgroundColor", "#000000")
+        config.set("Applications", "elementalColorby", "0")
 
         return config
 

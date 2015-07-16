@@ -158,6 +158,7 @@ def Preferences():
     config.set("Applications", "maximized", False)
     config.set("Applications", "foregroundColor", "#ffffff")
     config.set("Applications", "backgroundColor", "#000000")
+    config.set("Applications", "elementalColorby", "0")
 
     # mEoS
     config.add_section("MEOS")

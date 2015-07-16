@@ -12,11 +12,13 @@
 ###############################################################################
 
 import os
+from configparser import ConfigParser
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import unidades
-from lib.elemental import Elemental
+from lib.config import conf_dir
+from lib.elemental import Elemental, color_serie, color_block, color_phase
 from UI.widgets import Entrada_con_unidades
 
 font7 = QtGui.QFont()
@@ -34,6 +36,8 @@ palette.setColor(QtGui.QPalette.Window, QtGui.QColor("#c8c8c8"))
 alignment = QtCore.Qt.AlignRight | \
     QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
 
+Preferences = ConfigParser()
+Preferences.read(conf_dir+"pychemqtrc")
 
 class qtelemental(QtWidgets.QDialog):
     """Periodic table graph"""
@@ -276,7 +280,25 @@ class boton(QtWidgets.QPushButton):
             "pychemqt", "Click for view properties"))
         self.parent = parent
         self.Element = element
-        self.setPalette(QtGui.QPalette(QtGui.QColor(self.Element.color)))
+        
+        if Preferences.getint("Applications", "elementalColorby") == 1:
+            if self.Element.serie:
+                color = color_serie[self.Element.serie]
+            else:
+                color = "#DDDDDD"
+        elif Preferences.getint("Applications", "elementalColorby") == 2:
+            if self.Element.block:
+                color = color_block[self.Element.block]
+            else:
+                color = "#DDDDDD"
+        elif Preferences.getint("Applications", "elementalColorby") == 3:
+            if self.Element.phase:
+                color = color_phase[self.Element.phase]
+            else:
+                color = "#DDDDDD"
+        else:
+            color = self.Element.color
+        self.setPalette(QtGui.QPalette(QtGui.QColor(color)))
         self.setText(self.Element.symbol)
         self.clicked.connect(self.press)
 
@@ -365,8 +387,8 @@ class ElementDialog(QtWidgets.QDialog):
         layoutFisica = QtWidgets.QGridLayout(self.tab_Fisica)
         layoutFisica.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Fase:")), 1, 1)
-#        layoutFisica.addWidget(QtWidgets.QLabel(elemento.phase +
-#                                            " a 0ºC"), 1, 2, 1, 1)
+        layoutFisica.addWidget(QtWidgets.QLabel(elemento.phase +
+                                            " a 0ºC"), 1, 2, 1, 1)
         if elemento.density_Solid:
             layoutFisica.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
                 "pychemqt", "Solid Density:")), 2, 1)

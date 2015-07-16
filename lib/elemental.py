@@ -15,6 +15,28 @@ databank = connection.cursor()
 class float(float):
     code = ""
     
+color_serie = {
+    "Actinide": "#795681", 
+    "Alkali metal": "#B92D2D", 
+    "Alkaline earth metal": "#B8873A", 
+    "Halogen": "#D7C848", 
+    "Lanthanide": "#94738F", 
+    "Noble gas": "#6186AC", 
+    "Nonmetal": "#88AE62", 
+    "Post transition metal": "#949692", 
+    "Semimetal": "#BF924E", 
+    "Transition metal": "#C44343"}
+
+color_block = {
+    "D": "#B83A3A", 
+    "F": "#725279", 
+    "P": "#CEBE3B", 
+    "S": "#BC8A3D"}
+
+color_phase = {
+    "Solid": "#BB8F4A", 
+    "Liquid": "#7BB245", 
+    "Gas": "#5D82A8"}
 
 class Elemental(object):
     """Element class with data"""
@@ -102,6 +124,14 @@ class Elemental(object):
         self.first_ionization = self._unit(data[30])
         self.Tf = self._unit(data[31])
         self.Tb = self._unit(data[32])
+        if not self.Tf or not self.Tb:
+            self.phase = ""
+        elif self.Tf > 273.15:
+            self.phase = "Solid"
+        elif self.Tb < 273.15:
+            self.phase = "Gas"
+        else:
+            self.phase = "Liquid"
         self.Heat_f = self._unit(data[33])
         self.Heat_b = self._unit(data[34])
         self.Cp = self._unit(data[35])
