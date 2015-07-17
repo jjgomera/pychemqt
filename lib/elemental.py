@@ -6,37 +6,80 @@
 ###############################################################################
 
 import sqlite3
+from configparser import ConfigParser
 
+from numpy import linspace, logspace, log
+
+from lib.config import conf_dir
+from lib.utilities import colors
 
 connection = sqlite3.connect('dat/elemental.db')
 databank = connection.cursor()
+   
 
+def cleanFloat(flo):
+    try: 
+        value = float(flo)
+    except ValueError:
+        value = float(flo.split("(")[1].split(",")[0])
+    except TypeError:
+        value = 0
+    return value
 
-class float(float):
-    code = ""
-    
-color_serie = {
-    "Actinide": "#795681", 
-    "Alkali metal": "#B92D2D", 
-    "Alkaline earth metal": "#B8873A", 
-    "Halogen": "#D7C848", 
-    "Lanthanide": "#94738F", 
-    "Noble gas": "#6186AC", 
-    "Nonmetal": "#88AE62", 
-    "Post transition metal": "#949692", 
-    "Semimetal": "#BF924E", 
-    "Transition metal": "#C44343"}
+color_serie = ["#DDDDDD", "#795681", "#B92D2D", "#B8873A", "#D7C848", 
+               "#94738F", "#6186AC", "#88AE62", "#949692", "#BF924E", "#C44343"]
+color_phase = ["#DDDDDD", "#BB8F4A", "#7BB245", "#5D82A8"]
+NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date", 
+                  "atomic_mass", "atomic_volume", "atomic_radius", 
+                  "covalent_radius", "vanderWaals_radius", "electronegativity", 
+                  "electron_affinity", "first_ionization", "Tf", "Tb", 
+                  "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
 
-color_block = {
-    "D": "#B83A3A", 
-    "F": "#725279", 
-    "P": "#CEBE3B", 
-    "S": "#BC8A3D"}
+Preferences = ConfigParser()
+Preferences.read(conf_dir+"pychemqtrc")
+PROP = Preferences.get("Applications", "elementalColorby")
+NUM = 20
+LOG = 0
 
-color_phase = {
-    "Solid": "#BB8F4A", 
-    "Liquid": "#7BB245", 
-    "Gas": "#5D82A8"}
+PMIN = None
+PMAX = None
+if PROP == "phase":
+    CATEGORIES = ["", "Solid", "Liquid", "Gas"]
+elif PROP in NUMERIC_VALUES:
+    databank.execute("SELECT %s FROM ELEMENTS" % PROP)
+    PMAX = 0
+    for st, in databank:
+        value = cleanFloat(st)
+        if value > PMAX:
+            PMAX = value
+    try: 
+        PMAX = float(PMAX)
+    except ValueError:
+        PMAX = float(PMAX.split("(")[1].split(",")[0])
+    print(PMAX)
+    if LOG:
+        PMIN = 1
+        CATEGORIES = logspace(log(PMIN), log(PMAX), NUM)
+    else:
+        PMIN = 0
+        CATEGORIES = linspace(PMIN, PMAX, NUM)
+else:
+    databank.execute("SELECT %s, COUNT(*) c FROM ELEMENTS GROUP BY %s HAVING c > 0" % (PROP, PROP))
+    CATEGORIES = []
+    for category, count in databank:
+        CATEGORIES.append(category)
+
+if PROP == "serie":
+    COLORS = color_serie
+elif PROP == "phase":
+    COLORS = color_phase
+elif PROP == "ELEMENTS":
+    COLORS = []
+elif PROP in NUMERIC_VALUES:
+    COLORS = colors(NUM, scale=True)
+else:
+    COLORS = colors(len(CATEGORIES))
+
 
 class Elemental(object):
     """Element class with data"""
@@ -116,6 +159,8 @@ class Elemental(object):
         self.lattice_type = data[22]
         self.space_group = data[23]
         self.lattice_edges = eval(data[24])
+        self.lattice_volume = self.lattice_edges[0]*self.lattice_edges[1] * \
+            self.lattice_edges[2] / 1e9
         self.lattice_angles = eval(data[25])
         self.electron_configuration = data[26]
         self.oxidation = data[27]

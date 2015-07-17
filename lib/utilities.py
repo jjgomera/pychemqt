@@ -75,7 +75,7 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, sign
     return string.format(float)
 
 
-def colors(number, mix=""):
+def colors(number, mix="", scale=False):
     """Function to generate colors
     Input:
         number: number of required colors
@@ -84,10 +84,15 @@ def colors(number, mix=""):
         Array with color hex repr
     """
     colors = []
-    for i in number:
-        red = random.randint(0, 255)
-        green = random.randint(0, 255)
-        blue = random.randint(0, 255)
+    for i in range(number):
+        if scale:
+            red = 255*(i/number)
+            green = 0
+            blue = 255*((number-i)/number)
+        else:
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
         if mix:
             red_mix = int(mix[1:3], base=16)
             red = (red + red_mix) / 2
@@ -96,8 +101,8 @@ def colors(number, mix=""):
             blue_mix = int(mix[5:], base=16)
             blue = (blue + blue_mix) / 2
         
-        colors.append(('#%02X%02X%02X' % (r(),r(),r())))
-    return
+        colors.append(('#%02X%02X%02X' % (red, green, blue)))
+    return colors
     
     
 def exportTable(matrix, fname, format, title=None):
@@ -221,3 +226,4 @@ if __name__ == "__main__":
 #    print representacion("3232326262")
 
     print(spreadsheetColumn(55))
+    print(colors(5))
