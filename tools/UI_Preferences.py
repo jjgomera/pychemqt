@@ -29,7 +29,7 @@ from UI.widgets import Entrada_con_unidades, ColorSelector, LineConfig, PathConf
 from UI.delegate import CheckEditor, comboLine
 from tools import UI_confResolution
 from lib import unidades, corriente
-from lib.utilities import format2txt, representacion
+from lib.utilities import representacion
 from equipment import equipments
 from lib.firstrun import calculator, editor, shell, which
 
@@ -340,7 +340,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
     def value(self, config):
         if not config.has_section("Tooltip"):
             config.add_section("Tooltip")
-        config.set("Tooltip", "Show", self.checkShow.isChecked())
+        config.set("Tooltip", "Show", str(self.checkShow.isChecked()))
         for i, tabla in enumerate(self.tabla):
             lista=[]
             for j in range(tabla.rowCount()):
@@ -881,13 +881,13 @@ class ConfApplications(QtWidgets.QDialog):
         config.set("Applications", "Calculator", self.calculadora.text())
         config.set("Applications", "TextViewer", self.textViewer.text())
         config.set("Applications", "Shell",  self.terminal.text())
-        config.set("Applications", "ipython", self.ipython.isChecked())
-        config.set("Applications", "maximized", self.maximized.isChecked())
+        config.set("Applications", "ipython", str(self.ipython.isChecked()))
+        config.set("Applications", "maximized", str(self.maximized.isChecked()))
         config.set("Applications", "foregroundColor", self.ForegroundColor.color.name())
         config.set("Applications", "backgroundColor", self.BackgroundColor.color.name())
         config.set("Applications", "elementalColorby", self.ElementalColorby.currentText())
-        config.set("Applications", "elementalDefinition", self.ElementalDefinition.value())
-        config.set("Applications", "elementalLog", self.ElementalLog.isChecked())
+        config.set("Applications", "elementalDefinition", str(self.ElementalDefinition.value()))
+        config.set("Applications", "elementalLog", str(self.ElementalLog.isChecked()))
         return config
 
     @classmethod
@@ -1006,12 +1006,12 @@ class Isolinea(QtWidgets.QDialog):
             self.lineconfig.setConfig(config, section)
 
     def value(self, config):
-        config.set(self.section, self.ConfSection+"Start", self.inicio.value)
-        config.set(self.section, self.ConfSection+"End", self.fin.value)
-        config.set(self.section, self.ConfSection+"Step", self.intervalo.value)
-        config.set(self.section, self.ConfSection+"Custom", self.Personalizar.isChecked())
+        config.set(self.section, self.ConfSection+"Start", str(self.inicio.value))
+        config.set(self.section, self.ConfSection+"End", str(self.fin.value))
+        config.set(self.section, self.ConfSection+"Step", str(self.intervalo.value))
+        config.set(self.section, self.ConfSection+"Custom", str(self.Personalizar.isChecked()))
         T = []
-        if not self.Lista.text().isEmpty():
+        if self.Lista.text():
             T1 = self.Lista.text().split(',')
             for i in T1:
                 if self.unidad.__name__ == "float":
@@ -1021,17 +1021,16 @@ class Isolinea(QtWidgets.QDialog):
         config.set(self.section, self.ConfSection+"List", ", ".join(T))
         if self.unidad.__name__ != "float" and self.section != "Psychr":
             config.set(self.section, self.ConfSection+"Critic",
-                       self.Critica.isChecked())
+                       str(self.Critica.isChecked()))
         config = self.lineconfig.value(config, self.section)
 
-        config.set(self.section, self.ConfSection+"Label", self.label.isChecked())
-        config.set(self.section, self.ConfSection+"Variable", self.variable.isChecked())
-        config.set(self.section, self.ConfSection+"Units", self.unit.isChecked())
-        config.set(self.section, self.ConfSection+"Position", self.Posicion.value())
+        config.set(self.section, self.ConfSection+"Label", str(self.label.isChecked()))
+        config.set(self.section, self.ConfSection+"Variable", str(self.variable.isChecked()))
+        config.set(self.section, self.ConfSection+"Units", str(self.unit.isChecked()))
+        config.set(self.section, self.ConfSection+"Position", str(self.Posicion.value()))
         return config
 
-    @classmethod
-    def default(cls, config, ConfSection):
+    def default(self, config, ConfSection):
         config.set(self.section, ConfSection+"Start", "0")
         config.set(self.section, ConfSection+"End", "0")
         config.set(self.section, ConfSection+"Step", "0")
@@ -1127,11 +1126,11 @@ class ConfmEoS(QtWidgets.QDialog):
         if not config.has_section("MEOS"):
             config.add_section("MEOS")
 
-        config.set("MEOS", "coolprop", self.coolProp.isChecked())
-        config.set("MEOS", "refprop", self.refprop.isChecked())
+        config.set("MEOS", "coolprop", str(self.coolProp.isChecked()))
+        config.set("MEOS", "refprop", str(self.refprop.isChecked()))
         config = self.lineconfig.value(config)
-        config.set("MEOS", "grid", self.grid.isChecked())
-        config.set("MEOS", "definition", self.definition.currentIndex())
+        config.set("MEOS", "grid", str(self.grid.isChecked()))
+        config.set("MEOS", "definition", str(self.definition.currentIndex()))
 
         for indice in range(self.Isolineas.count()):
             config = self.Isolineas.widget(indice).value(config)
@@ -1233,10 +1232,10 @@ class ConfPsychrometric(QtWidgets.QDialog):
         if not config.has_section("Psychr"):
             config.add_section("Psychr")
             
-        config.set("Psychr", "chart", self.checkASHRAE.isChecked())
-        config.set("Psychr", "virial", self.virial.isChecked())
-        config.set("Psychr", "coolprop", self.coolProp.isChecked())
-        config.set("Psychr", "refprop", self.refprop.isChecked())
+        config.set("Psychr", "chart", str(self.checkASHRAE.isChecked()))
+        config.set("Psychr", "virial", str(self.virial.isChecked()))
+        config.set("Psychr", "coolprop", str(self.coolProp.isChecked()))
+        config.set("Psychr", "refprop", str(self.refprop.isChecked()))
         config = self.satlineconfig.value(config, "Psychr")
 
         for indice in range(self.Isolineas.count()):
@@ -1323,9 +1322,6 @@ class Preferences(QtWidgets.QDialog):
 
 
 if __name__ == "__main__":
-    import sys
-    from configparser import ConfigParser
-    import os
     conf_dir = os.path.expanduser('~') + "/.pychemqt/"
     pychemqt_dir = os.environ["PWD"] + "/"
     app = QtWidgets.QApplication(sys.argv)

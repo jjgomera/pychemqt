@@ -52,10 +52,6 @@ elif PROP in NUMERIC_VALUES:
         value = cleanFloat(st)
         if value > PMAX:
             PMAX = value
-    try: 
-        PMAX = float(PMAX)
-    except ValueError:
-        PMAX = float(PMAX.split("(")[1].split(",")[0])
 
     if LOG:
         PMIN = 1

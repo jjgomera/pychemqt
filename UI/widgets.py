@@ -782,7 +782,7 @@ class LineConfig(QtWidgets.QGroupBox):
 
     def value(self, config, section="MEOS"):
         config.set(section, self.confSection+"Color", self.ColorButton.color.name())
-        config.set(section, self.confSection+"lineWidth", self.Grosor.value())
+        config.set(section, self.confSection+"lineWidth", str(self.Grosor.value()))
         config.set(section, self.confSection+"lineStyle", self.Linea.currentValue())
         config.set(section, self.confSection+"marker", self.Marca.currentValue())
         return config
