@@ -806,8 +806,9 @@ class ConfApplications(QtWidgets.QDialog):
 
         qtelemental=QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Periodic table"))
         layout.addWidget(qtelemental,4,1)
-        layoutelemental=QtWidgets.QHBoxLayout(qtelemental)
-        layoutelemental.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Color by element:")))
+        layoutelemental=QtWidgets.QGridLayout(qtelemental)
+        layoutelemental.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Color by element:")), 1, 1)
         self.ElementalColorby = QtWidgets.QComboBox()
         self.ElementalColorby.addItem("Element")
         self.ElementalColorby.addItem("serie")
@@ -836,8 +837,17 @@ class ConfApplications(QtWidgets.QDialog):
         self.ElementalColorby.addItem("Cp")
         self.ElementalColorby.addItem("k")
         self.ElementalColorby.addItem("T_debye")
-        layoutelemental.addWidget(self.ElementalColorby)
-        layoutelemental.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+        layoutelemental.addWidget(self.ElementalColorby, 1, 2)
+        layoutelemental.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Color definition")), 2, 1)
+        self.ElementalDefinition = QtWidgets.QSpinBox()
+        self.ElementalDefinition.setMaximumWidth(50)
+        self.ElementalDefinition.setMinimum(5)
+        layoutelemental.addWidget(self.ElementalDefinition, 2, 2)
+        self.ElementalLog= QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+        layoutelemental.addWidget(self.ElementalLog, 3, 1, 1, 2)
+        layoutelemental.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed), 4, 3)
         layout.addItem(QtWidgets.QSpacerItem(10,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1)
 
         terminalTitle=QtWidgets.QApplication.translate("pychemqt", "Shell")
@@ -856,6 +866,8 @@ class ConfApplications(QtWidgets.QDialog):
             self.ForegroundColor.setColor(config.get("Applications", 'foregroundColor'))
             self.BackgroundColor.setColor(config.get("Applications", 'backgroundColor'))
             self.ElementalColorby.setCurrentText(config.get("Applications", 'elementalColorby'))
+            self.ElementalDefinition.setValue(config.getint("Applications", 'elementalDefinition'))
+            self.ElementalLog.setChecked(config.getboolean("Applications", 'elementalLog'))
 
         self.ipython.setEnabled(bool(which("ipython3")))
 
@@ -874,6 +886,8 @@ class ConfApplications(QtWidgets.QDialog):
         config.set("Applications", "foregroundColor", self.ForegroundColor.color.name())
         config.set("Applications", "backgroundColor", self.BackgroundColor.color.name())
         config.set("Applications", "elementalColorby", self.ElementalColorby.currentText())
+        config.set("Applications", "elementalDefinition", self.ElementalDefinition.value())
+        config.set("Applications", "elementalLog", self.ElementalLog.isChecked())
         return config
 
     @classmethod

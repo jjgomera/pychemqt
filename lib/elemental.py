@@ -38,8 +38,8 @@ NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date",
 Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
 PROP = Preferences.get("Applications", "elementalColorby")
-NUM = 20
-LOG = 0
+NUM = Preferences.getint("Applications", "elementalDefinition")
+LOG = Preferences.getboolean("Applications", "elementalLog")
 
 PMIN = None
 PMAX = None
@@ -56,7 +56,7 @@ elif PROP in NUMERIC_VALUES:
         PMAX = float(PMAX)
     except ValueError:
         PMAX = float(PMAX.split("(")[1].split(",")[0])
-    print(PMAX)
+
     if LOG:
         PMIN = 1
         CATEGORIES = logspace(log(PMIN), log(PMAX), NUM)
