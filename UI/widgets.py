@@ -399,7 +399,6 @@ class Tabla(QtWidgets.QTableWidget):
             for i, titulo in enumerate(self.encabezadoHorizontal):
                 self.setHorizontalHeaderItem(i,QtWidgets.QTableWidgetItem(titulo))
 
-    
     def addRow(self, data=None, index=None):
         if not data:
             data=[""]*self.columnas

@@ -15,9 +15,10 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from UI.widgets import Entrada_con_unidades, Tabla
 from lib import unidades
 from lib.elemental import Elemental, CATEGORIES, PROP, COLORS, PMAX, cleanFloat
-from UI.widgets import Entrada_con_unidades
+
 
 font7 = QtGui.QFont()
 font7.setPointSize(7.6)
@@ -591,6 +592,25 @@ class ElementDialog(QtWidgets.QDialog):
         lyt_C.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Expanding, 
             QtWidgets.QSizePolicy.Expanding), 6, 1, 1, 3)
+
+        label = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Isotopes"))
+        label.setFont(font)
+        lyt_C.addWidget(label, 8, 1)
+        title = [QtWidgets.QApplication.translate("pychemqt", "Mass Number"), 
+                 QtWidgets.QApplication.translate("pychemqt", "Mass"), 
+                 QtWidgets.QApplication.translate("pychemqt", "Abundance")]
+        self.isotopes = Tabla(3, horizontalHeader=title, readOnly=True,
+                              stretch=True, verticalHeader=False)
+        self.isotopes.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.isotopes.setColumn(0, [iso[0] for iso in elemento.isotopes], decimales=0)
+        self.isotopes.setColumn(1, [iso[1] for iso in elemento.isotopes], format=1, decimales=10)
+        self.isotopes.setColumn(2, [iso[2] for iso in elemento.isotopes], format=1, decimales=10)
+        lyt_C.addWidget(self.isotopes, 9, 1, 1, 2)
+        lyt_C.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding, 
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
+
         tabWidget.addTab(tabCristal,
             QtWidgets.QApplication.translate("pychemqt", "Crystallographic"))
 

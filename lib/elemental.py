@@ -184,6 +184,12 @@ class Elemental(object):
         self.T_debye = self._unit(data[37])
         self.color = data[38]
         self.notes = data[39]
+        
+        # Isotopes
+        databank.execute("SELECT * FROM ISOTOPES WHERE atomic_number==?", (self.id, ))
+        self.isotopes = []
+        for data in databank:
+            self.isotopes.append((int(data[4]), data[2], data[3]))
 
     def _unit(self, str):
         aproximate = False
