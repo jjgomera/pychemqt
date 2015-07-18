@@ -4,9 +4,9 @@
 from PyQt5 import QtCore, QtWidgets
 
 from matplotlib import rcParams
-rcParams['backend'] = 'QT4Agg'  #Fija el backend de las ventanas de matplotlib a qt4
+rcParams['backend'] = 'QT5Agg'  #Fija el backend de las ventanas de matplotlib a qt5
 rcParams['font.size'] = '9'
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from pylab import Figure, plot,  title,  figtext,  xlabel,  grid,  show
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.optimize import fsolve

@@ -6,7 +6,7 @@ from functools import partial
 
 from PyQt5 import QtCore, QtWidgets
 
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 #import matplotlib.gridspec as gridspec #necesita matplotlib >=1.0
 from pylab import Figure
 from numpy import transpose

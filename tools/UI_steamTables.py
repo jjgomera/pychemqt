@@ -8,7 +8,7 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 #from freesteam import *
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import meshgrid, zeros, arange, linspace, concatenate, max, min, transpose, logspace, log, arctan, pi

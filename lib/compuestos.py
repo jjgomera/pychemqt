@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from string import ascii_lowercase, digits
-import sqlite3, tempfile, time
+import tempfile
+import time
+import os
 
-from scipy import exp, cosh, sinh, log, log10, power, roots, minimum, absolute, real, tanh, arctan, sqrt, linspace
+from scipy import exp, cosh, sinh, log, log10, roots, absolute, sqrt
 from scipy.optimize import fsolve
-from scipy.constants import R, calorie as cal, pi, Avogadro
+from scipy.constants import R, Avogadro
 from PyQt5.QtWidgets import QApplication
 
 from .physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
@@ -163,7 +165,7 @@ class Componente(object):
         while len(formula)>0:
             letras=1
             numeros=0
-            if len(formula)>1 and formula[1] in lowercase:
+            if len(formula)>1 and formula[1] in ascii_lowercase:
                 letras+=1
             while len(formula)>letras+numeros and formula[letras+numeros] in digits:
                 numeros+=1
