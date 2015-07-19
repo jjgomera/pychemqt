@@ -215,8 +215,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         """Function to result wizard"""
         if not config.has_section("Components"):
             config.add_section("Components")
-        config.set("Components", "Components", self.indices)
-        config.set("Components", "Solids", self.solidos)
+        config.set("Components", "Components", str(self.indices))
+        config.set("Components", "Solids", str(self.solidos))
         return config
 
     @classmethod

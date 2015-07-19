@@ -17,7 +17,7 @@ try:
 except:
     pass
 
-from lib import unidades
+from . import unidades
 from .config import Fluid
 
 

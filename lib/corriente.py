@@ -12,15 +12,12 @@
 import os
 import logging
 
-from scipy.optimize import fsolve, leastsq
+from scipy.optimize import leastsq
 from scipy.special import erf
-from scipy.linalg import det
 from scipy import roots, log, sqrt, log10, exp, sin, r_, zeros
-from pylab import triu
 from PyQt5.QtWidgets import QApplication
 
 from .compuestos import Componente
-from .bip import srk
 from .physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp

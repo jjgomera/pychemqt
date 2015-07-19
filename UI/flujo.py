@@ -869,7 +869,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
 
     def mouseMoveEvent(self, event):
         QtWidgets.QGraphicsView.mouseMoveEvent(self, event)
-        self.mouseMove.emit(event.posF())
+        self.mouseMove.emit(event.globalPos())
 
     def mousePressEvent(self, event):
         QtWidgets.QGraphicsView.mousePressEvent(self, event)

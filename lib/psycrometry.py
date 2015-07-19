@@ -17,10 +17,8 @@ try:
 except:
     pass
 
-from lib.physics import R_atml
 from lib.config import conf_dir
 from lib import unidades
-from lib.iapws import _PSat_T, _Sublimation_Pressure
 
 
 def _Pbar(Z):

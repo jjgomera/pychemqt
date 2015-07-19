@@ -649,14 +649,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
 #File Manipulation
     def clearRecentFiles(self):
-        self.recentFiles=QtCore.QStringList()
+        self.recentFiles=[]
         self.menuRecentFiles.setEnabled(False)
 
     def addRecentFile(self, fname):
         if fname and fname not in self.recentFiles:
-            self.recentFiles.prepend(QtCore.QString(fname))
-            while self.recentFiles.count() > 9:
-                self.recentFiles.takeLast()
+            self.recentFiles.insert(0, fname)
+            if len(self.recentFiles) > 9:
+                self.recentFiles=self.recentFiles[:9]
         self.menuRecentFiles.setEnabled(len(self.recentFiles))
 
     def loadPFD(self, mdiarea):
@@ -733,16 +733,17 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if indice is None:
             indice=self.idTab
         dir = self.filename[indice] if self.filename[indice] else "."
-        fname = str(QtWidgets[0].QFileDialog.getSaveFileName(self,
-                            QtWidgets.QApplication.translate("pychemqt", "Save project"), dir,
-                            "pychemqt project file (*.pcq)"))
+        fname = QtWidgets.QFileDialog.getSaveFileName(self,
+                    QtWidgets.QApplication.translate("pychemqt", "Save project"), dir,
+                    "pychemqt project file (*.pcq)")
         if fname:
-            if fname.split(".")[-1]!="pcq":
-                fname+=".pcq"
-            self.addRecentFile(fname)
-            self.filename[indice] = fname
+            name = fname[0]
+            if name[0].split(".")[-1]!="pcq":
+                name+=".pcq"
+            self.addRecentFile(name)
+            self.filename[indice] = name
             self.fileSave(indice)
-            self.centralwidget.setTabText(indice, os.path.splitext(os.path.basename(fname))[0])
+            self.centralwidget.setTabText(indice, os.path.splitext(os.path.basename(name))[0])
 
 
     def fileSaveAll(self):
@@ -759,17 +760,18 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 self.loadFile(fname)
                 self.activeControl(True)
             except Exception as error:
-                aviso=QtWidgets.QMessageBox.critical(self, QtWidgets.QApplication.translate("pychemqt", "Error"), QtWidgets.QApplication.translate("pychemqt", "Failed to load file")+"\n"+fname)
+                QtWidgets.QMessageBox.critical(self, QtWidgets.QApplication.translate("pychemqt", "Error"), QtWidgets.QApplication.translate("pychemqt", "Failed to load file")+"\n"+fname)
                 self.activeControl(False)
                 del self.filename[-1]
-                print(error)
+                raise error
+#                print(error)
 
 
     def loadFile(self, fname=None):
         if not fname:
             action = self.sender()
             if isinstance(action, QtWidgets.QAction):
-                fname = str(action.data().toString())
+                fname = str(action.data())
             else:
                 return
 

@@ -579,9 +579,9 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-#    agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
-#    cambiador=Heat_Exchanger(entrada=agua, Tout=90+273.15)
-    dialogo = UI_equipment()
+    agua=Corriente(T=300, P=101325, caudalMasico=1, ids=[62], fraccionMolar=[1.])
+    cambiador=Heat_Exchanger(entrada=agua, Tout=90+273.15)
+    dialogo = UI_equipment(cambiador)
 #    dialogo = Fi()
     dialogo.show()
     sys.exit(app.exec_())

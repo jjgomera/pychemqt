@@ -327,7 +327,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
                 "pychemqt", "Calculating data, be patient..."))
             QtWidgets.QApplication.processEvents()
             data = PsychroState.calculatePlot(self)
-            pickle.dump(data, open(filename, "w"))
+            pickle.dump(data, open(filename, "wb"))
             self.progressBar.setVisible(False)
         self.status.setText(QtWidgets.QApplication.translate("pychemqt", "Plotting..."))
         QtWidgets.QApplication.processEvents()

@@ -177,16 +177,16 @@ class Project(object):
         # Write configuration
         stream.writeInt32(len(self.config.sections()))
         for section in self.config.sections():
-            stream.writeString(section)
+            stream.writeString(section.encode())
             stream.writeInt32(len(self.config.options(section)))
             for option in self.config.options(section):
-                stream.writeString(option)
-                stream.writeString(str(self.config.get(section, option)))
+                stream.writeString(option.encode())
+                stream.writeString(str(self.config.get(section, option)).encode())
 
         # write equipments
         stream.writeInt32(len(self.items))
         for key, item in self.items.items():
-            stream.writeString(key)
+            stream.writeString(key.encode())
             if key[0] == "e":
                 stream.writeInt32(equipments.index(item.__class__))
                 item.writeToStream(stream)
@@ -195,8 +195,8 @@ class Project(object):
         stream.writeInt32(len(self.streams))
         for id, item in self.streams.items():
             stream.writeInt32(id)
-            stream.writeString(item[0])
-            stream.writeString(item[1])
+            stream.writeString(item[0].encode())
+            stream.writeString(item[1].encode())
             stream.writeInt32(item[2])
             stream.writeInt32(item[3])
             item[4].writeToStream(stream)
@@ -207,16 +207,16 @@ class Project(object):
         # read configuration
         config = ConfigParser()
         for i in range(stream.readInt32()):
-            section = stream.readString()
+            section = stream.readString().decode("utf-8")
             config.add_section(section)
             for contador_option in range(stream.readInt32()):
-                option = stream.readString()
-                valor = stream.readString()
+                option = stream.readString().decode("utf-8")
+                valor = stream.readString().decode("utf-8")
                 config.set(section, option, valor)
 
         #TODO: Necesario para cargar los proyectos viejos
 #        config.set("Thermo", "freesteam", "False")
-        config.set("Units", "MolarSpecificHeat", "0")
+#        config.set("Units", "MolarSpecificHeat", "0")
 
         self.setConfig(config)
         if not huella:
@@ -227,7 +227,7 @@ class Project(object):
         items = {}
         contador_equipos = stream.readInt32()
         for i in range(contador_equipos):
-            id = stream.readString()
+            id = str(stream.readString())
             if id[0] == "e":
                 equip = equipments[stream.readInt32()]()
                 equip.readFromStream(stream, run)
@@ -241,8 +241,8 @@ class Project(object):
         contador_streams = stream.readInt32()
         for item in range(contador_streams):
             id = stream.readInt32()
-            up = stream.readString()
-            down = stream.readString()
+            up = str(stream.readString())
+            down = str(stream.readString())
             ind_up = stream.readInt32()
             ind_down = stream.readInt32()
             obj = Corriente()

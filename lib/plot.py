@@ -7,13 +7,9 @@ from matplotlib import rcParams
 rcParams['backend'] = 'QT5Agg'  #Fija el backend de las ventanas de matplotlib a qt5
 rcParams['font.size'] = '9'
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
-from pylab import Figure, plot,  title,  figtext,  xlabel,  grid,  show
+from pylab import Figure
 from mpl_toolkits.mplot3d import Axes3D
-from scipy.optimize import fsolve
-from scipy import arange, linspace
 
-from .compuestos import Componente
-from .corriente import Corriente, Mezcla
 
 class mpl(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=15, height=5, dpi=100):
