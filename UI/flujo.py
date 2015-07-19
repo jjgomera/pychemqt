@@ -12,11 +12,9 @@ import tempfile
 import os
 import subprocess
 from copy import deepcopy
+from xml.dom import minidom
 
-# FIXME QtXml is no longer supported.
-#from PyQt5 import QtCore, QtGui, QtXml, QtSvg, QtWidgets
 from PyQt5 import QtCore, QtGui, QtSvg, QtWidgets
-
 
 from lib import unidades
 from lib.project import Project
@@ -604,36 +602,24 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
         output=[]
         input=[]
-        # FIXME QtXml is no longer supported.
-        dom = QtXml.QDomDocument()
-        fh = QtCore.QFile(imagen)
-        if not fh.open(QtCore.QIODevice.ReadOnly):
-            raise IOError(str(fh.errorString()))
-        if not dom.setContent(fh):
-            raise ValueError("could not parse XML")
-        fh.close()
-        root = dom.documentElement()
-        node = root.firstChild().toElement()
+        doc = minidom.parse(imagen)
 
-        while node.toElement().tagName()!="ins":
-            node=node.nextSibling()
-        child=node.toElement().firstChild().toElement()
-        while not child.isNull():
-            x=child.attribute("x").toFloat()[0]
-            y=child.attribute("y").toFloat()[0]
-            d=child.attribute("d")
-            input.append([x, y, d])
-            child = child.nextSibling().toElement()
-
-        while node.toElement().tagName()!="outs":
-            node=node.nextSibling()
-        child=node.toElement().firstChild().toElement()
-        while not child.isNull():
-            x=child.attribute("x").toFloat()[0]
-            y=child.attribute("y").toFloat()[0]
-            d=child.attribute("d")
-            output.append([x, y, d])
-            child = child.nextSibling().toElement()
+        for entrada in doc.getElementsByTagName("ins")[0].childNodes:
+            if isinstance(entrada, minidom.Element):
+                if entrada.tagName == "in":
+                    x=float(entrada.getAttribute("x"))
+                    y=float(entrada.getAttribute("y"))
+                    d=float(entrada.getAttribute("d"))
+                    input.append([x, y, d])
+            
+        for salida in doc.getElementsByTagName("outs")[0].childNodes:
+            if isinstance(salida, minidom.Element):
+                if salida.tagName == "out":
+                    x=float(salida.getAttribute("x"))
+                    y=float(salida.getAttribute("y"))
+                    d=float(salida.getAttribute("d"))
+                    output.append([x, y, d])
+        doc.unlink()
 
         self.input=[]
         if input:
@@ -648,6 +634,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         if output:
             for salida in output:
                 obj=QtWidgets.QGraphicsEllipseItem(self)
+                print(type(salida[1]), type(self.boundingRect().height()))
                 obj.setRect(salida[0]*self.boundingRect().width()-5, salida[1]*self.boundingRect().height()-5, 10, 10)
                 obj.direction=int(salida[2])
                 obj.setPen(QtGui.QColor(255, 255, 255))
