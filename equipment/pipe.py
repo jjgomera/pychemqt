@@ -254,10 +254,10 @@ class Pipe(equipment):
     def writeListtoStream(self, stream, key, value):
         """Personalizar en el caso de equipos con listas complejas"""
         if key=="material":
-            stream.writeString(value[0])
-            stream.writeString(value[1])
+            stream.writeString(value[0].encode())
+            stream.writeString(value[1].encode())
             stream.writeFloat(value[2])
-            stream.writeString(value[3])
+            stream.writeString(value[3].encode())
             for val in value[4:-2]:
                 stream.writeFloat(val)
             for val in value[-2:]:
@@ -270,17 +270,17 @@ class Pipe(equipment):
                 stream.writeFloat(accesorio[2])
                 stream.writeInt32(accesorio[3])
                 for cadena in accesorio[4:]:
-                    stream.writeString(cadena)
+                    stream.writeString(cadena.encode())
 
 
     def readListFromStream(self, stream, key):
         """Personalizar en el caso de equipos con listas complejas"""
         valor=[]
         if key=="material":
-            valor.append(stream.readString())
-            valor.append(stream.readString())
+            valor.append(stream.readString().decode("utf-8"))
+            valor.append(stream.readString().decode("utf-8"))
             valor.append(float(representacion(stream.readFloat())))
-            valor.append(stream.readString())
+            valor.append(stream.readString().decode("utf-8"))
             for i in range(6):
                 valor.append(float(representacion(stream.readFloat())))
             valor.append(stream.readInt32())
@@ -293,7 +293,7 @@ class Pipe(equipment):
                 accesorio.append(float(representacion(stream.readFloat())))
                 accesorio.append(stream.readInt32())
                 for j in range(4):
-                    accesorio.append(stream.readString())
+                    accesorio.append(stream.readString().decode("utf-8"))
                 valor.append(accesorio)
         return valor
 

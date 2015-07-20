@@ -127,19 +127,19 @@ class Mezcla(config.Entity):
             caudalUnitarioMasico = [x*caudalMasico for x in fraccionMasica]
             caudalUnitarioMolar = [x*caudalMolar for x in fraccionMolar]
 
-        # Clean component with null composition
-        self.zeros = []
-        for i, x in enumerate(fraccionMolar):
-            if not x:
-                self.zeros.append(i)
-
-        for i in self.zeros[::-1]:
-            del self.ids[i]
-            del self.componente[i]
-            del fraccionMolar[i]
-            del fraccionMasica[i]
-            del caudalUnitarioMasico[i]
-            del caudalUnitarioMolar[i]
+#        # Clean component with null composition
+#        self.zeros = []
+#        for i, x in enumerate(fraccionMolar):
+#            if not x:
+#                self.zeros.append(i)
+#
+#        for i in self.zeros[::-1]:
+#            del self.ids[i]
+#            del self.componente[i]
+#            del fraccionMolar[i]
+#            del fraccionMasica[i]
+#            del caudalUnitarioMasico[i]
+#            del caudalUnitarioMolar[i]
 
         self.fraccion = [unidades.Dimensionless(f) for f in fraccionMolar]
         self.caudalmasico = unidades.MassFlow(caudalMasico)

@@ -3198,12 +3198,13 @@ class PlotMEoS(QtWidgets.QWidget):
             os.sep + self.filename+".gz"
         filenameSoft = config.conf_dir+self.filename
         if os.path.isfile(filenameSoft):
-            with open(filenameSoft) as archivo:
-                data = pickle.load(archivo)
+            print(filenameSoft)
+            with open(filenameSoft, "rb") as archivo:
+                data = pickle.load(archivo, fix_imports=False, errors="strict")
             return data
         elif os.path.isfile(filenameHard):
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
-                data = pickle.load(archivo)
+                data = pickle.load(archivo, encoding="latin1")
             self._saveData(data)
             return data
 
@@ -3310,11 +3311,11 @@ class PlotMEoS(QtWidgets.QWidget):
     @classmethod
     def readFromStream(cls, stream, parent):
         """Procedure to load from project file"""
-        filename = stream.readString()
-        title = stream.readString()
-        x = stream.readString()
-        y = stream.readString()
-        z = stream.readString()
+        filename = stream.readString().decode("utf-8")
+        title = stream.readString().decode("utf-8")
+        x = stream.readString().decode("utf-8")
+        y = stream.readString().decode("utf-8")
+        z = stream.readString().decode("utf-8")
         if z:
             dim = 3
         else:
@@ -3336,30 +3337,30 @@ class PlotMEoS(QtWidgets.QWidget):
         plotTitle = stream.readQString()
         if plotTitle:
             grafico.plot.ax.set_title(str(plotTitle))
-        titleColor = stream.readString()
+        titleColor = stream.readString().decode("utf-8")
         grafico.plot.ax.title.set_color(titleColor)
         xlabel = stream.readQString()
         if xlabel:
             grafico.plot.ax.set_xlabel(str(xlabel))
-        xlabelColor = stream.readString()
+        xlabelColor = stream.readString().decode("utf-8")
         grafico.plot.ax.xaxis.get_label().set_color(xlabelColor)
         ylabel = stream.readQString()
         if ylabel:
             grafico.plot.ax.set_ylabel(str(ylabel))
-        ylabelColor = stream.readString()
+        ylabelColor = stream.readString().decode("utf-8")
         grafico.plot.ax.yaxis.get_label().set_color(ylabelColor)
         if z:
             zlabel = stream.readQString()
             if zlabel:
                 grafico.plot.ax.set_zlabel(str(zlabel))
-            zlabelColor = stream.readString()
+            zlabelColor = stream.readString().decode("utf-8")
             grafico.plot.ax.zaxis.get_label().set_color(zlabelColor)
 
         grid = stream.readBool()
         grafico.plot.ax._gridOn = grid
         grafico.plot.ax.grid(grid)
-        xscale = stream.readString()
-        yscale = stream.readString()
+        xscale = stream.readString().decode("utf-8")
+        yscale = stream.readString().decode("utf-8")
 
         xmin = stream.readFloat()
         xmax = stream.readFloat()

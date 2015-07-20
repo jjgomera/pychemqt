@@ -572,7 +572,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
     type="equip"
     def __init__(self, name, dialogoId, parent=None):
         self.name=name
-        imagen=os.environ["pychemqt"]+"/images/equipment/%s.svg" % name
+        imagen=os.environ["pychemqt"]+"images/equipment/%s.svg" % name
         super(EquipmentItem, self).__init__(imagen, parent=parent)
         self.dialogoId=dialogoId
         self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable|QtWidgets.QGraphicsItem.ItemIsMovable|QtWidgets.QGraphicsItem.ItemSendsGeometryChanges|QtWidgets.QGraphicsItem.ItemIsFocusable)
@@ -1155,9 +1155,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream >> salida
             stream >> pen
             id_stream.append(stream.readInt32())
-            up_type = stream.readString().decode("utf-8")
+#            up_type = stream.readString().decode("utf-8")
+            up_type=str(stream.readQString())
             up_id=stream.readInt32()
-            down_type = stream.readString().decode("utf-8")
+#            down_type = stream.readString().decode("utf-8")
+            down_type=str(stream.readQString())
             down_id=stream.readInt32()
             up_stream[id_stream[-1]]=up_type, up_id
             down_stream[id_stream[-1]]=down_type, down_id
@@ -1223,7 +1225,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         n_equip=stream.readInt32()
         angle_equip={}
         for obj in range(n_equip):
-            name=stream.readString().decode("utf-8")
+#            name=stream.readString().decode("utf-8")
+            name=str(stream.readQString())
             dialogoId=stream.readInt32()
             pos=QtCore.QPointF()
             stream >> pos
@@ -1243,7 +1246,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.up=up
             self.objects["equip"][id]=s
             self.addItem(s)
-            txt=stream.readString().decode("utf-8")
+#            txt=stream.readString().decode("utf-8")
+            txt=str(stream.readQString())
             pos=QtCore.QPointF()
             stream >> pos
             s.idLabel.setPos(pos)

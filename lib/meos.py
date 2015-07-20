@@ -2243,8 +2243,8 @@ class MEoS(_fase):
             muo = Nchapman*(self.M*self.T)**tchapman/(self._viscosity["sigma"]**2*omega)
 
             # other adittional empirical terms
+            tau = self.T/self._viscosity["Tref"]
             if "n_ideal" in self._viscosity:
-                tau = self.T/self._viscosity["Tref"]
                 for n, t in zip(self._viscosity["n_ideal"], self._viscosity["t_ideal"]):
                     muo += n*tau**t
             if "n_poly" in self._viscosity:

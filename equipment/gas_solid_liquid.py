@@ -234,7 +234,7 @@ class Scrubber(equipment):
         self.At = Area(pi/4*self.Dt**2)
         self.Vg = Speed(self.entradaGas.Q/self.At)
         self.R = self.entradaLiquido.Q/self.entradaGas.Q
-        self.dd = Length(58600*(self.entradaLiquido.Liquido.sigma/self.entradaLiquido.Liquido.rho)**0.5/self.Vg**2 +
+        self.dd = Length(58600*(self.entradaLiquido.Liquido.epsilon/self.entradaLiquido.Liquido.rho)**0.5/self.Vg**2 +
             597*(self.entradaLiquido.Liquido.mu/self.entradaLiquido.Liquido.epsilon**0.5/self.entradaLiquido.Liquido.rho**0.5)**0.45*(1000*self.R)**1.5)
 
         self.efficiency_i = self._Efficiency()

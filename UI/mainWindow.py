@@ -738,7 +738,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     "pychemqt project file (*.pcq)")
         if fname:
             name = fname[0]
-            if name[0].split(".")[-1]!="pcq":
+            if name.split(".")[-1]!="pcq":
                 name+=".pcq"
             self.addRecentFile(name)
             self.filename[indice] = name
