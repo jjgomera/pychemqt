@@ -181,7 +181,7 @@ class Project(object):
             stream.writeInt32(len(self.config.options(section)))
             for option in self.config.options(section):
                 stream.writeString(option.encode())
-                stream.writeString(str(self.config.get(section, option)).encode())
+                stream.writeString(self.config.get(section, option).encode())
 
         # write equipments
         stream.writeInt32(len(self.items))
@@ -227,7 +227,7 @@ class Project(object):
         items = {}
         contador_equipos = stream.readInt32()
         for i in range(contador_equipos):
-            id = str(stream.readString())
+            id = stream.readString().decode("utf-8")
             if id[0] == "e":
                 equip = equipments[stream.readInt32()]()
                 equip.readFromStream(stream, run)
@@ -241,8 +241,8 @@ class Project(object):
         contador_streams = stream.readInt32()
         for item in range(contador_streams):
             id = stream.readInt32()
-            up = str(stream.readString())
-            down = str(stream.readString())
+            up = stream.readString().decode("utf-8")
+            down = stream.readString().decode("utf-8")
             ind_up = stream.readInt32()
             ind_down = stream.readInt32()
             obj = Corriente()

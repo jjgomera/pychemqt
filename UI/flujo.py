@@ -634,7 +634,6 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         if output:
             for salida in output:
                 obj=QtWidgets.QGraphicsEllipseItem(self)
-                print(type(salida[1]), type(self.boundingRect().height()))
                 obj.setRect(salida[0]*self.boundingRect().width()-5, salida[1]*self.boundingRect().height()-5, 10, 10)
                 obj.direction=int(salida[2])
                 obj.setPen(QtGui.QColor(255, 255, 255))
@@ -1156,11 +1155,9 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream >> salida
             stream >> pen
             id_stream.append(stream.readInt32())
-            up_type=QtCore.QString()
-            down_type=QtCore.QString()
-            stream >> up_type
+            up_type = stream.readString().decode("utf-8")
             up_id=stream.readInt32()
-            stream >> down_type
+            down_type = stream.readString().decode("utf-8")
             down_id=stream.readInt32()
             up_stream[id_stream[-1]]=up_type, up_id
             down_stream[id_stream[-1]]=down_type, down_id
@@ -1173,9 +1170,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.Ang_salida=stream.readInt32()
             self.objects["stream"][id_stream[-1]]=s
             self.addItem(s)
-            txt=QtCore.QString()
+            txt=stream.readString().decode("utf-8")
             pos=QtCore.QPointF()
-            stream >> txt
             stream >> pos
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
@@ -1227,10 +1223,9 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         n_equip=stream.readInt32()
         angle_equip={}
         for obj in range(n_equip):
-            name=QtCore.QString()
-            pos=QtCore.QPointF()
-            stream >> name
+            name=stream.readString().decode("utf-8")
             dialogoId=stream.readInt32()
+            pos=QtCore.QPointF()
             stream >> pos
             id=stream.readInt32()
             angle_equip[id]=stream.readInt32()
@@ -1248,9 +1243,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.up=up
             self.objects["equip"][id]=s
             self.addItem(s)
-            txt=QtCore.QString()
+            txt=stream.readString().decode("utf-8")
             pos=QtCore.QPointF()
-            stream >> txt
             stream >> pos
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
@@ -1292,13 +1286,13 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream << self.objects["stream"][id].salida
             stream << self.objects["stream"][id].pen()
             stream.writeInt32(self.objects["stream"][id].id)
-            stream << QtCore.QString(self.objects["stream"][id].up.tipo)
+            stream.writeString(self.objects["stream"][id].up.tipo.encode())
             stream.writeInt32(self.objects["stream"][id].up.id)
-            stream << QtCore.QString(self.objects["stream"][id].down.tipo)
+            stream.writeString(self.objects["stream"][id].down.tipo.encode())
             stream.writeInt32(self.objects["stream"][id].down.id)
             stream.writeInt32(self.objects["stream"][id].Ang_entrada)
             stream.writeInt32(self.objects["stream"][id].Ang_salida)
-            stream << self.objects["stream"][id].idLabel.toHtml()
+            stream.writeQString(self.objects["stream"][id].idLabel.toHtml())
             stream << self.objects["stream"][id].idLabel.pos()
 
         stream.writeInt32(len(self.objects["in"]))
@@ -1327,7 +1321,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
         stream.writeInt32(len(self.objects["equip"]))
         for id in self.objects["equip"]:
-            stream << QtCore.QString(self.objects["equip"][id].name)
+            stream.writeString(self.objects["equip"][id].name.encode())
             stream.writeInt32(self.objects["equip"][id].dialogoId)
             stream << self.objects["equip"][id].pos()
             stream.writeInt32(self.objects["equip"][id].id)
@@ -1338,7 +1332,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream.writeInt32(len(self.objects["equip"][id].down))
             for down in self.objects["equip"][id].down:
                 stream.writeInt32(down.id)
-            stream << self.objects["equip"][id].idLabel.toHtml()
+            stream.writeQString(self.objects["equip"][id].idLabel.toHtml())
             stream << self.objects["equip"][id].idLabel.pos()
 
 

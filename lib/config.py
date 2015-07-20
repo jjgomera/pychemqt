@@ -16,15 +16,15 @@
 import os
 
 # TODO: Delete when it isn´t necessary debug
-#os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-#os.environ["freesteam"]="True"
-#os.environ["oasa"]="True"
-#os.environ["Elemental"]="True"
-#os.environ["CoolProp"]="True"
-#os.environ["refprop"]="True"
-#os.environ["ezodf"]="True"
-#os.environ["openpyxl"]="True"
-#os.environ["xlwt"]="True"
+os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
+os.environ["freesteam"]="False"
+os.environ["oasa"]="False"
+os.environ["CoolProp"]="True"
+os.environ["refprop"]="False"
+os.environ["ezodf"]="False"
+os.environ["openpyxl"]="False"
+os.environ["xlwt"]="False"
+os.environ["icu"]="True"
 
 
 from configparser import ConfigParser
@@ -188,13 +188,13 @@ class Entity(object):
         stream.writeInt32(self.numInputs)
         for key, value in self.kwargs.items():
             if key not in self.kwargs_forbidden and value:
-                stream.writeString(key)
+                stream.writeString(key.encode())
                 if isinstance(value, float):
                     stream.writeFloat(value)
                 elif isinstance(value, int):
                     stream.writeInt32(value)
                 elif isinstance(value, str):
-                    stream.writeString(value)
+                    stream.writeString(value.encode())
                 elif isinstance(value, list):
                     self.writeListtoStream(stream, key, value)
 
@@ -208,13 +208,13 @@ class Entity(object):
         """Read entity from file
         run: opcional parameter if we not want run it"""
         for i in range(stream.readInt32()):
-            key = stream.readString()
+            key = stream.readString().decode("utf-8")
             if isinstance(self.kwargs[key], float):
                 valor = stream.readFloat()
             elif isinstance(self.kwargs[key], int):
                 valor = stream.readInt32()
             elif isinstance(self.kwargs[key], str):
-                valor = stream.readString()
+                valor = stream.readString().decode("utf-8")
             elif isinstance(self.kwargs[key], list):
                 valor = self.readListFromStream(stream, key)
             self.kwargs[key] = valor
