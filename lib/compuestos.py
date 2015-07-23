@@ -11,8 +11,8 @@ from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro
 from PyQt5.QtWidgets import QApplication
 
-from .physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
-from . import unidades, config, eos, sql
+from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
+from lib import unidades, config, eos, sql
 
 
 class Componente(object):
@@ -122,7 +122,7 @@ class Componente(object):
         self.energia_formacion_solido=componente[149]
         self.parametro_polar=componente[150]
         self.smile=componente[151]
-        if self.smile!="" and os.environ["oasa"]:
+        if self.smile!="" and os.environ["oasa"] == "True":
             import oasa
             # Install bkchem and create symbolic link for oasa
             # ln -s /usr/lib/bkchem/bkchem/oasa/oasa /usr/local/lib/python2.7/dist-packages

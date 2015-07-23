@@ -2530,13 +2530,13 @@ class TablaMEoS(Tabla):
         pat = QtCore.QStringList()
         pat.append(QtWidgets.QApplication.translate(
             "pychemqt", "CSV files") + " (*.csv)")
-        if os.environ["ezodf"]:
+        if os.environ["ezodf"] == "True":
             pat.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
-        if os.environ["xlwt"]:
+        if os.environ["xlwt"] == "True":
             pat.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML") + " (*.xls)")
-        if os.environ["openpyxl"]:
+        if os.environ["openpyxl"] == "True":
             pat.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
         patron = pat.join(";;")

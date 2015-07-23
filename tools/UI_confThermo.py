@@ -81,11 +81,11 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             "pychemqt", "Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 3)
 
-        if os.environ["freesteam"]:
+        if os.environ["freesteam"] == "True":
             self.iapws.toggled.connect(self.freesteam.setEnabled)
-        if os.environ["CoolProp"]:
+        if os.environ["CoolProp"] == "True":
             self.MEoS.toggled.connect(self.coolProp.setEnabled)
-        if os.environ["refprop"]:
+        if os.environ["refprop"] == "True":
             self.MEoS.toggled.connect(self.refprop.setEnabled)
 
         if config:
