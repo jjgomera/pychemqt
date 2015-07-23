@@ -11,7 +11,7 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from .widgets import createAction
+from UI.widgets import createAction
 
 
 class TextEditor(QtWidgets.QWidget):
@@ -211,7 +211,7 @@ class TextEditor(QtWidgets.QWidget):
             self.notas.fontFamily()))
         self.FontColor.setPalette(QtGui.QPalette(self.notas.textColor()))
         self.FontSize.setCurrentIndex(self.FontSize.findText(
-            QtCore.QString.number(self.notas.fontPointSize())))
+            str(int(self.notas.fontPointSize()))))
         self.actionNegrita.setChecked(
             self.notas.fontWeight() == QtGui.QFont.Bold)
         self.actionCursiva.setChecked(self.notas.fontItalic())
