@@ -947,7 +947,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         return menu
 
     def contextMenuEvent(self, event):
-        item=self.itemAt(event.scenePos())
+        item=self.itemAt(event.scenePos(), self.views()[0].transform())
         if item:
             item.setSelected(True)
         contextMenu= QtWidgets.QMenu()
