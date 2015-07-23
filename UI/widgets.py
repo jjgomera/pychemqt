@@ -166,9 +166,12 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         if unidad==int:
             if max==float("inf"):
                 max=1000000000
-            self.entrada.setValidator(QtGui.QIntValidator(min, max, self))
+            validator = QtGui.QIntValidator(min, max, self)
         else:
-            self.entrada.setValidator(QtGui.QDoubleValidator(min, max, decimales, self))
+            validator = QtGui.QDoubleValidator(min, max, decimales, self)
+            locale = QtCore.QLocale("en")
+            validator.setLocale(locale)
+        self.entrada.setValidator(validator)
         self.setReadOnly(readOnly)
         self.setRetornar(self.retornar)
         self.setFrame(frame)

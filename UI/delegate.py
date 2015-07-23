@@ -25,7 +25,10 @@ class CellEditor(QtWidgets.QItemDelegate):
     def createEditor(self, parent, option, index):
         widget = QtWidgets.QLineEdit(parent)
         widget.setAlignment(QtCore.Qt.AlignRight)
-        widget.setValidator(QtGui.QDoubleValidator(self))
+        validator = QtGui.QDoubleValidator(self)
+        locale = QtCore.QLocale("en")
+        validator.setLocale(locale)
+        widget.setValidator(validator)
         return widget
 
 
