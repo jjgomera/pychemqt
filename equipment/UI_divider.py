@@ -55,12 +55,12 @@ class UI_equipment(UI_equip):
             salidas = equipment.kwargs["salidas"]
         else:
             self.Equipment = Divider(salidas=salidas)
-
+        
         self.fracciones.setRowCount(salidas)
         for i in range(salidas):
-            self.fracciones.setItem(0, i, QtWidgets.QTableWidgetItem(""))
-            self.fracciones.item(0, i).setTextAlignment(QtCore.Qt.AlignRight |
-                                                        QtCore.Qt.AlignVCenter)
+            item = QtWidgets.QTableWidgetItem("%i" % i)
+            item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            self.fracciones.setItem(0, i, item)
             self.fracciones.setRowHeight(i, 20)
             widget = UI_corriente.Ui_corriente(readOnly=True)
             self.Salida.addTab(widget, str(i+1))
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-    agua = Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[0.1])
+    agua = Corriente(T=300, P=101325, caudalMasico=1, ids=[62], fraccionMolar=[0.1])
     divisor = Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
     dialogo = UI_equipment(divisor)
     dialogo.show()
