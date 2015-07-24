@@ -32,7 +32,7 @@ class UI_equipment(UI_equip):
         for i in range(entradas):
             entrada = UI_corriente.Ui_corriente()
             entrada.Changed.connect(partial(self.cambiarEntrada, i))
-            self.entrada.addTab(entrada, str(i+1))
+            self.Entrada.addTab(entrada, str(i+1))
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
@@ -74,17 +74,17 @@ class UI_equipment(UI_equip):
         UI_equip.rellenarInput(self)
         for i, entrada in enumerate(self.Equipment.kwargs["entrada"]):
             if entrada:
-                self.entrada.widget(i).setCorriente(entrada)
+                self.Entrada.widget(i).setCorriente(entrada)
 
 
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-    agua = Corriente(T=300, P=101325., caudalMasico=1, fraccionMasica=[1.])
-    agua2 = Corriente(T=300, P=101325.*2, caudalMasico=2, fraccionMasica=[1.])
-    mezclador = Mixer(entrada=[agua, agua2], criterio=0)
-#    mezclador=Mixer(criterio=0)
+    agua = Corriente(T=300, P=101325., caudalMasico=1, ids=[62], fraccionMasica=[1.])
+    agua2 = Corriente(T=300, P=101325.*2, caudalMasico=2, ids=[62], fraccionMasica=[1.])
+#    mezclador = Mixer(entrada=[agua, agua2], criterio=0)
+    mezclador=Mixer(criterio=0)
     dialogo = UI_equipment(mezclador, entradas=2)
     dialogo.show()
     sys.exit(app.exec_())
