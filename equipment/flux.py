@@ -123,6 +123,32 @@ class Divider(equipment):
             lista.append("Output %i" %(i+1))
         return lista
     
+    def writeStatetoStream(self, stream):
+        stream.writeInt32(self.criterio)
+        stream.writeInt32(len(self.split))
+        for value in self.split:
+            stream.writeFloat(value)
+        stream.writeFloat(self.deltaP)
+        stream.writeFloat(self.inputMolarFlow)
+        stream.writeFloat(self.inputMassFlow)
+        stream.writeFloat(self.inputVolFlow)
+        stream.writeFloat(self.inputT)
+        stream.writeFloat(self.inputP)
+        stream.writeInt32(self.output)
+
+    def readStatefromStream(self, stream):
+        self.criterio = stream.readInt32()
+        self.split = []
+        for i in range(stream.readInt32()):
+            self.split.append(stream.readFloat())
+        self.deltaP = unidades.DeltaP(stream.readFloat())
+        self.inputMolarFlow = unidades.MolarFlow(stream.readFloat())
+        self.inputMassFlow = unidades.MassFlow(stream.readFloat())
+        self.inputVolFlow = unidades.VolFlow(stream.readFloat())
+        self.inputT = unidades.Temperature(stream.readFloat())
+        self.inputP = unidades.Pressure(stream.readFloat())
+        self.output = unidades.Dimensionless(stream.readInt32())
+        self.salida = [None]*self.kwargs["salidas"]
 
 
 class Mixer(equipment):
@@ -257,18 +283,26 @@ class Mixer(equipment):
                 (QApplication.translate("pychemqt", "Output Volumetric Flow"), "outVolFlow", unidades.VolFlow)]
         return list
 
-#    def properties(self):
-#        list=[("T", self.salida[0].T.str),
-#                ("P", self.salida[0].P.str),
-#                ("x", self.salida[0].x.str),
-#                ("G", self.salida[0].caudalmolar.str),
-#                ("M", self.salida[0].caudalmasico.str),
-#                ("V", self.salida[0].Q.str),
-#                ("N", self.kwargs["n_entradas"]),
-#                (self.notasPlain,),
-#                (self.__class__.__name__,)] 
-#        return list
-#    
+    def writeStatetoStream(self, stream):
+        stream.writeInt32(self.criterio)
+        stream.writeFloat(self.Pout)
+        stream.writeFloat(self.outT)
+        stream.writeFloat(self.outP)
+        stream.writeFloat(self.outX)
+        stream.writeFloat(self.outMolarFlow)
+        stream.writeFloat(self.outMassFlow)
+        stream.writeInt32(self.outVolFlow)
+
+    def readStatefromStream(self, stream):
+        self.criterio = stream.readInt32()
+        self.Pout = unidades.Pressure(stream.readFloat())
+        self.outT = unidades.Temperature(stream.readFloat())
+        self.outP = unidades.Pressure(stream.readFloat())
+        self.outX = unidades.Dimensionless(stream.readFloat())
+        self.outMolarFlow = unidades.MolarFlow(stream.readFloat())
+        self.outMassFlow = unidades.MassFlow(stream.readFloat())
+        self.outVolFlow = unidades.VolFlow(stream.readInt32())
+        self.salida = [None]
 
 
 class Valve(equipment):
@@ -404,6 +438,19 @@ class Valve(equipment):
                 (QApplication.translate("pychemqt", "Output vapor fraction"), "outX", unidades.Dimensionless), 
                 (QApplication.translate("pychemqt", "Working Condition"), ("TEXT_WORKING", "off"), str)]
         return list
+
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.Pout)
+        stream.writeFloat(self.outT)
+        stream.writeFloat(self.outP)
+        stream.writeFloat(self.outX)
+
+    def readStatefromStream(self, stream):
+        self.Pout = unidades.Pressure(stream.readFloat())
+        self.outT = unidades.Temperature(stream.readFloat())
+        self.outP = unidades.Pressure(stream.readFloat())
+        self.outX = unidades.Dimensionless(stream.readFloat())
+        self.salida = [None]
 
 
 if __name__ == '__main__':
