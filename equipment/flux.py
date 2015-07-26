@@ -140,7 +140,7 @@ class Divider(equipment):
         self.criterio = stream.readInt32()
         self.split = []
         for i in range(stream.readInt32()):
-            self.split.append(stream.readFloat())
+            self.split.append(unidades.Dimensionless(stream.readFloat()))
         self.deltaP = unidades.DeltaP(stream.readFloat())
         self.inputMolarFlow = unidades.MolarFlow(stream.readFloat())
         self.inputMassFlow = unidades.MassFlow(stream.readFloat())

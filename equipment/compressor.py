@@ -383,6 +383,47 @@ class Compressor(equipment):
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
         return list
 
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.Pout)
+        stream.writeFloat(self.Tout)
+        stream.writeFloat(self.rendimientoCalculado)
+        stream.writeInt32(self.etapas)
+        stream.writeFloat(self.power)
+        stream.writeFloat(self.razonCalculada)
+        stream.writeFloat(self.deltaT)
+        stream.writeFloat(self.deltaP)
+        stream.writeFloat(self.cp_cv)
+        stream.writeFloat(self.Pin)
+        stream.writeFloat(self.Tin)
+        stream.writeInt32(self.statusCoste)
+        if self.statusCoste:
+            stream.writeFloat(self.C_comp)
+            stream.writeFloat(self.C_motor)
+            stream.writeFloat(self.C_trans)
+            stream.writeFloat(self.C_adq)
+            stream.writeFloat(self.C_inst)
+
+    def readStatefromStream(self, stream):
+        self.Pout = Pressure(stream.readFloat())
+        self.Tout = Temperature(stream.readFloat())
+        self.rendimientoCalculado = Dimensionless(stream.readFloat())
+        self.etapas = stream.readInt32()
+        self.power = Power(stream.readFloat())
+        self.razonCalculada = Dimensionless(stream.readFloat())
+        self.deltaT = DeltaT(stream.readFloat())
+        self.deltaP = DeltaP(stream.readFloat())
+        self.cp_cv = Dimensionless(stream.readFloat())
+        self.Pin = Pressure(stream.readFloat())
+        self.Tin = Temperature(stream.readFloat())
+        self.statusCoste = stream.readFloat()
+        if self.statusCoste:
+            self.C_comp = Currency(stream.readFloat())
+            self.C_motor = Currency(stream.readFloat())
+            self.C_trans = Currency(stream.readFloat())
+            self.C_adq = Currency(stream.readFloat())
+            self.C_inst = Currency(stream.readFloat())
+        self.salida = [None]
+
 
 class Turbine(equipment):
     """Clase que define una turbina
@@ -610,6 +651,41 @@ class Turbine(equipment):
                 (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", Currency),
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
         return list
+
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.Pout)
+        stream.writeFloat(self.rendimientoCalculado)
+        stream.writeFloat(self.razon)
+        stream.writeFloat(self.power)
+        stream.writeFloat(self.deltaT)
+        stream.writeFloat(self.deltaP)
+        stream.writeFloat(self.cp_cv)
+        stream.writeFloat(self.razonCalculada)
+        stream.writeFloat(self.Tout)
+        stream.writeFloat(self.Pin)
+        stream.writeFloat(self.Tin)
+        stream.writeInt32(self.statusCoste)
+        if self.statusCoste:
+            stream.writeFloat(self.C_adq)
+            stream.writeFloat(self.C_inst)
+
+    def readStatefromStream(self, stream):
+        self.Pout = Pressure(stream.readFloat())
+        self.rendimientoCalculado = Dimensionless(stream.readFloat())
+        self.razon = Dimensionless(stream.readFloat())
+        self.power = Power(stream.readFloat())
+        self.deltaT = DeltaT(stream.readFloat())
+        self.deltaP = DeltaP(stream.readFloat())
+        self.cp_cv = Dimensionless(stream.readFloat())
+        self.razonCalculada = Dimensionless(stream.readFloat())
+        self.Tout = Temperature(stream.readFloat())
+        self.Pin = Pressure(stream.readFloat())
+        self.Tin = Temperature(stream.readFloat())
+        self.statusCoste = stream.readFloat()
+        if self.statusCoste:
+            self.C_adq = Currency(stream.readFloat())
+            self.C_inst = Currency(stream.readFloat())
+        self.salida = [None]
 
 
 if __name__ == '__main__':
