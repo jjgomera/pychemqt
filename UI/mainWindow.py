@@ -7,15 +7,11 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from scipy import arange
-from scipy.optimize import fsolve
-
-from UI import texteditor, newComponent, flujo, wizard, charts, plots, viewComponents
-from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout, Tabla
-from lib.config import conf_dir, getComponents
+from UI import newComponent, flujo, wizard, charts, plots, viewComponents
+from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout
+from lib.config import conf_dir
 from lib.project import Project
 from lib.EoS import K, H
-from lib import unidades, mEoS
 from equipment import *
 from tools import UI_confComponents, UI_Preferences, UI_confTransport, UI_confThermo, UI_confUnits, UI_confResolution, UI_databank, UI_Tables, UI_unitConverter, UI_steamTables, UI_psychrometry, costIndex, doi, dependences
 from UI.conversor_unidades import moneda

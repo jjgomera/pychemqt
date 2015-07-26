@@ -230,7 +230,7 @@ class Project(object):
             id = stream.readString().decode("utf-8")
             if id[0] == "e":
                 equip = equipments[stream.readInt32()]()
-                equip.readFromStream(stream, run)
+                equip.readFromStream(stream)
             else:
                 equip = None
             items[id] = equip
@@ -246,7 +246,7 @@ class Project(object):
             ind_up = stream.readInt32()
             ind_down = stream.readInt32()
             obj = Corriente()
-            obj.readFromStream(stream, run)
+            obj.readFromStream(stream)
             streams[id] = (up, down, ind_up, ind_down, obj)
             if huella:
                 if down[0] == "e":
@@ -255,7 +255,10 @@ class Project(object):
                         kwargs = {"entrada": obj, "id_entrada": ind_down}
                     else:
                         kwargs = {equip.kwargsInput[ind_down]: obj}
-                    equip(**kwargs)
+                    equip.kwargs.update(kwargs)
+                if up[0] == "e":
+                    equip = self.items[up]
+                    equip.salida[ind_up] = obj
         self.setStreams(streams)
 
         if not huella:

@@ -599,7 +599,6 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 self.id=EquipmentItem.id_out
                 self.tipo="o"
 
-
         output=[]
         input=[]
         doc = minidom.parse(imagen)
@@ -650,21 +649,24 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
     def mouseDoubleClickEvent(self, event=None):
         if self.dialogoId!=None:
-            args=[self.equipment]
-            #Añadimos argumentos adicionales en algunos equipos
-            if isinstance(self.equipment, flux.Divider):         #divisor
+            kwarg = {"equipment": self.equipment}
+            # Aditional parameters for selected equipment
+            if isinstance(self.equipment, flux.Divider):
+                # Divider
                 if not len(self.down):
                     return
-                args.append(len(self.down))
-            elif isinstance(self.equipment, flux.Mixer):         #mezclador
+                kwarg["salidas"] = len(self.down)
+            elif isinstance(self.equipment, flux.Mixer):
+                # mixer
                 if not len(self.up):
                     return
-                args.append(len(self.up))
-            elif isinstance(self.equipment, spreadsheet.Spreadsheet):         #spreadsheet
+                kwarg["entradas"] = len(self.up)
+            elif isinstance(self.equipment, spreadsheet.Spreadsheet):
+                # spreadsheet
                 self.equipment(project=self.scene().project)
-                args.append(self.scene().project)
+                kwarg["project"] = self.scene().project
 
-            dialog = self.dialogo(*args)
+            dialog = self.dialogo(**kwarg)
             if dialog.exec_():
                 self.scene().project.setItem(self.id, dialog.Equipment)
 #                self.up[0].setCorriente(dialog.Equipment.entrada)
@@ -714,7 +716,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             self.showInput(True)
         else:
             if self.dialogoId!=None:
-                self.tabla=Table_Graphics(self.equipment, self.id, self.scene().parent().Preferences)
+                self.tabla = Table_Graphics(self.equipment, self.id, self.scene().parent().Preferences)
             else:
                 if self.output:
                     self.tabla=Table_Graphics(self.down[0].corriente, self.down[0].id, self.scene().parent().Preferences)
@@ -796,7 +798,6 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         contextMenu.addAction(self.menuTransform.menuAction())
 
         return contextMenu
-
 
     def delete(self):
         self.scene().delete(self)
@@ -1155,11 +1156,9 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream >> salida
             stream >> pen
             id_stream.append(stream.readInt32())
-#            up_type = stream.readString().decode("utf-8")
-            up_type=str(stream.readQString())
+            up_type = stream.readString().decode("utf-8")
             up_id=stream.readInt32()
-#            down_type = stream.readString().decode("utf-8")
-            down_type=str(stream.readQString())
+            down_type = stream.readString().decode("utf-8")
             down_id=stream.readInt32()
             up_stream[id_stream[-1]]=up_type, up_id
             down_stream[id_stream[-1]]=down_type, down_id
@@ -1172,11 +1171,12 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.Ang_salida=stream.readInt32()
             self.objects["stream"][id_stream[-1]]=s
             self.addItem(s)
-            txt=stream.readString().decode("utf-8")
+            txt=stream.readQString()
             pos=QtCore.QPointF()
             stream >> pos
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
+            s.idLabel.show()
 
         n_in=stream.readInt32()
         angle_in={}
@@ -1225,8 +1225,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         n_equip=stream.readInt32()
         angle_equip={}
         for obj in range(n_equip):
-#            name=stream.readString().decode("utf-8")
-            name=str(stream.readQString())
+            name=stream.readString().decode("utf-8")
             dialogoId=stream.readInt32()
             pos=QtCore.QPointF()
             stream >> pos
@@ -1246,8 +1245,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.up=up
             self.objects["equip"][id]=s
             self.addItem(s)
-#            txt=stream.readString().decode("utf-8")
-            txt=str(stream.readQString())
+            txt=stream.readQString()
             pos=QtCore.QPointF()
             stream >> pos
             s.idLabel.setPos(pos)
@@ -1266,7 +1264,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.objects["out"][id].rotate(angle)
         for id, angle in angle_equip.items():
             self.objects["equip"][id].rotate(angle)
-
 
     def saveToFile(self, stream):
         stream.writeInt32(len(self.objects["txt"]))
