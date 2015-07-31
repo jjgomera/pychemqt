@@ -154,11 +154,13 @@ def Preferences():
     config.set("Applications", "Calculator", calculator)
     config.set("Applications", "TextViewer", editor)
     config.set("Applications", "Shell", shell)
-    config.set("Applications", "ipython", False)
-    config.set("Applications", "maximized", False)
+    config.set("Applications", "ipython", "False")
+    config.set("Applications", "maximized", "False")
     config.set("Applications", "foregroundColor", "#ffffff")
     config.set("Applications", "backgroundColor", "#000000")
-    config.set("Applications", "elementalColorby", "0")
+    config.set("Applications", "elementalColorby", "serie")
+    config.set("Applications", "elementalDefinition", "10")
+    config.set("Applications", "elementalLog", "False")
 
     # mEoS
     config.add_section("MEOS")
@@ -218,18 +220,18 @@ def Preferences():
         "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False", 
         "position": 90}]
     for linea, value in zip(lineas, values):
-        config.set("Psychr", linea+"Start", value["start"])
-        config.set("Psychr", linea+"End", value["end"])
-        config.set("Psychr", linea+"Step", value["step"])
+        config.set("Psychr", linea+"Start", str(value["start"]))
+        config.set("Psychr", linea+"End", str(value["end"]))
+        config.set("Psychr", linea+"Step", str(value["step"]))
         config.set("Psychr", linea+"Custom", "False")
         config.set("Psychr", linea+"List", "")
-        config.set("Psychr", linea+"Color", value["color"])
-        config.set("Psychr", linea+"lineWidth", value["linewidth"])
-        config.set("Psychr", linea+"lineStyle", value["linestyle"])
+        config.set("Psychr", linea+"Color", str(value["color"]))
+        config.set("Psychr", linea+"lineWidth", str(value["linewidth"]))
+        config.set("Psychr", linea+"lineStyle", str(value["linestyle"]))
         config.set("Psychr", linea+"marker", "None")
-        config.set("Psychr", linea+"Label", value["label"])
-        config.set("Psychr", linea+"Units", value["units"])
-        config.set("Psychr", linea+"Position", value["position"])
+        config.set("Psychr", linea+"Label", str(value["label"]))
+        config.set("Psychr", linea+"Units", str(value["units"]))
+        config.set("Psychr", linea+"Position", str(value["position"]))
     
     return config
 
@@ -290,6 +292,7 @@ def getrates(archivo):  # From Python Cookbook
     url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
     fh = urllib.request.urlopen(url)
     for line in fh:
+        line = line.decode("utf-8")
         line = line.rstrip()
         if not line or line.startswith(("#", "Closing ")):
             continue
@@ -300,11 +303,11 @@ def getrates(archivo):  # From Python Cookbook
             pass
         else:
             value = float(fields[-1])
-            rates[fields[1][1:].lower()] = value
+            rates[fields[1][1:].replace("_NOON", "").lower()] = value
     del rates["iexe0124"]
     del rates["iexe0125"]
     rates["cad"] = 1.
     for rate in rates:
         rates[rate] = rates[rate] / rates["usd"]
     rates["date"] = date
-    pickle.dump(rates, open(archivo, "w"))
+    pickle.dump(rates, open(archivo, "wb"))

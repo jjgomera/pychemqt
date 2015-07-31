@@ -900,7 +900,9 @@ class ConfApplications(QtWidgets.QDialog):
         config.set("Applications", "maximized", False)
         config.set("Applications", "foregroundColor", "#ffffff")
         config.set("Applications", "backgroundColor", "#000000")
-        config.set("Applications", "elementalColorby", "0")
+        config.set("Applications", "elementalColorby", "serie")
+        config.set("Applications", "elementalDefinition", "10")
+        config.set("Applications", "elementalLog", "False")
 
         return config
 

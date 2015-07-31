@@ -56,13 +56,6 @@ for module, use in optional_modules:
                                            % (module, use))))
         os.environ[module] = ""
 
-# Logging configuration
-logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
-                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S', 
-                    format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
-logging.info(QtWidgets.QApplication.translate("pychemqt", 
-                                          "Starting pychemqt"))
-
 class SplashScreen(QtWidgets.QSplashScreen):
     """Clase que crea una ventana de splash"""
     def __init__(self):
@@ -102,6 +95,13 @@ if not os.path.isfile(conf_dir + "pychemqtrc"):
 if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
     Config = firstrun.config()
     Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
+
+# Logging configuration
+logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
+                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S', 
+                    format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
+logging.info(QtWidgets.QApplication.translate("pychemqt", 
+                                          "Starting pychemqt"))
 
 splash.showMessage(QtWidgets.QApplication.translate("pychemqt",
                                                 "Checking cost index..."))
