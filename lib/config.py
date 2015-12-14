@@ -33,6 +33,8 @@ from lib.sql import databank
 
 
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
+QTSETTING_FILE = os.path.expanduser('~') + os.sep +\
+    ".config/pychemqt/pychemqt.conf"
 Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
 # FIXME: This instance is not update when preferences are changed

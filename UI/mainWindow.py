@@ -9,7 +9,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, charts, plots, viewComponents
 from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout
-from lib.config import conf_dir
+from lib.config import conf_dir, QTSETTING_FILE
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *
@@ -487,17 +487,20 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.systemtray.setContextMenu(self.menuHerramientas)
 
         #Iniciar valores
-        self.settings = QtCore.QSettings()
-        self.recentFiles = self.settings.value("RecentFiles")
-        self.restoreGeometry(self.settings.value("Geometry"))
-        self.restoreState(self.settings.value("MainWindow/State"))
+        if os.path.isfile(QTSETTING_FILE):
+            settings = QtCore.QSettings()
+            self.recentFiles = settings.value("RecentFiles")
+            self.restoreGeometry(settings.value("Geometry"))
+            self.restoreState(settings.value("MainWindow/State"))
+        else:
+            self.recentFiles = []
+
         self.menuRecentFiles.setEnabled(len(self.recentFiles))
 
         self.updateStatus("Loaded pychemqt")
         self.activeControl(False)
         self.changePreferenceLive()
         self.centralwidget.tabCloseRequested.connect(self.fileClose)
-        self.centralwidget.currentChanged.connect(self.currentTabChanged)
 
     @property
     def currentScene(self):
@@ -1073,7 +1076,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if grafico.exec_():
             self.currentMdi.addSubWindow(grafico.plot)
             grafico.plot.show()
-            
+
 #        indices, nombres, M=getComponents(config=self.config[self.idTab])
 #        dialog=grafico(indices, nombres, x, y)
 #        self.currentMdi.addSubWindow(dialog)
