@@ -33,13 +33,7 @@ class TabWidget(QtWidgets.QTabWidget):
             h = rect.height()
             w = rect.width()
             image = QtGui.QImage("images/pychemqt.png")
-            if w > 500 and h > 500:
-                hi = (h-300)/2
-                wi = (w-300)/2
-                rectImage= QtCore.QRect(wi, hi, 300, 300)
-            else:
-                x = min(h, w)-200
-                rectImage = QtCore.QRect(x+50, 100, w-200, h-200)
+            rectImage = QtCore.QRect(25, rect.center().y()-50, 100, 100)
             painter.drawImage(rectImage, image)
             txt = QtWidgets.QApplication.translate(
                 "pychemqt", """Welcome to pychemqt,
@@ -52,8 +46,8 @@ but without any warranty, it is provided "as is" without warranty of any kind
 
 To use you can start creating a new project or open an existing project.""",
                 None)
-#            rect.setLeft(200)
-            painter.drawText(rect, QtCore.Qt.AlignBottom, txt)
+            rect.setLeft(150)
+            painter.drawText(rect, QtCore.Qt.AlignVCenter, txt)
 
 
 class UI_pychemqt(QtWidgets.QMainWindow):
@@ -493,9 +487,9 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.restoreGeometry(settings.value("Geometry"))
             self.restoreState(settings.value("MainWindow/State"))
         else:
-            self.recentFiles = []
+            self.recentFiles = None
 
-        self.menuRecentFiles.setEnabled(len(self.recentFiles))
+        self.menuRecentFiles.setEnabled(bool(self.recentFiles))
 
         self.updateStatus("Loaded pychemqt")
         self.activeControl(False)
