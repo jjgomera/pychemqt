@@ -16,15 +16,15 @@
 import os
 
 # TODO: Delete when it isn´t necessary debug
-os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-os.environ["freesteam"]="False"
-os.environ["oasa"]="False"
-os.environ["CoolProp"]="True"
-os.environ["refprop"]="False"
-os.environ["ezodf"]="False"
-os.environ["openpyxl"]="False"
-os.environ["xlwt"]="False"
-os.environ["icu"]="True"
+#os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
+#os.environ["freesteam"]="False"
+#os.environ["oasa"]="False"
+#os.environ["CoolProp"]="True"
+#os.environ["refprop"]="False"
+#os.environ["ezodf"]="False"
+#os.environ["openpyxl"]="False"
+#os.environ["xlwt"]="False"
+#os.environ["icu"]="True"
 
 
 from configparser import ConfigParser
@@ -39,6 +39,8 @@ Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
 # FIXME: This instance is not update when preferences are changed
 
+#global config
+#config = None
 
 def getComponents(solidos=False, config=None, name=True):
     """
@@ -57,6 +59,7 @@ def getComponents(solidos=False, config=None, name=True):
         indices = config.get("Components", "Components")
         if not isinstance(indices, list):
             indices = eval(indices)
+
     if name:
         nombres = []
         M = []
@@ -75,8 +78,9 @@ def getMainWindowConfig():
     """Return config of current project"""
     # FIXME: For now need pychemqtrc_temporal for save config of last project
     widget = QtWidgets.QApplication.activeWindow()
+#    global config
     config = None
-    if not widget:
+    if not widget and not config:
         config = ConfigParser()
         config.read(conf_dir+"pychemqtrc_temporal")
     if isinstance(widget, QtWidgets.QMainWindow) and \
@@ -199,6 +203,12 @@ class Entity(object):
                     stream.writeString(value.encode())
                 elif isinstance(value, list):
                     self.writeListtoStream(stream, key, value)
+        # Write state
+        stream.writeInt32(self.status)
+        stream.writeString(self.msg.encode())
+        stream.writeBool(self._bool)
+        if self.status:
+            self.writeStatetoStream(stream)
 
     def writeListtoStream(self, stream, key, value):
         """Write list to file, Customize in entities with complex list"""
@@ -220,8 +230,16 @@ class Entity(object):
             elif isinstance(self.kwargs[key], list):
                 valor = self.readListFromStream(stream, key)
             self.kwargs[key] = valor
+        # Read state
+#        self.status = stream.readInt32()
+#        self.msg = stream.readString().decode("utf-8")
+#        self._bool = stream.readBool()
+#        if self.status:
+#            self.readStatefromStream(stream)
+
         if run:
             self.__call__()
+            print(self)
 
     def readListFromStream(self, stream, key):
         """Read list from file, customize in entities with complex list"""
@@ -229,6 +247,11 @@ class Entity(object):
         for i in range(stream.readInt32()):
             valor.append(stream.readFloat())
         return valor
+
+    def writeStatefromStream(self, stream):
+        pass
+    def readStatefromStream(self, stream):
+        pass
 
     # Properties
     @classmethod
