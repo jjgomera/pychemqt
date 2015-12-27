@@ -486,10 +486,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.recentFiles = settings.value("RecentFiles")
             self.restoreGeometry(settings.value("Geometry"))
             self.restoreState(settings.value("MainWindow/State"))
+            if self.recentFiles is None:
+                self.recentFiles = []
+            self.menuRecentFiles.setEnabled(bool(self.recentFiles))
         else:
-            self.recentFiles = None
-
-        self.menuRecentFiles.setEnabled(bool(self.recentFiles))
+            self.recentFiles = []
+            self.menuRecentFiles.setEnabled(False)
 
         self.updateStatus("Loaded pychemqt")
         self.activeControl(False)
