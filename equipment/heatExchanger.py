@@ -22,7 +22,7 @@ from scipy.constants import g
 
 from lib import unidades
 from lib.corriente import Corriente
-from lib.physics import Re, Pr, Nu, Gr, Gz, f_friccion
+from lib.physics import Re, Pr, Gr, Gz, f_friccion
 from .parents import equipment
 
 
@@ -2144,7 +2144,7 @@ class Refrigeration(equipment):
 
         C=146*F*Q**0.65*1000
         C_adq=C*self.Current_index/self.Base_index
-        C_inst=C_adq*f_install
+        C_inst=C_adq*self.kwargs["f_install"]
 
         self.C_adq=C_adq
         self.C_inst=C_inst
@@ -2203,6 +2203,7 @@ class Fired_Heater(equipment):
     calculateValue=("CombustibleRequerido", "Heat")
     calculateCostos=("C_adq", "C_inst")
     indiceCostos=3
+    salida = [None]
 
     TEXT_TIPO=[QApplication.translate("pychemqt", "Box Type"),
                         QApplication.translate("pychemqt", "Cylindrical type")]
@@ -2271,9 +2272,9 @@ class Fired_Heater(equipment):
         Heat=unidades.Power(H1-Ho)
 
         if self.Hmax and Heat>self.Hmax:
-            self.Heat=unidades.Power(Hmax)
+            self.Heat=unidades.Power(self.Hmax)
             To=(self.entrada.T+self.Tout)/2
-            T=fsolve(lambda T: self.entrada.clone(T=T, P=self.entrada.P-self.deltaP).h-Ho-Hmax, To)[0]
+            T=fsolve(lambda T: self.entrada.clone(T=T, P=self.entrada.P-self.deltaP).h-Ho-self.Hmax, To)[0]
             self.salida=[self.entrada.clone(T=T, P=self.entrada.P-self.deltaP)]
         else:
             self.Heat=Heat
@@ -2285,7 +2286,6 @@ class Fired_Heater(equipment):
         self.poderCalorifico=unidades.Dimensionless(poderCalorifico)
         self.Tin=self.entrada.T
         self.Tout=self.salida[0].T
-
 
     def coste(self):
         """
@@ -2401,6 +2401,41 @@ class Fired_Heater(equipment):
                 (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
         return list
+
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.Tout)
+        stream.writeFloat(self.deltaP)
+        stream.writeFloat(self.Hmax)
+        stream.writeFloat(self.Heat)
+        stream.writeFloat(self.CombustibleRequerido)
+        stream.writeFloat(self.deltaT)
+        stream.writeFloat(self.eficiencia)
+        stream.writeFloat(self.poderCalorifico)
+        stream.writeFloat(self.Tin)
+        stream.writeFloat(self.Tout)
+        stream.writeInt32(self.statusCoste)
+        if self.statusCoste:
+            stream.writeFloat(self.P_dis)
+            stream.writeFloat(self.C_adq)
+            stream.writeFloat(self.C_inst)
+
+    def readStatefromStream(self, stream):
+        self.Tout=unidades.Temperature(stream.readFloat())
+        self.deltaP=unidades.DeltaP(stream.readFloat())
+        self.Hmax=unidades.Power(stream.readFloat())
+        self.Heat=unidades.Power(stream.readFloat())
+        self.CombustibleRequerido=unidades.VolFlow(stream.readFloat())
+        self.deltaT=unidades.DeltaT(stream.readFloat())
+        self.eficiencia=unidades.Dimensionless(stream.readFloat())
+        self.poderCalorifico=unidades.Dimensionless(stream.readFloat())
+        self.Tin=unidades.Temperature(stream.readFloat())
+        self.Tout=unidades.Temperature(stream.readFloat())
+        self.statusCoste = stream.readInt32()
+        if self.statusCoste:
+            self.P_dis=unidades.Pressure(stream.readFloat())
+            self.C_adq=unidades.Currency(stream.readFloat())
+            self.C_inst=unidades.Currency(stream.readFloat())
+        self.salida = [None]
 
 
 
