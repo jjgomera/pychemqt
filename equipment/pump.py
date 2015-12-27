@@ -8,12 +8,13 @@
 import os
 
 from PyQt5.QtWidgets import  QApplication
-from scipy import log, exp, sqrt, optimize, polyval
+from scipy import log, exp, optimize, polyval, roots, r_
 from scipy.constants import g
 #import xlwt
 
-from lib.unidades import Pressure, Length, Power, Temperature, VolFlow, Currency, Dimensionless
-from lib.corriente import Corriente, Mezcla
+from lib.unidades import (Pressure, Length, Power, Temperature, VolFlow,
+                          Currency, Dimensionless, DeltaP, DeltaT)
+from lib.corriente import Corriente
 #from lib.datasheet import pdf
 from .parents import equipment
 
@@ -109,7 +110,8 @@ class Pump(equipment):
     calculateValue=("PoutCalculada", "power", "headCalculada", "volflow", "rendimientoCalculado")
     calculateCostos=("C_bomba", "C_motor", "C_adq", "C_inst")
     indiceCostos=7
-    
+    salida = [None]
+
     TEXT_BOMBA=[QApplication.translate("pychemqt", "Centrifugal"), 
                             QApplication.translate("pychemqt", "Reciprocating"), 
                             QApplication.translate("pychemqt", "Gear pump"), 
@@ -185,15 +187,15 @@ class Pump(equipment):
 
 
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
+        entrada=self.kwargs["entrada"]
         self.rendimientoCalculado=Dimensionless(self.kwargs["rendimiento"])
         
         if self.kwargs["Pout"]:
-            DeltaP=Pressure(self.kwargs["Pout"]-self.entrada.P)
+            DeltaP=Pressure(self.kwargs["Pout"]-entrada.P)
         elif self.kwargs["deltaP"]:
             DeltaP=Pressure(self.kwargs["deltaP"])
         elif self.kwargs["Carga"]:
-            DeltaP=Pressure(self.kwargs["Carga"]*self.entrada.Liquido.rho*g)
+            DeltaP=Pressure(self.kwargs["Carga"]*entrada.Liquido.rho*g)
         else:
             DeltaP=Pressure(0)
         
@@ -205,32 +207,31 @@ class Pump(equipment):
             self.Ajustar_Curvas_Caracteristicas()
 
         if not self.kwargs["usarCurva"]:
-            head=Length(DeltaP/g/self.entrada.Liquido.rho)
-            power=Power(head*g*self.entrada.Liquido.rho*self.entrada.Q/self.rendimientoCalculado)
+            head=Length(DeltaP/g/entrada.Liquido.rho)
+            power=Power(head*g*entrada.Liquido.rho*entrada.Q/self.rendimientoCalculado)
             P_freno=Power(power*self.rendimientoCalculado)
         elif not self.kwargs["incognita"]:
-            head=Length(polyval(self.CurvaHQ,self.entrada.Q))
-            self.DeltaP=Pressure(head*g*self.entrada.Liquido.rho)
-            power=Power(self.entrada.Q*DeltaP)
-            P_freno=Power(polyval(self.CurvaPotQ,self.entrada.Q))
+            head=Length(polyval(self.CurvaHQ,entrada.Q))
+            self.DeltaP=Pressure(head*g*entrada.Liquido.rho)
+            power=Power(entrada.Q*DeltaP)
+            P_freno=Power(polyval(self.CurvaPotQ,entrada.Q))
             self.rendimientoCalculado=Dimensionless(power/P_freno)
         else:
-            head=Length(self.DeltaP/g/self.entrada.Liquido.rho)
+            head=Length(self.DeltaP/g/entrada.Liquido.rho)
             caudalvolumetrico=roots([self.CurvaHQ[0], self.CurvaHQ[1], self.CurvaHQ[2]-head])[0]
             power=Power(caudalvolumetrico*self.DeltaP)
-            self.entrada=Corriente(self.entrada.T, self.entrada.P.atm, caudalvolumetrico*self.entrada.Liquido.rho*3600, self.entrada.mezcla, self.entrada.solido)    
+            entrada=Corriente(entrada.T, entrada.P.atm, caudalvolumetrico*entrada.Liquido.rho*3600, entrada.mezcla, entrada.solido)    
             P_freno=Power(polyval(self.CurvaPotQ,caudalvolumetrico))
             self.rendimientoCalculado=Dimensionless(power/P_freno)
             
         self.headCalculada=head
         self.power=power
         self.P_freno=P_freno
-        self.salida=[self.entrada.clone(P=self.entrada.P+DeltaP)]
-        self.Pin=self.entrada.P
+        self.salida=[entrada.clone(P=entrada.P+DeltaP)]
+        self.Pin=entrada.P
         self.PoutCalculada=self.salida[0].P
-        self.Q=self.entrada.Q.galUSmin
-        self.volflow=self.entrada.Q
-
+        self.Q=entrada.Q.galUSmin
+        self.volflow=entrada.Q
 
     def Ajustar_Curvas_Caracteristicas(self):
         """Define la curva característica de la bomba a partir de los datos, todos ellos en forma de array de igual dimensión
@@ -381,14 +382,14 @@ class Pump(equipment):
 
     def propTxt(self):        
         txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.kwargs["entrada"].P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Head"), self.headCalculada.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Brake horsepower"), self.P_freno.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Volumetric Flow"), self.volflow.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Power"), self.power.str)+os.linesep
         txt+="%-25s\t %0.4f" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimientoCalculado)+os.linesep
-        txt+="%-25s\t %0.4f" %("Cp/Cv", self.entrada.Liquido.cp_cv)+os.linesep
+        txt+="%-25s\t %0.4f" %("Cp/Cv", self.kwargs["entrada"].Liquido.cp_cv)+os.linesep
 
         if self.statusCoste:
             txt+=os.linesep
@@ -430,6 +431,51 @@ class Pump(equipment):
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)] 
         return list
 
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.deltaP)
+        stream.writeFloat(self.rendimientoCalculado)
+        stream.writeFloat(self.headCalculada)
+        stream.writeFloat(self.power)
+        stream.writeFloat(self.P_freno)
+        stream.writeFloat(self.Pin)
+        stream.writeFloat(self.PoutCalculada)
+        stream.writeFloat(self.Q)
+        stream.writeFloat(self.volflow)
+        stream.writeInt32(self.statusCoste)
+        
+        if self.kwargs["usarCurva"]:
+            pass
+            
+        stream.writeInt32(self.statusCoste)
+        if self.statusCoste:
+            stream.writeFloat(self.C_bomba)
+            stream.writeFloat(self.C_motor)
+            stream.writeFloat(self.C_adq)
+            stream.writeFloat(self.C_inst)
+
+    def readStatefromStream(self, stream):
+        self.Tout=Temperature(stream.readFloat())
+        self.deltaP=DeltaP(stream.readFloat())
+        self.Hmax=Power(stream.readFloat())
+        self.Heat=Power(stream.readFloat())
+        self.CombustibleRequerido=VolFlow(stream.readFloat())
+        self.deltaT=DeltaT(stream.readFloat())
+        self.eficiencia=Dimensionless(stream.readFloat())
+        self.poderCalorifico=Dimensionless(stream.readFloat())
+        self.Tin=Temperature(stream.readFloat())
+        self.Tout=Temperature(stream.readFloat())
+        self.statusCoste = stream.readInt32()
+
+        if self.kwargs["usarCurva"]:
+            pass
+                    
+        self.statusCoste = stream.readInt32()
+        if self.statusCoste:
+            self.P_dis=Pressure(stream.readFloat())
+            self.C_adq=Currency(stream.readFloat())
+            self.C_inst=Currency(stream.readFloat())
+        self.salida = [None]
+    
     
     def datamap2xls(self):
         datamap=(("PoutCalculada", "value", "H15"),
