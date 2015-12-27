@@ -7,7 +7,7 @@
 
 import os
 
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy.constants import g, pi
 
 from lib import unidades
@@ -73,157 +73,151 @@ class Pipe(equipment):
     >>> print tuberia.Di, tuberia.V,  tuberia.Re, tuberia.DeltaP
     0.1524 0.0626814744044 9427.99142792 1.8362005711
     """
-    title=QApplication.translate("pychemqt", "Pipe")
-    help=""
-    kwargs={"entrada": None,
-                    "metodo": 0,
-                    "thermal": 0,
-                    "material": [],
-                    "accesorios": [],
-                    "l": 0.0,
-                    "h": 0.0,
-                    "K": 0.0,
-                    "C": 100.,
-                    "T_ext": 0.0,
-                    "U": 0.0,
-                    "Q": 0.0,
+    title = QApplication.translate("pychemqt", "Pipe")
+    help = ""
+    kwargs = {"entrada": None,
+              "metodo": 0,
+              "thermal": 0,
+              "material": [],
+              "accesorios": [],
+              "l": 0.0,
+              "h": 0.0,
+              "K": 0.0,
+              "C": 100.,
+              "T_ext": 0.0,
+              "U": 0.0,
+              "Q": 0.0,
 
-                    "f_install": 2.8,
-                    "Base_index": 0.0,
-                    "Current_index": 0.0}
-    kwargsInput=("entrada", )
-    kwargsValue=("l", "h", "C")
-    kwargsList=("metodo", "thermal")
-    calculateValue=("DeltaP", "DeltaP_f", "DeltaP_ac", "DeltaP_h", "DeltaP_v", "DeltaP_100ft", "V", "f", "Re", "Tout")
-    calculateCostos=("C_adq", "C_inst")
-    indiceCostos=5
+              "f_install": 2.8,
+              "Base_index": 0.0,
+              "Current_index": 0.0}
+    kwargsInput = ("entrada", )
+    kwargsValue = ("l", "h", "C")
+    kwargsList = ("metodo", "thermal")
+    calculateValue = ("DeltaP", "DeltaP_f", "DeltaP_ac", "DeltaP_h",
+                      "DeltaP_v", "DeltaP_100ft", "V", "f", "Re", "Tout")
+    calculateCostos = ("C_adq", "C_inst")
+    indiceCostos = 5
 
-    TEXT_METODO=[QApplication.translate("pychemqt", "Single Phase flow"),
-                                QApplication.translate("pychemqt", "Water (Hazen-Williams)"),
-                                QApplication.translate("pychemqt", "Steam (Fritzsche)"),
-                                QApplication.translate("pychemqt", "Isotermic gas flow"),
-                                QApplication.translate("pychemqt", "Two Phase flow (Baker method)"),
-                                QApplication.translate("pychemqt", "Two Phase flow (Beggs and Brill method)")]
-    TEXT_THERMAL=[QApplication.translate("pychemqt", "Adiabatic"),
-                                QApplication.translate("pychemqt", "Heat flux"),
-                                QApplication.translate("pychemqt", "Heat transfer")]
-
-    C_adq=unidades.Currency(None)
-    C_inst=unidades.Currency(None)
+    TEXT_METODO = [QApplication.translate("pychemqt", "Single Phase flow"),
+                   QApplication.translate("pychemqt", "Water (Hazen-Williams)"),
+                   QApplication.translate("pychemqt", "Steam (Fritzsche)"),
+                   QApplication.translate("pychemqt", "Isotermic gas flow"),
+                   QApplication.translate("pychemqt", "Two Phase flow (Baker method)"),
+                   QApplication.translate("pychemqt", "Two Phase flow (Beggs and Brill method)")]
+    TEXT_THERMAL = [QApplication.translate("pychemqt", "Adiabatic"),
+                    QApplication.translate("pychemqt", "Heat flux"),
+                    QApplication.translate("pychemqt", "Heat transfer")]
 
     @property
     def isCalculable(self):
         if self.kwargs["f_install"] and self.kwargs["Base_index"] and self.kwargs["Current_index"] and self.kwargs["material"] and self.kwargs["material"][0] in ['Stainless Steel (ANSI)', 'Steel Galvanised (ANSI)', 'Steel (ANSI)']:
-            self.statusCoste=True
+            self.statusCoste = True
         else:
-            self.statusCoste=False
-            self.C_adq=unidades.Currency(None)
-            self.C_inst=unidades.Currency(None)
-
+            self.statusCoste = False
+            self.C_adq = unidades.Currency(None)
+            self.C_inst = unidades.Currency(None)
 
         if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
             return
         if not self.kwargs["l"]:
-            self.msg=QApplication.translate("pychemqt", "undefined pipe length")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined pipe length")
+            self.status = 0
             return
         if not self.kwargs["material"]:
-            self.msg=QApplication.translate("pychemqt", "undefined material")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined material")
+            self.status = 0
             return
 
-        if self.kwargs["thermal"]==1 and not self.kwargs["Q"]:
-            self.msg=QApplication.translate("pychemqt", "undefined heat flux")
-            self.status=0
+        if self.kwargs["thermal"] == 1 and not self.kwargs["Q"]:
+            self.msg = QApplication.translate("pychemqt", "undefined heat flux")
+            self.status = 0
             return
-        elif self.kwargs["thermal"]==2 and (not self.kwargs["T_ext"]  or  not self.kwargs["U"]):
-            self.msg=QApplication.translate("pychemqt", "undefined heat transfer conditions")
-            self.status=0
-            return
-
-        if self.kwargs["metodo"]==1 and not self.kwargs["C"]:
-            self.msg=QApplication.translate("pychemqt", "undefined C William Factor")
-            self.status=0
+        elif self.kwargs["thermal"] == 2 and (not self.kwargs["T_ext"] or not self.kwargs["U"]):
+            self.msg = QApplication.translate("pychemqt", "undefined heat transfer conditions")
+            self.status = 0
             return
 
-        self.msg=""
-        self.status=1
+        if self.kwargs["metodo"] == 1 and not self.kwargs["C"]:
+            self.msg = QApplication.translate("pychemqt", "undefined C William Factor")
+            self.status = 0
+            return
+
+        self.msg = ""
+        self.status = 1
         return True
 
-
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        self.L=unidades.Length(self.kwargs["l"])
+        self.entrada = self.kwargs["entrada"]
+        self.L = unidades.Length(self.kwargs["l"])
 
-        if self.entrada.x==0:
-            self.rho=self.entrada.Liquido.rho
-            self.mu=self.entrada.Liquido.mu
+        if self.entrada.x == 0:
+            self.rho = self.entrada.Liquido.rho
+            self.mu = self.entrada.Liquido.mu
         else:
-            self.rho=self.entrada.Gas.rho
-            self.mu=self.entrada.Gas.mu
+            self.rho = self.entrada.Gas.rho
+            self.mu = self.entrada.Gas.mu
 
-        self.material=self.kwargs["material"][0] + " " + self.kwargs["material"][1]
-        self.Dn=self.kwargs["material"][3]
-        self.rugosidad=unidades.Length(self.kwargs["material"][2], "mm")
-        self.De=unidades.Length(self.kwargs["material"][6], "mm")
-        self.w=unidades.Length(self.kwargs["material"][5], "mm")
-        self.Di=unidades.Length((self.De-2*self.w))
-        self.eD=unidades.Dimensionless(self.rugosidad/self.Di)
-        self.seccion=unidades.Area(pi/4*self.Di**2)
-        self.A=unidades.Area(pi*self.De*self.L)
-        self.V=unidades.Speed(self.entrada.Q/self.seccion)
-        self.Re=Re(self.Di, self.V, self.rho, self.mu)
-        K=0
+        self.material = self.kwargs["material"][0] + " " + self.kwargs["material"][1]
+        self.Dn = self.kwargs["material"][3]
+        self.rugosidad = unidades.Length(self.kwargs["material"][2], "mm")
+        self.De = unidades.Length(self.kwargs["material"][6], "mm")
+        self.w = unidades.Length(self.kwargs["material"][5], "mm")
+        self.Di = unidades.Length((self.De-2*self.w))
+        self.eD = unidades.Dimensionless(self.rugosidad/self.Di)
+        self.seccion = unidades.Area(pi/4*self.Di**2)
+        self.A = unidades.Area(pi*self.De*self.L)
+        self.V = unidades.Speed(self.entrada.Q/self.seccion)
+        self.Re = Re(self.Di, self.V, self.rho, self.mu)
+        K = 0
         for accesorio in self.kwargs["accesorios"]:
-            K+=accesorio[2]*accesorio[3]
-        self.K=unidades.Dimensionless(K)
-        self.DeltaP_h=unidades.Pressure(g*self.kwargs["h"]*self.rho)
-        self.DeltaP_ac=unidades.Pressure(self.K*self.V**2/2*self.rho)
+            K += accesorio[2]*accesorio[3]
+        self.K = unidades.Dimensionless(K)
+        self.DeltaP_h = unidades.Pressure(g*self.kwargs["h"]*self.rho)
+        self.DeltaP_ac = unidades.Pressure(self.K*self.V**2/2*self.rho)
 
-        self.f=f_friccion(self.Re, self.eD)
-        self.DeltaP_f=self.__DeltaP_friccion()
-        #TODO:
-        self.DeltaP_v=unidades.Pressure(0)
+        self.f = f_friccion(self.Re, self.eD)
+        self.DeltaP_f = self.__DeltaP_friccion()
+        # TODO:
+        self.DeltaP_v = unidades.Pressure(0)
 
-        self.DeltaP=unidades.Pressure(self.DeltaP_f+self.DeltaP_ac+self.DeltaP_h)
-        self.DeltaP_100ft=self.DeltaP*100/self.L.ft
-        self.Pout=unidades.Pressure(self.entrada.P-self.DeltaP)
+        self.DeltaP = unidades.Pressure(self.DeltaP_f+self.DeltaP_ac+self.DeltaP_h)
+        self.DeltaP_100ft = self.DeltaP*100/self.L.ft
+        self.Pout = unidades.Pressure(self.entrada.P-self.DeltaP)
 
-        if self.kwargs["thermal"]==0:
-            self.Tout=self.entrada.T
-            self.Heat=unidades.Power(0)
+        if self.kwargs["thermal"] == 0:
+            self.Tout = self.entrada.T
+            self.Heat = unidades.Power(0)
         else:
-            cambiador=Heat_Exchanger()
+            cambiador = Heat_Exchanger()
             cambiador.calculo(entrada=self.entrada, modo=self.kwargs["thermal"], Heat=self.kwargs["Q"], deltaP=self.DeltaP, A=self.A, U=self.kwargs["U"], Text=self.kwargs["Text"])
-            self.Tout=cambiador.salida[0].T
-            self.Heat=cambiador.Heat
+            self.Tout = cambiador.salida[0].T
+            self.Heat = cambiador.Heat
 
-        self.salida=[self.entrada.clone(T=self.Tout, P=self.Pout)]
-        self.Pin=self.entrada.P
-        self.Pout=self.salida[0].P
-
+        self.salida = [self.entrada.clone(T=self.Tout, P=self.Pout)]
+        self.Pin = self.entrada.P
+        self.Pout = self.salida[0].P
 
     def __DeltaP_friccion(self):
         """Método para el calculo de la perdida de presión"""
-        if self.kwargs["metodo"]==0:
-            delta=unidades.Pressure(self.L*self.V**2/self.Di*self.f*self.rho/2)
-        elif self.kwargs["metodo"]==1:
-            delta=unidades.Pressure((self.entrada.Q.galUSmin*self.L.ft**0.54/0.442/self.Di.inch**2.63/self.kwargs["C"])**(1./0.54), "psi")
-        elif self.kwargs["metodo"]==2:
-            delta=unidades.Pressure(2.1082*self.L.ft*self.entrada.caudalmasico.lbh**1.85/self.rho.lbft3/1e7/self.Di.inch**4.97, "psi")
-        elif self.kwargs["metodo"]==3:
+        if self.kwargs["metodo"] == 0:
+            delta = unidades.Pressure(self.L*self.V**2/self.Di*self.f*self.rho/2)
+        elif self.kwargs["metodo"] == 1:
+            delta = unidades.Pressure((self.entrada.Q.galUSmin*self.L.ft**0.54/0.442/self.Di.inch**2.63/self.kwargs["C"])**(1./0.54), "psi")
+        elif self.kwargs["metodo"] == 2:
+            delta = unidades.Pressure(2.1082*self.L.ft*self.entrada.caudalmasico.lbh**1.85/self.rho.lbft3/1e7/self.Di.inch**4.97, "psi")
+        elif self.kwargs["metodo"] == 3:
             pass
 
-        elif self.kwargs["metodo"]==4:
+        elif self.kwargs["metodo"] == 4:
             pass
 
-        elif self.kwargs["metodo"]==5:
+        elif self.kwargs["metodo"] == 5:
             pass
 
         return delta
-
 
     def coste(self):
         """
@@ -233,27 +227,26 @@ class Pipe(equipment):
         kwargs:
             schedule: Clase de acero
         """
-        codigo=str(self.kwargs["material"][1])
+        codigo = str(self.kwargs["material"][1])
         if codigo in ('Sch. 40', 'Sch. 5S'):
-            a=30.
-            p=1.31
+            a = 30.
+            p = 1.31
         elif codigo in ('Sch. 80', 'Sch. 10S'):
-            a=38.1
-            p=1.35
+            a = 38.1
+            p = 1.35
         elif codigo in ('Sch. 160', 'Sch.  40S'):
-            a=55.3
-            p=1.39
+            a = 55.3
+            p = 1.39
         else:
-            a=0
-            p=1
+            a = 0
+            p = 1
 
-        self.C_adq=unidades.Currency(a*self.Di.ft**p*self.L * self.kwargs["Current_index"] / self.kwargs["Base_index"])
-        self.C_inst=unidades.Currency(self.C_adq*self.kwargs["f_install"])
-
+        self.C_adq = unidades.Currency(a*self.Di.ft**p*self.L * self.kwargs["Current_index"] / self.kwargs["Base_index"])
+        self.C_inst = unidades.Currency(self.C_adq*self.kwargs["f_install"])
 
     def writeListtoStream(self, stream, key, value):
         """Personalizar en el caso de equipos con listas complejas"""
-        if key=="material":
+        if key == "material":
             stream.writeString(value[0].encode())
             stream.writeString(value[1].encode())
             stream.writeFloat(value[2])
@@ -262,7 +255,7 @@ class Pipe(equipment):
                 stream.writeFloat(val)
             for val in value[-2:]:
                 stream.writeInt32(val)
-        elif key=="accesorios":
+        elif key == "accesorios":
             stream.writeInt32(len(value))
             for accesorio in value:
                 stream.writeInt32(accesorio[0])
@@ -272,11 +265,10 @@ class Pipe(equipment):
                 for cadena in accesorio[4:]:
                     stream.writeString(cadena.encode())
 
-
     def readListFromStream(self, stream, key):
         """Personalizar en el caso de equipos con listas complejas"""
-        valor=[]
-        if key=="material":
+        valor = []
+        if key == "material":
             valor.append(stream.readString().decode("utf-8"))
             valor.append(stream.readString().decode("utf-8"))
             valor.append(float(representacion(stream.readFloat())))
@@ -285,9 +277,9 @@ class Pipe(equipment):
                 valor.append(float(representacion(stream.readFloat())))
             valor.append(stream.readInt32())
             valor.append(stream.readInt32())
-        elif key=="accesorios":
+        elif key == "accesorios":
             for i in range(stream.readInt32()):
-                accesorio=[]
+                accesorio = []
                 accesorio.append(stream.readInt32())
                 accesorio.append(stream.readInt32())
                 accesorio.append(float(representacion(stream.readFloat())))
@@ -296,6 +288,56 @@ class Pipe(equipment):
                     accesorio.append(stream.readString().decode("utf-8"))
                 valor.append(accesorio)
         return valor
+
+    def writeStatetoStream(self, stream):
+        stream.writeFloat(self.L)
+        stream.writeFloat(self.rho)
+        stream.writeFloat(self.mu)
+        self.material=self.kwargs["material"][0] + " " + self.kwargs["material"][1]
+        stream.writeFloat(self.rugosidad)
+        stream.writeFloat(self.De)
+        stream.writeFloat(self.w)
+        stream.writeFloat(self.Di)
+        stream.writeFloat(self.eD)
+        stream.writeFloat(self.seccion)
+        stream.writeInt32(self.A)
+        stream.writeInt32(self.V)
+        stream.writeInt32(self.Re)
+        stream.writeInt32(self.k)
+        stream.writeInt32(self.DeltaP_h)
+        stream.writeInt32(self.DeltaP_ac)
+        stream.writeInt32(self.f)
+        stream.writeInt32(self.DeltaP_f)
+        stream.writeInt32(self.DeltaP_v)
+        stream.writeInt32(self.DeltaP)
+        stream.writeInt32(self.DeltaP_100ft)
+        stream.writeInt32(self.Pout)
+        stream.writeInt32(self.Tout)
+        stream.writeInt32(self.Pin)
+
+        stream.writeInt32(self.statusCoste)
+        if self.statusCoste:
+            stream.writeFloat(self.C_adq)
+            stream.writeFloat(self.C_inst)
+
+    def readStatefromStream(self, stream):
+        self.Tout=Temperature(stream.readFloat())
+        self.deltaP=DeltaP(stream.readFloat())
+        self.Hmax=Power(stream.readFloat())
+        self.Heat=Power(stream.readFloat())
+        self.CombustibleRequerido=VolFlow(stream.readFloat())
+        self.deltaT=DeltaT(stream.readFloat())
+        self.eficiencia=Dimensionless(stream.readFloat())
+        self.poderCalorifico=Dimensionless(stream.readFloat())
+        self.Tin=Temperature(stream.readFloat())
+        self.Tout=Temperature(stream.readFloat())
+        self.statusCoste = stream.readInt32()
+
+        if self.statusCoste:
+            self.P_dis=Pressure(stream.readFloat())
+            self.C_adq=Currency(stream.readFloat())
+            self.C_inst=Currency(stream.readFloat())
+        self.salida = [None]
 
 
     def propTxt(self):
@@ -336,9 +378,9 @@ class Pipe(equipment):
             txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Heat Transfer"), self.Heat.str)+os.linesep
 
         if self.statusCoste:
-            txt+=os.linesep
-            txt+="#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
+            txt += os.linesep
+            txt += "#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
+            txt += "%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
             txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
             txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
             txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
@@ -346,46 +388,43 @@ class Pipe(equipment):
 
         return txt
 
-
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Material"), "material", str),
-                (QApplication.translate("pychemqt", "Nominal Diameter"), "Dn", str),
-                (QApplication.translate("pychemqt", "Length"), "L", unidades.Length),
-                (QApplication.translate("pychemqt", "Roughness"), "rugosidad", unidades.Length),
-                (QApplication.translate("pychemqt", "Internal Diamter"), "Di", unidades.Length),
-                (QApplication.translate("pychemqt", "External Diamter"), "De", unidades.Length),
-                (QApplication.translate("pychemqt", "Thickness"), "w", unidades.Length),
-                (QApplication.translate("pychemqt", "Transversal section"), "seccion", unidades.Area),
-                (QApplication.translate("pychemqt", "External Area"), "A", unidades.Area),
-                (QApplication.translate("pychemqt", "K total"), "K", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Fittings"), "accesorios", None),
-                (QApplication.translate("pychemqt", "Method"), ("TEXT_METODO", "metodo"),  str),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", unidades.Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", unidades.Pressure),
-                (QApplication.translate("pychemqt", "ΔP Total", None), "DeltaP", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP friction", None), "DeltaP_f", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP fittings", None), "DeltaP_ac", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP elevation", None), "DeltaP_h", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "ΔP acceleration", None), "DeltaP_v", unidades.DeltaP),
-                (QApplication.translate("pychemqt", "Thermal Condition"), ("TEXT_THERMAL", "thermal"),  str),
-                (QApplication.translate("pychemqt", "Fluid Speed"), "V", unidades.Speed),
-                (QApplication.translate("pychemqt", "Reynolds number"), "Re", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Relative roughness"), "eD", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Factor Friction"), "f", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Output Temperaturet"), "Tout", unidades.Temperature),
-                (QApplication.translate("pychemqt", "Heat Transfer"), "Heat", unidades.Power),
-                (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
-                (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Material"), "material", str),
+             (QApplication.translate("pychemqt", "Nominal Diameter"), "Dn", str),
+             (QApplication.translate("pychemqt", "Length"), "L", unidades.Length),
+             (QApplication.translate("pychemqt", "Roughness"), "rugosidad", unidades.Length),
+             (QApplication.translate("pychemqt", "Internal Diamter"), "Di", unidades.Length),
+             (QApplication.translate("pychemqt", "External Diamter"), "De", unidades.Length),
+             (QApplication.translate("pychemqt", "Thickness"), "w", unidades.Length),
+             (QApplication.translate("pychemqt", "Transversal section"), "seccion", unidades.Area),
+             (QApplication.translate("pychemqt", "External Area"), "A", unidades.Area),
+             (QApplication.translate("pychemqt", "K total"), "K", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Fittings"), "accesorios", None),
+             (QApplication.translate("pychemqt", "Method"), ("TEXT_METODO", "metodo"),  str),
+             (QApplication.translate("pychemqt", "Input Pressure"), "Pin", unidades.Pressure),
+             (QApplication.translate("pychemqt", "Output Pressure"), "Pout", unidades.Pressure),
+             (QApplication.translate("pychemqt", "ΔP Total", None), "DeltaP", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "ΔP friction", None), "DeltaP_f", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "ΔP fittings", None), "DeltaP_ac", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "ΔP elevation", None), "DeltaP_h", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "ΔP acceleration", None), "DeltaP_v", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Thermal Condition"), ("TEXT_THERMAL", "thermal"),  str),
+             (QApplication.translate("pychemqt", "Fluid Speed"), "V", unidades.Speed),
+             (QApplication.translate("pychemqt", "Reynolds number"), "Re", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Relative roughness"), "eD", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Factor Friction"), "f", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Output Temperaturet"), "Tout", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Heat Transfer"), "Heat", unidades.Power),
+             (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
+             (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
+        return l
 
     def propertiesListTitle(self, index):
-        lista=[]
+        lista = []
         for accesorio in self.kwargs["accesorios"]:
-            lista.append("%3i %s" %(accesorio[3], accesorio[7]))
+            lista.append("%3i %s" % (accesorio[3], accesorio[7]))
         return lista
-
-
 
 
 if __name__ == '__main__':
