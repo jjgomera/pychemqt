@@ -172,6 +172,17 @@ class Spreadsheet(equipment):
             lista.append("{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data))
         return lista
 
+    def writeStatetoStream(self, stream):
+        stream.writeInt32(len(self.sheets))
+        for name in self.sheets:
+            stream.writeString(name)
+
+    def readStatefromStream(self, stream):
+        self.sheets = []
+        for i in range(stream.readInt32()):
+            self.sheets.append(stream.readString())
+        self.salida = []
+    
 
 if __name__ == '__main__':
     spreadsheet=Spreadsheet(filename="/media/datos/ejemplo.ods")
