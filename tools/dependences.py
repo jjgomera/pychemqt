@@ -25,7 +25,7 @@ optional_modules = (
     ("xlwt", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
     ("icu", QtWidgets.QApplication.translate(
-        "pychemqt", "Unicode collation algorithm for improve strin sorting")),
+        "pychemqt", "Unicode collation algorithm for improved string sorting disabled")),
     )
 
 

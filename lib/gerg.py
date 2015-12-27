@@ -22,7 +22,7 @@ from scipy.optimize import fsolve
 from . import unidades
 from .physics import R_atml
 from lib import mEoS
-from lib.config import Fluid
+from .thermo import Fluid
 
 Tref = 298.15
 Pref = 101325.

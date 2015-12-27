@@ -22,7 +22,7 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from .config import Fluid
+from .thermo import Fluid
 
 
 class Freesteam(object):

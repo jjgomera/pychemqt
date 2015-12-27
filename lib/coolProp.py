@@ -18,7 +18,7 @@ except:
     pass
 
 from . import unidades
-from .config import Fluid
+from .thermo import Fluid
 
 
 class CoolProp(object):

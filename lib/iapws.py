@@ -12,8 +12,8 @@ from cmath import log as log_c
 from scipy.optimize import fsolve
 from PyQt5.QtWidgets import QApplication
 
-from lib import unidades
-from .config import Fluid
+from . import unidades
+from .thermo import Fluid
 
 properties = {
     "P": QApplication.translate("pychemqt", "Pressure"),
@@ -3376,6 +3376,7 @@ class IAPWS97(object):
 
     def fill(self, fase, estado):
         """Fill phase properties"""
+        fase._bool = True
         fase.M = unidades.Dimensionless(M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1/fase.v)
@@ -3402,17 +3403,17 @@ class IAPWS97(object):
         fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
         fase.n = _Refractive(fase.rho, self.T, self.kwargs["l"])
 
-        self.alfa=unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
-        self.joule=unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
-        self.deltat=self.derivative("h", "P", "T", fase)
-        self.gamma = unidades.Dimensionless(-fase.v/self.P/1000*self.derivative("P", "v", "s", fase))
+        fase.alfa=unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.joule=unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
+        fase.deltat=self.derivative("h", "P", "T", fase)
+        fase.gamma = unidades.Dimensionless(-fase.v/self.P/1000*self.derivative("P", "v", "s", fase))
 
         if self.region==3:
-            self.alfap=estado["alfap"]
-            self.betap=estado["betap"]
+            fase.alfap=estado["alfap"]
+            fase.betap=estado["betap"]
         else:
-            self.alfap=fase.alfav/self.P/fase.xkappa
-            self.betap=-1/self.P/1000*self.derivative("P", "v", "T", fase)
+            fase.alfap=fase.alfav/self.P/fase.xkappa
+            fase.betap=-1/self.P/1000*self.derivative("P", "v", "T", fase)
 
         cp0 = prop0(self.T, self.P.MPa)
         fase.v0 = unidades.SpecificVolume(cp0.v)

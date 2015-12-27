@@ -8,7 +8,6 @@
 #   o   Ecuación Peng-Robinson con translación de Peneloux
 #############################################################################
 
-import pickle
 import os
 from itertools import product
 from PyQt5.QtWidgets import QApplication
@@ -20,9 +19,9 @@ else:
 from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
-from lib import unidades, compuestos
+from . import unidades, compuestos
 from .physics import R_atml
-from .config import Fluid
+from .thermo import Fluid
 
 data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
         (QApplication.translate("pychemqt", "Reduced temperature"), "Tr", unidades.Dimensionless),
@@ -607,7 +606,7 @@ class MEoS(_fase):
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["h"]-par["P"]*par["v"]-u/1000., par["P"]-P
-                def funcion(parr):
+                def funcion2(parr):
                     rho, T = parr
                     rhol, rhov, Ps = self._saturation(T)
                     vapor = self._eq(rhov, T)
@@ -675,7 +674,7 @@ class MEoS(_fase):
                 def funcion(parr):
                     par = self._eq(parr[0], parr[1])
                     return par["h"]-par["P"]/1000*par["v"]-u, par["h"]-h
-                def funcion(parr):
+                def funcion2(parr):
                     rho, T = parr
                     rhol, rhov, Ps = self._saturation(T)
                     vapor = self._eq(rhov, T)
@@ -1159,8 +1158,8 @@ class MEoS(_fase):
         fio, fiot, fiott, fiod, fiodd, fiodt=self._phi0(self._constants["cp"], tau, delta)
 
         ref = self._constants["ref"](eq=self._constants["eq"])
-        Tr = T/Tc
-        rhor = rho/rhoc
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
 
         psi = 1+(self.f_acent-ref.f_acent)*(self._constants["ft"][0]+self._constants["ft"][1]*log(Tr))
         for n, m in zip(self._constants["ft_add"], self._constants["ft_add_exp"]):
@@ -1321,7 +1320,7 @@ class MEoS(_fase):
         firtt = d2A*T/self.R
         fird = P/self.R/T/rho-1.
         firdd = (dPdrho-2*P/rho)/self.R/T+1.
-        firddd = (d2Prho*rho-4*dPdrho+6*P/rho)/self.R/T-2.
+#        firddd = (d2Prho*rho-4*dPdrho+6*P/rho)/self.R/T-2.
 
         propiedades = {}
         propiedades["T"] = T
@@ -3037,6 +3036,7 @@ if __name__ == "__main__":
 #    print aire.T, aire.P.MPa, aire.rho, aire.h.kJkg, aire.s.kJkgK
 
 #Calculate estado estandard  OTO (h,s=0 at 25ºC and 1 atm)
+#    import pickle
 #    std={}
 #    for compuesto in __all__:
 #        method={}

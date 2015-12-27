@@ -322,12 +322,3 @@ class Entity(object):
         return txt
 
 
-class Fluid(dict):
-    """Custom dict with null parameter to model a fluid with properties"""
-    h = 0
-    s = 0
-    cp = 0
-    cv = 0
-    cp_cv = 0
-    cp0 = 0
-
