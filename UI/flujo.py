@@ -610,7 +610,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                     y=float(entrada.getAttribute("y"))
                     d=float(entrada.getAttribute("d"))
                     input.append([x, y, d])
-            
+
         for salida in doc.getElementsByTagName("outs")[0].childNodes:
             if isinstance(salida, minidom.Element):
                 if salida.tagName == "out":

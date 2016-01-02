@@ -73,6 +73,7 @@ class equipment(Entity):
     indiceCostos = None
     calculateCostos = ()
     __doi__ = []
+    salida = [None]
 
     def __init__(self, **kwargs):
         """Class constructor, copy kwargs for child class to instance and do
@@ -102,15 +103,15 @@ class equipment(Entity):
         input = False
         for key in kwargs:
             if key in self.kwargsInput:
-                input = True 
+                input = True
                 break
         if self.isCalculable and (self._oldkwargs != self.kwargs or input):
-            logging.info('Calculate EQUIPMENT: %s' %self.__class__.__name__)
+            logging.info('Calculate EQUIPMENT: %s' % self.__class__.__name__)
             kw_new = {}
             for key, value in list(kwargs.items()):
                 if self.__class__.kwargs[key] != value:
                     kw_new[key] = value
-            logging.debug('kwarg; %s' %kw_new)
+            logging.debug('kwarg; %s' % kw_new)
             QtWidgets.QApplication.processEvents()
             self.calculo()
             if self.statusCoste:
@@ -221,7 +222,7 @@ class UI_equip(QtWidgets.QDialog):
             self.Entrada = QtWidgets.QTabWidget()
             self.tabWidget.addTab(
                 self.Entrada, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/in.svg"), 
+            "/images/equipment/in.svg"),
             QtWidgets.QApplication.translate("pychemqt", "Input"))
         elif entrada is None:
             pass
@@ -252,7 +253,7 @@ class UI_equip(QtWidgets.QDialog):
             self.Salida = QtWidgets.QTabWidget()
             self.tabWidget.addTab(
                 self.Salida, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/out.svg"), 
+            "/images/equipment/out.svg"),
             QtWidgets.QApplication.translate("pychemqt", "Output"))
         elif salida is None:
             pass
@@ -274,7 +275,7 @@ class UI_equip(QtWidgets.QDialog):
     def addSalida(self, title, **kw):
         widget = UI_corriente.Ui_corriente(readOnly=True, **kw)
         self.Salida.addTab(widget, title)
-    
+
     def addEntrada(self, title, key, **kw):
         widget = UI_corriente.Ui_corriente(**kw)
         widget.Changed.connect(partial(self.changeParams, key))

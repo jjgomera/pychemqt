@@ -231,14 +231,14 @@ class Entity(object):
                 valor = self.readListFromStream(stream, key)
             self.kwargs[key] = valor
         # Read state
-#        self.status = stream.readInt32()
-#        self.msg = stream.readString().decode("utf-8")
-#        self._bool = stream.readBool()
-#        if self.status:
-#            self.readStatefromStream(stream)
+        self.status = stream.readInt32()
+        self.msg = stream.readString().decode("utf-8")
+        self._bool = stream.readBool()
+        if self.status:
+            self.readStatefromStream(stream)
 
         if run:
-            self.__call__()
+#            self.__call__()
             print(self)
 
     def readListFromStream(self, stream, key):
@@ -248,7 +248,7 @@ class Entity(object):
             valor.append(stream.readFloat())
         return valor
 
-    def writeStatefromStream(self, stream):
+    def writeStatetoStream(self, stream):
         pass
     def readStatefromStream(self, stream):
         pass

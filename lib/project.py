@@ -258,6 +258,9 @@ class Project(object):
                     equip.kwargs.update(kwargs)
                 if up[0] == "e":
                     equip = self.items[up]
+                    # Equipment with variable output streams must be corrected
+                    while len(equip.salida) <= ind_up:
+                        equip.salida.append(None)
                     equip.salida[ind_up] = obj
         self.setStreams(streams)
 
