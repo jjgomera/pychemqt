@@ -111,7 +111,7 @@ class unidad(float):
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
 
-        
+
         if data is None:
             self._data = 0
             self.code = "n/a"
@@ -136,7 +136,7 @@ class unidad(float):
             data = cls._getBaseValue(data, unit, magnitud)
 
         return float.__new__(cls, data)
-            
+
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
         if data is None:
@@ -146,13 +146,13 @@ class unidad(float):
             unit = cls.__units__[cls.Config.getint('Units', magnitud)]
         elif not unit:
             unit = cls.__units__[0]
-            
+
         try:
             conversion = cls.rates[unit]
         except KeyError:
             raise ValueError(
                 QApplication.translate("pychemqt", "Wrong input code"))
-        
+
         data *= conversion
         return data
 
@@ -332,7 +332,7 @@ class Temperature(unidad):
             unit = cls.__units__[cls.Config.getint('Units', magnitud)]
         elif not unit:
             unit = "K"
-            
+
         if unit == "C":
             data = C2K(data)
         elif unit == "F":
@@ -1148,7 +1148,7 @@ class Pressure(unidad):
 
     def __init__(self, data, unit="Pa", magnitud=""):
         self.Config = getMainWindowConfig()
-        
+
         if data is None:
             data = 0
             self.code = "n/a"
@@ -1201,7 +1201,7 @@ class Pressure(unidad):
         else:
             raise ValueError(
                 QApplication.translate("pychemqt", "Wrong input code"))
-        
+
         return data
 
 
@@ -2617,7 +2617,7 @@ class Currency(unidad):
             txt = self.text(self.magnitud)
             return " "+txt+num
 
-if os.environ["icu"]:
+if os.environ["icu"] == "True":
     import icu
     locale = QtCore.QLocale.system().name()
 
@@ -2679,6 +2679,6 @@ if __name__ == "__main__":
 
     T=Temperature(5, "")
     print(T, type(T.K), T.C)
-    
+
     c = Dimensionless(None)
     print(c)
