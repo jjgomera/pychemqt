@@ -237,9 +237,9 @@ class Entity(object):
         if self.status:
             self.readStatefromStream(stream)
 
-        if run:
+#        if run:
 #            self.__call__()
-            print(self)
+#            print(self)
 
     def readListFromStream(self, stream, key):
         """Read list from file, customize in entities with complex list"""

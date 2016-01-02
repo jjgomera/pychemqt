@@ -98,9 +98,9 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 
 # Logging configuration
 logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
-                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S', 
+                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S',
                     format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
-logging.info(QtWidgets.QApplication.translate("pychemqt", 
+logging.info(QtWidgets.QApplication.translate("pychemqt",
                                           "Starting pychemqt"))
 
 splash.showMessage(QtWidgets.QApplication.translate("pychemqt",
@@ -156,17 +156,18 @@ logging.info(QtWidgets.QApplication.translate("pychemqt", "Loading project files
 
 pychemqt.show()
 
+filename = []
 if pychemqt.Preferences.getboolean("General", 'Load_Last_Project'):
     filename = pychemqt.settings.value("LastFile")
     if filename is None:
         filename = []
-    for file in args:
-        filename.append(file)
-    for fname in filename:
-        if fname and QtCore.QFile.exists(fname):
-            splash.showMessage(QtWidgets.QApplication.translate("pychemqt", "Loading project files...")+"\n"+fname)
-            logging.info(QtWidgets.QApplication.translate("pychemqt", "Loading project")+ ": %s" %fname)
-            pychemqt.fileOpen(fname)
+for file in args:
+    filename.append(file)
+for fname in filename:
+    if fname and QtCore.QFile.exists(fname):
+        splash.showMessage(QtWidgets.QApplication.translate("pychemqt", "Loading project files...")+"\n"+fname)
+        logging.info(QtWidgets.QApplication.translate("pychemqt", "Loading project")+ ": %s" %fname)
+        pychemqt.fileOpen(fname)
 splash.finish(pychemqt)
 
 sys.exit(app.exec_())
