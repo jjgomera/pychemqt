@@ -95,7 +95,7 @@ units = [p[2] for p in data]
 properties = dict(list(zip(keys, propiedades)))
 inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
 
-class _fase(object):
+class _fase(Fluid):
     """Class to implement a null phase"""
     v = None
     rho = None
