@@ -176,7 +176,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
             print(self.construccion.value, file=archivo)
             print(self.edificios.value, file=archivo)
             print(self.ingenieria.value, file=archivo)
-            QtWidgets.QDialog.accept()
+            QtWidgets.QDialog.accept(self)
 
 
 class CostData(QtWidgets.QWidget):
@@ -188,7 +188,7 @@ class CostData(QtWidgets.QWidget):
         values: a tuple with all properties, (factor, base,actual)
     """
     valueChanged = QtCore.pyqtSignal(str, float)
-    
+
     def __init__(self, equipment, parent=None):
         """constructor
         equipment: equipment class where the widget have to be put, define
