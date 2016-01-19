@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp
 
@@ -47,17 +64,17 @@ class R23(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-23 of Penoncello et al. (2003)",
         "__doi__": {"autor": "Penoncello, S.G., Lemmon, E.W., Jacobsen, R.T, Shan, Z.",
-                    "title": "A Fundamental Equation for Trifluoromethane (R-23)", 
+                    "title": "A Fundamental Equation for Trifluoromethane (R-23)",
                     "ref": "J. Phys. Chem. Ref. Data 32, 1473 (2003).",
-                    "doi":  "10.1063/1.1559671"}, 
+                    "doi":  "10.1063/1.1559671"},
         # TODO: Find paper to search test
-        
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 475.0, "Pmax": 120000.0, "rhomax": 24.31, 
-        "Pmin": 0.058, "rhomin": 24.31, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 475.0, "Pmax": 120000.0, "rhomax": 24.31,
+        "Pmin": 0.058, "rhomin": 24.31,
 
         "nr1": [.7041529e1, -.8259512e1, .805304e-2, -.8617615e-1, .633341e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -75,16 +92,16 @@ class R23(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-23 of Penoncello et al. (2000)",
         "__doi__": {"autor": "Penoncello, S.G., Shan, Z., and Jacobsen, R.T.",
-                    "title": "A fundamental equation for the calculation of the thermodynamic properties of trifluoromethane (R23)", 
+                    "title": "A fundamental equation for the calculation of the thermodynamic properties of trifluoromethane (R23)",
                     "ref": "ASHRAE Trans. 106(Part 1), 2000.",
-                    "doi":  ""}, 
+                    "doi":  ""},
 
         "R": 8.31451,
         "cp": CP2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 473.15, "Pmax": 120000.0, "rhomax": 23.0, 
-        "Pmin": 0.05888, "rhomin": 22.851535, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 473.15, "Pmax": 120000.0, "rhomax": 23.0,
+        "Pmin": 0.05888, "rhomin": 22.851535,
 
         "nr1": [0.350093635099, -0.131185838025e1, -0.254118065769,
                 .104275296122, -.205326997924, .256040993750, .118078220087e-1,
@@ -108,15 +125,15 @@ class R23(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-23 of Platzer et al. (1990).",
         "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants", 
+                    "title": "Thermophysical properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31451,
         "cp": CP3,
-        "ref": "NBP", 
-        
-        "Tmin": 90.0, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 16.65, 
-        "Pmin": 2.5664104, "rhomin": 22.851535, 
+        "ref": "NBP",
+
+        "Tmin": 90.0, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 16.65,
+        "Pmin": 2.5664104, "rhomin": 22.851535,
 
         "nr1": [-0.133234251368e1, 0.210373595421e1, -0.376198728030,
                 0.881622087335, -0.272053790906e1, 0.247468024356e1,
@@ -153,9 +170,9 @@ class R23(MEoS):
               "method": "_visco0",
               "__name__": "Shan (2000)",
               "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
-                          "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)", 
+                          "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)",
                           "ref": "ASHRAE Transactions, Volume 106:1-11, 2000.",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 243.91, "sigma": 0.4278,
               "n_chapman": 0.2233755/M**0.5,
@@ -183,9 +200,9 @@ class R23(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "Shan (2000)", 
+               "__name__": "Shan (2000)",
                "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
-                           "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)", 
+                           "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)",
                            "ref": "ASHRAE Transactions, Volume 106:1-11, 2000.",
                            "doi": ""}}
 

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -20,27 +37,27 @@ class DMC(MEoS):
     f_acent = 0.346
     momentoDipolar = unidades.DipoleMoment(0.899, "Debye")
     # id=1798
-           
+
     Fi1 = {"ao_log": [1, 8.28421],
            "pow": [0, 1],
            "ao_pow": [4.9916462, -0.1709449],
            "ao_exp": [1.48525, 0.822585, 16.2453, 1.15925],
-           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc], 
+           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2011).",
         "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of Dimethyl Carbonate", 
+                    "title": "Thermodynamic Properties of Dimethyl Carbonate",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
-                    "doi":  "10.1063/1.3664084"}, 
+                    "doi":  "10.1063/1.3664084"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 1.0, "ho": 26712.371, "so": 109.66202}, 
+        "ref": {"Tref": 298.15, "Pref": 1.0, "ho": 26712.371, "so": 109.66202},
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 60000.0, "rhomax": 12.107, 
-        "Pmin": 2.2495, "rhomin": 12.107, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 60000.0, "rhomax": 12.107,
+        "Pmin": 2.2495, "rhomin": 12.107,
 
         "nr1": [0.52683187e-3, 1.353396, -2.649283, -0.2785412, 0.1742554,
                 0.031606252],
@@ -63,16 +80,16 @@ class DMC(MEoS):
         "nr4": []}
 
     eq = helmholtz1,
-    
+
     _vapor_Pressure={
-        "eq": 5, 
+        "eq": 5,
         "ao": [-8.3197, 3.4260, -3.5905, -3.3194],
         "exp": [1.0, 1.5, 2.3, 4.7]}
-    _liquid_Density={ 
-        "eq": 1, 
-        "ao": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526], 
+    _liquid_Density={
+        "eq": 1,
+        "ao": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526],
         "exp": [0.27, 0.77, 1.29, 1.85, 2.46, 3.16]}
-    _vapor_Density={ 
+    _vapor_Density={
         "eq": 3,
         "ao": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072, -379.799],
         "exp": [0.197, 0.6, 2.86, 3.65, 4.5, 5.4, 6.4]}
@@ -80,9 +97,9 @@ class DMC(MEoS):
     visco0 = {"eq": 1, "omega": 3,
               "__name__": "Zhou (2010)",
               "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
-                          "title": "Equations for the Thermophysical Properties of Dimethyl Carbonate", 
+                          "title": "Equations for the Thermophysical Properties of Dimethyl Carbonate",
                           "ref": "AICHE Proceedings, 2009 Annual Meeting",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 442.3, "sigma": 0.510747,
               "Tref": 557.376, "rhoref": 3.9749*M,

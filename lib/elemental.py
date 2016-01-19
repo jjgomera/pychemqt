@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Library to implement a library for chemical component from mendeleev table
@@ -15,10 +33,10 @@ from lib.utilities import colors
 
 connection = sqlite3.connect('dat/elemental.db')
 databank = connection.cursor()
-   
+
 
 def cleanFloat(flo):
-    try: 
+    try:
         value = float(flo)
     except ValueError:
         value = float(flo.split("(")[1].split(",")[0])
@@ -26,13 +44,13 @@ def cleanFloat(flo):
         value = 0
     return value
 
-color_serie = ["#DDDDDD", "#795681", "#B92D2D", "#B8873A", "#D7C848", 
+color_serie = ["#DDDDDD", "#795681", "#B92D2D", "#B8873A", "#D7C848",
                "#94738F", "#6186AC", "#88AE62", "#949692", "#BF924E", "#C44343"]
 color_phase = ["#DDDDDD", "#BB8F4A", "#7BB245", "#5D82A8"]
-NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date", 
-                  "atomic_mass", "atomic_volume", "atomic_radius", 
-                  "covalent_radius", "vanderWaals_radius", "electronegativity", 
-                  "electron_affinity", "first_ionization", "Tf", "Tb", 
+NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date",
+                  "atomic_mass", "atomic_volume", "atomic_radius",
+                  "covalent_radius", "vanderWaals_radius", "electronegativity",
+                  "electron_affinity", "first_ionization", "Tf", "Tb",
                   "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
 
 Preferences = ConfigParser()
@@ -79,10 +97,10 @@ else:
 
 class Elemental(object):
     """Element class with data"""
-    
+
     def __init__(self, id):
         """@param id atomic number of element
-        
+
         The class implement this properties
            id: atomic number
            name
@@ -129,7 +147,7 @@ class Elemental(object):
             id = 118
         databank.execute("SELECT * FROM ELEMENTS WHERE id=='%i'" % id)
         data = databank.fetchone()
-        
+
         self.id = int(data[0])
         self.name = data[1]
         self.altname = data[2]
@@ -180,7 +198,7 @@ class Elemental(object):
         self.T_debye = self._unit(data[37])
         self.color = data[38]
         self.notes = data[39]
-        
+
         # Isotopes
         databank.execute("SELECT * FROM ISOTOPES WHERE atomic_number==?", (self.id, ))
         self.isotopes = []
@@ -201,7 +219,7 @@ class Elemental(object):
         if aproximate:
             value.code = "stimated"
         return value
-        
+
 if __name__ == '__main__':
     for i in range(1, 119):
         elemento = Elemental(i)

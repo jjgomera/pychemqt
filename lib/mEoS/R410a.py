@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoSBlend
 from lib import unidades
@@ -32,9 +49,9 @@ class R410a(MEoSBlend):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-410A of Lemmon (2003)",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C", 
+                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C",
                     "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
-                    "doi": "10.1023/A:1025048800563"}, 
+                    "doi": "10.1023/A:1025048800563"},
         "__test__": """
             >>> st=R410a(T=300, rhom=0)
             >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
@@ -52,16 +69,16 @@ class R410a(MEoSBlend):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 19.51, 
-        "Pmin": 29.16, "rhomin": 19.51, 
+        "ref": "IIR",
 
-        "Tj": 344.494, "Pj": 4.9012, 
-        "dew": {"i": [1*2, 1.6*2, 2.4*2, 5*2], 
-                "n": [-7.4411, 1.9883, -2.4925, -3.2633]}, 
-        "bubble": {"i": [1*2, 1.8*2, 2.4*2, 4.9*2], 
-                   "n": [-7.2818, 2.5093, -3.2695, -2.8022]}, 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 19.51,
+        "Pmin": 29.16, "rhomin": 19.51,
+
+        "Tj": 344.494, "Pj": 4.9012,
+        "dew": {"i": [1*2, 1.6*2, 2.4*2, 5*2],
+                "n": [-7.4411, 1.9883, -2.4925, -3.2633]},
+        "bubble": {"i": [1*2, 1.8*2, 2.4*2, 4.9*2],
+                   "n": [-7.2818, 2.5093, -3.2695, -2.8022]},
 
         "nr1": [0.987252, -0.103017e1, 0.117666e1, -0.138991, 0.302373e-2],
         "d1": [1, 1, 1, 2, 5],

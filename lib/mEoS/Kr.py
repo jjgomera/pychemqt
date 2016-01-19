@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -30,21 +47,21 @@ class Kr(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for krypton of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=Kr(T=211, rho=10*83.798)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             211 10 5741.445 6700.326 36.936 27.390 1667.678 137.838
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 33.42, 
-        "Pmin": 73.5, "rhomin": 29.2, 
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 33.42,
+        "Pmin": 73.5, "rhomin": 29.2,
 
         "nr1": [0.83561, -2.3725, 0.54567, 0.014361, 0.066502, 0.00019310],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -63,15 +80,15 @@ class Kr(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for krypton of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 780.0, "Pmax": 375000.0, "rhomax": 33.55, 
-        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": Tt, "Tmax": 780.0, "Pmax": 375000.0, "rhomax": 33.55,
+        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [-0.402218741560, 0.679250544381, -0.1878869802860,
                 0.603399982935, -0.177297564389e1, 0.581208430222,

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -27,7 +44,7 @@ class nC5(MEoS):
     Fi1 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [8.95043, 21.836, 33.4032, 0],
            "hyp": [0.380391739, 1.789520971, 3.777411113, 0]}
 
@@ -47,9 +64,9 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for pentane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=nC5(T=700, rho=200)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -61,10 +78,10 @@ class nC5(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2, 
-        "Pmin": 0.76322e-4, "rhomin": 10.566, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2,
+        "Pmin": 0.76322e-4, "rhomin": 10.566,
 
         "nr1": [0.10968643e1, -0.29988888e1, 0.99516887, -0.16170709,
                 0.11334460, 0.26760595e-3],
@@ -82,15 +99,15 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57, 
-#        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57,
+#        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10968643098001e1, -0.29988888298061e1, 0.99516886799212,
                 -0.16170708558539, 0.11334460072775, 0.26760595150748e-3],
@@ -108,15 +125,15 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819, 
-        "Pmin": 3.624503, "rhomin": 9.3861, 
+        "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819,
+        "Pmin": 3.624503, "rhomin": 9.3861,
 
         "nr1": [-0.117648900900e1, 0.163499095773e1, -0.366669005817,
                 0.724947274043, -0.221919300269e1, 0.188671490348e1,
@@ -137,15 +154,15 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3159524,
         "cp": CP2,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 177.0, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 10.2534, 
-        "Pmin": 0.011064, "rhomin": 10.253, 
+        "Tmin": 177.0, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 10.2534,
+        "Pmin": 0.011064, "rhomin": 10.253,
 
         "nr1": [0.175873733594e1, 0.485604047435, -0.111896446456e1,
                 -0.685918143315, 0.368714111378e-1, -0.167498784887e-2,
@@ -164,21 +181,21 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.20261753, 1.07797592, -3.82130221, 1.06627357e-1,
                 3.07513215e-4, -2.84309667e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
-  
+
         "nr2": [-7.28441220e-2, -4.60943732e-1, 8.39360011e-2 , -1.50650444e-2,
                 -2.03771872e-1, -7.90244277e-3, -5.68993564e-2, -2.99387974e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
@@ -190,18 +207,18 @@ class nC5(MEoS):
         "__type__": "MBWR",
         "__name__": " MBWR equation of state for pentane of Ratanapisit (1999).",
         "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
-                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties", 
+                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties",
                     "ref": "Int. J. Thermophys., 20(6):1721-1735, 1999.",
-                    "doi": "10.1023/A:1022610013596"}, 
-                    
+                    "doi": "10.1023/A:1022610013596"},
+
         "R": 8.31434,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2, 
-        "Pmin": 0.0000815, "rhomin": 10.558, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2,
+        "Pmin": 0.0000815, "rhomin": 10.558,
 
-        "b": [None, -7.41533782499e-2, 7.54044021950, -1.93328401588e2, 
+        "b": [None, -7.41533782499e-2, 7.54044021950, -1.93328401588e2,
               3.39428034054e4, -5.12571561595e6, 1.51195406963e-3,
               -7.12225059892, 4.12664185793e3, 8.40258305443e5,
               -4.68416651753e-4, 3.03565637672, -1.42146321204e3,
@@ -242,10 +259,10 @@ class nC5(MEoS):
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST14",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
-                           
+                          "doi": ""},
+
               "ek": 341.10, "sigma": 0.5784,
               "n_chapman": 0.226720214/M**0.5,
               "F": [0, 0, 0, 100],
@@ -256,9 +273,9 @@ class nC5(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 469.7, "muref": 1.0,
               "ek": 341.1, "sigma": 0.5784, "n_chapman": 0,
@@ -278,9 +295,9 @@ class nC5(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 341.1, "kref": 1e-3,
                "no": [1.35558587, -0.15569137, 1],

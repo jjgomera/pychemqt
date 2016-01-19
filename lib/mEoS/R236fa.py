@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,16 +54,16 @@ class R236fa(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R236fa of Pan et al. (2012).",
         "__doi__": {"autor": "Pan, J., Rui, X., Zhao, X., Qiu, L.",
-                    "title": "An equation of state for the thermodynamic properties of 1,1,1,3,3,3-hexafluoropropane (HFC-236fa)", 
+                    "title": "An equation of state for the thermodynamic properties of 1,1,1,3,3,3-hexafluoropropane (HFC-236fa)",
                     "ref": "Fluid Phase Equilib., 321:10-16, 2012",
-                    "doi": "10.1016/j.fluid.2012.02.012"}, 
-                    
+                    "doi": "10.1016/j.fluid.2012.02.012"},
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 54932.8947, "so": 280.341948}, 
-        
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 70000.0, "rhomax": 11.235, 
-        "Pmin": 0.1603, "rhomin": 11.235, 
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 54932.8947, "so": 280.341948},
+
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 70000.0, "rhomax": 11.235,
+        "Pmin": 0.1603, "rhomin": 11.235,
 
         "nr1": [0.04453255, 1.777017, -2.230519, -0.6708606, 0.1587907],
         "d1": [4, 1, 1, 2, 3],
@@ -70,15 +87,15 @@ class R236fa(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-236fa of Outcalt and McLinden (1995).",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "An equation of state for the thermodynamic properties of R236fa", 
+                    "title": "An equation of state for the thermodynamic properties of R236fa",
                     "ref": "NIST report to sponsor (U.S. Navy, David Taylor Model Basin) under contract N61533-94-F-0152, 1995.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314471,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 11.30, 
-        "Pmin": 0.162, "rhomin": 11.29, 
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 11.30,
+        "Pmin": 0.162, "rhomin": 11.29,
 
         "b": [None, -0.661121874831e-1, 0.861763902745e1, -0.233732255968e3,
               0.437486232843e5, -0.539677761508e7, -0.757588552002e-2,

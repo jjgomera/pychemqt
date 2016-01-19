@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp, log
 
@@ -30,23 +47,23 @@ class He(MEoS):
     Fi2 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [13.628409737, -143.470759602],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2013).",
         "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
-                    "title": "Interim equation", 
+                    "title": "Interim equation",
                     "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
-                    "doi":  ""}, 
-                    
+                    "doi":  ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22, 
-        "Pmin": 5.0335, "rhomin": 36.48, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22,
+        "Pmin": 5.0335, "rhomin": 36.48,
 
         "nr1": [0.014799269, 3.06281562, -4.25338698, 0.05192797,
                 -0.165087335, 0.087236897],
@@ -79,16 +96,16 @@ class He(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2010).",
         "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
-                    "title": "Interim equation", 
+                    "title": "Interim equation",
                     "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
-                    "doi":  ""}, 
-                    
+                    "doi":  ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22, 
-        "Pmin": 5.043, "rhomin": 36.46, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22,
+        "Pmin": 5.043, "rhomin": 36.46,
 
         "nr1":  [0.9288766e-2, 0.9258069, -0.1718156e1, 0.7606137e0,
                  -0.1024864e1, 0.1052455],
@@ -121,16 +138,16 @@ class He(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Fundamental equation of state for helium of McCarty and Arp (1990).",
         "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
-                    "title": "A New Wide Range Equation of State for Helium", 
+                    "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
-                    "doi":  ""}, 
-                    
+                    "doi":  ""},
+
         "R": 8.31431,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
-        "Pmin": 4.8565, "rhomin": 36.537, 
+        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
+        "Pmin": 4.8565, "rhomin": 36.537,
 
         "nr1": [-0.208984171567e1, 0.381792817549, -0.441393943069e-1,
                 0.954038242224e-1, 0.115744872054e1, -0.287584069992e1,
@@ -158,16 +175,16 @@ class He(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for helium of McCarty and Arp (1990).",
         "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
-                    "title": "A New Wide Range Equation of State for Helium", 
+                    "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
-                    "doi":  ""}, 
-                    
+                    "doi":  ""},
+
         "R": 8.31431,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
-        "Pmin": 4.8565, "rhomin": 36.537, 
+        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
+        "Pmin": 4.8565, "rhomin": 36.537,
 
         "b": [None, 0.4558980227431e-3, 0.1260692007853e-1, -0.7139657549318e-1,
               0.9728903861441e-1, -0.1589302471562, 0.1454229259623e-4,
@@ -185,15 +202,15 @@ class He(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for helium of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73, 
-        "Pmin": 4.8565, "rhomin": 36.537, 
+        "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
+        "Pmin": 4.8565, "rhomin": 36.537,
 
         "nr1": [-0.45579024006737, 0.12516390754925e1, -0.15438231650621e1,
                 0.20467489707221e-1],
@@ -240,14 +257,14 @@ class He(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Arp,V.D (1998)", 
+              "__name__": "Arp,V.D (1998)",
               "__doi__": {"autor": "Arp, V.D. McCarty, R.D., and Friend, D.G.",
-                          "title": "Thermophysical properties of Helium-4 from 0.8 to 1500 K with pressures to 2000 Mpa", 
+                          "title": "Thermophysical properties of Helium-4 from 0.8 to 1500 K with pressures to 2000 Mpa",
                           "ref": "NIST Technical Note 1334",
                           "doi": ""}}
-    
+
     def _visco0(self, rho, T, fase=None, coef=False):
-            
+
         Visco0 = lambda T: -0.135311743/log(T) + 1.00347841 + \
             1.20654649*log(T) - 0.149564551*log(T)**2 + 0.0125208416*log(T)**3
 
@@ -281,7 +298,7 @@ class He(MEoS):
                "method": "_thermo0",
                "__name__": "Hands (1981)",
                "__doi__": {"autor": "Hands, B.A. and Arp, V.D.",
-                           "title": "A Correlation of Thermal Conductivity Data for Helium", 
+                           "title": "A Correlation of Thermal Conductivity Data for Helium",
                            "ref": "Cryogenics, 21(12):697-703, 1981",
                            "doi": "10.1016/0011-2275(81)90211-3"}}
 
@@ -341,9 +358,9 @@ class He(MEoS):
 
     thermo1 = {"eq": 0,
                "method": "_thermo1",
-               "__name__": "Peterser (1970)", 
+               "__name__": "Peterser (1970)",
                "__doi__": {"autor": "Peterser, H.",
-                           "title": "The Properties of Helium: Density, Specific Heats. Viscosity, and Thermal Conductivity at Pressures from 1 to 100 bar and from Room Temperature to about 1800 K", 
+                           "title": "The Properties of Helium: Density, Specific Heats. Viscosity, and Thermal Conductivity at Pressures from 1 to 100 bar and from Room Temperature to about 1800 K",
                            "ref": "Denmark. Forskningscenter Risoe. Risoe-R; No. 224",
                            "doi": ""}}
 

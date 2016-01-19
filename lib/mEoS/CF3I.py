@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -35,16 +52,16 @@ class CF3I(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for CF3I of McLinden and Lemmon (2013)",
         "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1",
                     "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.314472,
         "cp": CP1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 420., "Pmax": 20000.0, "rhomax": 14.1, 
-        "Pmin": 0.0004623, "rhomin": 14.05, 
+        "Tmin": Tt, "Tmax": 420., "Pmax": 20000.0, "rhomax": 14.1,
+        "Pmin": 0.0004623, "rhomin": 14.05,
 
         "nr1": [0.112191e1, -0.308087e1, 0.111307e1, -0.184885, 0.110971,
                 0.325005e-3],

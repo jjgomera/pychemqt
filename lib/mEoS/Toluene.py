@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -45,21 +62,21 @@ class Toluene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for toluene of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=Toluene(T=593, rho=3*92.13842)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             593 3 4186.620 52937.550 105.422 214.488 7705.724 89.464
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 700.0, "Pmax": 500000.0, "rhomax": 10.581, 
-        "Pmin": 0.000039, "rhomin": 10.58, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 700.0, "Pmax": 500000.0, "rhomax": 10.581,
+        "Pmin": 0.000039, "rhomin": 10.58,
 
         "nr1": [0.96464, -2.7855, 0.86712, -0.18860, 0.11804, 0.00025181],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -75,15 +92,15 @@ class Toluene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": 298.0, "Tmax": 673.0, "Pmax": 25000.0, "rhomax": 9.7242, 
-        "Pmin": 3.774, "rhomin": 9.3606, 
+        "ref": "NBP",
+
+        "Tmin": 298.0, "Tmax": 673.0, "Pmax": 25000.0, "rhomax": 9.7242,
+        "Pmin": 3.774, "rhomin": 9.3606,
 
         "nr1": [-0.343905499875, 0.737562743137, -0.158601557810,
                 0.113243121503e1, -0.253681929563e1, 0.104584338973e1,
@@ -104,21 +121,21 @@ class Toluene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.34060172, 1.01624262, -3.27810202, 9.69209624e-2,
                 2.61950176e-4, -1.58891991e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
- 
+
         "nr2": [6.28559812e-2, -8.42364946e-2, 4.49701117e-1, -1.08658876e-2,
                 -3.83733669e-1, 2.21127543e-2, -9.54658223e-2, -1.77905259e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],

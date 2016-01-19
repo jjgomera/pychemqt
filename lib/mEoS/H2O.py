@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp
 
@@ -119,11 +136,11 @@ class H2O(MEoS):
            "ao_pow": [-8.3204464837497, 6.6832105275932],
            "ao_exp": [0.012436, 0.97315, 1.2795, 0.96956, 0.24873],
            "titao": [1.28728967, 3.53734222, 7.74073708, 9.24437796, 27.5075105]}
-           
+
     Fi2 = {"ao_log": [1, 3.00392],
            "pow": [0, 1],
            "ao_pow": [8.203520690, -11.996306443],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [0.01059, -0.98763, 3.06904, 0],
            "hyp": [0.415386589, 1.763895929, 3.874803739, 0]}
 
@@ -143,10 +160,10 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for water of Wagner and Pruß (2002).",
         "__doi__": {"autor": u"Wagner, W., Pruß, A.",
-                    "title": "The IAPWS Formulation 1995 for the Thermodynamic Properties of Ordinary Water Substance for General and Scientific Use", 
+                    "title": "The IAPWS Formulation 1995 for the Thermodynamic Properties of Ordinary Water Substance for General and Scientific Use",
                     "ref": "J. Phys. Chem. Ref. Data 31, 387 (2002)",
-                    "doi": "10.1063/1.1461829"}, 
-        "__test__": 
+                    "doi": "10.1063/1.1461829"},
+        "__test__":
             # Table 6.6, Pag 436
             """
             >>> wt=H2O()
@@ -185,7 +202,7 @@ class H2O(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             400 0.24577 937.486 1.3694 532.953 2715.7 1.6013 7.0581 3.6324 1.6435 4.2555 2.2183 1509.5 484.67
-            
+
             >>> st=H2O(T=500, x=0.5)
             >>> print "%0.6g %0.5g %0.6g %0.5g %0.3f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -206,7 +223,7 @@ class H2O(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             646 21.775 402.96 243.46 1963.49 2238.06 4.2214 4.6465 4.5943 5.1457 204.58 385.23 297.13 331.61
-                
+
             >>> st=H2O(T=647, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -230,19 +247,19 @@ class H2O(MEoS):
             >>> print "%0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             640 531.385 1744.16 1786.5 3.9443 3.1724 12.142 529.59
-            
+
             >>> st=H2O(T=580, P=40000000)
             >>> print "%0.6g %0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             580 753.362 1306.43 1359.53 3.2061 2.9966 4.9863 1099.6
-            """, 
-            
+            """,
+
         "R": 8.314371357587,
         "cp": Fi1,
-        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
-        "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96, 
-        "Pmin": 0.61248, "rhomin": 55.49696, 
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96,
+        "Pmin": 0.61248, "rhomin": 55.49696,
 
         "nr1": [0.12533547935523e-1, 0.78957634722828e1, -0.87803203303561e1,
                 0.31802509345418, -0.26145533859358, -0.78199751687981e-2,
@@ -297,15 +314,15 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
-        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.82728408749586, -0.18602220416584e1, -0.11199009613744e1,
                 0.15635753976056, 0.87375844859025, -0.36674403715731,
@@ -325,48 +342,48 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and Wagner-58 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
-                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa", 
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
-                    "doi": "10.1063/1.555836"}, 
+                    "doi": "10.1063/1.555836"},
         "R": 8.31434,
         "cp": Fi3,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
 
-        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
-        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
-        "nr1": [0.8216377478, -0.2543894379, -0.08830868648, -0.8903097248e-6, 
-                -0.1241333357e-5, 0.2895590286e-8, 0.1403610309e-10, 
+        "nr1": [0.8216377478, -0.2543894379, -0.08830868648, -0.8903097248e-6,
+                -0.1241333357e-5, 0.2895590286e-8, 0.1403610309e-10,
                 0.8183943371e-12, -0.2397905287e-12],
         "d1": [1, 1, 2, 5, 8, 11, 11, 13, 13],
         "t1": [0, 2, 0, 9, 0, 0, 12, 7, 13],
 
-        "nr2": [-0.7519743341, -0.4151278588, -0.103051374e1, -0.1648036888e1, 
-                -0.4686350251, 0.3560258142, -0.6364658294, 0.2227482363, 
-                -0.8954849939e-1, 0.1557686788e-2, 0.1347719088e-2, 
-                -0.1301353385e-2, 0.9987368673e-6, 0.2263629476e-3, 
-                0.289330495e-5, 0.1995437169, -0.2707767662e-1, 
-                0.1849068216e-1, -0.4402394357e-2, -0.8546876737e-1, 
-                0.1220538576, -0.2562237041, 0.2555034636, -0.6323203907e-1, 
+        "nr2": [-0.7519743341, -0.4151278588, -0.103051374e1, -0.1648036888e1,
+                -0.4686350251, 0.3560258142, -0.6364658294, 0.2227482363,
+                -0.8954849939e-1, 0.1557686788e-2, 0.1347719088e-2,
+                -0.1301353385e-2, 0.9987368673e-6, 0.2263629476e-3,
+                0.289330495e-5, 0.1995437169, -0.2707767662e-1,
+                0.1849068216e-1, -0.4402394357e-2, -0.8546876737e-1,
+                0.1220538576, -0.2562237041, 0.2555034636, -0.6323203907e-1,
                 0.3351397575e-4, -0.6152834985e-1, -0.3533048208e-3,
-                0.3146309259e-1, -0.2261795983e-2, 0.18689702e-3, 
-                -0.1384614556e-2, 0.2713160073e-2, -0.4866118539e-2, 
+                0.3146309259e-1, -0.2261795983e-2, 0.18689702e-3,
+                -0.1384614556e-2, 0.2713160073e-2, -0.4866118539e-2,
                 0.3751789129e-2, -0.5692669373e-3, -0.5876414555, 0.5687838346,
-                -0.1642158198, 0.5878635885, -0.2844301931, -0.2049198337, 
-                -0.4039233716e-2, 0.5459049594e-1, -0.8914260146e-2, 
+                -0.1642158198, 0.5878635885, -0.2844301931, -0.2049198337,
+                -0.4039233716e-2, 0.5459049594e-1, -0.8914260146e-2,
                 0.4974411254e-2],
         "c2": [1]*15+[2]*20+[3]*10,
         "d2": [1, 1, 1, 2, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9, 11, 1, 1, 1, 1, 2, 2,
                4, 5, 6, 6, 7, 7, 8, 10, 10, 11, 11, 11, 11, 11, 2, 2, 2, 3, 3,
                4, 4, 5, 5, 5],
-        "t2": [0, 1, 3, 1, 5, 5, 2, 3, 5, 6, 4, 1, 8, 0, 1, 0, 9, 10, 11, 0, 
+        "t2": [0, 1, 3, 1, 5, 5, 2, 3, 5, 6, 4, 1, 8, 0, 1, 0, 9, 10, 11, 0,
                8, 5, 4, 2, 12, 3, 10, 3, 2, 8, 0, 1, 3, 4, 6, 13, 14, 15, 14,
                16, 13, 26, 15, 23, 25],
-        "gamma2": [1]*45, 
-        
-        "nr5": [-0.709318338e-2, 0.1718796342e-1, -0.1482653038e-1, 
-                0.4517292884e-2], 
-        "d5": [1, 2, 3, 4], 
+        "gamma2": [1]*45,
+
+        "nr5": [-0.709318338e-2, 0.1718796342e-1, -0.1482653038e-1,
+                0.4517292884e-2],
+        "d5": [1, 2, 3, 4],
         "t5": [50, 40, 32, 26]
         }
 
@@ -374,15 +391,15 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and Wagner-38 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
-                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa", 
+                    "title": "A Fundamental Equation for Water Covering the Range from the Melting Line to 1273 K at Pressures up to 25000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
-                    "doi":  "10.1063/1.555836"}, 
+                    "doi":  "10.1063/1.555836"},
         "R": 8.31434,
         "cp": Fi4,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
 
-        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49, 
-        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.2330009013, -0.1402091128e1, 0.1172248041, -0.1850749499,
                 0.1770110422, 0.5525151794e-1, -0.341325738e-3, 0.8557274367e-3,
@@ -410,16 +427,16 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314371357587,
         "cp": Fi1,
         "ref": {"name": "CUSTOM",
-            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0}, 
+            "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [3.46821920e-1, 5.03423025e-1, -3.51059570e-1, 5.07004866e-2,
                 1.99939129e-4, -5.69888763e-1],
@@ -465,9 +482,9 @@ class H2O(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 647.096, "muref": 1.0,
               "ek": 809.1, "sigma": 0.2641, "n_chapman": 0,
@@ -494,7 +511,7 @@ class H2O(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "IAPWS (1997)", 
+               "__name__": "IAPWS (1997)",
                "__code__": (_ThCond, )}
 
     _thermal = thermo0,
@@ -506,7 +523,7 @@ class H2O(MEoS):
         estado = ref._Helmholtz(rho, 1.5*647.096)
         drho = 1/estado["dpdrho"]*1e3
         return _ThCond(rho, T, fase, drho)
-        
+
     def _Dielectric(self, rho, T):
         return unidades.Dimensionless(_Dielectric(rho, T))
 
@@ -522,7 +539,7 @@ class H2O(MEoS):
 #            P1 = suma*611.657
 #        else:
 #            P1 = None
-        
+
         if 251.165 <= T <= 256.164:
             Tref = 251.165
             Pref = 208566.

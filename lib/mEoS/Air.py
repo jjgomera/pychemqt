@@ -1,7 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from math import exp
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoSBlend
 from lib import unidades
@@ -25,12 +40,12 @@ class Air(MEoSBlend):
 
     Fi1 = {"ao_log": [1, 2.490888032],
            "pow": [-3, -2, -1, 0, 1, 1.5],
-           "ao_pow": [0.6057194e-7, -0.210274769e-4, -0.158860716e-3, 
+           "ao_pow": [0.6057194e-7, -0.210274769e-4, -0.158860716e-3,
                       -13.841928076, 17.275266575, -0.19536342e-3],
            "ao_exp": [0.791309509, 0.212236768],
-           "titao": [25.36365, 16.90741], 
-           "ao_exp2": [-0.197938904], 
-           "titao2": [87.31279], 
+           "titao": [25.36365, 16.90741],
+           "ao_exp2": [-0.197938904],
+           "titao2": [87.31279],
            "sum2": [2./3]
            }
 
@@ -38,10 +53,10 @@ class Air(MEoSBlend):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for air of Lemmon et al. (2000)",
         "__doi__": {"autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and Friend, D.G.",
-                    "title": "Thermodynamic Properties of Air and Mixtures of Nitrogen, Argon, and Oxygen From 60 to 2000 K at Pressures to 2000 MPa", 
+                    "title": "Thermodynamic Properties of Air and Mixtures of Nitrogen, Argon, and Oxygen From 60 to 2000 K at Pressures to 2000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
-                    "doi":  "10.1063/1.1285884"}, 
-        "__test__": 
+                    "doi":  "10.1063/1.1285884"},
+        "__test__":
             # Table A1, Pag 363
             """
             >>> print "%0.6f %0.5f" % (Air._bubbleP(59.75).MPa, Air._dewP(59.75).MPa)
@@ -100,22 +115,22 @@ class Air(MEoSBlend):
                 st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             1000 30.791 21944 54421 156.83 29.07 36.77 1966.3
             """,
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.},
 
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
-        "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 53.73, 
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 53.73,
         "Pmin": 5.2646, "rhomin": 33.067,
-        
-        "Tj": 132.6312, "Pj": 3.78502, 
-        "dew": {"i": [1, 2, 5, 8], 
-                "n": [-0.1567266, -5.539635, 0.7567212, -3.514322]}, 
-        "bubble": {"i": [1, 2, 3, 4, 5, 6], 
+
+        "Tj": 132.6312, "Pj": 3.78502,
+        "dew": {"i": [1, 2, 5, 8],
+                "n": [-0.1567266, -5.539635, 0.7567212, -3.514322]},
+        "bubble": {"i": [1, 2, 3, 4, 5, 6],
                    "n": [0.2260724, -7.080499, 5.700283, -12.44017, 17.81926,
-                         -10.81364]}, 
+                         -10.81364]},
 
         "nr1": [0.118160747229, 0.713116392079, -0.161824192067e1,
                 0.714140178971e-1, -0.865421396646e-1, 0.134211176704,
@@ -136,25 +151,25 @@ class Air(MEoSBlend):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for air of Jacobsen et al. (1992)",
         "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., Clarke, W.P., and Lemmon, E.W.",
-                    "title": "A Thermodynamic Property Formulation for Air", 
+                    "title": "A Thermodynamic Property Formulation for Air",
                     "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
-                    "doi":  "10.1016/0378-3812(92)85124-Q"}, 
+                    "doi":  "10.1016/0378-3812(92)85124-Q"},
 
-        "R": 8.31451,  
+        "R": 8.31451,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.},
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
-        "Tmin": Tt, "Tmax": 870.0, "Pmax": 70000.0, "rhomax": 34.628, 
-        "Pmin": 6.2545, "rhomin": 33.073, 
+        "Tmin": Tt, "Tmax": 870.0, "Pmax": 70000.0, "rhomax": 34.628,
+        "Pmin": 6.2545, "rhomin": 33.073,
 
-        "Tj": 132.61738, "Pj": 3.78502, 
-        "dew": {"i": [1, 2, 10, 11, 13, 14], 
-                "n": [-0.1537763029, -5.544542064, 312.7182733, -895.9553274, 
-                      1834.176566, -1321.892808]}, 
-        "bubble": {"i": [1, 2, 4, 5, 6, 7, 12], 
-                   "n": [0.2095592444, -6.654905539, 22.13718815, -84.14553609, 
-                         135.9753732, -83.66895082, 17.97856602]}, 
+        "Tj": 132.61738, "Pj": 3.78502,
+        "dew": {"i": [1, 2, 10, 11, 13, 14],
+                "n": [-0.1537763029, -5.544542064, 312.7182733, -895.9553274,
+                      1834.176566, -1321.892808]},
+        "bubble": {"i": [1, 2, 4, 5, 6, 7, 12],
+                   "n": [0.2095592444, -6.654905539, 22.13718815, -84.14553609,
+                         135.9753732, -83.66895082, 17.97856602]},
 
         "nr1": [0.206604930965, 0.367099749382, -0.943192015369,
                 0.382519513142e-2, -0.865385542309e-1, 0.323019987452,
@@ -177,10 +192,10 @@ class Air(MEoSBlend):
         "gamma2": [1]*22}
 
     eq = helmholtz1, helmholtz2
-    
+
     _surface = {"sigma": [0.03046], "exp": [1.28]}
     _melting = {"eq": 1, "Tref": Tb, "Pref": 5.265,
-                "Tmin": 59.75, "Tmax": 2000.0, 
+                "Tmin": 59.75, "Tmax": 2000.0,
                 "a1": [1, 0.354935e5, -0.354935e5],
                 "exp1": [0, 0.178963e1, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
@@ -196,9 +211,9 @@ class Air(MEoSBlend):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Lemmon (2004)",
               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                           "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
               "__test__": """
                   >>> st=Air(T=100, rhom=0)
                   >>> print "%0.5f" % st.mu.muPas
@@ -219,7 +234,7 @@ class Air(MEoSBlend):
                   >>> print "%0.4f" % st.mu.muPas
                   17.7623
                   """, # Table V, Pag 28
-                    
+
             "ek": 103.3, "sigma": 0.36,
             "Tref": 1, "rhoref": 1.*M,
 
@@ -235,9 +250,9 @@ class Air(MEoSBlend):
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=Air(T=100, rhom=0)
                     >>> print "%0.5f" % st.k.mWmK

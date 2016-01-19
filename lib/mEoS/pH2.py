@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp, log
 
@@ -44,9 +61,9 @@ class pH2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for parahydrogen of Leachman et al. (2007)",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
-                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
+                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen",
                     "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
-                    "doi": "10.1063/1.3160306"}, 
+                    "doi": "10.1063/1.3160306"},
         "__test__": """
             >>> st=pH2(T=13.8033, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
@@ -55,13 +72,13 @@ class pH2(MEoS):
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             13.8033 7.0410 76.977 0.12555 −53.741 396.31 −3.0840 29.521 5.1313 6.2265 6.9241 10.534 1263.1 305.65
             """, # Table 13, Pag 745
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 104.0, 
-        "Pmin": 7.041, "rhomin": 38.185, 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 104.0,
+        "Pmin": 7.041, "rhomin": 38.185,
 
         "nr1": [-7.33375, 0.01, 2.60375, 4.66279, 0.682390, -1.47078, 0.135801],
         "d1": [1, 4, 1, 1, 2, 2, 3],
@@ -86,16 +103,16 @@ class pH2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for parahydrogen of Younglove (1982).",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.31434,
         "cp": CP1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 44.0, 
-        "Pmin": 7.042, "rhomin": 38.21, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 44.0,
+        "Pmin": 7.042, "rhomin": 38.21,
 
         "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
               0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
@@ -137,9 +154,9 @@ class pH2(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "McCarty (1972)", 
+              "__name__": "McCarty (1972)",
               "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                          "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia", 
+                          "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia",
                           "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
                           "doi": ""}}
 
@@ -194,9 +211,9 @@ class pH2(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2011)",
                "__doi__": {"autor": " Assael, M.J., Assael. J.-A.M., Huber, M.L., Perkins, R.A. and Takata, Y.",
-                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa", 
+                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 40, 033101 (2011)",
-                           "doi": "10.1063/1.3606499"}, 
+                           "doi": "10.1063/1.3606499"},
                "__test__": """
                    >>> st=pH2(T=298.15, rho=0)
                    >>> print "%0.5g" % st.k.mWmK
@@ -229,9 +246,9 @@ class pH2(MEoS):
                       -5.58871e-2, 2.79243e-4, -4.06944e-7, 3.42309e-10],
                "co": [0, 1, 2, 3, 4, 5, 6, 7],
                "noden": [1.42304e4, -5.88749e2, 1.45983e1, -1.34830e-1,
-                         6.19047e-4, -9.21777e-7, 7.83099e-10], 
-               "coden": [0, 1, 2, 3, 4, 5, 6], 
- 
+                         6.19047e-4, -9.21777e-7, 7.83099e-10],
+               "coden": [0, 1, 2, 3, 4, 5, 6],
+
                "Trefb": 32.938, "rhorefb": 15.538, "krefb": 1.,
                "nb": [0.265975e-1, -0.133826e-2, 0.130219e-1, -0.567678e-2,
                       -0.92338e-4, -0.121727e-2, 0.366663e-2, 0.388715e-2,
@@ -246,12 +263,12 @@ class pH2(MEoS):
 
     thermo1 = {"eq": 0,
                "method": "_thermo1",
-               "__name__": "McCarty (1972)", 
+               "__name__": "McCarty (1972)",
                "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                           "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia", 
+                           "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia",
                            "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
                            "doi": ""}}
-                           
+
     def _thermo1(self, rho, T, fase):
         # TODO:
         return unidades.ThermalConductivity(0)

@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###Módulo que define los dialogos de definición de gráficos
 
@@ -47,30 +65,30 @@ class Standing_Katz(QtWidgets.QDialog):
         layout.addWidget(self.Tr,1, 9)
         self.diagrama = mpl(self, dpi=90)
         layout.addWidget(self.diagrama,2,1,1,9)
-        
+
         self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 5, 1, 1, 6)
 
         self.plot_Z(0)
-        
+
     def plot_Z(self, indice):
         Prmin=self.Prmin.value
         Prmax=self.Prmax.value
         self.diagrama.config(self.Prmin.value, self.Prmax.value)
-        
+
         try:
             Tr=self.Tr.text().split()
         except:
             Tr=[1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.]
         Z=Z_list[indice]
-        
+
         P=arange(Prmin, Prmax, 0.1)
         for Tr in Tr:
             self.diagrama.plot(P, [Z(Tr, Pr) for Pr in P], "k")
         self.diagrama.axes2D.set_title(QtWidgets.QApplication.translate("pychemqt", "Standing and Katz compressivitity factors chart for natural gas"), size='12')
         self.diagrama.draw()
-   
+
 
 class Moody(QtWidgets.QDialog):
     title=QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
@@ -89,22 +107,22 @@ class Moody(QtWidgets.QDialog):
         self.metodos.addItem("Serghides")
         self.metodos.addItem("Churchill (1977)")
         self.metodos.addItem("Zigrang-Sylvester (1982)")
-        self.metodos.addItem("Swamee-Jain (1976)")        
-        
+        self.metodos.addItem("Swamee-Jain (1976)")
+
         self.metodos.currentIndexChanged.connect(self.cambiar)
         layout.addWidget(self.metodos,1,2)
         layout.setColumnStretch(3, 1)
         self.diagrama = mpl(self, dpi=90)
         layout.addWidget(self.diagrama,2,1,1,4)
         self.diagrama.fig.text(0.95, 0.4, QtWidgets.QApplication.translate("pychemqt", "Relative roughness")+", "+r"$r=\frac{\epsilon}{D}$", rotation=90, size='14')
-        
+
         self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 3, 1, 1, 4)
-        
+
         self.cambiar(0)
 
-        
+
     def cambiar(self, int):
         self.diagrama.axes2D.clear()
         self.diagrama.axes2D.set_autoscale_on(False)
@@ -135,8 +153,8 @@ class Moody(QtWidgets.QDialog):
             5   -   Serghides
             6   -   Churchill (1977)
             7   -   Zigrang-Sylvester (1982)
-            8   -   Swamee-Jain (1976)")      
-            
+            8   -   Swamee-Jain (1976)")
+
         eD: lista con las líneas de rugosidades relativas a dibujar
         Prmin: escala del eje x, minimo valor de Pr a representar
         Prmax: escala del eje y, maximo valor de Pr a representar
@@ -144,7 +162,7 @@ class Moody(QtWidgets.QDialog):
         if not eD:
             eD=[0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 4e-4, 6e-4, 8e-4, 0.001, 0.0015, 0.002, 0.003, 0.004, 0.006, 0.008, 0.01, 0.0125, 0.015, 0.0175, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07]
         F=f_list[metodo]
-        
+
         #laminar
         Re=[600, 2400]
         f=[64./R for R in Re]
@@ -158,7 +176,7 @@ class Moody(QtWidgets.QDialog):
         #Transición
         f=[(1/(1.14-2*log10(3500/R)))**2 for R in Re]
         self.diagrama.axes2D.plot(Re, f, "k", lw=0.5, linestyle=":")
-        
+
         self.diagrama.axes2D.add_artist(ConnectionPatch((600, 0.009), (2400, 0.009), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         self.diagrama.axes2D.add_artist(ConnectionPatch((2400, 0.009), (6000, 0.009), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         self.diagrama.axes2D.add_artist(ConnectionPatch((6000, 0.095), (40000, 0.095), "data", "data", arrowstyle="<|-|>", mutation_scale=20, fc="w"))
@@ -173,8 +191,8 @@ class Moody(QtWidgets.QDialog):
 
 
 
-__all__={QtWidgets.QApplication.translate("pychemqt", "Petro"): (Standing_Katz, ), 
-             QtWidgets.QApplication.translate("pychemqt", "Fluid Flow"): (Moody, ), 
+__all__={QtWidgets.QApplication.translate("pychemqt", "Petro"): (Standing_Katz, ),
+             QtWidgets.QApplication.translate("pychemqt", "Fluid Flow"): (Moody, ),
              QtWidgets.QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
 
 

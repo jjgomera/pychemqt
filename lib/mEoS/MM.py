@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -23,7 +40,7 @@ class MM(MEoS):
 
     Fi1 = {"ao_log": [1, 50.894],
            "pow": [0, 1, -1, -2, -3],
-           "ao_pow": [229.69732080664645, -86.53450336886623, -192.26652900000002, 
+           "ao_pow": [229.69732080664645, -86.53450336886623, -192.26652900000002,
                       18.654111840000002, -0.8140770995175003],
            "ao_exp": [], "titao": []}
 
@@ -31,21 +48,21 @@ class MM(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "title": "Multiparameter Equations of State for Selected Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+                    "doi":  "10.1016/j.fluid.2006.04.015"},
         "__test__": """
             >>> st=MM(T=518.69997204, P=1939390)
             >>> print "%0.6f" % st.v
             0.003285
             """, # Table 16, Pag 202
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21, 
-        "Pmin": 0.00269, "rhomin": 5.2, 
+        "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21,
+        "Pmin": 0.00269, "rhomin": 5.2,
 
         "nr1": [1.01686012, -2.19713029, 0.75443188, -0.68003426, 0.19082162,
                 0.10530133e-2],

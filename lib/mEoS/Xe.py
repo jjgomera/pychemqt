@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -35,21 +52,21 @@ class Xe(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for xenon of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=Xe(T=291, rho=8*131.293)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             291 8 5986.014 9193.668 36.895 28.692 3063.309 125.648
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 750.0, "Pmax": 700000.0, "rhomax": 28.78, 
-        "Pmin": 81.77, "rhomin": 22.59, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 700000.0, "rhomax": 28.78,
+        "Pmin": 81.77, "rhomin": 22.59,
 
         "nr1": [0.83115, -2.3553, 0.53904, 0.014382, 0.066309, 0.00019649],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -70,9 +87,9 @@ class Xe(MEoS):
         "__doc__": u"""Coefficients from NIST Thermophysical Properties of Pure Fluids Database, NIST12, Version 3.0, National Institute of Standards and Technology, Boulder, CO, 1992.""",
         "R": 8.31434,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 1300.0, "Pmax": 100000.0, "rhomax": 24.62, 
-        "Pmin": 81.654, "rhomin": 22.597, 
+
+        "Tmin": Tt, "Tmax": 1300.0, "Pmax": 100000.0, "rhomax": 24.62,
+        "Pmin": 81.654, "rhomin": 22.597,
 
         "b": [None, -0.1122246365118e-2, 0.4265740662874, -0.1219294183093e2,
               0.9986032891995e3, -0.1292471898135e6, 0.1460668285129e-3,

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -27,7 +44,7 @@ class nC7(MEoS):
     Fi2 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [15.063786601, -97.345252349],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [13.7266, 30.4707, 43.55610, 0],
            "hyp": [0.314348398, 1.54813656, 3.259326458, 0]}
 
@@ -53,9 +70,9 @@ class nC7(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for heptane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=nC7(T=700, rho=200)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -67,10 +84,10 @@ class nC7(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75, 
-        "Pmin": 0.17549e-3, "rhomin": 7.7457, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75,
+        "Pmin": 0.17549e-3, "rhomin": 7.7457,
 
         "nr1": [0.10543747645262e1, -0.26500681506144e1, 0.81730047827543,
                 -0.30451391253428, 0.12253868710800, 0.27266472743928e-3],
@@ -87,15 +104,15 @@ class nC7(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75,
+#        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.10543747645262e1, -0.26500681506144e1, 0.81730047827543,
                 -0.30451391253428, 0.122538687108, 0.27266472743928e-3],
@@ -113,15 +130,15 @@ class nC7(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heptane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP3,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 500.0, "Pmax": 510000.0, "rhomax": 7.3348901, 
-        "Pmin": 0.17549e-3, "rhomin": 7.7457, 
+        "Tmin": 273.0, "Tmax": 500.0, "Pmax": 510000.0, "rhomax": 7.3348901,
+        "Pmin": 0.17549e-3, "rhomin": 7.7457,
 
         "nr1": [-0.52030538102, 0.338196304523, -0.491117643215e-2,
                 0.200594802481, -0.260824422526e-1, -0.191516844204e1,
@@ -142,15 +159,15 @@ class nC7(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heptane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3159524,
         "cp": CP4,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 255.37, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 7.2015722, 
-        "Pmin": 0.17549e-3, "rhomin": 7.7457, 
+        "Tmin": 255.37, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 7.2015722,
+        "Pmin": 0.17549e-3, "rhomin": 7.7457,
 
         "nr1": [0.153471579811e1, 0.521386289098, -0.107860953728e1,
                 -0.902616154206, 0.117182735038, -0.986768914864e-4,
@@ -169,26 +186,26 @@ class nC7(MEoS):
         "__type__": "MBWR",
         "__name__": " MBWR equation of state for pentane of Ratanapisit (1999).",
         "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
-                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties", 
+                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties",
                     "ref": "Int. J. Thermophys., 20(6):1721-1735, 1999.",
-                    "doi": "10.1023/A:1022610013596"}, 
-                    
+                    "doi": "10.1023/A:1022610013596"},
+
         "R": 8.31434,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2, 
-        "Pmin": 0.0000815, "rhomin": 10.558, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2,
+        "Pmin": 0.0000815, "rhomin": 10.558,
 
-        "b": [None, -9.53769631187e-3, 9.72551866385e-1, -2.60081304889e1, 
+        "b": [None, -9.53769631187e-3, 9.72551866385e-1, -2.60081304889e1,
               5.20865382062e3, -1.07729056282e6, -6.20474297014e-4,
               2.08733258744, - 1.37572781583e3, 6.95627225584e4,
               1.90615930406e-4, -5.61551412281e-1, 2.73983005070e2,
               6.28902715950e-2, -1.11012478028e1, 6.22600247144e2,
-              1.57273923084, -6.63204129629e-2, -1.79732347053e1, 1.24881866033, 
+              1.57273923084, -6.63204129629e-2, -1.79732347053e1, 1.24881866033,
               3.81777590060e5, - 3.56280298214e7, 1.7565835641e4,
               4.54695406896e9, 2.05985406654e3, 8.72406003683e5,
-              5.62265877351e1, -3.20150071052e7, 3.57524917645, 3.27649699126e3, 
+              5.62265877351e1, -3.20150071052e7, 3.57524917645, 3.27649699126e3,
               -1.15729200586e-1, 3.93007045330e1, 3.88225605345e3]}
 
     eq = helmholtz1, GERG, helmholtz3, helmholtz4, MBWR
@@ -215,10 +232,10 @@ class nC7(MEoS):
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
-                          
+                          "doi": ""},
+
               "ek": 400., "sigma": 0.64947,
               "n_chapman": 0.26718615/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -229,9 +246,9 @@ class nC7(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": "Quinones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 540.13, "muref": 1.0,
               "ek": 400., "sigma": 0.64947, "n_chapman": 0,
@@ -251,9 +268,9 @@ class nC7(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2013)",
                "__doi__": {"autor": "M. J. Assael, I. Bogdanou, S. K. Mylona, M. L. Huber, R. A. Perkins and V. Vesovic",
-                           "title": "Reference Correlation of the Thermal Conductivity of n-Heptane from the Triple Point to 600 K and up to 250 MPa", 
+                           "title": "Reference Correlation of the Thermal Conductivity of n-Heptane from the Triple Point to 600 K and up to 250 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 42, 023101 (2013)",
-                           "doi": "10.1063/1.4794091"}, 
+                           "doi": "10.1063/1.4794091"},
                "__test__": """
                    >>> st=nC7(T=250, rho=720)
                    >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
@@ -275,9 +292,9 @@ class nC7(MEoS):
                "Tref": Tc, "kref": 1e-3,
                "no": [-1.83367, 16.2572, -39.0996, 47.8594, 15.1925, -3.39115],
                "co": [0, 1, 2, 3, 4, 5],
-               "noden": [0.250611, -0.320871, 1.0], 
-               "toden": [0, 1, 2], 
-               
+               "noden": [0.250611, -0.320871, 1.0],
+               "toden": [0, 1, 2],
+
                "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
                "nb": [.51778500e-1, -.92405200e-1, .51148400e-1, -.77689600e-2,
                       .12163700e-3, -.77243300e-2, .21889900e-1, .17172500e-2,
@@ -293,9 +310,9 @@ class nC7(MEoS):
     thermo1 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 400.0, "kref": 1e-3,
                "no": [1.35558587, -0.152682526035, 1],

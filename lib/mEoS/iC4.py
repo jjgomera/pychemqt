@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -28,13 +45,13 @@ class iC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [11.60865546, -5.29450411],
            "ao_exp": [4.94641014, 4.09475197, 15.6632824, 9.73918122],
-           "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351], 
+           "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351],
            "ao_hyp": [], "hyp": []}
-           
+
     Fi2 = {"ao_log": [1, 3.06714],
            "pow": [0, 1],
            "ao_pow": [20.413726078, -94.467620036],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
            "hyp": [1.074673199, 0.485556021, 4.671261865, 2.19158348]}
 
@@ -42,7 +59,7 @@ class iC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [-5.404217, 4.91136],
            "ao_exp": [4.940314, 4.090139, 15.68832, 9.739581],
-           "titao": [0.9508183, 2.383449, 10.38655, 4.347095], 
+           "titao": [0.9508183, 2.383449, 10.38655, 4.347095],
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": -1.7231723278e1,
@@ -69,9 +86,9 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane",
                     "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
-                    "doi": "10.1063/1.1901687"}, 
+                    "doi": "10.1063/1.1901687"},
         "__test__":
             # Table 46, Pag 996
             """
@@ -176,14 +193,14 @@ class iC4(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             500 433.69 145.98 226.69 -0.051328 2.522 3.0667 628.75
-            """, 
-            
+            """,
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
-        "Pmin": 0.0000219, "rhomin": 12.74, 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
+        "Pmin": 0.0000219, "rhomin": 12.74,
 
         "nr1":  [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
                  0.17745845870123, -0.12361807851599, 0.45145314010528e-1,
@@ -214,16 +231,16 @@ class iC4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for isobutane of Younglove and Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                     "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                    "doi": "10.1063/1.555785"}, 
-                    
+                    "doi": "10.1063/1.555785"},
+
         "R": 8.31434,
         "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 17932.6, "so": 295.390}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 17932.6, "so": 295.390},
 
-        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 35000.0, "rhomax": 12.89, 
-        "Pmin": 1.948e-5, "rhomin": 12.755, 
+        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 35000.0, "rhomax": 12.89,
+        "Pmin": 1.948e-5, "rhomin": 12.755,
 
         "b": [None, 0.1307325972e-1, 0.3927802742, -0.3185427394e2,
               0.7608825192e4, -0.1753919859e7, -0.2090019755e-2, 0.8959557971e1,
@@ -239,15 +256,15 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9, 
-#        "Pmin": 7.36, "rhomin": 38.2, 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
+#        "Pmin": 7.36, "rhomin": 38.2,
 
         "nr1":  [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
                  -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
@@ -265,15 +282,15 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase Isobutane", 
+                    "title": "A Thermodynamic Property Model for Fluid-Phase Isobutane",
                     "ref": "Int. J. Thermophys., 23(2):477-499, 2002.",
-                    "doi": "10.1023/A:1015161519954"}, 
+                    "doi": "10.1023/A:1015161519954"},
         "R": 8.314472,
         "cp": Fi3,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9, 
-        "Pmin": 0.000021, "rhomin": 12.738, 
+        "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9,
+        "Pmin": 0.000021, "rhomin": 12.738,
 
         "nr1":  [2.892737e-1, -1.342570, -7.976713e-3, 2.025793e-1,
                  -4.241612e-2, 2.617971e-3, 5.068955e-5, -1.144596e-6],
@@ -292,9 +309,9 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isobutane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=iC4(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -307,8 +324,8 @@ class iC4(MEoS):
         "R": 8.31451,
         "cp": CP5,
 
-        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 12.89, 
-        "Pmin": 0.000020860, "rhomin": 12.784, 
+        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 12.89,
+        "Pmin": 0.000020860, "rhomin": 12.784,
 
         "nr1":  [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
                  0.986157490e-1, 0.23948209e-3],
@@ -326,15 +343,15 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP6,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 120.0, "Tmax": 498.0, "Pmax": 35000.0, "rhomax": 12.89, 
-        "Pmin": 0.46491e-4, "rhomin": 12.649, 
+        "Tmin": 120.0, "Tmax": 498.0, "Pmax": 35000.0, "rhomax": 12.89,
+        "Pmin": 0.46491e-4, "rhomin": 12.649,
 
         "nr1":  [-0.958589873652, 0.818846326211, -0.115814967179,
                  0.345513148715, -0.168751721524e1, 0.936693300209,
@@ -356,20 +373,20 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.18083775, 9.46903331e-1, -2.90618044, 8.51346220e-2,
                 2.79868503e-4, -1.68266335e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
-  
+
         "nr2": [-2.01202825e-1, -3.32570120e-2, 2.42967225e-1, -4.20931100e-3,
                 -2.24528572e-1, -1.41307663e-2, -5.93401702e-2, -2.27862942e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
@@ -406,9 +423,9 @@ class iC4(MEoS):
               "collision": [0.53583008, -0.45629630, 0.049911282],
               "__name__": "Vogel (2000)",
               "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
-                          "title": "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region", 
+                          "title": "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region",
                           "ref": "Int. J. Thermophys, 21(2):343-356, 2000.",
-                          "doi": "10.1023/A:1006623310780"}, 
+                          "doi": "10.1023/A:1006623310780"},
 
               "ek": 307.55, "sigma": 0.46445,
               "Tref": 1., "rhoref": 1.*M,
@@ -446,9 +463,9 @@ class iC4(MEoS):
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"}, 
+                          "doi": "10.1063/1.555785"},
 
               "ek": 418.0, "sigma": 0.509217,
               "n_chapman": 0.203525266/M**0.5,
@@ -463,9 +480,9 @@ class iC4(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2002)",
                "__doi__": {"autor": "Perkins, R.A.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Isobutane from 114 K to 600 K at Pressures to 70 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Isobutane from 114 K to 600 K at Pressures to 70 MPa",
                            "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1272–1279",
-                           "doi": "10.1021/je010121u"}, 
+                           "doi": "10.1021/je010121u"},
 
                "Tref": 407.85, "kref": 1,
                "no": [-2.37901e-3, 1.06601e-2, 2.15811e-2],
@@ -486,9 +503,9 @@ class iC4(MEoS):
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"}, 
+                           "doi": "10.1063/1.555785"},
 
                "visco": visco1,
                "n_chapman": 2.0352526600e-1,

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,16 +54,16 @@ class R115(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-115 of McLinden and Lemmon (2013)",
         "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1", 
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1",
                     "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 11.3, 
-        "Pmin": 2.2, "rhomin": 11.3, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 11.3,
+        "Pmin": 2.2, "rhomin": 11.3,
 
         "nr1": [1.20873, -3.54460, 0.745302, 0.114128, 0.000436572],
         "d1": [1, 1, 1, 3, 7],
@@ -63,16 +80,16 @@ class R115(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-115 of Platzer et al. (1990).",
         "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants", 
+                    "title": "Thermophysical properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.31451,
         "cp": CP2,
-        "ref": "NBP", 
-        
-        "Tmin": 200.0 , "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7, 
-        "Pmin": 6.213, "rhomin": 10.743, 
+        "ref": "NBP",
+
+        "Tmin": 200.0 , "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7,
+        "Pmin": 6.213, "rhomin": 10.743,
 
         "nr1": [-0.377294477051, -0.695891789165e-1, 0.206972205161,
                 0.266609543946, -0.117158857583e1, 0.817521154071,

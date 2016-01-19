@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -29,11 +46,11 @@ class nC8(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [0.3961814e6, 0.2245626e8, 0.1380875e9, 0],
            "hyp": [0.1589220e3, 0.8150640e3, 0.1693070e4, 0]}
-           
+
     Fi1 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [15.864687161, -97.370667555],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
            "hyp": [0.27914354, 1.431644769, 2.973845992, 0]}
 
@@ -53,9 +70,9 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for octane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=nC8(T=700, rho=200)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -67,10 +84,10 @@ class nC8(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
-        "Pmin": 0.001989, "rhomin": 6.6864, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69,
+        "Pmin": 0.001989, "rhomin": 6.6864,
 
         "nr1": [0.10722545e1, -0.24632951e1, 0.65386674, -0.36324974,
                 0.1271327, 0.30713573e-3],
@@ -88,15 +105,15 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69, 
-#        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69,
+#        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10722544875633e1, -0.24632951172003e1, 0.65386674054928,
                 -0.36324974085628, 0.12713269626764, 0.30713572777930e-3],
@@ -114,15 +131,15 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP3,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 258.0, "Tmax": 500.0, "Pmax": 200000.0, "rhomax": 6.6355607, 
-        "Pmin": 0.15134, "rhomin": 6.3907, 
+        "Tmin": 258.0, "Tmax": 500.0, "Pmax": 200000.0, "rhomax": 6.6355607,
+        "Pmin": 0.15134, "rhomin": 6.3907,
 
         "nr1": [0.266117347782e1, -0.343810366899e1, 0.700476763325,
                 0.573101545749e1, -0.411975339382e1, -0.771251551395e1,
@@ -144,15 +161,15 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3159524,
         "cp": CP4,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 255.372, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 6.36203, 
-        "Pmin": 0.099571, "rhomin": 6.3620, 
+        "Tmin": 255.372, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 6.36203,
+        "Pmin": 0.099571, "rhomin": 6.3620,
 
         "nr1": [0.253526486527e1, 0.616872653050, -0.941731168114,
                 -0.109609729872e1, 0.849362892312e-1, -0.363538456997e-3,
@@ -171,15 +188,15 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.57750154, 1.15745614, -3.54867092, 1.18030671e-1,
                 3.02753897e-4, -2.63074957e-1],
@@ -219,9 +236,9 @@ class nC8(MEoS):
               "collision": [0.335103, -0.467898],
               "__name__": "Huber (2004)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
-                          "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                          "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
                           "ref": "Fluid Phase Equilibria 224(2004)263-270.",
-                          "doi": "10.1016/j.fluid.2004.07.012"}, 
+                          "doi": "10.1016/j.fluid.2004.07.012"},
               "__test__": """
                   >>> st=nC8(T=300, rhom=6.1772)
                   >>> print "%0.2f" % st.mu.muPas
@@ -261,10 +278,10 @@ class nC8(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
-                          
+                          "doi": "10.1021/jp0618577"},
+
               "Tref": 569.32, "etaref": 1.0,
               "ek": 452.09, "sigma": 0.636170, "n_chapman": 0,
               "n_ideal": [16.7562, -53.1705, 46.9105],
@@ -283,9 +300,9 @@ class nC8(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
                "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
                            "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                           "doi": "10.1016/j.fluid.2004.10.031"}, 
+                           "doi": "10.1016/j.fluid.2004.10.031"},
                "__test__": """
                    >>> st=nC8(T=300, rhom=6.1772)
                    >>> print "%0.2f" % st.k

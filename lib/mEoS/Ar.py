@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,21 +49,21 @@ class Ar(MEoS):
     CP1 = {"ao": 2.5,
            "an": [], "pow": [], "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
-           
+
     Fi2 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [8.3166315, -4.9465026],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "FEQ Helmholtz equation of state for argon of Tegeler et al. (1999).",
         "__doi__": {"autor": "Tegeler, Ch., Span, R., Wagner, W.",
-                    "title": "A New Equation of State for Argon Covering the Fluid Region for Temperatures From the Melting Line to 700 K at Pressures up to 1000 MPa", 
+                    "title": "A New Equation of State for Argon Covering the Fluid Region for Temperatures From the Melting Line to 700 K at Pressures up to 1000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 28, 779 (1999)",
-                    "doi": "10.1063/1.556037"}, 
-        "__test__": 
+                    "doi": "10.1063/1.556037"},
+        "__test__":
             #Table 33, Pag 828
             """
             >>> st=Ar(T=83.8058, x=0.5)
@@ -111,7 +128,7 @@ class Ar(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             148 4.3797 775.03 309.6 -182.49 -133.29 -1.7749 -1.4424 0.55094 0.6568 6.2097 8.383 236.08 169.81
-            
+
             >>> st=Ar(T=150, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -177,14 +194,14 @@ class Ar(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             150 964.88 -203.07 -192.7 -1.8855 0.43203 1.5594 445.1
-            """, 
-            
+            """,
+
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 2000., "Pmax": 1000000.0, "rhomax": 50.65, 
-        "Pmin": 68.891, "rhomin": 35.465, 
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 1000000.0, "rhomax": 50.65,
+        "Pmin": 68.891, "rhomin": 35.465,
 
         "nr1": [0.887223049900e-1, 0.705148051673, -0.168201156541e1,
                  -0.149090144315, -0.120248046009, -0.121649787986,
@@ -224,15 +241,15 @@ class Ar(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 50.65, 
-        "Pmin": 68.891, "rhomin": 35.465, 
+        "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 50.65,
+        "Pmin": 68.891, "rhomin": 35.465,
 
         "nr1": [0.85095714803969, -0.24003222943480e1, 0.54127841476466,
                 0.16919770692538e-1, 0.68825965019035e-1, 0.21428032815338e-3],
@@ -253,10 +270,10 @@ class Ar(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Stewart and Jacobsen (1989).",
         "__doi__": {"autor": "Stewart, R.B. and Jacobsen, R.T.",
-                    "title": "Thermodynamic Properties of Argon from the Triple Point to 1200 K at Pressures to 1000 MPa", 
+                    "title": "Thermodynamic Properties of Argon from the Triple Point to 1200 K at Pressures to 1000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data, 18(2):639-798, 1989",
-                    "doi": "10.1063/1.555829"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555829"},
+        "__test__":
             #Table 14, Pag 379
             """
             >>> st=Ar(T=83.804, x=0.5, eq=3)
@@ -374,15 +391,15 @@ class Ar(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             450 41.651 2711.6 26720 80.63 20.67 28.69 1815
-            """, 
+            """,
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732}, 
-        "Tc": 150.6633, "Pc": 4860, "rhoc": 13.29, "Tt": 83.804, 
-        
-        "Tmin": 83.804, "Tmax": 1200., "Pmax": 1000000.0, "rhomax": 45.814, 
-        "Pmin": 68.961, "rhomin": 35.475, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732},
+        "Tc": 150.6633, "Pc": 4860, "rhoc": 13.29, "Tt": 83.804,
+
+        "Tmin": 83.804, "Tmax": 1200., "Pmax": 1000000.0, "rhomax": 45.814,
+        "Pmin": 68.961, "rhomin": 35.475,
 
         "nr1": [0.7918675715, -0.1633346151e1, -0.439530293, 0.1033899999,
                 0.2061801664, -0.2888681776, 0.439801055, -0.8429550391e-1,
@@ -408,9 +425,9 @@ class Ar(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for argon of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=Ar(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -422,10 +439,10 @@ class Ar(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 750., "Pmax": 100000.0, "rhomax": 50.65, 
-        "Pmin": 69.026, "rhomin": 35.498, 
+        "Tmin": Tt, "Tmax": 750., "Pmax": 100000.0, "rhomax": 50.65,
+        "Pmin": 69.026, "rhomin": 35.498,
 
         "nr1": [0.85095715, -0.24003223e1, 0.54127841, 0.16919771e-1,
                 0.68825965e-1, 0.21428033e-3],
@@ -446,16 +463,16 @@ class Ar(MEoS):
         "__type__": "MBWR",
         "__name__": "BWR  MBWR equation of state for argon of Younglove (1982).",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732},
 
-        "Tmin": 83.80, "Tmax": 400., "Pmax": 101000.0, "rhomax": 50.65, 
-        "Pmin": 68.906, "rhomin": 35.4, 
+        "Tmin": 83.80, "Tmax": 400., "Pmax": 101000.0, "rhomax": 50.65,
+        "Pmin": 68.906, "rhomin": 35.4,
 
         "b": [None, -0.6569731294e-3, 0.1822957801, -0.3649470141e1,
               0.1232012107e3, -0.8613578274e4, 0.7978579691e-4, -0.2911489110e-1,
@@ -477,13 +494,13 @@ class Ar(MEoS):
         "a2": [1.597, 0.262, -117.9], "expt2": [0, 1, 0], "expd2": [2, 2, 3.1]}
     _melting = {
         "eq": 1, "Tref": Tt, "Pref": 68.891,
-        "Tmin": 83.8058, "Tmax": 700.0, 
+        "Tmin": 83.8058, "Tmax": 700.0,
         "a1": [1, -7476.26651, 9959.06125, 7476.26651, -9959.06125],
         "exp1": [0, 1.05, 1.275, 0, 0],
         "a2": [], "exp2": [], "a3": [], "exp3": []}
     _sublimation = {
         "eq": 3, "Tref": Tt, "Pref": 68.891,
-        "Tmin": 83.8058, "Tmax": 83.8058, 
+        "Tmin": 83.8058, "Tmax": 83.8058,
         "a1": [], "exp1": [],
         "a2": [-11.1307], "exp2": [1],
         "a3": [], "exp3": []}
@@ -504,9 +521,9 @@ class Ar(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=Ar(T=100, rhom=0)
                     >>> print "%0.5f" % st.mu.muPas
@@ -538,9 +555,9 @@ class Ar(MEoS):
     visco1 = {"eq": 3,
               "__name__": "Younglove (1986)",
               "__doi__": {"autor": "Younglove, B.A. and Hanley, H.J.M.",
-                           "title": "The Viscosity and Thermal Conductivity Coefficients of Gaseous and Liquid Argon", 
+                           "title": "The Viscosity and Thermal Conductivity Coefficients of Gaseous and Liquid Argon",
                            "ref": "J. Phys. Chem. Ref. Data 15, 1323 (1986)",
-                           "doi": "10.1063/1.555765"}, 
+                           "doi": "10.1063/1.555765"},
               "__test__": """
                    >>> st=Ar(T=86, P=1e5, visco=1)
                    >>> print "%0.1f" % st.mu.muPas
@@ -555,23 +572,23 @@ class Ar(MEoS):
               "n_num": [0.5927733783, -0.4251221169e2, -0.2698477165e-1,
                         0.3727762288e2, -0.3958508720e4, 0.3636730841e-2,
                         -0.2633471347e1, 0.2936563322e3, -0.3811869019e-4,
-                        0.4451947464e-1, -0.5385874487e1, 1, -0.1115054926e-1, 
+                        0.4451947464e-1, -0.5385874487e1, 1, -0.1115054926e-1,
                         -0.1328893444e1],
               "t_num": [0, -1, 0, -1, -2, 0, -1, -2, 0, -1, -2, 0, 0, -1],
               "d_num": [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 0, 1, 1],
               "n_den": [1.0, -0.1115054926e-1, -0.1328893444e1],
               "t_den": [0, 0, -1],
               "d_den": [0, 1, 1]}
-              
+
     visco2 = {"eq": 2, "omega": 2,
               "collision": [25.7830291943396, -234.320222858983, 814.636688705024,
                             -1452.04353466585, 1467.17535558104, -870.164951237067,
                             313.024934147423, -61.2072628957372, 5.07700488990665],
               "__name__": "Younglove (1982)",
               "__doi__": {"autor": "Younglove, B.A.",
-                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 152.8, "sigma": 0.3297,
               "n_chapman": 0.16871158559818,
@@ -587,9 +604,9 @@ class Ar(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=Ar(T=100, rhom=0)
                     >>> print "%0.5f" % st.k.mWmK
@@ -628,9 +645,9 @@ class Ar(MEoS):
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
                "__doi__": {"autor": "Younglove, B.A.",
-                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                            "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "ek": 152.8, "sigma": 0.3297,
                "Nchapman": 0.16871158559818,
@@ -648,9 +665,9 @@ class Ar(MEoS):
     thermo2 = {"eq": 1,
                "__name__": "Perkins (1991)",
                "__doi__": {"autor": "Perkins, R.A., Friend, D.G., Roder, H.M., and Nieto de Castro, C.A.",
-                           "title": "Thermal Conductivity Surface of Argon:  A Fresh Analysis", 
+                           "title": "Thermal Conductivity Surface of Argon:  A Fresh Analysis",
                            "ref": "Int. J. Thermophys., 12(6):965-984, 1991.",
-                           "doi": "10.1007/BF00503513"}, 
+                           "doi": "10.1007/BF00503513"},
 
                "Tref": 1.0, "kref": 1e-3,
                "no": [.1225067272e5, -.9096222831e4, .2744958263e4,

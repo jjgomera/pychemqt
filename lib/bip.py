@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 #SRK=[[2, 46, 0.031899999999999998], [2, 48, 0.029999999999999999], [2, 49, 0.097299999999999998], [2, 50, 0.085000000000000006], [2, 98, 0.0252], [3, 46, 0.038800000000000001], [3, 49, 0.1346], [3, 50, 0.082900000000000001], [4, 46, 0.080699999999999994], [4, 48, 0.02], [4, 49, 0.1018], [4, 50, 0.083099999999999993], [5, 46, 0.13569999999999999], [5, 49, 0.1358], [5, 50, 0.052299999999999999], [6, 11, -0.00040000000000000002], [6, 46, 0.1007], [6, 49, 0.1474], [6, 50, 0.060900000000000003], [7, 49, 0.12620000000000001], [8, 49, 0.1278], [8, 50, 0.069699999999999998], [10, 46, 0.1444], [11, 49, 0.11360000000000001], [11, 50, 0.073700000000000002], [12, 48, 0.10000000000000001], [13, 50, 0.054199999999999998], [14, 46, 0.1293], [14, 49, 0.13769999999999999], [14, 50, 0.046399999999999997], [38, 49, 0.1087], [40, 46, 0.21310000000000001], [40, 48, -0.01], [40, 49, 0.081000000000000003], [46, 48, 0.045999999999999999], [46, 49, -0.021999999999999999], [46, 50, 0.14000000000000001], [47, 98, 0.0178], [48, 49, -0.064000000000000001], [48, 50, 0.036700000000000003], [49, 50, 0.10199999999999999], [63, 98, -0.22]]
 

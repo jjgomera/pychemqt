@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,16 +49,16 @@ class C1Palmitate(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel", 
+                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
                     "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
-                    "doi": "10.1021/ef900159g"}, 
-            
+                    "doi": "10.1021/ef900159g"},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 302.71, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.36, 
-        "Pmin": 0.0000000008, "rhomin": 3.36, 
+        "Tmin": 302.71, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.36,
+        "Pmin": 0.0000000008, "rhomin": 3.36,
 
         "nr1": [0.4282821e-1, 0.2443162e1, -0.3757540e1, -0.1588526, 0.4055990e-1],
         "d1": [4, 1, 1, 2, 3],
@@ -80,9 +97,9 @@ class C1Palmitate(MEoS):
     thermo0 = {"eq": 1,
              "__name__": "Perkins (2010)",
                "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate", 
+                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate",
                            "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
-                           "doi": "10.1021/ef200417x"}, 
+                           "doi": "10.1021/ef200417x"},
 
              "Tref": 755.0, "kref": 1,
              "no": [-0.27125e-3, 0.259365e-2, 0.350241e-1, -0.902273e-2],

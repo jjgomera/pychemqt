@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Basic periodic table with properties dialog
@@ -277,7 +295,7 @@ class boton(QtWidgets.QPushButton):
             "pychemqt", "Click for view properties"))
         self.parent = parent
         self.Element = element
-        
+
         if COLORS and not PMAX:
             prop = element.__getattribute__(PROP)
             color = COLORS[CATEGORIES.index(prop)]
@@ -296,7 +314,7 @@ class boton(QtWidgets.QPushButton):
                             index += 1
             else:
                 color = "#DDDDDD"
-                
+
         else:
             color = self.Element.color
         self.setPalette(QtGui.QPalette(QtGui.QColor(color)))
@@ -575,7 +593,7 @@ class ElementDialog(QtWidgets.QDialog):
         self.angulos = QtWidgets.QLabel()
         if elemento.lattice_angles:
             self.angulos.setText("%sº, %sº, %sº" % (
-                elemento.lattice_angles[0], elemento.lattice_angles[1], 
+                elemento.lattice_angles[0], elemento.lattice_angles[1],
                 elemento.lattice_angles[2]))
         else:
             self.angulos.setText(elemento.lattice_angles)
@@ -590,15 +608,15 @@ class ElementDialog(QtWidgets.QDialog):
             self.volumen_celda.setText(elemento.lattice_volume)
         lyt_C.addWidget(self.volumen_celda, 5, 2)
         lyt_C.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, 
+            20, 20, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 6, 1, 1, 3)
 
         label = QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Isotopes"))
         label.setFont(font)
         lyt_C.addWidget(label, 8, 1)
-        title = [QtWidgets.QApplication.translate("pychemqt", "Mass Number"), 
-                 QtWidgets.QApplication.translate("pychemqt", "Mass"), 
+        title = [QtWidgets.QApplication.translate("pychemqt", "Mass Number"),
+                 QtWidgets.QApplication.translate("pychemqt", "Mass"),
                  QtWidgets.QApplication.translate("pychemqt", "Abundance")]
         self.isotopes = Tabla(3, horizontalHeader=title, readOnly=True,
                               stretch=True, verticalHeader=False)
@@ -608,7 +626,7 @@ class ElementDialog(QtWidgets.QDialog):
         self.isotopes.setColumn(2, [iso[2] for iso in elemento.isotopes], format=1, decimales=10)
         lyt_C.addWidget(self.isotopes, 9, 1, 1, 2)
         lyt_C.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, 
+            20, 20, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
 
         tabWidget.addTab(tabCristal,

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,9 +48,9 @@ class COS(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbonyl sulfide of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=COS(T=380, rho=7*60.0751)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
@@ -42,10 +59,10 @@ class COS(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 22.52, 
-        "Pmin": 0.064, "rhomin": 22.5, 
+        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 22.52,
+        "Pmin": 0.064, "rhomin": 22.5,
 
         "nr1": [0.94374, -2.5348, 0.59058, -0.021488, 0.082083, 0.00024689],
         "d1": [1, 1, 1, 2, 3, 7],

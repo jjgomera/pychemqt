@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Module for psychrometry calculation
@@ -335,7 +353,7 @@ class PsyState(object):
         QApplication.translate("pychemqt", "T dry bulb, Relative humidity"),
         QApplication.translate("pychemqt", "T dry bulb, T wet bulb"),
         QApplication.translate("pychemqt", "T dry bulb, T dew point"),
-        QApplication.translate("pychemqt", "T dew point, Relative humidity"), 
+        QApplication.translate("pychemqt", "T dew point, Relative humidity"),
         QApplication.translate("pychemqt", "T wet bulb, Relative humidity")
         ]
     VAR_NAME = [
@@ -343,7 +361,7 @@ class PsyState(object):
         ("tdb", "HR"),
         ("tdb", "twb"),
         ("tdb", "tdp"),
-        ("tdp", "HR"), 
+        ("tdp", "HR"),
         ("twb", "HR")
         ]
 
@@ -736,7 +754,7 @@ class PsyCoolprop(PsyState):
             self.kwargs["RH"] = self.kwargs["HR"]
         if "W" in self._mode:
             self.kwargs["W"] = self.kwargs["w"]
-            
+
         var1 = self.kwargs[self._mode[0]]
         var2 = self.kwargs[self._mode[1]]
 

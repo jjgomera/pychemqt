@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 from configparser import ConfigParser
 import time
@@ -42,7 +60,7 @@ def prop_Ahmed(propiedad, n_carbonos):
     elif propiedad==6:
         x=unidades.SpecificVolume(x, "ft3lb")
     return x
-    
+
 def prop_Riazi_Daubert(propiedad, Tb, g):
     """
     Riazi, M. R., and T. E. Daubert. “Simplify Property Predictions.” Hydrocarbon Processing (March 1980): 115–116.
@@ -65,7 +83,7 @@ def prop_Riazi_Daubert(propiedad, Tb, g):
     elif propiedad==3:
         x=unidades.SpecificVolume(x, "ft3lb")
     return x
-    
+
 def prop_Riazi_Daubert_Tb_SG(propiedad, Tb, g):
     """
     Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
@@ -93,7 +111,7 @@ def prop_Riazi_Daubert_Tb_SG(propiedad, Tb, g):
     elif propiedad==3:
         x=unidades.SpecificVolume(x, "cm3g")
     return x
-    
+
 def prop_Riazi_Daubert_Tb_I(propiedad, Tb, i):
     """
     Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
@@ -177,7 +195,7 @@ def prop_Riazi_Daubert_M_SG(propiedad, M, g):
     elif propiedad==3:
         x=unidades.SpecificVolume(x, "cm3g")
     return x
-    
+
 def prop_Riazi_Daubert_M_I(propiedad, M, I):
     """
     Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
@@ -262,7 +280,7 @@ def prop_Riazi_Daubert_v100_I(propiedad, v100, i):
     elif propiedad==3:
         x=unidades.SpecificVolume(x, "cm3g")
     return x
-    
+
 def prop_Riazi_Adwani(propiedad, conocida, tita, SG):
     """Riazi, M. R. and Adwani, H. A., "Some Guidelines for Choosing a Characterization Method for Petroleum Fractions in Process Simulators," Chemical Engineering Research and Design, IchemE, Vol. 83, 2005.
     propiedad: propiedad física a calcular
@@ -300,7 +318,7 @@ def prop_Riazi_Adwani(propiedad, conocida, tita, SG):
     elif propiedad==5:
         x=unidades.Density(x, "gcm3")
     return x
-        
+
 def prop_Riazi_Alsahhaf(propiedad, M, reverse=False):
     """Riazi, M. R. and A1-Sahhaf, T. A., "Physical Properties of Heavy Petroleum Fractions and Crude Oils," Fluid Phase Equilibria, Vol. 117, 1996, pp. 217-224.
     propiedad a calcular
@@ -320,7 +338,7 @@ def prop_Riazi_Alsahhaf(propiedad, M, reverse=False):
     a=[6.97996, 3.56073, 3.80258, 2.30884, -0.34742, 6.34492, -3.2201, -6.252, 17.45018, 2.29195][propiedad]
     b=[0.01964, 2.93886, 3.12287, 2.96508, 0.02327, 0.7239, 0.0009, -3.64457, 9.70188, 0.54907][propiedad]
     c=[2./3, 0.1, 0.1, 0.1, 0.55, 0.3, 1.0, 0.1, 0.1, 0.3][propiedad]
-    
+
     if reverse:
         return ((a-log(tita-M))/b)**(1./c)
     else:
@@ -336,9 +354,9 @@ def prop_Riazi_Alsahhaf(propiedad, M, reverse=False):
         elif propiedad==9:
             x=unidades.SolubilityParameter(x, "calcc")
         return x
-    
 
-def Heptane_Rowe(peso_molecular):    
+
+def Heptane_Rowe(peso_molecular):
     """Rowe, A. M. “Internally Consistent Correlations for Predicting Phase Compositions for Use in Reservoir Compositional Simulators.” Paper SPE 7475 presented at the 53rd Annual Society of Petroleum Engineers Fall Technical Conference and Exhibition, 1978"""
     n=(peso_molecular-2)/14
     a=2.95597-0.090597*n**(2./3)
@@ -347,7 +365,7 @@ def Heptane_Rowe(peso_molecular):
     pc=10**(4.89165+y)/Tc
     Tb=0.0004347*Tc**2+265
     return unidades.Temperature(Tc, "R"), unidades.Pressure(pc, "psi"), unidades.Temperature(Tb, "R")
-    
+
 def Heptane_Standing(M, g):
     """Standing, M. B. Volumetric and Phase Behavior of Oil Field Hydrocarbon Systems. Dallas: Society of Petroleum Engineers, 1977.
     M: peso molecular
@@ -355,15 +373,15 @@ def Heptane_Standing(M, g):
     tc=608+364*log(M-71.2)+(2450*log(M)-3800)*log(g)
     pc=1188-431*log(M-61.1)+(2319-852*log(M-53.7)*(g-0.8))
     return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi")
-    
+
 def Alkanes_Willman_Teja(n, Tb):
     """Willman, B., and A. Teja. “Prediction of Dew Points of Semicontinuous Natural Gas and Petroleum Mixtures.” Industrial Engineering and Chemical Research 226, no. 5 (1987): 948–952.
     n: numero de carbonos
     Tb: Temperatura de ebullicion media en R"""
     tc=Tb*(1+(1.25127+0.137242*n)**-0.884540633)
     pc=(339.0416805+1184.157759*n)/(0.873159+0.54285*n)**1.9265669
-    return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi")    
-    
+    return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi")
+
 def Paraffin_Twu(Tb):
     """Twu, C. “An Internally Consistent Correlation for Predicting the Critical Properties and Molecular Weight of Petroleum and Coal-Tar Liquids.” Fluid Phase Equilibria, no. 16 (1984): 137.
     Tb: temperatura de ebullición normal"""
@@ -373,7 +391,7 @@ def Paraffin_Twu(Tb):
     vc=(1+0.419869+0.505839*alfa+1.56436*alfa**3+9481.7*alfa**14)**-8
     g=0.843593-0.128624*alfa-3.36159*alfa**3-13749.5*alfa**12
     return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi"), unidades.SpecificVolume(vc, "ft3lb"), g
-    
+
 
 
 
@@ -382,7 +400,7 @@ def Desglose_aromaticos(Ri, m):
     xma=-62.8245+59.90816*Ri-0.0248335*m
     xpa=11.88175-11.2213*Ri+0.023745*m
     return xma, xpa
-    
+
 def Hydrates_Sloan(prop, T=None, P=None, y=[]):
     """Sloan, E. “Phase Equilibria of Natural Gas Hydrates.” Paper presented at the Gas Producers Association Annual Conference, New Orleans, March 19–21, 1984.
     prop: propiedad a calcular, T, P
@@ -410,7 +428,7 @@ def Hydrates_Sloan(prop, T=None, P=None, y=[]):
     A15=[-2.3e-7, 0.0, 5.5e-6, 0.0, 0.0, 0.0, 8.82e-5, -1.3e-6]
     A16=[-2.0e-8, 0.0, 0.0, -5.4e-7, 4.98e-6, 1.0e-8, 2.55e-6, 0.0]
     A17=[0.0, 0.0, 0.0, -1.0e-8, -1.26e-6, 1.1e-7, 0.0, 0.0]
-    
+
     def ft(T):
         suma=1
         k=[]
@@ -418,7 +436,7 @@ def Hydrates_Sloan(prop, T=None, P=None, y=[]):
             k.append(exp(A0[i]+A1[i]*T+A2[i]*P.psi+A3[i]/T+A4[i]/P.psi+A5[i]*P.psi*T+A6[i]*T**2+A7[i]*P.psi**2+A8[i]*P.psi/T+A9[i]*log(P.psi/T)+A10[i]/P.psi**2+A11[i]*T/P.psi+A12[i]*T**2/P.psi+A13[i]*P.psi/T**2+A14[i]*T/P.psi**3+A15[i]*T**3+A16[i]*P.psi**3/T**2+A17[i]*T**4))
             suma-=y[i]/k[i]
         return suma
-            
+
     def fp(P):
         suma=1
         k=[]
@@ -426,7 +444,7 @@ def Hydrates_Sloan(prop, T=None, P=None, y=[]):
             k.append(exp(A0[i]+A1[i]*T.F+A2[i]*P+A3[i]/T.F+A4[i]/P+A5[i]*P*T.F+A6[i]*T.F**2+A7[i]*P**2+A8[i]*P/T.F+A9[i]*log(P/T.F)+A10[i]/P**2+A11[i]*T.F/P+A12[i]*T.F**2/P+A13[i]*P/T.F**2+A14[i]*T.F/P**3+A15[i]*T.F**3+A16[i]*P**3/T.F**2+A17[i]*T.F**4))
             suma-=y[i]/k[i]
         return suma
-   
+
     if prop=="T":
         t=fsolve(ft, T.F)
         hidrate=t>T
@@ -435,9 +453,9 @@ def Hydrates_Sloan(prop, T=None, P=None, y=[]):
         p=fsolve(fp, P.psi)
         hidrate=p>P
         lim=unidades.Pressure(p, "psi")
-        
+
     return lim, hidrate
-    
+
 def hidrates():
     """Método de cálculo de las condiciones de formación de hidratos en sistemas gaseosos con presencia de agua, API procedure 9B2.1, pag 947. En chemcad aparece como /Tools/Hidrates"""
     pass
@@ -451,7 +469,7 @@ def SUS(T, v):
     Seq=4.6324*v+(1.+0.03264*v)/(3930.2+262.7*v+23.97*v**2+1.646*v**3)*1e5
     St=(1.+0.000061*(t.F-100))*Seq
     return unidades.Time(St)
-    
+
 def SUF(T, v):
     """Cálculo de la viscosidad saybolt furol a partir de la viscosidad cinemática a 122ºF, API procedure 11A1.4, pag 1031
     T: temperatura a la que correspone el valor de viscosidad, puede ser 122 o 210
@@ -461,7 +479,7 @@ def SUF(T, v):
     else:
         S=0.4792*v+5612/(v**2+2130)
     return unidades.Time(S)
-    
+
 def Viscosidad_to_kinematic(tipo, mu, T=100):
     """Conversión de cualquier otro valor de visocidad a viscosidad cinemática, API procedure 11A1.6, pag 1035
     tipo: indice que indica el tipo de de viscosidad desde la que se convierte
@@ -487,7 +505,7 @@ def Viscosidad_to_kinematic(tipo, mu, T=100):
     elif tipo==6:
         parametros=[0.22, 7.336, 12.816]
         mu=mu/(1.0+0.000061*(T-100))
-        
+
     return parametros[0]*mu-parametros[1]*mu/(mu**3+parametros[2])
 
 def Viscosidad_from_kinematic(tipo, mu):
@@ -504,14 +522,14 @@ def Viscosidad_from_kinematic(tipo, mu):
         parametros=[0.40984, 0.38014, 0.01919, 0.000278, 0.0000521]
     elif tipo==3:
         parametros=[0.13158, 1.1326, 0.0104, 0.00656, 0.0]
-        
+
     return parametros[0]*mu+1/(parametros[1]+parametros[2]*mu+parametros[3]*mu**2+parametros[4]*mu**3)
 
-        
+
 def Z_Papay(Tr, Pr):
     """Papay, J. “A Termelestechnologiai Parameterek Valtozasa a Gazlelepk Muvelese Soran.” OGIL  MUSZ, Tud, Kuzl. [Budapest] (1985): 267–273."""
-    return 1-3.53*Pr/10**(0.9813*Tr)+0.274*Pr**2/10**(0.8157*Tr)    
-    
+    return 1-3.53*Pr/10**(0.9813*Tr)+0.274*Pr**2/10**(0.8157*Tr)
+
 def Z_Hall_Yarborough(Tr, Pr):
     """Hall, K. R., and L. Yarborough. “A New Equation of State for Z-factor Calculations.” Oil and Gas Journal (June 18, 1973): 82–92."""
     X1=-0.06125*Pr/Tr*exp(-1.2*(1-1/Tr)**2)
@@ -575,12 +593,12 @@ def Z_ShellOil(Tr, Pr):
     Zf=0.122*exp(-11.3*(Tr-1))
     Zg=Pr*(Zc+Zd*Pr+Ze*Pr**4)
     return Za+Zb*Pr+(1-Za)*exp(-Zg)-Zf*(Pr/10)**4
-    
+
 def Z_Sarem(Tr, Pr):
     """Sarem, A.M.: "Z-Factor Equation Developed for Use in Digital Computers", Oil and Gas J. (Sept. 18, 1961) 118."""
     x=(2.*Pr-15)/14.8
     y=(2.*Tr-4)/1.9
-    Aij=[[2.1433504, 0.0831762, -0.0214670, -0.0008714, 0.0042846, -0.0016595], 
+    Aij=[[2.1433504, 0.0831762, -0.0214670, -0.0008714, 0.0042846, -0.0016595],
             [0.3312352, -0.1340361, 0.0668810,  -0.0271743,  0.0088512,  -0.002152],
             [0.1057287,  -0.0503937,  0.0050925,  0.0105513,  -0.0073182,  0.0026960],
             [0.0521840,  0.0443121,  -0.0193294,  0.0058973,  0.0015367,  -0.0028327],
@@ -622,7 +640,7 @@ def Z_Gopal(Tr, Pr):
             return Pr*(-0.0284 *Tr + 0.0625 )+ 0.4714 *Tr - 0.0011
         elif 2.0<=Tr<3.0:
             return Pr*( 0.0041 *Tr + 0.0039)+ 0.0607 *Tr + 0.7927
-    else: 
+    else:
         return Pr*( 0.711+ 3.66 *Tr)**-1.4667-1.637/(0.319*Tr+0.522)+2.071
 
 Z_list=Z_Hall_Yarborough, Z_Dranchuk_Abu_Kassem, Z_Dranchuk_Purvis_Robinson, Z_ShellOil, Z_Beggs_Brill, Z_Sarem, Z_Gopal, Z_Papay
@@ -642,7 +660,7 @@ def Tb_Presion(T, P, Kw=None, reverse=False):
         Q=(5.994296-0.972546*log10(p.mmHg))/(2663.129-95.76*log10(p.mmHg))
     else:
         Q=(6.412631-0.989679*log10(p.mmHg))/(2770.085-36.*log10(p.mmHg))
-        
+
     if reverse:
         if T<367 or not Kw:
             F=0
@@ -661,22 +679,22 @@ def Tb_Presion(T, P, Kw=None, reverse=False):
         else:
             F=1
         Tb=Tb_+1.3889*F*log10(p.atm)
-    
+
     return unidades.Temperature(Tb)
-    
-    
+
+
 def curve_Predicted(T_dist, curva):
     """Método que predice la curva de destilación ajustando los datos existentes a un modelo matemático"""
-    funcion = lambda p, T, x: (T-p[0])/p[0]-(p[1]/p[2]*log(1/(1-x)))**(1./p[2]) 
+    funcion = lambda p, T, x: (T-p[0])/p[0]-(p[1]/p[2]*log(1/(1-x)))**(1./p[2])
     inicio=array([curva[0], 1e-2, 1.])
     ajuste, exito=leastsq(funcion,inicio,args=(array(curva), array(T_dist)/100.))
     return ajuste
-    
+
 def T_Predicted(par, x):
     return par[0]+par[0]*(par[1]/par[2]*log(1/(1-x/100.)))**(1./par[2])
-    
-    
-    
+
+
+
 def D86_TBP_Riazi(curva, reverse=False):
     """Conversión de la curva de destilación ASTM D86 a TBP atmosférica,
     Riazi, M. R. and Daubert, T. E., "Analytical Correlations Interconvert Distillation Curve Types," Oil & Gas Journal,
@@ -691,7 +709,7 @@ def D86_TBP_Riazi(curva, reverse=False):
         for i, D86 in enumerate(curva):
             TBP.append(unidades.Temperature(a[i]*D86**b[i]))
     return TBP
-    
+
 def D86_TBP_Daubert(curva, reverse=False):
     """Conversión de la curva de destilación ASTM D86 a TBP atmosférica, API procedure 3A1.1 pag 263
     reverse: para indicar que la conversión es la inversa de TBP a D86"""
@@ -706,7 +724,7 @@ def D86_TBP_Daubert(curva, reverse=False):
     tbp=[TBP50-i[0]-i[1]-i[2]-i[3]-i[4]-i[5], TBP50-i[0]-i[1]-i[2]-i[3]-i[4], TBP50-i[0]-i[1]-i[2]-i[3], TBP50-i[0]-i[1]-i[2], TBP50-i[0]-i[1], TBP50-i[0], TBP50, TBP50+i[6], TBP50+i[6]+i[7], TBP50+i[6]+i[7]+i[8], TBP50+i[6]+i[7]+i[8]+i[9], TBP50+i[6]+i[7]+i[8]+i[9]+i[10], TBP50+i[6]+i[7]+i[8]+i[9]+i[10]+i[11]]
     return [unidades.Temperature(T, "F") for T in tbp]
 
-    
+
 def SD_D86_Riazi(curva):
     """Conversión de la curva de destilación SD a ASTM D86, no es reversible
     Riazi, M. R. and Daubert, T. E., "Analytical Correlations Interconvert Distillation Curve Types," Oil & Gas Journal,"""
@@ -718,7 +736,7 @@ def SD_D86_Riazi(curva):
     for i, SD in curva:
         D86.append(unidades.Temperature(a[i]*SD**b[i]*F**c[i]))
     return D86
-    
+
 def SD_D86_Daubert(curva):
     """Conversión de la curva de destilación SD a D86, API procedure 3A3.2, pag 271"""
     e=[0.30470, 0.30470, 0.06069, 0.06069, 0.07978, 0.07978, 0.14862, 0.14862, 0.30785, 0.30785, 2.6029, 2.6029]
@@ -756,7 +774,7 @@ def SD_TBP(curva):
     return [unidades.Temperature(T) for T in tbp]
 
 
-    
+
 def D1160_TBP_10mmHg(curva, reverse=False):
     """Conversión de la curva de destilación D1160 a TBP ambas a 10 mmHg
     Edmister, W. C. and Okamoto, K. K., "Applied Hydrocarbon Thermodynamics, Part 13: Equilibrium Flash Vaporization Correlations for Heavy Oils Under Subatmospheric Pressures," Petroleum Refiner, Vol. 38, No. 9, 1959, pp. 271-288.
@@ -810,7 +828,7 @@ def D1160_TBP_10mmHg(curva, reverse=False):
     29 Indice
 """
 
-crudo=[[], 
+crudo=[[],
     ["ABU AL BU KHOOSH","ABU DHABI, U.A.E.",1978,31.6,2,None,None,-24.5,10.8,6.7,12,7,4.3,None,None,3.5,None,None,None,None,None,None,0,0.02,0.24,0.12,0.66,0.85,0.89,1],
     ["MURBAN","ABU DHABI, U.A.E.",1983,40.45,0.78,25,0.047,-11,4.8,2.7,1,0.7,1.35,0.08,None,3.46,None,None,0.16,0.05,None,None,0,0,0.3,0.3,1.3,1.1,1.7,2],
     ["UMM SHAIF (ABU DHABI)","ABU DHABI, U.A.E.",1983,37.4,1.51,None,0.0609,-22,4.7,3.6,3,0.8,2.2,0.13,None,7.05,None,None,0.02,None,0.004,1.5,0,0.1,0.5,0.6,1.5,1.1,1.9,3],
@@ -1062,7 +1080,7 @@ crudo=[[],
 
 class Petroleo(newComponente):
     """Clase que define una fracción de petroleo de composición indeterminada
-    
+
     Parámetros:
         nombre: nombre del componente, generalmente una fracción de petróleo
         M: peso_molecular
@@ -1094,7 +1112,7 @@ class Petroleo(newComponente):
             oleffin: porcentaje de contenido de olefinas
             TML: concentración de tetrametilplomo añadido en ml/galón UK
             TEL: concentración de tetraetilplomo añadido en ml/galón UK
-            
+
     Opciones de definición por prioridad:
         1   -   Tb y SG
         2   -   M y SG
@@ -1110,41 +1128,41 @@ class Petroleo(newComponente):
     Kw es una forma alternativa de indicar SG o Tb
     n es una forma equivalente alternativa a I
     """
-    
-    kwargs={"name": "", 
+
+    kwargs={"name": "",
                     "M": 0.0,
-                    "Tb": 0.0, 
-                    "SG": 0.0, 
-                    "API": 0.0, 
-                    "CH": 0.0, 
-                    "n": 0.0, 
-                    "I": 0.0, 
-                    "Nc": 0, 
-                    "Kw": 0.0, 
-                    "v100": 0.0, 
-                    "v210": 0.0, 
-                    "H": 0.0, 
-                    "S": 0.0, 
-                    "N": 0.0, 
-                    
-                    "P_dist": 0.0, 
-                    "T_dist": 0.0, 
-                    "D86": [], 
-                    "TBP": [], 
-                    "EFV": [], 
-                    "SD": [], 
-                    "D1160": [], 
-                    
-                    "oleffin": 0.0, 
-                    "TEL": 0.0, 
-                    "TML": 0.0, 
+                    "Tb": 0.0,
+                    "SG": 0.0,
+                    "API": 0.0,
+                    "CH": 0.0,
+                    "n": 0.0,
+                    "I": 0.0,
+                    "Nc": 0,
+                    "Kw": 0.0,
+                    "v100": 0.0,
+                    "v210": 0.0,
+                    "H": 0.0,
+                    "S": 0.0,
+                    "N": 0.0,
+
+                    "P_dist": 0.0,
+                    "T_dist": 0.0,
+                    "D86": [],
+                    "TBP": [],
+                    "EFV": [],
+                    "SD": [],
+                    "D1160": [],
+
+                    "oleffin": 0.0,
+                    "TEL": 0.0,
+                    "TML": 0.0,
                     }
-                    
+
     status=0
     _bool=False
-    msg="" 
+    msg=""
     definicion=0
-    
+
     def __init__(self, **kwargs):
         self.Preferences=ConfigParser()
         self.Preferences.read(conf_dir+"pychemqtrc")
@@ -1195,14 +1213,14 @@ class Petroleo(newComponente):
         else:
             self.status=0
             self.msg=QApplication.translate("pychemqt", "Insufficient input")
-            
+
         if self.definicion:
             self.status=1
             self.msg=""
             return True
 
 
-    def calculo(self):  
+    def calculo(self):
         self.formula=""
         if self.kwargs["name"]:
             self.name=str(self.kwargs["name"])
@@ -1225,7 +1243,7 @@ class Petroleo(newComponente):
                     curva_normalizada.append(unidades.Temperature(curva[T_dist.index(i)]))
                 else:
                     curva_normalizada.append(unidades.Temperature(T_Predicted(parameters_Curva, i)))
-                    
+
             # Si SG no está disponible se puede calcular a partir de la curva de destilación Pag 117 Riazi
             if not self.hasSG:
                 if self.kwargs["D86"]:
@@ -1234,7 +1252,7 @@ class Petroleo(newComponente):
                     self.SG=0.10431*curva_normalizada[2]**0.12550*curva_normalizada[6]**0.20862
                 else:
                     self.SG=0.09138*curva_normalizada[2]**-0.0153*curva_normalizada[6]**0.36844
-            
+
             if self.kwargs["D86"]:
                 self.D86=curva_normalizada
                 self.TBP=[D86_TBP_Riazi, D86_TBP_Daubert][self.Preferences.getint("petro", "curva")](self.D86)
@@ -1243,7 +1261,7 @@ class Petroleo(newComponente):
                 TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
                 D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
                 self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
-                
+
             elif self.kwargs["TBP"]:
                 if P_dist.mmHg == 760:
                     self.TBP=curva_normalizada
@@ -1259,7 +1277,7 @@ class Petroleo(newComponente):
                 self.SD=None
                 D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
                 self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
-                
+
             elif self.kwargs["SD"]:
                 self.SD=curva_normalizada
                 self.D86=[SD_D86_Riazi, SD_D86_Daubert][self.Preferences.getint("petro", "curva")](self.SD)
@@ -1268,7 +1286,7 @@ class Petroleo(newComponente):
                 TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
                 D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
                 self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
-                
+
             elif self.kwargs["EFV"]:
                 if P_dist.mmHg==760:
                     self.EFV=curva_normalizada
@@ -1280,7 +1298,7 @@ class Petroleo(newComponente):
                 TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
                 D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
                 self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
-                
+
             else:
                 if P_dist.mmHg==10:
                     D1160_10mmHg=curva_normalizada
@@ -1306,15 +1324,15 @@ class Petroleo(newComponente):
             self.MeABP=unidades.Temperature(self.VABP.F-exp(-0.94402-0.00865*(self.VABP.F-32)**(2./3)+2.99791*SL**(1./3)), "F")
             if not Tb:
                 Tb=self.MeABP
-            
-                
+
+
             self.T5=self.D86[1]
             self.T10=self.D86[2]
             self.T30=self.D86[4]
             self.T50=self.D86[6]
             self.T90=self.D86[10]
             self.ReidVP=unidades.Pressure(3.3922-0.02537*self.T5.C-0.070739*self.T10.C+0.00917*self.T30.C-0.0393*self.T50.C+6.8257e-4*self.T10.C**2, "bar")
-            
+
             A, B, To=parameters_Curva
             E70=100-100*exp(-B/A*(343.15-To)**B/To**B)
             self.VL_12=88.5-0.19*E70-42.5*self.ReidVP.bar
@@ -1322,7 +1340,7 @@ class Petroleo(newComponente):
             self.VL_36=94.7-0.36*E70-32.3*self.ReidVP.bar
             self.CVLI=4.27+0.24*E70+0.069*self.ReidVP.bar
             self.FVI=1000.*self.ReidVP.bar+7.*E70
-            
+
             #Cálculo de flash point, API procedure 2B7.1 pag 233
             self.FlashPc=unidades.Temperature(0.69*self.T10-118.2, "F")
             self.FlashPo=unidades.Temperature(0.68*self.T10-109.6, "F")
@@ -1338,7 +1356,7 @@ class Petroleo(newComponente):
             elif self.Preferences.getint("petro", "PNA")==2:
                 self.xp, self.xn, self.xa=self.PNA_Riazi()
             else:
-                self.xp, self.xn, self.xa=self.PNA_van_Nes()     
+                self.xp, self.xn, self.xa=self.PNA_van_Nes()
 
             T=self.Tb.C/100
             RONp=92.809-70.97*T-53.*T**2+20.*T**3+10.*T**4
@@ -1362,7 +1380,7 @@ class Petroleo(newComponente):
         else:
             SG=[self.SG_Riazi_Daubert, self.SG_Riazi_Alsahhaf][self.Preferences.getint("petro", "SG")]
             self.SG=SG()
-            
+
         if self.kwargs["Tb"]:
             self.Tb=unidades.Temperature(self.kwargs["Tb"])
         if self.kwargs["M"]:
@@ -1370,7 +1388,7 @@ class Petroleo(newComponente):
         if not self.kwargs["Tb"]:
             Tb=[self.tb_Riazi_Daubert_ext, self.tb_Riazi_Adwani, self.tb_Edmister, self.tb_Soreide][self.Preferences.getint("petro", "t_ebull")]
             self.Tb=Tb()
-            
+
         if not self.kwargs["M"]:
             Peso_Molecular=[self.peso_molecular_Riazi_Daubert, self.peso_molecular_Riazi_Daubert_ext, self.peso_molecular_Lee_Kesler, self.peso_molecular_Sim_Daubert, self.peso_molecular_API, self.peso_molecular_Goossens, self.peso_molecular_Twu][self.Preferences.getint("petro", "molecular_weight")]
             self.M=Peso_Molecular()
@@ -1385,7 +1403,7 @@ class Petroleo(newComponente):
             self.f_acent=prop_Ahmed(4, self.kwargs["Nc"])
             self.SG=prop_Ahmed(5, self.kwargs["Nc"])
             self.API=141.5/self.SG-131.5
-            
+
         if self.hasRefraction:
             if self.kwargs["n"]:
                 self.n=self.kwargs["n"]
@@ -1396,30 +1414,30 @@ class Petroleo(newComponente):
         else:
             self.I=self.I_Riazi_Daubert_ext()
             self.n=((1+2*self.I)/(1-self.I))**0.5
-            
+
         if self.kwargs["Kw"]:
             self.watson=self.kwargs["Kw"]
         else:
             self.watson=self.Tb.R**(1./3)/self.SG
-            
+
         if self.kwargs["CH"]:
             self.CH=self.kwargs["CH"]
         else:
             self.CH=self.CH_Riazi_Daubert_ext()
-            
+
         Tc=[self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Adwani, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Sim_Daubert, self.tc_Watansiri_Owens_Starling, self.tc_Edmister, self.tc_Magoulas, self.tc_Twu, self.tc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
         Pc=[self.pc_Riazi_Daubert, self.pc_Riazi_Daubert_ext, self.pc_Riazi_Adwani, self.pc_Lee_Kesler, self.pc_cavett, self.pc_Sim_Daubert, self.pc_Watansiri_Owens_Starling, self.pc_Edmister, self.pc_Magoulas, self.pc_Twu, self.pc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
         Vc=[self.vc_Riazi_Daubert, self.vc_Riazi_Daubert_ext, self.vc_Riazi_Adwani, self.vc_Watansiri_Owens_Starling, self.vc_Twu, self.vc_Hall_Yarborough][self.Preferences.getint("petro", "critical")]
-        Factor_acentrico=[self.factor_acentrico_Edmister, self.factor_acentrico_Lee_Kesler, self.factor_acentrico_Watansiri_Owens_Starling, self.factor_acentrico_Magoulas][self.Preferences.getint("petro", "f_acent")]        
+        Factor_acentrico=[self.factor_acentrico_Edmister, self.factor_acentrico_Lee_Kesler, self.factor_acentrico_Watansiri_Owens_Starling, self.factor_acentrico_Magoulas][self.Preferences.getint("petro", "f_acent")]
         self.Tc=Tc()
         self.Pc=Pc()
         self.Vc=Vc()
         self.f_acent=Factor_acentrico()
-        Zc=[self.Zc_Lee_Kesler, self.Zc_Haugen, self.Zc_Reid, self.Zc_Salerno, self.Zc_Nath][self.Preferences.getint("petro", "Zc")]        
+        Zc=[self.Zc_Lee_Kesler, self.Zc_Haugen, self.Zc_Reid, self.Zc_Salerno, self.Zc_Nath][self.Preferences.getint("petro", "Zc")]
         self.Zc=Zc()
 
         self.Parametro_solubilidad=prop_Riazi_Alsahhaf(9, self.M), "calcc"
-        
+
         #Calculo de las viscosidades cinemáticas si no indican
         if self.kwargs["v100"]:
             self.v100=unidades.Diffusivity(self.kwargs["v100"])
@@ -1442,12 +1460,12 @@ class Petroleo(newComponente):
         self.Ri=self.n-self.d20/2.
         self.m=self.M*(self.n-1.475)
         self.VI=self.Viscosity_Index()
-        
+
         if self.hasCurve:
             self.CI=48640/self.VABP+473.7*self.SG-456.8
         else:
             self.CI=48640/self.Tb+473.7*self.SG-456.8
-        
+
         #Cálculo del pour point, API procedure 2B8.1 pag 235
         if self.v100:
             PP=753.+136*(1.-exp(-0.15*self.v100))-572*self.SG+0.0512*self.v100+.139*self.Tb.R
@@ -1460,16 +1478,16 @@ class Petroleo(newComponente):
 
         #Cálculo del freezing point, API procedure 2B11.1 pag 241
         self.FreezingP=unidades.Temperature(-2390.42+1826.*self.SG+122.49*self.watson-0.135*self.Tb.R, "R")
-        
+
         #Cálculo del aniline point, API procedure 2B9.1 pag 237
         self.AnilineP=unidades.Temperature(-1253.7-0.139*self.Tb.R+107.8*self.watson+868.7*self.SG, "R")
-    
+
         #Cálculo del smoke point, API procedure 2B10.1 pag 239
         self.SmokeP=unidades.Length(exp(-1.028+0.474*self.watson-0.00168*self.Tb.R), "mm")
-        
+
         #Cálculo del cetane index de la fracción de petróleo, API procedure 2B13.1 pag 245
         self.CI=415.26-7.673*self.API+0.186*self.Tb.F+3.503*self.API*log10(self.Tb.F)-193.816*log10(self.Tb.F)
-        
+
         #Cálculo del indice Diesel
         self.DI=self.API*self.AnilineP.F/100.
 
@@ -1484,15 +1502,15 @@ class Petroleo(newComponente):
             H=[self.H_Riazi, self.H_Goossens, self.H_ASTM, self.H_Jenkins_Walsh][self.Preferences.getint("petro", "H")]
             self.H=H()
         self.N=self.kwargs["N"]
-            
+
 
 
     def tr(self,T):
        return T/self.Tc
-       
+
     def pr(self,P):
         return P/self.Pc.atm
-        
+
     def SG_Riazi_Daubert(self):
         if self.definicion==3:
             return prop_Riazi_Daubert_Tb_I(4, self.Tb, self.I)
@@ -1513,10 +1531,10 @@ class Petroleo(newComponente):
 
     def peso_molecular_Riazi_Daubert(self):
         return prop_Riazi_Daubert(0, self.Tb, self.SG)
-        
+
     def tc_Riazi_Daubert(self):
         return unidades.Temperature(prop_Riazi_Daubert(1, self.Tb, self.SG), "R")
-        
+
     def pc_Riazi_Daubert(self):
         return unidades.Pressure(prop_Riazi_Daubert(2, self.Tb, self.SG), "psi")
 
@@ -1532,8 +1550,8 @@ class Petroleo(newComponente):
             return prop_Riazi_Daubert_Tb_CH(0, self.Tb, self.CH)
         elif self.definicion==7:
             return prop_Riazi_Daubert_v100_I(0, self.v100, self.I)
-            
-        
+
+
     def tc_Riazi_Daubert_ext(self):
         if self.definicion==1:
             return unidades.Temperature(prop_Riazi_Daubert_Tb_SG(1, self.Tb, self.SG))
@@ -1582,7 +1600,7 @@ class Petroleo(newComponente):
             return unidades.SpecificVolume(prop_Riazi_Daubert_M_CH(3, self.M, self.CH), "lkg")
         elif self.definicion==7:
             return unidades.SpecificVolume(prop_Riazi_Daubert_v100_I(3, self.v100, self.I), "lkg")
-        
+
     def tb_Riazi_Daubert_ext(self):
         if self.definicion==2:
             return unidades.Temperature(prop_Riazi_Daubert_M_SG(0, self.M, self.SG))
@@ -1602,7 +1620,7 @@ class Petroleo(newComponente):
             return prop_Riazi_Daubert_Tb_CH(4, self.Tb, self.CH)
         elif self.definicion==6:
             return prop_Riazi_Daubert_M_CH(4, self.M, self.CH)
-            
+
     def CH_Riazi_Daubert_ext(self):
         if self.definicion==1:
             return prop_Riazi_Daubert_Tb_SG(5, self.Tb, self.SG)
@@ -1617,7 +1635,7 @@ class Petroleo(newComponente):
 
     def tb_Riazi_Adwani(self):
         return unidades.Temperature(prop_Riazi_Adwani(0, 1, self.M, self.SG))
-        
+
     def tc_Riazi_Adwani(self):
         if self.definicion==1:
             tc=prop_Riazi_Adwani(1, 0, self.Tb, self.SG)
@@ -1626,7 +1644,7 @@ class Petroleo(newComponente):
         else:
             tc=self.tc_Riazi_Daubert_ext()
         return unidades.Temperature(tc)
-    
+
     def pc_Riazi_Adwani(self):
         if self.definicion==1:
             pc=prop_Riazi_Adwani(2, 0, self.Tb, self.SG)
@@ -1635,7 +1653,7 @@ class Petroleo(newComponente):
         else:
             pc=self.pc_Riazi_Daubert_ext().bar
         return unidades.Pressure(pc, "bar")
-    
+
     def vc_Riazi_Adwani(self):
         if self.definicion==1:
             vc=prop_Riazi_Adwani(3, 0, self.Tb, self.SG)
@@ -1644,7 +1662,7 @@ class Petroleo(newComponente):
         else:
             vc=self.vc_Riazi_Daubert_ext().cm3g
         return unidades.SpecificVolume(vc*self.M, "cm3g")
-    
+
     def I_Riazi_Adwani(self):
         if self.definicion==1:
             i=prop_Riazi_Adwani(4, 0, self.Tb, self.SG)
@@ -1653,42 +1671,42 @@ class Petroleo(newComponente):
         else:
             i=self.I_Riazi_Daubert_ext()
         return i
-        
+
     def d20_Riazi_Adwani(self):
         if self.definicion==1:
             d20=prop_Riazi_Adwani(5, 0, self.Tb, self.SG)
         elif self.definicion==2:
             d20=prop_Riazi_Adwani(5, 1, self.M, self.SG)
         return unidades.Density(d20, "gcc")
-            
-    
+
+
     def tb_Soreide(self):
         """Soreide, I. “Improved Phase Behavior Predictions of Petroleum Reservoir Fluids from a Cubic Equation of State.” Doctor of Engineering dissertation, Norwegian Institute of Technology, Trondheim, 1989.
         """
         return unidades.Temperature(1928.3-1.695e5*self.SG**3.266/self.M**0.03522*exp(-4.922e-3*self.M-4.7685*self.SG+3.462*e-3*self.self.M*self.SG), "R")
 
-        
+
     def tc_cavett(self):
         """Cavett, R. H. “Physical Data for Distillation Calculations—Vapor–Liquid Equilibrium.” Proceedings of the 27th Meeting, API, San Francisco, 1962, pp. 351–366."""
         return unidades.Temperature(10**(768.07121+1.7133693*self.Tb.F-0.0010834003*self.Tb.F**2-0.0089212579*self.API*self.Tb.F+0.38890584e-6*self.Tb.F**3+0.5309492e-5*self.API*self.Tb.F**2+0.327116e-7*self.API**2*self.Tb.F**2), "R")
-        
+
     def pc_cavett(self):
         """Cavett, R. H. “Physical Data for Distillation Calculations—Vapor–Liquid Equilibrium.” Proceedings of the 27th Meeting, API, San Francisco, 1962, pp. 351–366."""
         return unidades.Pressure(10**(2.82904060+0.94120109e-3*self.Tb.F-0.30474749e-5*self.Tb.F**2-0.2087611e-4*self.API*self.Tb.F+0.15184103e-8*self.Tb.F**3+0.11047899e-7*self.API*self.Tb.F**2-0.48271599e-7*self.API**2*self.Tb.F+0.13949619e-9*self.API**2*self.Tb.F**2), "psi")
-        
-        
+
+
     def tc_Lee_Kesler(self):
         """Kesler, M. G., and B. I. Lee. “Improve Prediction of Enthalpy of Fractions.” Hydrocarbon Processing (March 1976): 153–158."""
         return unidades.Temperature(341.7+811.1*self.SG+(0.4244+0.1174*self.SG)*self.Tb.R+(0.4669-3.26238*self.SG)*1e5/self.Tb.R, "R")
-        
+
     def pc_Lee_Kesler(self):
         """Kesler, M. G., and B. I. Lee. “Improve Prediction of Enthalpy of Fractions.” Hydrocarbon Processing (March 1976): 153–158."""
         return unidades.Pressure(exp(8.3634-0.0566/self.SG-(0.24244+2.2898/self.SG+0.11857/self.SG**2)*1e-3*self.Tb.R+(1.4685+3.648/self.SG+0.47227/self.SG**2)*1e-7*self.Tb.R**2-(0.42019+1.6977/self.SG**2)*1e-10*self.Tb.R**3), "psi")
-        
+
     def peso_molecular_Lee_Kesler(self):
         """Kesler, M. G., and B. I. Lee. “Improve Prediction of Enthalpy of Fractions.” Hydrocarbon Processing (March 1976): 153–158."""
         return -12272.6+9486.4*self.SG+(4.6523-3.3287*self.SG)*self.Tb.R+(1-0.77084*self.SG-0.02058*self.SG**2)*(1.3437-720.79/self.Tb.R)*1e7/self.Tb.R+(1-0.80882*self.SG-0.02226*self.SG**2)*(1.8828-181.98/self.Tb.R)*1e12/self.Tb.R**3
-        
+
     def factor_acentrico_Lee_Kesler(self):
         """Kesler, M. G., and B. I. Lee. “Improve Prediction of Enthalpy of Fractions.” Hydrocarbon Processing (March 1976): 153–158."""
         tita=self.Tb/self.Tc
@@ -1696,25 +1714,25 @@ class Petroleo(newComponente):
             return -7.904+0.1352*self.watson-0.007465*self.watson**2+8359*tita+(1.408-0.01063*self.watson)/tita
         else:
             return (-log(self.Pc.atm)-5.92714+6.09648/tita+1.58862*log(tita)-0.169347*tita**6)/(15.2518-15.6875/tita-13.4721*log(tita)+0.43577*tita**6)
-   
+
 
     def tc_Sim_Daubert(self):
         """Sim, W. J., and T. E. Daubert. “Prediction of Vapor-Liquid Equilibria of Undefined Mixtures.” Ind. Eng. Chem. Process Dis. Dev. 19, no. 3 (1980): 380–393."""
         return unidades.Temperature(exp(3.9934718*self.Tb.R**0.08615*self.SG**0.04614), "R")
-        
+
     def pc_Sim_Daubert(self):
         """Sim, W. J., and T. E. Daubert. “Prediction of Vapor-Liquid Equilibria of Undefined Mixtures.” Ind. Eng. Chem. Process Dis. Dev. 19, no. 3 (1980): 380–393."""
         return unidades.Pressure(3.48242e9*self.Tb.R**-2.3177*self.SG**2.4853, "psi")
-        
+
     def peso_molecular_Sim_Daubert(self):
         """Sim, W. J., and T. E. Daubert. “Prediction of Vapor-Liquid Equilibria of Undefined Mixtures.” Ind. Eng. Chem. Process Dis. Dev. 19, no. 3 (1980): 380–393."""
         return 1.4350476e-5*self.Tb.R**2.3776*self.SG**-0.9371
-        
-        
+
+
     def tc_Tsonopoulos(self):
         """Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
         return unidades.Temperature(10**(1.20016-0.61954*log10(self.Tb)+0.48262*log10(self.SG)+0.67365*log10(self.SG)**2))
-        
+
     def pc_Tsonopoulos(self):
         """Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
         return unidades.Pressure(10**(7.37498-2.15833*log10(self.Tb)+3.35417*log10(self.SG)+5.64019*log10(self.SG)**2), "bar")
@@ -1727,7 +1745,7 @@ class Petroleo(newComponente):
     def vc_Watansiri_Owens_Starling(self):
         """Watansiri, S., V. H. Owens, and K. E. Starling. “Correlations for Estimating Critical Constants, Acentric Factor, and Dipole Moment for Undefined Coal-Fluid Fractions.” Ind. Eng. Chem. Process Des. Dev. 24 (1985): 294–296."""
         return unidades.SpecificVolume(exp(76.313887-129.8038*self.SG+63.175*self.SG**2-13.175*self.SG**3+1.10108*log(self.M)+42.1958*log(self.SG))/self.M, "ft3lb")
-        
+
     def pc_Watansiri_Owens_Starling(self):
         """Watansiri, S., V. H. Owens, and K. E. Starling. “Correlations for Estimating Critical Constants, Acentric Factor, and Dipole Moment for Undefined Coal-Fluid Fractions.” Ind. Eng. Chem. Process Des. Dev. 24 (1985): 294–296."""
         return unidades.Pressure(exp(6.6418853+0.01617283*(self.Tc.R/self.Vc.ft3lb)**0.8-8.712*self.M/self.Tc.R-0.08843889*self.Tb.R/self.M), "psi")
@@ -1740,33 +1758,33 @@ class Petroleo(newComponente):
     def tc_Edmister(self):
         """Edmister, W. C. “Applied Hydrocarbon Thermodynamics, Part 4, Compressibility Factors and Equations of State.” Petroleum Refiner 37 (April 1958): 173–179."""
         return unidades.Temperature(self.Tb.R*(3*log(self.Pc.atm)/7/(self.f_acent+1)+1), "R")
-        
+
     def pc_Edmister(self):
         """Edmister, W. C. “Applied Hydrocarbon Thermodynamics, Part 4, Compressibility Factors and Equations of State.” Petroleum Refiner 37 (April 1958): 173–179."""
         return unidades.Pressure(10**(7/3.*(self.f_acent+1)*(self.Tc.R/self.Tb.R-1)), "atm")
-    
+
     def tb_Edmister(self):
         """Edmister, W. C. “Applied Hydrocarbon Thermodynamics, Part 4, Compressibility Factors and Equations of State.” Petroleum Refiner 37 (April 1958): 173–179."""
         return unidades.Temperature(self.Tb.R/(3*log(self.Pc.atm)/7/(self.f_acent+1)+1), "R")
-        
+
     def factor_acentrico_Edmister(self):
         """Edmister, W. C. “Applied Hydrocarbon Thermodynamics, Part 4, Compressibility Factors and Equations of State.” Petroleum Refiner 37 (April 1958): 173–179."""
         return 3*log10(self.Pc.atm)/7./(self.Tc.R/self.Tb.R-1)-1
-        
+
     def factor_acentrico_Korsten(self):
         """Korsten, H., "Internally Consistent Prediction of Vapor Pressure and Related Properties," Industrial and Engineering Chemistry Research, 2000, Vol. 39, pp. 813-820."""
         tbr=self.Tb/self.Tc
         return 0.5899*tbr**1.3/(1-tbr**1.3)*log10(self.Pc.atm)-1.
-        
-        
+
+
     def tc_Magoulas(self):
         """Magoulas, S., and D. Tassios. Predictions of Phase Behavior of HT-HP Reservoir Fluids. Paper SPE no.37294. Richardson, TX: Society of Petroleum Engineers, 1990."""
         return unidades.Temperature(-1247.4+0.792*self.M+1971*self.SG-27000./self.M+707.4/self.SG, "R")
-        
+
     def pc_Magoulas(self):
         """Magoulas, S., and D. Tassios. Predictions of Phase Behavior of HT-HP Reservoir Fluids. Paper SPE no.37294. Richardson, TX: Society of Petroleum Engineers, 1990."""
         return unidades.Pressure(exp(0.01901-0.0048442*self.M+0.13239*self.SG+227./self.M-1.1663/self.SG+1.2702*log(self.M)), "atm")
-    
+
     def factor_acentrico_Magoulas(self):
         """Magoulas, S., and D. Tassios. Predictions of Phase Behavior of HT-HP Reservoir Fluids. Paper SPE no.37294. Richardson, TX: Society of Petroleum Engineers, 1990."""
         return -0.64235+0.00014667*self.M+0.021876*self.SG-4.539/self.M+0.21699*log(self.M)
@@ -1776,7 +1794,7 @@ class Petroleo(newComponente):
         f=(exp(5*(g-self.SG))-1)*(-0.362456/self.Tb.R**0.5+(0.0398285-0.948125/self.Tb.R**0.5)*(exp(5*(g-self.SG))-1))
         tc=t*((1+2*f)/(1-2*f))**2
         return unidades.Temperature(tc, "R")
-        
+
     def pc_Twu(self):
         t, p, v, g=Paraffin_Twu(self.Tb.R)
         f=(exp(0.5*(g-self.SG))-1)*((2.53262-46.19553/self.Tb.R**0.5-0.00127885*self.Tb.R)+(-11.4277+252.14/self.Tb.R**0.5+0.00230535*self.Tb.R)*(exp(0.5*(g-self.SG))-1))
@@ -1796,8 +1814,8 @@ class Petroleo(newComponente):
         DG=exp(5*(g-self.SG))-1.
         f=DG*(X+(-0.0175691+0.143979/self.Tb**0.5)*DG)
         return exp(log(mo)*((1+2*f)/(1-2*f))**2)
-        
-        
+
+
     def vc_Hall_Yarborough(self):
         """Hall, K. R., and L. Yarborough. “New Simple Correlation for Predicting Critical Volume.” Chemical Engineering (November 1971): 76."""
         return unidades.SpecificVolume(0.025*self.M**0.15/self.SG**0.7985, "ft3lb")
@@ -1810,12 +1828,12 @@ class Petroleo(newComponente):
     def peso_molecular_API(self):
         return 20.486*exp(1.165e-4*self.Tb.R-7.78712*self.SG+1.1582e-3*self.Tb.R*self.SG)*self.Tb.R**1.26007*self.SG**4.98308
         return 20.486*self.SG**(1.565*self.SG)
-        
+
     def peso_molecular_pesado(self):
         """Método alternativo para calcular el peso molecular en el caso de fracciones pesadas de petroleo, API procedure 2B2.3 pag.219
         Riazi, M. R., Daubert, 1". E., "Molecular Weight of Heavy Fractions from Viscosity," Oil and Gas Journal, Vol. 58, No. 52, 1987, pp. 110-113."""
         return 223.56*self.v100**(-1.2435+1.1228*self.SG)*self.v210**(3.4758-3.038*self.SG)*self.SG**-0.6665
-        
+
     def peso_molecular_ASTM(self):
         """Método histórico, ASTM D 2502
         ASTM, Annual Book of Standards, Section Five: Petroleum Products, Lubricants, and Fossil Fuels (in Five Volumes), ASTM International, West Conshohocken, PA, 2002"""
@@ -1824,7 +1842,7 @@ class Petroleo(newComponente):
         VSF=H100-H210
         K=4.145-1.733*log10(VSF-145)
         return 180+K*(H100+60.)
-        
+
     def peso_molecular_Goossens(self):
         """Goossens, A. G., "Prediction of Molecular Weight of Petroleum Fractions," Industrial and Engineering Chemistry Research, Vol. 35, 1996, pp. 985 988."""
         b=1.52869+0.06486*log(self.Tb/(1078-self.Tb))
@@ -1833,31 +1851,31 @@ class Petroleo(newComponente):
 
     def Zc(self):
         return self.Pc.atm*self.Vc*self.M/R_atml/self.Tc
-        
+
     def Zc_Lee_Kesler(self):
         """Lee, B. I. and Kesler, M. G., "A Generalized Thermodynamic Correlation Based on Three- Parameter Corresponding States," American Institute of Chemical Engineers Journal, Vot. 21, 1975,"""
         return 0.2905-0.085*self.f_acent
-        
+
     def Zc_Haugen(self):
         """Haugen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process Principles, 2nd ed. New York: Wiley, 1959, p. 577."""
         return 1./(1.28*self.f_acent+3.41)
-        
+
     def Zc_Reid(self):
         """Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21."""
         return 0.291-0.08*self.f_acent
-        
+
     def Zc_Salerno(self):
         """Salerno, S., et al. “Prediction of Vapor Pressures and Saturated Volumes.” Fluid Phase Equilibria 27 (June 10, 1985): 15–34."""
         return 0.291-0.08*self.f_acent-0.016*self.f_acent**2
-        
+
     def Zc_Nath(self):
         """Nath, J. “Acentric Factor and the Critical Volumes for Normal Fluids.” Industrial Engineering and Chemical. Fundamentals 21, no. 3 (1985): 325–326."""
         return 0.2918-0.0928*self.f_acent
-        
-        
 
 
-    
+
+
+
     def nT(self, T):
         """Indice de refracción a una temperatura diferente de los 20º"""
         return self.n-0.0004*(T-293.15)
@@ -1914,7 +1932,7 @@ class Petroleo(newComponente):
         tca=S1*(1+(3*log10(pca)-3.501952)/7/(1+wa))*Tba
         tc=Xp*tcp+Xn*tcn+Xa*tca
         return Xp, Xn, Xa
-    
+
     def PNA_Bergman(self):
         """Bergman, D. F., M. R. Tek, and D. L. Katz. “Retrograde Condensation in Natural Gas Pipelines.” Project PR 2-29 of Pipelines Research Committee, AGA, January 1977."""
         Xwa=8.47-self.watson
@@ -1937,7 +1955,7 @@ class Petroleo(newComponente):
         tc=Xwp*Tcp+Xwn*Tcn+Xwa*Tca
         w=Xwp*wp+Xwn*wn+Xwa*wa
         return Xwp, Xwn, Xwa
-        
+
     def PNA_van_Nes(self):
         """Van Nes, K. and Van Western, H. A., Aspects of the Constitution of Mineral Oils, Elsevier, New York, 1951."""
         v=2.51*(n-1.475)-(self.d20-0.851)
@@ -1956,22 +1974,22 @@ class Petroleo(newComponente):
         Cn=Cr-Ca
         Cp=100-Cr
         return Cp/100., Cn/100., Ca/100.
-    
+
     def H_Riazi(self):
         return (100.-self.S)/(1.+self.CH)
 
     def H_Goossens(self):
         return 30.346+(82.952-65.341*self.n)/self.d20-306./self.M
-        
+
     def H_ASTM(self):
         """ASTM, Annual Book of Standards, ASTM International, West Conshohocken, PA, 2002."""
         Tb=(self.T10+self.T50+self.T90)/3.
         return (5.2407+0.01448*Tb-7.018*self.xa)/self.SG-0.901*self.xa+0.01298*self.xa*Tb-0.01345*Tb-0.01345*Tb+5.6879
-    
+
     def H_Jenkins_Walsh(self):
         """Jenkins, G. I. and Walsh, R. E, "Quick Measure of Jet Fuel Properties," Hydrocarbon Processing, Vol. 47, No. 5, 1968, pp. 161-164."""
         return 11.17-12.89*self.SG+0.0389*self.AP
-        
+
     def S_Riazi(self):
         """Riazi, M. R., Nasimi, N., and Roomi, Y., "Estimating Sulfur Content of Petroleum Products and Crude Oils," Industrial and Engineering Chemistry Research, Vol. 38, No. 11, 1999, pp. 4507-4512."""
         if self.M<200:
@@ -1980,16 +1998,16 @@ class Petroleo(newComponente):
             S=-58.02+38.463*self.Ri-0.023*self.m+22.4*self.SG
         return S
 
-        
+
     def Reid_Blend(self):
         """Método de cálculo de la presión de vapor Reid, API procedure 5B1.3 pag 407"""
         suma=0
         for i in range(len(self.componente)):
             Reid=Pressure(self.componente[i].Pv_DIPPR(Temperature(100, "F")))
             suma+=self.fraccion[i]*Reid.psi**1.2
-        return suma**(1/1.2)    
-    
-    
+        return suma**(1/1.2)
+
+
     def Reid_simulate(self):
         """Método de cálculo de la presión de vapor Reid simulando un proceso de destilación ASTM D323-94, API procedure 5B1.4"""
         pass
@@ -1999,12 +2017,12 @@ class Petroleo(newComponente):
         """Método de cálculo de la temperatura crítica de fracciones de petroleo, API procedure 4D1.1, pag 331"""
         delta=self.SG*(self.VABP.F+100)
         return unidades.Temperature(186.16+1.6667*delta-0.7127e-3*delta**2, "F")
-        
+
     def pc(self):
         """Método de cálculo de la presión cricia de fracciones de petroleo, API procedure 4D2.1 pag 334
         Dificil de implementar ya que se trata de un método gráfico sin ecuaciones asociadas"""
         pass
-  
+
     def Pv_Maxwell_Bonnell(self, T, mod=False):
         """Maxwell, J. B. and Bonnell, L. S., Vapor Pressure Charts for Petroleum Engineers, Exxon Research and Engineering Company, Florham Park, NJ, 1955. Reprinted in 1974."Deviation and Precision of a New Vapor Pressure Correlation for Petroleum Hydrocarbons," Industrial and Engineering Chemistry, Vol. 49, 1957, pp. 1187-1196.
         modificación de Tsonopoulos para coal liquids:  Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
@@ -2021,7 +2039,7 @@ class Petroleo(newComponente):
                 F=-3.2985+0.0009*self.Tb
             else:
                 F=-3.2985+0.009*self.Tb
-            
+
         pvap=0.
         pvapcalc=1.
         while abs(pvap-pvapcalc)<1e-6:
@@ -2042,10 +2060,10 @@ class Petroleo(newComponente):
                 pvapcalc=10**((2663.129*Q-5.994296)/(95.76*Q-0.972546))
             else:
                 pvapcalc=10**((2770.085*Q-6.412631)/(36*Q-0.989679))
-    
+
         return unidades.Pressure(pvapcalc, "mmHg")
-    
-    
+
+
     def Pv_Tsonopoulos(self, T):
         """Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
         Tr=T/self.tpc
@@ -2055,7 +2073,7 @@ class Petroleo(newComponente):
         D=0.1383536+0.316367*self.f_acent
         pr=exp(A-B/Tr-C*log(Tr)+D*Tr**6)
         return unidades.Pressure(pr, "bar")
-        
+
     def Pv_simple(self, T):
         """eq 7.25"""
         pv=10**(3.2041*(1.-0.998*(self.Tb-41)/(self.Tb-41)*(1393-T)/(1393-self.Tb)))
@@ -2068,20 +2086,20 @@ class Petroleo(newComponente):
         SL=(unidades.Temperature(self.D86[-3]).F-unidades.Temperature(self.D86[1]).F)/15.
         p=exp(1/t.R*(21.36412862-6.7769666*sqrt(SL)-0.93213944*log(self.ReidVP.psi)+1.42680425*sqrt(SL)*log(self.ReidVP.psi)-0.29458386*self.ReidVP.psi+(-0.00568374+0.00577103*sqrt(SL)-0.00106045*sqrt(SL)*log(self.ReidVP.psi)+0.00060246*self.ReidVP.psi)*t.R+(-10177.78660360+2306.00561642*sqrt(SL)+1097.68947465*log(self.ReidVP.psi)-463.19014182*sqrt(SL)*log(self.ReidVP.psi)+65.61239475*self.ReidVP.psi+0.13751932*self.ReidVP.psi**2)))
         return unidades.Pressure(p, "psi")
-    
+
     def Pv_API(self, T):
         """Método de cálculo de la presión de vapor de fracciones de petroleo, API procedure 5B1.2 pag 406"""
         t=unidades.Temperature(T)
         p=exp(7.78511307-1.08100387*log(self.ReidVP.psi)+0.05319502*self.ReidVP.psi+0.00451316*t.R+(-5756.85623050+1104.41248797*log(self.ReidVP.psi)-0.00068023*self.ReidVP.psi**4)/t.R)
         return unidades.Pressure(p, "psi")
-    
+
 
     def RhoL(self, T):
         """Método de cálculo de la densidad del líquido de fraciones de petroleo a presión atmosférica, API procedure 6A3.5,pag 494"""
         t=unidades.Temperature(T)
         rho=62.3636*sqrt(self.SG**2-(1.2655*self.SG-0.5098+8.011e-5*self.Tb.R)*(t.R-519.67)/self.Tb.R)
         return unidades.Density(rho, "lbft3")
-    
+
     def RhoL_Rackett(self, T):
         """Método de cálculo de la densidad de la fase líquida de fracciones de petróleo a presión atmosférica, API procedure 6A3.6 pag 495"""
         rho=self.SG*1000
@@ -2089,7 +2107,7 @@ class Petroleo(newComponente):
         Zra=(self.Pc.atm/(rho/self.M*R_atml*self.Tc))**(1/(1+(1-t/self.Tc)**(2./7)))
         inv=R_atml*self.Tc/self.Pc.atm*Zra**(1+(1-T/self.Tc)**(2./7))
         return unidades.Density(1/inv*self.M, "gl")
-        
+
     def RhoL_Presion(self, T, P):
         """Método de cálculo de la densidad de la fase líquida de fracciones de petróleo a alta presión, API procedure 6A3.7, 6A3.10 pag 497"""
         rho0=self.RhoL_Rackett(T)
@@ -2101,15 +2119,15 @@ class Petroleo(newComponente):
         B1=1.52e+4+4.704*p.psig-2.5807e-5*p.psig**2+1.0611e-10*p.psig**3
         Bt=m*X+B1
         return unidades.Density(rho0/(1.0-p.psig/Bt))
-        
-    
+
+
     def Reduccion_volumetrica(self, C, G):
         """Cálculo de la reducción volumétrica que se produce al mezclar hidrocarburos de bajo peso molecular con otra fracción pesada de crudo, API procedure 6A3.11, pag 504
         requiere dos parámetros:
         C: fracción volumétria del componente ligero en la mezclar
         G: Diferencia de gravedad en grados API"""
         return 2.14e-3*C**-0.0704*G**1.76
-    
+
 
     def Entalpia(self, T, P):
         """Cálculo de la entalpia de fracciones petrolíferas, API procedure 7B4.7, pag 658"""
@@ -2134,8 +2152,8 @@ class Petroleo(newComponente):
             B3=1e-9*(-56.487-2.95*B4)
             H=Hl.Btulb+B1*(T.R-0.8*self.Tc.R)+B2*(T.R**2-0.64*self.Tc.R**2)+B3*(T.R**3-0.512*self.Tc.R**3)+R_Btu*self.Tc.R/self.M*(4.507+5.266*self.f_acent-H_adimensional_presion)
         return unidades.Enthalpy(H, "Btulb")
-        
-        
+
+
     def Cp_liquid_API(self, T):
         """Cálculo de la capacidad calorífica isobárica de la fase liquida de fracciones petrolíferas, API procedure 7D2.2, pag 702"""
         t=unidades.Temperature(T)
@@ -2143,41 +2161,41 @@ class Petroleo(newComponente):
         A2=1e-4*(1+0.82463*self.watson)*(1.12172-0.27634/self.SG)
         A3=-1e-8*(1+0.82463*self.watson)*(2.9027-0.70958/self.SG)
         return unidades.SpecificHeat(A1+A2*t.R+A3*t.R**2, "BtulbF")
-        
+
     def Cp_liquid_Tsonopoulos(self, T):
         """Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
         cp=(0.28299+0.23605*self.watson)*(0.645-0.05959*self.SG+(2.32056-0.94752*self.SG)*(T/1000.-0.25537))
         return unidades.SpecificHeat(cp, "kJkgK")
-        
+
     def Cp_liquid_Kesler_Lee(self, T):
         """Kesler, M. G. and Lee, B. I., "Improve Prediction of Enthalpy of Fractions," Hydrocarbon Processing, Vol. 55, No. 3, 1976, pp. 153-158."""
         a=1.4651+0.2302*self.watson
         b=0.306469-0.16734*self.SG
         c=0.001467-0.000551*self.SG
         return unidades.SpecificHeat(a*(b+c*T), "kJkgK")
-        
+
     def Cp_liquid_Bondi(self, T):
         """Ref Eq 7.40 Riazi - Characterization of petroleum fraction, pag 333"""
         Tr=T/self.Tc
         Cp_ideal
         cp_adimensional=1.586+0.49*(1-Tr)+self.f_acent*(4.2775+6.3*(1-Tr)**(1./3)/Tr+0.4355/(1-Tr))
         return unidades.SpecificHeat(cp_adimensional*R+Cp_ideal, "kJkgK")
-        
+
 
     def Lee_Kesler_lib_Cp(self, T, P):
         """Librería para el cálculo de capacidades calorificas, usada a continuación en diferentes funciones
         Procedure API 7E1.6 Pag.726"""
-        #FIXME: No concuerdan mucho los valores de cp y cv con los valores por DIPPR    
+        #FIXME: No concuerdan mucho los valores de cp y cv con los valores por DIPPR
         Tr=self.tr(T)
         vr0, vrh=self.Lee_Kesler_lib(T, P.atm, "gas")
         E=0.042724/2/Tr**3/0.060167*(0.65392+1-(0.65392+1+0.060167/vr0**2)*exp(-0.060167/vr0**2))
         Cv0=-2*(0.154790+3*0.030323/Tr)/Tr**2/vr0+6*E
-        
+
         E=0.041577/2/Tr**3/0.03754*(1.226+1-(1.226+1+0.03754/vrh**2)*exp(-0.03754/vrh**2))
         Cvh=-2*(0.027655+3*0.203488/Tr)/Tr**2/vrh+3*0.016901/Tr**3/vrh**2+6*E
 
         return Cv0, Cvh
-    
+
     def Cp_gas(self, T, P):
         """Cálculo de la capacidad calorífica isobárica de la fase vapor de fracciones petrolíferas, API procedure 7D4.2, pag 717"""
         if 10.<=self.watson<=12.8 and 0.70<self.SG<=0.885:
@@ -2191,23 +2209,23 @@ class Petroleo(newComponente):
 #        Cp_adimensional=-1.107
         Cp_adimensional=Cp0+self.f_acent/0.3978*(Cph-Cp0)
         return unidades.SpecificHeat(A1+A2*t.R+A3*t.R**2-R_Btu/self.M*Cp_adimensional, "BtulbF")
-        
-        
+
+
     def flash(self):
         """Método de cálculo del equilibrio líquido-vapor, API procedure 8D1.5, pag 828"""
         pass
-        
+
     def flash2(self):
         """Método de cálculo del equilibrio líquido-vapor, cuando parte de la composición sí es conocida, API procedure 8D1.6, pag 832"""
         pass
-        
-    
+
+
     def Tension_API(self,T):
         """Método de cálculo de la tensión superficial de fracciones petrolíferas, API procedure 10A3.2, pag 997"""
         t=unidades.Temperature(T)
         sigma=673.7/self.watson*((self.Tc.R-t.R)/self.Tc.R)**1.232
         return unidades.Tension(sigma, "dyncm")
-        
+
     def Tension_Baker_Swerdloff(self, T, P=1):
         """Baker, O. and Swerdloff, W.: "Finding Surface Tension of Hydrocarbon Liquids," Oil and Gas J. (Jan. 2, 1956) 125"""
         t=unidades.Temperature(T)
@@ -2222,7 +2240,7 @@ class Petroleo(newComponente):
             s=s100
         F=1.-0.024*p.psi**0.45
         return unidades.Tension(F*s, "dyncm")
-        
+
     def Tension_Tsonopoulos(self, T):
         """Método alternativo de cálculo de la tensión superficial
         Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
@@ -2238,7 +2256,7 @@ class Petroleo(newComponente):
         rhoL=self.RhoL(T)
         rhoV
         return unidades.Tension((Pa/self.M*(rhoL-rhoV))**(11./3), "dyncm")
-        
+
     def Tension_PNA(self, T):
         """Método alternativo de cálculo de la tensión superficial si se conoce la composición PNA
         Miqueu, C., Satherley, J., Mendiboure, B., Lachiase, J., and Graciaa, A., "The Effect of P/N/A Distribution on the Parachors of Petroleum Fractions," Fluid Phase Equilibria, Vol. 180, 2001,pp. 327-344."""
@@ -2249,8 +2267,8 @@ class Petroleo(newComponente):
         rhoL=self.RhoL(T)
         rhoV
         return unidades.Tension((Pa/self.M*(rhoL-rhoV))**(11./3), "dyncm")
-    
-        
+
+
     def Mu_Singh(self, T, mu):
         """Calculo de la viscosidad cinemática de fracciones petrolíferas a baja presión, conocida la viscosidad cinemática a 100ºF, API procedure 11A4.1 pag 1054
         mu: viscosidad cinematica experimental a 100ºF
@@ -2259,8 +2277,8 @@ class Petroleo(newComponente):
         S=0.28008*log10(mu)+1.8616
         B=log10(mu)+0.86960
         return 10**(B*(559.67/t.R)**S-0.86960)
-        
-        
+
+
     def V100_API(self):
         """Cálculo de la viscosidad cinemática a 100ºF de fracciones petrolíferas a baja presión, API procedure 11A4.2, pag 1056"""
         A1=34.9310-8.84387e-2*self.Tb.R+6.73513e-5*self.Tb.R**2-1.01394e-8*self.Tb.R**3
@@ -2268,7 +2286,7 @@ class Petroleo(newComponente):
         mu_ref=10**(-1.35579+8.16059e-4*self.Tb.R+8.38505e-7*self.Tb.R**2)
         mu_cor=10**(A1+A2*self.watson)
         return unidades.Diffusivity(mu_ref+mu_cor, "cSt")
-        
+
     def V210_API(self):
         """Cálculo de la viscosidad cinemática a 210ºF de fracciones petrolíferas a baja presión, API procedure 11A4.2, pag 1056"""
         if self.v100:
@@ -2295,7 +2313,7 @@ class Petroleo(newComponente):
         B=(log10(log10(Z1))-log10(log10(Z2)))/(log10(T1.R)-log10(T2.R))
         Z=10**(10**(log10(log10(Z1))+B*(log10(t.R)-log10(T1.R))))
         return unidades.Diffusivity(Z-0.7-exp(-0.7487-3.295*(Z-0.7)+0.6119*(Z-0.7)**2-0.3191*(Z-0.7)**3), "cSt")
-        
+
     def Viscosidad_liquido_blend(self, T, fraccion_masica, petro1, petro2):
         """Método de cálculo de la viscosidad de líquidos en mezclas de fracciones petrolíferas, API procedure 11A4.5, pag 1066
         Los parámetros petro tienen la estructura [T1,T2,mu1,mu2]"""
@@ -2303,17 +2321,17 @@ class Petroleo(newComponente):
         t=unidades.Temperature(T)
         T1=unidades.Temperature(petro1[0])
         T2=unidades.Temperature(petro1[1])
-        
+
         ml=(log(log(petro1[3]+0.7))-log(log(petro1[2]+0.7)))/(log(T2.R)-log(T1.R))
         bl=log(log(petro1[2]+0.7))-ml*log(T1.R)
         mh=(log(log(petro2[3]+0.7))-log(log(petro2[2]+0.7)))/(log(T2.R)-log(T1.R))
         bh=log(log(petro2[2]+0.7))-mh*log(T1.R)
-        
+
         Tl=exp((log(log(petro2[2]+0.7))-bl)/ml)
         Tx=exp(fraccion_masica[0]*log(Tl)+fraccion_masica[1]*log(T1.R))
         Th=exp((log(log(petro1[3]+0.7))-bh)/mh)
         Ty=exp(fraccion_masica[0]*log(T2.R)+fraccion_masica[1]*log(Th))
-        
+
         m=(log(log(petro1[3]+0.7))-log(log(petro2[2]+0.7)))/(log(Ty)-log(Tx))
         b=log(log(petro2[2]+0.7))-m*log(Tx)
 
@@ -2352,16 +2370,16 @@ class Petroleo(newComponente):
             N=(log10(H)-log10(self.v100.cSt))/log10(self.v210.cSt)
             VI=(10**N-1)/0.00715+100
         return VI
-        
 
 
-    
+
+
     def ThCond_Liquido_simple(self, T):
         """Método de cálculo de la conductividad térmica de fracciones petrolíferas líquidas a baja presión, API procedure 12A3.1, pag 1149"""
         t=unidades.Temperature(T)
         k=0.07577-4.1e-5*t.F
         return unidades.Conductividad_termica(k, "BtuhftF")
-        
+
     def ThCond_Liquido_Tsonopoulos(self, T):
         """Método de cálculo de la conductividad térmica de fracciones petrolíferas líquidas a baja presión,
         Tsonopoulos, C., Heidman, J. L., and Hwang, S.-C.,Thermodynamic and Transport Properties of Coal Liquids, An Exxon Monograph, Wiley, New York, 1986."""
@@ -2373,7 +2391,7 @@ class Petroleo(newComponente):
         t=unidades.Temperature(T)
         k=self.Tb.R**0.2904*(9.961e-3-5.364e-6*t.F)
         return unidades.Conductividad_termica(k, "BtuhftF")
-    
+
     def ThCond_Liquido_Riazi_Faghri(self, T):
         """Método de cálculo de la conductividad térmica de fracciones petrolíferas a baja presión,
         Riazi, M. R. and Faghri, A., "Thermal Conductivity of Liquid and Vapor Hydrocarbon Systems: Pentanes and Heavier at Low Pressures," Industrial and Engineering Chemistry, Process Design and Development, Vol. 24, No. 2, 1985, pp. 398-401."""
@@ -2397,14 +2415,14 @@ class Petroleo(newComponente):
         C2=17.77+0.065*self.pr(P)-7.764*Tr-2.065*Tr**2/exp(0.2*self.pr(P))
         k=k1*C2/C1
         return unidades.Conductividad_termica(k)
-    
-    
+
+
     def ThCond_Gas(self, T):
         """Método de cálculo de la conductividad térmica de vapores de fracciones petrolíferas a baja presión, API procedure 12B3.1, pag 1168"""
         t=unidades.Temperature(T)
         k=0.0013349+0.24628/self.M+1.1493/self.M**2+t.F*(3.2768e-5+4.1881e-5/self.M+0.0018427/self.M**2)
         return unidades.Conductividad_termica(k, "BtuhftF")
-    
+
     def ThCond_Gas_Riazi_Faghri(self, T):
         """Método de cálculo de la conductividad térmica de fracciones petrolíferas a baja presión,
         Riazi, M. R. and Faghri, A., "Thermal Conductivity of Liquid and Vapor Hydrocarbon Systems: Pentanes and Heavier at Low Pressures," Industrial and Engineering Chemistry, Process Design and Development, Vol. 24, No. 2, 1985, pp. 398-401."""
@@ -2414,37 +2432,37 @@ class Petroleo(newComponente):
         C=0.19876-0.0312*t-0.00567*t**2
         k=1.7307*A*self.Tb.R**B*self.SG**C
         return unidades.Conductividad_termica(k)
-        
-        
+
+
     def Calor_combustion_bruto(self):
         """Método de cálculo del calor de combustión bruto de una fracción petrolífera, API procedure 14A1.3, pag 1236"""
         h=17.672+66.6*self.API-0.316*self.API**2-0.0014*self.API**3
         hhv=h-0.01*h*(self.water+self.S+self.ash)+40.5*self.S
         return unidades.Enthalpy(hhv, "Btulb")
-        
-    
+
+
     def Calor_combustion_neto(self):
         """Método de cálculo del calor de combustión neto de una fracción petrolífera, API procedure 14A1.3, pag 1236"""
         h=16.796+54.5*self.API-0.217*self.API**2-0.0019*self.API**3
         lhv=h-0.01*h*(self.water+self.S+self.ash)+40.5*self.S-10.53*self.water
         return unidades.Enthalpy(lhv, "Btulb")
-        
-        
-        
-    
+
+
+
+
 class Crudo(Petroleo):
     """Clase que define una fracción de petroleo a partir de la base de datos
-    
+
     Parámetros:
         indice: indice de la base de datos
         Cplus: numero de fraccioness en las que dividir la fracción para compuestos más pesados que C6
     """
     kwargs=Petroleo.kwargs.copy()
-    kwarg={"indice": 0, 
-                    "Cplus": 0, 
-                    
-                    "Rgo": 0.0, 
-                    "gas": None, 
+    kwarg={"indice": 0,
+                    "Cplus": 0,
+
+                    "Rgo": 0.0,
+                    "gas": None,
                     "water": None}
     kwargs.update(kwarg)
     status=0
@@ -2470,10 +2488,10 @@ class Crudo(Petroleo):
             self.status=0
             self.msg=QApplication.translate("pychemqt", "Undefined petrol")
 
-    
+
     def calculo(self):
         propiedades=crudo[self.kwargs["indice"]]
-        
+
         API=propiedades[3]
         SG=141.5/(API+131.5)
         PP=unidades.Temperature(propiedades[7], "F")
@@ -2488,7 +2506,7 @@ class Crudo(Petroleo):
         self.kwargs["N"]=propiedades[5]
         self.kwargs["v100"]=propiedades[9]
         Petroleo.calculo(self)
-        
+
         self.vanadium=propiedades[10]
         self.nickel=propiedades[11]
         self.carbonResid=propiedades[12]
@@ -2507,7 +2525,7 @@ class Crudo(Petroleo):
         if propiedades[16]:
             self.FlashP=unidades.Temperature(propiedades[16], "F")
         self.PourP=PP
-        
+
         self.C1=propiedades[22]/100.
         self.C2=propiedades[23]/100.
         self.C3=propiedades[24]/100.
@@ -2515,7 +2533,7 @@ class Crudo(Petroleo):
         self.nC4=propiedades[26]/100.
         self.iC5=propiedades[27]/100.
         self.nC5=propiedades[28]/100.
-        
+
         SGo=0.7
         SG_=(SG-SGo)/SGo
         B=3.
@@ -2535,14 +2553,14 @@ class Crudo(Petroleo):
         Wi=[prop_Riazi_Alsahhaf(7, M) for M in Mi]
         Tensioni=[unidades.Tension(prop_Riazi_Alsahhaf(8, M), "dyncm") for M in Mi]
         ParSoli=[unidades.SolubilityParameter(prop_Riazi_Alsahhaf(9, M), "calcc") for M in Mi]
-        
-        
+
+
     def pb_Standing(self, T):
         """Standing, M.B.: Volumetric and Phase Behavior of Oil Field Hydrocarbon Systems, SPE, Dallas (1977)"""
         t=unidades.Temperature(T)
         F=(self.Rgo.ft3bbl/self.gas.SG)**0.83*10**(0.00091*t.F-0.0125*self.API)
         return unidades.Pressure(18.2*(F-1.4), "psi")
-        
+
     def pb_Lasater(self, T):
         """Lasater, J.A: "Bubble Point Pressure Correlation," Trans., AIME (1958) 213, 379-381"""
         t=unidades.Temperature(T)
@@ -2556,7 +2574,7 @@ class Crudo(Petroleo):
         else:
             pb=8.26*yg**3.56+1.95
         return unidades.Pressure(pb*t.R/self.gas.SG, "psi")
-        
+
     def pb_Vazquez_Beggs(self, T, ts=350, ps=10):
         """Vázquez, M.E. and Beggs, H.D.: "Correlations for Fluid Physical Property Prediction," J.Pet. Tech. (June 1980), 968-970"""
         t=unidades.Temperature(T)
@@ -2566,16 +2584,16 @@ class Crudo(Petroleo):
             C1, C2, C3=0.0362, 1.0937, 25.724
         else:
             C1, C2, C3=0.0178, 1.187, 23.931
-            
+
         gravity_corr=self.gas.SG*(1.+5.912e-5*self.API*ts.F*log10(ps.psi/114.7))
         return unidades.Pressure((self.Rgo.ft3bbl/C1/gravity_corr/exp(C3*self.API/T.R))**(1./C2), "psi")
-        
+
     def pb_Glaso(self, T):
         """Glaso, O.: "Generalized Pressure-Volume-Temperature Correlations," J. Pet. Tech. (May 1980), 785-795"""
         t=unidades.Temperature(T)
         F=(self.Rgo.ft3bbl/self.gas.SG)**0.816*t.F**0.172/self.API**0.989
         return unidades.Pressure(10**(1.7669+1.7447*log10(F)-0.30218*log10(F)**2), "psi")
-        
+
     def pb_Total(self, T):
         """TOTAL Compagnie Francaise Des Petroles: "Proyectos de Inyección de Fluidos - Correlaciones PVT para Crudos del Oriente de Venezuela," S.A. MENEVEN, Sept. 1983"""
         t=unidades.Temperature(T)
@@ -2591,18 +2609,18 @@ class Crudo(Petroleo):
         """Al-Marhoun, M.A.: "PVT Correlation for Middle East Crude Oils," J. Pet. Tech (May 1988), 650-666"""
         t=unidades.Temperature(T)
         return unidades.Pressure(5.38088e-3*self.Rgo.ft3bbl**0.715082*self.gas.SG**-1.87784*self.SG**3.1437*t.R**1.32657, "psi")
-        
+
     def pb_Dokla_Osman(self, T):
         """Dokla, M.E. and Osman, M.E.: "Correlation of PVT properties for UAE Crudes," Trans., AIME (1992) 293, 41-46"""
         t=unidades.Temperature(T)
         return unidades.Pressure(0.836386e4*self.Rgo.ft3bbl**0.724047*self.gas.SG**-1.01049*self.SG**0.107991*t.R**-0.952584, "psi")
-        
+
     def pb_Petrosky_Farshad(self, T):
         """Petrosky, G.E., Jr. and Farshad, F.F.: "Pressure-Volume-Temperature Correlations for Gulf of Mexico Crude Oils," paper SPE 26644 presented at the 68th Annual Technical Conference and Exhibition, Houston, Texas, Oct. 3-6,1993."""
         t=unidades.Temperature(T)
         F=self.Rgo.ft3bbl**0.5774/self.gas.SG**0.8439*10**(4.561e-5*t.F**1.3911-7.916e-4*self.API**1.541)
         return unidades.Pressure(112.727*(F-12.34), "psi")
-        
+
     def pb_Kartoatmodjo_Schmidt(self, T, ts=350, ps=10):
         """Kartoatmodjo, T. and Schmidt, Z.: "Large Data Bank Improve Crude Physical Property Correlations," Oil and Gas J. (July 4, 1994) 51-55"""
         t=unidades.Temperature(T)
@@ -2612,10 +2630,10 @@ class Crudo(Petroleo):
             C1, C2, C3, C4=0.05958, 0.7972, 13.1405, 0.9986
         else:
             C1, C2, C3, C4=0.0315, 0.7587, 11.2895, 0.9143
-            
+
         gravity_corr=self.gas.SG*(1.+0.1595*self.API**0.4078*ts.F**-0.2506*log10(ps.psi/114.7))
         return unidades.Pressure((self.Rgo.ft3bbl/C1/gravity_corr**C2/10**(C3*self.API/t.R))**C4, "psi")
-        
+
     def pb(self, T):
         """Presión de burbujeo del crudo"""
         t=unidades.Temperature(T)
@@ -2625,8 +2643,8 @@ class Crudo(Petroleo):
         CCO2=1.-693.8*self.gas.CO2*t.F**-1.553
         CH2S=1.-(0.9035+0.0015*self.API)*self.gas.H2S+0.019*(45-self.API)*self.gas.H2S**2
         return unidades.Pressure(CN2*CH2S*CCO2*pb)
-        
-        
+
+
     def B_Standing(self, T):
         """Standing, M.B.: Volumetric and Phase Behavior of Oil Field Hydrocarbon Systems, SPE, Dallas (1977)"""
         t=unidades.Temperature(T)
@@ -2642,16 +2660,16 @@ class Crudo(Petroleo):
             C1, C2, C3=4.667e-4, 1.751e-5, -1.8106e-6
         else:
             C1, C2, C3=4.67e-4, 1.1e-5, 1.337e-9
-            
+
         gravity_corr=self.gas.SG*(1.+5.912e-5*self.API*ts.F*log10(ps.psi/114.7))
         return 1.+C1*self.Rgo.ft3bbl+C2*(t.F-60)*self.API/gravity_corr+C3*self.Rgo.ft3bbl*(t.F-60)*self.API/gravity_corr
-        
+
     def B_Glaso(self, T):
         """Glaso, O.: "Generalized Pressure-Volume-Temperature Correlations," J. Pet. Tech. (May 1980), 785-795"""
         t=unidades.Temperature(T)
         F=self.Rgo.ft3bbl(self.gas.SG/self.SG)**0.526*+0.968*t.F
         return 1.+10**(-6.58511+2.91329*log10(F)-0.27683*log10(F)**2)
-        
+
     def B_Total(self, T):
         """TOTAL Compagnie Francaise Des Petroles: "Proyectos de Inyección de Fluidos - Correlaciones PVT para Crudos del Oriente de Venezuela," S.A. MENEVEN, Sept. 1983"""
         t=unidades.Temperature(T)
@@ -2662,29 +2680,29 @@ class Crudo(Petroleo):
         t=unidades.Temperature(T)
         F=self.Rgo.ft3bbl**0.74239*self.gas.SG**0.323294*self.SG**-1.20204
         return 0.497069+0.862963e-3*t.R+0.182594e-2*F+0.318099e-5*F**2
-        
+
     def B_Dokla_Osman(self, T):
         """Dokla, M.E. and Osman, M.E.: "Correlation of PVT properties for UAE Crudes," Trans., AIME (1992) 293, 41-46"""
         t=unidades.Temperature(T)
         F=self.Rgo.ft3bbl**0.773572*self.gas.SG**0.40402*self.SG**-0.882605
         return 0.431935e-1+0.156667e-2*t.R+0.139775e-2*F+0.380525e-5*F**2
-        
+
     def B_Petrosky_Farshad(self, T):
         """Petrosky, G.E., Jr. and Farshad, F.F.: "Pressure-Volume-Temperature Correlations for Gulf of Mexico Crude Oils," paper SPE 26644 presented at the 68th Annual Technical Conference and Exhibition, Houston, Texas, Oct. 3-6,1993."""
         t=unidades.Temperature(T)
         F=self.Rgo.ft3bbl**0.3738*self.gas.SG**0.2914/self.SG**0.6265+0.24626*t.F**0.5371
         return 1.0113+7.2046e-5*F**3.0936
-        
+
     def B_Kartoatmodjo_Schmidt(self, T, ts=350, ps=10):
         """Kartoatmodjo, T. and Schmidt, Z.: "Large Data Bank Improve Crude Physical Property Correlations," Oil and Gas J. (July 4, 1994) 51-55"""
         t=unidades.Temperature(T)
         ts=unidades.Temperature(ts)
         ps=unidades.Pressure(ps, "atm")
-            
+
         gravity_corr=self.gas.SG*(1.+0.1595*self.API**0.4078*ts.F**-0.2506*log10(ps.psi/114.7))
         F=self.Rgo.ft3bbl**0.755*gravity_corr**0.25*self.SG**-1.5+0.45*t.F
         return 0.98496+1e-4*F**1.5
-        
+
     def B(self, T, P):
         """Factor volumétrico, relación entre el volumen a las condiciones del yacimiento y las condiciones normales a la presión de burbujeo"""
         t=unidades.Temperature(T)
@@ -2705,15 +2723,15 @@ class Crudo(Petroleo):
         t=unidades.Temperature(T)
         return unidades.Viscosity(-0.0092696+t.R**0.5*(0.0010310+4.4507e-5*self.M**0.5)+1.1249e-5*self.M, "cP")
 #        return unidades.Viscosity(-0.0092696+T**0.5*(0.001383-5.9712e-5*self.M**0.5)+1.1249e-5*self.M, "cP")
-        
-        
+
+
     def Mu_Beal(self, T):
         """Beal, C.: "The Viscosity of Air, Water, Natural Gas, crude Oil and its Associated Gases at Oil-Field Temperatures and Pressures," Trans., AIME (1946) 165, 94-115"""
         t=unidades.Temperature(T)
         a=10**(0.43+8.33/self.API)
         mu=(0.32+1.8e7/self.API**4.53)*(360/(t.F+200))**a
         return unidades.Viscosity(mu, "cP")
-        
+
     def Mu_Beggs_Robinson(self, T):
         """Beggs, H.D. and Robinson, J.R.: "Estimating the Viscosity of Crude Oil Systems," J. Pet. Tech. Forum (Sept. 1975), 1140-1141"""
         t=unidades.Temperature(T)
@@ -2721,30 +2739,30 @@ class Crudo(Petroleo):
         y=10**z
         x=y*t.F**-1.163
         return unidades.Viscosity(10**x-1, "cP")
-    
+
     def Mu_Glaso(self, T):
         """Glaso, O.: "Generalized Pressure-Volume-Temperature Correlations," J. Pet. Tech. (May 1980), 785-795"""
         t=unidades.Temperature(T)
         mu=3.141e10*t.F**-3.444*log10(self.API)**(10.313*log10(t.F)-36.447)
         return unidades.Viscosity(mu, "cP")
-        
+
     def Mu_Egbogah(self, T):
         """Egbogah, E.O.: "An Improved Temperature-Viscosity Correlation for Crude Oil Systems," paper 83-34-32 presented at the 1983 Annual Technical Meeting of the Petroleum Society of CIM, Banff, Alberta, May 10-13, 1983"""
         t=unidades.Temperature(T)
         mu=1.8653-0.025086*self.API-0.5644*log10(t.F)
         return unidades.Viscosity(10**(10**mu)-1, "cP")
-        
+
     def Mu_Kartoatmodjo_Schmidt(self, T):
         """Kartoatmodjo, T. and Schmidt, Z.: "Large Data Bank Improve Crude Physical Property Correlations," Oil and Gas J. (July 4, 1994) 51-55"""
         t=unidades.Temperature(T)
         mu=16e8*t.F**-2.8177*log10(self.API)**(5.7526*log10(t.F)-26.9718)
         return unidades.Viscosity(mu, "cP")
-        
+
     def Mu_Muerto(self, T):
         """Viscosidad de petroleos muertos (sin gas disuelto)"""
         metodos=[self.Mu_Beal, self.Mu_Beggs_Robinson, self.Mu_Glaso, self.Mu_Egbogah, self.Mu_Kartoatmodjo_Schmidt][Preferences.getint("petro", "mu_dead")]
         return metodos(T)
-            
+
     def Mu_Chew_Connally(self, T, R):
         """Chew, J.N. and Connally, C.A. Jr.: "A Viscosity Correlation for Gas-Saturated Crude Oils," Trans, AIME (1959) 216, 23-25"""
         t=unidades.Temperature(T)
@@ -2753,7 +2771,7 @@ class Crudo(Petroleo):
         A=10**(r.ft3bbl*(2.2e-7*r.ft3bbl-7.4e-4))
         b=0.68/10**(8.62e-5*r.ft3bbl)+0.25/10**(1.1e-3*r.ft3bbl)+0.062/10**(3.74e-3*r.ft3bbl)
         return unidades.Viscosity(A*muo.cP**b, "cP")
-        
+
     def Mu_Beggs_Robinson_vivo(self, T, R):
         """Beggs, H.D. and Robinson, J.R.: "Estimating the Viscosity of Crude Oil Systems," J. Pet. Tech. Forum (Sept. 1975), 1140-1141"""
         t=unidades.Temperature(T)
@@ -2785,7 +2803,7 @@ class Crudo(Petroleo):
         muo=self.Mu_Vivo(T, R)
         mu=(0.024*muo.cP**1.6+0.038*muo.cP**0.56)*0.001*(p.psi-pb.psi)+muo.cP
         return unidades.Viscosity(mu, "cP")
-    
+
     def Mu_Vazquez_Beggs(self, T, P, R):
         """Vázquez, M.E. and Beggs, H.D.: "Correlations for Fluid Physical Property Prediction," J.Pet. Tech. (June 1980), 968-970"""
         p=unidades.Pressure(P, "atm")
@@ -2793,7 +2811,7 @@ class Crudo(Petroleo):
         muo=self.Mu_Vivo(T, R)
         m=2.6*p.psi**1.187*exp(-11.513-8.98e-5*p.psi)
         return unidades.Viscosity(muo.cP*(p.psi/pb.psi)**m, "cP")
-        
+
     def Mu_Kartoatmodjo_Schmidt_presion(self, T, P, ):
         """Kartoatmodjo, T. and Schmidt, Z.: "Large Data Bank Improve Crude Physical Property Correlations," Oil and Gas J. (July 4, 1994) 51-55"""
         p=unidades.Pressure(P, "atm")
@@ -2801,7 +2819,7 @@ class Crudo(Petroleo):
         muo=self.Mu_Vivo(T, R)
         mu=1.00081*muo.cP+1.127e-3*(p.psi-pb.psi)*(-65.17e-4*muo.cP**1.8148+0.038*muo.cP**1.59)
         return unidades.Viscosity(mu, "cP")
-        
+
     def Mu_Presion(self, T, P):
         """Viscosidad de petroleos vivos (con gas disuelto)"""
         metodos=[self.Mu_Beal_presion, self.Mu_Vazquez_Beggs, self.Mu_Kartoatmodjo_Schmidt_presion][Preferences.getint("petro", "mu_live")]
@@ -2835,7 +2853,7 @@ class Natural_Gas(object):
         if CO2+H2S!=0.:
             self.tpc, self.ppc=self.Critical_Wichert_Aziz()
         self.M=28.96*SG
-            
+
     def Critical_Wichert_Aziz(self):
         """Wichert, E., and K. Aziz. “Calculation of Z’s for Sour Gases.” Hydrocarbon Processing 51, no. 5 (1972): 119–122."""
         A=self.CO2+self.H2S
@@ -2843,12 +2861,12 @@ class Natural_Gas(object):
         tpc=self.tpc.R-e
         ppc=self.ppc.psi*tpc/(self.tpc.R+self.H2S*(1-self.H2S)*e)
         return unidades.Temperature(tpc, "R"), unidades.Pressure(ppc, "psi")
-        
+
     def Critical_Carr_Kobayashi_Burrows(self):
         tpc=self.tpc.R-80*self.CO2+130*self.H2S-250*self.N2
         ppc=self.ppc.psi+440*self.CO2+600*self.H2S-170*self.N2
-        return unidades.Temperature(tpc, "R"), unidades.Pressure(ppc, "psi")  
-    
+        return unidades.Temperature(tpc, "R"), unidades.Pressure(ppc, "psi")
+
     def Critical_Whitson_Brule(self):
         """Whitson, C. H., and M. R. Brule. Phase Behavior. Richardson, TX: Society of Petroleum Engineers, 2000."""
         CO2=Componente(49)
@@ -2859,8 +2877,8 @@ class Natural_Gas(object):
         ppcHC=677+15.*g-37.5*g**2
         tpc=(1-self.N2-self.CO2-self.H2S)*tpcHC+N2.tc.R*self.N2+CO2.tc.R*self.CO2+H2S.tc.R*self.H2S
         ppc=(1-self.N2-self.CO2-self.H2S)*ppcHC+N2.pc.psi*self.N2+CO2.pc.psi*self.CO2+H2S.pc.psi*self.H2S
-        return unidades.Temperature(tpc, "R"), unidades.Pressure(ppc, "psi")  
-        
+        return unidades.Temperature(tpc, "R"), unidades.Pressure(ppc, "psi")
+
     def tc_gas(self):
         """Cálculo de la temperatura crítica de un gas natural de composición conocida con metano como componente principal, API procedure 4C1.1 pag 329"""
         Tc1=exp(-5.624853)*exp(-0.0105852*self.MABP().R-1.4401126*self.SG+0.013200830*self.SG*self.MABP().R)
@@ -2888,7 +2906,7 @@ class Natural_Gas(object):
     def RhoG(self, T, P):
         Z=self.Z_factor(T, P)
         return unidades.Density(P*self.M/Z/R_atml/T, "gl")
-        
+
     def Compressibility_Mattar_Brar_Aziz(self, T, P):
         """Mattar, L. G., S. Brar, and K. Aziz. “Compressibility of Natural Gases.” Journal of Canadian Petroleum Technology (October–November 1975): 77–80."""
         Tr=T/self.tpc
@@ -2901,10 +2919,10 @@ class Natural_Gas(object):
         T5=0.27*Pr/Tr
         dZ=T1+2*T2*g+5*T3*g**4+2*T4*g*(1+0.68446549*g**2-0.68446549**2*g**4)*exp(-0.68446549*g**2)-T5/g
         return self.ppc.atm/P-0.27/Z**2/Tr*dz/(1+g/Z*dz)
-    
+
     def Gas_Formation_Volume_Factor(self, T, P):
         return Z*T/288.9/P
-        
+
     def Viscosity_Carr_Kobayashi_Burrows(self, T):
         """Carr, N., R. Kobayashi, and D. Burrows. “Viscosity of Hydrocarbon Gases under Pressure.” Transactions of the AIME 201 (1954): 270–275."""
         muo=8.118e-3-6.15e-3*log10(self.SG)+(1.709e-5-2.062e-6*self.SG)*unidades.Temperature(T, "R").F
@@ -2921,13 +2939,13 @@ class Natural_Gas(object):
         Y=2.4-0.2*X
         return unidades.Viscosity(1e-4*K*exp(X*(self.RhoG(T, P).lbft3/62.4)**Y), "cP")
 
-    
+
 
 class Water(Componente):
     """Clase que define el agua específica que acompaña al petroleo, con las propiedades específicas"""
     def __init__(self):
         Componente.__init__(self, 62)
-        
+
     def Solubilidad_Culberson_McKetta(self, T, P, S=0):
         """Culberson, O.L. and McKetta, J.J., Jr.: "Phase Equilibria in Hydrocarbon-Water Systems III - The solubility of Methane in Water at Pressures to 10,000 psia," Trans., AIME (1951) 192, 223-226
         S: salinidad en % en peso"""
@@ -2939,7 +2957,7 @@ class Water(Componente):
         R=A+B*p.psi+C*p.psi**2
         Rs=R*10**(-0.0840655*S*t.F**-0.285854)
         return unidades.V2V(Rs, "ft3bbl")
-        
+
     def Solubilidad_McCoy(self, T, P, S=0):
         """McCoy, R.L.: Microcomputer Programs for Petroleum Engineers: Vol. 1, Reservoir Engineering and Formation Evaluation, Gulf Publishing Co., Houston (1983).
         S: salinidad en % en peso"""
@@ -2951,7 +2969,7 @@ class Water(Componente):
         R=A+B*p.psi+C*p.psi**2
         Rs=R*(1-(0.0753-1.73e-4*t.F)*S)
         return unidades.V2V(Rs, "ft3bbl")
-        
+
 
     def Factor_Volumetrico_McCain(self, T, P, S=0):
         """McCain, W.D., Jr: The Properties of Petroleum Fluids, 2nd ed. Tulsa, OK: PennWell Books, 1990.
@@ -2962,7 +2980,7 @@ class Water(Componente):
         DVt=-1.95301e-9*p.psi*t.F-1.72834e-13*p.psi**2*t.F-3.58922e-7*p.psi-2.25341e-10*p.psi**2
         B=(1+DVp)*(1+DVt)
         return B*(1+S*(5.1e-8*p.psi+(5.47e-6-1.95e-10*p.psi)*(t.F-60)-(3.23e-8-8.5e-13*p.psi)*(t.F-60)**2))
-        
+
     def Factor_Volumetrico_McCoy(self, T, P, S=0, R=1):
         """McCoy, R.L.: Microcomputer Programs for Petroleum Engineers: Vol. 1, Reservoir Engineering and Formation Evaluation, Gulf Publishing Co., Houston (1983).
         R: razon de gas disuelto
@@ -2979,19 +2997,19 @@ class Water(Componente):
             C=-5e-11+6.429e-13*t.F-1.43e-15*t.F**2
         B=A+B*p.psi+C*p.psi**2
         return B*(1+S*(5.1e-8*p.psi+(5.47e-6-1.95e-10*p.psi)*(t.F-60)-(3.23e-8-8.5e-13*p.psi)*(t.F-60)**2))
-    
+
     def Rho(self, T, P, S=0):
         B=self.Factor_Volumetrico_McCain(T, P, S)
         s=S*1e7/58443
         g=1.+0.695e-6*s
         return unidades.Density(62.4*g/B, "lbft3")
-        
+
     def Rho_McCain(self, T, P, S=0):
         """McCain, W.D., Jr: The Properties of Petroleum Fluids, 2nd ed. Tulsa, OK: PennWell Books, 1990."""
         B=self.Factor_Volumetrico_McCain(T, P, S)
         g=62.368+0.438603*S+1.60074e-3*S**2
         return unidades.Density(g/B, "lbft3")
-        
+
     def Compresibilidad_Dodson_Standing(self, T, P, S=0, R=0):
         """Dodson, C.R. and Standing, M.B.: "Pressure-Volume-Temperature and Solubility RElations for Natural Gas-Water-Mixtures," Drill. and Prod. Prac., API (1944) 173-179"""
         t=unidades.Temperature(T)
@@ -3004,20 +3022,20 @@ class Water(Componente):
         cr=1.+8.9e-3*R.ft3bbl
         cs=1+S**0.7*(-5.2e-2+2.7e-4*t.F-1.14e-6*t.F**2+1.121e-9*t.F**3)
         return cw*cr*cs
-        
+
     def Compresibilidad_Osif(self, T, P, S=0):
         """Osif, T.L.: "The Effects of Salt, Gas, Temperature and Pressure on the Compressibility of Water," SPE Res.Eng. (Feb. 1988) 3, No.1. 175-181"""
         t=unidades.Temperature(T)
         p=unidades.Pressure(P, "atm")
         S=S*1e4/58443
         return 1/(7.033*p.psi+541.5*S-537.*t.F+403300.)
-        
-    
+
+
     def Mu_Van_Wingen(self, T):
         """Van Wingen, N.: "Viscosity of Air, Water, Natural Gas, and Crude Oil at Varying Pressure and Temperatures," Secondary Recovery of Oil in the United States, API (1950) 127."""
         t=unidades.Temperature(T)
         return unidades.Viscosity(exp(1.003-1.479e-2*t.F+1.982e-5*t.F**2), "cP")
-        
+
     def Mu_Mattews_Russel(self, T, P, S=0):
         """Mathews, C.S and Russel, D.G.: Pressure Buildup and Flow Text in Wells. Monograph Series. Society of Petroleum Engineers of AIME, Dallas (1967) 1, Appendix G."""
         t=unidades.Temperature(T)
@@ -3027,7 +3045,7 @@ class Water(Componente):
         mu=A+B/t.F
         f=1.+3.5e-12*p.psi**2*(t.F-40.)
         return unidades.Viscosity(mu*f, "cP")
-        
+
     def Mu_McCain(self, T, P, S=0):
         """McCain, W.D., Jr: The Properties of Petroleum Fluids, 2nd ed. Tulsa, OK: PennWell Books, 1990."""
         t=unidades.Temperature(T)
@@ -3037,14 +3055,14 @@ class Water(Componente):
         mu=A*t.F**B
         f=0.9994+4.0295e-5*p.psi+3.1062e-9*p.psi**2
         return unidades.Viscosity(mu*f, "cP")
-        
+
     def Mu_McCoy(self, T, S=0):
         """McCoy, R.L.: Microcomputer Programs for Petroleum Engineers: Vol. 1, Reservoir Engineering and Formation Evaluation, Gulf Publishing Co., Houston (1983)."""
         t=unidades.Temperature(T)
         mu=0.02414*10**(247.8/(t-140))
         f=1.-1.87e-3*S**0.5+2.18e-4*S**2.5+(t.F**0.5-1.35e-2*t.F)*(2.76e-3*S-3.44e-4*S**1.5)
         return unidades.Viscosity(mu*f, "cP")
-        
+
     def Tension_Jennings_Newman(self, T, P):
         """Jennings, H.Y., Jr. and Newman, G.I.L.:"The Effect of Temperature and Pressure on the Interfacial Tension of Water Against Mechane-Normal Decane Mixtures," Trans., AIME (1971) 251, 171-175."""
         t=unidades.Temperature(T)
@@ -3053,7 +3071,7 @@ class Water(Componente):
         B=-5.28473e-3+9.87913e-6*t.F
         C=(2.33814-4.57194e-4*t.F-7.52678e-6*t.F**2)*1e-7
         return unidades.Tension(A+B*p.psi+C*p.psi**2, "dyncm")
-        
+
 if __name__ == '__main__':
 #    petroleo=Petroleo()
 #    print petroleo.VABP
@@ -3084,7 +3102,7 @@ if __name__ == '__main__':
 #    print petroleo.Conductividad_termica_gas(t).BtuhftF
 
 #    print PNA_Peng_Robinson(7, 655, 94)
-    
+
 #    gas=Natural_Gas(0.699)
 #    print gas.ppc.psi, gas.tpc.R
 #    print Z_Papay(1.346, 5.603)
@@ -3110,25 +3128,25 @@ if __name__ == '__main__':
 #    print petroleo.M
 #    print petroleo.refractive_index()
 #    print petroleo.composicion_molecular(v100=336)
-    
+
 #    petroleo=Petroleo(SG=0.839, Tb=unidades.Temperature(972, "R"), v100=3)
 #    print petroleo.pour_point().R
-    
+
 #    petroleo=Petroleo(SG=0.8304, Tb=unidades.Temperature(570.2, "F"))
 #    print petroleo.aniline_point().R, petroleo.watson
-    
+
 #    petroleo=Petroleo(SG=0.853, Tb=unidades.Temperature(414.5, "F"))
 #    print petroleo.smoke_point().mm, petroleo.watson
 
 #    petroleo=Petroleo(SG=0.799, Tb=unidades.Temperature(874.5, "R"))
 #    print petroleo.freezing_point().R, petroleo.watson
-    
+
 #    petroleo=Petroleo(SG=0.787, Tb=unidades.Temperature(811.5, "R"))
 #    print petroleo.cloud_point().R
-    
+
 #    petroleo=Petroleo(API=32.3, Tb=unidades.Temperature(617, "F"))
 #    print petroleo.cetane_index()
-    
+
 #    d86=[unidades.Temperature(t, "F") for t in [149, 230, 282, 325, 429]]
 #    petroleo=Petroleo(D86=d86)
 #    print petroleo.VABP.F
@@ -3158,13 +3176,13 @@ if __name__ == '__main__':
 #    petroleo=Petroleo(API=44.4, D86=d86)
 #    t=unidades.Temperature(325, "F")
 #    print petroleo.Cp_liquido(t).BtulbF
-    
+
 #    d86=[unidades.Temperature(t, "F") for t in [304, 313, 321, 329, 341]]
 #    petroleo=Petroleo(API=44.4, D86=d86)
 #    t=unidades.Temperature(885, "F")
 #    p=unidades.Pressure(205, "psi")
 #    print petroleo.Cp_gas(t, p.atm).BtulbF
-    
+
 #    R=unidades.V2V(675, "ft3bbl")
 #    gas=Natural_Gas(SG=0.95, CO2=0.2, H2S=0.1)
 #    petroleo=Petroleo(API=31., Rgo=R, gas=gas)
@@ -3191,7 +3209,7 @@ if __name__ == '__main__':
 #    print petroleo.Mu_Chew_Connally(t, R).cP
 #    print petroleo.Mu_Beggs_Robinson_vivo(t, R).cP
 #    print petroleo.Mu_Kartoatmodjo_Schmidt_vivo(t, R).cP
-    
+
 #    petroleo=Petroleo(API=33., M=250)
 #    print petroleo.Viscosidad_gas(unidades.Temperature(100, "F")).cP
 
@@ -3207,7 +3225,7 @@ if __name__ == '__main__':
 #    p=unidades.Pressure(5000, "psi")
 #    print agua.Factor_Volumetrico_McCain(t, p.atm, 2)
 #    print agua.Factor_Volumetrico_McCoy(t, p.atm, 2)
-    
+
 #    R=unidades.V2V(17.8, "ft3bbl")
 #    print agua.Compresibilidad_Dodson_Standing(t, p.atm, 2, R)
 #    print agua.Compresibilidad_Osif(t, p.atm, 2)
@@ -3240,7 +3258,7 @@ if __name__ == '__main__':
 #    v=[10, 30, 50, 70, 90]
 #    D1160=[i+273.15 for i in [150, 205, 250, 290, 350]]
 #    petroleo=Petroleo(P_dist=10, T_dist=v, D1160=D1160)
-    
+
 
 #    print prop_Riazi_Daubert_M_SG(0, 252., 0.8095)
 
@@ -3262,6 +3280,6 @@ if __name__ == '__main__':
 #    print petroleo.Tension_API(t).dyncm
 #    print petroleo.Tension_Baker_Swerdloff(t).dyncm
 #    print petroleo.API
-    
+
     petroleo=Petroleo(API=22.5, M=339.7)
     print(petroleo.API, petroleo.M)

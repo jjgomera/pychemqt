@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -36,15 +53,15 @@ class R161(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-161 of Wu and Zhou (2012).",
         "__doi__": {"autor": "Wu, J. and Zhou, Y.",
-                    "title": "An Equation of State for Fluoroethane (R161)", 
+                    "title": "An Equation of State for Fluoroethane (R161)",
                     "ref": "Int. J. Thermophys. 33:220-234, 2012.",
-                    "doi": "10.1007/s10765-011-1151-3"}, 
+                    "doi": "10.1007/s10765-011-1151-3"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205}, 
-        
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0, 
-        "Pmin": 0.005512, "rhomin": 19.91, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205},
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0,
+        "Pmin": 0.005512, "rhomin": 19.91,
 
         "nr1": [1.511, -2.3 , -0.457, 0.1683, 0.04133],
         "d1": [1, 1, 2, 3, 4],
@@ -68,14 +85,14 @@ class R161(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-161 of Lemmon (2005).",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "preliminary equation, 2005.", 
+                    "title": "preliminary equation, 2005.",
                     "ref": "",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 50000.0, "rhomax": 20.0, 
-        "Pmin": 0.006, "rhomin": 19.95, 
+
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 50000.0, "rhomax": 20.0,
+        "Pmin": 0.006, "rhomin": 19.95,
 
         "nr1": [0.75688, -1.4110, -0.63922, 0.055685, 0.00028395],
         "d1": [1, 1, 1, 3, 7],

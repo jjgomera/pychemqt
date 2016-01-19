@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -38,15 +55,15 @@ class Benzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Thol et al. (2013).",
         "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
-                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa (final)", 
+                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa (final)",
                     "ref": "to be published, 2013",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45, 
-        "Pmin": 4.78, "rhomin": 11.45, 
+        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45,
+        "Pmin": 4.78, "rhomin": 11.45,
 
         "nr1": [0.03512459, 2.2338, -3.10542612, -0.577233, 0.25101],
         "d1": [4, 1, 1, 2, 3],
@@ -71,15 +88,15 @@ class Benzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Thol et al. (2012).",
         "__doi__": {"autor": "Thol M., Lemmon E.W., Span R.",
-                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa", 
+                    "title": "Equation of state for benzene for temperatures from the melting line up to 750 K and pressures up to 500 MPa",
                     "ref": "High Temperatures-High Pressures 01/2012; 41:81.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45, 
-        "Pmin": 4.78, "rhomin": 11.45, 
+        "Tmin": Tt, "Tmax": 750., "Pmax": 500000.0, "rhomax": 11.45,
+        "Pmin": 4.78, "rhomin": 11.45,
 
         "nr1": [0.3513062e-1, 0.2229707e1, -0.3100459e1, -0.5763224, 0.2504179],
         "d1": [4, 1, 1, 2, 3],
@@ -104,15 +121,15 @@ class Benzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP2,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 278.7, "Tmax": 635.0, "Pmax": 78000.0, "rhomax": 11.45, 
-        "Pmin": 6.0329, "rhomin": 11.385, 
+        "Tmin": 278.7, "Tmax": 635.0, "Pmax": 78000.0, "rhomax": 11.45,
+        "Pmin": 6.0329, "rhomin": 11.385,
 
         "nr1": [-0.918572178424, 0.155357491575e1, -0.356149241161,
                 0.817273664265, -0.331303917534e1, 0.335336626528e1,
@@ -134,15 +151,15 @@ class Benzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.76284970, 1.02610647, -3.74263321, 9.57682041e-2,
                 2.59179321e-4, -1.03082188e-1],
@@ -175,9 +192,9 @@ class Benzene(MEoS):
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
               "__name__": "Chung (1988)",
               "w": 0.5693, "mur": 0.3209, "k": 0.0642}
 
@@ -186,16 +203,16 @@ class Benzene(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2012)",
                "__doi__": {"autor": "Assael, M.J., Mihailidou, E., Huber, M.L. and Perkins, R.A.",
-                           "title": "Reference Correlation of the Thermal Conductivity of Benzene from the Triple Point to 725 K and up to 500 MPa", 
+                           "title": "Reference Correlation of the Thermal Conductivity of Benzene from the Triple Point to 725 K and up to 500 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 41, 043102 (2012)",
-                           "doi": "10.1063/1.4755781"}, 
+                           "doi": "10.1063/1.4755781"},
 
                "Tref": 1., "kref": 1e-3,
                "no": [56991.07, -521.44, 1.5449],
                "co": [0, 1, 2],
-               "noden": [562.02, 9.714, 0.0026102], 
-               "coden": [0, 1, 2], 
- 
+               "noden": [562.02, 9.714, 0.0026102],
+               "coden": [0, 1, 2],
+
                "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
                "nb": [.282489e-1, -.773415e-1, .714001e-1, -.236798e-1,
                       .300875e-2, -.119268e-1, .833389e-1, -.898176e-1,

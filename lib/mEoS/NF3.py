@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -34,15 +51,15 @@ class NF3(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for nitrogen trifluoride of Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.314471,
         "cp": CP1,
 
-        "Tmin": 85.0, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 25.3, 
-        "Pmin": 0.000186, "rhomin": 26.32, 
+        "Tmin": 85.0, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 25.3,
+        "Pmin": 0.000186, "rhomin": 26.32,
 
         "b": [None, 0.1774353868e-1, -0.5409379418, 0.3976634466e1,
               -0.5209476694e3, -0.3286322888e5, -0.5990517411e-3, 0.9217525601,

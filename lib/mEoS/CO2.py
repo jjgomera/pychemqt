@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -25,13 +42,13 @@ class CO2(MEoS):
            "pow": [0, 1],
            "ao_pow": [8.37304456, -3.70454304],
            "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
-           "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792], 
+           "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792],
            "ao_hyp": [], "hyp": []}
-           
+
     Fi2 = {"ao_log": [1, 2.50002],
            "pow": [0, 1],
            "ao_pow": [11.925152758, -16.118762264],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [2.04452, -1.06044, 2.03366, 0.01393],
            "hyp": [3.022758166, -2.844425476, 1.589964364, 1.12159609]}
 
@@ -44,10 +61,10 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Span and Wagner (1996)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "A New Equation of State for Carbon Dioxide Covering the Fluid Region from the Triple‐Point Temperature to 1100 K at Pressures up to 800 MPa", 
+                    "title": "A New Equation of State for Carbon Dioxide Covering the Fluid Region from the Triple‐Point Temperature to 1100 K at Pressures up to 800 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 25, 1509 (1996)",
-                    "doi": "10.1063/1.555991"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555991"},
+        "__test__":
             # Table 34, Pag 1560
             """
             >>> st=CO2(T=216.592, x=0.5)
@@ -175,14 +192,14 @@ class CO2(MEoS):
             >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             1100 1092.77 545.32 1277.4 -0.43587 1.202 1.4286 1542.2
-            """, 
+            """,
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 2000., "Pmax": 800000.0, "rhomax": 37.24, 
-        "Pmin": 517.95, "rhomin": 26.777, 
+        "Tmin": Tt, "Tmax": 2000., "Pmax": 800000.0, "rhomax": 37.24,
+        "Pmin": 517.95, "rhomin": 26.777,
 
         "nr1": [0.38856823203161, 0.29385475942740e1, -0.55867188534934e1,
                 -0.76753199592477, 0.31729005580416, 0.54803315897767,
@@ -229,16 +246,16 @@ class CO2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon dioxide of Ely et al. (1987)",
         "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
-                    "title": "Thermophysical properties for special high CO2 content mixtures", 
+                    "title": "Thermophysical properties for special high CO2 content mixtures",
                     "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.31434,
         "cp": CP3,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 216.58, "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778, 
-        "Pmin": 518.2, "rhomin": 26.778, 
+        "Tmin": 216.58, "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778,
+        "Pmin": 518.2, "rhomin": 26.778,
 
         "b": [None, -0.981851065838e-2, 0.995062267309, -0.228380160313e2,
               0.281827634529e4, -0.347001262699e6, 0.394706709102e-3,
@@ -256,15 +273,15 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Kunz and Wagner (2004)",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24,
+#        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.52646564804653, -0.14995725042592e1, 0.27329786733782,
                 0.12949500022786],
@@ -287,15 +304,15 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Ely et al. (1987)",
         "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
-                    "title": "Thermophysical properties for special high CO2 content mixtures", 
+                    "title": "Thermophysical properties for special high CO2 content mixtures",
                     "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31434,
         "cp": CP3,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 216.58, "Tmax": 1000., "Pmax": 100000.0, "rhomax": 26.776, 
-        "Pmin": 518.03, "rhomin": 26.776, 
+        "Tmin": 216.58, "Tmax": 1000., "Pmax": 100000.0, "rhomax": 26.776,
+        "Pmin": 518.03, "rhomin": 26.776,
 
         "nr1": [0.485497428986, -0.191900462349e1, 0.451739876847,
                 0.838475229022e-2, 0.310719428397, -0.183619563850,
@@ -322,9 +339,9 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon dioxide of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=CO2(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -333,13 +350,13 @@ class CO2(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             191.33 0.60315
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 37.24, 
-        "Pmin": 517.86, "rhomin": 26.795, 
+        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 37.24,
+        "Pmin": 517.86, "rhomin": 26.795,
 
         "nr1": [0.89875108, -0.21281985e1, -0.6819032e-1, 0.76355306e-1,
                 0.22053253e-3],
@@ -357,15 +374,15 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [-4.71122371e-1, 9.13375599e-1, -1.96793707, 6.89687161e-2,
                 2.15658922e-4, 9.51876380e-2],
@@ -416,10 +433,10 @@ class CO2(MEoS):
                             -1.537102e-2],
               "__name__": "Fenghour (1998)",
               "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
-                          "title": "The Viscosity of Carbon Dioxide", 
+                          "title": "The Viscosity of Carbon Dioxide",
                           "ref": "J. Phys. Chem. Ref. Data 27, 31 (1998)",
-                          "doi": "10.1063/1.556013"}, 
-                          
+                          "doi": "10.1063/1.556013"},
+
               "bmega_b": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
                           -1.537102e-2],
               "ek": 251.196, "sigma": 1.,
@@ -437,9 +454,9 @@ class CO2(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "ek": 251.196, "sigma": 0.3751, "n_chapman": 0,
               "Tref": 304.1282, "muref": 1.0,
@@ -456,15 +473,15 @@ class CO2(MEoS):
               "D": [0.0, 0.0, 0.0]}
 
     # TODO: Add visco correlation from vesovic
-    
+
     _viscosity = visco0, visco1
 
     thermo0 = {"eq": 1,
                "__name__": "Vesovic (1990)",
                "__doi__": {"autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., Sengers, J.V., Watson, J.T.R., and Millat, J.",
-                           "title": "The transport properties of carbon dioxide", 
+                           "title": "The transport properties of carbon dioxide",
                            "ref": "J. Phys. Chem. Ref. Data 19, 763 (1990)",
-                           "doi": "10.1063/1.555875"}, 
+                           "doi": "10.1063/1.555875"},
                "__test__": """
                    >>> st=CO2(T=222, P=1e5)
                    >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)

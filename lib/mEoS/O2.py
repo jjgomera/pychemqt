@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -34,7 +51,7 @@ class O2(MEoS):
     Fi2 = {"ao_log": [1, 2.50146],
            "pow": [0, 1],
            "ao_pow": [10.001843586, -14.996095135],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [1.07558, 1.01334, 0, 0],
            "hyp": [14.461722565, 7.223325463, 0, 0]}
 
@@ -50,15 +67,15 @@ class O2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for oxygen of Schmidt and Wagner (1985).",
         "__doi__": {"autor": "Schmidt, R., Wagner, W.",
-                    "title": "A new form of the equation of state for pure substances and its application to oxygen", 
+                    "title": "A new form of the equation of state for pure substances and its application to oxygen",
                     "ref": "Fluid Phase Equuilibria. 19 (1985), 175-200.",
-                    "doi": "10.1016/0378-3812(85)87016-3"}, 
+                    "doi": "10.1016/0378-3812(85)87016-3"},
         "R": 8.31434,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 82000.0, "rhomax": 43.348, 
-        "Pmin": 0.14628, "rhomin": 40.816, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 82000.0, "rhomax": 43.348,
+        "Pmin": 0.14628, "rhomin": 40.816,
 
         "nr1": [0.39837687490, -0.1846157454e1, 0.4183473197, 0.2370620711e-1,
                 0.9771730573e-1, 0.3017891294e-1, 0.2273353212e-1,
@@ -83,15 +100,15 @@ class O2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for oxygen of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 82000.0, "rhomax": 43.348, 
-#        "Pmin": 73.5, "rhomin": 29.2, 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 82000.0, "rhomax": 43.348,
+#        "Pmin": 73.5, "rhomin": 29.2,
 
         "nr1": [0.88878286369701, -0.24879433312148e1, 0.59750190775886,
                 0.96501817061881e-2, 0.71970428712770e-1, 0.22337443000195e-3],
@@ -112,15 +129,15 @@ class O2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for oxygen of Younglove (1982).",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.31411,
         "cp": CP2,
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 40.820, 
-        "Pmin": 0.148, "rhomin": 40.820, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 40.820,
+        "Pmin": 0.148, "rhomin": 40.820,
 
         "b": [None, -0.4365859650e-3, 0.2005820677, -0.4197909916e1,
               0.1878215317e3, -0.1287473398e5, 0.1556745888e-4, 0.1343639359e-2,
@@ -136,9 +153,9 @@ class O2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for oxygen of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=O2(T=700, rho=200, eq=3)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -150,16 +167,16 @@ class O2(MEoS):
 
         "R": 8.31451,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 43.348, 
-        "Pmin": 0.14603, "rhomin": 40.885, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 43.348,
+        "Pmin": 0.14603, "rhomin": 40.885,
 
         "nr1": [0.88878286, -0.24879433e1, 0.59750191, 0.96501817e-2,
                 0.71970429e-1, 0.22337443e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
- 
+
         "nr2": [0.18558686, -0.38129368e-1, -0.15352245, -0.26726815e-1,
                 -0.25675299e-1, 0.95714302e-2],
         "d2": [2, 5, 1, 4, 3, 4],
@@ -204,9 +221,9 @@ class O2(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=O2(T=100, rhom=0)
                     >>> print "%0.5f" % st.mu.muPas
@@ -227,7 +244,7 @@ class O2(MEoS):
                     >>> print "%0.4f" % st.mu.muPas
                     24.7898
                     """, # Table V, Pag 28
-                    
+
               "Tref": 1., "etaref": 1,
               "ek": 118.5, "sigma": 0.3428,
               "n_chapman": 0.151011418/M**0.5,
@@ -245,10 +262,10 @@ class O2(MEoS):
                             98.4332230147836, -22.9410694301649, 2.12402264924749],
               "__name__": "Younglove (1982)",
               "__doi__": {"autor": "Younglove, B.A.",
-                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                          "doi": ""}, 
-            
+                          "doi": ""},
+
               "ek": 113., "sigma": 0.3437,
               "n_chapman": 0.15099557923496,
               "t_chapman": 0.0,
@@ -262,9 +279,9 @@ class O2(MEoS):
               "collision": [0.46649, -0.57015, 0.19164, -0.03708, 0.00241],
               "__name__": "Laesecke (1990)",
               "__doi__": {"autor": "Laesecke, A., Krauss, R., Stephan, K., and Wagner, W.",
-                          "title": "Transport Properties of Fluid Oxygen", 
+                          "title": "Transport Properties of Fluid Oxygen",
                           "ref": "J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.",
-                          "doi": "10.1063/1.555863"}, 
+                          "doi": "10.1063/1.555863"},
                "__test__": """
                     >>> st=O2(T=70, x=0.5, visco=2)
                     >>> print "%0.4g %0.4g" % (st.Liquido.mu.muPas, st.Gas.mu.muPas)
@@ -365,9 +382,9 @@ class O2(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=O2(T=100, rhom=0)
                     >>> print "%0.5f" % st.k.mWmK
@@ -406,9 +423,9 @@ class O2(MEoS):
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
                "__doi__": {"autor": "Younglove, B.A.",
-                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                            "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "ek": 113, "sigma": 0.3437,
                "Nchapman": 0.15099557923496,
@@ -426,9 +443,9 @@ class O2(MEoS):
     thermo2 = {"eq": 1,
                "__name__": "Laesecke (1990)",
                "__doi__": {"autor": "Laesecke, A., Krauss, R., Stephan, K., and Wagner, W.",
-                           "title": "Transport Properties of Fluid Oxygen", 
+                           "title": "Transport Properties of Fluid Oxygen",
                            "ref": "J. Phys. Chem. Ref. Data, 19(5):1089-1122, 1990.",
-                           "doi": "10.1063/1.555863"}, 
+                           "doi": "10.1063/1.555863"},
                "__test__": """
                     >>> st=O2(T=70, x=0.5, thermo=2)
                     >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)

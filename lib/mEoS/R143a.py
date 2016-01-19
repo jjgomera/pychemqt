@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -46,11 +63,11 @@ class R143a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-143a of Lemmon and Jacobsen (2000).",
         "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                    "title": "An International Standard Formulation for the Thermodynamic Properties of 1,1,1-Trifluoroethane (HFC-143a) for Temperatures From 161 to 450 K and Pressures to 50 MPa", 
+                    "title": "An International Standard Formulation for the Thermodynamic Properties of 1,1,1-Trifluoroethane (HFC-143a) for Temperatures From 161 to 450 K and Pressures to 50 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 29, 521 (2000)",
-                    "doi": "10.1063/1.1318909"}, 
+                    "doi": "10.1063/1.1318909"},
 
-        "__test__": 
+        "__test__":
             #Table, Pag 541
             """
             >>> st=R143a(T=161.34, x=0.5)
@@ -180,14 +197,14 @@ class R143a(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
                 st.T.C, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             300 890.5 569.53 681.83 1.9149 1.368 1.595 671.2
-            """, 
+            """,
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 33936.4, "so": 198.961}, 
-        
-        "Tmin": Tt, "Tmax": 650.0, "Pmax": 100000.0, "rhomax": 15.85, 
-        "Pmin": 1.0749, "rhomin": 15.832, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 33936.4, "so": 198.961},
+
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 100000.0, "rhomax": 15.85,
+        "Pmin": 1.0749, "rhomin": 15.832,
 
         "nr1": [.77736443e1, -.870185e1, -.27779799, .1460922, .89581616e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -205,15 +222,15 @@ class R143a(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-143a of Outcalt and McLinden (1996)",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "An equation of state for the thermodynamic properties of R143a (1,1,1-trifluoroethane)", 
+                    "title": "An equation of state for the thermodynamic properties of R143a (1,1,1-trifluoroethane)",
                     "ref": "Int. J. Thermophys., 18(6):1445-1463, 1997.",
-                    "doi": "10.1007/BF02575344"}, 
-                    
+                    "doi": "10.1007/BF02575344"},
+
         "R": 8.314471,
         "cp": CP3,
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 15.84, 
-        "Pmin": 1.069, "rhomin": 15.8328, 
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 15.84,
+        "Pmin": 1.069, "rhomin": 15.8328,
 
         "b": [None, -0.240561786316e-1, 0.262345913719e1, -0.650858041394e2,
               0.995952053681e4, -0.147536464961e7, 0.135498153308e-2,
@@ -231,15 +248,15 @@ class R143a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-143a of Li et al. (1999).",
         "__doi__": {"autor": "Li, J., Tillner-Roth, R., Sato, H., and Watanabe, K.",
-                    "title": "An Equation of State for 1,1,1-Trifluoroethane (R-143a)", 
+                    "title": "An Equation of State for 1,1,1-Trifluoroethane (R-143a)",
                     "ref": "Int. J. Thermophys., 20(6):1639-1651, 1999.",
-                    "doi": "10.1023/A:1022645626800"}, 
+                    "doi": "10.1023/A:1022645626800"},
         "R": 8.31451,
         "cp": Fi2,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 650.0, "Pmax": 50000.0, "rhomax": 15.84, 
-        "Pmin": 1.0808, "rhomin": 15.819, 
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 50000.0, "rhomax": 15.84,
+        "Pmin": 1.0808, "rhomin": 15.819,
 
         "nr1": [.1606645e-1, .4163515e1, -.5031058e1, -.1920208e-1, .1470093e-2],
         "d1": [5, 1, 1, 2, 4],
@@ -258,9 +275,9 @@ class R143a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-143a of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R143a(T=700, rho=200, eq=3)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -269,12 +286,12 @@ class R143a(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             201.13 0.47846
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": CP2,
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.82, 
-        "Pmin": 1.072, "rhomin": 15.816, 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.82,
+        "Pmin": 1.072, "rhomin": 15.816,
 
         "nr1": [.10306886e1, -.29497307e1, .6943523, .71552102e-1, .19155982e-3],
         "d1": [1, 1, 1, 3, 7],

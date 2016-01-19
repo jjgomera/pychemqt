@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -19,7 +36,7 @@ class D2(MEoS):
     Tb = unidades.Temperature(23.661)
     f_acent = -0.136
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    
+
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [-2.0677351753, 2.4237151502],
@@ -41,10 +58,10 @@ class D2(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for deuterium of Richardson et al. (2013).",
         "__doi__": {"autor": "Richardson, I.A., Leachman, J.W., and Lemmon, E.W.",
-                    "title": "Fundamental Equation of State for Deuterium ", 
+                    "title": "Fundamental Equation of State for Deuterium ",
                     "ref": "J. Phys. Chem. Ref. Data 43, 013103 (2014)",
-                    "doi": "10.1063/1.4864752"}, 
-        "__test__": 
+                    "doi": "10.1063/1.4864752"},
+        "__test__":
             # Table 7, Pag 12
             """
             >>> st=D2(T=18.724, x=0.5)
@@ -83,14 +100,14 @@ class D2(MEoS):
                 st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
                 st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             38 1600.6 88.550 50.659 172.270 244.900 5.009 6.920 4.187 4.300 132.060 137.920 374.12 297.24
-            """, 
-            
+            """,
+
         "R": 8.3144621,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 2000000.0, "rhomax": 43.351, 
-        "Pmin": 17.189, "rhomin": 43.351, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 2000000.0, "rhomax": 43.351,
+        "Pmin": 17.189, "rhomin": 43.351,
 
         "nr1": [0.006267958, 10.53609, -10.14149, 0.356061, 0.1824472,
                 -1.129638, -0.0549812, -0.6791329],
@@ -102,8 +119,8 @@ class D2(MEoS):
         "d2": [2, 2, 1, 1, 3, 2],
         "t2": [1.25, 1.25, 1.395, 1.627, 1.0, 2.5],
         "c2": [1, 1, 2, 2, 2, 2],
-        "gamma2": [1]*6, 
-        
+        "gamma2": [1]*6,
+
         "nr3": [1.686617, -4.240326, 1.857114, -0.5903705, 1.520171,
                 2.361373, -2.297315],
         "d3": [1, 1, 2, 3, 3, 1, 3],
@@ -118,16 +135,16 @@ class D2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for deuterium of McCarty (1989)",
         "__doi__": {"autor": "McCarty, R.D.",
-                    "title": "Correlations for the Thermophysical Properties of Deuterium", 
+                    "title": "Correlations for the Thermophysical Properties of Deuterium",
                     "ref": "National Institute of Standards and Technology, Boulder, CO, 1989",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.31434,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 423.0, "Pmax": 320000.0, "rhomax": 43.38, 
-        "Pmin": 19.462, "rhomin": 43.365, 
+        "Tmin": Tt, "Tmax": 423.0, "Pmax": 320000.0, "rhomax": 43.38,
+        "Pmin": 19.462, "rhomin": 43.365,
 
         "b": [None, 0.4894244053982e-4, 0.5600164604601e-1, -0.6301493491211,
               0.2538329946038e1, 0.1723475985309e3, 0.2956238369436e-4,

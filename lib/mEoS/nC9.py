@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -26,11 +43,11 @@ class nC9(MEoS):
            "ao_pow": [10.7927224829, -8.2418318753],
            "ao_exp": [24.926, 24.842, 11.188, 17.483],
            "titao": [1221/Tc, 2244/Tc, 5008/Tc, 11724/Tc]}
-           
+
     Fi2 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [16.313913248, -102.160247463],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [18.0241, 38.1235, 53.3415, 0],
            "hyp": [0.263819696, 1.370586158, 2.848860483, 0]}
 
@@ -38,21 +55,21 @@ class nC9(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nonane of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=nC9(T=596, rho=128.2551)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             596 1 2200.687 81692.218 156.217 379.897 715.553 85.318
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
-        "Pmin": 0.00044, "rhomin": 6.05, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06,
+        "Pmin": 0.00044, "rhomin": 6.05,
 
         "nr1": [1.1151, -2.7020, 0.83416, -0.38828, 0.1376, 0.00028185],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -68,15 +85,15 @@ class nC9(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06, 
-        "Pmin": 0.00044, "rhomin": 6.05, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06,
+        "Pmin": 0.00044, "rhomin": 6.05,
 
         "nr1": [0.11151e1, -0.27020e1, 0.83416, -0.38828, 0.13760, 0.28185e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -113,9 +130,9 @@ class nC9(MEoS):
               "collision": [0.340344, -0.466455],
               "__name__": "Huber (2004)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
-                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
                         "ref": "Fluid Phase Equilibria 224(2004)263-270.",
-                        "doi": "10.1016/j.fluid.2004.07.012"}, 
+                        "doi": "10.1016/j.fluid.2004.07.012"},
               "__test__": """
                   >>> st=nC9(T=300, rhom=5.6191)
                   >>> print "%0.2f" % st.mu.muPas
@@ -157,9 +174,9 @@ class nC9(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
               "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                        "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane", 
+                        "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
                         "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                        "doi": "10.1016/j.fluid.2004.10.031"}, 
+                        "doi": "10.1016/j.fluid.2004.10.031"},
                "__test__": """
                    >>> st=nC9(T=300, rhom=5.6194)
                    >>> print "%0.2f" % st.k

@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 #############################################################################
 # Implemented multiparameter equation of state
@@ -225,32 +243,32 @@ class MEoS(_fase):
               "s": None,
               "u": None,
               "x": None,
-              "v": 0.0, 
+              "v": 0.0,
 
               "eq": 0,
               "visco": 0,
               "thermal": 0,
-              "ref": None, 
-              "refvalues": None, 
-              "rho0": 0, 
-              "T0": 0, 
+              "ref": None,
+              "refvalues": None,
+              "rho0": 0,
+              "T0": 0,
               "recursion": True}
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown Variables")
     __doi__ = {
         "surface":
             {"autor": "Mulero, A., Cachadiña, I., and Parra, M.I.",
-             "title": "Recommended Correlations for the Surface Tension of Common Fluids", 
+             "title": "Recommended Correlations for the Surface Tension of Common Fluids",
              "ref": "J. Phys. Chem. Ref. Data 41, 043105 (2012)",
-             "doi": "10.1063/1.4768782"}, 
+             "doi": "10.1063/1.4768782"},
         "melting":
             {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
-             "title": "Melting Curves of Pressure‐Transmitting Fluids ", 
+             "title": "Melting Curves of Pressure‐Transmitting Fluids ",
              "ref": "J. Chem. Phys. 40, 3662 (1964)",
-             "doi": "10.1063/1.1725068"}, 
+             "doi": "10.1063/1.1725068"},
         "dielectric":
             {"autor": "Harvey, A.H. and Lemmon, E.W.",
-             "title": "Method for Estimating the Dielectric Constant of Natural Gas Mixtures ", 
+             "title": "Method for Estimating the Dielectric Constant of Natural Gas Mixtures ",
              "ref": "Int. J. Thermophys., 26(1):31-46, 2005.",
              "doi": "10.1007/s10765-005-2351-5"}
         }
@@ -359,14 +377,14 @@ class MEoS(_fase):
 
         self.kwargs = MEoS.kwargs.copy()
         self.__call__(**kwargs)
-        
+
         # Define general documentation
         if self._surface and "__doi__" not in self._surface:
             self._surface["__doi__"] = self.__doi__["surface"]
 
     def __call__(self, **kwargs):
         self.cleanOldValues(**kwargs)
-        
+
         self._constants = self.eq[self.kwargs["eq"]]
         # Configure custom parameter from eq
         if "M" in self._constants:
@@ -394,7 +412,7 @@ class MEoS(_fase):
                     self.status = 5
                     self.msg = QApplication.translate("pychemqt", "Solution don´t converge", None, QApplication.UnicodeUTF8)
                     print(("dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)))
-            
+
     def cleanOldValues(self, **kwargs):
         """Convert alternative rho input to correct rho value"""
         if "rhom" in kwargs:
@@ -462,7 +480,7 @@ class MEoS(_fase):
         thermal = self.kwargs["thermal"]
         ref = self.kwargs["ref"]
         refvalues = self.kwargs["refvalues"]
-        
+
         self._ref(ref, refvalues)
 
         if self.id:
@@ -507,7 +525,7 @@ class MEoS(_fase):
         if x is None:
             # Method with iteration necessary to get x
             if self._mode == "T-P":
-                
+
                 if self.kwargs["rho0"]:
                     rhoo = self.kwargs["rho0"]
                 elif T < 0.99*self.Tc and \
@@ -522,7 +540,7 @@ class MEoS(_fase):
                 else:
                     rhoo = P/T/self.R
                 rinput = fsolve(lambda rho: self._eq(rho, T)["P"]-P, rhoo, full_output=True)
-            
+
                 if rinput[2] != 1:
                     self.status = 0
                     return
@@ -637,9 +655,9 @@ class MEoS(_fase):
                     liquido = self._eq(rhol, T)
                     x = (1./rho-1/rhol)/(1/rhov-1/rhol)
                     return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-                
+
                 T = self.fsolve(funcion, True, funcion2, **{"s": s, "rho": rho})
-                
+
             elif self._mode == "rho-u":
                 def funcion(T):
                     par = self._eq(rho, T)
@@ -665,9 +683,9 @@ class MEoS(_fase):
                     vapor = self._eq(rhov, T)
                     liquido = self._eq(rhol, T)
                     x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return (vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h, 
+                    return (vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h,
                             vapor["s"]*1000*x+liquido["s"]*1000*(1-x)-s)
-                            
+
                 rho, T = self.fsolve(funcion, True, funcion2, **{"s": s, "h": h})
 
             elif self._mode == "h-u":
@@ -712,7 +730,7 @@ class MEoS(_fase):
             else:
                 self.status = 5
                 self.msg = QApplication.translate("pychemqt", "input out of range")
-                return 
+                return
 
             rho = float(rho)
             T = float(T)
@@ -779,7 +797,7 @@ class MEoS(_fase):
                 propiedades = vapor
             P = P/1000.
             self.status = 1
-            
+
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
         self.P = unidades.Pressure(P, "kPa")
@@ -834,7 +852,7 @@ class MEoS(_fase):
             self.u = unidades.Enthalpy(x*self.Gas.u+(1-x)*self.Liquido.u)
             self.a = unidades.Enthalpy(x*self.Gas.a+(1-x)*self.Liquido.a)
             self.g = unidades.Enthalpy(x*self.Gas.g+(1-x)*self.Liquido.g)
-            
+
             self.rhoM = unidades.MolarDensity(self.rho/self.M)
             self.hM = unidades.MolarEnthalpy(self.h*self.M)
             self.sM = unidades.MolarSpecificHeat(self.s*self.M)
@@ -859,7 +877,7 @@ class MEoS(_fase):
         else:
             self.virialB = unidades.SpecificVolume(propiedades["B"]/self.rhoc)
             self.virialC = unidades.SpecificVolume_square(propiedades["C"]/self.rhoc**2)
-            
+
         if self.Tt <= T <= self.Tc:
             self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
             self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
@@ -883,7 +901,7 @@ class MEoS(_fase):
             ro = [322, rhov, self.rhoc, self._constants["rhomax"]*self.M, 1, 1e-3]
             if self.kwargs["rho0"]:
                 ro.insert(0, self.kwargs["rho0"])
-        
+
         rinput = None
         rho, T = 0, 0
         if "T" in kwargs:
@@ -973,7 +991,7 @@ class MEoS(_fase):
                                 print(rho, T, f1, f2)
                                 if (rho != r or T != t) and 0 < rho < self._constants["rhomax"]*self.M and abs(f1) < 1e-3 and abs(f2) < 1e-3:
                                     break
-                                    
+
         if "T" in kwargs:
             return rho
         elif "rho" in kwargs:
@@ -985,16 +1003,16 @@ class MEoS(_fase):
         """Fill properties in null phase with a explicative msg"""
         if self.x == 0:
             txt = QApplication.translate("pychemqt", "Subcooled")
-        elif self.Tr < 1 and self.Pr < 1: 
+        elif self.Tr < 1 and self.Pr < 1:
             txt = QApplication.translate("pychemqt", "Superheated")
-        elif self.Tr == 1 and self.Pr == 1: 
+        elif self.Tr == 1 and self.Pr == 1:
             txt = QApplication.translate("pychemqt", "Critic point")
         else:
             txt = QApplication.translate("pychemqt", "Supercritical")
         for key in _fase.__dict__:
             if key[0] != "_":
                 fase.__setattr__(key, txt)
-            
+
     def fill(self, fase, estado):
         """Fill phase properties"""
         fase.M = unidades.Dimensionless(self.M)
@@ -1024,13 +1042,13 @@ class MEoS(_fase):
         fase.gM = unidades.MolarEnthalpy(fase.g*self.M)
         fase.cvM = unidades.MolarSpecificHeat(fase.cv*self.M)
         fase.cpM = unidades.MolarSpecificHeat(fase.cp*self.M)
-        
+
         fase.alfap = unidades.InvTemperature(estado["alfap"])
         fase.betap = unidades.Density(estado["betap"])
 
         fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
         fase.Gruneisen = unidades.Dimensionless(fase.v/fase.cv*self.derivative("P", "T", "v", fase))
-        
+
         if fase.rho:
             fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
             fase.kappa = unidades.InvPressure(-self.derivative("v", "P", "T", fase)/fase.v)
@@ -1079,7 +1097,7 @@ class MEoS(_fase):
         T = float(T)
         rhoLo = self._Liquid_Density(T)
         rhoGo = self._Vapor_Density(T)
-        
+
         def f(parr):
             rhol, rhog = parr
             deltaL = rhol/self.rhoc
@@ -1107,10 +1125,10 @@ class MEoS(_fase):
         """Implementación general de la ecuación de estado Setzmann-Wagner, ecuación de estado de multiparámetros basada en la energía libre de Helmholtz"""
         delta = rho/self.rhoc
         tau = self.Tc/T
-        
+
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
         fir, firt, firtt, fird, firdd, firdt, firdtt, B, C=self._phir(tau, delta)
-        
+
         propiedades = {}
         propiedades["fir"] = fir
         propiedades["fird"] = fird
@@ -1122,13 +1140,13 @@ class MEoS(_fase):
             propiedades["v"] = 1./rho
         else:
             propiedades["v"] = float("inf")
-            
+
         propiedades["h"] = self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
         propiedades["s"] = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
         propiedades["cv"] = -self.R.kJkgK*tau**2*(fiott+firtt)
-        propiedades["cp"] = self.R.kJkgK*(-tau**2*(fiott+firtt) + 
+        propiedades["cp"] = self.R.kJkgK*(-tau**2*(fiott+firtt) +
             (1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
-        propiedades["w"] = abs(self.R*T*(1+2*delta*fird+delta**2*firdd - 
+        propiedades["w"] = abs(self.R*T*(1+2*delta*fird+delta**2*firdd -
             (1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
         propiedades["alfap"] = (1-delta*tau*firdt/(1+delta*fird))/T
         propiedades["betap"] = rho*(1+(delta*fird+delta**2*firdd)/(1+delta*fird))
@@ -1483,7 +1501,7 @@ class MEoS(_fase):
                 refvalues = [refeq["Tref"], refeq["Pref"], refeq["ho"], refeq["so"]]
             else:
                 ref = "OTO"
-                
+
         if ref == "OTO":
             self.Tref = 298.15
             self.Pref = 101325.
@@ -1530,7 +1548,7 @@ class MEoS(_fase):
         propiedades.alfap = 1/T
         propiedades.betap = rho
         return propiedades
-    
+
     def _PHIO(self, cp):
         """Convert cp dict in phi0 dict"""
         R = cp.get("R", self._constants["R"])/self.M*1000
@@ -1557,7 +1575,7 @@ class MEoS(_fase):
             for i in [1, 3]:
                 cI+=cp["ao_hyp"][i]*hyp[i]*tanh(hyp[i]*tau0)
                 cII-=cp["ao_hyp"][i]*(hyp[i]*tau0*tanh(hyp[i]*tau0)-log(abs(cosh(hyp[i]*tau0))))
-        
+
         Fi0 = {"ao_log": [1,  co],
                "pow": [0, 1] + ti,
                "ao_pow": [cII, cI] + ci,
@@ -1573,23 +1591,23 @@ class MEoS(_fase):
         else:
             Fi0 = self._PHIO(cp)
 #        print Fi0
-#        
+#
 #        T = self._constants.get("Tref", self.Tc)/tau
 #        rho = delta*self.rhoc
 #        rho0 = self.Pref/self.R/self.Tref
 #        delta0=rho0/self.rhoc
 #        tau0=self._constants.get("Tref", self.Tc)/self.Tref
-#        
+#
 #        cp0sav = self._Cp0(cp, T)
 #        cpisav = self._dCp(cp, T, self.Tref)
 #        cptsav = self._dCpT(cp, T, self.Tref)
 #        cpt2sav = self._dCpT2(cp, T, self.Tref)
-#        
+#
 #        fio = self.ho*tau/self.R/self.Tc-self.so/self.R-1+\
 #            log(delta*tau0/delta0/tau)-tau*cpt2sav/self.R*1000+cptsav/self.R
 #        fiot = (cpisav/self.R*1000/T-1)/tau+self.ho/self.R/self.Tc
 #        fiott = (1-cp0sav/self.R*1000)/tau**2
-        
+
         # FIXME: Reference estate
         fio=Fi0["ao_log"][1]*log(tau)
         fiot=Fi0["ao_log"][1]/tau
@@ -1613,7 +1631,7 @@ class MEoS(_fase):
             fio += n*log(1-exp(-g*tau))
             fiot += n*g*((1-exp(-g*tau))**-1-1)
             fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
-            
+
         if "tau*logtau" in Fi0:
             fio += Fi0["tau*logtau"]*tau*log(tau)
             fiot += Fi0["tau*logtau"]*(log(tau)+1)
@@ -1624,7 +1642,7 @@ class MEoS(_fase):
             fiod += Fi0["tau*logdelta"]*tau/delta
             fiodd -= Fi0["tau*logdelta"]*tau/delta**2
             fiodt += Fi0["tau*logdelta"]/delta
-            
+
         if "ao_exp2" in Fi0:
             for n, g, sum in zip(Fi0["ao_exp2"], Fi0["titao2"], Fi0["sum2"]):
                 fio += n*log(sum+exp(g*tau))
@@ -1655,7 +1673,7 @@ class MEoS(_fase):
         if not T:
             T = self.T
         cp = self._constants["cp"]
-            
+
         if "ao_log" in cp:
             tau = Tc/T
             fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(cp, tau, 0)
@@ -1701,7 +1719,7 @@ class MEoS(_fase):
         """Calcula la integral de Cp0/T² entre T y Tref, necesario para calcular la entropia usando estados de referencia"""
         cpsum = -cp.get("ao", 0)*(1/T-1/Tref)
         return unidades.SpecificHeat(cpsum*self.M*1000)
-        
+
     def _phir(self, tau, delta):
         delta_0 = 1e-200
         fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
@@ -1721,7 +1739,7 @@ class MEoS(_fase):
                 firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
                 B += n*d*delta_0**(d-1)*tau**t
                 C += n*d*(d-1)*delta_0**(d-2)*tau**t
-                
+
             # Exponential terms
             nr2 = self._constants.get("nr2", [])
             d2 = self._constants.get("d2", [])
@@ -1751,7 +1769,7 @@ class MEoS(_fase):
             b3 = self._constants.get("beta3", [])
             g3 = self._constants.get("gamma3", [])
             exp1 = self._constants.get("exp1", [2]*len(nr3))
-            exp2 = self._constants.get("exp2", [2]*len(nr3))            
+            exp2 = self._constants.get("exp2", [2]*len(nr3))
             for n, d, t, a, e, b, g, ex1, ex2 in zip(nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
                 fir += n*delta**d*tau**t * \
                     exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
@@ -1892,7 +1910,7 @@ class MEoS(_fase):
                 ahdXX_virial = -(f**2-1)/(1-X_virial)**2+(3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
                 B += ahdX_virial*Xd
                 C += ahdXX_virial*Xd**2
-            
+
             # Special form from Saul, A. and Wagner, W. Water 58 coefficient equation
             if "nr5" in self._constants:
                 delta_0 = 1e-200
@@ -1927,7 +1945,7 @@ class MEoS(_fase):
                     Csum1 += n*delta_0**(d+10)*tau**t
                     Csum2 += n*(2*d+5)*delta_0**(d+4)*tau**t
                     Csum3 += n*d*(d-1)*delta_0**(d-2)*tau**t
-                    
+
                 fir += factor*fr
                 fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 +\
                     factor*frd2
@@ -1945,7 +1963,7 @@ class MEoS(_fase):
                 C += (5.76*exp(-0.4*delta_0**6)-144*exp(-2*delta_0**6))*Csum1 +\
                     (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6))*Csum2 +\
                     (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Csum3
-                    
+
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
 
 
@@ -2716,7 +2734,7 @@ class MEoS(_fase):
                 else:
                     deltaL = 0.0
                 kc = deltaL*exp(-18.66*((rho-self.rhoc)/self.rhoc)**4-4.25*((T-self.Tc)/self.Tc)**2)
-                
+
                 k = kg+kb+kc
 
             elif self._thermal["eq"] == "ecs":
@@ -2736,7 +2754,7 @@ class MEoS(_fase):
               self._constants["__doi__"]["title"] + "; " + \
               self._constants["__doi__"]["ref"]
         txt += os.linesep + doc + os.linesep
-        
+
         if 0 < self.x < 1:
             param = "%-40s\t%20s\t%20s"
         else:
@@ -2748,10 +2766,10 @@ class MEoS(_fase):
             txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
             phases = [self.Gas]
         else:
-            txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"), 
+            txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"),
                                  QApplication.translate("pychemqt", "Gas"))+os.linesep
             phases = [self.Liquido, self.Gas]
-            
+
         complejos = ""
         for propiedad, key, unit in data:
             if key in _fase.__dict__:
@@ -2775,13 +2793,13 @@ class MEoSBlend(MEoS):
         Tj = cls.eq[eq]["Tj"]
         Pj = cls.eq[eq]["Pj"]
         Tita = 1-T/Tj
-        
+
         suma = 0
         for i, n in zip(c["i"], c["n"]):
             suma += n*Tita**(i/2.)
         P = Pj*exp(Tj/T*suma)
         return unidades.Pressure(P, "MPa")
-    
+
     @classmethod
     def _bubbleP(cls, T, eq=0):
         """Using ancillary equation return the pressure of bubble point"""
@@ -2789,7 +2807,7 @@ class MEoSBlend(MEoS):
         Tj = cls.eq[eq]["Tj"]
         Pj = cls.eq[eq]["Pj"]
         Tita = 1-T/Tj
-        
+
         suma = 0
         for i, n in zip(c["i"], c["n"]):
             suma += n*Tita**(i/2.)

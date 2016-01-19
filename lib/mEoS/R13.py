@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,16 +54,16 @@ class R13(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-13 of Magee et al. (2000)",
         "__doi__": {"autor": "Magee, J.W., Outcalt, S.L., and Ely, J.F.",
-                    "title": "Molar Heat Capacity Cv, Vapor Pressure, and (p, ρ, T) Measurements from 92 to 350 K at Pressures to 35 MPa and a New Equation of State for Chlorotrifluoromethane (R13)", 
+                    "title": "Molar Heat Capacity Cv, Vapor Pressure, and (p, ρ, T) Measurements from 92 to 350 K at Pressures to 35 MPa and a New Equation of State for Chlorotrifluoromethane (R13)",
                     "ref": "Int. J. Thermophys., 21(5):1097-1121, 2000.",
-                    "doi": "10.1023/A:1026446004383"}, 
+                    "doi": "10.1023/A:1026446004383"},
 
         "R": 8.314471,
         "cp": CP1,
-        "ref": "OTO", 
-        
-        "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85, 
-        "Pmin": 0.00033, "rhomin": 17.84, 
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85,
+        "Pmin": 0.00033, "rhomin": 17.84,
 
         "b": [None, 0.427710490378e-2, 0.106603397093e1, -0.383065097813e2,
               0.661580211522e4, -0.800160780370e6, -0.406405755462e-2,
@@ -64,15 +81,15 @@ class R13(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-13 of Platzer et al. (1990).",
         "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants", 
+                    "title": "Thermophysical properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31451,
         "cp": CP2,
-        "ref": "OTO", 
-        
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806, 
-        "Pmin": 0.0009047, "rhomin": 17.6998, 
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806,
+        "Pmin": 0.0009047, "rhomin": 17.6998,
 
         "nr1": [-0.628346559920, 0.792797111341, -0.134038992692,
                 0.761143010172, -0.194465098795e1, 0.940938700406,
@@ -109,9 +126,9 @@ class R13(MEoS):
     trnECS = {"eq": "ecs",
               "__name__": "Extended Corresponding States model",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
                           "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"}, 
+                          "doi": "10.1021/ie0300880"},
 
               "ref": C3,
               "ref_eq": "helmholtz1",

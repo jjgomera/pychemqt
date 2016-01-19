@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,16 +48,16 @@ class D6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
-                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6", 
+                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
-                    "doi":  "10.1016/j.fluid.2007.10.001"}, 
-            
+                    "doi":  "10.1016/j.fluid.2007.10.001"},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.246, 
-        "Pmin": 0.00016, "rhomin": 2.245, 
+        "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.246,
+        "Pmin": 0.00016, "rhomin": 2.245,
 
         "nr1": [1.69156186, -3.37962568, 0.38609039, 0.64598995e-1,
                 0.10589012, 0.45456825e-4],

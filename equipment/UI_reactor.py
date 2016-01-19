@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###################################
 ###   Diálogo de definición de reactores UI_reactor  ###
@@ -31,11 +49,11 @@ class widgetReacciones(QtWidgets.QWidget):
     reaccion=None
     activo=None
     ajuste=None
-    
+
     def __init__(self, parent=None):
         super(widgetReacciones, self).__init__(parent)
         self.indices, self.nombres, M=getComponents()
-        gridLayout = QtWidgets.QGridLayout(self)        
+        gridLayout = QtWidgets.QGridLayout(self)
 
         self.TablaReacciones=Tabla(5, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Reaction"), "ΔHr, %s" %unidades.MolarEnthalpy(None).text(), QtWidgets.QApplication.translate("pychemqt", "Type"), QtWidgets.QApplication.translate("pychemqt", "Phase"), QtWidgets.QApplication.translate("pychemqt", "Description")], dinamica=False, verticalHeader=True, orientacion=QtCore.Qt.AlignLeft)
         self.TablaReacciones.setMinimumWidth(500)
@@ -45,7 +63,7 @@ class widgetReacciones(QtWidgets.QWidget):
         self.TablaReacciones.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.TablaReacciones.itemSelectionChanged.connect(self.actualizarBotones)
         gridLayout.addWidget(self.TablaReacciones,1,1,6,4)
-        
+
         self.botonAbrir=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileOpen.png")), QtWidgets.QApplication.translate("pychemqt", "Open"))
         self.botonAbrir.clicked.connect(self.botonAbrirClicked)
         gridLayout.addWidget(self.botonAbrir,1,5)
@@ -95,7 +113,7 @@ class widgetReacciones(QtWidgets.QWidget):
             for i in range(4):
                 self.TablaReacciones.resizeColumnToContents(i)
         self.changed.emit()
-    
+
     def botonGuardarClicked(self):
         fname = str(QtWidgets.QFileDialog.getSaveFileName(self, QtWidgets.QApplication.translate("pychemqt", "Save reaction to file"), "./", QtWidgets.QApplication.translate("pychemqt", "reaction file")+" (*.rec)")[0])
         if fname:
@@ -108,7 +126,7 @@ class widgetReacciones(QtWidgets.QWidget):
         if dialog.exec_():
             pass
 
-        
+
     def botonEditClicked(self, bool):
         if bool:
             indice=self.TablaReacciones.currentRow()
@@ -129,9 +147,9 @@ class widgetReacciones(QtWidgets.QWidget):
         self.botonClear.setEnabled(not bool)
         self.botonAdd.setEnabled(not bool)
         self.botonAbrir.setEnabled(not bool)
-        self.botonGuardar.setEnabled(not bool) 
-            
-        
+        self.botonGuardar.setEnabled(not bool)
+
+
     def botonDeleteClicked(self):
         indice=self.TablaReacciones.currentRow()
         self.TablaReacciones.removeRow(indice)
@@ -160,7 +178,7 @@ class widgetReacciones(QtWidgets.QWidget):
         self.reacciones.insert(fila, self.reaccion)
         self.botonGuardar.setEnabled(True)
         self.changed.emit()
-    
+
 class UI_reacciones(QtWidgets.QDialog):
     reaction=reaction.Reaction()
     def __init__(self, reaccion=None, parent=None):
@@ -168,10 +186,10 @@ class UI_reacciones(QtWidgets.QDialog):
         self.evaluate=Evaluate()
         self.evaluate.finished.connect(self.rellenar)
         self.indices, self.nombres, M=getComponents()
-        gridLayout = QtWidgets.QGridLayout(self)        
+        gridLayout = QtWidgets.QGridLayout(self)
 
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Key component")))        
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Key component")))
         self.key=QtWidgets.QComboBox()
         for i, nombre in enumerate(self.nombres):
             self.key.addItem("%i - %s" %(i+1, nombre))
@@ -181,7 +199,7 @@ class UI_reacciones(QtWidgets.QDialog):
         gridLayout.addLayout(lyt,1,1,1,5)
 
         lyt=QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Phase")))        
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Phase")))
         self.fase=QtWidgets.QComboBox()
         for txt in reaction.Reaction.TEXT_PHASE:
             self.fase.addItem(txt)
@@ -192,7 +210,7 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Formula.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed)
         lyt.addWidget(self.Formula)
         gridLayout.addLayout(lyt,2,1,1,5)
-        
+
         lyt=QtWidgets.QVBoxLayout()
         title=self.nombres[:]
         title.append("")
@@ -206,7 +224,7 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Estequiometria.cellChanged.connect(self.reaccionCambiada)
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Expanding))
         gridLayout.addLayout(lyt,3,1,1,2)
-        
+
         lyt=QtWidgets.QGridLayout()
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,1)
         self.formula=QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Use name in formula"))
@@ -221,7 +239,7 @@ class UI_reacciones(QtWidgets.QDialog):
         lyt.addWidget(self.Hr,3,3)
         lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Expanding))
         gridLayout.addLayout(lyt,3,3,1,2)
-        
+
         gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,2)
 
         lyt=QtWidgets.QHBoxLayout()
@@ -310,12 +328,12 @@ class UI_reacciones(QtWidgets.QDialog):
         label.setAlignment(QtCore.Qt.AlignCenter)
         lyt.addWidget(label,5,1,1,8)
 
-        
+
         self.checkGibbs=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "From Gibbs free energy minimization"))
         lyt.addWidget(self.checkGibbs,6,1,1,4)
-        
+
         self.check_KFijo.setChecked(True)
-        
+
 
         widget=QtWidgets.QWidget()
         self.stacked.addWidget(widget)
@@ -331,10 +349,10 @@ class UI_reacciones(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         gridLayout.addWidget(self.buttonBox,10,2,1,4)
-        
+
         if reaccion:
             self.setReaction(reaccion)
-            
+
     def changeParams(self, parametro, valor):
         self.calculo(**{parametro: valor})
 
@@ -347,10 +365,10 @@ class UI_reacciones(QtWidgets.QDialog):
         self.changeParams("customHr", bool)
 
     def reaccionCambiada(self):
-        kwargs={"componentes": self.indices, 
+        kwargs={"componentes": self.indices,
                     "coeficientes": self.Estequiometria.getColumn(0)[:-1]}
         self.calculo(**kwargs)
-        
+
     def setReaction(self, reaction):
         self.reaction=reaction
         self.rellenar()
@@ -375,9 +393,9 @@ class UI_reacciones(QtWidgets.QDialog):
             self.__getattribute__(combo).setCurrentIndex(self.reaction.kwargs[combo])
         for check in self.reaction.kwargsCheck:
             self.__getattribute__(check).setChecked(self.reaction.kwargs[check])
-            
+
         self.Estequiometria.setColumn(0, self.reaction.kwargs["coeficientes"])
-#        self.Conversion.setColumn(0, self.reaction.estequiometria[-1::-1])            
+#        self.Conversion.setColumn(0, self.reaction.estequiometria[-1::-1])
         self.blockSignals(False)
 
         self.status.setState(self.reaction.status, self.reaction.msg)
@@ -405,17 +423,17 @@ class UI_reacciones(QtWidgets.QDialog):
                 inicio=r_[0, 0, 0, 0, 0, 0, 0, 0]
                 f=lambda par, T: exp(par[0]+par[1]/T+par[2]*log(T)+par[3]*T+par[4]*T**2+par[5]*T**3+par[6]*T**4+par[7]*T**5)
                 resto=lambda par, T, k: k-f(par, T)
-        
+
             ajuste=leastsq(resto,inicio,args=(t, k))
             kcalc=f(ajuste[0], t)
             error=(k-kcalc)/k*100
             self.KEq_Dat.setColumn(0, ajuste[0])
             self.KEq_Tab.setColumn(2, kcalc)
             self.KEq_Tab.setColumn(3, error)
-            
+
             if ajuste[1] in [1, 2, 3, 4]:
                 self.ajuste=ajuste[0]
-            
+
     def Plot(self):
         if self.ajuste!=None:
             t=array(self.KEq_Tab.getColumn(0)[:-1])
@@ -424,7 +442,7 @@ class UI_reacciones(QtWidgets.QDialog):
                 f=lambda par, T: exp(par[0]+par[1]/T+par[2]*log(T)+par[3]*T)
             else:
                 f=lambda par, T: exp(par[0]+par[1]/T+par[2]*log(T)+par[3]*T+par[4]*T**2+par[5]*T**3+par[6]*T**4+par[7]*T**5)
-                
+
             grafico=plot.Plot()
             grafico.data(t, k, 'ro', t, f(self.ajuste, t))
             grafico.exec_()
@@ -438,12 +456,12 @@ class UI_equipment(UI_equip):
     def __init__(self, equipment=None, parent=None):
         """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en el reactor"""
         super(UI_equipment, self).__init__(Reactor, entrada=False, salida=False, parent=parent)
-        
+
         #Pestaña reacciones
         self.Reacciones= widgetReacciones()
         self.Reacciones.changed.connect(self.calculo)
         self.tabWidget.insertTab(1, self.Reacciones, QtWidgets.QApplication.translate("pychemqt", "Reactions"))
-        
+
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pressure")),2,0,1,1)
@@ -504,7 +522,7 @@ class UI_equipment(UI_equip):
         self.botonPerfil.clicked.connect(self.editorPerfil)
         layout.addWidget(self.botonPerfil,5,2,1,1)
         gridLayout_Calculo.addWidget(groupbox, 7, 0, 1, 5)
-        
+
         self.groupBox_Diseno= QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Design"))
         gridLayout_Calculo.addWidget(self.groupBox_Diseno,8,0,1,5)
         lyt = QtWidgets.QGridLayout(self.groupBox_Diseno)
@@ -527,9 +545,9 @@ class UI_equipment(UI_equip):
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Conversion")),3,4)
         self.conversion=Entrada_con_unidades(float, max=1)
         lyt.addWidget(self.conversion,3,5)
-        
+
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,5)
-        
+
         groupBox_Calculo = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(groupBox_Calculo,11,0,1,5)
         gridLayout_1 = QtWidgets.QGridLayout(groupBox_Calculo)
@@ -549,7 +567,7 @@ class UI_equipment(UI_equip):
 
         self.checkAdiabatico.setChecked(True)
         self.tipoCambiado(0)
-        
+
 
     def heatChanged(self):
         self.T.setReadOnly(not self.checkIsotermico.isChecked())
@@ -558,22 +576,22 @@ class UI_equipment(UI_equip):
         self.U.setReadOnly(not self.checkIntercambio.isChecked())
         self.direccion.setEnabled(self.checkIntercambio.isChecked() and self.tipo.currentIndex())
         self.botonPerfil.setEnabled(self.checkPerfil.isChecked())
-    
+
     def tipoCambiado(self, ind):
         self.checkPerfil.setEnabled(ind)
         self.direccion.setEnabled(self.checkIntercambio.isChecked() and ind)
         self.calculo()
-            
-        
+
+
     def editorPerfil(self):
         dialog=entrada_datos.Entrada_Datos(data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
         if dialog.exec_():
             self.profile_T=dialog.data
-        
+
 #    def cambiar_entrada(self, corriente):
 #        self.entrada=corriente
 #        self.calculo()
-#        
+#
 #    def todos_datos(self):
 #        if self.checkAdiabatico.isChecked():
 #            heat=True
@@ -594,7 +612,7 @@ class UI_equipment(UI_equip):
 #            elif self.checkFlux.isChecked():
 #                thermal=2
 #            else: thermal=3
-#        
+#
 #            if self.P.value:
 #                P=self.P.value.atm
 #            else:
@@ -610,10 +628,10 @@ class UI_equipment(UI_equip):
 #        self.TCalc.setValue(self.Equipment.Salida.T)
 #        self.HeatCalc.setValue(self.Equipment.Heat)
 #        self.Salida.rellenar(self.Equipment.Salida)
-        
+
 
 if __name__ == "__main__":
-    import sys        
+    import sys
     from lib.corriente import Corriente, Mezcla, Solid
     from numpy import r_
     app = QtWidgets.QApplication(sys.argv)

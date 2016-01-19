@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -34,14 +51,14 @@ class C2(MEoS):
     Fi2 = {"ao_log": [1, 3.00263],
            "pow": [0, 1],
            "ao_pow": [24.675437527, -77.42531376],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [4.33939, 1.23722, 13.1974, -6.01989],
            "hyp": [1.831882406, 0.731306621, 3.378007481, 3.508721939]}
 
     Fi3 = {"ao_log": [1, 3.8159476],
            "pow": [0, -1./3, -2./3, -1],
            "ao_pow": [-23.446765, 8.6021299, -3.3075735, -.55956678],
-           "ao_exp": [5.0722267], "titao": [5.5074874], 
+           "ao_exp": [5.0722267], "titao": [5.5074874],
            "ao_hyp": [], "hyp": []}
 
     CP5 = {"ao": 9.9507922459,
@@ -55,9 +72,9 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "A Reference Equation of State for the Thermodynamic Properties of Ethane for Temperatures from the Melting Line to 675 K and Pressures up to 900 MPa", 
+                    "title": "A Reference Equation of State for the Thermodynamic Properties of Ethane for Temperatures from the Melting Line to 675 K and Pressures up to 900 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 35, 205 (2006)",
-                    "doi": "10.1063/1.1859286"}, 
+                    "doi": "10.1063/1.1859286"},
         "__test__":
             # Table 29, Pag 238
             """
@@ -168,14 +185,14 @@ class C2(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.6g %0.5g %0.5g %0.5g %0.6g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             675 632.88 443.09 1865.16 -0.95311 3.2264 3.638 2628.58
-            """, 
-            
+            """,
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
-        "Pmin": 0.00114, "rhomin": 21.668, 
+        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419,
+        "Pmin": 0.00114, "rhomin": 21.668,
 
         "nr1": [0.83440745735241, -0.14287360607171e1, 0.34430242210927,
                 -0.42096677920265, 0.12094500886549e-1],
@@ -217,16 +234,16 @@ class C2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                     "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                    "doi": "10.1063/1.555785"}, 
-                    
+                    "doi": "10.1063/1.555785"},
+
         "R": 8.31434,
         "cp": CP5,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874.2, "so": 229.116}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874.2, "so": 229.116},
 
-        "Tmin": 90.348, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 21.68, 
-        "Pmin": 1.1308e-3, "rhomin": 21.68, 
+        "Tmin": 90.348, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 21.68,
+        "Pmin": 1.1308e-3, "rhomin": 21.68,
 
         "b": [None, -0.3204748852e-2, 0.6529792241, -0.1669704591e2,
               0.1147983381e4, -0.1854721998e6, 0.4994149431e-3, -0.4858871291,
@@ -242,15 +259,15 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
-        
-        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419,
+#        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.63596780450714, -0.17377981785459e1, 0.28914060926272,
                 -0.33714276845694, 0.22405964699561e-1, 0.15715424886913e-1],
@@ -273,9 +290,9 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Friend et al. (1991)",
         "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
-                    "title": "Thermophysical Properties of Ethane", 
+                    "title": "Thermophysical Properties of Ethane",
                     "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
-                    "doi": "10.1063/1.555881"}, 
+                    "doi": "10.1063/1.555881"},
         "__test__":
             # Table A1, Pag 336
             """
@@ -404,15 +421,15 @@ class C2(MEoS):
                 st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
                 st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
             500 60 11.21 19.385 199.38 73.24 95.28 752.5 48.34 101.4
-            """, 
+            """,
 
         "R": 8.31451,
         "cp": Fi3,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874, "so": 229.12}, 
-        "Tt": 90.352, "Tc": 305.33, "Pc": 4871.8, "rhoc": 6.87, "M": 30.07, 
-        
-        "Tmin": 90.352, "Tmax": 625.0, "Pmax": 70000.0, "rhomax": 22.419, 
-        "Pmin": 1.130e-3, "rhomin": 21.665, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 11874, "so": 229.12},
+        "Tt": 90.352, "Tc": 305.33, "Pc": 4871.8, "rhoc": 6.87, "M": 30.07,
+
+        "Tmin": 90.352, "Tmax": 625.0, "Pmax": 70000.0, "rhomax": 22.419,
+        "Pmin": 1.130e-3, "rhomin": 21.665,
 
         "nr1": [0.46215430560, -0.19236936387e1, 0.39878604003, 0.16054532372e-1,
                 0.12895242219, 0.35458320491e-1, 0.34927844540e-1,
@@ -437,9 +454,9 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ethane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=C2(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -451,10 +468,10 @@ class C2(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 90.352, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 22.419, 
-        "Pmin": 0.0010902, "rhomin": 21.721, 
+        "Tmin": 90.352, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 22.419,
+        "Pmin": 0.0010902, "rhomin": 21.721,
 
         "nr1": [0.97628068, -0.26905251e1, 0.73498222, -0.35366206e-1,
                 0.84692031e-1, 0.24154594e-3],
@@ -472,15 +489,15 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419, 
-        "Pmin": 0.00114, "rhomin": 21.668, 
+        "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419,
+        "Pmin": 0.00114, "rhomin": 21.668,
 
         "nr1": [1.32031629, 9.47177394e-1, -3.21919278, 7.47287278e-2,
                 2.74919584e-4, -6.33952115e-2],
@@ -503,7 +520,7 @@ class C2(MEoS):
                    "a2": [36.759, 23.639, -808.03, -378.84],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.75, 2.75]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.0011421,
-                "Tmin": Tt, "Tmax": 2000.0, 
+                "Tmin": Tt, "Tmax": 2000.0,
                 "a1": [1, 1.05262374e8, -1.05262374e8], "exp1": [0, 2.55, 0],
                 "a2": [2.23626315e8], "exp2": [1], "a3": [], "exp3": []}
     _vapor_Pressure = {
@@ -524,10 +541,10 @@ class C2(MEoS):
               "collision": [0.17067154, -0.48879666, 0.039038856],
               "__name__": "Friend (1991)",
               "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
-                          "title": "Thermophysical Properties of Ethane", 
+                          "title": "Thermophysical Properties of Ethane",
                           "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
-                          "doi": "10.1063/1.555881"}, 
-                          
+                          "doi": "10.1063/1.555881"},
+
               "ek": 245.0, "sigma": 0.43682,
               "Tref": 1, "rhoref": 1.*M,
               "n_chapman": 0.1463897/M**0.5,
@@ -549,9 +566,9 @@ class C2(MEoS):
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"}, 
+                          "doi": "10.1063/1.555785"},
 
               "ek": 240.0, "sigma": 0.440110,
               "n_chapman": 0.146388493/M**0.5,
@@ -564,9 +581,9 @@ class C2(MEoS):
     visco2 = {"eq": 4, "omega": 1,
               "__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 305.322, "muref": 1.0,
               "ek": 240.0, "sigma": 0.440110, "n_chapman": 0,
@@ -586,9 +603,9 @@ class C2(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Friend (1991)",
                "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
-                           "title": "Thermophysical Properties of Ethane", 
+                           "title": "Thermophysical Properties of Ethane",
                            "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
-                           "doi": "10.1063/1.555881"}, 
+                           "doi": "10.1063/1.555881"},
 
                "Tref": 245.0, "kref": 1e-3,
                "no": [1.7104147, -0.6936482, 0],

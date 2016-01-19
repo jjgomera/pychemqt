@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,16 +49,16 @@ class C1Linoleate(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel", 
+                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
                     "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
-                    "doi": "10.1021/ef900159g"}, 
-            
+                    "doi": "10.1021/ef900159g"},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.16, 
-        "Pmin": 0.7e-14, "rhomin": 3.16, 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.16,
+        "Pmin": 0.7e-14, "rhomin": 3.16,
 
         "nr1": [0.3183187e-1, 0.1927286e1, -0.3685053e1, 0.8449312e-1],
         "d1": [4, 1, 1, 3],
@@ -80,9 +97,9 @@ class C1Linoleate(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2010)",
                "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate", 
+                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate",
                            "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
-                           "doi": "10.1021/ef200417x"}, 
+                           "doi": "10.1021/ef200417x"},
                "__test__": """
                     >>> st=C1Linoleate(T=450, P=1e2)
                     >>> print "%0.0f %0.4f %0.6g %0.6g" % (st.T, st.P.MPa, st.rho, st.k.WmK)
@@ -113,9 +130,9 @@ class C1Linoleate(MEoS):
     thermo1 = {"eq": 5, "omega": 3,
                "__name__": "Chung (1988)",
                "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E.",
-                           "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                           "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                            "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                           "doi": "10.1021/ie00076a024"}, 
+                           "doi": "10.1021/ie00076a024"},
                "w": 0.805, "mur": 0.0, "k": 0.0}
 
     _thermal = thermo0, thermo1

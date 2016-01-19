@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -24,13 +41,13 @@ class CO(MEoS):
     Fi1 = {"ao_log": [1, 2.5],
            "pow": [0, 1, -1.5],
            "ao_pow": [-3.3728318564, 3.3683460039, 9.111274701235156e-5],
-           "ao_exp": [1.0128], 
+           "ao_exp": [1.0128],
            "titao": [3089/Tc]}
 
     Fi2 = {"ao_log": [1, 2.50055],
            "pow": [0, 1],
            "ao_pow": [10.813340744, -19.834733959],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [1.02865, 0.00493, 0, 0],
            "hyp": [11.6698028, 5.302762306, 0, 0]}
 
@@ -45,21 +62,21 @@ class CO(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon monoxide of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=CO(T=134, rho=10*28.0101)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             134 10 3668.867 4838.507 41.601 38.702 1642.142 168.632
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84, 
-        "Pmin": 15.45, "rhomin": 30.33, 
+        "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84,
+        "Pmin": 15.45, "rhomin": 30.33,
 
         "nr1":  [0.90554, -2.4515, 0.53149, 0.024173, 0.072156, 0.00018818],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -75,15 +92,15 @@ class CO(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon monoxide of McCarty (1989)",
         "__doi__": {"autor": "McCarty, R.D.",
-                    "title": "Correlations for the Thermophysical Properties of Carbon Monoxide", 
+                    "title": "Correlations for the Thermophysical Properties of Carbon Monoxide",
                     "ref": "National Institute of Standards and Technology, Boulder, CO, 1989.",
-                    "doi":  ""}, 
+                    "doi":  ""},
 
         "R": 8.31434,
         "cp": CP3,
 
-        "Tmin": Tt, "Tmax": 1000., "Pmax": 30000.0, "rhomax": 30.25, 
-        "Pmin": 15.423, "rhomin": 30.249, 
+        "Tmin": Tt, "Tmax": 1000., "Pmax": 30000.0, "rhomax": 30.25,
+        "Pmin": 15.423, "rhomin": 30.249,
 
         "b": [None, 0.8845582109949e-2, -0.2236741566840, 0.1742275796442e1,
               -0.2169146998363e3, 0.1721504267082e4, -0.3990514770703e-4,
@@ -101,15 +118,15 @@ class CO(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon monoxide of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84, 
-        "Pmin": 15.45, "rhomin": 30.33, 
+        "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84,
+        "Pmin": 15.45, "rhomin": 30.33,
 
         "nr1":  [0.92310041400851, -0.248858452058e1, 0.58095213783396,
                  0.28859164394654e-1, 0.70256257276544e-1, 0.21687043269488e-3],
@@ -147,9 +164,9 @@ class CO(MEoS):
     visco0 = {"eq": 2, "omega": 2,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
+                          "doi": ""},
               "ek": 91.7, "sigma": 0.369,
               "n_chapman": 0.141374566/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -162,9 +179,9 @@ class CO(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 91.7, "kref": 1e-3,
                "no": [1.35558587, -0.16380500617, 1],

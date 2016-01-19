@@ -1,14 +1,31 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoSBlend
 from lib import unidades
 
 
 class R404a(MEoSBlend):
-    """Multiparameter equation of state for R404A 
+    """Multiparameter equation of state for R404A
     (44% R125, 4% R134a, 52% R143a)"""
-    
+
     name = "R404A"
     CASNumber = ""
     formula = "R125+R134a+R143a"
@@ -33,9 +50,9 @@ class R404a(MEoSBlend):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-404A of Lemmon (2003)",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C", 
+                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C",
                     "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
-                    "doi": "10.1023/A:1025048800563"}, 
+                    "doi": "10.1023/A:1025048800563"},
         "__test__": """
             >>> st=R404a(T=300, rhom=0)
             >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
@@ -53,16 +70,16 @@ class R404a(MEoSBlend):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.21, 
-        "Pmin": 22.65, "rhomin": 14.21, 
-        
-        "Tj": 345.270, "Pj": 3.7348, 
-        "dew": {"i": [0.1*2, 0.972*2, 3.8*2, 9.0*2], 
-                "n": [-0.00026863, -6.5757, -4.1802, -7.9102]}, 
-        "bubble": {"i": [0.54*2, 0.965*2, 3.7*2, 9.0*2], 
-                   "n": [0.061067, -6.5646, -3.6162, 3.9771]}, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.21,
+        "Pmin": 22.65, "rhomin": 14.21,
+
+        "Tj": 345.270, "Pj": 3.7348,
+        "dew": {"i": [0.1*2, 0.972*2, 3.8*2, 9.0*2],
+                "n": [-0.00026863, -6.5757, -4.1802, -7.9102]},
+        "bubble": {"i": [0.54*2, 0.965*2, 3.7*2, 9.0*2],
+                   "n": [0.061067, -6.5646, -3.6162, 3.9771]},
 
         "nr1": [0.610984e1, -0.779453e1, 0.183377e-1, 0.262270, -0.351688e-2,
                 0.116181e-1, 0.105992e-2],

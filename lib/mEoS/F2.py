@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -38,15 +55,15 @@ class F2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of de Reuck (1990).",
         "__doi__": {"autor": "de Reuck, K.M.",
-                    "title": "International thermodynamic tables of the fluid state: Vol. 11 – fluorine", 
+                    "title": "International thermodynamic tables of the fluid state: Vol. 11 – fluorine",
                     "ref": "Pergamon Press, Oxford, 1990.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31448,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 300.0, "Pmax": 20000.0, "rhomax": 45.47, 
-        "Pmin": 0.23881, "rhomin": 44.917, 
+        "Tmin": Tt, "Tmax": 300.0, "Pmax": 20000.0, "rhomax": 45.47,
+        "Pmin": 0.23881, "rhomin": 44.917,
 
         "nr1": [0.151144749736e1, -0.298666288409e1, 0.329644905098e1,
                 -0.298458624201e1, -0.228688966459e1, -0.109492193400e1,
@@ -71,15 +88,15 @@ class F2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP2,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 300.0, "Pmax": 25000.0, "rhomax": 45.14, 
-        "Pmin": 0.25394, "rhomin": 44.89, 
+        "Tmin": Tt, "Tmax": 300.0, "Pmax": 25000.0, "rhomax": 45.14,
+        "Pmin": 0.25394, "rhomin": 44.89,
 
         "nr1": [0.862212325175e-2, 0.162286882091, -0.228707299586e-1,
                 0.624951179331, -0.158918489879e1, 0.195171867807,
@@ -101,7 +118,7 @@ class F2(MEoS):
 
     _surface = {"sigma": [0.03978], "exp": [1.218]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 300.0, 
+                "Tmin": Tt, "Tmax": 300.0,
                 "a1": [0.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {

@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Module to define common graphics widget for pychemqt
@@ -342,7 +360,7 @@ class Tabla(QtWidgets.QTableWidget):
     def __init__(self, columnas=0, horizontalHeader=None, verticalHeaderLabels=None,
                  verticalHeader=True, filas=0, stretch=True, verticalOffset=0,
                  dinamica=False, external=False, orientacion=QtCore.Qt.AlignRight,
-                 verticalHeaderModel="", readOnly=False, columnReadOnly=None, 
+                 verticalHeaderModel="", readOnly=False, columnReadOnly=None,
                  num=True, delegateforRow=None, parent=None):
         """
         columnas: número de columnas
@@ -484,7 +502,7 @@ class Tabla(QtWidgets.QTableWidget):
         for fila, dato in enumerate(data):
             self.item(fila, columna).setText(representacion(dato, **format))
         self.blockSignals(False)
-    
+
     def getColumn(self, columna, fill=True):
         lista=[]
         for i in range(self.verticalOffset, self.rowCount()):

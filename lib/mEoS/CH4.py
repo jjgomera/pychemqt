@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -28,21 +45,21 @@ class CH4(MEoS):
            "pow": [0, 1],
            "ao_pow": [9.91243972, -6.33270087],
            "ao_exp": [0.008449, 4.6942, 3.4865, 1.6572, 1.4115],
-           "titao": [648/Tc, 1957/Tc, 3895/Tc, 5705/Tc, 15080/Tc], 
+           "titao": [648/Tc, 1957/Tc, 3895/Tc, 5705/Tc, 15080/Tc],
            "ao_hyp": [], "hyp": []}
 
-    Fi2 = {"R": 8.314510, 
+    Fi2 = {"R": 8.314510,
            "ao_log": [1, 3.00088],
            "pow": [0, 1],
            "ao_pow": [19.597508817, -83.959667892],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [0.76315, 0.0046, 8.74432, -4.46921],
            "hyp": [4.306474465, 0.936220902, 5.577233895, 5.722644361]}
 
     Fi3 = {"ao_log": [1, 2.5998324],
            "pow": [0, -1./3, -2./3, -1],
            "ao_pow": [-10.413865, -3.3854083, 1.6900979, -0.3911541],
-           "ao_exp": [4.7206715], "titao": [10.543907], 
+           "ao_exp": [4.7206715], "titao": [10.543907],
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": 0.15438149595e2,
@@ -56,10 +73,10 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Setzmann and Wagner (1991)",
         "__doi__": {"autor": "Setzmann, U., Wagner, W.",
-                    "title": "A New Equation of State and Tables of Thermodynamic Properties for Methane Covering the Range from the Melting Line to 625 K at Pressures up to 1000 MPa", 
+                    "title": "A New Equation of State and Tables of Thermodynamic Properties for Methane Covering the Range from the Melting Line to 625 K at Pressures up to 1000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 20, 1061 (1991)",
-                    "doi": "10.1063/1.555898"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555898"},
+        "__test__":
             # Table 39, Pag 1117
             """
             >>> st=CH4(T=90.694, x=0.5)
@@ -68,7 +85,7 @@ class CH4(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             90.694 0.011696 451.48 0.25074 -982.76 -438.5 -7.3868 -1.3857 2.1677 1.5735 3.3678 2.11 1538.6 249.13
-            
+
             >>> st=CH4(T=100, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -117,7 +134,7 @@ class CH4(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             168 2.1647 316.14 35.758 -689.46 -357.52 -5.1261 -3.1503 1.9059 1.93 4.9854 4.174 686.42 278.23
-            
+
             >>> st=CH4(T=170, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -180,14 +197,14 @@ class CH4(MEoS):
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             186 3.986 244.93 85.704 -582.19 -404.47 -4.5586 -3.6032 2.0978 2.362 12.883 16.333 375.88 255.97
-            
+
             >>> st=CH4(T=188, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
                 st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             188 4.2448 228.93 99.377 -562.88 -420.58 -4.4612 -3.7044 2.213 2.5001 20.738 28.774 324.57 250.72
-            
+
             >>> st=CH4(T=190, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
@@ -216,12 +233,12 @@ class CH4(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             90.704 451.49 -982.78 -982.67 -7.3867 2.1677 3.3676 1538.8
-            
+
             >>> st=CH4(T=230, P=50000)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             230 0.42032 -267.02 -148.06 -0.19648 1.5947 2.1175 397.03
-            
+
             >>> st=CH4(T=620, P=50000)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
@@ -261,14 +278,14 @@ class CH4(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             190 115.69 -477.41 -438.51 -3.8118 2.6453 55.55 246.05
-            """, 
-            
+            """,
+
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
-        
-        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
-        "Pmin": 11.696, "rhomin": 28.142, 
+
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072,
+        "Pmin": 11.696, "rhomin": 28.142,
 
         "nr1": [0.43679010280e-1, 0.67092361990, -0.17655778590e01,
                 0.85823302410, -0.12065130520e01, 0.51204672200,
@@ -305,16 +322,16 @@ class CH4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                     "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                    "doi": "10.1063/1.555785"}, 
-                            
-        "Tmin": 90.68, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 36.2029, 
-        "Pmin": 11.744, "rhomin": 28.147, 
+                    "doi": "10.1063/1.555785"},
+
+        "Tmin": 90.68, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 36.2029,
+        "Pmin": 11.744, "rhomin": 28.147,
 
         "R": 8.31434,
         "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10018, "so": 186.266}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10018, "so": 186.266},
 
         "b": [None, 0.9898937956e-4, 0.2199608275, -0.5322788000e1,
               0.2021657962e3, -0.2234398926e5, 0.106794028e-3, 0.1457922469e-2,
@@ -330,15 +347,15 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
-#        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072,
+#        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1":  [0.57335704239162, -0.16760687523730e1, 0.23405291834916,
                  -0.21947376343441, 0.16369201404128e-1, 0.15004406389280e-1],
@@ -361,9 +378,9 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Friend et al. (1989)",
         "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
-                    "title": "Thermophysical Properties of Methane", 
+                    "title": "Thermophysical Properties of Methane",
                     "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
-                    "doi": "10.1063/1.555828"}, 
+                    "doi": "10.1063/1.555828"},
         "__test__":
             # Table A1, Pag 630
             """
@@ -413,7 +430,7 @@ class CH4(MEoS):
             >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
                 st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            160 1.593 20.96 1.584 67.42 791.5 46.70 115.0 
+            160 1.593 20.96 1.584 67.42 791.5 46.70 115.0
             >>> st=CH4(T=170, x=0.5, eq=3, visco=3)
             >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
@@ -507,15 +524,15 @@ class CH4(MEoS):
                 st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
                 st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
             400 5 1.53 13.441 164.04 32.65 42.95 512.9 14.96 52.6
-            """, 
+            """,
 
         "R": 8.31451,
         "cp": Fi3,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10017.7, "so": 186.266}, 
-        "Tt": 90.6854, "Tc": 190.551, "rhoc": 10.139, "M": 16.043, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10017.7, "so": 186.266},
+        "Tt": 90.6854, "Tc": 190.551, "rhoc": 10.139, "M": 16.043,
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 100000.0, "rhomax": 29.714, 
-        "Pmin": 11.694, "rhomin": 28.145, 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 100000.0, "rhomax": 29.714,
+        "Pmin": 11.694, "rhomin": 28.145,
 
         "nr1": [0.384436099659, -0.179692598800e1, 0.329444947369,
                 0.226312728442e-1, 0.759236768798e-1, 0.693758447259e-1,
@@ -542,9 +559,9 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for methane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=CH4(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -553,13 +570,13 @@ class CH4(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             142.73 0.78167
             """, # Table III, Pag 46
-            
+
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 40.072, 
-        "Pmin": 11.661, "rhomin": 28.167, 
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 40.072,
+        "Pmin": 11.661, "rhomin": 28.167,
 
         "nr1": [0.89269676, -0.25438282e1, 0.64980978, 0.20793471e-1,
                 0.70189104e-1, 0.23700378e-3],
@@ -577,15 +594,15 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072, 
-        "Pmin": 11.696, "rhomin": 28.142, 
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072,
+        "Pmin": 11.696, "rhomin": 28.142,
 
         "nr1": [1.25595787, 8.48007435e-1, -3.00939285, 5.99544996e-2,
                 2.57003062e-4, -2.85914246e-2],
@@ -634,9 +651,9 @@ class CH4(MEoS):
     visco0 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2011)",
               "__doi__": {"autor": "S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters",
-                  "title": "Reference Correlation for the Viscosity of Methane", 
+                  "title": "Reference Correlation for the Viscosity of Methane",
                   "ref": "High Temperatures - High Pressures 32(1) 73 – 81",
-                  "doi": ""}, 
+                  "doi": ""},
 
               "Tref": 190.564, "muref": 1.0,
               "ek": 174., "sigma": 0.36652, "n_chapman": 0,
@@ -657,9 +674,9 @@ class CH4(MEoS):
                             0.030320660, -0.0070047029],
               "__name__": "Vogel (2000)",
               "__doi__": {"autor": "Vogel, E., Wilhelm, J., Kuechenmeister, C., and Jaesche, M.",
-                  "title": "High-precision viscosity measurements on methane", 
+                  "title": "High-precision viscosity measurements on methane",
                   "ref": "High Temperatures - High Pressures 32(1) 73 – 81",
-                  "doi": "10.1068/htwu359"}, 
+                  "doi": "10.1068/htwu359"},
 
               "ek": 160.78, "sigma": 0.37333,
               "n_chapman": 0.0855422/M**0.5,
@@ -694,9 +711,9 @@ class CH4(MEoS):
     visco2 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"}, 
+                          "doi": "10.1063/1.555785"},
 
               "ek": 168., "sigma": 0.368,
               "n_chapman": 0.1069188/M**0.5,
@@ -709,10 +726,10 @@ class CH4(MEoS):
     visco3 = {"eq": 1, "omega": 2,
               "__name__": "Friend (1989)",
               "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
-                          "title": "Thermophysical Properties of Methane", 
+                          "title": "Thermophysical Properties of Methane",
                           "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
-                          "doi": "10.1063/1.555828"}, 
-                          
+                          "doi": "10.1063/1.555828"},
+
               "Tref": 174., "etaref": 10.0,
               "ek": 174., "sigma": 0.36652,
               "n_chapman": 0.14105376/M**0.5,
@@ -736,9 +753,9 @@ class CH4(MEoS):
     thermo0 = {"eq": 1, "critical": "CH4",
                "__name__": "Friend (1989)",
                "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
-                           "title": "Thermophysical Properties of Methane", 
+                           "title": "Thermophysical Properties of Methane",
                            "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
-                           "doi": "10.1063/1.555828"}, 
+                           "doi": "10.1063/1.555828"},
 
                "Tref": 174., "kref": 1e-3,
                "no": [1.45885, -0.4377162, 0],
@@ -754,9 +771,9 @@ class CH4(MEoS):
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"}, 
+                           "doi": "10.1063/1.555785"},
 
                "visco": visco2,
                "n_chapman": 0.1069188,

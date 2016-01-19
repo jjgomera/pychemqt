@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -45,16 +62,16 @@ class Propylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propylene of Lemmon et al. (2013).",
         "__doi__": {"autor": "Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W.",
-                    "title": "A reference equation of state for the thermodynamic properties of propene for temperatures from the melting line to 575 K and pressures up to 1000 MPa", 
+                    "title": "A reference equation of state for the thermodynamic properties of propene for temperatures from the melting line to 575 K and pressures up to 1000 MPa",
                     "ref": "to be submitted to J. Phys. Chem. Ref. Data",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.1, 
-        "Pmin": 0.00000075, "rhomin": 18.255, 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.1,
+        "Pmin": 0.00000075, "rhomin": 18.255,
 
         "nr1": [0.4341002e-1, 0.1136592e1, -0.8528611, 0.5216669, -0.1382953e1,
                 0.1214347],
@@ -81,16 +98,16 @@ class Propylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propylene of Overhoff (2006).",
         "__doi__": {"autor": "Overhoff, U.",
-                    "title": "Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids", 
+                    "title": "Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids",
                     "ref": "Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.4, 
-        "Pmin": 0.00000074, "rhomin": 18.26, 
+        "Tmin": Tt, "Tmax": 575.0, "Pmax": 1000000.0, "rhomax": 23.4,
+        "Pmin": 0.00000074, "rhomin": 18.26,
 
         "nr1": [0.11167427541961e1, -0.76114879497376, -0.18654354344883e1,
                 0.41500701892893e-1, 0.10706545719025e-1, 0.17481482892991e-1],
@@ -124,16 +141,16 @@ class Propylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propylene of Angus et al. (1980)",
         "__doi__": {"autor": "Angus, S., Armstrong, B., and de Reuck, K.M.",
-                    "title": "International Thermodynamic Tables of the Fluid State-7 Propylene", 
+                    "title": "International Thermodynamic Tables of the Fluid State-7 Propylene",
                     "ref": "International Union of Pure and Applied Chemistry, Pergamon Press, Oxford, 1980.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.31434,
         "cp": CP1,
-        "ref": "IIR", 
-        
-        "Tmin": 100.0, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 9.73, 
-        "Pmin": 0.48475e-4, "rhomin": 17.938, 
+        "ref": "IIR",
+
+        "Tmin": 100.0, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 9.73,
+        "Pmin": 0.48475e-4, "rhomin": 17.938,
 
         "nr1": [0.631922681460, 0.102655250604, -0.70798923e-2, 0.18624829,
                 -0.1292611017e1, -0.5410160974e-1, 0.5069017035, -0.10606146125e1,

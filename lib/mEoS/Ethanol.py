@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,9 +54,9 @@ class Ethanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Schroeder (2011).",
         "__doi__": {"autor": "Schroeder, J. A.; Penoncello, S. G.; Schroeder, J. S.",
-                    "title": "A Fundamental Equation of State for Ethanol", 
+                    "title": "A Fundamental Equation of State for Ethanol",
                     "ref": "J. Phys. Chem. Ref. Data 43, 043102 (2014)",
-                    "doi": "10.1063/1.4895394"}, 
+                    "doi": "10.1063/1.4895394"},
         "__test__": """
             >>> st=Ethanol(T=300, rhom=18)
             >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
@@ -62,13 +79,13 @@ class Ethanol(MEoS):
                 st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             514.8 6.0 6.2784176 163.95041 115623.88 159.34583
             """, # Table 30, Pag 38
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 52811.79, "so": 209.583}, 
-        
-        "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74, 
-        "Pmin": 0.00000088, "rhomin": 19.731, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 52811.79, "so": 209.583},
+
+        "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74,
+        "Pmin": 0.00000088, "rhomin": 19.731,
 
         "nr1": [0.58200796e-1, 0.94391227, -0.80941908, 0.55359038,
                 -0.14269032e1, 0.13448717],
@@ -81,8 +98,8 @@ class Ethanol(MEoS):
         "d2": [1, 1, 1, 3, 3, 2, 2, 6, 6, 8],
         "t2": [2.43, 1.274, 4.16, 3.3, 4.177, 2.5, 0.81, 2.02, 1.606, 0.86],
         "c2": [1, 1, 2, 1, 2, 1, 2, 1, 1, 1],
-        "gamma2": [1]*10, 
-        
+        "gamma2": [1]*10,
+
         "nr3": [.75564749, .1069411, -.69533844e-1, -.24947395, .27177891e-1,
                 -0.9053953e-3, -0.12310953, -0.8977971e-1, -0.39512601],
         "d3": [1, 1, 2, 3, 3, 2, 2, 2, 1],
@@ -92,14 +109,14 @@ class Ethanol(MEoS):
         "gamma3": [1.194, 1.986, 1.583, .756, .495, 1.002, 1.077, 1.493, 1.542],
         "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313],
         "nr4": []}
-        
+
     helmholtz2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Dillon and Penoncello (2004)",
         "__doi__": {"autor": "Dillon, H.E. and Penoncello, S.G.",
-                    "title": "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol", 
+                    "title": "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol",
                     "ref": "Int. J. Thermophys., 25(2):321-335, 2004.",
-                    "doi": "10.1023/B:IJOT.0000028470.49774.14"}, 
+                    "doi": "10.1023/B:IJOT.0000028470.49774.14"},
         "__test__": """
             >>> st=Ethanol(T=350, P=1e5, eq=1)
             >>> print "%0.1f %0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
@@ -120,14 +137,14 @@ class Ethanol(MEoS):
             >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             100 400 784.52 500.06 1.3279 2.8005 3.2736 1348.2
             """, # Table IV, Pag 329
-            
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
-        "Tc": 513.9, "rhoc": 5.991, 
-        
-        "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4, 
-        "Pmin": 0.00000088, "rhomin": 19.4, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
+        "Tc": 513.9, "rhoc": 5.991,
+
+        "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4,
+        "Pmin": 0.00000088, "rhomin": 19.4,
 
         "nr1": [0.114008942201e2, -0.395227128302e2, 0.413063408370e2,
                 -0.188892923721e2, 0.472310314140e1, -0.778322827052e-2,
@@ -149,23 +166,23 @@ class Ethanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely (2004).",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
-            
+                    "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": CP1,
         "ref": {"name": "CUSTOM",
-            "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180}, 
+            "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
 
-        "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6, 
-        "Pmin": 0.00000064, "rhomin": 19.55, 
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6,
+        "Pmin": 0.00000064, "rhomin": 19.55,
 
         "nr1":  [-2.95455387, 1.95055493, -1.31612955, -1.47547651e-2,
                  1.39251945e-4, 5.04178939e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
-        
+
         "nr2": [2.52310166e-1, 1.97074652, 8.73146115e-1, 4.27767205e-2,
                 9.68966545e-2, -8.39632113e-1, -7.71828521e-2, 1.63430744e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
@@ -195,10 +212,10 @@ class Ethanol(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Kiselev (2005)",
               "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
-                          "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols", 
+                          "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols",
                           "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
-                          "doi": "10.1021/ie050010e"}, 
-                          
+                          "doi": "10.1021/ie050010e"},
+
               "ek": 362.6, "sigma": 0.453,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0,
@@ -236,9 +253,9 @@ class Ethanol(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2013)",
                "__doi__": {"autor": "M. J. Assael, E. A. Sykioti, M. L. Huber, and R. A. Perkins",
-                           "title": "Reference Correlation of the Thermal Conductivity of Ethanol from the Triple Point to 600 K and up to 245 MPa", 
+                           "title": "Reference Correlation of the Thermal Conductivity of Ethanol from the Triple Point to 600 K and up to 245 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 42, 023102 (2013)",
-                           "doi": "10.1063/1.4797368"}, 
+                           "doi": "10.1063/1.4797368"},
                "__test__": """
                    >>> st=Ethanol(T=300, rho=850)
                    >>> print "%0.5g" % st.k.mWmK
@@ -260,8 +277,8 @@ class Ethanol(MEoS):
                "Tref": 514.71, "kref": 1e-3,
                "no": [-2.09575, 1.99045e1, -5.39640e1, 8.21223e1, -1.98864, -0.495513],
                "co": [0, 1, 2, 3, 4, 5],
-               "noden": [0.17223, -0.078273, 1.0], 
-               "coden": [0, 1, 2], 
+               "noden": [0.17223, -0.078273, 1.0],
+               "coden": [0, 1, 2],
 
                "Trefb": 514.71, "rhorefb": 5.93, "krefb": 1.,
                "nb": [.267222E-01, .148279, -.130429, .346232E-01,
@@ -278,15 +295,15 @@ class Ethanol(MEoS):
     thermo1 = {"eq": 1,
                "__name__": "Kiselev (2005)",
                "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
-                           "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols", 
+                           "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols",
                            "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
-                           "doi": "10.1021/ie050010e"}, 
+                           "doi": "10.1021/ie050010e"},
 
                "Tref": 1, "kref": 1,
                "no": [-10.109e-3],
                "co": [0.6475],
-               "noden": [1.0, -7.332e3, -2.68e5], 
-               "coden": [0, -1, -2], 
+               "noden": [1.0, -7.332e3, -2.68e5],
+               "coden": [0, -1, -2],
 
                "Trefb": 513.9, "rhorefb": 5.991, "krefb": 1.,
                "nb": [1.06917458e-1, -5.95897870e-2, -8.65012441e-2,

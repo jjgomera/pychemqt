@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###Módulo que define los dialogos de definición de gráficos
 
@@ -25,7 +43,7 @@ class Binary_distillation(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Component 2:")),1,4)
         self.Comp2=QtWidgets.QComboBox()
         layout.addWidget(self.Comp2,1,5)
-        
+
         self.indices=indices
         self.nombres=nombres
         for i, nombre in enumerate(nombres):
@@ -38,15 +56,15 @@ class Binary_distillation(QtWidgets.QDialog):
         tab.addTab(self.plot, QtWidgets.QApplication.translate("equipment", "Plot"))
         self.tabla=Tabla(2, horizontalHeader=["x", "y"], stretch=False, readOnly=True)
         tab.addTab(self.tabla, QtWidgets.QApplication.translate("equipment", "Table"))
-        
+
         self.Comp1.currentIndexChanged.connect(self.calculo)
         self.Comp2.currentIndexChanged.connect(self.calculo)
-        
+
         if x and y:
             self.rellenar(x, y)
         else:
             self.calculo()
-        
+
     def rellenar(self, x, y):
         self.x=x
         self.y=y
@@ -92,7 +110,7 @@ class Binary_distillation(QtWidgets.QDialog):
             stream.writeFloat(i)
         for i in self.widget().y:
             stream.writeFloat(i)
-    
+
     @classmethod
     def readToStream(cls, stream):
         id1=stream.readInt32()
@@ -124,10 +142,10 @@ class Plot_Distribucion(mpl):
         for i in range(6):
             x, y, leyenda=solido.ajustar_distribucion(i)
             self.data(x, y, label=leyenda)
-        
-        
-        
-__all__=Binary_distillation, 
+
+
+
+__all__=Binary_distillation,
 
 if __name__ == "__main__":
     import sys

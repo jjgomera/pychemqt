@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -20,7 +38,7 @@ class mpl(FigureCanvasQTAgg):
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    
+
     def config(self, xmin=None, xmax=None, ymin=None, ymax=None, scalex="linear", scaley="linear"):
         self.axes2D.clear()
         self.axes2D.set_autoscale_on(False)
@@ -35,10 +53,10 @@ class mpl(FigureCanvasQTAgg):
             self.axes2D.set_ylim(ymin, ymax)
         else:
             self.axes2D.set_autoscaley_on(True)
-        
+
         self.axes2D.set_xscale(scalex)
         self.axes2D.set_yscale(scaley)
-        
+
     def plot(self, *args, **kwargs):
         self.axes2D.plot(*args, **kwargs)
 
@@ -56,7 +74,7 @@ class matplotlib(FigureCanvasQTAgg):
         self.setParent(parent)
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
-        
+
         if dim==2:
             self.ax = self.fig.add_subplot(111)
             self.ax.figure.subplots_adjust(left=0.08, right=0.98, bottom=0.08, top=0.92)
@@ -72,12 +90,12 @@ class matplotlib(FigureCanvasQTAgg):
         """Método que dibuja la matriz de datos"""
         self.ax.clear()
         self.data={"x": xdata[0], "y": ydata[:,0], "z": zdata}
-        
+
         if config and config.getboolean("MEOS", "surface"):
             self.ax.plot_surface(xdata, ydata, zdata, rstride=1, cstride=1)
         else:
             self.ax.plot_wireframe(xdata, ydata, zdata, rstride=1, cstride=1)
-            
+
         self.ax.set_xlabel(labels[0])
         self.ax.set_ylabel(labels[1])
         self.ax.set_zlabel(labels[2])
@@ -89,10 +107,10 @@ class matplotlib(FigureCanvasQTAgg):
 #        layout=QtGui.QVBoxLayout(self)
 #        self.plot=matplotlib(dim)
 #        layout.addWidget(self.plot)
-#        
+#
 #        self.toolbar=NavigationToolbar2QT(self, self)
 #        layout.addWidget(self.toolbar)
-#        
+#
 
 class Plot(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -107,7 +125,7 @@ class Plot(QtWidgets.QDialog):
         self.buttonBox.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         self.buttonBox.rejected.connect(self.reject)
         gridLayout.addWidget(self.buttonBox,2,2)
-        
+
     def addText(self, *args, **kwargs):
         self.plot.ax.text(*args, **kwargs)
 
@@ -116,13 +134,13 @@ class Plot(QtWidgets.QDialog):
         self.plot.ax.plot(*args, **kwargs)
 #        self.plot.draw()
 
-    
+
 
 if __name__ == '__main__':
     import sys
     t=[0.3, 0.45, 1., 1.5, 3.5, 7.5, 11.0, 24.0]
     k=[0.5, 0.6, 0.75, 0.8, 0.9, 0.95, 0.97, 0.99]
-    
+
     app = QtWidgets.QApplication(sys.argv)
     grafico=Plot()
     grafico.data(t, k, 'ro')

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -23,16 +40,16 @@ class R1234ze(MEoS):
 
     CP1 = {"ao": 4.0,
            "an": [], "pow": [],
-           "ao_exp": [9.3575, 10.717], 
+           "ao_exp": [9.3575, 10.717],
            "exp": [513, 1972],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 6.259,
            "an": [], "pow": [],
-           "ao_exp": [7.303, 8.597, 2.333], 
+           "ao_exp": [7.303, 8.597, 2.333],
            "exp": [691, 1705, 4216],
            "ao_hyp": [], "hyp": []}
-           
+
     CP3 = {"ao": 5.8887,
            "an": [], "pow": [],
            "ao_exp": [7.0804, 9.3371, 2.5577],
@@ -43,23 +60,23 @@ class R1234ze(MEoS):
            "pow": [0, 1],
            "ao_pow": [-10.8724711, -30.1326538],
            "ao_exp": [6.07536, 9.95795],
-           "titao": [289/Tc, 1303/Tc], 
+           "titao": [289/Tc, 1303/Tc],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of Thol and Lemmon (2013).",
         "__doi__": {"autor": "Thol, M. and Lemmon, E.W.",
-                    "title": "to be published in Int. J. Thermophys., 2013.", 
+                    "title": "to be published in Int. J. Thermophys., 2013.",
                     "ref": "",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26, 
-        "Pmin": 0.2187, "rhomin": 13.26, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26,
+        "Pmin": 0.2187, "rhomin": 13.26,
 
         "nr1": [0.03982797, 1.812227, -2.537512, -0.5333254, 0.1677031],
         "d1": [4, 1, 1, 2, 3],
@@ -84,16 +101,16 @@ class R1234ze(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
         "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State", 
+                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State",
                     "ref": "International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.",
-                    "doi": "10.0000_docs.lib.purdue.edu_generic-99DA7EA2C877"}, 
-                    
+                    "doi": "10.0000_docs.lib.purdue.edu_generic-99DA7EA2C877"},
+
         "R": 8.314472,
         "cp": CP2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
-        "Pmin": 0.23, "rhomin": 13.19, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20,
+        "Pmin": 0.23, "rhomin": 13.19,
 
         "nr1": [0.055563, 1.66927, -2.53408, -0.475075, 0.190055],
         "d1": [4, 1, 1, 2, 3],
@@ -118,15 +135,15 @@ class R1234ze(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
         "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State", 
+                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State",
                     "ref": "unpublished equation, similar to helmholtz2",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": CP3,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20, 
-        "Pmin": 0.23, "rhomin": 13.19, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20,
+        "Pmin": 0.23, "rhomin": 13.19,
 
         "nr1": [0.4434245e-1, 0.1646369e1, -0.2437488e1, -0.517056, 0.1815626],
         "d1": [4, 1, 1, 2, 3],
@@ -151,20 +168,20 @@ class R1234ze(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
         "__doi__": {"autor": "Akasaka, R.",
-                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))", 
+                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))",
                     "ref": "Int J Thermophys (2011) 32:1125–1147",
-                    "doi": "10.1007/s10765-011-0992-0"}, 
+                    "doi": "10.1007/s10765-011-0992-0"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20, 
-        "Pmin": 0.23, "rhomin": 13.19, 
+        "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20,
+        "Pmin": 0.23, "rhomin": 13.19,
 
         "nr1": [0.85579765e1, -0.94701332e1, -0.25013623, 0.13789870, 0.12177113e-1],
         "d1": [1, 1, 1, 2, 5],
         "t1": [0.66886, 0.83392, 1.6982, 1.8030, 0.36657],
- 
+
         "nr2": [-0.14227996, 0.10096648, 0.17504319e-1, -0.17627303e-1, -0.14705120e-1, 0.37202269, -0.30138266, -0.92927274e-1, 0.87051177e-1, 0.18113770e-1, -0.16018424e-1, 0.53809860e-2],
         "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
         "t2": [3.8666, 1.0194, 0, 1.1655, 8.3101, 6.1459, 8.3495, 6.0422,
@@ -174,11 +191,11 @@ class R1234ze(MEoS):
 
     eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
-    _surface = {"__doi__": 
+    _surface = {"__doi__":
                     {"autor": "Tanaka, K., Higashi, Y.",
-                     "title": "Surface Tension of trans-1,3,3,3-Tetrafluoropropene and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane Mixture", 
+                     "title": "Surface Tension of trans-1,3,3,3-Tetrafluoropropene and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane Mixture",
                      "ref": "J. Chem. Eng. Japan, 2013",
-                     "doi": "10.1252/jcej.13we021"}, 
+                     "doi": "10.1252/jcej.13we021"},
                 "sigma": [0.05681], "exp": [1.23]}
     _vapor_Pressure = {
         "eq": 5,
@@ -196,9 +213,9 @@ class R1234ze(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2011)",
                "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))", 
+                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))",
                             "ref": "J. Chem. Eng. Data, 2011, 56 (12), pp 4868–4874",
-                            "doi": "10.1021/je200811n"}, 
+                            "doi": "10.1021/je200811n"},
                "__test__": """
                     >>> st=R1234ze(T=250, P=5e4, eq=1)
                     >>> print "%0.6g %0.5g" % (st.rho, st.k)

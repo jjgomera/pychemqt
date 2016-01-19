@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,15 +48,15 @@ class R114(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-114 of Platzer et al. (1990).",
         "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants", 
+                    "title": "Thermophysical properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31451,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": 273.15, "Tmax": 507.0, "Pmax": 21000.0, "rhomax": 8.942, 
-        "Pmin": 0.2, "rhomin": 10.4, 
+        "ref": "NBP",
+
+        "Tmin": 273.15, "Tmax": 507.0, "Pmax": 21000.0, "rhomax": 8.942,
+        "Pmin": 0.2, "rhomin": 10.4,
 
         "nr1": [-0.340776521414, 0.323001398420, -0.424950537596e-1,
                 0.107938879710e1, -0.199243619673e1, -0.155135133506,

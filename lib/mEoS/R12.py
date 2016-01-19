@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,15 +48,15 @@ class R12(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-12 of Marx et al. (1992).",
         "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
                     "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.314471,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 15.13, 
-        "Pmin": 0.000243, "rhomin": 15.1253, 
+
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 15.13,
+        "Pmin": 0.000243, "rhomin": 15.1253,
 
         "nr1": [0.2075343402e1, -0.2962525996e1, 0.1001589616e-1, 0.1781347612e-1,
                 0.2556929157e-1, 0.2352142637e-2, -0.8495553314e-4],
@@ -60,9 +77,9 @@ class R12(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-12 of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R12(T=700, rho=200, eq=1)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -71,12 +88,12 @@ class R12(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             121.54 0.28621
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": CP1,
-        
-        "Tmin": 173.0, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.9, 
-        "Pmin": 1.1633, "rhomin": 13.892, 
+
+        "Tmin": 173.0, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.9,
+        "Pmin": 1.1633, "rhomin": 13.892,
 
         "nr1": [0.10557228e1, -0.33312001e1, 0.10197244e1, 0.84155115e-1,
                 0.28520742e-3],

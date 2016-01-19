@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # library for heat exchanger calculation
@@ -922,7 +940,7 @@ class Shell_Tube(Heat_ExchangerDesign):
         "tipoCoste": 0,
         "materialCoste": 0,
         "P_dis": 0.0}
-        
+
     indiceCostos=2
 
     TEXT_METHOD_TUBE_LAMINAR = ["Eubank-Proctor", "VDI mean Nusselt",
@@ -958,31 +976,31 @@ class Shell_Tube(Heat_ExchangerDesign):
         QApplication.translate("pychemqt", "Horizontal"),
         QApplication.translate("pychemqt", "Vertical")]
     TEXT_DISTRIBUTION_TUBE = [
-        QApplication.translate("pychemqt", "Triangular")+", 30º", 
-        QApplication.translate("pychemqt", "Diamond")+", 45º", 
-        QApplication.translate("pychemqt", "Rotated Triangular")+", 60º", 
+        QApplication.translate("pychemqt", "Triangular")+", 30º",
+        QApplication.translate("pychemqt", "Diamond")+", 45º",
+        QApplication.translate("pychemqt", "Rotated Triangular")+", 60º",
         QApplication.translate("pychemqt", "Square")+", 90º"]
     TEXT_BAFFLE_TYPE = [
-        QApplication.translate("pychemqt", "Single segmental"), 
-        QApplication.translate("pychemqt", "Double segmental"), 
-        QApplication.translate("pychemqt", "Triple segmental"), 
-        QApplication.translate("pychemqt", "No tubes in window"), 
-        QApplication.translate("pychemqt", "Disk & donut"), 
+        QApplication.translate("pychemqt", "Single segmental"),
+        QApplication.translate("pychemqt", "Double segmental"),
+        QApplication.translate("pychemqt", "Triple segmental"),
+        QApplication.translate("pychemqt", "No tubes in window"),
+        QApplication.translate("pychemqt", "Disk & donut"),
         QApplication.translate("pychemqt", "Rod")]
     TEXT_COST_TYPE = [
-        QApplication.translate("pychemqt", "Fixed Head"), 
-        QApplication.translate("pychemqt", "Kettle Reboiler"), 
+        QApplication.translate("pychemqt", "Fixed Head"),
+        QApplication.translate("pychemqt", "Kettle Reboiler"),
         QApplication.translate("pychemqt", "U-Tube")]
     TEXT_COST_MATERIAL = [
-        QApplication.translate("pychemqt", "Carbon Steel"), 
-        QApplication.translate("pychemqt", "Stainless Steel 316"), 
-        QApplication.translate("pychemqt", "Stainless Steel 304"), 
-        QApplication.translate("pychemqt", "Stainless Steel 347"), 
-        QApplication.translate("pychemqt", "Nickel 200"), 
-        QApplication.translate("pychemqt", "Monel 400"), 
-        QApplication.translate("pychemqt", "Inconel 600"), 
-        QApplication.translate("pychemqt", "Incoloy 825"), 
-        QApplication.translate("pychemqt", "Titanium"), 
+        QApplication.translate("pychemqt", "Carbon Steel"),
+        QApplication.translate("pychemqt", "Stainless Steel 316"),
+        QApplication.translate("pychemqt", "Stainless Steel 304"),
+        QApplication.translate("pychemqt", "Stainless Steel 347"),
+        QApplication.translate("pychemqt", "Nickel 200"),
+        QApplication.translate("pychemqt", "Monel 400"),
+        QApplication.translate("pychemqt", "Inconel 600"),
+        QApplication.translate("pychemqt", "Incoloy 825"),
+        QApplication.translate("pychemqt", "Titanium"),
         QApplication.translate("pychemqt", "Hastelloy")]
 
     @property
@@ -1604,7 +1622,7 @@ class Hairpin(Heat_ExchangerDesign):
             self.statusCoste=True
         else:
             self.statusCoste=False
-        
+
         if not self.kwargs["entradaTubo"]:
             self.msg=QApplication.translate("pychemqt", "undefined internal stream input")
             self.status=0

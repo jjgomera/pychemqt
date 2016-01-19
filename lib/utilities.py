@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 #################################################################################
 # Module with utilities:
@@ -100,11 +118,11 @@ def colors(number, mix="", scale=False):
             green = (green + green_mix) / 2
             blue_mix = int(mix[5:], base=16)
             blue = (blue + blue_mix) / 2
-        
+
         colors.append(('#%02X%02X%02X' % (red, green, blue)))
     return colors
-    
-    
+
+
 def exportTable(matrix, fname, format, title=None):
     """Save data to a file
     Inputs
@@ -132,7 +150,7 @@ def exportTable(matrix, fname, format, title=None):
         import csv
         with open(fname, "w") as archivo:
             writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
-            
+
             # Add Data
             if title:
                 writer.writerow([ttl.translate(c_newline) for ttl in header])
@@ -147,7 +165,7 @@ def exportTable(matrix, fname, format, title=None):
         sheet=ezodf.Table(sheetTitle)
         sheets+=sheet
         sheet.reset(size=(len(matrix)+1, len(matrix[0])))
-        
+
         # Add Data
         if title:
             for i, ttl in enumerate(header):
@@ -161,7 +179,7 @@ def exportTable(matrix, fname, format, title=None):
         import xlwt
         spreadsheet = xlwt.Workbook()
         sheet = spreadsheet.add_sheet(sheetTitle)
-        
+
         font = xlwt.Font()
         font.bold = True
         style = xlwt.XFStyle()
@@ -182,13 +200,13 @@ def exportTable(matrix, fname, format, title=None):
         spreadsheet = openpyxl.Workbook()
         sheet = spreadsheet.active
         sheet.title = sheetTitle
-        
+
         font1 = Font()
         font1.size = 9
         font1.bold = True
         font2 = Font()
         font2.size = 9
-        
+
         # Add Data
         if title:
             for i, ttl in enumerate(header):
@@ -199,7 +217,7 @@ def exportTable(matrix, fname, format, title=None):
                 sheet["%s%i"%(spreadsheetColumn(i), j+2)] = data
                 sheet["%s%i"%(spreadsheetColumn(i), j+2)].style.font = font2
         spreadsheet.save(filename=fname)
-    
+
     else:
         raise ValueError(QApplication.translate(
             "pychemqt", "Unsopported format") + " " + format)

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -25,7 +42,7 @@ class Cyclopentane(MEoS):
            "pow": [0, 1],
            "ao_pow": [-0.3946233253, 2.4918910143],
            "ao_exp": [1.34, 13.4, 17.4, 6.65],
-           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc], 
+           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc],
            "ao_hyp": [], "hyp": []}
 
     CP1 = {"ao": 3.263,
@@ -38,9 +55,9 @@ class Cyclopentane(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopentane of Gedanitz et al. (2015).",
         "__doi__": {"autor": "Gedanitz, H., Davila, M.J., Lemmon, E.W.",
-                    "title": "Speed of Sound Measurements and a Fundamental Equation of State for Cyclopentane", 
+                    "title": "Speed of Sound Measurements and a Fundamental Equation of State for Cyclopentane",
                     "ref": "J. Chem. Eng. Data, 2015, 60 (5), pp 1331–1337",
-                    "doi": "10.1021/je5010164"}, 
+                    "doi": "10.1021/je5010164"},
         "__test__": """
             >>> st=Cyclopentane(T=330, rhom=0.01)
             >>> print "%0.0f %0.7g %0.2f %0.7g %0.7g %0.7g" % (\
@@ -63,13 +80,13 @@ class Cyclopentane(MEoS):
                 st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
             520 6.522373 6.0 159.2304 276.7530 234.2660
             """, # Table 5, Pag F
-                    
-        "R": 8.314472, "rhoc": 3.92, 
-        "cp": Fi1,
-        "ref": "NBP", 
 
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 250000.0, "rhomax": 12.11, 
-        "Pmin": 0.008854, "rhomin": 12.1, 
+        "R": 8.314472, "rhoc": 3.92,
+        "cp": Fi1,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 250000.0, "rhomax": 12.11,
+        "Pmin": 0.008854, "rhomin": 12.1,
 
         "nr1": [0.0630928, 1.50365, -2.37099, -0.484886, 0.191843],
         "d1": [4, 1, 1, 2, 3],
@@ -93,15 +110,15 @@ class Cyclopentane(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopentane of Lemmon et al. (2008).",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "", 
+                    "title": "",
                     "ref": "unpublished equation",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 12.2, 
-        "Pmin": 0.0089, "rhomin": 12.1, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 12.2,
+        "Pmin": 0.0089, "rhomin": 12.1,
 
         "nr1": [0.4909331e-1, 0.1244679e1, -0.1990222e1, -0.5245596, 0.1764215],
         "d1": [4, 1, 1, 2, 3],

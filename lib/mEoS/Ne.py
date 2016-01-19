@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import log10
 from scipy.constants import pi, Avogadro
@@ -32,15 +49,15 @@ class Ne(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for neon of Katti et al. (1986).",
         "__doi__": {"autor": "Katti, R.S., Jacobsen, R.T, Stewart, R.B., Jahangiri, M.",
-                    "title": "Thermodynamic properties for neon for temperatures from the triple point to 700 K at pressures up to 700 MPa", 
+                    "title": "Thermodynamic properties for neon for temperatures from the triple point to 700 K at pressures up to 700 MPa",
                     "ref": "Adv. Cryo. Eng. 31 (1986), 1189-1197",
-                    "doi": "10.1007/978-1-4613-2213-9_132"}, 
+                    "doi": "10.1007/978-1-4613-2213-9_132"},
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6179, "so": 146.214}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6179, "so": 146.214},
 
-        "Tmin": Tt, "Tmax": 700.0, "Pmax": 700000.0, "rhomax": 90.56, 
-        "Pmin": 43.464, "rhomin": 62.059, 
+        "Tmin": Tt, "Tmax": 700.0, "Pmax": 700000.0, "rhomax": 90.56,
+        "Pmin": 43.464, "rhomin": 62.059,
 
         "nr1": [0.3532653449e1, -0.4513954384e1, -0.1524027959, 0.2188568609e1,
                 -0.744299997e1, 0.7755627402e1, -0.3122553128e1, 0.1014206899e1,
@@ -94,9 +111,9 @@ class Ne(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "Rabinovich (1988)", 
+              "__name__": "Rabinovich (1988)",
               "__doi__": {"autor": "Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I. and Veksler, L.S.",
-                          "title": "Thermophysical Properties of Neon, Argon, Krypton, and Xenon", 
+                          "title": "Thermophysical Properties of Neon, Argon, Krypton, and Xenon",
                           "ref": "Hemisphere Publishing Corp., 1988.",
                           "doi": ""}}
 

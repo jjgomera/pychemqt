@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Module with stream definition
@@ -56,7 +74,7 @@ class Mezcla(config.Entity):
     def __init__(self, tipo=0, **kwargs):
         if tipo == 0:
             return
-            
+
         self.kwargs = Mezcla.kwargs.copy()
         self.kwargs.update(kwargs)
         if "ids" in self.kwargs and self.kwargs["ids"] is not None:
@@ -219,7 +237,7 @@ class Mezcla(config.Entity):
 
     def __call__(self):
         pass
-        
+
     def recallZeros(self, lista, val=0):
         """Method to return any list with null component added"""
         l = lista[:]
@@ -1082,7 +1100,7 @@ class Mezcla(config.Entity):
             stream.writeFloat(x)
         stream.writeFloat(self.caudalmasico)
         stream.writeFloat(self.caudalmolar)
-        
+
         stream.writeFloat(self.M)
         stream.writeFloat(self.Tc)
         stream.writeFloat(self.tpc)
@@ -1117,7 +1135,7 @@ class Mezcla(config.Entity):
                 unidades.MolarFlow(stream.readFloat()))
         self.caudalmasico = unidades.MassFlow(stream.readFloat())
         self.caudalmolar = unidades.MolarFlow(stream.readFloat())
-        
+
         self.M = unidades.Dimensionless(stream.readFloat())
         self.Tc = unidades.Temperature(stream.readFloat())
         self.tpc = unidades.Temperature(stream.readFloat())
@@ -1148,7 +1166,7 @@ class Solid(config.Entity):
               "distribucion_fraccion": [],
               "distribucion_diametro": []}
 
-    
+
     def __call__(self, **kwargs):
         """All equipment are callables, so we can instance or add/change
         input value with flexibility"""
@@ -1175,7 +1193,7 @@ class Solid(config.Entity):
         else:
             self.ids = txt
         self.componente = [Componente(int(i)) for i in self.ids]
-        
+
         caudal = self.kwargs.get("caudalSolido", [])
         diametro_medio = self.kwargs.get("diametroMedio", 0.0)
         fraccion = self.kwargs.get("distribucion_fraccion", [])
@@ -1202,7 +1220,7 @@ class Solid(config.Entity):
                 self.fracciones_acumuladas.append(xi+self.fracciones_acumuladas[-1])
             del self.fracciones_acumuladas[0]
         self.diametro_medio = unidades.Length(diametro_medio, magnitud="ParticleDiameter")
-        
+
     def RhoS(self, T):
         densidad = 0
         for i in range(len(self.ids)):
@@ -1321,7 +1339,7 @@ class Solid(config.Entity):
         for frac in self.fracciones_acumuladas:
             stream.writeFloat(frac)
         stream.writeFloat(self.diametro_medio)
-        
+
     def readStatefromStream(self, stream):
         self._bool = stream.readBool()
         self._def = stream.readInt32()
@@ -1374,7 +1392,7 @@ class Corriente(config.Entity):
     kwargs = {"T": 0.0,
               "P": 0.0,
               "x": None,
-              "ids": None, 
+              "ids": None,
 
               "caudalMasico": 0.0,
               "caudalVolumetrico": 0.0,
@@ -1496,7 +1514,7 @@ class Corriente(config.Entity):
             self.kwargs["P"] = 0.0
         elif kwargs.get("P", 0.0) and self.kwargs["T"] and self.kwargs["x"]:
             self.kwargs["x"] = None
-            
+
         self.kwargs.update(kwargs)
 
         for key, value in list(self.kwargs.items()):
@@ -1525,13 +1543,13 @@ class Corriente(config.Entity):
             self.status = 1
             self.calculo()
             self.msg = ""
-            
+
         elif self.tipoFlujo:
             if self.kwargs["mezcla"]:
                 self.mezcla = self.kwargs["mezcla"]
             else:
                 self.mezcla = Mezcla(self.tipoFlujo, **self.kwargs)
-                
+
         elif self.tipoSolido:
             if self.kwargs["solido"]:
                 self.solido = self.kwargs["solido"]
@@ -1676,7 +1694,7 @@ class Corriente(config.Entity):
                 self.x = unidades.Dimensionless(eos.x)
             else:
                 self.x = unidades.Dimensionless(x)
-            
+
 #            self.mezcla.recallZeros(eos.xi)
 #            self.mezcla.recallZeros(eos.yi)
 #            self.mezcla.recallZeros(eos.Ki, 1.)
@@ -1809,7 +1827,7 @@ class Corriente(config.Entity):
 
     def setSolid(self, solid):
         self.solido = solid
-        
+
     @property
     def psystream(self):
         xw = self.fraccion_masica[self.ids.index(62)]
@@ -2009,7 +2027,7 @@ class Corriente(config.Entity):
                 for di, xi in zip(self.solido.diametros, self.solido.fracciones):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
-        
+
         if self.calculable and self._thermo == "meos":
             txt += os.linesep+self.cmp.txt()
 
@@ -2056,14 +2074,14 @@ class Corriente(config.Entity):
         stream.writeFloat(self.rho)
         stream.writeFloat(self.Q)
         stream.writeFloat(self.SG)
-        
+
         stream.writeInt32(self.tipoFlujo)
         self.mezcla.writeStatetoStream(stream)
-        
+
         stream.writeInt32(self.tipoSolido)
         if self.tipoSolido:
             self.solido.writeStatetoStream(stream)
-        
+
         self.Liquido.writeStatetoStream(stream)
         self.Gas.writeStatetoStream(stream)
 
@@ -2094,7 +2112,7 @@ class Corriente(config.Entity):
         self.fraccion_masica = self.mezcla.fraccion_masica
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
-        
+
         self.tipoSolido = stream.readInt32()
         if self.tipoSolido:
             self.solido = Solid()
@@ -2210,7 +2228,7 @@ class PsyStream(config.Entity):
         kwargs = self.kwargs
         self.__dict__.update(self.state.__dict__)
         self.kwargs = kwargs
-        
+
         self.updateFlow()
 
     def updatekwargsFlow(self, key, value):
@@ -2231,7 +2249,7 @@ class PsyStream(config.Entity):
             self.status = 1
             self.calculo()
             self.msg = ""
-           
+
     def updateFlow(self):
         if self.kwargs["caudalMasico"]:
             G = self.kwargs["caudalMasico"]
@@ -2249,7 +2267,7 @@ class PsyStream(config.Entity):
         self.caudalVolumetrico = unidades.VolFlow(Q)
         self.caudalMolar = unidades.MolarFlow(M)
 
-        
+
     @property
     def corriente(self):
         corriente = Corriente(T=self.state.twb, P=self.state.P,
@@ -2546,5 +2564,5 @@ if __name__ == '__main__':
 #    print(agua2.rho)
     from pprint import pprint
     pprint(agua.__dict__)
-    
+
 

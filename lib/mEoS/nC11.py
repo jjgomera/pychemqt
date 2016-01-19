@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -23,27 +40,27 @@ class nC11(MEoS):
 
     Fi1 = {"ao_log": [1, -120.4274],
            "pow": [-3, -2, -1, 0, 1, 2],
-           "ao_pow": [-3.515339, 28.27708, -136.8378, -46.40384, 107.1876, 
+           "ao_pow": [-3.515339, 28.27708, -136.8378, -46.40384, 107.1876,
                       1.419929],
-           "tau*logtau": -31.81246, 
-           "tau*logdeñta": 0, 
-           "ao_exp": [], "titao": [], 
+           "tau*logtau": -31.81246,
+           "tau*logdeñta": 0,
+           "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for undecane of Aleksandrov et al. (2011)",
         "__doi__": {"autor": "Aleksandrov, I.S., Gerasimov, A.A., and Grigor’ev, B.A.",
-                    "title": "Using fundamental equations of state for calculating the thermodynamic properties of normal undecane", 
+                    "title": "Using fundamental equations of state for calculating the thermodynamic properties of normal undecane",
                     "ref": "Thermal Engineering, 58(8):691-698, 2011",
-                    "doi": "10.1134/S0040601511080027"}, 
+                    "doi": "10.1134/S0040601511080027"},
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 700., "Pmax": 500000.0, "rhomax": 4.97, 
-        "Pmin": 0.0004461, "rhomin": 4.962, 
+        "Tmin": Tt, "Tmax": 700., "Pmax": 500000.0, "rhomax": 4.97,
+        "Pmin": 0.0004461, "rhomin": 4.962,
 
         "nr1": [-0.66172706, 1.3375396, -2.5608399, 0.1067891, 0.28873614e-3,
                 0.49587209e-1],

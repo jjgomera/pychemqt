@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -28,13 +45,13 @@ class C3(MEoS):
            "pow": [0, 1],
            "ao_pow": [-4.970583, 4.29352],
            "ao_exp": [3.043, 5.874, 9.337, 7.922],
-           "titao": [393/Tc, 1237/Tc, 1984/Tc, 4351/Tc], 
+           "titao": [393/Tc, 1237/Tc, 1984/Tc, 4351/Tc],
            "ao_hyp": [], "hyp": []}
 
     Fi2 = {"ao_log": [1, 3.02939],
            "pow": [0, 1],
            "ao_pow": [31.602908195, -84.463284382],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
            "hyp": [1.297521801, 0.543210978, 2.583146083, 2.777773271]}
 
@@ -42,14 +59,14 @@ class C3(MEoS):
            "pow": [0, 1],
            "ao_pow": [10.14394256, -4.79513693],
            "ao_exp": [2.90591124, 4.68495401, 10.2971154, 8.08977905],
-           "titao": [1.0515052038, 3.0961635368, 5.0845797877, 11.4329447982], 
+           "titao": [1.0515052038, 3.0961635368, 5.0845797877, 11.4329447982],
            "ao_hyp": [], "hyp": []}
-           
+
     Fi4 = {"ao_log": [1, 3.021394],
            "pow": [0, 1],
            "ao_pow": [-4.992402, 4.291476],
            "ao_exp": [2.889980, 4.474243, 8.139803, 10.48251],
-           "titao": [1.048309, 3.053170, 11.42280, 5.042815], 
+           "titao": [1.048309, 3.053170, 11.42280, 5.042815],
            "ao_hyp": [], "hyp": []}
 
     CP5 = {"ao": -5.4041204338,
@@ -63,9 +80,9 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Lemmon et al. (2009)",
         "__doi__": {"autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
-                    "title": "Thermodynamic Properties of Propane.  III.  A Reference Equation of State for Temperatures from the Melting Line to 650 K and Pressures up to 1000 MPa", 
+                    "title": "Thermodynamic Properties of Propane.  III.  A Reference Equation of State for Temperatures from the Melting Line to 650 K and Pressures up to 1000 MPa",
                     "ref": "J. Chem. Eng. Data, 2009, 54 (12), pp 3141–3180",
-                    "doi": "10.1021/je900217v"}, 
+                    "doi": "10.1021/je900217v"},
         "__test__":
             # Table 5, Pag AH
             """
@@ -159,13 +176,13 @@ class C3(MEoS):
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             95 4.1195 286.51 156.31 516.33 595.81 1.948 2.164 2.302 2.467 23.59 36.07 158.1 144.1
             """
-            , 
+            ,
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
 
-        "Tmin": Tt, "Tmax": 650.0, "Pmax": 1000000.0, "rhomax": 20.6, 
-        "Pmin": 0.00000017, "rhomin": 16.63, 
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 1000000.0, "rhomax": 20.6,
+        "Pmin": 0.00000017, "rhomin": 16.63,
 
         "nr1":  [0.42910051e-1, 0.17313671e1, -0.24516524e1, 0.34157466,
                  -0.46047898],
@@ -192,16 +209,16 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Bücker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane",
                     "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
-                    "doi": "10.1063/1.1901687"}, 
-                    
+                    "doi": "10.1063/1.1901687"},
+
         "R": 8.314472,
         "cp": Fi3,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
-        "Pmin": 0.00000017, "rhomin": 16.62, 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41,
+        "Pmin": 0.00000017, "rhomin": 16.62,
 
         "nr1": [.21933784906951e1, -.38432884604893e1, .56820219711755,
                 .11235233289697, -.13246623110619e-1, .14587076590314e-1,
@@ -233,16 +250,16 @@ class C3(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for propane of Younglove and Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane", 
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane",
                     "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                    "doi": "10.1063/1.555785"}, 
-                    
+                    "doi": "10.1063/1.555785"},
+
         "R": 8.31434,
         "cp": CP5,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 14740.2, "so": 270.203}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 14740.2, "so": 270.203},
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
-        "Pmin": 1.685e-7, "rhomin": 16.617, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36,
+        "Pmin": 1.685e-7, "rhomin": 16.617,
 
         "b": [None, -0.2804337729e-2, 0.1180666107e1, -0.3756325860e2,
               0.5624374521e4, -0.9354759605e6, -0.4557405505e-3, 0.1530044332e1,
@@ -258,15 +275,15 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 85.48, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41, 
-#        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": 85.48, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41,
+#        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10403973107358e1, -0.28318404081403e1, 0.84393809606294,
                 -0.76559591850023e-1, 0.94697373057280e-1, 0.24796475497006e-3],
@@ -284,15 +301,15 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase Propane", 
+                    "title": "A Thermodynamic Property Model for Fluid-Phase Propane",
                     "ref": "Int. J. Thermophys., 21(5):1045-1072, 2000.",
-                    "doi":  "10.1023/A:1026441903474"}, 
+                    "doi":  "10.1023/A:1026441903474"},
         "R": 8.314472,
         "cp": Fi4,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 623.0, "Pmax": 103000.0, "rhomax": 17.41, 
-        "Pmin": 0.00000017, "rhomin": 16.64, 
+        "Tmin": Tt, "Tmax": 623.0, "Pmax": 103000.0, "rhomax": 17.41,
+        "Pmin": 0.00000017, "rhomin": 16.64,
 
         "nr1":  [2.698378e-1, -1.339252, -2.273858e-2, 2.414973e-1,
                  -3.321461e-2, 2.203323e-3, 5.935588e-5, -1.137457e-6],
@@ -311,9 +328,9 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for propane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=C3(T=700, rho=200, eq=5)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -325,10 +342,10 @@ class C3(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36, 
-        "Pmin": 0.00000015304, "rhomin": 16.706, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36,
+        "Pmin": 0.00000015304, "rhomin": 16.706,
 
         "nr1":  [0.10403973e1, -0.28318404e1, 0.8439381, -0.76559592e-1,
                  0.94697373e-1, 0.24796475e-3],
@@ -346,15 +363,15 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105}, 
+        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [9.70439249e-1, 9.73671323e-1, -2.96661981, 7.84340496e-2,
                 2.78440866e-4, -6.77622221e-2],
@@ -397,17 +414,17 @@ class C3(MEoS):
               "collision": [0.25104574, -0.47271238, 0, 0.060836515],
               "__name__": "Vogel (1998)",
               "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane", 
+                          "title": "Reference Correlation of the Viscosity of Propane",
                           "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"}, 
-              "__test__": 
-                  
+                          "doi": "10.1063/1.556025"},
+              "__test__":
+
                   # Table 4, pag 961
                   """
                   >>> st=C3(T=90, P=1e4, eq=1)
                   >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
                   3.2350 21.175 3.5658
-                  """, 
+                  """,
 
               "ek": 263.88, "sigma": 0.49748,
               "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
@@ -445,9 +462,9 @@ class C3(MEoS):
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"}, 
+                          "doi": "10.1063/1.555785"},
 
               "ek": 358.9, "sigma": 0.47,
               "n_chapman": 0.177273976/M**0.5,
@@ -459,9 +476,9 @@ class C3(MEoS):
     visco2 = {"eq": 4, "omega": 1,
               "__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 369.825, "muref": 1.0,
               "ek": 358.9, "sigma": 0.47, "n_chapman": 0,
@@ -480,9 +497,9 @@ class C3(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Marsh (2002)",
                "__doi__": {"autor": "Marsh, K., Perkins, R., and Ramires, M.L.V.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa",
                            "ref": "J. Chem. Eng. Data, 2002, 47 (4), pp 932–940",
-                           "doi": "10.1021/je010001m"}, 
+                           "doi": "10.1021/je010001m"},
 
                "Tref": 369.85, "kref": 1.,
                "no": [-1.24778e-3, 8.16371e-3, 1.99374e-2],
@@ -503,9 +520,9 @@ class C3(MEoS):
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"}, 
+                           "doi": "10.1063/1.555785"},
 
                "visco": visco1,
                "n_chapman": 1.77273976e-1,
@@ -518,4 +535,4 @@ class C3(MEoS):
                "X": [3.98, 5.45, 0.468067, 1.08],
                "Z": 8.117e-10}
 
-    _thermal = thermo0, thermo1    
+    _thermal = thermo0, thermo1

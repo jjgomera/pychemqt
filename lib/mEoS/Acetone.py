@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,21 +48,21 @@ class Acetone(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for acetone of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi": "10.1021/je050186n"}, 
+                    "doi": "10.1021/je050186n"},
         "__test__": """
             >>> st=Acetone(T=510, rho=4*58.07914)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 700000.0, "rhomax": 15.73, 
-        "Pmin": 0.0023, "rhomin": 15.72, 
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 700000.0, "rhomax": 15.73,
+        "Pmin": 0.0023, "rhomin": 15.72,
 
         "nr1":  [0.90041, -2.1267, -0.083409, 0.065683, 0.00016527],
         "d1": [1, 1, 1, 3, 7],

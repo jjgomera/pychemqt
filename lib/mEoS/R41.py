@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,21 +54,21 @@ class R41(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=R41(T=319, rho=9*34.03292)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             319 9 6129.100 13670.133 55.886 55.438 2796.224 189.549
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 425.0, "Pmax": 70000.0, "rhomax": 29.66, 
-        "Pmin": 0.345, "rhomin": 29.65, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 70000.0, "rhomax": 29.66,
+        "Pmin": 0.345, "rhomin": 29.65,
 
         "nr1": [1.6264, -2.8337, 0.0010932, 0.037136, 0.00018724],
         "d1": [1, 1, 1, 3, 7],
@@ -67,21 +84,21 @@ class R41(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=R41(T=319, rho=9*34.03292, eq=1)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             319 9 6130.986 13699.382 55.982 53.388 2724.221 194.624
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 29.6, 
-        "Pmin": 0.343, "rhomin": 29.6, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 29.6,
+        "Pmin": 0.343, "rhomin": 29.6,
 
         "nr1": [0.85316, -2.6366, 0.69129, 0.054681, 0.00012796],
         "d1": [1, 1, 1, 3, 7],
@@ -98,16 +115,16 @@ class R41(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-41 of Outcalt (1996).",
         "__doi__": {"autor": "Haynes, W.M.",
-                    "title": "Thermophysical properties of HCFC alternatives", 
+                    "title": "Thermophysical properties of HCFC alternatives",
                     "ref": "National Institute of Standards and Technology, Boulder, Colorado, Final Report for ARTI MCLR Project Number 660-50800, 1996. Pag. A-82",
-                    "doi":  ""}, 
+                    "doi":  ""},
 
         "R": 8.314471,
         "cp": CP2,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006, 
-        "Pmin": 0.32, "rhomin": 29.66, 
+        "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006,
+        "Pmin": 0.32, "rhomin": 29.66,
 
         "b": [None, -0.326441485138e-1, 0.338620074694e1, -0.831696847103e2,
               0.139589938388e5, -0.156113972752e7, -0.165160386413e-2,

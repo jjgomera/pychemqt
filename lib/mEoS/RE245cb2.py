@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -21,7 +38,7 @@ class RE245cb2(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.785, "Debye")
     id = 671
     # id = 1817
-    
+
     CP1 = {"ao": 10.196438,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
@@ -32,16 +49,16 @@ class RE245cb2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for RE245cb2 of Zhou et al. (2010)",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2010.", 
+                    "title": "preliminary equation, 2010.",
                     "ref": "",
-                    "doi":  ""}, 
-            
+                    "doi":  ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 400000.0, "rhomax": 10.02, 
-        "Pmin": 8.272, "rhomin": 10., 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 400000.0, "rhomax": 10.02,
+        "Pmin": 8.272, "rhomin": 10.,
 
         "nr1": [0.41453162e-1, 0.15010352e1, -0.23142144e1, -0.471412, 0.17182],
         "d1": [4, 1, 1, 2, 3],
@@ -78,9 +95,9 @@ class RE245cb2(MEoS):
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
               "__name__": "Chung (1988)",
               "w": 0.354, "mur": 0.0, "k": 0.0}
 

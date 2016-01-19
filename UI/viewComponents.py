@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 from functools import partial
 import os
@@ -107,15 +125,15 @@ class View_Petro(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flash point (closed)")),10,7)
         self.flashClosed=Entrada_con_unidades(unidades.Temperature, readOnly=True)
         layout.addWidget(self.flashClosed,10,8)
-        
+
         layout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),15,3,1,1)
         self.boton = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.boton.rejected.connect(self.accept)
         layout.addWidget(self.boton,16,1,1,8)
-        
+
         if petroleo:
             self.rellenar(petroleo)
-        
+
     def rellenar(self, petroleo):
         self.nombre.setText(petroleo.name)
         self.M.setValue(petroleo.M)
@@ -123,7 +141,7 @@ class View_Petro(QtWidgets.QDialog):
         self.gravity.setValue(petroleo.SG)
         self.API.setValue(petroleo.API)
         self.watson.setValue(petroleo.watson)
-        
+
         self.Tc.setValue(petroleo.Tc)
         self.Pc.setValue(petroleo.Pc)
         self.Vc.setValue(petroleo.Vc)
@@ -133,7 +151,7 @@ class View_Petro(QtWidgets.QDialog):
         self.CH.setValue(petroleo.CH)
         self.S.setValue(petroleo.S)
         self.H.setValue(petroleo.H)
-        
+
         self.n.setValue(petroleo.n)
         self.I.setValue(petroleo.I)
         self.cetane.setValue(petroleo.CI)
@@ -234,10 +252,10 @@ class View_Contribution(QtWidgets.QDialog):
         self.boton = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.boton.rejected.connect(self.accept)
         layout.addWidget(self.boton,16,1,1,8)
-        
+
         if petroleo:
             self.rellenar(petroleo)
-        
+
     def rellenar(self, petroleo):
         self.nombre.setText(petroleo.name)
         self.M.setValue(petroleo.M)
@@ -248,14 +266,14 @@ class View_Contribution(QtWidgets.QDialog):
         self.Vc.setValue(petroleo.Vc)
         self.Hf.setValue(petroleo.Hf)
         self.Gf.setValue(petroleo.Gf)
-        
+
         self.Hm.setValue(petroleo.Hm)
         self.Hv.setValue(petroleo.Hv)
         self.cpa.setValue(petroleo.cp[0])
         self.cpb.setValue(petroleo.cp[1])
         self.cpc.setValue(petroleo.cp[2])
         self.cpd.setValue(petroleo.cp[3])
-        
+
         self.gravity.setValue(petroleo.SG)
         self.API.setValue(petroleo.API)
         self.watson.setValue(petroleo.watson)
@@ -275,7 +293,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.parent=parent
         self.t=[]
         self.data=[]
-        
+
         layout = QtWidgets.QGridLayout(self)
         self.buttonRegression = QtWidgets.QToolButton()
         self.buttonRegression.setToolTip(QtWidgets.QApplication.translate("pychemqt", "Fit parameters from experimental data"))
@@ -300,7 +318,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.tmax =Entrada_con_unidades(unidades.Temperature, width=70)
         self.tmax.valueChanged.connect(self.valueChanged.emit)
         layout.addWidget(self.tmax,5,2)
-        
+
         txt=["A", "B", "C", "D", "E"]
         self.entradas=[]
         for i in range(5):
@@ -320,8 +338,8 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         layout.addWidget(self.eqformula, 0, 0, 1, 6)
 
         self.changeIndice(indice)
-        
-        
+
+
     def changeIndice(self, indice):
         self.indice=indice
         if indice == 0 or indice > 1000:
@@ -339,7 +357,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.tmin.setReadOnly(bool)
         self.tmax.setReadOnly(bool)
         self.buttonRegression.setDisabled(bool)
-        
+
     @property
     def value(self):
         valor=[self.eq.value()]
@@ -458,7 +476,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
                 string+="%+0.3f\\left(\\frac{%0.3f/T}{sinh(%0.3f/T)}\\right)^2" % (parametros[1], parametros[2], parametros[2])
             if parametros[3]:
                 string+="%+0.3f\\left(\\frac{%0.3f/T}{cosh(%0.3f/T)}\\right)^2" % (parametros[3], parametros[4], parametros[4])
-            string+="$"    
+            string+="$"
             return string
         elif ecuacion == 9:
             string="$%s = " % self.propiedad
@@ -475,7 +493,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             if parametros[2] and parametros[3]:
                 string+="%+0.3fT_r^4" % -parametros[2]*parametros[3]/2
             if parametros[3]:
-                string+="%+0.3fT_r^5" % -parametros[3]**2/5                
+                string+="%+0.3fT_r^5" % -parametros[3]**2/5
             string+="$"
             return string
 
@@ -507,14 +525,14 @@ class DIPPR_widget(QtWidgets.QGroupBox):
 #            self.parent.compuesto.Tc=dialogo.tc.value
 
             inicio=[1, 1, 1, 1, 1]
-        
+
             def resto(parametros, ecuacion, t, f):
                 var=array([ecuacion]+list(parametros))
                 return f-array([self.parent.compuesto.DIPPR(ti, var) for ti in t])
 
             # Realizamos los ajustes
             ajuste=optimize.leastsq(resto,inicio,args=(ecuacion, t, p))
-                
+
             dialog=Plot()
             dialog.addData(t, p, "ro")
             if ajuste[1] in range(1, 5):
@@ -576,7 +594,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.buttonPlot.clicked.connect(self.plot)
         self.buttonPlot.setEnabled(False)
         layout.addWidget(self.buttonPlot,1,2,2,1)
-        
+
         txt=["A", "B", "C", "D"]
         self.entradas=[]
         for i in range(numero):
@@ -587,7 +605,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         layout.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),2+numero,3)
 
         self.changeIndice(indice)
-        
+
     def changeIndice(self, indice):
         self.indice=indice
         if indice == 0 or indice > 1000:
@@ -623,7 +641,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.data=[]
         self.buttonPlot.setEnabled(False)
 
-    
+
     def rellenar(self, array, indice=None):
         if indice:
             self.changeIndice(indice)
@@ -650,15 +668,15 @@ class Parametric_widget(QtWidgets.QGroupBox):
         else:
             tmax=500
         t=linspace(tmin, tmax, 100)
-        
-        funcion={"viscosidad": self.parent.compuesto.Mu_Liquido_Parametrica, 
-                        "antoine": self.parent.compuesto.Pv_Antoine, 
-                        "tensionsuperficial": self.parent.compuesto.Tension_Parametrica, 
+
+        funcion={"viscosidad": self.parent.compuesto.Mu_Liquido_Parametrica,
+                        "antoine": self.parent.compuesto.Pv_Antoine,
+                        "tensionsuperficial": self.parent.compuesto.Tension_Parametrica,
                         "henry": self.parent.compuesto.constante_Henry}
 
-        formula={"viscosidad": "$\\log\\mu=%0.2f\\left(\\frac{1}{T}-\\frac{1}{%0.2f}\\right)$" % self.parent.compuesto.viscosidad_parametrica, 
-                        "antoine": "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}}$" % self.parent.compuesto.antoine, 
-                        "tensionsuperficial": "$\\sigma=%0.2f\\left(1-T_{r}\\right)^{%0.2f}$" % self.parent.compuesto.tension_superficial_parametrica, 
+        formula={"viscosidad": "$\\log\\mu=%0.2f\\left(\\frac{1}{T}-\\frac{1}{%0.2f}\\right)$" % self.parent.compuesto.viscosidad_parametrica,
+                        "antoine": "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}}$" % self.parent.compuesto.antoine,
+                        "tensionsuperficial": "$\\sigma=%0.2f\\left(1-T_{r}\\right)^{%0.2f}$" % self.parent.compuesto.tension_superficial_parametrica,
                         "henry": "$\\lnH=\\frac{%0.2f}{T}%+0.2f\\cdot\\lnT%+0.2f\\cdot T%+0.2f$" % self.parent.compuesto.henry}
 
         var=[funcion[self.imagen](ti) for ti in t]
@@ -681,12 +699,12 @@ class Parametric_widget(QtWidgets.QGroupBox):
             p=dialogo.tabla.getColumn(1, fill=False)
             self.parent.tempCritica.setValue(dialogo.tc.value)
             self.parent.compuesto.Tc=dialogo.tc.value
-            
+
             #TODO: Añadir soporte para configurar valores iniciales
             inicio=[1.]*self.numero
-            funcion={"viscosidad": self.parent.compuesto.Mu_Liquido_Parametrica, 
-                            "antoine": self.parent.compuesto.Pv_Antoine, 
-                            "tensionsuperficial": self.parent.compuesto.Tension_Parametrica, 
+            funcion={"viscosidad": self.parent.compuesto.Mu_Liquido_Parametrica,
+                            "antoine": self.parent.compuesto.Pv_Antoine,
+                            "tensionsuperficial": self.parent.compuesto.Tension_Parametrica,
                             "henry": self.parent.compuesto.constante_Henry}
 
             def resto(parametros, t, f):
@@ -694,7 +712,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
             # Realizamos los ajustes
             ajuste=optimize.leastsq(resto,inicio,args=(t, p))
-                
+
             if ajuste[1] in range(1, 5):
                 self.rellenar(list(ajuste[0]))
                 self.t=t
@@ -727,11 +745,11 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
 class View_Component(QtWidgets.QDialog):
     compuesto=Componente()
-    
+
     def __init__(self, indice=0, parent=None):
         super(View_Component, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
-        
+
         layoutTitle=QtWidgets.QHBoxLayout()
         layoutTitle.setSpacing(5)
         if indice == 0:
@@ -769,14 +787,14 @@ class View_Component(QtWidgets.QDialog):
             self.buttonLast.clicked.connect(partial(self.change, "last"))
             layoutTitle.addWidget(self.buttonLast)
         gridLayout.addItem(layoutTitle,1,1,1,3)
-        
+
         tabWidget = QtWidgets.QTabWidget()
         gridLayout.addWidget(tabWidget,2,1,1,3)
-        
+
         self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Discard|QtWidgets.QDialogButtonBox.Save|QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.clicked.connect(self.buttonClicked)
         gridLayout.addWidget(self.buttonBox,3,1,1,3)
-        
+
         #Pestaña general
         tab1 = QtWidgets.QWidget()
         tabWidget.addTab(tab1,QtWidgets.QApplication.translate("pychemqt", "&General"))
@@ -793,7 +811,7 @@ class View_Component(QtWidgets.QDialog):
         self.nombre_alternativo = QtWidgets.QLineEdit()
         self.nombre_alternativo.editingFinished.connect(self.setDirty)
         gridLayout_General.addWidget(self.nombre_alternativo,3,2)
-        
+
         self.labelSmile=QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Smile Code"))
         gridLayout_General.addWidget(self.labelSmile,4,1,1,1)
         self.smile=QtWidgets.QLineEdit()
@@ -811,16 +829,16 @@ class View_Component(QtWidgets.QDialog):
         label_UNIFAC=QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "UNIFAC Groups" ))
         label_UNIFAC.setAlignment(QtCore.Qt.AlignTop)
         gridLayout_General.addWidget(label_UNIFAC,9,1,1,1)
-        
+
         self.UNIFAC=Tabla(2, filas=1, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Group" ), QtWidgets.QApplication.translate("pychemqt", "Contribution")], verticalHeader=False, dinamica=True, readOnly=indice)
         self.UNIFAC.setItemDelegateForColumn(0, SpinEditor(self))
-        self.UNIFAC.setItemDelegateForColumn(1, SpinEditor(self))    
+        self.UNIFAC.setItemDelegateForColumn(1, SpinEditor(self))
         self.UNIFAC.setColumnWidth(0, 80)
         self.UNIFAC.setFixedWidth(160)
         gridLayout_General.addWidget(self.UNIFAC, 9,2,3,1)
 
         gridLayout_General.addItem(QtWidgets.QSpacerItem(30,30,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),9,3,3,1)
-        
+
         gridLayout_General.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Molecular Weight")),1,4)
         self.M = Entrada_con_unidades(float,  textounidad="g/mol")
         self.M.valueChanged.connect(self.setDirty)
@@ -853,7 +871,7 @@ class View_Component(QtWidgets.QDialog):
         self.temp_ebullicion = Entrada_con_unidades(unidades.Temperature)
         self.temp_ebullicion.valueChanged.connect(self.setDirty)
         gridLayout_General.addWidget(self.temp_ebullicion,8,5)
-        
+
         gridLayout_General.addWidget(QtWidgets.QLabel("ΔH<sub>f</sub>"),9,4)
         self.calorFormacionGas = Entrada_con_unidades(unidades.Enthalpy)
         self.calorFormacionGas.valueChanged.connect(self.setDirty)
@@ -864,8 +882,8 @@ class View_Component(QtWidgets.QDialog):
         gridLayout_General.addWidget(self.energiaGibbsGas,10,5)
         gridLayout_General.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),11,4,1,2)
         gridLayout_General.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),13,1,1,6)
-        
-        
+
+
         #pestaña cp
         tab2 = QtWidgets.QWidget()
         tabWidget.addTab(tab2,QtWidgets.QApplication.translate("pychemqt", "&Cp"))
@@ -904,7 +922,7 @@ class View_Component(QtWidgets.QDialog):
         self.cpf.valueChanged.connect(self.setDirty)
         lyt_cpGasIdeal.addWidget(self.cpf,3,5)
         lyt_cpGasIdeal.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),4,1,1,4)
-        
+
         self.cpgasDIPPR = DIPPR_widget(QtWidgets.QApplication.translate("pychemqt", "Cp ideal gas DIPPR")+", cal/mol K", indice, "Cp_g", parent=self)
         self.cpgasDIPPR.valueChanged.connect(self.setDirty)
         gridLayout_cp.addWidget(self.cpgasDIPPR,1,2)
@@ -921,7 +939,7 @@ class View_Component(QtWidgets.QDialog):
         tab3 = QtWidgets.QWidget()
         tabWidget.addTab(tab3,QtWidgets.QApplication.translate("pychemqt", "&Density"))
         gridLayout_rho = QtWidgets.QGridLayout(tab3)
-        
+
         self.RhoSolido = DIPPR_widget(QtWidgets.QApplication.translate("pychemqt", "Solid Density DIPPR")+", kmol/m^3", indice, "\\rho_s", parent=self)
         self.RhoSolido.valueChanged.connect(self.setDirty)
         gridLayout_rho.addWidget(self.RhoSolido,1,1)
@@ -947,7 +965,7 @@ class View_Component(QtWidgets.QDialog):
         gridLayout_mu.addWidget(self.muParametric,2,1)
         gridLayout_mu.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),3,1)
 
-        
+
         #Pestaña Pv, Hv
         tab5 = QtWidgets.QWidget()
         tabWidget.addTab(tab5,QtWidgets.QApplication.translate("pychemqt", "P&v && Hv"))
@@ -1012,7 +1030,7 @@ class View_Component(QtWidgets.QDialog):
         tab8 = QtWidgets.QWidget()
         tabWidget.addTab(tab8,QtWidgets.QApplication.translate("pychemqt", "&Others"))
         gridLayout_Otros=QtWidgets.QGridLayout(tab8)
-                
+
         gridLayout_Otros.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Solubility Parameter")),1,1)
         self.parametroSolubilidad = Entrada_con_unidades(unidades.SolubilityParameter)
         self.parametroSolubilidad.valueChanged.connect(self.setDirty)
@@ -1079,7 +1097,7 @@ class View_Component(QtWidgets.QDialog):
         self.watson.valueChanged.connect(self.setDirty)
         gridLayout_Otros.addWidget(self.watson,8,5)
         gridLayout_Otros.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),9,1)
-        
+
         group_electrolitos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Electrolitics properties"))
         gridLayout_Otros.addWidget(group_electrolitos,10,1,1,5)
         lyt_electrolitos=QtWidgets.QGridLayout(group_electrolitos)
@@ -1113,7 +1131,7 @@ class View_Component(QtWidgets.QDialog):
         self.change(indice)
         self.dirty=False
 
-    def change(self, indice):            
+    def change(self, indice):
         if indice=="-1":
             if self.indice==1001:
                 indice=sql.N_comp
@@ -1145,7 +1163,7 @@ class View_Component(QtWidgets.QDialog):
             self.buttonBox.button(QtWidgets.QDialogButtonBox.Save).setVisible(False)
             self.buttonBox.button(QtWidgets.QDialogButtonBox.Apply).setVisible(True)
             self.buttonBox.button(QtWidgets.QDialogButtonBox.Close).setVisible(False)
-            
+
         if indice == 0 or indice >1000:
             self.setReadOnly(False)
         else:
@@ -1166,7 +1184,7 @@ class View_Component(QtWidgets.QDialog):
 
     def setDirty(self):
         self.dirty=True
-        
+
     def clear(self):
         self.nombre.clear()
         self.nombre_alternativo.clear()
@@ -1224,8 +1242,8 @@ class View_Component(QtWidgets.QDialog):
         self.EpsK.clear()
         self.watson.clear()
 
-        
-            
+
+
     def rellenar(self, indice):
         self.indice=indice
         self.compuesto=Componente(indice)
@@ -1243,7 +1261,7 @@ class View_Component(QtWidgets.QDialog):
                 self.UNIFAC.setItem(i, 0, QtWidgets.QTableWidgetItem(str(self.compuesto.UNIFAC[i][0])))
                 self.UNIFAC.setItem(i, 1, QtWidgets.QTableWidgetItem(str(self.compuesto.UNIFAC[i][1])))
                 self.UNIFAC.item(i, 1).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-            
+
         if self.compuesto.M:
             self.M.setValue(self.compuesto.M)
         if self.compuesto.Tc:
@@ -1270,7 +1288,7 @@ class View_Component(QtWidgets.QDialog):
         self.cpd.setValue(self.compuesto.cp[3])
         self.cpe.setValue(self.compuesto.cp[4])
         self.cpf.setValue(self.compuesto.cp[5])
-        
+
         self.cpgasDIPPR.rellenar(self.compuesto.capacidad_calorifica_gas, indice)
         self.cpLiquidoDIPPR.rellenar(self.compuesto.capacidad_calorifica_liquido, indice)
         self.cpSolidoDIPPR.rellenar(self.compuesto.capacidad_calorifica_solido, indice)
@@ -1283,7 +1301,7 @@ class View_Component(QtWidgets.QDialog):
         self.conductivityLiquido.rellenar(self.compuesto.conductividad_liquido, indice)
         self.conductivityGas.rellenar(self.compuesto.conductividad_gas, indice)
         self.tension.rellenar(self.compuesto.tension_superficial, indice)
-        
+
         self.muParametric.rellenar(self.compuesto.viscosidad_parametrica, indice)
         self.PvAntoine.rellenar(self.compuesto.antoine, indice)
         self.tensionParametrica.rellenar(self.compuesto.tension_superficial_parametrica, indice)
@@ -1343,13 +1361,13 @@ class View_Component(QtWidgets.QDialog):
             nuevo_elemento.append(str(self.nombre.text()))
         else:
             nuevo_elemento.append(str(self.nombre.text()).split(" - ")[1])
-        
+
         nuevo_elemento.append(self.M.value)
         nuevo_elemento.append(self.tempCritica.value)
         nuevo_elemento.append(self.Pc.value)
         nuevo_elemento.append(self.volumenCritico.value)
         nuevo_elemento.append(self.gravedadAPI.value)
-            
+
         cpideal=[]
         cpideal.append(self.cpa.value)
         cpideal.append(self.cpb.value)
@@ -1358,12 +1376,12 @@ class View_Component(QtWidgets.QDialog):
         cpideal.append(self.cpe.value)
         cpideal.append(self.cpf.value)
         nuevo_elemento.append(cpideal)
-        
+
         nuevo_elemento.append(self.PvAntoine.value)
         nuevo_elemento.append(self.Henry.value)
         nuevo_elemento.append(self.muParametric.value)
         nuevo_elemento.append(self.tensionParametrica.value)
-        
+
         nuevo_elemento.append(self.RhoSolido.value)
         nuevo_elemento.append(self.RhoLiquido.value)
         nuevo_elemento.append(self.vaporPressure.value)
@@ -1384,12 +1402,12 @@ class View_Component(QtWidgets.QDialog):
         nuevo_elemento.append(self.factorAcentrico.value)
         nuevo_elemento.append(self.parametroSolubilidad.value)
         nuevo_elemento.append(self.watson.value)
-        
+
         msrk=[]
         msrk.append(self.MSRKa.value)
         msrk.append(self.MSRKb.value)
         nuevo_elemento.append(msrk)
-        
+
         nuevo_elemento.append(self.stiehl.value)
         nuevo_elemento.append(self.temp_ebullicion.value)
         nuevo_elemento.append(self.temp_fusion.value)
@@ -1424,7 +1442,7 @@ class View_Component(QtWidgets.QDialog):
         nuevo_elemento.append(self.pka.value)
         nuevo_elemento.append(self.pkb.value)
         nuevo_elemento.append(str(self.smile.text()))
-        
+
         return nuevo_elemento
 
     def buttonClicked(self, boton):
@@ -1451,7 +1469,7 @@ class View_Component(QtWidgets.QDialog):
                 self.reject()
         else:
                 self.reject()
-                
+
 
 
     def setReadOnly(self, bool):
@@ -1501,7 +1519,7 @@ class View_Component(QtWidgets.QDialog):
         self.cargaElectrolitica.setReadOnly(bool)
         self.tipo_ph.setDisabled(bool)
 
-        
+
 if __name__ == "__main__":
     import sys
     from lib.petro import Petroleo

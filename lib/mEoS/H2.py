@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp, log
 
@@ -29,11 +46,11 @@ class H2(MEoS):
            "ao_exp": [1.616, -0.4117, -0.792, 0.758, 1.217],
            "titao": [16.0205159149, 22.6580178006, 60.0090511389,
                      74.9434303817, 206.9392065168]}
-                     
+
     Fi2 = {"ao_log": [1, 1.47906],
            "pow": [0, 1],
            "ao_pow": [13.796443393, -175.864487294],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [0.95806, 0.45444, 1.56039, -1.3756],
            "hyp": [6.891654113, 9.84763483, 49.76529075, 50.367279301]}
 
@@ -51,9 +68,9 @@ class H2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for normal hydrogen of Leachman et al. (2009).",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
-                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
+                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen",
                     "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
-                    "doi": "10.1063/1.3160306"}, 
+                    "doi": "10.1063/1.3160306"},
         "__test__": """
             >>> st=H2(T=13.957, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
@@ -62,13 +79,13 @@ class H2(MEoS):
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             13.957 7.3580 77.004 0.12985 −53.926 399.83 −3.0723 29.438 5.1616 6.2433 7.0212 10.564 1269.2 307.14
             """, # Table 14, Pag 746
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0, 
-        "Pmin": 7.36, "rhomin": 38.2, 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0,
+        "Pmin": 7.36, "rhomin": 38.2,
 
         "nr1": [-6.93643, 0.01, 2.1101, 4.52059, 0.732564, -1.34086, 0.130985],
         "d1": [1, 4, 1, 1, 2, 2, 3],
@@ -93,16 +110,16 @@ class H2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for hydrogen of Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
-        
+                    "doi": ""},
+
         "R": 8.31434,
         "cp": CP1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
-        "Pmin": 7.70, "rhomin": 38.3, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
+        "Pmin": 7.70, "rhomin": 38.3,
 
         "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
               0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
@@ -120,15 +137,15 @@ class H2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
+#        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.53579928451252e1, -0.62050252530595e1,  0.13830241327086,
                 -0.71397954896129e-1,  0.15474053959733e-1],
@@ -150,16 +167,16 @@ class H2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Bender (1982).",
         "__doi__": {"autor": "Bender, E.",
-                    "title": "Equation of state of normal hydrogen in the range 18 to 700 K and 1 to 500 bar", 
+                    "title": "Equation of state of normal hydrogen in the range 18 to 700 K and 1 to 500 bar",
                     "ref": "VDI-Forschungsheft, no. 609, 1982, p. 15-20",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.3143,
         "cp": CP1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74, 
-        "Pmin": 8.736, "rhomin": 38.7, 
+        "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74,
+        "Pmin": 8.736, "rhomin": 38.7,
 
         "nr1": [0.133442326203e1, -0.104116843433e1, 0.227202245707,
                 0.300374270906, -0.463984214813, -0.178010492282e1,
@@ -215,16 +232,16 @@ class H2(MEoS):
 
     visco0 = {"eq": 0,
              "method": "_visco0",
-             "__name__": "Muzny (2013)", 
+             "__name__": "Muzny (2013)",
              "__doi__": {"autor": "Muzny, C.D., Huber, M.L., and Kazakov, A.F.",
-                         "title": "Correlation for the Viscosity of Normal Hydrogen Obtained from Symbolic Regression", 
+                         "title": "Correlation for the Viscosity of Normal Hydrogen Obtained from Symbolic Regression",
                          "ref": "J. Chem. Eng. Data, 2013, 58 (4), pp 969–979",
                          "doi": "10.1021/je301273j"}}
 
     def _visco0(self, rho, T, fase):
         sigma = 0.297
         ek = 30.41
-        
+
         # Zero-Density Limit, Eq. 3-4
         T_ = T/ek
         ai = [2.0963e-1, -4.55274e-1, 1.43602e-1, -3.35325e-2, 2.76981e-3]
@@ -233,7 +250,7 @@ class H2(MEoS):
             suma += a*log(T_)**i
         S = exp(suma)
         no=0.021357*(self.M*T)**0.5/sigma/S
-        
+
         # Excess Contribution, Eq. 5-7
         bi = [-0.187, 2.4871, 3.7151, -11.0972, 9.0965, -3.8292, 0.5166]
         B_ = 0
@@ -241,21 +258,21 @@ class H2(MEoS):
             B_ += b/T**i
         B = B_*sigma**3
         n1=B*no
-        
+
         # Simbolic Regression, Eq. 9
         rhor = rho/90.5
         Tr = T/self.Tc
         c = [6.43449673, 4.56334068e-2, 2.32797868e-1, 9.5832612e-1,
              1.27941189e-1, 3.63576595e-1]
         nc=c[0]*rhor**2*exp(c[1]*Tr+c[2]/Tr+c[3]*rhor**2/(c[4]+Tr)+c[5]*rhor**6)
-        
+
         return unidades.Viscosity(no+n1+nc, "muPas")
-        
+
     visco1 = {"eq": 0,
              "method": "_visco1",
-             "__name__": "McCarty (1972)", 
+             "__name__": "McCarty (1972)",
              "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                         "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 Psia", 
+                         "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 Psia",
                          "ref": "NBS Technical Note 617",
                          "doi": ""}}
 
@@ -296,9 +313,9 @@ class H2(MEoS):
     visco2 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2011)",
               "__doi__": {"autor": "S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters",
-                  "title": "model of 1-march-2011", 
+                  "title": "model of 1-march-2011",
                   "ref": "unpublished",
-                  "doi": ""}, 
+                  "doi": ""},
 
               "Tref": 33.145, "muref": 1.0,
               "ek": 59.7, "sigma": 0.2827, "n_chapman": 0,
@@ -311,10 +328,10 @@ class H2(MEoS):
               "t_poly": [0.75],
               "n_polyden": [1, 1],
               "t_polyden": [0, 1],
-              
+
               "nb": [1.0, -0.187, 75.6327, 3435.61, -312078, 7.77929e6,
-                    -9.95841e7, 4.08557e8], 
-              "tb": [0.0157768, 0, -1, -2, -3, -4, -5, -6], 
+                    -9.95841e7, 4.08557e8],
+              "tb": [0.0157768, 0, -1, -2, -3, -4, -5, -6],
 
               "a": [-0.00002348389676311179e3, 0.00002197232806029717e3,
                     2.4547322430816313e-3, 3.9791170684039065e-8,
@@ -326,7 +343,7 @@ class H2(MEoS):
               "A": [-3.912305916140789e-5, -2.1198288980972056e-6,
                     4.690087618888682e-6, 1.6938783854559677e-11,
                     9.39021777998824e-5],
-              "B": [-6.381148168720446e-5, 5.178086941554603e-4, 
+              "B": [-6.381148168720446e-5, 5.178086941554603e-4,
                     -4.5508093750991845e-5 -1.3780811004280076e-9
                     -3.7679840470735697e-4],
               "C": [0, 0, 0, 0, 0],
@@ -335,9 +352,9 @@ class H2(MEoS):
     visco3 = {"eq": 1, "omega": 1,
               "__name__": "Vargaftik (1996)",
               "__doi__": {"autor": "Vargaftik, N.B., Vinogradov, Y.K. and Yargin, V.S.",
-                          "title": "Handbook of Physical Properties of Liquids and Gases", 
+                          "title": "Handbook of Physical Properties of Liquids and Gases",
                           "ref": "Hemisphere Publishing Corporation,New York, NY",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 59.7, "sigma": 0.2827,
               "Tref": 32.938, "rhoref": 1.*M,
@@ -347,7 +364,7 @@ class H2(MEoS):
               "Tref_virial": 32.938, "etaref_virial": 1.*M,
 
               "Tref_res": 32.938, "rhoref_res": 15.556*M, "etaref_res": 1.,
-              "n_packed": [], "t_packed": [], 
+              "n_packed": [], "t_packed": [],
               "n_poly": [-9.22703e-1, 6.41602, -5.98018, 2.89715e-1, 2.36429,
                          -2.78870e-1, -1.10595e1, 1.11582e1, 7.18928,
                          -7.76971, -1.21827,  1.47193],
@@ -363,9 +380,9 @@ class H2(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2011)",
                "__doi__": {"autor": " Assael, M.J., Assael. J.-A.M., Huber, M.L., Perkins, R.A. and Takata, Y.",
-                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa", 
+                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 40, 033101 (2011)",
-                           "doi": "10.1063/1.3606499"}, 
+                           "doi": "10.1063/1.3606499"},
                "__test__": """
                    >>> st=H2(T=298.15, rho=0)
                    >>> print "%0.5g" % st.k.mWmK
@@ -397,9 +414,9 @@ class H2(MEoS):
                "no": [-1.24159e7, 5.04056e6, -4.80868e4, 3.26394e2,
                       9.56218e-2, 1.73488e-4, -3.12802e-8],
                "co": [0, 1, 2, 3, 4, 5, 6],
-               "noden": [5.04305e6, -2.43753e4, 1.51523e2, 1.0], 
-               "coden": [0, 1, 2, 3], 
- 
+               "noden": [5.04305e6, -2.43753e4, 1.51523e2, 1.0],
+               "coden": [0, 1, 2, 3],
+
                "Trefb": 33.145, "rhorefb": 15.508, "krefb": 1.,
                "nb": [.363081e-1, -.207629e-1, .31481e-1, -.143097e-1,
                       .17498e-2, .18337e-2, -.886716e-2, .15826e-1,
@@ -411,5 +428,5 @@ class H2(MEoS):
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 49.7175}
-               
+
     _thermal = thermo0,

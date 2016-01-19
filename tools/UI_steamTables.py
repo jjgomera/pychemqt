@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 from csv import writer
 from configparser import ConfigParser
@@ -23,13 +41,13 @@ class Plot(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         self.dim=dim
-        
+
         if dim==2:
             self.axes2D = self.fig.add_subplot(111)
             self.axes2D.figure.subplots_adjust(left=0.09, right=0.98, bottom=0.08, top=0.98)
         else:
             self.axes3D = Axes3D(self.fig)
-        
+
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
@@ -51,13 +69,13 @@ class Plot(FigureCanvasQTAgg):
         self.axes3D.set_ylabel(labels[1])
         self.axes3D.set_zlabel(labels[2])
         self.axes3D.mouse_init()
-        
+
     def plot_2D(self, labels, bool):
         self.axes2D.clear()
-        self.axes2D.grid(bool)        
+        self.axes2D.grid(bool)
         self.axes2D.axes.set_xlabel(labels[0], size='12')
         self.axes2D.axes.set_ylabel(labels[1], size='12')
-        
+
     def plot_labels(self, tipo, x, y, label, angle=0):
         linea=[]
         for i in range(len(label)):
@@ -85,7 +103,7 @@ class Plot(FigureCanvasQTAgg):
         else:
             for i in range(len(x)):
                 self.puntos.append(self.axes2D.plot([x[i]], [y[i]], color=colores[i], marker="o"))
-            
+
     def plot_Isolinea(self, tipo, x, y, z=0, color="#000000", grosor=1, estilo=0):
         """Método que dibuja las isolineas"""
         if estilo==0:
@@ -96,7 +114,7 @@ class Plot(FigureCanvasQTAgg):
             linestyle='-.'
         elif estilo==3:
             linestyle=':'
-        
+
         linea=[]
         if self.dim==3:
             for i in range(len(x)):
@@ -162,7 +180,7 @@ class Ventana_Lista_Puntos(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
         self.setFixedSize(500, self.minimumHeight())
-        
+
         self.colores=colors(len(self.puntos))
         self.rellenarLista()
         self.rellenarTabla()
@@ -174,7 +192,7 @@ class Ventana_Lista_Puntos(QtWidgets.QDialog):
             pixmap=QtGui.QPixmap(10, 10)
             pixmap.fill(QtGui.QColor(self.colores[i]))
             self.listWidget.item(i).setIcon(QtGui.QIcon(pixmap))
-            
+
     def rellenarTabla(self):
         if len(self.puntos)==0:
             self.tablaPropiedades.setFixedHeight(404)
@@ -219,7 +237,7 @@ class Ventana_Lista_Puntos(QtWidgets.QDialog):
                 self.tablaPropiedades.setItem(15, i, QtWidgets.QTableWidgetItem('5'))
             for j in range(16):
                 self.tablaPropiedades.item(j, i).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-                
+
         self.tablaPropiedades.resizeColumnsToContents()
 
     def on_botonBorrar_clicked(self):
@@ -242,7 +260,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.showMaximized()
         self.centralwidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralwidget)
-        
+
         #menus
         self.menubar = QtWidgets.QMenuBar()
         self.menubar.setGeometry(QtCore.QRect(0,0,700,30))
@@ -325,7 +343,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuArchivo.menuAction())
         self.menubar.addAction(self.menuGrafico.menuAction())
         self.menubar.addAction(self.menuAyuda.menuAction())
-                
+
         #Ventana principal
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.toolBox = QtWidgets.QToolBox()
@@ -409,11 +427,11 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.gridLayout_4.addWidget(self.label_17,6,0,1,1)
         self.abscisaInicio = QtWidgets.QLineEdit()
         self.abscisaInicio.setMaximumSize(QtCore.QSize(80,16777215))
-        self.abscisaInicio.setAlignment(QtCore.Qt.AlignRight)        
+        self.abscisaInicio.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.abscisaInicio,4,1,1,1)
         self.ordenadaInicio = QtWidgets.QLineEdit()
         self.ordenadaInicio.setMaximumSize(QtCore.QSize(80,16777215))
-        self.ordenadaInicio.setAlignment(QtCore.Qt.AlignRight)        
+        self.ordenadaInicio.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.ordenadaInicio,4,2,1,1)
         self.label_15 = QtWidgets.QLabel()
         self.label_15.setText(QtWidgets.QApplication.translate("SteamTables", "Inicio", None))
@@ -423,19 +441,19 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.gridLayout_4.addWidget(self.label_16,5,0,1,1)
         self.abscisaFin = QtWidgets.QLineEdit()
         self.abscisaFin.setMaximumSize(QtCore.QSize(80,16777215))
-        self.abscisaFin.setAlignment(QtCore.Qt.AlignRight)        
+        self.abscisaFin.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.abscisaFin,5,1,1,1)
         self.ordenadaFin = QtWidgets.QLineEdit()
         self.ordenadaFin.setMaximumSize(QtCore.QSize(80,16777215))
-        self.ordenadaFin.setAlignment(QtCore.Qt.AlignRight)        
+        self.ordenadaFin.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.ordenadaFin,5,2,1,1)
         self.abscisaIntervalo = QtWidgets.QLineEdit()
         self.abscisaIntervalo.setMaximumSize(QtCore.QSize(80,16777215))
-        self.abscisaIntervalo.setAlignment(QtCore.Qt.AlignRight)        
+        self.abscisaIntervalo.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.abscisaIntervalo,6,1,1,1)
         self.ordenadaIntervalo = QtWidgets.QLineEdit()
         self.ordenadaIntervalo.setMaximumSize(QtCore.QSize(80,16777215))
-        self.ordenadaIntervalo.setAlignment(QtCore.Qt.AlignRight)        
+        self.ordenadaIntervalo.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_4.addWidget(self.ordenadaIntervalo,6,2,1,1)
         self.botonCalcular = QtWidgets.QPushButton()
         self.botonCalcular.setMaximumWidth(80)
@@ -513,7 +531,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.dockWidget_2D.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.dockWidget_2D.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
 
-        
+
         #Toolbox parámetros Puntos individuales
         self.dockWidget_Puntos = QtWidgets.QDockWidget()
         self.dockWidget_Puntos.setWindowTitle(QtWidgets.QApplication.translate("SteamTables", "Puntos específicos", None))
@@ -651,7 +669,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Puntos)
         self.dockWidget_Puntos.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
         self.dockWidget_Puntos.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        
+
         #Iniciar valores de widgets
         Ejes=["p,T", "p,h", "p,s", "p,v", "T,s", "T,x"]
         for i in Ejes:
@@ -661,7 +679,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         for i in Ejes2D:
             self.ejeX.addItem(i)
             self.ejeY.addItem(i)
-            
+
         self.matriz=[]
         self.saturacion=[]
         self.isoterma=[]
@@ -671,7 +689,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.isocora=[]
         self.isoX=[]
         self.factorx, self.factory, self.factorz, self.factorx2, self.factory2=(0, 0, 0, 0, 0)
-        
+
         #Cargar configuración
         if self.Config.has_section("Table"):
             self.ejesTabla.setCurrentIndex(self.Config.getint("Table","Axis"))
@@ -727,7 +745,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             self.punto=self.puntos[-1]
             self.botonAdd.setEnabled(True)
             self.mostrarPropiedades()
-        
+
         self.Isoterma=Iso()
         self.Isobara=Iso()
         self.Isoentropica=Iso()
@@ -735,7 +753,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.Isocora=Iso()
         self.IsoX=Iso()
         self.definirIsolineas()
-    
+
         self.ejesTabla.currentIndexChanged.connect(self.ejesTabla_currentIndexChanged)
         self.variablesCalculo.currentIndexChanged.connect(self.variablesCalculo_currentIndexChanged)
         self.variableTabla.currentIndexChanged.connect(self.Calcular_Propiedades)
@@ -750,7 +768,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
 
     def acerca(self):
         QtWidgets.QMessageBox.information(self,"Acerca de" ,"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n<html><head><meta name="qrichtext" content="1" /><style type="text/css">\np, li { white-space: pre-wrap; }\n</style></head><body style=" font-family:'Nimbus Sans L'; font-size:9pt; font-weight:400; font-style:normal;">\n<table border="0" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;" cellspacing="2" cellpadding="0">\n<tr>\n<td style=" vertical-align:top;">\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">freesteam</span> is an open source implementation of international-standard IAPWS-IF97 steam tables from the <a href="http://www.iapws.org"><span style=" text-decoration: underline; color:#0000ff;">International Association for the Properties of Water and Steam</span></a> (IAPWS). <span style=" font-weight:600;">freesteam</span> lets you compute water and steam properties for a wide range of pressures and temperatures: you can specify the state of the steam in terms of a variety of combinations of 'known' properties, then freesteam will solve and allow you to query to find the values of the 'unknown' properties.</p>\n<p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Website: <a href="http://freesteam.sourceforge.net/"><span style=" text-decoration: underline; color:#0000ff;">http://freesteam.sourceforge.net/</span></a></p></td></tr></table></body></html>""")
-        
+
     def acercaQt(self):
         QtWidgets.QMessageBox.aboutQt(self,"Acerca de Qt" )
 
@@ -770,7 +788,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             self.Config.read("UI_steamTablesrc")
             self.actualizarConfiguracion()
             self.definirIsolineas()
-        
+
     def closeEvent(self, event):
         """Guarda la configuración antes de salir"""
         Config=ConfigParser()
@@ -820,8 +838,8 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             Config.set("Points", "Variable", self.variablesCalculo.currentIndex())
         Config.write(open("UI_steamTablesrc", "w"))
         event.accept()
-                
-                
+
+
     #Controles
     def ejesTabla_currentIndexChanged(self, indice):
         """Hace los cambios pertinentes en la gui cuando se cambian los ejes de la tabla 3D:
@@ -1017,7 +1035,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             otro=self.volumen
         if otro.value and self.presion.value:
             self.calcularPropiedades()
-        
+
     def temperatura_editingFinished(self):
         if self.variablesCalculo.currentIndex()==0:
             otro=self.presion
@@ -1027,7 +1045,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             otro=self.fraccionVapor
         if otro.value and self.temperatura.value:
             self.calcularPropiedades()
-        
+
     def entalpia_editingFinished(self):
         if self.presion.value and self.entalpia.value:
             self.calcularPropiedades()
@@ -1059,7 +1077,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.puntos.append(self.punto)
         self.calcularPuntos()
         self.dibujar()
-    
+
     def botonLista_clicked(self):
         """Muestra la lista de puntos especificados por el usuario"""
         dialog=Ventana_Lista_Puntos(self.puntos)
@@ -1125,7 +1143,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             i[0].set_visible(bool)
         self.diagrama3D.draw()
         self.diagrama2D.draw()
-        
+
     def mostrarSaturacion(self, bool):
         """Muestra la línea de saturación"""
         self.diagrama3D.satliq[0].set_visible(bool)
@@ -1145,7 +1163,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             i.set_visible(self.checkIsoEntr.isChecked() and self.Isoentropica.label)
         self.diagrama3D.draw()
         self.diagrama2D.draw()
-        
+
     def mostrarIsoentalpica(self, bool):
         """Muestra las líneas isoentálpicas"""
         for i in self.diagrama3D.Isoentalpica:
@@ -1167,7 +1185,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             i.set_visible(self.checkIsoBar.isChecked() and self.Isobara.label)
         self.diagrama3D.draw()
         self.diagrama2D.draw()
-        
+
     def mostrarIsoterma(self):
         """Muestra las líneas isotermas"""
         for i in self.diagrama3D.Isoterma:
@@ -1178,7 +1196,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             i.set_visible(self.checkIsoTherm.isChecked() and self.Isoterma.label)
         self.diagrama3D.draw()
         self.diagrama2D.draw()
-        
+
     def mostrarIsocora(self):
         """Muestra las líneas isocoras"""
         for i in self.diagrama3D.Isocora:
@@ -1189,7 +1207,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             i.set_visible(self.checkIsoVol.isChecked() and self.Isocora.label)
         self.diagrama3D.draw()
         self.diagrama2D.draw()
-        
+
     def mostrarIsoX(self):
         """Muestra las líneas con igual fración de vapor"""
         for i in self.diagrama3D.IsoX:
@@ -1218,13 +1236,13 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         del Ejes2D[int]
         for i in Ejes2D:
             self.ejeY.addItem(i)
-            
+
     def dibujar(self):
         """Método que dibuja todos los datos pedidos"""
         self.progresbar.setValue(100)
         self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Dibujando...", None))
         QtWidgets.QApplication.processEvents()
-        self.diagrama3D.plot_3D(self.etiquetas, self.xdata, self.ydata, self.zdata) 
+        self.diagrama3D.plot_3D(self.etiquetas, self.xdata, self.ydata, self.zdata)
         if len(self.puntos)>0:
             self.diagrama3D.plot_puntos(self.xi, self.yi, self.zi)
         self.diagrama3D.plot_sat(self.xsat, self.ysat, self.zsat)
@@ -1238,7 +1256,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         self.diagrama3D.axes3D.set_ylim3d(self.ydata[0][0], self.ydata[-1][-1])
         self.diagrama3D.axes3D.set_zlim3d(min(self.zdata), max(self.zdata))
         self.diagrama3D.draw()
-        
+
         self.diagrama2D.plot_2D(self.etiquetas2, self.rejilla.isChecked())
         self.diagrama2D.plot_sat(self.xsat2, self.ysat2)
         self.diagrama2D.plot_Isolinea("T", self.isoterma2[0], self.isoterma2[1], self.isoterma[2], self.Isoterma.Color, self.Isoterma.Grosor, self.Isoterma.Linea)
@@ -1277,7 +1295,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         """Muestra o esconde la rejilla del gráfico 2D"""
         self.diagrama2D.axes2D.grid(bool)
         self.diagrama2D.draw()
-        
+
     def diagrama2D_ejeX(self):
         """Define la orientación del eje x, creciente o decreciente"""
         if self.ejeX_min.value and self.ejeX_max.value:
@@ -1299,7 +1317,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         else:
             self.diagrama2D.axes2D.set_autoscaley_on(True)
         self.diagrama2D.draw()
-        
+
     def ejeX_log(self, bool):
         """Define la escala del eje x, normal o logarítmica"""
         if bool:
@@ -1315,8 +1333,8 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         else:
             self.diagrama2D.axes2D.set_yscale("linear")
         self.diagrama2D.draw()
-    
-    #Métodos de cálculo    
+
+    #Métodos de cálculo
     def definirIsolineas(self):
         Isolineas=[self.Isoterma, self.Isobara, self.Isoentropica, self.Isoentalpica, self.Isocora, self.IsoX]
         iso=["Isotherm", "Isobar", "Isoentropic", "Isoenthalpic", "Isochor", "Isoquality"]
@@ -1338,7 +1356,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 Isolineas[i].label=self.Config.getboolean(propiedad, 'Label')
                 Isolineas[i].units=self.Config.getboolean(propiedad, 'Units')
                 Isolineas[i].posicion=self.Config.getfloat(propiedad, 'Position')
-    
+
     def factores_conversion(self):
         """Método que calcula los factores de conversión de unidades necesarios, tambien los textos"""
         indiceT=self.Config.getint("Units", "Temperature")
@@ -1357,7 +1375,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif indiceT==4:
             self.conv_T=config.Re2K
             self.conv_T_inv=config.K2Re
-            
+
         if self.ejesTabla.currentIndex()==0:
             abcisa="P, %s" % config.Configuracion("Pressure").text()
             ordenada="T, %s" % config.Configuracion("Temperature").text()
@@ -1388,7 +1406,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             ordenada="x"
             self.factorx=0
             self.factory=1
-            
+
         if self.ejeX.currentText()=="p":
             abcisa2="P, %s" % config.Configuracion("Pressure").text()
             self.factorx2=unidades.Pressure(1, config.Configuracion("Pressure").func())
@@ -1470,16 +1488,16 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             texto="A, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1, config.Configuracion("Enthalpy").func())
-            
+
         self.etiquetas=[abcisa, ordenada, texto]
         self.etiquetas2=[abcisa2, ordenada2]
 
 
     def calcularMatriz(self, start=0, rango=40):
-        """Método que actualiza los datos de matriz"""        
+        """Método que actualiza los datos de matriz"""
         xini=float(self.abscisaInicio.text())
         xfin=float(self.abscisaFin.text())
-        xsalto=float(self.abscisaIntervalo.text())                
+        xsalto=float(self.abscisaIntervalo.text())
         xn=int((xfin-xini)/xsalto+1)
         yini=float(self.ordenadaInicio.text())
         yfin=float(self.ordenadaFin.text())
@@ -1487,9 +1505,9 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         yn=int((yfin-yini)/ysalto+1)
         self.tabla.setRowCount(yn)
         self.tabla.setColumnCount(xn)
-        
+
         self.factores_conversion()
-                    
+
         xi=arange(xini, xfin, xsalto)
         if (xfin-xini)/xsalto==float(int((xfin-xini)/xsalto)):
             xi=concatenate((xi, [xfin]))
@@ -1505,7 +1523,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             headerItem = QtWidgets.QTableWidgetItem()
             headerItem.setText(str(yi[i]))
             self.tabla.setVerticalHeaderItem(i,headerItem)
-            
+
         xdata,ydata = meshgrid(xi, yi)
         self.matriz=[]
 
@@ -1519,18 +1537,18 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 elif self.ejesTabla.currentIndex()==1:
                     vapor=steam_ph(xi[i]*self.factorx, yi[j]*self.factory)
                 elif self.ejesTabla.currentIndex()==2:
-                    vapor=steam_ps(xi[i]*self.factorx, yi[j]*self.factory)       
+                    vapor=steam_ps(xi[i]*self.factorx, yi[j]*self.factory)
                 elif self.ejesTabla.currentIndex()==3:
-                    vapor=steam_pv(xi[i]*self.factorx, yi[j]*self.factory)     
+                    vapor=steam_pv(xi[i]*self.factorx, yi[j]*self.factory)
                 elif self.ejesTabla.currentIndex()==4:
                     if bounds_Ts(xi[i], yi[j], 0)==0:
                         vapor=steam_Ts(self.conv_T(xi[i]), yi[j]*self.factory)
                     else:
                         vapor=steam_Ts(TCRIT, steam_pT(PCRIT, TCRIT).s)
                 elif self.ejesTabla.currentIndex()==5:
-                    vapor=steam_Tx(self.conv_T(xi[i]), yi[j]) 
+                    vapor=steam_Tx(self.conv_T(xi[i]), yi[j])
                 fila.append(vapor)
-                    
+
             self.matriz.append(fila)
 
         self.xdata=xdata
@@ -1542,7 +1560,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         """Método que actualiza los datos al cambiar la propiedad a mostrar"""
         if len(self.matriz)!=0:
             zdata = zeros(self.xdata.shape)
-            
+
             for i, fila in enumerate(self.matriz):
                 self.progresbar.setValue(start+rango*(i+1.)/len(self.matriz))
                 QtWidgets.QApplication.processEvents()
@@ -1596,7 +1614,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         """Método que calcula datos de la línea de saturación"""
         TT0 = linspace(273.15, TCRIT, 200)
         psat = [psat_T(T) for T in TT0]
-        
+
         if self.ejesTabla.currentIndex()==0:
             self.xsat=[[P/self.factorx for P in psat], [P/self.factorx for P in psat]]
             self.ysat=[[self.conv_T_inv(T) for T in TT0], [self.conv_T_inv(T) for T in TT0]]
@@ -1615,7 +1633,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif self.ejesTabla.currentIndex()==5:
             self.xsat=[[self.conv_T_inv(T) for T in TT0], [self.conv_T_inv(T) for T in TT0]]
             self.ysat=[[0]*100, [1]*100]
-        
+
         if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
             self.zsat=[[P/self.factorz for P in psat], [P/self.factorz for P in psat]]
         elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
@@ -1646,14 +1664,14 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             self.zsat=[[(region4_Tx(T,0).h-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).h-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
         elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             self.zsat=[[(region4_Tx(T,0).u-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).u-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
-        
+
         for i in range(len(self.xsat)):
             for j in range(len(self.xsat[i])-1, -1, -1):
                 if self.xsat[i][j]<self.xdata[0][0] or self.xsat[i][j]>self.xdata[-1][-1] or self.ysat[i][j]<self.ydata[0][0] or self.ysat[i][j]>self.ydata[-1][-1]:
                     del self.xsat[i][j]
                     del self.ysat[i][j]
                     del self.zsat[i][j]
-    
+
         if self.ejeX.currentText()=="p":
             self.xsat2=[[P/self.factorx2 for P in psat], [P/self.factorx2 for P in psat]]
         elif self.ejeX.currentText()=="T":
@@ -1700,7 +1718,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif self.ejesTabla.currentIndex()==5:
             self.xi=[self.conv_T_inv(punto.T) for punto in self.puntos]
             self.yi=[punto.x for punto in self.puntos]
-            
+
         if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
             self.zi=[punto.p/self.factorz for punto in self.puntos]
         elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
@@ -1731,7 +1749,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             self.zi=[(punto.h-punto.T*punto.s)/self.factorz for punto in self.puntos]
         elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
             self.zi=[(punto.u-punto.T*punto.s)/self.factorz for punto in self.puntos]
-                
+
         if self.ejeX.currentText()=="p":
             self.xi2=[punto.p/self.factorx2 for punto in self.puntos]
         elif self.ejeX.currentText()=="T":
@@ -1757,7 +1775,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif self.ejeY.currentText()=="u":
             self.yi2=[punto.u/self.factory2 for punto in self.puntos]
 
-        
+
     def isolineas(self, S, X, funcion, start, rango):
         """Librería de cálculo de los parámetros de las isolineas"""
         x=[]
@@ -1786,7 +1804,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             elif self.ejesTabla.currentIndex()==5:
                 xi=[self.conv_T_inv(funcion(i, propiedad).T) for i in X]
                 yi=[funcion(i, propiedad).x for i in X]
-                
+
             if self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Presión", None):
                 zi=[funcion(i, propiedad).p/self.factorz for i in X]
             elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Temperatura", None):
@@ -1817,7 +1835,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 zi=[(funcion(i, propiedad).h-funcion(i, propiedad).T*funcion(i, propiedad).s)/self.factorz for i in X]
             elif self.variableTabla.currentText()==QtWidgets.QApplication.translate("SteamTables", "Energía de Helmholtz", None):
                 zi=[(funcion(i, propiedad).u-funcion(i, propiedad).T*funcion(i, propiedad).s)/self.factorz for i in X]
-                
+
             if self.ejeX.currentText()=="p":
                 xi2=[funcion(i, propiedad).p/self.factorx2 for i in X]
             elif self.ejeX.currentText()=="T":
@@ -1848,7 +1866,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             x2.append(xi2)
             y2.append(yi2)
         return x, y, z, x2, y2
- 
+
     def labels(self, isolineas, x, y, pos):
         x_label=[]
         y_label=[]
@@ -1872,8 +1890,8 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             except ZeroDivisionError:
                 angle.append(90)
         return x_label, y_label, label, angle
-        
-        
+
+
     def calcularIsoentropica(self, start=85, rango=5):
         """Método que actualiza los datos de isoentrópicas"""
         self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isoentrópicas...", None))
@@ -1908,7 +1926,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             if len(x[i])==0:
                 del x[i]
                 del y[i]
-                del z[i]        
+                del z[i]
                 S.remove(S[i])
         x_label, y_label, label, angle=self.labels([unidades.SpecificHeat(i).config("Entropy") for i in S2], x2, y2, self.Isoentropica.posicion)
         self.isoentropica=[x, y, z]
@@ -2009,7 +2027,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             T.append(TCRIT)
         X= logspace(-3, 3, 200)*1e5
         x, y, z, x2, y2=self.isolineas(T, X, steam_pT, start, rango)
-        
+
         #Añadimos puntos interiores de la campana de saturación
         X=linspace(1, 0, 50)
         for i , t in enumerate(T):
@@ -2021,7 +2039,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 for j in range(len(xi2)):
                     x2[i].insert(indice+j, xi2[j][0])
                     y2[i].insert(indice+j, yi2[j][0])
-                    
+
         #Eliminamos puntos del grafico 3D fuera de los ejes
         for i in range(len(T)-1, -1, -1):
             for j in range(len(x[i])-1, -1, -1):
@@ -2033,7 +2051,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 del x[i]
                 del y[i]
                 del z[i]
-        
+
         x_label, y_label, label, angle=self.labels([unidades.Temperature(i).config() for i in T], x2, y2, self.Isoterma.posicion)
         self.isoterma=[x, y, z]
         if self.Isoterma.units:
@@ -2078,12 +2096,12 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 del z[i]
                 V.remove(V[i])
         x_label, y_label, label, angle=self.labels([unidades.SpecificVolume(i).config() for i in V2], x2, y2, self.Isocora.posicion)
-        self.isocora=[x, y, z]     
+        self.isocora=[x, y, z]
         if self.Isocora.units:
             self.isocora2=[x2, y2, x_label, y_label, ["v="+i+config.Configuracion("SpecificVolume").text() for i in label], angle]
         else:
             self.isocora2=[x2, y2, x_label, y_label, label, angle]
-        
+
     def calcularIsoX(self, start=95, rango=5):
         """Método que actualiza los datos de isocalidad"""
         self.statusbar.showMessage(QtWidgets.QApplication.translate("SteamTables", "Calculando isocalidades...", None))
@@ -2100,7 +2118,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                     del y[i][j]
                     del z[i][j]
         x_label, y_label, label, angle=self.labels(X, x2, y2, self.IsoX.posicion)
-        self.isoX=[x, y, z]        
+        self.isoX=[x, y, z]
         if self.IsoX.units:
             self.isoX2=[x2, y2, x_label, y_label, ["x="+i for i in label], angle]
         else:
@@ -2119,23 +2137,23 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
         elif self.variablesCalculo.currentIndex()==2:
             p=self.presion.value
             s=self.entropia.value
-            vapor=steam_ps(p, s)            
+            vapor=steam_ps(p, s)
         elif self.variablesCalculo.currentIndex()==3:
             p=self.presion.value
             v=self.volumen.value
-            vapor=steam_pv(p, v)            
+            vapor=steam_pv(p, v)
         elif self.variablesCalculo.currentIndex()==4:
             T=self.temperatura.value
             s=self.entropia.value
-            vapor=steam_Ts(T, s)            
+            vapor=steam_Ts(T, s)
         elif self.variablesCalculo.currentIndex()==5:
             T=self.temperatura.value
             x=self.fraccionVapor.value
-            vapor=steam_Tx(T, x)  
+            vapor=steam_Tx(T, x)
         self.punto=vapor
         self.mostrarPropiedades()
-        self.botonAdd.setEnabled(True) 
-                
+        self.botonAdd.setEnabled(True)
+
     def mostrarPropiedades(self):
         """Muestra los valores de las propiedades de la sección de puntos especificados por el usuario"""
         if self.punto!=0:
@@ -2167,7 +2185,7 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
                 self.region.setText("4")
             elif self.punto.region =='\x05':
                 self.region.setText("5")
-                
+
     def actualizarConfiguracion(self):
         """Actualiza los diferentes parámetros que puedan cambiar al cerrar el dialogo de preferencias
             Factores de conversión si han cambiado las unidades
@@ -2186,23 +2204,23 @@ class Ui_SteamTables(QtWidgets.QMainWindow):
             xmin=float(self.ejeX_min.value)*self.factorx2
             self.ejeX_max.setValue(representacion(xmax/self.factorx2))
             self.ejeX_min.setValue(representacion(xmin/self.factorx2))
-        if self.factory2==0:  
+        if self.factory2==0:
             ymax=unidades.Temperature(self.ejeY_max.value, config.Configuracion("Temperature").func())
             ymin=unidades.Temperature(self.ejeY_min.value, config.Configuracion("Temperature").func())
             self.ejeY_max.setValue(representacion(ymax.config()))
             self.ejeY_min.setValue(representacion(ymin.config()))
-        else: 
+        else:
             ymax=float(self.ejeY_max.value)*self.factory2
-            ymin=float(self.ejeY_min.value)*self.factory2      
+            ymin=float(self.ejeY_min.value)*self.factory2
             self.ejeY_max.setValue(representacion(ymax/self.factory2))
             self.ejeY_min.setValue(representacion(ymin/self.factory2))
-        if self.factory2==0:  
+        if self.factory2==0:
             self.ejeY_max.setValue(representacion(ymax.config))
             self.ejeY_min.setValue(representacion(ymin.config))
-        else: 
+        else:
             self.ejeY_max.setValue(representacion(ymax/self.factory2))
             self.ejeY_min.setValue(representacion(ymin/self.factory2))
-            
+
         self.mostrarUnidades()
 
     def mostrarUnidades(self):

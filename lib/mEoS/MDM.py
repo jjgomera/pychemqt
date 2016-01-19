@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,16 +48,16 @@ class MDM(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MDM of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
-                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6", 
+                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
-                    "doi":  "10.1016/j.fluid.2007.10.001"}, 
-            
+                    "doi":  "10.1016/j.fluid.2007.10.001"},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.94, 
-        "Pmin": 0.0000008, "rhomin": 3.93, 
+        "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.94,
+        "Pmin": 0.0000008, "rhomin": 3.93,
 
         "nr1": [1.19735372, -2.40380622, 0.3256564, -0.19971259, 0.11206277,
                 0.15893999e-3],
@@ -71,9 +88,9 @@ class MDM(MEoS):
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
               "__name__": "Chung (1988)",
               "w": 0.531, "mur": 0.0, "k": 0.0}
 

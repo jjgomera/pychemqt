@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,9 +48,9 @@ class oH2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ortohydrogen of Leachman et al. (2007)",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
-                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen", 
+                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen",
                     "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
-                    "doi": "10.1063/1.3160306"}, 
+                    "doi": "10.1063/1.3160306"},
         "__test__": """
             >>> st=oH2(T=14.008, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
@@ -42,13 +59,13 @@ class oH2(MEoS):
                 st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
             14.008 7.5600 77.010 0.13273 −53.820 400.77 −3.0625 29.390 5.1746 6.2707 7.1448 10.557 1264.7 307.38
             """, # Table 15, Pag 746
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 38.2, 
-        "Pmin": 7.461, "rhomin": 38.2, 
+        "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 38.2,
+        "Pmin": 7.461, "rhomin": 38.2,
 
         "nr1": [-6.83148, 0.01, 2.11505, 4.38353, 0.211292, -1.00939, 0.142086],
         "d1": [1, 4, 1, 1, 2, 2, 3],

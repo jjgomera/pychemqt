@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -28,13 +45,13 @@ class nC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [12.54882924, -5.46976878],
            "ao_exp": [5.54913289, 11.4648996, 7.59987584, 9.66033239],
-           "titao": [0.7748404445, 3.3406025522, 4.9705130961, 9.9755537783], 
+           "titao": [0.7748404445, 3.3406025522, 4.9705130961, 9.9755537783],
            "ao_hyp": [], "hyp": []}
-           
+
     Fi2 = {"ao_log": [1, 3.33944],
            "pow": [0, 1],
            "ao_pow": [20.884143364, -91.638478026],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [9.44893, 6.89406, 24.4618, 14.7824],
            "hyp": [1.101487798, 0.43195766, 4.502440459, 2.124516319]}
 
@@ -42,7 +59,7 @@ class nC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [-5.404217, 4.91136],
            "ao_exp": [5.513671, 7.388450, 10.250630, 11.061010],
-           "titao": [327.55988/Tc, 1319.06935/Tc, 4138.63184/Tc, 1864.36783/Tc], 
+           "titao": [327.55988/Tc, 1319.06935/Tc, 4138.63184/Tc, 1864.36783/Tc],
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": -1.3491511376e1,
@@ -63,10 +80,10 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane", 
+                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane",
                     "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
-                    "doi": "10.1063/1.1901687"}, 
-        "__test__": 
+                    "doi": "10.1063/1.1901687"},
+        "__test__":
             # Table 44, Pag 974
             """
             >>> st=nC4(T=134.895, x=0.5)
@@ -176,14 +193,14 @@ class nC4(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             500 515.49 90.412 224.26 -0.17641 2.533 2.986 923.31
-            """, 
-            
+            """,
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575., "Pmax": 200000.0, "rhomax": 13.86, 
-        "Pmin": 0.000653, "rhomin": 12.645, 
+        "Tmin": Tt, "Tmax": 575., "Pmax": 200000.0, "rhomax": 13.86,
+        "Pmin": 0.000653, "rhomin": 12.645,
 
         "nr1": [0.25536998241635e1, -0.44585951806696e1, 0.82425886369063,
                 0.11215007011442, -0.35910933680333e-1, 0.16790508518103e-1,
@@ -214,16 +231,16 @@ class nC4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for butane of Younglove and Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ", 
+                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
                     "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                    "doi": "10.1063/1.555785"}, 
-                    
+                    "doi": "10.1063/1.555785"},
+
         "R": 8.31434,
         "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 19275.7, "so": 309.909}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 19275.7, "so": 309.909},
 
-        "Tmin": 134.86, "Tmax": 500., "Pmax": 70000.0, "rhomax": 13.2, 
-        "Pmin": 6.736e-4, "rhomin": 12.65, 
+        "Tmin": 134.86, "Tmax": 500., "Pmax": 70000.0, "rhomax": 13.2,
+        "Pmin": 6.736e-4, "rhomin": 12.65,
 
         "b": [None, 0.153740104603e-1, -0.160980034611, -0.979782459010e1,
               0.499660674504e3, -0.102115607687e7, 0.236032147756e-2,
@@ -241,15 +258,15 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575., "Pmax": 69000.0, "rhomax": 13.2, 
-        "Pmin": 0.000653, "rhomin": 12.645, 
+        "Tmin": Tt, "Tmax": 575., "Pmax": 69000.0, "rhomax": 13.2,
+        "Pmin": 0.000653, "rhomin": 12.645,
 
         "nr1": [0.10626277411455e1, -0.28620951828350e1, 0.88738233403777,
                 -0.12570581155345, 0.10286308708106, 0.25358040602654e-3],
@@ -267,15 +284,15 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase n-Butane", 
+                    "title": "A Thermodynamic Property Model for Fluid-Phase n-Butane",
                     "ref": "Int. J. Thermophys., 22(2):459-475, 2001.",
-                    "doi": "10.1023/A:1010722814682"}, 
+                    "doi": "10.1023/A:1010722814682"},
         "R": 8.314472,
         "cp": Fi3,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": 134.87, "Tmax": 589., "Pmax": 69000.0, "rhomax": 13.15, 
-        "Pmin": 0.000688, "rhomin": 12.652, 
+        "Tmin": 134.87, "Tmax": 589., "Pmax": 69000.0, "rhomax": 13.15,
+        "Pmin": 0.000688, "rhomin": 12.652,
 
         "nr1": [2.952054e-1, -1.32636, -2.031317e-3, 2.240301e-1,
                 -3.635425e-2, 1.905841e-3, 7.409154e-5, -1.401175e-6],
@@ -294,9 +311,9 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for butane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=nC4(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -308,10 +325,10 @@ class nC4(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": 134.86, "Tmax": 750., "Pmax": 100000.0, "rhomax": 13.20, 
-        "Pmin": 0.00064578, "rhomin": 12.671, 
+        "Tmin": 134.86, "Tmax": 750., "Pmax": 100000.0, "rhomax": 13.20,
+        "Pmin": 0.00064578, "rhomin": 12.671,
 
         "nr1": [0.10626277e1, -0.28620952e1, 0.88738233, -0.12570581,
                 0.10286309, 0.25358041e-3],
@@ -329,15 +346,15 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP6,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 140.0, "Tmax": 589., "Pmax": 30000.0, "rhomax": 12.81, 
-        "Pmin": 0.00161, "rhomin": 12.573, 
+        "Tmin": 140.0, "Tmax": 589., "Pmax": 30000.0, "rhomax": 12.81,
+        "Pmin": 0.00161, "rhomin": 12.573,
 
         "nr1": [-0.504188295325, 0.541067401063, -0.760421383062e-1,
                 0.846035653528, -0.191317317203e1, 0.521441860186,
@@ -359,15 +376,15 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.18936994, 1.05407451, -3.24964532, 8.25263908e-2,
                 2.76467405e-4, -8.09869214e-2],
@@ -410,10 +427,10 @@ class nC4(MEoS):
               "collision": [0.17067154, -0.48879666, 0.039038856],
               "__name__": "Vogel (1999)",
               "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
-                          "title": "Viscosity for n-Butane in the Fluid Region", 
+                          "title": "Viscosity for n-Butane in the Fluid Region",
                           "ref": "High Temp. - High Pressures, 31(2):173-186, 1999.",
-                          "doi": "10.1068/htrt154"}, 
-              
+                          "doi": "10.1068/htrt154"},
+
               "ek": 280.51, "sigma": 0.57335,
               "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
               "n_chapman": 0.1628213/M**0.5,
@@ -447,9 +464,9 @@ class nC4(MEoS):
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane", 
+                          "title": "Reference Correlation of the Viscosity of Propane",
                           "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"}, 
+                          "doi": "10.1063/1.556025"},
 
               "ek": 440., "sigma": 0.503103,
               "n_chapman": 0.20352457/M**0.5,
@@ -462,10 +479,10 @@ class nC4(MEoS):
     visco2 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
-                          
+                          "doi": "10.1021/jp0618577"},
+
               "Tref": 425.125, "muref": 1.0,
               "ek": 440., "sigma": 0.503103, "n_chapman": 0,
               "n_ideal": [18.3983, -57.1255, 49.3197],
@@ -483,9 +500,9 @@ class nC4(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2002)",
                "__doi__": {"autor": "Perkins, R.A, Ramires, M.L.V., Nieto de Castro, C.A. and Cusco, L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Butane from 135 K to 600 K at Pressures to 70 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Butane from 135 K to 600 K at Pressures to 70 MPa",
                            "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1263–1271",
-                           "doi": "10.1021/je0101202"}, 
+                           "doi": "10.1021/je0101202"},
 
                "Tref": 425.16, "kref": 1.,
                "no": [1.62676e-3, 9.75703e-4, 2.89887e-2],
@@ -506,9 +523,9 @@ class nC4(MEoS):
     thermo1 = {"eq": 2, "omega": 2,
                "__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane", 
+                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane",
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"}, 
+                           "doi": "10.1063/1.555785"},
 
                "visco": visco1,
                "n_chapman": 2.0352526600e-1,

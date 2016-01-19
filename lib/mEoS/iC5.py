@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -26,11 +43,11 @@ class iC5(MEoS):
            "ao_pow": [2.5822330405, 1.1609103419],
            "ao_exp": [7.4056, 9.5772, 15.765, 12.119],
            "titao": [442/Tc, 1109/Tc, 2069/Tc, 4193/Tc]}
-           
+
     Fi2 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [15.449907693, -101.298172792],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [11.7618, 20.1101, 33.1688, 0],
            "hyp": [0.635392636, 1.977271641, 4.169371131, 0]}
 
@@ -51,21 +68,21 @@ class iC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isopentane of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=iC5(T=462, rho=3*72.14878)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             462 3 3458.617 37318.534 94.634 190.631 4660.943 96.324
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
-        "Pmin": 0.83e-7, "rhomin": 10.925, 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3,
+        "Pmin": 0.83e-7, "rhomin": 10.925,
 
         "nr1": [1.0963, -3.0402, 1.0317, -0.15410, 0.11535, 0.00029809],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -81,15 +98,15 @@ class iC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3, 
-        "Pmin": 0.83e-7, "rhomin": 10.925, 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3,
+        "Pmin": 0.83e-7, "rhomin": 10.925,
 
         "nr1": [0.11017531966644e1, -0.30082368531980e1, 0.99411904271336,
                 -0.14008636562629, 0.11193995351286, 0.29548042541230e-3],
@@ -107,15 +124,15 @@ class iC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP3,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 200.0, "Tmax": 553.0, "Pmax": 7500.0, "rhomax": 5.2252, 
-        "Pmin": 51.964, "rhomin": 8.7248, 
+        "Tmin": 200.0, "Tmax": 553.0, "Pmax": 7500.0, "rhomax": 5.2252,
+        "Pmin": 51.964, "rhomin": 8.7248,
 
         "nr1": [-0.143819012123e1, 0.138298276836e1, -0.203328695121,
                 0.619304204378, -0.311353942178e1, 0.316914412369e1,
@@ -137,15 +154,15 @@ class iC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3159524,
         "cp": CP4,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 199.82, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 9.9258626, 
-        "Pmin": 0.34375, "rhomin": 9.9259, 
+        "Tmin": 199.82, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 9.9258626,
+        "Pmin": 0.34375, "rhomin": 9.9259,
 
         "nr1": [0.179378842786e1, 0.258488286720, -0.812072482201,
                 -0.753941018871, 0.565338153509e-1, -0.115706201242e-2,
@@ -188,9 +205,9 @@ class iC5(MEoS):
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 341.06, "sigma": 0.56232,
               "n_chapman": 0.2267237/M**0.5,
@@ -204,9 +221,9 @@ class iC5(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 341.06, "kref": 1e-3,
                "no": [1.35558587, -0.152666315743857, 1],

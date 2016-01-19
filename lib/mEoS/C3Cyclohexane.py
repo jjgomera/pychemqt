@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,16 +49,16 @@ class C3Cyclohexane(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for propylcyclohexane of Lemmon (2007).",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "", 
+                    "title": "",
                     "ref": "unpublished equation, 2007",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 7.03, 
-        "Pmin": 0.0000007, "rhomin": 7.03, 
+        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 7.03,
+        "Pmin": 0.0000007, "rhomin": 7.03,
 
         "nr1": [1.01911, -2.59762, 0.675152, -0.230891, 0.120966, 0.000309038],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -71,10 +88,10 @@ class C3Cyclohexane(MEoS):
     visco0 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
-                          
+                          "doi": "10.1021/jp0618577"},
+
               "Tref": 630.8, "muref": 1.0,
               "ek": 507.54, "sigma": 0.6321,
               "n_ideal": [0.528175e2, -0.170572e3,  0.171218e3, -0.402745e2],
@@ -93,10 +110,10 @@ class C3Cyclohexane(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2008)",
                "__doi__": {"autor": "Perkins, R.A. Hammerschmidt, U. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa",
                            "ref": "J. Chem. Eng. Data, 2008, 53 (9), pp 2120–2127",
-                           "doi": "10.1021/je800255r"}, 
-               "__test__": 
+                           "doi": "10.1021/je800255r"},
+               "__test__":
                     """
                     >>> st=C3Cyclohexane(T=300, P=1e5)
                     >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \

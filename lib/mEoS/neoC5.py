@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -20,13 +37,13 @@ class neoC5(MEoS):
     f_acent = 0.1961
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 9
-    
+
     Fi1 = {"ao_log": [1, 3.],
            "pow": [0, 1],
            "ao_pow": [0.8702452614, 1.6071746358],
            "ao_exp": [14.422, 12.868, 17.247, 12.663],
            "titao": [710/Tc, 1725/Tc, 3280/Tc, 7787/Tc]}
-           
+
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
@@ -37,21 +54,21 @@ class neoC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for neopentane of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=neoC5(T=435, rho=3*72.14878)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             435 3 3256.677 34334.720 92.525 184.435 5161.767 93.352
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 200000.0, "rhomax": 8.71, 
-        "Pmin": 35.4, "rhomin": 8.70, 
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 200000.0, "rhomax": 8.71,
+        "Pmin": 35.4, "rhomin": 8.70,
 
         "nr1": [1.1136, -3.1792, 1.1411, -0.10467, 0.11754, 0.00034058],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -67,15 +84,15 @@ class neoC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for neopentane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 498.0, "Pmax": 20000.0, "rhomax": 8.511, 
-        "Pmin": 70.6, "rhomin": 8.51, 
+        "Tmin": 273.0, "Tmax": 498.0, "Pmax": 20000.0, "rhomax": 8.511,
+        "Pmin": 70.6, "rhomin": 8.51,
 
         "nr1": [-0.146552261671e1, 0.199230626557e1, -0.500821886276,
                 0.119809758161e1, -0.363135896710e1, 0.312770556886e1,

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -21,7 +38,7 @@ class Butene_1(MEoS):
     f_acent = 0.192
     momentoDipolar = unidades.DipoleMoment(0.339, "Debye")
     id = 24
-           
+
     Fi1 = {"ao_log": [1, 2.9197],
            "pow": [0, 1],
            "ao_pow": [-0.00101126, 2.3869174],
@@ -32,9 +49,9 @@ class Butene_1(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for 1-butene of Lemmon and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
-                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+                    "doi":  "10.1016/j.fluid.2004.09.004"},
         "__test__": """
             >>> st=Butene_1(T=350, rho=0)
             >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
@@ -49,13 +66,13 @@ class Butene_1(MEoS):
             >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             440 4.0 5.3245 29454 80.191 124.13 416.03 151.49
             """, # Table 9, Pag 186
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 525., "Pmax": 70000.0, "rhomax": 14.59, 
-        "Pmin": 0.0000000008, "rhomin": 14.58, 
+        "Tmin": Tt, "Tmax": 525., "Pmax": 70000.0, "rhomax": 14.59,
+        "Pmin": 0.0000000008, "rhomin": 14.58,
 
         "nr1": [0.78084, -2.8258, 0.99403, 0.017951, 0.088889, 0.00024673],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -86,17 +103,17 @@ class Butene_1(MEoS):
     trnECS = {"eq": "ecs",
               "__name__": "Extended Corresponding States model",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
                           "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"}, 
+                          "doi": "10.1021/ie0300880"},
 
               "ref": C3,
               "ref_eq": "helmholtz1",
               "eq_visco": "visco1",
               "eq_thermo": "thermo0",
-              
-              "sigma": 0.4998, "ek": 332.95, 
-              "fint": [1.32e-3], "fint_t": [0], 
+
+              "sigma": 0.4998, "ek": 332.95,
+              "fint": [1.32e-3], "fint_t": [0],
               "psi": [1.0], "psi_t": [0], "psi_d": [0],
               "phi": [1.0], "phi_t": [0], "phi_d": [0]}
 

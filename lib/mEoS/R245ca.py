@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -27,7 +44,7 @@ class R245ca(MEoS):
            "ao_exp": [0.8843, 5.331, 14.46],
            "exp": [865, 2830, 1122],
            "ao_hyp": [], "hyp": []}
-           
+
     CP2 = {"ao": -3.8444,
            "an": [5.24008e-1, -3.74976e-4], "pow": [1, 2],
            "ao_exp": [], "exp": [],
@@ -37,16 +54,16 @@ class R245ca(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-245ca of Zhou and Lemmon (2013).",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "unpublished equation, 2013.", 
+                    "title": "unpublished equation, 2013.",
                     "ref": "",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.314472,
         "cp": CP1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 10000.0, "rhomax": 12.21, 
-        "Pmin": 0.0708, "rhomin": 12.21, 
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 10000.0, "rhomax": 12.21,
+        "Pmin": 0.0708, "rhomin": 12.21,
 
         "nr1": [0.04489247, 1.526476, -2.408320, -0.5288088, 0.18222346],
         "d1": [4, 1, 1, 2, 3],
@@ -57,7 +74,7 @@ class R245ca(MEoS):
         "t2": [1.92, 2., 1.5, 1.93, 1.06],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
- 
+
         "nr3": [1.364444, -0.5080666, -0.06649496, -1.128359],
         "d3": [1, 1, 3, 3],
         "t3": [0.17, 3.9, 1., 1.],
@@ -73,9 +90,9 @@ class R245ca(MEoS):
            "ref": R134a,
            "eq": "helmholtz1",
            "R": 8.314471,
-        
-            "Tmin": 200.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 11.995, 
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa, 
+
+            "Tmin": 200.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 11.995,
+#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
 
            "ft": [-0.241011472, -0.788477331],
            "ft_add": [], "ft_add_exp": [],

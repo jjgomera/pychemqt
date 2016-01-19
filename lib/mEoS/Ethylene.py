@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp
 
@@ -52,10 +69,10 @@ class Ethylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Smukala et al. (2000)",
         "__doi__": {"autor": "Smukala, J., Span, R., Wagner, W.",
-                    "title": "New equation of state for ethylene covering the fluid region from the melting line to 450 K at pressures up to 300 MPa", 
+                    "title": "New equation of state for ethylene covering the fluid region from the melting line to 450 K at pressures up to 300 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 29, 1053 (2000)",
-                    "doi": "10.1063/1.1329318"}, 
-        "__test__": 
+                    "doi": "10.1063/1.1329318"},
+        "__test__":
             # Table 32, Pag 1093
             """
             >>> st=Ethylene(T=103.989, x=0.5)
@@ -211,10 +228,10 @@ class Ethylene(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 300000.0, "rhomax": 27.03, 
-        "Pmin": 0.12196, "rhomin": 23.334, 
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 300000.0, "rhomax": 27.03,
+        "Pmin": 0.12196, "rhomin": 23.334,
 
         "nr1": [0.18617429100670e1, -0.30913708460844e1, -0.17384817095516,
                 0.80370985692840e-1, 0.23682707317354, 0.21922786610247e-1],
@@ -236,7 +253,7 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4,
                4, 4, 4],
         "gamma2": [1]*24,
- 
+
         "nr3": [-0.50242414011355e2, 0.74846420119299e4, -0.68734299232625e4,
                 -0.93577982814338e3, 0.94133024786113e3],
         "d3": [2, 2, 2, 3, 3],
@@ -250,10 +267,10 @@ class Ethylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Jahangiri et al. (1986)",
         "__doi__": {"autor": "Jahangiri, M., Jacobsen, R.T, Stewart, R.B., and McCarty, R.D.",
-                    "title": "Thermodynamic properties of ethylene from the freezing line to 450 K at pressures to 260 MPa", 
+                    "title": "Thermodynamic properties of ethylene from the freezing line to 450 K at pressures to 260 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 15, 593 (1986)",
-                    "doi": "10.1063/1.555753"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555753"},
+        "__test__":
             # Table 18, Pag 613
             """
             >>> st=Ethylene(T=200, x=0.5, eq=2)
@@ -310,14 +327,14 @@ class Ethylene(MEoS):
             >>> st=Ethylene(T=282.15, x=0.5, eq=2)
             >>> print "%0.2f %0.3f %0.1f %0.1f" % (st.T, st,P.MPa, st.Liquido.hM.Jmol, st.Gas.hM.Jmol)
             282.15 5.018 24644.4 23021.6
-            """, 
+            """,
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 260000.0, "rhomax": 26.67, 
-        "Pmin": 0.1225, "rhomin": 23.348, 
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 260000.0, "rhomax": 26.67,
+        "Pmin": 0.1225, "rhomin": 23.348,
 
         "nr1": [0.324893703388e1, -0.101727886161e2, 0.738660405252e1,
                 -0.156891635862e1, -0.888451428662e-1, 0.602106814262e-1,
@@ -346,9 +363,9 @@ class Ethylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ethylene of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=Ethylene(T=700, rho=200, eq=3)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -360,10 +377,10 @@ class Ethylene(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.03, 
-        "Pmin": 0.12123, "rhomin": 23.34, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.03,
+        "Pmin": 0.12123, "rhomin": 23.34,
 
         "nr1": [0.9096223, -0.24641015e1, 0.56175311, -0.19688013e-1,
                 0.78831145e-1, 0.21478776e-3],
@@ -381,10 +398,10 @@ class Ethylene(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethylene of McCarty and Jacobsen (1981)",
         "__doi__": {"autor": "McCarty, R.D., Jacobsen, R.T.",
-                    "title": "An Equation of State for Fluid Ethylene", 
+                    "title": "An Equation of State for Fluid Ethylene",
                     "ref": "Natl. Bur. Stand., Tech. Note 1045, 1981.",
-                    "doi": ""}, 
-        "__test__": 
+                    "doi": ""},
+        "__test__":
             # Table, Pag 138
             """
             >>> st=Ethylene(T=110, P=1e7, eq=1)
@@ -415,13 +432,13 @@ class Ethylene(MEoS):
             >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
                 st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
             10 3.7626 400 31676.15 189.761 46.49 70.37 347.16
-            """, 
+            """,
         "R": 8.31434,
         "cp": CP2,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 23.343, 
-        "Pmin": 0.1213, "rhomin": 23.343, 
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 23.343,
+        "Pmin": 0.1213, "rhomin": 23.343,
 
         "b": [None, -0.2146684366683e-1, 0.1791433722534e1, -0.3675315603930e2,
               0.3707178934669e4, -0.3198282566709e6, 0.5809379774732e-3,
@@ -439,15 +456,15 @@ class Ethylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225}, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [8.42278605e-1, 8.65139678e-1, -2.79801027, 6.74520156e-2,
                 2.42445468e-4, -2.74767618e-3],
@@ -470,7 +487,7 @@ class Ethylene(MEoS):
                    "a2": [55.19, 49.5, -2045, -1154.],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 450.0, 
+                "Tmin": Tt, "Tmax": 450.0,
                 "a1": [0.1225e-3, 0.357924e3, -0.357924e3],
                 "exp1": [0, 0.20645e1, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
@@ -492,9 +509,9 @@ class Ethylene(MEoS):
               "method": "_visco0",
               "__name__": "Holland (1983)",
               "__doi__": {"autor": "Holland, P.M., Eaton, B.E., and Hanley, H.J.M.",
-                          "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene", 
+                          "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene",
                           "ref": "J. Phys. Chem. Ref. Data 12, 917 (1983)",
-                          "doi": "10.1063/1.555701"}, 
+                          "doi": "10.1063/1.555701"},
               "__test__":
                   # Table 5, pag 924
                   """
@@ -543,9 +560,9 @@ class Ethylene(MEoS):
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 224.7, "sigma": 0.4163,
               "n_chapman": 0.141374566253583/M**0.5,
@@ -560,9 +577,9 @@ class Ethylene(MEoS):
                "method": "_thermo0",
                "__name__": "Holland (1983)",
                "__doi__": {"autor": "Holland, P.M., Eaton, B.E., and Hanley, H.J.M.",
-                           "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene", 
+                           "title": "A Correlation of the Viscosity and Thermal Conductivity Data of Gaseous and Liquid Ethylene",
                            "ref": "J. Phys. Chem. Ref. Data 12, 917 (1983)",
-                           "doi": "10.1063/1.555701"}, 
+                           "doi": "10.1063/1.555701"},
                "__test__":
                    # Table 6, pag 927
                    """
@@ -624,9 +641,9 @@ class Ethylene(MEoS):
     thermo1 = {"eq": 1, "critical": 0,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 224.7, "kref": 1e-3,
                "no": [1.35558587, -0.14207565869509, 1],

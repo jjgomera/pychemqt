@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,16 +48,16 @@ class iC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isooctane of Blackham and Lemmon (2011).",
         "__doi__": {"autor": "Blackham, T.M. and Lemmon, E.W.",
-                    "title": "", 
+                    "title": "",
                     "ref": "to be published in Int. J. Thermophys., 2011.",
-                    "doi": ""}, 
-            
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 1000000.0, "rhomax": 6.97, 
-        "Pmin": 0.00001796, "rhomin": 6.96, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 1000000.0, "rhomax": 6.97,
+        "Pmin": 0.00001796, "rhomin": 6.96,
 
         "nr1": [0.568901e-1, 0.196155e1, -0.281164e1, -0.815112, 0.326583],
         "d1": [4, 1, 1, 2, 3],
@@ -50,8 +67,8 @@ class iC8(MEoS):
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.2, 3.7, 1.53, 2.1, 0.9],
         "c2": [2, 2, 1, 2, 1],
-        "gamma2": [1]*6, 
-  
+        "gamma2": [1]*6,
+
         "nr3": [0.196648e1, -0.465082, -0.409398, 0.232131e-1],
         "d3": [1, 1, 3, 3, ],
         "t3": [0.88, 1.1, 2.75, 1.0],
@@ -81,10 +98,10 @@ class iC8(MEoS):
     thermo0 = {"eq": 5, "omega": 3,
                "__name__": "Chung (1988)",
                "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E.",
-                           "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                           "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                            "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                           "doi": "10.1021/ie00076a024"}, 
+                           "doi": "10.1021/ie00076a024"},
                "w": 0.3, "mur": 0.0, "k": 0.0}
 
     _viscosity = thermo0,
-    _thermal = thermo0, 
+    _thermal = thermo0,

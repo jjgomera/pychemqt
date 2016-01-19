@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -30,21 +47,21 @@ class MD4M(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MD4M of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "title": "Multiparameter Equations of State for Selected Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+                    "doi":  "10.1016/j.fluid.2006.04.015"},
         "__test__": """
             >>> st=MD4M(T=653.2, P=877470)
             >>> print "%0.6f" % st.v
             0.003501
             """, # Table 18, Pag 204
-            
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 300, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.09, 
-        "Pmin": 0.000000001, "rhomin": 2.09, 
+        "Tmin": 300, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.09,
+        "Pmin": 0.000000001, "rhomin": 2.09,
 
         "nr1": [1.18492421, -1.87465636, -0.65713510e-1, -0.61812689,
                 0.19535804, 0.50678740e-3],

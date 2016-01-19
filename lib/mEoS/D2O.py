@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp
 
@@ -26,9 +43,9 @@ class D2O(MEoS):
            "pow": [0, 1, 2, 3, 4, 5],
            "ao_pow": [0.3087155964e2, -.3827264031e2, 0.4424799189,
                       -.1256336874e1, 0.2843343470, -.2401555088e-1],
-           "tau*logtau": -.1288399716e2, 
-           "tau*logdelta": 0.4415884023e1, 
-           "ao_exp": [], "titao": [], 
+           "tau*logtau": -.1288399716e2,
+           "tau*logdelta": 0.4415884023e1,
+           "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
     CP1 = {"ao": 0.39176485e1,
@@ -43,10 +60,10 @@ class D2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for heavy water of Hill et al. (1982).",
         "__doi__": {"autor": "Hill, P.G., MacMillan, R.D.C., and Lee, V.",
-                    "title": "A Fundamental Equation of State for Heavy Water", 
+                    "title": "A Fundamental Equation of State for Heavy Water",
                     "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
-                    "doi": "10.1063/1.555661"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555661"},
+        "__test__":
             # Pag 17 of IAPWS 2007 update paper
             """
             >>> st=D2O(T=0.5*D2O.Tc, rho=0.0002*D2O.rhoc)
@@ -75,12 +92,12 @@ class D2O(MEoS):
             -21.278164 4.5643798 25.4800
             """,
 
-        "R": 8.3143565, "rhoref": 17.875414*M, 
+        "R": 8.3143565, "rhoref": 17.875414*M,
         "cp": Fi1,
-        "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0}, 
+        "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
-        "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65., 
-        "Pmin": 0.66103, "rhomin": 55.198, 
+        "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65.,
+        "Pmin": 0.66103, "rhomin": 55.198,
 
         "nr1": [-0.384820628204e3, 0.108213047259e4, -0.110768260635e4,
                 0.164668954246e4, -0.137959852228e4, 0.598964185629e3,
@@ -127,12 +144,12 @@ class D2O(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "IAPWS (2007)", 
+              "__name__": "IAPWS (2007)",
               "__doi__": {"autor": "J. Kestin, J. V. Sengers, B. Kamgar‐Parsi and J. M. H. Levelt Sengers",
-                          "title": "Thermophysical Properties of Fluid D2O", 
+                          "title": "Thermophysical Properties of Fluid D2O",
                           "ref": "J. Phys. Chem. Ref. Data 13, 601 (1984)",
-                          "doi": "10.1063/1.555714"}, 
-              "__test__": 
+                          "doi": "10.1063/1.555714"},
+              "__test__":
                   # Pag 17 of IAPWS 2007 update paper
                   """
                   >>> st=D2O(T=0.431*D2O.Tc, rho=3.09*D2O.rhoc)
@@ -184,12 +201,12 @@ class D2O(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "IAPWS (1994)", 
+               "__name__": "IAPWS (1994)",
                "__doi__": {"autor": "J. Kestin, J. V. Sengers, B. Kamgar‐Parsi and J. M. H. Levelt Sengers",
-                           "title": "Thermophysical Properties of Fluid D2O", 
+                           "title": "Thermophysical Properties of Fluid D2O",
                            "ref": "J. Phys. Chem. Ref. Data 13, 601 (1984)",
-                           "doi": "10.1063/1.555714"}, 
-               "__test__": 
+                           "doi": "10.1063/1.555714"},
+               "__test__":
                    # Pag 17 of IAPWS 2007 update paper
                    """
                    >>> st=D2O(T=0.431*D2O.Tc, rho=3.09*D2O.rhoc)

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -30,9 +47,9 @@ class DEE(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for diethyl ether  of Thol et al. (2013).",
         "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
-                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids", 
-                    "ref": "Int. J. Thermophys., 35(5):783-811, 2014.", 
-                    "doi": "10.1007/s10765-014-1633-1"}, 
+                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids",
+                    "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
+                    "doi": "10.1007/s10765-014-1633-1"},
         "__test__": """
             >>> st=DEE(T=280, rho=0.1)
             >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
@@ -51,19 +68,19 @@ class DEE(MEoS):
                 st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             400 650 33.847217264 -101.418571257 -0.568533506 1.949560509 2.520106238 919.575708532
             """, # Table 9, Pag 26
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
-        
-        "Tmin": 270.0, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 10.6851, 
-        "Pmin": 0.000001, "rhomin": 10.6851, 
+        "ref": "OTO",
+
+        "Tmin": 270.0, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 10.6851,
+        "Pmin": 0.000001, "rhomin": 10.6851,
 
         "nr1": [0.376700499, -.116630334, -.73801498, -.2725701, -.4979231e-1,
                 0.172267029, 0.441618910e-2],
         "d1": [1, 1, 1, 2, 3, 3, 5],
         "t1": [-0.75, -0.25, 1.25, 0.75, -1.0, -0.375, 1.25],
-        
+
         "nr2": [-.153951612e1, 0.115606052e1, -.184504019e-1, -.101800599,
                 -.403598704, 0.213055571e-2, -.154741976, 0.120950552e-1,
                 -.143106371e-1],

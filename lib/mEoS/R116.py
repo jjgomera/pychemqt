@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -44,21 +61,21 @@ class R116(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-116 of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=R116(T=295, rho=4*138.01182)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             295 4 3180.336 34509.528 161.389 120.218 2189.730 73.317
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31, 
-        "Pmin": 26.1, "rhomin": 12.3, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31,
+        "Pmin": 26.1, "rhomin": 12.3,
 
         "nr1": [1.1632, -2.8123, 0.77202, -0.14331, 0.10227, 0.00024629],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -74,16 +91,16 @@ class R116(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-116 of Kozlov (1996).",
         "__doi__": {"autor": "Kozlov A.D.",
-                    "title": "private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru", 
+                    "title": "private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru",
                     "ref": "",
-                    "doi":  ""}, 
-                    
+                    "doi":  ""},
+
         "R": 8.31451,
         "cp": CP2,
-        
-        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23, 
-        "Pmin": 32.09, "rhomin": 12.231, 
-        "Pmin": 32.09, "rhomin": 12.231, 
+
+        "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23,
+        "Pmin": 32.09, "rhomin": 12.231,
+        "Pmin": 32.09, "rhomin": 12.231,
 
         "nr1": [2.1775273, -5.5052198, -1.3675742, -8.1284229e-1,
                 -4.0207525e-1, 2.5890073, 1.4500537, -1.0445036, 9.8965288e-1,
@@ -119,9 +136,9 @@ class R116(MEoS):
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "__name__": "Huber (2003)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
                           "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"}, 
+                          "doi": "10.1021/ie0300880"},
 
               "ek": 226.16, "sigma": 0.5249,
               "Tref": 1., "rhoref": 1.*M,
@@ -161,10 +178,10 @@ class R116(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
                "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
-                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)",
                            "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                           "doi": ""}, 
-    
+                           "doi": ""},
+
                "Tref": 1, "kref": 1.05,
                "no": [-1.05248e-2, 8.00982e-5],
                "co": [0, 1],

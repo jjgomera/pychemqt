@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,16 +49,16 @@ class C1Cyclohexane(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for methylcyclohexane of Lemmon (2007).",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "", 
+                    "title": "",
                     "ref": "unpublished equation, 2007",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600., "Pmax": 500000.0, "rhomax": 9.13, 
-        "Pmin": 0.0000003, "rhomin": 9.12, 
+        "Tmin": Tt, "Tmax": 600., "Pmax": 500000.0, "rhomax": 9.13,
+        "Pmin": 0.0000003, "rhomin": 9.12,
 
         "nr1": [1.3026, -2.6270, 0.68834, -0.16415, 0.092174, 0.0003842],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -71,9 +88,9 @@ class C1Cyclohexane(MEoS):
     visco0 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 572.2, "muref": 1.0,
               "ek": 454.3, "sigma": 0.5801,
@@ -91,9 +108,9 @@ class C1Cyclohexane(MEoS):
     visco1 = {"eq": 5, "omega": 3,
               "__name__": "Chung (1988)",
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E.",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
              "w": 0.885, "mur": 0.0, "k": 0.0}
 
     _viscosity = visco0, visco1
@@ -101,10 +118,10 @@ class C1Cyclohexane(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2008)",
                "__doi__": {"autor": "Perkins, R.A. Hammerschmidt, U. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa",
                            "ref": "J. Chem. Eng. Data, 2008, 53 (9), pp 2120–2127",
-                           "doi": "10.1021/je800255r"}, 
-               "__test__": 
+                           "doi": "10.1021/je800255r"},
+               "__test__":
                     """
                     >>> st=C1Cyclohexane(T=300, P=1e5)
                     >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,9 +48,9 @@ class Trans_2_butene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for trans-butene of Lemmon and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state", 
+                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
-                    "doi":  "10.1016/j.fluid.2004.09.004"}, 
+                    "doi":  "10.1016/j.fluid.2004.09.004"},
         "__test__": """
             >>> st=Trans_2_butene(T=350, rho=0)
             >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
@@ -51,10 +68,10 @@ class Trans_2_butene(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 13.141, 
-        "Pmin": 0.075, "rhomin": 13.14, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 13.141,
+        "Pmin": 0.075, "rhomin": 13.14,
 
         "nr1": [0.81107, -2.8846, 1.0265, 0.016591, 0.086511, 0.00023256],
         "d1": [1, 1, 1, 2, 3, 7],

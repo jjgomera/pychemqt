@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -24,7 +41,7 @@ class NH3(MEoS):
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, 1./3, -1.5, -1.75],
            "ao_pow": [-15.81502, 4.255726, 11.47434, -1.296211, 0.5706757],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 5.111814,
@@ -38,10 +55,10 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Baehr and Tillner-Roth (1993)",
         "__doi__": {"autor": "Baehr, H.D. and Tillner-Roth, R.",
-                    "title": "Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123", 
+                    "title": "Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123",
                     "ref": "Springer-Verlag, Berlin, 1994.",
-                    "doi": ""}, 
-        "__test__": 
+                    "doi": ""},
+        "__test__":
             # Table, Pag 42
             """
             >>> st=NH3(T=-77.65+273.15, x=0.5)
@@ -133,14 +150,14 @@ class NH3(MEoS):
             >>> st=NH3(T=-50+273.15, P=3e6)
             >>> print "%0.0f %0.5g %0.4g %0.3g" % (st.T.C, st.rho, st.h.kJkg, st.s.kJkgK)
             -50 703.33 -22.08 0.0875
-            """, 
+            """,
 
         "R": 8.314471,
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 52.915, 
-        "Pmin": 6.09, "rhomin": 43.035, 
+        "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 52.915,
+        "Pmin": 6.09, "rhomin": 43.035,
 
         "nr1": [-0.1858814e01, 0.4554431e-1, 0.7238548, 0.1229470e-1,
                 0.2141882e-10],
@@ -160,16 +177,16 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts and Baehr (1979)",
         "__doi__": {"autor": "Ahrendts, J. and Baehr, H.D.",
-                    "title": "The Thermodynamic Properties of Ammonia", 
+                    "title": "The Thermodynamic Properties of Ammonia",
                     "ref": "VDI-Forsch., Number 596, 1979.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.31434,
         "cp": CP2,
         "ref": "IIR",
 
-        "Tmin": 195.486, "Tmax": 600., "Pmax": 400000.0, "rhomax": 44.0, 
-        "Pmin": 6.0339, "rhomin": 43.137, 
+        "Tmin": 195.486, "Tmax": 600., "Pmax": 400000.0, "rhomax": 44.0,
+        "Pmin": 6.0339, "rhomin": 43.137,
 
         "nr1": [0.911447599671, -0.382129415537e1, 0.147730246416e1,
                 0.580205129871e-1, -0.574413226616e-3, 0.153018094697,
@@ -195,9 +212,9 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ammonia of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=NH3(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -206,13 +223,13 @@ class NH3(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             776.69 2.07036
             """, # Table III, Pag 117
-            
+
         "R": 8.314471,
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 52.915, 
-        "Pmin": 6.0531, "rhomin": 43.158, 
+        "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 52.915,
+        "Pmin": 6.0531, "rhomin": 43.158,
 
         "nr1": [0.7302272, -0.11879116e1, -0.68319136, 0.40028683e-1, 0.90801215e-4],
         "d1": [1, 1, 1, 3, 7],
@@ -229,15 +246,15 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.3143,
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [3.29159441e-1, 8.48237019e-1, -2.30706412, 4.08625188e-2,
                 6.79597481e-5, 4.99412149e-2],
@@ -254,7 +271,7 @@ class NH3(MEoS):
     eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
 
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 700.0, 
+                "Tmin": Tt, "Tmax": 700.0,
                 "a1": [], "exp1": [], "a2": [], "exp2": [],
                 "a3": [0.2533125e4], "exp3": [1]}
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
@@ -275,10 +292,10 @@ class NH3(MEoS):
               "collision": [4.99318220, -0.61122364, 0.0, 0.18535124, -0.11160946],
               "__name__": "Fenghour (1995)",
               "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, J.T.R., Millat, J., and Vogel, E.",
-                          "title": "The viscosity of ammonia", 
+                          "title": "The viscosity of ammonia",
                           "ref": "J. Phys. Chem. Ref. Data 24, 1649 (1995)",
-                          "doi": "10.1063/1.555961"}, 
-              "__test__": 
+                          "doi": "10.1063/1.555961"},
+              "__test__":
                     # Appendix II, pag 1664
                     """
                     >>> st=NH3(T=200, P=1e5)
@@ -375,9 +392,9 @@ class NH3(MEoS):
     thermo0 = {"eq": 1, "critical": "NH3",
                "__name__": "Tufeu (1984)",
                "__doi__": {"autor": "Tufeu, R., Ivanov, D.Y., Garrabos, Y., and Le Neindre, B.",
-                            "title": "Thermal conductivity of ammonia in a large temperature and pressure range including the critical region", 
+                            "title": "Thermal conductivity of ammonia in a large temperature and pressure range including the critical region",
                             "ref": "Ber. Bunsenges. Phys. Chem., 88:422-427, 1984",
-                            "doi": "10.1002/bbpc.19840880421"}, 
+                            "doi": "10.1002/bbpc.19840880421"},
 
                "Tref": 1., "kref": 1.,
                "no": [0.3589e-1, -0.1750e-3, 0.4551e-6, 0.1685e-9, -0.4828e-12],

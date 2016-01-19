@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Pipe equipment dialog and functionality
@@ -424,7 +442,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
     valueChanged = QtCore.pyqtSignal(list)
     titles = [
         QtWidgets.QApplication.translate("pychemqt", "Type"),
-        "D,mm", "D,in", "K", "Nº", 
+        "D,mm", "D,in", "K", "Nº",
         QtWidgets.QApplication.translate("pychemqt", "Description")]
 
     def __init__(self, parent=None):
@@ -439,7 +457,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.setColumnCount(6)
         titles = [
             QtWidgets.QApplication.translate("pychemqt", "Type"),
-            "D,mm", "D,in", "K", "Nº", 
+            "D,mm", "D,in", "K", "Nº",
             QtWidgets.QApplication.translate("pychemqt", "Description")]
         self.Accesorios.setHorizontalHeaderLabels(self.titles)
         self.Accesorios.setItemDelegateForColumn(4, SpinEditor(self))

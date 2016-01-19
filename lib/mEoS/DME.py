@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -25,22 +42,22 @@ class DME(MEoS):
            "pow": [0, 1],
            "ao_pow": [-1.928925, 3.150284],
            "ao_exp": [2.641, 2.123, 8.992, 6.191],
-           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc], 
+           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
            "ao_hyp": [], "hyp": []}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Wu et al. (2011).",
         "__doi__": {"autor": "Wu, J., Zhou, Y., and Lemmon, E.W.",
-                    "title": "An Equation of State for the Thermodynamic Properties of Dimethyl Ether", 
+                    "title": "An Equation of State for the Thermodynamic Properties of Dimethyl Ether",
                     "ref": "J. Phys. Chem. Ref. Data 40, 023104 (2011)",
-                    "doi":  "10.1063/1.3582533"}, 
+                    "doi":  "10.1063/1.3582533"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883}, 
+        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883},
 
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15, 
-        "Pmin": 0.0022, "rhomin": 19.15, 
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15,
+        "Pmin": 0.0022, "rhomin": 19.15,
 
         "nr1":  [0.29814139e-1, 0.14351700e1, -0.26496400e1, -0.29515532,
                  0.17035607],
@@ -67,15 +84,15 @@ class DME(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Ihmels and Lemmon (2007)",
         "__doi__": {"autor": "Ihmels, E.C. and Lemmon, E.W.",
-                    "title": "Experimental densities, vapor pressures, and critical point, and a fundamental equation of state for dimethyl ether", 
+                    "title": "Experimental densities, vapor pressures, and critical point, and a fundamental equation of state for dimethyl ether",
                     "ref": "Fluid Phase Equilibria. 10/2007; 260(1):36-48",
-                    "doi":  "10.1016/j.fluid.2006.09.016"}, 
+                    "doi":  "10.1016/j.fluid.2006.09.016"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883}, 
+        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883},
 
-        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96, 
-        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1":  [1.22690, -2.47245, 0.119889, 0.0000354],
         "d1": [1, 1, 3, 8],
@@ -103,28 +120,28 @@ class DME(MEoS):
         "ao": [-4.136444, -4.302025, -12.03214, -39.527936, -89.4768],
         "exp": [1.467, 4.2, 8.0, 17.0, 36.0]}
 
-    visco0 = {"eq": 1, "omega": 1, 
-              "__name__": "Meng (2012)", 
+    visco0 = {"eq": 1, "omega": 1,
+              "__name__": "Meng (2012)",
               "__doi__": {"autor": "Meng, X., Zhang, J., Wu, J., Liu, Z.",
-                          "title": "Experimental Measurement and Modeling of the Viscosity of Dimethyl Ether", 
+                          "title": "Experimental Measurement and Modeling of the Viscosity of Dimethyl Ether",
                           "ref": "J. Chem. Eng. Data, 2012, 57 (3), pp 988–993",
-                          "doi":  "10.1021/je201297j"}, 
-                          
+                          "doi":  "10.1021/je201297j"},
+
               "ek": 317.937, "sigma": 0.446704,
-              "Tref": 1., "rhoref": 1.*M, 
+              "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0.14508011,
-              "n_ideal": [0.294261, -0.377826, -0.491673], 
-              "t_ideal": [0, 1, 2], 
- 
-              "Tref_res": 400.378, "rhoref_res": 5.94*M, "etaref_res": 1, 
-              "n_packed": [], 
-              "t_packed": [], 
+              "n_ideal": [0.294261, -0.377826, -0.491673],
+              "t_ideal": [0, 1, 2],
+
+              "Tref_res": 400.378, "rhoref_res": 5.94*M, "etaref_res": 1,
+              "n_packed": [],
+              "t_packed": [],
               "n_poly": [-2.70002, 4.44583, -104.998, 78.27474, 41.3751,
-                         -175.055, 62.81975, 0.21302, 112.3219, 6.50681], 
+                         -175.055, 62.81975, 0.21302, 112.3219, 6.50681],
               "t_poly": [-5.92, -4.36, -2.93, -1.64, -7.86, -4.25, -4.79,
-                         -5.87, -3.11, -0.45], 
-              "d_poly": [3, 3, 3, 4, 5, 2, 2, 5, 2, 1], 
-              "g_poly": [0]*10, 
+                         -5.87, -3.11, -0.45],
+              "d_poly": [3, 3, 3, 4, 5, 2, 2, 5, 2, 1],
+              "g_poly": [0]*10,
               "c_poly": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
 
     _viscosity = visco0,

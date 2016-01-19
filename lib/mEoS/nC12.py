@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,9 +48,9 @@ class nC12(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for dodecane of Lemmon (2004).",
         "__doi__": {"autor": "Lemmon, E.W. and Huber, M.L.",
-                    "title": "Thermodynamic Properties of n-Dodecane", 
+                    "title": "Thermodynamic Properties of n-Dodecane",
                     "ref": "Energy & Fuels, 18:960-967, 2004.",
-                    "doi": "10.1021_ef0341062"}, 
+                    "doi": "10.1021_ef0341062"},
         "__test__": """
             >>> st=nC12(T=300, rho=0)
             >>> print "%0.1f %0.1f %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
@@ -54,10 +71,10 @@ class nC12(MEoS):
 
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 700., "Pmax": 700000.0, "rhomax": 4.53, 
-        "Pmin": 0.00063, "rhomin": 4.53, 
+        "Tmin": Tt, "Tmax": 700., "Pmax": 700000.0, "rhomax": 4.53,
+        "Pmin": 0.00063, "rhomin": 4.53,
 
         "nr1": [1.38031, -2.85352, 0.288897, -0.165993, 0.0923993, 0.000282772],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -90,9 +107,9 @@ class nC12(MEoS):
               "collision": [0.382987, -0.561050, 0.313962e-1],
               "__name__": "Huber (2004)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
-                          "title": "Transport Properties of n-Dodecane", 
+                          "title": "Transport Properties of n-Dodecane",
                           "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
-                          "doi": "10.1021/ef034109e"}, 
+                          "doi": "10.1021/ef034109e"},
               "__test__": """
                   >>> st=nC12(T=300, rhom=4.4115)
                   >>> print "%0.1f" % st.mu.muPas
@@ -136,9 +153,9 @@ class nC12(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Huber (2004)",
                "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
-                           "title": "Transport Properties of n-Dodecane", 
+                           "title": "Transport Properties of n-Dodecane",
                            "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
-                           "doi": "10.1021/ef034109e"}, 
+                           "doi": "10.1021/ef034109e"},
                "__test__": """
                    >>> st=nC12(T=300, rhom=4.4115)
                    >>> print "%0.2f" % st.k.mWmK

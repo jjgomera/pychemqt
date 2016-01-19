@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,15 +48,15 @@ class R113(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-113 of Marx et al. (1992).",
         "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
                     "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
-                    "doi": ""}, 
-                    
+                    "doi": ""},
+
         "R": 8.314471,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 9.10, 
-        "Pmin": 1.87, "rhomin": 9.099, 
+
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 9.10,
+        "Pmin": 1.87, "rhomin": 9.099,
 
         "nr1": [0.8432092286, -0.2019185967e1, 0.2920612996, 0.5323107661e-1,
                 0.3214971931e-2, 0.4667858574e-4, -0.1227522799e-5],
@@ -59,9 +76,9 @@ class R113(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-113 of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R113(T=700, rho=200, eq=1)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -70,12 +87,12 @@ class R113(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             131.00 0.26004
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.09, 
-        "Pmin": 1.869, "rhomin": 9.0893, 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.09,
+        "Pmin": 1.869, "rhomin": 9.0893,
 
         "nr1": [0.10519071e1, -0.28724742e1, 0.41983153, 0.87107788e-1,
                 0.24105194e-3],
@@ -109,9 +126,9 @@ class R113(MEoS):
               "collision": [0.355404, -0.464337, 0.257353e-1],
               "__name__": "Huber (2003)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
                           "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"}, 
+                          "doi": "10.1021/ie0300880"},
 
               "ek": 376.035, "sigma": 0.6019,
               "Tref": 1., "rhoref": 1.*M,
@@ -151,9 +168,9 @@ class R113(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
                "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
-                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)",
                            "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 487.21, "kref": 1.1,
                "no": [-0.460820e-2, 0.168688e-1, 0.488345e-2],

@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -27,7 +44,7 @@ class nC6(MEoS):
     Fi2 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [14.345969349, -96.165722367],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [11.6977, 26.8142, 38.6164, 0],
            "hyp": [0.359036667, 1.691951873, 3.596924107, 0]}
 
@@ -53,9 +70,9 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for hexane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=nC6(T=700, rho=200)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -67,10 +84,10 @@ class nC6(MEoS):
 
         "R": 8.31451,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85, 
-        "Pmin": 0.001277, "rhomin": 8.8394, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85,
+        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [0.10553238013661e1, -0.26120615890629e1, 0.76613882967260,
                 -0.29770320622459, 0.11879907733358, 0.27922861062617e-3],
@@ -87,15 +104,15 @@ class nC6(MEoS):
     GERG = {
         "__type__": "Helmholtz",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi": "10.1021/je300655b"}, 
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85, 
-#        "Pmin": 0.61166, "rhomin": 55.497, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85,
+#        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.10553238013661e1, -0.26120615890629e1, 0.76613882967260,
                 -0.29770320622459, 0.11879907733358, 0.27922861062617e-3],
@@ -113,15 +130,15 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP3,
-        "ref": "NBP", 
-        
-        "Tmin": 223.0, "Tmax": 623.0, "Pmax": 510000.0, "rhomax": 8.726125, 
-        "Pmin": 0.001277, "rhomin": 8.8394, 
+        "ref": "NBP",
+
+        "Tmin": 223.0, "Tmax": 623.0, "Pmax": 510000.0, "rhomax": 8.726125,
+        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [-0.157654494847e1, 0.178731485778e1, -0.341262936801,
                 0.114919468260e1, -0.381451065649e1, 0.356688884337e1,
@@ -143,15 +160,15 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems", 
+                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3159524,
         "cp": CP4,
-        "ref": "NBP", 
-        
-        "Tmin": 222.04, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 8.6724844, 
-        "Pmin": 0.001277, "rhomin": 8.8394, 
+        "ref": "NBP",
+
+        "Tmin": 222.04, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 8.6724844,
+        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [0.261128818398e1, 0.451396780770, -0.783362300734,
                 -0.108785843809e1, 0.124906986929, -0.155020819852e-1,
@@ -170,21 +187,21 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.43433265, 1.18137185, -4.24411947, 1.08655334e-1,
                 2.87828538e-4, -2.51781047e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
- 
+
         "nr2": [2.16096570e-2, -4.58052979e-1, 1.63940974e-1, -2.55034034e-2,
                 -2.47418231e-1, -8.05544799e-3, -7.78926202e-2, -2.69044742e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
@@ -216,10 +233,10 @@ class nC6(MEoS):
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08", 
+                          "title": "Coefficients are taken from NIST14, Version 9.08",
                           "ref": "",
-                          "doi": ""}, 
-                           
+                          "doi": ""},
+
               "ek": 399.3, "sigma": 0.5949,
               "n_chapman": 0.247780666/M**0.5,
               "F": [0, 0, 0, 100.],
@@ -230,9 +247,9 @@ class nC6(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": "Quinones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
+                          "doi": "10.1021/jp0618577"},
 
               "Tref": 507.82, "muref": 1.0,
               "ek": 393.1, "sigma": 0.5949, "n_chapman": 0,
@@ -252,9 +269,9 @@ class nC6(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Assael (2013)",
                "__doi__": {"autor": "M. J. Assael, S. K. Mylona, Ch. A. Tsiglifisi, M. L. Huber, and R. A. Perkins",
-                           "title": "Reference Correlation of the Thermal Conductivity of n-Hexane from the Triple Point to 600 K and up to 500 MPa", 
+                           "title": "Reference Correlation of the Thermal Conductivity of n-Hexane from the Triple Point to 600 K and up to 500 MPa",
                            "ref": "J. Phys. Chem. Ref. Data 42, 013106 (2013)",
-                           "doi": "10.1063/1.4793335"}, 
+                           "doi": "10.1063/1.4793335"},
                "__test__": """
                    >>> st=nC6(T=250, rho=700)
                    >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
@@ -276,14 +293,14 @@ class nC6(MEoS):
                "Tref": Tc, "kref": 1e-3,
                "no": [6.6742, -23.7619, 72.0155, -18.3714],
                "co": [0, 1, 2, 3],
-               
+
                "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
                "nb": [-.301408e-1, .167975, -.129739, .382833e-1, -.370294e-2,
                       .218208e-1, -.100833, .77418e-1, -.215945e-1, .212487e-2],
                "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
                "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
                "cb": [0]*10,
-               
+
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.2364e-9, "gam0": 0.05803, "qd": 0.737e-9, "Tcref": 761.73}
@@ -291,9 +308,9 @@ class nC6(MEoS):
     thermo1 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08", 
+                           "title": "Coefficients are taken from NIST14, Version 9.08",
                            "ref": "",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 399.3, "kref": 1e-3,
                "no": [1.35558587, -0.143662461021788, 1],

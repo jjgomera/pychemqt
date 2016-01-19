@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,16 +49,16 @@ class RE347mcc(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for RE347mcc of Zhou et al. (2012)",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2012.", 
+                    "title": "preliminary equation, 2012.",
                     "ref": "",
-                    "doi":  ""}, 
-            
+                    "doi":  ""},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 20000.0, "rhomax": 7.662, 
-        "Pmin": 6.825 , "rhomin": 7.66, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 20000.0, "rhomax": 7.662,
+        "Pmin": 6.825 , "rhomin": 7.66,
 
         "nr1": [0.0330627, 2.606165, -4.902937, 2.228012, 1.494115, -2.420459,
                 0.160067],
@@ -80,9 +97,9 @@ class RE347mcc(MEoS):
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
               "__name__": "Chung (1988)",
               "w": 0.411, "mur": 0.0, "k": 0.0}
 

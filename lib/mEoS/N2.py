@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -26,15 +43,15 @@ class N2(MEoS):
 
     Fi1 = {"ao_log": [1, 2.5],
            "pow": [0, 1, -1, -2, -3],
-           "ao_pow": [-12.76952708, -0.00784163, -1.934819e-4, 
+           "ao_pow": [-12.76952708, -0.00784163, -1.934819e-4,
                       -1.247742e-5, 6.678326e-8],
            "ao_exp": [1.012941],
            "titao": [26.65788]}
-           
+
     Fi2 = {"ao_log": [1, 2.50031],
            "pow": [0, 1],
            "ao_pow": [11.083407489, -22.202102428],
-           "ao_exp": [], "titao": [], 
+           "ao_exp": [], "titao": [],
            "ao_hyp": [0.13732, -0.1466, 0.90066, 0],
            "hyp": [5.25182262, -5.393067706, 13.788988208, 0]}
 
@@ -61,10 +78,10 @@ class N2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Span et al. (2000).",
         "__doi__": {"autor": "Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, W., Yokozeki, A.",
-                    "title": "A Reference Equation of State for the Thermodynamic Properties of Nitrogen for Temperatures from 63.151 to 1000 K and Pressures to 2200 MPa", 
+                    "title": "A Reference Equation of State for the Thermodynamic Properties of Nitrogen for Temperatures from 63.151 to 1000 K and Pressures to 2200 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 29, 1361 (2000)",
-                    "doi":  "10.1063/1.1349047"}, 
-        "__test__": 
+                    "doi":  "10.1063/1.1349047"},
+        "__test__":
             # Pag 1403
             """
             >>> st=N2(T=63.151, x=0.5)
@@ -73,7 +90,7 @@ class N2(MEoS):
                 st.Liquido.sM.kJkmolK, st.Gas.sM.kJkmolK, st.Liquido.cvM.kJkmolK, st.Gas.cvM.kJkmolK, \
                 st.Liquido.cpM.kJkmolK, st.Gas.cpM.kJkmolK, st.Liquido.w, st.Gas.w)
             63.151 0.012523 30.957 0.02407 -4222.6 1814.7 67.951 163.55 32.95 21.01 56.03 29.65 995.3 161.1
-            
+
             >>> st=N2(T=70, x=0.5)
             >>> print "%0.6g %0.4g %0.5g %0.4g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJkmol, st.Gas.hM.kJkmol, \
@@ -101,21 +118,21 @@ class N2(MEoS):
                 st.Liquido.sM.kJkmolK, st.Gas.sM.kJkmolK, st.Liquido.cvM.kJkmolK, st.Gas.cvM.kJkmolK, \
                 st.Liquido.cpM.kJkmolK, st.Gas.cpM.kJkmolK, st.Liquido.w, st.Gas.w)
             120 2.51058 18.682 4.4653 -500.6 2077.8 107.89 129.38 28.31 30.77 126.3 129.7 317.3 172.6
-                
+
             >>> st=N2(T=122, x=0.5)
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJkmol, st.Gas.hM.kJkmol, \
                 st.Liquido.sM.kJkmolK, st.Gas.sM.kJkmolK, st.Liquido.cvM.kJkmolK, st.Gas.cvM.kJkmolK, \
                 st.Liquido.cpM.kJkmolK, st.Gas.cpM.kJkmolK, st.Liquido.w, st.Gas.w)
             122 2.7727 17.633 5.2696 -277.39 1933.5 109.62 127.74 29.38 32.78 163.7 187.6 276.5 169.5
-                
+
             >>> st=N2(T=124, x=0.5)
             >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJkmol, st.Gas.hM.kJkmol, \
                 st.Liquido.sM.kJkmolK, st.Gas.sM.kJkmolK, st.Liquido.cvM.kJkmolK, st.Gas.cvM.kJkmolK, \
                 st.Liquido.cpM.kJkmolK, st.Gas.cpM.kJkmolK, st.Liquido.w, st.Gas.w)
             124 3.05618 16.23 6.4301 -3.0925 1714.7 111.71 125.56 31.83 36.12 271.2 356.6 227 164.7
-                
+
             >>> st=N2(T=126, x=0.5)
             >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g" % (\
                 st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJkmol, st.Gas.hM.kJkmol, \
@@ -169,14 +186,14 @@ class N2(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g" % (\
                 st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             600 3.6638 12183 17641 167.51 22.12 31.58 553.9
-            """, 
+            """,
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5}, 
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5},
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
-        "Pmin": 12.5198, "rhomin": 30.957, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15,
+        "Pmin": 12.5198, "rhomin": 30.957,
 
         "nr1": [0.924803575275, -0.492448489428, 0.661883336938,
                 -0.192902649201e1, -0.622469309629e-1, 0.349943957581],
@@ -214,14 +231,14 @@ class N2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for nitrogen of Younglove (1982).",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31434,
         "cp": CP1,
 
-        "Tmin": Tt, "Tmax": 1900.0, "Pmax": 1013000.0, "rhomax": 30.977, 
-        "Pmin": 12.463, "rhomin": 30.977, 
+        "Tmin": Tt, "Tmax": 1900.0, "Pmax": 1013000.0, "rhomax": 30.977,
+        "Pmin": 12.463, "rhomin": 30.977,
 
         "b": [None, 0.1380297474657e-2, 0.1084506501349, -0.2471324064362e1,
               0.3455257980807e2, -0.4279707690666e4, 0.1064911566998e-3,
@@ -240,15 +257,15 @@ class N2(MEoS):
         "__name__": "Helmholtz equation of state for nitrogen of Kunz and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
                     "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004", 
+                    Natural Gases and Other Mixtures: An Expansion of GERG-2004",
                     "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
-                    "doi":  "10.1021/je300655b"}, 
+                    "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "OTO", 
+        "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15, 
-#        "Pmin": 73.476, "rhomin": 29.249, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15,
+#        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.59889711801201, -0.16941557480731e1, 0.24579736191718,
                 -0.23722456755175, 0.17954918715141e-1, 0.14592875720215e-1],
@@ -274,10 +291,10 @@ class N2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Jacobsen et al. (1986).",
         "__doi__": {"autor": "Jacobsen, R.T, Stewart, R.B., and Jahangiri, M.",
-                    "title": "Thermodynamic properties of nitrogen from the freezing line to 2000 K at pressures to 1000 MPa", 
+                    "title": "Thermodynamic properties of nitrogen from the freezing line to 2000 K at pressures to 1000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data, 15(2):735-909, 1986",
-                    "doi": "10.1007/BF00502385"}, 
-        "__test__": 
+                    "doi": "10.1007/BF00502385"},
+        "__test__":
             #Table 21, Pag 795
             """
             >>> st=N2(T=63.15, x=0.5, eq=3)
@@ -390,15 +407,15 @@ class N2(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.2f %0.4g %0.4g %0.0f" % (\
                 st.T, st.rhoM, st.uM.Jmol, st.hM.Jmol, st.sM.JmolK, st.cvM.JmolK, st.cpM.JmolK, st.w)
             700 26.085 13376 32544 143.38 26.67 35.08 1544
-            """, 
+            """,
 
         "R": 8.31434,
         "cp": CP2,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8669, "so": 191.502}, 
-        "Tc": 126.193, "Pc": 3397.8, "rhoc": 11.177, "Tt": 63.148, "M": 28.0134, 
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8669, "so": 191.502},
+        "Tc": 126.193, "Pc": 3397.8, "rhoc": 11.177, "Tt": 63.148, "M": 28.0134,
 
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 30.96, 
-        "Pmin": 12.52, "rhomin": 31.046, 
+        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 30.96,
+        "Pmin": 12.52, "rhomin": 31.046,
 
         "nr1": [0.9499541827, 0.2481718513, -0.2046287122, -0.1748429008,
                 0.6387017148, -0.5272986168, -0.2049741504e1, 0.5551383553e-1,
@@ -425,9 +442,9 @@ class N2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nitrogen of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.", 
+                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
                     "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
-                    "doi": "10.1023/A:1022310214958"}, 
+                    "doi": "10.1023/A:1022310214958"},
         "__test__": """
             >>> st=N2(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -439,10 +456,10 @@ class N2(MEoS):
 
         "R": 8.31451,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5}, 
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5},
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 53.15, 
-        "Pmin": 12.566, "rhomin": 30.935, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 53.15,
+        "Pmin": 12.566, "rhomin": 30.935,
 
         "nr1": [0.92296567, -0.25575012e1, 0.64482463, 0.1083102e-1,
                 0.73924167e-1, 0.23532962e-3],
@@ -463,15 +480,15 @@ class N2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi1,
-        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5}, 
+        "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5},
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [9.57664698e-1, 8.68692283e-1, -2.88536117, 6.12953165e-2,
                 2.55919463e-4, 1.69423647e-2],
@@ -520,9 +537,9 @@ class N2(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=N2(T=100, rhom=0)
                     >>> print "%0.5f" % st.mu.muPas
@@ -560,9 +577,9 @@ class N2(MEoS):
                             -232.996787901831, 40.0691427576552, -2.99482706239363],
               "__name__": "Younglove (1982)",
               "__doi__": {"autor": "Younglove, B.A.",
-                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                          "doi": ""}, 
+                          "doi": ""},
 
               "ek": 118., "sigma": 0.354,
               "n_chapman": 0.141286429751707,
@@ -576,9 +593,9 @@ class N2(MEoS):
               "collision": [0.46649, -0.57015,  0.19164, -0.03708,  0.00241],
               "__name__": "Stephan (1987)",
               "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
-                          "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States", 
+                          "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States",
                           "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
-                          "doi": "10.1063/1.555798"}, 
+                          "doi": "10.1063/1.555798"},
                "__test__": """
                     >>> st=N2(T=80, P=1e5, visco=2)
                     >>> print "%0.2f" % st.mu.muPas
@@ -632,9 +649,9 @@ class N2(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air", 
+                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
                             "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"}, 
+                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=N2(T=100, rhom=0)
                     >>> print "%0.5f" % st.k.mWmK
@@ -673,9 +690,9 @@ class N2(MEoS):
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
                "__doi__": {"autor": "Younglove, B.A.",
-                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen", 
+                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
                            "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "ek": 118, "sigma": 0.354,
                "Nchapman": 0.141286429751707,
@@ -693,9 +710,9 @@ class N2(MEoS):
     thermo2 = {"eq": 1, "critical": 0,
                "__name__": "Stephan (1987)",
                "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
-                           "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States", 
+                           "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States",
                            "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
-                           "doi": "10.1063/1.555798"}, 
+                           "doi": "10.1063/1.555798"},
                "__test__": """
                     >>> st=N2(T=80, P=1e5, thermo=2)
                     >>> print "%0.2f" % st.k.mWmK

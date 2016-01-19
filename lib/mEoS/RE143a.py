@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -21,7 +38,7 @@ class RE143a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.32, "Debye")
     id = 671
     # id = 1817
-    
+
     CP1 = {"ao": 20.37,
            "an": [], "pow": [],
            "ao_exp": [0.2918, -1.950e-4, 4.650e-8],
@@ -32,16 +49,16 @@ class RE143a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for RE143a of Akasaka and Kayukawa (2012)",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "A fundamental equation of state for trifluoromethyl methyl ether (HFE-143m) and its application to refrigeration cycle analysis", 
+                    "title": "A fundamental equation of state for trifluoromethyl methyl ether (HFE-143m) and its application to refrigeration cycle analysis",
                     "ref": "Int. J. Refrig., 35(4):1003-1013, 2012.",
-                    "doi":  "10.1016/j.ijrefrig.2012.01.003"}, 
-            
+                    "doi":  "10.1016/j.ijrefrig.2012.01.003"},
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 7200.0, "rhomax": 12.62, 
-        "Pmin": 65.35, "rhomin": 12.62, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 7200.0, "rhomax": 12.62,
+        "Pmin": 65.35, "rhomin": 12.62,
 
         "nr1": [0.77715884e1, -0.87042750e1, -0.28095049, 0.14540153,
                 0.92291277e-2],

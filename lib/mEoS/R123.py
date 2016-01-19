@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,18 +49,18 @@ class R123(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-123 of Younglove and McLinden (1994).",
         "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
-                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)", 
+                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
-                    "doi":  "10.1063/1.555950"}, 
+                    "doi":  "10.1063/1.555950"},
         #TODO: Add test from file
         #FIXME: The file include derived heltmholtz expresion for MBWR equations
         # too in Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123
         "R": 8.31451,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
-        "Pmin": 0.0042, "rhomin": 11.60, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
+        "Pmin": 0.0042, "rhomin": 11.60,
 
         "b": [None, -0.657453133659e-2, 0.293479845842e1, -0.989140469845e2,
               0.201029776013e5, -0.383566527886e7, 0.227587641969e-2,
@@ -61,16 +78,16 @@ class R123(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz transform of MBWR EOS for R-123 of Younglove & McLinden (1994)",
         "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
-                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)", 
+                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
-                    "doi":  "10.1063/1.555950"}, 
-                    
+                    "doi":  "10.1063/1.555950"},
+
         "R": 8.31451,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60, 
-        "Pmin": 0.0042, "rhomin": 11.60, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
+        "Pmin": 0.0042, "rhomin": 11.60,
 
         "nr1": [-0.100242647494e2, -0.280607656419, 0.206814471606e-1,
                 -0.284379431451, 0.593928110321e1, -0.936560389528e1,
@@ -98,9 +115,9 @@ class R123(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-123 of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R123(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -109,13 +126,13 @@ class R123(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             144.33 0.29582
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": CP1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62, 
-        "Pmin": 0.0041534, "rhomin": 11.613, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62,
+        "Pmin": 0.0041534, "rhomin": 11.613,
 
         "nr1": [0.1116973e1, -0.3074593e1, 0.51063873, 0.94478812e-1,
                 0.29532752e-3],
@@ -149,10 +166,10 @@ class R123(MEoS):
               "__name__": "Tanaka (1996)",
               "__doc__": """Tanaka, Y. and Sotani, T., "Transport Properties (Thermal Conductivity and Viscosity), Int. J. Thermophys., 17(2):293-328, 1996""",
               "__doi__": {"autor": "Tanaka, Y. and Sotani, T.",
-                          "title": "Thermal Conductivity and Viscosity of 2,2-Dichioro-1,1,1-Trifluoroethane (HCFC-123)", 
+                          "title": "Thermal Conductivity and Viscosity of 2,2-Dichioro-1,1,1-Trifluoroethane (HCFC-123)",
                           "ref": "Int. J. Thermophys., 17(2):293-328, 1996",
-                          "doi":  "10.1007/BF01443394"}, 
-              "__test__": 
+                          "doi":  "10.1007/BF01443394"},
+              "__test__":
                   # Table VII, Pag 316
                   """
                   >>> st=R123(T=260, x=0.5, eq=2)
@@ -182,7 +199,7 @@ class R123(MEoS):
                   >>> st=R123(T=420, x=0.5, eq=2)
                   >>> print "%0.0f %0.3f %0.4g %0.4g" % (st.T, st.P.MPa, st.Liquido.mu.muPas, st.Gas.mu.muPas)
                   420 19.89 114.5 16.33
-                  """ 
+                  """
                   # Table IX, Pag 320
                   """
                   >>> st=R123(T=260, P=1e5, eq=2)
@@ -218,8 +235,8 @@ class R123(MEoS):
                   >>> st=R123(T=300, P=1.5e7, eq=2)
                   >>> print "%0.4g" % st.mu.muPas
                   491.8
-                  """, 
-                  
+                  """,
+
               "ek": 275.16, "sigma": 0.5909,
               "Tref": 1., "rhoref": 1.*M,
               "n_chapman": 0,
@@ -251,9 +268,9 @@ class R123(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Laesecke (1996)",
                "__doi__": {"autor": "Laesecke, A., Perkins, R.A., and Howley, J.B.",
-                           "title": "An improved correlation for the thermal conductivity of HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)", 
+                           "title": "An improved correlation for the thermal conductivity of HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)",
                            "ref": "Int. J. Refrigeration, 19:231-238, 1996",
-                           "doi":  "10.1016/0140-7007(96)00019-9"}, 
+                           "doi":  "10.1016/0140-7007(96)00019-9"},
                "__test__": """
                    >>> st=R123(T=180, x=0.5, eq=2)
                    >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\

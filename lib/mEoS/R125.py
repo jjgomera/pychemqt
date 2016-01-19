@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -61,11 +78,11 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Lemmon and Jacobsen (2005).",
         "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T",
-                    "title": "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)", 
+                    "title": "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)",
                     "ref": "J. Phys. Chem. Ref. Data 34, 69 (2005)",
-                    "doi": "10.1063/1.1797813"}, 
+                    "doi": "10.1063/1.1797813"},
 
-        "__test__": 
+        "__test__":
             # Table 12, Pag 104
             """
             >>> st=R125(T=200, rhom=14)
@@ -88,14 +105,14 @@ class R125(MEoS):
             >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
                 st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             339.2 4.8 3.6201215 130.63650 274863.02 78.735928
-            """, 
+            """,
         # FIXME: Check meos phir calculation with exp != 2
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195}, 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
-        "Pmin": 2.914, "rhomin": 14.086, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195},
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
+        "Pmin": 2.914, "rhomin": 14.086,
 
         "nr1": [0.5280760e1, -0.8676580e1, 0.7501127, 0.7590023, 0.1451899e-1],
         "d1": [1, 1, 1, 2, 4],
@@ -122,16 +139,16 @@ class R125(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-125 of Outcalt and McLinden (1995)",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)", 
+                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)",
                     "ref": "Int. J. Thermophysics, 16:79-89, 1995.",
-                    "doi": "10.1007/BF01438959"}, 
+                    "doi": "10.1007/BF01438959"},
 
         "R": 8.314471,
         "cp": CP4,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.10, 
-        "Pmin": 2.921, "rhomin": 14.095, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.10,
+        "Pmin": 2.921, "rhomin": 14.095,
 
         "b": [None, -0.523369607050e-1, 0.378761878904e1, -0.807152818990e2,
               0.115654605248e5, -0.152175619161e7, 0.597541484451e-2,
@@ -149,16 +166,16 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Sunaga et al. (1998)",
         "__doi__": {"autor": "Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K.",
-                    "title": "A Thermodynamic Equation of State for Pentafluoroethane (R-125)", 
+                    "title": "A Thermodynamic Equation of State for Pentafluoroethane (R-125)",
                     "ref": "Int. J. Thermophys., 19(6):1623-1635, 1998.",
-                    "doi": "10.1007/BF03344914"}, 
+                    "doi": "10.1007/BF03344914"},
 
         "R": 8.314471,
         "cp": Fi2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09, 
-        "Pmin": 2.943, "rhomin": 14.088, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
+        "Pmin": 2.943, "rhomin": 14.088,
 
         "nr1": [0.12439220, 0.27922179, -0.11822597e1, 0.23616512, -0.11571810e-1],
         "d1": [1, 2, 2, 3, 2],
@@ -176,16 +193,16 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Piao and Noguchi (1998)",
         "__doi__": {"autor": "Piao, C.-C. and Noguchi, M.",
-                    "title": "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)", 
+                    "title": "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data, 27(4):775-806, 1998.",
-                    "doi": "10.1063/1.556021"}, 
+                    "doi": "10.1063/1.556021"},
         # Paper with mBWR type equation!!
         "R": 8.314471,
         "cp": CP3,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.11, 
-        "Pmin": 2.9562, "rhomin": 14.1, 
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.11,
+        "Pmin": 2.9562, "rhomin": 14.1,
 
         "nr1": [0.85393382372e-1, -0.133260499658, 0.257817782488,
                 -0.735018179542, -0.787454743426, -0.190320468891e-1,
@@ -205,9 +222,9 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-125 of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R125(T=700, rho=200, eq=4)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -216,12 +233,12 @@ class R125(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             151.30 0.35860
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": CP5,
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 14.1, 
-        "Pmin": 2.9213, "rhomin": 14.096, 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 14.1,
+        "Pmin": 2.9213, "rhomin": 14.096,
 
         "nr1": [0.11290996e1, -0.28349269e1, 0.29968733, 0.87282204e-1,
                 0.26347747e-3],
@@ -239,16 +256,16 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases", 
+                    "title": "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases",
                     "ref": "Int. J. Thermophys., 25(1):113-131, 2004.",
-                    "doi": "10.1023/B:IJOT.0000022330.46522.68"}, 
-        
+                    "doi": "10.1023/B:IJOT.0000022330.46522.68"},
+
         "R": 8.314472,
         "cp": Fi3,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 70000.0, "rhomax": 14.1, 
-        "Pmin": 2.94, "rhomin": 14.1, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 70000.0, "rhomax": 14.1,
+        "Pmin": 2.94, "rhomin": 14.1,
 
         "nr1": [1.51628822, -1.4959805, -1.2893965, 1.47295195, -2.22976436,
                 1.02082011, -9.61695881e-3, 4.14142522e-2],
@@ -267,15 +284,15 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195}, 
+        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195},
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [7.41057508e-1, 1.13555445, -3.12563760, 9.32031442e-2,
                 2.76844975e-4, -5.64403707e-2],
@@ -311,9 +328,9 @@ class R125(MEoS):
     visco0 = {"eq": 1, "omega": 3,
               "__name__": "Huber (2006)",
               "__doi__": {"autor": "Huber, M.L., and Laesecke, A.",
-                          "title": "Correlation for the Viscosity of Pentafluoroethane (R125) from the Triple Point to 500 K at Pressures up to 60 MPa", 
+                          "title": "Correlation for the Viscosity of Pentafluoroethane (R125) from the Triple Point to 500 K at Pressures up to 60 MPa",
                           "ref": "Ind. Eng. Chem. Res., 2006, 45 (12), pp 4447–4453",
-                          "doi": "10.1021/ie051367l"}, 
+                          "doi": "10.1021/ie051367l"},
               "__test__":
                 """
                 >>> st=R125(T=300, rhom=10.5969998)
@@ -322,7 +339,7 @@ class R125(MEoS):
                 >>> st=R125(T=400, rhom=0.030631)
                 >>> print "%0.6f %0.5g" % (st.P.MPa, st.mu.muPas)
                 0.101325 17.070
-                """, 
+                """,
 
               "ek": 237.077, "sigma": 0.5235,
               "collision": [0.355404, -0.464337, 0.257353e-1],
@@ -359,9 +376,9 @@ class R125(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2006)",
                "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Pentafluoroethane (R125)from 190 K to 512 K at pressures to 70 MPa", 
+                           "title": "Measurement and Correlation of the Thermal Conductivity of Pentafluoroethane (R125)from 190 K to 512 K at pressures to 70 MPa",
                            "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 898–904",
-                           "doi": "10.1021/je050372t"}, 
+                           "doi": "10.1021/je050372t"},
 
                "Tref": 339.173, "kref": 1.,
                "no": [-0.460820e-2, 0.168688e-1, 0.488345e-2],

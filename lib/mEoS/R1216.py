@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,14 +48,14 @@ class R1216(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1216 of Zhou et al. (2010).",
         "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2010.", 
+                    "title": "preliminary equation, 2010.",
                     "ref": "",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 12000.0, "rhomax": 12.89, 
-        "Pmin": 0.0000936, "rhomin": 12.88, 
+
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 12000.0, "rhomax": 12.89,
+        "Pmin": 0.0000936, "rhomin": 12.88,
 
         "nr1": [.37582356e-1, .14558246e1, -.2701615e1, -.3357347, .1885495],
         "d1": [4, 1, 1, 2, 3],

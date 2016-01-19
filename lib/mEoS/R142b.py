@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -26,26 +43,26 @@ class R142b(MEoS):
            "ao_pow": [-12.6016527149, 8.3160183265],
            "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
            "titao": [473/Tc, 1256/Tc, 2497/Tc, 6840/Tc]}
-           
+
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-142b of Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=R142b(T=412, rho=4*100.49503)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             412 4 4165.653 44982.401 170.029 117.705 3187.213 96.468
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 470.0, "Pmax": 60000.0, "rhomax": 14.44, 
-        "Pmin": 0.00363, "rhomin": 14.44, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 470.0, "Pmax": 60000.0, "rhomax": 14.44,
+        "Pmin": 0.00363, "rhomin": 14.44,
 
         "nr1": [1.0038, -2.7662, 0.42921, 0.081363, 0.00024174],
         "d1": [1, 1, 1, 3, 7],

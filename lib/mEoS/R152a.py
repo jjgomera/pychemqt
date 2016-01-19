@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -48,17 +65,17 @@ class R152a(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-152a of Outcalt and McLinden (1996)",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)", 
+                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data 25, 605 (1996)",
-                    "doi": "10.1063/1.555979"}, 
+                    "doi": "10.1063/1.555979"},
 
         #TODO: Add test from file
-        
+
         "R": 8.314471,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07, 
-        "Pmin": 0.0641, "rhomin": 18.061, 
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07,
+        "Pmin": 0.0641, "rhomin": 18.061,
 
         "b": [None, -0.101623317192e-1, 0.215677129618e1, -0.648581254334e2,
               0.122535596303e5, -0.206805988259e7, -0.379836507323e-3,
@@ -76,15 +93,15 @@ class R152a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz transform of MBWR EOS for R-152a of Outcalt and McLinden (1996).",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)", 
+                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data 25, 605 (1996)",
-                    "doi": "10.1063/1.555979"}, 
-                    
+                    "doi": "10.1063/1.555979"},
+
         "R": 8.314471,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07, 
-        "Pmin": 0.0641, "rhomin": 18.061, 
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07,
+        "Pmin": 0.0641, "rhomin": 18.061,
 
         "nr1": [-0.354657949982e1, -0.364631280620, 0.333233335558e-1,
                 -0.6809684351170, 0.735212646801e1, -0.112473063838e2,
@@ -112,16 +129,16 @@ class R152a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-152a of Tillner-Roth (1995).",
         "__doi__": {"autor": "Tillner-Roth, R.",
-                    "title": "A Fundamental Equation of State for 1,1-Difluoroethane (HFC-152a)", 
+                    "title": "A Fundamental Equation of State for 1,1-Difluoroethane (HFC-152a)",
                     "ref": "Int. J. Thermophys., 16(1):91-100, 1995.",
-                    "doi": "10.1007/BF01438960"}, 
-                    
+                    "doi": "10.1007/BF01438960"},
+
         "R": 8.314471,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 435.0, "Pmax": 30000.0, "rhomax": 18.03, 
-        "Pmin": 0.065395176, "rhomin": 18.020671, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 435.0, "Pmax": 30000.0, "rhomax": 18.03,
+        "Pmin": 0.065395176, "rhomin": 18.020671,
 
         "nr1": [0.3552260, -0.1425660e1, -0.4631621e-1, 0.6903546e-1,
                 0.1975710e-1, 0.7486977e-3, 0.4642204e-3],
@@ -140,9 +157,9 @@ class R152a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-152a of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
 #        "__test__": """
 #            >>> st=R152a(T=700, rho=200, eq=3)
 #            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -151,13 +168,13 @@ class R152a(MEoS):
 #            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
 #            270.60 0.60934
 #            """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 18.1, 
-        "Pmin": 0.064093, "rhomin": 18.031, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 18.1,
+        "Pmin": 0.064093, "rhomin": 18.031,
 
         "nr1": [.95702326, -.23707196e1, .18748463, .63800843e-1, .16625977e-3],
         "d1": [1, 1, 1, 3, 7],
@@ -174,11 +191,11 @@ class R152a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-152a of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Rigorous Thermodynamic Property Model for Fluid - Phase 1,1-Difluoroethane (R-152a)", 
+                    "title": "A Rigorous Thermodynamic Property Model for Fluid - Phase 1,1-Difluoroethane (R-152a)",
                     "ref": "Int. J. Thermophys., 25(6):1713-1733, 2004.",
-                    "doi": "10.1007/s10765-004-7731-8"}, 
+                    "doi": "10.1007/s10765-004-7731-8"},
 
-        "__test__": 
+        "__test__":
             # Table III, Pag 1719 Saturation
             """
             >>> st=R152a(T=200, x=0.5, eq=4)
@@ -256,15 +273,15 @@ class R152a(MEoS):
             >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
                 st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
             50 450 782.051 1.40653 1.86403 612.067 528.382 1.76108
-            """, 
+            """,
 
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "IIR", 
+        "ref": "IIR",
         "Tc": 386.41, "Pc": 4516,
-        
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 60000.0, "rhomax": 18.04 , 
-        "Pmin": 0.064, "rhomin": 18.04 , 
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 60000.0, "rhomax": 18.04 ,
+        "Pmin": 0.064, "rhomin": 18.04 ,
 
         "nr1": [1.753847317, -4.049760759, -2.277389257e-1, 7.087751950e-1,
                 -5.528619502e-1, -3.025046686e-2, 1.396289974e-1, 1.121238954e-4],
@@ -301,9 +318,9 @@ class R152a(MEoS):
                             0.1578286e-2],
               "__name__": "Krauss (1996)",
               "__doi__": {"autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K.",
-                          "title": "Transport properties of 1,1-Difluoroethane (R152a)", 
+                          "title": "Transport properties of 1,1-Difluoroethane (R152a)",
                           "ref": "Int. J. Thermophysics 17:731-757, 1996.",
-                          "doi": "10.1007/BF01439187"}, 
+                          "doi": "10.1007/BF01439187"},
 
               "ek": 354.84, "sigma": 0.46115,
               "Tref": 1., "rhoref": 1.*M,
@@ -331,9 +348,9 @@ class R152a(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Krauss (1996)",
                "__doi__": {"autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K.",
-                           "title": "Transport properties of 1,1-Difluoroethane (R152a)", 
+                           "title": "Transport properties of 1,1-Difluoroethane (R152a)",
                            "ref": "Int. J. Thermophysics 17:731-757, 1996.",
-                           "doi": "10.1007/BF01439187"}, 
+                           "doi": "10.1007/BF01439187"},
 
                "Tref": 1., "kref": 1e-3,
                "no": [-1.49420e1, 9.73283-2],

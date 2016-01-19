@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -30,21 +47,21 @@ class D4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octamethylcyclotetrasiloxane of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes", 
+                    "title": "Multiparameter Equations of State for Selected Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"}, 
+                    "doi":  "10.1016/j.fluid.2006.04.015"},
         "__test__": """
             >>> st=D4(T=586.49127187, P=1332000)
             >>> print "%0.6f" % st.v
-            0.003257 
+            0.003257
             """, # Table 20, Pag 204
-            
+
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.21, 
-        "Pmin": 0.0696, "rhomin": 3.2, 
+        "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.21,
+        "Pmin": 0.0696, "rhomin": 3.2,
 
         "nr1": [1.05392408, -2.22981918, 0.77573923, -0.6937405, 0.18721557,
                 0.42193330e-3],
@@ -75,9 +92,9 @@ class D4(MEoS):
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties", 
+                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
                           "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"}, 
+                          "doi": "10.1021/ie00076a024"},
               "__name__": "Chung (1988)",
               "w": 0.592, "mur": 0.0, "k": 0.0}
 

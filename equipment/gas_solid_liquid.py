@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # library for definition of equipment with gas, solid and liquid interaction:
@@ -40,7 +58,7 @@ class Dryer(equipment):
     help=""
     kwargs={"entradaSolido": None,
             "entradaAire": None,
-            
+
             "mode": 0,
             "HR": 0.0,
             "TemperaturaSolid": 0.0,
@@ -164,23 +182,23 @@ class Scrubber(equipment):
 
     __doi__ = [
             {"autor": "S. JENNINGS",
-              "title": "The Mean Free Path in Air", 
+              "title": "The Mean Free Path in Air",
               "ref": "Journal of Aerosol Science - J AEROSOL SCI 01/1988; 19(2):159-166",
-              "doi":  "10.1016/0021-8502(88)90219-4"}, 
+              "doi":  "10.1016/0021-8502(88)90219-4"},
             {"autor": "Seymour Calvert, Dale Lundgren & Dilip S. Mehta",
-              "title": "Venturi Scrubber Performance", 
+              "title": "Venturi Scrubber Performance",
               "ref": "Journal of the Air Pollution Control Association, 22:7, 529-532",
-              "doi":  "10.1080/00022470.1972.10469674"}, 
+              "doi":  "10.1080/00022470.1972.10469674"},
             {"autor": "Shui-Chow Yung, Harry F. Barbarika & Seymour Calvert",
-              "title": "Pressure Loss in Venturi Scrubbers", 
+              "title": "Pressure Loss in Venturi Scrubbers",
               "ref": "Journal of the Air Pollution Control Association, 27:4, 348-351",
-              "doi":  "10.1080/00022470.1977.10470432"}, 
+              "doi":  "10.1080/00022470.1977.10470432"},
             {"autor": "Howard E. Hesketh",
-              "title": "Fine Particle Collection Efficiency Related to Pressure Drop, Scrubbant and Particle Properties, and Contact Mechanism", 
+              "title": "Fine Particle Collection Efficiency Related to Pressure Drop, Scrubbant and Particle Properties, and Contact Mechanism",
               "ref": "Journal of the Air Pollution Control Association, 24:10, 939-942",
-              "doi":  "10.1080/00022470.1974.10469992"}, 
+              "doi":  "10.1080/00022470.1974.10469992"},
               ]
-            
+
     @property
     def isCalculable(self):
         self.status = 1

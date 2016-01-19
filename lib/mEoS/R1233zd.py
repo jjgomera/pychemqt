@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,14 +48,14 @@ class R1233zd(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1233zd(E) of Mondejar et al. (2013).",
         "__doi__": {"autor": "Mondejar, M.E., McLinden, M.O., Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of Trans-1-chloro-3,3,3-trifluoropropene (R1233zd(E)): Vapor Pressure, p-rho-T Data, Speed of Sound Measurements and Equation of State", 
+                    "title": "Thermodynamic Properties of Trans-1-chloro-3,3,3-trifluoropropene (R1233zd(E)): Vapor Pressure, p-rho-T Data, Speed of Sound Measurements and Equation of State",
                     "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.314472,
         "cp": CP1,
-        
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 100000.0, "rhomax": 11.41, 
-        "Pmin": 0.25, "rhomin": 11.41, 
+
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 100000.0, "rhomax": 11.41,
+        "Pmin": 0.25, "rhomin": 11.41,
 
         "nr1": [0.03920261, 1.639052, -1.997147, -0.6603372, 0.1498682],
         "d1": [4, 1, 1, 2, 3],
@@ -49,7 +66,7 @@ class R1233zd(MEoS):
         "t2": [2.2, 2.88, 1.1, 2., 1.07],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
- 
+
         "nr3": [1.335117, -0.5441797, -0.05862723, -0.04123614, -0.6619106],
         "d3": [1, 1, 3, 2, 3],
         "t3": [1.27, 1.94, 2., 1.5, 1.],

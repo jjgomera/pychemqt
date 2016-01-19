@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -32,22 +49,22 @@ class R236ea(MEoS):
            "an": [0.03973, -1.859e-5], "pow": [1, 2],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
-           
+
     helmholtz1 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R236ea of Rui et al. (2013).",
         "__doi__": {"autor": "Rui, X., Pan, J., Wang, Y.",
-                    "title": "An Equation of State for Thermodynamic Properties of 1,1,1,2,3,3-Hexafluoropropane (R236ea)", 
+                    "title": "An Equation of State for Thermodynamic Properties of 1,1,1,2,3,3-Hexafluoropropane (R236ea)",
                     "ref": "Fluid Phase Equilibria, Volume 348, 25 June 2013, Page 83",
-                    "doi": "10.1016/j.fluid.2012.12.026"}, 
-                    
+                    "doi": "10.1016/j.fluid.2012.12.026"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1.,
-                "ho": 56317.4970978844, "so": 282.8465334259}, 
-        
-        "Tmin": 240.0, "Tmax": 412.0, "Pmax": 6000.0, "rhomax": 10.5, 
-        "Pmin": 0.02, "rhomin": 11.7, 
+                "ho": 56317.4970978844, "so": 282.8465334259},
+
+        "Tmin": 240.0, "Tmax": 412.0, "Pmax": 6000.0, "rhomax": 10.5,
+        "Pmin": 0.02, "rhomin": 11.7,
 
         "nr1": [0.051074, 2.5584, -2.9180, -0.71485, 0.15534],
         "d1": [4, 1, 1, 2, 3],
@@ -58,7 +75,7 @@ class R236ea(MEoS):
         "t2": [2.207, 2.283, 1.373, 2.33, 0.6376],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
- 
+
         "nr3": [1.3165, -0.42023, -0.28053, -1.4134, -0.0000062617],
         "d3": [1, 1, 3, 3, 2],
         "t3": [1.08, 1.67, 3.502, 4.357, 0.6945],
@@ -75,9 +92,9 @@ class R236ea(MEoS):
            "eq": "helmholtz1",
            # "eq": "MBWR",
            "R": 8.314471,
-        
-            "Tmin": 242.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 10.465, 
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa, 
+
+            "Tmin": 242.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 10.465,
+#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
 
            "ft": [-0.67786992, -0.52182651],
            "ft_add": [], "ft_add_exp": [],

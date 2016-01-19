@@ -1,5 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
 
 ###############################################################################
 # Virial equation of state implementation
@@ -50,7 +68,7 @@ class Cubic(EoS):
 
 class _2ParameterCubic(Cubic):
     pass
-    
+
 class van_Waals(Cubic):
     """Ecuación de estado de van der Waals
         van der Waals, J.D. Over de continuiteit van den gas- en vloestof-toestand. Dissertation, Leiden University, Leiden, Niederlande, 1873."""
@@ -657,9 +675,9 @@ class PRSV(Cubic):
     __title__="PR-SV (1986)"
     __status__="PR-SV"
     __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
-               "title": "PRSV: An improved peng—Robinson equation of state for pure compounds and mixtures", 
+               "title": "PRSV: An improved peng—Robinson equation of state for pure compounds and mixtures",
                "ref": "Can. J. Chem. Eng. 1986, 64: 323–333",
-               "doi":  "10.1002/cjce.5450640224"}, 
+               "doi":  "10.1002/cjce.5450640224"},
 
     def __init__(self, T, P, mezcla):
         ai=[]
@@ -701,7 +719,7 @@ class PRSV(Cubic):
             ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
         else:
             ko=0.37464+1.54226*w-0.26992*w**2
-        
+
         if compuesto.PRSV_k1:
             # TODO: Add data from journal to database
             k1 = compuesto.PRSV_k1
@@ -726,9 +744,9 @@ class PRSV2(Cubic):
     __title__="PR-SV2 (1986)"
     __status__="PR-SV2"
     __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
-               "title": "PRSV2: A cubic equation of state for accurate vapor—liquid equilibria calculations", 
+               "title": "PRSV2: A cubic equation of state for accurate vapor—liquid equilibria calculations",
                "ref": "Can. J. Chem. Eng., 64: 820–826",
-               "doi":  "10.1002/cjce.5450640516"}, 
+               "doi":  "10.1002/cjce.5450640516"},
 
     def __init__(self, T, P, mezcla):
         ai=[]
@@ -770,7 +788,7 @@ class PRSV2(Cubic):
             ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
         else:
             ko=0.37464+1.54226*w-0.26992*w**2
-        
+
         if compuesto.PRSV_k1 and compuesto.PRSV_k2:
             # TODO: Add data from journal to database
             k1 = compuesto.PRSV_k1

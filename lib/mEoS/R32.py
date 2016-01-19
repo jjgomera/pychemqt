@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -44,11 +61,11 @@ class R32(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Tillner-Roth & Yokozeki (1997)",
         "__doi__": {"autor": "Tillner-Roth, R., Yokozeki, A.",
-                    "title": "An international standard equation of state for difluoromethane (R-32) for temperatures from the triple point at 136.4 K to 435 K at pressures up to 70 MPa", 
+                    "title": "An international standard equation of state for difluoromethane (R-32) for temperatures from the triple point at 136.4 K to 435 K at pressures up to 70 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 26 (1997), 1273 – 1328.",
-                    "doi": "10.1063/1.556002"}, 
+                    "doi": "10.1063/1.556002"},
 
-        "__test__": 
+        "__test__":
             #Table 12, Pag 1293
             """
             >>> st=R32(T=136.34, x=0.5)
@@ -214,13 +231,13 @@ class R32(MEoS):
             >>> print "%0.2f" % st.w
             439.83
             """,
-            
+
         "R": 8.314471,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 435.0, "Pmax": 70000.0, "rhomax": 27.4734, 
-        "Pmin": 0.480e-1, "rhomin": 27.4734, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 435.0, "Pmax": 70000.0, "rhomax": 27.4734,
+        "Pmin": 0.480e-1, "rhomin": 27.4734,
 
         "nr1": [0.1046634e1, -0.5451165, -0.2448595e-2, -0.4877002e-1,
                 0.3520158e-1, 0.1622750e-2, 0.2377225e-4, 0.2914900e-1],
@@ -239,9 +256,9 @@ class R32(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-32 of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R32(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -250,13 +267,13 @@ class R32(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             235.85 0.59791
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": Fi1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.41, 
-        "Pmin": 0.047922, "rhomin": 27.41, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.41,
+        "Pmin": 0.047922, "rhomin": 27.41,
 
         "nr1": [.93080907, -.24777491e1, .41470439, .54859755e-1, .11475587e-3],
         "d1": [1, 1, 1, 3, 7],
@@ -273,16 +290,16 @@ class R32(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Astina and Sato (2003)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Rational Helmholtz Fundamental Equation of State for Difluoromethane with an Intermolecular Potential Background", 
+                    "title": "A Rational Helmholtz Fundamental Equation of State for Difluoromethane with an Intermolecular Potential Background",
                     "ref": "Int. J. Thermophys., 34(4):963-990, 2003.",
-                    "doi": "10.1023/A:1025096716493"}, 
+                    "doi": "10.1023/A:1025096716493"},
 
         "R": 8.314472,
         "cp": Fi2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 72000.0, "rhomax": 27.48, 
-        "Pmin": 0.0485, "rhomin": 27.47, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 72000.0, "rhomax": 27.48,
+        "Pmin": 0.0485, "rhomin": 27.47,
 
         "nr1": [2.118688, -4.531096, 1.442456, 2.053906e-1, -1.311675e-1,
                 1.022272e-2],
@@ -301,16 +318,16 @@ class R32(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-32 of Outcalt and McLinden (1995)",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)", 
+                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)",
                     "ref": "Int. J. Thermophysics, 16:79-89, 1995.",
-                    "doi": "10.1007/BF01438959"}, 
+                    "doi": "10.1007/BF01438959"},
 
         "R": 8.314471,
         "cp": CP2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.48, 
-        "Pmin": 0.0477, "rhomin": 27.48, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.48,
+        "Pmin": 0.0477, "rhomin": 27.48,
 
         "b": [None, -0.131275405202e-3, 0.899927934911, -0.281400805178e2,
               0.436091182784e4, -0.837235280004e6, -0.782176408963e-6,
@@ -328,15 +345,15 @@ class R32(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314471,
         "cp": Fi1,
-        "ref": "IIR", 
+        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.75866232e-1, 9.26526641e-1, -2.44296579, 5.34289357e-2,
                 1.06739638e-4, 3.46487335e-2],

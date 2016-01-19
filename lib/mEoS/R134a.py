@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -43,10 +60,10 @@ class R134a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Tillner-Roth & Baehr (1994).",
         "__doi__": {"autor": "Tillner-Roth, R. and Baehr, H.D.",
-                    "title": "An international standard formulation of the thermodynamic properties of 1,1,1,2-tetrafluoroethane (HFC-134a) for temperatures from 170 K to 455 K at pressures up to 70 MPa", 
+                    "title": "An international standard formulation of the thermodynamic properties of 1,1,1,2-tetrafluoroethane (HFC-134a) for temperatures from 170 K to 455 K at pressures up to 70 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 23, 657 (1994)",
-                    "doi": "10.1063/1.555958"}, 
-        "__test__": 
+                    "doi": "10.1063/1.555958"},
+        "__test__":
             #Table 8, Pag 696
             """
             >>> st=R134a(T=169.85, x=0.5)
@@ -240,15 +257,15 @@ class R134a(MEoS):
             >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
                 st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             460 1113.9 471.45 1.5916 1.1023 1.4020 617.03
-            """, 
+            """,
 
         "R": 8.314471,
         "Tref": 374.18, "rhoref": 508,
         "cp": Fi1,
         "ref": "IIR",
-        
-        "Tmin": Tt, "Tmax": 455.0, "Pmax": 70000.0, "rhomax": 15.60, 
-        "Pmin": 0.3896, "rhomin": 15.5942, 
+
+        "Tmin": Tt, "Tmax": 455.0, "Pmax": 70000.0, "rhomax": 15.60,
+        "Pmin": 0.3896, "rhomin": 15.5942,
 
         "nr1": [0.5586817e-1, 0.498223, 0.2458698e-1, 0.8570145e-3,
                 0.4788584e-3, -0.1800808e1, 0.2671641, -0.4781652e-1],
@@ -268,9 +285,9 @@ class R134a(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-134a of Huber and McLinden (1992)",
         "__doi__": {"autor": "Huber, M.L. and McLinden, M.O.",
-                    "title": "Thermodynamic properties of R134a (1,1,1,2-tetrafluoroethane)", 
+                    "title": "Thermodynamic properties of R134a (1,1,1,2-tetrafluoroethane)",
                     "ref": "International Refrigeration Conference, West Lafayette, IN, July 14-17, 453-462, 1992.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "__test__": """
             >>> st=R134a(T=-103.3+273.15, x=0.5, eq=1)
             >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
@@ -322,9 +339,9 @@ class R134a(MEoS):
         "R": 8.314471,
         "cp": CP2,
         "ref": "IIR",
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 15.60, 
-        "Pmin": 0.3922, "rhomin": 15.60, 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 15.60,
+        "Pmin": 0.3922, "rhomin": 15.60,
 
         "b": [None, 0.965209362217e-1, -0.401824768889e1, 0.395239532858e2,
               0.134532868960e4, -0.139439741347e7, -0.309281355175e-2,
@@ -342,9 +359,9 @@ class R134a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-134a of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R134a(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -353,13 +370,13 @@ class R134a(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             181.97 0.41386
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": Fi1,
         "ref": "IIR",
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.6, 
-        "Pmin": 0.38818, "rhomin": 15.588, 
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.6,
+        "Pmin": 0.38818, "rhomin": 15.588,
 
         "nr1": [0.106631890000e1, -0.244959700000e1, 0.446457180000e-1,
                 0.756568840000e-1, 0.206520890000e-3],
@@ -377,16 +394,16 @@ class R134a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Fundamental Equation of State for 1,1,1,2-Tetrafluoroethane with an Intermolecular Potential Energy Background and Relialbe Ideal-Gas Properties", 
+                    "title": "A Fundamental Equation of State for 1,1,1,2-Tetrafluoroethane with an Intermolecular Potential Energy Background and Relialbe Ideal-Gas Properties",
                     "ref": "Fluid Phase Equilib., 221:103-111, 2004.",
-                    "doi": "10.1016/j.fluid.2004.03.004"}, 
-                    
+                    "doi": "10.1016/j.fluid.2004.03.004"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "IIR",
-        
-        "Tmin": Tt, "Tmax": 460.0, "Pmax": 70000.0, "rhomax": 15.58, 
-        "Pmin": 0.327, "rhomin": 15.58, 
+
+        "Tmin": Tt, "Tmax": 460.0, "Pmax": 70000.0, "rhomax": 15.58,
+        "Pmin": 0.327, "rhomin": 15.58,
 
         "nr1": [1.832124209, -2.940698861, 5.156071823e-1, 2.756965911e-1,
                 1.225264939, -6.486749497e-1, -9.286738053e-1, 3.920381291e-1,
@@ -406,15 +423,15 @@ class R134a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314471,
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.08605179, 1.03772416, -2.92069735, 9.15573346e-2,
                 2.40541430e-4, -2.00239570e-1],
@@ -448,9 +465,9 @@ class R134a(MEoS):
     visco0 = {"eq": 1, "omega": 1,
               "__name__": "Huber (2003)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a", 
+                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
                           "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"}, 
+                          "doi": "10.1021/ie0300880"},
 
               "ek": 299.363, "sigma": 0.468932,
               "collision": [0.355404, -0.464337, 0.257353e-1],
@@ -489,10 +506,10 @@ class R134a(MEoS):
     visco1 = {"eq": 4, "omega": 1,
               "__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling", 
+                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
                           "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"}, 
-                          
+                          "doi": "10.1021/jp0618577"},
+
               "Tref": 374.21, "muref": 1.0,
               "ek": 299.363, "sigma": 0.468932, "n_chapman": 0,
               "n_ideal": [31.2515, -89.6122, 73.0823],
@@ -509,9 +526,9 @@ class R134a(MEoS):
     visco2 = {"eq": 1, "omega": 1,
               "__name__": "Laesecke (2003)",
               "__doi__": {"autor": "Laesecke, A.",
-                          "title": "Data reassessment and full surface correlation of the viscosity of HFC-134a (1,1,1,2-tetrafluoroethane)", 
+                          "title": "Data reassessment and full surface correlation of the viscosity of HFC-134a (1,1,1,2-tetrafluoroethane)",
                           "ref": "J. Phys. Chem. Ref. Data.",
-                          "doi": ""}, 
+                          "doi": ""},
               "__doc__": """, ",""",
               "ek": 288.82, "sigma": 0.50647,
               "collision": [0.355404, -0.464337, 0.257353e-1],
@@ -551,9 +568,9 @@ class R134a(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2000)",
                "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
-                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)", 
+                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)",
                            "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 1., "kref": 1.,
                "no": [-1.05248e-2, 8.00982e-5],

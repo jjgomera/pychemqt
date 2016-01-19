@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -31,9 +48,9 @@ class HCl(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen chloride of Thol et al. (2013).",
         "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
-                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids", 
-                    "ref": "Int. J. Thermophys., 35(5):783-811, 2014.", 
-                    "doi": "10.1007/s10765-014-1633-1"}, 
+                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids",
+                    "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
+                    "doi": "10.1007/s10765-014-1633-1"},
         "__test__": """
             >>> st=HCl(T=170, rho=0.01)
             >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
@@ -52,13 +69,13 @@ class HCl(MEoS):
                 st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
             280 900 3.421902004 -371.035989751 -2.044095830 0.961502216 2.150825813 577.782761523
             """, # Table 9, Pag 26
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO", 
-        
-        "Tmin": 155.0, "Tmax": 330.0, "Pmax": 20000.0, "rhomax": 33.8145, 
-        "Pmin": 0.7, "rhomin": 33.8145, 
+        "ref": "OTO",
+
+        "Tmin": 155.0, "Tmax": 330.0, "Pmax": 20000.0, "rhomax": 33.8145,
+        "Pmin": 0.7, "rhomin": 33.8145,
 
         "nr1": [-.40937325, 0.943994574, -.178830477e1, 0.128619044,
                 0.439018427e-2, 0.130480908e-1, 0.169387782e-2],

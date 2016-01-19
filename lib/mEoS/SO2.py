@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -38,21 +55,21 @@ class SO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for sulfur dioxide of Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids", 
+                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"}, 
+                    "doi":  "10.1021/je050186n"},
         "__test__": """
             >>> st=SO2(T=432, rho=8*64.0638)
             >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
             432 8 8052.256 20821.200 56.819 61.478 4877.456 171.538
             """, # Table 10, Pag 842
-            
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "NBP", 
-        
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30, 
-        "Pmin": 1.66, "rhomin": 25.29, 
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30,
+        "Pmin": 1.66, "rhomin": 25.29,
 
         "nr1": [0.93061, -1.9528, -0.17467, 0.061524, 0.00017711],
         "d1": [1, 1, 1, 3, 7, ],
@@ -69,15 +86,15 @@ class SO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur dioxide of Polt (1987).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP2,
-        "ref": "NBP", 
-        
-        "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91, 
-        "Pmin": 11.82, "rhomin": 23.0, 
+        "ref": "NBP",
+
+        "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91,
+        "Pmin": 11.82, "rhomin": 23.0,
 
         "nr1": [0.789407019882, -0.170449580056e1, 0.115984637964e1,
                 -0.576307837294, 0.249237283833e1, -0.518115678632e1,

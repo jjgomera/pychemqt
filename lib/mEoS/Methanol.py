@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from scipy import exp
 from scipy import __version__
@@ -48,17 +65,17 @@ class Methanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of de Reuck and Craven (1993)",
         "__doi__": {"autor": "de Reuck, K.M. and Craven, R.J.B.",
-                    "title": "Methanol, International Thermodynamic Tables of the Fluid State - 12", 
+                    "title": "Methanol, International Thermodynamic Tables of the Fluid State - 12",
                     "ref": "IUPAC, Blackwell Scientific Publications, London, 1993.",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.31448,
         "cp": CP1,
-        "ref": "NBP", 
-        
+        "ref": "NBP",
+
         "Tref": 513.38, "rhoref": 8.78517*M,
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57, 
-        "Pmin": 0.18629e-3, "rhomin": 28.23, 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57,
+        "Pmin": 0.18629e-3, "rhomin": 28.23,
 
         "nr1": [-0.280062505988e1, 0.125636372418e2, -0.130310563173e2,
                 0.326593134060e1, -0.411425343805e1, 0.346397741254e1,
@@ -103,15 +120,15 @@ class Methanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids", 
+                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
-                    "doi": "10.1016/j.fluid.2004.06.028"}, 
+                    "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.3143,
         "cp": CP1,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40., 
-        "Pmin": 0.1, "rhomin": 40., 
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [-2.4578394, 1.39060027, 8.56114069e-1, -4.20843418e-2,
                 3.63682442e-5, 7.05598662e-1],
@@ -129,15 +146,15 @@ class Methanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe", 
+                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
-                    "doi": ""}, 
+                    "doi": ""},
         "R": 8.3143,
         "cp": CP2,
-        "ref": "NBP", 
+        "ref": "NBP",
 
-        "Tmin": 298., "Tmax": 703.0, "Pmax": 63000.0, "rhomax": 26.0625, 
-        "Pmin": 16.803, "rhomin": 24.576, 
+        "Tmin": 298., "Tmax": 703.0, "Pmax": 63000.0, "rhomax": 26.0625,
+        "Pmin": 16.803, "rhomin": 24.576,
 
         "nr1": [-0.412043979985e1, 0.541210456547e1, -0.974639417666,
                 -0.909437999343, -0.143467597275, 0.557052459597e1,
@@ -181,10 +198,10 @@ class Methanol(MEoS):
               "method": "_visco0",
               "__name__": "Xiang (2006)",
               "__doi__": {"autor": "Xiang, H.W., Huber, M.L. and Laesecke, A.",
-                          "title": "A New Reference Correlation for the Viscosity of Methanol", 
+                          "title": "A New Reference Correlation for the Viscosity of Methanol",
                           "ref": "J. Phys. Chem. Ref. Data 35, 1597 (2006)",
-                          "doi": "10.1063/1.2360605"}, 
-              "__test__": 
+                          "doi": "10.1063/1.2360605"},
+              "__test__":
                   # Table 5, Pag 15
                   """
                   >>> st=Methanol(T=175.63, x=0.5)
@@ -223,7 +240,7 @@ class Methanol(MEoS):
                   >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
                       st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
                   512 8.0195 202.99 0.02838 341.17 0.04174
-                  """ 
+                  """
                   # Table 6, Pag 16
                   """
                   >>> st=Methanol(T=180, P=1e4)
@@ -294,9 +311,9 @@ class Methanol(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2002)",
                "__doi__": {"autor": "",
-                           "title": "", 
+                           "title": "",
                            "ref": "unpublished preliminary correlation, NIST, MLH, Aug. 2006",
-                           "doi": ""}, 
+                           "doi": ""},
 
                "Tref": 1., "kref": 1,
                "no": [5.7992e-7],

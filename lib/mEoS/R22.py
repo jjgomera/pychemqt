@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -38,16 +55,16 @@ class R22(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-22 of Kamei et al. (1995)",
         "__doi__": {"autor": "Kamei, A., Beyerlein, S.W., and Jacobsen, R.T.",
-                    "title": "Application of nonlinear regression in the development of a wide range formulation for HCFC-22", 
+                    "title": "Application of nonlinear regression in the development of a wide range formulation for HCFC-22",
                     "ref": "Int. J. Thermophysics, 16:1155-1164, 1995.",
-                    "doi": "10.1007/BF02081283"}, 
+                    "doi": "10.1007/BF02081283"},
 
         "R": 8.31451,
         "cp": CP1,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
-        "Pmin": 0.0003793, "rhomin": 19.907, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91,
+        "Pmin": 0.0003793, "rhomin": 19.907,
 
         "nr1": [0.695645445236e-1, 0.252275419999e2, -0.202351148311e3,
                 0.350063090302e3, -0.223134648863e3, 0.488345904592e2,
@@ -74,9 +91,9 @@ class R22(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-22 of Wagner et al. (1993)",
         "__doi__": {"autor": "Wagner, W., Marx, V., and Pruss, A.",
-                    "title": "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa", 
+                    "title": "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa",
                     "ref": "Int. J. Refrig., 16(6):373-389, 1993.",
-                    "doi": "10.1016/0140-7007(93)90055-D"}, 
+                    "doi": "10.1016/0140-7007(93)90055-D"},
 
         "__test__":
             """
@@ -90,16 +107,16 @@ class R22(MEoS):
                 st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, \
                 st.s.kJkgK, st.u.kJkg, st.joule.KMPa)
             323.15 36.58815 0.62447 0.79727 173.92097 434.49209 1.79016 407.16083 18.34747
-            """, 
-            
+            """,
+
         "R": 8.31451,
         "cp": Fi2,
-        "ref": "IIR", 
-        
-        "Tref": 369.28, "rhoref": 520, 
-        
-        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91, 
-        "Pmin": 0.00036783, "rhomin": 19.907, 
+        "ref": "IIR",
+
+        "Tref": 369.28, "rhoref": 520,
+
+        "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91,
+        "Pmin": 0.00036783, "rhomin": 19.907,
 
         "nr1": [0.29599201810, -0.1151392173e1, 0.5259746924, -0.6644393736,
                 .1723481086, -.1158525163e-3, .3803104348e-3, .4119291557e-5],
@@ -119,9 +136,9 @@ class R22(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-22 of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R22(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -130,13 +147,13 @@ class R22(MEoS):
             >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
             151.95 0.37335
             """, # Table III, Pag 117
-            
+
         "R": 8.31451,
         "cp": Fi2,
-        "ref": "IIR", 
-        
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 20.0, 
-        "Pmin": 0.00036704, "rhomin": 19.976, 
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 20.0,
+        "Pmin": 0.00036704, "rhomin": 19.976,
 
         "nr1": [.96268924, -.25275103e1, .31308745, .72432837e-1, .21930233e-3],
         "d1": [1, 1, 1, 3, 7],

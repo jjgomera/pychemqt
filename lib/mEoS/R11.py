@@ -1,5 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
 
 from lib.meos import MEoS
 from lib import unidades
@@ -37,16 +54,16 @@ class R11(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-11 of Jacobsen et al. (1992)",
         "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., and Lemmon, E.W.",
-                    "title": "A fundamental equation for trichlorofluoromethane (R-11)", 
+                    "title": "A fundamental equation for trichlorofluoromethane (R-11)",
                     "ref": "Fluid Phase Equilibria, 80:45-56, 1992.",
-                    "doi": "10.1016/0378-3812(92)87054-Q"}, 
+                    "doi": "10.1016/0378-3812(92)87054-Q"},
 
         "R": 8.31451,
         "cp": CP1,
-        "ref": {"Tref": Tt, "Pref": 1.0, "ho": 53727.59, "so": 264.0369}, 
+        "ref": {"Tref": Tt, "Pref": 1.0, "ho": 53727.59, "so": 264.0369},
 
-        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 12.88, 
-        "Pmin": 0.006510, "rhomin": 12.8745, 
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 12.88,
+        "Pmin": 0.006510, "rhomin": 12.8745,
 
         "nr1": [0.125993633881e1, -0.260818574641e1, 0.982122542463e-2,
                 -0.106085385839e1, 0.122820363510e1, 0.118000776439,
@@ -70,16 +87,16 @@ class R11(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-11 of Marx et al. (1992)",
         "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa", 
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
                     "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
-                    "doi": ""}, 
+                    "doi": ""},
 
         "R": 8.31451,
         "cp": CP2,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 13.0 , 
-        "Pmin": 0.0066057, "rhomin": 12.945, 
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 13.0 ,
+        "Pmin": 0.0066057, "rhomin": 12.945,
 
         "nr1": [-0.219644325e1, 0.8562148696, 0.185864982e-1, 0.2807246052,
                 -0.8526398864e-1, 0.1090334698e-1],
@@ -100,9 +117,9 @@ class R11(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-11 of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids", 
+                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
                     "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
-                    "doi": "10.1023/A:1022362231796"}, 
+                    "doi": "10.1023/A:1022362231796"},
         "__test__": """
             >>> st=R11(T=700, rho=200, eq=2)
             >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
@@ -116,8 +133,8 @@ class R11(MEoS):
         "cp": CP2,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.0, 
-        "Pmin": 0.0066915, "rhomin": 12.963, 
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.0,
+        "Pmin": 0.0066915, "rhomin": 12.963,
 
         "nr1": [0.10656383e1, -0.32495206e1, 0.87823894, 0.87611569e-1,
                 0.29950049e-3],
