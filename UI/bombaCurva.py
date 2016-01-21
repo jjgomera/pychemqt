@@ -43,7 +43,7 @@ class Plot(FigureCanvasQTAgg):
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-        
+
 class Ui_bombaCurva(QtWidgets.QDialog):
     def __init__(self, curva=[], parent=None):
         """curva: Parametro opcional indicando la curva de la bomba"""
@@ -100,13 +100,13 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.gridLayout.addItem(QtWidgets.QSpacerItem(1000,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1,10)
         self.Plot = Plot(self, width=5, height=1, dpi=100)
         self.gridLayout.addWidget(self.Plot,2,6,4,5)
-        
+
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox,6,9,1,2)
-        
+
         if curva:
             self.curvas=curva
             for i in curva:
@@ -122,7 +122,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.actualizarPlot()
         else:
             self.curva=[]
-            
+
         for i in Length.__text__:
             self.unidadesCarga.addItem(i)
             self.unidadesNPSH.addItem(i)
@@ -130,19 +130,19 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.unidadesCaudal.addItem(i)
         for i in Power.__text__:
             self.unidadesPotencia.addItem(i)
-            
+
         self.oldIndices=[0, 0, 0, 0]
         self.unidadesCaudal.currentIndexChanged.connect(partial(self.cambiar_unidades, 0, VolFlow, "VolFlow"))
         self.unidadesCarga.currentIndexChanged.connect(partial(self.cambiar_unidades, 1, Length,"Head", ))
         self.unidadesPotencia.currentIndexChanged.connect(partial(self.cambiar_unidades, 2, Power, "Power"))
         self.unidadesNPSH.currentIndexChanged.connect(partial(self.cambiar_unidades, 3, Length,"Head", ))
-        
+
         Config=config.getMainWindowConfig()
         self.unidadesCaudal.setCurrentIndex(Config.getint("Units","QLiq"))
         self.unidadesCarga.setCurrentIndex(Config.getint("Units","Head"))
         self.unidadesPotencia.setCurrentIndex(Config.getint("Units","Power"))
         self.unidadesNPSH.setCurrentIndex(Config.getint("Units","Head"))
-        
+
         self.checkCarga.toggled.connect(self.actualizarPlot)
         self.checkPotencia.toggled.connect(self.actualizarPlot)
         self.checkNPSH.toggled.connect(self.actualizarPlot)
@@ -157,7 +157,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.checkPotencia.setChecked(False)
             self.checkNPSH.setChecked(False)
             self.rejilla.setChecked(False)
-            
+
         elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Open):
             fname = str(QtWidgets.QFileDialog.getOpenFileName(self, QtWidgets.QApplication.translate("pychemqt", "Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)")[0])
             if fname:
@@ -173,7 +173,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
                 self.lista.setCurrentIndex(self.lista.count()-1)
                 self.cambiarCurvaVista(self.lista.count()-1)
                 self.actualizarPlot()
-                
+
         elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Apply):
             txt=str(self.diametro.value)+'", '+str(self.rpm.value)+" rpm"
             indice=self.lista.findText(txt)
@@ -188,7 +188,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
                 self.curvas[indice]=self.curva
                 self.lista.setCurrentIndex(indice)
                 self.actualizarPlot()
-                
+
         else:
             fname = str(QtWidgets.QFileDialog.getSaveFileName(self, QtWidgets.QApplication.translate("pychemqt", "Save curve to file"), "./", "cpickle file (*.pkl)")[0])
             if fname:
@@ -221,7 +221,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.Tabla.item(fila+1, col).setText(representacion(a))
         self.Tabla.blockSignals(False)
         self.oldIndices[col]=i
-        
+
     def cambiarCurvaVista(self, ind):
         self.curva=self.curvas[ind]
         self.diametro.setValue(self.curva[0])
@@ -269,7 +269,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
                 Pot=curva[4]
                 self.Plot.potencia+=self.Plot.ax2.plot(Q, Pot, label=str(curva[0])+'", '+str(curva[1])+" rpm")
             self.Plot.ax2.legend(loc='upper left')
-                
+
         if NPSH:
             self.Plot.ax3 = self.Plot.fig.add_subplot(total, 1, actual, sharex=share)
             self.Plot.ax3.grid(self.rejilla.isChecked())
@@ -284,7 +284,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             share.set_xlabel("Q, $m^3/s$", horizontalalignment='left', size='12')
 
 
-        
+
 #        self.Plot.ax2.set_title("Curva P/Q", size='14')
 #        self.Plot.ax3.set_title("Curva NPSH/Q", size='14')
 #        self.Plot.ax1.set_xlabel("Q, $m^3/s$", horizontalalignment='left', size='12')

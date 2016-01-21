@@ -314,57 +314,12 @@ def f_friccion(Re, eD=0, metodo=0, geometria=0, adicional=0):
     return Dimensionless(f_friccion)
 
 
-# Adimensional numbers
-def Re(D, V, rho, mu):
-    """
-    Número de Reynolds
-    Fluidos
-    """
-    return Dimensionless(D*V*rho/mu)
-
-
-def We(D, V, rho, sigma):
-    """
-    Número de Weber
-    Formación de gotas
-    """
-    return D*V**2*rho/sigma
-
-
-def Pr(Cp, mu, k):
-    """
-    Número de Prandtl
-    Transferencia de calor
-    """
-    return Cp*mu/k
-
-
-def Nu(h, D, k):
-    """
-    Número de Nusselt
-    Transferencia de calor
-    """
-    return h*D/k
-
-
-def Ar(D, rho_p, rho, mu):
     """Número de Arquímedes
     Circulación de sólidos en fluidos, ej, fluidización
     """
     return D**3*rho*(rho_p-rho)*g/mu**2
 
 
-def Gz(w, cp, k, L):
-    """Número de Graetz
-    Flujo laminar en conducciones
-    w: caudal másico"""
-    return w*cp/k/L
-
-
-def Gr(beta, T, To, L, mu):
-    """Número de Grashof
-    """
-    return g*beta*(T-To)*L**3/mu**2
 
 
 # Particle solids distribution

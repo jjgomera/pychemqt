@@ -48,8 +48,6 @@ class TabWidget(QtWidgets.QTabWidget):
         else:
             painter = QtGui.QPainter(self)
             rect = event.rect()
-            h = rect.height()
-            w = rect.width()
             image = QtGui.QImage("images/pychemqt.png")
             rectImage = QtCore.QRect(25, rect.center().y()-50, 100, 100)
             painter.drawImage(rectImage, image)
