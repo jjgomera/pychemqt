@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from lib.meos import MEoS
 from lib import unidades
-from .R113 import R113
+from R113 import R113
 
 
 class C5F12(MEoS):

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from lib.meos import MEoS
 from lib import unidades
-from .C3 import C3
+from C3 import C3
 
 
 class R13(MEoS):
