@@ -57,8 +57,10 @@ Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
 # FIXME: This instance is not update when preferences are changed
 
-#global config
-#config = None
+global currentConfig
+currentConfig = ConfigParser()
+currentConfig.read(conf_dir+"pychemqtrc_temporal")
+
 
 def getComponents(solidos=False, config=None, name=True):
     """
@@ -94,30 +96,27 @@ where id == %s" % str(componente))
 
 def getMainWindowConfig():
     """Return config of current project"""
-    # FIXME: For now need pychemqtrc_temporal for save config of last project
-    widget = QtWidgets.QApplication.activeWindow()
-#    global config
-    config = None
-    if not widget and not config:
-        config = ConfigParser()
-        config.read(conf_dir+"pychemqtrc_temporal")
-    if isinstance(widget, QtWidgets.QMainWindow) and \
-       widget.__class__.__name__ == "UI_pychemqt":
-        config = widget.currentConfig
-    else:
-        lista = QtWidgets.QApplication.topLevelWidgets()
-        for widget in lista:
-            if isinstance(widget, QtWidgets.QMainWindow) and \
-               widget.__class__.__name__ == "UI_pychemqt":
-                config = widget.currentConfig
-                break
-    if not config:
-        config = ConfigParser()
-        config.read(conf_dir+"pychemqtrc_temporal")
-    return config
+    return currentConfig
 
-# indices, nombres, M=getComponents()
-# solidos, nombreSolidos, MSolidos=getComponents(solidos=True)
+
+def setMainWindowConfig(config=None):
+    """Return config of current project"""
+    global currentConfig
+    if config:
+        currentConfig = config
+        return
+    else:
+        widget = QtWidgets.QApplication.activeWindow()
+        if isinstance(widget, QtWidgets.QMainWindow) and \
+           widget.__class__.__name__ == "UI_pychemqt":
+            currentConfig = widget.currentConfig
+        else:
+            lista = QtWidgets.QApplication.topLevelWidgets()
+            for widget in lista:
+                if isinstance(widget, QtWidgets.QMainWindow) and \
+                   widget.__class__.__name__ == "UI_pychemqt":
+                    currentConfig = widget.currentConfig
+                    break
 
 
 class Entity(object):
@@ -268,6 +267,7 @@ class Entity(object):
 
     def writeStatetoStream(self, stream):
         pass
+
     def readStatefromStream(self, stream):
         pass
 
@@ -338,5 +338,3 @@ class Entity(object):
             else:
                 txt.append(propiedades[i])
         return txt
-
-

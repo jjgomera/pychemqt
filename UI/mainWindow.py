@@ -18,16 +18,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 from configparser import ConfigParser
-import os, time, platform, sys
+import os
+import time
+import platform
+import sys
 from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, charts, plots, viewComponents
 from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout
-from lib.config import conf_dir, QTSETTING_FILE
+from lib.config import conf_dir, QTSETTING_FILE, setMainWindowConfig
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *
@@ -876,6 +878,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.dirty[self.idTab]=True
         self.currentScene.setSceneRect(0, 0, config.getint("PFD", "x"), config.getint("PFD", "y"))
         self.changeStatusThermo(config)
+        setMainWindowConfig(config)
 
 #TODO: Delete this when its not necessary to run library isolated
         config.write(open(conf_dir+"pychemqtrc_temporal", "w"))

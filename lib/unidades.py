@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 import os
 import pickle
 from configparser import ConfigParser
@@ -119,16 +118,13 @@ class unidad(float):
     __tooltip__ = []
     _magnitudes = []
     __units_set__ = []
-    Config = getMainWindowConfig()
 
     def __init__(self, data, unit="", magnitud=""):
         """Non proportional magnitudes (Temperature, Pressure)
         must rewrite this method"""
-        self.Config = getMainWindowConfig()
         if not magnitud:
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
-
 
         if data is None:
             self._data = 0
@@ -138,7 +134,8 @@ class unidad(float):
             self.code = ""
 
         if unit == "conf":
-            unit = self.__units__[self.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = self.__units__[Config.getint('Units', magnitud)]
         elif not unit:
             unit = self.__units__[0]
         self._data = self._getBaseValue(data, unit, magnitud)
@@ -161,7 +158,8 @@ class unidad(float):
             data = 0
 
         if unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = cls.__units__[Config.getint('Units', magnitud)]
         elif not unit:
             unit = cls.__units__[0]
 
@@ -178,7 +176,8 @@ class unidad(float):
         """Using config file return the value in the configurated unit"""
         if not magnitud:
             magnitud = self.__class__.__name__
-        value = self.Config.getint('Units', magnitud)
+        Config = getMainWindowConfig()
+        value = Config.getint('Units', magnitud)
         return self.__getattribute__(self.__units__[value])
 
     @classmethod
@@ -186,14 +185,16 @@ class unidad(float):
         """Using config file return the configurated unit text"""
         if not magnitud:
             magnitud = cls.__name__
-        return cls.__text__[cls.Config.getint("Units", magnitud)]
+        Config = getMainWindowConfig()
+        return cls.__text__[Config.getint("Units", magnitud)]
 
     @classmethod
     def func(cls, magnitud=""):
         """Return the configurated unit name for getattribute call"""
         if not magnitud:
             magnitud = cls.__name__
-        return cls.__units__[cls.Config.getint("Units", magnitud)]
+        Config = getMainWindowConfig()
+        return cls.__units__[Config.getint("Units", magnitud)]
 
     @classmethod
     def magnitudes(cls):
@@ -303,7 +304,6 @@ class Temperature(unidad):
                      "english": "F"}
 
     def __init__(self, data, unit="K", magnitud=""):
-        self.Config = getMainWindowConfig()
 
         if not magnitud:
             magnitud = self.__class__.__name__
@@ -317,7 +317,8 @@ class Temperature(unidad):
             self.code = ""
 
         if unit == "conf":
-            unit = self.__units__[self.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = self.__units__[Config.getint('Units', magnitud)]
 
         if unit == "K":
             self._data = data
@@ -347,7 +348,8 @@ class Temperature(unidad):
             magnitud = cls.__name__
 
         if unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = cls.__units__[Config.getint('Units', magnitud)]
         elif not unit:
             unit = "K"
 
@@ -1165,7 +1167,6 @@ class Pressure(unidad):
                      "cgs": "dyncm2", "english": "psi"}
 
     def __init__(self, data, unit="Pa", magnitud=""):
-        self.Config = getMainWindowConfig()
 
         if data is None:
             data = 0
@@ -1178,7 +1179,8 @@ class Pressure(unidad):
         self.magnitud = magnitud
 
         if unit == "conf":
-            unit = self.__units__[self.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = self.__units__[Config.getint('Units', magnitud)]
 
         if unit == "barg":
             self._data = data*k.bar+k.atm
@@ -1204,7 +1206,8 @@ class Pressure(unidad):
             magnitud = cls.__name__
 
         if unit == "conf":
-            unit = cls.__units__[cls.Config.getint('Units', magnitud)]
+            Config = getMainWindowConfig()
+            unit = cls.__units__[Config.getint('Units', magnitud)]
         elif not unit:
             unit = "Pa"
 
@@ -1550,15 +1553,16 @@ class MolarSpecificHeat(unidad):
     __title__ = QApplication.translate("pychemqt", "Molar Specific Heat")
     rates = {"JkmolK": 1.,
              "kJkmolK": k.kilo,
+             "kJmolK": k.kilo*k.kilo,
              "JmolK": k.kilo,
              "kcalkmolK": k.calorie*k.kilo,
              "calmolK": k.calorie*k.kilo,
              "kcalmolK": k.calorie*k.kilo**2,
              "kWhkmolK": k.kilo*k.hour,
              "BtulbmolF": k.Btu/k.lb/k.Rankine}
-    __text__ = ['J/kmol·K', 'kJ/kmol·K', 'kcal/kmol·K', 'cal/mol·K', 'kcal/mol·K',
+    __text__ = ['J/kmol·K', 'kJ/kmol·K', 'kJ/mol·K', 'kcal/kmol·K', 'cal/mol·K', 'kcal/mol·K',
                 'kWh/kmol·K', 'Btu/lbmol·F']
-    __units__ = ['JkmolK', 'kJkmolK', 'kcalkmolK', 'calmolK', 'kcalmolK', 'kWhkmolK',
+    __units__ = ['JkmolK', 'kJkmolK', 'kJmolK', 'kcalkmolK', 'calmolK', 'kcalmolK', 'kWhkmolK',
                  'BtulbmolF']
     __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
                      "cgs": "calmolK", "english": "BtulbmolF"}
@@ -2681,21 +2685,23 @@ _magnitudes.append(("Dimensionless",
 #    sets[set]=[]
 #    for magnitud, titulo, unidad in _magnitudes[:-1]:
 #        sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
-#print sets
+#print(sets)
 
-units_set = {'cgs': [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 2, 23, 23, 6, 6, 5, 5, 3, 3, 3, 3, 10, 10, 3, 3, 6, 6, 6, 1, 1, 4, 4, 7, 8, 9, 2, 5, 1, 3, 0, 1, 0, 0, 1, 23, 1, 1, 0, 0, 5, 5, 1, 0],
-             'si': [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 8, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-             'altsi': [1, 1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 2, 2, 1, 1, 1, 1, 1, 1, 9, 3, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0],
-             'metric': [1, 1, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-             'english': [3, 3, 0, 6, 5, 5, 5, 6, 5, 4, 4, 4, 2, 0, 4, 2, 4, 3, 5, 5, 7, 4, 4, 4, 4, 5, 7, 7, 9, 13, 7, 7, 12, 6, 6, 6, 14, 3, 11, 8, 12, 12, 12, 3, 3, 6, 8, 9, 10, 10, 3, 4, 2, 6, 1, 2, 1, 1, 3, 7, 5, 2, 5, 5, 6, 6, 2, 0]}
+units_set = {
+    'altsi': [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 0, 0, 1, 4, 0, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 9, 3, 0, 4, 4, 1, 1, 0, 0, 1, 1, 1, 1, 0, 2, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0],
+    'english': [2, 1, 6, 6, 10, 8, 4, 4, 4, 4, 6, 2, 3, 3, 9, 13, 7, 7, 2, 5, 12, 6, 8, 11, 12, 12, 12, 10, 0, 5, 7, 6, 5, 5, 5, 6, 4, 6, 3, 1, 0, 2, 14, 3, 6, 7, 7, 5, 6, 1, 2, 3, 3, 5, 3, 5, 2, 9, 3, 4, 4, 4, 4, 4, 7, 5, 0, 5],
+    'cgs': [1, 0, 3, 3, 8, 4, 1, 1, 1, 1, 5, 1, 1, 1, 6, 6, 5, 5, 1, 1, 3, 4, 3, 3, 6, 6, 6, 9, 3, 2, 23, 1, 1, 1, 1, 1, 1, 3, 1, 0, 0, 1, 10, 10, 3, 23, 23, 0, 5, 0, 1, 1, 1, 0, 2, 1, 0, 7, 1, 1, 5, 1, 1, 1, 3, 1, 0, 1],
+    'si': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 3, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'metric': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
-#
+
     P=Pressure(5, "MPa")
     print(P)
 
-    T=Temperature(5, "")
+    T=Temperature(5, "K")
     print(T, type(T.K), T.C)
 
     c = Dimensionless(None)
