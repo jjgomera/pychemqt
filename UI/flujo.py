@@ -145,7 +145,7 @@ class TextItemDlg(QtWidgets.QDialog):
         self.updateUi()
 
     def updateUi(self):
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setDisabled(self.editor.notas.toPlainText().isEmpty())
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(bool(self.editor.notas.toPlainText()))
 
 
 
