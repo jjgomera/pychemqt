@@ -1070,6 +1070,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             id=self.object.id
             self.objects[self.addType][id]=self.object
         self.parent().list.updateList(self.objects)
+
+        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 #        for item in self.items():
 #            if isinstance(item, QtSvg.QGraphicsSvgItem):
 #                item.hoverLeaveEvent(None)
