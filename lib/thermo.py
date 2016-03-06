@@ -39,133 +39,121 @@ class Fluid(object):
     cp_cv = 0
     cp0 = 0
 
-    def writeStatetoStream(self, stream):
-        stream.writeBool(self._bool)
+    def writeStatetoJSON(self, state, fase):
+        fluid = {}
         if self._bool:
-            stream.writeFloat(self.M)
-            stream.writeFloat(self.v)
+            fluid["M"] = self.M
+            fluid["v"] = self.v
 
-            stream.writeFloat(self.h)
-            stream.writeFloat(self.s)
-            stream.writeFloat(self.u)
-            stream.writeFloat(self.a)
-            stream.writeFloat(self.g)
+            fluid["h"] = self.h
+            fluid["s"] = self.s
+            fluid["u"] = self.u
+            fluid["a"] = self.a
+            fluid["g"] = self.g
 
-            stream.writeFloat(self.cv)
-            stream.writeFloat(self.cp)
-            stream.writeFloat(self.cp_cv)
-            stream.writeFloat(self.w)
+            fluid["cv"] = self.cv
+            fluid["cp"] = self.cp
+            fluid["cp/cv"] = self.cp_cv
+            fluid["w"] = self.w
 
-            stream.writeFloat(self.Z)
-            stream.writeFloat(self.alfav)
-            stream.writeFloat(self.xkappa)
+            fluid["Z"] = self.Z
+            fluid["alfav"] = self.alfav
+            fluid["xkappa"] = self.xkappa
 
-            stream.writeFloat(self.mu)
-            stream.writeFloat(self.k)
-            stream.writeFloat(self.nu)
-            stream.writeFloat(self.epsilon)
-            stream.writeFloat(self.Prandt)
-            stream.writeFloat(self.n)
+            fluid["mu"] = self.mu
+            fluid["k"] = self.k
+            fluid["nu"] = self.nu
+            fluid["epsilon"] = self.epsilon
+            fluid["Prandt"] = self.Prandt
+            fluid["n"] = self.n
 
-            stream.writeFloat(self.alfa)
-            stream.writeFloat(self.joule)
-            stream.writeFloat(self.deltat)
-            stream.writeFloat(self.gamma)
+            fluid["alfa"] = self.alfa
+            fluid["joule"] = self.joule
+            fluid["deltat"] = self.deltat
+            fluid["gamma"] = self.gamma
 
-            stream.writeFloat(self.alfap)
-            stream.writeFloat(self.betap)
+            fluid["alfap"] = self.alfap
+            fluid["betap"] = self.betap
 
-            stream.writeFloat(self.v0)
-            stream.writeFloat(self.h0)
-            stream.writeFloat(self.u0)
-            stream.writeFloat(self.s0)
-            stream.writeFloat(self.a0)
-            stream.writeFloat(self.g0)
+            fluid["vo"] = self.v0
+            fluid["ho"] = self.h0
+            fluid["uo"] = self.u0
+            fluid["so"] = self.s0
+            fluid["ao"] = self.a0
+            fluid["go"] = self.g0
 
-            stream.writeFloat(self.cp0)
-            stream.writeFloat(self.cv0)
-            stream.writeFloat(self.cp0_cv)
-            stream.writeFloat(self.w0)
-            stream.writeFloat(self.gamma0)
-            stream.writeFloat(self.f)
+            fluid["cpo"] = self.cp0
+            fluid["cvo"] = self.cv0
+            fluid["cpo/cvo"] = self.cp0_cv
+            fluid["wo"] = self.w0
+            fluid["gammao"] = self.gamma0
+            fluid["f"] = self.f
 
-            stream.writeFloat(self.Q)
-            stream.writeFloat(self.caudalmasico)
-            stream.writeFloat(self.caudalmolar)
-            stream.writeInt32(len(self.fraccion))
-            for x in self.fraccion:
-                stream.writeFloat(x)
-            for x in self.fraccion_masica:
-                stream.writeFloat(x)
-            for x in self.caudalunitariomasico:
-                stream.writeFloat(x)
-            for x in self.caudalunitariomolar:
-                stream.writeFloat(x)
+            fluid["volFlow"] = self.Q
+            fluid["massFlow"] = self.caudalmasico
+            fluid["molarFlow"] = self.caudalmolar
+            fluid["fraction"] = self.fraccion
+            fluid["massFraction"] = self.fraccion_masica
+            fluid["massUnitFlow"] = self.caudalunitariomasico
+            fluid["molarUnitFlow"] = self.caudalunitariomolar
+        state[fase] = fluid
 
-    def readStatefromStream(self, stream):
-        self._bool = stream.readBool()
-        if self._bool:
-            self.M = unidades.Dimensionless(stream.readFloat())
-            self.v = unidades.SpecificVolume(stream.readFloat())
+    def readStatefromJSON(self, fluid):
+        if fluid:
+            self._bool = True
+
+            self.M = unidades.Dimensionless(fluid["M"])
+            self.v = unidades.SpecificVolume(fluid["v"])
             self.rho = unidades.Density(1/self.v)
 
-            self.h = unidades.Enthalpy(stream.readFloat())
-            self.s = unidades.SpecificHeat(stream.readFloat())
-            self.u = unidades.Enthalpy(stream.readFloat())
-            self.a = unidades.Enthalpy(stream.readFloat())
-            self.g = unidades.Enthalpy(stream.readFloat())
+            self.h = unidades.Enthalpy(fluid["h"])
+            self.s = unidades.SpecificHeat(fluid["s"])
+            self.u = unidades.Enthalpy(fluid["u"])
+            self.a = unidades.Enthalpy(fluid["a"])
+            self.g = unidades.Enthalpy(fluid["g"])
 
-            self.cv = unidades.SpecificHeat(stream.readFloat())
-            self.cp = unidades.SpecificHeat(stream.readFloat())
-            self.cp_cv = unidades.Dimensionless(stream.readFloat())
-            self.w = unidades.Speed(stream.readFloat())
+            self.cv = unidades.SpecificHeat(fluid["cv"])
+            self.cp = unidades.SpecificHeat(fluid["cp"])
+            self.cp_cv = unidades.Dimensionless(fluid["cp/cv"])
+            self.w = unidades.Speed(fluid["w"])
 
-            self.Z = unidades.Dimensionless(stream.readFloat())
-            self.alfav = unidades.InvTemperature(stream.readFloat())
-            self.xkappa = unidades.InvPressure(stream.readFloat())
+            self.Z = unidades.Dimensionless(fluid["Z"])
+            self.alfav = unidades.InvTemperature(fluid["alfav"])
+            self.xkappa = unidades.InvPressure(fluid["xkappa"])
 
-            self.mu = unidades.Viscosity(stream.readFloat())
-            self.k = unidades.ThermalConductivity(stream.readFloat())
-            self.nu = unidades.Diffusivity(stream.readFloat())
-            self.epsilon = unidades.Dimensionless(stream.readFloat())
-            self.Prandt = unidades.Dimensionless(stream.readFloat())
-            self.n = unidades.Dimensionless(stream.readFloat())
+            self.mu = unidades.Viscosity(fluid["mu"])
+            self.k = unidades.ThermalConductivity(fluid["k"])
+            self.nu = unidades.Diffusivity(fluid["nu"])
+            self.epsilon = unidades.Dimensionless(fluid["epsilon"])
+            self.Prandt = unidades.Dimensionless(fluid["Prandt"])
+            self.n = unidades.Dimensionless(fluid["n"])
 
-            self.alfa = unidades.Diffusivity(stream.readFloat())
-            self.joule = unidades.TemperaturePressure(stream.readFloat())
-            self.deltat = unidades.EnthalpyPressure(stream.readFloat())
-            self.gamma = unidades.Dimensionless(stream.readFloat())
+            self.alfa = unidades.Diffusivity(fluid["alfa"])
+            self.joule = unidades.TemperaturePressure(fluid["joule"])
+            self.deltat = unidades.EnthalpyPressure(fluid["deltat"])
+            self.gamma = unidades.Dimensionless(fluid["gamma"])
 
-            self.alfap=stream.readFloat()
-            self.betap=stream.readFloat()
+            self.alfap=fluid["alfap"]
+            self.betap=fluid["betap"]
 
-            self.v0 = unidades.SpecificVolume(stream.readFloat())
-            self.h0 = unidades.Enthalpy(stream.readFloat())
-            self.u0 = unidades.Enthalpy(stream.readFloat())
-            self.s0 = unidades.SpecificHeat(stream.readFloat())
-            self.a0 = unidades.Enthalpy(stream.readFloat())
-            self.g0 = unidades.Enthalpy(stream.readFloat())
+            self.v0 = unidades.SpecificVolume(fluid["vo"])
+            self.h0 = unidades.Enthalpy(fluid["ho"])
+            self.u0 = unidades.Enthalpy(fluid["uo"])
+            self.s0 = unidades.SpecificHeat(fluid["so"])
+            self.a0 = unidades.Enthalpy(fluid["ao"])
+            self.g0 = unidades.Enthalpy(fluid["go"])
 
-            self.cp0 = unidades.SpecificHeat(stream.readFloat())
-            self.cv0 = unidades.SpecificHeat(stream.readFloat())
-            self.cp0_cv = unidades.Dimensionless(stream.readFloat())
-            self.w0 = unidades.Speed(stream.readFloat())
-            self.gamma0 = unidades.Dimensionless(stream.readFloat())
-            self.f = unidades.Pressure(stream.readFloat())
+            self.cp0 = unidades.SpecificHeat(fluid["cpo"])
+            self.cv0 = unidades.SpecificHeat(fluid["cvo"])
+            self.cp0_cv = unidades.Dimensionless(fluid["cpo/cvo"])
+            self.w0 = unidades.Speed(fluid["wo"])
+            self.gamma0 = unidades.Dimensionless(fluid["gammao"])
+            self.f = unidades.Pressure(fluid["f"])
 
-            self.Q = unidades.VolFlow(stream.readFloat())
-            self.caudalmasico = unidades.MassFlow(stream.readFloat())
-            self.caudalmolar = unidades.MolarFlow(stream.readFloat())
-            num = stream.readInt32()
-            self.fraccion = []
-            for i in range(num):
-                self.fraccion.append(stream.readFloat())
-            self.fraccion_masica = []
-            for i in range(num):
-                self.fraccion_masica.append(stream.readFloat())
-            self.caudalunitariomasico = []
-            for i in range(num):
-                self.caudalunitariomasico.append(stream.readFloat())
-            self.caudalunitariomolar = []
-            for i in range(num):
-                self.caudalunitariomolar.append(stream.readFloat())
+            self.Q = unidades.VolFlow(fluid["volFlow"])
+            self.caudalmasico = unidades.MassFlow(fluid["massFlow"])
+            self.caudalmolar = unidades.MolarFlow(fluid["molarFlow"])
+            self.fraccion = fluid["fraction"]
+            self.fraccion_masica = fluid["massFraction"]
+            self.caudalunitariomasico = fluid["massUnitFlow"]
+            self.caudalunitariomolar = fluid["molarUnitFlow"]

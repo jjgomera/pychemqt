@@ -23,6 +23,7 @@ import os
 import time
 import platform
 import sys
+import json
 from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -533,6 +534,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     @property
     def currentConfig(self):
+        print(self.config[self.idTab],self.centralwidget.count())
         if self.centralwidget.count():
             return self.config[self.idTab]
 
@@ -703,44 +705,47 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.activeControl(True)
         self.wizard()
 
-
     def fileSave(self, indice=None):
         if indice is None:
             indice=self.idTab
         if not self.filename[indice]:
             self.fileSaveAs()
         else:
-            fh = QtCore.QFile(self.filename[indice])
-            if not fh.open(QtCore.QIODevice.WriteOnly):
-                raise IOError(str(fh.errorString()))
-            stream = QtCore.QDataStream(fh)
-            stream.writeInt32(Project.MAGIC_NUMBER)
-            stream.writeInt32(Project.FILE_VERSION)
-            stream.setVersion(QtCore.QDataStream.Qt_4_2)
+            with open(self.filename[indice], "w") as file:
+                data = {}
+                self.getScene(indice).project.writeToJSON(data)
 
-            self.getScene(indice).project.writeToStream(stream)
+                PFD = {}
+                win = self.centralwidget.currentWidget().subWindowList()[0]
+                PFD["x"] = win.pos().x()
+                PFD["y"] = win.pos().y()
+                PFD["height"] = win.size().height()
+                PFD["width"] = win.size().width()
+                self.currentScene.writeToJSON(PFD)
+                data["PFD"] = PFD
 
-            stream << self.centralwidget.currentWidget().subWindowList()[0].pos()
-            stream << self.centralwidget.currentWidget().subWindowList()[0].size()
+                other = {}
+                ventanas = self.centralwidget.currentWidget().subWindowList()
+                for ind, win in enumerate(ventanas[1:]):
+                    ventana = {}
+                    ventana["class"] = window.widget().__class__
+                    ventana["x"] = win.pos().x()
+                    ventana["y"] = win.pos().y()
+                    ventana["height"] = win.size().height()
+                    vetnana["width"] = win.size().width()
 
-            self.currentScene.saveToFile(stream)
+                    widget = {}
+                    win.widget().writeToJSON(widget)
+                    ventana["window"] = widget
+                    other["ind"] = ventana
+                data["other"] = other
 
-            otras_ventanas=len(self.centralwidget.currentWidget().subWindowList())-1
-            stream.writeInt32(otras_ventanas)
-            for ventana in self.centralwidget.currentWidget().subWindowList()[1:]:
-                clase = ventana.widget().__class__
-                stream.writeInt32(other_window.index(clase))
-                ventana.widget().writeToStream(stream)
-                stream << ventana.pos()
-                stream << ventana.size()
+                json.dump(data, file, indent=4)
 
-            fh.close()
             self.dirty[self.idTab]=False
-
             self.updateStatus(QtWidgets.QApplication.translate("pychemqt", "Saved as %s" % self.filename[indice]))
             self.dirty[indice]=False
             self.saveControl()
-
 
     def fileSaveAs(self, indice=None):
         if indice is None:
@@ -793,49 +798,40 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.filename.append(fname)
             self.addRecentFile(fname)
 
-            fh = QtCore.QFile(fname)
-            if not fh.open(QtCore.QIODevice.ReadOnly):
-                raise IOError(str(fh.errorString()))
-            stream = QtCore.QDataStream(fh)
-
-            magic = stream.readInt32()
-            if magic != Project.MAGIC_NUMBER:
-                raise IOError("unrecognized file type")
-            version = stream.readInt32()
-            if version < Project.FILE_VERSION:
-                raise IOError("old and unreadable file format")
-            elif version > Project.FILE_VERSION:
-                raise IOError("new and unreadable file format")
-            stream.setVersion(QtCore.QDataStream.Qt_4_2)
+            with open(fname, "r") as file:
+                data = json.load(file)
 
             project=Project()
-            project.loadFromStream(stream)
-
+            project.readFromJSON(data)
             self.config.append(project.config)
 
             mdiArea = QtWidgets.QMdiArea()
-
             self.loadPFD(mdiArea)
 
-            pos=QtCore.QPoint()
-            size=QtCore.QSize()
-            stream >> pos >> size
+            x = data["PFD"]["x"]
+            y = data["PFD"]["y"]
+            pos = QtCore.QPoint(x, y)
+            width = data["PFD"]["width"]
+            height = data["PFD"]["height"]
+            size = QtCore.QSize(width, height)
             mdiArea.subWindowList()[0].move(pos)
             mdiArea.subWindowList()[0].resize(size)
 
-            mdiArea.subWindowList()[0].widget().scene().readFromFile(stream)
+            mdiArea.subWindowList()[0].widget().scene().readFromJSON(data)
             self.list.updateList(mdiArea.subWindowList()[0].widget().scene().objects)
 
-            otras_ventanas=stream.readInt32()
-            for ventana in range(otras_ventanas):
-                widget = other_window[stream.readInt32()]
-                grafico = widget.readFromStream(stream, self)
-                mdiArea.addSubWindow(grafico)
-                pos=QtCore.QPoint()
-                size=QtCore.QSize()
-                stream >> pos >> size
-                mdiArea.subWindowList()[ventana+1].move(pos)
-                mdiArea.subWindowList()[ventana+1].resize(size)
+            for ventana in data["other"]:
+                pass
+#            otras_ventanas=stream.readInt32()
+#            for ventana in range(otras_ventanas):
+#                widget = other_window[stream.readInt32()]
+#                grafico = widget.readFromStream(stream, self)
+#                mdiArea.addSubWindow(grafico)
+#                pos=QtCore.QPoint()
+#                size=QtCore.QSize()
+#                stream >> pos >> size
+#                mdiArea.subWindowList()[ventana+1].move(pos)
+#                mdiArea.subWindowList()[ventana+1].resize(size)
 
             self.centralwidget.addTab(mdiArea, os.path.splitext(os.path.basename(str(fname)))[0])
             self.centralwidget.setCurrentIndex(self.centralwidget.count()-1)

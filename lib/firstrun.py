@@ -33,23 +33,22 @@ import pickle
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
 # magnitude are added
-magnitudes = ['Temperature', 'DeltaT', 'Angle', 'Length', 'ParticleDiameter',
-              'Thickness', 'PipeDiameter', 'Head', 'Area', 'Volume', 'VolLiq',
-              'VolGas', 'Time', 'Frequency', 'Speed', 'Acceleration', 'Mass',
-              'Mol', 'SpecificVolume', 'SpecificVolume_square', 'MolarVolume',
-              'Density', 'DenLiq', 'DenGas', 'MolarDensity', 'Force',
-              'Pressure', 'DeltaP', 'Energy', 'Work', 'Enthalpy',
-              'MolarEnthalpy', 'Entropy', 'SpecificHeat', 'SpecificEntropy',
-              'MolarSpecificHeat', 'EnergyFlow', 'Power', 'MassFlow',
-              'MolarFlow', 'VolFlow', 'QLiq', 'QGas', 'Diffusivity',
-              'KViscosity', 'HeatFlux', 'ThermalConductivity', 'UA',
-              'HeatTransfCoef', 'Fouling', 'Tension', 'Viscosity',
-              'SolubilityParameter', 'PotencialElectric', 'DipoleMoment',
-              'CakeResistance', 'PackingDP', 'V2V', 'InvTemperature',
-              'InvPressure', 'EnthalpyPressure', 'EnthalpyDensity',
-              'TemperaturePressure', 'PressureTemperature', 'PressureDensity',
-              'DensityPressure', 'DensityTemperature', 'Currency',
-              'Dimensionless']
+magnitudes = ['Acceleration', 'PackingDP', 'SpecificHeat', 'SpecificEntropy',
+            'HeatTransfCoef', 'ThermalConductivity', 'Density', 'DenLiq', 'DenGas',
+            'MolarDensity', 'DensityPressure', 'DensityTemperature', 'Diffusivity',
+            'KViscosity', 'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy',
+            'EnthalpyDensity', 'EnthalpyPressure', 'Entropy', 'HeatFlux',
+            'MolarFlow', 'MassFlow', 'VolFlow', 'QLiq', 'QGas', 'Fouling',
+            'Frequency', 'Force', 'DeltaP', 'Length', 'ParticleDiameter',
+            'Thickness', 'PipeDiameter', 'Head', 'Mass', 'MolarSpecificHeat',
+            'Mol', 'DipoleMoment', 'Currency', 'SolubilityParameter', 'EnergyFlow',
+            'Power', 'PotencialElectric', 'Pressure', 'InvPressure',
+            'PressureTemperature', 'PressureDensity', 'V2V', 'CakeResistance',
+            'Temperature', 'InvTemperature', 'TemperaturePressure', 'Tension',
+            'SpecificVolume_square', 'Time', 'UA', 'DeltaT', 'Speed', 'Viscosity',
+            'Volume', 'VolLiq', 'VolGas', 'MolarVolume', 'SpecificVolume', 'Angle',
+            'Area', 'Dimensionless']
+
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
 equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',

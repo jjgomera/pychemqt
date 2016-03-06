@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module for project definition (pdf of equipment, configuration and many more)
 ###############################################################################
@@ -48,21 +47,19 @@ class Project(object):
         items: diccionario con los equipos
         stream: diccionario con las corrientes
         """
-        self.items=items
-        self.out={}
+        self.items = items
+        self.out = {}
         if not config:
-            config=ConfigParser()
+            config = ConfigParser()
             config.read(conf_dir+"pychemqtrc")
-        self.config=config
-        self.streams=streams
-        self.graph=self.calGraph()
+        self.config = config
+        self.streams = streams
+        self.graph = self.calGraph()
 
-        self.downToStream={}
-
+        self.downToStream = {}
 #        import gv
 #        for item in items:
 #           print gv.tailof(item)
-
 
     def __bool__(self):
         return True
@@ -77,165 +74,167 @@ class Project(object):
     def calGraph(self):
         grafo = graph()
         for item in self.items:
-            grafo.add_node(item, attrs = [("splines",  "")])
+            grafo.add_node(item, attrs=[("splines",  "")])
         for key, stream in self.streams.items():
-            grafo.add_edge((stream[0], stream[1]), attrs = [("splines",  "")])
+            grafo.add_edge((stream[0], stream[1]), attrs=[("splines",  "")])
         return grafo
 
     def getObject(self, id):
         if id[0] in ["e", "i", "o"]:
             return self.items[id]
         else:
-            return  self.getStream(int(id[1:]))
+            return self.getStream(int(id[1:]))
 
     def setPFD(self, streams):
-        self.streams=streams
+        self.streams = streams
+
     def setItems(self, items):
-        self.items=items
+        self.items = items
+
     def setStreams(self, streams):
-        self.streams=streams
+        self.streams = streams
+
     def setConfig(self, config):
-        self.config=config
+        self.config = config
 
     def addItem(self, id, obj):
         if id not in self.items:
-            self.items[id]=obj
+            self.items[id] = obj
             self.graph.add_node(id)
+
     def setItem(self, id, obj):
-        self.items["e%i" %id]=obj
-        self.run("e%i" %id)
+        self.items["e%i" % id] = obj
+        self.run("e%i" % id)
+
     def getItem(self, id):
-        return self.items["e%i" %id]
+        return self.items["e%i" % id]
 
     def setInput(self, id, obj):
-        self.items["i%i" %id]=obj
-        self.run("i%i" %id)
+        self.items["i%i" % id] = obj
+        self.run("i%i" % id)
+
     def getInput(self, id):
-        return self.items["i%i" %id]
+        return self.items["i%i" % id]
 
     def setOutput(self, id, obj):
-        self.items["o%i" %id]=obj
-    def getOutput(self, id):
-        return self.items["o%i" %id]
+        self.items["o%i" % id] = obj
 
+    def getOutput(self, id):
+        return self.items["o%i" % id]
 
     def addStream(self, id, up, down, obj=Corriente(), ind_up=0, ind_down=0):
-        if up[0]=="i":
-            obj=self.items[up]
+        if up[0] == "i":
+            obj = self.items[up]
 
-        stream=(up, down, ind_up, ind_down, obj)
+        stream = (up, down, ind_up, ind_down, obj)
         if id not in list(self.streams.keys()):
-            self.streams[id]=stream
+            self.streams[id] = stream
             self.graph.add_edge((up, down))
 
-        if down[0]=="e":
-            eq=self.items[down]
+        if down[0] == "e":
+            eq = self.items[down]
             if isinstance(eq, Mixer):
-                kwargs={"entrada": obj, "id_entrada": ind_down}
+                kwargs = {"entrada": obj, "id_entrada": ind_down}
             else:
-                kwargs={eq.kwargsInput[ind_down]: obj}
+                kwargs = {eq.kwargsInput[ind_down]: obj}
             eq(**kwargs)
 
     def setStream(self, id, obj):
-        stream=self.streams[id]
-        self.streams[id]=stream[0:4]+(obj, )
-        self.run("s%i" %id)
+        stream = self.streams[id]
+        self.streams[id] = stream[0:4]+(obj, )
+        self.run("s%i" % id)
 
     def getStream(self, id):
         return self.streams[id][-1]
 
     def getDownToStream(self, id):
-        up, down, ind_up, ind_down, obj=self.streams[id]
-        if down[0]=="e":
+        up, down, ind_up, ind_down, obj = self.streams[id]
+        if down[0] == "e":
             return self.getItem(int(down[1]))
         else:
             return obj
 
     def getDownToEquip(self, str):
-        lista=[]
+        lista = []
         for key, value in self.streams.items():
-            if value[0]==str:
+            if value[0] == str:
                 lista.append((key, value))
         return lista
 
     def run(self, name):
         """Ejecuta el projecto de forma recursiva hasta que encuentra un equipo no resuelto"""
-        tipo=name[0]
-        ind=int(name[1])
+        tipo = name[0]
+        ind = int(name[1])
 
-        if tipo=="i":
-            obj=self.getInput(ind)
+        if tipo == "i":
+            obj = self.getInput(ind)
             if obj.status:
-                key, (up, down, ind_up, ind_down, oldobj)=self.getDownToEquip(name)[0]
+                key, (up, down, ind_up, ind_down, oldobj) = self.getDownToEquip(name)[0]
                 self.setStream(key, obj)
-                self.run("s%i" %key)
+                self.run("s%i" % key)
 
-        elif tipo=="e":
-            obj=self.getItem(ind)
+        elif tipo == "e":
+            obj = self.getItem(ind)
             if obj.status:
                 for key, (up, down, ind_up, ind_down, oldobj) in self.getDownToEquip(name):
                     self.setStream(key, obj.salida[ind_up])
-                    self.run("s%i" %key)
+                    self.run("s%i" % key)
 
-        elif tipo=="s":
-            up, down, ind_up, ind_down, stream=self.streams[ind]
+        elif tipo == "s":
+            up, down, ind_up, ind_down, stream = self.streams[ind]
             if stream.status:
-                if down[0]=="e":
-                    equip=self.items[down]
+                if down[0] == "e":
+                    equip = self.items[down]
                     if isinstance(equip, Mixer):
-                        kwargs={"entrada": stream, "id_entrada": ind_down}
+                        kwargs = {"entrada": stream, "id_entrada": ind_down}
                     else:
-                        kwargs={equip.kwargsInput[ind_down]: stream}
+                        kwargs = {equip.kwargsInput[ind_down]: stream}
                     equip(**kwargs)
                     self.run(down)
-                elif down[0]=="o":
+                elif down[0] == "o":
                     self.setOutput(int(down[1]), stream)
 
-    def writeToStream(self, stream):
-        """Write the project to stream"""
+    def writeToJSON(self, data):
+        """Write the project to a dictionary to save to file in json format"""
         # Write configuration
-        stream.writeInt32(len(self.config.sections()))
+        config = {}
         for section in self.config.sections():
-            stream.writeString(section.encode())
-            stream.writeInt32(len(self.config.options(section)))
+            section_dict = {}
             for option in self.config.options(section):
-                stream.writeString(option.encode())
-                stream.writeString(self.config.get(section, option).encode())
+                section_dict[option] = self.config.get(section, option)
+            config[section] = section_dict
+        data["config"] = config
 
         # write equipments
-        stream.writeInt32(len(self.items))
+        equipment = {}
         for key, item in self.items.items():
-            stream.writeString(key.encode())
             if key[0] == "e":
-                stream.writeInt32(equipments.index(item.__class__))
-                item.writeToStream(stream)
+                eq = {}
+                item.writeToJSON(eq)
+                equipment["key"] = eq
+        data["equipment"] = equipment
 
         # write streams
-        stream.writeInt32(len(self.streams))
+        streams ={}
         for id, item in self.streams.items():
-            stream.writeInt32(id)
-            stream.writeString(item[0].encode())
-            stream.writeString(item[1].encode())
-            stream.writeInt32(item[2])
-            stream.writeInt32(item[3])
-            item[4].writeToStream(stream)
+            stream = {}
+            stream["up"] = item[0]
+            stream["down"] = item[1]
+            stream["ind_up"] = item[2]
+            stream["ind_down"] = item[3]
+            item[4].writeToJSON(stream)
+            streams[id] = stream
+        data["stream"] = streams
 
-    def loadFromStream(self, stream, huella=True, run=True):
+    def readFromJSON(self, data, huella=True):
         """Read project from stream
         huella: boolean to save project file to pychemqt_temporal"""
         # read configuration
         config = ConfigParser()
-        for i in range(stream.readInt32()):
-            section = stream.readString().decode("utf-8")
+        for section, options in data["config"].items():
             config.add_section(section)
-            for contador_option in range(stream.readInt32()):
-                option = stream.readString().decode("utf-8")
-                valor = stream.readString().decode("utf-8")
-                config.set(section, option, valor)
-
-        #TODO: Necesario para cargar los proyectos viejos
-#        config.set("Thermo", "freesteam", "False")
-#        config.set("Units", "MolarSpecificHeat", "0")
+            for option, value in options.items():
+                config.set(section, option, value)
 
         self.setConfig(config)
         if not huella:
@@ -244,12 +243,10 @@ class Project(object):
 
         # read equipments
         items = {}
-        contador_equipos = stream.readInt32()
-        for i in range(contador_equipos):
-            id = stream.readString().decode("utf-8")
+        for id, equip in data["equipment"].items():
             if id[0] == "e":
                 equip = equipments[stream.readInt32()]()
-                equip.readFromStream(stream)
+                equip.readFromJSON(data)
             else:
                 equip = None
             items[id] = equip
@@ -257,15 +254,14 @@ class Project(object):
 
         # read streams
         streams = {}
-        contador_streams = stream.readInt32()
-        for item in range(contador_streams):
-            id = stream.readInt32()
-            up = stream.readString().decode("utf-8")
-            down = stream.readString().decode("utf-8")
-            ind_up = stream.readInt32()
-            ind_down = stream.readInt32()
+        for id, stream in data["stream"].items():
+            id = int(id)
+            up = stream["up"]
+            down = stream["down"]
+            ind_up = stream["ind_up"]
+            ind_down = stream["ind_down"]
             obj = Corriente()
-            obj.readFromStream(stream)
+            obj.readFromJSON(stream)
             streams[id] = (up, down, ind_up, ind_down, obj)
             if huella:
                 if down[0] == "e":
@@ -290,8 +286,8 @@ class Project(object):
         # Draw as PNG
         dot = write(self.graph)
         gvv = gv.readstring(dot)
-        gv.layout(gvv,'dot')
-        gv.render(gvv,'png','project.png')
+        gv.layout(gvv, 'dot')
+        gv.render(gvv, 'png', 'project.png')
 
     def cycle(self):
         cicle = find_cycle(self.graph)
@@ -308,7 +304,7 @@ class Project(object):
 
 if __name__ == '__main__':
 
-    from .corriente import Corriente, Mezcla
+    from .corriente import Corriente
 
 #    project=Project()
 #    project.addItem("i1", Corriente())
@@ -345,10 +341,10 @@ if __name__ == '__main__':
 #    print dir(gv)
 #    print gv.nextin(project.graph)
 
-    project=Project()
+    project = Project()
     project.addItem("i1", Corriente())
     project.addItem("i2", Corriente())
-    mezclador=Mixer()
+    mezclador = Mixer()
     project.addItem("e1", mezclador)
     project.addStream(1, "i1", "e1", ind_down=0)
     project.addStream(2, "i2", "e1", ind_down=1)

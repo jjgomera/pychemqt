@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module with stream definition
 #   -Mezcla: Mixture related calculation
@@ -73,7 +72,10 @@ class Mezcla(config.Entity):
 
     def __init__(self, tipo=0, **kwargs):
         if tipo == 0:
+            self._bool = False
             return
+
+        self._bool = True
 
         self.kwargs = Mezcla.kwargs.copy()
         self.kwargs.update(kwargs)
@@ -1086,66 +1088,51 @@ class Mezcla(config.Entity):
         H = exp(self.henry[0]/T.R+self.henry[1]*log(T.R)+self.henry[2]*T.R+self.henry[3])
         return p.psi/H
 
-    def writeStatetoStream(self, stream):
-        stream.writeInt32(len(self.ids))
-        for id in self.ids:
-            stream.writeInt32(id)
-        for x in self.fraccion:
-            stream.writeFloat(x)
-        for x in self.fraccion_masica:
-            stream.writeFloat(x)
-        for x in self.caudalunitariomasico:
-            stream.writeFloat(x)
-        for x in self.caudalunitariomolar:
-            stream.writeFloat(x)
-        stream.writeFloat(self.caudalmasico)
-        stream.writeFloat(self.caudalmolar)
+    def writeStatetoJSON(self, state):
+        mezcla = {}
+        if self._bool:
+            mezcla["ids"] = self.ids
+            mezcla["fraction"] = self.fraccion
+            mezcla["massFraction"] = self.fraccion_masica
+            mezcla["massUnitFlow"] = self.caudalunitariomasico
+            mezcla["molarUnitFlow"] = self.caudalunitariomolar
+            mezcla["massFlow"] = self.caudalmasico
+            mezcla["molarFlow"] = self.caudalmolar
 
-        stream.writeFloat(self.M)
-        stream.writeFloat(self.Tc)
-        stream.writeFloat(self.tpc)
-        stream.writeFloat(self.ppc)
-        stream.writeFloat(self.Pc)
-        stream.writeFloat(self.f_acent)
-        stream.writeFloat(self.f_acent_mod)
-        stream.writeFloat(self.Vc)
-        stream.writeFloat(self.Tb)
-        stream.writeFloat(self.SG)
+            mezcla["M"] = self.M
+            mezcla["Tc"] = self.Tc
+            mezcla["tpc"] = self.tpc
+            mezcla["ppc"] = self.ppc
+            mezcla["Pc"] = self.Pc
+            mezcla["w"] = self.f_acent
+            mezcla["wm"] = self.f_acent_mod
+            mezcla["Vc"] = self.Vc
+            mezcla["Tb"] = self.Tb
+            mezcla["SG"] = self.SG
+        state["mezcla"] = mezcla
 
-    def readStatefromStream(self, stream):
-        num = stream.readInt32()
-        self.ids = []
-        for i in range(num):
-            self.ids.append(stream.readInt32())
-        self.componente = [Componente(int(i)) for i in self.ids]
-        self.fraccion = []
-        for i in range(num):
-            self.fraccion.append(unidades.Dimensionless(stream.readFloat()))
-        self.fraccion_masica = []
-        for i in range(num):
-            self.fraccion_masica.append(
-                unidades.Dimensionless(stream.readFloat()))
-        self.caudalunitariomasico = []
-        for i in range(num):
-            self.caudalunitariomasico.append(
-                unidades.MassFlow(stream.readFloat()))
-        self.caudalunitariomolar = []
-        for i in range(num):
-            self.caudalunitariomolar.append(
-                unidades.MolarFlow(stream.readFloat()))
-        self.caudalmasico = unidades.MassFlow(stream.readFloat())
-        self.caudalmolar = unidades.MolarFlow(stream.readFloat())
+    def readStatefromJSON(self, mezcla):
+        if mezcla:
+            self._bool = True
+            self.ids = mezcla["ids"]
+            self.componente = [Componente(int(i)) for i in self.ids]
+            self.fraccion = [unidades.Dimensionless(x) for x in mezcla["fraction"]]
+            self.fraccion_masica = [unidades.Dimensionless(x) for x in mezcla["massFraction"]]
+            self.caudalunitariomasico = [unidades.MassFlow(x) for x in mezcla["massUnitFlow"]]
+            self.caudalunitariomolar = [unidades.MolarFlow(x) for x in mezcla["molarUnitFlow"]]
+            self.caudalmasico = unidades.MassFlow(mezcla["massFlow"])
+            self.caudalmolar = unidades.MolarFlow(mezcla["molarFlow"])
 
-        self.M = unidades.Dimensionless(stream.readFloat())
-        self.Tc = unidades.Temperature(stream.readFloat())
-        self.tpc = unidades.Temperature(stream.readFloat())
-        self.ppc = unidades.Pressure(stream.readFloat())
-        self.Pc = unidades.Pressure(stream.readFloat())
-        self.f_acent = unidades.Dimensionless(stream.readFloat())
-        self.f_acent_mod = unidades.Dimensionless(stream.readFloat())
-        self.Vc = unidades.SpecificVolume(stream.readFloat())
-        self.Tb = unidades.Temperature(stream.readFloat())
-        self.SG = unidades.Dimensionless(stream.readFloat())
+            self.M = unidades.Dimensionless(mezcla["M"])
+            self.Tc = unidades.Temperature(mezcla["Tc"])
+            self.tpc = unidades.Temperature(mezcla["tpc"])
+            self.ppc = unidades.Pressure(mezcla["ppc"])
+            self.Pc = unidades.Pressure(mezcla["Pc"])
+            self.f_acent = unidades.Dimensionless(mezcla["w"])
+            self.f_acent_mod = unidades.Dimensionless(mezcla["wm"])
+            self.Vc = unidades.SpecificVolume(mezcla["Vc"])
+            self.Tb = unidades.Temperature(mezcla["Tb"])
+            self.SG = unidades.Dimensionless(mezcla["SG"])
 
 
 class Solid(config.Entity):
@@ -1176,14 +1163,14 @@ class Solid(config.Entity):
 
     @property
     def isCalculable(self):
-        self._def = 0
+        self.status = 0
         if sum(self.kwargs["caudalSolido"]) > 0:
             if self.kwargs["distribucion_fraccion"] and \
                     self.kwargs["distribucion_diametro"]:
-                self._def = 2
+                self.status = 2
             elif self.kwargs["diametroMedio"]:
-                self._def = 1
-        return self._def
+                self.status = 1
+        return self.status
 
     def calculo(self):
         self.Config = config.getMainWindowConfig()
@@ -1199,7 +1186,7 @@ class Solid(config.Entity):
         fraccion = self.kwargs.get("distribucion_fraccion", [])
         diametros = self.kwargs.get("distribucion_diametro", [])
 
-        if self._def == 0:
+        if self.status == 0:
             self._bool = False
             return
         else:
@@ -1209,7 +1196,7 @@ class Solid(config.Entity):
         self.caudal = unidades.MassFlow(sum(self.caudalUnitario))
         self.diametros = diametros
         self.fracciones = fraccion
-        if self._def == 2:
+        if self.status == 2:
             self.diametros = [unidades.Length(i, magnitud="ParticleDiameter")
                               for i in diametros]
             self.fracciones = fraccion
@@ -1228,7 +1215,7 @@ class Solid(config.Entity):
         self.rho = unidades.Density(densidad)
 
     def __repr__(self):
-        if self._def:
+        if self.status:
             return "Solid with %s and dm %s" % (self.caudal.str, self.diametro_medio.str)
         else:
             return "%s empty" % (self.__class__)
@@ -1322,47 +1309,34 @@ class Solid(config.Entity):
             Solido_Capturado = Solid(caudalSolido=[caudal_separado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_ensolido)
             return Solido_NoCapturado, Solido_Capturado
 
-    def writeStatefromStream(self, stream):
-        stream.writeBool(self._bool)
-        stream.writeInt32(self._def)
-        stream.writeInt32(len(self.ids))
-        for id in self.ids:
-            stream.writeInt32(id)
-        for caudal in self.caudalUnitario:
-            stream.writeFloat(caudal)
-        stream.writeFloat(self.caudal)
-        stream.writeInt32(len(self.diametros))
-        for diametro in self.diametros:
-            stream.writeFloat(diametro)
-        for frac in self.fracciones:
-            stream.writeFloat(frac)
-        for frac in self.fracciones_acumuladas:
-            stream.writeFloat(frac)
-        stream.writeFloat(self.diametro_medio)
+    def writeStatefromJSON(self, state):
+        solid = {}
+        if self.status:
+            solid["ids"] = self.ids
+            solid["caudalUnitario"] = self.caudalUnitario
+            solid["caudal"] = self.caudal
+            solid["diametros"] = self.diametros
+            solid["fracciones"] = self.fracciones
+            solid["fracciones_acumuladas"] = self.fracciones_acumuladas
+            solid["diametro_medio"] = self.diametro_medio
+        state["solid"] = solid
 
-    def readStatefromStream(self, stream):
-        self._bool = stream.readBool()
-        self._def = stream.readInt32()
-        num = stream.readInt32()
-        self.ids = []
-        for i in range(num):
-            self.ids.append(stream.readInt32())
-        self.componente = [Componente(int(i)) for i in self.ids]
-        self.caudalUnitario = []
-        for i in range(num):
-            self.caudalUnitario.append(unidades.MassFlow(stream.readFloat()))
-        self.caudal = unidades.MassFlow(stream.readFloat())
-        num = stream.readInt32()
-        self.diametros = []
-        for i in range(num):
-            self.diametros.append(unidades.Length(stream.readFloat()))
-        self.fracciones = []
-        for i in range(num):
-            self.fracciones.append(stream.readFloat())
-        self.fracciones_acumuladas = []
-        for i in range(num):
-            self.fracciones_acumuladas.append(stream.readFloat())
-        self.diametro_medio = unidades.Length(stream.readFloat())
+    def readStatefromJSON(self, solid):
+        if solid:
+            self._bool = True
+            self.status = solid["status"]
+            self.ids = solid["ids"]
+            self.componente = [Componente(int(i)) for i in self.ids]
+            self.caudalUnitario = [unidades.MassFlow(q) for q in solid["caudalUnitario"]]
+            self.caudal = unidades.MassFlow(solid["caudal"])
+            self.diametros = [unidades.Length(d) for de in solid["diametros"]]
+            self.fracciones = solid["fracciones"]
+            self.fracciones_acumuladas = solid["fracciones_acumuladas"]
+            self.diametro_medio = unidades.Length(solid["dm"])
+        else:
+            self._bool = False
+            self.status = False
+
 
 class Corriente(config.Entity):
     """
@@ -1751,6 +1725,8 @@ class Corriente(config.Entity):
             # TODO:
             self.cp_cv = 0.5
             self.cp_cv_ideal = 0.5
+            self.s = 0
+            self.rho = 0
 
         if setData:
         # Asignación de valores comun
@@ -2007,7 +1983,7 @@ class Corriente(config.Entity):
             txt += QApplication.translate("pychemqt", "No Fluid Stream")
             txt += "-------------------#"+os.linesep
 
-        if self.solido._def:
+        if self.solido.status:
             txt += os.linesep+"#---------------"
             txt += QApplication.translate("pychemqt", "Solid")
             txt += "-------------------#"+os.linesep
@@ -2059,51 +2035,52 @@ class Corriente(config.Entity):
         lista = [comp.nombre for comp in self.componente]
         return lista
 
-    def writeStatetoStream(self, stream):
-        stream.writeString(self._thermo.encode())
-        stream.writeBool(self._bool)
-        stream.writeString(self.tipoTermodinamica.encode())
-        stream.writeFloat(self.T)
-        stream.writeFloat(self.P)
-        stream.writeFloat(self.x)
-        stream.writeFloat(self.M)
-        stream.writeFloat(self.Tc)
-        stream.writeFloat(self.Pc)
-        stream.writeFloat(self.h)
-        stream.writeFloat(self.s)
-        stream.writeFloat(self.rho)
-        stream.writeFloat(self.Q)
-        stream.writeFloat(self.SG)
+    def writeStatetoJSON(self, data):
+        state = {}
+        state["thermo"] = self._thermo
+        state["bool"] = self._bool
+        state["thermoType"] = self.tipoTermodinamica
+        state["T"] = self.T
+        state["P"] = self.P
+        state["x"] = self.x
+        state["M"] = self.M
+        state["Tc"] = self.Tc
+        state["Pc"] = self.Pc
+        state["h"] = self.h
+        state["s"] = self.s
+        state["rho"] = self.rho
+        state["Q"] = self.Q
+        state["SG"] = self.SG
 
-        stream.writeInt32(self.tipoFlujo)
-        self.mezcla.writeStatetoStream(stream)
+        state["fluxType"] = self.tipoFlujo
+        self.mezcla.writeStatetoJSON(state)
 
-        stream.writeInt32(self.tipoSolido)
-        if self.tipoSolido:
-            self.solido.writeStatetoStream(stream)
+        state["solidType"] = self.tipoSolido
+        self.solido.writeStatetoJSON(state)
 
-        self.Liquido.writeStatetoStream(stream)
-        self.Gas.writeStatetoStream(stream)
+        self.Liquido.writeStatetoJSON(state, "liquid")
+        self.Gas.writeStatetoJSON(state, "gas")
+        data["state"] = state
 
-    def readStatefromStream(self, stream):
-        self._thermo = stream.readString().decode("utf-8")
-        self._bool = stream.readBool()
-        self.tipoTermodinamica = stream.readString().decode("utf-8")
-        self.T = unidades.Temperature(stream.readFloat())
-        self.P = unidades.Pressure(stream.readFloat())
-        self.x = unidades.Dimensionless(stream.readFloat())
-        self.M = unidades.Dimensionless(stream.readFloat())
-        self.Tc = unidades.Temperature(stream.readFloat())
-        self.Pc = unidades.Pressure(stream.readFloat())
-        self.h = unidades.Power(stream.readFloat())
-        self.s = unidades.Entropy(stream.readFloat())
-        self.rho = unidades.Density(stream.readFloat())
-        self.Q = unidades.VolFlow(stream.readFloat())
-        self.SG = unidades.Dimensionless(stream.readFloat())
+    def readStatefromJSON(self, state):
+        self._thermo = state["thermo"]
+        self._bool = state["bool"]
+        self.tipoTermodinamica = state["thermoType"]
+        self.T = unidades.Temperature(state["T"])
+        self.P = unidades.Pressure(state["P"])
+        self.x = unidades.Dimensionless(state["x"])
+        self.M = unidades.Dimensionless(state["M"])
+        self.Tc = unidades.Temperature(state["Tc"])
+        self.Pc = unidades.Pressure(state["Pc"])
+        self.h = unidades.Power(state["h"])
+        self.s = unidades.Entropy(state["s"])
+        self.rho = unidades.Density(state["rho"])
+        self.Q = unidades.VolFlow(state["Q"])
+        self.SG = unidades.Dimensionless(state["SG"])
 
-        self.tipoFlujo = stream.readInt32()
+        self.tipoFlujo = state["fluxType"]
         self.mezcla = Mezcla()
-        self.mezcla.readStatefromStream(stream)
+        self.mezcla.readStatefromJSON(state["mezcla"])
         self.ids = self.mezcla.ids
         self.componente = self.mezcla.componente
         self.fraccion = self.mezcla.fraccion
@@ -2113,19 +2090,16 @@ class Corriente(config.Entity):
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
 
-        self.tipoSolido = stream.readInt32()
-        if self.tipoSolido:
-            self.solido = Solid()
-            self.solido.readStatefromStream(stream)
+        self.tipoSolido = state["solidType"]
+        self.solido = Solid()
+        self.solido.readStatefromJSON(state["solid"])
 
         if self._thermo in ["iapws", "freesteam", "coolprop", "refprop"]:
             self.Liquido = Fluid()
-            self.Liquido.readStatefromStream(stream)
+            self.Liquido.readStatefromJSON(state["liquid"])
             self.Gas = Fluid()
-            self.Gas.readStatefromStream(stream)
+            self.Gas.readStatefromJSON(state["gas"])
 
-#{'Config': <configparser.ConfigParser object at 0xb63a7dcc>,
-# 'cmp': <lib.iapws.IAPWS97 object at 0xb01d1dac>,
 
 class PsyStream(config.Entity):
     """

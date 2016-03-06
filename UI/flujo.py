@@ -1119,130 +1119,146 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         elif isinstance(item, RectItem):
             stream << item.rect()  << item.pen()
         elif isinstance(item, EquipmentItem):
-            stream << QtCore.QString(item.name)
+            stream.writeString(item.name)
+            #stream << QtCore.QString(item.name)
             stream.writeInt32(item.dialogoId)
 
 
-    def readFromFile(self, stream):
+    def readFromJSON(self, data):
         self.objects = deepcopy(GraphicsScene.objects)
-#        {"txt": [], "square": [], "ellipse": [], "stream": {},
-#                        "in": {}, "out": {}, "equip": {}}
-        n_txt = stream.readInt32()
-        for obj in range(n_txt):
-            txt=QtCore.QString()
-            pos=QtCore.QPointF()
-            stream >> txt
-            stream >> pos
-            s=TextItem(txt)
+
+        for text in data["PFD"]["txt"].values():
+            txt = text["txt"]
+            s = TextItem(txt)
+            x = text["x"]
+            y = text["y"]
+            pos = QtCore.QPoint(x, y)
             s.setPos(pos)
             self.objects["txt"].append(s)
             self.addItem(s)
 
-        n_square=stream.readInt32()
-        for obj in range(n_square):
-            rect=QtCore.QRectF()
-            pen=QtGui.QPen()
-            stream >> rect
-            stream >> pen
-            s=RectItem()
+        for obj in data["PFD"]["square"].values():
+            s = RectItem()
+            x = obj["x"]
+            y = obj["y"]
+            width = obj["width"]
+            height = obj["height"]
+            rect = QtCore.QRect(x, y, width, height)
             s.setRect(rect)
+
+            pen=QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen.setWidthF(obj["width"])
+            pen.setJoinStyle(obj["joinStyle"])
+            pen.setMiterLimit(obj["miterLimit"])
+            pen.setCapStyle(obj["capStyle"])
+            pen.setStyle(obj["style"])
+            pen.setDashOffset(obj["dashOffset"])
             s.setPen(pen)
+
             self.objects["square"].append(s)
             self.addItem(s)
 
-        n_circle=stream.readInt32()
-        for obj in range(n_circle):
-            rect=QtCore.QRectF()
-            pen=QtGui.QPen()
-            stream >> rect
-            stream >> pen
-            s=EllipseItem()
+        for obj in data["PFD"]["ellipse"].values():
+            s = EllipseItem()
+            x = obj["x"]
+            y = obj["y"]
+            width = obj["width"]
+            height = obj["height"]
+            rect = QtCore.QRect(x, y, width, height)
             s.setRect(rect)
+
+            pen=QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen.setWidthF(obj["width"])
+            pen.setJoinStyle(obj["joinStyle"])
+            pen.setMiterLimit(obj["miterLimit"])
+            pen.setCapStyle(obj["capStyle"])
+            pen.setStyle(obj["style"])
+            pen.setDashOffset(obj["dashOffset"])
             s.setPen(pen)
+
             self.objects["ellipse"].append(s)
             self.addItem(s)
 
-        n_stream=stream.readInt32()
-        id_stream=[]
-        up_stream={}
-        down_stream={}
-        for obj in range(n_stream):
-            entrada=QtCore.QPointF()
-            salida=QtCore.QPointF()
-            pen=QtGui.QPen()
-            stream >> entrada
-            stream >> salida
-            stream >> pen
-            id_stream.append(stream.readInt32())
-            up_type = stream.readString().decode("utf-8")
-            up_id=stream.readInt32()
-            down_type = stream.readString().decode("utf-8")
-            down_id=stream.readInt32()
-            up_stream[id_stream[-1]]=up_type, up_id
-            down_stream[id_stream[-1]]=down_type, down_id
-            s=StreamItem()
-            s.id=id_stream[-1]
-            s.entrada=entrada
-            s.salida=salida
+        id_stream = []
+        up_stream = {}
+        down_stream = {}
+        for id, obj in data["PFD"]["stream"].items():
+            id = int(id)
+            s = StreamItem()
+            in_x = obj["input_x"]
+            in_y = obj["input_y"]
+            entrada = QtCore.QPointF(in_x, in_y)
+            out_x = obj["output_x"]
+            out_y = obj["output_y"]
+            salida = QtCore.QPointF(out_x, out_y)
+
+            pen = QtGui.QPen(QtGui.QColor(obj["pen"]["color"]))
+            pen.setWidthF(obj["pen"]["width"])
+            pen.setJoinStyle(obj["pen"]["joinStyle"])
+            pen.setMiterLimit(obj["pen"]["miterLimit"])
+            pen.setCapStyle(obj["pen"]["capStyle"])
+            pen.setStyle(obj["pen"]["style"])
+            pen.setDashOffset(obj["pen"]["dashOffset"])
             s.setPen(pen)
-            s.Ang_entrada=stream.readInt32()
-            s.Ang_salida=stream.readInt32()
-            self.objects["stream"][id_stream[-1]]=s
+
+            up_type = obj["up_type"]
+            down_type = obj["down_type"]
+            up_id = obj["up_id"]
+            down_id = obj["down_id"]
+            id_stream.append(id)
+            up_stream[id] = up_type, up_id
+            down_stream[id] = down_type, down_id
+
+            s.id = id_stream[-1]
+            s.entrada = entrada
+            s.salida = salida
+            s.Ang_entrada = obj["input_angle"]
+            s.Ang_salida = obj["output_angle"]
+            self.objects["stream"][id_stream[-1]] = s
             self.addItem(s)
-            txt=stream.readQString()
-            pos=QtCore.QPointF()
-            stream >> pos
+
+            txt = obj["label"]
+            x = obj["label_x"]
+            y = obj["label_y"]
+            pos = QtCore.QPointF(x, y)
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
             s.idLabel.show()
 
-        n_in=stream.readInt32()
         angle_in={}
-        for obj in range(n_in):
-            pos=QtCore.QPointF()
-            stream >> pos
-            id=stream.readInt32()
-            angle_in[id]=stream.readInt32()
-            n_up=stream.readInt32()
-            up=[]
-            for i in range(n_up):
-                up.append(self.objects["stream"][stream.readInt32()])
-            n_down=stream.readInt32()
-            down=[]
-            for i in range(n_down):
-                down.append(self.objects["stream"][stream.readInt32()])
+        for id, obj in data["PFD"]["in"].items():
+            id = int(id)
             s=EquipmentItem("in", None)
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
             s.setPos(pos)
-            s.down=down
-            s.up=up
-            self.objects["in"][id]=s
+
+            angle_in[id] = obj["angle"]
+            down = [self.objects["stream"][obj["down_id"]]]
+            s.down = down
+            self.objects["in"][id] = s
             self.addItem(s)
 
-        n_out=stream.readInt32()
-        angle_out={}
-        for obj in range(n_out):
-            pos=QtCore.QPointF()
-            stream >> pos
-            id=stream.readInt32()
-            angle_out[id]=stream.readInt32()
-            n_up=stream.readInt32()
-            up=[]
-            for i in range(n_up):
-                up.append(self.objects["stream"][stream.readInt32()])
-            n_down=stream.readInt32()
-            down=[]
-            for i in range(n_down):
-                down.append(self.objects["stream"][stream.readInt32()])
-            s=EquipmentItem("out", None)
+        angle_out = {}
+        for id, obj in data["PFD"]["out"].items():
+            id = int(id)
+            s = EquipmentItem("out", None)
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
             s.setPos(pos)
-            s.down=down
-            s.up=up
-            self.objects["out"][id]=s
+
+            angle_out[id] = obj["angle"]
+            up = [self.objects["stream"][obj["up_id"]]]
+            s.up = up
+            self.objects["out"][id] = s
             self.addItem(s)
 
-        n_equip=stream.readInt32()
+
         angle_equip={}
-        for obj in range(n_equip):
+        for id, obj in data["PFD"]["equip"].items():
+            id = int(id)
             name=stream.readString().decode("utf-8")
             dialogoId=stream.readInt32()
             pos=QtCore.QPointF()
@@ -1270,10 +1286,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.idLabel.setHtml(txt)
 
         for id in id_stream:
-            tipo, i=up_stream[id]
-            self.objects["stream"][id].up=self.getObject(tipo, i)
-            tipo, i=down_stream[id]
-            self.objects["stream"][id].down=self.getObject(tipo, i)
+            tipo, i = up_stream[id]
+            self.objects["stream"][id].up = self.getObject(tipo, i)
+            tipo, i = down_stream[id]
+            self.objects["stream"][id].down = self.getObject(tipo, i)
             self.objects["stream"][id].redraw()
 
         for id, angle in angle_in.items():
@@ -1283,77 +1299,135 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for id, angle in angle_equip.items():
             self.objects["equip"][id].rotate(angle)
 
-    def saveToFile(self, stream):
-        stream.writeInt32(len(self.objects["txt"]))
-        for obj in self.objects["txt"]:
-            stream << obj.toHtml()
-            stream << obj.pos()
+    def writeToJSON(self, data):
+        txts = {}
+        for i, obj in enumerate(self.objects["txt"]):
+            txt = {}
+            txt["txt"] = obj.toHtml()
+            txt["x"] = obj.pos().x()
+            txt["y"] = obj.pos().y()
+            txts[i] = txt
+        data["txt"] = txts
 
-        stream.writeInt32(len(self.objects["square"]))
-        for obj in self.objects["square"]:
-            stream << obj.rect()
-            stream << obj.pen()
+        squares = {}
+        for i, obj in enumerate(self.objects["square"]):
+            square = {}
+            square["x"] = obj.rect().x()
+            square["y"] = obj.rect().y()
+            square["width"] = obj.rect().width()
+            square["height"] = obj.rect().height()
 
-        stream.writeInt32(len(self.objects["ellipse"]))
-        for obj in self.objects["ellipse"]:
-            stream << obj.rect()
-            stream << obj.pen()
+            pen = {}
+            pen["color"] = obj.pen().color().name()
+            pen["width"] = obj.pen().widthF()
+            pen["joinStyle"] = obj.pen().joinStyle()
+            pen["miterLimit"] = obj.pen().miterLimit()
+            pen["capStyle"] = obj.pen().capStyle()
+            pen["style"] = obj.pen().style()
+            pen["dashOffset"] = obj.pen().dashOffset()
+            square["pen"] = pen
+            squares[i] = square
+        data["square"] = squares
 
-        stream.writeInt32(len(self.objects["stream"]))
-        for id in self.objects["stream"]:
-            stream << self.objects["stream"][id].entrada
-            stream << self.objects["stream"][id].salida
-            stream << self.objects["stream"][id].pen()
-            stream.writeInt32(self.objects["stream"][id].id)
-            stream.writeString(self.objects["stream"][id].up.tipo.encode())
-            stream.writeInt32(self.objects["stream"][id].up.id)
-            stream.writeString(self.objects["stream"][id].down.tipo.encode())
-            stream.writeInt32(self.objects["stream"][id].down.id)
-            stream.writeInt32(self.objects["stream"][id].Ang_entrada)
-            stream.writeInt32(self.objects["stream"][id].Ang_salida)
-            stream.writeQString(self.objects["stream"][id].idLabel.toHtml())
-            stream << self.objects["stream"][id].idLabel.pos()
+        ellipses = {}
+        for i, obj in enumerate(self.objects["ellipse"]):
+            ellipse = {}
+            ellipse["x"] = obj.rect().x()
+            ellipse["y"] = obj.rect().y()
+            ellipse["width"] = obj.rect().width()
+            ellipse["height"] = obj.rect().height()
+            pen = {}
+            pen["color"] = obj.pen().color().name()
+            pen["width"] = obj.pen().widthF()
+            pen["joinStyle"] = obj.pen().joinStyle()
+            pen["miterLimit"] = obj.pen().miterLimit()
+            pen["capStyle"] = obj.pen().capStyle()
+            pen["style"] = obj.pen().style()
+            pen["dashOffset"] = obj.pen().dashOffset()
+            ellipse["pen"] = pen
+            ellipses[i] = ellipse
+        data["ellipse"] = ellipses
 
-        stream.writeInt32(len(self.objects["in"]))
-        for id in self.objects["in"]:
-            stream << self.objects["in"][id].pos()
-            stream.writeInt32(self.objects["in"][id].id)
-            stream.writeInt32(self.objects["in"][id].angle)
-            stream.writeInt32(len(self.objects["in"][id].up))
-            for up in self.objects["in"][id].up:
-                stream.writeInt32(up.id)
-            stream.writeInt32(len(self.objects["in"][id].down))
-            for down in self.objects["in"][id].down:
-                stream.writeInt32(down.id)
+        streams = {}
+        for id, obj in self.objects["stream"].items():
+            stream = {}
+            stream["input_x"] = obj.entrada.x()
+            stream["input_y"] = obj.entrada.y()
+            stream["output_x"] = obj.salida.x()
+            stream["output_y"] = obj.salida.y()
+            pen = {}
+            pen["color"] = obj.pen().color().name()
+            pen["width"] = obj.pen().widthF()
+            pen["joinStyle"] = obj.pen().joinStyle()
+            pen["miterLimit"] = obj.pen().miterLimit()
+            pen["capStyle"] = obj.pen().capStyle()
+            pen["style"] = obj.pen().style()
+            pen["dashOffset"] = obj.pen().dashOffset()
+            stream["pen"] = pen
 
-        stream.writeInt32(len(self.objects["out"]))
-        for id in self.objects["out"]:
-            stream << self.objects["out"][id].pos()
-            stream.writeInt32(self.objects["out"][id].id)
-            stream.writeInt32(self.objects["out"][id].angle)
-            stream.writeInt32(len(self.objects["out"][id].up))
-            for up in self.objects["out"][id].up:
-                stream.writeInt32(up.id)
-            stream.writeInt32(len(self.objects["out"][id].down))
-            for down in self.objects["out"][id].down:
-                stream.writeInt32(down.id)
+            stream["up_id"] = obj.up.id
+            stream["up_type"] = obj.up.tipo
+            stream["down_id"] = obj.down.id
+            stream["down_type"] = obj.down.tipo
+            stream["input_angle"] = obj.Ang_entrada
+            stream["output_angle"] = obj.Ang_salida
+            stream["label"] = obj.idLabel.toHtml()
+            stream["label_x"] = obj.idLabel.pos().x()
+            stream["label_y"] = obj.idLabel.pos().y()
+            streams[id] = stream
+        data["stream"] = streams
 
-        stream.writeInt32(len(self.objects["equip"]))
-        for id in self.objects["equip"]:
-            stream.writeString(self.objects["equip"][id].name.encode())
-            stream.writeInt32(self.objects["equip"][id].dialogoId)
-            stream << self.objects["equip"][id].pos()
-            stream.writeInt32(self.objects["equip"][id].id)
-            stream.writeInt32(self.objects["equip"][id].angle)
-            stream.writeInt32(len(self.objects["equip"][id].up))
-            for up in self.objects["equip"][id].up:
-                stream.writeInt32(up.id)
-            stream.writeInt32(len(self.objects["equip"][id].down))
-            for down in self.objects["equip"][id].down:
-                stream.writeInt32(down.id)
-            stream.writeQString(self.objects["equip"][id].idLabel.toHtml())
-            stream << self.objects["equip"][id].idLabel.pos()
+        ins = {}
+        for id, obj in self.objects["in"].items():
+            in_ = {}
+            in_["x"] = obj.x()
+            in_["y"] = obj.y()
+            in_["angle"] = obj.angle
 
+            if obj.down:
+                in_["down_id"] = obj.down[0].id
+            else:
+                in_["down_id"] = None
+            ins[id] = in_
+        data["in"] = ins
+
+        outs = {}
+        for id, obj in self.objects["out"].items():
+            out = {}
+            out["x"] = obj.x()
+            out["y"] = obj.y()
+            out["angle"] = obj.angle
+
+            if obj.up:
+                out["up_id"] = obj.up[0].id
+            else:
+                out["up_id"] = None
+            outs[id] = out
+        data["out"] = outs
+
+        equipments = {}
+        for id, obj in self.objects["equip"].items():
+            equip = {}
+            equip["name"] = obj.name
+            equip["dialogo_id"] = obj.dialogoId
+            equip["x"] = obj.pos().x()
+            equip["y"] = obj.pos().y()
+            equip["angle"] = obj.angle
+
+            ups = []
+            for up in obj.up:
+                ups.append(up.id)
+            stream["up_id"] = ups
+            downs = []
+            for down in obj.down:
+                downs.append(down.id)
+            stream["down_id"] = downs
+
+            equip["label"] = obj.idLabel.toHtml()
+            equip["label_x"] = obj.idLabel.pos().x()
+            equip["label_y"] = obj.idLabel.pos().y()
+            equipments[id] = equip
+        data["equip"] = equipments
 
     def getObject(self, tipo, id):
         if tipo=="e":
@@ -1375,4 +1449,3 @@ if __name__ == "__main__":
     dialogo = SelectStreamProject()
     dialogo.show()
     sys.exit(app.exec_())
-

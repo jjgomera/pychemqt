@@ -206,69 +206,56 @@ class Entity(object):
         return count
 
     # Read-Write to file
-    def writeToStream(self, stream):
+    def writeToJSON(self, data):
         """Save kwargs properties of entity to file"""
-        stream.writeInt32(self.numInputs)
+        kwarg = {}
         for key, value in self.kwargs.items():
             if key not in self.kwargs_forbidden and value:
-                stream.writeString(key.encode())
-                if isinstance(value, float):
-                    stream.writeFloat(value)
-                elif isinstance(value, int):
-                    stream.writeInt32(value)
-                elif isinstance(value, str):
-                    stream.writeString(value.encode())
-                elif isinstance(value, list):
-                    self.writeListtoStream(stream, key, value)
+                if isinstance(value, list):
+                    self.writeListtoJSON(kwarg, key, value)
+                else:
+                    kwarg[key] = value
+        data["kwarg"] = kwarg
+
         # Write state
-        stream.writeInt32(self.status)
-        stream.writeString(self.msg.encode())
-        stream.writeBool(self._bool)
+        data["status"] = self.status
+        data["msg"] = self.msg
+        data["bool"] = self._bool
         if self.status:
-            self.writeStatetoStream(stream)
+            self.writeStatetoJSON(data)
+        else:
+            data["state"] = {}
 
-    def writeListtoStream(self, stream, key, value):
+    def writeListtoJSON(self, data, key, value):
         """Write list to file, Customize in entities with complex list"""
-        stream.writeInt32(len(value))
-        for val in value:
-            stream.writeFloat(val)
+        data[key] = value
 
-    def readFromStream(self, stream, run=True):
-        """Read entity from file
-        run: opcional parameter if we not want run it"""
-        for i in range(stream.readInt32()):
-            key = stream.readString().decode("utf-8")
-            if isinstance(self.kwargs[key], float):
-                valor = stream.readFloat()
-            elif isinstance(self.kwargs[key], int):
-                valor = stream.readInt32()
-            elif isinstance(self.kwargs[key], str):
-                valor = stream.readString().decode("utf-8")
-            elif isinstance(self.kwargs[key], list):
-                valor = self.readListFromStream(stream, key)
-            self.kwargs[key] = valor
+    def readFromJSON(self, data):
+        """Read entity from file"""
+        for key, value in data["kwarg"].items():
+            if isinstance(self.kwargs[key], list):
+                value = self.readListFromJSON(data["kwarg"], key)
+            self.kwargs[key] = value
+
         # Read state
-        self.status = stream.readInt32()
-        self.msg = stream.readString().decode("utf-8")
-        self._bool = stream.readBool()
+        self.status = data["status"]
+        self.msg = data["msg"]
+        self._bool = data["bool"]
         if self.status:
-            self.readStatefromStream(stream)
+            self.readStatefromJSON(data["state"])
 
 #        if run:
 #            self.__call__()
 #            print(self)
 
-    def readListFromStream(self, stream, key):
+    def readListFromJSON(self, data, key):
         """Read list from file, customize in entities with complex list"""
-        valor = []
-        for i in range(stream.readInt32()):
-            valor.append(stream.readFloat())
-        return valor
+        return data[key]
 
-    def writeStatetoStream(self, stream):
+    def writeStatetoJSON(self, data):
         pass
 
-    def readStatefromStream(self, stream):
+    def readStatefromJSON(self, data):
         pass
 
     # Properties
