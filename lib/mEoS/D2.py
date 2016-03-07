@@ -56,7 +56,7 @@ class D2(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for deuterium of Richardson et al. (2013).",
+        "__name__": u"Helmholtz equation of state for deuterium of Richardson et al. (2014).",
         "__doi__": {"autor": "Richardson, I.A., Leachman, J.W., and Lemmon, E.W.",
                     "title": "Fundamental Equation of State for Deuterium ",
                     "ref": "J. Phys. Chem. Ref. Data 43, 013103 (2014)",

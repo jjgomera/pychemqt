@@ -21,148 +21,148 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from lib.meos import MEoS, MEoSBlend
 
 # Noble Gases
-import He
-import Ne
-import Ar
-import Kr
-import Xe
+from lib.mEoS import He
+from lib.mEoS import Ne
+from lib.mEoS import Ar
+from lib.mEoS import Kr
+from lib.mEoS import Xe
 
 # Gases
-import H2
-import D2
-import pH2
-import oH2
-import N2
-import O2
-import F2
-import H2O
-import D2O
-import CO2
-import CO
-import N2O
-import SO2
-import COS
-import NH3
-import H2S
+from lib.mEoS import H2
+from lib.mEoS import D2
+from lib.mEoS import pH2
+from lib.mEoS import oH2
+from lib.mEoS import N2
+from lib.mEoS import O2
+from lib.mEoS import F2
+from lib.mEoS import H2O
+from lib.mEoS import D2O
+from lib.mEoS import CO2
+from lib.mEoS import CO
+from lib.mEoS import N2O
+from lib.mEoS import SO2
+from lib.mEoS import COS
+from lib.mEoS import NH3
+from lib.mEoS import H2S
 
 # Alkanes
 
-import CH4
-import C2
-import C3
-import nC4
-import iC4
-import nC5
-import neoC5
-import iC5
-import nC6
-import iC6
-import nC7
-import nC8
-import iC8
-import nC9
-import nC10
-import nC11
-import nC12
+from lib.mEoS import CH4
+from lib.mEoS import C2
+from lib.mEoS import C3
+from lib.mEoS import nC4
+from lib.mEoS import iC4
+from lib.mEoS import nC5
+from lib.mEoS import neoC5
+from lib.mEoS import iC5
+from lib.mEoS import nC6
+from lib.mEoS import iC6
+from lib.mEoS import nC7
+from lib.mEoS import nC8
+from lib.mEoS import iC8
+from lib.mEoS import nC9
+from lib.mEoS import nC10
+from lib.mEoS import nC11
+from lib.mEoS import nC12
 
 # Naphthenes
-import Cyclopropane
-import Cyclopentane
-import Cyclohexane
-import C1Cyclohexane
-import C3Cyclohexane
+from lib.mEoS import Cyclopropane
+from lib.mEoS import Cyclopentane
+from lib.mEoS import Cyclohexane
+from lib.mEoS import C1Cyclohexane
+from lib.mEoS import C3Cyclohexane
 
 # Alkenes
-import Benzene
-import Toluene
-import oXylene
-import pXylene
-import pXylene
-import EthylBenzene
-import Ethylene
-import Propylene
-import Butene_1
-import iButene
-import Cis_2_butene
-import Trans_2_butene
-import Propyne
-import C1Oleate
-import C1Linolenate
-import C1Linoleate
-import C1Palmitate
-import C1Stearate
+from lib.mEoS import Benzene
+from lib.mEoS import Toluene
+from lib.mEoS import oXylene
+from lib.mEoS import pXylene
+from lib.mEoS import pXylene
+from lib.mEoS import EthylBenzene
+from lib.mEoS import Ethylene
+from lib.mEoS import Propylene
+from lib.mEoS import Butene_1
+from lib.mEoS import iButene
+from lib.mEoS import Cis_2_butene
+from lib.mEoS import Trans_2_butene
+from lib.mEoS import Propyne
+from lib.mEoS import C1Oleate
+from lib.mEoS import C1Linolenate
+from lib.mEoS import C1Linoleate
+from lib.mEoS import C1Palmitate
+from lib.mEoS import C1Stearate
 
 # Heteroatom
-import Methanol
-import Ethanol
-import Acetone
-import DME
-import DEE
-import DMC
-import NF3
-import SF6
-import HCl
+from lib.mEoS import Methanol
+from lib.mEoS import Ethanol
+from lib.mEoS import Acetone
+from lib.mEoS import DME
+from lib.mEoS import DEE
+from lib.mEoS import DMC
+from lib.mEoS import NF3
+from lib.mEoS import SF6
+from lib.mEoS import HCl
 
 # CFCs
-import CF3I
-import C4F10
-import C5F12
-import R11
-import R12
-import R13
-import R14
-import R21
-import R22
-import R23
-import R32
-import R40
-import R41
-import R113
-import R114
-import R115
-import R116
-import R123
-import R124
-import R125
-import R134a
-import R141b
-import R142b
-import R143a
-import R152a
-import R161
-import R218
-import R227ea
-import R236ea
-import R236fa
-import R245ca
-import R245fa
-import R365mfc
-import RC318
-import R1234yf
-import R1234ze
-import R1216
-import R1233zd
-import RE143a
-import RE245cb2
-import RE245fa2
-import RE347mcc
+from lib.mEoS import CF3I
+from lib.mEoS import C4F10
+from lib.mEoS import C5F12
+from lib.mEoS import R11
+from lib.mEoS import R12
+from lib.mEoS import R13
+from lib.mEoS import R14
+from lib.mEoS import R21
+from lib.mEoS import R22
+from lib.mEoS import R23
+from lib.mEoS import R32
+from lib.mEoS import R40
+from lib.mEoS import R41
+from lib.mEoS import R113
+from lib.mEoS import R114
+from lib.mEoS import R115
+from lib.mEoS import R116
+from lib.mEoS import R123
+from lib.mEoS import R124
+from lib.mEoS import R125
+from lib.mEoS import R134a
+from lib.mEoS import R141b
+from lib.mEoS import R142b
+from lib.mEoS import R143a
+from lib.mEoS import R152a
+from lib.mEoS import R161
+from lib.mEoS import R218
+from lib.mEoS import R227ea
+from lib.mEoS import R236ea
+from lib.mEoS import R236fa
+from lib.mEoS import R245ca
+from lib.mEoS import R245fa
+from lib.mEoS import R365mfc
+from lib.mEoS import RC318
+from lib.mEoS import R1234yf
+from lib.mEoS import R1234ze
+from lib.mEoS import R1216
+from lib.mEoS import R1233zd
+from lib.mEoS import RE143a
+from lib.mEoS import RE245cb2
+from lib.mEoS import RE245fa2
+from lib.mEoS import RE347mcc
 
 # Siloxanes
-import D4
-import D5
-import D6
-import MDM
-import MD2M
-import MD3M
-import MD4M
-import MM
+from lib.mEoS import D4
+from lib.mEoS import D5
+from lib.mEoS import D6
+from lib.mEoS import MDM
+from lib.mEoS import MD2M
+from lib.mEoS import MD3M
+from lib.mEoS import MD4M
+from lib.mEoS import MM
 
 # PseudoCompound
-import Air
-import R404a
-import R407c
-import R410a
-import R507a
+from lib.mEoS import Air
+from lib.mEoS import R404a
+from lib.mEoS import R407c
+from lib.mEoS import R410a
+from lib.mEoS import R507a
 
 # TODO: Add Novec 649 from REFPROP
 
