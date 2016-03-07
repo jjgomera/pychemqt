@@ -36,10 +36,10 @@ except:
     pass
 
 from . import unidades
-from .thermo import Fluid
+from .thermo import Fluid, Thermo
 
 
-class CoolProp(object):
+class CoolProp(Thermo):
     """Stream class using coolProp external library"""
     kwargs = {"fluido": None,
               "fraccion": [1],
@@ -165,7 +165,7 @@ class CoolProp(object):
         if self.x == 0:
             # liquid phase
             self.fill(self.Liquido, estado)
-            self.Liquido.epsilon = unidades.Tension(estado.Props(param_constants.iI))
+            self.Liquido.sigma = unidades.Tension(estado.Props(param_constants.iI))
             self.fill(self, estado)
         elif self.x == 1:
             # vapor phase
@@ -175,6 +175,7 @@ class CoolProp(object):
             # Two phase
             estado.update_Trho(estado.T, estado.PFC.rhoL())
             self.fill(self.Liquido, estado)
+            self.Liquido.sigma = unidades.Tension(estado.Props(param_constants.iI))
             estado.update_Trho(estado.T, estado.PFC.rhoV())
             self.fill(self.Gas, estado)
 

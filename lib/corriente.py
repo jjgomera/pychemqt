@@ -1788,7 +1788,7 @@ class Corriente(config.Entity):
                 self.solido = self.kwargs["solido"]
             else:
                 self.solido = Solid(**self.kwargs)
-            if self.solido._def:
+            if self.solido.status:
                 self.solido.RhoS(T)
         else:
             self.solido = None
@@ -2004,8 +2004,10 @@ class Corriente(config.Entity):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
 
-        if self.calculable and self._thermo == "meos":
-            txt += os.linesep+self.cmp.txt()
+        # FIXME: Add support for load cmp from saved file
+        # cmp is a bad option
+        #if self.calculable and self._thermo != "eos":
+        #    txt += os.linesep+self.cmp.txt()
 
         return txt
 
@@ -2096,9 +2098,16 @@ class Corriente(config.Entity):
 
         if self._thermo in ["iapws", "freesteam", "coolprop", "refprop"]:
             self.Liquido = Fluid()
-            self.Liquido.readStatefromJSON(state["liquid"])
             self.Gas = Fluid()
-            self.Gas.readStatefromJSON(state["gas"])
+        elif self._thermo == "meos":
+            self.Liquido = Fluid_MEOS()
+            self.Gas = Fluid_MEOS()
+        else:
+            self.Liquido = Mezcla()
+            self.Gas = Mezcla()
+
+        self.Liquido.readStatefromJSON(state["liquid"])
+        self.Gas.readStatefromJSON(state["gas"])
 
 
 class PsyStream(config.Entity):

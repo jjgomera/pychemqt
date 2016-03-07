@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # IAPWS-IF97 pure python implementation
 ###############################################################################
@@ -31,71 +30,7 @@ from scipy.optimize import fsolve
 from PyQt5.QtWidgets import QApplication
 
 from . import unidades
-from .thermo import Fluid
-
-properties = {
-    "P": QApplication.translate("pychemqt", "Pressure"),
-    "T": QApplication.translate("pychemqt", "Temperature"),
-    "g": QApplication.translate("pychemqt", "Gibbs free energy"),
-    "a": QApplication.translate("pychemqt", "Helmholtz free energy"),
-    "v": QApplication.translate("pychemqt", "Specific Volume"),
-    "rho": QApplication.translate("pychemqt", "Density"),
-    "h": QApplication.translate("pychemqt", "Enghalpy"),
-    "u": QApplication.translate("pychemqt", "Internal Energy"),
-    "s": QApplication.translate("pychemqt", "Entropy"),
-    "cp": QApplication.translate("pychemqt", "Cp"),
-    "cv": QApplication.translate("pychemqt", "Cv"),
-    "Z": QApplication.translate("pychemqt", "Compression factor"),
-    "f": QApplication.translate("pychemqt", "Fugacity"),
-    "x": QApplication.translate("pychemqt", "Quality"),
-    "gamma": QApplication.translate("pychemqt", "Isoentropic exponent"),
-    "alfav": QApplication.translate("pychemqt", "Isobaric cubic expansion coefficient"),
-    "kt": QApplication.translate("pychemqt", "Isothermal compressibility"),
-    "alfap": QApplication.translate("pychemqt", "Relative pressure coefficient"),
-    "betap": QApplication.translate("pychemqt", "Isothermal stress coefficient"),
-    "joule": QApplication.translate("pychemqt", "Joule-Thomson coefficient"),
-    "deltat": QApplication.translate("pychemqt", "Isothermal throttling coefficient"),
-    "k": QApplication.translate("pychemqt", "Thermal Conductivity"),
-    "mu": QApplication.translate("pychemqt", "Viscosity"),
-    "nu": QApplication.translate("pychemqt", "Kinematic viscosity"),
-    "alfa": QApplication.translate("pychemqt", "Thermal diffusivity"),
-    "sigma": QApplication.translate("pychemqt", "Surface tension"),
-    "epsilon": QApplication.translate("pychemqt", "Dielectric constant"),
-    "n": QApplication.translate("pychemqt", "Refractive index"),
-    "Pr": QApplication.translate("pychemqt", "Prandtl number"),
-    "w": QApplication.translate("pychemqt", "Speed of sound")}
-
-units = [
-    ("P", unidades.Pressure, None),
-    ("T", unidades.Temperature, None),
-    ("g", unidades.Enthalpy, None),
-    ("a", unidades.Enthalpy, None),
-    ("v", unidades.SpecificVolume, None),
-    ("rho", unidades.Density, None),
-    ("h", unidades.Enthalpy, None),
-    ("u", unidades.Enthalpy, None),
-    ("s", unidades.SpecificHeat, "Entropy"),
-    ("cp", unidades.SpecificHeat, None),
-    ("cv", unidades.SpecificHeat, None),
-    ("Z", float, None),
-    ("f", unidades.Pressure, None),
-    ("x", float, None),
-    ("gamma", float, None),
-    ("alfav", unidades.InvTemperature, None),
-    ("kt", unidades.InvPressure, None),
-    ("alfap", unidades.InvTemperature, None),
-    ("betap", unidades.Density, None),
-    ("joule", unidades.TemperaturePressure, None),
-    ("deltat", unidades.EnthalpyPressure, None),
-    ("k", unidades.ThermalConductivity, None),
-    ("mu", unidades.Viscosity, None),
-    ("nu", unidades.Diffusivity, None),
-    ("alfa", unidades.Diffusivity, None),
-    ("sigma", unidades.Tension, None),
-    ("epsilon", float, None),
-    ("n", float, None),
-    ("Pr", float, None),
-    ("w", unidades.Speed, None)]
+from .thermo import Fluid, Thermo
 
 
 # Constants
@@ -3024,7 +2959,7 @@ def prop0(T, P):
     return prop0
 
 
-class IAPWS97(object):
+class IAPWS97(Thermo):
     """Class to model a state for liquid water or steam with the IAPWS-IF97
 
     Incoming properties:
@@ -3112,6 +3047,15 @@ class IAPWS97(object):
               "l": 0.5893}
     status = 0
     msg = "Unknown variables"
+    __doi__ = [
+        {"autor": "IAPWS",
+         "title": "Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
+         "ref": "",
+         "doi": ""},
+        {"autor": "Wagner, W., Cooper, J. R., Dittmann, A., Kijima, J., Kretzschmar, H.-J., Kruse, A., Mareš, R., Oguchi, K., Sato, H., Stöcker, I., Šifner, O., Takaishi, Y., Tanishita, I., Trübenbach, J., and Willkommen, Th.",
+         "title": "The IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
+         "ref": "J. Eng. Gas Turbines & Power 122, 150-182 (2000)",
+         "doi": "10.1115/1.483186"}]
 
     def __init__(self, **kwargs):
         self.kwargs = IAPWS97.kwargs.copy()
@@ -3367,9 +3311,10 @@ class IAPWS97(object):
         self.Liquido = Fluid()
         self.Gas = Fluid()
         if self.x == 0:
-            # only lilquid phase
+            # only liquid phase
             self.fill(self, propiedades)
-            self.fill(self.Liquido, propiedades)
+            self.fill(lself.Liquido, propiedades)
+            self.Liquido.sigma = unidades.Tension(_Tension(self.T))
         elif self.x == 1:
             # only vapor phase
             self.fill(self, propiedades)
@@ -3378,6 +3323,7 @@ class IAPWS97(object):
             # two phases
             liquido = _Region1(self.T, self.P.MPa)
             self.fill(self.Liquido, liquido)
+            self.Liquido.sigma = unidades.Tension(_Tension(self.T))
             vapor = _Region2(self.T, self.P.MPa)
             self.fill(self.Gas, vapor)
 
@@ -3419,19 +3365,19 @@ class IAPWS97(object):
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.epsilon = unidades.Dimensionless(_Dielectric(fase.rho, self.T))
         fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
-        fase.n = _Refractive(fase.rho, self.T, self.kwargs["l"])
+        fase.n = unidades.Dimensionless(_Refractive(fase.rho, self.T, self.kwargs["l"]))
 
-        fase.alfa=unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
-        fase.joule=unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
-        fase.deltat=self.derivative("h", "P", "T", fase)
+        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
+        fase.deltat = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase))
         fase.gamma = unidades.Dimensionless(-fase.v/self.P/1000*self.derivative("P", "v", "s", fase))
 
         if self.region==3:
-            fase.alfap=estado["alfap"]
-            fase.betap=estado["betap"]
+            fase.alfap = unidades.Density(estado["alfap"])
+            fase.betap = unidades.Density(estado["betap"])
         else:
-            fase.alfap=fase.alfav/self.P/fase.xkappa
-            fase.betap=-1/self.P/1000*self.derivative("P", "v", "T", fase)
+            fase.alfap = unidades.Density(fase.alfav/self.P/fase.xkappa)
+            fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
 
         cp0 = prop0(self.T, self.P.MPa)
         fase.v0 = unidades.SpecificVolume(cp0.v)
@@ -3444,8 +3390,8 @@ class IAPWS97(object):
         fase.cp0 = unidades.SpecificHeat(cp0.cp)
         fase.cv0 = unidades.SpecificHeat(cp0.cv)
         fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv0)
-        fase.w0 = cp0.w
-        fase.gamma0 = cp0.gamma
+        fase.w0 = unidades.Speed(cp0.w)
+        fase.gamma0 = unidades.Dimensionless(cp0.gamma)
         fase.f = unidades.Pressure(self.P*exp((fase.g-fase.g0)/R/self.T))
 
     def getphase(self, fld):

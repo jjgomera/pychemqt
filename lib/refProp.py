@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library to multiparameter equation of state calculation using refprop
 # https://github.com/BenThelen/python-refprop
@@ -36,10 +35,10 @@ except:
     pass
 
 from lib import unidades
-from .thermo import Fluid
+from .thermo import Fluid, Thermo
 
 
-class RefProp(object):
+class RefProp(Thermo):
     """
     Stream class using refProp external library
     Parameters needed to define it are:
@@ -301,9 +300,9 @@ class RefProp(object):
         if self.T <= self.Tc:
             surten = refprop.surten(flash["t"], flash["Dliq"], flash["Dvap"],
                                     flash["xliq"], flash["xvap"])
-            self.surten = unidades.Tension(surten["sigma"])
+            self.sigma = unidades.Tension(surten["sigma"])
         else:
-            self.surten = unidades.Tension(None)
+            self.sigma = unidades.Tension(None)
 
 #        cp2=refprop.cv2pk(self.nc, flash["t"], flash["D"])
 #        self.cv2p=unidades.SpecificHeat(cp2["cv2p"]/self.M)

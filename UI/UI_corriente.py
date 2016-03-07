@@ -693,7 +693,7 @@ class StreamProperties(QtWidgets.QTableWidget):
                 self.CpLiquido.setValue(stream.Liquido.cp)
                 self.ViscosidadLiquido.setValue(stream.Liquido.mu)
                 self.ConductividadLiquido.setValue(stream.Liquido.k)
-                self.Tension.setValue(stream.Liquido.epsilon)
+                self.Tension.setValue(stream.Liquido.sigma)
 
 
 class SolidDefinition(QtWidgets.QWidget):
@@ -771,10 +771,10 @@ class SolidDefinition(QtWidgets.QWidget):
     def fill(self):
         if self.semaforo.available() > 0:
             self.semaforo.acquire(1)
-            if self.solido._def:
+            if self.solido.status:
                 for i, caudal in enumerate(self.solido.caudalUnitario):
                     self.CaudalSolidos[i].setValue(caudal)
-                if self.solido._def == 1:
+                if self.solido.status == 1:
                     self.checkDistribucion.setChecked(False)
                 else:
                     self.checkDistribucion.setChecked(True)

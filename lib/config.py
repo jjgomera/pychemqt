@@ -18,37 +18,40 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module with configuration tools
 #   - getComponents: Get component list from project
 #   - getMainWindowConfig: Return config of current project
+#   - setMainWindowConfig: Update currentconfig variable
 #   - Entity: General class for model object
 #   - Fluid: dict class wiih custom properties
-
+#
 #   Variables:
 #   - conf_dir: User configuration path
+#   - QTSETTING_FILE: Path of qt application configuration
 #   - Preferences: ConfigParser instance with pychemqt preferences
+#   - currentConfig: ConfirParser instance with the current pychemqt open
+#   project or the last open project
 ###############################################################################
+
 
 import os
 
 # TODO: Delete when it isn´t necessary debug
-#os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-#os.environ["freesteam"]="False"
-#os.environ["oasa"]="False"
-#os.environ["CoolProp"]="True"
-#os.environ["refprop"]="False"
-#os.environ["ezodf"]="False"
-#os.environ["openpyxl"]="False"
-#os.environ["xlwt"]="False"
-#os.environ["icu"]="True"
+#os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
+#os.environ["freesteam"] = "False"
+#os.environ["oasa"] = "False"
+#os.environ["CoolProp"] = "True"
+#os.environ["refprop"] = "False"
+#os.environ["ezodf"] = "False"
+#os.environ["openpyxl"] = "False"
+#os.environ["xlwt"] = "False"
+#os.environ["icu"] = "False"
 
 
 from configparser import ConfigParser
 from PyQt5 import QtWidgets
 from lib.sql import databank
-
 
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 QTSETTING_FILE = os.path.expanduser('~') + os.sep +\

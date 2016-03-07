@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library to use freesteam library to calculate water properties with IAPWS-IF97
 # to meos calculation or in stream calculations.
@@ -40,10 +39,10 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from .thermo import Fluid
+from .thermo import Fluid, Thermo
 
 
-class Freesteam(object):
+class Freesteam(Thermo):
     """Class to define a water stream
     It can be defined by the pair:
         P,T
@@ -145,7 +144,7 @@ class Freesteam(object):
             # Liquid phase
             liquido = freesteam.steam_Tx(fluido.T, 0.)
             self.fill(self.Liquido, liquido)
-            self.Liquido.epsilon = unidades.Tension(iapws._Tension(self.T))
+            self.Liquido.sigma = unidades.Tension(iapws._Tension(self.T))
         if self.x > 0:
             vapor = freesteam.steam_Tx(fluido.T, 1.)
             self.fill(self.Gas, vapor)

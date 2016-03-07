@@ -39,7 +39,7 @@ from scipy.optimize import fsolve
 
 from . import unidades, compuestos
 from .physics import R_atml
-from .thermo import Fluid
+from .thermo import Fluid_MEOS
 
 data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
         (QApplication.translate("pychemqt", "Reduced temperature"), "Tr", unidades.Dimensionless),
@@ -114,71 +114,9 @@ properties = dict(list(zip(keys, propiedades)))
 inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
 
 
-class _fase(Fluid):
-    """Class to implement a null phase"""
-    v = None
-    rho = None
-
-    h = None
-    s = None
-    u = None
-    a = None
-    g = None
-
-    cp = None
-    cv = None
-    cp_cv = None
-    w = None
-    Z = None
-    fi = None
-    f = None
-
-    rhoM = None
-    hM = None
-    sM = None
-    uM = None
-    aM = None
-    gM = None
-    cvM = None
-    cpM = None
-
-    mu = None
-    k = None
-    nu = None
-    Prandt = None
-    epsilon = None
-    alfa = None
-    n = None
-
-    alfap = None
-    betap = None
-    joule = None
-    Gruneisen = None
-    alfav = None
-    kappa = None
-    betas = None
-    gamma = None
-    Kt = None
-    kt = None
-    Ks = None
-    ks = None
-    dpdT_rho = None
-    dpdrho_T = None
-    drhodT_P = None
-    drhodP_T = None
-    dhdT_rho = None
-    dhdT_P = None
-    dhdrho_T = None
-    dhdrho_P = None
-    dhdP_T = None
-    dhdP_rho = None
-
-    Z_rho = None
-    IntP = None
-    hInput = None
 
 
-class MEoS(_fase):
+class MEoS(Fluid_MEOS):
     """General class for implement multiparameter equation of state
     Each child class must define parameters for do calculations:
         name: Name of component
@@ -829,8 +767,8 @@ class MEoS(_fase):
         else:
             self.gamma0 = 0
 
-        self.Liquido = _fase()
-        self.Gas = _fase()
+        self.Liquido = Fluid_MEOS()
+        self.Gas = Fluid_MEOS()
         if x == 0:
             # liquid phase
             self.fill(self.Liquido, propiedades)
@@ -1010,7 +948,7 @@ class MEoS(_fase):
             txt = QApplication.translate("pychemqt", "Critic point")
         else:
             txt = QApplication.translate("pychemqt", "Supercritical")
-        for key in _fase.__dict__:
+        for key in Fluid_MEOS.__dict__:
             if key[0] != "_":
                 fase.__setattr__(key, txt)
 
@@ -1537,7 +1475,7 @@ class MEoS(_fase):
         tau = self.Tc/T
         fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
 
-        propiedades = _fase()
+        propiedades = Fluid_MEOS()
         if rho:
             propiedades.v = self.R*T/self.P
         else:
@@ -2773,7 +2711,7 @@ class MEoS(_fase):
 
         complejos = ""
         for propiedad, key, unit in data:
-            if key in _fase.__dict__:
+            if key in Fluid_MEOS.__dict__:
                 values = [propiedad]
                 for phase in phases:
                     values.append(phase.__getattribute__(key).str)
