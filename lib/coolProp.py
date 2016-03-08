@@ -214,7 +214,7 @@ class CoolProp(Thermo):
         fase.Prandt = unidades.Dimensionless(estado.Prandtl)
 
         # fase.joule = unidades.TemperaturePressure(self.Liquido["hjt"], "KkPa")
-        fase.xkappa = unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
+        fase.kappa = unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
         fase.alfav = unidades.InvTemperature(-estado.PFC.drhodT_constp()/estado.rho)
 
         fase.cp0 = unidades.SpecificHeat(estado.Props(param_constants.iC0), "kJkgK")

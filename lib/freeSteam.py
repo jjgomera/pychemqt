@@ -187,7 +187,7 @@ class Freesteam(Thermo):
         fase.Prandt = unidades.Dimensionless(estado.mu*estado.cp/estado.k)
 
 #            fase.joule=unidades.TemperaturePressure(self.Liquido["hjt"], "KkPa")
-#        fase.xkappa=unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
+#        fase.kappa=unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
 #        fase.alfav=unidades.InvTemperature(-estado.PFC.drhodT_constp()/estado.rho)
 
         cp0 = iapws.prop0(self.T, self.P)

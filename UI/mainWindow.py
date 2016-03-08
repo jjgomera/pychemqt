@@ -41,6 +41,7 @@ __version__ = "0.1.0"
 
 other_window = (plots.Binary_distillation, UI_Tables.TablaMEoS,
                 UI_Tables.PlotMEoS)
+other_window_names = [cl.__name__ for cl in other_window]
 
 
 class TabWidget(QtWidgets.QTabWidget):
@@ -821,17 +822,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.list.updateList(mdiArea.subWindowList()[0].widget().scene().objects)
 
             for ventana in data["other"]:
-                pass
-#            otras_ventanas=stream.readInt32()
-#            for ventana in range(otras_ventanas):
-#                widget = other_window[stream.readInt32()]
-#                grafico = widget.readFromStream(stream, self)
-#                mdiArea.addSubWindow(grafico)
-#                pos=QtCore.QPoint()
-#                size=QtCore.QSize()
-#                stream >> pos >> size
-#                mdiArea.subWindowList()[ventana+1].move(pos)
-#                mdiArea.subWindowList()[ventana+1].resize(size)
+                name = ventana["class"]
+                indice = other_window_names.index(name)
+                widget = other_window[indice]()
+                widget.readFromJSON(ventana)
+                mdiArea.addSubWindow(widget)
+                x = ventana["x"]
+                y = ventana["y"]
+                pos = QtCore.QPoint(x, y)
+                h = ventana["height"]
+                w = ventana["width"]
+                size = QtCore.QSize(w, h)
+                mdiArea.subWindowList()[ventana+1].move(pos)
+                mdiArea.subWindowList()[ventana+1].resize(size)
 
             self.centralwidget.addTab(mdiArea, os.path.splitext(os.path.basename(str(fname)))[0])
             self.centralwidget.setCurrentIndex(self.centralwidget.count()-1)

@@ -225,7 +225,9 @@ class Entity(object):
         data["msg"] = self.msg
         data["bool"] = self._bool
         if self.status:
-            self.writeStatetoJSON(data)
+            state = {}
+            self.writeStatetoJSON(state)
+            data["state"] = state
         else:
             data["state"] = {}
 

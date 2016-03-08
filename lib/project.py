@@ -207,11 +207,12 @@ class Project(object):
 
         # write equipments
         equipment = {}
-        for key, item in self.items.items():
+        for key, equip in self.items.items():
             if key[0] == "e":
                 eq = {}
-                item.writeToJSON(eq)
-                equipment["key"] = eq
+                eq["id"] = equipments.index(equip.__class__)
+                equip.writeToJSON(eq)
+                equipment[key] = eq
         data["equipment"] = equipment
 
         # write streams
@@ -245,8 +246,9 @@ class Project(object):
         items = {}
         for id, equip in data["equipment"].items():
             if id[0] == "e":
-                equip = equipments[stream.readInt32()]()
-                equip.readFromJSON(data)
+                index = equip["id"]
+                equip = equipments[index]()
+                equip.readFromJSON(data["equipment"][id])
             else:
                 equip = None
             items[id] = equip

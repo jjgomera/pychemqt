@@ -324,7 +324,7 @@ class RefProp(Thermo):
         fase.Z = unidades.Dimensionless(fase["Z"])
         fase.A = unidades.Enthalpy(fase["A"]/fase.M, "Jg")
         fase.G = unidades.Enthalpy(fase["G"]/fase.M, "Jg")
-        fase.xkappa = unidades.InvPressure(fase["xkappa"], "kPa")
+        fase.kappa = unidades.InvPressure(fase["kappa"], "kPa")
         fase.alfav = unidades.InvTemperature(fase["beta"])
 #            fase.dpdD = fase["dpdD"]      #derivative dP/dD [kPa-L/mol]
 #            fase.d2pdD2 = fase["d2pdD2"]  #derivative d^2p/dD^2 [kPa-L^2/mol^2]

@@ -37,10 +37,10 @@ from PyQt5.QtWidgets import QApplication
 from lib.compuestos import Componente
 from lib.physics import R_atml, R
 from lib import unidades, config
-from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
+from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp, meos, thermo
 from lib.psycrometry import PsychroState
 from lib.elemental import Elemental
-from .thermo import Fluid
+from .thermo import Fluid, Fluid_MEOS
 
 
 class Mezcla(config.Entity):
@@ -1173,8 +1173,8 @@ class Solid(config.Entity):
         return self.status
 
     def calculo(self):
-        self.Config = config.getMainWindowConfig()
-        txt = self.Config.get("Components", "Solids")
+        Config = config.getMainWindowConfig()
+        txt = Config.get("Components", "Solids")
         if isinstance(txt, str):
             self.ids = eval(txt)
         else:
@@ -1309,8 +1309,7 @@ class Solid(config.Entity):
             Solido_Capturado = Solid(caudalSolido=[caudal_separado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_ensolido)
             return Solido_NoCapturado, Solido_Capturado
 
-    def writeStatefromJSON(self, state):
-        solid = {}
+    def writeStatefromJSON(self, solid):
         if self.status:
             solid["ids"] = self.ids
             solid["caudalUnitario"] = self.caudalUnitario
@@ -1319,7 +1318,6 @@ class Solid(config.Entity):
             solid["fracciones"] = self.fracciones
             solid["fracciones_acumuladas"] = self.fracciones_acumuladas
             solid["diametro_medio"] = self.diametro_medio
-        state["solid"] = solid
 
     def readStatefromJSON(self, solid):
         if solid:
@@ -1388,7 +1386,6 @@ class Corriente(config.Entity):
     solido = None
 
     def __init__(self, **kwargs):
-        self.Config = config.getMainWindowConfig()
         self.kwargs = Corriente.kwargs.copy()
         self.__call__(**kwargs)
 
@@ -1603,14 +1600,15 @@ class Corriente(config.Entity):
         P = unidades.Pressure(self.kwargs.get("P", None))
         x = self.kwargs.get("x", None)
 
-        MEoS = self.Config.getboolean("Thermo", "MEoS")
-        COOLPROP = self.Config.getboolean("Thermo", "coolprop")
-        REFPROP = self.Config.getboolean("Thermo", "refprop")
-        IAPWS = self.Config.getboolean("Thermo", "iapws") and \
+        Config = config.getMainWindowConfig()
+        MEoS = Config.getboolean("Thermo", "MEoS")
+        COOLPROP = Config.getboolean("Thermo", "coolprop")
+        REFPROP = Config.getboolean("Thermo", "refprop")
+        IAPWS = Config.getboolean("Thermo", "iapws") and \
             len(self.ids) == 1 and self.ids[0] == 62
-        FREESTEAM = self.Config.getboolean("Thermo", "freesteam") and \
+        FREESTEAM = Config.getboolean("Thermo", "freesteam") and \
             len(self.ids) == 1 and self.ids[0] == 62
-        GERG = self.Config.getboolean("Thermo", "GERG")
+        GERG = Config.getboolean("Thermo", "GERG")
         setData = True
 
         mEoS_available = self.ids[0] in mEoS.id_mEoS
@@ -1663,7 +1661,7 @@ class Corriente(config.Entity):
             if self.tipoTermodinamica == "TP":
                 self.T = unidades.Temperature(T)
                 self.P = unidades.Pressure(P)
-                eos = EoS.K[self.Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
+                eos = EoS.K[Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
                 self.eos = eos
                 self.x = unidades.Dimensionless(eos.x)
             else:
@@ -1685,10 +1683,10 @@ class Corriente(config.Entity):
             self.Gas.Z = unidades.Dimensionless(float(eos.Z[0]))
             self.Liquido.Z = unidades.Dimensionless(float(eos.Z[1]))
 
-            if EoS.H[self.Config.getint("Thermo", "H")].__title__ == EoS.K[self.Config.getint("Thermo","K")].__title__:
+            if EoS.H[Config.getint("Thermo", "H")].__title__ == EoS.K[Config.getint("Thermo","K")].__title__:
                 eosH = eos
             else:
-                eosH = EoS.H[self.Config.getint("Thermo", "H")](self.T, self.P.atm, self.mezcla)
+                eosH = EoS.H[Config.getint("Thermo", "H")](self.T, self.P.atm, self.mezcla)
             self.H_exc = eosH.H_exc
 
             self.Liquido.Q = unidades.VolFlow(0)
@@ -1703,9 +1701,9 @@ class Corriente(config.Entity):
                 self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
                 self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
                 self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm)
-                self.Liquido.epsilon = self.Liquido.Tension(T)
+                self.Liquido.sigma = self.Liquido.Tension(T)
                 self.Liquido.Q = unidades.VolFlow(self.Liquido.caudalmasico/self.Liquido.rho)
-                self.Liquido.Pr = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
+                self.Liquido.Prandt = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
             if self.x > 0:
                 # There is gas phase
                 Hg = self.Gas.Entalpia_ideal(self.T).Jg*self.Gas.caudalmasico.gh
@@ -1716,7 +1714,7 @@ class Corriente(config.Entity):
                 self.Gas.mu = self.Gas.Mu_Gas(T, self.P.atm)
                 self.Gas.k = self.Gas.ThCond_Gas(T, self.P.atm)
                 self.Gas.Q = unidades.VolFlow(self.Gas.caudalmasico/self.Gas.rho)
-                self.Gas.Pr = self.Gas.cp*self.Gas.mu/self.Gas.k
+                self.Gas.Prandt = self.Gas.cp*self.Gas.mu/self.Gas.k
 
             self.Q = unidades.VolFlow(self.Liquido.Q+self.Gas.Q)
             self.h = unidades.Power(self.Liquido.h+self.Gas.h)
@@ -1729,7 +1727,7 @@ class Corriente(config.Entity):
             self.rho = 0
 
         if setData:
-        # Asignación de valores comun
+            # Asignación de valores comun
             self.cmp = compuesto
             self.T = compuesto.T
             self.P = compuesto.P
@@ -1741,6 +1739,27 @@ class Corriente(config.Entity):
             self.s = unidades.Entropy(compuesto.s*self.caudalmasico)
             self.rho = compuesto.rho
             self.Q = unidades.VolFlow(compuesto.v*self.caudalmasico)
+
+            if self._thermo == "meos":
+                self.Tr = compuesto.Tr
+                self.Pr = compuesto.Pr
+                self.v0 = compuesto.v0
+                self.rho0 = compuesto.rho0
+                self.h0 = compuesto.h0
+                self.u0 = compuesto.u0
+                self.s0 = compuesto.s0
+                self.a0 = compuesto.a0
+                self.g0 = compuesto.g0
+                self.cp0 = compuesto.cp0
+                self.cv0 = compuesto.cv0
+                self.cp0_cv = compuesto.cp0_cv
+                self.gamma0 = compuesto.gamma0
+                self.virialB = compuesto.virialB
+                self.virialC = compuesto.virialC
+                self.invT = compuesto.invT
+                self.Hvap = compuesto.Hvap
+                self.Svap = compuesto.Svap
+
 
 #        if self.__class__!=mEoS.H2O:
 #            agua=mEoS.H2O(T=self.T, P=self.P.MPa)
@@ -1782,8 +1801,9 @@ class Corriente(config.Entity):
                 self.Liquido.fraccion_masica = [unidades.Dimensionless(1)]
                 self.Liquido.caudalunitariomasico = [self.Liquido.caudalmasico]
                 self.Liquido.caudalunitariomolar = [self.Liquido.caudalmolar]
+                self.Liquido.sigma = compuesto.Liquido.sigma
 
-        if self.Config.get("Components", "Solids"):
+        if Config.get("Components", "Solids"):
             if self.kwargs["solido"]:
                 self.solido = self.kwargs["solido"]
             else:
@@ -1976,7 +1996,7 @@ class Corriente(config.Entity):
                     self.Liquido.k.str)+os.linesep
                 txt += "%-25s\t%s" % (
                     QApplication.translate("pychemqt", "Surface Tension"),
-                    self.Liquido.epsilon.str)+os.linesep
+                    self.Liquido.sigma.str)+os.linesep
 
         else:
             txt += os.linesep+"#---------------"
@@ -2004,11 +2024,62 @@ class Corriente(config.Entity):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
 
-        # FIXME: Add support for load cmp from saved file
-        # cmp is a bad option
-        #if self.calculable and self._thermo != "eos":
-        #    txt += os.linesep+self.cmp.txt()
+        if self.calculable and self._thermo != "eos":
+            doc = self._doc()
 
+            if 0 < self.x < 1:
+                param = "%-40s\t%20s\t%20s"
+            else:
+                param = "%-40s\t%s"
+            if self.x == 0:
+                txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
+                phases = [self.Liquido]
+            elif self.x == 1:
+                txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
+                phases = [self.Gas]
+            else:
+                txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"),
+                                     QApplication.translate("pychemqt", "Gas"))+os.linesep
+                phases = [self.Liquido, self.Gas]
+
+            complejos = ""
+            if self._thermo == "meos":
+                data = meos.data
+            else:
+                data = thermo.data
+            for propiedad, key, unit in data:
+                if key in self.Gas.__dict__:
+                    values = [propiedad]
+                    for phase in phases:
+                        values.append(phase.__getattribute__(key).str)
+                    complejos += param % tuple(values) +os.linesep
+                elif key == "sigma":
+                    if self.x < 1:
+                        complejos += "%-40s\t%s" % (propiedad, self.Liquido.sigma.str)
+                        complejos += os.linesep
+                else:
+                    complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
+                    complejos += os.linesep
+
+            txt += doc + os.linesep + os.linesep + txtphases + complejos
+
+        return txt
+
+    def _doc(self):
+        """Return a text repr of class with all properties"""
+        if self._thermo == "meos":
+            title = QApplication.translate("pychemqt", "Advanced MEoS properties")
+            doc = self.cmp._constants["__doi__"]["autor"] + "; " + \
+                self.cmp._constants["__doi__"]["title"] + "; " + \
+                self.cmp._constants["__doi__"]["ref"]
+        else:
+            title = QApplication.translate("pychemqt", "Advanced thermo properties")
+            doc = self.cmp.__doi__[0]["autor"] + "; " + \
+                self.cmp.__doi__[0]["title"]
+
+        txt = os.linesep + os.linesep + os.linesep + "#---------------"
+        txt += title + "-------------------#" + os.linesep
+        txt += os.linesep + doc + os.linesep
         return txt
 
     @classmethod
@@ -2037,8 +2108,7 @@ class Corriente(config.Entity):
         lista = [comp.nombre for comp in self.componente]
         return lista
 
-    def writeStatetoJSON(self, data):
-        state = {}
+    def writeStatetoJSON(self, state):
         state["thermo"] = self._thermo
         state["bool"] = self._bool
         state["thermoType"] = self.tipoTermodinamica
@@ -2054,15 +2124,43 @@ class Corriente(config.Entity):
         state["Q"] = self.Q
         state["SG"] = self.SG
 
+        if self._thermo != "eos":
+            state["Tr"] = self.Tr
+            state["Pr"] = self.Pr
+            state["vo"] = self.v0
+            state["rhoo"] = self.rho0
+            state["ho"] = self.h0
+            state["uo"] = self.u0
+            state["so"] = self.s0
+            state["ao"] = self.a0
+            state["go"] = self.g0
+            state["cpo"] = self.cp0
+            state["cvo"] = self.cv0
+            state["cpo/cv"] = self.cp0_cv
+            state["gammao"] = self.gamma0
+
+        if self._thermo == "meos":
+            state["virialB"] = self.virialB
+            state["virialC"] = self.virialC
+            state["invT"] = self.invT
+            state["Hvap"] = self.Hvap
+            state["Svap"] = self.Svap
+
         state["fluxType"] = self.tipoFlujo
         self.mezcla.writeStatetoJSON(state)
 
         state["solidType"] = self.tipoSolido
-        self.solido.writeStatetoJSON(state)
+        solid = {}
+        self.solido.writeStatetoJSON(solid)
+        state["solid"] = solid
 
         self.Liquido.writeStatetoJSON(state, "liquid")
         self.Gas.writeStatetoJSON(state, "gas")
-        data["state"] = state
+        if state["liquid"]:
+            state["liquid"]["sigma"] = self.Liquido.sigma
+
+        if self._thermo == "meos":
+            state["meos_eq"] = self.cmp.kwargs["eq"]
 
     def readStatefromJSON(self, state):
         self._thermo = state["thermo"]
@@ -2079,6 +2177,28 @@ class Corriente(config.Entity):
         self.rho = unidades.Density(state["rho"])
         self.Q = unidades.VolFlow(state["Q"])
         self.SG = unidades.Dimensionless(state["SG"])
+
+        if self._thermo != "eos":
+            self.Tr = unidades.Dimensionless(state["Tr"])
+            self.Pr = unidades.Dimensionless(state["Pr"])
+            self.v0 = unidades.SpecificVolume(state["vo"])
+            self.rho0 = unidades.Density(state["rhoo"])
+            self.h0 = unidades.Power(state["ho"])
+            self.u0 = unidades.Power(state["uo"])
+            self.s0 = unidades.Entropy(state["so"])
+            self.a0 = unidades.Power(state["ao"])
+            self.g0 = unidades.Power(state["go"])
+            self.cp0 = unidades.Entropy(state["cpo"])
+            self.cv0 = unidades.Entropy(state["cvo"])
+            self.cp0_cv = unidades.Dimensionless(state["cpo/cv"])
+            self.gamma0 = unidades.Dimensionless(state["gammao"])
+
+        if self._thermo == "meos":
+            self.virialB = unidades.SpecificVolume(state["virialB"])
+            self.virialC = unidades.SpecificVolume_square(state["virialC"])
+            self.invT = unidades.InvTemperature(state["invT"])
+            self.Hvap = unidades.Enthalpy(state["Hvap"])
+            self.Svap = unidades.SpecificHeat(state["Svap"])
 
         self.tipoFlujo = state["fluxType"]
         self.mezcla = Mezcla()
@@ -2108,6 +2228,21 @@ class Corriente(config.Entity):
 
         self.Liquido.readStatefromJSON(state["liquid"])
         self.Gas.readStatefromJSON(state["gas"])
+        if state["liquid"]:
+            self.Liquido.sigma = unidades.Tension(state["liquid"]["sigma"])
+
+        if self._thermo == "freesteam":
+            self.cmp = freeSteam.Freesteam()
+        elif self._thermo == "iapws":
+            self.cmp = iapws.IAPWS97()
+        elif self._thermo == "refprop":
+            fluido = [refProp.__all__[id] for id in self.ids]
+            self.cmp = refProp.refProp(fluido=fluido)
+        elif self._thermo == "coolprop":
+            self.cmp = coolProp.CoolProp(fluido=self.ids[0])
+        elif self._thermo == "meos":
+            eq = state["meos_eq"]
+            self.cmp = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](eq=eq)
 
 
 class PsyStream(config.Entity):

@@ -48,7 +48,7 @@ properties = {
     "x": QApplication.translate("pychemqt", "Quality"),
     "gamma": QApplication.translate("pychemqt", "Isoentropic exponent"),
     "alfav": QApplication.translate("pychemqt", "Isobaric cubic expansion coefficient"),
-    "xkappa": QApplication.translate("pychemqt", "Isothermal compressibility"),
+    "kappa": QApplication.translate("pychemqt", "Isothermal compressibility"),
     "alfap": QApplication.translate("pychemqt", "Relative pressure coefficient"),
     "betap": QApplication.translate("pychemqt", "Isothermal stress coefficient"),
     "joule": QApplication.translate("pychemqt", "Joule-Thomson coefficient"),
@@ -60,7 +60,7 @@ properties = {
     "sigma": QApplication.translate("pychemqt", "Surface tension"),
     "epsilon": QApplication.translate("pychemqt", "Dielectric constant"),
     "n": QApplication.translate("pychemqt", "Refractive index"),
-    "Pr": QApplication.translate("pychemqt", "Prandtl number"),
+    "Prandt": QApplication.translate("pychemqt", "Prandtl number"),
     "w": QApplication.translate("pychemqt", "Speed of sound")}
 
 units = {
@@ -80,7 +80,7 @@ units = {
     "x": float,
     "gamma": float,
     "alfav": unidades.InvTemperature,
-    "xkappa": unidades.InvPressure,
+    "kappa": unidades.InvPressure,
     "alfap": unidades.InvTemperature,
     "betap": unidades.Density,
     "joule": unidades.TemperaturePressure,
@@ -92,7 +92,7 @@ units = {
     "sigma": unidades.Tension,
     "epsilon": float,
     "n": float,
-    "Pr": float,
+    "Prandt": float,
     "w": unidades.Speed}
 
 data = []
@@ -129,7 +129,7 @@ class Fluid(object):
 
             fluid["Z"] = self.Z
             fluid["alfav"] = self.alfav
-            fluid["xkappa"] = self.xkappa
+            fluid["kappa"] = self.kappa
 
             fluid["mu"] = self.mu
             fluid["k"] = self.k
@@ -145,19 +145,6 @@ class Fluid(object):
 
             fluid["alfap"] = self.alfap
             fluid["betap"] = self.betap
-
-            fluid["vo"] = self.v0
-            fluid["ho"] = self.h0
-            fluid["uo"] = self.u0
-            fluid["so"] = self.s0
-            fluid["ao"] = self.a0
-            fluid["go"] = self.g0
-
-            fluid["cpo"] = self.cp0
-            fluid["cvo"] = self.cv0
-            fluid["cpo/cvo"] = self.cp0_cv
-            fluid["wo"] = self.w0
-            fluid["gammao"] = self.gamma0
             fluid["f"] = self.f
 
             fluid["volFlow"] = self.Q
@@ -190,7 +177,7 @@ class Fluid(object):
 
             self.Z = unidades.Dimensionless(fluid["Z"])
             self.alfav = unidades.InvTemperature(fluid["alfav"])
-            self.xkappa = unidades.InvPressure(fluid["xkappa"])
+            self.kappa = unidades.InvPressure(fluid["kappa"])
 
             self.mu = unidades.Viscosity(fluid["mu"])
             self.k = unidades.ThermalConductivity(fluid["k"])
@@ -204,30 +191,17 @@ class Fluid(object):
             self.deltat = unidades.EnthalpyPressure(fluid["deltat"])
             self.gamma = unidades.Dimensionless(fluid["gamma"])
 
-            self.alfap = fluid["alfap"]
-            self.betap = fluid["betap"]
-
-            self.v0 = unidades.SpecificVolume(fluid["vo"])
-            self.h0 = unidades.Enthalpy(fluid["ho"])
-            self.u0 = unidades.Enthalpy(fluid["uo"])
-            self.s0 = unidades.SpecificHeat(fluid["so"])
-            self.a0 = unidades.Enthalpy(fluid["ao"])
-            self.g0 = unidades.Enthalpy(fluid["go"])
-
-            self.cp0 = unidades.SpecificHeat(fluid["cpo"])
-            self.cv0 = unidades.SpecificHeat(fluid["cvo"])
-            self.cp0_cv = unidades.Dimensionless(fluid["cpo/cvo"])
-            self.w0 = unidades.Speed(fluid["wo"])
-            self.gamma0 = unidades.Dimensionless(fluid["gammao"])
+            self.alfap = unidades.Dimensionless(fluid["alfap"])
+            self.betap = unidades.Dimensionless(fluid["betap"])
             self.f = unidades.Pressure(fluid["f"])
 
             self.Q = unidades.VolFlow(fluid["volFlow"])
             self.caudalmasico = unidades.MassFlow(fluid["massFlow"])
             self.caudalmolar = unidades.MolarFlow(fluid["molarFlow"])
-            self.fraccion = fluid["fraction"]
-            self.fraccion_masica = fluid["massFraction"]
-            self.caudalunitariomasico = fluid["massUnitFlow"]
-            self.caudalunitariomolar = fluid["molarUnitFlow"]
+            self.fraccion = [unidades.Dimensionless(x) for x in fluid["fraction"]]
+            self.fraccion_masica = [unidades.Dimensionless(x) for x in fluid["massFraction"]]
+            self.caudalunitariomasico = [unidades.MassFlow(x) for x in fluid["massUnitFlow"]]
+            self.caudalunitariomolar = [unidades.MolarFlow(x) for x in fluid["molarUnitFlow"]]
 
 
 class Fluid_MEOS(Fluid):
@@ -295,9 +269,8 @@ class Fluid_MEOS(Fluid):
 
     def writeStatetoJSON(self, state, fase):
         Fluid.writeStatetoJSON(self, state, fase)
+        fluid = state[fase]
         if self._bool:
-            fluid = state[fase]
-
             fluid["rhoM"] = self.rhoM
             fluid["hM"] = self.hM
             fluid["sM"] = self.sM
@@ -307,138 +280,63 @@ class Fluid_MEOS(Fluid):
             fluid["cvM"] = self.cvM
             fluid["cpM"] = self.cpM
 
-            fluid["alfav"] = self.alfav
-            fluid["xkappa"] = self.xkappa
+            fluid["fi"] = self.fi
+            fluid["betas"] = self.betas
+            fluid["Gruneisen"] = self.Gruneisen
+            fluid["dpdT_rho"] = self.dpdT_rho
+            fluid["dpdrho_T"] = self.dpdrho_T
+            fluid["drhodT_P"] = self.drhodT_P
+            fluid["drhodP_T"] = self.drhodP_T
+            fluid["dhdT_rho"] = self.dhdT_rho
+            fluid["dhdP_T"] = self.dhdP_T
+            fluid["dhdT_P"] = self.dhdT_P
+            fluid["dhdrho_T"] = self.dhdrho_T
+            fluid["dhdP_rho"] = self.dhdP_rho
+            fluid["kt"] = self.kt
+            fluid["ks"] = self.ks
+            fluid["Ks"] = self.Ks
+            fluid["Kt"] = self.Kt
+            fluid["IntP"] = self.IntP
+            fluid["hInput"] = self.hInput
+            fluid["alfa"] = self.alfa
 
-            fluid["deltat"] = self.deltat
-            fluid["gamma"] = self.gamma
-
-            fluid["vo"] = self.v0
-            fluid["ho"] = self.h0
-            fluid["uo"] = self.u0
-            fluid["so"] = self.s0
-            fluid["ao"] = self.a0
-            fluid["go"] = self.g0
-
-            fluid["cpo"] = self.cp0
-            fluid["cvo"] = self.cv0
-            fluid["cpo/cvo"] = self.cp0_cv
-            fluid["wo"] = self.w0
-            fluid["gammao"] = self.gamma0
-            fluid["f"] = self.f
-
-            fluid["volFlow"] = self.Q
-            fluid["massFlow"] = self.caudalmasico
-            fluid["molarFlow"] = self.caudalmolar
-            fluid["fraction"] = self.fraccion
-            fluid["massFraction"] = self.fraccion_masica
-            fluid["massUnitFlow"] = self.caudalunitariomasico
-            fluid["molarUnitFlow"] = self.caudalunitariomolar
         state[fase] = fluid
 
     def readStatefromJSON(self, fluid):
-        if fluid:
-            self._bool = True
+        Fluid.readStatefromJSON(self, fluid)
+        if self._bool:
+            self.rhoM = unidades.MolarDensity(fluid["rhoM"])
+            self.hM = unidades.MolarEnthalpy(fluid["hM"])
+            self.sM = unidades.MolarSpecificHeat(fluid["sM"])
+            self.uM = unidades.MolarEnthalpy(fluid["uM"])
+            self.aM = unidades.MolarEnthalpy(fluid["aM"])
+            self.gM = unidades.MolarEnthalpy(fluid["gM"])
+            self.cvM = unidades.MolarSpecificHeat(fluid["cvM"])
+            self.cpM = unidades.MolarSpecificHeat(fluid["cpM"])
 
-            self.M = unidades.Dimensionless(fluid["M"])
-            self.v = unidades.SpecificVolume(fluid["v"])
-            self.rho = unidades.Density(1/self.v)
-
-            self.h = unidades.Enthalpy(fluid["h"])
-            self.s = unidades.SpecificHeat(fluid["s"])
-            self.u = unidades.Enthalpy(fluid["u"])
-            self.a = unidades.Enthalpy(fluid["a"])
-            self.g = unidades.Enthalpy(fluid["g"])
-
-            self.cv = unidades.SpecificHeat(fluid["cv"])
-            self.cp = unidades.SpecificHeat(fluid["cp"])
-            self.cp_cv = unidades.Dimensionless(fluid["cp/cv"])
-            self.w = unidades.Speed(fluid["w"])
-
-            self.Z = unidades.Dimensionless(fluid["Z"])
-            self.alfav = unidades.InvTemperature(fluid["alfav"])
-            self.xkappa = unidades.InvPressure(fluid["xkappa"])
-
-            self.mu = unidades.Viscosity(fluid["mu"])
-            self.k = unidades.ThermalConductivity(fluid["k"])
-            self.nu = unidades.Diffusivity(fluid["nu"])
-            self.epsilon = unidades.Dimensionless(fluid["epsilon"])
-            self.Prandt = unidades.Dimensionless(fluid["Prandt"])
-            self.n = unidades.Dimensionless(fluid["n"])
-
+            self.fi = unidades.Dimensionless(fluid["fi"])
+            self.betas = unidades.TemperaturePressure(fluid["betas"])
+            self.Gruneisen = unidades.Dimensionless(fluid["Gruneisen"])
+            self.dpdT_rho = unidades.PressureTemperature(fluid["dpdT_rho"])
+            self.dpdrho_T = unidades.PressureDensity(fluid["dpdrho_T"])
+            self.drhodT_P = unidades.DensityTemperature(fluid["drhodT_P"])
+            self.drhodP_T = unidades.DensityPressure(fluid["drhodP_T"])
+            self.dhdT_rho = unidades.SpecificHeat(fluid["dhdT_rho"])
+            self.dhdP_T = unidades.EnthalpyPressure(fluid["dhdP_T"])
+            self.dhdT_P = unidades.SpecificHeat(fluid["dhdT_P"])
+            self.dhdrho_T = unidades.EnthalpyDensity(fluid["dhdrho_T"])
+            self.dhdP_rho = unidades.EnthalpyPressure(fluid["dhdP_rho"])
+            self.kt = unidades.Dimensionless(fluid["kt"])
+            self.ks = unidades.InvPressure(fluid["ks"])
+            self.Ks = unidades.Pressure(fluid["Ks"])
+            self.Kt = unidades.Pressure(fluid["Kt"])
+            self.IntP = unidades.Pressure(fluid["IntP"])
+            self.hInput = unidades.Enthalpy(fluid["hInput"])
             self.alfa = unidades.Diffusivity(fluid["alfa"])
-            self.joule = unidades.TemperaturePressure(fluid["joule"])
-            self.deltat = unidades.EnthalpyPressure(fluid["deltat"])
-            self.gamma = unidades.Dimensionless(fluid["gamma"])
-
-            self.alfap=fluid["alfap"]
-            self.betap=fluid["betap"]
-
-            self.v0 = unidades.SpecificVolume(fluid["vo"])
-            self.h0 = unidades.Enthalpy(fluid["ho"])
-            self.u0 = unidades.Enthalpy(fluid["uo"])
-            self.s0 = unidades.SpecificHeat(fluid["so"])
-            self.a0 = unidades.Enthalpy(fluid["ao"])
-            self.g0 = unidades.Enthalpy(fluid["go"])
-
-            self.cp0 = unidades.SpecificHeat(fluid["cpo"])
-            self.cv0 = unidades.SpecificHeat(fluid["cvo"])
-            self.cp0_cv = unidades.Dimensionless(fluid["cpo/cvo"])
-            self.w0 = unidades.Speed(fluid["wo"])
-            self.gamma0 = unidades.Dimensionless(fluid["gammao"])
-            self.f = unidades.Pressure(fluid["f"])
-
-            self.Q = unidades.VolFlow(fluid["volFlow"])
-            self.caudalmasico = unidades.MassFlow(fluid["massFlow"])
-            self.caudalmolar = unidades.MolarFlow(fluid["molarFlow"])
-            self.fraccion = fluid["fraction"]
-            self.fraccion_masica = fluid["massFraction"]
-            self.caudalunitariomasico = fluid["massUnitFlow"]
-            self.caudalunitariomolar = fluid["molarUnitFlow"]
 
 
 class Thermo(object):
     """Class with common functionality for special thermo model, children class
     are iapws, coolprop, refprop"""
-
-    def txt(self):
-        """Return a text repr of class with all properties"""
-        txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Advanced thermo properties")
-        txt += "-------------------#"+os.linesep
-        doc = self.__doi__[0]["autor"] + "; " + \
-            self.__doi__[0]["title"]
-        txt += os.linesep + doc + os.linesep
-
-        if 0 < self.x < 1:
-            param = "%-40s\t%20s\t%20s"
-        else:
-            param = "%-40s\t%s"
-        if self.x == 0:
-            txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
-            phases = [self.Liquido]
-        elif self.x == 1:
-            txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
-            phases = [self.Gas]
-        else:
-            txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"),
-                                 QApplication.translate("pychemqt", "Gas"))+os.linesep
-            phases = [self.Liquido, self.Gas]
-
-        complejos = ""
-        for propiedad, key, unit in data:
-            if key in Fluid.__dict__ and key != "sigma":
-                values = [propiedad]
-                for phase in phases:
-                    values.append(phase.__getattribute__(key).str)
-                complejos += os.linesep
-                complejos += param % tuple(values)
-            elif key == "sigma":
-                if self.x < 1:
-                    complejos += os.linesep
-                    complejos += "%-40s\t%s" % (propiedad, self.Liquido.__getattribute__(key).str)
-            else:
-                complejos += os.linesep
-                complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
-        txt += os.linesep + os.linesep + txtphases + complejos
-        return txt
+    # TODO: Add here the common functionality of model
+    pass

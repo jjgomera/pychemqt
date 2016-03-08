@@ -1257,33 +1257,32 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.objects["out"][id] = s
             self.addItem(s)
 
-
-        angle_equip={}
+        angle_equip = {}
         for id, obj in data["PFD"]["equip"].items():
             id = int(id)
-            name=stream.readString().decode("utf-8")
-            dialogoId=stream.readInt32()
-            pos=QtCore.QPointF()
-            stream >> pos
-            id=stream.readInt32()
-            angle_equip[id]=stream.readInt32()
-            n_up=stream.readInt32()
-            up=[]
-            for i in range(n_up):
-                up.append(self.objects["stream"][stream.readInt32()])
-            n_down=stream.readInt32()
-            down=[]
-            for i in range(n_down):
-                down.append(self.objects["stream"][stream.readInt32()])
-            s=EquipmentItem(name, dialogoId)
+
+            name = obj["name"]
+            dialogoId = obj["dialogo_id"]
+            s = EquipmentItem(name, dialogoId)
+
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
             s.setPos(pos)
-            s.down=down
-            s.up=up
-            self.objects["equip"][id]=s
+
+            angle_equip[id] = obj["angle"]
+            up = [self.objects["stream"][i] for i in obj["up_id"]]
+            s.up = up
+            down = [self.objects["stream"][i] for i in obj["down_id"]]
+            s.down = down
+
+            self.objects["equip"][id] = s
             self.addItem(s)
-            txt=stream.readQString()
-            pos=QtCore.QPointF()
-            stream >> pos
+
+            txt = obj["label"]
+            x = obj["label_x"]
+            y = obj["label_y"]
+            pos = QtCore.QPointF(x, y)
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
 
@@ -1419,11 +1418,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             ups = []
             for up in obj.up:
                 ups.append(up.id)
-            stream["up_id"] = ups
+            equip["up_id"] = ups
             downs = []
             for down in obj.down:
                 downs.append(down.id)
-            stream["down_id"] = downs
+            equip["down_id"] = downs
 
             equip["label"] = obj.idLabel.toHtml()
             equip["label_x"] = obj.idLabel.pos().x()

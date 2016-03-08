@@ -2952,7 +2952,7 @@ def prop0(T, P):
 
     prop0.w = (R*T*1000/(1+1/Tr**2/gott))**0.5
     prop0.alfav = 1/T
-    prop0.xkappa = 1/P
+    prop0.kappa = 1/P
     # FIXME: Ideal Isentropic exponent dont work
     # prop0.gamma = -prop0.v/P/1000*derivative("P", "v", "s", prop0)
     prop0.gamma = 1.
@@ -2997,7 +2997,7 @@ class IAPWS97(Thermo):
     f        -   Fugacity, MPa
     gamma    -   Isoentropic exponent
     alfav    -   Isobaric cubic expansion coefficient, 1/K
-    xkappa   -   Isothermal compressibility, 1/MPa
+    kappa   -   Isothermal compressibility, 1/MPa
     alfap    -   Relative pressure coefficient, 1/K
     betap    -   Isothermal stress coefficient, kg/m³
     joule    -   Joule-Thomson coefficient, K/MPa
@@ -3358,7 +3358,7 @@ class IAPWS97(Thermo):
 
         fase.Z = unidades.Dimensionless(self.P*fase.v/R/1000*self.M/self.T)
         fase.alfav = unidades.InvTemperature(estado["alfav"])
-        fase.xkappa = unidades.InvPressure(estado["kt"], "MPa")
+        fase.kappa = unidades.InvPressure(estado["kt"], "MPa")
 
         fase.mu = unidades.Viscosity(_Viscosity(fase.rho, self.T))
         fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
@@ -3376,7 +3376,7 @@ class IAPWS97(Thermo):
             fase.alfap = unidades.Density(estado["alfap"])
             fase.betap = unidades.Density(estado["betap"])
         else:
-            fase.alfap = unidades.Density(fase.alfav/self.P/fase.xkappa)
+            fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
             fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
 
         cp0 = prop0(self.T, self.P.MPa)
@@ -3433,12 +3433,12 @@ class IAPWS97(Thermo):
               "a": -self.P*fase.v*fase.alfav-fase.s}
         dP = {"P": 1,
               "T": 0,
-              "v": -fase.v*fase.xkappa,
-              "u": fase.v*(self.P*fase.xkappa-self.T*fase.alfav),
+              "v": -fase.v*fase.kappa,
+              "u": fase.v*(self.P*fase.kappa-self.T*fase.alfav),
               "h": fase.v*(1-self.T*fase.alfav),
               "s": -fase.v*fase.alfav,
               "g": fase.v,
-              "a": self.P*fase.v*fase.xkappa}
+              "a": self.P*fase.v*fase.kappa}
         return (dP[z]*dT[y]-dT[z]*dP[y])/(dP[x]*dT[y]-dT[x]*dP[y])
 
 

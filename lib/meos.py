@@ -62,6 +62,7 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temper
         (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
         (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
         (QApplication.translate("pychemqt", "Vaporization heat"), "Hvap", unidades.Enthalpy),
+        (QApplication.translate("pychemqt", "Vaporization entropy"), "Svap", unidades.SpecificHeat),
         (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav", unidades.InvTemperature),
         (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa", unidades.InvPressure),
         (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
@@ -112,8 +113,6 @@ keys = [p[1] for p in data]
 units = [p[2] for p in data]
 properties = dict(list(zip(keys, propiedades)))
 inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
-
-
 
 
 class MEoS(Fluid_MEOS):
@@ -940,6 +939,7 @@ class MEoS(Fluid_MEOS):
 
     def fillNone(self, fase):
         """Fill properties in null phase with a explicative msg"""
+        fase._bool = False
         if self.x == 0:
             txt = QApplication.translate("pychemqt", "Subcooled")
         elif self.Tr < 1 and self.Pr < 1:
@@ -949,11 +949,12 @@ class MEoS(Fluid_MEOS):
         else:
             txt = QApplication.translate("pychemqt", "Supercritical")
         for key in Fluid_MEOS.__dict__:
-            if key[0] != "_":
+            if key[0] != "_"  and key[-4:] != "JSON":
                 fase.__setattr__(key, txt)
 
     def fill(self, fase, estado):
         """Fill phase properties"""
+        fase._bool = True
         fase.M = unidades.Dimensionless(self.M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1/fase.v)
@@ -1001,6 +1002,7 @@ class MEoS(Fluid_MEOS):
             fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
             fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
             fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
+            fase.deltat = fase.dhdP_T
             fase.dhdP_rho = unidades.EnthalpyPressure(self.derivative("h", "P", "rho", fase))
             fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
             fase.dhdrho_P = unidades.EnthalpyDensity(estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
@@ -2684,46 +2686,9 @@ class MEoS(Fluid_MEOS):
             k = None
         return unidades.ThermalConductivity(k)
 
-    def txt(self):
-        """Return a text repr of class with all properties"""
-        txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Advanced MEoS properties")
-        txt += "-------------------#"+os.linesep
-        doc = self._constants["__doi__"]["autor"] + "; " + \
-              self._constants["__doi__"]["title"] + "; " + \
-              self._constants["__doi__"]["ref"]
-        txt += os.linesep + doc + os.linesep
-
-        if 0 < self.x < 1:
-            param = "%-40s\t%20s\t%20s"
-        else:
-            param = "%-40s\t%s"
-        if self.x == 0:
-            txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
-            phases = [self.Liquido]
-        elif self.x == 1:
-            txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
-            phases = [self.Gas]
-        else:
-            txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"),
-                                 QApplication.translate("pychemqt", "Gas"))+os.linesep
-            phases = [self.Liquido, self.Gas]
-
-        complejos = ""
-        for propiedad, key, unit in data:
-            if key in Fluid_MEOS.__dict__:
-                values = [propiedad]
-                for phase in phases:
-                    values.append(phase.__getattribute__(key).str)
-                complejos += param % tuple(values) +os.linesep
-            else:
-                txt += os.linesep
-                txt += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
-        txt += os.linesep + os.linesep + txtphases + complejos
-        return txt
 
 class MEoSBlend(MEoS):
-    """Special meos class to implement pseudocomponente blend and defining its
+    """Special meos class to implement pseudocomponent blend and defining its
     ancillary dew and bubble point"""
     @classmethod
     def _dewP(cls, T, eq=0):
