@@ -156,14 +156,14 @@ case it override flow of input stream"))
             10, 1, 1, 6)
 
         # Design tab
-        self.tabDiseno = QtWidgets.QWidget()
-        lyt = QtWidgets.QGridLayout(self.tabDiseno)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Not implemented\n\nRef: Gülich - Centrifugal Pumps", None)), 0, 0)
-        self.tabWidget.insertTab(
-            2, self.tabDiseno,
-            QtWidgets.QApplication.translate("pychemqt", "Design"))
+#        self.tabDiseno = QtWidgets.QWidget()
+#        lyt = QtWidgets.QGridLayout(self.tabDiseno)
+#        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+#            "pychemqt",
+#            "Not implemented\n\nRef: Gülich - Centrifugal Pumps", None)), 0, 0)
+#        self.tabWidget.insertTab(
+#            2, self.tabDiseno,
+#            QtWidgets.QApplication.translate("pychemqt", "Design"))
 
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
