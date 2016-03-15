@@ -18,14 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
-################################
-###         librería de definición de bombas         ###
-################################
+###############################################################################
+#   Library for pump equipment definition
+###############################################################################
 
 import os
 
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy import log, exp, optimize, polyval, roots, r_
 from scipy.constants import g
 #import xlwt
@@ -230,7 +229,7 @@ class Pump(equipment):
             P_freno=Power(power*self.rendimientoCalculado)
         elif not self.kwargs["incognita"]:
             head=Length(polyval(self.CurvaHQ,entrada.Q))
-            self.DeltaP=Pressure(head*g*entrada.Liquido.rho)
+            DeltaP=Pressure(head*g*entrada.Liquido.rho)
             power=Power(entrada.Q*DeltaP)
             P_freno=Power(polyval(self.CurvaPotQ,entrada.Q))
             self.rendimientoCalculado=Dimensionless(power/P_freno)
@@ -242,13 +241,13 @@ class Pump(equipment):
             P_freno=Power(polyval(self.CurvaPotQ,caudalvolumetrico))
             self.rendimientoCalculado=Dimensionless(power/P_freno)
 
+        self.deltaP = DeltaP
         self.headCalculada=head
         self.power=power
         self.P_freno=P_freno
         self.salida=[entrada.clone(P=entrada.P+DeltaP)]
         self.Pin=entrada.P
         self.PoutCalculada=self.salida[0].P
-        self.Q=entrada.Q.galUSmin
         self.volflow=entrada.Q
 
     def Ajustar_Curvas_Caracteristicas(self):
@@ -305,10 +304,11 @@ class Pump(equipment):
     def coste(self):
         HP=self.power.hp
         LnHP = log(self.power.hp)
+        Q=self.kwargs["entrada"].Q.galUSmin
 
         #Coste Bomba
         if self.kwargs["tipo_bomba"]==0:                       #Centrifugal pumps
-            QH=log(self.Q*self.power.hp**0.5)
+            QH=log(Q*self.power.hp**0.5)
             Fm=[1., 1.35, 1.15, 2., 2., 3.5, 3.3, 4.95, 4.6, 9.7, 2.95, 1.15, 1.90]
 
             b1=[0., 5.1029, 0.0632, 2.0290, 13.7321, 9.8849][self.kwargs["tipo_centrifuga"]]
@@ -320,24 +320,24 @@ class Pump(equipment):
 
         elif self.kwargs["tipo_bomba"]==1:                     #Reciprocating pumps
             if self.kwargs["material"] == 0:                                #Case iron
-                Cb=40.*self.Q**0.81
+                Cb=40.*Q**0.81
             elif self.kwargs["material"] == 3:                             #316 Staineless steel
-                Cb = 410.*self.Q**0.52
+                Cb = 410.*Q**0.52
             elif self.kwargs["material"] == 12:                           #Bronze
-                Cb = 410.* 1.4 * self.Q**0.52
+                Cb = 410.* 1.4 * Q**0.52
             elif self.kwargs["material"] == 5:                             #Nickel
-                Cb = 410. * 1.86 * self.Q**0.52
+                Cb = 410. * 1.86 * Q**0.52
             elif self.kwargs["material"] == 6:                             #Monel
-                Cb = 410. * 2.20 * self.Q**0.52
+                Cb = 410. * 2.20 * Q**0.52
             else:                                                  #Material not available. Assume case iron
-                Cb = 40. *self.Q**0.81
+                Cb = 40. * Q**0.81
 
         elif self.kwargs["tipo_bomba"]==2:                     #Gear pumps
-            Cb=1000*exp(-0.0881+0.1986*log(self.Q)+0.0291*log(self.Q)**2)
+            Cb=1000*exp(-0.0881+0.1986*log(Q)+0.0291*log(Q)**2)
         elif self.kwargs["tipo_bomba"]==3:                     #Vertical mixed flow
-            Cb=0.036*self.Q**0.82*1000
+            Cb=0.036*Q**0.82*1000
         elif self.kwargs["tipo_bomba"]==4:                     #Vertical axial flow
-            Cb=0.02*self.Q**0.78*1000
+            Cb=0.02*Q**0.78*1000
 
         C_bomba=Cb * self.kwargs["Current_index"] / self.kwargs["Base_index"]
 
@@ -449,51 +449,47 @@ class Pump(equipment):
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
         return list
 
-    def writeStatetoStream(self, stream):
-        stream.writeFloat(self.deltaP)
-        stream.writeFloat(self.rendimientoCalculado)
-        stream.writeFloat(self.headCalculada)
-        stream.writeFloat(self.power)
-        stream.writeFloat(self.P_freno)
-        stream.writeFloat(self.Pin)
-        stream.writeFloat(self.PoutCalculada)
-        stream.writeFloat(self.Q)
-        stream.writeFloat(self.volflow)
-        stream.writeInt32(self.statusCoste)
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["deltaP"] = self.deltaP
+        state["rendimientoCalculado"] = self.rendimientoCalculado
+        state["headCalculada"] = self.headCalculada
+        state["power"] = self.power
+        state["P_freno"] = self.P_freno
+        state["Pin"] = self.Pin
+        state["PoutCalculada"] = self.PoutCalculada
+        state["volflow"] = self.volflow
+        state["statusCoste"] = self.statusCoste
+
+        if self.statusCoste:
+            state["C_bomba"] = self.C_bomba
+            state["C_motor"] = self.C_motor
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
 
         if self.kwargs["usarCurva"]:
             pass
 
-        stream.writeInt32(self.statusCoste)
-        if self.statusCoste:
-            stream.writeFloat(self.C_bomba)
-            stream.writeFloat(self.C_motor)
-            stream.writeFloat(self.C_adq)
-            stream.writeFloat(self.C_inst)
+    def readStatefromJSON(self, state):
+        self.deltaP = DeltaP(state["deltaP"])
+        self.rendimientoCalculado = Dimensionless(state["rendimientoCalculado"])
+        self.headCalculada = Length(state["headCalculada"])
+        self.power = Power(state["power"])
+        self.P_freno = Power(state["P_freno"])
+        self.Pin = Pressure(state["Pin"])
+        self.PoutCalculada = Pressure(state["PoutCalculada"])
+        self.volflow = VolFlow(state["volflow"])
+        self.statusCoste = state["statusCoste"]
 
-    def readStatefromStream(self, stream):
-        self.Tout=Temperature(stream.readFloat())
-        self.deltaP=DeltaP(stream.readFloat())
-        self.Hmax=Power(stream.readFloat())
-        self.Heat=Power(stream.readFloat())
-        self.CombustibleRequerido=VolFlow(stream.readFloat())
-        self.deltaT=DeltaT(stream.readFloat())
-        self.eficiencia=Dimensionless(stream.readFloat())
-        self.poderCalorifico=Dimensionless(stream.readFloat())
-        self.Tin=Temperature(stream.readFloat())
-        self.Tout=Temperature(stream.readFloat())
-        self.statusCoste = stream.readInt32()
+        if self.statusCoste:
+            self.C_bomba = Currency(state["C_bomba"])
+            self.C_motor = Currency(state["C_motor"])
+            self.C_adq = Currency(state["C_adq"])
+            self.C_inst = Currency(state["C_inst"])
 
         if self.kwargs["usarCurva"]:
             pass
-
-        self.statusCoste = stream.readInt32()
-        if self.statusCoste:
-            self.P_dis=Pressure(stream.readFloat())
-            self.C_adq=Currency(stream.readFloat())
-            self.C_inst=Currency(stream.readFloat())
         self.salida = [None]
-
 
     def datamap2xls(self):
         datamap=(("PoutCalculada", "value", "H15"),
