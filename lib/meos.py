@@ -805,9 +805,9 @@ class MEoS(Fluid_MEOS):
 
         # Calculate special properties useful only for one phase
         if x < 1 and self.Tt <= T <= self.Tc:
-            self.sigma = unidades.Tension(self._Surface())
+            self.Liquido.sigma = unidades.Tension(self._Surface())
         else:
-            self.sigma = unidades.Tension(None)
+            self.Liquido.sigma = unidades.Tension(None)
 
         if 0 < x < 1:
             self.virialB = unidades.SpecificVolume(vapor["B"]/self.rhoc)
