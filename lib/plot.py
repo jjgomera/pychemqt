@@ -34,34 +34,35 @@ class mpl(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
-        self.axes2D = self.fig.add_subplot(111)
+        self.ax = self.fig.add_subplot(111)
+        self.ax.figure.subplots_adjust(left=0.08, right=0.92, bottom=0.1, top=0.95)
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
 
     def config(self, xmin=None, xmax=None, ymin=None, ymax=None, scalex="linear", scaley="linear"):
-        self.axes2D.clear()
-        self.axes2D.set_autoscale_on(False)
-        self.axes2D.set_xlabel("Pr", horizontalalignment='right', size='12')
-        self.axes2D.set_ylabel("Z", size='14')
-        self.axes2D.grid(True)
+        self.ax.clear()
+        self.ax.set_autoscale_on(False)
+        self.ax.set_xlabel("Pr", horizontalalignment='right', size='12')
+        self.ax.set_ylabel("Z", size='14')
+        self.ax.grid(True)
         if xmin!=None and xmax!=None:
-            self.axes2D.set_xlim(xmin, xmax)
+            self.ax.set_xlim(xmin, xmax)
         else:
-            self.axes2D.set_autoscalex_on(True)
+            self.ax.set_autoscalex_on(True)
         if ymin!=None and ymax!=None:
-            self.axes2D.set_ylim(ymin, ymax)
+            self.ax.set_ylim(ymin, ymax)
         else:
-            self.axes2D.set_autoscaley_on(True)
+            self.ax.set_autoscaley_on(True)
 
-        self.axes2D.set_xscale(scalex)
-        self.axes2D.set_yscale(scaley)
+        self.ax.set_xscale(scalex)
+        self.ax.set_yscale(scaley)
 
     def plot(self, *args, **kwargs):
-        self.axes2D.plot(*args, **kwargs)
+        self.ax.plot(*args, **kwargs)
 
     def data(self, *args, **kwargs):
-        self.axes2D.plot(*args, **kwargs)
+        self.ax.plot(*args, **kwargs)
         self.draw()
 
 

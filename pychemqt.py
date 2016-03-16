@@ -148,7 +148,8 @@ from lib.sql import createDatabase
 # Import internal libraries
 splash.showMessage(QtWidgets.QApplication.translate("pychemqt",
                                                 "Importing libraries..."))
-from UI import texteditor, newComponent, flujo, charts, plots, viewComponents
+from UI import texteditor, newComponent, flujo, plots, viewComponents
+import plots as charts
 from UI.widgets import createAction, ClickableLabel, TreeEquipment
 from lib.config import conf_dir, getComponents
 from lib.project import Project

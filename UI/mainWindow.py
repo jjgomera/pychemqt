@@ -28,13 +28,17 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from UI import newComponent, flujo, wizard, charts, plots, viewComponents
+from UI import newComponent, flujo, wizard, plots, viewComponents
+import plots as charts
 from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout
 from lib.config import conf_dir, QTSETTING_FILE, setMainWindowConfig
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *
-from tools import UI_confComponents, UI_Preferences, UI_confTransport, UI_confThermo, UI_confUnits, UI_confResolution, UI_databank, UI_Tables, UI_unitConverter, UI_steamTables, UI_psychrometry, costIndex, doi, dependences
+from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
+                   UI_confThermo, UI_confUnits, UI_confResolution, UI_databank,
+                   UI_Tables, UI_unitConverter, UI_steamTables,
+                   UI_psychrometry, costIndex, doi, dependences)
 from UI.conversor_unidades import moneda
 
 __version__ = "0.1.0"

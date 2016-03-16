@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library for equipment common functionality
 #   * equipment: libreria de funcionamiento
@@ -97,6 +96,7 @@ class equipment(Entity):
         """Class constructor, copy kwargs for child class to instance and do
         several works with that"""
         self.kwargs = self.__class__.kwargs.copy()
+        self.kwargs["notas"] = ""
         self.kwargs_forbidden = self.kwargs_forbidden + list(self.kwargsInput)
 
         # Values defined as integer Entrada_con_unidades return as float
