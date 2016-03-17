@@ -23,14 +23,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from PyQt5 import QtWidgets
+import os
+import json
 
+from PyQt5 import QtWidgets
 from scipy import logspace, log10, pi, arctan
 from matplotlib.patches import ConnectionPatch
 
+from lib.config import conf_dir
 from lib.physics import f_list
 from lib.plot import mpl
 from lib.utilities import representacion
+from UI.widgets import Entrada_con_unidades
+
+
+Re_laminar = [600, 2400]
+Re_turbulent = logspace(log10(2400), 8, 50)
+
+
+def calculate(eD, F):
+    dat = {}
+    # laminar
+    dat["laminar"] = [64./R for R in Re_laminar]
+
+    # turbulent
+    turb = {}
+    for e in eD:
+        turb[e] = [F(Rei, e) for Rei in Re_turbulent]
+        dat["turbulent"] = turb
+
+    # Line to define the fully desarrolled turbulent flux
+    dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2 for R in Re_turbulent]
+    with open(conf_dir+"moody.dat", "w") as file:
+        json.dump(dat, file, indent=4)
 
 
 class Moody(QtWidgets.QDialog):
@@ -41,26 +66,16 @@ class Moody(QtWidgets.QDialog):
         self.showMaximized()
         self.setWindowTitle(self.title)
         layout = QtWidgets.QGridLayout(self)
-        # layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
-        # self.metodos = QtWidgets.QComboBox()
-        # self.metodos.addItem("Colebrook")
-        # self.metodos.addItem("Chen (1979")
-        # self.metodos.addItem("Romeo (2002)")
-        # self.metodos.addItem("Goudar-Sonnad")
-        # self.metodos.addItem("Manadilli (1997)")
-        # self.metodos.addItem("Serghides")
-        # self.metodos.addItem("Churchill (1977)")
-        # self.metodos.addItem("Zigrang-Sylvester (1982)")
-        # self.metodos.addItem("Swamee-Jain (1976)")
-
-        # self.metodos.currentIndexChanged.connect(self.cambiar)
-        # layout.addWidget(self.metodos, 1, 2)
         layout.setColumnStretch(3, 1)
         self.diagrama = mpl(self)
         layout.addWidget(self.diagrama, 2, 1, 1, 4)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
+        txt = QtWidgets.QApplication.translate("pychemqt", "Calculate point")
+        self.buttonCalculation = QtWidgets.QPushButton(txt)
+        self.buttonBox.addButton(self.buttonCalculation, QtWidgets.QDialogButtonBox.ActionRole)
+        self.buttonCalculation.clicked.connect(self.calculate)
         layout.addWidget(self.buttonBox, 3, 1, 1, 4)
 
         self.cambiar(0)
@@ -68,8 +83,6 @@ class Moody(QtWidgets.QDialog):
     def cambiar(self, int):
         self.diagrama.ax.clear()
         self.diagrama.ax.set_autoscale_on(False)
-        # title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
-        # self.diagrama.ax.set_title(title, size='12')
         xlabel = QtWidgets.QApplication.translate("pychemqt", "Reynolds number") + \
             ",  " + r"$Re=\frac{V\rho D}{\mu}$"
         self.diagrama.ax.set_xlabel(xlabel, ha='center', size='10')
@@ -103,7 +116,6 @@ class Moody(QtWidgets.QDialog):
                        "", 7, "", 8, "", 9, "", r"$10^{-1}$"]
         self.diagrama.ax.set_yticklabels(ytickslabel)
         self.__plot(int)
-        self.diagrama.draw()
 
     def __plot(self, metodo=0, eD=[]):
         """Plot the Moody chart using the indicate method
@@ -129,26 +141,31 @@ class Moody(QtWidgets.QDialog):
                   0.04, 0.045, 0.05, 0.06, 0.07]
         F = f_list[metodo]
 
-        # laminar
-        Re = [600, 2400]
-        f = [64./R for R in Re]
-        self.diagrama.ax.plot(Re, f, "k")
+        if os.path.isfile(conf_dir+"moody.dat"):
+            with open(conf_dir+"moody.dat", "r") as file:
+                try:
+                    dat = json.load(file)
+                except ValueError:
+                    calculate(eD, F)
+                    dat = json.load(file)
+        else:
+            calculate(eD, F)
 
-        # turbulent
-        Re = logspace(log10(2400), 8, 50)
-        for e in eD:
-            self.diagrama.ax.plot(Re, [F(Rei, e) for Rei in Re], "k")
-            title = representacion(e, tol=4.5)
-            angle = arctan((log10(F(Re[47], e))-log10(F(Re[35], e))) /
-                           (log10(Re[47])-log10(Re[35])))*360/2/pi
+        # Plot data
+        self.diagrama.ax.plot(Re_laminar, dat["laminar"], "k")
+        for eD, f in dat["turbulent"].items():
+            self.diagrama.ax.plot(Re_turbulent, f, "k")
+            title = representacion(eD, tol=4.5)
+            angle = arctan((log10(f[47])-log10(f[35])) /
+                           (log10(Re_turbulent[47])-log10(Re_turbulent[35])))*360/2/pi
+            # angle = arctan((log10(F(Re[47], e))-log10(F(Re[35], e))) /
+                           # (log10(Re[47])-log10(Re[35])))*360/2/pi
             self.diagrama.ax.annotate(
-                title, (Re[45], F(Re[45], e)), size="small", ha="center",
+                title, (Re_turbulent[45], f[45]), size="x-small", ha="center",
                 va="bottom", rotation=angle)
+        self.diagrama.ax.plot(Re_turbulent, dat["fully"], "k", lw=0.5, ls=":")
 
-        # Line to define the fully desarrolled turbulent flux
-        f = [(1/(1.14-2*log10(3500/R)))**2 for R in Re]
-        self.diagrama.ax.plot(Re, f, "k", lw=0.5, linestyle=":")
-
+        # Add explicative legend
         self.diagrama.ax.add_artist(
             ConnectionPatch((600, 0.009), (2400, 0.009), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))

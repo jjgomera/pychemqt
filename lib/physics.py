@@ -314,13 +314,6 @@ def f_friccion(Re, eD=0, metodo=0, geometria=0, adicional=0):
     return Dimensionless(f_friccion)
 
 
-    """Número de Arquímedes
-    Circulación de sólidos en fluidos, ej, fluidización
-    """
-    return D**3*rho*(rho_p-rho)*g/mu**2
-
-
-
 
 # Particle solids distribution
 # Ref Hoffmann,Gas Cyclones and Swirl Tubes, pag 63
