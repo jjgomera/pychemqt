@@ -39,6 +39,7 @@ from UI.widgets import Entrada_con_unidades
 
 Re_laminar = [600, 2400]
 Re_turbulent = logspace(log10(2400), 8, 50)
+Re_fully = logspace(log10(4000), 8, 50)
 
 
 def calculate(eD, F):
@@ -53,12 +54,15 @@ def calculate(eD, F):
         dat["turbulent"] = turb
 
     # Line to define the fully desarrolled turbulent flux
-    dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2 for R in Re_turbulent]
+    dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2 for R in Re_fully]
+
+    # Save to file
     with open(conf_dir+"moody.dat", "w") as file:
         json.dump(dat, file, indent=4)
 
 
 class Moody(QtWidgets.QDialog):
+    """Moody chart dialog"""
     title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
 
     def __init__(self, parent=None):
@@ -70,11 +74,13 @@ class Moody(QtWidgets.QDialog):
         self.diagrama = mpl(self)
         layout.addWidget(self.diagrama, 2, 1, 1, 4)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.rejected.connect(self.reject)
         txt = QtWidgets.QApplication.translate("pychemqt", "Calculate point")
         self.buttonCalculation = QtWidgets.QPushButton(txt)
-        self.buttonBox.addButton(self.buttonCalculation, QtWidgets.QDialogButtonBox.ActionRole)
+        self.buttonBox.addButton(self.buttonCalculation,
+                                 QtWidgets.QDialogButtonBox.ActionRole)
         self.buttonCalculation.clicked.connect(self.calculate)
         layout.addWidget(self.buttonBox, 3, 1, 1, 4)
 
@@ -83,18 +89,19 @@ class Moody(QtWidgets.QDialog):
     def cambiar(self, int):
         self.diagrama.ax.clear()
         self.diagrama.ax.set_autoscale_on(False)
-        xlabel = QtWidgets.QApplication.translate("pychemqt", "Reynolds number") + \
-            ",  " + r"$Re=\frac{V\rho D}{\mu}$"
+        xlabel = QtWidgets.QApplication.translate(
+            "pychemqt", "Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
         self.diagrama.ax.set_xlabel(xlabel, ha='center', size='10')
-        ylabel = QtWidgets.QApplication.translate("pychemqt", "Friction factor") + \
-            ",  " + r"$f=\frac{2hDg}{LV^2}$"
+        ylabel = QtWidgets.QApplication.translate(
+            "pychemqt", "Friction factor") + ",  " + r"$f=\frac{2hDg}{LV^2}$"
         self.diagrama.ax.set_ylabel(ylabel, size='10')
-        txt = QtWidgets.QApplication.translate("pychemqt", "Relative roughness") + \
-            ", "+r"$r=\frac{\epsilon}{D}$"
-        self.diagrama.fig.text(0.95, 0.5, txt, rotation=90, size='10', va = "center", ha = "center")
+        txt = QtWidgets.QApplication.translate(
+            "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
+        self.diagrama.fig.text(0.95, 0.5, txt, rotation=90, size='10',
+                               va="center", ha="center")
         self.diagrama.ax.grid(True)
         self.diagrama.ax.set_xlim(600, 1e8)
-        self.diagrama.ax.set_ylim(0.008, 0.1)
+        self.diagrama.ax.set_ylim(0.008, 0.11)
         self.diagrama.ax.set_xscale("log")
         self.diagrama.ax.set_yscale("log")
         xticks = [7e2, 8e2, 9e2, 1e3, 2e3, 3e3, 4e3, 5e3, 6e3, 7e3, 8e3, 9e3,
@@ -131,8 +138,6 @@ class Moody(QtWidgets.QDialog):
             8   -   Swamee-Jain (1976)")
 
         eD: lista con las líneas de rugosidades relativas a dibujar
-        Prmin: escala del eje x, minimo valor de Pr a representar
-        Prmax: escala del eje y, maximo valor de Pr a representar
         """
         if not eD:
             eD = [0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 4e-4, 6e-4,
@@ -141,29 +146,28 @@ class Moody(QtWidgets.QDialog):
                   0.04, 0.045, 0.05, 0.06, 0.07]
         F = f_list[metodo]
 
-        if os.path.isfile(conf_dir+"moody.dat"):
-            with open(conf_dir+"moody.dat", "r") as file:
-                try:
-                    dat = json.load(file)
-                except ValueError:
-                    calculate(eD, F)
-                    dat = json.load(file)
-        else:
+        if not os.path.isfile(conf_dir+"moody.dat"):
             calculate(eD, F)
+
+        with open(conf_dir+"moody.dat", "r") as file:
+            try:
+                dat = json.load(file)
+            except ValueError:
+                calculate(eD, F)
+                dat = json.load(file)
 
         # Plot data
         self.diagrama.ax.plot(Re_laminar, dat["laminar"], "k")
         for eD, f in dat["turbulent"].items():
             self.diagrama.ax.plot(Re_turbulent, f, "k")
             title = representacion(eD, tol=4.5)
-            angle = arctan((log10(f[47])-log10(f[35])) /
-                           (log10(Re_turbulent[47])-log10(Re_turbulent[35])))*360/2/pi
-            # angle = arctan((log10(F(Re[47], e))-log10(F(Re[35], e))) /
-                           # (log10(Re[47])-log10(Re[35])))*360/2/pi
+            num = log10(f[47])-log10(f[35])
+            den = log10(Re_turbulent[47])-log10(Re_turbulent[35])
+            angle = arctan(num/den)*360/2/pi
             self.diagrama.ax.annotate(
                 title, (Re_turbulent[45], f[45]), size="x-small", ha="center",
                 va="bottom", rotation=angle)
-        self.diagrama.ax.plot(Re_turbulent, dat["fully"], "k", lw=0.5, ls=":")
+        self.diagrama.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
 
         # Add explicative legend
         self.diagrama.ax.add_artist(
@@ -179,13 +183,72 @@ class Moody(QtWidgets.QDialog):
             ConnectionPatch((40000, 0.095), (9.9e7, 0.095), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
-        self.diagrama.ax.text(15000, 0.094, txt, size="small", va="top", ha="center")
-        txt = QtWidgets.QApplication.translate("pychemqt", "Turbulent flux fully desarrolled")
-        self.diagrama.ax.text(2e6, 0.094, txt, size="small", va="top", ha="center")
+        self.diagrama.ax.text(15000, 0.104, txt, size="small", va="top",
+                              ha="center")
+        txt = QtWidgets.QApplication.translate(
+            "pychemqt", "Turbulent flux fully desarrolled")
+        self.diagrama.ax.text(2e6, 0.104, txt, size="small", va="top",
+                              ha="center")
         txt = QtWidgets.QApplication.translate("pychemqt", "Critic\nzone")
-        self.diagrama.ax.text(4000, 0.0091, txt, size="small", va="bottom", ha="center")
+        self.diagrama.ax.text(4000, 0.0091, txt, size="small", va="bottom",
+                              ha="center")
         txt = QtWidgets.QApplication.translate("pychemqt", "Laminar flux")
-        self.diagrama.ax.text(1200, 0.0091, txt, size="small", va="bottom", ha="center")
+        self.diagrama.ax.text(1200, 0.0091, txt, size="small", va="bottom",
+                              ha="center")
+
+    def calculate(self):
+        dialog = CalculateDialog()
+        if dialog.exec_():
+            pass
+
+
+class CalculateDialog(QtWidgets.QDialog):
+    """Dialog to calculate a specified point"""
+    def __init__(self, parent=None):
+        super(CalculateDialog, self).__init__(parent)
+        # self.setWindowTitle(self.title)
+        layout = QtWidgets.QGridLayout(self)
+        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt",
+                                                                  "Method:"))
+        layout.addWidget(label, 1, 0)
+        self.metodos = QtWidgets.QComboBox()
+        self.metodos.addItem("Colebrook")
+        self.metodos.addItem("Chen (1979")
+        self.metodos.addItem("Romeo (2002)")
+        self.metodos.addItem("Goudar-Sonnad")
+        self.metodos.addItem("Manadilli (1997)")
+        self.metodos.addItem("Serghides")
+        self.metodos.addItem("Churchill (1977)")
+        self.metodos.addItem("Zigrang-Sylvester (1982)")
+        self.metodos.addItem("Swamee-Jain (1976)")
+        self.metodos.currentIndexChanged.connect(self.calculate)
+        layout.addWidget(self.metodos, 1, 1, 1, 2)
+
+        layout.addWidget(QtWidgets.QLabel("Re"), 2, 1)
+        self.Re = Entrada_con_unidades(float, tolerancia=4)
+        self.Re.valueChanged.connect(self.calculate)
+        layout.addWidget(self.Re, 2, 2)
+        layout.addWidget(QtWidgets.QLabel("e/D"), 3, 1)
+        self.eD = Entrada_con_unidades(float)
+        self.eD.valueChanged.connect(self.calculate)
+        layout.addWidget(self.eD, 3, 2)
+        layout.addWidget(QtWidgets.QLabel("f"), 4, 1)
+        self.f = Entrada_con_unidades(float, readOnly=True)
+        layout.addWidget(self.f, 4, 2)
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Close)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox, 10, 1, 1, 2)
+
+    def calculate(self, value):
+        index = self.metodos.currentIndex()
+        F = f_list[index]
+        Re = self.Re.value
+        eD = self.eD.value
+        if Re is not None and eD is not None:
+            self.f.setValue(F(Re, eD))
+
 
 if __name__ == "__main__":
     import sys
@@ -193,4 +256,3 @@ if __name__ == "__main__":
     Dialog = Moody()
     Dialog.show()
     sys.exit(app.exec_())
-
