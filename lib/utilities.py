@@ -18,19 +18,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
-#################################################################################
+###############################################################################
 # Module with utilities:
 #   - format2txt: Function to convert dict format config in a string value
 #   - representacion: Function for string representation of float values
 #   - colors: Function to generate colors
 #   - exportTable; Save data to a file
-#################################################################################
+###############################################################################
 
 
 import random
 import os
-#from string import maketrans
 
 from PyQt5.QtWidgets import QApplication
 
@@ -52,7 +50,8 @@ def format2txt(formato):
     return txt
 
 
-def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, signo=False, thousand=False):
+def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4,
+                   signo=False, thousand=False):
     """Function for string representation of float values
     float: number to transform
     format: mode
@@ -70,25 +69,24 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4, sign
         return float
 
     if signo:
-        start="{:+"
+        start = "{:+"
     else:
-        start="{: "
+        start = "{: "
 
     if thousand:
-        coma=",."
+        coma = ",."
     else:
-        coma="."
+        coma = "."
 
-    if exp:
-        if -10**tol > float or -10**-tol < float < 10**-tol or float > 10**tol:
-            format=2
-
-    if format==1:
-        string=start+"{}{:d}g".format(coma, decimales)+"}"
-    elif format==2:
-        string=start+"{:d}{}{:d}e".format(total, coma, decimales)+"}"
+    if -10**tol > float or -10**-tol < float < 10**-tol or float > 10**tol:
+        format = 2
+    print(format)
+    if format == 1:
+        string = start+"{}{:d}g".format(coma, decimales)+"}"
+    elif format == 2:
+        string = start+"{:d}{}{:d}e".format(total, coma, decimales)+"}"
     else:
-        string=start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"
+        string = start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"
 
     return string.format(float)
 
@@ -134,7 +132,7 @@ def exportTable(matrix, fname, format, title=None):
     """
     sheetTitle = str(QApplication.translate("pychemqt", "Table"))
     if fname.split(".")[-1] != format:
-        fname+=".%s" % format
+        fname += ".%s" % format
 
     # Format title
     if title:
@@ -144,17 +142,18 @@ def exportTable(matrix, fname, format, title=None):
             if line[-1] != "[-]":
                 line[-1] = "["+line[-1]+"]"
             header.append(" ".join(line))
-        c_newline=maketrans(os.linesep, " ")
+        c_newline = bytes.maketrans(os.linesep, " ")
 
     if format == "csv":
         import csv
         with open(fname, "w") as archivo:
-            writer = csv.writer(archivo, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
+            writer = csv.writer(archivo, delimiter='\t', quotechar='"',
+                                quoting=csv.QUOTE_NONE)
 
             # Add Data
             if title:
                 writer.writerow([ttl.translate(c_newline) for ttl in header])
-            c_float=maketrans(".", ",")
+            c_float = bytes.maketrans(".", ",")
             for row in matrix:
                 writer.writerow([str(data).translate(c_float) for data in row])
 
@@ -162,17 +161,17 @@ def exportTable(matrix, fname, format, title=None):
         import ezodf
         spreadsheet = ezodf.newdoc("ods", fname)
         sheets = spreadsheet.sheets
-        sheet=ezodf.Table(sheetTitle)
-        sheets+=sheet
+        sheet = ezodf.Table(sheetTitle)
+        sheets += sheet
         sheet.reset(size=(len(matrix)+1, len(matrix[0])))
 
         # Add Data
         if title:
             for i, ttl in enumerate(header):
-                sheet["%s%i"%(spreadsheetColumn(i), 1)].set_value(ttl)
+                sheet["%s%i" % (spreadsheetColumn(i), 1)].set_value(ttl)
         for j, row in enumerate(matrix):
             for i, data in enumerate(row):
-                sheet["%s%i"%(spreadsheetColumn(i), j+2)].set_value(data)
+                sheet["%s%i" % (spreadsheetColumn(i), j+2)].set_value(data)
         spreadsheet.save()
 
     elif format == "xls":
@@ -196,7 +195,7 @@ def exportTable(matrix, fname, format, title=None):
 
     elif format == "xlsx":
         import openpyxl
-        from openpyxl.styles import Style, Font
+        from openpyxl.styles import Font
         spreadsheet = openpyxl.Workbook()
         sheet = spreadsheet.active
         sheet.title = sheetTitle
@@ -210,12 +209,12 @@ def exportTable(matrix, fname, format, title=None):
         # Add Data
         if title:
             for i, ttl in enumerate(header):
-                sheet["%s%i"%(spreadsheetColumn(i), 1)] = ttl
-                sheet["%s%i"%(spreadsheetColumn(i), 1)].style.font= font1
+                sheet["%s%i" % (spreadsheetColumn(i), 1)] = ttl
+                sheet["%s%i" % (spreadsheetColumn(i), 1)].style.font = font1
         for j, row in enumerate(matrix):
             for i, data in enumerate(row):
-                sheet["%s%i"%(spreadsheetColumn(i), j+2)] = data
-                sheet["%s%i"%(spreadsheetColumn(i), j+2)].style.font = font2
+                sheet["%s%i" % (spreadsheetColumn(i), j+2)] = data
+                sheet["%s%i" % (spreadsheetColumn(i), j+2)].style.font = font2
         spreadsheet.save(filename=fname)
 
     else:
@@ -238,10 +237,10 @@ def spreadsheetColumn(index):
 
 
 if __name__ == "__main__":
-#    import math
-#    print representacion(math.pi, decimales=6, tol=1)
-#    print repr(Configuracion("Density", "DenGas").text())
-#    print representacion("3232326262")
+    import math
+    print(representacion(math.pi*1000, decimales=6, tol=1))
+    # print repr(Configuracion("Density", "DenGas").text())
+    # print representacion("3232326262")
 
-    print(spreadsheetColumn(55))
-    print(colors(5))
+    # print(spreadsheetColumn(55))
+    # print(colors(5))

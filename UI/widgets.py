@@ -248,7 +248,9 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             else:
                 txt=self.entrada.text().replace(',', '.')
             if self.unidad!=int:
-                self.entrada.setText(representacion(float(txt), self.decimales, self.tolerancia)+self.suffix)
+                self.entrada.setText(
+                    representacion(float(txt), decimales=self.decimales,
+                                   tol=self.tolerancia)+self.suffix)
             oldvalue=self.value
             if self.magnitud:
                 self.value=self.unidad(float(txt), "conf", magnitud=self.UIconfig)
@@ -257,7 +259,6 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             if self.value!=oldvalue:
                 self.valueChanged.emit(self.value)
                 self.setToolTip()
-
 
     def clear(self):
         self.entrada.setText("")
