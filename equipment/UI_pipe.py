@@ -313,6 +313,9 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         if load:
             i = self.ComboMaterial.currentIndex()
             j = self.TablaDiametro2.currentRow()
+        else:
+            self.ComboMaterial.setCurrentIndex(i)
+            self.TablaDiametro2.setCurrentRow(j)
         self.blockSignals(True)
         self.TablaMaterial.item(0, 0).setText(self.materiales[i][0])
         self.TablaMaterial.item(0, 1).setText(self.materiales[i][1])
@@ -402,10 +405,12 @@ class Catalogo_Materiales(QtWidgets.QWidget):
             lista = []
             lista.append(self.TablaMaterial.item(0, 0).text())
             lista.append(self.TablaMaterial.item(0, 1).text())
-            lista.append(float(self.TablaMaterial.item(0, 2).text())/1000.)
+            lista.append(float(self.TablaMaterial.item(0, 2).text()))
             lista.append(self.TablaDiametro.item(0, 0).text())
-            for i in range(1, 7):
-                lista.append(float(self.TablaDiametro.item(0, i).text())/1000.)
+            for i in range(1, 4):
+                lista.append(float(self.TablaDiametro.item(0, i).text()))
+            for i in range(4, 7):
+                lista.append(float(self.TablaDiametro.item(0, i).text()))
             if self.botonEdit.isChecked():
                 lista.append(self.ComboMaterial.currentIndex())
                 lista.append(self.TablaDiametro2.currentRow())
@@ -811,11 +816,11 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.closePersistentEditor(self.Accesorios.item(oldi, 4))
 
     def add(self, indicetabla=None, indicecombo=None, emit=True):
-#        self.Accesorios.blockSignals(True)
+        self.Accesorios.blockSignals(True)
         if indicetabla == None:
             indicetabla = self.TablaAccesorios.currentRow()
             indicecombo = self.comboxmm[indicetabla].currentIndex()
-        print((indicetabla, indicecombo, self.accesorios))
+
         if [indicetabla, indicecombo] not in self.accesorios:
             indice = self.Accesorios.rowCount()
             self.accesorios.append([indicetabla, indicecombo])
@@ -853,7 +858,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.Accesorios.item(indice, 4).setText(
                 str(int(self.Accesorios.item(indice, 4).text())+1))
         self.CalcularK()
-#        self.Accesorios.blockSignals(False)
+        self.Accesorios.blockSignals(False)
 
         if emit:
             array = []
@@ -861,10 +866,10 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 lista = [indicetabla, indicecombo]
                 lista.append(float(self.Accesorios.item(i, 3).text()))
                 lista.append(int(self.Accesorios.item(i, 4).text()))
-                lista.append(str(self.Accesorios.item(i, 0).text().toUtf8()))
-                lista.append(str(self.Accesorios.item(i, 1).text().toUtf8()))
-                lista.append(str(self.Accesorios.item(i, 2).text().toUtf8()))
-                lista.append(str(self.Accesorios.item(i, 5).text().toUtf8()))
+                lista.append(str(self.Accesorios.item(i, 0).text()))
+                lista.append(str(self.Accesorios.item(i, 1).text()))
+                lista.append(str(self.Accesorios.item(i, 2).text()))
+                lista.append(str(self.Accesorios.item(i, 5).text()))
                 array.append(lista)
             self.valueChanged.emit(array)
 

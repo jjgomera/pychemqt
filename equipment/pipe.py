@@ -18,10 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
-###############################
-#        librería de definición de tuberias       ###
-###############################
+###############################################################################
+#   Library for pipe equipment definition
+###############################################################################
 
 import os
 
@@ -94,22 +93,23 @@ class Pipe(equipment):
     """
     title = QApplication.translate("pychemqt", "Pipe")
     help = ""
-    kwargs = {"entrada": None,
-              "metodo": 0,
-              "thermal": 0,
-              "material": [],
-              "accesorios": [],
-              "l": 0.0,
-              "h": 0.0,
-              "K": 0.0,
-              "C": 100.,
-              "T_ext": 0.0,
-              "U": 0.0,
-              "Q": 0.0,
+    kwargs = {
+        "entrada": None,
+        "metodo": 0,
+        "thermal": 0,
+        "material": [],
+        "accesorios": [],
+        "l": 0.0,
+        "h": 0.0,
+        "K": 0.0,
+        "C": 100.,
+        "T_ext": 0.0,
+        "U": 0.0,
+        "Q": 0.0,
 
-              "f_install": 2.8,
-              "Base_index": 0.0,
-              "Current_index": 0.0}
+        "f_install": 2.8,
+        "Base_index": 0.0,
+        "Current_index": 0.0}
     kwargsInput = ("entrada", )
     kwargsValue = ("l", "h", "C")
     kwargsList = ("metodo", "thermal")
@@ -117,20 +117,25 @@ class Pipe(equipment):
                       "DeltaP_v", "DeltaP_100ft", "V", "f", "Re", "Tout")
     calculateCostos = ("C_adq", "C_inst")
     indiceCostos = 5
+    salida = [None]
 
-    TEXT_METODO = [QApplication.translate("pychemqt", "Single Phase flow"),
-                   QApplication.translate("pychemqt", "Water (Hazen-Williams)"),
-                   QApplication.translate("pychemqt", "Steam (Fritzsche)"),
-                   QApplication.translate("pychemqt", "Isotermic gas flow"),
-                   QApplication.translate("pychemqt", "Two Phase flow (Baker method)"),
-                   QApplication.translate("pychemqt", "Two Phase flow (Beggs and Brill method)")]
-    TEXT_THERMAL = [QApplication.translate("pychemqt", "Adiabatic"),
-                    QApplication.translate("pychemqt", "Heat flux"),
-                    QApplication.translate("pychemqt", "Heat transfer")]
+    TEXT_METODO = (
+        QApplication.translate("pychemqt", "Single Phase flow"),
+        QApplication.translate("pychemqt", "Water (Hazen-Williams)"),
+        QApplication.translate("pychemqt", "Steam (Fritzsche)"),
+        QApplication.translate("pychemqt", "Isotermic gas flow"),
+        QApplication.translate("pychemqt", "Two Phase flow (Baker method)"),
+        QApplication.translate("pychemqt", "Two Phase flow (Beggs and Brill method)"))
+    TEXT_THERMAL = (
+        QApplication.translate("pychemqt", "Adiabatic"),
+        QApplication.translate("pychemqt", "Heat flux"),
+        QApplication.translate("pychemqt", "Heat transfer"))
 
     @property
     def isCalculable(self):
-        if self.kwargs["f_install"] and self.kwargs["Base_index"] and self.kwargs["Current_index"] and self.kwargs["material"] and self.kwargs["material"][0] in ['Stainless Steel (ANSI)', 'Steel Galvanised (ANSI)', 'Steel (ANSI)']:
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"] and self.kwargs["material"] and \
+                self.kwargs["material"][0] in ['Stainless Steel (ANSI)', 'Steel Galvanised (ANSI)', 'Steel (ANSI)']:
             self.statusCoste = True
         else:
             self.statusCoste = False
@@ -169,15 +174,14 @@ class Pipe(equipment):
         return True
 
     def calculo(self):
-        self.entrada = self.kwargs["entrada"]
         self.L = unidades.Length(self.kwargs["l"])
 
-        if self.entrada.x == 0:
-            self.rho = self.entrada.Liquido.rho
-            self.mu = self.entrada.Liquido.mu
+        if self.kwargs["entrada"].x == 0:
+            self.rho = self.kwargs["entrada"].Liquido.rho
+            self.mu = self.kwargs["entrada"].Liquido.mu
         else:
-            self.rho = self.entrada.Gas.rho
-            self.mu = self.entrada.Gas.mu
+            self.rho = self.kwargs["entrada"].Gas.rho
+            self.mu = self.kwargs["entrada"].Gas.mu
 
         self.material = self.kwargs["material"][0] + " " + self.kwargs["material"][1]
         self.Dn = self.kwargs["material"][3]
@@ -188,7 +192,7 @@ class Pipe(equipment):
         self.eD = unidades.Dimensionless(self.rugosidad/self.Di)
         self.seccion = unidades.Area(pi/4*self.Di**2)
         self.A = unidades.Area(pi*self.De*self.L)
-        self.V = unidades.Speed(self.entrada.Q/self.seccion)
+        self.V = unidades.Speed(self.kwargs["entrada"].Q/self.seccion)
         self.Re = Re(self.Di, self.V, self.rho, self.mu)
         K = 0
         for accesorio in self.kwargs["accesorios"]:
@@ -204,19 +208,19 @@ class Pipe(equipment):
 
         self.DeltaP = unidades.Pressure(self.DeltaP_f+self.DeltaP_ac+self.DeltaP_h)
         self.DeltaP_100ft = self.DeltaP*100/self.L.ft
-        self.Pout = unidades.Pressure(self.entrada.P-self.DeltaP)
+        self.Pout = unidades.Pressure(self.kwargs["entrada"].P-self.DeltaP)
 
         if self.kwargs["thermal"] == 0:
-            self.Tout = self.entrada.T
+            self.Tout = self.kwargs["entrada"].T
             self.Heat = unidades.Power(0)
         else:
             cambiador = Heat_Exchanger()
-            cambiador.calculo(entrada=self.entrada, modo=self.kwargs["thermal"], Heat=self.kwargs["Q"], deltaP=self.DeltaP, A=self.A, U=self.kwargs["U"], Text=self.kwargs["Text"])
+            cambiador.calculo(entrada=self.kwargs["entrada"], modo=self.kwargs["thermal"], Heat=self.kwargs["Q"], deltaP=self.DeltaP, A=self.A, U=self.kwargs["U"], Text=self.kwargs["Text"])
             self.Tout = cambiador.salida[0].T
             self.Heat = cambiador.Heat
 
-        self.salida = [self.entrada.clone(T=self.Tout, P=self.Pout)]
-        self.Pin = self.entrada.P
+        self.salida = [self.kwargs["entrada"].clone(T=self.Tout, P=self.Pout)]
+        self.Pin = self.kwargs["entrada"].P
         self.Pout = self.salida[0].P
 
     def __DeltaP_friccion(self):
@@ -224,9 +228,9 @@ class Pipe(equipment):
         if self.kwargs["metodo"] == 0:
             delta = unidades.Pressure(self.L*self.V**2/self.Di*self.f*self.rho/2)
         elif self.kwargs["metodo"] == 1:
-            delta = unidades.Pressure((self.entrada.Q.galUSmin*self.L.ft**0.54/0.442/self.Di.inch**2.63/self.kwargs["C"])**(1./0.54), "psi")
+            delta = unidades.Pressure((self.kwargs["entrada"].Q.galUSmin*self.L.ft**0.54/0.442/self.Di.inch**2.63/self.kwargs["C"])**(1./0.54), "psi")
         elif self.kwargs["metodo"] == 2:
-            delta = unidades.Pressure(2.1082*self.L.ft*self.entrada.caudalmasico.lbh**1.85/self.rho.lbft3/1e7/self.Di.inch**4.97, "psi")
+            delta = unidades.Pressure(2.1082*self.L.ft*self.kwargs["entrada"].caudalmasico.lbh**1.85/self.rho.lbft3/1e7/self.Di.inch**4.97, "psi")
         elif self.kwargs["metodo"] == 3:
             pass
 
@@ -263,101 +267,134 @@ class Pipe(equipment):
         self.C_adq = unidades.Currency(a*self.Di.ft**p*self.L * self.kwargs["Current_index"] / self.kwargs["Base_index"])
         self.C_inst = unidades.Currency(self.C_adq*self.kwargs["f_install"])
 
-    def writeListtoStream(self, stream, key, value):
+    def writeListtoJSON(self, kwarg, key, value):
         """Personalizar en el caso de equipos con listas complejas"""
+        kwarg_list = {}
         if key == "material":
-            stream.writeString(value[0].encode())
-            stream.writeString(value[1].encode())
-            stream.writeFloat(value[2])
-            stream.writeString(value[3].encode())
-            for val in value[4:-2]:
-                stream.writeFloat(val)
-            for val in value[-2:]:
-                stream.writeInt32(val)
+            kwarg_list["material"] = value[0]
+            kwarg_list["class"] = value[1]
+            kwarg_list["rugosidad"] = value[2]
+            kwarg_list["nominal"] = value[3]
+            kwarg_list["Di"] = value[4]
+            kwarg_list["w"] = value[5]
+            kwarg_list["De"] = value[6]
+            kwarg_list["weight"] = value[7]
+            kwarg_list["volume"] = value[8]
+            kwarg_list["area"] = value[9]
+            kwarg_list["ind_material"] = value[10]
+            kwarg_list["ind_size"] = value[11]
         elif key == "accesorios":
-            stream.writeInt32(len(value))
-            for accesorio in value:
-                stream.writeInt32(accesorio[0])
-                stream.writeInt32(accesorio[1])
-                stream.writeFloat(accesorio[2])
-                stream.writeInt32(accesorio[3])
-                for cadena in accesorio[4:]:
-                    stream.writeString(cadena.encode())
+            for i, accesorio in enumerate(value):
+                ac = {}
+                ac["ind_equip"] = value[i][0]
+                ac["ind_size"] = value[i][1]
+                ac["K"] = value[i][2]
+                ac["count"] = value[i][3]
+                ac["type"] = value[i][4]
+                ac["D_mm"] = value[i][5]
+                ac["D_in"] = value[i][6]
+                ac["description"] = value[i][7]
+                kwarg_list[i] = ac
+        kwarg[key] = kwarg_list
 
-    def readListFromStream(self, stream, key):
-        """Personalizar en el caso de equipos con listas complejas"""
-        valor = []
+    def readListFromJSON(self, data, key):
+        """Read list from file, customize in entities with complex list"""
+        kwarg = []
         if key == "material":
-            valor.append(stream.readString().decode("utf-8"))
-            valor.append(stream.readString().decode("utf-8"))
-            valor.append(float(representacion(stream.readFloat())))
-            valor.append(stream.readString().decode("utf-8"))
-            for i in range(6):
-                valor.append(float(representacion(stream.readFloat())))
-            valor.append(stream.readInt32())
-            valor.append(stream.readInt32())
+            kwarg.append(data[key]["material"])
+            kwarg.append(data[key]["class"])
+            kwarg.append(data[key]["rugosidad"])
+            kwarg.append(data[key]["nominal"])
+            kwarg.append(data[key]["Di"])
+            kwarg.append(data[key]["w"])
+            kwarg.append(data[key]["De"])
+            kwarg.append(data[key]["weight"])
+            kwarg.append(data[key]["volume"])
+            kwarg.append(data[key]["area"])
+            kwarg.append(data[key]["ind_material"])
+            kwarg.append(data[key]["ind_size"])
+
         elif key == "accesorios":
-            for i in range(stream.readInt32()):
-                accesorio = []
-                accesorio.append(stream.readInt32())
-                accesorio.append(stream.readInt32())
-                accesorio.append(float(representacion(stream.readFloat())))
-                accesorio.append(stream.readInt32())
-                for j in range(4):
-                    accesorio.append(stream.readString().decode("utf-8"))
-                valor.append(accesorio)
-        return valor
+            for i, accesorio in data[key].items():
+                ac = []
+                ac.append(accesorio["ind_equip"])
+                ac.append(accesorio["ind_size"])
+                ac.append(accesorio["K"])
+                ac.append(accesorio["count"])
+                ac.append(accesorio["type"])
+                ac.append(accesorio["D_mm"])
+                ac.append(accesorio["D_in"])
+                ac.append(accesorio["description"])
+                kwarg.append(ac)
+        return kwarg
 
-    def writeStatetoStream(self, stream):
-        stream.writeFloat(self.L)
-        stream.writeFloat(self.rho)
-        stream.writeFloat(self.mu)
-        self.material=self.kwargs["material"][0] + " " + self.kwargs["material"][1]
-        stream.writeFloat(self.rugosidad)
-        stream.writeFloat(self.De)
-        stream.writeFloat(self.w)
-        stream.writeFloat(self.Di)
-        stream.writeFloat(self.eD)
-        stream.writeFloat(self.seccion)
-        stream.writeInt32(self.A)
-        stream.writeInt32(self.V)
-        stream.writeInt32(self.Re)
-        stream.writeInt32(self.k)
-        stream.writeInt32(self.DeltaP_h)
-        stream.writeInt32(self.DeltaP_ac)
-        stream.writeInt32(self.f)
-        stream.writeInt32(self.DeltaP_f)
-        stream.writeInt32(self.DeltaP_v)
-        stream.writeInt32(self.DeltaP)
-        stream.writeInt32(self.DeltaP_100ft)
-        stream.writeInt32(self.Pout)
-        stream.writeInt32(self.Tout)
-        stream.writeInt32(self.Pin)
-
-        stream.writeInt32(self.statusCoste)
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["L"] = self.L
+        state["rho"] = self.rho
+        state["mu"] = self.mu
+        state["material"] = self.material
+        state["Dn"] = self.Dn
+        state["rugosidad"] = self.rugosidad
+        state["De"] = self.De
+        state["w"] = self.w
+        state["Di"] = self.Di
+        state["eD"] = self.eD
+        state["seccion"] = self.seccion
+        state["A"] = self.A
+        state["V"] = self.V
+        state["Re"] = self.Re
+        state["K"] = self.K
+        state["DeltaP_h"] = self.DeltaP_h
+        state["DeltaP_ac"] = self.DeltaP_ac
+        state["f"] = self.f
+        state["DeltaP_f"] = self.DeltaP_f
+        state["DeltaP_v"] = self.DeltaP_v
+        state["DeltaP"] = self.DeltaP
+        state["DeltaP_100ft"] = self.DeltaP_100ft
+        state["Pout"] = self.Pout
+        state["Tout"] = self.Tout
+        state["Heat"] = self.Heat
+        state["Pin"] = self.Pin
+        state["Pout"] = self.Pout
+        state["statusCoste"] = self.statusCoste
         if self.statusCoste:
-            stream.writeFloat(self.C_adq)
-            stream.writeFloat(self.C_inst)
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
 
-    def readStatefromStream(self, stream):
-        self.Tout=Temperature(stream.readFloat())
-        self.deltaP=DeltaP(stream.readFloat())
-        self.Hmax=Power(stream.readFloat())
-        self.Heat=Power(stream.readFloat())
-        self.CombustibleRequerido=VolFlow(stream.readFloat())
-        self.deltaT=DeltaT(stream.readFloat())
-        self.eficiencia=Dimensionless(stream.readFloat())
-        self.poderCalorifico=Dimensionless(stream.readFloat())
-        self.Tin=Temperature(stream.readFloat())
-        self.Tout=Temperature(stream.readFloat())
-        self.statusCoste = stream.readInt32()
-
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.L = unidades.Length(state["L"])
+        self.rho = unidades.Density(state["rho"])
+        self.mu = unidades.Viscosity(state["mu"])
+        self.material = state["material"]
+        self.Dn = state["Dn"]
+        self.rugosidad = unidades.Length(state["rugosidad"])
+        self.De = unidades.Length(state["De"])
+        self.w = unidades.Length(state["w"])
+        self.Di = unidades.Length(state["Di"])
+        self.eD = unidades.Dimensionless(state["eD"])
+        self.seccion = unidades.Area(state["seccion"])
+        self.A = unidades.Area(state["A"])
+        self.V = unidades.Speed(state["V"])
+        self.Re = unidades.Dimensionless(state["Re"])
+        self.K = unidades.Dimensionless(state["K"])
+        self.DeltaP_h = unidades.DeltaP(state["DeltaP_h"])
+        self.DeltaP_ac = unidades.DeltaP(state["DeltaP_ac"])
+        self.f = unidades.Dimensionless(state["f"])
+        self.DeltaP_f = unidades.DeltaP(state["DeltaP_f"])
+        self.DeltaP_v = unidades.DeltaP(state["DeltaP_v"])
+        self.DeltaP = unidades.DeltaP(state["DeltaP"])
+        self.DeltaP_100ft = unidades.Dimensionless(state["DeltaP_100ft"])
+        self.Tout = unidades.Temperature(state["Tout"])
+        self.Heat = unidades.Power(state["Heat"])
+        self.Pin = unidades.Pressure(state["Pin"])
+        self.Pout = unidades.Pressure(state["Pout"])
+        self.statusCoste = state["statusCoste"]
         if self.statusCoste:
-            self.P_dis=Pressure(stream.readFloat())
-            self.C_adq=Currency(stream.readFloat())
-            self.C_inst=Currency(stream.readFloat())
+            self.C_adq = unidades.Currency(state["C_adq"])
+            self.C_inst = unidades.Currency(state["C_inst"])
         self.salida = [None]
-
 
     def propTxt(self):
         txt="#---------------"+QApplication.translate("pychemqt", "Catalog")+"-----------------#"+os.linesep
@@ -379,7 +416,7 @@ class Pipe(equipment):
 
         txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
         txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Method"), self.TEXT_METODO[self.kwargs["metodo"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.kwargs["entrada"].P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Total", None), self.DeltaP.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP friction", None), self.DeltaP_f.str)+os.linesep
@@ -454,7 +491,7 @@ if __name__ == '__main__':
 #    agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
 #    tuberia=Pipe(entrada=agua, metodo=0, l=5, material=["Cast Iron", "Class A", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, 0, 2])
 #    print tuberia.Di, tuberia.V,  tuberia.Re, tuberia.DeltaP
-
+    # import config
     agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
     tuberia=Pipe(entrada=agua, metodo=0, l=5, material=["Steel (ANSI)", "Sch. 40", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, -1, 2], notas="Tuberia")
     print((tuberia.DeltaP))
