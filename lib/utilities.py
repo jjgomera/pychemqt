@@ -78,9 +78,11 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4,
     else:
         coma = "."
 
-    if -10**tol > float or -10**-tol < float < 10**-tol or float > 10**tol:
+    if -10**tol > float or (-10**-tol < float < 10**-tol and float != 0) or float > 10**tol:
         format = 2
-    print(format)
+    if float == 0:
+        decimales = 1
+
     if format == 1:
         string = start+"{}{:d}g".format(coma, decimales)+"}"
     elif format == 2:
@@ -238,7 +240,8 @@ def spreadsheetColumn(index):
 
 if __name__ == "__main__":
     import math
-    print(representacion(math.pi*1000, decimales=6, tol=1))
+    # print(representacion(math.pi*1000, decimales=6, tol=1))
+    print(representacion(0, decimales=6, tol=1))
     # print repr(Configuracion("Density", "DenGas").text())
     # print representacion("3232326262")
 
