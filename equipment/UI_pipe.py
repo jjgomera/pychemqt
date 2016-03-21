@@ -37,7 +37,7 @@ from lib.utilities import representacion
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
 from lib.table import Material_Tuberia, Accesorios_Tuberia, Fitting_icon
-from lib.physics import (K_contraction, K_enlargement, K_flush, K_MitreBend,
+from lib.friction import (K_contraction, K_enlargement, K_flush, K_MitreBend,
                          Ft, K_longBend)
 from tools.costIndex import CostData
 from equipment.parents import UI_equip

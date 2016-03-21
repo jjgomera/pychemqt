@@ -40,7 +40,7 @@ from scipy.constants import g
 
 from lib import unidades
 from lib.corriente import Corriente
-from lib.physics import f_friccion
+from lib.friction import f_friccion
 from lib.adimensional import Re, Pr, Gr, Gz
 from .parents import equipment
 

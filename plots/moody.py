@@ -31,7 +31,7 @@ from scipy import logspace, log10, pi, arctan
 from matplotlib.patches import ConnectionPatch
 
 from lib.config import conf_dir
-from lib.physics import f_list
+from lib.friction import f_list, f_colebrook
 from lib.plot import mpl
 from lib.utilities import representacion
 from UI.widgets import Entrada_con_unidades
@@ -122,29 +122,14 @@ class Moody(QtWidgets.QDialog):
                        "", 4, "", "", "", "", 5, "", "", "", "", 6, "", "", "",
                        "", 7, "", 8, "", 9, "", r"$10^{-1}$"]
         self.diagrama.ax.set_yticklabels(ytickslabel)
-        self.__plot(int)
+        self.__plot()
 
-    def __plot(self, metodo=0, eD=[]):
-        """Plot the Moody chart using the indicate method
-        método de cálculo:
-            0   -   Colebrook
-            1   -   Chen (1979)
-            2   -   Romeo (2002)
-            3   -   Goudar-Sonnad
-            4   -   Manadilli (1997)
-            5   -   Serghides
-            6   -   Churchill (1977)
-            7   -   Zigrang-Sylvester (1982)
-            8   -   Swamee-Jain (1976)")
-
-        eD: lista con las líneas de rugosidades relativas a dibujar
-        """
-        if not eD:
-            eD = [0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 4e-4, 6e-4,
-                  8e-4, 0.001, 0.0015, 0.002, 0.003, 0.004, 0.006, 0.008,
-                  0.01, 0.0125, 0.015, 0.0175, 0.02, 0.025, 0.03, 0.035,
-                  0.04, 0.045, 0.05, 0.06, 0.07]
-        F = f_list[metodo]
+    def __plot(self):
+        """Plot the Moody chart using the indicate method """
+        eD = [0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 4e-4, 6e-4, 8e-4,
+              .001, .0015, .002, .003, .004, .006, .008, .01, .0125, .015,
+              .0175, .02, .025, .03, .035, .04, .045, .05, .06, .07]
+        F = f_colebrook
 
         if not os.path.isfile(conf_dir+"moody.dat"):
             calculate(eD, F)
@@ -212,15 +197,12 @@ class CalculateDialog(QtWidgets.QDialog):
                                                                   "Method:"))
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
-        self.metodos.addItem("Colebrook")
-        self.metodos.addItem("Chen (1979")
-        self.metodos.addItem("Romeo (2002)")
-        self.metodos.addItem("Goudar-Sonnad")
-        self.metodos.addItem("Manadilli (1997)")
-        self.metodos.addItem("Serghides")
-        self.metodos.addItem("Churchill (1977)")
-        self.metodos.addItem("Zigrang-Sylvester (1982)")
-        self.metodos.addItem("Swamee-Jain (1976)")
+        for f in f_list:
+            line = f.__doc__.split("\n")[1]
+            year = line.split(" ")[-1]
+            name = line.split(" ")[-3]
+            doc = name + " " + year
+            self.metodos.addItem(doc)
         self.metodos.currentIndexChanged.connect(self.calculate)
         layout.addWidget(self.metodos, 1, 1, 1, 2)
 

@@ -30,7 +30,7 @@ from scipy.constants import g, pi
 from lib import unidades
 from lib.utilities import representacion
 from lib.corriente import Corriente
-from lib.physics import f_friccion
+from lib.friction import f_friccion
 from lib.adimensional import Re
 from equipment.parents import equipment
 from equipment.heatExchanger import Heat_Exchanger
