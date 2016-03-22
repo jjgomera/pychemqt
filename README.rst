@@ -4,8 +4,8 @@ pychemqt intended as a free software tool for calculation and design of unit ope
 Dependencies
 --------------------
 
-* `python <http://www.python.org/>`__, version 2.7 required
-* `pyqt4 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 4.9
+* `python3 <http://www.p7ython.org/>`__, version 3.x required
+* `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
 * `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
 * `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data
 * `python-graph <http://code.google.com/p/python-graph/>`__:  python library for working with graphs
@@ -16,7 +16,6 @@ Optional applications, pychemqt work but some options will be disabled
 * `python-refprop <https://github.com/BenThelen/python-refprop>`__: package for calculating thermodynamic properties using `refprop <http://www.nist.gov/srd/nist23.cfm>`__ NIST application
 * `coolprop <http://coolprop.org/>`__: package for calculating thermodynamic properties using multiparameter equation of state
 * `oasa <http://bkchem.zirael.org/oasa_en.html>`__: used to show compound extended formula in database
-* `pyelemental <http://www.kdau.com/projects/gelemental/>`__: used to show a periodic table of elements
 * `ezodf <https://bitbucket.org/mozman/ezodf>`__: package to integration with OpenDocument spreadsheet (ods)
 * `openpyxl <https://bitbucket.org/ericgazoni/openpyxl>`__: package to integration with Microsoft Excel 2007/2010 (xlsx)
 * `xlwt <https://pypi.python.org/pypi/xlwt>`__: package to integration with Microsoft Excel 97/2000/XP/2003 (xls)
