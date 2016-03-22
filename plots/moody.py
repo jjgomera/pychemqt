@@ -27,7 +27,7 @@ import os
 import json
 
 from PyQt5 import QtWidgets
-from scipy import logspace, log10, pi, arctan
+from scipy import logspace, log10
 from matplotlib.patches import ConnectionPatch
 
 from lib.config import conf_dir
@@ -97,7 +97,7 @@ class Moody(QtWidgets.QDialog):
         self.diagrama.ax.set_ylabel(ylabel, size='10')
         txt = QtWidgets.QApplication.translate(
             "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
-        self.diagrama.fig.text(0.95, 0.5, txt, rotation=90, size='10',
+        self.diagrama.fig.text(0.97, 0.5, txt, rotation=90, size='10',
                                va="center", ha="center")
         self.diagrama.ax.grid(True)
         self.diagrama.ax.set_xlim(600, 1e8)
@@ -145,46 +145,57 @@ class Moody(QtWidgets.QDialog):
         self.diagrama.ax.plot(Re_laminar, dat["laminar"], "k")
         for eD, f in dat["turbulent"].items():
             self.diagrama.ax.plot(Re_turbulent, f, "k")
-            title = representacion(eD, tol=4.5)
-            num = log10(f[47])-log10(f[35])
-            den = log10(Re_turbulent[47])-log10(Re_turbulent[35])
-            angle = arctan(num/den)*360/2/pi
-            self.diagrama.ax.annotate(
-                title, (Re_turbulent[45], f[45]), size="x-small", ha="center",
-                va="bottom", rotation=angle)
+            title = " " + representacion(eD, tol=4.5)
+            if f[-1] > 0.008:
+                self.diagrama.ax.text(1e8, f[-1], title, size="x-small",
+                                      ha='left', va='center')
         self.diagrama.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
 
         # Add explicative legend
         self.diagrama.ax.add_artist(
             ConnectionPatch((600, 0.009), (2400, 0.009), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
-        self.diagrama.ax.add_artist(
-            ConnectionPatch((2400, 0.009), (6000, 0.009), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
-        self.diagrama.ax.add_artist(
-            ConnectionPatch((6000, 0.095), (40000, 0.095), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
-        self.diagrama.ax.add_artist(
-            ConnectionPatch((40000, 0.095), (9.9e7, 0.095), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
         self.diagrama.ax.text(15000, 0.104, txt, size="small", va="top",
                               ha="center")
+
+        self.diagrama.ax.add_artist(
+            ConnectionPatch((2400, 0.009), (6000, 0.009), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate(
             "pychemqt", "Turbulent flux fully desarrolled")
         self.diagrama.ax.text(2e6, 0.104, txt, size="small", va="top",
                               ha="center")
+
+        self.diagrama.ax.add_artist(
+            ConnectionPatch((6000, 0.095), (40000, 0.095), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Critic\nzone")
         self.diagrama.ax.text(4000, 0.0091, txt, size="small", va="bottom",
                               ha="center")
+
+        self.diagrama.ax.add_artist(
+            ConnectionPatch((40000, 0.095), (9.9e7, 0.095), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Laminar flux")
         self.diagrama.ax.text(1200, 0.0091, txt, size="small", va="bottom",
                               ha="center")
 
+        self.diagrama.ax.add_artist(
+            ConnectionPatch((1e6, 0.009), (1.5e6, 0.011), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+        txt = QtWidgets.QApplication.translate("pychemqt", "Smooth tubes")
+        self.diagrama.ax.text(1e6, 0.009, txt, size="small", va="top",
+                              ha="right")
+
+        txt = QtWidgets.QApplication.translate("pychemqt", "Smooth tubes")
+        self.diagrama.ax.text(1.4e3, 0.042, r"$f=\frac{64}{Re}$", size="12",
+                              va="top", ha="center", rotation=-66)
+        # TODO: Calculate the angle dynamically
+
     def calculate(self):
         dialog = CalculateDialog()
-        if dialog.exec_():
-            pass
+        dialog.exec_()
 
 
 class CalculateDialog(QtWidgets.QDialog):
