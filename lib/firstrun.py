@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library to define functions necessary to run at first pychemqt run, so don't
 # let import other pychemqt library to avoid import error when no config
@@ -34,27 +33,30 @@ import pickle
 # See end of lib/unidades.py to know how to get this list, check when new
 # magnitude are added
 magnitudes = ['Acceleration', 'PackingDP', 'SpecificHeat', 'SpecificEntropy',
-            'HeatTransfCoef', 'ThermalConductivity', 'Density', 'DenLiq', 'DenGas',
-            'MolarDensity', 'DensityPressure', 'DensityTemperature', 'Diffusivity',
-            'KViscosity', 'Energy', 'Work', 'Enthalpy', 'MolarEnthalpy',
-            'EnthalpyDensity', 'EnthalpyPressure', 'Entropy', 'HeatFlux',
-            'MolarFlow', 'MassFlow', 'VolFlow', 'QLiq', 'QGas', 'Fouling',
-            'Frequency', 'Force', 'DeltaP', 'Length', 'ParticleDiameter',
-            'Thickness', 'PipeDiameter', 'Head', 'Mass', 'MolarSpecificHeat',
-            'Mol', 'DipoleMoment', 'Currency', 'SolubilityParameter', 'EnergyFlow',
-            'Power', 'PotencialElectric', 'Pressure', 'InvPressure',
-            'PressureTemperature', 'PressureDensity', 'V2V', 'CakeResistance',
-            'Temperature', 'InvTemperature', 'TemperaturePressure', 'Tension',
-            'SpecificVolume_square', 'Time', 'UA', 'DeltaT', 'Speed', 'Viscosity',
-            'Volume', 'VolLiq', 'VolGas', 'MolarVolume', 'SpecificVolume', 'Angle',
-            'Area', 'Dimensionless']
+              'HeatTransfCoef', 'ThermalConductivity', 'Density', 'DenLiq',
+              'DenGas', 'MolarDensity', 'DensityPressure',
+              'DensityTemperature', 'Diffusivity', 'KViscosity', 'Energy',
+              'Work', 'Enthalpy', 'MolarEnthalpy', 'EnthalpyDensity',
+              'EnthalpyPressure', 'Entropy', 'HeatFlux', 'MolarFlow',
+              'MassFlow', 'VolFlow', 'QLiq', 'QGas', 'Fouling', 'Frequency',
+              'Force', 'DeltaP', 'Length', 'ParticleDiameter', 'Thickness',
+              'PipeDiameter', 'Head', 'Mass', 'MolarSpecificHeat', 'Mol',
+              'DipoleMoment', 'Currency', 'SolubilityParameter', 'EnergyFlow',
+              'Power', 'PotencialElectric', 'Pressure', 'InvPressure',
+              'PressureTemperature', 'PressureDensity', 'V2V',
+              'CakeResistance', 'Temperature', 'InvTemperature',
+              'TemperaturePressure', 'Tension', 'SpecificVolume_square',
+              'Time', 'UA', 'DeltaT', 'Speed', 'Viscosity', 'Volume',
+              'VolLiq', 'VolGas', 'MolarVolume', 'SpecificVolume', 'Angle',
+              'Area', 'Dimensionless']
 
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
 equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
            'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
            'Hairpin', 'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
-           'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Spreadsheet', 'Reactor']
+           'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Spreadsheet',
+           'Reactor']
 
 
 def which(program):
@@ -91,7 +93,7 @@ if sys.platform == "win32":
     editor = "notepad.exe"
 else:
     for programa in ["gedit", "leafpad", "geany", "kate", "kwrite", "vim",
-            "vi", "emacs", "nano", "pico"]:
+                     "vi", "emacs", "nano", "pico"]:
         ejecutable = which(programa)
         if ejecutable:
             editor = ejecutable
@@ -222,20 +224,20 @@ def Preferences():
     lineas = ["IsoTdb", "IsoW", "IsoHR", "IsoTwb", "Isochor"]
     values = [
         {"start": 274.0, "end": 330.0, "step": 1.0, "color": "#000000",
-        "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
-        "position": 50},
+         "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
+         "position": 50},
         {"start": 0.0, "end": 0.04, "step": 0.001, "color": "#000000",
-        "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
-        "position": 50},
+         "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
+         "position": 50},
         {"start": 10.0, "end": 100.0, "step": 10.0, "color": "#000000",
-        "linewidth": 0.5, "linestyle": "--", "label": "True", "units": "True",
-        "position": 85},
+         "linewidth": 0.5, "linestyle": "--", "label": "True", "units": "True",
+         "position": 85},
         {"start": 250.0, "end": 320.0, "step": 1.0, "color": "#aa0000",
-        "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
-        "position": 90},
+         "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
+         "position": 90},
         {"start": 0.8, "end": 1.0, "step": 0.01, "color": "#00aa00",
-        "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
-        "position": 90}]
+         "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
+         "position": 90}]
     for linea, value in zip(lineas, values):
         config.set("Psychr", linea+"Start", str(value["start"]))
         config.set("Psychr", linea+"End", str(value["end"]))
@@ -250,6 +252,11 @@ def Preferences():
         config.set("Psychr", linea+"Units", str(value["units"]))
         config.set("Psychr", linea+"Position", str(value["position"]))
         config.set("Psychr", linea+"variable", str(False))
+
+    # Moody
+    config.add_section("Moody")
+    config.set("Moody", "fanning", "False")
+    config.set("Moody", "method", "0")
 
     return config
 

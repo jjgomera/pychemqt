@@ -247,10 +247,12 @@ class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
         super(CalculateDialog, self).__init__(parent)
-        # self.setWindowTitle(self.title)
+        title = QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate friction factor")
+        self.setWindowTitle(title)
         layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt",
-                                                                  "Method:"))
+        label = QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Method:"))
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
         for f in f_list:

@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library to show/configure pychemqt general preferences
 #
@@ -32,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - ConfTooltipEntity
 #   - ConfmEoS: mEoS parameter configuration dialog
 #       Isolinea: widget to configure isolines for mEoS
+#   - ConfMoody
 ###############################################################################
 
 import os
@@ -48,6 +48,7 @@ from UI.delegate import CheckEditor, comboLine
 from tools import UI_confResolution
 from lib import unidades, corriente
 from lib.utilities import representacion
+from lib.friction import f_list
 from equipment import equipments
 from lib.firstrun import calculator, editor, shell, which
 
@@ -1275,6 +1276,49 @@ class ConfPsychrometric(QtWidgets.QDialog):
         return config
 
 
+class ConfMoody(QtWidgets.QDialog):
+    """Clase con el widget de las características del diagrama de Moody"""
+    def __init__(self, config=None, parent=None):
+        super(ConfMoody, self).__init__(parent)
+        layout = QtWidgets.QGridLayout(self)
+        label = QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Method:"))
+        layout.addWidget(label, 1, 1)
+        self.metodos = QtWidgets.QComboBox()
+        for f in f_list:
+            line = f.__doc__.split("\n")[1]
+            year = line.split(" ")[-1]
+            name = line.split(" ")[-3]
+            doc = name + " " + year
+            self.metodos.addItem(doc)
+        layout.addWidget(self.metodos, 1, 2)
+        self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate fanning friction factor"))
+        layout.addWidget(self.fanning, 2, 1, 1, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
+
+        if config and config.has_section("Moody"):
+            self.metodos.setCurrentIndex(config.getint("Moody", 'method'))
+            self.fanning.setChecked(config.getboolean("Moody", 'fanning'))
+
+    def value(self, config):
+        if not config.has_section("Moody"):
+            config.add_section("Moody")
+        config.set("Moody", "method", str(self.method.currentIndex()))
+        config.set("Moody", "fanning", str(self.fanning.isChecked()))
+        return config
+
+    @classmethod
+    def default(cls, config):
+        config.add_section("")
+        config.set("Moody", "method", "0")
+        config.set("Moody", "fanning", "False")
+        return config
+
+
 class Preferences(QtWidgets.QDialog):
     """Preferences main dialog"""
     classes = [
@@ -1295,7 +1339,9 @@ class Preferences(QtWidgets.QDialog):
         ("button/steamTables.png", ConfmEoS,
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", ConfPsychrometric,
-         QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart"))]
+         QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
+        ("button/psychrometric.png", ConfMoody,
+         QtWidgets.QApplication.translate("pychemqt", "Moody chart"))]
 
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter to input project config"""
@@ -1303,10 +1349,12 @@ class Preferences(QtWidgets.QDialog):
         if not config:
             config = self.default()
         self.config = config
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Preferences"))
+        self.setWindowTitle(
+            QtWidgets.QApplication.translate("pychemqt", "Preferences"))
         layout = QtWidgets.QGridLayout(self)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed), 1, 1, 1, 1)
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            1, 1, 1, 1)
         self.stacked = QtWidgets.QStackedWidget()
         layout.addWidget(self.stacked, 1, 2, 1, 1)
         self.lista = QtWidgets.QListWidget()
@@ -1320,8 +1368,8 @@ class Preferences(QtWidgets.QDialog):
             self.lista.addItem(QtWidgets.QListWidgetItem(icon, title))
 
         self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 0, 1, 3)
