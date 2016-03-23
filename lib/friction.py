@@ -24,32 +24,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #       · f_colebrook
 #       · f_chen (1991)
 #       · f_chen (1979)
-#       · f_moody
-#       · f_churchill
-#       · f_wood
-#       · f_eck
-#       · f_altshul
-#       · f_haaland
-#       · f_serghides
-#       · f_round
-#       · f_swamee
-#       · f_jain
-#       · f_barr
-#       · f_zigrang
-#       · f_shacham
-#       · f_tsal
-#       · f_manadilli
-#       · f_romeo
-#       · f_goudar
-#       · f_goudar2006
-#       · f_buzzelli
-#       · f_Vatankhah
-#       · f_avci
-#       · f_papaevangelou
-#       · f_brkic
-#       · f_brkic2
-#       · f_fang
-#       · f_ghanbari
+#       · f_moody (1947)
+#       · f_churchill (1977)
+#       · f_wood (1966)
+#       · f_eck (1973)
+#       · f_altshul (1975)
+#       · f_haaland (1983)
+#       · f_serghides (1984)
+#       · f_round (1980)
+#       · f_swamee (1976)
+#       · f_jain (1976)
+#       · f_barr (1981)
+#       · f_zigrang (1982)
+#       · f_shacham (1980)
+#       · f_tsal (1989)
+#       · f_manadilli (1997)
+#       · f_romeo (2002)
+#       · f_goudar (2008)
+#       · f_goudar2006 (2006)
+#       · f_buzzelli (2008)
+#       · f_Vatankhah (2008)
+#       · f_avci (2009)
+#       · f_papaevangelou (2009)
+#       · f_brkic (2010)
+#       · f_brkic2 (2010)
+#       · f_fang (2011)
+#       · f_ghanbari (2011)
+#
+#
+#
 #   -Fitting K
 ###############################################################################
 
@@ -100,6 +103,8 @@ __doi__ = [
 
 
 # Friction factor for pipes
+# All this function return the darcy friction factor, fanning friction factor
+# can be obtained divided darcy factor by 4.
 def f_colebrook(Re, eD):
     """
     Calculates friction factor `f` with original Colebrook-White correlation (1939)
