@@ -173,9 +173,9 @@ class Moody(QtWidgets.QDialog):
                 calculate(eD, F)
                 dat = json.load(file)
 
-        if dat["fanning"] != fanning or dat["method"] != method:
-            calculate(eD, F)
-            dat = json.load(file)
+            if dat["fanning"] != fanning or dat["method"] != method:
+                calculate(eD, F)
+                dat = json.load(file)
 
         # Plot data
         self.diagrama.ax.plot(Re_laminar, dat["laminar"], "k")
