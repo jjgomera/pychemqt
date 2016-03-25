@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module to implement delegate special editiing in tables
 #   -CellEditor
@@ -32,7 +31,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 
 class CellEditor(QtWidgets.QItemDelegate):
@@ -116,7 +114,6 @@ class LineStyleDelegate(QtWidgets.QItemDelegate):
         data = index.model().data(index, QtCore.Qt.UserRole)
         if data.isValid() and data.toPyObject() is not None:
             data = data.toPyObject()
-            print(data)
             painter.save()
 
             rect = option.rect
@@ -140,11 +137,12 @@ class comboLine(QtWidgets.QComboBox):
     """Special combobox editor delegate for line Style"""
     def __init__(self, parent=None):
         QtWidgets.QComboBox.__init__(self, parent)
-        lineas = [os.environ["pychemqt"]+"/images/button/solid_line.png",
-                  os.environ["pychemqt"]+"/images/button/dot_line.png",
-                  os.environ["pychemqt"]+"/images/button/dash_line.png",
-                  os.environ["pychemqt"]+"/images/button/dash_dot_line.png",
-                  os.environ["pychemqt"]+"/images/button/dash_dot_dot_line.png"]
+        lineas = [
+            os.environ["pychemqt"]+"/images/button/solid_line.png",
+            os.environ["pychemqt"]+"/images/button/dot_line.png",
+            os.environ["pychemqt"]+"/images/button/dash_line.png",
+            os.environ["pychemqt"]+"/images/button/dash_dot_line.png",
+            os.environ["pychemqt"]+"/images/button/dash_dot_dot_line.png"]
         for i in lineas:
             self.addItem(QtGui.QIcon(QtGui.QPixmap(i)), "")
         self.setItemDelegate(LineStyleDelegate(self))
@@ -163,8 +161,8 @@ class comboLine(QtWidgets.QComboBox):
             painter = QtGui.QPainter(self)
             painter.save()
 
-            rect = p.style().subElementRect(QtWidgets.QStyle.SE_ComboBoxFocusRect,
-                                            opt, self)
+            rect = p.style().subElementRect(
+                QtWidgets.QStyle.SE_ComboBoxFocusRect, opt, self)
             rect.adjust(+5, 0, -5, 0)
 
             pen = QtGui.QPen()

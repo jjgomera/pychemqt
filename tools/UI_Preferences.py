@@ -999,9 +999,9 @@ class ConfApplications(QtWidgets.QDialog):
                    "vanderWaals_radius", "electronegativity",
                    "electron_affinity", "first_ionization", "Tf", "Tb",
                    "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
-        self.ElementalColorby.QComboBox()
+        self.ElementalColorby = QtWidgets.QComboBox()
         for c in colorby:
-            self.ElementalColorBy.addItem(c)
+            self.ElementalColorby.addItem(c)
         layoutelemental.addWidget(self.ElementalColorby, 1, 2)
         layoutelemental.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Color definition")),
@@ -1186,7 +1186,7 @@ class Isolinea(QtWidgets.QDialog):
                     else:
                         T.append(representacion(unit(float(i)).config()))
                 self.Lista.setText(",".join(T))
-            if self.unit.__name__ != "float" and section != "Psychr":
+            if unit.__name__ != "float" and section != "Psychr":
                 self.Critica.setChecked(
                     config.getboolean(section, ConfSection+'Critic'))
             self.inicio.setDisabled(self.Personalizar.isChecked())

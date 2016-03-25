@@ -18,15 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Pipe equipment dialog and functionality
 #
-
 ###############################################################################
 
 from functools import partial
 import os
+import sqlite3
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -36,9 +35,9 @@ from lib.config import Preferences
 from lib.utilities import representacion
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
-from lib.table import Material_Tuberia, Accesorios_Tuberia, Fitting_icon
+from lib.pipeDatabase import MATERIAL_TRANSLATE, FITTING_DESC
 from lib.friction import (K_contraction, K_enlargement, K_flush, K_MitreBend,
-                         Ft, K_longBend)
+                          Ft, K_longBend)
 from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.pipe import Pipe
@@ -268,15 +267,21 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         materiales = []
         diametros = []
-        for material in Material_Tuberia:
-            txt = material[0:2]
+
+        databank = sqlite3.connect("pipeDatabase.db").cursor()
+        databank.execute("select * from Materials")
+
+        for material in databank:
+            txt = list(material[1:3])
             if txt not in materiales:
-                materiales.append(material[0:2])
+                materiales.append(txt)
                 diametros.append([])
             indice = materiales.index(txt)
-            diametros[indice].append(material[2:])
+            diametros[indice].append(material[3:])
         for material in materiales:
             self.ComboMaterial.addItem(material[0]+" "+material[1])
+            if material[0] in MATERIAL_TRANSLATE:
+                material[0] = MATERIAL_TRANSLATE[material[0]]
         self.ComboMaterial.currentIndexChanged.connect(self.rellenarDiametros)
         self.diametros = diametros
         self.materiales = materiales
@@ -567,40 +572,44 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.k = []
         self.comboxPulgadas = []
         self.comboxmm = []
-        for i, fitting in enumerate(Accesorios_Tuberia):
-            if fitting[2] in self.ListaAccesorios:
-                indice = self.ListaAccesorios.index(fitting[2])
-                self.diametros[indice].append(fitting[0])
-                self.pulgadas[indice].append(fitting[3])
-                self.k[indice].append(fitting[5])
-                self.comboxPulgadas[indice].addItem(fitting[3])
-                self.comboxmm[indice].addItem(str(int(fitting[0])))
+
+        databank = sqlite3.connect("pipeDatabase.db").cursor()
+        databank.execute("select * from Fitting")
+        for i, Di, key, Di_in, K in databank:
+            if key in self.ListaAccesorios:
+                indice = self.ListaAccesorios.index(key)
+                self.diametros[indice].append(Di)
+                self.pulgadas[indice].append(Di_in)
+                self.k[indice].append(K)
+                self.comboxPulgadas[indice].addItem(Di_in)
+                self.comboxmm[indice].addItem(str(int(Di)))
             else:
                 indice = self.TablaAccesorios.rowCount()
-                self.ListaAccesorios.append(fitting[2])
-                self.diametros.append([fitting[0]])
-                self.pulgadas.append([fitting[3]])
-                self.k.append([fitting[5]])
+                self.ListaAccesorios.append(key)
+                self.diametros.append([Di])
+                self.pulgadas.append([Di_in])
+                self.k.append([K])
                 self.TablaAccesorios.setRowCount(indice+1)
+                icon = os.environ["pychemqt"]+"images/equip/%s.png" % key
                 self.TablaAccesorios.setItem(
                     indice, 0, QtWidgets.QTableWidgetItem(QtGui.QIcon(
-                        QtGui.QPixmap(Fitting_icon[int(fitting[1])])), fitting[2]))
+                        QtGui.QPixmap(icon)), key))
                 self.comboxmm.append(QtWidgets.QComboBox())
                 self.TablaAccesorios.setCellWidget(indice, 1, self.comboxmm[-1])
-                self.comboxmm[-1].addItem(str(int(fitting[0])))
+                self.comboxmm[-1].addItem(str(int(Di)))
                 self.comboxmm[-1].currentIndexChanged.connect(self.combommChanged)
                 self.comboxPulgadas.append(QtWidgets.QComboBox())
                 self.TablaAccesorios.setCellWidget(
                     indice, 2, self.comboxPulgadas[-1])
-                self.comboxPulgadas[-1].addItem(fitting[3])
+                self.comboxPulgadas[-1].addItem(Di_in)
                 self.comboxPulgadas[-1].currentIndexChanged.connect(
                     self.comboinchChanged)
                 self.TablaAccesorios.setItem(
-                    indice, 3, QtWidgets.QTableWidgetItem("%0.3f" % fitting[5]))
+                    indice, 3, QtWidgets.QTableWidgetItem("%0.3f" % K))
                 self.TablaAccesorios.item(indice, 3).setTextAlignment(
                     QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                 self.TablaAccesorios.setItem(
-                    indice, 4, QtWidgets.QTableWidgetItem(fitting[4]))
+                    indice, 4, QtWidgets.QTableWidgetItem(FITTING_DESC[key]))
                 self.TablaAccesorios.setRowHeight(
                     self.TablaAccesorios.rowCount()-1, 20)
 

@@ -29,7 +29,7 @@ from PyQt5 import QtCore, QtWidgets
 
 
 from lib.unidades import Fouling, Length, ThermalConductivity
-from lib.table import finnedTube_database
+from lib.pipeDatabase import finnedTube_database
 from UI.widgets import Entrada_con_unidades
 
 
