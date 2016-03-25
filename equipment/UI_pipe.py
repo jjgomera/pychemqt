@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 import os
-import sqlite3
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -35,7 +34,7 @@ from lib.config import Preferences
 from lib.utilities import representacion
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
-from lib.pipeDatabase import MATERIAL_TRANSLATE, FITTING_DESC
+from lib.pipeDatabase import CATALOG, CATALOG_TRANSLATE, FITTING, FITTING_DESC
 from lib.friction import (K_contraction, K_enlargement, K_flush, K_MitreBend,
                           Ft, K_longBend)
 from tools.costIndex import CostData
@@ -267,11 +266,7 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         materiales = []
         diametros = []
-
-        databank = sqlite3.connect("pipeDatabase.db").cursor()
-        databank.execute("select * from Materials")
-
-        for material in databank:
+        for material in CATALOG:
             txt = list(material[1:3])
             if txt not in materiales:
                 materiales.append(txt)
@@ -280,8 +275,8 @@ class Catalogo_Materiales(QtWidgets.QWidget):
             diametros[indice].append(material[3:])
         for material in materiales:
             self.ComboMaterial.addItem(material[0]+" "+material[1])
-            if material[0] in MATERIAL_TRANSLATE:
-                material[0] = MATERIAL_TRANSLATE[material[0]]
+            if material[0] in CATALOG_TRANSLATE:
+                material[0] = CATALOG_TRANSLATE[material[0]]
         self.ComboMaterial.currentIndexChanged.connect(self.rellenarDiametros)
         self.diametros = diametros
         self.materiales = materiales
@@ -465,10 +460,6 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.verticalHeader().hide()
         self.Accesorios.setRowCount(0)
         self.Accesorios.setColumnCount(6)
-        titles = [
-            QtWidgets.QApplication.translate("pychemqt", "Type"),
-            "D,mm", "D,in", "K", "Nº",
-            QtWidgets.QApplication.translate("pychemqt", "Description")]
         self.Accesorios.setHorizontalHeaderLabels(self.titles)
         self.Accesorios.setItemDelegateForColumn(4, SpinEditor(self))
         self.Accesorios.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -573,9 +564,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.comboxPulgadas = []
         self.comboxmm = []
 
-        databank = sqlite3.connect("pipeDatabase.db").cursor()
-        databank.execute("select * from Fitting")
-        for i, Di, key, Di_in, K in databank:
+        for i, Di, key, Di_in, K in FITTING:
             if key in self.ListaAccesorios:
                 indice = self.ListaAccesorios.index(key)
                 self.diametros[indice].append(Di)
@@ -826,7 +815,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def add(self, indicetabla=None, indicecombo=None, emit=True):
         self.Accesorios.blockSignals(True)
-        if indicetabla == None:
+        if indicetabla is None:
             indicetabla = self.TablaAccesorios.currentRow()
             indicecombo = self.comboxmm[indicetabla].currentIndex()
 
@@ -1162,8 +1151,8 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-    agua = Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
-    tuberia = Pipe(entrada=agua, metodo=0, l=5, material=["Steel (ANSI)", "Sch. 40", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, -1, 2])
-    dialogo = UI_equipment(tuberia)
+    # agua = Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
+    # tuberia = Pipe(entrada=agua, metodo=0, l=5, material=["Steel (ANSI)", "Sch. 40", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, -1, 2])
+    dialogo = UI_equipment()
     dialogo.show()
     sys.exit(app.exec_())

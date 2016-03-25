@@ -24,23 +24,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Description translation
 ###############################################################################
 
+import os
+import sqlite3
+
 from PyQt5.QtWidgets import QApplication
 
 
 # Standard pipe database
 
-"""Material de la tubería:
-        0   -   Nombre
-        1   -   Tipo
-        2   -   Rugosidad, mm
-        3   -   Diametro nominal, mm
-        4   -   Diametro nominal, pulgadas
-        5   -   Espesor de la pared, mm
-        6   -   Diametro externo, mm
-        7   -   Peso, kg/m
-"""
+# Material de la tubería:
+ # 0 - Nombre
+ # 1 - Tipo
+ # 2 - Rugosidad, mm
+ # 3 - Diametro nominal, mm
+ # 4 - Diametro nominal, pulgadas
+ # 5 - Espesor de la pared, mm
+ # 6 - Diametro externo, mm
+ # 7 - Peso, kg/m
 
-MATERIAL_TRANSLATE = {
+
+path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
+databank = sqlite3.connect(path).cursor()
+databank.execute("select * from Materials")
+CATALOG = databank.fetchall()
+CATALOG_TRANSLATE = {
     "Cast Iron (Asphalt Dipped)": QApplication.translate("pychemqt", 'Cast Iron (Asphalt Dipped)'),
     "Cast Iron": QApplication.translate("pychemqt", "Cast Iron"),
     "Copper": QApplication.translate("pychemqt", "Copper"),
@@ -56,17 +63,18 @@ MATERIAL_TRANSLATE = {
 
 # Pipe fitting K values
 
-"""
-    Accesorios de la Tuberia:
-    0   -   Diámetro interno, mm
-    1   -   Indice imagen
-    2   -   Tipo
-    3   -   Diámetro interno, pulgadas
-    4   -   Descripción
-    5   -   K
+# Accesorios de la Tuberia:
+#  0 - Diámetro interno, mm
+#  1 - Indice imagen
+#  2 - Tipo
+#  3 - Diámetro interno, pulgadas
+#  4 - Descripción
+#  5 - K
 
-"""
-
+path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
+databank = sqlite3.connect(path).cursor()
+databank.execute("select * from Fitting")
+FITTING = databank.fetchall()
 FITTING_DESC = {
     "SB": QApplication.translate("pychemqt", 'Standard Bend'),
     "LB": QApplication.translate("pychemqt", 'Long Bend'),
