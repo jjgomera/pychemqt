@@ -166,15 +166,21 @@ class Moody(QtWidgets.QDialog):
         if not os.path.isfile(conf_dir+"moody.dat"):
             calculate(eD, F)
 
+        load = False
         with open(conf_dir+"moody.dat", "r") as file:
             try:
                 dat = json.load(file)
             except ValueError:
                 calculate(eD, F)
-                dat = json.load(file)
+                load = True
 
             if dat["fanning"] != fanning or dat["method"] != method:
                 calculate(eD, F)
+                load = True
+
+        # Reload file if is create in las with statement
+        if load:
+            with open(conf_dir+"moody.dat", "r") as file:
                 dat = json.load(file)
 
         # Plot data
@@ -277,7 +283,7 @@ class CalculateDialog(QtWidgets.QDialog):
         self.eD.valueChanged.connect(self.calculate)
         layout.addWidget(self.eD, 4, 2)
         layout.addWidget(QtWidgets.QLabel("f"), 5, 1)
-        self.f = Entrada_con_unidades(float, readOnly=True)
+        self.f = Entrada_con_unidades(float, readOnly=True, decimales=8)
         layout.addWidget(self.f, 5, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
@@ -290,7 +296,7 @@ class CalculateDialog(QtWidgets.QDialog):
         F = f_list[index]
         Re = self.Re.value
         eD = self.eD.value
-        if Re is not None and eD is not None:
+        if Re and eD is not None:
             f = F(Re, eD)
             if self.fanning.isChecked():
                 f /= 4

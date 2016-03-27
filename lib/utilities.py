@@ -240,7 +240,7 @@ def spreadsheetColumn(index):
 
 if __name__ == "__main__":
     import math
-    # print(representacion(math.pi*1000, decimales=6, tol=1))
+    print(representacion(math.pi*1000, decimales=6, tol=5))
     print(representacion(0, decimales=6, tol=1))
     # print repr(Configuracion("Density", "DenGas").text())
     # print representacion("3232326262")

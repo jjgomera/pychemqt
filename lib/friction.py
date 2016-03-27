@@ -66,38 +66,47 @@ from lib.unidades import Dimensionless
 __doi__ = [
     {"autor": "Colebrook, C. F. and White, C. M.",
      "title": "Experiments with Fluid Friction in Roughened Pipes",
-     "ref": "Proceedings of the Royal Society of London. Series A, Mathematical and Physical Sciences 161 (906): 367–381.",
+     "ref": "Proceedings of the Royal Society of London. Series A,"
+            "Mathematical and Physical Sciences 161 (906): 367–381.",
      "doi": "10.1098/rspa.1937.0150"},
     {"autor": "Chen, H.J.",
      "title": "An Explicit Equation for Friction Factor in Pipe",
      "ref": "Ind. Eng. Chem. Fundamen., 1979, 18 (3), pp 296–297",
      "doi": "10.1021/i160071a019"},
     {"autor": "Haaland, S. E.",
-     "title": "Simple and explicit formulas for the friction factor in turbulent flow",
+     "title": "Simple and explicit formulas for the friction factor in"
+              "turbulent flow",
      "ref": "J. Fluids Eng., 105(1), 89–90.",
      "doi": "10.1115/1.3240948"},
     {"autor": "Round, G. F.",
-     "title": "An explicit approximation for the friction factor-reynolds number relation for rough and smooth pipes",
+     "title": "An explicit approximation for the friction factor-reynolds"
+              "number relation for rough and smooth pipes",
      "ref": "Can. J. Chem. Eng., 58: 122-123",
      "doi": "10.1002/cjce.5450580119"},
     {"autor": "Zigrang, D.J., Sylvester, N.D.",
-     "title": "Explicit approximations to the solution of Colebrook's friction factor equation",
+     "title": "Explicit approximations to the solution of Colebrook's"
+              "friction factor equation",
      "ref": "AICHE J 28, 514-515.",
      "doi": "10.1002/aic.690280323"},
     {"autor": "Avci, A.; Karagoz, I.",
-     "title": "A Novel Explicit Equation for Friction Factor in Smooth and Rough Pipes",
+     "title": "A Novel Explicit Equation for Friction Factor in Smooth and"
+              "Rough Pipes",
      "ref": "J. Fluids Eng 131(6), 061203 (May 13, 2009)",
      "doi": "10.1115/1.3129132"},
     {"autor": "Brkić, D.",
-     "title": "An Explicit Approximation of Colebrook’s equation for fluid flow friction factor",
+     "title": "An Explicit Approximation of Colebrook’s equation for fluid"
+              "flow friction factor",
      "ref": "Petroleum Science and Technology 29 (15): 1596–1602. ",
      "doi": "10.1080/10916461003620453"},
     {"autor": "Romeo, E., Royo, C., Monzon, A.",
-     "title": "Improved explicit equation for estimation of the friction factor in rough and smooth pipes.",
+     "title": "Improved explicit equation for estimation of the friction"
+              "factor in rough and smooth pipes.",
      "ref": "Chem. Eng. J. 86 (3), 369–374. (2002)",
      "doi": "10.1016/S1385-8947(01)00254-6"},
     {"autor": "Fang X, Xua Y, Zhou Z",
-     "title": "New correlations of single-phase friction factor for turbulent pipe flow and evaluation of existing single-phase friction factor correlations.",
+     "title": "New correlations of single-phase friction factor for"
+              "turbulent pipe flow and evaluation of existing single-phase"
+              "friction factor correlations.",
      "ref": "Nucl Eng Des 241, 897-902. (2011)",
      "doi": "10.1016/j.nucengdes.2010.12.019"}]
 
@@ -107,10 +116,12 @@ __doi__ = [
 # can be obtained divided darcy factor by 4.
 def f_colebrook(Re, eD):
     """
-    Calculates friction factor `f` with original Colebrook-White correlation (1939)
+    Calculates friction factor `f` with Colebrook-White correlation (1939)
+    This is the original impicit correlation
 
     .. math::
-        $\frac{1}{\sqrt{f}}=-2\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}+\frac{2.51}{Re\sqrt{f}}\right)$
+        $\frac{1}{\sqrt{f}}=-2\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}+
+        \frac{2.51}{Re\sqrt{f}}\right)$
 
     Parameters
     ------------
@@ -196,6 +207,12 @@ def f_chen1979(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 4e8
+        1e-7 <= eD <= 0.05
+
     References
     ----------
     [1] .. Chen, H-J, “An Explicit Equation for Friction Factor in Pipe”, Ind.
@@ -210,6 +227,10 @@ def f_moody(Re, eD):
     """
     Calculates friction factor `f` with Moody correlation (1947)
 
+    .. math::
+        f = 5.5 10^{-3}\left[1+\left(2 10^4\frac{\epsilon}{D} +
+        \frac{10^6}{Re}\right)^{1/3}\right]
+
     Parameters
     ------------
     Re : float
@@ -222,6 +243,12 @@ def f_moody(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity:
+        4e3 <= Re <= 1e8
+        0<= eD < 0.01.
+
     References
     ----------
     [1] .. Moody, L. F. (1947). “An approximate formula for pipe friction
@@ -233,6 +260,14 @@ def f_moody(Re, eD):
 def f_churchill(Re, eD):
     """
     Calculates friction factor `f` with Churchill correlation (1977)
+
+    .. math::
+        f = 2\left[(\frac{8}{Re})^{12} + (A_2 + A_3)^{-1.5}\right]^{1/12}
+
+        A = \left\{2.457\ln\left[(\frac{7}{Re})^{0.9}
+        + 0.27\frac{\epsilon}{D}\right]\right\}^{16}
+
+        B = \left( \frac{37530}{Re}\right)^{16}
 
     Parameters
     ------------
@@ -265,6 +300,12 @@ def f_wood(Re, eD):
     """
     Calculates friction factor `f` with Wood correlation (1966)
 
+    .. math::
+        f_d = 0.094(\frac{\epsilon}{D})^{0.225} + 0.53(\frac{\epsilon}{D})
+        + 88(\frac{\epsilon}{D})^{0.4}Re^{-A_1}
+
+        A_1 = 1.62(\frac{\epsilon}{D})^{0.134}
+
     Parameters
     ------------
     Re : float
@@ -279,7 +320,9 @@ def f_wood(Re, eD):
 
     Notes
     -----
-    Valid for Re > 10000 and 10⁻⁵<ε/D<0.04
+    Range of validity
+        Re > 10000
+        1e-5 < eD < 0.04
 
     References
     ----------
@@ -294,6 +337,10 @@ def f_haaland(Re, eD):
     """
     Calculates friction factor `f` with Haaland correlation (1983)
 
+    .. math::
+        f = \left(-1.8\log_{10}\left[\left(\frac{\epsilon/D}{3.7}
+        \right)^{1.11} + \frac{6.9}{Re}\right]\right)^{-2}
+
     Parameters
     ------------
     Re : float
@@ -306,6 +353,12 @@ def f_haaland(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 1e8
+        1e-6 <= eD <= 0.05
+
     References
     ----------
     [1] .. Haaland, S. E. (1983). “Simple and explicit formulas for the
@@ -317,6 +370,15 @@ def f_haaland(Re, eD):
 def f_serghides(Re, eD):
     """
     Calculates friction factor `f` with Serguides correlation (1984)
+
+    .. math::
+        f=\left[A-\frac{(B-A)^2}{C-2B+A}\right]^{-2}
+
+        A=-2\log_{10}\left[\frac{\epsilon/D}{3.7}+\frac{12}{Re}\right]
+
+        B=-2\log_{10}\left[\frac{\epsilon/D}{3.7}+\frac{2.51A}{Re}\right]
+
+        C=-2\log_{10}\left[\frac{\epsilon/D}{3.7}+\frac{2.51B}{Re}\right]
 
     Parameters
     ------------
@@ -345,6 +407,10 @@ def f_round(Re, eD):
     """
     Calculates friction factor `f` with Round correlation (1980)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = 1.8\log\left[\frac{Re}{0.135Re
+        \frac{\epsilon}{D}+6.5}\right]
+
     Parameters
     ------------
     Re : float
@@ -356,6 +422,12 @@ def f_round(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 4e8
+        eD <= 0.05
 
     References
     ----------
@@ -370,6 +442,10 @@ def f_swamee(Re, eD):
     """
     Calculates friction factor `f` with Swamee-Jain correlation (1976)
 
+    .. math::
+        \frac{1}{\sqrt{f_f}} = -2\log\left[\left(\frac{6.97}{Re}\right)^{0.9}
+        + (\frac{\epsilon}{3.7D})\right]
+
     Parameters
     ------------
     Re : float
@@ -381,6 +457,12 @@ def f_swamee(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        5e3 <= Re <= 1e8
+        1e-6 <= eD <= 5e-2
 
     References
     ----------
@@ -394,6 +476,10 @@ def f_jain(Re, eD):
     """
     Calculates friction factor `f` with Jain correlation (1976)
 
+    .. math::
+        \frac{1}{\sqrt{f_f}} = 1.14 - 2\log\left[ \frac{\epsilon}{D} +
+        \left(\frac{29.843}{Re}\right)^{0.9}\right]
+
     Parameters
     ------------
     Re : float
@@ -406,10 +492,16 @@ def f_jain(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity:
+        5e3 <= Re <= 1e7
+        4e-5 <= eD <= 0.05
+
     References
     ----------
-    [1] .. Swamee, P.K.; Jain, A.K. (1976). "Explicit equations for pipe-flow
-    problems". Journal of the Hydraulics Division (ASCE) 102 (5): 657–664.
+    [1] .. Jain, Akalank K."Accurate Explicit Equation for Friction Factor."
+       Journal of the Hydraulics Division 102, no. 5 (May 1976): 674-77.
     """
     return 1/(1.14-2*log10(eD+(29.843/Re)**0.9))**2
 
@@ -417,6 +509,11 @@ def f_jain(Re, eD):
 def f_barr(Re, eD):
     """
     Calculates friction factor `f` with Barr correlation (1981)
+
+    .. math::
+        \frac{1}{\sqrt{f}} = -2\log\left\{\frac{\epsilon}{3.7D} +
+        \frac{4.518\log(\frac{Re}{7})}{Re\left[1+\frac{Re^{0.52}}{29}
+        \left(\frac{\epsilon}{D}\right)^{0.7}\right]}\right\}
 
     Parameters
     ------------
@@ -442,6 +539,12 @@ def f_zigrang(Re, eD):
     """
     Calculates friction factor `f` with Zigrang-Sylvester correlation (1982)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = -2\log\left[\frac{\epsilon}{3.7D}
+        - \frac{5.02}{Re}\log A\right]
+
+        A = \frac{\epsilon}{3.7D} + \frac{13}{Re}
+
     Parameters
     ------------
     Re : float
@@ -453,6 +556,12 @@ def f_zigrang(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 1e8
+        4e-5 <= eD <= 5e-2
 
     References
     ----------
@@ -466,6 +575,9 @@ def f_zigrang(Re, eD):
 def f_altshul(Re, eD):
     """
     Calculates friction factor `f` with Altshul correlation (1975)
+
+    .. math::
+        f = 0.11\left( \frac{68}{Re} + \frac{\epsilon}{D}\right)^{0.25}
 
     Parameters
     ------------
@@ -491,6 +603,12 @@ def f_tsal(Re, eD):
     """
     Calculates friction factor `f` with Tsal correlation (1989)
 
+    .. math::
+        A = 0.11(\frac{68}{Re} + \frac{\epsilon}{D})^{0.25}
+
+    if A >= 0.018 then f = A
+    if A < 0.018 then f = 0.0028 + 0.85 A
+
     Parameters
     ------------
     Re : float
@@ -502,6 +620,12 @@ def f_tsal(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 1e8
+        eD <= 0.05
 
     References
     ----------
@@ -517,6 +641,10 @@ def f_tsal(Re, eD):
 def f_eck(Re, eD):
     """
     Calculates friction factor `f` with Eck correlation (1973)
+
+    .. math::
+        \frac{1}{\sqrt{f_d}} = -2\log\left[\frac{\epsilon}{3.715D}
+        + \frac{15}{Re}\right]
 
     Parameters
     ------------
@@ -541,6 +669,11 @@ def f_shacham(Re, eD):
     """
     Calculates friction factor `f` with Shacham correlation (1980)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = -2\log\left[\frac{\epsilon}{3.7D} -
+        \frac{5.02}{Re} \log\left(\frac{\epsilon}{3.7D}
+        + \frac{14.5}{Re}\right)\right]
+
     Parameters
     ------------
     Re : float
@@ -552,6 +685,11 @@ def f_shacham(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 4e8
 
     References
     ----------
@@ -565,6 +703,10 @@ def f_manadilli(Re, eD):
     """
     Calculates friction factor `f` with Manadilli correlation (1997)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = -2\log\left[\frac{\epsilon}{3.7D} +
+        \frac{95}{Re^{0.983}} - \frac{96.82}{Re}\right]
+
     Parameters
     ------------
     Re : float
@@ -576,6 +718,12 @@ def f_manadilli(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        5.245e3 <= Re <= 1e8
+        eD <= 0.05
 
     References
     ----------
@@ -589,6 +737,12 @@ def f_romeo(Re, eD):
     """
     Calculates friction factor `f` with Monzon-Romeo-Royo correlation (2002)
 
+    .. math::
+        \frac{1}{\sqrt{f_d}} = -2\log\left\{\frac{\epsilon}{3.7065D}\times
+        \frac{5.0272}{Re}\times\log\left[\frac{\epsilon}{3.827D} -
+        \frac{4.567}{Re}\times\log\left(\frac{\epsilon}{7.7918D}^{0.9924} +
+        \left(\frac{5.3326}{208.815+Re}\right)^{0.9345}\right)\right]\right\}
+
     Parameters
     ------------
     Re : float
@@ -600,6 +754,12 @@ def f_romeo(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        3e3 <= Re <= 1.5e8
+        eD <= 0.05
 
     References
     ----------
@@ -616,6 +776,11 @@ def f_goudar2006(Re, eD):
     """
     Calculates friction factor `f` with Goudar-Sonnad correlation (2006)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = 0.8686\ln\left(\frac{0.4587Re}{S^{S/(S+1)}}\right)
+
+        S = 0.1240\times\frac{\epsilon}{D}\times Re + \ln(0.4587Re)
+
     Parameters
     ------------
     Re : float
@@ -627,6 +792,12 @@ def f_goudar2006(Re, eD):
     -------
     f : float
         Friction factor, [-]
+
+    Notes
+    -----
+    Range of validity
+        4e3 <= Re <= 1e8
+        1e-6 <= eD <= 0.05
 
     References
     ----------
@@ -675,6 +846,14 @@ def f_buzzelli(Re, eD):
     """
     Calculates friction factor `f` with Buzzelli correlation (2008)
 
+    .. math::
+        \frac{1}{\sqrt{f}} = A - \left[\frac{A +2\log(\frac{B}{Re})}
+        {1 + \frac{2.18}{B}}\right]
+
+        A = \frac{0.774\ln(Re)-1.41}{1+1.32\sqrt{\frac{\epsilon}{D}}}
+
+        B = \frac{\epsilon}{3.7D}Re+2.51\times B_1
+
     Parameters
     ------------
     Re : float
@@ -699,7 +878,7 @@ def f_buzzelli(Re, eD):
 
 def f_Vatankhah(Re, eD):
     """
-    Calculates friction factor `f` with Vatankhah-Kouchakzadeh correlation (2008)
+    Calculates friction factor `f` with Vatankhah-Kouchakzadeh corr (2008)
 
     Parameters
     ------------
@@ -726,6 +905,11 @@ def f_avci(Re, eD):
     """
     Calculates friction factor `f` with Avci-Karagoz correlation (2009)
 
+    .. math::
+        f = \frac{6.4} {\left\{\ln(Re) - \ln\left[
+        1 + 0.01Re\frac{\epsilon}{D}\left(1 + 10(\frac{\epsilon}{D})^{0.5}
+        \right)\right]\right\}^{2.4}}
+
     Parameters
     ------------
     Re : float
@@ -748,7 +932,11 @@ def f_avci(Re, eD):
 
 def f_papaevangelou(Re, eD):
     """
-    Calculates friction factor `f` with Papaevangelow-Evangelides-Tzimopoulos correlation (2009)
+    Calculates friction factor `f` with Papaevangelou correlation (2009)
+
+    .. math::
+        f = \frac{0.2479 - 0.0000947(7-\log Re)^4}{\left[\log\left
+        (\frac{\epsilon}{3.615D} + \frac{7.366}{Re^{0.9142}}\right)\right]^2}
 
     Parameters
     ------------
@@ -762,6 +950,12 @@ def f_papaevangelou(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity
+        1e4 <= Re <= 1e7
+        1e-5 <= eD <= 1e-3
+
     References
     ----------
     [1] .. Papaevangelou G, Evangelides C, Tzimopoulos C (2010). A new explicit
@@ -769,12 +963,17 @@ def f_papaevangelou(Re, eD):
     Proceedings of the Tenth Conference on Protection and Restoration of the
     Environment 166,1-7pp, PRE10 July 6-09 2010 Corfu, Greece.
     """
-    return (0.2479-0.0000947*(7-log10(Re))**4)/log10(eD/3.615+7.366/Re**0.9142)**2
+    return (0.2479-9.47e-5*(7-log10(Re))**4)/log10(eD/3.615+7.366/Re**0.9142)**2
 
 
 def f_brkic(Re, eD):
     """
     Calculates friction factor `f` with Brkić correlation (2010a)
+
+    .. math::
+        f = [-2\log(10^{-0.4343\beta} + \frac{\epsilon}{3.71D})]^{-2}
+
+        \beta = \ln \frac{Re}{1.816\ln\left(\frac{1.1Re}{\ln(1+1.1Re)}\right)}
 
     Parameters
     ------------
@@ -803,6 +1002,11 @@ def f_brkic2(Re, eD):
     Calculates friction factor `f` with Brkić correlation (2010b)
     Second correlation
 
+    .. math::
+        f = [-2\log(\frac{2.18\beta}{Re}+ \frac{\epsilon}{3.71D})]^{-2}
+
+        \beta = \ln \frac{Re}{1.816\ln\left(\frac{1.1Re}{\ln(1+1.1Re)}\right)}
+
     Parameters
     ------------
     Re : float
@@ -828,7 +1032,11 @@ def f_brkic2(Re, eD):
 def f_fang(Re, eD):
     """
     Calculates friction factor `f` with Fang-Xua-Zhou correlation (2011)
-    Second correlation
+
+    .. math::
+        f = 1.613\left\{\ln\left[0.234\frac{\epsilon}{D}^{1.1007}
+        - \frac{60.525}{Re^{1.1105}}
+        + \frac{56.291}{Re^{1.0712}}\right]\right\}^{-2}
 
     Parameters
     ------------
@@ -842,6 +1050,12 @@ def f_fang(Re, eD):
     f : float
         Friction factor, [-]
 
+    Notes
+    -----
+    Range of validity
+        3e3 <= Re <= 1e8
+        eD <= 0.05
+
     References
     ----------
     [1] .. Fang X, Xua Y, Zhou Z (2011). New correlations of single-phase
@@ -853,7 +1067,7 @@ def f_fang(Re, eD):
 
 def f_ghanbari(Re, eD):
     """
-    Calculates friction factor `f` with Ghanbari-Farshad-Rieke correlation (2011)
+    Calculates friction factor `f` with Ghanbari correlation (2011)
     Second correlation
 
     Parameters

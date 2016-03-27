@@ -292,7 +292,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             if self.magnitud:
                 self.entrada.setText(self.value.format(magnitud=self.UIconfig)+self.suffix)
             elif self.unidad==float:
-                self.entrada.setText(representacion(self.value, self.decimales, self.tolerancia)+self.suffix)
+                self.entrada.setText(representacion(self.value, decimales=self.decimales, tol=self.tolerancia)+self.suffix)
             else:
                 self.entrada.setText(str(self.value)+self.suffix)
             self.setToolTip()
