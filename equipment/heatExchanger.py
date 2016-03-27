@@ -2050,7 +2050,7 @@ class Fired_Heater(equipment):
 
 
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
+        entrada=self.kwargs["entrada"]
         self.Tout=unidades.Temperature(self.kwargs["Tout"])
         self.deltaP=unidades.DeltaP(self.kwargs["deltaP"])
         self.Hmax=unidades.Power(self.kwargs["Hmax"])
@@ -2064,25 +2064,25 @@ class Fired_Heater(equipment):
         else:
             poderCalorifico=900
 
-        salida=self.entrada.clone(T=self.Tout, P=self.entrada.P-self.deltaP)
-        Ho=self.entrada.h
+        salida=entrada.clone(T=self.Tout, P=entrada.P-self.deltaP)
+        Ho=entrada.h
         H1=salida.h
         Heat=unidades.Power(H1-Ho)
 
         if self.Hmax and Heat>self.Hmax:
             self.Heat=unidades.Power(self.Hmax)
-            To=(self.entrada.T+self.Tout)/2
-            T=fsolve(lambda T: self.entrada.clone(T=T, P=self.entrada.P-self.deltaP).h-Ho-self.Hmax, To)[0]
-            self.salida=[self.entrada.clone(T=T, P=self.entrada.P-self.deltaP)]
+            To=(entrada.T+self.Tout)/2
+            T=fsolve(lambda T: entrada.clone(T=T, P=entrada.P-self.deltaP).h-Ho-self.Hmax, To)[0]
+            self.salida=[entrada.clone(T=T, P=entrada.P-self.deltaP)]
         else:
             self.Heat=Heat
             self.salida=[salida]
 
         self.CombustibleRequerido=unidades.VolFlow(self.Heat.Btuh/poderCalorifico/eficiencia, "ft3h")
-        self.deltaT=unidades.DeltaT(self.salida[0].T-self.entrada.T)
+        self.deltaT=unidades.DeltaT(self.salida[0].T-entrada.T)
         self.eficiencia=unidades.Dimensionless(eficiencia)
         self.poderCalorifico=unidades.Dimensionless(poderCalorifico)
-        self.Tin=self.entrada.T
+        self.Tin=entrada.T
         self.Tout=self.salida[0].T
 
     def coste(self):
@@ -2106,7 +2106,7 @@ class Fired_Heater(equipment):
         if self.kwargs["P_dis"]:
             P_dis=unidades.Pressure(self.kwargs["P_dis"])
         else:
-            P_dis=self.entrada.P
+            P_dis=self.kwargs["entrada"].P
 
         if self.kwargs["tipo"]==0:                    #Boxtype
             k=[25.5, 33.8, 45.][self.kwargs["material"]]
@@ -2146,7 +2146,7 @@ class Fired_Heater(equipment):
 
     def propTxt(self):
         txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Temperature"), self.entrada.T.str)+os.linesep
+        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Temperature"), self.Tin.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Temperature"), self.salida[0].T.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Temperature increase"), self.deltaT.str)+os.linesep
         txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure increase"), self.deltaP.str)+os.linesep
@@ -2200,39 +2200,39 @@ class Fired_Heater(equipment):
                 (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
         return list
 
-    def writeStatetoStream(self, stream):
-        stream.writeFloat(self.Tout)
-        stream.writeFloat(self.deltaP)
-        stream.writeFloat(self.Hmax)
-        stream.writeFloat(self.Heat)
-        stream.writeFloat(self.CombustibleRequerido)
-        stream.writeFloat(self.deltaT)
-        stream.writeFloat(self.eficiencia)
-        stream.writeFloat(self.poderCalorifico)
-        stream.writeFloat(self.Tin)
-        stream.writeFloat(self.Tout)
-        stream.writeInt32(self.statusCoste)
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["Tout"] = self.Tout
+        state["deltaP"] = self.deltaP
+        state["Hmax"] = self.Hmax
+        state["Heat"] = self.Heat
+        state["CombustibleRequerido"] = self.CombustibleRequerido
+        state["deltaT"] = self.deltaT
+        state["eficiencia"] = self.eficiencia
+        state["poderCalorifico"] = self.poderCalorifico
+        state["Tin"] = self.Tin
+        state["statusCoste"] = self.statusCoste
         if self.statusCoste:
-            stream.writeFloat(self.P_dis)
-            stream.writeFloat(self.C_adq)
-            stream.writeFloat(self.C_inst)
+            state["P_dis"] = self.P_dis
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
 
-    def readStatefromStream(self, stream):
-        self.Tout=unidades.Temperature(stream.readFloat())
-        self.deltaP=unidades.DeltaP(stream.readFloat())
-        self.Hmax=unidades.Power(stream.readFloat())
-        self.Heat=unidades.Power(stream.readFloat())
-        self.CombustibleRequerido=unidades.VolFlow(stream.readFloat())
-        self.deltaT=unidades.DeltaT(stream.readFloat())
-        self.eficiencia=unidades.Dimensionless(stream.readFloat())
-        self.poderCalorifico=unidades.Dimensionless(stream.readFloat())
-        self.Tin=unidades.Temperature(stream.readFloat())
-        self.Tout=unidades.Temperature(stream.readFloat())
-        self.statusCoste = stream.readInt32()
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.Tout = unidades.Temperature(state["Tout"])
+        self.deltaP = unidades.DeltaP(state["deltaP"])
+        self.Hmax = unidades.Power(state["Hmax"])
+        self.Heat = unidades.Power(state["Heat"])
+        self.CombustibleRequerido = unidades.VolFlow(state["CombustibleRequerido"])
+        self.deltaT = unidades.DeltaT(state["deltaT"])
+        self.eficiencia = unidades.Dimensionless(state["eficiencia"])
+        self.poderCalorifico = unidades.Dimensionless(state["poderCalorifico"])
+        self.Tin = unidades.Temperature(state["Tin"])
+        self.statusCoste = state["statusCoste"]
         if self.statusCoste:
-            self.P_dis=unidades.Pressure(stream.readFloat())
-            self.C_adq=unidades.Currency(stream.readFloat())
-            self.C_inst=unidades.Currency(stream.readFloat())
+            self.P_dis = unidades.Pressure(state["P_dis"])
+            self.C_adq = unidades.Currency(state["C_adq"])
+            self.C_inst = unidades.Currency(state["C_inst"])
         self.salida = [None]
 
 

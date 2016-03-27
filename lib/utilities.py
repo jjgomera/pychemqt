@@ -50,7 +50,7 @@ def format2txt(formato):
     return txt
 
 
-def representacion(float, format=0, total=0, decimales=4, exp=False, tol=4,
+def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
                    signo=False, thousand=False):
     """Function for string representation of float values
     float: number to transform
