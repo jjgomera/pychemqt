@@ -129,7 +129,7 @@ class Heat_Exchanger(equipment):
 
     def calculo(self):
         entrada = self.kwargs["entrada"]
-        self.DeltaP = unidades.DeltaP(self.kwargs["DeltaP"])
+        self.deltaP = unidades.DeltaP(self.kwargs["DeltaP"])
         self.HeatCalc = unidades.Power(self.kwargs["Heat"])
         if self.kwargs["Tout"]:
             Tout = unidades.Temperature(self.kwargs["Tout"])
@@ -140,7 +140,7 @@ class Heat_Exchanger(equipment):
         Text = unidades.Temperature(self.kwargs["Text"])
 
         if self.modo == 1:
-            self.salida = [entrada.clone(T=Tout, P=entrada.P-self.DeltaP)]
+            self.salida = [entrada.clone(T=Tout, P=entrada.P-self.deltaP)]
             self.HeatCalc = unidades.Power(self.salida[0].h-entrada.h)
         else:
             if self.modo == 2:
@@ -149,36 +149,54 @@ class Heat_Exchanger(equipment):
                 self.HeatCalc = unidades.Power(A*U*(Text-entrada.T))
 
             def f():
-                output = entrada.clone(T=T, P=entrada.P-self.DeltaP)
+                output = entrada.clone(T=T, P=entrada.P-self.deltaP)
                 return output.h-entrada.h-self.HeatCalc
             T = fsolve(f, entrada.T)[0]
             if T > max(Text, entrada.T) or T < min(Text, entrada.T):
                 T = self.Text
-            self.salida = [entrada.clone(T=T, P=entrada.P-self.DeltaP)]
+            self.salida = [entrada.clone(T=T, P=entrada.P-self.deltaP)]
 
         self.Tin = entrada.T
         self.ToutCalc = self.salida[0].T
-        self.DeltaT = unidades.DeltaT(self.ToutCalc-entrada.T)
+        self.deltaT = unidades.DeltaT(self.ToutCalc-entrada.T)
 
     def propTxt(self):
         txt = "#---------------"
         txt += QApplication.translate("pychemqt", "Calculate properties")
-        txt += "-----------------#" + os.linesep
-        txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Input Temperature"), self.kwargs["entrada"].T.str)+os.linesep
-        txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Output Temperature"), self.salida[0].T.str)+os.linesep
-        txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Temperature increase"), self.DeltaT.str)+os.linesep
-        txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Pressure increase"), self.DeltaP.str)+os.linesep
-        txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Heat"), self.HeatCalc.str)+os.linesep
+        txt += "-----------------#"+os.linesep
+        txt += self.propertiesToText(range(5))
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"), "Tin", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Output Temperature"), "ToutCalc", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Temperature increase"), "DeltaT", unidades.DeltaT),
-             (QApplication.translate("pychemqt", "Pressure increase"), "DeltaP", unidades.DeltaP),
-             (QApplication.translate("pychemqt", "Heat"), "HeatCalc", unidades.Power)]
+        l = [(QApplication.translate("pychemqt", "Input Temperature"),
+              "Tin", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Output Temperature"),
+              "ToutCalc", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Temperature increase"),
+              "deltaT", unidades.DeltaT),
+             (QApplication.translate("pychemqt", "Pressure increase"),
+              "deltaP", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Heat"), "HeatCalc",
+              unidades.Power)]
         return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["Tin"] = self.Tin
+        state["ToutCalc"] = self.ToutCalc
+        state["deltaT"] = self.deltaT
+        state["deltaP"] = self.deltaP
+        state["HeatCalc"] = self.HeatCalc
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.Tin = unidades.Temperature(state["Tin"])
+        self.ToutCalc = unidades.Temperature(state["ToutCalc"])
+        self.deltaT = unidades.DeltaT(state["deltaT"])
+        self.deltaP = unidades.DeltaP(state["deltaP"])
+        self.HeatCalc = unidades.Power(state["HeatCalc"])
+        self.salida = [None]
 
 
 class Heat_ExchangerDesign(equipment):
