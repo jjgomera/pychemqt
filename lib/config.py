@@ -224,6 +224,8 @@ class Entity(object):
         data["status"] = self.status
         data["msg"] = self.msg
         data["bool"] = self._bool
+        data["notas"] = self.notas
+        data["notasPlain"] = self.notasPlain
         if self.status:
             state = {}
             self.writeStatetoJSON(state)
@@ -246,6 +248,8 @@ class Entity(object):
         self.status = data["status"]
         self.msg = data["msg"]
         self._bool = data["bool"]
+        self.notas = data["notas"]
+        self.notasPlain = data["notasPlain"]
         if self.status:
             self.readStatefromJSON(data["state"])
 
@@ -282,7 +286,7 @@ class Entity(object):
                     lista.append(([f.str for f in prop], name))
             elif unit == str:
                 lista.append((prop, name, 0))
-            elif unit == int:
+            elif unit == int or unit == float:
                 lista.append((str(prop), name, 1))
             else:
                 lista.append((prop.str, name, 1))
