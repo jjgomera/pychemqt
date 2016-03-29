@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module for graphics elements of PFD
 ###############################################################################
@@ -28,6 +27,7 @@ from functools import partial
 from datetime import datetime
 import tempfile
 import os
+import json
 import subprocess
 from copy import deepcopy
 from xml.dom import minidom
@@ -50,69 +50,60 @@ from equipment import *
 factor = 5
 
 
-def loadFromFile(path):
-    fh = QtCore.QFile(path)
-    if not fh.open(QtCore.QIODevice.ReadOnly):
-        raise IOError(str(fh.errorString()))
-    stream = QtCore.QDataStream(fh)
-
-    magic = stream.readInt32()
-    if magic != Project.MAGIC_NUMBER:
-        raise IOError("unrecognized file type")
-    version = stream.readInt32()
-    if version < Project.FILE_VERSION:
-        raise IOError("old and unreadable file format")
-    elif version > Project.FILE_VERSION:
-        raise IOError("new and unreadable file format")
-    stream.setVersion(QtCore.QDataStream.Qt_4_2)
-
-    project=Project()
-    project.loadFromStream(stream, huella=False, run=False)
-    return project
-
 class SelectStreamProject(QtWidgets.QDialog):
-    project=None
+    project = None
+
     def __init__(self, parent=None):
         super(SelectStreamProject, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Select stream from file"))
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Select stream from file"))
 
         layout = QtWidgets.QGridLayout(self)
-        label=QtWidgets.QApplication.translate("pychemqt", "Project path")+":"
-        msg=QtWidgets.QApplication.translate("pychemqt", "Select pychemqt project file")
-        patrones=QtCore.QStringList()
-        patrones.append(QtWidgets.QApplication.translate("pychemqt", "pychemqt project file")+" (*.pcq)")
-        patron=patrones.join(";;")
-        self.filename=PathConfig(label, msg=msg, patron=patron)
+        label = QtWidgets.QApplication.translate("pychemqt", "Project path")
+        msg = QtWidgets.QApplication.translate(
+            "pychemqt", "Select pychemqt project file")
+        patrones = []
+        patrones.append(QtWidgets.QApplication.translate(
+            "pychemqt", "pychemqt project file")+" (*.pcq)")
+        patron = ";;".join(patrones)
+        self.filename = PathConfig(label+":", msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeproject)
-        layout.addWidget(self.filename,1,1,1,3)
+        layout.addWidget(self.filename, 1, 1, 1, 3)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Streams")),2,1)
-        self.stream=QtWidgets.QComboBox()
-        layout.addWidget(self.stream,2,2)
-        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),3,3)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Streams")), 2, 1)
+        self.stream = QtWidgets.QComboBox()
+        layout.addWidget(self.stream, 2, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 3, 3)
 
-        self.status=QtWidgets.QLabel()
-        layout.addWidget(self.status,10,1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
+        self.status = QtWidgets.QLabel()
+        layout.addWidget(self.status, 10, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox,10,2,1,2)
+        layout.addWidget(self.buttonBox, 10, 2, 1, 2)
 
     def changeproject(self, path):
-        self.status.setText(QtWidgets.QApplication.translate("pychemqt", "Loading project..."))
+        st = QtWidgets.QApplication.translate("pychemqt", "Loading project...")
+        self.status.setText(st)
         QtWidgets.QApplication.processEvents()
-#        try:
-        self.project=loadFromFile(path)
+        try:
+            with open(path, "r") as file:
+                self.project = json.load(file)
+        except Exception as e:
+            print e
+            self.status.setText(QtGui.QApplication.translate(
+                "pychemqt", "Failed to loading project..."))
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
-        self.status.setText(QtWidgets.QApplication.translate("pychemqt", "Project loaded succesfully"))
-#        except Exception as e:
-#            print e
-#            self.status.setText(QtGui.QApplication.translate("pychemqt", "Failed to loading project..."))
+        self.status.setText(QtWidgets.QApplication.translate(
+            "pychemqt", "Project loaded succesfully"))
         self.stream.clear()
-        for stream in list(self.project.streams.keys()):
-            self.stream.addItem("%i" %stream)
-
+        for stream in self.project["stream"].keys():
+            self.stream.addItem(stream)
 
 
 class ConfLineDialog(QtWidgets.QDialog, ConfLine):
@@ -431,19 +422,12 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.setCorriente(dialog.corriente)
 
     def copyFromProject(self):
-        dialog=SelectStreamProject()
+        dialog = SelectStreamProject()
         if dialog.exec_():
-            indice=int(dialog.stream.currentText())
-            corriente=dialog.project.getStream(indice)
-            component = eval(self.scene().project.config.get("Components", "components"))
-            for variable in ["caudalUnitarioMolar", "caudalUnitarioMasico",
-                             "fraccionMolar", "fraccionMasica"]:
-                if corriente.kwargs[variable]:
-                    while len(corriente.kwargs[variable]) < len(component):
-                        corriente.kwargs[variable].append(0)
-                    if len(corriente.kwargs[variable]) > len(component):
-                        corriente.kwargs[variable] = corriente.kwargs[variable][:len(component)]
-            corriente.__call__()
+            indice = dialog.stream.currentText()
+            data = dialog.project["stream"][indice]
+            corriente = Corriente()
+            corriente.readFromJSON(data)
             self.setCorriente(corriente)
 
 
