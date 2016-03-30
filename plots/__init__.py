@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import QApplication
 
 from plots import moody
 from plots import standing
-from equipment.UI_heatExchanger import chart as chartHE
+from plots.heatTransfer import chartHE
 
 
 __all__ = {

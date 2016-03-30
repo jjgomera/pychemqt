@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from scipy import exp, log, pi, log10
+from math import factorial
+from scipy import exp, log, pi, log10, tanh
 
 
 # Pipe Laminar flow
@@ -263,3 +264,345 @@ def h_tube_Condensation_Traviss(fluid, Di, X):
 
     return fluid.Pr*Re**0.9*F1/F2
 
+
+# Heat Exchanger design methods
+def efectividad(NTU, C_, flujo, **kwargs):
+    """Calculo de la efectividad del cambiador
+    Flujo vendra definido por su acronimo
+        CF: Counter flow
+        PF: Parallel flow
+        CrFMix: Crossflow, both fluids mixed
+        CrFSMix: Crossflow, one fluid mixed, other unmixed
+        CrFunMix: Crossflow, both fluids unmixed
+        1-2TEMAE: 1-2 pass shell and tube exchanger
+
+    kwargs: Opciones adicionales:
+        mixed: corriente mezclada para CrFSMix
+        Cmin, Cmax
+    """
+    if C_ == 0:
+        ep = 1-exp(-NTU)
+
+    elif flujo == "PF":
+        if C_ == 1:
+            ep = (1-exp(-2*NTU))/2
+        else:
+            ep = (1-exp(-NTU*(1+C_)))/(1+C_)
+
+    elif flujo == "CF":
+        if C_ == 1:
+            ep = NTU/(1+NTU)
+        else:
+            ep = (1-exp(-NTU*(1-C_)))/(1-C_*exp(-NTU*(1-C_)))
+
+    elif flujo == "CrFunMix":
+        def P(n, y):
+            suma = 0
+            for j in range(1, n+1):
+                suma += (n+1-j)/factorial(j)*y**(n+j)
+            return suma/factorial(n+1)
+        n = 1
+        suma = 0
+        while True:
+            inc = C_**n*P(n, NTU)
+            suma += inc
+            n += 1
+            if inc < 1e-12:
+                break
+        ep = 1-exp(-NTU)-exp(-(1+C_)*NTU)*suma
+
+    elif flujo == "CrFMix":
+        if C_ == 1:
+            ep = 1/(2/(1-exp(-NTU))-1/NTU)
+        else:
+            ep = 1/(1/(1-exp(-NTU))+C_/(1-exp(-NTU*C_))-1/NTU)
+
+    elif flujo == "CrFSMix":
+        if C_ == 1:
+            ep = 1-exp(-(1-exp(-NTU)))
+        else:
+            if kwargs["mixed"] == "Cmin":
+                ep = 1-exp(-(1-exp(-NTU*C_))/C_)
+            else:
+                ep = (1-exp(-C_*(1-exp(-NTU))))/C_
+
+    elif flujo == "1-2TEMAE":
+        if C_ == 1:
+            ep = 2/(2+2**0.5/tanh(2**0.5*NTU/2))
+        else:
+            ep = 2/((1+C_)+(1+C_**2)**0.5/tanh(NTU*(1+C_**2)**0.5/2))
+
+    return ep
+
+
+def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
+    """Calculo de la temperatura efectividad del cambiador
+    Flujo vendra definido por su acronimo
+        CF: Counter flow
+        PF: Parallel flow
+        CrFMix: Crossflow, both fluids mixed
+        CrFSMix: Crossflow, one fluid mixed, other unmixed
+        CrFunMix: Crossflow, both fluids unmixed
+        1-2TEMAE: 1-2 TEMA E
+        1-2TEMAE2: 1-2 TEMA E, shell fluid flow divided
+        1-3TEMAE: 1-3 TEMA E
+        1-4TEMAE: 1-4 TEMA E
+        1-1TEMAG: 1-1 TEMA G
+        1-2TEMAG: 1-2 TEMA G
+        1-1TEMAH: 1-1 TEMA H
+        1-2TEMAH: 1-2 TEMA H
+        1-1TEMAJ: 1-1 TEMA J
+        1-2TEMAJ: 1-2 TEMA J
+        1-4TEMAJ: 1-4 TEMA J
+
+    kwargs: Opciones adicionales:
+        mixed: corriente mezclada para CrFSMix
+            1, 2
+    """
+
+    if flujo == "PF":
+        if R == 1:
+            ep = NTU/(1+NTU)
+        else:
+            ep = (1-exp(-NTU*(1-R)))/(1-R*exp(-NTU*(1-R)))
+
+    elif flujo == "CF":
+        if R == 1:
+            ep = (1-exp(-2*NTU))/2.
+        else:
+            ep = (1-exp(-NTU*(1+R)))/(1+R)
+
+    elif flujo == "CrFunMix":
+        ep = 1-exp(NTU**0.22/R*(exp(-R*NTU**0.78)-1))
+        #            def P(n, y):
+        #                suma=0
+        #                for j in range(1, n+1):
+        #                    suma+=(n+1-j)/factorial(j)*y**(n+j)
+        #                return suma/factorial(n+1)
+        #            n=1
+        #            suma=0
+        #            while True:
+        #                inc=R**n*P(n, NTU)
+        #                suma+=inc
+        #                n+=1
+        #                if inc<1e-12:
+        #                    break
+        #            ep=1-exp(-NTU)-exp(-(1+R)*NTU)*suma
+
+    elif flujo == "CrFMix":
+        K1 = 1-exp(-NTU)
+        if R == 1:
+            ep = 1/(2/K1-1/NTU)
+        else:
+            K2 = 1-exp(-R*NTU)
+            ep = 1/(1/K1+R/K2-1/NTU)
+
+    elif flujo == "CrFSMix":
+        K = 1-exp(-NTU)
+        if R == 1:
+            ep = 1-exp(-K)
+        else:
+            if kwargs["mixed"] == "1":
+                ep = (1-exp(-R*K))/R
+            else:
+                K = 1-exp(-R*NTU)
+                ep = 1-exp(-K/R)
+
+    elif flujo == "1-2TEMAE":
+        if R == 1:
+            ep = 1/(1+1/tanh(NTU/2**0.5)/2**0.5)
+        else:
+            E = (1+R**2)**0.5
+            ep = 2/(1+R+E/tanh(E*NTU/2))
+
+    elif flujo == "1-2TEMAE2":
+        E = exp(NTU)
+        if R == 2:
+            ep = 0.5*(1-(1+E**-2)/2/(1+NTU))
+        else:
+            B = exp(-NTU*R/2.)
+            ep = 1/R*(1-(2-R)*(2.*E+R*B)/(2+R)/(2.*E-R/B))
+
+    elif flujo == "1-3TEMAE":
+        l1 = -3./2+(9./4+R*(R-1))**0.5
+        l2 = -3./2-(9./4+R*(R-1))**0.5
+        l3 = R
+        d = l1-l2
+        X1 = exp(l1*NTU/3.)/2/d
+        X2 = exp(l2*NTU/3.)/2/d
+        X3 = exp(l3*NTU/3.)/2/d
+        if R == 1:
+            A = -exp(-NTU)/18-exp(NTU/3)/2+(NTU+5)/9
+        else:
+            A = X1*(R+l1)*(R-l2)/2/l1-X3*d-X2*(R+l2)*(R-l1)/2/l2+1/(1-R)
+        B = X1*(R-l2)-X2*(R-l1)+X3*d
+        C = X2*(3*R+l1)-X1*(3*R+l2)+X3*d
+        ep = 1/R*(1-C/(A*C+B**2))
+
+    elif flujo == "1-4TEMAE":
+        if R == 1:
+            A = 1/tanh(5**0.5*NTU/4)
+            B = tanh(NTU/4)
+            ep = 4/(4+5**0.5*A+B)
+        else:
+            D = (4+R**2)**0.5
+            A = 1/tanh(D*NTU/4)
+            B = tanh(NTU*R/4)
+            ep = 4/(2*(1+R)+D*A+R*B)
+
+    elif flujo == "1-1TEMAG":
+        if R == 1:
+            B = NTU/(2+NTU)
+        else:
+            D = exp(-NTU*(1-R)/2)
+            B = (1-D)/(1-R*D)
+        A = 1/(1+R)*(1-exp(-NTU*(1+R)/2))
+        ep = A+B-A*B*(1+R)+R*A*B**2
+
+    elif flujo == "1-2TEMAG":
+        if R == 2:
+            alfa = exp(-NTU)
+            ep = (1+2*NTU-alfa**2)/(4+4*NTU-(1-alfa)**2)
+        else:
+            alfa = exp(-NTU*(2+R)/4)
+            beta = exp(-NTU*(2-R)/2)
+            A = -2*R*(1-alfa)**2/(2+R)
+            B = (4-beta*(2+R))/(2-R)
+            ep = (B-alfa**2)/(A+2+R*B)
+
+    elif flujo == "1-1TEMAH":
+        A = 1/(1+R/2)*(1-exp(-NTU*(1+R/2)/2))
+        if R == 2:
+            B = NTU/(2+NTU)
+        else:
+            D = exp(-NTU*(1-R/2)/2)
+            B = (1-D)/(1-R*D/2)
+        E = (A+B-A*B*R/2)/2
+        ep = E*(1+(1-B*R/2)*(1-A*R/2+A*B*R))-A*B*(1-B*R/2)
+
+    elif flujo == "1-2TEMAH":
+        if R == 4:
+            H = NTU
+            E = NTU/2
+        else:
+            beta = NTU*(4-R)/8
+            H = (1-exp(-2*beta))/(4/R-1)
+            E = (1-exp(-beta))/(4/R-1)
+        alfa = NTU*(4-R)/8
+        D = (1-exp(-alfa))/(4/R+1)
+        G = (1-D)**2*(D**2+E**2)+D**2*(1+E)**2
+        B = (1+H)*(1+E)**2
+        ep = 1/R*(1-(1-D)**4/(B-4*G/R))
+
+    elif flujo == "1-1TEMAJ":
+        A = exp(NTU)
+        if R == 2:
+            ep = 0.5*(1-(1+1/A**2)/2/(1+NTU))
+        else:
+            B = exp(-NTU*R/2)
+            ep = 1/R*(1-(2-R)*(2*A+R*B)/(2+R)/(2*A-R/B))
+
+    elif flujo == "1-2TEMAJ":
+        l = (1+R**2/4)**0.5
+        A = exp(NTU)
+        B = (A**l+1)/(A**l-1)
+        C = A**((1+l)/2)/(l-1+(1+l)*A**l)
+        D = 1+l*A**((l-1)/2)/(A**l-1)
+        ep = 1/(1+R/2+l*B-2*l*C*D)
+
+    elif flujo == "1-4TEMAJ":
+        l = (1+R**2/16)**0.5
+        A = exp(NTU)
+        B = (A**l+1)/(A**l-1)
+        C = A**((1+l)/2)/(l-1+(1+l)*A**l)
+        D = 1+l*A**((l-1)/2)/(A**l-1)
+        E = exp(R*NTU/2)
+        ep = 1/(1+R/4*(1+3*E)/(1+E)+l*B-2*l*C*D)
+
+    return ep
+
+
+def CorrectionFactor(P, R, flujo, **kwargs):
+    """Calculo de la factor de correccion
+    Flujo vendra definido por su acronimo
+        CF: Counter flow
+        PF: Parallel flow
+        CrFMix: Crossflow, both fluids mixed
+        CrFSMix: Crossflow, one fluid mixed, other unmixed
+        CrFunMix: Crossflow, both fluids unmixed
+        1-2TEMAE: 1-2 pass shell and tube exchanger
+
+    kwargs: Opciones adicionales:
+        mixed: corriente mezclada para CrFSMix
+            Cmin, Cmax
+    """
+    if flujo == "PF" or flujo == "CF":
+        f = 1
+
+    elif flujo == "CrFSMix":
+        if kwargs["mixed"] == "1":
+            f = log((1-R*P)/(1-P))/(1-1/R)/log(1+R*log(1-P))
+        else:
+            f = log((1-R*P)/(1-P))/(R-1)/log(1+log(1-R*P)/R)
+
+    elif flujo == "1-2TEMAE":
+        if R == 1:
+            if P*(2+2**0.5) >= 2:
+                f = 0
+            else:
+                f = 2**0.5*P/(1-P)/log((2-P*(2-2**0.5))/(2-P*(2+2**0.5)))
+        else:
+            E = (1+R**2)**0.5
+            if P*(1+R+E) >= 2:
+                f = 0
+            else:
+                f = E*log((1-R*P)/(1-P))/(1-R)/log((2-P*(1+R-E))/(2-P*(1+R+E)))
+
+    else:  # Para los ordenamientos de flujo sin solucion analitica
+        NTU = NTU_fPR(P, R, flujo, **kwargs)
+        if R == 1:
+            f = P/NTU/(1-P)
+        else:
+            f = log((1-R*P)/(1-P))/NTU/(1-R)
+
+    return f
+
+
+def NTU_fPR(P, R, flujo, **kwargs):
+    """Calculo de la factor de correccion
+    Flujo vendra definido por su acronimo
+        CF: Counter flow
+        PF: Parallel flow
+        CrFMix: Crossflow, both fluids mixed
+        CrFSMix: Crossflow, one fluid mixed, other unmixed
+        CrFunMix: Crossflow, both fluids unmixed
+        1-2TEMAE: 1-2 pass shell and tube exchanger
+
+    kwargs: Opciones adicionales:
+        mixed: corriente mezclada para CrFSMix
+            Cmin, Cmax
+    """
+
+    if flujo == "1-2TEMAE":
+        if R == 1:
+            NTU = log((1-P)/2-3*P)
+        else:
+            E = (1+R**2)**0.5
+            NTU = log((2-P*(1+R-E))/(2-P*(1+R+E)))/E
+
+    else:
+        if R == 1:
+            NTU = P/(1-P)
+        else:
+            NTU = log((1-R/P)/(1-P))/(1-R)
+
+    return NTU
+
+
+def Fi(P, R, flujo, **kwargs):
+    F = CorrectionFactor(P, R, flujo, **kwargs)
+    if R == 1:
+        Fi = F*(1-P)
+    else:
+        Fi = F*P*(1-R)/log((1-R*P)/(1-P))
+    return Fi
