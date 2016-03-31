@@ -54,152 +54,153 @@ class Spreadsheet(equipment):
                 celda: Celda en la que colocar el dato
 
     """
-    title=QApplication.translate("pychemqt", "Spreadsheet")
-    help=""
-    kwargs={"project": None,
-                    "input": "",
-                    "output": "",
-                    "filename": "",
-                    "datamap": []}
-    kwargs_forbidden=["project", ]
+    title = QApplication.translate("pychemqt", "Spreadsheet")
+    help = ""
+    kwargs = {
+        "project": None,
+        "input": "",
+        "output": "",
+        "filename": "",
+        "datamap": []}
+    kwargs_forbidden = ["project", ]
 
     @property
     def isCalculable(self):
-        self.msg=""
-        self.status=1
-        if not self.kwargs["filename"] or not os.path.isfile(self.kwargs["filename"]):
-            self.msg=QApplication.translate("pychemqt", "undefined spreadsheet filename")
-            self.status=0
+        self.msg = ""
+        self.status = 1
+        if not self.kwargs["filename"] or \
+                not os.path.isfile(self.kwargs["filename"]):
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined spreadsheet filename")
+            self.status = 0
             return
         if not self.kwargs["datamap"]:
-            self.msg=QApplication.translate("pychemqt", "undefined spreadsheet data map")
-            self.status=3
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined spreadsheet data map")
+            self.status = 3
         return True
 
     def cleanOldValues(self, **kwargs):
         """Si se cambia la ruta de la hoja de cálculo se reinicia el datamap"""
-        if kwargs.get("filename", "") and kwargs.get("filename", "")!=self.kwargs["filename"]:
-            self.kwargs["datamap"]=[]
+        if kwargs.get("filename", "") and \
+                kwargs.get("filename", "") != self.kwargs["filename"]:
+            self.kwargs["datamap"] = []
         self.kwargs.update(kwargs)
 
     def calculo(self):
-        ext=self.kwargs["filename"].split(".")[-1]
-        if ext=="ods":
+        ext = self.kwargs["filename"].split(".")[-1]
+        if ext == "ods":
             spreadsheet = ezodf.opendoc(self.kwargs["filename"])
-            self.sheets=[name for name in spreadsheet.sheets.names()]
+            self.sheets = [name for name in spreadsheet.sheets.names()]
             if self.kwargs["datamap"]:
                 for data in self.kwargs["datamap"]:
-                    entity=self.kwargs["project"].getObject(data["entity"])
-                    sheet=spreadsheet.sheets[data["sheet"]]
-                    indProp=entity.propertiesTitle().index(data["property"])
-                    if entity.propertiesUnit()[indProp]==str:
-                        value=entity.__getattribute__(entity.propertiesAttribute()[indProp])
+                    entity = self.kwargs["project"].getObject(data["entity"])
+                    sheet = spreadsheet.sheets[data["sheet"]]
+                    indProp = entity.propertiesTitle().index(data["property"])
+                    if entity.propertiesUnit()[indProp] == str:
+                        value = entity.__getattribute__(
+                            entity.propertiesAttribute()[indProp])
                     else:
-                        indUnit=entity.propertiesUnit()[indProp].__text__.index(data["unit"])
-                        units=entity.propertiesUnit()[indProp].__units__
-                        value=entity.__getattribute__(entity.propertiesAttribute()[indProp]).__getattribute__(units[indUnit])
+                        indUnit = entity.propertiesUnit()[indProp].__text__.index(data["unit"])
+                        units = entity.propertiesUnit()[indProp].__units__
+                        value = entity.__getattribute__(entity.propertiesAttribute()[indProp]).__getattribute__(units[indUnit])
 
-                    #Chequear
-                    celda=list(data["cell"])
-                    column=[]
-                    while celda[0] in string.uppercase:
+                    # Chequear
+                    celda = list(data["cell"])
+                    column = []
+                    while celda[0] in string.ascii_uppercase:
                         column.append(celda.pop(0))
-                    base=len(string.uppercase)
-                    exponente=0
-                    columna=0
+                    base = len(string.ascii_uppercase)
+                    exponente = 0
+                    columna = 0
                     while column:
-                        ordinal=ord(column.pop())-64
-                        columna+=ordinal*base**exponente
-                        exponente+=1
-                    fila=int("".join(celda))
-                    if fila>sheet.nrows():
+                        ordinal = ord(column.pop())-64
+                        columna += ordinal*base**exponente
+                        exponente += 1
+                    fila = int("".join(celda))
+                    if fila > sheet.nrows():
                         sheet.append_rows(fila-sheet.nrows())
-                    if columna>sheet.ncols():
+                    if columna > sheet.ncols():
                         sheet.append_columns(columna-sheet.ncols())
 
                     sheet[data["cell"]].set_value(value)
                 spreadsheet.save()
 
-        elif ext=="xlsx":
+        elif ext == "xlsx":
             spreadsheet = openpyxl.load_workbook(self.kwargs["filename"])
-            self.sheets=spreadsheet.get_sheet_names()
+            self.sheets = spreadsheet.get_sheet_names()
             if self.kwargs["datamap"]:
                 for data in self.kwargs["datamap"]:
-                    entity=self.kwargs["project"].getObject(data["entity"])
-                    sheet=spreadsheet[data["sheet"]]
-                    indProp=entity.propertiesTitle().index(data["property"])
-                    if entity.propertiesUnit()[indProp]==str:
-                        value=entity.__getattribute__(entity.propertiesAttribute()[indProp])
+                    entity = self.kwargs["project"].getObject(data["entity"])
+                    sheet = spreadsheet[data["sheet"]]
+                    indProp = entity.propertiesTitle().index(data["property"])
+                    if entity.propertiesUnit()[indProp] == str:
+                        value = entity.__getattribute__(entity.propertiesAttribute()[indProp])
                     else:
-                        indUnit=entity.propertiesUnit()[indProp].__text__.index(data["unit"])
-                        units=entity.propertiesUnit()[indProp].__units__
-                        value=entity.__getattribute__(entity.propertiesAttribute()[indProp]).__getattribute__(units[indUnit])
+                        indUnit = entity.propertiesUnit()[indProp].__text__.index(data["unit"])
+                        units = entity.propertiesUnit()[indProp].__units__
+                        value = entity.__getattribute__(entity.propertiesAttribute()[indProp]).__getattribute__(units[indUnit])
                     sheet[data["cell"]] = value
                     comentario = openpyxl.comments.Comment("{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data), 'pychemqt')
-                    sheet[data["cell"]].comment=comentario
+                    sheet[data["cell"]].comment = comentario
                 spreadsheet.save(".".join(self.kwargs["filename"].split(".")[:-1])+"-bak"+".xlsx")
 
-        self.salida=[]
+            elif ext == "xls":
+                # TODO: Implement old office support
+                pass
 
+        self.salida = []
 
-    def writeListtoStream(self, stream, key, value):
+    def writeListtoJSON(self, kwarg, key, value):
         """Personalizar en el caso de equipos con listas complejas"""
-        if key=="datamap":
-            stream.writeInt32(len(value))
-            for data in value:
-                stream.writeString(data["entity"])
-                stream.writeString(data["property"])
-                stream.writeString(data["unit"])
-                stream.writeString(data["sheet"])
-                stream.writeString(data["cell"])
+        kwarg_list = {}
+        if key == "datamap":
+            for i, data in enumerate(value):
+                kwarg_list[i] = data
+        kwarg[key] = kwarg_list
 
-    def readListFromStream(self, stream, key):
-        """Personalizar en el caso de equipos con listas complejas"""
-        valor=[]
-        if key=="datamap":
-            for i in range(stream.readInt32()):
-                data={}
-                data["entity"]=stream.readString()
-                data["property"]=stream.readString()
-                data["unit"]=stream.readString()
-                data["sheet"]=stream.readString()
-                data["cell"]=stream.readString()
-                valor.append(data)
-        return valor
+    def readListFromJSON(self, data, key):
+        """Read list from file, customize in entities with complex list"""
+        kwarg = []
+        if key == "datamap":
+            for i, data in data[key].items():
+                kwarg.append(data)
+        return kwarg
 
     def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Data map")+"-----------------#"+os.linesep
-        txt+=QApplication.translate("pychemqt", "Spreadsheet path")+": "+self.kwargs["filename"]+os.linesep
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Data map")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(0)
         if self.kwargs["datamap"]:
             for data in self.kwargs["datamap"]:
-                txt+="{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data)+os.linesep
+                txt += "{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data)+os.linesep
         else:
-            txt+=QApplication.translate("pychemqt", "Undefined")+os.linesep
+            txt += QApplication.translate("pychemqt", "Undefined")+os.linesep
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Filename"), "filename", str),
-                (QApplication.translate("pychemqt", "Data map"), "datamap", None)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Spreadsheet path"),
+              "filename", str),
+             (QApplication.translate("pychemqt", "Data map"), "datamap", None)]
+        return l
 
     def propertiesListTitle(self, index):
-        lista=[]
+        lista = []
         for data in self.kwargs["datamap"]:
             lista.append("{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data))
         return lista
 
-    def writeStatetoStream(self, stream):
-        stream.writeInt32(len(self.sheets))
-        for name in self.sheets:
-            stream.writeString(name)
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["sheets"] = self.sheets
 
-    def readStatefromStream(self, stream):
-        self.sheets = []
-        for i in range(stream.readInt32()):
-            self.sheets.append(stream.readString())
-        self.salida = []
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.sheets = state["sheets"]
+        self.salida = [None]
 
 
 if __name__ == '__main__':
