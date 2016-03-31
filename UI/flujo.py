@@ -95,7 +95,7 @@ class SelectStreamProject(QtWidgets.QDialog):
             with open(path, "r") as file:
                 self.project = json.load(file)
         except Exception as e:
-            print e
+            print(e)
             self.status.setText(QtGui.QApplication.translate(
                 "pychemqt", "Failed to loading project..."))
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
@@ -404,10 +404,10 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
     def setCorriente(self, corriente):
             self.scene().project.setStream(self.id, corriente)
-#            kwargs={"entrada": corriente}
-#            if isinstance(self.scene().project.getDownToStream(self.id), flux.Mixer):
-#                kwargs["id_entrada"]=self.scene().project.streams[self.id][3]+1
-#            self.scene().project.getDownToStream(self.id)(**kwargs)
+            kwargs={"entrada": corriente}
+            if isinstance(self.scene().project.getDownToStream(self.id), flux.Mixer):
+                kwargs["id_entrada"]=self.scene().project.streams[self.id][3]+1
+            self.scene().project.getDownToStream(self.id)(**kwargs)
             pen=self.pen()
             if corriente.status==1:
                 pen.setColor(QtGui.QColor("blue"))
@@ -518,7 +518,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
                 qp.lineTo(QtCore.QPointF(x_mean, self.entrada.y()))
                 qp.lineTo(QtCore.QPointF(x_mean, self.salida.y()))
             else:
-                if abs(self.entrada.y()-self.salida.y())>max_height: #cabe la linea entre ambos equipos
+                if abs(self.entrada.y()-self.salida.y()) > max_height:  # cabe la linea entre ambos equipos
                     y_mean=(y_up+y_down+height_sup)/2.
                     qp.lineTo(QtCore.QPointF(self.entrada.x()+Xdist_entrada, self.entrada.y()+Ydist_entrada))
                     qp.lineTo(QtCore.QPointF(self.entrada.x()+Xdist_entrada, y_mean))

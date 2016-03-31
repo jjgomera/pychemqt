@@ -216,7 +216,7 @@ class Project(object):
         data["equipment"] = equipment
 
         # write streams
-        streams ={}
+        streams = {}
         for id, item in self.streams.items():
             stream = {}
             stream["up"] = item[0]
@@ -270,9 +270,10 @@ class Project(object):
                     equip = self.items[down]
                     if isinstance(equip, Mixer):
                         kwargs = {"entrada": obj, "id_entrada": ind_down}
+                        equip.cleanOldValues(**kwargs)
                     else:
                         kwargs = {equip.kwargsInput[ind_down]: obj}
-                    equip.kwargs.update(kwargs)
+                        equip.kwargs.update(kwargs)
                 if up[0] == "e":
                     equip = self.items[up]
                     # Equipment with variable output streams must be corrected
