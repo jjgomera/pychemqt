@@ -60,13 +60,13 @@ class TableDelegate(QtWidgets.QItemDelegate):
             self.editor.addItems(self.items[index.column()])
         else:
             self.editor = QtWidgets.QLineEdit(parent)
-            regExp = QtCore.QRegExp("[A-Z]|[a-z]{1,3}\\d{1,5}")
+            regExp = QtCore.QRegExp("[A-Z]{1,3}\\d{1,5}")
             validator = QtGui.QRegExpValidator(regExp)
             self.editor.setValidator(validator)
         return self.editor
 
     def setEditorData(self, editor, index):
-        value = str(index.data(QtCore.Qt.DisplayRole).toString())
+        value = index.data(QtCore.Qt.DisplayRole)
         if index.column() < 4:
             try:
                 num = self.items[index.column()].index(value)
@@ -80,7 +80,7 @@ class TableDelegate(QtWidgets.QItemDelegate):
         if index.column() < 4:
             value = editor.currentText()
         else:
-            value = editor.text().toUpper()
+            value = editor.text().upper()
 
         model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
 
@@ -98,20 +98,20 @@ class UI_equipment(UI_equip):
         self.project = project
 
         # Calculate tab
-        layout = QtWidgets.QGridLayout(self.entrada)
+        layout = QtWidgets.QGridLayout(self.Entrada)
         label = QtWidgets.QApplication.translate("pychemqt", "Spreadsheet path")+":"
         msg = QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
-        patrones = QtCore.QStringList()
+        patrones = []
         if os.environ["ezodf"]:
             patrones.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
-#        if os.environ["xlwt"]:
-#            patrones.append(QtGui.QApplication.translate(
-#                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")+ " (*.xls)")
+        if os.environ["xlwt"]:
+            patrones.append(QtWidgets.QApplication.translate(
+                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML") + " (*.xls)")
         if os.environ["openpyxl"]:
             patrones.append(QtWidgets.QApplication.translate(
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
-        patron = patrones.join(";;")
+        patron = ";;".join(patrones)
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename, 1, 1)

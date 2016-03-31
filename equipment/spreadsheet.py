@@ -18,10 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# library for spreadsheet equipment integration
+###############################################################################
 
-##############################
-###   librería de definición de spreadsheet   ###
-##############################
 
 import os
 import string
@@ -32,21 +32,22 @@ try:
 except:
     pass
 
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 
 from .parents import equipment
 
 
 class Spreadsheet(equipment):
-    """Clase que define un la interaccion con un hoja de calculo de libreoffice/openoffice
+    """Clase que define un la interaccion con un hoja de calculo de
+    libreoffice/openoffice
 
     Parámetros:
         project: instancia project
         input: entity de entrada
         output: entity de salida
         filename: Path del archivo ods
-        datamap: Array con la estructura de datos a traspasar,
-            cada elemento es un dicciontario con los datos de conversion de valores
+        datamap: Array con la estructura de datos a traspasar, cada elemento
+        es un dicciontario con los datos de conversion de valores
                 entity: corriente o equipo del que exportar el valor
                 variable: nombre del valor de la variable de la corriente
                 unidad: unidad del valor a pasar en el caso de magitudes
