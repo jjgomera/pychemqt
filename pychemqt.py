@@ -114,6 +114,8 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
     Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
 
 # Logging configuration
+if not os.path.isfile(conf_dir + "pychemqt.log"):
+    os.mknod(conf_dir + "pychemqt.log")
 logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
                     level=loglevel, datefmt='%d-%b-%Y %H:%M:%S',
                     format='[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s')
