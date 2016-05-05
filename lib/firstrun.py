@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import sys
 from configparser import ConfigParser
 import urllib.request
+import codecs
+import csv
 import pickle
 
 # It must be defined previously to avoid to early import of libraries
@@ -311,24 +313,19 @@ def config():
     return config
 
 
-def getrates(archivo):  # From Python Cookbook
+def getrates(archivo):
     """Procedure to update change rates"""
     rates = {}
     url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
     fh = urllib.request.urlopen(url)
-    for line in fh:
-        line = line.decode("utf-8")
-        line = line.rstrip()
-        if not line or line.startswith(("#", "Closing ")):
-            continue
-        fields = line.split(",")
-        if line.startswith("Date "):
-            date = fields[-1]
-        elif line.startswith("U.S. dollar (close)"):
-            pass
-        else:
-            value = float(fields[-1])
-            rates[fields[1][1:].replace("_NOON", "").lower()] = value
+    data = csv.reader(codecs.iterdecode(fh, "utf-8"))
+    for row in data:
+        if row[0].startswith("Date "):
+            date = row[-1]
+        elif not row[0].startswith("#"):
+            value = float(row[-1])
+            rates[row[1][1:].replace("_NOON", "").lower()] = value
+
     del rates["iexe0124"]
     del rates["iexe0125"]
     rates["cad"] = 1.
