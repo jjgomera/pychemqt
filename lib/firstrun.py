@@ -29,7 +29,7 @@ from configparser import ConfigParser
 import urllib.request
 import codecs
 import csv
-import pickle
+import json
 
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
@@ -332,4 +332,4 @@ def getrates(archivo):
     for rate in rates:
         rates[rate] = rates[rate] / rates["usd"]
     rates["date"] = date
-    pickle.dump(rates, open(archivo, "wb"))
+    json.dump(rates, open(archivo, "w"), indent=4)

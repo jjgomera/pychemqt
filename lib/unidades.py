@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import os
-import pickle
+import json
 from configparser import ConfigParser
 
 from PyQt5.QtWidgets import QApplication
@@ -2546,12 +2546,14 @@ class Currency(unidad):
 
     >>> S=Currency(5, "eur")
     """
+    filename = conf_dir+"moneda.dat"
     try:
-        archivo = open(conf_dir+"moneda.dat", "rb")
-    except:
-        getrates()
-        archivo = open(conf_dir+"moneda.dat", "rb")
-    rates = pickle.load(archivo)
+        archivo = open(filename, "r")
+        rates = json.load(archivo)
+    except (FileNotFoundError, TypeError):
+        getrates(filename)
+        archivo = open(filename, "r")
+        rates = json.load(archivo)
     archivo.close
     fecha = rates.pop("date")
     __title__ = QApplication.translate("pychemqt", "Currency")
@@ -2568,64 +2570,65 @@ class Currency(unidad):
                  'mad', 'jmd', 'hnl', 'pab', 'pen', 'pkr', 'xcd', 'aed', 'ang',
                  'ttd', 'xpf', 'vef', 'gtq', 'xaf', 'vnd', 'mmk', 'bsd', 'rsd',
                  'ghs', 'idr', 'fjd', 'ils']
-    __tooltip__ = [QApplication.translate("pychemqt", "United States dollar"),
-                   QApplication.translate("pychemqt", "Euro"),
-                   QApplication.translate("pychemqt", "Pound sterling"),
-                   QApplication.translate("pychemqt", "Japanese yen"),
-                   QApplication.translate("pychemqt", "Chinese yuan"),
-                   QApplication.translate("pychemqt", "Russian rouble"),
-                   QApplication.translate("pychemqt", "Australian dollar"),
-                   QApplication.translate("pychemqt", "Brazilian real"),
-                   QApplication.translate("pychemqt", "Canadian dollar"),
-                   QApplication.translate("pychemqt", "Swiss franc"),
-                   QApplication.translate("pychemqt", "Danish krone"),
-                   QApplication.translate("pychemqt", "Hong Kong dollar"),
-                   QApplication.translate("pychemqt", "Indian rupee"),
-                   QApplication.translate("pychemqt", "South Korean won"),
-                   QApplication.translate("pychemqt", "Sri Lankan rupee"),
-                   QApplication.translate("pychemqt", "Malaysian ringgit"),
-                   QApplication.translate("pychemqt", "New Zealand dollar"),
-                   QApplication.translate("pychemqt", "Singapore dollar"),
-                   QApplication.translate("pychemqt", "New Taiwan dollar"),
-                   QApplication.translate("pychemqt", "South African rand"),
-                   QApplication.translate("pychemqt", "Thai baht"),
-                   QApplication.translate("pychemqt", "Swedish krona"),
-                   QApplication.translate("pychemqt", "Norwegian krone"),
-                   QApplication.translate("pychemqt", "Mexican peso"),
-                   QApplication.translate("pychemqt", "Czech koruna"),
-                   QApplication.translate("pychemqt", "Hungarian forint"),
-                   QApplication.translate("pychemqt", "Polish złoty"),
-                   QApplication.translate("pychemqt", "Romanian new leu"),
-                   QApplication.translate("pychemqt", "Icelandic króna"),
-                   QApplication.translate("pychemqt", "Croatian kuna"),
-                   QApplication.translate("pychemqt", "Turkish lira"),
-                   QApplication.translate("pychemqt", "Philippine peso"),
-                   QApplication.translate("pychemqt", "Colombian peso"),
-                   QApplication.translate("pychemqt", "Argentine peso"),
-                   QApplication.translate("pychemqt", "Chilean peso"),
-                   QApplication.translate("pychemqt", "Tunisian dinar"),
-                   QApplication.translate("pychemqt", "Moroccan dirham"),
-                   QApplication.translate("pychemqt", "Jamaican dollar"),
-                   QApplication.translate("pychemqt", "Honduran lempira"),
-                   QApplication.translate("pychemqt", "Panamanian balboa"),
-                   QApplication.translate("pychemqt", "Peruvian nuevo sol"),
-                   QApplication.translate("pychemqt", "Pakistani rupee"),
-                   QApplication.translate("pychemqt", "East Caribbean dollar"),
-                   QApplication.translate("pychemqt", "United Arab Emirates dirham"),
-                   QApplication.translate("pychemqt", "Netherlands Antillean guilder"),
-                   QApplication.translate("pychemqt", "Trinidad and Tobago dollar"),
-                   QApplication.translate("pychemqt", "CFP franc"),
-                   QApplication.translate("pychemqt", "Venezuelan bolívar fuerte"),
-                   QApplication.translate("pychemqt", "Guatemalan quetzal"),
-                   QApplication.translate("pychemqt", "CFA franc"),
-                   QApplication.translate("pychemqt", "Vietnamese dong"),
-                   QApplication.translate("pychemqt", "Myanma kyat"),
-                   QApplication.translate("pychemqt", "Bahamian dollar"),
-                   QApplication.translate("pychemqt", "Serbian dinar"),
-                   QApplication.translate("pychemqt", "Ghanaian cedi"),
-                   QApplication.translate("pychemqt", "Indonesian rupiah"),
-                   QApplication.translate("pychemqt", "Fiji dollar"),
-                   QApplication.translate("pychemqt", "Israeli new shekel")]
+    __tooltip__ = [
+        QApplication.translate("pychemqt", "United States dollar"),
+        QApplication.translate("pychemqt", "Euro"),
+        QApplication.translate("pychemqt", "Pound sterling"),
+        QApplication.translate("pychemqt", "Japanese yen"),
+        QApplication.translate("pychemqt", "Chinese yuan"),
+        QApplication.translate("pychemqt", "Russian rouble"),
+        QApplication.translate("pychemqt", "Australian dollar"),
+        QApplication.translate("pychemqt", "Brazilian real"),
+        QApplication.translate("pychemqt", "Canadian dollar"),
+        QApplication.translate("pychemqt", "Swiss franc"),
+        QApplication.translate("pychemqt", "Danish krone"),
+        QApplication.translate("pychemqt", "Hong Kong dollar"),
+        QApplication.translate("pychemqt", "Indian rupee"),
+        QApplication.translate("pychemqt", "South Korean won"),
+        QApplication.translate("pychemqt", "Sri Lankan rupee"),
+        QApplication.translate("pychemqt", "Malaysian ringgit"),
+        QApplication.translate("pychemqt", "New Zealand dollar"),
+        QApplication.translate("pychemqt", "Singapore dollar"),
+        QApplication.translate("pychemqt", "New Taiwan dollar"),
+        QApplication.translate("pychemqt", "South African rand"),
+        QApplication.translate("pychemqt", "Thai baht"),
+        QApplication.translate("pychemqt", "Swedish krona"),
+        QApplication.translate("pychemqt", "Norwegian krone"),
+        QApplication.translate("pychemqt", "Mexican peso"),
+        QApplication.translate("pychemqt", "Czech koruna"),
+        QApplication.translate("pychemqt", "Hungarian forint"),
+        QApplication.translate("pychemqt", "Polish złoty"),
+        QApplication.translate("pychemqt", "Romanian new leu"),
+        QApplication.translate("pychemqt", "Icelandic króna"),
+        QApplication.translate("pychemqt", "Croatian kuna"),
+        QApplication.translate("pychemqt", "Turkish lira"),
+        QApplication.translate("pychemqt", "Philippine peso"),
+        QApplication.translate("pychemqt", "Colombian peso"),
+        QApplication.translate("pychemqt", "Argentine peso"),
+        QApplication.translate("pychemqt", "Chilean peso"),
+        QApplication.translate("pychemqt", "Tunisian dinar"),
+        QApplication.translate("pychemqt", "Moroccan dirham"),
+        QApplication.translate("pychemqt", "Jamaican dollar"),
+        QApplication.translate("pychemqt", "Honduran lempira"),
+        QApplication.translate("pychemqt", "Panamanian balboa"),
+        QApplication.translate("pychemqt", "Peruvian nuevo sol"),
+        QApplication.translate("pychemqt", "Pakistani rupee"),
+        QApplication.translate("pychemqt", "East Caribbean dollar"),
+        QApplication.translate("pychemqt", "United Arab Emirates dirham"),
+        QApplication.translate("pychemqt", "Netherlands Antillean guilder"),
+        QApplication.translate("pychemqt", "Trinidad and Tobago dollar"),
+        QApplication.translate("pychemqt", "CFP franc"),
+        QApplication.translate("pychemqt", "Venezuelan bolívar fuerte"),
+        QApplication.translate("pychemqt", "Guatemalan quetzal"),
+        QApplication.translate("pychemqt", "CFA franc"),
+        QApplication.translate("pychemqt", "Vietnamese dong"),
+        QApplication.translate("pychemqt", "Myanma kyat"),
+        QApplication.translate("pychemqt", "Bahamian dollar"),
+        QApplication.translate("pychemqt", "Serbian dinar"),
+        QApplication.translate("pychemqt", "Ghanaian cedi"),
+        QApplication.translate("pychemqt", "Indonesian rupiah"),
+        QApplication.translate("pychemqt", "Fiji dollar"),
+        QApplication.translate("pychemqt", "Israeli new shekel")]
     __units_set__ = {"altsi": "usd", "si": "usd", "metric": "usd",
                      "cgs": "usd", "english": "usd"}
 
