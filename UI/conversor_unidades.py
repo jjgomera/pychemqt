@@ -18,11 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib.unidades import Currency, getrates
+from lib.config import conf_dir
 from UI.delegate import CellEditor
 
 
@@ -116,7 +116,8 @@ class moneda(UI_conversorUnidades):
                 os.environ["pychemqt"]+"/images/flag/%s.gif" % Currency.__units__[i])))
 
     def getrates(self):
-        getrates()
+        filename = conf_dir+"moneda.dat"
+        getrates(filename)
         self.value = self.unidad(self.value)
         self.fecha.setText(QtWidgets.QApplication.translate("pychemqt", "Date:") +
                            self.value.fecha)
