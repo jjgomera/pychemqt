@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''pychemqt, Chemical Engineering Process simulator
+"""pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import logging
@@ -32,7 +32,7 @@ sys.path.append(path)
 
 # Define pychemqt environment
 os.environ["pychemqt"] = path + os.path.sep
-conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
+conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 # Check mandatory external dependences
 # PyQt5
@@ -140,9 +140,9 @@ loglevel = getattr(logging, loglevel.upper())
 # Logging configuration
 if not os.path.isfile(conf_dir + "pychemqt.log"):
     os.mknod(conf_dir + "pychemqt.log")
-fmt = '[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s'
-logging.basicConfig(filename=conf_dir+'pychemqt.log', filemode='w',
-                    level=loglevel, datefmt='%d-%b-%Y %H:%M:%S', format=fmt)
+fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
+logging.basicConfig(filename=conf_dir+"pychemqt.log", filemode="w",
+                    level=loglevel, datefmt="%d-%b-%Y %H:%M:%S", format=fmt)
 logging.info(
     QtWidgets.QApplication.translate("pychemqt", "Starting pychemqt"))
 
@@ -219,7 +219,7 @@ splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking custom database..."))
 from lib.sql import createDatabase  # noqa
 if not os.path.isfile(conf_dir + "databank.db"):
-    createDatabase(conf_dir + 'databank.db')
+    createDatabase(conf_dir + "databank.db")
 
 
 # Import internal libraries
@@ -242,7 +242,7 @@ splash.showMessage(msg + "...")
 logging.info(msg)
 
 filename = []
-if pychemqt.Preferences.getboolean("General", 'Load_Last_Project'):
+if pychemqt.Preferences.getboolean("General", "Load_Last_Project"):
     filename = pychemqt.lastFile
     if filename is None:
         filename = []
