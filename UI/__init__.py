@@ -22,8 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # UI module
 ###############################################################################
 
-# TODO: PyQT5 adaptattion for BIP
-__all__ = [  # "BIP",
-           "bombaCurva", "conversor_unidades", "delegate", "flujo",
+
+__all__ = ["BIP", "bombaCurva", "conversor_unidades", "delegate", "flujo",
            "entrada_datos", "mainWindow", "newComponent", "plots",
            "texteditor", "UI_corriente", "viewComponents", "widgets", "wizard"]
