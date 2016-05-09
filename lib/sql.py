@@ -33,14 +33,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sqlite3
 
-from lib.config import conf_dir
-
 
 databank_name = os.environ["pychemqt"] + 'dat'+os.sep+'databank.db'
 databank = sqlite3.connect(databank_name).cursor()
 databank.execute("SELECT COUNT(*) AS Total FROM compuestos")
 N_comp = databank.fetchone()[0]
 
+conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 databank_Custom_name = conf_dir + 'databank.db'
 databank_Custom = sqlite3.connect(databank_Custom_name).cursor()
 databank_Custom.execute("SELECT COUNT(*) AS Total FROM compuestos")
@@ -435,16 +434,11 @@ def getElement(indice):
 def copyElement(indice):
     """Create a copy of element of indice in custom Database"""
     elemento = getElement(indice)
-    vals = []
-    for i in elemento[1:]:
-        if isinstance(i, unicode):
-            vals.append(i.encode())
-        else:
-            vals.append(i)
+    vals = elemento[1:]
     conn = sqlite3.connect(databank_Custom_name)
     curs = conn.cursor()
     curs.execute("INSERT INTO compuestos VALUES" +
-                 str((1000+N_comp_Custom+1, ) + tuple(vals)))
+                 str((1001+N_comp_Custom, ) + vals))
     conn.commit()
     conn.close()
 
