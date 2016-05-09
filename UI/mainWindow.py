@@ -391,7 +391,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         self.menuPFD = QtWidgets.QMenu(QtWidgets.QApplication.translate("pychemqt", "&PFD"))
         self.actionResolution = createAction(QtWidgets.QApplication.translate("pychemqt", "Resolution"), slot=partial(self.dialogConfig, UI_confResolution), tip=QtWidgets.QApplication.translate("pychemqt", "Defining PFD resolution dialog"), parent=self)
-        self.menuPFD.addAction( self.actionResolution)
+        self.menuPFD.addAction(self.actionResolution)
         self.menuPFD.addSeparator()
         self.menuPFD.addAction(self.menuObjetosGraficos.menuAction())
         self.menuPFD.addAction(self.menuObjetosFlujo.menuAction())
@@ -408,8 +408,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuPlot.menuAction())
 
         self.menuCharts = QtWidgets.QMenu(QtWidgets.QApplication.translate("pychemqt", "Charts"), self)
-        for titulo, lista in charts.__all__.items():
-            menu= QtWidgets.QMenu(titulo, self)
+        for titulo, lista in charts._all.items():
+            menu = QtWidgets.QMenu(titulo, self)
             for grafico in lista:
                 menu.addAction(grafico.title, partial(self.chart, grafico))
             self.menuCharts.addAction(menu.menuAction())
@@ -508,6 +508,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if os.path.isfile(QTSETTING_FILE):
             settings = QtCore.QSettings()
             self.recentFiles = settings.value("RecentFiles")
+            self.lastFile = settings.value("LastFile")
             self.restoreGeometry(settings.value("Geometry"))
             self.restoreState(settings.value("MainWindow/State"))
             if self.recentFiles is None:

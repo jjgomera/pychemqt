@@ -18,5 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# Tools module
+###############################################################################
 
-"""Tools module"""
+
+__all__ = ["UI_confComponents", "UI_confTransport", "UI_confThermo",
+           "UI_confUnits", "UI_confResolution", "UI_databank",
+           "UI_unitConverter", "UI_steamTables", "UI_psychrometry"]

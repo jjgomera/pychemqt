@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module to show optional dependences availability
 ###############################################################################
@@ -43,7 +42,8 @@ optional_modules = (
     ("xlwt", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
     ("icu", QtWidgets.QApplication.translate(
-        "pychemqt", "Unicode collation algorithm for improved string sorting disabled")),
+        "pychemqt",
+        "Unicode collation algorithm for improved string sorting disabled")),
     )
 
 
@@ -65,16 +65,16 @@ class ShowDependences(QtWidgets.QDialog):
         for module, txt in optional_modules:
             if os.environ[module] == "True":
                 mod = __import__(module)
-                estado = mod.__file__
+                st = mod.__file__
             else:
-                estado = QtWidgets.QApplication.translate("pychemqt", "not found")
-            item = QtWidgets.QTreeWidgetItem([module, estado])
+                st = QtWidgets.QApplication.translate("pychemqt", "not found")
+            item = QtWidgets.QTreeWidgetItem([module, st])
             self.tree.addTopLevelItem(item)
 
         layout.addWidget(self.tree)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
+        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        button.rejected.connect(self.reject)
+        layout.addWidget(button)
 
 
 if __name__ == "__main__":

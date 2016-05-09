@@ -23,7 +23,11 @@ from functools import partial
 
 from PyQt5 import QtCore, QtWidgets
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib import rcParams
+rcParams['backend'] = 'QT5Agg'  #Fija el backend de las ventanas de matplotlib a qt5
+rcParams['font.size'] = '9'
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 #import matplotlib.gridspec as gridspec #necesita matplotlib >=1.0
 from pylab import Figure
 from numpy import transpose

@@ -29,7 +29,9 @@ from plots import standing
 from plots.heatTransfer import chartHE
 
 
-__all__ = {
+_all = {
     QApplication.translate("pychemqt", "Petro"): (standing.Standing_Katz, ),
     QApplication.translate("pychemqt", "Fluid Flow"): (moody.Moody, ),
     QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
+
+__all__ = ["moody", "standing", "chartHE"]

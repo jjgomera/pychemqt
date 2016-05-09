@@ -18,5 +18,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# lib module
+# module with general library functionality of pychemqt
+###############################################################################
 
-"""Library modules"""
+__all__ = ["EoS", "mEoS", "adimensional", "bip", "compuestos", "config",
+           "coolProp", "corriente",
+           # TODO: Add optional reportlab dependence
+           # "datasheet",
+           "elemental", "eos",
+           "firstrun", "freeSteam", "friction", "gerg", "heatTransfer",
+           "iapws", "meos", "petro", "physics", "pipeDatabase", "plot",
+           "project", "psycrometry", "reaction", "refProp", "sql", "thermo",
+           "thread", "unidades", "utilities"]
