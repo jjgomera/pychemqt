@@ -26,11 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
-
 from lib import config
+
+if os.environ["reportlab"] == "True":
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
 
 
 class pdf():
