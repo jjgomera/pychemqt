@@ -127,7 +127,7 @@ class equipment(Entity):
             logging.info('Calculate EQUIPMENT: %s' % self.__class__.__name__)
             kw_new = {}
             for key, value in list(kwargs.items()):
-                if self.__class__.kwargs[key] != value:
+                if self.kwargs[key] != value:
                     kw_new[key] = value
             logging.debug('kwarg; %s' % kw_new)
             QtWidgets.QApplication.processEvents()
