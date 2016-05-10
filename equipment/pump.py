@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 #   Library for pump equipment definition
 ###############################################################################
+
 
 import os
 
@@ -28,31 +29,33 @@ from PyQt5.QtWidgets import QApplication
 from scipy import log, exp, optimize, polyval, roots, r_
 from scipy.constants import g
 
-from lib.unidades import (Pressure, Length, Power, Temperature, VolFlow,
-                          Currency, Dimensionless, DeltaP, DeltaT)
-from lib.corriente import Corriente
-#from lib.datasheet import pdf
-from .parents import equipment
+from lib.unidades import (Pressure, Length, Power, VolFlow, Currency,
+                          Dimensionless, DeltaP)
+from lib.datasheet import pdf
+from equipment.parents import equipment
 
 
 class Pump(equipment):
-    """Clase que modela un equipo de bombeo de líquidos
+    """Class to model a liquid pump
 
-    Parámetros:
-        entrada: instancia de la clase corriente que define la corriente de entrada en la bomba
+    Parameters:
+        entrada: Corriente instance to define the input stream to equipment
         usarCurva:
-            0   -   Funcionamiento fijo
-            1   -   Funcionamiento siguiendo la curva característica
-        incognita: Indica la variable a calcular en el caso de que se use la curva caracteristica
-            0   -   Carga (incremento de presión)
-            1   -   Caudal, en este caso sobreescribe el caudal de la corriente de entrada
-        rendimiento: rendimiento de la bomba, no necesario si se ha definido la curva característica de la bomba
-        deltaP: incremento de presión proporcionado por la bomba, no será necesario si se define la curva característica y es el caudal la variable a calcular, en atmosferas
-        Pout: Presión a la salida de la bomba
-        Carga: Cambio de presión basada en altura de columna de fluido
-        curvaCaracteristica: array que define la curva característica, en la forma: [Dia, rpm, [Q1,..Qn], [h1,...,hn], [Pot1,...,Potn], [NPSH1,...NPSHn]].
-        diametro: diametro nominal bomba
-        velocidad: velocidad de giro de la bomba
+            0   -   Use fixed parameters
+            1   -   Use pump characteristic curve
+        incognita: Index of variable to calculate if usarCurva is on
+            0   -   Head
+            1   -   Flow, in this case overwrite the input stream flow
+        rendimiento: pump efficiency, necessary is not use characteristic curve
+        deltaP: Pressure increase of pump, unnecessary is use the
+            characteristic curve and the flow is the variable to calculate
+        Pout: Output pressure of pump
+        Carga: Head of pump
+        curvaCaracteristica: array to define the characteristic curve of pump
+            the format is: [Diameter, rpm, [Q1,..Qn], [h1,...,hn],
+                            [Pot1,...,Potn], [NPSH1,...NPSHn]].
+        diametro: nominal diameter of pump
+        velocidad: rpm of pump
 
     Coste
         tipo_bomba
@@ -91,12 +94,13 @@ class Pump(equipment):
             1   -   1800 rpm
             2   -   1200 rpm
 
-    >>> agua=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
-    >>> bomba=Pump(entrada=agua, rendimiento=0.75, deltaP=20*101325, tipo_bomba=1)
-    >>> print bomba.power.hp
-    3.63596053358
-    >>> print bomba.C_inst
-    3493.24497823
+    >>> from lib.corriente import Corriente
+    >>> c=Corriente(T=300, P=101325, caudalMasico=1, fraccionMolar=[1.])
+    >>> bomba=Pump(entrada=c, rendimiento=0.75, deltaP=20*101325, tipo_bomba=1)
+    >>> print("%0.5f" % bomba.power.hp)
+    3.63596
+    >>> print("%0.2f" % bomba.C_inst)
+    3493.24
     """
     title = QApplication.translate("pychemqt", "Pump")
     help = ""
@@ -177,7 +181,8 @@ class Pump(equipment):
             self.msg = QApplication.translate("pychemqt", "undefined input")
             self.status = 0
         else:
-            P = self.kwargs["Pout"] or self.kwargs["deltaP"] or self.kwargs["Carga"]
+            P = self.kwargs["Pout"] or self.kwargs["deltaP"] \
+                or self.kwargs["Carga"]
             if self.kwargs["usarCurva"]:
                 if self.kwargs["incognita"]:
                     if P and self.kwargs["curvaCaracteristica"]:
@@ -185,17 +190,20 @@ class Pump(equipment):
                         self.status = 1
                         return True
                     elif P:
-                        self.msg = QApplication.translate("pychemqt", "undefined pump curve")
+                        self.msg = QApplication.translate(
+                            "pychemqt", "undefined pump curve")
                         self.status = 0
                     else:
-                        self.msg = QApplication.translate("pychemqt", "undefined out pressure condition")
+                        self.msg = QApplication.translate(
+                            "pychemqt", "undefined out pressure condition")
                         self.status = 0
                 elif self.kwargs["curvaCaracteristica"]:
                     self.msg = ""
                     self.status = 1
                     return True
                 else:
-                    self.msg = QApplication.translate("pychemqt", "undefined pump curve")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined pump curve")
                     self.status = 0
             else:
                 if P and self.kwargs["rendimiento"]:
@@ -203,10 +211,12 @@ class Pump(equipment):
                     self.status = 1
                     return True
                 elif P:
-                    self.msg = QApplication.translate("pychemqt", "undefined efficiency")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined efficiency")
                     self.status = 0
                 else:
-                    self.msg = QApplication.translate("pychemqt", "undefined out pressure condition")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined out pressure condition")
                     self.status = 0
 
     def calculo(self):
@@ -223,8 +233,9 @@ class Pump(equipment):
             DeltaP = Pressure(0)
 
         if self.kwargs["usarCurva"]:
-            if self.kwargs["diametro"] != self.kwargs["curvaCaracteristica"][0] or \
-                    self.kwargs["velocidad"] != self.kwargs["curvaCaracteristica"][1]:
+            b1 = self.kwargs["diametro"] != self.kwargs["curvaCaracteristica"][0]  # noqa
+            b2 = self.kwargs["velocidad"] != self.kwargs["curvaCaracteristica"][1]  # noqa
+            if b1 or b2:
                 self.curvaActual = self.calcularCurvaActual()
             else:
                 self.curvaActual = self.kwargs["curvaCaracteristica"]
@@ -232,7 +243,8 @@ class Pump(equipment):
 
         if not self.kwargs["usarCurva"]:
             head = Length(DeltaP/g/entrada.Liquido.rho)
-            power = Power(head*g*entrada.Liquido.rho*entrada.Q/self.rendimientoCalculado)
+            power = Power(head*g*entrada.Liquido.rho*entrada.Q /
+                          self.rendimientoCalculado)
             P_freno = Power(power*self.rendimientoCalculado)
         elif not self.kwargs["incognita"]:
             head = Length(polyval(self.CurvaHQ, entrada.Q))
@@ -242,10 +254,11 @@ class Pump(equipment):
             self.rendimientoCalculado = Dimensionless(power/P_freno)
         else:
             head = Length(self.DeltaP/g/entrada.Liquido.rho)
-            caudalvolumetrico = roots([self.CurvaHQ[0], self.CurvaHQ[1], self.CurvaHQ[2]-head])[0]
-            power = Power(caudalvolumetrico*self.DeltaP)
-            entrada = Corriente(entrada.T, entrada.P.atm, caudalvolumetrico*entrada.Liquido.rho*3600, entrada.mezcla, entrada.solido)
-            P_freno = Power(polyval(self.CurvaPotQ, caudalvolumetrico))
+            poli = [self.CurvaHQ[0], self.CurvaHQ[1], self.CurvaHQ[2]-head]
+            Q = roots(poli)[0]
+            power = Power(Q*self.DeltaP)
+            entrada = entrada.clone(split=Q/entrada.Q)
+            P_freno = Power(polyval(self.CurvaPotQ, Q))
             self.rendimientoCalculado = Dimensionless(power/P_freno)
 
         self.deltaP = DeltaP
@@ -256,39 +269,49 @@ class Pump(equipment):
         self.Pin = entrada.P
         self.PoutCalculada = self.salida[0].P
         self.volflow = entrada.Q
+        self.cp_cv = entrada.Liquido.cp_cv
 
     def Ajustar_Curvas_Caracteristicas(self):
-        """Define la curva característica de la bomba a partir de los datos, todos ellos en forma de array de igual dimensión
-        Q: caudal, m3/s
-        h: carga, m
-        mu: rendimiento
-        NPSHr: carga neta de aspiración requerida por la bomba para no entrar en cavitación
+        """Define the characteristic curve of pump, all input arrays must be
+        of same dimension
+            Q: volumetric flow, m3/s
+            h: head, m
+            Pot: power, hp
+            NPSHr: net power suption head requered to avoid pump cavitation
         """
         Q = r_[self.curvaActual[2]]
         h = r_[self.curvaActual[3]]
         Pot = r_[self.curvaActual[4]]
         NPSH = r_[self.curvaActual[5]]
 
-        funcion_h = lambda p, x: p[0]*x**2+p[1]*x+p[2]  # Función a ajustar
-        residuo_h = lambda p, x, y: funcion_h(p, x) - y  # Residuo
-        inicio = r_[0, 0, 0]
-        ajuste_h, exito_h = optimize.leastsq(residuo_h,inicio,args=(Q, h))
+        # Function to fix
+        def funcion(p, x):
+            return p[0]*x**2+p[1]*x+p[2]
+
+        # Residue
+        def residuo(p, x, y):
+            return funcion(p, x) - y
+
+        inicio = r_[1, 1, 1]
+
+        ajuste_h, exito_h = optimize.leastsq(residuo, inicio, args=(Q, h))
         self.CurvaHQ = ajuste_h
 
-        funcion_Pot = lambda p, x: p[0]*x**2+p[1]*x+p[2]  # Función a ajustar
-        residuo_Pot = lambda p, x, y: funcion_Pot(p, x) - y  # Residuo
-        inicio = r_[0, 0, 0]
-        ajuste_Pot, exito_Pot = optimize.leastsq(residuo_Pot, inicio, args=(Q, Pot))
-        self.CurvaPotQ = ajuste_Pot
+        ajuste_P, exito_P = optimize.leastsq(residuo, inicio, args=(Q, Pot))
+        self.CurvaPotQ = ajuste_P
 
-        funcion_NPSH = lambda p, x: p[0]+p[1]*exp(p[2]*x)  # Función a ajustar
-        residuo_NPSH = lambda p, x, y: funcion_NPSH(p, x) - y  # Residuo
-        inicio = r_[0, 0, 0]
-        ajuste_NPSH, exito_NPSH = optimize.leastsq(residuo_NPSH, inicio, args=(Q, NPSH))
-        self.CurvaNPSHQ = ajuste_NPSH
+        def funcion_NPSH(p, x):
+            return p[0]+p[1]*exp(p[2]*x)
+
+        def residuo_NPSH(p, x, y):
+            return funcion_NPSH(p, x) - y
+        ajuste_N, ex = optimize.leastsq(residuo_NPSH, inicio, args=(Q, NPSH))
+        self.CurvaNPSHQ = ajuste_N
 
     def calcularCurvaActual(self):
-        """Método que define curvas caracteristica de la bomba a una velocidad de giro y diametro del propulsor diferente de la curva característica original haciendo uso de las leyes de afinidad, perry 10.25 Table 10.7"""
+        """Calculate the actual characteristic curve at different rpm and
+        diameter than the characteristic curve of pump using the affinity laws
+        Ref: Perry 10.25, Table 10.7"""
         D1 = self.kwargs["curvaCaracteristica"][0]
         N1 = self.kwargs["curvaCaracteristica"][1]
         D2 = self.kwargs["diametro"]
@@ -302,7 +325,7 @@ class Pump(equipment):
         h2 = h1*N2**2/N1**2*D2**2/D1**2
         Pot2 = Pot1*N2**3/N1**3*D2**3/D1**3
 
-        # Esta relación no es tan fiable como las anteriores
+        # This relation is not so exact than others
         npsh2 = npsh1*N2**2/N1**2*D2**2/D1**2
 
         return [D2, N2, Q2, h2, Pot2, npsh2]
@@ -317,14 +340,19 @@ class Pump(equipment):
         # Coste Bomba
         if self.kwargs["tipo_bomba"] == 0:  # Centrifugal pumps
             QH = log(Q*self.power.hp**0.5)
-            Fm = [1., 1.35, 1.15, 2., 2., 3.5, 3.3, 4.95, 4.6, 9.7, 2.95, 1.15, 1.90]
+            Fm = [1., 1.35, 1.15, 2., 2., 3.5, 3.3, 4.95, 4.6, 9.7, 2.95,
+                  1.15, 1.90]
+            B1 = [0., 5.1029, 0.0632, 2.0290, 13.7321, 9.8849]
+            B2 = [0., -1.2217, 0.2744, -0.2371, -2.8304, -1.6164]
+            B3 = [0., 0.0771, -0.0253, 0.0102, 0.1542, 0.0834]
 
-            b1 = [0., 5.1029, 0.0632, 2.0290, 13.7321, 9.8849][self.kwargs["tipo_centrifuga"]]
-            b2 = [0., -1.2217, 0.2744, -0.2371, -2.8304, -1.6164][self.kwargs["tipo_centrifuga"]]
-            b3 = [0., 0.0771, -0.0253, 0.0102, 0.1542, 0.0834][self.kwargs["tipo_centrifuga"]]
+            fm = Fm[self.kwargs["material"]]
+            b1 = B1[self.kwargs["tipo_centrifuga"]]
+            b2 = B2[self.kwargs["tipo_centrifuga"]]
+            b3 = B3[self.kwargs["tipo_centrifuga"]]
 
             Ft = exp(b1 + b2 * QH + b3 * QH**2)
-            Cb = Fm[self.kwargs["material"]]*Ft*1.55*exp(8.833-0.6019*QH+0.0519*QH**2)
+            Cb = fm*Ft*1.55*exp(8.833-0.6019*QH+0.0519*QH**2)
 
         elif self.kwargs["tipo_bomba"] == 1:  # Reciprocating pumps
             if self.kwargs["material"] == 0:  # Case iron
@@ -408,56 +436,67 @@ class Pump(equipment):
         self.C_inst = Currency(self.C_adq*self.kwargs["f_install"])
 
     def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.kwargs["entrada"].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Head"), self.headCalculada.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Brake horsepower"), self.P_freno.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Volumetric Flow"), self.volflow.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Power"), self.power.str)+os.linesep
-        txt+="%-25s\t %0.4f" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimientoCalculado)+os.linesep
-        txt+="%-25s\t %0.4f" %("Cp/Cv", self.kwargs["entrada"].Liquido.cp_cv)+os.linesep
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#"+os.linesep
+        txt += self.propertiesToText(range(8))
 
         if self.statusCoste:
-            txt+=os.linesep
-            txt+="#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Pump type"), self.TEXT_BOMBA[self.kwargs["tipo_bomba"]])
-            if self.kwargs["tipo_bomba"]==0:
-                txt+=", "+self.TEXT_CENTRIFUGA[self.kwargs["tipo_centrifuga"]]+os.linesep
-            else:
-                txt+=os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Material"), self.TEXT_MATERIAL[self.kwargs["material"]])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pump Cost"), self.C_bomba.str)+os.linesep
-            txt+="%-25s\t %s, %s" %(QApplication.translate("pychemqt", "Motor type"), self.TEXT_MOTOR[self.kwargs["motor"]], self.TEXT_RPM[self.kwargs["rpm"]])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Motor Cost"), self.C_motor.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
+            txt += os.linesep+"#---------------"
+            txt += QApplication.translate(
+                "pychemqt", "Preliminary Cost Estimation")
+            txt += "-----------------#" + os.linesep
+            txt += self.propertiesToText(range(8, 11))
+            txt += self.propertiesToText(11, linesep=False)
+            if self.kwargs["tipo_bomba"] == 0:
+                txt += ", "
+                txt += self.TEXT_CENTRIFUGA[self.kwargs["tipo_centrifuga"]]
+            txt += os.linesep
+            txt += self.propertiesToText(range(13, 19))
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        list = [
-            (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-            (QApplication.translate("pychemqt", "Output Pressure"), "PoutCalculada", Pressure),
-            (QApplication.translate("pychemqt", "Head"), "headCalculada", Length),
-            (QApplication.translate("pychemqt", "Brake horsepower"), "P_freno", Power),
-            (QApplication.translate("pychemqt", "Volumetric Flow"), "volflow", VolFlow),
-            (QApplication.translate("pychemqt", "Power"), "power", Power),
-            (QApplication.translate("pychemqt", "Efficiency"), "rendimientoCalculado", Dimensionless),
-            (QApplication.translate("pychemqt", "Pump Type"), ("TEXT_BOMBA", "tipo_bomba"), str),
-            (QApplication.translate("pychemqt", "Centrifuge Type"), ("TEXT_CENTRIFUGA", "tipo_centrifuga"), str),
-            (QApplication.translate("pychemqt", "Material"), ("TEXT_MATERIAL", "material"), str),
-            (QApplication.translate("pychemqt", "Motor Type"), ("TEXT_MOTOR", "motor"), str),
-            (QApplication.translate("pychemqt", "Motor RPM"), ("TEXT_RPM", "rpm"), str),
-            (QApplication.translate("pychemqt", "Pump Cost"), "C_bomba", Currency),
-            (QApplication.translate("pychemqt", "Motor Cost"), "C_motor", Currency),
-            (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", Currency),
-            (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Input Pressure"),
+              "Pin", Pressure),
+             (QApplication.translate("pychemqt", "Output Pressure"),
+              "PoutCalculada", Pressure),
+             (QApplication.translate("pychemqt", "Head"), "headCalculada",
+              Length),
+             (QApplication.translate("pychemqt", "Brake horsepower"),
+              "P_freno", Power),
+             (QApplication.translate("pychemqt", "Volumetric Flow"),
+              "volflow", VolFlow),
+             (QApplication.translate("pychemqt", "Power"), "power", Power),
+             (QApplication.translate("pychemqt", "Efficiency"),
+              "rendimientoCalculado", Dimensionless),
+             ("Cp/Cv", "cp_cv", Dimensionless),
+             (QApplication.translate("pychemqt", "Base index"),
+              "Base_index", float),
+             (QApplication.translate("pychemqt", "Current index"),
+              "Current_index", float),
+             (QApplication.translate("pychemqt", "Install factor"),
+              "f_install", float),
+             (QApplication.translate("pychemqt", "Pump Type"),
+              ("TEXT_BOMBA", "tipo_bomba"), str),
+             (QApplication.translate("pychemqt", "Centrifuge Type"),
+              ("TEXT_CENTRIFUGA", "tipo_centrifuga"), str),
+             (QApplication.translate("pychemqt", "Material"),
+              ("TEXT_MATERIAL", "material"), str),
+             (QApplication.translate("pychemqt", "Motor Type"),
+              ("TEXT_MOTOR", "motor"), str),
+             (QApplication.translate("pychemqt", "Motor RPM"),
+              ("TEXT_RPM", "rpm"), str),
+             (QApplication.translate("pychemqt", "Pump Cost"),
+              "C_bomba", Currency),
+             (QApplication.translate("pychemqt", "Motor Cost"),
+              "C_motor", Currency),
+             (QApplication.translate("pychemqt", "Purchase Cost"),
+              "C_adq", Currency),
+             (QApplication.translate("pychemqt", "Installed Cost"),
+              "C_inst", Currency)]
+        return l
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -470,6 +509,7 @@ class Pump(equipment):
         state["PoutCalculada"] = self.PoutCalculada
         state["volflow"] = self.volflow
         state["statusCoste"] = self.statusCoste
+        state["cp_cv"] = self.cp_cv
 
         if self.statusCoste:
             state["C_bomba"] = self.C_bomba
@@ -481,14 +521,16 @@ class Pump(equipment):
             pass
 
     def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
         self.deltaP = DeltaP(state["deltaP"])
-        self.rendimientoCalculado = Dimensionless(state["rendimientoCalculado"])
+        self.rendimientoCalculado = Dimensionless(state["rendimientoCalculado"])  # noqa
         self.headCalculada = Length(state["headCalculada"])
         self.power = Power(state["power"])
         self.P_freno = Power(state["P_freno"])
         self.Pin = Pressure(state["Pin"])
         self.PoutCalculada = Pressure(state["PoutCalculada"])
         self.volflow = VolFlow(state["volflow"])
+        self.cp_cv = Dimensionless(state["cp_cv"])
         self.statusCoste = state["statusCoste"]
 
         if self.statusCoste:
@@ -512,7 +554,7 @@ class Pump(equipment):
         bomba = pdf("Bomba")
         bomba.bomba(self)
         bomba.dibujar()
-        os.system("evince datasheet.pdf")
+        os.system("atril datasheet.pdf")
 
     def export2xls(self):
         import xlwt
@@ -539,38 +581,18 @@ class Pump(equipment):
         os.system("gnumeric datasheet.xls")
 
 if __name__ == '__main__':
-#    import doctest
-#    doctest.testmod()
+    import doctest
+    doctest.testmod()
 
-
-#    t=Temperature(27, "C")
-#    DeltaP= Pressure(1, "atm")
-#    agua=Corriente(t, 1, 3600, Mezcla([62], [1]))
-#    bomba=Pump()
-#    Q=r_[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]/3600. #en m³/s
-#    h=r_[15.5, 15.4, 15.3, 15.1, 14.8, 14.5, 14.1, 13.5, 12.7, 11.6]
-#    Pot=r_[0.5, 0.53, 0.57, 0.61, 0.66, 0.71, 0.77, 0.83, 0.89, 0.97]*1000
-#    NHPS=r_[0]*9
-#    bomba(entrada=agua, usarCurva=1, calculo=1, DeltaP=DeltaP.atm, curvaCaracteristica=[3.5, 1500, Q, h, Pot, NHPS])
-##    print bomba.head, "m"
-##    print bomba.entrada.caudal_volumetrico.m3h, "m3h"
-##    print bomba.rendimiento*100,  "%"
-##    print bomba.power.hp, "HP, ",  bomba.power.kW, "kW"
-##    print bomba.salida.P.atm,  "atm"
-##    print agua.caudal_volumetrico.m3h, bomba.entrada.caudal_volumetrico.m3h
-#    bomba.coste(2.8, 421.2, 600)
-##    print bomba.C_bomba, bomba.C_motor, bomba.C_adq, bomba.C_inst
-##    print bomba.C_inst
-#    bomba.export2xls()
-
-    agua=Corriente(T=275, P=101325., ids=[62], caudalMasico=1, fraccionMolar=[1.])
-    bomba=Pump(entrada=agua, rendimiento=0.75, deltaP=20*101325, tipo_bomba=1)
-#    print bomba.power.hp
-#    print bomba.C_inst
-#    print bool(bomba)
-#    bomba.clear()
-#    print bomba.__dict__
-#    print bool(bomba)
-
-#    bomba=Pump()
-#    print bomba.__class__
+    # from lib.corriente import Corriente
+    # agua=Corriente(T=300, P=1e5, caudalMasico=1, fraccionMasica=[1])
+    # bomba=Pump()
+    # Q=r_[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]/3600. #en m³/s
+    # h=r_[15.5, 15.4, 15.3, 15.1, 14.8, 14.5, 14.1, 13.5, 12.7, 11.6]
+    # Pot=r_[0.5, 0.53, 0.57, 0.61, 0.66, 0.71, 0.77, 0.83, 0.89, 0.97]*1000
+    # NHPS=r_[0]*9
+    # bomba(entrada=agua, usarCurva=1, calculo=1, DeltaP=5e5,
+    #       curvaCaracteristica=[3.5, 1500, Q, h, Pot, NHPS])
+    # print(bomba.headCalculada, "m")
+    # print bomba.entrada.caudal_volumetrico.m3h, "m3h"
+    # print bomba.rendimiento*100,  "%"
