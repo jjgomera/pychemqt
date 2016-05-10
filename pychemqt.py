@@ -104,15 +104,17 @@ else:
             "pychemqt", "matplotlib version too old, try to install a updated version")  # noqa
         raise ImportError(msg)
 
+# TODO: Disable python-graph external dependence, functional mock up in
+# project yet useless
 # python-graph
-try:
-    from pygraph.classes.graph import graph  # noqa
-    from pygraph.algorithms.cycles import find_cycle  # noqa
-except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python-graph don't found, you need install it")
-    print(msg)
-    raise err
+# try:
+    # from pygraph.classes.graph import graph  # noqa
+    # from pygraph.algorithms.cycles import find_cycle  # noqa
+# except ImportError as err:
+    # msg = QtWidgets.QApplication.translate(
+        # "pychemqt", "Python-graph don't found, you need install it")
+    # print(msg)
+    # raise err
 
 
 # Check external optional modules

@@ -8,7 +8,6 @@ Dependencies
 * `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
 * `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
 * `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data
-* `python-graph <http://code.google.com/p/python-graph/>`__:  python library for working with graphs
 
 Optional applications, pychemqt work but some options will be disabled 
 
@@ -19,6 +18,7 @@ Optional applications, pychemqt work but some options will be disabled
 * `ezodf <https://bitbucket.org/mozman/ezodf>`__: package to integration with OpenDocument spreadsheet (ods)
 * `openpyxl <https://bitbucket.org/ericgazoni/openpyxl>`__: package to integration with Microsoft Excel 2007/2010 (xlsx)
 * `xlwt <https://pypi.python.org/pypi/xlwt>`__: package to integration with Microsoft Excel 97/2000/XP/2003 (xls)
+* `reportlab <https://bitbucket.org/rptlab/reportlab>`__: package to pdf report exportation
 
 
 Features

@@ -25,12 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from configparser import ConfigParser
 
-from pygraph.classes.graph import graph
-from pygraph.algorithms.cycles import find_cycle
-try:
-    from pygraph.readwrite.dot import write
-except:
-    from pygraph.readwrite.markup import write
+# from pygraph.classes.graph import graph
+# from pygraph.algorithms.cycles import find_cycle
+# try:
+   # from pygraph.readwrite.dot import write
+# except:
+   # from pygraph.readwrite.markup import write
 
 from lib.config import conf_dir
 from lib.corriente import Corriente
@@ -54,7 +54,7 @@ class Project(object):
             config.read(conf_dir+"pychemqtrc")
         self.config = config
         self.streams = streams
-        self.graph = self.calGraph()
+        # self.graph = self.calGraph()
 
         self.downToStream = {}
 #        import gv
@@ -71,13 +71,13 @@ class Project(object):
     def streamCount(self):
         return len(self.streams)
 
-    def calGraph(self):
-        grafo = graph()
-        for item in self.items:
-            grafo.add_node(item, attrs=[("splines",  "")])
-        for key, stream in self.streams.items():
-            grafo.add_edge((stream[0], stream[1]), attrs=[("splines",  "")])
-        return grafo
+    # def calGraph(self):
+        # grafo = graph()
+        # for item in self.items:
+            # grafo.add_node(item, attrs=[("splines",  "")])
+        # for key, stream in self.streams.items():
+            # grafo.add_edge((stream[0], stream[1]), attrs=[("splines",  "")])
+        # return grafo
 
     def getObject(self, id):
         if id[0] in ["e", "i", "o"]:
@@ -100,7 +100,7 @@ class Project(object):
     def addItem(self, id, obj):
         if id not in self.items:
             self.items[id] = obj
-            self.graph.add_node(id)
+            # self.graph.add_node(id)
 
     def setItem(self, id, obj):
         self.items["e%i" % id] = obj
@@ -129,7 +129,7 @@ class Project(object):
         stream = (up, down, ind_up, ind_down, obj)
         if id not in list(self.streams.keys()):
             self.streams[id] = stream
-            self.graph.add_edge((up, down))
+            # self.graph.add_edge((up, down))
 
         if down[0] == "e":
             eq = self.items[down]
@@ -285,24 +285,24 @@ class Project(object):
         if not huella:
             os.rename(conf_dir+"pychemqtrc_temporal_bak", conf_dir+"pychemqtrc_temporal")
 
-    def printer(self):
-        # Draw as PNG
-        dot = write(self.graph)
-        gvv = gv.readstring(dot)
-        gv.layout(gvv, 'dot')
-        gv.render(gvv, 'png', 'project.png')
+    # def printer(self):
+        # # Draw as PNG
+        # dot = write(self.graph)
+        # gvv = gv.readstring(dot)
+        # gv.layout(gvv, 'dot')
+        # gv.render(gvv, 'png', 'project.png')
 
-    def cycle(self):
-        cicle = find_cycle(self.graph)
-        if cicle:
-            return cicle
-        else:
-            return None
+    # def cycle(self):
+        # cicle = find_cycle(self.graph)
+        # if cicle:
+            # return cicle
+        # else:
+            # return None
 
-    def hasCycle(self):
-        """Detect cycle in project"""
-        cicle = self.cycle()
-        return bool(cicle)
+    # def hasCycle(self):
+        # """Detect cycle in project"""
+        # cicle = self.cycle()
+        # return bool(cicle)
 
 
 if __name__ == '__main__':
