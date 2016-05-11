@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
@@ -29,15 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import logging
 
-from scipy.optimize import leastsq
-from scipy.special import erf
-from scipy import roots, log, sqrt, log10, exp, sin, r_, zeros
+from scipy import roots, log, sqrt, log10, exp, sin, zeros
 from PyQt5.QtWidgets import QApplication
 
 from lib.compuestos import Componente
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp, meos, thermo
+from lib import Solid
 from lib.psycrometry import PsychroState
 from lib.elemental import Elemental
 from .thermo import Fluid, Fluid_MEOS
@@ -295,98 +294,98 @@ class Mezcla(config.Entity):
             kij = zeros((len(self.ids), len(self.ids)))
         return kij
 
-#    def _Critical_API(self):
-#        """Método de cálculo de las propiedades críticas, haciendo uso de la ecuación de estado de Soave-Redlich-Kwong Modificada Thorwart-Daubert, API procedure 4B4.1 pag 317"""
-#
-#        def parameters(T):
-#            ai=[]
-#            bi=[]
-#            for componente in self.componente:
-#                a, b=eos.SRK_Thorwart_lib(componente, T)
-#                ai.append(a)
-#                bi.append(b)
-#            b=sum([fraccion*b for fraccion, b in zip(self.fraccion, bi)])
-#
-#            k=self.Kij(srk)
-#
-#            aij=[[(ai[i]*ai[j])**0.5*(1-k[i][j]) for j in range(len(self.componente))] for i in range(len(self.componente))]
-#            a=sum([fraccioni*fraccionj*aij[i][j] for j, fraccionj in enumerate(self.fraccion) for i, fraccioni in enumerate(self.fraccion)])
-#            a_=[2*sum([fraccion*a for fraccion, a in zip(self.fraccion, aij[i])]) for i in range(len(self.fraccion))]
-#
-#            return ai, bi, b, k, aij, a, a_
-#
-#
-#        def q(T, V):
-#            """Subrutina de cálculo del determinante de Q, eq 4B4.1-5"""
-#            ai, bi, b, k, aij, a, a_=parameters(T)
-#            B1=[[2*a*bi[i]*bi[j]-b*(a_[i]*bi[j]+a_[j]*bi[i]) for j in range(len(self.fraccion))] for i in range(len(self.fraccion))]
-#            B2=[[-B1[i][j]-2*aij[i][j]*b**2 for j in range(len(self.fraccion))] for i in range(len(self.fraccion))]
-#            d=[]
-#            for i in range(len(self.componente)):
-#                d_=[]
-#                for j in range(len(self.componente)):
-#                    if i==j:
-#                        d_.append(1)
-#                    else: d_.append(0)
-#                d.append(d_)
-#
-#            Q=[[R_atml*T*(d[i][j]/self.fraccion[i]+(bi[i]+bi[j])/(V-b)+bi[i]*bi[j]/(V-b)**2)+a*bi[i]*bi[j]/b/(V+b)**2+B1[i][j]/b**2/(V+b)+B2[i][j]/b**3*log((V+b)/V)  for j in range(len(self.componente))] for i in range(len(self.componente))]
-#            q=triu(Q)
-#            return q
-#
-#        def C(T, V):
-#            """Subrutina de cálculo del parámetro C, eq 4B4.1-19"""
-#            Q=q(T, V)
-#            ai, bi, b, k, aij, a, a_=parameters(T)
-#
-#            deltaN=[1]
-#            for i in range(len(self.componente)-1, 0, -1):
-#                deltaN.insert(0, -deltaN[0]*Q[i-1][i]/Q[i-1][i-1])
-#            suma=sum([n**2 for n in deltaN])**0.5
-#            deltaN=[n/suma for n in deltaN]
-#
-#            h=[]
-#            for i in range(len(self.componente)):
-#                hi=[]
-#                for j in range(len(self.componente)):
-#                    hij=[]
-#                    for k in range(len(self.componente)):
-#                        if i==j and j==k: hij.append(1)
-#                        elif i!=j and i!=k and j!=k: hij.append(6)
-#                        else: hij.append(3)
-#                    hi.append(hij)
-#                h.append(hi)
-#
-#            F=[[[b_i*b_j*b_k for b_k in bi] for b_j in bi] for b_i in bi]
-#            D=[[[b*a_[i]*bi[j]*bi[k]+a_[j]*bi[i]*bi[k]+a_[k]*bi[i]*bi[j]-3*F[i][j][k]*a for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
-#            E=[[[2*D[i][j][k]-2*b**2*(aij[i][j]*bi[k]+aij[i][k]*bi[j]+aij[j][k]*bi[i]) for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
-#
-#            d=[]
-#            for i in range(len(self.componente)):
-#                d_=[]
-#                for j in range(len(self.componente)):
-#                    d__=[]
-#                    for k in range(len(self.componente)):
-#                        if i==j and i==k: d__.append(1)
-#                        else: d__.append(0)
-#                    d_.append(d__)
-#                d.append(d_)
-#
-#            delta=[[[R_atml*T*(d[i][j][k]/self.fraccion[i]**2+(bi[i]*bi[j]+bi[j]*bi[k]+bi[k]*bi[i])/(V-b)**2+2*F[i][j][k]/(V-b)**3)-2*a*F[i][j][k]/b/(V+b)**3+D[i][j][k]/b**2/(V+b)**2+E[i][j][k]/b**3/(V+b)-E[i][j][k]/b**4*log((V+b)/V)  for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
-#            sumaijk=sum([sum([sum([h[i][j][k]*delta[i][j][k]*deltaN[i]*deltaN[j]*deltaN[k] for k in range(len(self.componente))]) for j in range(len(self.componente))]) for i in range(len(self.componente))])
-#
-#            return ((V-b)/2/b)**2*sumaijk
-#
-#        To=1.5*self.tpc
-#        Vo=sum([fraccion*R_atml*componente.Tc/3/componente.Pc.atm for fraccion, componente in zip(self.fraccion, self.componente)])
-#        funcion = lambda par: (det(q(par[0], par[1])), C(par[0], par[1]))
-#        Tc, Vc=fsolve(funcion, [To, Vo])
-#
-#        ai, bi, b, k, aij, a, a_=parameters(Tc)
-#        Pc=R_atml*Tc/(Vc-b)-a/(Vc*(Vc+b))
-#        VcCorr=sum([fraccion/(R_atml*componente.Tc/3/componente.Pc.atm-componente.Vc*componente.M) for fraccion, componente in zip(self.fraccion, self.componente)])
-#
-#        return unidades.Temperature(Tc), unidades.Pressure(Pc, "atm"), unidades.SpecificVolume(VcCorr/self.M, "lg")
+    def _Critical_API(self):
+        """Método de cálculo de las propiedades críticas, haciendo uso de la ecuación de estado de Soave-Redlich-Kwong Modificada Thorwart-Daubert, API procedure 4B4.1 pag 317"""
+
+        def parameters(T):
+            ai=[]
+            bi=[]
+            for componente in self.componente:
+                a, b=eos.SRK_Thorwart_lib(componente, T)
+                ai.append(a)
+                bi.append(b)
+            b=sum([fraccion*b for fraccion, b in zip(self.fraccion, bi)])
+
+            k=self.Kij(srk)
+
+            aij=[[(ai[i]*ai[j])**0.5*(1-k[i][j]) for j in range(len(self.componente))] for i in range(len(self.componente))]
+            a=sum([fraccioni*fraccionj*aij[i][j] for j, fraccionj in enumerate(self.fraccion) for i, fraccioni in enumerate(self.fraccion)])
+            a_=[2*sum([fraccion*a for fraccion, a in zip(self.fraccion, aij[i])]) for i in range(len(self.fraccion))]
+
+            return ai, bi, b, k, aij, a, a_
+
+
+        def q(T, V):
+            """Subrutina de cálculo del determinante de Q, eq 4B4.1-5"""
+            ai, bi, b, k, aij, a, a_=parameters(T)
+            B1=[[2*a*bi[i]*bi[j]-b*(a_[i]*bi[j]+a_[j]*bi[i]) for j in range(len(self.fraccion))] for i in range(len(self.fraccion))]
+            B2=[[-B1[i][j]-2*aij[i][j]*b**2 for j in range(len(self.fraccion))] for i in range(len(self.fraccion))]
+            d=[]
+            for i in range(len(self.componente)):
+                d_=[]
+                for j in range(len(self.componente)):
+                    if i==j:
+                        d_.append(1)
+                    else: d_.append(0)
+                d.append(d_)
+
+            Q=[[R_atml*T*(d[i][j]/self.fraccion[i]+(bi[i]+bi[j])/(V-b)+bi[i]*bi[j]/(V-b)**2)+a*bi[i]*bi[j]/b/(V+b)**2+B1[i][j]/b**2/(V+b)+B2[i][j]/b**3*log((V+b)/V)  for j in range(len(self.componente))] for i in range(len(self.componente))]
+            q=triu(Q)
+            return q
+
+        def C(T, V):
+            """Subrutina de cálculo del parámetro C, eq 4B4.1-19"""
+            Q=q(T, V)
+            ai, bi, b, k, aij, a, a_=parameters(T)
+
+            deltaN=[1]
+            for i in range(len(self.componente)-1, 0, -1):
+                deltaN.insert(0, -deltaN[0]*Q[i-1][i]/Q[i-1][i-1])
+            suma=sum([n**2 for n in deltaN])**0.5
+            deltaN=[n/suma for n in deltaN]
+
+            h=[]
+            for i in range(len(self.componente)):
+                hi=[]
+                for j in range(len(self.componente)):
+                    hij=[]
+                    for k in range(len(self.componente)):
+                        if i==j and j==k: hij.append(1)
+                        elif i!=j and i!=k and j!=k: hij.append(6)
+                        else: hij.append(3)
+                    hi.append(hij)
+                h.append(hi)
+
+            F=[[[b_i*b_j*b_k for b_k in bi] for b_j in bi] for b_i in bi]
+            D=[[[b*a_[i]*bi[j]*bi[k]+a_[j]*bi[i]*bi[k]+a_[k]*bi[i]*bi[j]-3*F[i][j][k]*a for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
+            E=[[[2*D[i][j][k]-2*b**2*(aij[i][j]*bi[k]+aij[i][k]*bi[j]+aij[j][k]*bi[i]) for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
+
+            d=[]
+            for i in range(len(self.componente)):
+                d_=[]
+                for j in range(len(self.componente)):
+                    d__=[]
+                    for k in range(len(self.componente)):
+                        if i==j and i==k: d__.append(1)
+                        else: d__.append(0)
+                    d_.append(d__)
+                d.append(d_)
+
+            delta=[[[R_atml*T*(d[i][j][k]/self.fraccion[i]**2+(bi[i]*bi[j]+bi[j]*bi[k]+bi[k]*bi[i])/(V-b)**2+2*F[i][j][k]/(V-b)**3)-2*a*F[i][j][k]/b/(V+b)**3+D[i][j][k]/b**2/(V+b)**2+E[i][j][k]/b**3/(V+b)-E[i][j][k]/b**4*log((V+b)/V)  for k in range(len(self.componente))] for j in range(len(self.componente))] for i in range(len(self.componente))]
+            sumaijk=sum([sum([sum([h[i][j][k]*delta[i][j][k]*deltaN[i]*deltaN[j]*deltaN[k] for k in range(len(self.componente))]) for j in range(len(self.componente))]) for i in range(len(self.componente))])
+
+            return ((V-b)/2/b)**2*sumaijk
+
+        To=1.5*self.tpc
+        Vo=sum([fraccion*R_atml*componente.Tc/3/componente.Pc.atm for fraccion, componente in zip(self.fraccion, self.componente)])
+        funcion = lambda par: (det(q(par[0], par[1])), C(par[0], par[1]))
+        Tc, Vc=fsolve(funcion, [To, Vo])
+
+        ai, bi, b, k, aij, a, a_=parameters(Tc)
+        Pc=R_atml*Tc/(Vc-b)-a/(Vc*(Vc+b))
+        VcCorr=sum([fraccion/(R_atml*componente.Tc/3/componente.Pc.atm-componente.Vc*componente.M) for fraccion, componente in zip(self.fraccion, self.componente)])
+
+        return unidades.Temperature(Tc), unidades.Pressure(Pc, "atm"), unidades.SpecificVolume(VcCorr/self.M, "lg")
 
     # Mixing Rules
     def Mix_van_der_Waals(self, parameters, kij):
@@ -1133,207 +1132,6 @@ class Mezcla(config.Entity):
             self.Vc = unidades.SpecificVolume(mezcla["Vc"])
             self.Tb = unidades.Temperature(mezcla["Tb"])
             self.SG = unidades.Dimensionless(mezcla["SG"])
-
-
-class Solid(config.Entity):
-    """Class to define a solid entity
-    Parameters:
-        tipo: definition of solid
-            0 - Undefined
-            1 - Mean diameter
-            2 - Particle solid distribution
-        kwargs:
-            caudalSolido
-            diametroMedio
-            fraccionMasica
-            diametros
-        """
-    kwargs = {"caudalSolido": [],
-              "diametroMedio": 0.0,
-              "distribucion_fraccion": [],
-              "distribucion_diametro": []}
-
-
-    def __call__(self, **kwargs):
-        """All equipment are callables, so we can instance or add/change
-        input value with flexibility"""
-        config.Entity.__call__(self, **kwargs)
-        if self._oldkwargs != self.kwargs and self.isCalculable:
-            self.calculo()
-
-    @property
-    def isCalculable(self):
-        self.status = 0
-        if sum(self.kwargs["caudalSolido"]) > 0:
-            if self.kwargs["distribucion_fraccion"] and \
-                    self.kwargs["distribucion_diametro"]:
-                self.status = 2
-            elif self.kwargs["diametroMedio"]:
-                self.status = 1
-        return self.status
-
-    def calculo(self):
-        Config = config.getMainWindowConfig()
-        txt = Config.get("Components", "Solids")
-        if isinstance(txt, str):
-            self.ids = eval(txt)
-        else:
-            self.ids = txt
-        self.componente = [Componente(int(i)) for i in self.ids]
-
-        caudal = self.kwargs.get("caudalSolido", [])
-        diametro_medio = self.kwargs.get("diametroMedio", 0.0)
-        fraccion = self.kwargs.get("distribucion_fraccion", [])
-        diametros = self.kwargs.get("distribucion_diametro", [])
-
-        if self.status == 0:
-            self._bool = False
-            return
-        else:
-            self._bool = True
-
-        self.caudalUnitario = [unidades.MassFlow(i) for i in caudal]
-        self.caudal = unidades.MassFlow(sum(self.caudalUnitario))
-        self.diametros = diametros
-        self.fracciones = fraccion
-        if self.status == 2:
-            self.diametros = [unidades.Length(i, magnitud="ParticleDiameter")
-                              for i in diametros]
-            self.fracciones = fraccion
-            diametro_medio = 0
-            self.fracciones_acumuladas = [0]
-            for di, xi in zip(diametros, fraccion):
-                diametro_medio += di*xi
-                self.fracciones_acumuladas.append(xi+self.fracciones_acumuladas[-1])
-            del self.fracciones_acumuladas[0]
-        self.diametro_medio = unidades.Length(diametro_medio, magnitud="ParticleDiameter")
-
-    def RhoS(self, T):
-        densidad = 0
-        for i in range(len(self.ids)):
-            densidad += self.caudalUnitario[i]/self.caudal*self.componente[i].RhoS(T)
-        self.rho = unidades.Density(densidad)
-
-    def __repr__(self):
-        if self.status:
-            return "Solid with %s and dm %s" % (self.caudal.str, self.diametro_medio.str)
-        else:
-            return "%s empty" % (self.__class__)
-
-    def ajustar_distribucion(self, eq=0):
-        """
-        Fit current distribution with any of standard.
-        eq: index with distribuciont to fit
-            0 - Rosin, Rammler, Sperling (Weibull distribution)
-            1 - Gates, Gaudin, Shumann
-            2 - Gaudin, Meloy
-            3 - Broadbent, Callcott
-            4 - Distribución lognormal
-            5 - Harris
-        Ref: Ahmed, Drzymala; Two-dimensional fractal linearization of distribution curves, pag 2
-        """
-        if eq == 0:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: 1.-exp(-(d/p[0])**p[1])  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[1, 1]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "Rosin, Rammler, Sperling"
-
-        elif eq == 1:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: (d/p[0])**p[1]  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[1., 1.]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "Gates, Gaudin, Shumann"
-
-        elif eq == 2:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: 1-(1-d/p[0])**p[1]  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[d[-1]*2, 0]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "Gaudin, Meloy"
-
-        elif eq == 3:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: 1.-exp(-(d/p[0])**p[1])/(1-exp(-1.))  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[1., 1.]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "Broadbent, Callcott"
-
-        elif eq == 4:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: erf(log(d/p[0])/p[1])  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[1., 1.]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "lognormal"
-
-        elif eq == 5:
-            d = r_[self.diametros]
-            y = r_[self.fracciones_acumuladas]
-            funcion = lambda p, d: 1-(1-d/p[0]**p[1])**p[2]  # Función a ajustar
-            residuo = lambda p, d, y: funcion(p, d) - y  # Residuo
-            inicio = r_[d[-1]*2, 1, 1]
-            ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-            return d, funcion(ajuste, d), "Harris"
-
-    def Separar(self, rendimiento_parcial):
-        """Split solid with efficiency array input
-        return two array with solids filtered and no filtered"""
-        rendimiento_global = 0
-        for i, fraccion in enumerate(self.fracciones):
-            rendimiento_global += rendimiento_parcial[i]*fraccion
-
-        caudal_escapado = unidades.MassFlow(self.caudal*(1-rendimiento_global))
-        caudal_separado = unidades.MassFlow(self.caudal*rendimiento_global)
-        if rendimiento_global == 1:
-            return None, self
-        elif rendimiento_global == 0:
-            return self, None
-        else:
-            fraccion_engas = []
-            fraccion_ensolido = []
-            for i in range(len(self.diametros)):
-                fraccion_engas.append(self.caudal*self.fracciones[i]*(1-rendimiento_parcial[i])/caudal_escapado)
-                fraccion_ensolido.append(self.caudal*self.fracciones[i]*rendimiento_parcial[i]/caudal_separado)
-            Solido_NoCapturado = Solid(caudalSolido=[caudal_escapado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_engas)
-            Solido_Capturado = Solid(caudalSolido=[caudal_separado], distribucion_diametro=self.diametros, distribucion_fraccion=fraccion_ensolido)
-            return Solido_NoCapturado, Solido_Capturado
-
-    def writeStatefromJSON(self, solid):
-        if self.status:
-            solid["ids"] = self.ids
-            solid["caudalUnitario"] = self.caudalUnitario
-            solid["caudal"] = self.caudal
-            solid["diametros"] = self.diametros
-            solid["fracciones"] = self.fracciones
-            solid["fracciones_acumuladas"] = self.fracciones_acumuladas
-            solid["diametro_medio"] = self.diametro_medio
-
-    def readStatefromJSON(self, solid):
-        if solid:
-            self._bool = True
-            self.status = solid["status"]
-            self.ids = solid["ids"]
-            self.componente = [Componente(int(i)) for i in self.ids]
-            self.caudalUnitario = [unidades.MassFlow(q) for q in solid["caudalUnitario"]]
-            self.caudal = unidades.MassFlow(solid["caudal"])
-            self.diametros = [unidades.Length(d) for de in solid["diametros"]]
-            self.fracciones = solid["fracciones"]
-            self.fracciones_acumuladas = solid["fracciones_acumuladas"]
-            self.diametro_medio = unidades.Length(solid["dm"])
-        else:
-            self._bool = False
-            self.status = False
 
 
 class Corriente(config.Entity):
