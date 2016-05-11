@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,15 +15,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # library for heat exchanger equipment calculation
 # - Heat_Exchanger
+# - Fired_Heater
 # - Shell_Tube
 # - Hairpin
-# - Fired_Heater
 ###############################################################################
 
 
@@ -31,17 +31,18 @@ import os
 
 from PyQt5.QtWidgets import QApplication
 from scipy import sqrt, exp, log, pi, arccos, sin, cos, tanh
-from scipy.optimize import fsolve
 from scipy.constants import g
+from scipy.optimize import fsolve
 
 from lib import unidades
+from lib.adimensional import Re, Pr, Gr, Gz
 from lib.corriente import Corriente
 from lib.friction import f_friccion
-from lib.adimensional import Re, Pr, Gr, Gz
-from lib.heatTransfer import *
-from .parents import equipment
+from lib.heatTransfer import *  # noqa
+from equipment.parents import equipment
 
 
+# Equipment
 class Heat_Exchanger(equipment):
     """Define a simple heat exchanger, only make energy balance
 
@@ -193,6 +194,320 @@ class Heat_Exchanger(equipment):
         self.deltaT = unidades.DeltaT(state["deltaT"])
         self.deltaP = unidades.DeltaP(state["deltaP"])
         self.HeatCalc = unidades.Power(state["HeatCalc"])
+        self.salida = [None]
+
+
+class Fired_Heater(equipment):
+    """Class to model a fire heater
+
+    Parameters
+    ------------
+    entrada : Corriente
+        Input stream to equipment
+    Tout : float
+        Desired output stream temperature, [K]
+    deltaP: float, optional
+        Pressure loss in equipment, [Pa]
+    Hmax: float, optional
+        Design heat transfer of equipment, maximum equipment capacity, [kJ/s]
+    eficiencia: float, optional, default 0.75
+        Thermic efficiency in combustion process, [-]
+    poderCalorifico: float, optional, default 900 Btu/stdft³
+        fuel heat power, [-]
+
+    Coste:
+        tipo:
+            0   -   Box type
+            1   -   Cylindrical type
+        subtipoBox:
+            0   -   Process heater
+            1   -   Pyrolysis
+            2   -   Reformer without catalyst
+        subtipoCylindrical:
+            0   -   Cylindrical
+            1   -   Dowtherm
+        material:
+            0   -   Carbon steel
+            1   -   CrMo steel
+            2   -   Stainless
+        P_dis: Design pressure of equipment, if no specified use the input
+            stream pressure
+    """
+    title = QApplication.translate("pychemqt", "Fired Heater")
+    help = os.environ["pychemqt"] + "doc/fireHeater.htm"
+    kwargs = {
+        "entrada": None,
+        "Tout": 0.0,
+        "deltaP": 0.0,
+        "Hmax": 0.0,
+        "eficiencia": 0.0,
+        "poderCalorifico": 0.0,
+
+        "f_install": 1.3,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "tipo": 0,
+        "subtipoBox": 0,
+        "subtipoCylindrical": 0,
+        "material": 0,
+        "P_dis": 0.0}
+
+    kwargsInput = ("entrada", )
+    kwargsValue = ("Tout", "deltaP", "Hmax", "eficiencia", "poderCalorifico",
+                   "P_dis")
+    kwargsList = ("tipo", "subtipoBox", "subtipoCylindrical", "material")
+    calculateValue = ("CombustibleRequerido", "Heat")
+    calculateCostos = ("C_adq", "C_inst")
+    indiceCostos = 3
+    salida = [None]
+
+    TEXT_TIPO = [QApplication.translate("pychemqt", "Box Type"),
+                 QApplication.translate("pychemqt", "Cylindrical type")]
+    TEXT_SUBTIPOBOX = [
+        QApplication.translate("pychemqt", "Process heater"),
+        QApplication.translate("pychemqt", "Pyrolysis"),
+        QApplication.translate("pychemqt", "Reforme without catalysis")]
+    TEXT_SUBTIPOCYLINDRICAL = [
+        QApplication.translate("pychemqt", "Cylindrical"),
+        QApplication.translate("pychemqt", "Dowtherm")]
+    TEXT_MATERIAL = [QApplication.translate("pychemqt", "Carbon steel"),
+                     QApplication.translate("pychemqt", "Cr-Mo steel"),
+                     QApplication.translate("pychemqt", "Stainless steel")]
+
+    @property
+    def isCalculable(self):
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"]:
+            self.statusCoste = True
+        else:
+            self.statusCoste = False
+
+        if not self.kwargs["entrada"]:
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
+            return
+
+        if not self.kwargs["Tout"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined output temperature condition")
+            self.status = 0
+            return
+        if self.kwargs["Tout"] <= self.kwargs["entrada"].T:
+            self.msg = QApplication.translate(
+                "pychemqt", "bad output temperature condition")
+            self.status = 0
+            return
+
+        if not self.kwargs["eficiencia"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "using default efficiency")
+            self.status = 3
+            return True
+        if not self.kwargs["poderCalorifico"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "using default fuel calorific value")
+            self.status = 3
+            return True
+
+        self.msg = ""
+        self.status = 1
+        return True
+
+    def calculo(self):
+        entrada = self.kwargs["entrada"]
+        self.Tout = unidades.Temperature(self.kwargs["Tout"])
+        self.deltaP = unidades.DeltaP(self.kwargs["deltaP"])
+        self.Hmax = unidades.Power(self.kwargs["Hmax"])
+        if self.kwargs["eficiencia"]:
+            eficiencia = self.kwargs["eficiencia"]
+        else:
+            eficiencia = 0.75
+
+        if self.kwargs["poderCalorifico"]:
+            poderCalorifico = self.kwargs["poderCalorifico"]
+        else:
+            poderCalorifico = 900
+
+        salida = entrada.clone(T=self.Tout, P=entrada.P-self.deltaP)
+        Ho = entrada.h
+        H1 = salida.h
+        Heat = unidades.Power(H1-Ho)
+
+        if self.Hmax and Heat > self.Hmax:
+            self.Heat = unidades.Power(self.Hmax)
+            To = (entrada.T+self.Tout)/2
+            T = fsolve(lambda T: entrada.clone(
+                T=T, P=entrada.P-self.deltaP).h-Ho-self.Hmax, To)[0]
+            self.salida = [entrada.clone(T=T, P=entrada.P-self.deltaP)]
+        else:
+            self.Heat = Heat
+            self.salida = [salida]
+
+        fuel = self.Heat.Btuh/poderCalorifico/eficiencia
+        self.CombustibleRequerido = unidades.VolFlow(fuel, "ft3h")
+        self.deltaT = unidades.DeltaT(self.salida[0].T-entrada.T)
+        self.eficiencia = unidades.Dimensionless(eficiencia)
+        self.poderCalorifico = unidades.Dimensionless(poderCalorifico)
+        self.Tin = entrada.T
+        self.Tout = self.salida[0].T
+
+    def coste(self):
+        """
+        tipo:
+            0   -   Box type
+            1   -   Cylindrical type
+        subtipoBox:
+            0   -   Process heater
+            1   -   Pyrolysis
+            2   -   Reformer without catalyst
+        subtipoCylindrical:
+            0   -   Cylindrical
+            1   -   Dowtherm
+        material:
+            0   -   Carbon steel
+            1   -   CrMo steel
+            2   -   Stainless
+        P_dis: Presión de diseño del equipo
+        """
+        if self.kwargs["P_dis"]:
+            P_dis = unidades.Pressure(self.kwargs["P_dis"])
+        else:
+            P_dis = self.kwargs["entrada"].P
+        CI = self.kwargs["Current_index"]
+        BI = self.kwargs["Base_index"]
+
+        if self.kwargs["tipo"] == 0:  # Boxtype
+            k = [25.5, 33.8, 45.][self.kwargs["material"]]
+            Fd = [0, 0.1, 0.35][self.kwargs["subtipoBox"]]
+
+            if P_dis.psi <= 500:
+                Fp = 0
+            elif P_dis.psi <= 1000:
+                Fp = 0.1
+            elif P_dis.psi <= 1500:
+                Fp = 0.15
+            elif P_dis.psi <= 2000:
+                Fp = 0.25
+            elif P_dis.psi <= 2500:
+                Fp = 0.4
+            else:
+                Fp = 0.6
+
+            C = k*(1+Fd+Fp)*self.Heat.MBtuh**0.86*1000
+
+        else:  # Cylindrical
+            k = [27.3, 40.2, 42.][self.kwargs["material"]]
+            Fd = [0, 0.33][self.kwargs["subtipoCylindrical"]]
+
+            if P_dis.psi <= 500:
+                Fp = 0
+            elif P_dis.psi <= 1000:
+                Fp = 0.15
+            else:
+                Fp = 0.2
+
+            C = k*(1+Fd+Fp)*self.Heat.MBtuh**0.82*1000
+
+        self.P_dis = P_dis
+        self.C_adq = unidades.Currency(C * CI / BI)
+        self.C_inst = unidades.Currency(self.C_adq * self.kwargs["f_install"])
+
+    def propTxt(self):
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#"+os.linesep
+        txt += self.propertiesToText(range(5))
+
+        stimated = " (%s)" % QApplication.translate("pychemqt", "stimated")
+        txt += self.propertiesToText(5, kwCheck=True, kwSuffix=stimated,
+                                     kwKey="eficiencia", kwValue=0.0)
+        txt += self.propertiesToText(6, kwCheck=True, kwSuffix=stimated,
+                                     kwKey="poderCalorifico", kwValue=0.0)
+        txt += self.propertiesToText(7)
+
+        if self.statusCoste:
+            txt += os.linesep+"#---------------"
+            txt += QApplication.translate(
+                "pychemqt", "Preliminary Cost Estimation")
+            txt += "-----------------#" + os.linesep
+            txt += self.propertiesToText(range(8, 18))
+
+        return txt
+
+    @classmethod
+    def propertiesEquipment(cls):
+        l = [(QApplication.translate("pychemqt", "Input Temperature"),
+              "Tin", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Output Temperature"),
+              "Tout", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Temperature increase"),
+              "deltaT", unidades.DeltaT),
+             (QApplication.translate("pychemqt", "Pressure increase"),
+              "deltaP", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Maximum heat"),
+              "Hmax", unidades.Power),
+             (QApplication.translate("pychemqt", "Thermal Efficiency"),
+              "eficiencia", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Fuel Heating Value"),
+              "poderCalorifico", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Required Fuel"),
+              "CombustibleRequerido", unidades.VolFlow),
+             (QApplication.translate("pychemqt", "Base index"),
+              "Base_index", float),
+             (QApplication.translate("pychemqt", "Current index"),
+              "Current_index", float),
+             (QApplication.translate("pychemqt", "Install factor"),
+              "f_install", float),
+             (QApplication.translate("pychemqt", "FireHeater type"),
+              ("TEXT_TIPO", "tipo"), str),
+             (QApplication.translate("pychemqt", "Cylindrical type"),
+              ("TEXT_SUBTIPOCYLINDRICAL", "subtipoCylindrical"), str),
+             (QApplication.translate("pychemqt", "Box type"),
+              ("TEXT_SUBTIPOBOX", "subtipoBox"), str),
+             (QApplication.translate("pychemqt", "Material"),
+              ("TEXT_MATERIAL", "material"), str),
+             (QApplication.translate("pychemqt", "Design Pressure"),
+              "P_dis", unidades.Pressure),
+             (QApplication.translate("pychemqt", "Purchase Cost"),
+              "C_adq", unidades.Currency),
+             (QApplication.translate("pychemqt", "Installed Cost"),
+              "C_inst", unidades.Currency)]
+        return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["Tout"] = self.Tout
+        state["deltaP"] = self.deltaP
+        state["Hmax"] = self.Hmax
+        state["Heat"] = self.Heat
+        state["CombustibleRequerido"] = self.CombustibleRequerido
+        state["deltaT"] = self.deltaT
+        state["eficiencia"] = self.eficiencia
+        state["poderCalorifico"] = self.poderCalorifico
+        state["Tin"] = self.Tin
+        state["statusCoste"] = self.statusCoste
+        if self.statusCoste:
+            state["P_dis"] = self.P_dis
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.Tout = unidades.Temperature(state["Tout"])
+        self.deltaP = unidades.DeltaP(state["deltaP"])
+        self.Hmax = unidades.Power(state["Hmax"])
+        self.Heat = unidades.Power(state["Heat"])
+        self.CombustibleRequerido = unidades.VolFlow(
+            state["CombustibleRequerido"])
+        self.deltaT = unidades.DeltaT(state["deltaT"])
+        self.eficiencia = unidades.Dimensionless(state["eficiencia"])
+        self.poderCalorifico = unidades.Dimensionless(state["poderCalorifico"])
+        self.Tin = unidades.Temperature(state["Tin"])
+        self.statusCoste = state["statusCoste"]
+        if self.statusCoste:
+            self.P_dis = unidades.Pressure(state["P_dis"])
+            self.C_adq = unidades.Currency(state["C_adq"])
+            self.C_inst = unidades.Currency(state["C_inst"])
         self.salida = [None]
 
 
@@ -1439,7 +1754,8 @@ class Hairpin(equipment):
         if self.kwargs["P_dis"]:
             self.P_dis = unidades.Pressure(self.kwargs["P_dis"])
         else:
-            self.P_dis = max(self.kwargs["entradaTubo"].P, self.kwargs["entradaExterior"].P)
+            self.P_dis = max(self.kwargs["entradaTubo"].P,
+                             self.kwargs["entradaExterior"].P)
 
         Pd = self.P_dis.psi
         Fm = [1., 1.9, 2.2][self.kwargs["material"]]
@@ -1592,298 +1908,6 @@ class Refrigeration(equipment):
 
         self.C_adq = C_adq
         self.C_inst = C_inst
-
-
-class Fired_Heater(equipment):
-    """Clase que modela los equipos de calentamiento por fuego directo
-
-    Parámetros:
-        entrada: Instancia de clase corriente que define la corriente que fluye por la tubería
-        Tout: requerido, temperatura que queremos que alcance la coriente a calentar
-        deltaP: Perdida de presión en el equipo
-        Hmax: Flujo de calor de diseño del equipo, el valor del calor transmitido no podrá ser superior a este valor
-        eficiencia: eficiencia térmica en la combustión, por defecto 75%
-        poderCalorifico: poder calorífico del combustible, por defecto 900 Btu/stdft³
-
-    Coste:
-        tipo:
-            0   -   Box type
-            1   -   Cylindrical type
-        subtipoBox:
-            0   -   Process heater
-            1   -   Pyrolysis
-            2   -   Reformer without catalyst
-        subtipoCylindrical:
-            0   -   Cylindrical
-            1   -   Dowtherm
-        material:
-            0   -   Carbon steel
-            1   -   CrMo steel
-            2   -   Stainless
-        P_dis: Presión de diseño del equipo
-    """
-    title = QApplication.translate("pychemqt", "Fired Heater")
-    help = os.environ["pychemqt"] + "doc/fireHeater.htm"
-    kwargs = {
-        "entrada": None,
-        "Tout": 0.0,
-        "deltaP": 0.0,
-        "Hmax": 0.0,
-        "eficiencia": 0.0,
-        "poderCalorifico": 0.0,
-
-        "f_install": 1.3,
-        "Base_index": 0.0,
-        "Current_index": 0.0,
-        "tipo": 0,
-        "subtipoBox": 0,
-        "subtipoCylindrical": 0,
-        "material": 0,
-        "P_dis": 0.0}
-
-    kwargsInput = ("entrada", )
-    kwargsValue = ("Tout", "deltaP", "Hmax", "eficiencia", "poderCalorifico",
-                   "P_dis")
-    kwargsList = ("tipo", "subtipoBox", "subtipoCylindrical", "material")
-    calculateValue = ("CombustibleRequerido", "Heat")
-    calculateCostos = ("C_adq", "C_inst")
-    indiceCostos = 3
-    salida = [None]
-
-    TEXT_TIPO = [QApplication.translate("pychemqt", "Box Type"),
-                 QApplication.translate("pychemqt", "Cylindrical type")]
-    TEXT_SUBTIPOBOX = [
-        QApplication.translate("pychemqt", "Process heater"),
-        QApplication.translate("pychemqt", "Pyrolysis"),
-        QApplication.translate("pychemqt", "Reforme without catalysis")]
-    TEXT_SUBTIPOCYLINDRICAL = [
-        QApplication.translate("pychemqt", "Cylindrical"),
-        QApplication.translate("pychemqt", "Dowtherm")]
-    TEXT_MATERIAL = [QApplication.translate("pychemqt", "Carbon steel"),
-                     QApplication.translate("pychemqt", "Cr-Mo steel"),
-                     QApplication.translate("pychemqt", "Stainless steel")]
-
-    @property
-    def isCalculable(self):
-        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
-                self.kwargs["Current_index"]:
-            self.statusCoste = True
-        else:
-            self.statusCoste = False
-
-        if not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
-            self.status = 0
-            return
-
-        if not self.kwargs["Tout"]:
-            self.msg = QApplication.translate("pychemqt", "undefined output temperature condition")
-            self.status = 0
-            return
-        if self.kwargs["Tout"]<=self.kwargs["entrada"].T:
-            self.msg = QApplication.translate("pychemqt", "bad output temperature condition")
-            self.status = 0
-            return
-
-        if not self.kwargs["eficiencia"]:
-            self.msg = QApplication.translate("pychemqt", "using default efficiency")
-            self.status = 3
-            return True
-        if not self.kwargs["poderCalorifico"]:
-            self.msg = QApplication.translate("pychemqt", "using default fuel calorific value")
-            self.status = 3
-            return True
-
-        self.msg = ""
-        self.status = 1
-        return True
-
-    def calculo(self):
-        entrada = self.kwargs["entrada"]
-        self.Tout = unidades.Temperature(self.kwargs["Tout"])
-        self.deltaP = unidades.DeltaP(self.kwargs["deltaP"])
-        self.Hmax = unidades.Power(self.kwargs["Hmax"])
-        if self.kwargs["eficiencia"]:
-            eficiencia = self.kwargs["eficiencia"]
-        else:
-            eficiencia = 0.75
-
-        if self.kwargs["poderCalorifico"]:
-            poderCalorifico = self.kwargs["poderCalorifico"]
-        else:
-            poderCalorifico = 900
-
-        salida = entrada.clone(T=self.Tout, P=entrada.P-self.deltaP)
-        Ho = entrada.h
-        H1 = salida.h
-        Heat = unidades.Power(H1-Ho)
-
-        if self.Hmax and Heat > self.Hmax:
-            self.Heat = unidades.Power(self.Hmax)
-            To = (entrada.T+self.Tout)/2
-            T = fsolve(lambda T: entrada.clone(T=T, P=entrada.P-self.deltaP).h-Ho-self.Hmax, To)[0]
-            self.salida = [entrada.clone(T=T, P=entrada.P-self.deltaP)]
-        else:
-            self.Heat = Heat
-            self.salida = [salida]
-
-        self.CombustibleRequerido = unidades.VolFlow(self.Heat.Btuh/poderCalorifico/eficiencia, "ft3h")
-        self.deltaT = unidades.DeltaT(self.salida[0].T-entrada.T)
-        self.eficiencia = unidades.Dimensionless(eficiencia)
-        self.poderCalorifico = unidades.Dimensionless(poderCalorifico)
-        self.Tin = entrada.T
-        self.Tout = self.salida[0].T
-
-    def coste(self):
-        """
-        tipo:
-            0   -   Box type
-            1   -   Cylindrical type
-        subtipoBox:
-            0   -   Process heater
-            1   -   Pyrolysis
-            2   -   Reformer without catalyst
-        subtipoCylindrical:
-            0   -   Cylindrical
-            1   -   Dowtherm
-        material:
-            0   -   Carbon steel
-            1   -   CrMo steel
-            2   -   Stainless
-        P_dis: Presión de diseño del equipo
-        """
-        if self.kwargs["P_dis"]:
-            P_dis = unidades.Pressure(self.kwargs["P_dis"])
-        else:
-            P_dis = self.kwargs["entrada"].P
-
-        if self.kwargs["tipo"] == 0:  # Boxtype
-            k = [25.5, 33.8, 45.][self.kwargs["material"]]
-            Fd = [0, 0.1, 0.35][self.kwargs["subtipoBox"]]
-
-            if P_dis.psi <= 500:
-                Fp = 0
-            elif P_dis.psi <= 1000:
-                Fp = 0.1
-            elif P_dis.psi <= 1500:
-                Fp = 0.15
-            elif P_dis.psi <= 2000:
-                Fp = 0.25
-            elif P_dis.psi <= 2500:
-                Fp = 0.4
-            else:
-                Fp = 0.6
-
-            C = k*(1+Fd+Fp)*self.Heat.MBtuh**0.86*1000
-
-        else:  # Cylindrical
-            k = [27.3, 40.2, 42.][self.kwargs["material"]]
-            Fd = [0, 0.33][self.kwargs["subtipoCylindrical"]]
-
-            if P_dis.psi <= 500:
-                Fp = 0
-            elif P_dis.psi <= 1000:
-                Fp = 0.15
-            else:
-                Fp = 0.2
-
-            C = k*(1+Fd+Fp)*self.Heat.MBtuh**0.82*1000
-
-        self.P_dis = P_dis
-        self.C_adq = unidades.Currency(C * self.kwargs["Current_index"] / self.kwargs["Base_index"])
-        self.C_inst = unidades.Currency(self.C_adq * self.kwargs["f_install"])
-
-    def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Temperature"), self.Tin.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Temperature"), self.salida[0].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Temperature increase"), self.deltaT.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure increase"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Maximum heat"), self.Hmax.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Thermal Efficiency"), self.eficiencia.str)
-        if self.kwargs["eficiencia"]==0.0:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")+os.linesep
-        else:
-            txt+=os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Fuel Heating Value"), self.poderCalorifico.str)
-        if self.kwargs["poderCalorifico"]==0.0:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")+os.linesep
-        else:
-            txt+=os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Required Fuel"), self.CombustibleRequerido.str)+os.linesep
-
-        if self.statusCoste:
-            txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
-
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "FireHeater type"), self.TEXT_TIPO[self.kwargs["tipo"]])+os.linesep
-            if self.kwargs["tipo"]:
-                txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Cylindrical type"), self.TEXT_SUBTIPOCYLINDRICAL[self.kwargs["subtipoCylindrical"]])+os.linesep
-            else:
-                txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Box type"), self.TEXT_SUBTIPOBOX[self.kwargs["subtipoBox"]])+os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Material"), self.TEXT_MATERIAL[self.kwargs["material"]])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Design Pressure"), self.P_dis.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
-
-        return txt
-
-    @classmethod
-    def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"), "Tin", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Output Temperature"), "Tout", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Temperature increase"), "deltaT", unidades.DeltaT),
-             (QApplication.translate("pychemqt", "Pressure increase"), "deltaP", unidades.DeltaP),
-             (QApplication.translate("pychemqt", "Maximum heat"), "Hmax", unidades.Power),
-             (QApplication.translate("pychemqt", "Thermal Efficiency"), "eficiencia", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Fuel Heating Value"), "poderCalorifico", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Required Fuel"), "CombustibleRequerido", unidades.VolFlow),
-             (QApplication.translate("pychemqt", "FireHeater type"), ("TEXT_TIPO", "tipo"), str),
-             (QApplication.translate("pychemqt", "Cylindrical type"), ("TEXT_SUBTIPOCYLINDRICAL", "subtipoCylindrical"), str),
-             (QApplication.translate("pychemqt", "Box type"), ("TEXT_SUBTIPOBOX", "subtipoBox"), str),
-             (QApplication.translate("pychemqt", "Material"), ("TEXT_MATERIAL", "material"), str),
-             (QApplication.translate("pychemqt", "Design Pressure"), "P_dis", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
-             (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
-        return l
-
-    def writeStatetoJSON(self, state):
-        """Write instance parameter to file"""
-        state["Tout"] = self.Tout
-        state["deltaP"] = self.deltaP
-        state["Hmax"] = self.Hmax
-        state["Heat"] = self.Heat
-        state["CombustibleRequerido"] = self.CombustibleRequerido
-        state["deltaT"] = self.deltaT
-        state["eficiencia"] = self.eficiencia
-        state["poderCalorifico"] = self.poderCalorifico
-        state["Tin"] = self.Tin
-        state["statusCoste"] = self.statusCoste
-        if self.statusCoste:
-            state["P_dis"] = self.P_dis
-            state["C_adq"] = self.C_adq
-            state["C_inst"] = self.C_inst
-
-    def readStatefromJSON(self, state):
-        """Load instance parameter from saved file"""
-        self.Tout = unidades.Temperature(state["Tout"])
-        self.deltaP = unidades.DeltaP(state["deltaP"])
-        self.Hmax = unidades.Power(state["Hmax"])
-        self.Heat = unidades.Power(state["Heat"])
-        self.CombustibleRequerido = unidades.VolFlow(state["CombustibleRequerido"])
-        self.deltaT = unidades.DeltaT(state["deltaT"])
-        self.eficiencia = unidades.Dimensionless(state["eficiencia"])
-        self.poderCalorifico = unidades.Dimensionless(state["poderCalorifico"])
-        self.Tin = unidades.Temperature(state["Tin"])
-        self.statusCoste = state["statusCoste"]
-        if self.statusCoste:
-            self.P_dis = unidades.Pressure(state["P_dis"])
-            self.C_adq = unidades.Currency(state["C_adq"])
-            self.C_inst = unidades.Currency(state["C_inst"])
-        self.salida = [None]
-
 
 
 def unsteady():

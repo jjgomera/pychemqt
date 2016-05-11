@@ -1,540 +1,540 @@
 {
-    "PFD": {
-        "out": {
-            "1": {
-                "up_id": 2,
-                "x": 523.0,
-                "y": 168.0,
-                "angle": 0
-            }
-        },
-        "ellipse": {},
-        "width": 661,
-        "stream": {
-            "1": {
-                "input_x": 193.0,
-                "label_x": 261.0,
-                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S1</p></body></html>",
-                "input_y": 178.0,
-                "input_angle": 0,
-                "output_y": 178.0,
-                "up_id": 1,
-                "output_x": 329.0,
-                "pen": {
-                    "joinStyle": 0,
-                    "dashOffset": 0.0,
-                    "width": 1.0,
-                    "style": 1,
-                    "miterLimit": 2.0,
-                    "color": "#0000ff",
-                    "capStyle": 0
-                },
-                "down_id": 1,
-                "output_angle": 0,
-                "up_type": "i",
-                "label_y": 178.0,
-                "down_type": "e"
-            },
-            "2": {
-                "input_x": 379.0,
-                "label_x": 451.0,
-                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S2</p></body></html>",
-                "input_y": 178.0,
-                "input_angle": 0,
-                "output_y": 178.0,
-                "up_id": 1,
-                "output_x": 523.0,
-                "pen": {
-                    "joinStyle": 0,
-                    "dashOffset": 0.0,
-                    "width": 1.0,
-                    "style": 1,
-                    "miterLimit": 2.0,
-                    "color": "#0000ff",
-                    "capStyle": 0
-                },
-                "down_id": 1,
-                "output_angle": 0,
-                "up_type": "e",
-                "label_y": 178.0,
-                "down_type": "o"
-            }
-        },
-        "y": 0,
-        "txt": {},
-        "equip": {
-            "1": {
-                "name": "heatExchanger",
-                "label_x": 16.666666666666668,
-                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">E1</p></body></html>",
-                "y": 148.0,
-                "dialogo_id": 9,
-                "label_y": -20.0,
-                "up_id": [
-                    1
-                ],
-                "x": 329.0,
-                "down_id": [
-                    2
-                ],
-                "angle": 0
-            }
-        },
-        "in": {
-            "1": {
-                "x": 144.0,
-                "y": 168.0,
-                "down_id": 1,
-                "angle": 0
-            }
-        },
-        "x": 0,
-        "square": {},
-        "height": 463
-    },
-    "other": {},
-    "equipment": {
-        "e1": {
-            "bool": true,
-            "msg": "",
-            "state": {
-                "Tin": 303.15,
-                "ToutCalc": 368.15,
-                "deltaT": 65.0,
-                "HeatCalc": 7562.072967623688,
-                "deltaP": 0.0
-            },
-            "notas": "",
-            "kwarg": {
-                "Tout": 368.15
-            },
-            "id": 9,
-            "status": 1,
-            "notasPlain": ""
-        }
-    },
-    "stream": {
-        "1": {
-            "bool": true,
-            "msg": "",
-            "ind_up": 0,
-            "notas": "",
-            "down": "e1",
-            "ind_down": 0,
-            "kwarg": {
-                "caudalMasico": 0.027777777777777776,
-                "P": 400000.0,
-                "T": 303.15,
-                "fraccionMolar": [
-                    1.0
-                ]
-            },
-            "up": "i1",
-            "state": {
-                "bool": true,
-                "cpo/cv": 1.3286866239626152,
-                "x": 0.0,
-                "vo": 0.34977299214373314,
-                "go": 1448423.0697664432,
-                "Hvap": 2429819.802173334,
-                "Tc": 647.096,
-                "Q": 2.7895425497171154e-05,
-                "rhoo": 2.8589971852059617,
-                "virialB": -0.06317146618163451,
-                "thermoType": "TP",
-                "T": 303.15,
-                "gammao": 0.3486265266917656,
-                "ao": 1308513.8729089499,
-                "uo": 2417397.383869036,
-                "virialC": -0.011639337612124543,
-                "Pr": 0.018129079042784626,
-                "fluxType": 3,
-                "P": 400000.0,
-                "gas": {},
-                "cpo": 1865.6459224273979,
-                "liquid": {
-                    "uM": 2264396.3172773193,
-                    "dhdP_rho": 0.007069157045966318,
-                    "ks": 4.4063260548546003e-10,
-                    "M": 18.015268,
-                    "kt": 5588.490845694748,
-                    "Prandt": 5.421096366974092,
-                    "massFlow": 0.027777777777777776,
-                    "v": 0.0010042353178981616,
-                    "alfav": 0.0003036160253487957,
-                    "molarFlow": 0.0015419249390939648,
-                    "gamma": 5673.660934023854,
-                    "a": -6672.492009570837,
-                    "dpdrho_T": 2244863.9524296853,
-                    "h": 126094.8737832887,
-                    "hM": 2271632.9446321195,
-                    "cpM": 75285.95914136512,
-                    "dhdP_T": 0.0009118042960800586,
-                    "rhoM": 55.274367517994456,
-                    "molarUnitFlow": [
-                        0.0015419249390939648
-                    ],
-                    "Z": 0.0028711059471552575,
-                    "dhdrho_T": 2046.8765959406473,
-                    "gM": -112970.10442547692,
-                    "fi": 0.01062701211705839,
-                    "IntP": 205348557.16877395,
-                    "betap": 5564921.633498525,
-                    "dpdT_rho": 678702.1513071877,
-                    "sM": 7866.082959121217,
-                    "cv": 4116.275424349565,
-                    "n": 0.0,
-                    "fraction": [
-                        1.0
-                    ],
-                    "massUnitFlow": [
-                        0.027777777777777776
-                    ],
-                    "k": 614.5568169116971,
-                    "joule": -2.1818675015606816e-07,
-                    "cp/cv": 1.0152402662332152,
-                    "kappa": 4.473479637040017e-10,
-                    "aM": -120206.73178027719,
-                    "deltat": 0.0009118042960800586,
-                    "dhdT_rho": 4797.852095025704,
-                    "alfap": 1.6967553782679694,
-                    "Gruneisen": 0.16558091974223021,
-                    "massFraction": [
-                        1.0
-                    ],
-                    "Kt": 2269464373.609542,
-                    "cp": 4179.008557705893,
-                    "f": 4250.8048468233565,
-                    "drhodT_P": -0.30233553823246945,
-                    "sigma": 0.07127805854171046,
-                    "dhdT_P": 4179.008557705032,
-                    "u": 125693.17965612943,
-                    "betas": 2.211793073447612e-08,
-                    "volFlow": 2.7895425497171154e-05,
-                    "Ks": 2235396338.2778993,
-                    "drhodP_T": 4.454612935085306e-07,
-                    "alfa": 1.4768087977704362e-07,
-                    "s": 436.6342459696529,
-                    "hInput": 13764123.790581098,
-                    "cvM": 74155.80493147112,
-                    "mu": 0.0007972158184064744,
-                    "g": -6270.797882411571,
-                    "epsilon": 76.64501795831254,
-                    "nu": 8.005922808308689e-07,
-                    "w": 1509.6609807245009
-                },
-                "ho": 2557306.5807265295,
-                "SG": 1.0,
-                "mezcla": {
-                    "SG": 1.0,
-                    "fraction": [
-                        1.0
-                    ],
-                    "massUnitFlow": [
-                        0.027777777777777776
-                    ],
-                    "Tb": 373.15,
-                    "wm": 0.348,
-                    "molarUnitFlow": [
-                        0.0015419249390939648
-                    ],
-                    "Tc": 647.35,
-                    "massFlow": 0.027777777777777776,
-                    "tpc": 647.35,
-                    "M": 18.015,
-                    "Pc": 22118234.25,
-                    "Vc": 1.14384441,
-                    "molarFlow": 0.0015419249390939648,
-                    "massFraction": [
-                        1.0
-                    ],
-                    "ppc": 22118234.25,
-                    "w": 0.348,
-                    "ids": [
-                        62
-                    ]
-                },
-                "solid": {},
-                "thermo": "meos",
-                "M": 18.015268,
-                "Pc": 22064000.0,
-                "Tr": 0.4684776292852992,
-                "so": 3657.870727231029,
-                "h": 3502.6353828691304,
-                "invT": -0.003298697014679202,
-                "rho": 995.7825443671649,
-                "solidType": 0,
-                "Svap": 8015.215364802163,
-                "meos_eq": 0,
-                "s": 12.128729054712581,
-                "cvo": 1404.1278724274198
-            },
-            "status": 1,
-            "notasPlain": ""
-        },
-        "2": {
-            "bool": true,
-            "msg": "",
-            "ind_up": 0,
-            "notas": "",
-            "down": "o1",
-            "ind_down": 0,
-            "kwarg": {
-                "caudalMasico": 0.027777777777777776,
-                "P": 400000.0,
-                "T": 368.15,
-                "fraccionMolar": [
-                    1.0
-                ]
-            },
-            "up": "e1",
-            "state": {
-                "bool": true,
-                "cpo/cv": 1.3236028931381372,
-                "x": 0.0,
-                "vo": 0.42476967526872955,
-                "go": 1225607.7249182928,
-                "Hvap": 2269531.3002797263,
-                "Tc": 647.096,
-                "Q": 2.887423930182429e-05,
-                "rhoo": 2.354217022124643,
-                "virialB": -0.026391267817975662,
-                "thermoType": "TP",
-                "T": 368.15,
-                "gammao": 0.40896320454692503,
-                "ao": 1055699.8548108009,
-                "uo": 2509328.1089710807,
-                "virialC": -0.0015822932095134281,
-                "Pr": 0.018129079042784626,
-                "fluxType": 3,
-                "P": 400000.0,
-                "gas": {},
-                "cpo": 1887.7044648506273,
-                "liquid": {
-                    "uM": 7168522.15484059,
-                    "dhdP_rho": 0.0035647596388694146,
-                    "ks": 4.3387715423646426e-10,
-                    "M": 18.015268,
-                    "kt": 5192.858927822982,
-                    "Prandt": 1.8522981856743983,
-                    "massFlow": 0.027777777777777776,
-                    "v": 0.0010394726148656745,
-                    "alfav": 0.0007232459446352957,
-                    "molarFlow": 0.0015419249390939648,
-                    "gamma": 5761.999624984847,
-                    "a": -62330.80873037281,
-                    "dpdrho_T": 2159133.8593467143,
-                    "h": 398329.50061774143,
-                    "hM": 7176012.705934777,
-                    "cpM": 75835.17591008064,
-                    "dhdP_T": 0.0007626995237126205,
-                    "rhoM": 53.40061031163004,
-                    "molarUnitFlow": [
-                        0.0015419249390939648
-                    ],
-                    "Z": 0.002447144123949184,
-                    "dhdrho_T": 1646.7703661555315,
-                    "gM": -1115415.6728402195,
-                    "fi": 0.20910133119430313,
-                    "IntP": 552666467.2915998,
-                    "betap": 4995666.892575162,
-                    "dpdT_rho": 1502285.6642444648,
-                    "sM": 22521.8752649056,
-                    "cv": 3793.702494263386,
-                    "n": null,
-                    "fraction": [
-                        1.0
-                    ],
-                    "massUnitFlow": [
-                        0.027777777777777776
-                    ],
-                    "k": 675.3344229870352,
-                    "joule": -1.8118552714186174e-07,
-                    "cp/cv": 1.1096006467874642,
-                    "kappa": 4.814303709667851e-10,
-                    "aM": -1122906.223934406,
-                    "deltat": 0.0007626995237126205,
-                    "dhdT_rho": 5355.287301950797,
-                    "alfap": 3.7557141606111624,
-                    "Gruneisen": 0.4116255320623447,
-                    "massFraction": [
-                        1.0
-                    ],
-                    "Kt": 2304799849.993939,
-                    "cp": 4209.494741353869,
-                    "f": 83640.53247772125,
-                    "drhodT_P": -0.6957816245392449,
-                    "sigma": 0.05988782466539089,
-                    "dhdT_P": 4209.494741351246,
-                    "u": 397913.71157179517,
-                    "betas": 6.57497177592886e-08,
-                    "volFlow": 2.887423930182429e-05,
-                    "Ks": 2077143571.129193,
-                    "drhodP_T": 4.63148681435883e-07,
-                    "alfa": 1.6676387113037667e-07,
-                    "s": 1250.1548833414859,
-                    "hInput": 5820281.154115462,
-                    "cvM": 68344.56714642336,
-                    "mu": 0.00029716647799399017,
-                    "g": -61915.019684426545,
-                    "epsilon": 56.83499326159678,
-                    "nu": 3.088964159308359e-07,
-                    "w": 1547.8295535464583
-                },
-                "ho": 2679235.9790785727,
-                "SG": 1.0,
-                "mezcla": {
-                    "SG": 1.0,
-                    "fraction": [
-                        1.0
-                    ],
-                    "massUnitFlow": [
-                        0.027777777777777776
-                    ],
-                    "Tb": 373.15,
-                    "wm": 0.348,
-                    "molarUnitFlow": [
-                        0.0015419249390939648
-                    ],
-                    "Tc": 647.35,
-                    "massFlow": 0.027777777777777776,
-                    "tpc": 647.35,
-                    "M": 18.015,
-                    "Pc": 22118234.25,
-                    "Vc": 1.14384441,
-                    "molarFlow": 0.0015419249390939648,
-                    "massFraction": [
-                        1.0
-                    ],
-                    "ppc": 22118234.25,
-                    "w": 0.348,
-                    "ids": [
-                        62
-                    ]
-                },
-                "solid": {},
-                "thermo": "meos",
-                "M": 18.015268,
-                "Pc": 22064000.0,
-                "Tr": 0.5689264035011806,
-                "so": 3948.46734798392,
-                "h": 11064.708350492818,
-                "invT": -0.0027162841233192994,
-                "rho": 962.0263061275787,
-                "solidType": 0,
-                "Svap": 6164.720511526137,
-                "meos_eq": 0,
-                "s": 34.726524537263494,
-                "cvo": 1426.1864148506495
-            },
-            "status": 1,
-            "notasPlain": ""
-        }
-    },
     "config": {
-        "Components": {
-            "solids": "[]",
-            "components": "[62]"
-        },
-        "PFD": {
-            "x": "800",
-            "y": "600"
-        },
-        "Thermo": {
-            "gerg": "False",
-            "refprop": "False",
-            "iapws": "False",
-            "cp_ideal": "0",
-            "coolprop": "False",
-            "k": "0",
-            "mixing": "0",
-            "meos": "True",
-            "alfa": "0",
-            "freesteam": "False",
-            "h": "0"
+        "Units": {
+            "kviscosity": "0",
+            "molarvolume": "0",
+            "qliq": "2",
+            "time": "2",
+            "pressuretemperature": "1",
+            "head": "0",
+            "diffusivity": "0",
+            "specificentropy": "1",
+            "density": "0",
+            "temperaturepressure": "1",
+            "dengas": "0",
+            "area": "0",
+            "frequency": "0",
+            "specificheat": "1",
+            "volliq": "0",
+            "deltat": "1",
+            "acceleration": "0",
+            "heattransfcoef": "0",
+            "particlediameter": "2",
+            "specificvolume": "0",
+            "mass": "0",
+            "entropy": "1",
+            "massflow": "2",
+            "thickness": "2",
+            "system": "4",
+            "mol": "0",
+            "currency": "0",
+            "volgas": "0",
+            "densitypressure": "1",
+            "denliq": "0",
+            "work": "2",
+            "enthalpy": "1",
+            "qgas": "2",
+            "solubilityparameter": "0",
+            "power": "3",
+            "viscosity": "2",
+            "speed": "0",
+            "fouling": "0",
+            "specificvolume_square": "0",
+            "heatflux": "0",
+            "enthalpydensity": "1",
+            "dipolemoment": "0",
+            "potencialelectric": "0",
+            "invpressure": "4",
+            "deltap": "4",
+            "molarspecificheat": "1",
+            "enthalpypressure": "1",
+            "tension": "1",
+            "v2v": "0",
+            "invtemperature": "1",
+            "length": "0",
+            "pipediameter": "2",
+            "volume": "0",
+            "packingdp": "0",
+            "force": "1",
+            "temperature": "1",
+            "ua": "2",
+            "angle": "0",
+            "molardensity": "0",
+            "pressure": "4",
+            "densitytemperature": "0",
+            "cakeresistance": "0",
+            "pressuredensity": "1",
+            "energy": "2",
+            "volflow": "2",
+            "thermalconductivity": "1",
+            "molarenthalpy": "1",
+            "molarflow": "2",
+            "energyflow": "9"
         },
         "Transport": {
             "thcondg": "0",
+            "corr_thcondl": "0",
+            "mug": "0",
             "corr_mul": "0",
             "rhol": "0",
-            "pv": "0",
-            "corr_rhol": "0",
+            "tension": "0",
             "thcondl": "0",
             "mul": "0",
-            "corr_thcondl": "0",
-            "tension": "0",
-            "mug": "0"
+            "pv": "0",
+            "corr_rhol": "0"
         },
-        "Units": {
-            "density": "0",
-            "temperature": "1",
-            "area": "0",
-            "molarspecificheat": "1",
-            "length": "0",
-            "massflow": "2",
-            "molarflow": "2",
-            "angle": "0",
-            "dipolemoment": "0",
-            "molarenthalpy": "1",
-            "heattransfcoef": "0",
-            "head": "0",
-            "thermalconductivity": "1",
-            "denliq": "0",
-            "molardensity": "0",
-            "acceleration": "0",
-            "energy": "2",
-            "kviscosity": "0",
-            "v2v": "0",
-            "viscosity": "2",
-            "deltap": "4",
-            "time": "2",
-            "ua": "2",
-            "mol": "0",
-            "frequency": "0",
-            "temperaturepressure": "1",
-            "tension": "1",
-            "enthalpydensity": "1",
-            "heatflux": "0",
-            "molarvolume": "0",
-            "energyflow": "9",
-            "potencialelectric": "0",
-            "mass": "0",
-            "specificentropy": "1",
-            "densitytemperature": "0",
-            "entropy": "1",
-            "pipediameter": "2",
-            "volliq": "0",
-            "system": "4",
-            "qgas": "2",
-            "work": "2",
-            "dengas": "0",
-            "diffusivity": "0",
-            "solubilityparameter": "0",
-            "force": "1",
-            "invpressure": "4",
-            "pressuredensity": "1",
-            "deltat": "1",
-            "thickness": "2",
-            "volgas": "0",
-            "densitypressure": "1",
-            "volflow": "2",
-            "invtemperature": "1",
-            "packingdp": "0",
-            "volume": "0",
-            "currency": "0",
-            "enthalpy": "1",
-            "specificvolume": "0",
-            "enthalpypressure": "1",
-            "specificvolume_square": "0",
-            "pressuretemperature": "1",
-            "qliq": "2",
-            "specificheat": "1",
-            "fouling": "0",
-            "cakeresistance": "0",
-            "pressure": "4",
-            "particlediameter": "2",
-            "power": "3",
-            "speed": "0"
+        "Thermo": {
+            "iapws": "False",
+            "alfa": "0",
+            "refprop": "False",
+            "coolprop": "False",
+            "freesteam": "False",
+            "cp_ideal": "0",
+            "meos": "True",
+            "k": "0",
+            "gerg": "False",
+            "h": "0",
+            "mixing": "0"
+        },
+        "PFD": {
+            "y": "600",
+            "x": "800"
+        },
+        "Components": {
+            "components": "[62]",
+            "solids": "[]"
+        }
+    },
+    "other": {},
+    "PFD": {
+        "height": 462,
+        "x": 0,
+        "stream": {
+            "1": {
+                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S1</p></body></html>",
+                "label_y": 198.0,
+                "output_angle": 0,
+                "down_type": "e",
+                "label_x": 240.0,
+                "input_y": 180.0,
+                "up_id": 1,
+                "output_y": 198.0,
+                "input_x": 183.0,
+                "pen": {
+                    "joinStyle": 0,
+                    "miterLimit": 2.0,
+                    "capStyle": 0,
+                    "style": 1,
+                    "dashOffset": 0.0,
+                    "width": 1.0,
+                    "color": "#0000ff"
+                },
+                "output_x": 297.0,
+                "down_id": 1,
+                "up_type": "i",
+                "input_angle": 0
+            },
+            "2": {
+                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S2</p></body></html>",
+                "label_y": 198.0,
+                "output_angle": 0,
+                "down_type": "o",
+                "label_x": 404.5,
+                "input_y": 198.0,
+                "up_id": 1,
+                "output_y": 188.0,
+                "input_x": 347.0,
+                "pen": {
+                    "joinStyle": 0,
+                    "miterLimit": 2.0,
+                    "capStyle": 0,
+                    "style": 1,
+                    "dashOffset": 0.0,
+                    "width": 1.0,
+                    "color": "#0000ff"
+                },
+                "output_x": 462.0,
+                "down_id": 1,
+                "up_type": "e",
+                "input_angle": 0
+            }
+        },
+        "ellipse": {},
+        "txt": {},
+        "y": 0,
+        "width": 661,
+        "in": {
+            "1": {
+                "angle": 0,
+                "down_id": 1,
+                "y": 170.0,
+                "x": 134.0
+            }
+        },
+        "equip": {
+            "1": {
+                "angle": 0,
+                "dialogo_id": 9,
+                "x": 297.0,
+                "label_y": -20.0,
+                "down_id": [
+                    2
+                ],
+                "y": 168.0,
+                "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">E1</p></body></html>",
+                "label_x": 16.666666666666668,
+                "name": "heatExchanger",
+                "up_id": [
+                    1
+                ]
+            }
+        },
+        "out": {
+            "1": {
+                "angle": 0,
+                "y": 178.0,
+                "x": 462.0,
+                "up_id": 2
+            }
+        },
+        "square": {}
+    },
+    "stream": {
+        "1": {
+            "status": 1,
+            "msg": "",
+            "down": "e1",
+            "ind_down": 0,
+            "kwarg": {
+                "P": 100000.0,
+                "caudalMasico": 1.0,
+                "T": 298.15,
+                "fraccionMolar": [
+                    1.0
+                ]
+            },
+            "ind_up": 0,
+            "bool": true,
+            "notasPlain": "",
+            "state": {
+                "cpo": 1864.3811212926298,
+                "liquid": {
+                    "drhodP_T": 4.511271523991229e-07,
+                    "h": 104918.89282625659,
+                    "fraction": [
+                        1.0
+                    ],
+                    "cp/cv": 1.010573717074724,
+                    "Gruneisen": 0.13783969879586497,
+                    "gamma": 22334.93462724921,
+                    "betas": 1.840028049414921e-08,
+                    "cv": 4137.5693433489505,
+                    "dhdrho_T": 2052.6901618024162,
+                    "M": 18.015268,
+                    "fi": 0.03167078825320005,
+                    "dpdT_rho": 568637.1754521132,
+                    "sigma": 0.07205503890847453,
+                    "s": 367.19998402168886,
+                    "a": -4662.078580488684,
+                    "mu": 0.0008900226737733193,
+                    "kt": 22101.242340658144,
+                    "molarFlow": 0.055509297807382736,
+                    "massUnitFlow": [
+                        1.0
+                    ],
+                    "ks": 4.47729091975928e-10,
+                    "nu": 8.926586599671839e-07,
+                    "Z": 0.0007288880787913658,
+                    "rhoM": 55.34455768391424,
+                    "hM": 1890141.9725282898,
+                    "gM": -82181.73267041185,
+                    "v": 0.0010029617067874115,
+                    "IntP": 169439173.86104754,
+                    "u": 104818.59665557784,
+                    "Kt": 2233493462.724921,
+                    "cpM": 75327.57933323746,
+                    "hInput": 16251547.52253647,
+                    "betap": 22035978.234354205,
+                    "uM": 1888335.1101341385,
+                    "dpdrho_T": 2216669.9447859353,
+                    "epsilon": 78.40843280653539,
+                    "volFlow": 0.0010029617067874115,
+                    "alfav": 0.0002572874260584122,
+                    "massFraction": [
+                        1.0
+                    ],
+                    "alfap": 5.686371754521131,
+                    "kappa": 4.5246325278302044e-10,
+                    "f": 3167.078825320005,
+                    "Prandt": 6.135819480722633,
+                    "dhdT_P": 4181.3188315393745,
+                    "n": null,
+                    "aM": -83988.5950645632,
+                    "massFlow": 1.0,
+                    "Ks": 2210124234.0658145,
+                    "drhodT_P": -0.25652766632789015,
+                    "cp": 4181.318830962574,
+                    "alfa": 1.4548320118799403e-07,
+                    "deltat": 0.0009260242674516188,
+                    "joule": -2.2146703103974928e-07,
+                    "cvM": 74539.42058901535,
+                    "dhdP_T": 0.0009260242674516188,
+                    "molarUnitFlow": [
+                        0.055509297807382736
+                    ],
+                    "dhdT_rho": 4707.890655383175,
+                    "sM": 6615.2061217464425,
+                    "k": 606.5153281520192,
+                    "g": -4561.782409809937,
+                    "w": 1496.6991633692276,
+                    "dhdP_rho": 0.008279252322256308
+                },
+                "gas": {},
+                "vo": 1.3760160660749337,
+                "SG": 1.0,
+                "bool": true,
+                "meos_eq": 0,
+                "virialB": -0.06887894093930812,
+                "thermo": "meos",
+                "virialC": -0.013801246044334282,
+                "Pc": 22064000.0,
+                "P": 100000.0,
+                "Svap": 8189.443497183477,
+                "gammao": 1.3722817272831607,
+                "fluxType": 3,
+                "Tc": 647.096,
+                "rho": 997.0470390171743,
+                "Tr": 0.46075080049946215,
+                "M": 18.015268,
+                "Pr": 0.0045322697606961565,
+                "Hvap": 2441684.437474262,
+                "s": 367.19998402168886,
+                "invT": -0.0033540164346805303,
+                "go": 1464521.2551147747,
+                "thermoType": "TP",
+                "ho": 2547981.53994687,
+                "so": 3633.943601650496,
+                "solidType": 0,
+                "mezcla": {
+                    "Tb": 373.15,
+                    "massFlow": 1.0,
+                    "molarFlow": 0.055509297807382736,
+                    "molarUnitFlow": [
+                        0.055509297807382736
+                    ],
+                    "massUnitFlow": [
+                        1.0
+                    ],
+                    "wm": 0.348,
+                    "Pc": 22118234.25,
+                    "M": 18.015,
+                    "ppc": 22118234.25,
+                    "massFraction": [
+                        1.0
+                    ],
+                    "Vc": 1.14384441,
+                    "Tc": 647.35,
+                    "fraction": [
+                        1.0
+                    ],
+                    "tpc": 647.35,
+                    "ids": [
+                        62
+                    ],
+                    "w": 0.348,
+                    "SG": 1.0
+                },
+                "h": 104918.89282625659,
+                "rhoo": 0.7267357007338482,
+                "cvo": 1402.8630712926522,
+                "Q": 0.0010029617067874115,
+                "solid": {},
+                "x": 0.0,
+                "T": 298.15,
+                "uo": 2410379.9333393765,
+                "cpo/cv": 1.3289829630875643,
+                "ao": 1326919.6485072812
+            },
+            "notas": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>",
+            "up": "i1"
+        },
+        "2": {
+            "status": 1,
+            "msg": "",
+            "down": "o1",
+            "ind_down": 0,
+            "kwarg": {
+                "P": 100000.0,
+                "caudalMasico": 1.0,
+                "T": 328.15,
+                "fraccionMolar": [
+                    1.0
+                ]
+            },
+            "ind_up": 0,
+            "bool": true,
+            "notasPlain": "",
+            "state": {
+                "cpo": 1872.9275770830725,
+                "liquid": {
+                    "drhodP_T": 4.365689219248237e-07,
+                    "h": 230327.94737597703,
+                    "fraction": [
+                        1.0
+                    ],
+                    "cp/cv": 1.0453255442652605,
+                    "Gruneisen": 0.2811854593691987,
+                    "gamma": 23601.532750106322,
+                    "betas": 3.9095345827311527e-08,
+                    "cv": 4001.5854564387078,
+                    "dhdrho_T": 1949.2475905489018,
+                    "M": 18.015268,
+                    "fi": 0.1569983491227297,
+                    "dpdT_rho": 1109089.0319221972,
+                    "sigma": 0.06717163659814765,
+                    "s": 767.9811233248813,
+                    "a": -21786.509759812994,
+                    "mu": 0.0005036243116564743,
+                    "kt": 22578.16511527752,
+                    "molarFlow": 0.055509297807382736,
+                    "massUnitFlow": [
+                        1.0
+                    ],
+                    "ks": 4.2370129541501717e-10,
+                    "nu": 5.109345027977322e-07,
+                    "Z": 0.0006698806679293448,
+                    "rhoM": 54.714285034938754,
+                    "hM": 4149419.6998681226,
+                    "gM": -390662.13584474486,
+                    "v": 0.0010145151673024162,
+                    "IntP": 363847565.825269,
+                    "u": 230226.4958592468,
+                    "Kt": 2360153275.010632,
+                    "cpM": 75357.13633873571,
+                    "hInput": 8515416.480028138,
+                    "betap": 22255128.20603027,
+                    "uM": 4147592.023605221,
+                    "dpdrho_T": 2290589.0680239443,
+                    "epsilon": 68.32770977975223,
+                    "volFlow": 0.0010145151673024162,
+                    "alfav": 0.0004912219510573656,
+                    "massFraction": [
+                        1.0
+                    ],
+                    "alfap": 11.090890319221971,
+                    "kappa": 4.429057874695716e-10,
+                    "f": 15699.83491227297,
+                    "Prandt": 3.260951963439028,
+                    "dhdT_P": 4182.959497385466,
+                    "n": null,
+                    "aM": -392489.8121076467,
+                    "massFlow": 1.0,
+                    "Ks": 2257816511.527752,
+                    "drhodT_P": -0.48419379708587196,
+                    "cp": 4182.959495175743,
+                    "alfa": 1.5668262167802566e-07,
+                    "deltat": 0.0008509809191704942,
+                    "joule": -2.0343991370282088e-07,
+                    "cvM": 72089.63442264564,
+                    "dhdP_T": 0.0008509809191704942,
+                    "molarUnitFlow": [
+                        0.055509297807382736
+                    ],
+                    "dhdT_rho": 5126.7731012125305,
+                    "sM": 13835.385755638787,
+                    "k": 646.0199721013724,
+                    "g": -21685.05824308275,
+                    "w": 1547.3885304667942,
+                    "dhdP_rho": 0.004622508160888723
+                },
+                "gas": {},
+                "vo": 1.5144714810749271,
+                "SG": 1.0,
+                "bool": true,
+                "meos_eq": 0,
+                "virialB": -0.042984483660444626,
+                "thermo": "meos",
+                "virialC": -0.0051644717857353565,
+                "Pc": 22064000.0,
+                "P": 100000.0,
+                "Svap": 7221.788204902069,
+                "gammao": 1.493130183863998,
+                "fluxType": 3,
+                "Tc": 647.096,
+                "rho": 985.692508332811,
+                "Tr": 0.5071117732144844,
+                "M": 18.015268,
+                "Pr": 0.0045322697606961565,
+                "Hvap": 2369848.7567140358,
+                "s": 767.9811233248813,
+                "invT": -0.0030473868657626088,
+                "go": 1365560.3640286485,
+                "thermoType": "TP",
+                "ho": 2604035.451278823,
+                "so": 3774.112714460383,
+                "solidType": 0,
+                "mezcla": {
+                    "Tb": 373.15,
+                    "massFlow": 1.0,
+                    "molarFlow": 0.055509297807382736,
+                    "molarUnitFlow": [
+                        0.055509297807382736
+                    ],
+                    "massUnitFlow": [
+                        1.0
+                    ],
+                    "wm": 0.348,
+                    "Pc": 22118234.25,
+                    "M": 18.015,
+                    "ppc": 22118234.25,
+                    "massFraction": [
+                        1.0
+                    ],
+                    "Vc": 1.14384441,
+                    "Tc": 647.35,
+                    "fraction": [
+                        1.0
+                    ],
+                    "tpc": 647.35,
+                    "ids": [
+                        62
+                    ],
+                    "w": 0.348,
+                    "SG": 1.0
+                },
+                "h": 230327.94737597703,
+                "rhoo": 0.6602963558549346,
+                "cvo": 1411.4095270830949,
+                "Q": 0.0010145151673024162,
+                "solid": {},
+                "x": 0.0,
+                "T": 328.15,
+                "uo": 2452588.30317133,
+                "cpo/cv": 1.3269908847461014,
+                "ao": 1214113.2159211556
+            },
+            "notas": "",
+            "up": "e1"
+        }
+    },
+    "equipment": {
+        "e1": {
+            "status": 1,
+            "msg": "",
+            "notasPlain": "",
+            "state": {
+                "deltaT": 30.0,
+                "deltaP": 0.0,
+                "ToutCalc": 328.15,
+                "HeatCalc": 125409.05454972044,
+                "Tin": 298.15
+            },
+            "kwarg": {
+                "Tout": 328.15
+            },
+            "bool": true,
+            "notas": "",
+            "id": 9
         }
     }
 }

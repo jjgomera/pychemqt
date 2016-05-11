@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
@@ -64,22 +64,22 @@ class UI_equipment(UI_equip):
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Heat Transfer"))
         lyt.addWidget(group, 4, 1, 1, 2)
-        lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(
+        lyt1 = QtWidgets.QGridLayout(group)
+        lyt1.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Area")), 1, 1)
         self.A = Entrada_con_unidades(Area)
         self.A.valueChanged.connect(partial(self.changeParams, "A"))
-        lyt.addWidget(self.A, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt1.addWidget(self.A, 1, 2)
+        lyt1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Heat Transfer Coefficient")), 2, 1)
         self.U = Entrada_con_unidades(HeatTransfCoef)
         self.U.valueChanged.connect(partial(self.changeParams, "U"))
-        lyt.addWidget(self.U, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt1.addWidget(self.U, 2, 2)
+        lyt1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "External Temperature")), 3, 1)
         self.Text = Entrada_con_unidades(Temperature)
         self.Text.valueChanged.connect(partial(self.changeParams, "Text"))
-        lyt.addWidget(self.Text, 3, 2)
+        lyt1.addWidget(self.Text, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
