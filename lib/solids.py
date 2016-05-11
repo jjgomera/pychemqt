@@ -52,7 +52,7 @@ class Solid(Entity):
               "distribucion_fraccion": [],
               "distribucion_diametro": []}
     status = 0
-    msg = QApplication.trnaslate("pychemqt", "undefined")
+    msg = QApplication.translate("pychemqt", "undefined")
 
     def __call__(self, **kwargs):
         """All equipment are callables, so we can instance or add/change
@@ -263,4 +263,4 @@ if __name__ == '__main__':
 
     solido = Solid(caudalSolido=[5], distribucion_diametro=diametros,
                    distribucion_fraccion=fracciones)
-    print solido._def
+    print(solido._def)

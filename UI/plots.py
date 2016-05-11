@@ -29,7 +29,8 @@ from numpy import transpose
 from UI.widgets import Tabla
 from lib.plot import mpl
 from lib import config, unidades
-from lib.corriente import Corriente, Mezcla
+from lib.corriente import Corriente
+from lib.mezcla import Mezcla
 
 class Binary_distillation(QtWidgets.QDialog):
     title=QtWidgets.QApplication.translate("pychemqt", "x-y Distillation")
