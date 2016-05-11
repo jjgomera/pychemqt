@@ -348,7 +348,7 @@ class MEoS(Fluid_MEOS):
                         break
                 if not converge:
                     self.status = 5
-                    self.msg = QApplication.translate("pychemqt", "Solution don´t converge", None, QApplication.UnicodeUTF8)
+                    self.msg = QApplication.translate("pychemqt", "Solution don´t converge")
                     print(("dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)))
 
     def cleanOldValues(self, **kwargs):

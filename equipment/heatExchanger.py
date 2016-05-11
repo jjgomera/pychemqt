@@ -511,6 +511,711 @@ class Fired_Heater(equipment):
         self.salida = [None]
 
 
+class Hairpin(equipment):
+    """Class to model double pipe section heat exchanger (hairpin)
+
+    Parameters:
+        entradaInterior: Corriente instance to define the fluid stream that
+            flow at internal section
+        entradaExterior: Corriente instance to define the fluid stream that
+            flow at external (anulli) section
+
+        modo: Calculate module
+            0 - Design
+            1 - Rating
+        flujo: Flow type
+            0 - Counterflow
+            1 - Parallelflow
+        orientacion: Pipe orientation
+            0 - Horizontal
+            1 - Vertical, internal down
+            2 - Vertical, internal up
+        metodo:
+            0 - Mean temperature
+            1 - Split the pipe in segments
+        tubesideLaminar: Method to calculate the global heat transfer
+            coefficient in laminar flow for tubeside
+            0 - Eubank-Proctor
+            1 - VDI mean Nusselt
+            2 - Hausen
+            3 - Sieder-Tate
+        tubesideTurbulent: Method to calculate the global heat transfer
+            coefficient in turbulent flow for tubeside
+            0 - Sieder-Tate
+            1 - Colburn
+            2 - Dittus-Boelter
+            3 - ESDU
+            4 - Gnielinski
+            5 - VDI mean Nusselt
+
+        LTube: Tube length
+        DeeTube: External diameter of annulli
+        DeTube: External diameter of internal pipe
+        DiTube: Internal diameter of internal pipe
+        wTube: Pipe width
+        rTube: Internal roughness of pipe
+        kTube: Thermal conductivity
+
+        tubeFouling: Fouling at tubeside
+        annulliFouling: Fouling at annulliside
+
+        tubeFinned: Boolean to use finned tube
+        hFin: Finned height
+        thicknessBaseFin: Thickness of the bottom of fin
+        thicknessTopFin: Thickness of the top of fin
+        rootDoFin: External diameter in the bottom of fin
+        kFin: Thermal conductiviti of material of fin
+        nFin: Fin count per meter of pipe
+
+        tubeTout: Output temperature of fluid in tubeside
+        annulliTout: Output temperature of fluid in annulliside
+
+    Coste:
+        material:
+            0 - Carbon steel/carbon steel
+            1 - Carbon steel/304 stainless
+            2 - Carbon steel/316 stainless
+        P_dis: Design pressure
+    """
+    title = QApplication.translate("pychemqt", "Hairpin Heat Exchanger")
+    help = ""
+    kwargs = {
+        "entradaTubo": None,
+        "entradaExterior": None,
+
+        "modo": 0,
+        "flujo": 0,
+        "orientacion": 0,
+        "tubesideLaminar": 0,
+        "tubesideTurbulent": 0,
+        "metodo": 0,
+        "phase": 0,
+
+        "DeeTube": 0.0,
+        "DeTube": 0.0,
+        "DiTube": 0.0,
+        "wTube": 0.0,
+        "rTube": 0.0,
+        "kTube": 0.0,
+        "LTube": 0.0,
+        "nTube": 0.0,
+
+        "tubeFouling": 0.0,
+        "annulliFouling": 0.0,
+
+        "tubeFinned": 0,
+        "hFin": 0.0,
+        "thicknessBaseFin": 0.0,
+        "thicknessTopFin": 0.0,
+        "rootDoFin": 0.0,
+        "kFin": 0.0,
+        "nFin": 0,
+
+        "tubeTout": 0.0,
+        "tubeXout": -1.0,
+        "annulliTout": 0.0,
+        "annulliXout": -1.0,
+
+        "f_install": 3.,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "material": 0,
+        "P_dis": 0}
+
+    kwargsInput = ("entradaTubo", "entradaExterior")
+    kwargsValue = ("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
+                   "nTube", "tubeFouling", "annulliFouling", "P_dis",
+                   "tubeTout", "annulliTout")
+    kwargsList = ("modo", "flujo", "orientacion")
+    kwargsCheck = ("tubeFinned", )
+    calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
+                      "deltaPTube", "deltaPAnnulli", "CF")
+    calculateCostos = ("C_adq", "C_inst")
+    indiceCostos = 2
+
+    TEXT_MODO = [
+        QApplication.translate("pychemqt", "Design"),
+        QApplication.translate("pychemqt", "Rating")]
+    TEXT_FLUJO = [
+        QApplication.translate("pychemqt", "Counterflow"),
+        QApplication.translate("pychemqt", "Parallelflow")]
+    TEXT_ORIENTACION = [
+        QApplication.translate("pychemqt", "Horizontal"),
+        QApplication.translate("pychemqt", "Vertical, (in down)"),
+        QApplication.translate("pychemqt", "Vertical, (in up)")]
+    TEXT_MATERIAL = [
+        QApplication.translate("pychemqt", "Carbon steel/carbon steel"),
+        QApplication.translate("pychemqt", "Carbon steel/304 stainless"),
+        QApplication.translate("pychemqt", "Carbon steel/316 stainless")]
+    CODE_FLUJO = ("CF", "PF")
+
+    @property
+    def isCalculable(self):
+        self.status = 1
+        self.msg = ""
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"]:
+            self.statusCoste = True
+        else:
+            self.statusCoste = False
+
+        if not self.kwargs["entradaTubo"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined internal stream input")
+            self.status = 0
+            return
+        if not self.kwargs["entradaExterior"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined external stream input")
+            self.status = 0
+            return
+
+        if not self.kwargs["DeeTube"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined pipe external diameter")
+            self.status = 0
+            return
+
+        self.statusPipe = 0
+        if self.kwargs["DeTube"] and self.kwargs["DiTube"]:
+            self.statusPipe = 1
+        elif self.kwargs["DeTube"] and self.kwargs["wTube"]:
+            self.statusPipe = 2
+        elif self.kwargs["DiTube"] and self.kwargs["wTube"]:
+            self.statusPipe = 3
+        else:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined pipe diameters")
+            self.status = 0
+            return
+
+        if not self.kwargs["kTube"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined pipe material thermal conductivity")
+            self.status = 0
+            return
+
+        self.statusFinned = 0
+        self.tubefinned = QApplication.translate("pychemqt", "Bare Tube")
+        if self.kwargs["tubeFinned"]:
+            self.tubefinned = QApplication.translate("pychemqt", "Finned Tube")
+            if self.kwargs["hFin"] and (self.kwargs["thicknessBaseFin"] or
+                                        self.kwargs["thicknessTopFin"]):
+                self.statusFinned = 1
+                self.msg = ""
+            else:
+                self.msg = QApplication.translate(
+                    "pychemqt", "fin not specified, using bare tube")
+                self.status = 3
+
+        if self.kwargs["modo"]:
+            if not self.kwargs["LTube"]:
+                self.msg = QApplication.translate(
+                    "pychemqt", "undefined pipe length")
+                self.status = 0
+                return
+        else:
+            self.statusOut = 0
+            o1 = self.kwargs["tubeTout"] or self.kwargs["tubeXout"] != -1
+            o2 = self.kwargs["annulliTout"] or self.kwargs["annulliXout"] != -1
+            if o1 and o2:
+                self.statusOut = 1
+            elif o1:
+                self.statusOut = 2
+            elif o2:
+                self.statusOut = 3
+            else:
+                self.msg = QApplication.translate(
+                    "pychemqt", "undefined output condition")
+                self.status = 0
+                return
+        return True
+
+    def calculo(self):
+        # Define tipo de flujo
+        if self.kwargs["flujo"]:
+            self.flujo = "PF"
+        else:
+            self.flujo = "CF"
+
+        # Calculate pipe dimension
+        if self.statusPipe == 1:
+            self.De = unidades.Length(self.kwargs["DeTube"])
+            self.Di = unidades.Length(self.kwargs["DiTube"])
+            self.w = unidades.Length((self.De-self.Di)/2)
+            if self.kwargs["wTube"] and w != self.kwargs["wTube"]:
+                self.msg = QApplication.translate(
+                    "pychemqt", "Pipe thickness discard")
+                self.status = 3
+        elif self.statusPipe == 2:
+            self.De = unidades.Length(self.kwargs["DeTube"])
+            self.w = unidades.Length(self.kwargs["wTube"])
+            self.Di = unidades.Length(self.De-w*2)
+        else:
+            self.Di = unidades.Length(self.kwargs["DiTube"])
+            self.w = unidades.Length(self.kwargs["wTube"])
+            self.De = unidades.Length(self.Di+w*2)
+        self.Dee = unidades.Length(self.kwargs["DeeTube"])
+        self.rugosidad = unidades.Length(self.kwargs["rTube"])
+        self.k = unidades.ThermalConductivity(self.kwargs["kTube"])
+        self.fi = unidades.Fouling(self.kwargs["tubeFouling"])
+        self.fo = unidades.Fouling(self.kwargs["annulliFouling"])
+
+        if self.kwargs["modo"]:
+            self.rating()
+        else:
+            self.design()
+
+        eD = unidades.Dimensionless(self.kwargs["rTube"]/self.Di)
+        f = f_friccion(self.ReTube, eD)
+        dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
+        self.deltaPTube = unidades.DeltaP(dp_tube)
+
+        f_a = f_friccion(self.ReAnnulli, geometria=6)
+        dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
+        self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
+
+        self.salida = [
+            self.outTube.clone(P=self.outTube.P-self.deltaPTube),
+            self.outAnnulli.clone(P=self.outAnnulli.P-self.deltaPAnnulli)]
+        self.ToutTube = self.salida[0].T
+        self.ToutAnnulli = self.salida[1].T
+        self.XoutTube = self.salida[0].x
+        self.XoutAnnulli = self.salida[1].x
+        self.TinTube = self.kwargs["entradaTubo"].T
+        self.XinTube = self.kwargs["entradaTubo"].x
+        self.TinAnnulli = self.kwargs["entradaExterior"].T
+        self.XinAnnulli = self.kwargs["entradaExterior"].x
+
+    def rating(self):
+        """Rating of a specified pipe"""
+        # Input stream
+        inTube = self.kwargs["entradaTubo"]
+        inAnnulli = self.kwargs["entradaExterior"]
+
+        self.L = unidades.Length(self.kwargs["LTube"])
+
+        # Mean temperature method
+        if self.kwargs["metodo"] == 0:
+            self.phaseTube = self.ThermalPhase(inTube, inTube)
+            self.phaseAnnulli = self.ThermalPhase(inAnnulli, inAnnulli)
+
+            Ci = inTube.Liquido.cp*inTube.caudalmasico
+            Co = inAnnulli.Liquido.cp*inAnnulli.caudalmasico
+            Cmin = min(Ci, Co)
+            Cmax = max(Ci, Co)
+            C_ = Cmin/Cmax
+
+            self.A = unidades.Area(self.L*pi*self.De)
+            hi = self.hTube(inTube)
+            ho = self.hAnnulli(inAnnulli)
+            ni, no = self.rendimientoAletas(hi, ho)
+            self.Ug(hi, ni, ho, no)
+
+            NTU = self.A*self.U/Cmin
+            ep = efectividad(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
+            self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
+
+            if inTube.T > inAnnulli.T:
+                QTube = self.Q
+                QAnnulli = -self.Q
+            else:
+                QTube = -self.Q
+                QAnnulli = self.Q
+
+            def f(T):
+                return inTube.clone(T=T).h-inTube.h+QTube
+            T = fsolve(f, inTube.T)[0]
+            self.outTube = inTube.clone(T=T)
+
+            def f(T):
+                return inAnnulli.clone(T=T).h-inAnnulli.h+QAnnulli
+            T = fsolve(f, inAnnulli.T)[0]
+            self.outAnnulli = inAnnulli.clone(T=T)
+
+    def design(self):
+        """Design a pipe to meet the specified heat transfer requeriments"""
+        # Input stream
+        inTube = self.kwargs["entradaTubo"]
+        inAnnulli = self.kwargs["entradaExterior"]
+
+        # Metodo temperaturas medias
+        if self.kwargs["metodo"] == 0:
+
+            # Calculate output condition and sensible/latent thermal situation,
+            # global thermal balance
+            if self.statusOut == 1:
+                if self.kwargs["tubeTout"]:
+                    self.outTube = inTube.clone(T=self.kwargs["tubeTout"])
+                else:
+                    self.outTube = inTube.clone(x=self.kwargs["tubeXout"])
+                if self.kwargs["annulliTout"]:
+                    Tout = self.kwargs["annulliTout"]
+                    self.outAnnulli = inAnnulli.clone(T=Tout)
+                else:
+                    Xout = self.kwargs["annulliXout"]
+                    self.outAnnulli = inAnnulli.clone(x=Xout)
+
+                Qo = abs(self.outAnnulli.h-inAnnulli.h)
+                Qi = abs(self.outTube.h-inTube.h)
+                self.Q = unidades.Power((Qo+Qi)/2.)
+
+            elif self.statusOut == 2:
+                if self.kwargs["tubeTout"]:
+                    self.outTube = inTube.clone(T=self.kwargs["tubeTout"])
+                else:
+                    self.outTube = inTube.clone(x=self.kwargs["tubeXout"])
+
+                Qi = abs(self.outTube.h-inTube.h)
+                self.Q = unidades.Power(Qi)
+
+                def f(T):
+                    return inAnnulli.clone(T=T).h-inAnnulli.h-Qi
+                T = fsolve(f, inAnnulli.T)[0]
+                self.outAnnulli = inAnnulli.clone(T=T)
+
+            elif self.statusOut == 3:
+                if self.kwargs["annulliTout"]:
+                    Tout = self.kwargs["annulliTout"]
+                    self.outAnnulli = inAnnulli.clone(T=Tout)
+                else:
+                    Xout = self.kwargs["annulliXout"]
+                    self.outAnnulli = inAnnulli.clone(x=Xout)
+
+                Qo = abs(self.outAnnulli.h-inAnnulli.h)
+                self.Q = unidades.Power(Qo)
+
+                def f(T):
+                    return inTube.clone(T=T).h-inTube.h-Qi
+                T = fsolve(f, inTube.T)[0]
+                self.outTube = inTube.clone(T=T)
+
+            self.phaseTube = self.ThermalPhase(inTube, self.outTube)
+            self.phaseAnnulli = self.ThermalPhase(inAnnulli, self.outAnnulli)
+
+            fluidTube = inTube.clone(T=(inTube.T+self.outTube.T)/2.)
+            T = (inAnnulli.T+self.outAnnulli.T)/2.
+            fluidAnnulli = inAnnulli.clone(T=T)
+
+            hi = self.hTube(fluidTube)
+            ho = self.hAnnulli(fluidAnnulli)
+            ni, no = self.rendimientoAletas(hi, ho)
+            self.Ug(hi, ni, ho, no)
+
+            if self.kwargs["flujo"]:
+                DTin = abs(inAnnulli.T-inTube.T)
+                DTout = abs(self.kwargs["tubeTout"]-self.kwargs["annulliTout"])
+            else:
+                DTin = abs(self.kwargs["tubeTout"]-inAnnulli.T)
+                DTout = abs(self.kwargs["annulliTout"]-inTube.T)
+            if DTin == DTout:
+                DTm = DTin
+            else:
+                DTm = (DTin-DTout)/log(DTin/DTout)
+
+        self.A = unidades.Area(self.Q/self.U/DTm)
+        self.L = unidades.Length(self.A/2/pi)
+
+    def Ug(self, hi, ni, ho, no):
+        """Calculate global heat transfer coefficient"""
+        Ui = self.De/self.Di/hi/ni
+        Ufi = self.De*self.fi/self.Di/ni
+        k = self.De*log(self.De/self.Di)/2/self.k
+        U = 1/(Ui+Ufi+k+self.fo/no+1/ho/no)
+        Uc = 1/(Ui+k+1/ho/no)
+        self.U = unidades.HeatTransfCoef(U)
+        self.CF = unidades.Dimensionless(U/Uc)
+        self.OS = unidades.Dimensionless(Uc*(self.fi+self.fo))
+
+    def ThermalPhase(self, input, output):
+        # Calculate thermal fundamentals
+        if input.x == output.x:
+            if input.x == 0:
+                phase = "Latent-Liquid"
+            else:
+                phase = "Latent-Vapor"
+        elif input.x < output.x:
+            phase = "Evaporator"
+        else:
+            phase = "Condenser"
+        return phase
+
+    def rendimientoAletas(self, hi, ho):
+        """Calculate thermal efficiency of fins"""
+        if self.kwargs["tubeFinned"]:
+            if self.statusFinned:
+                # For now only use circular fin
+                do = self.kwargs["rootDoFin"]
+                D = do + self.kwargs["hFin"] * 2
+                phi = (D/do-1)*(1+0.35*log(D/do))
+                w_b = self.kwargs["thicknessBaseFin"]
+                w_t = self.kwargs["thicknessTopFin"]
+                if w_b and w_t:
+                    delta = (w_b + w_t) / 2
+                else:
+                    delta = w_b + w_t
+                if self.kwargs["kFin"]:
+                    kf = self.kwargs["kFin"]
+                else:
+                    kf = self.kwargs["kTube"]
+
+                X = phi*do/2*sqrt(2*ho/kf/delta)
+                no = tanh(X)/X
+            else:
+                no = 1
+            # TODO: Define internal fins
+            ni = 1
+        else:
+            ni = 1
+            no = 1
+        return ni, no
+
+    def hTube(self, fluidTube):
+        """Calculate convection heat trasnfer coefficient in tubeside"""
+        if self.phaseTube[:6] == "Latent":
+            if fluidTube.x == 0:
+                fluido = fluidTube.Liquido
+            else:
+                fluido = fluidTube.Vapor
+
+            rho_i = fluido.rho
+            mu = fluido.mu
+            k = fluido.k
+            v_i = fluidTube.Q*4/pi/self.Di**2
+            re_i = Re(D=self.Di, V=v_i, rho=rho_i, mu=mu)
+            self.VTube = unidades.Speed(v_i)
+            self.rhoTube = rho_i
+            self.ReTube = unidades.Dimensionless(re_i)
+            pr = fluido.Prandt
+
+            if re_i < 2300:
+                L = self.L
+                cp = fluido.cp
+                w = fluido.caudalmasico
+                gz = Gz(w=w, cp=cp, k=k, L=L)
+                beta = fluido.alfav
+                gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
+                if self.kwargs["tubesideLaminar"] == 0:
+                    Nu = h_tubeside_laminar_Eubank_Proctor(
+                        Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
+                elif self.kwargs["tubesideLaminar"] == 1:
+                    Nu = h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
+                elif self.kwargs["tubesideLaminar"] == 2:
+                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
+                elif self.kwargs["tubesideLaminar"] == 3:
+                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+            else:
+                if self.kwargs["tubesideTurbulent"] == 0:
+                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
+                elif self.kwargs["tubesideTurbulent"] == 1:
+                    Nu = h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
+                elif self.kwargs["tubesideTurbulent"] == 2:
+                    frio = self.kwargs["entradaCarcasa"].T > fluidTube.T
+                    Nu = h_tubeside_turbulent_Dittus_Boelter(
+                        Re=re_i, Pr=pr, calentamiento=frio)
+                elif self.kwargs["tubesideTurbulent"] == 3:
+                    Nu = h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
+                elif self.kwargs["tubesideTurbulent"] == 4:
+                    Nu = h_tubeside_turbulent_Gnielinski(
+                        Re=re_i, Pr=pr, D=self.Di, L=L)
+                elif self.kwargs["tubesideTurbulent"] == 5:
+                    line = self.kwargs["distribucionTube"] == 3
+                    filas = self.kwargs["NTube"]**0.5
+                    Nu = h_tubeside_turbulent_VDI(
+                        Re=re_i, Pr=pr, filas_tubos=filas, alineados=line)
+
+        if self.phaseTube == "Condenser":
+            if self.kwargs["orientation"] == 0:
+                # Condensation in horizontal tubes
+                if 0 < fluidTube.x < 1:
+                    X_lockhart = ((1-fluidTube.x)/fluidTube.x)**0.9 * \
+                        (fluidTube.Vapor.rho/fluidTube.Liquido.rho)**0.5 * \
+                        (fluidTube.Liquido.mu/fluidTube.Vapor.mu)**0.1
+                    G = fluidTube.caudalmasico*4/pi/self.Di**2
+                    j = fluidTube.x*G/(
+                        g*self.Di*fluidTube.Vapor.rho *
+                        (fluidTube.Liquido.rho-fluidTube.Vapor.rho))**0.5
+                    print((j, X_lockhart))
+
+            else:
+                # Condensation in vertical tubes
+                pass
+
+        return unidades.HeatTransfCoef(Nu*k/self.Di)
+
+    def hAnnulli(self, fluidAnnulli):
+        """Calculate convection heat transfer coefficient in annulliside"""
+        a = self.Dee/self.De
+        dh = self.Dee-self.De
+
+        rho = fluidAnnulli.Liquido.rho
+        mu = fluidAnnulli.Liquido.mu
+        k = fluidAnnulli.Liquido.k
+        v = fluidAnnulli.Q*4/pi/(self.Dee**2-self.De**2)
+        re = Re(D=dh, V=v, rho=rho, mu=mu)
+        self.VAnnulli = unidades.Speed(v)
+        self.rhoAnnulli = rho
+        self.ReAnnulli = unidades.Dimensionless(re)
+        pr = fluidAnnulli.Liquido.Prandt
+
+        if re <= 2300:
+            Nu = h_anulli_Laminar(re, pr, a)
+        elif re >= 1e4:
+            Nu = h_anulli_Turbulent(re, pr, a)
+        else:
+            Nu = h_anulli_Transition(re, pr, a)
+
+        return unidades.HeatTransfCoef(Nu*k/self.Di)
+
+    def coste(self):
+        self.material = self.kwargs["material"]
+        CI = self.kwargs["Current_index"]
+        BI = self.kwargs["Base_index"]
+
+        if self.kwargs["P_dis"]:
+            self.P_dis = unidades.Pressure(self.kwargs["P_dis"])
+        else:
+            self.P_dis = max(self.kwargs["entradaTubo"].P,
+                             self.kwargs["entradaExterior"].P)
+
+        Pd = self.P_dis.psi
+        Fm = [1., 1.9, 2.2][self.kwargs["material"]]
+
+        if Pd < 4:
+            Fp = 1.
+        elif Pd < 6:
+            Fp = 1.1
+        else:
+            Fp = 1.25
+
+        C = Fm*Fp*900*self.A.ft2**0.18
+        self.C_adq = unidades.Currency(C * CI / BI)
+        self.C_inst = unidades.Currency(self.C_adq * self.kwargs["f_install"])
+
+    def propTxt(self):
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Catalog")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(11))
+
+        if self.kwargs["tubeFinned"]:
+            txt += "\t" + self.propertiesToText(range(11, 17))
+
+        txt += os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(17, 20)) + os.linesep
+        txt += self.propertiesToText(range(20, 28)) + os.linesep
+        txt += self.propertiesToText(range(28, 36)) + os.linesep
+        txt += self.propertiesToText(range(36, 39)) + os.linesep
+
+        if self.statusCoste:
+            txt += os.linesep+"#---------------"
+            txt += QApplication.translate(
+                "pychemqt", "Preliminary Cost Estimation")
+            txt += "-----------------#" + os.linesep
+            txt += self.propertiesToText(range(39, 46))
+
+        return txt
+
+    @classmethod
+    def propertiesEquipment(cls):
+        l = [(QApplication.translate("pychemqt", "Length"), "L",
+              unidades.Length),
+             (QApplication.translate("pychemqt", "Pipe Internal Diameter"),
+              "Di", unidades.Length),
+             (QApplication.translate("pychemqt", "Pipe External Diameter"),
+              "De", unidades.Length),
+             (QApplication.translate("pychemqt", "Annulli External Diameter"),
+              "Dee", unidades.Length),
+             (QApplication.translate("pychemqt", "Thickness"), "w",
+              unidades.Length),
+             (QApplication.translate("pychemqt", "Roughness"), "rugosidad",
+              unidades.Length),
+             (QApplication.translate("pychemqt", "External Area"), "A",
+              unidades.Area),
+             (QApplication.translate("pychemqt", "Thermal Conductivity"), "k",
+              unidades.ThermalConductivity),
+             (QApplication.translate("pychemqt", "Internal Fouling"), "fi",
+              unidades.Fouling),
+             (QApplication.translate("pychemqt", "External Fouling"), "fo",
+              unidades.Fouling),
+             (QApplication.translate("pychemqt", "Finned Tube"), "tubefinned",
+              str),
+             (QApplication.translate("pychemqt", "Fin height"), "hFin",
+              unidades.Length),
+             (QApplication.translate("pychemqt", "Thickness at bottom of fin"),
+              "thicknessBaseFin", unidades.Length),
+             (QApplication.translate("pychemqt", "Thickness at top of fin"),
+              "thicknessTopFin", unidades.Length),
+             (QApplication.translate("pychemqt",
+                                     "External diameter at bottom of fin"),
+              "rootDoFin", unidades.Length),
+             (QApplication.translate("pychemqt", "Fin thermal conductivity"),
+              "kFin", unidades.ThermalConductivity),
+             (QApplication.translate("pychemqt", "Fin count per meter"),
+              "nFin", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_MODO", "modo"), str),
+             (QApplication.translate("pychemqt", "Arrangement Flow"),
+              ("TEXT_FLUJO", "flujo"), str),
+             (QApplication.translate("pychemqt", "Layout"),
+              ("TEXT_ORIENTACION", "orientacion"), str),
+             (QApplication.translate("pychemqt", "Tube Mechanism"),
+              "phaseTube", str),
+             (QApplication.translate("pychemqt", "Tube Fluid Speed"), "VTube",
+              unidades.Speed),
+             (QApplication.translate("pychemqt", "Tube Reynolds"), "ReTube",
+              unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Tube In Temperature"),
+              "TinTube", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Tube In Quality"),
+              "XinTube", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Tube Out Temperature"),
+              "ToutTube", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Tube Out Quality"),
+              "XoutTube", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "ΔP Tube", None),
+              "deltaPTube", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Annulli Mechanism"),
+              "phaseAnnulli", str),
+             (QApplication.translate("pychemqt", "Annulli Fluid Speed"),
+              "VAnnulli", unidades.Speed),
+             (QApplication.translate("pychemqt", "Annulli Reynolds"),
+              "ReAnnulli", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Annulli In Temperature"),
+              "TinAnnulli", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Annulli In Quality"),
+              "XinAnnulli", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Annulli Out Temperature"),
+              "ToutAnnulli", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Annulli Out Quality"),
+              "XoutAnnulli", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "ΔP Annulli", None),
+              "deltaPAnnulli", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "U"), "U",
+              unidades.HeatTransfCoef),
+             (QApplication.translate("pychemqt", "Clean Factor"), "CF",
+              unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Over Surface"), "OS",
+              unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Base index"), "Base_index",
+              float),
+             (QApplication.translate("pychemqt", "Current index"),
+              "Current_index", float),
+             (QApplication.translate("pychemqt", "Install factor"),
+              "f_install", float),
+             (QApplication.translate("pychemqt", "Material"),
+              ("TEXT_MATERIAL", "material"), str),
+             (QApplication.translate("pychemqt", "Design Pressure"), "P_dis",
+              unidades.Pressure),
+             (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq",
+              unidades.Currency),
+             (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
+              unidades.Currency)]
+        return l
+
+
 class Shell_Tube(equipment):
     """Clase que define un cambiador de calor de carcasa y tubos
 
@@ -1227,657 +1932,6 @@ class Evaporator(equipment):
         self.C_inst = unidades.Currency(self.C_adq*self.f_install)
 
 
-class Hairpin(equipment):
-    """Clase que modela los intercambiadores de calor de doble tubo
-
-    Parámetros:
-        entradaInterior: Instancia de clase corriente que define la corriente que pasa por la seccion interior
-        entradaExterior: Instancia de calse corriente que define la corriente que pasa por la seccion exterior
-
-        modo: Modo de cálculo
-            0   -   Diseño
-            1   -   Evaluacion
-        flujo: Tipo de flujo
-            0   -   Contracorriente
-            1   -   Cocorriente
-        orientacion: Orientacion de la tuberia
-            0   -   Horizontal
-            1   -   Vertical, interior descendente
-            2   -   Vertical, interior ascendente
-        metodo:
-            0   -   Temperaturas medias
-            1   -   Division del equipo en segmentos
-        tubesideLaminar: Método de cálculo de h en el lado del tubo en regimen laminar
-            0   -   Eubank-Proctor
-            1   -   VDI mean Nusselt
-            2   -   Hausen
-            3   -   Sieder-Tate
-        tubesideTurbulent: Método de cálculo de h en el lado del tubo en regimen turbulento
-            0   -   Sieder-Tate
-            1   -   Colburn
-            2   -   Dittus-Boelter
-            3   -   ESDU
-            4   -   Gnielinski
-            5   -   VDI mean Nusselt
-
-        LTube: Longitud del tubo
-        DeeTube: Diametro interno tuberia externa
-        DeTube: Diametro externo pared tuberia interna
-        DiTube: Diametro interno pared tuberia interna
-        wTube: Espesor tuberia
-        rTube: rugosidad interna de los tubos
-        kTube: Conductividad térmica
-
-        tubeFouling: Fouling en el lado del tubo
-        annulliFouling: Fouling en el lado del anillo
-
-        tubeFinned: Boolean que indica si el tubo tiene aletas
-        hFin: Altura de la aleta
-        thicknessBaseFin: Espesor en la base de la aleta
-        thicknessTopFin: Espesor en lo alto de la aleta
-        rootDoFin: Diametro externo en la base de las aletas
-        kFin: Conductividad termica del material de la aleta
-        nFin: Numero de aletas por metro de tuberia
-
-        tubeTout: Temperatura de salida del fluido del tubo
-        annulliTout: Temperatura de salida del fluido del anillo
-
-    Coste:
-        material:
-            0   -  Carbon steel/carbon steel
-            1   -  Carbon steel/304 stainless
-            2   -  Carbon steel/316 stainless
-        P_dis: Presion de diseño
-    """
-    title = QApplication.translate("pychemqt", "Hairpin Heat Exchanger")
-    help = ""
-    kwargs = {
-        "entradaTubo": None,
-        "entradaExterior": None,
-
-        "modo": 0,
-        "flujo": 0,
-        "orientacion": 0,
-        "tubesideLaminar": 0,
-        "tubesideTurbulent": 0,
-        "metodo": 0,
-        "phase": 0,
-
-        "DeeTube": 0.0,
-        "DeTube": 0.0,
-        "DiTube": 0.0,
-        "wTube": 0.0,
-        "rTube": 0.0,
-        "kTube": 0.0,
-        "LTube": 0.0,
-        "nTube": 0.0,
-
-        "tubeFouling": 0.0,
-        "annulliFouling": 0.0,
-
-        "tubeFinned": 0,
-        "hFin": 0.0,
-        "thicknessBaseFin": 0.0,
-        "thicknessTopFin": 0.0,
-        "rootDoFin": 0.0,
-        "kFin": 0.0,
-        "nFin": 0,
-
-        "tubeTout": 0.0,
-        "tubeXout": -1.0,
-        "annulliTout": 0.0,
-        "annulliXout": -1.0,
-
-        "f_install": 3.,
-        "Base_index": 0.0,
-        "Current_index": 0.0,
-        "material": 0,
-        "P_dis": 0}
-
-    kwargsInput = ("entradaTubo", "entradaExterior")
-    kwargsValue = ("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
-                   "nTube", "tubeFouling", "annulliFouling", "P_dis",
-                   "tubeTout", "annulliTout")
-    kwargsList = ("modo", "flujo", "orientacion")
-    kwargsCheck = ("tubeFinned", )
-    calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
-                      "deltaPTube", "deltaPAnnulli", "CF")
-    calculateCostos = ("C_adq", "C_inst")
-    indiceCostos = 2
-
-    TEXT_MODO = [
-        QApplication.translate("pychemqt", "Design"),
-        QApplication.translate("pychemqt", "Rating")]
-    TEXT_FLUJO = [
-        QApplication.translate("pychemqt", "Counterflow"),
-        QApplication.translate("pychemqt", "Parallelflow")]
-    TEXT_ORIENTACION = [
-        QApplication.translate("pychemqt", "Horizontal"),
-        QApplication.translate("pychemqt", "Vertical, (in down)"),
-        QApplication.translate("pychemqt", "Vertical, (in up)")]
-    TEXT_MATERIAL = [
-        QApplication.translate("pychemqt", "Carbon steel/carbon steel"),
-        QApplication.translate("pychemqt", "Carbon steel/304 stainless"),
-        QApplication.translate("pychemqt", "Carbon steel/316 stainless")]
-    CODE_FLUJO = ("CF", "PF")
-
-    @property
-    def isCalculable(self):
-        self.status = 1
-        self.msg = ""
-        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
-                self.kwargs["Current_index"]:
-            self.statusCoste = True
-        else:
-            self.statusCoste = False
-
-        if not self.kwargs["entradaTubo"]:
-            self.msg = QApplication.translate("pychemqt", "undefined internal stream input")
-            self.status = 0
-            return
-        if not self.kwargs["entradaExterior"]:
-            self.msg = QApplication.translate("pychemqt", "undefined external stream input")
-            self.status = 0
-            return
-
-        if not self.kwargs["DeeTube"]:
-            self.msg = QApplication.translate("pychemqt", "undefined pipe external diameter")
-            self.status = 0
-            return
-
-        self.statusPipe = 0
-        if self.kwargs["DeTube"] and self.kwargs["DiTube"]:
-            self.statusPipe = 1
-        elif self.kwargs["DeTube"] and self.kwargs["wTube"]:
-            self.statusPipe = 2
-        elif self.kwargs["DiTube"] and self.kwargs["wTube"]:
-            self.statusPipe = 3
-        else:
-            self.msg = QApplication.translate("pychemqt", "undefined pipe diameters")
-            self.status = 0
-            return
-
-        if not self.kwargs["kTube"]:
-            self.msg = QApplication.translate("pychemqt", "undefined pipe material thermal conductivity")
-            self.status = 0
-            return
-
-        self.statusFinned = 0
-        self.tubefinned = QApplication.translate("pychemqt", "Bare Tube")
-        if self.kwargs["tubeFinned"]:
-            self.tubefinned = QApplication.translate("pychemqt", "Finned Tube")
-            espesor = self.kwargs["thicknessBaseFin"] or self.kwargs["thicknessTopFin"]
-            if self.kwargs["hFin"] and espesor:
-                self.statusFinned = 1
-                self.msg = ""
-            else:
-                self.msg = QApplication.translate("pychemqt", "fin not specified, using bare tube")
-                self.status = 3
-
-        if self.kwargs["modo"]:
-            if not self.kwargs["LTube"]:
-                self.msg = QApplication.translate("pychemqt", "undefined pipe length")
-                self.status = 0
-                return
-        else:
-            self.statusOut = 0
-            o1 = self.kwargs["tubeTout"] or self.kwargs["tubeXout"] != -1.
-            o2 = self.kwargs["annulliTout"] or self.kwargs["annulliXout"] != -1.
-            if o1 and o2:
-                self.statusOut = 1
-            elif o1:
-                self.statusOut = 2
-            elif o2:
-                self.statusOut = 3
-            else:
-                self.msg = QApplication.translate("pychemqt", "undefined output condition")
-                self.status = 0
-                return
-        return True
-
-    def calculo(self):
-        # Define tipo de flujo
-        if self.kwargs["flujo"]:
-            self.flujo = "PF"
-        else:
-            self.flujo = "CF"
-
-        # Calculate pipe dimension
-        if self.statusPipe == 1:
-            self.De = unidades.Length(self.kwargs["DeTube"])
-            self.Di = unidades.Length(self.kwargs["DiTube"])
-            self.w = unidades.Length((self.De-self.Di)/2)
-            if self.kwargs["wTube"] and w != self.kwargs["wTube"]:
-                self.msg = QApplication.translate("pychemqt", "Pipe thickness discard")
-                self.status = 3
-        elif self.statusPipe == 2:
-            self.De = unidades.Length(self.kwargs["DeTube"])
-            self.w = unidades.Length(self.kwargs["wTube"])
-            self.Di = unidades.Length(self.De-w*2)
-        else:
-            self.Di = unidades.Length(self.kwargs["DiTube"])
-            self.w = unidades.Length(self.kwargs["wTube"])
-            self.De = unidades.Length(self.Di+w*2)
-        self.Dee = unidades.Length(self.kwargs["DeeTube"])
-        self.rugosidad = unidades.Length(self.kwargs["rTube"])
-        self.k = unidades.ThermalConductivity(self.kwargs["kTube"])
-        self.fi = unidades.Fouling(self.kwargs["tubeFouling"])
-        self.fo = unidades.Fouling(self.kwargs["annulliFouling"])
-
-        if self.kwargs["modo"]:
-            self.rating()
-        else:
-            self.design()
-
-        eD = unidades.Dimensionless(self.kwargs["rTube"]/self.Di)
-        f = f_friccion(self.ReTube, eD)
-        self.deltaPTube = unidades.DeltaP(self.L*self.VTube**2/self.Di*f*self.rhoTube/2)
-
-        f_a = f_friccion(self.ReAnnulli, geometria=6)
-        self.deltaPAnnulli = unidades.DeltaP(self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2)
-
-        self.salida = [self.outTube.clone(P=self.outTube.P-self.deltaPTube)]
-        self.salida.append(self.outAnnulli.clone(P=self.outAnnulli.P-self.deltaPAnnulli))
-        self.ToutTube = self.salida[0].T
-        self.ToutAnnulli = self.salida[1].T
-        self.XoutTube = self.salida[0].x
-        self.XoutAnnulli = self.salida[1].x
-        self.TinTube = self.kwargs["entradaTubo"].T
-        self.XinTube = self.kwargs["entradaTubo"].x
-        self.TinAnnulli = self.kwargs["entradaExterior"].T
-        self.XinAnnulli = self.kwargs["entradaExterior"].x
-
-    def rating(self):
-        """Evaluacion de una tuberia existente"""
-        # Input stream
-        inTube = self.kwargs["entradaTubo"]
-        inAnnulli = self.kwargs["entradaExterior"]
-
-        self.L = unidades.Length(self.kwargs["LTube"])
-
-        # Metodo temperaturas medias
-        if self.kwargs["metodo"] == 0:
-            self.phaseTube = self.ThermalPhase(inTube, inTube)
-            self.phaseAnnulli = self.ThermalPhase(inAnnulli, inAnnulli)
-
-            Ci = inTube.Liquido.cp*inTube.caudalmasico
-            Co = inAnnulli.Liquido.cp*inAnnulli.caudalmasico
-            Cmin = min(Ci, Co)
-            Cmax = max(Ci, Co)
-            C_ = Cmin/Cmax
-
-            self.A = unidades.Area(self.L*pi*self.De)
-            hi = self.hTube(inTube)
-            ho = self.hAnnulli(inAnnulli)
-            ni, no = self.rendimientoAletas(hi, ho)
-            self.Ug(hi, ni, ho, no)
-
-            NTU = self.A*self.U/Cmin
-            ep = efectividad(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
-            self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
-
-            if inTube.T > inAnnulli.T:
-                QTube = self.Q
-                QAnnulli = -self.Q
-            else:
-                QTube = -self.Q
-                QAnnulli = self.Q
-            f = lambda T: inTube.clone(T=T).h-inTube.h+QTube
-            T = fsolve(f, inTube.T)[0]
-            self.outTube = inTube.clone(T=T)
-            f = lambda T: inAnnulli.clone(T=T).h-inAnnulli.h+QAnnulli
-            T = fsolve(f, inAnnulli.T)[0]
-            self.outAnnulli = inAnnulli.clone(T=T)
-
-    def design(self):
-        """Diseño a partir de unas condiciones de salida indicadas"""
-        # Input stream
-        inTube = self.kwargs["entradaTubo"]
-        inAnnulli = self.kwargs["entradaExterior"]
-
-        # Metodo temperaturas medias
-        if self.kwargs["metodo"] == 0:
-
-            # Calculate output condition and sensible/latent thermal situation,
-            # global thermal balance
-            if self.statusOut == 1:
-                if self.kwargs["tubeTout"]:
-                    self.outTube = inTube.clone(T=self.kwargs["tubeTout"])
-                else:
-                    self.outTube = inTube.clone(x=self.kwargs["tubeXout"])
-                if self.kwargs["annulliTout"]:
-                    self.outAnnulli = inAnnulli.clone(T=self.kwargs["annulliTout"])
-                else:
-                    self.outAnnulli = inAnnulli.clone(x=self.kwargs["annulliXout"])
-
-                DTi = abs(self.outTube.T-inTube.T)
-                DTo = abs(self.outAnnulli.T-inAnnulli.T)
-                Qo = abs(self.outAnnulli.h-inAnnulli.h)
-                Qi = abs(self.outTube.h-inTube.h)
-                self.Q = unidades.Power((Qo+Qi)/2.)
-
-            elif self.statusOut == 2:
-                if self.kwargs["tubeTout"]:
-                    self.outTube = inTube.clone(T=self.kwargs["tubeTout"])
-                else:
-                    self.outTube = inTube.clone(x=self.kwargs["tubeXout"])
-
-                DTi = abs(self.outTube.T-inTube.T)
-                Qi = abs(self.outTube.h-inTube.h)
-                self.Q = unidades.Power(Qi)
-                f = lambda T: inAnnulli.clone(T=T).h-inAnnulli.h-Qi
-                T = fsolve(f, inAnnulli.T)[0]
-                DTo = abs(T-inAnnulli.T)
-                self.outAnnulli = inAnnulli.clone(T=T)
-
-            elif self.statusOut == 3:
-                if self.kwargs["annulliTout"]:
-                    self.outAnnulli = inAnnulli.clone(T=self.kwargs["annulliTout"])
-                else:
-                    self.outAnnulli = inAnnulli.clone(x=self.kwargs["annulliXout"])
-
-                DTo = abs(self.outAnnulli.T-inAnnulli.T)
-                Qo = abs(self.outAnnulli.h-inAnnulli.h)
-                self.Q = unidades.Power(Qo)
-                f = lambda T: inTube.clone(T=T).h-inTube.h-Qi
-                T = fsolve(f, inTube.T)[0]
-                DTi = abs(T-inTube.T)
-                self.outTube = inTube.clone(T=T)
-
-            self.phaseTube = self.ThermalPhase(inTube, self.outTube)
-            self.phaseAnnulli = self.ThermalPhase(inAnnulli, self.outAnnulli)
-
-            fluidTube = inTube.clone(T=(inTube.T+self.outTube.T)/2.)
-            fluidAnnulli = inAnnulli.clone(T=(inAnnulli.T+self.outAnnulli.T)/2.)
-
-            hi = self.hTube(fluidTube)
-            ho = self.hAnnulli(fluidAnnulli)
-            ni, no = self.rendimientoAletas(hi, ho)
-            self.Ug(hi, ni, ho, no)
-
-            DTi = abs(self.kwargs["tubeTout"]-inTube.T)
-            DTo = abs(self.kwargs["annulliTout"]-inAnnulli.T)
-
-            if self.kwargs["flujo"]:
-                DTin = abs(inAnnulli.T-inTube.T)
-                DTout = abs(self.kwargs["tubeTout"]-self.kwargs["annulliTout"])
-            else:
-                DTin = abs(self.kwargs["tubeTout"]-inAnnulli.T)
-                DTout = abs(self.kwargs["annulliTout"]-inTube.T)
-            if DTin == DTout:
-                DTm = DTin
-            else:
-                DTm = (DTin-DTout)/log(DTin/DTout)
-
-        self.A = unidades.Area(self.Q/self.U/DTm)
-        self.L = unidades.Length(self.A/2/pi)
-
-    def Ug(self, hi, ni, ho, no):
-        U = 1/(self.De/self.Di/hi/ni+self.De*self.fi/self.Di/ni+self.De*log(self.De/self.Di)/2/self.k+self.fo/no+1/ho/no)
-        Uc = 1/(self.De/self.Di/hi/ni+self.De*log(self.De/self.Di)/2/self.k+1/ho/no)
-        self.U = unidades.HeatTransfCoef(U)
-        self.CF = unidades.Dimensionless(U/Uc)
-        self.OS = unidades.Dimensionless(Uc*(self.fi+self.fo))
-
-    def ThermalPhase(self, input, output):
-        # Calculate thermal fundamentals
-        if input.x == output.x:
-            if input.x == 0:
-                phase = "Latent-Liquid"
-            else:
-                phase = "Latent-Vapor"
-        elif input.x < output.x:
-            phase = "Evaporator"
-        else:
-            phase = "Condenser"
-        return phase
-
-    def rendimientoAletas(self, hi, ho):
-        """Metodo de calculo del rendimiento termico de aletas"""
-        if self.kwargs["tubeFinned"]:
-            if self.statusFinned:
-                # de momento solo asumimos el caso de aleta circular
-                do = self.kwargs["rootDoFin"]
-                D = do+self.kwargs["hFin"]*2
-                phi = (D/do-1)*(1+0.35*log(D/do))
-                if self.kwargs["thicknessBaseFin"] and self.kwargs["thicknessTopFin"]:
-                    delta = (self.kwargs["thicknessBaseFin"]+self.kwargs["thicknessTopFin"])/2
-                else:
-                    delta = self.kwargs["thicknessBaseFin"]+self.kwargs["thicknessTopFin"]
-                if self.kwargs["kFin"]:
-                    kf = self.kwargs["kFin"]
-                else:
-                    kf = self.kwargs["kTube"]
-
-                X = phi*do/2*sqrt(2*ho/kf/delta)
-                no = tanh(X)/X
-            else:
-                no = 1
-            # Falta definir aletas interiores
-            ni = 1
-        else:
-            ni = 1
-            no = 1
-        return ni, no
-
-
-    def hTube(self, fluidTube):
-        """Cálculo del coeficiente de transferencia de calor por conveccion en la parte del tubo"""
-        if self.phaseTube[:6] == "Latent":
-            if fluidTube.x == 0:
-                fluido = fluidTube.Liquido
-            else:
-                fluido = fluidTube.Vapor
-
-            rho_i = fluido.rho
-            mu = fluido.mu
-            k = fluido.k
-            v_i = fluidTube.Q*4/pi/self.Di**2
-            re_i = Re(D=self.Di, V=v_i, rho=rho_i, mu=mu)
-            self.VTube = unidades.Speed(v_i)
-            self.rhoTube = rho_i
-            self.ReTube = unidades.Dimensionless(re_i)
-            pr = fluido.Prandt
-
-            if re_i < 2300:
-                L = self.L
-                cp = fluido.cp
-                w = fluido.caudalmasico
-                gz = Gz(w=w, cp=cp, k=k, L=L)
-                beta = fluido.alfav
-                gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
-                if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
-                elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
-            else:
-                if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
-                elif self.kwargs["tubesideTurbulent"] == 1:
-                    Nu = h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
-                elif self.kwargs["tubesideTurbulent"] == 2:
-                    frio = self.kwargs["entradaCarcasa"].T > fluidTube.T
-                    Nu = h_tubeside_turbulent_Dittus_Boelter(Re=re_i, Pr=pr, calentamiento=frio)
-                elif self.kwargs["tubesideTurbulent"] == 3:
-                    Nu = h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
-                elif self.kwargs["tubesideTurbulent"] == 4:
-                    Nu = h_tubeside_turbulent_Gnielinski(Re=re_i, Pr=pr, D=self.Di, L=L)
-                elif self.kwargs["tubesideTurbulent"] == 5:
-                    line = self.kwargs["distribucionTube"] == 3
-                    filas = self.kwargs["NTube"]**0.5
-                    Nu = h_tubeside_turbulent_VDI(Re=re_i, Pr=pr, filas_tubos=filas, alineados=line)
-
-        if self.phaseTube == "Condenser":
-            if self.kwargs["orientation"] == 0:  # Condensacion en tubos horizontales
-                if 0 < fluidTube.x < 1:
-                    X_lockhart = ((1-fluidTube.x)/fluidTube.x)**0.9*(fluidTube.Vapor.rho/fluidTube.Liquido.rho)**0.5*(fluidTube.Liquido.mu/fluidTube.Vapor.mu)**0.1
-                    G = fluidTube.caudalmasico*4/pi/self.Di**2
-                    j = fluidTube.x*G/(g*self.Di*fluidTube.Vapor.rho*(fluidTube.Liquido.rho-fluidTube.Vapor.rho))**0.5
-                    print((j, X_lockhart))
-
-            else:   # condensacion veritcal
-                pass
-
-        return unidades.HeatTransfCoef(Nu*k/self.Di)
-
-    def hAnnulli(self, fluidAnnulli):
-        """Cálculo del coeficiente de transferencia de calor por conveccion en la parte del anillo"""
-        a = self.Dee/self.De
-        dh = self.Dee-self.De
-
-        rho = fluidAnnulli.Liquido.rho
-        mu = fluidAnnulli.Liquido.mu
-        k = fluidAnnulli.Liquido.k
-        v = fluidAnnulli.Q*4/pi/(self.Dee**2-self.De**2)
-        re = Re(D=dh, V=v, rho=rho, mu=mu)
-        self.VAnnulli = unidades.Speed(v)
-        self.rhoAnnulli = rho
-        self.ReAnnulli = unidades.Dimensionless(re)
-        pr = fluidAnnulli.Liquido.Prandt
-
-        if re <= 2300:
-            Nu = h_anulli_Laminar(re, pr, a)
-        elif re >= 1e4:
-            Nu = h_anulli_Turbulent(re, pr, a)
-        else:
-            Nu = h_anulli_Transition(re, pr, a)
-
-        return unidades.HeatTransfCoef(Nu*k/self.Di)
-
-    def coste(self):
-        self.material = self.kwargs["material"]
-
-        if self.kwargs["P_dis"]:
-            self.P_dis = unidades.Pressure(self.kwargs["P_dis"])
-        else:
-            self.P_dis = max(self.kwargs["entradaTubo"].P,
-                             self.kwargs["entradaExterior"].P)
-
-        Pd = self.P_dis.psi
-        Fm = [1., 1.9, 2.2][self.kwargs["material"]]
-
-        if Pd < 4:
-            Fp = 1.
-        elif Pd < 6:
-            Fp = 1.1
-        else:
-            Fp = 1.25
-
-        C = Fm*Fp*900*self.A.ft2**0.18
-        self.C_adq = unidades.Currency(C * self.kwargs["Current_index"] / self.kwargs["Base_index"])
-        self.C_inst = unidades.Currency(self.C_adq * self.kwargs["f_install"])
-
-    def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Catalog")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Length"), self.L.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pipe Internal Diameter"), self.Di.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pipe External Diameter"), self.De.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli External Diameter"), self.Dee.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Thickness"), self.w.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Roughness"), self.rugosidad.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "External Area"), self.A.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Thermal Conductivity"), self.k.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Internal Fouling"), self.fi.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "External Fouling"), self.fo.str)+os.linesep
-
-        if self.kwargs["tubeFinned"]:
-            txt+="%s" %(QApplication.translate("pychemqt", "Finned Tube"))+os.linesep
-#        hFin: Altura de la aleta
-#        thicknessBaseFin: Espesor en la base de la aleta
-#        thicknessTopFin: Espesor en lo alto de la aleta
-#        rootDoFin: Diametro externo en la base de las aletas
-#        kFin: Conductividad termica del material de la aleta
-#        nFin: Numero de aletas por metro de tuberia
-
-        else:
-            txt+="%s" %(QApplication.translate("pychemqt", "Bare Tube"))+os.linesep
-
-        txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_MODO[self.kwargs["modo"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Arrangement Flow"), self.TEXT_FLUJO[self.kwargs["flujo"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Layout"), self.TEXT_ORIENTACION[self.kwargs["orientacion"]])+os.linesep
-
-        txt+=os.linesep+"%-25s\t %s" %(QApplication.translate("pychemqt", "Tube Mechanism"), self.phaseTube)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Fluid Speed"), self.VTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Reynolds"), self.ReTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube In Temperature"), self.kwargs["entradaTubo"].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube In Quality"), self.kwargs["entradaTubo"].x.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Temperature"), self.ToutTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Tube Out Quality"), self.XoutTube.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Tube", None), self.deltaPTube.str)+os.linesep
-
-        txt+=os.linesep+"%-25s\t %s" %(QApplication.translate("pychemqt", "Annulli Mechanism"), self.phaseAnnulli)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Fluid Speed"), self.VAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Reynolds"), self.ReAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli In Temperature"), self.kwargs["entradaExterior"].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli In Quality"), self.kwargs["entradaExterior"].x.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Temperature"), self.ToutAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Annulli Out Quality"), self.XoutAnnulli.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "ΔP Annulli", None), self.deltaPAnnulli.str)+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "U"), self.U.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Factor"), self.CF.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Over Surface"), self.OS.str)+os.linesep
-
-        if self.statusCoste:
-            txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Material"), self.TEXT_MATERIAL[self.kwargs["material"]])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Design Pressure"), self.P_dis.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
-
-        return txt
-
-
-    @classmethod
-    def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Length"), "L", unidades.Length),
-             (QApplication.translate("pychemqt", "Pipe Internal Diameter"), "Di", unidades.Length),
-             (QApplication.translate("pychemqt", "Pipe External Diameter"), "De", unidades.Length),
-             (QApplication.translate("pychemqt", "Annulli External Diameter"), "Dee", unidades.Length),
-             (QApplication.translate("pychemqt", "Thickness"), "w", unidades.Length),
-             (QApplication.translate("pychemqt", "Roughness"), "rugosidad", unidades.Length),
-             (QApplication.translate("pychemqt", "External Area"), "A", unidades.Area),
-             (QApplication.translate("pychemqt", "Thermal Conductivity"), "k", unidades.ThermalConductivity),
-             (QApplication.translate("pychemqt", "Internal Fouling"), "fo", unidades.Fouling),
-             (QApplication.translate("pychemqt", "External Fouling"), "fi", unidades.Fouling),
-             (QApplication.translate("pychemqt", "Finned Tube"), "tubefinned", str),
-             (QApplication.translate("pychemqt", "Mode"), ("TEXT_MODO", "modo"), str),
-             (QApplication.translate("pychemqt", "Arrangement Flow"), ("TEXT_FLUJO", "flujo"), str),
-             (QApplication.translate("pychemqt", "Layout"), ("TEXT_ORIENTACION", "orientacion"), str),
-             (QApplication.translate("pychemqt", "Tube Mechanism"), "phaseTube", str),
-             (QApplication.translate("pychemqt", "Tube Fluid Speed"), "VTube", unidades.Speed),
-             (QApplication.translate("pychemqt", "Tube Reynolds"), "ReTube", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Tube In Temperature"), "TinTube", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Tube In Quality"), "XinTube", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Tube Out Temperature"), "ToutTube", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Tube Out Quality"), "XoutTube", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "ΔP Tube", None), "deltaPTube", unidades.DeltaP),
-             (QApplication.translate("pychemqt", "Annulli Mechanism"), "phaseAnnulli", str),
-             (QApplication.translate("pychemqt", "Annulli Fluid Speed"), "VAnnulli", unidades.Speed),
-             (QApplication.translate("pychemqt", "Annulli Reynolds"), "ReAnnulli", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Annulli In Temperature"), "TinAnnulli", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Annulli In Quality"), "XinAnnulli", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Annulli Out Temperature"), "ToutAnnulli", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Annulli Out Quality"), "XoutAnnulli", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "ΔP Annulli", None), "deltaPAnnulli", unidades.DeltaP),
-             (QApplication.translate("pychemqt", "U"), "U", unidades.HeatTransfCoef),
-             (QApplication.translate("pychemqt", "Clean Factor"), "CF", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Over Surface"), "OS", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Material"), ("TEXT_MATERIAL", "material"), str),
-             (QApplication.translate("pychemqt", "Design Pressure"), "P_dis", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", unidades.Currency),
-             (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", unidades.Currency)]
-        return l
-
-
 class Refrigeration(equipment):
     """Clase que modela las unidades de refrigeración"""
     title = "Refrigerador"
@@ -1991,25 +2045,22 @@ if __name__ == "__main__":
 #    Cambiador=Heat_Exchanger(entrada=agua, Tout=350)
 #    print Cambiador.Heat.MJh
 
-    aguaTubo=Corriente(T=283.15, P=101325., ids=[62], caudalMasico=10., fraccionMolar=[1.])
-    aguaCarcasa=Corriente(T=370, P=101325., ids=[62], caudalMasico=1000., fraccionMolar=[1.])
-    Ds=unidades.Length(19.25, "inch")
-    Do=unidades.Length(1, "inch")
-    L=unidades.Length(14, "ft")
-    pt=unidades.Length(1.25, "inch")
-    B=unidades.Length(3.85, "inch")
-    dotl=unidades.Length(0.5*(19.25-17.91), "inch")
-    cambiador = Shell_Tube(entradaTubo=aguaTubo, entradaCarcasa=aguaCarcasa, shellsideSensible=1, DShell=Ds, NTube=124, DeTube=Do, wTube=0.006, LTube=L, pitch=pt, distribucionTube=3, baffleSpacing=B, baffleSpacingIn=B, baffleSpacingOut=B, baffleCut=0.2, clearanceTubeBaffle=0.0004, clearanceShellBaffle=0.0025279, clearanceShellBundle=dotl, sealingStrips=0.1*9.24)
+    # aguaTubo=Corriente(T=283.15, P=101325., ids=[62], caudalMasico=10., fraccionMolar=[1.])
+    # aguaCarcasa=Corriente(T=370, P=101325., ids=[62], caudalMasico=1000., fraccionMolar=[1.])
+    # Ds=unidades.Length(19.25, "inch")
+    # Do=unidades.Length(1, "inch")
+    # L=unidades.Length(14, "ft")
+    # pt=unidades.Length(1.25, "inch")
+    # B=unidades.Length(3.85, "inch")
+    # dotl=unidades.Length(0.5*(19.25-17.91), "inch")
+    # cambiador = Shell_Tube(entradaTubo=aguaTubo, entradaCarcasa=aguaCarcasa, shellsideSensible=1, DShell=Ds, NTube=124, DeTube=Do, wTube=0.006, LTube=L, pitch=pt, distribucionTube=3, baffleSpacing=B, baffleSpacingIn=B, baffleSpacingOut=B, baffleCut=0.2, clearanceTubeBaffle=0.0004, clearanceShellBaffle=0.0025279, clearanceShellBundle=dotl, sealingStrips=0.1*9.24)
 
-#    caliente=Corriente(T=140+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
-#    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
-#    Cambiador=Hairpin(modo=1)
-#    print Cambiador.status, Cambiador.msg
-#    Cambiador(entradaTubo=caliente)
-#    print Cambiador.status, Cambiador.msg
-#    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
-#                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
-#                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
+    caliente=Corriente(T=90+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
+    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
+    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
+                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
+                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
+    print(Cambiador.propTxt())
 
 #    from scipy import *
 #    from pylab import *
