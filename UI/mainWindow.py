@@ -517,6 +517,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         else:
             self.recentFiles = []
             self.menuRecentFiles.setEnabled(False)
+            self.lastFile = []
 
         self.updateStatus("Loaded pychemqt")
         self.activeControl(False)
