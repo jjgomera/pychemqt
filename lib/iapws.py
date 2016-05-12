@@ -3313,7 +3313,7 @@ class IAPWS97(Thermo):
         if self.x == 0:
             # only liquid phase
             self.fill(self, propiedades)
-            self.fill(lself.Liquido, propiedades)
+            self.fill(self.Liquido, propiedades)
             self.Liquido.sigma = unidades.Tension(_Tension(self.T))
         elif self.x == 1:
             # only vapor phase

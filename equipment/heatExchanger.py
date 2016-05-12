@@ -55,6 +55,11 @@ class Heat_Exchanger(equipment):
         U: Global coefficient of heat transmision
         Text: Ambient external temperature
         DeltaP: Opcional pressure losses of equipment
+
+    >>> agua = Corriente(T=300, P=101325., caudalMasico=1., fraccionMolar=[1.])
+    >>> Cambiador = Heat_Exchanger(entrada=agua, Tout=350)
+    >>> print("%6g" % Cambiador.HeatCalc.MJh)
+    753.063
     """
     title = QApplication.translate("pychemqt", "Heat Exchanger")
     help = ""
@@ -232,6 +237,11 @@ class Fired_Heater(equipment):
             2   -   Stainless
         P_dis: Design pressure of equipment, if no specified use the input
             stream pressure
+
+    >>> agua = Corriente(T=400, P=101325., caudalMasico=1., fraccionMolar=[1.])
+    >>> cambiador = Fired_Heater(entrada=agua, Tout=450)
+    >>> print("%6g" % cambiador.Heat.MJh)
+    357.685
     """
     title = QApplication.translate("pychemqt", "Fired Heater")
     help = os.environ["pychemqt"] + "doc/fireHeater.htm"
@@ -576,6 +586,18 @@ class Hairpin(equipment):
             1 - Carbon steel/304 stainless
             2 - Carbon steel/316 stainless
         P_dis: Design pressure
+
+    >>> kw = {"ids": [62], "fraccionMolar": [1.]}
+    >>> caliente = Corriente(T=90+273.15, P=361540., caudalMasico=0.36, **kw)
+    >>> fria = Corriente(T=20+273.15, P=101325., caudalMasico=500/3600., **kw)
+    >>> Cambiador = Hairpin(entradaTubo=caliente, entradaExterior=fria, \
+                            modo=1, DiTube=0.0525, DeTube=0.0603, LTube=2.5, \
+                            DeeTube=0.0779, kTube=54, rTube=0.0459994e-3, \
+                            annulliFouling=0.000352, tubeFouling=0.000176)
+    >>> print("%6g %6g" % (Cambiador.ReTube, Cambiador.ReAnnulli))
+    27783.3 1277.55
+    >>> print("%6g %6g" % (Cambiador.hTube.kWm2K, Cambiador.hAnnulli.kWm2K))
+    1055.53 52.8267
     """
     title = QApplication.translate("pychemqt", "Hairpin Heat Exchanger")
     help = ""
@@ -807,8 +829,8 @@ class Hairpin(equipment):
             C_ = Cmin/Cmax
 
             self.A = unidades.Area(self.L*pi*self.De)
-            hi = self.hTube(inTube)
-            ho = self.hAnnulli(inAnnulli)
+            hi = self._hTube(inTube)
+            ho = self._hAnnulli(inAnnulli)
             ni, no = self.rendimientoAletas(hi, ho)
             self.Ug(hi, ni, ho, no)
 
@@ -897,8 +919,8 @@ class Hairpin(equipment):
             T = (inAnnulli.T+self.outAnnulli.T)/2.
             fluidAnnulli = inAnnulli.clone(T=T)
 
-            hi = self.hTube(fluidTube)
-            ho = self.hAnnulli(fluidAnnulli)
+            hi = self._hTube(fluidTube)
+            ho = self._hAnnulli(fluidAnnulli)
             ni, no = self.rendimientoAletas(hi, ho)
             self.Ug(hi, ni, ho, no)
 
@@ -923,6 +945,8 @@ class Hairpin(equipment):
         k = self.De*log(self.De/self.Di)/2/self.k
         U = 1/(Ui+Ufi+k+self.fo/no+1/ho/no)
         Uc = 1/(Ui+k+1/ho/no)
+        self.hTube = unidades.HeatTransfCoef(hi)
+        self.hAnnulli = unidades.HeatTransfCoef(ho)
         self.U = unidades.HeatTransfCoef(U)
         self.CF = unidades.Dimensionless(U/Uc)
         self.OS = unidades.Dimensionless(Uc*(self.fi+self.fo))
@@ -942,6 +966,12 @@ class Hairpin(equipment):
 
     def rendimientoAletas(self, hi, ho):
         """Calculate thermal efficiency of fins"""
+        self.hFin = unidades.Length(self.kwargs["hFin"])
+        self.thicknessBaseFin = unidades.Length(self.kwargs["thicknessBaseFin"])
+        self.thicknessTopFin = unidades.Length(self.kwargs["thicknessTopFin"])
+        self.rootDoFin = unidades.Length(self.kwargs["rootDoFin"])
+        self.kFin = unidades.ThermalConductivity(self.kwargs["kFin"])
+        self.nFin = unidades.Dimensionless(self.kwargs["nFin"])
         if self.kwargs["tubeFinned"]:
             if self.statusFinned:
                 # For now only use circular fin
@@ -970,7 +1000,7 @@ class Hairpin(equipment):
             no = 1
         return ni, no
 
-    def hTube(self, fluidTube):
+    def _hTube(self, fluidTube):
         """Calculate convection heat trasnfer coefficient in tubeside"""
         if self.phaseTube[:6] == "Latent":
             if fluidTube.x == 0:
@@ -1043,7 +1073,7 @@ class Hairpin(equipment):
 
         return unidades.HeatTransfCoef(Nu*k/self.Di)
 
-    def hAnnulli(self, fluidAnnulli):
+    def _hAnnulli(self, fluidAnnulli):
         """Calculate convection heat transfer coefficient in annulliside"""
         a = self.Dee/self.De
         dh = self.Dee-self.De
@@ -1105,16 +1135,16 @@ class Hairpin(equipment):
         txt += QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(17, 20)) + os.linesep
-        txt += self.propertiesToText(range(20, 28)) + os.linesep
-        txt += self.propertiesToText(range(28, 36)) + os.linesep
-        txt += self.propertiesToText(range(36, 39)) + os.linesep
+        txt += self.propertiesToText(range(20, 29)) + os.linesep  # Tube
+        txt += self.propertiesToText(range(29, 38)) + os.linesep  # Annulli
+        txt += self.propertiesToText(range(38, 41)) + os.linesep
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
             txt += QApplication.translate(
                 "pychemqt", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
-            txt += self.propertiesToText(range(39, 46))
+            txt += self.propertiesToText(range(41, 48))
 
         return txt
 
@@ -1175,8 +1205,10 @@ class Hairpin(equipment):
               "ToutTube", unidades.Temperature),
              (QApplication.translate("pychemqt", "Tube Out Quality"),
               "XoutTube", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "ΔP Tube", None),
+             (QApplication.translate("pychemqt", "ΔP Tube"),
               "deltaPTube", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Tube heat transfer"),
+              "hTube", unidades.HeatTransfCoef),
              (QApplication.translate("pychemqt", "Annulli Mechanism"),
               "phaseAnnulli", str),
              (QApplication.translate("pychemqt", "Annulli Fluid Speed"),
@@ -1193,6 +1225,8 @@ class Hairpin(equipment):
               "XoutAnnulli", unidades.Dimensionless),
              (QApplication.translate("pychemqt", "ΔP Annulli", None),
               "deltaPAnnulli", unidades.DeltaP),
+             (QApplication.translate("pychemqt", "Annulli heat transfer"),
+              "hAnnulli", unidades.HeatTransfCoef),
              (QApplication.translate("pychemqt", "U"), "U",
               unidades.HeatTransfCoef),
              (QApplication.translate("pychemqt", "Clean Factor"), "CF",
@@ -1214,6 +1248,105 @@ class Hairpin(equipment):
              (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
               unidades.Currency)]
         return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["L"] = self.L
+        state["Di"] = self.Di
+        state["De"] = self.De
+        state["Dee"] = self.Dee
+        state["w"] = self.w
+        state["rugosidad"] = self.rugosidad
+        state["A"] = self.A
+        state["k"] = self.k
+        state["fi"] = self.fi
+        state["fo"] = self.fo
+        state["tubefinned"] = self.tubefinned
+
+        state["hFin"] = self.hFin
+        state["thicknessBaseFin"] = self.thicknessBaseFin
+        state["thicknessTopFin"] = self.thicknessTopFin
+        state["rootDoFin"] = self.rootDoFin
+        state["kFin"] = self.kFin
+        state["nFin"] = self.nFin
+
+        state["phaseTube"] = self.phaseTube
+        state["VTube"] = self.VTube
+        state["ReTube"] = self.ReTube
+        state["TinTube"] = self.TinTube
+        state["XinTube"] = self.XinTube
+        state["ToutTube"] = self.ToutTube
+        state["XoutTube"] = self.XoutTube
+        state["deltaPTube"] = self.deltaPTube
+        state["hTube"] = self.hTube
+        state["phaseAnnulli"] = self.phaseAnnulli
+        state["VAnnulli"] = self.VAnnulli
+        state["ReAnnulli"] = self.ReAnnulli
+        state["TinAnnulli"] = self.TinAnnulli
+        state["XinAnnulli"] = self.XinAnnulli
+        state["ToutAnnulli"] = self.ToutAnnulli
+        state["XoutAnnulli"] = self.XoutAnnulli
+        state["deltaPAnnulli"] = self.deltaPAnnulli
+        state["hAnnulli"] = self.hAnnulli
+        state["U"] = self.U
+        state["CF"] = self.CF
+        state["OS"] = self.OS
+
+        state["statusCoste"] = self.statusCoste
+        if self.statusCoste:
+            state["P_dis"] = self.P_dis
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.L = unidades.Length(state["L"])
+        self.Di = unidades.Length(state["Di"])
+        self.De = unidades.Length(state["De"])
+        self.Dee = unidades.Length(state["Dee"])
+        self.w = unidades.Length(state["w"])
+        self.rugosidad = unidades.Length(state["rugosidad"])
+        self.A = unidades.Area(state["A"])
+        self.k = unidades.ThermalConductivity(state["k"])
+        self.fi = unidades.Fouling(state["fi"])
+        self.fo = unidades.Fouling(state["fo"])
+        self.tubefinned = state["tubefinned"]
+
+        self.hFin = unidades.Length(state["hFin"])
+        self.thicknessBaseFin = unidades.Length(state["thicknessBaseFin"])
+        self.thicknessTopFin = unidades.Length(state["thicknessTopFin"])
+        self.rootDoFin = unidades.Length(state["rootDoFin"])
+        self.kFin = unidades.ThermalConductivity(state["kFin"])
+        self.nFin = unidades.Dimensionless(state["nFin"])
+
+        self.phaseTube = state["phaseTube"]
+        self.VTube = unidades.Speed(state["VTube"])
+        self.ReTube = unidades.Dimensionless(state["ReTube"])
+        self.TinTube = unidades.Temperature(state["TinTube"])
+        self.XinTube = unidades.Dimensionless(state["XinTube"])
+        self.ToutTube = unidades.Temperature(state["ToutTube"])
+        self.XoutTube = unidades.Dimensionless(state["XoutTube"])
+        self.deltaPTube = unidades.DeltaP(state["deltaPTube"])
+        self.hTube = unidades.HeatTransfCoef(state["hTube"])
+        self.phaseAnnulli = state["phaseAnnulli"]
+        self.VAnnulli = unidades.Speed(state["VAnnulli"])
+        self.ReAnnulli = unidades.Dimensionless(state["ReAnnulli"])
+        self.TinAnnulli = unidades.Temperature(state["TinAnnulli"])
+        self.XinAnnulli = unidades.Dimensionless(state["XinAnnulli"])
+        self.ToutAnnulli = unidades.Temperature(state["ToutAnnulli"])
+        self.XoutAnnulli = unidades.Dimensionless(state["XoutAnnulli"])
+        self.deltaPAnnulli = unidades.DeltaP(state["deltaPAnnulli"])
+        self.hAnnulli = unidades.HeatTransfCoef(state["hAnnulli"])
+        self.U = unidades.HeatTransfCoef(state["U"])
+        self.CF = unidades.Dimensionless(state["CF"])
+        self.OS = unidades.Dimensionless(state["OS"])
+
+        self.statusCoste = state["statusCoste"]
+        if self.statusCoste:
+            self.P_dis = unidades.Pressure(state["P_dis"])
+            self.C_adq = unidades.Currency(state["C_adq"])
+            self.C_inst = unidades.Currency(state["C_inst"])
+        self.salida = [None]
 
 
 class Shell_Tube(equipment):
@@ -2037,13 +2170,8 @@ def unsteady():
     grid()
 
 if __name__ == "__main__":
-#    agua=Corriente(T=400, P=101325., caudalMasico=1., fraccionMolar=[1.])
-#    cambiador=Fired_Heater(entrada=agua, Tout=450)
-#    print cambiador.Heat.MJh
-
-#    agua=Corriente(T=300, P=101325., caudalMasico=1., fraccionMolar=[1.])
-#    Cambiador=Heat_Exchanger(entrada=agua, Tout=350)
-#    print Cambiador.Heat.MJh
+    import doctest
+    doctest.testmod()
 
     # aguaTubo=Corriente(T=283.15, P=101325., ids=[62], caudalMasico=10., fraccionMolar=[1.])
     # aguaCarcasa=Corriente(T=370, P=101325., ids=[62], caudalMasico=1000., fraccionMolar=[1.])
@@ -2055,12 +2183,6 @@ if __name__ == "__main__":
     # dotl=unidades.Length(0.5*(19.25-17.91), "inch")
     # cambiador = Shell_Tube(entradaTubo=aguaTubo, entradaCarcasa=aguaCarcasa, shellsideSensible=1, DShell=Ds, NTube=124, DeTube=Do, wTube=0.006, LTube=L, pitch=pt, distribucionTube=3, baffleSpacing=B, baffleSpacingIn=B, baffleSpacingOut=B, baffleCut=0.2, clearanceTubeBaffle=0.0004, clearanceShellBaffle=0.0025279, clearanceShellBundle=dotl, sealingStrips=0.1*9.24)
 
-    caliente=Corriente(T=90+273.15, P=361540., caudalMasico=1.36, ids=[62], fraccionMolar=[1.])
-    fria=Corriente(T=20+273.15, P=101325., caudalMasico=5000/3600., ids=[62], fraccionMolar=[1.])
-    Cambiador=Hairpin(entradaTubo=caliente, entradaExterior=fria, modo=1,
-                      DiTube=0.0525, DeTube=0.0603, DeeTube=0.0779, kTube=54, rTube=0.0459994e-3,
-                      annulliFouling= 0.000352, tubeFouling=0.000176, LTube=2.5)
-    print(Cambiador.propTxt())
 
 #    from scipy import *
 #    from pylab import *

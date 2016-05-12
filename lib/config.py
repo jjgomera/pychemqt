@@ -301,7 +301,7 @@ class Entity(object):
             prop = self.__getattribute__(attr[0])[self.kwargs[attr[1]]]
         elif attr in self.__dict__:
             prop = self.__getattribute__(attr)
-        elif attr in self.kwargs and self.kwargs[attr]:
+        elif attr in self.kwargs:
             prop = self.kwargs[attr]
         return prop
 
@@ -333,4 +333,41 @@ class Entity(object):
                     txt.append(("%s\t%s" % (name, value), "", 1))
             else:
                 txt.append(propiedades[i])
+        return txt
+
+    def propertiesToText(self, index=None, linesep=True, suffix="",
+                         kwCheck=False, kwKey="", kwSuffix="", kwValue=""):
+        """
+        Return a string representation of properties for report
+        index: Index of properties in propertiesList
+            None: Return all properties
+            array: Return the selected properties
+            int: Return only the indexed property
+        linesep: Boolean to add a linesep a end line
+        suffix: Optional suffix text
+        """
+        if index is None:
+            index = range(len(self.propertiesNames()))
+        if isinstance(index, int):
+            index = [index]
+
+        txt = ""
+        for i in index:
+            title, prop, unit = self.propertiesNames()[i]
+            value = self._prop(prop)
+            if unit != str and unit != float:
+                value = value.str
+            elif unit == str:
+                value = " " + value
+            elif unit == float:
+                value = " %s" % value.__repr__()
+
+            txt += "%-25s\t%s" % (title, value)
+            if kwCheck:
+                if self.kwargs[kwKey] == kwValue:
+                    txt += kwSuffix
+            if suffix:
+                txt += suffix
+            if linesep:
+                txt += os.linesep
         return txt
