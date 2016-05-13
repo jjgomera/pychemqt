@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,24 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
+
+from PyQt5.QtWidgets import QApplication
 
 from . import BWRS
 from . import cubic
+from .cubic import alfa
 from . import Grayson_Streed
 from . import Lee_Kesler
 from . import virial
 
-K=cubic._all + BWRS._all + Lee_Kesler._all + Grayson_Streed._all
-H=cubic._all + BWRS._all + Lee_Kesler._all
+
+K = cubic._all + BWRS._all + Lee_Kesler._all + Grayson_Streed._all
+K_name = [k.__name__ for k in K]
+H = cubic._all + BWRS._all + Lee_Kesler._all
+H_name = [h.__name__ for h in H]
+
+mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
+cp_ideal = (QApplication.translate("pychemqt", "Ideal"),
+            "DIPPR")

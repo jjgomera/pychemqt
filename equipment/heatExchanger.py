@@ -36,7 +36,6 @@ from scipy.optimize import fsolve
 
 from lib import unidades
 from lib.adimensional import Re, Pr, Gr, Gz
-from lib.corriente import Corriente
 from lib.friction import f_friccion
 from lib.heatTransfer import *  # noqa
 from equipment.parents import equipment
@@ -56,6 +55,7 @@ class Heat_Exchanger(equipment):
         Text: Ambient external temperature
         DeltaP: Opcional pressure losses of equipment
 
+    >>> from lib.corriente import Corriente
     >>> agua = Corriente(T=300, P=101325., caudalMasico=1., fraccionMolar=[1.])
     >>> Cambiador = Heat_Exchanger(entrada=agua, Tout=350)
     >>> print("%6g" % Cambiador.HeatCalc.MJh)
@@ -238,6 +238,7 @@ class Fired_Heater(equipment):
         P_dis: Design pressure of equipment, if no specified use the input
             stream pressure
 
+    >>> from lib.corriente import Corriente
     >>> agua = Corriente(T=400, P=101325., caudalMasico=1., fraccionMolar=[1.])
     >>> cambiador = Fired_Heater(entrada=agua, Tout=450)
     >>> print("%6g" % cambiador.Heat.MJh)
@@ -587,6 +588,7 @@ class Hairpin(equipment):
             2 - Carbon steel/316 stainless
         P_dis: Design pressure
 
+    >>> from lib.corriente import Corriente
     >>> kw = {"ids": [62], "fraccionMolar": [1.]}
     >>> caliente = Corriente(T=90+273.15, P=361540., caudalMasico=0.36, **kw)
     >>> fria = Corriente(T=20+273.15, P=101325., caudalMasico=500/3600., **kw)
@@ -597,7 +599,7 @@ class Hairpin(equipment):
     >>> print("%6g %6g" % (Cambiador.ReTube, Cambiador.ReAnnulli))
     27783.3 1277.55
     >>> print("%6g %6g" % (Cambiador.hTube.kWm2K, Cambiador.hAnnulli.kWm2K))
-    1055.53 52.8267
+    1555.53 52.8267
     """
     title = QApplication.translate("pychemqt", "Hairpin Heat Exchanger")
     help = ""
@@ -2173,6 +2175,7 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
 
+    # from lib.corriente import Corriente
     # aguaTubo=Corriente(T=283.15, P=101325., ids=[62], caudalMasico=10., fraccionMolar=[1.])
     # aguaCarcasa=Corriente(T=370, P=101325., ids=[62], caudalMasico=1000., fraccionMolar=[1.])
     # Ds=unidades.Length(19.25, "inch")

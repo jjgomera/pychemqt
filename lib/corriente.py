@@ -37,7 +37,7 @@ from lib import meos, thermo
 from lib.solids import Solid
 from lib.mezcla import Mezcla
 from lib.psycrometry import PsychroState
-from .thermo import Fluid, Fluid_MEOS
+from lib.thermo import Fluid, Fluid_MEOS
 
 
 class Corriente(config.Entity):
@@ -66,11 +66,31 @@ class Corriente(config.Entity):
             distribution, in micrometer
 
         -notas: Description text for stream
+
+    Aditional parameter for define a corriente with different properties than
+    the  project config, components for debug, thermodynamic method for add per
+    per stream configuration:
+        -ids: Array with index of components
+        -solids: Array with index of solids components
+
+        -K: Name of method for K values calculation, ej: "SRK", "Lee-Kesler"
+        -alfa: Name of method for alpha calculation, available only for some K
+            methods
+        -mix: Mixing rule for calculate mix properties
+        -H: Name of method for enthalpy calculation, ej: "SRK", "Lee-Kesler"
+        -Cp_ideal: Bool to choose method for ideal cp:
+            0 - Ideal parameters
+            1 - DIPPR parameters
+        -MEoS: Use meos equation if is available
+        -iapws: Use iapws97 standard for water
+        -GERG: Use GERG-2008 equation if is available
+        -freesteam: Use freesteam external library for water
+        -coolProp: Use coolProp external library if is available
+        -refprop: Use refProp external library if is available
     """
     kwargs = {"T": 0.0,
               "P": 0.0,
               "x": None,
-              "ids": None,
 
               "caudalMasico": 0.0,
               "caudalVolumetrico": 0.0,
@@ -85,7 +105,22 @@ class Corriente(config.Entity):
               "caudalSolido": [],
               "diametroMedio": 0.0,
               "distribucion_fraccion": [],
-              "distribucion_diametro": []}
+              "distribucion_diametro": [],
+
+              "ids": None,
+              "solids": None,
+              "K": "",
+              "alfa": "",
+              "mix": "",
+              "H": "",
+              "Cp_ideal": None,
+              "MEoS": None,
+              "iapws": None,
+              "GERG": None,
+              "freesteam": None,
+              "coolProp": None,
+              "refprop": None}
+
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown variables")
     kwargs_forbidden = ["entrada", "mezcla", "solido"]
@@ -314,16 +349,34 @@ class Corriente(config.Entity):
         x = self.kwargs.get("x", None)
 
         Config = config.getMainWindowConfig()
-        MEoS = Config.getboolean("Thermo", "MEoS")
-        COOLPROP = Config.getboolean("Thermo", "coolprop")
-        REFPROP = Config.getboolean("Thermo", "refprop")
-        IAPWS = Config.getboolean("Thermo", "iapws") and \
-            len(self.ids) == 1 and self.ids[0] == 62
-        FREESTEAM = Config.getboolean("Thermo", "freesteam") and \
-            len(self.ids) == 1 and self.ids[0] == 62
-        GERG = Config.getboolean("Thermo", "GERG")
-        setData = True
+        if self.kwargs["MEoS"] is not None:
+            MEoS = self.kwargs["MEoS"]
+        else:
+            MEoS = Config.getboolean("Thermo", "MEoS")
+        if self.kwargs["coolProp"] is not None:
+            COOLPROP = self.kwargs["coolProp"]
+        else:
+            COOLPROP = Config.getboolean("Thermo", "coolprop")
+        if self.kwargs["refprop"] is not None:
+            REFPROP  = self.kwargs["refprop"]
+        else:
+            REFPROP = Config.getboolean("Thermo", "refprop")
+        if self.kwargs["iapws"] is not None:
+            _iapws = self.kwargs["iapws"]
+        else:
+            _iapws = Config.getboolean("Thermo", "iapws")
+        IAPWS = _iapws and len(self.ids) == 1 and self.ids[0] == 62
+        if self.kwargs["freesteam"] is not None:
+            _freesteam = self.kwargs["freesteam"]
+        else:
+            _freesteam = Config.getboolean("Thermo", "freesteam")
+        FREESTEAM = _freesteam and len(self.ids) == 1 and self.ids[0] == 62
+        if self.kwargs["GERG"] is not None:
+            GERG  = self.kwargs["GERG"]
+        else:
+            GERG = Config.getboolean("Thermo", "GERG")
 
+        setData = True
         mEoS_available = self.ids[0] in mEoS.id_mEoS
         GERG_available = True
         REFPROP_available = True
@@ -364,6 +417,19 @@ class Corriente(config.Entity):
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
             self._thermo = "meos"
         else:
+            if self.kwargs["K"]:
+                index = K_name.index(self.kwargs["K"])
+                K = EoS.K[index]
+                print(K)
+            else:
+                K = EoS.K[Config.getint("Thermo","K")]
+            if self.kwargs["H"]:
+                index = H_name.index(self.kwargs["H"])
+                H = EoS.H[index]
+                print(H)
+            else:
+                H = EoS.H[Config.getint("Thermo","H")]
+
             self._thermo = "eos"
             setData = False
             self.M = unidades.Dimensionless(self.mezcla.M)
@@ -374,7 +440,7 @@ class Corriente(config.Entity):
             if self.tipoTermodinamica == "TP":
                 self.T = unidades.Temperature(T)
                 self.P = unidades.Pressure(P)
-                eos = EoS.K[Config.getint("Thermo","K")](self.T, self.P.atm, self.mezcla)
+                eos = K(self.T, self.P.atm, self.mezcla)
                 self.eos = eos
                 self.x = unidades.Dimensionless(eos.x)
             else:
@@ -396,10 +462,10 @@ class Corriente(config.Entity):
             self.Gas.Z = unidades.Dimensionless(float(eos.Z[0]))
             self.Liquido.Z = unidades.Dimensionless(float(eos.Z[1]))
 
-            if EoS.H[Config.getint("Thermo", "H")].__title__ == EoS.K[Config.getint("Thermo","K")].__title__:
+            if H == K:
                 eosH = eos
             else:
-                eosH = EoS.H[Config.getint("Thermo", "H")](self.T, self.P.atm, self.mezcla)
+                eosH = H(self.T, self.P.atm, self.mezcla)
             self.H_exc = eosH.H_exc
 
             self.Liquido.Q = unidades.VolFlow(0)
@@ -1144,11 +1210,11 @@ if __name__ == '__main__':
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
-    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.])
-    print(agua.rho)
-#    agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[475, 62], fraccionMolar=[0, 1.])
-#    print(agua2.rho)
+    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True)
+    agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], iapws=True)
     from pprint import pprint
     pprint(agua.__dict__)
+    pprint(agua2.__dict__)
+    print(agua.rho, agua2.rho)
 
 

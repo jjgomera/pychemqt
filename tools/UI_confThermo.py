@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,20 +15,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Thermal method calculation config
 ###############################################################################
 
+
 import os
 
 from PyQt5 import QtWidgets
 
-
-from lib.EoS import K, H
+from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name
+from lib.config import getMainWindowConfig
+from lib.corriente import Corriente
 
 
 class UI_confThermo_widget(QtWidgets.QWidget):
@@ -37,33 +38,30 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         """Constructor, opcional config parameter with proyect configuration"""
         super(UI_confThermo_widget, self).__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "K values:")), 0, 0, 1, 2)
+        title = QtWidgets.QApplication.translate("pychemqt", "K values:")
+        layout.addWidget(QtWidgets.QLabel(title), 0, 0, 1, 2)
         self.K = QtWidgets.QComboBox()
         for eq in K:
             self.K.addItem(eq.__title__)
         layout.addWidget(self.K, 0, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt   ", "Alfa function:")), 1, 0, 1, 2)
+        text = QtWidgets.QApplication.translate("pychemqt", "Alfa function:")
+        layout.addWidget(QtWidgets.QLabel(text), 1, 0, 1, 2)
         self.alfa = QtWidgets.QComboBox()
-        self.alfa.addItem(QtWidgets.QApplication.translate("pychemqt", "Original"))
-        self.alfa.addItem("Boston-Mathias")
-        self.alfa.addItem("Twu")
-        self.alfa.addItem("Doridon")
+        for a in alfa:
+            self.alfa.addItem(a)
         layout.addWidget(self.alfa, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Mix rules:")), 2, 0, 1, 2)
+        text = QtWidgets.QApplication.translate("pychemqt", "Mix rules:")
+        layout.addWidget(QtWidgets.QLabel(text), 2, 0, 1, 2)
         self.mixing_rule = QtWidgets.QComboBox()
-        self.mixing_rule.addItem("van der Waals")
-        self.mixing_rule.addItem("Stryjek-Vera")
-        self.mixing_rule.addItem("Panagiotopoulos")
-        self.mixing_rule.addItem("Melhem")
+        for m in mix:
+            self.mixing_rule.addItem(m)
         layout.addWidget(self.mixing_rule, 2, 2)
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 3, 0, 1, 4)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Enthalpy:")), 4, 0, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            3, 0, 1, 4)
+        text = QtWidgets.QApplication.translate("pychemqt", "Enthalpy:")
+        layout.addWidget(QtWidgets.QLabel(text), 4, 0, 1, 2)
         self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
@@ -71,11 +69,12 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Ideal heat capacity:")), 5, 0, 1, 2)
         self.Cp_ideal = QtWidgets.QComboBox()
-        self.Cp_ideal.addItem(QtWidgets.QApplication.translate("pychemqt", "Ideal"))
-        self.Cp_ideal.addItem("DIPPR")
+        for cp in cp_ideal:
+            self.Cp_ideal.addItem(cp)
         layout.addWidget(self.Cp_ideal, 5, 2)
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 6, 0, 1, 4)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            6, 0, 1, 4)
         self.MEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use MEoS for single compounds if it's available"))
         layout.addWidget(self.MEoS, 7, 0, 1, 3)
@@ -98,6 +97,9 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.GERG = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 3)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 13, 0, 1, 4)
 
         if os.environ["freesteam"] == "True":
             self.iapws.toggled.connect(self.freesteam.setEnabled)
@@ -122,6 +124,32 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             self.freesteam.setChecked(config.getboolean("Thermo", "freesteam"))
             self.coolProp.setChecked(config.getboolean("Thermo", "coolProp"))
             self.refprop.setChecked(config.getboolean("Thermo", "refprop"))
+
+    def setKwargs(self, kwarg):
+        config = getMainWindowConfig()
+        self.setConfig(config)
+        for key in ["MEoS", "iapws", "GERG", "freesteam", "coolProp",
+                    "refprop"]:
+            if kwarg[key] != Corriente.kwargs[key]:
+                self.__getattribute__(key).setChecked(kwarg[key])
+
+        if kwarg["K"] != Corriente.kwargs["K"]:
+            index = K_name.index(kwarg["K"])
+            self.K.setCurrentIndex(index)
+        if kwarg["H"] != Corriente.kwargs["H"]:
+            index = H_name.index(kwarg["H"])
+            self.H.setCurrentIndex(index)
+        if kwarg["mix"] != Corriente.kwargs["mix"]:
+            index = mix.index(kwarg["mix"])
+            self.mixing_rule.setCurrentIndex(index)
+        if kwarg["Cp_ideal"] != Corriente.kwargs["Cp_ideal"]:
+            self.Cp_ideal.setCurrentIndex(kwarg["Cp_ideal"])
+        if kwarg["alfa"] != Corriente.kwargs["alfa"]:
+            try:
+                index = alfa.index(kwarg["alfa"])
+                self.alfa.setCurrentIndex(index)
+            except ValueError:
+                pass
 
     def value(self, config):
         """Function result for wizard"""
@@ -166,8 +194,8 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confThermo_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
