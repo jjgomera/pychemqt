@@ -35,27 +35,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from configparser import ConfigParser
 import os
 
-# TODO: Delete when it isn´t necessary debug
-#os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
-#os.environ["freesteam"] = "False"
-#os.environ["oasa"] = "False"
-#os.environ["CoolProp"] = "True"
-#os.environ["refprop"] = "False"
-#os.environ["ezodf"] = "False"
-#os.environ["openpyxl"] = "False"
-#os.environ["xlwt"] = "False"
-#os.environ["icu"] = "False"
-
-
-from configparser import ConfigParser
 from PyQt5 import QtWidgets
+
+# TODO: Delete when it isn´t necessary debug
+# os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
+# os.environ["freesteam"] = "False"
+# os.environ["oasa"] = "False"
+# os.environ["CoolProp"] = "True"
+# os.environ["refprop"] = "False"
+# os.environ["ezodf"] = "False"
+# os.environ["openpyxl"] = "False"
+# os.environ["xlwt"] = "False"
+# os.environ["icu"] = "False"
+# os.environ["reportlab"] = "False"
+
+
 from lib.sql import databank
+
 
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 QTSETTING_FILE = os.path.expanduser('~') + os.sep +\
     ".config/pychemqt/pychemqt.conf"
+IMAGE_PATH = os.environ["pychemqt"] + "/images/"
+
 Preferences = ConfigParser()
 Preferences.read(conf_dir+"pychemqtrc")
 # FIXME: This instance is not update when preferences are changed
@@ -346,6 +351,7 @@ class Entity(object):
         linesep: Boolean to add a linesep a end line
         suffix: Optional suffix text
         """
+        mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG, "%")
         if index is None:
             index = range(len(self.propertiesNames()))
         if isinstance(index, int):
@@ -362,7 +368,7 @@ class Entity(object):
             elif unit == float:
                 value = " %s" % value.__repr__()
 
-            txt += "%-25s\t%s" % (title, value)
+            txt += mask % (title, value)
             if kwCheck:
                 if self.kwargs[kwKey] == kwValue:
                     txt += kwSuffix

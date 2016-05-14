@@ -111,6 +111,14 @@ class equipment(Entity):
             self.kwargs["Base_index"] = indiceBase[self.indiceCostos]
             self.kwargs["Current_index"] = indiceActual[self.indiceCostos]
 
+        # Calculate the maximum properties name length for best report
+        # formating
+        letter = 0
+        for name in self.propertiesTitle():
+            if len(name) > letter:
+                letter = len(name)
+        self.TEXT_FORMATING_LENG = (letter//4+1)*4
+
         if kwargs:
             self.__call__(**kwargs)
 
@@ -162,10 +170,12 @@ class equipment(Entity):
         txt += "#---------------"
         txt += QtWidgets.QApplication.translate("pychemqt", "Input properties")
         txt += "-----------------#"+os.linesep
+        mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG + 1, "%")
         for key, value in list(self.kwargs.items()):
             if value and key not in ["f_install", "Base_index", "Current_index"]:
-                txt += key+": "+str(value)+os.linesep
+                txt += mask % (key, value) + os.linesep
         txt += os.linesep
+
         txt += self.propTxt()
         return txt
 
