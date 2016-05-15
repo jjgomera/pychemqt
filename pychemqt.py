@@ -130,6 +130,7 @@ for module, use in optional_modules:
 # Parse command line options
 parser = OptionParser()
 parser.add_option("--debug", action="store_true")
+parser.add_option("--nosplash", action="store_true")
 parser.add_option("-l", "--log", dest="loglevel", default="INFO")
 (options, args) = parser.parse_args()
 
@@ -155,7 +156,6 @@ class SplashScreen(QtWidgets.QSplashScreen):
         QtWidgets.QSplashScreen.__init__(
             self,
             QtGui.QPixmap(os.environ["pychemqt"] + "/images/splash.jpg"))
-        self.show()
         QtWidgets.QApplication.flush()
 
     def showMessage(self, msg):
@@ -173,6 +173,8 @@ class SplashScreen(QtWidgets.QSplashScreen):
         QtWidgets.QApplication.processEvents()
 
 splash = SplashScreen()
+if not options.nosplash:
+    splash.show()
 
 
 # Checking config files
