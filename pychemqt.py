@@ -18,12 +18,30 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+import argparse
 import logging
-from optparse import OptionParser
 import os
 import shutil
 import sys
 import urllib.error
+
+
+# Parse command line options
+desc = """pychemqt intended as a free software tool for calculation and \
+design of unit operations in chemical engineering."""
+further = """For any suggestions, comments, bug ... you can contact me at \
+https://github.com/jjgomera/pychemqt or by email jjgomera@gmail.com."""
+
+parser = argparse.ArgumentParser(description=desc, epilog=further)
+parser.add_argument("-l", "--log", dest="loglevel", default="INFO",
+                    help="Set level of report in log file")
+parser.add_argument("--debug", action="store_true",
+                    help="Enable loglevel to debug, the more verbose option")
+parser.add_argument("--nosplash", action="store_true",
+                    help="Don't show the splash screen at start")
+parser.add_argument("projectFile", nargs="*",
+                    help="Optional pychemqt project files to load at startup")
+args = parser.parse_args()
 
 
 # Add pychemqt folder to python path
@@ -127,20 +145,14 @@ for module, use in optional_modules:
         print("%s don't found, %s" % (module, use))
         os.environ[module] = ""
 
-# Parse command line options
-parser = OptionParser()
-parser.add_option("--debug", action="store_true")
-parser.add_option("--nosplash", action="store_true")
-parser.add_option("-l", "--log", dest="loglevel", default="INFO")
-(options, args) = parser.parse_args()
-
-if options.debug:
-    loglevel = "DEBUG"
-else:
-    loglevel = options.loglevel
-loglevel = getattr(logging, loglevel.upper())
 
 # Logging configuration
+if args.debug:
+    loglevel = "DEBUG"
+else:
+    loglevel = args.loglevel
+loglevel = getattr(logging, loglevel.upper())
+
 if not os.path.isfile(conf_dir + "pychemqt.log"):
     os.mknod(conf_dir + "pychemqt.log")
 fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
@@ -173,7 +185,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
         QtWidgets.QApplication.processEvents()
 
 splash = SplashScreen()
-if not options.nosplash:
+if not args.nosplash:
     splash.show()
 
 
@@ -250,7 +262,7 @@ if pychemqt.Preferences.getboolean("General", "Load_Last_Project"):
     filename = pychemqt.lastFile
     if filename is None:
         filename = []
-for file in args:
+for file in args.projectFile:
     filename.append(file)
 for fname in filename:
     if fname and QtCore.QFile.exists(fname):
