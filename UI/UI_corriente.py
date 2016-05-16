@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,10 +15,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-################################################################################
+###############################################################################
 # Module with stream UI utilities
 #   -Ui_corriente: Widget for general stream input
 #   -Corriente_Dialog: QDialog for stream input
@@ -27,20 +27,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   -StreamProperties: Table for show stream properties
 #   -SolidDefinition: Solid particle stream definition
 #   -SolidDistribution: Dialog for define particle solid distribution
-################################################################################
+###############################################################################
 
-import os
-from math import exp, log
+
 from functools import partial
+from math import exp, log
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from numpy import all
 from scipy.special import erf
 
+from tools.UI_confThermo import UI_confThermo_widget
 from tools.UI_psychrometry import PsychroInput
-from lib.corriente import Corriente, Solid, PsyStream
 from lib import unidades, config
+from lib.corriente import Corriente, Solid, PsyStream
 from lib.thread import Evaluate
 from UI import texteditor
 from UI.widgets import Tabla, Entrada_con_unidades, Status
@@ -51,14 +52,16 @@ class Ui_corriente(QtWidgets.QWidget):
     Changed = QtCore.pyqtSignal(Corriente)
     corriente = Corriente()
 
-    def __init__(self, corriente=None, readOnly=False, psychro=False, parent=None):
+    def __init__(self, corriente=None, readOnly=False, psychro=False,
+                 parent=None):
         """
         corriente: Corriente instance to initialize widget
         readOnly: Set initial readOnly state for widget
         psychro: boolean to show aditional input stream por humid air
         """
         super(Ui_corriente, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Stream"))
+        title = QtWidgets.QApplication.translate("pychemqt", "Stream")
+        self.setWindowTitle(title)
         self.readOnly = readOnly
         self.psychro = psychro
         self.semaforo = QtCore.QSemaphore(1)
@@ -66,7 +69,7 @@ class Ui_corriente(QtWidgets.QWidget):
         self.evaluate.finished.connect(self.repaint)
 
         self.indices, self.nombres, M = config.getComponents()
-        self.solidos, self.nombreSolidos, MSolidos = config.getComponents(solidos=True)
+        self.solidos, nameSol, M = config.getComponents(solidos=True)
 
         gridLayout1 = QtWidgets.QVBoxLayout(self)
         self.toolBox = QtWidgets.QTabWidget()
@@ -79,8 +82,15 @@ class Ui_corriente(QtWidgets.QWidget):
         self.pageDefinition.changedValue.connect(self.calculo)
         self.toolBox.addTab(
             self.pageDefinition,
-            QtGui.QIcon(os.environ["pychemqt"] + "/images/button/in.png"),
+            QtGui.QIcon(config.IMAGE_PATH + "button/in.png"),
             QtWidgets.QApplication.translate("pychemqt", "Definition"))
+
+        # Configuration per stream
+        self.pageConfig = UI_confThermo_widget()
+        self.toolBox.addTab(
+            self.pageConfig,
+            QtGui.QIcon(config.IMAGE_PATH + "button/configure.png"),
+            QtWidgets.QApplication.translate("pychemqt", "Thermodynamic"))
 
         # Humid Air
         if psychro:
@@ -88,12 +98,12 @@ class Ui_corriente(QtWidgets.QWidget):
             self.pagePsychro.Changed.connect(self.changePsychroState)
             self.toolBox.addTab(
                 self.pagePsychro,
-                QtGui.QIcon(os.environ["pychemqt"] + "/images/button/psychrometric.png"),
+                QtGui.QIcon(config.IMAGE_PATH + "button/psychrometric.png"),
                 QtWidgets.QApplication.translate("pychemqt", "Humid Air"))
 
         # Solid
         self.pageSolids = SolidDefinition()
-        self.pageSolids.Changed.connect(self.corriente.setSolid)
+        self.pageSolids.Changed.connect(self.changeSolid)
         self.toolBox.addTab(self.pageSolids, QtWidgets.QApplication.translate(
             "pychemqt", "Solid"))
         self.pageSolids.setEnabled(len(self.solidos))
@@ -110,13 +120,14 @@ class Ui_corriente(QtWidgets.QWidget):
         self.pageProperties = StreamProperties()
         self.toolBox.addTab(
             self.pageProperties,
-            QtGui.QIcon(os.environ["pychemqt"] + "/images/button/helpAbout.png"),
+            QtGui.QIcon(config.IMAGE_PATH + "button/helpAbout.png"),
             QtWidgets.QApplication.translate("pychemqt", "Properties"))
 
         # Notes
         self.PageNotas = texteditor.TextEditor()
         self.toolBox.addTab(
-            self.PageNotas, QtGui.QIcon(os.environ["pychemqt"] + "/images/button/editor.png"),
+            self.PageNotas,
+            QtGui.QIcon(config.IMAGE_PATH + "button/editor.png"),
             QtWidgets.QApplication.translate("pychemqt", "Notes"))
 
         if corriente:
@@ -138,14 +149,19 @@ class Ui_corriente(QtWidgets.QWidget):
     def changePsychroState(self, stream):
         self.setCorriente(stream.corriente, False)
 
+    def changeSolid(self, solido):
+        self.corriente.setSolid(solido)
+        self.Changed.emit(self.corriente)
+
     def repaint(self, psychro=True):
         # Parameter to avoid recursive repaint
         if self.semaforo.available() > 0:
             self.semaforo.acquire(1)
             self.pageDefinition.setStream(self.corriente)
+            self.pageConfig.setKwargs(self.corriente.kwargs)
             if psychro and self.psychro:
                 psystream = self.corriente.psystream
-                self.pagePsychro.setStream(psystram)
+                self.pagePsychro.setStream(psystream)
             self.pageSolids.setSolido(self.corriente.solido)
             self.PageNotas.setText(self.corriente.notas)
             self.pageProperties.fill(self.corriente)
@@ -169,6 +185,7 @@ class Ui_corriente(QtWidgets.QWidget):
         """Función que crea la instancia corriente"""
         if not kwargs:
             kwargs = self.pageDefinition.kwargs()
+            kwargs["solido"] = self.pageSolids.solido
         if not self.evaluate.isRunning():
             self.evaluate.start(self.corriente, kwargs)
 
@@ -178,12 +195,13 @@ class Corriente_Dialog(QtWidgets.QDialog, Ui_corriente):
     Changed = QtCore.pyqtSignal(Corriente)
     corriente = Corriente()
 
-    def __init__(self, corriente=None, readOnly=False, psychro=False, parent=None):
+    def __init__(self, corriente=None, readOnly=False, psychro=False,
+                 parent=None):
         layout = QtWidgets.QHBoxLayout()
         self.status = Status()
         layout.addWidget(self.status)
-        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok |
-                                           QtWidgets.QDialogButtonBox.Cancel)
+        buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox)
@@ -207,53 +225,62 @@ class StreamDefinition(QtWidgets.QWidget):
         lyt.setVerticalSpacing(0)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Temperature")), 1, 1)
-        self.T = Entrada_con_unidades(unidades.Temperature, readOnly=readOnly)
+        self.T = Entrada_con_unidades(unidades.Temperature)
         self.T.valueChanged.connect(partial(self.calculo, "T"))
         lyt.addWidget(self.T, 1, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure")), 2, 1)
-        self.P = Entrada_con_unidades(unidades.Pressure, readOnly=readOnly)
+        self.P = Entrada_con_unidades(unidades.Pressure)
         self.P.valueChanged.connect(partial(self.calculo, "P"))
         lyt.addWidget(self.P, 2, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Vapor fraccion")), 3, 1)
-        self.x = Entrada_con_unidades(float, readOnly=readOnly)
+        self.x = Entrada_con_unidades(float)
         self.x.valueChanged.connect(partial(self.calculo, "x"))
         lyt.addWidget(self.x, 3, 2, 1, 2)
-        lyt.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                      QtWidgets.QSizePolicy.Fixed), 4, 1, 1, 2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            4, 1, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mass flow")), 5, 1)
-        self.caudalMasico = Entrada_con_unidades(unidades.MassFlow, readOnly=readOnly)
-        self.caudalMasico.valueChanged.connect(partial(self.calculo, "caudalMasico"))
+        self.caudalMasico = Entrada_con_unidades(unidades.MassFlow)
+        self.caudalMasico.valueChanged.connect(
+            partial(self.calculo, "caudalMasico"))
         lyt.addWidget(self.caudalMasico, 5, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Molar flow")), 6, 1)
-        self.caudalMolar = Entrada_con_unidades(unidades.MolarFlow, readOnly=readOnly)
-        self.caudalMolar.valueChanged.connect(partial(self.calculo, "caudalMolar"))
+        self.caudalMolar = Entrada_con_unidades(unidades.MolarFlow)
+        self.caudalMolar.valueChanged.connect(
+            partial(self.calculo, "caudalMolar"))
         lyt.addWidget(self.caudalMolar, 6, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Volumetric flow")), 7, 1)
-        self.caudalVolumetrico = Entrada_con_unidades(unidades.VolFlow, "volliq", readOnly=readOnly)
-        self.caudalVolumetrico.valueChanged.connect(partial(self.calculo, "caudalVolumetrico"))
+        self.caudalVolumetrico = Entrada_con_unidades(unidades.VolFlow)
+        self.caudalVolumetrico.valueChanged.connect(
+            partial(self.calculo, "caudalVolumetrico"))
         lyt.addWidget(self.caudalVolumetrico, 7, 2, 1, 2)
 
-        lyt.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                      QtWidgets.QSizePolicy.Fixed), 8, 1, 1, 1)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            8, 1, 1, 1)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Composition")), 9, 1)
         self.tipoFraccion = QtWidgets.QComboBox()
         self.tipoFraccion.addItem(unidades.MassFlow.text())
         self.tipoFraccion.addItem(unidades.MolarFlow.text())
-        self.tipoFraccion.addItem(QtWidgets.QApplication.translate("pychemqt", "Mass fraction"))
-        self.tipoFraccion.addItem(QtWidgets.QApplication.translate("pychemqt", "Molar fraction"))
+        self.tipoFraccion.addItem(
+            QtWidgets.QApplication.translate("pychemqt", "Mass fraction"))
+        self.tipoFraccion.addItem(
+            QtWidgets.QApplication.translate("pychemqt", "Molar fraction"))
         self.tipoFraccion.setCurrentIndex(3)
-        self.tipoFraccion.currentIndexChanged.connect(self.tipoFraccionesCambiado)
-        self.tipoFraccion.setSizePolicy(QtWidgets.QSizePolicy.Maximum,
-                                        QtWidgets.QSizePolicy.Maximum)
+        self.tipoFraccion.currentIndexChanged.connect(
+            self.tipoFraccionesCambiado)
+        self.tipoFraccion.setSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         lyt.addWidget(self.tipoFraccion, 9, 2)
-        lyt.addItem(QtWidgets.QSpacerItem(5, 5, QtWidgets.QSizePolicy.Fixed,
-                                      QtWidgets.QSizePolicy.Fixed), 10, 1, 1, 1)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            5, 5, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 1, 1, 1)
 
         composition = QtWidgets.QWidget()
         comp_lyt = QtWidgets.QGridLayout(composition)
@@ -263,7 +290,7 @@ class StreamDefinition(QtWidgets.QWidget):
             label = QtWidgets.QLabel(nombre)
             label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             comp_lyt.addWidget(label, i, 1)
-            widget = Entrada_con_unidades(float, readOnly=readOnly)
+            widget = Entrada_con_unidades(float)
             widget.valueChanged.connect(self.changeFraction)
             comp_lyt.addWidget(widget, i, 2)
             self.xi.append(widget)
@@ -271,8 +298,9 @@ class StreamDefinition(QtWidgets.QWidget):
         scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
         scroll.setWidget(composition)
         lyt.addWidget(scroll, 10, 1, 1, 2)
-        lyt.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
-                                      QtWidgets.QSizePolicy.Expanding), 11, 3)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 11, 3)
 
         if stream:
             self.setStream(stream)
@@ -321,7 +349,8 @@ class StreamDefinition(QtWidgets.QWidget):
                 widget.setValue(value)
 
         elif stream.numInputs:
-            for input in ["T", "P", "x", "caudalMasico", "caudalMolar", "caudalVolumetrico"]:
+            for input in ["T", "P", "x", "caudalMasico", "caudalMolar",
+                          "caudalVolumetrico"]:
                 if stream.kwargs[input]:
                     self.__getattribute__(input).setValue(stream.kwargs[input])
                     self.__getattribute__(input).setResaltado(True)
@@ -704,64 +733,71 @@ class SolidDefinition(QtWidgets.QWidget):
     def __init__(self, solid=None, readOnly=False, parent=None):
         super(SolidDefinition, self).__init__(parent)
 
-        self.solidos, self.nombreSolidos, MSolidos = config.getComponents(solidos=True)
+        self.solidos, self.NameSol, M = config.getComponents(solidos=True)
         self.semaforo = QtCore.QSemaphore(1)
         self.evaluate = Evaluate()
-        self.evaluate.finished.connect(self.fill)
+        # self.evaluate.finished.connect(self.fill)
 
         lyt = QtWidgets.QGridLayout(self)
-        header = [QtWidgets.QApplication.translate("pychemqt", "Mass flow") + ", "
-                  + unidades.MassFlow.text()]
-        self.TablaSolidos = Tabla(
-            1, horizontalHeader=header, stretch=False,
-            verticalHeaderLabels=self.nombreSolidos, filas=len(self.solidos))
-        self.TablaSolidos.setFixedHeight(22*len(self.solidos)+24+4)
+
+        composition = QtWidgets.QWidget()
+        comp_lyt = QtWidgets.QGridLayout(composition)
+        comp_lyt.setVerticalSpacing(0)
         self.CaudalSolidos = []
-        for i in range(len(self.nombreSolidos)):
-            widget = Entrada_con_unidades(
-                unidades.MassFlow, texto=False, boton=False,
-                width=self.TablaSolidos.columnWidth(0))
+        for i, nombre in enumerate(self.NameSol):
+            label = QtWidgets.QLabel(nombre)
+            label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            comp_lyt.addWidget(label, i, 1)
+            widget = Entrada_con_unidades(unidades.MassFlow)
             widget.valueChanged.connect(self.caudalesSolidoFinished)
+            comp_lyt.addWidget(widget, i, 2)
             self.CaudalSolidos.append(widget)
-            self.TablaSolidos.setCellWidget(i, 0, widget)
-        lyt.addWidget(self.TablaSolidos, 1, 1, 1, 2)
-        lyt.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                      QtWidgets.QSizePolicy.Fixed), 2, 2)
+        scroll = QtWidgets.QScrollArea()
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setMinimumHeight(min(100, 30*len(M)))
+        scroll.setWidget(composition)
+        lyt.addWidget(scroll, 1, 1, 1, 2)
+
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mean Diameter")), 3, 1, 1, 1)
         self.diametroParticula = Entrada_con_unidades(
             unidades.Length, "ParticleDiameter")
-        self.diametroParticula.valueChanged.connect(partial(self.calculo,
-                                                            "diametroMedio"))
+        self.diametroParticula.valueChanged.connect(
+            partial(self.calculo, "diametroMedio"))
         lyt.addWidget(self.diametroParticula, 3, 2, 1, 1)
-        self.checkDistribucion = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Use particle size distribution"))
+        self.checkDistribucion = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt",
+                                             "Use particle size distribution"))
         self.checkDistribucion.toggled.connect(self.checkDistributionToggled)
         lyt.addWidget(self.checkDistribucion, 5, 1, 1, 2)
 
-        header = [QtWidgets.QApplication.translate("pychemqt", "Diameter") + ", " +
-                  unidades.Length.text("ParticleDiameter"),
+        header = [QtWidgets.QApplication.translate("pychemqt", "Diameter")
+                  + ", " + unidades.Length.text("ParticleDiameter"),
                   QtWidgets.QApplication.translate("pychemqt", "Fraction")]
-        self.distribucionTamanos = Tabla(2, horizontalHeader=header,
-                                         stretch=False, verticalHeader=False)
-        self.distribucionTamanos.rowFinished.connect(self.diametro_medio)
-        self.distribucionTamanos.editingFinished.connect(self.distribucionFinished)
+        self.distribucionTamanos = Tabla(
+            2, horizontalHeader=header, stretch=False, verticalHeader=False)
+        self.distribucionTamanos.editingFinished.connect(
+            self.distribucionFinished)
         lyt.addWidget(self.distribucionTamanos, 6, 1, 1, 2)
 
         dialog = self.buttonBox = QtWidgets.QDialogButtonBox()
         self.botonNormalizar = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Normalize"))
         self.botonNormalizar.clicked.connect(self.botonNormalizar_clicked)
-        dialog.addButton(self.botonNormalizar, QtWidgets.QDialogButtonBox.AcceptRole)
+        dialog.addButton(self.botonNormalizar,
+                         QtWidgets.QDialogButtonBox.AcceptRole)
         self.botonGenerar = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Generate"))
         self.botonGenerar.clicked.connect(self.botonGenerar_clicked)
-        dialog.addButton(self.botonGenerar, QtWidgets.QDialogButtonBox.AcceptRole)
+        dialog.addButton(self.botonGenerar,
+                         QtWidgets.QDialogButtonBox.AcceptRole)
         lyt.addWidget(dialog, 7, 1, 1, 2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 8, 3)
 
-        if solid:
-            self.setSolido(solid)
         self.distribucionTamanos.setConnected()
+        self.setSolido(solid)
 
     def setSolido(self, solido):
         if solido:
@@ -783,14 +819,19 @@ class SolidDefinition(QtWidgets.QWidget):
                     self.distribucionTamanos.setColumn(0, diametros)
                     self.distribucionTamanos.setColumn(1, self.solido.fracciones)
                 self.diametroParticula.setValue(self.solido.diametro_medio)
+            else:
+                print(self.solido.kwargs)
             self.semaforo.release(1)
 
     def setReadOnly(self, bool):
+        for w in self.CaudalSolidos:
+            w.setReadOnly(bool)
+        self.diametroParticula.setReadOnly(bool)
+        self.checkDistribucion.setDisabled(bool)
         if bool:
             triggers = QtWidgets.QAbstractItemView.NoEditTriggers
         else:
             triggers = QtWidgets.QAbstractItemView.AllEditTriggers
-        self.TablaSolidos.setEditTriggers(triggers)
         self.distribucionTamanos.setEditTriggers(triggers)
 
     def distribucionFinished(self):
@@ -800,12 +841,11 @@ class SolidDefinition(QtWidgets.QWidget):
         if diametros:
             kwargs = {"distribucion_diametro": diametros,
                       "distribucion_fraccion": fracciones}
-            self.salida(**kwargs)
+            self.calculo(**kwargs)
 
     def caudalesSolidoFinished(self):
         caudales = self.caudalSolido()
-        kwargs = {"caudalSolido": caudales}
-        self.salida(**kwargs)
+        self.calculo("caudalSolido", caudales)
 
     def caudalSolido(self):
         caudales = []
@@ -825,8 +865,7 @@ class SolidDefinition(QtWidgets.QWidget):
         else:
             self.solido.kwargs["distribucion_diametro"] = []
             self.solido.kwargs["distribucion_fraccion"] = []
-            kwargs = {"diametroMedio": self.diametroParticula.value}
-            self.salida(**kwargs)
+            self.calculo("diametroMedio", self.diametroParticula.value)
 
     def botonNormalizar_clicked(self, diametros=None, fracciones=None):
         if not diametros:
@@ -845,31 +884,25 @@ class SolidDefinition(QtWidgets.QWidget):
         if dialog.exec_():
             self.distribucionTamanos.setMatrix(dialog.matriz)
 
-    def diametro_medio(self):
-        conversion = unidades.Length(1, "conf", "ParticleDiameter").m
-        diametros = [diametro*conversion for diametro in self.distribucionTamanos.getColumn(0, False)]
-        fracciones = self.distribucionTamanos.getColumn(1, False)
-        if sum(fracciones) != 1.:
-            suma = sum(fracciones)
-            fracciones = [fraccion/suma for fraccion in fracciones]
+    def calculo(self, key=None, value=None, **kw):
+        if key:
+            kw[key] = value
+        self.solido(**kw)
+        if self.solido:
+            self.fill()
+            self.Changed.emit(self.solido)
 
-        diametro_medio = sum([diametro*fraccion for diametro, fraccion in zip(diametros, fracciones)])
-        self.diametroParticula.setValue(diametro_medio)
-
-    def calculo(self):
-        pass
-
-    def salida(self, **kwargs):
-        """Return kwargs argument to solid definition"""
-        if not kwargs:
-            kwargs = {}
-            kwargs["caudalSolido"] = self.caudalSolido()
-            kwargs["diametroMedio"] = self.diametroParticula.value
-            kwargs["distribucion_diametro"] = self.TablaSolidos.getColumn(0)
-            kwargs["distribucion_fraccion"] = self.TablaSolidos.getColumn(1)
-
-        if not self.evaluate.isRunning():
-            self.evaluate.start(self.solido, kwargs)
+#    def salida(self, **kwargs):
+#        """Return kwargs argument to solid definition"""
+#        if not kwargs:
+#            kwargs = {}
+#            kwargs["caudalSolido"] = self.caudalSolido()
+#            kwargs["diametroMedio"] = self.diametroParticula.value
+#            kwargs["distribucion_diametro"] = self.TablaSolidos.getColumn(0)
+#            kwargs["distribucion_fraccion"] = self.TablaSolidos.getColumn(1)
+#
+#        if not self.evaluate.isRunning():
+#            self.evaluate.start(self.solido, kwargs)
 
 
 class SolidDistribution(QtWidgets.QDialog):
@@ -1094,13 +1127,17 @@ if __name__ == "__main__":
 #    corriente = SolidDefinition(solido)
 #    corriente.show()
 
-#    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.])
-#    dialogo = Corriente_Dialog()
-#    dialogo.show()
-
-    corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.0, 0.5, 0.35, 0.15])
-    corriente=Corriente(P=101325)
-    dialogo = StreamDefinition(corriente)
+    kw = {"iapws": True, "GERG": True, "K": "SRK", "H": "SRK", "mix": "Melhem", "Cp_ideal": 1}
+    diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
+    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
+    solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
+    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.], solido=solido, **kw)
+    dialogo = Corriente_Dialog(corriente)
     dialogo.show()
+
+    # corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.0, 0.5, 0.35, 0.15])
+    # corriente=Corriente(P=101325)
+    # dialogo = StreamDefinition(corriente)
+    # dialogo.show()
 
     sys.exit(app.exec_())

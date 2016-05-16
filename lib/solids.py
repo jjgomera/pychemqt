@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import QApplication
 
 from lib.compuestos import Componente
 from lib.config import Entity, getMainWindowConfig
-from lib.unidades import Density, MassFlow, Length
+from lib.unidades import Density, MassFlow, Length, Temperature
 
 
 class Solid(Entity):
@@ -116,6 +116,7 @@ class Solid(Entity):
             densidad += self.caudalUnitario[i]/self.caudal * \
                 self.componente[i].RhoS(T)
         self.rho = Density(densidad)
+        self.T = Temperature(T)
 
     def __repr__(self):
         if self.status:
@@ -215,6 +216,7 @@ class Solid(Entity):
 
     def writeStatetoJSON(self, solid):
         if self.status:
+            solid["status"] = self.status
             solid["ids"] = self.ids
             solid["unitFlow"] = self.caudalUnitario
             solid["caudal"] = self.caudal
@@ -222,6 +224,8 @@ class Solid(Entity):
             solid["fracciones"] = self.fracciones
             solid["fracciones_acumuladas"] = self.fracciones_acumuladas
             solid["diametro_medio"] = self.diametro_medio
+            solid["rho"] = self.rho
+            solid["T"] = self.T
 
     def readStatefromJSON(self, solid):
         if solid:
@@ -234,7 +238,9 @@ class Solid(Entity):
             self.diametros = [Length(d) for d in solid["diametros"]]
             self.fracciones = solid["fracciones"]
             self.fracciones_acumuladas = solid["fracciones_acumuladas"]
-            self.diametro_medio = Length(solid["dm"])
+            self.diametro_medio = Length(solid["diametro_medio"])
+            self.rho = Density(solid["rho"])
+            self.T = Temperature(solid["T"])
         else:
             self._bool = False
             self.status = False
