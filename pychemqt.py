@@ -82,14 +82,14 @@ try:
     import scipy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python scipy library don't found, you need install it")
+        "pychemqt", "The scipy library could not be found, you need to install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
     if minor < 14:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "scipy version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of scipy is too old, you must install an updated version.")  # noqa
         raise ImportError(msg)
 
 # numpy
@@ -97,14 +97,14 @@ try:
     import numpy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python numpy library don't found, you need install it")
+        "pychemqt", "The numpy library could not be found, you need to install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, numpy.version.version.split("."))
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "numpy version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of numpy is too old, you must install an updated version.")  # noqa
         raise ImportError(msg)
 
 # matplotlib
@@ -112,14 +112,14 @@ try:
     import matplotlib
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python matplotlib don't found, you need install it")
+        "pychemqt", "The matplotlib library could not be found, you need to install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
     if mayor < 1 or minor < 4:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "matplotlib version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of matplotlib is too old, you must install an updated version.")  # noqa
         raise ImportError(msg)
 
 # TODO: Disable python-graph external dependence, functional mock up in
@@ -142,7 +142,7 @@ for module, use in optional_modules:
         __import__(module)
         os.environ[module] = "True"
     except ImportError:
-        print("%s don't found, %s" % (module, use))
+        print("%s could not be found, %s" % (module, use))
         os.environ[module] = ""
 
 
