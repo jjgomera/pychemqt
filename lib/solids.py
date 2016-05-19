@@ -46,11 +46,15 @@ class Solid(Entity):
             diametroMedio
             fraccionMasica
             diametros
+
+            solidos: To override the config value
         """
     kwargs = {"caudalSolido": [],
               "diametroMedio": 0.0,
               "distribucion_fraccion": [],
-              "distribucion_diametro": []}
+              "distribucion_diametro": [],
+
+              "solids": None}
     status = 0
     msg = QApplication.translate("pychemqt", "undefined")
 
@@ -73,12 +77,15 @@ class Solid(Entity):
         return self.status
 
     def calculo(self):
-        Config = getMainWindowConfig()
-        txt = Config.get("Components", "Solids")
-        if isinstance(txt, str):
-            self.ids = eval(txt)
+        if self.kwargs["solids"] is not None:
+            self.ids = self.kwargs["solids"]
         else:
-            self.ids = txt
+            Config = getMainWindowConfig()
+            txt = Config.get("Components", "Solids")
+            if isinstance(txt, str):
+                self.ids = eval(txt)
+            else:
+                self.ids = txt
         self.componente = [Componente(int(i)) for i in self.ids]
 
         caudal = self.kwargs.get("caudalSolido", [])
@@ -97,7 +104,7 @@ class Solid(Entity):
         self.diametros = diametros
         self.fracciones = fraccion
         if self.status == 2:
-            self.diametros = [Length(i, magnitud="ParticleDiameter")
+            self.diametros = [Length(i, "m", magnitud="ParticleDiameter")
                               for i in diametros]
             self.fracciones = fraccion
             diametro_medio = 0
@@ -235,7 +242,7 @@ class Solid(Entity):
             self.componente = [Componente(int(i)) for i in self.ids]
             self.caudalUnitario = [MassFlow(q) for q in solid["unitFlow"]]
             self.caudal = MassFlow(solid["caudal"])
-            self.diametros = [Length(d) for d in solid["diametros"]]
+            self.diametros = [Length(d, "m", "ParticleDiameter") for d in solid["diametros"]]
             self.fracciones = solid["fracciones"]
             self.fracciones_acumuladas = solid["fracciones_acumuladas"]
             self.diametro_medio = Length(solid["diametro_medio"])
