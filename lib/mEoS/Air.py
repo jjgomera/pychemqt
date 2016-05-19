@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
+
+from math import log, exp
 
 from lib.meos import MEoSBlend
 from lib import unidades
@@ -59,60 +61,60 @@ class Air(MEoSBlend):
         "__test__":
             # Table A1, Pag 363
             """
-            >>> print "%0.6f %0.5f" % (Air._bubbleP(59.75).MPa, Air._dewP(59.75).MPa)
+            >>> print("%0.6f %0.5f" % (Air._bubbleP(59.75).MPa, Air._dewP(59.75).MPa))
             0.005265 0.00243
-            >>> print "%0.5f %0.5f" % (Air._bubbleP(70).MPa, Air._dewP(70).MPa)
+            >>> print("%0.5f %0.5f" % (Air._bubbleP(70).MPa, Air._dewP(70).MPa))
             0.03191 0.01943
-            >>> print "%0.5f %0.5f" % (Air._bubbleP(80).MPa, Air._dewP(80).MPa)
+            >>> print("%0.5f %0.5f" % (Air._bubbleP(80).MPa, Air._dewP(80).MPa))
             0.11462 0.08232
-            >>> print "%0.5f %0.5f" % (Air._bubbleP(100).MPa, Air._dewP(100).MPa)
+            >>> print("%0.5f %0.5f" % (Air._bubbleP(100).MPa, Air._dewP(100).MPa))
             0.66313 0.56742
-            >>> print "%0.5f %0.5f" % (Air._bubbleP(120).MPa, Air._dewP(120).MPa)
+            >>> print("%0.5f %0.5f" % (Air._bubbleP(120).MPa, Air._dewP(120).MPa))
             2.15573 2.00674
-            >>> print "%0.5f %0.5f" % (Air._bubbleP(130).MPa, Air._dewP(130).MPa)
+            >>> print("%0.5f %0.5f" % (Air._bubbleP(130).MPa, Air._dewP(130).MPa))
             3.42947 3.30835
             """
             # Table A2, Pag 366
             """
             >>> st=Air(T=100, P=101325)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             100 0.12449 2028.2 2784.1 166.61 21.09 30.13 198.2
             >>> st=Air(T=2000, P=101325)
-            >>> print "%0.0f %0.4g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.4g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             2000 0.006092 48610 65242 259.62 27.90 36.21 863.5
             >>> st=Air(T=500, P=2e5)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             500 0.048077 10418 14578 208.2 21.51 29.84 446.6
             >>> st=Air(T=300, P=5e5)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             300 0.20075 6179.8 8670.5 185.5 20.82 29.33 347.8
             >>> st=Air(T=130, P=1e6)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             130 1.0295 2461.1 3432.5 153.79 22.058 34.69 216.8
             >>> st=Air(T=70, P=5e6)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             70 31.895 -4198 -4041.2 78.907 32.17 54.57 974.6
             >>> st=Air(T=2000, P=1e7)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             2000 0.59094 48600 65522 221.44 27.93 36.25 878.6
             >>> st=Air(T=130, P=5e7)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             130 27.946 -1831.3 -42.096 104.84 27.68 48.19 878.8
             >>> st=Air(T=100, P=1e8)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             100 33.161 -3403.9 -388.34 87.644 31.98 48.22 1192.4
             >>> st=Air(T=1000, P=1e9)
-            >>> print "%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
+            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
             1000 30.791 21944 54421 156.83 29.07 36.77 1966.3
             """,
 
@@ -208,7 +210,8 @@ class Air(MEoSBlend):
         "ao": [-0.1567266, -0.5539635e1, 0.7567212, -0.3514322e1],
         "exp": [0.5, 1, 2.5, 4]}
 
-    visco0 = {"eq": 1, "omega": 1,
+    visco0 = {"eq": 0,
+              "method": "_visco0",
               "__name__": "Lemmon (2004)",
               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
                           "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
@@ -216,22 +219,81 @@ class Air(MEoSBlend):
                           "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
               "__test__": """
                   >>> st=Air(T=100, rhom=0)
-                  >>> print "%0.5f" % st.mu.muPas
+                  >>> print("%0.5f" % st.mu.muPas)
                   7.09559
                   >>> st=Air(T=300, rhom=0)
-                  >>> print "%0.4f" % st.mu.muPas
+                  >>> print("%0.4f" % st.mu.muPas)
                   18.5230
                   >>> st=Air(T=100, rhom=28)
-                  >>> print "%0.3f" % st.mu.muPas
+                  >>> print("%0.3f" % st.mu.muPas)
                   107.923
                   >>> st=Air(T=200, rhom=10)
-                  >>> print "%0.4f" % st.mu.muPas
+                  >>> print("%0.4f" % st.mu.muPas)
                   21.1392
                   >>> st=Air(T=300, rhom=5)
-                  >>> print "%0.4f" % st.mu.muPas
+                  >>> print("%0.4f" % st.mu.muPas)
                   21.3241
                   >>> st=Air(T=132.64, rhom=10.4)
-                  >>> print "%0.4f" % st.mu.muPas
+                  >>> print("%0.4f" % st.mu.muPas)
+                  17.7623
+                  """,  # Table V, Pag 28
+              }
+
+    def _visco0(self, rho, T, fase=None):
+
+        ek = 103.3
+        sigma = 0.36
+        rhoc = 10.4477*self.M
+        tau = self.Tc/T
+        delta = rho/rhoc
+
+        n_poly = [10.72, 1.122, 0.002019, -8.876, -0.02916]
+        t_poly = [.2, .05, 2.4, .6, 3.6]
+        d_poly = [1, 4, 9, 1, 8]
+        l_poly = [0, 0, 0, 1, 1]
+        g_poly = [0, 0, 0, 1, 1]
+
+        b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
+        T_ = log(T/ek)
+        suma = 0
+        for i, bi in enumerate(b):
+            suma += bi*T_**i
+        omega = exp(suma)
+
+        Nchapman = 0.0266958
+        muo = Nchapman*(self.M*T)**0.5/(sigma**2*omega)
+
+        mur = 0
+        for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
+            mur += n*tau**t*delta**d*exp(-g*delta**l)
+
+        return unidades.Viscosity(muo+mur, "muPas")
+
+
+    visco1 = {"eq": 1, "omega": 1,
+              "__name__": "Lemmon (2004)",
+              "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
+                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
+                          "ref": "Int. J. Thermophys., 25:21-69, 2004.",
+                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
+              "__test__": """
+                  >>> st=Air(T=100, rhom=0)
+                  >>> print("%0.5f" % st.mu.muPas)
+                  7.09559
+                  >>> st=Air(T=300, rhom=0)
+                  >>> print("%0.4f" % st.mu.muPas)
+                  18.5230
+                  >>> st=Air(T=100, rhom=28)
+                  >>> print("%0.3f" % st.mu.muPas)
+                  107.923
+                  >>> st=Air(T=200, rhom=10)
+                  >>> print("%0.4f" % st.mu.muPas)
+                  21.1392
+                  >>> st=Air(T=300, rhom=5)
+                  >>> print("%0.4f" % st.mu.muPas)
+                  21.3241
+                  >>> st=Air(T=132.64, rhom=10.4)
+                  >>> print("%0.4f" % st.mu.muPas)
                   17.7623
                   """, # Table V, Pag 28
 
@@ -245,9 +307,75 @@ class Air(MEoSBlend):
             "g_poly": [0, 0, 0, 1, 1],
             "c_poly": [0, 0, 0, 1, 1]}
 
-    _viscosity = visco0,
+    _viscosity = visco0, visco1
 
-    thermo0 = {"eq": 1,
+    thermo0 = {"eq": 0,
+               "method": "_thermo0",
+               "__name__": "Lemmon (2004)",
+               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
+                           "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
+                           "ref": "Int. J. Thermophys., 25:21-69, 2004.",
+                           "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
+               "__test__": """
+                    >>> st=Air(T=100, rhom=0)
+                    >>> print("%0.5f" % st.k.mWmK)
+                    9.35902
+                    >>> st=Air(T=300, rhom=0)
+                    >>> print("%0.4f" % st.k.mWmK)
+                    26.3529
+                    >>> st=Air(T=100, rhom=28)
+                    >>> print("%0.3f" % st.k.mWmK)
+                    119.221
+                    >>> st=Air(T=200, rhom=10)
+                    >>> print("%0.4f" % st.k.mWmK)
+                    35.3185
+                    >>> st=Air(T=300, rhom=5)
+                    >>> print("%0.4f" % st.k.mWmK)
+                    32.6062
+                    >>> st=Air(T=132.64, rhom=10.4)
+                    >>> print("%0.4f" % st.k.mWmK)
+                    75.6231
+                    """,  # Table V, Pag 28
+               }
+
+    def _thermo0(self, rho, T, fase=None):
+
+        ek = 103.3
+        sigma = 0.36
+        rhoc = 10.4477*self.M
+        tau = self.Tc/T
+        delta = rho/rhoc
+
+        N = [10.72, 1.122, 0.002019]
+        t = [.2, .05, 2.4]
+        n_poly = [-8.876, -0.02916]
+        t_poly = [.6, 3.6]
+        d_poly = [1, 8]
+        l_poly = [1, 1]
+        g_poly = [1, 1]
+
+        b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
+        T_ = log(T/ek)
+        suma = 0
+        for i, bi in enumerate(b):
+            suma += bi*T_**i
+        omega = exp(suma)
+
+        Nchapman = 0.0266958
+        muo = Nchapman*(self.M*T)**0.5/(sigma**2*omega)
+
+        lo = N[0]*muo+N[1]**tau**t[1]+N[2]*tau**t[2]
+        lr = 0
+        for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
+            lr += n*tau**t*delta**d*exp(-g*delta**l)
+
+        # TODO: Critical enchancement
+        lc = 0
+
+        return unidades.ThermalConductivity(lo+lr+lc, "mWmK")
+
+
+    thermo1 = {"eq": 1,
                "__name__": "Lemmon (2004)",
                "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
                             "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
@@ -255,24 +383,24 @@ class Air(MEoSBlend):
                             "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
                "__test__": """
                     >>> st=Air(T=100, rhom=0)
-                    >>> print "%0.5f" % st.k.mWmK
+                    >>> print("%0.5f" % st.k.mWmK)
                     9.35902
                     >>> st=Air(T=300, rhom=0)
-                    >>> print "%0.4f" % st.k.mWmK
+                    >>> print("%0.4f" % st.k.mWmK)
                     26.3529
                     >>> st=Air(T=100, rhom=28)
-                    >>> print "%0.3f" % st.k.mWmK
+                    >>> print("%0.3f" % st.k.mWmK)
                     119.221
                     >>> st=Air(T=200, rhom=10)
-                    >>> print "%0.4f" % st.k.mWmK
+                    >>> print("%0.4f" % st.k.mWmK)
                     35.3185
                     >>> st=Air(T=300, rhom=5)
-                    >>> print "%0.4f" % st.k.mWmK
+                    >>> print("%0.4f" % st.k.mWmK)
                     32.6062
                     >>> st=Air(T=132.64, rhom=10.4)
-                    >>> print "%0.4f" % st.k.mWmK
+                    >>> print("%0.4f" % st.k.mWmK)
                     75.6231
-                    """, # Table V, Pag 28
+                    """,  # Table V, Pag 28
 
                "Tref": 132.6312, "kref": 1e-3,
                "no": [1.308, 1.405, -1.036],
@@ -288,4 +416,15 @@ class Air(MEoSBlend):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.11e-9, "gam0": 0.55e-1, "qd": 0.31e-9, "Tcref": 265.262}
 
-    _thermal = thermo0,
+    _thermal = thermo0, thermo1
+
+
+if __name__ == "__main__":
+    st=Air(T=300, P=5e5)
+    print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
+         st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
+    # 300 0.20075 6179.8 8670.5 185.5 20.82 29.33 347.8
+
+    st=Air(T=300, rhom=5)
+    print("%0.4f" % st.mu.muPas)
+    # 21.3241

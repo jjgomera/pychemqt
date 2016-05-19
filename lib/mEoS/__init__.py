@@ -175,7 +175,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
         for module in __all__:
-            if module.__module__ != "R245fa":
+            if "Air" not in module.__module__:
                 continue
             print(module.__module__)
             inst = module()
