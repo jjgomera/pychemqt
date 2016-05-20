@@ -327,6 +327,8 @@ class Corriente(config.Entity):
                 self.tipoSolido = 2
             elif self.kwargs["diametroMedio"]:
                 self.tipoSolido = 1
+        if self.kwargs["solido"]:
+            self.tipoSolido = self.kwargs["solido"].status
         return self.tipoTermodinamica and self.tipoFlujo
 
     def calculo(self):
@@ -827,7 +829,7 @@ class Corriente(config.Entity):
             else:
                 data = thermo.data
             for propiedad, key, unit in data:
-                if key in self.Gas.__dict__:
+                if key in self.Gas.__dict__ or key in self.Liquido.__dict__:
                     values = [propiedad]
                     for phase in phases:
                         values.append(phase.__getattribute__(key).str)
@@ -887,6 +889,15 @@ class Corriente(config.Entity):
         lista = [comp.nombre for comp in self.componente]
         return lista
 
+    def writeToJSON(self, data):
+        """Read entity from file"""
+        config.Entity.writeToJSON(self, data)
+
+        # Solid state, can be defined without a thermo status
+        solid = {}
+        self.solido.writeStatetoJSON(solid)
+        data["solid"] = solid
+
     def writeStatetoJSON(self, state):
         state["thermo"] = self._thermo
         state["bool"] = self._bool
@@ -928,11 +939,6 @@ class Corriente(config.Entity):
         state["fluxType"] = self.tipoFlujo
         self.mezcla.writeStatetoJSON(state)
 
-        state["solidType"] = self.tipoSolido
-        solid = {}
-        self.solido.writeStatetoJSON(solid)
-        state["solid"] = solid
-
         self.Liquido.writeStatetoJSON(state, "liquid")
         self.Gas.writeStatetoJSON(state, "gas")
         if state["liquid"]:
@@ -940,6 +946,14 @@ class Corriente(config.Entity):
 
         if self._thermo == "meos":
             state["meos_eq"] = self.cmp.kwargs["eq"]
+
+    def readFromJSON(self, data):
+        """Read entity from file"""
+        config.Entity.readFromJSON(self, data)
+
+        # Read solid
+        self.solido = Solid()
+        self.solido.readStatefromJSON(data["solid"])
 
     def readStatefromJSON(self, state):
         self._thermo = state["thermo"]
@@ -990,10 +1004,6 @@ class Corriente(config.Entity):
         self.fraccion_masica = self.mezcla.fraccion_masica
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
-
-        self.tipoSolido = state["solidType"]
-        self.solido = Solid()
-        self.solido.readStatefromJSON(state["solid"])
 
         if self._thermo in ["iapws", "freesteam", "coolprop", "refprop"]:
             self.Liquido = Fluid()
