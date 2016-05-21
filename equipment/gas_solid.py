@@ -36,7 +36,7 @@ from scipy.optimize import fsolve
 
 from lib.unidades import (Length, Pressure, DeltaP, Speed, Time, Area, VolFlow,
                           PotencialElectric, Currency, Dimensionless, MassFlow)
-# from lib.datasheet import pdf
+from lib.datasheet import pdf
 from lib.corriente import Corriente
 from equipment.parents import equipment
 
@@ -73,6 +73,25 @@ class Separador_SolidGas(equipment):
         self.Ms = self.salida[1].solido.caudal
         self.Dms = self.salida[1].solido.diametro_medio
 
+    def propTxt(self, i):
+        """i: index of common properties in equipment subclas list"""
+        entrada = self.kwargs["entrada"]
+
+        txt = os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Separation efficiency")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(i, i+6)) + os.linesep
+        if len(entrada.solido.diametros) >= 1:
+            txt += "%12s %11s %9s %9s %9s" % ("Dp", "Xi", "ηi", "Xis", "Xig")
+            txt += os.linesep
+            for d, X, eta, Xs, Xg in zip(
+                    entrada.solido.diametros, entrada.solido.fracciones,
+                    self.rendimiento_parcial, self.salida[1].solido.fracciones,
+                    self.salida[0].solido.fracciones):
+                txt += "%15s %9.4f %9.5f %9.5f %9.5f" % (d.str, X, eta, Xs, Xg)
+                txt += os.linesep
+        return txt
+
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
         state["Pin"] = self.Pin
@@ -83,6 +102,8 @@ class Separador_SolidGas(equipment):
         state["Dmr"] = self.Dmr
         state["Ms"] = self.Ms
         state["Dms"] = self.Dms
+        state["rendimiento_parcial"] = self.rendimiento_parcial
+        state["rendimiento"] = self.rendimiento
 
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
@@ -94,6 +115,9 @@ class Separador_SolidGas(equipment):
         self.Dmr = Length(state["Dmr"])
         self.Ms = MassFlow(state["Ms"])
         self.Dms = Length(state["Dms"])
+        eta = [Dimensionless(nu) for nu in state["rendimiento_parcial"]]
+        self.rendimiento_parcial = eta
+        self.rendimiento = Dimensionless(state["rendimiento"])
 
 
 class GravityChamber(Separador_SolidGas):
@@ -254,28 +278,12 @@ class GravityChamber(Separador_SolidGas):
         return rendimientos
 
     def propTxt(self):
-        entrada = self.kwargs["entrada"]
-
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(11)) + os.linesep
+        txt += self.propertiesToText(range(11))
 
-        txt += self.propertiesToText(range(12, 18))
-
-        txt += os.linesep + "#---------------"
-        txt += QApplication.translate("pychemqt", "Efficiency per fraction")
-        txt += "-----------------#" + os.linesep
-        if len(entrada.solido.diametros) >= 1:
-            txt += "%6s %11s %9s %9s %9s" % ("Dp", "Xi", "ηi", "Xis", "Xig")
-            txt += os.linesep
-            for d, X, eta, Xs, Xg in zip(
-                    entrada.solido.diametros, entrada.solido.fracciones,
-                    self.rendimiento_parcial, self.salida[1].solido.fracciones,
-                    self.salida[0].solido.fracciones):
-                txt += "%9s %9.4f %9.5f %9.5f %9.5f" % (d.str, X, eta, Xs, Xg)
-                txt += os.linesep
-
+        txt += Separador_SolidGas.propTxt(self, 12)
         return txt
 
     @classmethod
@@ -317,8 +325,6 @@ class GravityChamber(Separador_SolidGas):
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
         state["Vgas"] = self.Vgas
-        state["rendimiento_parcial"] = self.rendimiento_parcial
-        state["rendimiento"] = self.rendimiento
         state["LCalc"] = self.LCalc
         state["WCalc"] = self.WCalc
         state["HCalc"] = self.HCalc
@@ -329,9 +335,6 @@ class GravityChamber(Separador_SolidGas):
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
         self.Vgas = Speed(state["Vgas"])
-        eta = [Dimensionless(nu) for nu in state["rendimiento_parcial"]]
-        self.rendimiento_parcial = eta
-        self.rendimiento = Dimensionless(state["rendimiento"])
         self.LCalc = Length(state["LCalc"])
         self.WCalc = Length(state["WCalc"])
         self.HCalc = Length(state["HCalc"])
@@ -343,53 +346,67 @@ class GravityChamber(Separador_SolidGas):
 
 
 class Ciclon(Separador_SolidGas):
-    """Clase que modela un ciclón
+    """Class to model a cyclone equipment
 
-    Parámetros:
-        Entrada: instancia de la clase corriente que define la corriente a tratar
+    Parameters:
+        Entrada: Corriente instance to define the input stream to equipment
         tipo_calculo:
-            0   -   Evaluación del funcionamiento de un ciclón de dimensiones conocidas (diametro, forma, número de ciclones)
-            1   -   Diseño de un ciclón a partir del rendimiento o perdida de carga admisibles
-        modelo_rendimiento: Modelo de simulación del ciclón:
-            0   -   Modelo Rosin-Rammler-Intelmann
-            1   -   Modelo Leith-Licht
-        modelo_DeltaP: Método de cálculo de la perdida de presión:
-            0   -   Cálculo simplificado teniendo en cuenta únicamente las pérdidas cinéticas
-            1   -   Método de Casal-Martinez-Benet
-            2   -   Método de Leith-Licht
-            3   -   Método de Sheferd, Lapple y Ter Linden
-        modelo_ciclón: Define la forma del ciclón a partir del diametro del ciclón y una serie de modelo habituales
-            0   -   Stairmand (Alta η)
-            1   -   Swift (Alta η)
-            2   -   Lapple (Baja η)
-            3   -   Swift (Baja η)
-            4   -   Peterson/Whitby (Baja η)
-            5   -   Lorenz I
-            6   -   Lorenz II
-            7   -   Lorenz III
-            8   -   Personalizado
-        diametro: diametro del ciclón
-        num_ciclones: Número de ciclones dispuestos en paralelo para tratar la corriente
-        dimensiones: En el caso de que se trate de un modelo de ciclón personalizado, se pueden indicar las dimensiones principales en un array de 7 elementos
-        rendimientoAdmisible: Rendimiento admisible del ciclón (en diseño)
-        DeltaPAdmisible: Perdida de presión admisible del ciclon
-        velocidadAdmisible: Velocidad de admisión del ciclón
+            0 - Rating
+            1 - Design
+        modelo_rendimiento: Model to simulate the equipment:
+            0 - Rosin-Rammler-Intelmann
+            1 - Leith-Licht
+        modelo_DeltaP: Method to calculate the pressure loss:
+            0 - Simple, only cinetic loss
+            1 - Casal-Martinez-Benet
+            2 - Leith-Licht
+            3 - Sheferd, Lapple y Ter Linden
+        modelo_ciclón: Use a standard model to dimension the equipment
+            0 - Stairmand (High η)
+            1 - Swift (High η)
+            2 - Lapple (Low η)
+            3 - Swift (Low η)
+            4 - Peterson/Whitby (Low η)
+            5 - Lorenz I
+            6 - Lorenz II
+            7 - Lorenz III
+            8 - Custom
+        diametro: Cyclone diameter
+        num_ciclones: Cyclone count working in parallel
+        dimensiones: If use a custom cyclone model, it can be defined here with
+            array with the custom dimension in the order:
+                Inlet Height, Hc
+                Inlet Width, Bc
+                Solid Output Diameter, Jc
+                Cylinder Cyclone Section Length, Lc
+                Conical Cyclone Section Length, Zc
+                Clean Gas Output Diameter, De
+                Clean Gas Inlet Orifice Length, Sc
+
+        rendimientoAdmisible: Required efficiency orcyclone (design)
+        DeltaPAdmisible: Maximum pressure loss permisible of cyclone
+        velocidadAdmisible: Input gas speed to equipment
 
     Coste
-        f_install: factor instalación
-        base: indice base
-        actual: Indice actual
         tipo_costo:
-            0   -   Heavy duty
-            1   -   Standart duty
-            2   -   Multiciclone
+            0 - Heavy duty
+            1 - Standart duty
+            2 - Multiciclone
 
-    >>> diametros=[17.5, 22.4, 26.2, 31.8, 37, 42.4, 48, 54, 60, 69, 81.3, 96.5, 109, 127]
-    >>> fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    >>> corriente=Corriente(T=300, P=101325, caudalMasico=0.3,  fraccionMolar=[1.], caudalSolido=[0.001], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    >>> ciclon=Ciclon(entrada=corriente, tipo_calculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
-    >>> print ciclon.C_instTotal, ciclon.C_adqTotal
-    2260.1946585 1614.42475607
+    >>> from lib.corriente import Corriente
+    >>> from lib.solids import Solid
+    >>> dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, \
+        54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+    >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
+        0.1, 0.05, 0.03, 0.02]
+    >>> sol = Solid(caudalSolido=[0.001], distribucion_diametro=dm, \
+        distribucion_fraccion=fracciones, solids=[638])
+    >>> kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
+    >>> entrada = Corriente(T=300, P=1e5, caudalMasico=0.3, solido=sol, **kw)
+    >>> ciclon = Ciclon(entrada=entrada, tipo_calculo=1, \
+        rendimientoAdmisible=0.95, velocidadAdmisible=5)
+    >>> print("%0.2f %0.2f" % (ciclon.C_instTotal, ciclon.C_adqTotal))
+    2302.76 1644.83
     """
     title = QApplication.translate("pychemqt", "Cyclone")
     help = os.environ["pychemqt"] + "doc/Ciclones.htm"
@@ -410,31 +427,40 @@ class Ciclon(Separador_SolidGas):
               "Current_index": 0.0,
               "tipo_costo": 0}
     kwargsInput = ("entrada", )
-    kwargsValue = ("Dc", "num_ciclones", "rendimientoAdmisible", "velocidadAdmisible", "DeltaPAdmisible")
-    kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP", "modelo_ciclon", "tipo_costo")
-    calculateValue = ("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc", "Bc", "Jc", "Lc", "Zc", "De", "Sc")
+    kwargsValue = ("Dc", "num_ciclones", "rendimientoAdmisible",
+                   "velocidadAdmisible", "DeltaPAdmisible")
+    kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP",
+                  "modelo_ciclon", "tipo_costo")
+    calculateValue = ("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc",
+                      "Bc", "Jc", "Lc", "Zc", "De", "Sc")
     calculateCostos = ("C_adq", "C_inst", "num_ciclonesCoste", "Q")
     indiceCostos = 2
 
-    TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate ΔP and efficiency", None),
-                 QApplication.translate("pychemqt", "Design: Calculate cyclone dimensions")]
+    TEXT_TIPO = [
+        QApplication.translate("pychemqt", "Rating"),
+        QApplication.translate("pychemqt", "Design")]
     TEXT_MODEL = ["Rossin, Rammler & Intelmann", "Leith & Licht"]
-    TEXT_MODEL_DELTAP = [QApplication.translate("pychemqt", "Standart"),
-                         "Casal & Martinez-Benet", "Leith & Licht", "Sheferd, Lapple & Ter Linden"]
-    TEXT_MODEL_CICLON = ["Stairmand ("+QApplication.translate("pychemqt", "High η", None)+")",
-                         "Swift ("+QApplication.translate("pychemqt", "High η", None)+")",
-                         "Lapple ("+QApplication.translate("pychemqt", "Low η", None)+")",
-                         "Swift ("+QApplication.translate("pychemqt", "Low η", None)+")",
-                         "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η", None)+")",
-                         "Lorenz I", "Lorenz II", "Lorenz III",
-                         QApplication.translate("pychemqt", "Custom")]
-    TEXT_COST = [QApplication.translate("pychemqt", "Heavy duty"),
-                 QApplication.translate("pychemqt", "Standard dury"),
-                 QApplication.translate("pychemqt", "Multicyclone")]
+    TEXT_MODEL_DELTAP = [
+        QApplication.translate("pychemqt", "Standart"),
+        "Casal & Martinez-Benet", "Leith & Licht",
+        "Sheferd, Lapple & Ter Linden"]
+    TEXT_MODEL_CICLON = [
+        "Stairmand ("+QApplication.translate("pychemqt", "High η")+")",
+        "Swift ("+QApplication.translate("pychemqt", "High η")+")",
+        "Lapple ("+QApplication.translate("pychemqt", "Low η")+")",
+        "Swift ("+QApplication.translate("pychemqt", "Low η")+")",
+        "Peterson/Whitby ("+QApplication.translate("pychemqt", "Low η")+")",
+        "Lorenz I", "Lorenz II", "Lorenz III",
+        QApplication.translate("pychemqt", "Custom")]
+    TEXT_COST = [
+        QApplication.translate("pychemqt", "Heavy duty"),
+        QApplication.translate("pychemqt", "Standard dury"),
+        QApplication.translate("pychemqt", "Multicyclone")]
 
     @property
     def isCalculable(self):
-        if self.kwargs["f_install"] and self.kwargs["Base_index"] and self.kwargs["Current_index"]:
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"]:
             self.statusCoste = True
         else:
             self.statusCoste = False
@@ -446,23 +472,29 @@ class Ciclon(Separador_SolidGas):
 
         if self.kwargs["tipo_calculo"]:
             if self.kwargs["modelo_ciclon"] == 8:
-                if self.kwargs["Dc"] and self.kwargs["Hc"] and self.kwargs["Bc"] and self.kwargs["De"]:
+                if self.kwargs["Dc"] and self.kwargs["Hc"] and \
+                        self.kwargs["Bc"] and self.kwargs["De"]:
                     self.msg = ""
                     self.status = 1
                     return True
                 else:
-                    self.msg = QApplication.translate("pychemqt", "undefined cyclone dimension")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined cyclone dimension")
                     self.status = 0
             else:
-                if (self.kwargs["DeltaPAdmisible"] or self.kwargs["velocidadAdmisible"]) and self.kwargs["rendimientoAdmisible"]:
+                if (self.kwargs["DeltaPAdmisible"] or
+                    self.kwargs["velocidadAdmisible"]) and \
+                        self.kwargs["rendimientoAdmisible"]:
                     self.msg = ""
                     self.status = 1
                     return True
                 elif self.kwargs["rendimientoAdmisible"]:
-                    self.msg = QApplication.translate("pychemqt", "undefined efficiency")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined efficiency")
                     self.status = 0
                 else:
-                    self.msg = QApplication.translate("pychemqt", "undefined loss pressure specification")
+                    self.msg = QApplication.translate(
+                        "pychemqt", "undefined loss pressure specification")
                     self.status = 0
 
         else:
@@ -471,473 +503,384 @@ class Ciclon(Separador_SolidGas):
                 self.status = 1
                 return True
             elif self.kwargs["Dc"]:
-                self.msg = QApplication.translate("pychemqt", "undefined cyclone number")
+                self.msg = QApplication.translate(
+                    "pychemqt", "undefined cyclone number")
                 self.status = 0
             else:
-                self.msg = QApplication.translate("pychemqt", "undefined cyclone diameter")
+                self.msg = QApplication.translate(
+                    "pychemqt", "undefined cyclone diameter")
                 self.status = 0
 
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        self.Dc=Length(self.kwargs["Dc"])
-        self.num_ciclones=Dimensionless(self.kwargs["num_ciclones"])
-        self.dimensiones=self.kwargs["dimensiones"]
-        self.rendimientoAdmisible=self.kwargs["rendimientoAdmisible"]
-        self.DeltaPAdmisible=Pressure(self.kwargs["DeltaPAdmisible"])
+        entrada = self.kwargs["entrada"]
+        self.Dc = Length(self.kwargs["Dc"])
+        self.num_ciclones = int(self.kwargs["num_ciclones"])
+        self.dimensiones = self.kwargs["dimensiones"]
+        self.rendimientoAdmisible = self.kwargs["rendimientoAdmisible"]
+        self.DeltaPAdmisible = Pressure(self.kwargs["DeltaPAdmisible"])
 
-        if self.kwargs["tipo_calculo"]==0: #Calculo
-            if self.kwargs["modelo_ciclon"]!=8:
-                self.dimensiones=self.dimensionado(Dc=self.Dc)  #Hc, Bc, Jc, Lc, Zc, De, Sc,kf, G
+        rhoS = entrada.solido.rho
+        rhoG = entrada.Gas.rho
+        muG = entrada.Gas.mu
+
+        if self.kwargs["tipo_calculo"] == 0:  # Calculo
+            if self.kwargs["modelo_ciclon"] != 8:
+                # Hc, Bc, Jc, Lc, Zc, De, Sc,kf, G
+                self.dimensiones = self.dimensionado(Dc=self.Dc)
             else:
-                self.dimensiones=self.dimensionado(dimensiones=self.dimensiones)
-            self.Hc=Length(self.dimensiones[0])
-            self.Bc=Length(self.dimensiones[1])
-            self.Jc=Length(self.dimensiones[2])
-            self.Lc=Length(self.dimensiones[3])
-            self.Zc=Length(self.dimensiones[4])
-            self.De=Length(self.dimensiones[5])
-            self.Sc=Length(self.dimensiones[6])
-            self.kf=Length(self.dimensiones[7])
-            self.G=Length(self.dimensiones[8])
+                dimensiones = self.dimensionado(dimensiones=self.dimensiones)
+                self.dimensiones = dimensiones
+            self.Hc = Length(self.dimensiones[0])
+            self.Bc = Length(self.dimensiones[1])
+            self.Jc = Length(self.dimensiones[2])
+            self.Lc = Length(self.dimensiones[3])
+            self.Zc = Length(self.dimensiones[4])
+            self.De = Length(self.dimensiones[5])
+            self.Sc = Length(self.dimensiones[6])
+            self.kf = Length(self.dimensiones[7])
+            self.G = Length(self.dimensiones[8])
 
-            self.V=Speed(self.entrada.Q/(self.Bc*self.Hc*self.num_ciclones))
-            if self.kwargs["modelo_rendimiento"]==0:
-                self.N=11.3*(self.Hc*self.Bc/self.Sc**2)**2+3.33
-                self.dc=Length(sqrt(9*self.Bc*self.entrada.Gas.mu/(2*pi*self.N*self.V*(self.entrada.solido.rho-self.entrada.Gas.rho))), "ParticleDiameter")
+            self.V = Speed(entrada.Q/(self.Bc*self.Hc*self.num_ciclones))
+            if self.kwargs["modelo_rendimiento"] == 0:
+                self.N = 11.3*(self.Hc*self.Bc/self.Sc**2)**2+3.33
+                dc = sqrt(9*self.Bc*muG/(2*pi*self.N*self.V*(rhoS-rhoG)))
+                self.dc = Length(dc, "ParticleDiameter")
             else:
-                self.N=self.V*(0.1079-0.00077*self.V+1.924e-6*self.V**2)
+                self.N = self.V*(0.1079-0.00077*self.V+1.924e-6*self.V**2)
 
-            self.rendimiento_parcial=self.calcularRendimientos_parciales()
-            self.rendimiento=self.calcularRendimiento(self.rendimiento_parcial)
-            self.DeltaP=self.PerdidaPresion()
+            eta_i = self.calcularRendimientos_parciales()
+            self.rendimiento_parcial = eta_i
+            self.rendimiento = self.calcularRendimiento(eta_i)
+
         else:
             if self.DeltaPAdmisible and self.kwargs["velocidadAdmisible"]:
-                V_fpresion=self.velocidad_f_presion()
-                if self.kwargs["velocidadAdmisible"]>V_fpresion:
-                    self.kwargs["velocidadAdmisible"]=V_fpresion
+                V_fpresion = self.velocidad_f_presion()
+                if self.kwargs["velocidadAdmisible"] > V_fpresion:
+                    self.kwargs["velocidadAdmisible"] = V_fpresion
             elif self.DeltaPAdmisible:
-                self.kwargs["velocidadAdmisible"]=self.velocidad_f_presion()
+                self.kwargs["velocidadAdmisible"] = self.velocidad_f_presion()
 
             def f(diametro):
-                self.dimensiones=self.dimensionado(Dc=diametro)
-                self.Dc=Length(diametro)
-                self.Hc=Length(self.dimensiones[0])
-                self.Bc=Length(self.dimensiones[1])
-                self.Jc=Length(self.dimensiones[2])
-                self.Lc=Length(self.dimensiones[3])
-                self.Zc=Length(self.dimensiones[4])
-                self.De=Length(self.dimensiones[5])
-                self.Sc=Length(self.dimensiones[6])
-                self.kf=Length(self.dimensiones[7])
-                self.G=Length(self.dimensiones[8])
-                self.num_ciclones=Dimensionless(ceil(self.entrada.Q/self.Bc/self.Hc/self.kwargs["velocidadAdmisible"]))
-                self.V=Speed(self.entrada.Q/(self.Bc*self.Hc*self.num_ciclones))
-                if self.kwargs["modelo_rendimiento"]==0:
-                    self.N=Dimensionless(11.3*(self.Hc*self.Bc/self.Sc**2)**2+3.33)
-                    self.dc=Length(sqrt(9*self.Bc*self.entrada.Gas.mu/(2*pi*self.N*self.V*(self.entrada.solido.rho-self.entrada.Gas.rho))), magnitud="ParticleDiameter")
+                self.dimensiones = self.dimensionado(Dc=diametro)
+                self.Dc = Length(diametro)
+                self.Hc = Length(self.dimensiones[0])
+                self.Bc = Length(self.dimensiones[1])
+                self.Jc = Length(self.dimensiones[2])
+                self.Lc = Length(self.dimensiones[3])
+                self.Zc = Length(self.dimensiones[4])
+                self.De = Length(self.dimensiones[5])
+                self.Sc = Length(self.dimensiones[6])
+                self.kf = Length(self.dimensiones[7])
+                self.G = Length(self.dimensiones[8])
+                n = entrada.Q/self.Bc/self.Hc/self.kwargs["velocidadAdmisible"]
+                self.num_ciclones = int(ceil(n))
+                self.V = Speed(entrada.Q/(self.Bc*self.Hc*ceil(n)))
+                if self.kwargs["modelo_rendimiento"] == 0:
+                    N = 11.3*(self.Hc*self.Bc/self.Sc**2)**2+3.33
+                    self.N = Dimensionless(N)
+                    dc = sqrt(9*self.Bc*muG/(2*pi*N*self.V*(rhoS-rhoG)))
+                    self.dc = Length(dc, magnitud="ParticleDiameter")
                 else:
-                    self.N=Dimensionless(self.V*(0.1079-0.00077*self.V+1.924e-6*self.V**2))
-                rendimiento_parcial=self.calcularRendimientos_parciales()
-                rendimiento=self.calcularRendimiento(rendimiento_parcial)
+                    N = self.V*(0.1079-0.00077*self.V+1.924e-6*self.V**2)
+                    self.N = Dimensionless(N)
+                rendimiento_parcial = self.calcularRendimientos_parciales()
+                rendimiento = self.calcularRendimiento(rendimiento_parcial)
                 return rendimiento-self.kwargs["rendimientoAdmisible"]
 
-            Dc0=1
-            diametro=fsolve(f, Dc0)
-            self.Dc=Length(diametro[0])
-            self.dimensiones=self.dimensionado(self.Dc)
-            self.Hc=Length(self.dimensiones[0])
-            self.Bc=Length(self.dimensiones[1])
-            self.Jc=Length(self.dimensiones[2])
-            self.Lc=Length(self.dimensiones[3])
-            self.Zc=Length(self.dimensiones[4])
-            self.De=Length(self.dimensiones[5])
-            self.Sc=Length(self.dimensiones[6])
-            self.kf=Length(self.dimensiones[7])
-            self.G=Length(self.dimensiones[8])
-            self.rendimiento_parcial=self.calcularRendimientos_parciales()
-            self.rendimiento=self.calcularRendimiento(self.rendimiento_parcial)
-            self.deltaP=self.PerdidaPresion()
+            Dc0 = 1
+            diametro = fsolve(f, Dc0)
+            self.Dc = Length(diametro[0])
+            self.dimensiones = self.dimensionado(self.Dc)
+            self.Hc = Length(self.dimensiones[0])
+            self.Bc = Length(self.dimensiones[1])
+            self.Jc = Length(self.dimensiones[2])
+            self.Lc = Length(self.dimensiones[3])
+            self.Zc = Length(self.dimensiones[4])
+            self.De = Length(self.dimensiones[5])
+            self.Sc = Length(self.dimensiones[6])
+            self.kf = Length(self.dimensiones[7])
+            self.G = Length(self.dimensiones[8])
+            eta_i = self.calcularRendimientos_parciales()
+            self.rendimiento_parcial = eta_i
+            self.rendimiento = self.calcularRendimiento(eta_i)
 
-        self.num_ciclonesCoste=self.num_ciclones
-        self.NCalc=self.num_ciclones
-        self.Q=self.entrada.Q
-        self.rendimientoCalc=self.rendimiento
-        self.Dcc=self.Dc
-
+        self.deltaP = self.PerdidaPresion()
+        self.num_ciclonesCoste = self.num_ciclones
+        self.NCalc = self.num_ciclones
+        self.Q = entrada.Q
+        self.rendimientoCalc = self.rendimiento
+        self.Dcc = self.Dc
         self.CalcularSalidas()
 
-
     def dimensionado(self, Dc=0, dimensiones=[]):
-        coef=[[0.5, 0.2, 0.375, 1.5, 2.5, 0.5, 0.5, 6.4, 551.3], #Stairmand (Alta η)
-                    [0.44, 0.21, 0.4, 1.4, 2.5, 0.4, 0.5, 9.2, 699.2], #Swift (Alta η)
-                    [0.5, 0.25, 0.25, 2, 2, 0.5, 0.625, 8, 402.9], #Lapple (Baja η)
-                    [0.5, 0.25, 0.4, 1.75, 2, 0.5, 0.6, 7.6, 381.8], #Swift (Baja η)
-                    [0.583, 0.208, 0.5, 1.333, 1.837, 0.5, 0.583, 16*0.583*0.208/0.5/0.5, 0], #Peterson/Whitby (Baja η)
-                    [0.533, 0.133, 0.333, 0.693, 1.887, 0.333, 0.733, 16*0.583*0.133/0.333/0.333, 0], #Lorenz I
-                    [0.533, 0.133, 0.333, 0.693, 1.887, 0.233, 0.733, 16*0.583*0.133/0.233/0.233, 0], #Lorenz II
-                    [0.4, 0.1, 0.333, 0.693, 1.887, 0.233, 0.733, 16*0.4*0.1/0.233/0.233, 0]] #Lorenz III
+        coef = [
+            # Stairmand (Alta η)
+            [0.5, 0.2, 0.375, 1.5, 2.5, 0.5, 0.5, 6.4, 551.3],
+            # Swift (Alta η)
+            [0.44, 0.21, 0.4, 1.4, 2.5, 0.4, 0.5, 9.2, 699.2],
+            # Lapple (Baja η)
+            [0.5, 0.25, 0.25, 2, 2, 0.5, 0.625, 8, 402.9],
+            # Swift (Baja η)
+            [0.5, 0.25, 0.4, 1.75, 2, 0.5, 0.6, 7.6, 381.8],
+            # Peterson/Whitby (Baja η)
+            [0.583, 0.208, 0.5, 1.333, 1.837, 0.5, 0.583, 7.760896, 0],
+            # Lorenz I
+            [0.533, 0.133, 0.333, 0.693, 1.887, 0.333, 0.733, 11.187981, 0],
+            # Lorenz II
+            [0.533, 0.133, 0.333, 0.693, 1.887, 0.233, 0.733, 22.85221684, 0],
+            # Lorenz III
+            [0.4, 0.1, 0.333, 0.693, 1.887, 0.233, 0.733, 11.78876, 0]]
 
-        if self.kwargs["modelo_ciclon"]==8:
-            coef=dimensiones
-            dimensiones.append(16*dimensiones[0]*dimensiones[1]/dimensiones[5]**2)
+        if self.kwargs["modelo_ciclon"] == 8:
+            coef = dimensiones
+            dimensiones.append(16*coef[0]*coef[1]/coef[5]**2)
             dimensiones.append(0)
         else:
-            coef=coef[self.kwargs["modelo_ciclon"]]
+            coef = coef[self.kwargs["modelo_ciclon"]]
 
-        Hc=Dc*coef[0]
-        Bc=Dc*coef[1]
-        Jc=Dc*coef[2]
-        Lc=Dc*coef[3]
-        Zc=Dc*coef[4]
-        De=Dc*coef[5]
-        Sc=Dc*coef[6]
-        kf=coef[7]
-        G=coef[8]
+        Hc = Dc*coef[0]
+        Bc = Dc*coef[1]
+        Jc = Dc*coef[2]
+        Lc = Dc*coef[3]
+        Zc = Dc*coef[4]
+        De = Dc*coef[5]
+        Sc = Dc*coef[6]
+        kf = coef[7]
+        G = coef[8]
 
         return Hc, Bc, Jc, Lc, Zc, De, Sc, kf, G
 
-
     def calcularRendimientos_parciales(self):
-        rendimiento_parcial=[]
-        if self.kwargs["modelo_rendimiento"]:     #modelo Leith-Licht
-            Vo=self.entrada.Q/self.num_ciclones
-            n=1-(1-(12*self.Dc.ft)**0.14/2.5)*((self.entrada.T.F+460)/530)**0.3
-            if self.G==0:
-                Vs=self.entrada.solido.caudal/self.entrada.solido.rho/self.num_ciclones
-                self.G=4*self.Dc*(2*Vs+Vo)/self.num_ciclones/self.Hc**2/self.Bc**2
-            for i in range(len(self.entrada.solido.diametros)):
-                t=self.entrada.solido.rho*(self.entrada.solido.diametros[i])**2/18/self.entrada.Gas.mu
-                rendimiento_parcial.append(1-exp(-2*(self.G*t*Vo/self.Dc**3*(n+1))**(0.5/(n+1))))
+        entrada = self.kwargs["entrada"]
+        rhoS = entrada.solido.rho
+        muG = entrada.Gas.mu
+
+        rendimiento_parcial = []
+        if self.kwargs["modelo_rendimiento"]:
+            # modelo Leith-Licht
+            Vo = entrada.Q/self.num_ciclones
+            n = 1-(1-(12*self.Dc.ft)**0.14/2.5)*((entrada.T.F+460)/530)**0.3
+            if self.G == 0:
+                Vs = entrada.solido.caudal/entrada.solido.rho/self.num_ciclones
+                self.G = 4*self.Dc*(2*Vs+Vo)/self.num_ciclones / \
+                    self.Hc**2/self.Bc**2
+            for d in entrada.solido.diametros:
+                t = rhoS*(d)**2/18/muG
+                rendimiento_parcial.append(
+                    1-exp(-2*(self.G*t*Vo/self.Dc**3*(n+1))**(0.5/(n+1))))
         else:
-            #modelo Rosin-Rammler-Intelmann
-            for i in range(len(self.entrada.solido.diametros)):
-                rendimiento_parcial.append((self.entrada.solido.diametros[i]/self.dc)**2/(1+(self.entrada.solido.diametros[i]/self.dc)**2))
+            # model Rosin-Rammler-Intelmann
+            for d in entrada.solido.diametros:
+                rendimiento_parcial.append((d/self.dc)**2/(1+(d/self.dc)**2))
         return rendimiento_parcial
 
-
     def PerdidaPresion(self):
-        if self.kwargs["modelo_DeltaP"]==0:   # Cálculo simplificado teniendo en cuenta unicamente las pérdidas cinéticas
-            DeltaP=Pressure(self.kf/2.*self.entrada.Gas.rho*self.V**2)
-        elif self.kwargs["modelo_DeltaP"]==1:     # Casal-Martinez-Benet
-            DeltaP=Pressure(0.003*self.N*self.entrada.Gas.rho*self.V**2, "inH2O")
-        elif self.kwargs["modelo_DeltaP"]==2:     # Leith-Licht
-            DeltaP=Pressure(0.003*self.entrada.Gas.rho*16*(self.entrada.Q/self.num_ciclones)**2/self.De**2/self.Bc/self.Hc, "mmHg")
-        else:       # Sheferd, Lapple y Ter Linden
-            Ae=self.Bc*self.Hc
-            As=pi/4*self.De**2
-            densidad_media=self.entrada.Gas.rho+self.entrada.solido.caudal/self.entrada.Gas.rho/(self.entrada.caudalmasico+self.entrada.solido.caudal/self.entrada.Gas.rho)*(self.entrada.solido.rho-self.entrada.Gas.rho)
-            DeltaP=Pressure(1.078*(Ae/As)**1.21*self.entrada.Gas.rho*self.V**2, "mmH2O")
+        entrada = self.kwargs["entrada"]
+        rhoS = entrada.solido.rho
+        rhoG = entrada.Gas.rho
+        QS = entrada.solido.caudal
+        Q = entrada.caudalmasico
+
+        if self.kwargs["modelo_DeltaP"] == 0:
+            # Cinetic loss
+            DeltaP = Pressure(self.kf/2.*rhoG*self.V**2)
+        elif self.kwargs["modelo_DeltaP"] == 1:
+            # Casal-Martinez-Benet
+            DeltaP = Pressure(0.003*self.N*rhoG*self.V**2, "inH2O")
+        elif self.kwargs["modelo_DeltaP"] == 2:
+            # Leith-Licht
+            DeltaP = Pressure(0.003*rhoG*16*(entrada.Q/self.num_ciclones)**2 /
+                              self.De**2/self.Bc/self.Hc, "mmHg")
+        else:
+            # Sheferd, Lapple y Ter Linden
+            Ae = self.Bc*self.Hc
+            As = pi/4*self.De**2
+            rhom = rhoG+QS/rhoG/(Q+QS/rhoG)*(rhoS-rhoG)
+            DeltaP = Pressure(1.078*(Ae/As)**1.21*rhom*self.V**2, "mmH2O")
         return DeltaP
 
     def velocidad_f_presion(self):
-        if self.kwargs["modelo_DeltaP"]==0:
-            velocidad=sqrt(self.DeltaPAdmisible*2/self.kf/self.entrada.densidad_gas)
-        elif self.kwargs["modelo_DeltaP"]==1:
-            velocidad=sqrt(self.DeltaPAdmisible.inH2O/self.vueltas_supuestas/0.003/self.entrada.densidad_gas)
-        elif self.kwargs["modelo_DeltaP"]==2:
-            velocidad=sqrt(self.DeltaPAdmisible*self.De**2*self.Bc*self.Hc/0.003/self.entrada.densidad_gas/16)
+        entrada = self.kwargs["entrada"]
+        rhoS = entrada.solido.rho
+        rhoG = entrada.Gas.rho
+        dP = self.DeltaPAdmisible
+        QS = entrada.solido.caudal
+        Q = entrada.caudalmasico
+
+        if self.kwargs["modelo_DeltaP"] == 0:
+            velocidad = sqrt(dP*2/self.kf/rhoG)
+        elif self.kwargs["modelo_DeltaP"] == 1:
+            velocidad = sqrt(dP.inH2O/self.N/0.003/rhoG)
+        elif self.kwargs["modelo_DeltaP"] == 2:
+            velocidad = sqrt(dP*self.De**2*self.Bc*self.Hc/0.003/rhoG/16)
         else:
-            Ae=self.Bc*self.Hc
-            As=pi/4*self.De**2
-            densidad_media=self.entrada.Gas.rho+self.entrada.solido.caudal/self.entrada.Gas.rho/(self.entrada.caudal+self.entrada.solido.caudal/self.entrada.Gas.rho)*(self.entrada.solido.rho-self.entrada.Gas.rho)
-            velocidad=sqrt(self.DeltaPAdmisible.mmH2O/1.078/(Ae/As)**1.21/densidad_media)
+            Ae = self.Bc*self.Hc
+            As = pi/4*self.De**2
+            rhom = rhoG+QS/rhoG/(Q+QS/rhoG)*(rhoS-rhoG)
+            velocidad = sqrt(dP.mmH2O/1.078/(Ae/As)**1.21/rhom)
         return velocidad
 
     def coste(self):
-        Q=self.entrada.Q.kft3min*self.entrada.Gas.rho/self.entrada.Gas.rho#Sd
-        if self.num_ciclones!=1:
-            Q=Q/self.num_ciclones
+        CI = self.kwargs["Current_index"]
+        BI = self.kwargs["Base_index"]
+        # TODO: Q is at standard condition
+        Q = self.kwargs["entrada"].Q.kft3min
+        if self.num_ciclones != 1:
+            Q = Q/self.num_ciclones
 
-        if self.kwargs["tipo_costo"]==0:
-            C=1.39*Q**0.98*1000     #Heavy duty
-        elif self.kwargs["tipo_costo"]==1:
-            C=0.65*Q**0.91*1000     #Standart duty
+        if self.kwargs["tipo_costo"] == 0:
+            C = 1.39*Q**0.98*1000  # Heavy duty
+        elif self.kwargs["tipo_costo"] == 1:
+            C = 0.65*Q**0.91*1000  # Standart duty
         else:
-            C=1.56*Q**0.68*1000     #multiciclone
+            C = 1.56*Q**0.68*1000  # multiciclone
 
-        self.C_adq=Currency(C * self.kwargs["Current_index"] / self.kwargs["Base_index"])
-        self.C_inst=Currency(self.C_adq * self.kwargs["f_install"])
-        self.C_adqTotal=Currency(self.C_adq*self.num_ciclones)
-        self.C_instTotal=Currency(self.C_inst*self.num_ciclones)
-
+        self.C_adq = Currency(C*CI/BI)
+        self.C_inst = Currency(self.C_adq * self.kwargs["f_install"])
+        self.C_adqTotal = Currency(self.C_adq*self.num_ciclones)
+        self.C_instTotal = Currency(self.C_inst*self.num_ciclones)
 
     def Pdf(self):
-        archivo=pdf("CICLÓN")
+        archivo = pdf("CICLÓN")
         archivo.ciclon("Ciclon limpieza polvo", self)
         archivo.dibujar()
-        #Si queremos abrirlo con algún visor de pdf
-        os.system("xpdf datasheet.pdf")
-
+        # if we sant to open with a external editor
+        # os.system("xpdf datasheet.pdf")
 
     def propTxt(self):
-        txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["tipo_calculo"]].split(":")[0])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_MODEL[self.kwargs["modelo_rendimiento"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Pressure Loss Model"), self.TEXT_MODEL_DELTAP[self.kwargs["modelo_DeltaP"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Ciclon Model"), self.TEXT_MODEL_CICLON[self.kwargs["modelo_ciclon"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Critic Particle Diameter"), self.dc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Internal Cycles"), self.N.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Speed"), self.V.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimiento.str)+os.linesep
-        txt+="%-25s\t %i" %(QApplication.translate("pychemqt", "Cyclone number"), self.num_ciclones)+os.linesep
+        txt = os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(12))
 
-        txt+=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Cyclone Dimensions")+"-----------------#"+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Ciclon Diameter"), self.Dc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Inlet Height"), self.Hc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Inlet Width"), self.Bc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Diameter"), self.Jc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Cylinder Cyclone Section Length"), self.Lc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Conical Cyclone Section Length"), self.Zc.str)+os.linesep
+        txt += os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Cyclone Dimensions")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(12, 20))
 
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Gas Output Diameter"), self.De.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Clean Gas Inlet Orifice Length"), self.Sc.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
-        if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
-            for i in range(len(self.rendimiento_parcial)):
-                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
+        txt += Separador_SolidGas.propTxt(self, 20)
 
         if self.statusCoste:
-            txt+=os.linesep
-            txt+="#---------------"+QApplication.translate("pychemqt", "Preliminary Cost Estimation")+"-----------------#"+os.linesep
-            txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_COST[self.kwargs["tipo_costo"]])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Base index"), self.kwargs["Base_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Current index"), self.kwargs["Current_index"])+os.linesep
-            txt+="%-25s\t %0.2f" %(QApplication.translate("pychemqt", "Install factor"), self.kwargs["f_install"])+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Purchase Cost"), self.C_adq.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Installed Cost"), self.C_inst.str)+os.linesep
+            txt += os.linesep + "#---------------"
+            txt += QApplication.translate(
+                "pychemqt", "Preliminary Cost Estimation")
+            txt += "-----------------#"+os.linesep
+            txt += self.propertiesToText(range(26, 32))
 
         return txt
 
-
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
-                (QApplication.translate("pychemqt", "Model"), ("TEXT_MODEL", "modelo_rendimiento"), str),
-                (QApplication.translate("pychemqt", "Pressure Loss Model"), ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-                (QApplication.translate("pychemqt", "Ciclon Model"), ("TEXT_MODEL_CICLON", "modelo_ciclon"), str),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
-                (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Critic Particle Diameter"), "dc", Length),
-                (QApplication.translate("pychemqt", "Gas Internal Cycles"), "N", Dimensionless),
-                (QApplication.translate("pychemqt", "Gas Speed"), "V", Speed),
-                (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),
-                (QApplication.translate("pychemqt", "Cyclone number"), "num_ciclones", Dimensionless),
-                (QApplication.translate("pychemqt", "Ciclon Diameter"), "Dc", Length),
-                (QApplication.translate("pychemqt", "Inlet Height"), "Hc", Length),
-                (QApplication.translate("pychemqt", "Inlet Width"), "Bc", Length),
-                (QApplication.translate("pychemqt", "Solid Output Diameter"), "Jc", Length),
-                (QApplication.translate("pychemqt", "Cylinder Cyclone Section Length"), "Lc", Length),
-                (QApplication.translate("pychemqt", "Conical Cyclone Section Length"), "Zc", Length),
-                (QApplication.translate("pychemqt", "Clean Gas Output Diameter"), "De", Length),
-                (QApplication.translate("pychemqt", "Clean Gas Inlet Orifice Length"), "Sc", Length),
-                (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
-                (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-                (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length),
-                (QApplication.translate("pychemqt", "Cost Mode"), ("TEXT_COST", "tipo_costo"), str),
-                (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq", Currency),
-                (QApplication.translate("pychemqt", "Installed Cost"), "C_inst", Currency)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_TIPO", "tipo_calculo"), str),
+             (QApplication.translate("pychemqt", "Model"),
+              ("TEXT_MODEL", "modelo_rendimiento"), str),
+             (QApplication.translate("pychemqt", "Pressure Loss Model"),
+              ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
+             (QApplication.translate("pychemqt", "Ciclon Model"),
+              ("TEXT_MODEL_CICLON", "modelo_ciclon"), str),
+             (QApplication.translate("pychemqt", "Input Pressure"), "Pin",
+              Pressure),
+             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+              Pressure),
+             (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
+              DeltaP),
+             (QApplication.translate("pychemqt", "Critic Particle Diameter"),
+              "dc", Length),
+             (QApplication.translate("pychemqt", "Gas Internal Cycles"), "N",
+              Dimensionless),
+             (QApplication.translate("pychemqt", "Gas Speed"), "V", Speed),
+             (QApplication.translate("pychemqt", "Efficiency"), "rendimiento",
+              Dimensionless),
+             (QApplication.translate("pychemqt", "Cyclone number"),
+              "num_ciclones", int),
+             (QApplication.translate("pychemqt", "Ciclon Diameter"), "Dc",
+              Length),
+             (QApplication.translate("pychemqt", "Inlet Height"), "Hc",
+              Length),
+             (QApplication.translate("pychemqt", "Inlet Width"), "Bc", Length),
+             (QApplication.translate("pychemqt", "Solid Output Diameter"),
+              "Jc", Length),
+             (QApplication.translate(
+                 "pychemqt", "Cylinder Cyclone Section Length"), "Lc", Length),
+             (QApplication.translate(
+                 "pychemqt", "Conical Cyclone Section Length"), "Zc", Length),
+             (QApplication.translate("pychemqt", "Clean Gas Output Diameter"),
+              "De", Length),
+             (QApplication.translate(
+                 "pychemqt", "Clean Gas Inlet Orifice Length"), "Sc", Length),
+             (QApplication.translate("pychemqt", "Input Solid Mass Flow"),
+              "Min", MassFlow),
+             (QApplication.translate("pychemqt", "Input Solid Mean Diameter"),
+              "Dmin", Length),
+             (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"),
+              "Mr", MassFlow),
+             (QApplication.translate(
+                 "pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
+             (QApplication.translate("pychemqt", "Solid Output Mass Flow"),
+              "Ms", MassFlow),
+             (QApplication.translate("pychemqt", "Solid Output Mean Diameter"),
+              "Dms", Length),
+             (QApplication.translate("pychemqt", "Base index"),
+              "Base_index", float),
+             (QApplication.translate("pychemqt", "Current index"),
+              "Current_index", float),
+             (QApplication.translate("pychemqt", "Install factor"),
+              "f_install", float),
+             (QApplication.translate("pychemqt", "Cost Mode"),
+              ("TEXT_COST", "tipo_costo"), str),
+             (QApplication.translate("pychemqt", "Purchase Cost"), "C_adq",
+              Currency),
+             (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
+              Currency)]
+        return l
 
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["Pin"] = self.Pin
+        state["Pout"] = self.Pout
+        state["deltaP"] = self.deltaP
+        state["dc"] = self.dc
+        state["N"] = self.N
+        state["V"] = self.V
+        state["num_ciclones"] = self.num_ciclones
+        state["Dc"] = self.Dc
+        state["Hc"] = self.Hc
+        state["Bc"] = self.Bc
+        state["Jc"] = self.Jc
+        state["Lc"] = self.Lc
+        state["Zc"] = self.Zc
+        state["De"] = self.De
+        state["Sc"] = self.Sc
+        Separador_SolidGas.writeStatetoJSON(self, state)
+        state["statusCoste"] = self.statusCoste
+        if self.statusCoste:
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
 
-class GravityChamber(Separador_SolidGas):
-    """Clase que define la cámara de sedimentación por gravedad
-
-    Parámetros:
-        entrada: Instancia de clase corriente que define la corriente que fluye por la cámara
-        metodo: Integer que indica el tipo de cálculo a realizar:
-            0   -   Calculo del funcionamiento conociendo la geometria y corriente de entrada, calcula el rendimiento
-            1   -   Diseño del equipo conocida la entrada y el rendimiento admisible para obtener la geometría
-        modelo: Integer que indica el tipo de modelo de cálculo a aplicar:
-            0   -   Modelo de flujo piston sin mezcla vertical
-            1   -   Modelo de mezcla perfecta
-        W, H, L: dimensiones de la cámara de sedimentación
-        rendimientoAdmisible: rendimiento requerido para el equipo, necesario en el caso de que estemos diseñando el equipo
-        velocidadAdmisible: velocidad admisible del gas en la cámara, si no se indica se considera el valor de 1 m/s
-        deltaP: Perdida de presion
-
-    >>> diametros=[17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, 54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
-    >>> fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    >>> solido=Solid(caudalSolido=[12426.28], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    >>> entrada=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
-    >>> camara=GravityChamber(entrada=entrada, modelo=1, H=1, W=3, L=10)
-    >>> print camara.Vgas, camara.rendimiento
-    0.283284753885 0.124577139186
-    """
-    title=QApplication.translate("pychemqt", "Gravity settling chamber")
-    help=""
-    kwargs={"entrada": None,
-                    "metodo": 0,
-                    "modelo": 0,
-                    "W": 0.0,
-                    "H": 0.0,
-                    "L": 0.0,
-                    "rendimientoAdmisible": 0.0,
-                    "velocidadAdmisible": 0.0,
-                    "deltaP": 0.0}
-
-    kwargsInput=("entrada", )
-    kwargsValue=("W", "H", "L", "rendimientoAdmisible", "velocidadAdmisible", "deltaP")
-    kwargsList=("metodo", "modelo")
-    calculateValue=("Q", "LCalc", "WCalc", "HCalc", "Vgas",  "rendimiento")
-
-    TEXT_TIPO=[QApplication.translate("pychemqt", "Rating: Known dimensions, calculate efficiency"),
-                        QApplication.translate("pychemqt", "Design: Calculate dimensions to fit a requerid efficiency")]
-    TEXT_MODEL=[QApplication.translate("pychemqt", "Plug flow without vertical mix"),
-                                    QApplication.translate("pychemqt", "Vertical mix")]
-
-    @property
-    def isCalculable(self):
-        if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
-            return
-
-        if self.kwargs["metodo"]:
-            if self.kwargs["rendimientoAdmisible"]:
-                self.msg=""
-                self.status=1
-                return True
-            else:
-                self.msg=QApplication.translate("pychemqt", "undefined efficiency")
-                self.status=0
-        else:
-            if not self.kwargs["W"]:
-                self.msg=QApplication.translate("pychemqt", "undefined width")
-                self.status=0
-            elif self.kwargs["W"]  and self.kwargs["H"] and self.kwargs["L"]:
-                self.msg=""
-                self.status=1
-                return True
-            elif not self.kwargs["H"]:
-                self.msg=QApplication.translate("pychemqt", "height undefined, using default")
-                self.status=3
-                return True
-            else:
-                self.msg=""
-                self.status=1
-                return True
-
-    def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        self.W=Length(self.kwargs["W"])
-        self.L=Length(self.kwargs["L"])
-        self.deltaP=DeltaP(self.kwargs["deltaP"])
-        if self.kwargs["H"]:
-            self.H=Length(self.kwargs["H"])
-        else:
-            self.H=Length(1)
-        if self.kwargs["velocidadAdmisible"]:
-            velocidadAdmisible=self.kwargs["velocidadAdmisible"]
-        else:
-            velocidadAdmisible=1.
-
-        if self.kwargs["metodo"]==0: #Calculo
-            self.Vgas=Speed(self.entrada.Q/self.H/self.W)
-            self.rendimiento_parcial=self.calcularRendimientos_parciales(self.L)
-            self.rendimiento=Dimensionless(self.calcularRendimiento(self.rendimiento_parcial))
-        else: #Diseño
-            self.Vgas=Speed(velocidadAdmisible)
-            self.W=Length(self.entrada.Q/velocidadAdmisible/self.H)
-
-            def f(longitud):
-                rendimientos=self.calcularRendimientos_parciales(longitud)
-                return self.calcularRendimiento(self.calcularRendimientos_parciales(longitud))-self.kwargs["rendimientoAdmisible"]
-
-            if f(0.1)>self.kwargs["rendimientoAdmisible"]:
-                longitud=1
-            else:
-                longitud_=0.1
-                longitud=fsolve(f, longitud_)
-            self.L=Length(float(longitud))
-            self.rendimiento_parcial=self.calcularRendimientos_parciales(self.L)
-            self.rendimiento=Dimensionless(self.calcularRendimiento(self.rendimiento_parcial))
-
-        self.LCalc=self.L
-        self.WCalc=self.W
-        self.HCalc=self.H
-        self.Q=self.entrada.Q
-
-        self.CalcularSalidas()
-
-    def calcularRendimientos_parciales(self, L):
-        """Método que calcula el rendimiento de separación, tanto global, como desglosado según la distribución de sólidos"""
-        rendimientos=[]
-        for diametro in self.entrada.solido.diametros:
-            Ar=diametro**3*self.entrada.Gas.rho*(self.entrada.solido.rho-self.entrada.Gas.rho)*g/self.entrada.Gas.mu**2
-            Vt=self.entrada.Gas.mu/diametro*self.entrada.Gas.rho*((14.42+1.827*Ar**0.5)**0.5-3.798)**2
-            if self.kwargs["modelo"]==0:
-                r=Vt*L/self.Vgas/self.H
-            else:
-                r=1-exp(-Vt*L/self.Vgas/self.H)
-            if r>1:
-                rendimientos.append(1)
-            else:
-                rendimientos.append(r)
-        return rendimientos
-
-
-    def propTxt(self):
-        txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["metodo"]].split(":")[0])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_MODEL[self.kwargs["modelo"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Height"), self.HCalc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Width"), self.WCalc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Length"), self.LCalc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Speed"), self.Vgas.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimiento.str)+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
-        if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
-            for i in range(len(self.rendimiento_parcial)):
-                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
-
-        return txt
-
-
-    @classmethod
-    def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "metodo"), str),
-                (QApplication.translate("pychemqt", "Model"), ("TEXT_MODEL", "modelo"), str),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
-                (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Height"), "HCalc", Length),
-                (QApplication.translate("pychemqt", "Width"), "WCalc", Length),
-                (QApplication.translate("pychemqt", "Length"), "LCalc", Length),
-                (QApplication.translate("pychemqt", "Gas Speed"), "Vgas", Speed),
-                (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),
-                (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
-                (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-                (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length)]
-        return list
-
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.Pin = Pressure(state["Pin"])
+        self.Pout = Pressure(state["Pout"])
+        self.deltaP = DeltaP(state["deltaP"])
+        self.dc = Length(state["dc"])
+        self.N = Dimensionless(state["N"])
+        self.V = Speed(state["V"])
+        self.num_ciclones = state["num_ciclones"]
+        self.Dc = Length(state["Dc"])
+        self.Hc = Length(state["Hc"])
+        self.Bc = Length(state["Bc"])
+        self.Jc = Length(state["Jc"])
+        self.Lc = Length(state["Lc"])
+        self.Zc = Length(state["Zc"])
+        self.De = Length(state["De"])
+        self.Sc = Length(state["Sc"])
+        Separador_SolidGas.readStatefromJSON(self, state)
+        self.statusCoste = state["statusCoste"]
+        if self.statusCoste:
+            self.C_adq = Currency(state["C_adq"])
+            self.C_inst = Currency(state["C_inst"])
+        self.salida = [None]
 
 
 class Baghouse(Separador_SolidGas):
@@ -1364,24 +1307,23 @@ class ElectricPrecipitator(Separador_SolidGas):
 
 
 if __name__ == '__main__':
-#    import doctest
-#    doctest.testmod()
+    import doctest
+    doctest.testmod()
 
-    diametros=[17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
-    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    solido=Solid(caudalSolido=[0.1], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
-
-#    ciclon=Ciclon(entrada=corriente, tipo_calculo=1, rendimientoAdmisible=0.95, velocidadAdmisible=5)
-#    print ciclon.msg, ciclon.status
-#    print ciclon.C_instTotal, ciclon.C_adqTotal
-
-#    camara=GravityChamber(entrada=corriente, metodo=1, modelo=1, H=1, rendimientoAdmisible=0.9)
-#    camara.show()
+#    from lib.solids import Solid
+#    dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, 54e-4,
+#          60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+#    fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+#                  0.05, 0.03, 0.02]
+#    solido = Solid(caudalSolido=[0.1], distribucion_diametro=dm,
+#                   distribucion_fraccion=fracciones, solids=[638])
+#    kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
+#    corriente = Corriente(T=300, P=1e5, caudalMasico=1, solido=solido, **kw)
+#
 
 #
-    filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
-    print((filtro.floorArea, filtro.Vgas.ftmin))
+#    filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
+#    print((filtro.floorArea, filtro.Vgas.ftmin))
 
 
 #    precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)
