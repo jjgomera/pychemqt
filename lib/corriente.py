@@ -895,7 +895,8 @@ class Corriente(config.Entity):
 
         # Solid state, can be defined without a thermo status
         solid = {}
-        self.solido.writeStatetoJSON(solid)
+        if self.solido is not None:
+            self.solido.writeStatetoJSON(solid)
         data["solid"] = solid
 
     def writeStatetoJSON(self, state):
