@@ -37,7 +37,7 @@ parser.add_argument("-l", "--log", dest="loglevel", default="INFO",
                     help="Set level of report in log file")
 parser.add_argument("--debug", action="store_true",
                     help="Enable loglevel to debug, the more verbose option")
-parser.add_argument("--nosplash", action="store_true",
+parser.add_argument("-n", "--nosplash", action="store_true",
                     help="Don't show the splash screen at start")
 parser.add_argument("projectFile", nargs="*",
                     help="Optional pychemqt project files to load at startup")
