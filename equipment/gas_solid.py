@@ -28,9 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import os
+from math import exp, sqrt, ceil
 
 from PyQt5.QtWidgets import QApplication
-from scipy import exp, sqrt, ceil, roots
+from scipy import roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
 
@@ -169,8 +170,8 @@ class GravityChamber(Separador_SolidGas):
 
     >>> from lib.corriente import Corriente
     >>> from lib.solids import Solid
-    >>> dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, \
-        54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+    >>> dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, \
+        54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
         0.1, 0.05, 0.03, 0.02]
     >>> solido = Solid(caudalSolido=[0.1], distribucion_diametro=dm, \
@@ -179,7 +180,7 @@ class GravityChamber(Separador_SolidGas):
     >>> entrada = Corriente(T=300, P=1e5, caudalMasico=1, solido=solido, **kw)
     >>> camara = GravityChamber(entrada=entrada, modelo=0, H=1, W=1, L=1)
     >>> print("%0.4f %0.4f" % (camara.Vgas, camara.rendimiento))
-    0.4249 0.5588
+    0.8611 0.3439
     """
 
     title = QApplication.translate("pychemqt", "Gravity settling chamber")
@@ -404,18 +405,18 @@ class Ciclon(Separador_SolidGas):
 
     >>> from lib.corriente import Corriente
     >>> from lib.solids import Solid
-    >>> dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, \
-        54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+    >>> dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, \
+        54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
         0.1, 0.05, 0.03, 0.02]
-    >>> sol = Solid(caudalSolido=[0.001], distribucion_diametro=dm, \
+    >>> sol = Solid(caudalSolido=[0.1], distribucion_diametro=dm, \
         distribucion_fraccion=fracciones, solids=[638])
     >>> kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
-    >>> entrada = Corriente(T=300, P=1e5, caudalMasico=0.3, solido=sol, **kw)
+    >>> entrada = Corriente(T=300, P=1e5, caudalMasico=1, solido=sol, **kw)
     >>> ciclon = Ciclon(entrada=entrada, tipo_calculo=1, \
         rendimientoAdmisible=0.95, velocidadAdmisible=5)
     >>> print("%0.2f %0.2f" % (ciclon.C_instTotal, ciclon.C_adqTotal))
-    2302.76 1644.83
+    7597.86 5427.04
     """
     title = QApplication.translate("pychemqt", "Cyclone")
     help = os.environ["pychemqt"] + "doc/Ciclones.htm"
@@ -895,8 +896,8 @@ class Baghouse(Separador_SolidGas):
 
     >>> from lib.corriente import Corriente
     >>> from lib.solids import Solid
-    >>> dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, \
-        54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+    >>> dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, \
+        54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
         0.1, 0.05, 0.03, 0.02]
     >>> sol = Solid(caudalSolido=[0.001], distribucion_diametro=dm, \
@@ -1152,196 +1153,191 @@ class Baghouse(Separador_SolidGas):
 
 
 class ElectricPrecipitator(Separador_SolidGas):
-    """ Clase que define el precipitador electrostático
+    """ Class to define a electrostatic precipitator
 
-    Parámetros:
-        entrada: Instancia de clase corriente que define el gas que fluye por la cámara
-        metodo: indice que indica el tipo de cálculo a realizar
-            0   -   Evaluación, conocidas las dimensiones, calcular el rendimiento del equipo
-            1   -   Diseño, imponiendo el rendimiento a obtener calcular el area y potencia del carga
-        potencialCarga: potencial de carga del equipo en V/m
-        potencialDescarga: potencial de descarga del equipo en V/m
-        area: area de recolección del equipo, m2
-        epsilon: constante dieléctrica relativa del material
-        rendimientoAdmisible: rendimiento exigido al equipo (modo diseño)
-        deltaP: parámetro opcional que indica la perdida de presión del equipo
+    Parameters:
+        entrada: Corriente instance to define the input stream to equipment
+        metodo: Index to specified the chalculate mode
+            0 - Rating
+            1 - Design
+        potencialCarga: Charge potential, V/m
+        potencialDescarga: Discharge potential, V/m
+        area: Area of particle deposition
+        epsilon: Relative dielectric constant of material
+        rendimientoAdmisible: Required efficiency of equipment (design)
+        deltaP: Pressure loss of equipoment
 
-    >>> diametros=[17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, 54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
-    >>> fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    >>> solido=Solid(caudalSolido=[12426.28], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    >>> corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
-    >>> precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)
-    >>> print precipitador.area, precipitador.rendimiento
-    2389.41624164 0.9
+    >>> from lib.corriente import Corriente
+    >>> from lib.solids import Solid
+    >>> dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, \
+        54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
+    >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
+        0.1, 0.05, 0.03, 0.02]
+    >>> sol = Solid(caudalSolido=[0.1], distribucion_diametro=dm, \
+        distribucion_fraccion=fracciones, solids=[638])
+    >>> kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
+    >>> entrada = Corriente(T=300, P=1e5, caudalMasico=1, solido=sol, **kw)
+    >>> elec = ElectricPrecipitator(entrada=entrada, metodo=1, \
+        rendimientoAdmisible=0.9)
+    >>> print("%0.2f %0.2f" % (elec.areaCalculada, elec.rendimiento))
+    242.02 0.90
     """
-    title=QApplication.translate("pychemqt", "Electrostatic precipitator")
-    help=""
-    kwargs={"entrada": None,
-                    "metodo": 0,
-                    "potencialCarga": 0.0,
-                    "potencialDescarga": 0.0,
-                    "area": 0.0,
-                    "epsilon": 0.0,
-                    "rendimientoAdmisible": 0.0,
-                    "deltaP": 0.0}
-    kwargsInput=("entrada", )
-    kwargsValue=("potencialCarga", "potencialDescarga", "area", "rendimientoAdmisible", "epsilon", "deltaP")
-    kwargsList=("metodo", )
-    calculateValue=("areaCalculada", "rendimiento")
+    title = QApplication.translate("pychemqt", "Electrostatic precipitator")
+    kwargs = {"entrada": None,
+              "metodo": 0,
+              "potencialCarga": 0.0,
+              "potencialDescarga": 0.0,
+              "area": 0.0,
+              "epsilon": 0.0,
+              "rendimientoAdmisible": 0.0,
+              "deltaP": 0.0}
+    kwargsInput = ("entrada", )
+    kwargsValue = ("potencialCarga", "potencialDescarga", "area",
+                   "rendimientoAdmisible", "epsilon", "deltaP")
+    kwargsList = ("metodo", )
+    calculateValue = ("areaCalculada", "rendimiento")
 
-    TEXT_TIPO=[QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
-                        QApplication.translate("pychemqt", "Design: Calculate dimensions to fit a requerid efficiency")]
-
+    TEXT_TIPO = [
+        QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
+        QApplication.translate(
+            "pychemqt",
+            "Design: Calculate dimensions to fit a requerid efficiency")]
 
     @property
     def isCalculable(self):
         if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
             return
 
-        if self.kwargs["metodo"]==0 and not self.kwargs["area"]:
-            self.msg=QApplication.translate("pychemqt", "undefined area")
-            self.status=0
+        if self.kwargs["metodo"] == 0 and not self.kwargs["area"]:
+            self.msg = QApplication.translate("pychemqt", "undefined area")
+            self.status = 0
             return
-        elif self.kwargs["metodo"]==1 and not self.kwargs["rendimientoAdmisible"]:
-            self.msg=QApplication.translate("pychemqt", "undefined efficiency")
-            self.status=0
+        elif self.kwargs["metodo"] == 1 and \
+                not self.kwargs["rendimientoAdmisible"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined efficiency")
+            self.status = 0
             return
-
 
         if not self.kwargs["potencialCarga"]:
-            self.msg=QApplication.translate("pychemqt", "using default charging field")
-            self.status=3
+            self.msg = QApplication.translate(
+                "pychemqt", "using default charging field")
+            self.status = 3
             return True
         if not self.kwargs["potencialDescarga"]:
-            self.msg=QApplication.translate("pychemqt", "using default collecting field")
-            self.status=3
+            self.msg = QApplication.translate(
+                "pychemqt", "using default collecting field")
+            self.status = 3
             return True
         if not self.kwargs["epsilon"]:
-            self.msg=QApplication.translate("pychemqt", "using default dielectric constant")
-            self.status=3
+            self.msg = QApplication.translate(
+                "pychemqt", "using default dielectric constant")
+            self.status = 3
             return True
 
-        self.msg=""
-        self.status=1
+        self.msg = ""
+        self.status = 1
         return True
 
-
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        self.areaCalculada=Area(self.kwargs["area"])
-        self.deltaP=Pressure(self.kwargs["deltaP"])
+        self.areaCalculada = Area(self.kwargs["area"])
+        self.deltaP = Pressure(self.kwargs["deltaP"])
 
         if self.kwargs["potencialCarga"]:
-            self.potencialCarga=PotencialElectric(self.kwargs["potencialCarga"])
+            self.potencialCarga = PotencialElectric(
+                self.kwargs["potencialCarga"])
         else:
-            self.potencialCarga=PotencialElectric(24000)
+            self.potencialCarga = PotencialElectric(24000)
         if self.kwargs["potencialDescarga"]:
-            self.potencialDescarga=PotencialElectric(self.kwargs["potencialDescarga"])
+            self.potencialDescarga = PotencialElectric(
+                self.kwargs["potencialDescarga"])
         else:
-            self.potencialDescarga=PotencialElectric(24000)
+            self.potencialDescarga = PotencialElectric(24000)
         if self.kwargs["epsilon"]:
-            self.epsilon=Dimensionless(self.kwargs["epsilon"])
+            self.epsilon = Dimensionless(self.kwargs["epsilon"])
         else:
-            self.epsilon=Dimensionless(4.)
+            self.epsilon = Dimensionless(4.)
 
-        if self.kwargs["metodo"]==0:
-            self.rendimiento_parcial=self.calcularRendimientos_parciales(self.areaCalculada)
-            self.rendimiento=self.calcularRendimiento(self.rendimiento_parcial)
-        else:
+        if self.kwargs["metodo"] == 1:
             def f(area):
-                rendimientos=self.calcularRendimientos_parciales(area)
-                return self.calcularRendimiento(rendimientos)-self.kwargs["rendimientoAdmisible"]
+                eta_i = self.calcularRendimientos_parciales(area)
+                eta = self.calcularRendimiento(eta_i)
+                return eta-self.kwargs["rendimientoAdmisible"]
 
-            self.areaCalculada=Area(fsolve(f, 100)[0])
-            self.rendimiento_parcial=self.calcularRendimientos_parciales(self.areaCalculada)
-            self.rendimiento=self.calcularRendimiento(self.rendimiento_parcial)
+            self.areaCalculada = Area(fsolve(f, 100)[0])
+
+        eta_i = self.calcularRendimientos_parciales(self.areaCalculada)
+        self.rendimiento_parcial = eta_i
+        self.rendimiento = self.calcularRendimiento(eta_i)
 
         self.CalcularSalidas()
 
-
     def calcularRendimientos_parciales(self, A):
-        """Método que calcula el rendimiento de separación, desglosado según la distribución de sólidos"""
-        rendimiento_parcial=[]
-        for dp in self.entrada.solido.diametros:
+        """Calculate the separation efficiency per diameter"""
+        entrada = self.kwargs["entrada"]
+        rendimiento_parcial = []
+        for dp in entrada.solido.diametros:
             if dp <= 1e-6:
-                q=dp*e*1e8
+                q = dp*e*1e8
             else:
-                q=pi*epsilon_0*self.potencialCarga*dp**2*(1+2*(self.epsilon-1.)/(self.epsilon+2.))
-            U=q*self.potencialDescarga/(3*pi*dp*self.entrada.Gas.mu)
-            rendimiento_parcial.append(1-exp(-U*A/self.entrada.Q))
+                q = pi*epsilon_0*self.potencialCarga*dp**2 * \
+                    (1+2*(self.epsilon-1.)/(self.epsilon+2.))
+            U = q*self.potencialDescarga/(3*pi*dp*entrada.Gas.mu)
+            rendimiento_parcial.append(Dimensionless(1-exp(-U*A/entrada.Q)))
         return rendimiento_parcial
 
-
     def propTxt(self):
-        txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["metodo"]].split(":")[0])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Charging field"), self.potencialCarga.str)
-        if self.kwargs["potencialCarga"]==0.0:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Collecting field"), self.potencialDescarga.str)
-        if self.kwargs["potencialDescarga"]==0.0:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Dielectric constant"), self.epsilon.str)
-        if self.kwargs["epsilon"]==0.0:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Area"), self.areaCalculada.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimiento.str)+os.linesep
+        txt = os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(0)
 
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
-        if len(self.entrada.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
-            for i in range(len(self.rendimiento_parcial)):
-                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
+        suf = " (%s)" % QApplication.translate("pychemqt", "stimated")
+        txt += self.propertiesToText(range(1, 4), kwCheck=True, kwValue=0,
+                                     kwSuffix=suf)
+        txt += self.propertiesToText(range(4, 8))
+        txt += Separador_SolidGas.propTxt(self, 8)
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "metodo"), str),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
-                (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Charging field"), "potencialCarga", PotencialElectric),
-                (QApplication.translate("pychemqt", "Collecting field"), "potencialDescarga", PotencialElectric),
-                (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon", Dimensionless),
-                (QApplication.translate("pychemqt", "Area"), "areaCalculada", Area),
-                (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),
-                (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
-                (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-                (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_TIPO", "metodo"), str),
+             (QApplication.translate("pychemqt", "Charging field"),
+              "potencialCarga", PotencialElectric),
+             (QApplication.translate("pychemqt", "Collecting field"),
+              "potencialDescarga", PotencialElectric),
+             (QApplication.translate("pychemqt", "Dielectric constant"),
+              "epsilon", Dimensionless),
+             (QApplication.translate("pychemqt", "Area"), "areaCalculada",
+              Area)]
+
+        for prop in Separador_SolidGas.propertiesEquipment():
+            l.append(prop)
+
+        return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["potencialCarga"] = self.potencialCarga
+        state["potencialDescarga"] = self.potencialDescarga
+        state["epsilon"] = self.epsilon
+        state["areaCalculada"] = self.areaCalculada
+        Separador_SolidGas.writeStatetoJSON(self, state)
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.potencialCarga = PotencialElectric(state["potencialCarga"])
+        self.potencialDescarga = PotencialElectric(state["potencialDescarga"])
+        self.epsilon = Dimensionless(state["epsilon"])
+        self.areaCalculada = Area(state["areaCalculada"])
+        Separador_SolidGas.readStatefromJSON(self, state)
+        self.salida = [None]
 
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-#    from lib.solids import Solid
-#    dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, 54e-4,
-#          60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
-#    fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
-#                  0.05, 0.03, 0.02]
-#    solido = Solid(caudalSolido=[0.1], distribucion_diametro=dm,
-#                   distribucion_fraccion=fracciones, solids=[638])
-#    kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
-#    corriente = Corriente(T=300, P=1e5, caudalMasico=1, solido=solido, **kw)
-
-
-#    precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)
-#    print precipitador.msg, precipitador.status
-#    print precipitador.areaCalculada, precipitador.rendimiento
-#    print(precipitador.propTxt())
