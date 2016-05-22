@@ -153,8 +153,11 @@ else:
     loglevel = args.loglevel
 loglevel = getattr(logging, loglevel.upper())
 
-if not os.path.isfile(conf_dir + "pychemqt.log"):
-    os.mknod(conf_dir + "pychemqt.log")
+try:
+    open(conf_dir + "pychemqt.log", 'x')
+except FileExistsError:
+    pass
+
 fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
 logging.basicConfig(filename=conf_dir+"pychemqt.log", filemode="w",
                     level=loglevel, datefmt="%d-%b-%Y %H:%M:%S", format=fmt)
