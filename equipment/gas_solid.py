@@ -80,7 +80,8 @@ class Separador_SolidGas(equipment):
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Separation efficiency")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(i, i+6)) + os.linesep
+        txt += self.propertiesToText(range(i+2, i+8)) + os.linesep
+        txt += self.propertiesToText(i) + os.linesep
         if len(entrada.solido.diametros) >= 1:
             txt += "%12s %11s %9s %9s %9s" % ("Dp", "Xi", "ηi", "Xis", "Xig")
             txt += os.linesep
@@ -92,10 +93,37 @@ class Separador_SolidGas(equipment):
                 txt += os.linesep
         return txt
 
+    @classmethod
+    def propertiesEquipment(cls):
+        l = [(QApplication.translate("pychemqt", "Input Pressure"), "Pin",
+              Pressure),
+             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+              Pressure),
+             (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
+              DeltaP),
+             (QApplication.translate("pychemqt", "Global Efficiency"),
+              "rendimiento", Dimensionless),
+             (QApplication.translate("pychemqt", "Partial Efficiency"),
+              "rendimiento_parcial", Dimensionless),
+             (QApplication.translate("pychemqt", "Input Solid Mass Flow"),
+              "Min", MassFlow),
+             (QApplication.translate("pychemqt", "Input Solid Mean Diameter"),
+              "Dmin", Length),
+             (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"),
+              "Mr", MassFlow),
+             (QApplication.translate(
+                 "pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
+             (QApplication.translate("pychemqt", "Solid Output Mass Flow"),
+              "Ms", MassFlow),
+             (QApplication.translate("pychemqt", "Solid Output Mean Diameter"),
+              "Dms", Length)]
+        return l
+
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
         state["Pin"] = self.Pin
         state["Pout"] = self.Pout
+        state["deltaP"] = self.deltaP
         state["Min"] = self.Min
         state["Dmin"] = self.Dmin
         state["Mr"] = self.Mr
@@ -109,6 +137,7 @@ class Separador_SolidGas(equipment):
         """Load instance parameter from saved file"""
         self.Pin = Pressure(state["Pin"])
         self.Pout = Pressure(state["Pout"])
+        self.deltaP = DeltaP(state["deltaP"])
         self.Min = MassFlow(state["Min"])
         self.Dmin = Length(state["Dmin"])
         self.Mr = MassFlow(state["Mr"])
@@ -281,9 +310,9 @@ class GravityChamber(Separador_SolidGas):
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(11))
+        txt += self.propertiesToText(range(10))
 
-        txt += Separador_SolidGas.propTxt(self, 12)
+        txt += Separador_SolidGas.propTxt(self, 10)
         return txt
 
     @classmethod
@@ -292,56 +321,36 @@ class GravityChamber(Separador_SolidGas):
               ("TEXT_TIPO", "metodo"), str),
              (QApplication.translate("pychemqt", "Model"),
               ("TEXT_MODEL", "modelo"), str),
-             (QApplication.translate("pychemqt", "Input Pressure"), "Pin",
-              Pressure),
-             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
-              Pressure),
-             (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
-              DeltaP),
              (QApplication.translate("pychemqt", "Height"), "HCalc", Length),
              (QApplication.translate("pychemqt", "Width"), "WCalc", Length),
              (QApplication.translate("pychemqt", "Length"), "LCalc", Length),
              (QApplication.translate("pychemqt", "Gas Speed"), "Vgas", Speed),
              (QApplication.translate("pychemqt", "Gas Volumetric Flow"), "Q",
-              VolFlow),
-             (QApplication.translate("pychemqt", "Efficiency"), "rendimiento",
-              Dimensionless),
-             (QApplication.translate("pychemqt", "Partial Efficiency"),
-              "rendimiento_parcial", Dimensionless),
-             (QApplication.translate("pychemqt", "Input Solid Mass Flow"),
-              "Min", MassFlow),
-             (QApplication.translate("pychemqt", "Input Solid Mean Diameter"),
-              "Dmin", Length),
-             (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"),
-              "Mr", MassFlow),
-             (QApplication.translate(
-                 "pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-             (QApplication.translate("pychemqt", "Solid Output Mass Flow"),
-              "Ms", MassFlow),
-             (QApplication.translate("pychemqt", "Solid Output Mean Diameter"),
-              "Dms", Length)]
+              VolFlow)
+             ]
+
+        for prop in Separador_SolidGas.propertiesEquipment():
+            l.append(prop)
+
         return l
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
-        state["Vgas"] = self.Vgas
         state["LCalc"] = self.LCalc
         state["WCalc"] = self.WCalc
         state["HCalc"] = self.HCalc
+        state["Vgas"] = self.Vgas
         state["Q"] = self.Q
-        state["deltaP"] = self.deltaP
         Separador_SolidGas.writeStatetoJSON(self, state)
 
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
-        self.Vgas = Speed(state["Vgas"])
         self.LCalc = Length(state["LCalc"])
         self.WCalc = Length(state["WCalc"])
         self.HCalc = Length(state["HCalc"])
+        self.Vgas = Speed(state["Vgas"])
         self.Q = VolFlow(state["Q"])
-        self.deltaP = DeltaP(state["deltaP"])
         Separador_SolidGas.readStatefromJSON(self, state)
-
         self.salida = [None]
 
 
@@ -751,14 +760,15 @@ class Ciclon(Separador_SolidGas):
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(12))
+        txt += self.propertiesToText(range(7))
+        txt += self.propertiesToText(range(16, 19))
 
         txt += os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Cyclone Dimensions")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(12, 20))
+        txt += self.propertiesToText(range(7, 16))
 
-        txt += Separador_SolidGas.propTxt(self, 20)
+        txt += Separador_SolidGas.propTxt(self, 19)
 
         if self.statusCoste:
             txt += os.linesep + "#---------------"
@@ -779,19 +789,11 @@ class Ciclon(Separador_SolidGas):
               ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
              (QApplication.translate("pychemqt", "Ciclon Model"),
               ("TEXT_MODEL_CICLON", "modelo_ciclon"), str),
-             (QApplication.translate("pychemqt", "Input Pressure"), "Pin",
-              Pressure),
-             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
-              Pressure),
-             (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
-              DeltaP),
              (QApplication.translate("pychemqt", "Critic Particle Diameter"),
               "dc", Length),
              (QApplication.translate("pychemqt", "Gas Internal Cycles"), "N",
               Dimensionless),
              (QApplication.translate("pychemqt", "Gas Speed"), "V", Speed),
-             (QApplication.translate("pychemqt", "Efficiency"), "rendimiento",
-              Dimensionless),
              (QApplication.translate("pychemqt", "Cyclone number"),
               "num_ciclones", int),
              (QApplication.translate("pychemqt", "Ciclon Diameter"), "Dc",
@@ -809,18 +811,6 @@ class Ciclon(Separador_SolidGas):
               "De", Length),
              (QApplication.translate(
                  "pychemqt", "Clean Gas Inlet Orifice Length"), "Sc", Length),
-             (QApplication.translate("pychemqt", "Input Solid Mass Flow"),
-              "Min", MassFlow),
-             (QApplication.translate("pychemqt", "Input Solid Mean Diameter"),
-              "Dmin", Length),
-             (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"),
-              "Mr", MassFlow),
-             (QApplication.translate(
-                 "pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-             (QApplication.translate("pychemqt", "Solid Output Mass Flow"),
-              "Ms", MassFlow),
-             (QApplication.translate("pychemqt", "Solid Output Mean Diameter"),
-              "Dms", Length),
              (QApplication.translate("pychemqt", "Base index"),
               "Base_index", float),
              (QApplication.translate("pychemqt", "Current index"),
@@ -833,13 +823,14 @@ class Ciclon(Separador_SolidGas):
               Currency),
              (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
               Currency)]
+
+        for prop in Separador_SolidGas.propertiesEquipment()[-1::-1]:
+            l.insert(16, prop)
+
         return l
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
-        state["Pin"] = self.Pin
-        state["Pout"] = self.Pout
-        state["deltaP"] = self.deltaP
         state["dc"] = self.dc
         state["N"] = self.N
         state["V"] = self.V
@@ -860,9 +851,6 @@ class Ciclon(Separador_SolidGas):
 
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
-        self.Pin = Pressure(state["Pin"])
-        self.Pout = Pressure(state["Pout"])
-        self.deltaP = DeltaP(state["deltaP"])
         self.dc = Length(state["dc"])
         self.N = Dimensionless(state["N"])
         self.V = Speed(state["V"])
@@ -884,251 +872,283 @@ class Ciclon(Separador_SolidGas):
 
 
 class Baghouse(Separador_SolidGas):
-    """Clase que define los filtros de mangas
+    """Class to define a baghouse filter
 
-    Parámetros:
-        entrada: Instancia de clase corriente que define la corriente que fluye por la cámara
-        metodo: Integer que indica el tipo de cálculo a realizar:
-            0   -   Calcular caida de presión
-            1   -   Calcular el tiempo de filtración
-            2   -   Calcular el número de filtros necesarios
-        num_filtros: número de filtros
-        tiempo: tiempo de filtración que lleva operando
-        deltaP: perdida de presión a traves de la membrana
-        resistenciaFiltro: coeficiente de perdida de presión del filtros, (in water)/(cP)(ft/min)
-        resistenciaTorta: coeficiente de perdida de presión de la torta,  (in water)/(cP)(gr/ft2)(ft/min)
-        limpieza: indica el número de filtros que están en limpieza
-        membranasFiltro: número de membranas que tiene cada filtro
-        diametroMembrana: diametro  de cada membrana
-        areaMembrana: area de filtración que tiene cada membrana
-        rendimientos: array con los rendimientos de fabrica de la membrana
+    Parameters:
+        entrada: Corriente instance to define the imput stream to equipment
+        metodo: Integer to choose the variable to calculate:
+            0 - Calculate the pressure loss
+            1 - Calculate the filtration time
+            2 - Calculate the required filter count
+        num_filtros: Filter count
+        tiempo: Filtration time
+        deltaP: Pressure loss
+        resistenciaFiltro: Coefficient of pressure loss of filter
+            (in water)/(cP)(ft/min)
+        resistenciaTorta: Coefficient of pressure loss of cake
+            (in water)/(cP)(gr/ft2)(ft/min)
+        limpieza: Specified the filter in clean status
+        membranasFiltro: Membrane count per filter
+        diametroMembrana: Diameter of membrane
+        areaMembrana: Filter area of a membrana
+        rendimientos: Array with the fabric efficiency of membrane
 
-    >>> diametros=[17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, 54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
-    >>> fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    >>> solido=Solid(caudalSolido=[12426.28], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    >>> corriente=Corriente(T=300, P=101325, caudalMasico=1.,  fraccionMolar=[1.], solido=solido)
-    >>> filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
-    >>> print filtro.floorArea, filtro.Vgas.ftmin
-    7.24643712 0.480966666862
+    >>> from lib.corriente import Corriente
+    >>> from lib.solids import Solid
+    >>> dm = [17.5e-4, 22.4e-4, 26.2e-4, 31.8e-4, 37e-4, 42.4e-4, 48e-4, \
+        54e-4, 60e-4, 69e-4, 81.3e-4, 96.5e-4, 109e-4, 127e-4]
+    >>> fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, \
+        0.1, 0.05, 0.03, 0.02]
+    >>> sol = Solid(caudalSolido=[0.001], distribucion_diametro=dm, \
+        distribucion_fraccion=fracciones, solids=[638])
+    >>> kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
+    >>> entrada = Corriente(T=300, P=1e5, caudalMasico=0.3, solido=sol, **kw)
+    >>> filtro = Baghouse(entrada=entrada, metodo=1, num_filtros=4, deltaP=0.1)
+    >>> print("%0.4f %0.4f" % (filtro.floorArea, filtro.Vgas.ftmin))
+    7.2464 0.1462
     """
-    title=QApplication.translate("pychemqt", "Baghouse")
-    help=""
-    kwargs={"entrada": None,
-                    "metodo": 0,
-                    "num_filtros": 0,
-                    "tiempo": 0.0,
-                    "deltaP": 0.0,
-                    "resistenciaFiltro": 0.0,
-                    "resistenciaTorta": 0.0,
-                    "limpieza": 0,
-                    "membranasFiltro": 0,
-                    "diametroMembrana": 0.0,
-                    "areaMembrana": 0.0,
-                    "rendimientos": []}
-    kwargsInput=("entrada", )
-    kwargsValue=("num_filtros", "tiempo", "deltaP", "resistenciaFiltro", "resistenciaTorta", "limpieza", "membranasFiltro", "diametroMembrana", "areaMembrana")
-    kwargsList=("metodo", )
-    calculateValue=("floorArea", "rendimiento", "Vgas", "num_filtrosCalc", "tiempoCalc", "deltaPCalc")
+    title = QApplication.translate("pychemqt", "Baghouse")
+    kwargs = {"entrada": None,
+              "metodo": 0,
+              "num_filtros": 0,
+              "tiempo": 0.0,
+              "deltaP": 0.0,
+              "resistenciaFiltro": 0.0,
+              "resistenciaTorta": 0.0,
+              "limpieza": 0,
+              "membranasFiltro": 0,
+              "diametroMembrana": 0.0,
+              "areaMembrana": 0.0,
+              "rendimientos": []}
+    kwargsInput = ("entrada", )
+    kwargsValue = ("num_filtros", "tiempo", "deltaP", "resistenciaFiltro",
+                   "resistenciaTorta", "limpieza", "membranasFiltro",
+                   "diametroMembrana", "areaMembrana")
+    kwargsList = ("metodo", )
+    calculateValue = ("floorArea", "rendimiento", "Vgas", "num_filtrosCalc",
+                      "tiempoCalc", "deltaPCalc")
 
-    TEXT_TIPO=[QApplication.translate("pychemqt", "Calculate Pressure drop"),
-                        QApplication.translate("pychemqt", "Calculate time of filtration"),
-                        QApplication.translate("pychemqt", "Calculate number of cells")]
-
+    TEXT_TIPO = [
+        QApplication.translate("pychemqt", "Calculate Pressure drop"),
+        QApplication.translate("pychemqt", "Calculate time of filtration"),
+        QApplication.translate("pychemqt", "Calculate number of cells")]
 
     @property
     def isCalculable(self):
         if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
             return
 
-        if self.kwargs["metodo"]==0 and (not self.kwargs["num_filtros"] or not self.kwargs["tiempo"]):
-            self.msg=QApplication.translate("pychemqt", "undefined values")
-            self.status=0
+        if self.kwargs["metodo"] == 0 and (not self.kwargs["num_filtros"] or
+                                           not self.kwargs["tiempo"]):
+            self.msg = QApplication.translate("pychemqt", "undefined values")
+            self.status = 0
             return
-        elif self.kwargs["metodo"]==1 and (not self.kwargs["num_filtros"] or not self.kwargs["deltaP"]):
-            self.msg=QApplication.translate("pychemqt", "undefined values")
-            self.status=0
+        elif self.kwargs["metodo"] == 1 and (not self.kwargs["num_filtros"] or
+                                             not self.kwargs["deltaP"]):
+            self.msg = QApplication.translate("pychemqt", "undefined values")
+            self.status = 0
             return
-        elif self.kwargs["metodo"]==2 and (not self.kwargs["tiempo"] or not self.kwargs["deltaP"]):
-            self.msg=QApplication.translate("pychemqt", "undefined values")
-            self.status=0
+        elif self.kwargs["metodo"] == 2 and (not self.kwargs["tiempo"] or
+                                             not self.kwargs["deltaP"]):
+            self.msg = QApplication.translate("pychemqt", "undefined values")
+            self.status = 0
             return
 
-        if self.kwargs["metodo"]==2 and self.kwargs["limpieza"]>=self.kwargs["num_filtros"]:
-            self.msg=QApplication.translate("pychemqt", "All filters cleaned")
-            self.status=0
+        if self.kwargs["metodo"] == 2 and \
+                self.kwargs["limpieza"] >= self.kwargs["num_filtros"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "All filters cleaned")
+            self.status = 0
             return
 
         if not self.kwargs["rendimientos"]:
-            self.msg=QApplication.translate("pychemqt", "using default efficiency")
-            self.status=3
+            self.msg = QApplication.translate(
+                "pychemqt", "using default efficiency")
+            self.status = 3
             return True
-        if len(self.kwargs["rendimientos"])!=self.kwargs["entrada"].solido.diametros:
-            self.msg=QApplication.translate("pychemqt", "using default efficiency")
-            self.status=3
+        if len(self.kwargs["rendimientos"]) != \
+                len(self.kwargs["entrada"].solido.diametros):
+            self.msg = QApplication.translate(
+                "pychemqt", "using default efficiency")
+            self.status = 3
             return True
 
-        self.msg=""
-        self.status=1
+        self.msg = ""
+        self.status = 1
         return True
 
-
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        self.metodo=self.kwargs["metodo"]
-        self.num_filtros=self.kwargs["num_filtros"]
-        self.tiempo=Time(self.kwargs["tiempo"])
-        self.deltaP=Pressure(self.kwargs["deltaP"])
+        entrada = self.kwargs["entrada"]
+        muG = entrada.Gas.mu
+
+        self.metodo = self.kwargs["metodo"]
+        self.num_filtros = self.kwargs["num_filtros"]
+        self.tiempo = Time(self.kwargs["tiempo"])
+        self.deltaP = Pressure(self.kwargs["deltaP"])
 
         if self.kwargs["resistenciaFiltro"]:
-            self.resistenciaFiltro=Dimensionless(self.kwargs["resistenciaFiltro"])
+            self.resistenciaFiltro = Dimensionless(
+                self.kwargs["resistenciaFiltro"])
         else:
-            self.resistenciaFiltro=Dimensionless(0.84)
+            self.resistenciaFiltro = Dimensionless(0.84)
         if self.kwargs["resistenciaTorta"]:
-            self.resistenciaTorta=Dimensionless(self.kwargs["resistenciaTorta"])
+            self.resistenciaTorta = Dimensionless(
+                self.kwargs["resistenciaTorta"])
         else:
-            self.resistenciaTorta=Dimensionless(0.1)
+            self.resistenciaTorta = Dimensionless(0.1)
         if self.kwargs["limpieza"]:
-            self.limpieza=self.kwargs["limpieza"]
+            self.limpieza = self.kwargs["limpieza"]
         else:
-            self.limpieza=1
+            self.limpieza = 1
         if self.kwargs["membranasFiltro"]:
-            self.membranasFiltro=self.kwargs["membranasFiltro"]
+            self.membranasFiltro = self.kwargs["membranasFiltro"]
         else:
-            self.membranasFiltro=78
+            self.membranasFiltro = 78
 
         if self.kwargs["diametroMembrana"]:
-            self.diametroMembrana=Length(self.kwargs["diametroMembrana"])
+            self.diametroMembrana = Length(self.kwargs["diametroMembrana"])
         else:
-            self.diametroMembrana=Length(0.5, "ft")
+            self.diametroMembrana = Length(0.5, "ft")
 
         if self.kwargs["areaMembrana"]:
-            self.areaMembrana=Area(self.kwargs["areaMembrana"])
+            self.areaMembrana = Area(self.kwargs["areaMembrana"])
         else:
-            self.areaMembrana=Area(16, "ft2")
+            self.areaMembrana = Area(16, "ft2")
 
         if any(self.kwargs["rendimientos"]):
-            self.rendimiento_parcial=self.kwargs["rendimientos"]
+            self.rendimiento_parcial = self.kwargs["rendimientos"]
         else:
-            self.rendimiento_parcial=self.defaultRendimiento()
-        self.rendimiento=self.calcularRendimiento(self.rendimiento_parcial)
+            self.rendimiento_parcial = self.defaultRendimiento()
+        self.rendimiento = self.calcularRendimiento(self.rendimiento_parcial)
 
-        if self.kwargs["metodo"]==0:
-            self.area=Area(self.areaMembrana*self.membranasFiltro*(self.num_filtros-self.limpieza))
-            ms=self.entrada.solido.caudal.gmin*self.tiempo.min/self.area.ft2
-            self.Vgas=Speed(self.entrada.Q/self.area)
-            self.deltaP=Pressure(self.resistenciaFiltro*self.entrada.Gas.mu.cP*self.Vgas.ftmin+self.resistenciaTorta*self.entrada.Gas.mu.cP*ms*self.Vgas.ftmin, "inH2O")
-        elif self.kwargs["metodo"]==1:
-            self.area=Area(self.areaMembrana*self.membranasFiltro*(self.num_filtros-self.limpieza))
-            self.Vgas=Speed(self.entrada.Q/self.area)
-            deltaPMinimo=Pressure(self.resistenciaFiltro*self.entrada.Gas.mu.cP*self.Vgas.ftmin, "inH2O")
-            if deltaPMinimo>self.deltaP:
-                self.deltaP=deltaPMinimo
-                self.tiempo=Time(0)
+        if self.kwargs["metodo"] == 0:
+            self.area = Area(self.areaMembrana*self.membranasFiltro *
+                             (self.num_filtros-self.limpieza))
+            ms = entrada.solido.caudal.gmin*self.tiempo.min/self.area.ft2
+            self.Vgas = Speed(entrada.Q/self.area)
+            dP = self.resistenciaFiltro*muG.cP*self.Vgas.ftmin + \
+                self.resistenciaTorta*muG.cP*ms*self.Vgas.ftmin
+            self.deltaP = Pressure(dP, "inH2O")
+        elif self.kwargs["metodo"] == 1:
+            self.area = Area(self.areaMembrana*self.membranasFiltro *
+                             (self.num_filtros-self.limpieza))
+            self.Vgas = Speed(entrada.Q/self.area)
+            dP = self.resistenciaFiltro*muG.cP*self.Vgas.ftmin
+            deltaPMinimo = Pressure(dP, "inH2O")
+            if deltaPMinimo > self.deltaP:
+                self.deltaP = deltaPMinimo
+                self.tiempo = Time(0)
             else:
-                ms=(self.deltaP.inH2O-self.resistenciaFiltro*self.entrada.Gas.mu.cP*self.Vgas.ftmin)/(self.resistenciaTorta*self.entrada.Gas.mu.cP*self.Vgas.ftmin)
-                self.tiempo=Time(ms*self.area.ft2/self.entrada.solido.caudal.gmin, "min")
+                ms = (dP-self.resistenciaFiltro*muG.cP*self.Vgas.ftmin) / \
+                    (self.resistenciaTorta*muG.cP*self.Vgas.ftmin)
+                self.tiempo = Time(ms*self.area.ft2/entrada.solido.caudal.gs)
         else:
-            N=roots([self.deltaP.inH2O, -self.resistenciaFiltro*self.entrada.Gas.mu.cP*self.entrada.Q.ft3min/self.areaMembrana.ft2/self.membranasFiltro,-self.resistenciaTorta*self.entrada.Gas.mu.cP*self.entrada.Q.ft3min*self.entrada.solido.caudal.gmin*self.tiempo.min/self.areaMembrana.ft2**2/self.membranasFiltro**2])
-            if N[0]>0:
-                self.num_filtros=ceil(N[0])+self.limpieza
+            a0 = self.deltaP.inH2O
+            a1 = -self.resistenciaFiltro*muG.cP*entrada.Q.ft3min / \
+                self.areaMembrana.ft2/self.membranasFiltro
+            a2 = -self.resistenciaTorta*muG.cP*entrada.Q.ft3min * \
+                entrada.solido.caudal.gmin*self.tiempo.min / \
+                self.areaMembrana.ft2**2/self.membranasFiltro**2
+            N = roots([a0, a1, a2])
+            if N[0] > 0:
+                self.num_filtros = int(ceil(N[0])+self.limpieza)
             else:
-                self.num_filtros=ceil(N[1])+self.limpieza
-            self.area=Area(self.areaMembrana*self.membranasFiltro*(self.num_filtros-self.limpieza))
-            ms=self.entrada.solido.caudal.gmin*self.tiempo.min/self.area.ft2
-            self.Vgas=Speed(self.entrada.Q/self.area)
-            self.deltaP=Pressure(self.resistenciaFiltro*self.entrada.Gas.mu.cP*self.Vgas.ftmin+self.resistenciaTorta*self.entrada.Gas.mu.cP*ms*self.Vgas.ftmin, "inH2O")
+                self.num_filtros = int(ceil(N[1])+self.limpieza)
+            self.area = Area(self.areaMembrana*self.membranasFiltro *
+                             (self.num_filtros-self.limpieza))
+            ms = entrada.solido.caudal.gmin*self.tiempo.min/self.area.ft2
+            self.Vgas = Speed(entrada.Q/self.area)
+            dP = self.resistenciaFiltro*muG.cP*self.Vgas.ftmin + \
+                self.resistenciaTorta*muG.cP*ms*self.Vgas.ftmin
+            self.deltaP = Pressure(dP, "inH2O")
 
-        self.floorArea=Area(self.num_filtros*self.membranasFiltro*self.diametroMembrana**2)
-        self.num_filtrosCalc=self.num_filtros
-        self.tiempoCalc=self.tiempo
-        self.deltaPCalc=self.deltaP
+        self.floorArea = Area(
+            self.num_filtros*self.membranasFiltro*self.diametroMembrana**2)
+        self.num_filtrosCalc = self.num_filtros
+        self.tiempoCalc = self.tiempo
+        self.deltaPCalc = self.deltaP
 
         self.CalcularSalidas()
 
-
     def defaultRendimiento(self):
-        """Modelo de rendimiento sylvan, se usara si no se indica el rendimiento"""
-        rendimiento=[(d/0.3177e-6)/(1+(d/0.3177e-6)) for d in self.entrada.solido.diametros]
+        """Sylvan default filter efficciency, used if no specified"""
+        dia = self.kwargs["entrada"].solido.diametros
+        rendimiento = [(d/0.3177e-6)/(1+(d/0.3177e-6)) for d in dia]
         return rendimiento
 
-
     def propTxt(self):
-        txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["metodo"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entrada.P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-        txt+="%-25s\t %i" %(QApplication.translate("pychemqt", "Filter Number"), self.num_filtros)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Operation Time"), self.tiempo.str)
+        txt = os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(3))
 
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Cloth resistence"), self.resistenciaFiltro.str)
-        if not self.kwargs["resistenciaFiltro"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Cake resistence"), self.resistenciaTorta.str)
-        if not self.kwargs["resistenciaTorta"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-        txt+=os.linesep+"%-25s\t %i" %(QApplication.translate("pychemqt", "Cells cleaned"), self.limpieza)
-        if not self.kwargs["limpieza"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-        txt+=os.linesep+"%-25s\t %i" %(QApplication.translate("pychemqt", "Bags per cell"), self.membranasFiltro)
-        if not self.kwargs["membranasFiltro"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Bag diameter"), self.diametroMembrana.str)
-        if not self.kwargs["diametroMembrana"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Area per bag"), self.areaMembrana.str)
-        if not self.kwargs["areaMembrana"]:
-            txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Speed"), self.Vgas.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Surface"), self.floorArea.str)+os.linesep
-
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.rendimiento.str)+os.linesep
-        if self.entrada.solido.diametros:
-            txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entrada.solido.caudal.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entrada.solido.diametro_medio.str)+os.linesep
-            if len(self.entrada.solido.diametros)>=1:
-                txt+=os.linesep+"#"+QApplication.translate("pychemqt", "Partial Efficiency")
-                if not any(self.kwargs["rendimientos"]):
-                    txt+=" (%s)" % QApplication.translate("pychemqt", "stimated")
-
-                txt+=os.linesep+"%10s %8s %10s %10s %10s" %("Dp("+Length.text("ParticleDiameter")+")", "Xi", "ŋi", "Xis", "Xig")+os.linesep
-                for i in range(len(self.rendimiento_parcial)):
-                    txt+="%10.4f %10.4f %10.4f %10.4f %10.4f" % (self.entrada.solido.diametros[i].config("ParticleDiameter"), self.entrada.solido.fracciones[i],  self.rendimiento_parcial[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
-
-            txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
-            txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
-            txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
+        suf = " (%s)" % QApplication.translate("pychemqt", "stimated")
+        txt += self.propertiesToText(range(3, 9), kwCheck=True, kwValue=0,
+                                     kwSuffix=suf)
+        txt += self.propertiesToText(range(9, 14))
+        txt += Separador_SolidGas.propTxt(self, 14)
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "metodo"), str),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
-                (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Filter Number"), "num_filtros", int),
-                (QApplication.translate("pychemqt", "Operation Time"), "tiempo", Time),
-                (QApplication.translate("pychemqt", "Cloth resistence"), "resistenciaFiltro", Dimensionless),
-                (QApplication.translate("pychemqt", "Cake resistence"), "resistenciaTorta", Dimensionless),
-                (QApplication.translate("pychemqt", "Cells cleaned"), "limpieza", int),
-                (QApplication.translate("pychemqt", "Bags per cell"), "membranasFiltro", int),
-                (QApplication.translate("pychemqt", "Bag diameter"), "diametroMembrana", Length),
-                (QApplication.translate("pychemqt", "Area per bag"), "areaMembrana", int),
-                (QApplication.translate("pychemqt", "Speed"), "Vgas", Speed),
-                (QApplication.translate("pychemqt", "Surface"), "floorArea", Area),
-                (QApplication.translate("pychemqt", "Efficiency"), "rendimiento", Dimensionless),
-                (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
-                (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-                (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length)]
-        return list
+        l = [(QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_TIPO", "metodo"), str),
+             (QApplication.translate("pychemqt", "Filter Number"),
+              "num_filtros", int),
+             (QApplication.translate("pychemqt", "Operation Time"), "tiempo",
+              Time),
+             (QApplication.translate("pychemqt", "Cloth resistence"),
+              "resistenciaFiltro", Dimensionless),
+             (QApplication.translate("pychemqt", "Cake resistence"),
+              "resistenciaTorta", Dimensionless),
+             (QApplication.translate("pychemqt", "Cells cleaned"),
+              "limpieza", int),
+             (QApplication.translate("pychemqt", "Bags per cell"),
+              "membranasFiltro", int),
+             (QApplication.translate("pychemqt", "Bag diameter"),
+              "diametroMembrana", Length),
+             (QApplication.translate("pychemqt", "Area per bag"),
+              "areaMembrana", Area),
+             (QApplication.translate("pychemqt", "Speed"), "Vgas", Speed),
+             (QApplication.translate("pychemqt", "Surface"), "floorArea",
+              Area)]
+
+        for prop in Separador_SolidGas.propertiesEquipment():
+            l.append(prop)
+
+        return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["num_filtros"] = self.num_filtros
+        state["tiempo"] = self.tiempo
+        state["resistenciaFiltro"] = self.resistenciaFiltro
+        state["resistenciaTorta"] = self.resistenciaTorta
+        state["limpieza"] = self.limpieza
+        state["membranasFiltro"] = self.membranasFiltro
+        state["diametroMembrana"] = self.diametroMembrana
+        state["areaMembrana"] = self.areaMembrana
+        state["Vgas"] = self.Vgas
+        state["floorArea"] = self.floorArea
+        Separador_SolidGas.writeStatetoJSON(self, state)
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.num_filtros = state["num_filtros"]
+        self.tiempo = Time(state["tiempo"])
+        self.resistenciaFiltro = Dimensionless(state["resistenciaFiltro"])
+        self.resistenciaTorta = Dimensionless(state["resistenciaTorta"])
+        self.limpieza = state["limpieza"]
+        self.membranasFiltro = state["membranasFiltro"]
+        self.diametroMembrana = Length(state["diametroMembrana"])
+        self.areaMembrana = Area(state["areaMembrana"])
+        self.Vgas = Speed(state["Vgas"])
+        self.floorArea = Area(state["floorArea"])
+        Separador_SolidGas.readStatefromJSON(self, state)
+        self.salida = [None]
 
 
 class ElectricPrecipitator(Separador_SolidGas):
@@ -1319,13 +1339,9 @@ if __name__ == '__main__':
 #                   distribucion_fraccion=fracciones, solids=[638])
 #    kw = {"ids": [475], "fraccionMolar": [1.], "MEoS": True}
 #    corriente = Corriente(T=300, P=1e5, caudalMasico=1, solido=solido, **kw)
-#
-
-#
-#    filtro=Baghouse(entrada=corriente, metodo=1, num_filtros=4, tiempo=3600, deltaP=0.1)
-#    print((filtro.floorArea, filtro.Vgas.ftmin))
 
 
 #    precipitador=ElectricPrecipitator(entrada=corriente, metodo=1, rendimientoAdmisible=0.9)
 #    print precipitador.msg, precipitador.status
 #    print precipitador.areaCalculada, precipitador.rendimiento
+#    print(precipitador.propTxt())
