@@ -63,12 +63,10 @@ class GERG(object):
               "x": None,
               "mezcla": None}
 
-    componentes = [mEoS.CH4.CH4, mEoS.N2.N2, mEoS.CO2.CO2, mEoS.C2.C2,
-                   mEoS.C3.C3, mEoS.nC4.nC4, mEoS.iC4.iC4, mEoS.nC5.nC5,
-                   mEoS.iC5.iC5, mEoS.nC6.nC6, mEoS.nC7.nC7, mEoS.nC8.nC8,
-                   mEoS.H2.H2, mEoS.O2.O2, mEoS.CO.CO, mEoS.H2O.H2O,
-                   mEoS.He.He, mEoS.Ar.Ar, mEoS.H2S.H2S, mEoS.nC9.nC9,
-                   mEoS.nC10.nC10]
+    componentes = [mEoS.CH4, mEoS.N2, mEoS.CO2, mEoS.C2, mEoS.C3, mEoS.nC4,
+                   mEoS.iC4, mEoS.nC5, mEoS.iC5, mEoS.nC6, mEoS.nC7, mEoS.nC8,
+                   mEoS.H2, mEoS.O2, mEoS.CO, mEoS.H2O, mEoS.He, mEoS.Ar,
+                   mEoS.H2S, mEoS.nC9, mEoS.nC10]
 
     Fij = pickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Fij.pkl", "rb"))
     Prop_c = pickle.load(open(os.environ["pychemqt"]+"dat/mEoS_Tc.pkl", "rb"))
