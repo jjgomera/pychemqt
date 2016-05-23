@@ -1132,7 +1132,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             rect = QtCore.QRect(x, y, width, height)
             s.setRect(rect)
 
-            pen=QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
             pen.setWidthF(obj["width"])
             pen.setJoinStyle(obj["joinStyle"])
             pen.setMiterLimit(obj["miterLimit"])
@@ -1153,7 +1153,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             rect = QtCore.QRect(x, y, width, height)
             s.setRect(rect)
 
-            pen=QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
             pen.setWidthF(obj["width"])
             pen.setJoinStyle(obj["joinStyle"])
             pen.setMiterLimit(obj["miterLimit"])
@@ -1195,7 +1195,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             up_stream[id] = up_type, up_id
             down_stream[id] = down_type, down_id
 
-            s.id = id_stream[-1]
+            s.id = id
             s.entrada = entrada
             s.salida = salida
             s.Ang_entrada = obj["input_angle"]
@@ -1211,10 +1211,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.idLabel.setHtml(txt)
             s.idLabel.show()
 
-        angle_in={}
+        angle_in = {}
         for id, obj in data["PFD"]["in"].items():
             id = int(id)
-            s=EquipmentItem("in", None)
+            s = EquipmentItem("in", None)
             x = obj["x"]
             y = obj["y"]
             pos = QtCore.QPointF(x, y)
@@ -1248,6 +1248,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             name = obj["name"]
             dialogoId = obj["dialogo_id"]
             s = EquipmentItem(name, dialogoId)
+            s.id = id
 
             x = obj["x"]
             y = obj["y"]
