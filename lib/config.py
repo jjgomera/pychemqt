@@ -46,11 +46,12 @@ from PyQt5 import QtWidgets
 # os.environ["oasa"] = "False"
 # os.environ["CoolProp"] = "True"
 # os.environ["refprop"] = "False"
-# os.environ["ezodf"] = "False"
+# os.environ["ezodf"] = "True"
 # os.environ["openpyxl"] = "False"
 # os.environ["xlwt"] = "False"
 # os.environ["icu"] = "False"
 # os.environ["reportlab"] = "False"
+# os.environ["PyQt5.Qsci"] = "True"
 
 
 from lib.sql import databank
