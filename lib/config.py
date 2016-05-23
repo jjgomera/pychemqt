@@ -258,6 +258,7 @@ class Entity(object):
         if self.status:
             self.readStatefromJSON(data["state"])
 
+
 #        if run:
 #            self.__call__()
 #            print(self)
@@ -348,7 +349,7 @@ class Entity(object):
             None: Return all properties
             array: Return the selected properties
             int: Return only the indexed property
-        linesep: Boolean to add a linesep a end line
+        linesep: Boolean to add a linesep at end line
         suffix: Optional suffix text
         """
         mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG, "%")
@@ -357,15 +358,18 @@ class Entity(object):
         if isinstance(index, int):
             index = [index]
 
+
         txt = ""
         for i in index:
             title, prop, unit = self.propertiesNames()[i]
+            if not kwKey:
+                kwKey = prop
             value = self._prop(prop)
-            if unit != str and unit != float:
+            if unit != str and unit != float and unit != int:
                 value = value.str
             elif unit == str:
                 value = " " + value
-            elif unit == float:
+            elif unit == float or unit == int:
                 value = " %s" % value.__repr__()
 
             txt += mask % (title, value)

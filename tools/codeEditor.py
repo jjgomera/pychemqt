@@ -35,7 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import sys
 from PyQt5 import QtGui, QtWidgets
 
-from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+try:
+    from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+except:
+    pass
 
 
 class SimplePythonEditor(QsciScintilla):
@@ -82,7 +85,8 @@ class SimplePythonEditor(QsciScintilla):
         lexer = QsciLexerPython()
         lexer.setDefaultFont(font)
         self.setLexer(lexer)
-        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+        # self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+        # self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1)
 
         # Don't want to see the horizontal scrollbar at all
         # Use raw message to Scintilla here (all messages are documented

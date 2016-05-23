@@ -46,6 +46,8 @@ optional_modules = (
         "Unicode collation algorithm for improved string sorting disabled")),
     ("reportlab", QtWidgets.QApplication.translate(
         "pychemqt", "Pdf report exporting disabled")),
+    ("PyQt5.Qsci", QtWidgets.QApplication.translate(
+        "pychemqt", "Qscintilla custom module editor disabled")),
     )
 
 
