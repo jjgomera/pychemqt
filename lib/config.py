@@ -359,7 +359,6 @@ class Entity(object):
         if isinstance(index, int):
             index = [index]
 
-
         txt = ""
         for i in index:
             title, prop, unit = self.propertiesNames()[i]

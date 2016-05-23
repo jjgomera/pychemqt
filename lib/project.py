@@ -247,11 +247,11 @@ class Project(object):
         for id, equip in data["equipment"].items():
             if id[0] == "e":
                 index = equip["id"]
-                equip = equipments[index]()
-                equip.readFromJSON(data["equipment"][id])
+                eq = equipments[index]()
+                eq.readFromJSON(equip)
             else:
-                equip = None
-            items[id] = equip
+                eq = None
+            items[id] = eq
         self.setItems(items)
 
         # read streams
