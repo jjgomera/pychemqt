@@ -57,18 +57,17 @@ from PyQt5 import QtWidgets
 from lib.sql import databank
 
 
-conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
-QTSETTING_FILE = os.path.expanduser('~') + os.sep +\
-    ".config/pychemqt/pychemqt.conf"
-IMAGE_PATH = os.environ["pychemqt"] + "/images/"
+conf_dir = os.path.expanduser('~') + os.sep + ".pychemqt" + os.sep
+QTSETTING_FILE = os.path.join(os.path.expanduser('~'), ".config", "pychemqt", "pychemqt.conf")
+IMAGE_PATH = os.path.join(os.environ["pychemqt"], "images") + os.sep
 
 Preferences = ConfigParser()
-Preferences.read(conf_dir+"pychemqtrc")
-# FIXME: This instance is not update when preferences are changed
+Preferences.read(conf_dir + "pychemqtrc")
+# FIXME: This instance is not updated when preferences are changed
 
 global currentConfig
 currentConfig = ConfigParser()
-currentConfig.read(conf_dir+"pychemqtrc_temporal")
+currentConfig.read(conf_dir + "pychemqtrc_temporal")
 
 
 def getComponents(solidos=False, config=None, name=True):
