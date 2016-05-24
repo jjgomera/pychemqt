@@ -28,7 +28,7 @@ import urllib.error
 
 # Parse command line options
 desc = """pychemqt intended as a free software tool for calculation and \
-design of unit operations in chemical engineering."""
+design of chemical engineering unit operations."""
 further = """For any suggestions, comments, bug ... you can contact me at \
 https://github.com/jjgomera/pychemqt or by email jjgomera@gmail.com."""
 
@@ -57,7 +57,7 @@ conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 try:
     from PyQt5 import QtCore, QtGui, QtWidgets
 except ImportError as err:
-    print("PyQt5 don't found, you need install it")
+    print("PyQt5 could not be found, you must install it.")
     raise err
 
 # Qt application definition
@@ -82,14 +82,14 @@ try:
     import scipy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "The scipy library could not be found, you need to install it.")
+        "pychemqt", "scipy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
     if minor < 14:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of scipy is too old, you must install an updated version.")  # noqa
+            "pychemqt", "Your version of scipy is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # numpy
@@ -97,14 +97,14 @@ try:
     import numpy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "The numpy library could not be found, you need to install it.")
+        "pychemqt", "numpy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, numpy.version.version.split("."))
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of numpy is too old, you must install an updated version.")  # noqa
+            "pychemqt", "Your version of numpy is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # matplotlib
@@ -112,14 +112,14 @@ try:
     import matplotlib
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "The matplotlib library could not be found, you need to install it.")
+        "pychemqt", "matplotlib could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
     if mayor < 1 or minor < 4:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of matplotlib is too old, you must install an updated version.")  # noqa
+            "pychemqt", "Your version of matplotlib is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # TODO: Disable python-graph external dependence, functional mock up in
@@ -166,7 +166,7 @@ logging.info(
 
 
 class SplashScreen(QtWidgets.QSplashScreen):
-    """Class to defne a splash screen to show progress of loading"""
+    """Class to define a splash screen to show loading progress"""
     def __init__(self):
         QtWidgets.QSplashScreen.__init__(
             self,
