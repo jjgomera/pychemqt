@@ -102,7 +102,7 @@ class SelectStreamProject(QtWidgets.QDialog):
         self.status.setText(QtWidgets.QApplication.translate(
             "pychemqt", "Project loaded succesfully"))
         self.stream.clear()
-        for stream in self.project["stream"].keys():
+        for stream in sorted(self.project["stream"].keys()):
             self.stream.addItem(stream)
 
 
