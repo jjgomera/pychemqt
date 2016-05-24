@@ -1045,7 +1045,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
         tip=text
     action = QtWidgets.QAction(text, parent)
     if icon:
-        action.setIcon(QtGui.QIcon(icon))
+        action.setIcon(QtGui.QIcon(config.IMAGE_PATH + icon))
     if shortcut:
         action.setShortcut(shortcut)
     action.setToolTip(tip)
@@ -1058,7 +1058,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
     if button:
         boton = DragButton(parent)
 
-        boton.setIcon(QtGui.QIcon(QtGui.QPixmap(icon)))
+        boton.setIcon(QtGui.QIcon(QtGui.QPixmap(config.IMAGE_PATH + icon)))
         boton.setToolTip(tip)
         boton.setStatusTip(tip)
         if slot:
