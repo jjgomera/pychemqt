@@ -49,7 +49,7 @@ path = os.path.dirname(os.path.realpath(sys.argv[0]))
 sys.path.append(path)
 
 # Define pychemqt environment
-os.environ["pychemqt"] = path + os.path.sep
+os.environ["pychemqt"] = path + os.sep
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 # Check mandatory external dependences
@@ -215,7 +215,7 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
-        with open(os.environ["pychemqt"] + "dat/costindex.dat") as cost_index:
+        with open(os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")) as cost_index:
             lista = cost_index.readlines()[-1][:-1].split(" ")
             with open(conf_dir + "CostIndex.dat", "w") as archivo:
                 for data in lista:
@@ -224,12 +224,12 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
 # Checking currency rates
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking currency data"))
-if not os.path.isfile(conf_dir+"moneda.dat"):
+if not os.path.isfile(conf_dir + "moneda.dat"):
     try:
-        firstrun.getrates(conf_dir+"moneda.dat")
+        firstrun.getrates(conf_dir + "moneda.dat")
     except urllib.error.URLError:
-        origen = os.environ["pychemqt"]+"dat"+os.sep+"moneda.dat"
-        shutil.copy(origen, conf_dir+"moneda.dat")
+        origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
+        shutil.copy(origen, conf_dir + "moneda.dat")
         print(QtWidgets.QApplication.translate("pychemqt",
               "Internet connection error, using archived currency rates"))
 
