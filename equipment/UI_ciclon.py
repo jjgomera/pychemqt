@@ -126,8 +126,8 @@ class UI_equipment(UI_equip):
         lyt = QtWidgets.QGridLayout(group)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Efficiency")), 1, 1)
-        self.rendimientoCalc = Entrada_con_unidades(float, readOnly=True)
-        lyt.addWidget(self.rendimientoCalc, 1, 2)
+        self.rendimiento = Entrada_con_unidades(float, readOnly=True)
+        lyt.addWidget(self.rendimiento, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure drop:")), 2, 1)
         self.deltaP = Entrada_con_unidades(DeltaP, readOnly=True)

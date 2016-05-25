@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,27 +15,325 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # library for definition of equipment with gas, solid and liquid interaction:
-#     -Dryer
 #     -Scrubber
+#     -Dryer
 ###############################################################################
+
 
 import os
 
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 from scipy import pi, exp, sqrt, log
 
-from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless, Length,
-                          MassFlow, Power)
+from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless,
+                          Length, Power)
 from lib.physics import Cunningham
 from lib.corriente import Corriente
 from lib.psycrometry import PsychroState
-from .parents import equipment
+from equipment.parents import equipment
+from equipment.gas_solid import Separador_SolidGas
+
+
+class Scrubber(Separador_SolidGas):
+    """Class to model a scrubber equipment
+
+    Parameters:
+        entradaGas: Corriente instance for define the gas input to equipment
+        entradaLiquido: Corriente instance for define the liquid input
+        tipo_calculo:
+            0 - Rating, known dimensions
+            1 - Design, fixed efficiency, calculate dimensions
+        diametro: Scruber diameter
+        rendimientoAdmisible: Efficiency admisible
+        modelo_rendimiento: Scrubber calculate model:
+            0 - Johnstone (1954)
+            1 - Calvert (1972)
+        k: Empiric constant of scrubber for Johnstone Method, range 500-1000
+        f: Empiric constant of scrubber for Calvert Method, range from
+            0.2 (hydrophobic) to 0.7 (hydrophilic)
+        modelo_DeltaP:
+            0 - Young (1977)
+    """
+    title = QApplication.translate("pychemqt", "Scrubber")
+    help = ""
+    kwargs = {"entradaGas": None,
+              "entradaLiquido": None,
+              "tipo_calculo": 0,
+              "diametro": 0.0,
+              "rendimientoAdmisible": 0.0,
+              "modelo_rendimiento": 0,
+              "k": 0.0,
+              "f": 0.0,
+              "modelo_DeltaP": 0,
+              "Lt": 0.0}
+    kwargsInput = ("entradaGas", "entradaLiquido")
+    kwargsValue = ("diametro", "rendimientoAdmisible", "k", "Lt")
+    kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP")
+    calculateValue = ("deltaP", "rendimiento")
+
+    TEXT_TIPO = [
+        QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
+        QApplication.translate("pychemqt", "Design: Calculate diameter")]
+    TEXT_MODEL = ["Johnstone (1954)",
+                  "Calvert (1972)"]
+    TEXT_MODEL_DELTAP = ["Calvert (1968)",
+                         "Hesketh (1974)",
+                         "Gleason (1971)",
+                         "Volgin (1968)",
+                         "Young (1977)"]
+
+    __doi__ = [
+        {"autor": "S. JENNINGS",
+         "title": "The Mean Free Path in Air",
+         "ref": "Journal of Aerosol Science - J AEROSOL SCI 01/1988; "
+                "19(2):159-166",
+         "doi":  "10.1016/0021-8502(88)90219-4"},
+        {"autor": "Seymour Calvert, Dale Lundgren & Dilip S. Mehta",
+         "title": "Venturi Scrubber Performance",
+         "ref": "Journal of the Air Pollution Control Association, 22:7, "
+                "529-532",
+         "doi":  "10.1080/00022470.1972.10469674"},
+        {"autor": "Shui-Chow Yung, Harry F. Barbarika & Seymour Calvert",
+         "title": "Pressure Loss in Venturi Scrubbers",
+         "ref": "Journal of the Air Pollution Control Association, 27:4, "
+                "348-351",
+         "doi":  "10.1080/00022470.1977.10470432"},
+        {"autor": "Howard E. Hesketh",
+         "title": "Fine Particle Collection Efficiency Related to Pressure "
+                  "Drop, Scrubbant and Particle Properties, and Contact "
+                  "Mechanism",
+         "ref": "Journal of the Air Pollution Control Association, 24:10, "
+                "939-942",
+         "doi":  "10.1080/00022470.1974.10469992"},
+        {"autor": "Johnstone, H. F.; Feild, R. B.; Tassler, M. C.",
+         "title": "Gas Absorption and Aerosol Collection in a Venturi Atomizer",  # noqa
+         "ref": "Industrial and Engineering Chemistry, Vol. 46, pp. 1601–1608 "
+                "(1954)",
+         "doi":  "10.1021/ie50536a028"},
+    ]
+
+    @property
+    def isCalculable(self):
+        self.status = 1
+        self.msg = ""
+
+        self.statusDeltaP = 1
+        if self.kwargs["modelo_DeltaP"] in (3, 4) and not self.kwargs["Lt"]:
+            self.statusDeltaP = 0
+
+        if not self.kwargs["entradaGas"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined gas stream")
+            self.status = 0
+            return
+        if not self.kwargs["entradaLiquido"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined liquid stream")
+            self.status = 0
+            return
+        if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
+            self.msg = QApplication.translate("pychemqt", "undefined diameter")
+            self.status = 0
+            return
+        elif self.kwargs["tipo_calculo"] == 1 and \
+                not self.kwargs["rendimientoAdmisible"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined efficiency")
+            self.status = 0
+            return
+
+        if self.kwargs["modelo_rendimiento"] == 0 and not self.kwargs["k"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined venturi constant")
+            self.status = 3
+        elif self.kwargs["modelo_rendimiento"] == 1 and not self.kwargs["f"]:
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined calvert coefficient")
+            self.status = 3
+
+        return True
+
+    def calculo(self):
+        Gas = self.kwargs["entradaGas"]
+        Liquido = self.kwargs["entradaLiquido"]
+        sigma = Liquido.Liquido.sigma
+        rhoL = Liquido.Liquido.rho
+        muL = Liquido.Liquido.mu
+
+        self.Dt = Length(self.kwargs["diametro"])
+        self.Lt = Length(self.kwargs["Lt"])
+
+        if self.kwargs["k"]:
+            self.k = Dimensionless(self.kwargs["k"])
+        else:
+            self.k = Dimensionless(1000.)
+        if self.kwargs["f"]:
+            self.f = Dimensionless(self.kwargs["f"])
+        else:
+            self.f = Dimensionless(0.5)
+
+        self.At = Area(pi/4*self.Dt**2)
+        self.Vg = Speed(Gas.Q/self.At)
+        self.R = Liquido.Q/Gas.Q
+        self.dd = Length(58600/self.Vg*(sigma/rhoL)**0.5+597*(
+            muL/sigma**0.5/rhoL**0.5)**0.45*(1000*self.R)**1.5)
+
+        self.rendimiento_parcial = self._Efficiency()
+        self.rendimiento = self._GlobalEfficiency(self.rendimiento_parcial)
+
+        if self.statusDeltaP:
+            self.deltaP = self._deltaP()
+        else:
+            self.deltaP = DeltaP(0)
+
+        self.CalcularSalidas(Gas)
+        self.Pin = min(Gas.P, Liquido.P)
+
+    def _Salidas(self, Gas):
+        Liquido = self.kwargs["entradaLiquido"]
+        unfiltered, filtered = Gas.solido.Separar(self.rendimiento_parcial)
+        Pout = min(Gas.P, Liquido.P)-self.deltaP
+        self.salida = []
+        self.salida.append(Gas.clone(solido=unfiltered, P=Pout))
+        self.salida.append(Liquido.clone(solido=filtered, P=Pout))
+
+    def _Efficiency(self):
+        Gas = self.kwargs["entradaGas"]
+        Liquido = self.kwargs["entradaLiquido"]
+        rhoS = Gas.solido.rho
+        muG = Gas.Gas.mu
+        rhoL = Liquido.Liquido.rho
+
+        rendimiento_fraccional = []
+        if self.kwargs["modelo_rendimiento"] == 0:
+            # Modelo de Johnstone (1954)
+            l = sqrt(pi/8)*Gas.Gas.mu/0.4987445/sqrt(Gas.Gas.rho*Gas.P)
+            for dp in Gas.solido.diametros:
+                Kn = l/dp*2
+                C = Cunningham(l, Kn)
+                kp = C*rhoS*dp**2*self.Vg/9/Gas.Gas.mu/self.dd
+                penetration = exp(-self.k*self.R*kp**0.5)
+                rendimiento_fraccional.append(1-penetration)
+
+        elif self.kwargs["modelo_rendimiento"] == 1:
+            # Modelo de Calvert (1972)
+            l = sqrt(pi/8)*muG/0.4987445/sqrt(Gas.Gas.rho*Gas.P)
+            for dp in Gas.solido.diametros:
+                Kn = l/dp*2
+                C = Cunningham(l, Kn)
+                kp = C*rhoS*dp**2*self.Vg/9/muG/self.dd
+                b = (-0.7-kp*self.f+1.4*log((kp*self.f+0.7)/0.7)+0.49 /
+                     (0.7+kp*self.f))
+                penetration = exp(self.R*self.Vg*rhoL*self.dd/55/muG*b/kp)
+                if penetration > 1:
+                    penetration = 1
+                elif penetration < 0:
+                    penetration = 0
+                rendimiento_fraccional.append(1-penetration)
+
+        return rendimiento_fraccional
+
+    def _GlobalEfficiency(self, rendimientos):
+        Gas = self.kwargs["entradaGas"]
+
+        rendimiento_global = 0
+        for i, fraccion in enumerate(Gas.solido.fracciones):
+            rendimiento_global += rendimientos[i]*fraccion
+        return Dimensionless(rendimiento_global)
+
+#        DeltaP=Pressure(1.002*V**2*R, "kPa")
+#
+#        self.DeltaP=DeltaP
+#
+#        print V, DeltaP
+
+#Calvert: 'dp = 5.4e-04 * (v^2) * rho_gas * (L/G)'
+#Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * (0.56 + 0.125*L/G + 0.0023*(L/G)^2) / 507'
+#Simplified Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * ((L/G)^0.78) / 1270'
+
+    def _deltaP(self):
+        Gas = self.kwargs["entradaGas"]
+        Liquido = self.kwargs["entradaLiquido"]
+        rhoL = Liquido.Liquido.rho
+
+        if self.kwargs["modelo_DeltaP"] == 0:
+            # Calvert (1968)
+            deltaP = 0.85*rhoL*self.Vg**2*self.R
+        elif self.kwargs["modelo_DeltaP"] == 1:
+            # Hesketh (1974)
+            deltaP = 1.36e-4*self.Vg.cms**2*rhoL.gcc*self.At.cm2**0.133 * \
+                (0.56+935*self.R+1.29e-2*self.R**2)
+        elif self.kwargs["modelo_DeltaP"] == 2:
+            # Gleason (1971)
+            deltaP = 2.08e-5*self.Vg.cms**2*(0.264*Liquido.Liquido.Q.ccs+73.8)
+        elif self.kwargs["modelo_DeltaP"] == 3:
+            # Volgin (1968)
+            deltaP = 3.32e-6*self.Vg.cms**2*self.R*0.26*self.Lt**1.43
+        elif self.kwargs["modelo_DeltaP"] == 4:
+            # Yung (1977)
+            Re = self.dd*self.Vg+Gas.Gas.rho/Gas.Gas.mu
+            Cd = 0.22+(24/Re * (1+0.15*Re**0.6))
+            X = 3*self.Lt*Cd*Gas.Gas.rho/16/self.dd/rhoL + 1
+            deltaP = 2*rhoL*self.Vg**2*self.R*(1-X**2+(X**4-X**2)**0.5)
+
+#        elif self.kwargs["modelo_DeltaP"] == 0: #Matrozov (1953)
+#            deltaP=dPd+1.38e-3*self.Vg.cms**1.08*self.R**0.63
+#        elif self.kwargs["modelo_DeltaP"] == 1: #Yoshida (1960)
+#            pass
+#        elif self.kwargs["modelo_DeltaP"] == 3: #Tohata (1964)
+#            pass
+#        elif self.kwargs["modelo_DeltaP"] == 4: #Geiseke (1968)
+#            pass
+#        elif self.kwargs["modelo_DeltaP"] == 8: #Boll (1973)
+#            pass
+#        elif self.kwargs["modelo_DeltaP"] == 9: #Behie & Beeckman (1973)
+#            pass
+
+        return DeltaP(deltaP)
+
+    def propTxt(self):
+        Gas = self.kwargs["entradaGas"]
+
+        txt = os.linesep + "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(13))
+        txt += Separador_SolidGas.propTxt(self, 13, Gas)
+        return txt
+
+    @classmethod
+    def propertiesEquipment(cls):
+        l = [(QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_TIPO", "tipo_calculo"), str),
+             (QApplication.translate("pychemqt", "Model"),
+              ("TEXT_MODEL", "modelo_rendimiento"), str),
+             (QApplication.translate("pychemqt", "Pressure Loss Model"),
+              ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
+             (QApplication.translate("pychemqt", "Throat Diameter"), "Dt",
+              Length),
+             (QApplication.translate("pychemqt", "Throat Length"), "Lt",
+              Length),
+             (QApplication.translate(
+                 "pychemqt", "Johnstone method scrubber constant"),
+                 "k", Dimensionless),
+             (QApplication.translate(
+                 "pychemqt", "Calvert method scrubber constant"),
+                 "f", Dimensionless),
+             (QApplication.translate("pychemqt", "Drops Diameter"), "dd",
+              Length),
+             (QApplication.translate("pychemqt", "Throat Cross Area"), "At",
+              Area),
+             (QApplication.translate("pychemqt", "Throat Speed"), "Vg", Speed)]
+
+        for prop in Separador_SolidGas.propertiesEquipment():
+            l.append(prop)
+
+        return l
 
 
 class Dryer(equipment):
@@ -134,284 +432,18 @@ class Dryer(equipment):
 #        self.SalidaAire=Corriente(self.entradaAire.T, self.entradaAire.P.atm-self.deltaP.atm, self.entradaAire.caudalmasico.kgh, self.entradaAire.mezcla)
 
 
-class Scrubber(equipment):
-    """ Model equipment for scrubber
-
-    Parameters:
-        entradaGas: Stream instance of Corriente for define gas input
-        entradaLiquido: Stream instance of Corriente for define liquid input
-        tipo_calculo:
-            0   -   Rating, known dimensions
-            1   -   Design, fixed efficiency, calculate dimensions
-        diametro: scruber diameter
-        rendimiento: Efficiency admisible
-        modelo_rendimiento: Scrubber calculate model:
-            0   -   Johnstone (1954)
-            1   -   Calvert (1972)
-        k: Johnstone Method - Empiric constant of scrubber, range 500-1000
-        f: Calvert Method - Empiric parameter 0.2 (hydrophobic) to 0.7 (hydrophilic)
-        modelo_DeltaP:
-            0   -   Young (1977)
-    """
-    title = QApplication.translate("pychemqt", "Scrubber")
-    help = ""
-    kwargs = {"entradaGas": None,
-              "entradaLiquido": None,
-              "tipo_calculo": 0,
-              "diametro": 0.0,
-              "rendimiento": 0.0,
-              "modelo_rendimiento": 0,
-              "k": 0.0,
-              "f": 0.0,
-              "modelo_DeltaP": 0,
-              "Lt": 0.0}
-    kwargsInput = ("entradaGas", "entradaLiquido")
-    kwargsValue = ("diametro", "rendimiento", "k", "Lt")
-    kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP")
-    calculateValue = ("deltaP", "efficiencyCalc")
-
-    TEXT_TIPO = [QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
-                 QApplication.translate("pychemqt", "Design: Calculate diameter")]
-    TEXT_MODEL = ["Johnstone (1954)",
-                  "Calvert (1972)"]
-    TEXT_MODEL_DELTAP = ["Calvert (1968)",
-                         "Hesketh (1974)",
-                         "Gleason (1971)",
-                         "Volgin (1968)",
-                         "Young (1977)"]
-
-    __doi__ = [
-            {"autor": "S. JENNINGS",
-              "title": "The Mean Free Path in Air",
-              "ref": "Journal of Aerosol Science - J AEROSOL SCI 01/1988; 19(2):159-166",
-              "doi":  "10.1016/0021-8502(88)90219-4"},
-            {"autor": "Seymour Calvert, Dale Lundgren & Dilip S. Mehta",
-              "title": "Venturi Scrubber Performance",
-              "ref": "Journal of the Air Pollution Control Association, 22:7, 529-532",
-              "doi":  "10.1080/00022470.1972.10469674"},
-            {"autor": "Shui-Chow Yung, Harry F. Barbarika & Seymour Calvert",
-              "title": "Pressure Loss in Venturi Scrubbers",
-              "ref": "Journal of the Air Pollution Control Association, 27:4, 348-351",
-              "doi":  "10.1080/00022470.1977.10470432"},
-            {"autor": "Howard E. Hesketh",
-              "title": "Fine Particle Collection Efficiency Related to Pressure Drop, Scrubbant and Particle Properties, and Contact Mechanism",
-              "ref": "Journal of the Air Pollution Control Association, 24:10, 939-942",
-              "doi":  "10.1080/00022470.1974.10469992"},
-              ]
-
-    @property
-    def isCalculable(self):
-        self.status = 1
-        self.msg = ""
-
-        self.statusDeltaP = 1
-        if self.kwargs["modelo_DeltaP"] in (3, 4) and not self.kwargs["Lt"]:
-            self.statusDeltaP = 0
-
-        if not self.kwargs["entradaGas"]:
-            self.msg = QApplication.translate("pychemqt", "undefined gas stream")
-            self.status = 0
-            return
-        if not self.kwargs["entradaLiquido"]:
-            self.msg = QApplication.translate("pychemqt", "undefined liquid stream")
-            self.status = 0
-            return
-        if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
-            self.msg = QApplication.translate("pychemqt", "undefined diameter")
-            self.status = 0
-            return
-        elif self.kwargs["tipo_calculo"] == 1 and not self.kwargs["rendimiento"]:
-            self.msg = QApplication.translate("pychemqt", "undefined efficiency")
-            self.status = 0
-            return
-
-        if self.kwargs["modelo_rendimiento"] == 0 and not self.kwargs["k"]:
-            self.msg = QApplication.translate("pychemqt", "undefined venturi constant")
-            self.status = 3
-        elif self.kwargs["modelo_rendimiento"] == 1 and not self.kwargs["f"]:
-            self.msg = QApplication.translate("pychemqt", "undefined calvert coefficient")
-            self.status = 3
-
-        return True
-
-    def calculo(self):
-        self.entradaGas = self.kwargs["entradaGas"]
-        self.entradaLiquido = self.kwargs["entradaLiquido"]
-        self.Dt = Length(self.kwargs["diametro"])
-        self.Lt = Length(self.kwargs["Lt"])
-
-        if self.kwargs["k"]:
-            self.k = Dimensionless(self.kwargs["k"])
-        else:
-            self.k = Dimensionless(1000.)
-        if self.kwargs["f"]:
-            self.f = Dimensionless(self.kwargs["f"])
-        else:
-            self.f = Dimensionless(0.5)
-
-        self.At = Area(pi/4*self.Dt**2)
-        self.Vg = Speed(self.entradaGas.Q/self.At)
-        self.R = self.entradaLiquido.Q/self.entradaGas.Q
-        self.dd = Length(58600*(self.entradaLiquido.Liquido.epsilon/self.entradaLiquido.Liquido.rho)**0.5/self.Vg**2 +
-            597*(self.entradaLiquido.Liquido.mu/self.entradaLiquido.Liquido.epsilon**0.5/self.entradaLiquido.Liquido.rho**0.5)**0.45*(1000*self.R)**1.5)
-
-        self.efficiency_i = self._Efficiency()
-        self.efficiencyCalc = self._GlobalEfficiency(self.efficiency_i)
-
-        if self.statusDeltaP:
-            self.deltaP=self._deltaP()
-        else:
-            self.deltaP=DeltaP(0)
-
-        Solido_NoCapturado, Solido_Capturado=self.entradaGas.solido.Separar(self.efficiency_i)
-        self.Pin=min(self.entradaGas.P, self.entradaLiquido.P)
-        self.Pout=Pressure(self.Pin-self.deltaP)
-        self.Min=self.entradaGas.solido.caudal
-        self.Dmin=self.entradaGas.solido.diametro_medio
-        self.Mr=Solido_NoCapturado.caudal
-        self.Dmr=Solido_NoCapturado.diametro_medio
-        self.Ms=Solido_Capturado.caudal
-        self.Dms=Solido_Capturado.diametro_medio
-
-        self.salida=[]
-        self.salida.append(self.entradaGas.clone(solido=Solido_NoCapturado, P=self.Pin-self.deltaP))
-        self.salida.append(self.entradaLiquido.clone(solido=Solido_Capturado, P=self.Pin-self.deltaP))
-
-    def _Efficiency(self):
-        rendimiento_fraccional=[]
-        if self.kwargs["modelo_rendimiento"] == 0:  # Modelo de Johnstone (1954)
-            l=sqrt(pi/8)*self.entradaGas.Gas.mu/0.4987445/sqrt(self.entradaGas.Gas.rho*self.entradaGas.P)
-            for dp in self.entradaGas.solido.diametros:
-                Kn=l/dp*2
-                C=Cunningham(l, Kn)
-                kp=C*self.entradaGas.solido.rho*dp**2*self.Vg/9/self.entradaGas.Gas.mu/self.dd
-                penetration=exp(-self.k*self.R*kp**0.5)
-                rendimiento_fraccional.append(1-penetration)
-
-        elif self.kwargs["modelo_rendimiento"] == 1:  # Modelo de Calvert (1972)
-            l=sqrt(pi/8)*self.entradaGas.Gas.mu/0.4987445/sqrt(self.entradaGas.Gas.rho*self.entradaGas.P)
-            for dp in self.entradaGas.solido.diametros:
-                Kn=l/dp*2
-                C=Cunningham(l, Kn)
-                kp=C*self.entradaGas.solido.rho*dp**2*self.Vg/9/self.entradaGas.Gas.mu/self.dd
-                b=(-0.7-kp*self.f+1.4*log((kp*self.f+0.7)/0.7)+0.49/(0.7+kp*self.f))/kp
-                penetration=exp(self.R*self.Vg*self.entradaLiquido.Liquido.rho*self.dd/55/self.entradaGas.Gas.mu*b)
-                rendimiento_fraccional.append(1-penetration)
-
-        return rendimiento_fraccional
-
-    def _GlobalEfficiency(self, rendimientos):
-        rendimiento_global = 0
-        for i, fraccion in enumerate(self.entradaGas.solido.fracciones):
-            rendimiento_global += rendimientos[i]*fraccion
-        return Dimensionless(rendimiento_global)
-
-#        DeltaP=Pressure(1.002*V**2*R, "kPa")
-#
-#        self.DeltaP=DeltaP
-#
-#        print V, DeltaP
-        """        1. Calvert: 'dp = 5.4e-04 * (v^2) * rho_gas * (L/G)'
-        2a. Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * (0.56 + 0.125*L/G + 0.0023*(L/G)^2) / 507'
-        2b. Simplified Hesketh: '(v^2) * rho_gas * (Throat_Area^0.133) * ((L/G)^0.78) / 1270'
-                """
-    def _deltaP(self):
-        if self.kwargs["modelo_DeltaP"] == 0: #Calvert (1968)
-            deltaP=0.85*self.entradaLiquido.Liquido.rho*self.Vg**2*self.R
-        elif self.kwargs["modelo_DeltaP"] == 1: #Hesketh (1974)
-            deltaP=1.36e-4*self.Vg.cms**2*self.entradaGas.Gas.rho.gcc*self.At.cm2**0.133*(0.56+935*self.R+1.29e-2*self.R**2)
-        elif self.kwargs["modelo_DeltaP"] == 2: #Gleason (1971)
-            deltaP=2.08e-5*self.Vg.cms**2*(0.264*self.entradaLiquido.Liquido.Q.ccs+73.8)
-        elif self.kwargs["modelo_DeltaP"] == 3: #Volgin (1968)
-            deltaP=3.32e-6*self.Vg.cms**2*self.R*0.26*self.Lt**1.43
-        elif self.kwargs["modelo_DeltaP"] == 4: #Yung (1977)
-            Re=self.dd*self.Vg+self.entradaGas.Gas.rho/self.entradaGas.Gas.mu
-            Cd=0.22+(24/Re * (1+0.15*Re**0.6))
-            X=3*self.Lt*Cd*self.entradaGas.Gas.rho/16/self.dd/self.entradaLiquido.Liquido.rho + 1
-            deltaP=2*self.entradaLiquido.Liquido.rho*self.Vg**2*self.R*(1-X**2+(X**4-X**2)**0.5)
-
-#        elif self.kwargs["modelo_DeltaP"] == 0: #Matrozov (1953)
-#            deltaP=dPd+1.38e-3*self.Vg.cms**1.08*self.R**0.63
-#        elif self.kwargs["modelo_DeltaP"] == 1: #Yoshida (1960)
-#            pass
-#        elif self.kwargs["modelo_DeltaP"] == 3: #Tohata (1964)
-#            pass
-#        elif self.kwargs["modelo_DeltaP"] == 4: #Geiseke (1968)
-#            pass
-#        elif self.kwargs["modelo_DeltaP"] == 8: #Boll (1973)
-#            pass
-#        elif self.kwargs["modelo_DeltaP"] == 9: #Behie & Beeckman (1973)
-#            pass
-
-        return DeltaP(deltaP)
-
-    def propTxt(self):
-        txt=os.linesep+"#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_TIPO[self.kwargs["tipo_calculo"]].split(":")[0])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Model"), self.TEXT_MODEL[self.kwargs["modelo_rendimiento"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Pressure Loss Model"), self.TEXT_MODEL_DELTAP[self.kwargs["modelo_DeltaP"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Diameter"), self.Dt.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Length"), self.Lt.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Johnstone method scrubber constant"), self.k.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Calvert method scrubber constant"), self.f.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Drops Diameter"), self.dd.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Cross Area"), self.At.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Throat Speed"), self.Vg.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Efficiency"), self.efficiencyCalc.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Pressure"), self.entradaGas.P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Pressure Loss"), self.deltaP.str)+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mass Flow"), self.entradaGas.solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Input Solid Mean Diameter"), self.entradaGas.solido.diametro_medio.str)+os.linesep
-        if len(self.entradaGas.solido.diametros)>=1:
-            txt+="%10s %10s %10s %10s %10s" %("Dp(µm)", "Xi", "ηi", "Xis", "Xig")+os.linesep
-            for i in range(len(self.efficiency_i)):
-                txt+="%10.1f %10.2f %10.3f %10.3f %10.3f" % (self.entradaGas.solido.diametros[i].config("ParticleDiameter"), self.entradaGas.solido.fracciones[i],  self.efficiency_i[i], self.salida[1].solido.fracciones[i], self.salida[0].solido.fracciones[i])+os.linesep
-
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), self.salida[0].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), self.salida[0].solido.diametro_medio.str)+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mass Flow"), self.salida[1].solido.caudal.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Solid Output Mean Diameter"), self.salida[1].solido.diametro_medio.str)+os.linesep
-
-        return txt
-
-
-    @classmethod
-    def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
-                (QApplication.translate("pychemqt", "Model"), ("TEXT_MODEL", "modelo_rendimiento"), str),
-                (QApplication.translate("pychemqt", "Pressure Loss Model"), ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-                (QApplication.translate("pychemqt", "Throat Diameter"), "Dt", Length),
-                (QApplication.translate("pychemqt", "Throat Length"), "Lt", Length),
-                (QApplication.translate("pychemqt", "Johnstone method scrubber constant"), "k", Dimensionless),
-                (QApplication.translate("pychemqt", "Calvert method scrubber constant"), "f", Dimensionless),
-                (QApplication.translate("pychemqt", "Drops Diameter"), "dd", Length),
-                (QApplication.translate("pychemqt", "Throat Cross Area"), "At", Area),
-                (QApplication.translate("pychemqt", "Throat Speed"), "Vg", Speed),
-                (QApplication.translate("pychemqt", "Efficiency"), "efficiencyCalc", Dimensionless),
-                (QApplication.translate("pychemqt", "Input Pressure"), "Pin", Pressure),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", Pressure),
-                (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP", DeltaP),
-                (QApplication.translate("pychemqt", "Input Solid Mass Flow"), "Min", MassFlow),
-                (QApplication.translate("pychemqt", "Input Solid Mean Diameter"), "Dmin", Length),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-                (QApplication.translate("pychemqt", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-                (QApplication.translate("pychemqt", "Solid Output Mass Flow"), "Ms", MassFlow),
-                (QApplication.translate("pychemqt", "Solid Output Mean Diameter"), "Dms", Length)]
-        return list
-
 
 
 if __name__ == '__main__':
 #    import doctest
 #    doctest.testmod()
 
-    from lib.corriente import Corriente, Solid
+    from lib.solids import Solid
     diametros=[17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    solido=Solid(caudalSolido=[1/3600.], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475], fraccionMolar=[1.], solido=solido)
-    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], fraccionMolar=[1.])
+    solido=Solid(T=300, caudalSolido=[1/3600.], distribucion_diametro=diametros, distribucion_fraccion=fracciones, solids=[638])
+    kw = {"fraccionMolar": [1.], "MEoS": True}
+    aire=Corriente(T=350, P=101325, caudalMasico=0.01, ids=[475], solido=solido, **kw)
+    agua=Corriente(T=300, P=101325, caudalMasico=0.1, ids=[62], **kw)
     secador=Scrubber(entradaGas=aire, entradaLiquido=agua, modelo_rendimiento=1, diametro=0.25, f=0.5)
-    print((secador.deltaP.bar, secador.efficiencyCalc))
+    print(secador.propTxt())
