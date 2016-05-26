@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,13 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # gravity chamber equipment dialog
 ###############################################################################
+
 
 from functools import partial
 
@@ -42,8 +42,7 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(GravityChamber, entrada=False,
-                                           parent=parent)
+        super().__init__(GravityChamber, entrada=False, parent=parent)
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
@@ -82,7 +81,8 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.L, 6, 2, 1, 1)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Allowable efficiency")), 7, 1, 1, 1)
-        self.rendimientoAdmisible = Entrada_con_unidades(float, spinbox=True, max=1)
+        self.rendimientoAdmisible = Entrada_con_unidades(
+            float, spinbox=True, max=1)
         self.rendimientoAdmisible.valueChanged.connect(
             partial(self.changeParams, "rendimientoAdmisible"))
         lyt_Calc.addWidget(self.rendimientoAdmisible, 7, 2, 1, 1)
@@ -99,8 +99,8 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.deltaP, 9, 2, 1, 1)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
         group_Calc = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Results"))
         lyt_Calc.addWidget(group_Calc, 11, 1, 1, 5)
@@ -135,11 +135,12 @@ class UI_equipment(UI_equip):
         self.LCalc.setReadOnly(True)
         lyt.addWidget(self.LCalc, 2, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
 
         # Output tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
+            QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
         self.addSalida(
             QtWidgets.QApplication.translate("pychemqt", "Collected solids"))
 
