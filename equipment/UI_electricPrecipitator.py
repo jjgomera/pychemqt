@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,13 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Electric precipitator equipment dialog
 ###############################################################################
+
 
 from functools import partial
 
@@ -42,8 +42,7 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(ElectricPrecipitator, entrada=False,
-                                           parent=parent)
+        super().__init__(ElectricPrecipitator, entrada=False, parent=parent)
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
@@ -76,7 +75,8 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Dielectric constant")), 6, 1)
         self.epsilon = Entrada_con_unidades(float)
-        self.epsilon.valueChanged.connect(partial(self.changeParams, "epsilon"))
+        self.epsilon.valueChanged.connect(
+            partial(self.changeParams, "epsilon"))
         lyt_Calc.addWidget(self.epsilon, 6, 2)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Charging field")), 7, 1)
@@ -96,8 +96,8 @@ class UI_equipment(UI_equip):
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
         lyt_Calc.addWidget(self.deltaP, 9, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
 
         groupbox = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Result"))
@@ -113,11 +113,12 @@ class UI_equipment(UI_equip):
         self.rendimiento = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimiento, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
 
         # Output tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
+            QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
         self.addSalida(
             QtWidgets.QApplication.translate("pychemqt", "Collected solids"))
 

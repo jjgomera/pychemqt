@@ -44,6 +44,7 @@ from UI.plots import Plot_Distribucion
 from UI.widgets import createAction, Table_Graphics, PathConfig
 from tools.UI_Preferences import ConfLine
 from equipment import *
+from equipment.parents import equipment
 
 
 # Value for mouse wheel zoom
@@ -407,14 +408,16 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             kwargs={"entrada": corriente}
             if isinstance(self.scene().project.getDownToStream(self.id), flux.Mixer):
                 kwargs["id_entrada"]=self.scene().project.streams[self.id][3]+1
-            self.scene().project.getDownToStream(self.id)(**kwargs)
-            pen=self.pen()
-            if corriente.status==1:
-                pen.setColor(QtGui.QColor("blue"))
-            else:
-                pen.setColor(QtGui.QColor("red"))
-            self.setPen(pen)
-            self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
+            equip = self.scene().project.getDownToStream(self.id)
+            if isinstance(equip, equipment):
+                equip(**kwargs)
+                pen=self.pen()
+                if corriente.status==1:
+                    pen.setColor(QtGui.QColor("blue"))
+                else:
+                    pen.setColor(QtGui.QColor("red"))
+                self.setPen(pen)
+                self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
 
     def mouseDoubleClickEvent(self, event=None):
         dialog = UI_corriente.Corriente_Dialog(self.corriente)

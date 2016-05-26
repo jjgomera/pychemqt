@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,13 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Baghouse equipment dialog
 ###############################################################################
+
 
 from functools import partial
 
@@ -43,12 +43,11 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Baghouse, entrada=False,
-                                           parent=parent)
+        super().__init__(Baghouse, entrada=False, parent=parent)
 
         # Efficiency tab
-        title = [QtWidgets.QApplication.translate("pychemqt", "Diameter")+", " +
-                 Length.text("ParticleDiameter"),
+        title = [QtWidgets.QApplication.translate("pychemqt", "Diameter") +
+                 ", " + Length.text("ParticleDiameter"),
                  QtWidgets.QApplication.translate("pychemqt", "Efficiency")]
         self.efic = Tabla(2, horizontalHeader=title, filas=1, stretch=False)
         self.efic.setColumnReadOnly(0, True)
@@ -73,7 +72,8 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "No cells")), 3, 1)
         self.num_filtros = Entrada_con_unidades(
-            int, spinbox=True, step=1, min=1, width=50, resaltado=True, start=1)
+            int, spinbox=True, step=1, min=1, width=50, resaltado=True,
+            start=1)
         self.num_filtros.valueChanged.connect(
             partial(self.changeParams, "num_filtros"))
         lyt_Calc.addWidget(self.num_filtros, 3, 2)
@@ -129,11 +129,11 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "limpieza"))
         lyt_Calc.addWidget(self.limpieza, 9, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
 
-        groupbox = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt",
-                                                                "Results"))
+        groupbox = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "Results"))
         lyt_Calc.addWidget(groupbox, 11, 1, 1, 5)
         lyt = QtWidgets.QGridLayout(groupbox)
 
@@ -163,11 +163,12 @@ class UI_equipment(UI_equip):
         self.floorArea = Entrada_con_unidades(Area, readOnly=True)
         lyt.addWidget(self.floorArea, 3, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
 
         # Output tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
+        self.addSalida(
+            QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
         self.addSalida(
             QtWidgets.QApplication.translate("pychemqt", "Collected solids"))
 

@@ -52,8 +52,22 @@ class Separador_SolidGas(equipment):
             rendimiento_global += rendimientos[i]*fraccion
         return Dimensionless(rendimiento_global)
 
-    def CalcularSalidas(self):
-        entrada = self.kwargs["entrada"]
+    def CalcularSalidas(self, entrada=None):
+        if entrada is None:
+            entrada = self.kwargs["entrada"]
+
+        self._Salidas(entrada)
+
+        self.Pin = entrada.P
+        self.Pout = self.salida[0].P
+        self.Min = entrada.solido.caudal
+        self.Dmin = entrada.solido.diametro_medio
+        self.Mr = self.salida[0].solido.caudal
+        self.Dmr = self.salida[0].solido.diametro_medio
+        self.Ms = self.salida[1].solido.caudal
+        self.Dms = self.salida[1].solido.diametro_medio
+
+    def _Salidas(self, entrada):
         unfiltered, filtered = entrada.solido.Separar(self.rendimiento_parcial)
         Pout = entrada.P-self.deltaP
         self.salida = []
@@ -65,18 +79,10 @@ class Separador_SolidGas(equipment):
             self.salida.append(
                 Corriente(P=Pout, T=entrada.T, solido=filtered))
 
-        self.Pin = entrada.P
-        self.Pout = self.salida[0].P
-        self.Min = entrada.solido.caudal
-        self.Dmin = entrada.solido.diametro_medio
-        self.Mr = self.salida[0].solido.caudal
-        self.Dmr = self.salida[0].solido.diametro_medio
-        self.Ms = self.salida[1].solido.caudal
-        self.Dms = self.salida[1].solido.diametro_medio
-
-    def propTxt(self, i):
+    def propTxt(self, i, entrada=None):
         """i: index of common properties in equipment subclas list"""
-        entrada = self.kwargs["entrada"]
+        if entrada is None:
+            entrada = self.kwargs["entrada"]
 
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Separation efficiency")
@@ -441,7 +447,7 @@ class Ciclon(Separador_SolidGas):
                    "velocidadAdmisible", "DeltaPAdmisible")
     kwargsList = ("tipo_calculo", "modelo_rendimiento", "modelo_DeltaP",
                   "modelo_ciclon", "tipo_costo")
-    calculateValue = ("deltaP", "V", "rendimientoCalc", "NCalc", "Dcc", "Hc",
+    calculateValue = ("deltaP", "V", "rendimiento", "NCalc", "Dcc", "Hc",
                       "Bc", "Jc", "Lc", "Zc", "De", "Sc")
     calculateCostos = ("C_adq", "C_inst", "num_ciclonesCoste", "Q")
     indiceCostos = 2
@@ -618,7 +624,6 @@ class Ciclon(Separador_SolidGas):
         self.num_ciclonesCoste = self.num_ciclones
         self.NCalc = self.num_ciclones
         self.Q = entrada.Q
-        self.rendimientoCalc = self.rendimiento
         self.Dcc = self.Dc
         self.CalcularSalidas()
 
@@ -761,22 +766,22 @@ class Ciclon(Separador_SolidGas):
         txt = os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(7))
-        txt += self.propertiesToText(range(16, 19))
+        txt += self.propertiesToText(range(8))
+        txt += self.propertiesToText(range(17, 20))
 
         txt += os.linesep + "#---------------"
         txt += QApplication.translate("pychemqt", "Cyclone Dimensions")
         txt += "-----------------#" + os.linesep
-        txt += self.propertiesToText(range(7, 16))
+        txt += self.propertiesToText(range(8, 17))
 
-        txt += Separador_SolidGas.propTxt(self, 19)
+        txt += Separador_SolidGas.propTxt(self, 20)
 
         if self.statusCoste:
             txt += os.linesep + "#---------------"
             txt += QApplication.translate(
                 "pychemqt", "Preliminary Cost Estimation")
             txt += "-----------------#"+os.linesep
-            txt += self.propertiesToText(range(26, 32))
+            txt += self.propertiesToText(range(27, 33))
 
         return txt
 
@@ -795,6 +800,8 @@ class Ciclon(Separador_SolidGas):
              (QApplication.translate("pychemqt", "Gas Internal Cycles"), "N",
               Dimensionless),
              (QApplication.translate("pychemqt", "Gas Speed"), "V", Speed),
+             (QApplication.translate("pychemqt", "Gas Volumetric Flow"), "Q",
+              VolFlow),
              (QApplication.translate("pychemqt", "Cyclone number"),
               "num_ciclones", int),
              (QApplication.translate("pychemqt", "Ciclon Diameter"), "Dc",
@@ -826,7 +833,7 @@ class Ciclon(Separador_SolidGas):
               Currency)]
 
         for prop in Separador_SolidGas.propertiesEquipment()[-1::-1]:
-            l.insert(16, prop)
+            l.insert(17, prop)
 
         return l
 
@@ -836,6 +843,7 @@ class Ciclon(Separador_SolidGas):
         state["N"] = self.N
         state["V"] = self.V
         state["num_ciclones"] = self.num_ciclones
+        state["Q"] = self.Q
         state["Dc"] = self.Dc
         state["Hc"] = self.Hc
         state["Bc"] = self.Bc
@@ -856,7 +864,11 @@ class Ciclon(Separador_SolidGas):
         self.N = Dimensionless(state["N"])
         self.V = Speed(state["V"])
         self.num_ciclones = state["num_ciclones"]
+        self.num_ciclonesCoste = self.num_ciclones
+        self.NCalc = self.num_ciclones
+        self.Q = VolFlow(state["Q"])
         self.Dc = Length(state["Dc"])
+        self.Dcc = self.Dc
         self.Hc = Length(state["Hc"])
         self.Bc = Length(state["Bc"])
         self.Jc = Length(state["Jc"])

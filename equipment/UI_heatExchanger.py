@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # Generic heat exchanger equipment dialog
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtWidgets
@@ -41,8 +42,8 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Heat_Exchanger, entrada=False,
-                                           salida=False, parent=parent)
+        super().__init__(Heat_Exchanger, entrada=False, salida=False,
+                         parent=parent)
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)

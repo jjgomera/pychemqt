@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,17 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Pump equipment dialog
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtWidgets
-
 
 from lib.unidades import Pressure, Length, Power, VolFlow, Currency
 from tools.costIndex import CostData
@@ -43,14 +43,13 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Pump, entrada=False, salida=False,
-                                           parent=parent)
+        super().__init__(Pump, entrada=False, salida=False, parent=parent)
         self.curva = [0, 0, []]
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Output Pressure")), 1, 1)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Output Pressure")), 1, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.cambiar_data, "Pout"))
         lyt.addWidget(self.Pout, 1, 2)
@@ -79,8 +78,8 @@ class UI_equipment(UI_equip):
             partial(self.cambiar_data, "rendimiento"))
         lyt.addWidget(self.rendimiento, 7, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
 
         self.groupBox_Curva = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Pump curve"))
@@ -108,8 +107,8 @@ case it override flow of input stream"))
         layout.addWidget(self.incognita, 2, 2)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Diameter")), 3, 1)
-        self.diametro = Entrada_con_unidades(float, spinbox=True, step=0.1,
-                                             suffix='"')
+        self.diametro = Entrada_con_unidades(
+            float, spinbox=True, step=0.1, suffix='"')
         self.diametro.valueChanged.connect(
             partial(self.cambiar_data, "diametro"))
         layout.addWidget(self.diametro, 3, 2)
@@ -127,8 +126,8 @@ case it override flow of input stream"))
             QtWidgets.QApplication.translate("pychemqt", "Power")), 0, 0)
         self.power = Entrada_con_unidades(Power, retornar=False, readOnly=True)
         layout.addWidget(self.power, 0, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Output Pressure")), 0, 4)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Output Pressure")), 0, 4)
         self.PoutCalculada = Entrada_con_unidades(Pressure, retornar=False)
         self.PoutCalculada.setReadOnly(True)
         layout.addWidget(self.PoutCalculada, 0, 5)
@@ -148,22 +147,22 @@ case it override flow of input stream"))
         self.rendimientoCalculado.setReadOnly(True)
         layout.addWidget(self.rendimientoCalculado, 2, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum),
-            0, 3)
+            40, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum), 0, 3)
         lyt.addWidget(group, 9, 1, 1, 6)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
 
         # Design tab
-#        self.tabDiseno = QtWidgets.QWidget()
-#        lyt = QtWidgets.QGridLayout(self.tabDiseno)
-#        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-#            "pychemqt",
-#            "Not implemented\n\nRef: Gülich - Centrifugal Pumps", None)), 0, 0)
-#        self.tabWidget.insertTab(
-#            2, self.tabDiseno,
-#            QtWidgets.QApplication.translate("pychemqt", "Design"))
+        # self.tabDiseno = QtWidgets.QWidget()
+        # lyt = QtWidgets.QGridLayout(self.tabDiseno)
+        # lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        #     "pychemqt",
+        #     "Not implemented\n\nRef: Gülich - Centrifugal Pumps")), 0, 0)
+        # self.tabWidget.insertTab(
+        #     2, self.tabDiseno,
+        #     QtWidgets.QApplication.translate("pychemqt", "Design"))
 
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
@@ -175,8 +174,8 @@ case it override flow of input stream"))
         self.tipo_bomba.currentIndexChanged.connect(
             self.bomba_currentIndexChanged)
         lyt.addWidget(self.tipo_bomba, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Centrifuge type")), 2, 1)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Centrifuge type")), 2, 1)
         self.tipo_centrifuga = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_CENTRIFUGA:
             self.tipo_centrifuga.addItem(txt)
@@ -213,8 +212,8 @@ case it override flow of input stream"))
         lyt.addWidget(self.Costos, 6, 1, 2, 4)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            7, 1, 1, 4)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 7, 1, 1, 4)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated costs"))
         lyt.addWidget(group, 8, 1, 1, 4)
@@ -229,19 +228,19 @@ case it override flow of input stream"))
         self.C_motor = Entrada_con_unidades(Currency, retornar=False)
         self.C_bomba.setReadOnly(True)
         layout.addWidget(self.C_motor, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Purchase cost")), 0, 4)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Purchase cost")), 0, 4)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 0, 5)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Installed cost")), 1, 4)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Installed cost")), 1, 4)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 1, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            9, 1, 1, 4)
+            20, 20, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 9, 1, 1, 4)
 
         if equipment:
             self.setEquipment(equipment)

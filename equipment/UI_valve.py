@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Valve equipment definition
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtWidgets
-
 
 from lib.unidades import Temperature, Pressure
 from equipment.parents import UI_equip
@@ -42,8 +41,7 @@ class UI_equipment (UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Valve, entrada=False,
-                                           salida=False, parent=parent)
+        super().__init__(Valve, entrada=False, salida=False, parent=parent)
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
@@ -78,8 +76,8 @@ class UI_equipment (UI_equip):
         self.Bubble.valueChanged.connect(partial(self.changeParams, "Bubble"))
         lyt_Calc.addWidget(self.Bubble, 6, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
 
         self.criterio_Changed(0)
         if equipment:

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,13 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Spreadsheet interaction equipment dialog
 ###############################################################################
+
 
 import os
 
@@ -29,7 +29,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 try:
     import ezodf
-    import openpyxl
 except:
     pass
 
@@ -93,24 +92,26 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(
-            Spreadsheet, entrada=True, salida=True, calculo=False, parent=parent)
+        super().__init__(Spreadsheet, entrada=True, salida=True,
+                         calculo=False, parent=parent)
         self.project = project
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.Entrada)
-        label = QtWidgets.QApplication.translate("pychemqt", "Spreadsheet path")+":"
-        msg = QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
+        label = QtWidgets.QApplication.translate(
+            "pychemqt", "Spreadsheet path")+":"
+        msg = QtWidgets.QApplication.translate(
+            "pychemqt", "Select Spreadsheet")
         patrones = []
         if os.environ["ezodf"]:
             patrones.append(QtWidgets.QApplication.translate(
-                "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
+                "pychemqt", "Libreoffice spreadsheet files")+" (*.ods)")
         if os.environ["xlwt"]:
             patrones.append(QtWidgets.QApplication.translate(
-                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML") + " (*.xls)")
+                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML")+" (*.xls)")
         if os.environ["openpyxl"]:
             patrones.append(QtWidgets.QApplication.translate(
-                "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
+                "pychemqt", "Microsoft Excel 2007/2010 XML")+" (*.xlsx)")
         patron = ";;".join(patrones)
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
@@ -129,8 +130,8 @@ class UI_equipment(UI_equip):
         self.datamap.rowFinished.connect(self.addRow)
         layout.addWidget(self.datamap, 2, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            10, 1)
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1)
 
         entitys = []
         for stream in list(self.project.streams.keys()):
@@ -172,20 +173,21 @@ class UI_equipment(UI_equip):
                     0, self.entitys)
                 self.datamap.itemDelegateForRow(i).setItemsByIndex(
                     3, self.Equipment.sheets)
-                self.datamap.setItem(i, 0,
-                                     QtWidgets.QTableWidgetItem(data["entity"]))
-                self.datamap.setItem(i, 1,
-                                     QtWidgets.QTableWidgetItem(data["property"]))
-                self.datamap.setItem(i, 2,
-                                     QtWidgets.QTableWidgetItem(data["unit"]))
-                self.datamap.setItem(i, 3,
-                                     QtWidgets.QTableWidgetItem(data["sheet"]))
-                self.datamap.setItem(i, 4,
-                                     QtWidgets.QTableWidgetItem(data["cell"]))
+                self.datamap.setItem(
+                    i, 0, QtWidgets.QTableWidgetItem(data["entity"]))
+                self.datamap.setItem(
+                    i, 1, QtWidgets.QTableWidgetItem(data["property"]))
+                self.datamap.setItem(
+                    i, 2, QtWidgets.QTableWidgetItem(data["unit"]))
+                self.datamap.setItem(
+                    i, 3, QtWidgets.QTableWidgetItem(data["sheet"]))
+                self.datamap.setItem(
+                    i, 4, QtWidgets.QTableWidgetItem(data["cell"]))
             self.datamap.itemDelegateForRow(
                 self.datamap.rowCount()-1).setItemsByIndex(0, self.entitys)
             self.datamap.itemDelegateForRow(
-                self.datamap.rowCount()-1).setItemsByIndex(3, self.Equipment.sheets)
+                self.datamap.rowCount()-1).setItemsByIndex(
+                    3, self.Equipment.sheets)
         self.datamap.blockSignals(False)
         self.blockSignals(False)
 

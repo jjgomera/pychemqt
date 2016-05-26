@@ -46,6 +46,7 @@ class Solid(Entity):
             diametroMedio
             fraccionMasica
             diametros
+            T
 
             solidos: To override the config value
         """
@@ -55,6 +56,7 @@ class Solid(Entity):
               "distribucion_diametro": [],
 
               "solids": None}
+
     status = 0
     msg = QApplication.translate("pychemqt", "undefined")
 
@@ -116,6 +118,7 @@ class Solid(Entity):
             del self.fracciones_acumuladas[0]
         self.diametro_medio = Length(diametro_medio,
                                      magnitud="ParticleDiameter")
+        self.RhoS(self.kwargs.get("T", 300))
 
     def RhoS(self, T):
         densidad = 0
