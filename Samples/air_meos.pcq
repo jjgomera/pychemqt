@@ -28,6 +28,7 @@
                 "up_type": "i",
                 "down_type": "o",
                 "label_y": 144.0,
+                "label_visible": 0,
                 "output_x": 564.0,
                 "output_angle": 0,
                 "up_id": 1,

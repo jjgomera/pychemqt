@@ -63,6 +63,7 @@
                 "x": 302.0,
                 "dialogo_id": 16,
                 "label_y": -20.0,
+                "label_visible": 0,
                 "y": 164.0
             }
         },
@@ -106,6 +107,7 @@
                 "output_angle": 0,
                 "up_id": 1,
                 "label_y": 207.0,
+                "label_visible": 0,
                 "input_x": 200.0,
                 "input_angle": 0,
                 "output_x": 302.0,
@@ -130,6 +132,7 @@
                 "output_angle": 0,
                 "up_id": 1,
                 "label_y": 167.0,
+                "label_visible": 0,
                 "input_x": 342.0,
                 "input_angle": 0,
                 "output_x": 512.0,
@@ -154,6 +157,7 @@
                 "output_angle": 0,
                 "up_id": 1,
                 "label_y": 235.5,
+                "label_visible": 0,
                 "input_x": 322.0,
                 "input_angle": 90,
                 "output_x": 469.0,

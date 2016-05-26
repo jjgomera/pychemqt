@@ -1212,7 +1212,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             pos = QtCore.QPointF(x, y)
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
-            s.idLabel.show()
+            visible = obj["label_visible"]
+            s.idLabel.setVisible(visible)
 
         angle_in = {}
         for id, obj in data["PFD"]["in"].items():
@@ -1273,6 +1274,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             pos = QtCore.QPointF(x, y)
             s.idLabel.setPos(pos)
             s.idLabel.setHtml(txt)
+            visible = obj["label_visible"]
+            s.idLabel.setVisible(visible)
 
         for id in id_stream:
             tipo, i = up_stream[id]
@@ -1363,6 +1366,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream["label"] = obj.idLabel.toHtml()
             stream["label_x"] = obj.idLabel.pos().x()
             stream["label_y"] = obj.idLabel.pos().y()
+            stream["label_visible"] = int(obj.idLabel.isVisible())
             streams[id] = stream
         data["stream"] = streams
 
@@ -1415,6 +1419,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             equip["label"] = obj.idLabel.toHtml()
             equip["label_x"] = obj.idLabel.pos().x()
             equip["label_y"] = obj.idLabel.pos().y()
+            equip["label_visible"] = int(obj.idLabel.isVisible())
             equipments[id] = equip
         data["equip"] = equipments
 

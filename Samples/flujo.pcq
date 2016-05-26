@@ -976,6 +976,7 @@
                     "width": 1.0
                 },
                 "label_y": 166.0,
+                "label_visible": 0,
                 "down_id": 1,
                 "input_angle": 0,
                 "down_type": "e",
@@ -1000,6 +1001,7 @@
                     "width": 1.0
                 },
                 "label_y": 143.5,
+                "label_visible": 0,
                 "down_id": 3,
                 "input_angle": 0,
                 "down_type": "e",
@@ -1024,6 +1026,7 @@
                     "width": 1.0
                 },
                 "label_y": 203.5,
+                "label_visible": 0,
                 "down_id": 2,
                 "input_angle": 0,
                 "down_type": "e",
@@ -1048,6 +1051,7 @@
                     "width": 1.0
                 },
                 "label_y": 203.5,
+                "label_visible": 0,
                 "down_id": 3,
                 "input_angle": 0,
                 "down_type": "e",
@@ -1072,6 +1076,7 @@
                     "width": 1.0
                 },
                 "label_y": 166.0,
+                "label_visible": 0,
                 "down_id": 1,
                 "input_angle": 0,
                 "down_type": "o",
@@ -1119,6 +1124,7 @@
                     3
                 ],
                 "label_y": -20.0,
+                "label_visible": 0,
                 "name": "divider",
                 "label_x": 6.666666666666667
             },
@@ -1135,6 +1141,7 @@
                     4
                 ],
                 "label_y": 20.0,
+                "label_visible": 0,
                 "name": "valve",
                 "label_x": 8.333333333333334
             },
@@ -1152,6 +1159,7 @@
                     5
                 ],
                 "label_y": -20.0,
+                "label_visible": 0,
                 "name": "mixer",
                 "label_x": 6.666666666666667
             }
