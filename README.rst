@@ -19,6 +19,7 @@ Optional applications that are required for pychemqt to work with full functiona
 * `openpyxl <https://bitbucket.org/ericgazoni/openpyxl>`__: package for integration with Microsoft Excel 2007/2010 (xlsx)
 * `xlwt <https://pypi.python.org/pypi/xlwt>`__: package for integration with Microsoft Excel 97/2000/XP/2003 (xls)
 * `reportlab <https://bitbucket.org/rptlab/reportlab>`__: package to export pdf reports
+* `PyQt5-Qscintilla <https://riverbankcomputing.com/software/qscintilla/intro>`__: Custom code viewer and editor with syntax highlight
 
 
 Features
