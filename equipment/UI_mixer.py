@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Mixer equipment dialog
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtWidgets
-
 
 from lib.unidades import Pressure
 from equipment.parents import UI_equip
@@ -44,7 +43,7 @@ class UI_equipment(UI_equip):
         equipment: Initial equipment instance to model
         entradas: Stream Input number to equipment
         """
-        super(UI_equipment, self).__init__(Mixer, salida=False, parent=parent)
+        super().__init__(Mixer, salida=False, parent=parent)
 
         # Input tab
         for i in range(entradas):
@@ -71,8 +70,8 @@ class UI_equipment(UI_equip):
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 3, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            4, 1, 1, 3)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
 
         self.criterio_Changed(0)
 
@@ -99,10 +98,12 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-    agua = Corriente(T=300, P=101325., caudalMasico=1, ids=[62], fraccionMasica=[1.])
-    agua2 = Corriente(T=300, P=101325.*2, caudalMasico=2, ids=[62], fraccionMasica=[1.])
+    agua = Corriente(T=300, P=101325., caudalMasico=1, ids=[62],
+                     fraccionMasica=[1.])
+    agua2 = Corriente(T=300, P=101325.*2, caudalMasico=2, ids=[62],
+                      fraccionMasica=[1.])
 #    mezclador = Mixer(entrada=[agua, agua2], criterio=0)
-    mezclador=Mixer(criterio=0)
+    mezclador = Mixer(criterio=0)
     dialogo = UI_equipment(mezclador, entradas=2)
     dialogo.show()
     sys.exit(app.exec_())

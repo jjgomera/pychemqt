@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Divider equipment dialog
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtCore, QtWidgets
-
 
 from lib.unidades import Pressure, MassFlow
 from equipment.parents import UI_equip
@@ -45,7 +44,7 @@ class UI_equipment(UI_equip):
         equipment: Initial equipment instance to model
         salidas: Stream Output number to equipment
         """
-        super(UI_equipment, self).__init__(Divider, entrada=False, parent=parent)
+        super().__init__(Divider, entrada=False, parent=parent)
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
@@ -76,16 +75,16 @@ class UI_equipment(UI_equip):
 
         self.fracciones.setRowCount(salidas)
         for i in range(salidas):
-            item = QtWidgets.QTableWidgetItem("%i" % i)
-            item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-            self.fracciones.setItem(0, i, item)
+            itm = QtWidgets.QTableWidgetItem("%i" % i)
+            itm.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            self.fracciones.setItem(0, i, itm)
             self.fracciones.setRowHeight(i, 20)
             widget = UI_corriente.Ui_corriente(readOnly=True)
             self.Salida.addTab(widget, str(i+1))
 
         self.criterio_Changed(0)
-        self.fracciones.editingFinished.connect(partial(self.changeParams,
-                                                        "split"))
+        self.fracciones.editingFinished.connect(
+            partial(self.changeParams, "split"))
         self.setEquipment(equipment)
 
     def criterio_Changed(self, int):
@@ -130,7 +129,8 @@ if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente
     app = QtWidgets.QApplication(sys.argv)
-    agua = Corriente(T=300, P=101325, caudalMasico=1, ids=[62], fraccionMolar=[0.1])
+    agua = Corriente(T=300, P=101325, caudalMasico=1, ids=[62],
+                     fraccionMolar=[0.1])
     divisor = Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
     dialogo = UI_equipment(divisor)
     dialogo.show()
