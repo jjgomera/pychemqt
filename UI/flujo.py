@@ -253,8 +253,8 @@ class TextItem(QtWidgets.QGraphicsTextItem):
     def __init__(self, text, parent=None, position=QtCore.QPointF(0, 0), transform=QtGui.QTransform(), selectable=True):
         super(TextItem, self).__init__(parent=parent)
         if selectable:
-            self.setFlags(
-                QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsMovable | QtWidgets.QGraphicsItem.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.ItemIsFocusable)
+            self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsMovable |
+                          QtWidgets.QGraphicsItem.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.ItemIsFocusable)
         else:
             self.setFlags(QtWidgets.QGraphicsItem.ItemIsMovable)
         self.setHtml(text)
@@ -314,8 +314,8 @@ class GraphicsEntity(object):
 
     def view(self):
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as temp:
-            temp.write(QtWidgets.QApplication.translate("pychemqt",
-                                                        "Project Name") + ": " + self.scene().parent().currentFilename + os.linesep)
+            temp.write(QtWidgets.QApplication.translate("pychemqt", "Project Name") + ": " +
+                       self.scene().parent().currentFilename + os.linesep)
             if isinstance(self.entity, Corriente):
                 temp.write(QtWidgets.QApplication.translate("pychemqt", "Stream Id"))
             else:
@@ -347,8 +347,7 @@ class GraphicsEntity(object):
 
             if ruta[-3:] == "ods":
                 import ezodf
-                templatefile = os.environ[
-                                   "pychemqt"] + os.sep + "dat" + os.sep + "templates" + os.sep + self.entity.__class__.__name__.lower() + ".ots"
+                templatefile = os.environ["pychemqt"] + os.sep + "dat" + os.sep + "templates" + os.sep + self.entity.__class__.__name__.lower() + ".ots"
                 if os.path.isfile(templatefile):
                     spreadsheet = ezodf.newdoc("ods", ruta, templatefile)
                     sheet = spreadsheet.sheets[0]
@@ -648,7 +647,8 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         if input:
             for entrada in input:
                 obj = QtWidgets.QGraphicsEllipseItem(self)
-                obj.setRect(entrada[0] * self.boundingRect().width() - 5, entrada[1] * self.boundingRect().height() - 5,
+                obj.setRect(entrada[0] * self.boundingRect().width() - 5,
+                            entrada[1] * self.boundingRect().height() - 5,
                             10, 10)
                 obj.direction = int(entrada[2])
                 obj.setPen(QtGui.QColor(255, 255, 255))
@@ -658,7 +658,8 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         if output:
             for salida in output:
                 obj = QtWidgets.QGraphicsEllipseItem(self)
-                obj.setRect(salida[0] * self.boundingRect().width() - 5, salida[1] * self.boundingRect().height() - 5,
+                obj.setRect(salida[0] * self.boundingRect().width() - 5,
+                            salida[1] * self.boundingRect().height() - 5,
                             10, 10)
                 obj.direction = int(salida[2])
                 obj.setPen(QtGui.QColor(255, 255, 255))
@@ -796,7 +797,8 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
     def contextMenu(self):
         if self.dialogoId != None:
-            ViewAction = createAction(QtWidgets.QApplication.translate("pychemqt", "View Properties"), slot=self.view,
+            ViewAction = createAction(QtWidgets.QApplication.translate("pychemqt", "View Properties"),
+                                      slot=self.view,
                                       parent=self.scene())
             ViewAction.setEnabled(self.equipment.status)
 
