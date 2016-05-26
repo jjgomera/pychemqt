@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
 # Fireheater equipment dialog
 ###############################################################################
 
+
 from functools import partial
 
 from PyQt5 import QtWidgets
-
 
 from lib.unidades import Temperature, Pressure, Power, VolFlow, Currency
 from tools.costIndex import CostData
@@ -43,8 +42,8 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Fired_Heater, entrada=False,
-                                           salida=False, parent=parent)
+        super().__init__(Fired_Heater, entrada=False, salida=False,
+                         parent=parent)
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.tabCalculo)
@@ -79,8 +78,8 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "eficiencia"))
         layout.addWidget(self.eficiencia, 6, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            7, 0, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 7, 0, 1, 6)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -96,8 +95,8 @@ class UI_equipment(UI_equip):
             VolFlow, "QLiq", retornar=False, readOnly=True)
         lyt.addWidget(self.CombustibleRequerido, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            9, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 9, 0, 1, 6)
 
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
@@ -130,39 +129,40 @@ class UI_equipment(UI_equip):
         self.material.currentIndexChanged.connect(
             partial(self.changeParamsCoste, "material"))
         lyt_Cost.addWidget(self.material, 3, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Design pressure")), 4, 1)
+        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Design pressure")), 4, 1)
         self.P_dis = Entrada_con_unidades(Pressure)
-        self.P_dis.valueChanged.connect(partial(self.changeParamsCoste, "P_dis"))
+        self.P_dis.valueChanged.connect(
+            partial(self.changeParamsCoste, "P_dis"))
         lyt_Cost.addWidget(self.P_dis, 4, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            5, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 1, 1, 6)
 
         self.Costos = CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.changeParamsCoste)
         lyt_Cost.addWidget(self.Costos, 6, 1, 2, 5)
 
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
-            8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 9, 1, 1, 6)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Purchase costs")), 0, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Purchase costs")), 0, 1)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Installed costs")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Installed costs")), 1, 1)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 1, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 10, 1, 1, 6)
 
         self.mostrarSubclasificacion(0)
         if equipment:
@@ -170,10 +170,11 @@ class UI_equipment(UI_equip):
 
     def mostrarSubclasificacion(self, ind):
         if ind:
-            txt = QtWidgets.QApplication.translate("pychemqt",
-                                               "Cylindrical heater type")
+            txt = QtWidgets.QApplication.translate(
+                "pychemqt", "Cylindrical heater type")
         else:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Box heater type")
+            txt = QtWidgets.QApplication.translate(
+                "pychemqt", "Box heater type")
         self.label.setText(txt)
         self.subtipoBox.setVisible(not ind)
         self.subtipoCylindrical.setVisible(ind)
