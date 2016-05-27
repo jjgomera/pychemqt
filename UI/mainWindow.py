@@ -50,7 +50,7 @@ other_window_names = [cl.__name__ for cl in other_window]
 
 
 class TabWidget(QtWidgets.QTabWidget):
-    """Customize a empty tabwidget to show a welcome and information message"""
+    """Customize an empty tabwidget to show a welcome and information message"""
     def paintEvent(self, event):
         if self.count():
             QtWidgets.QTabWidget.paintEvent(self, event)
@@ -62,14 +62,14 @@ class TabWidget(QtWidgets.QTabWidget):
             painter.drawImage(rectImage, image)
             txt = QtWidgets.QApplication.translate(
                 "pychemqt", """Welcome to pychemqt,
-a software for simulate units operations in Chemical Engineering,
+a software for simulating Chemical Engineering units operations,
 
 Copyright © 2012 Juan José Gómez Romera (jjgomera)
 Licenced with GPL.v3
 This software is distributed in the hope that it will be useful,
 but without any warranty, it is provided "as is" without warranty of any kind
 
-To use you can start creating a new project or open an existing project.""",
+You can start by creating a new project or opening an existing project.""",
                 None)
             rect.setLeft(150)
             painter.drawText(rect, QtCore.Qt.AlignVCenter, txt)
