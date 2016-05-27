@@ -3343,7 +3343,7 @@ class IAPWS97(Thermo):
         fase._bool = True
         fase.M = unidades.Dimensionless(M)
         fase.v = unidades.SpecificVolume(estado["v"])
-        fase.rho = unidades.Density(1/fase.v)
+        fase.rho = unidades.Density(1./fase.v)
 
         fase.h = unidades.Enthalpy(estado["h"], "kJkg")
         fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
@@ -3381,6 +3381,7 @@ class IAPWS97(Thermo):
 
         cp0 = prop0(self.T, self.P.MPa)
         fase.v0 = unidades.SpecificVolume(cp0.v)
+        fase.rho0 = unidades.Density(1./cp0.v)
         fase.h0 = unidades.Enthalpy(cp0.h)
         fase.u0 = unidades.Enthalpy(fase.h0-self.P*fase.v0)
         fase.s0 = unidades.SpecificHeat(cp0.s)
