@@ -521,7 +521,7 @@ class Corriente(config.Entity):
             self.rho = compuesto.rho
             self.Q = unidades.VolFlow(compuesto.v*self.caudalmasico)
 
-            if self._thermo == "meos":
+            if self._thermo != "eos":
                 self.Tr = compuesto.Tr
                 self.Pr = compuesto.Pr
                 self.v0 = compuesto.v0
@@ -535,6 +535,8 @@ class Corriente(config.Entity):
                 self.cv0 = compuesto.cv0
                 self.cp0_cv = compuesto.cp0_cv
                 self.gamma0 = compuesto.gamma0
+
+            if self._thermo == "meos":
                 self.virialB = compuesto.virialB
                 self.virialC = compuesto.virialC
                 self.invT = compuesto.invT
