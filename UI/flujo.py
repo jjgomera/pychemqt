@@ -1097,7 +1097,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         elif self.addType == "out":
             self.project.addItem("o%i" % self.object.id, self.object.dialogo.corriente)
         elif self.addType == "stream":
-            self.project.addStream(self.object.id, "%s%i" % self.up.tipo, self.up.id,
+            self.project.addStream(self.object.id, "%s%i" % (self.up.tipo, self.up.id),
                                    "%s%i" % (self.down.tipo, self.down.id), Corriente(),
                                    self.up.down_used - 1, self.down.up_used - 1)
 
