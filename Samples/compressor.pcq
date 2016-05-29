@@ -720,6 +720,7 @@
                     2
                 ],
                 "label_y": -20.0,
+                "label_visible": 0,
                 "x": 320.0,
                 "angle": 0,
                 "label_x": 16.666666666666668,
@@ -736,6 +737,7 @@
                     4
                 ],
                 "label_y": -20.0,
+                "label_visible": 0,
                 "x": 333.0,
                 "angle": 0,
                 "label_x": 16.666666666666668,
@@ -765,6 +767,7 @@
                 "up_id": 1,
                 "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S1</p></body></html>",
                 "label_y": 162.0,
+                "label_visible": 0,
                 "output_y": 162.0,
                 "label_x": 247.0,
                 "input_y": 162.0
@@ -789,6 +792,7 @@
                 "up_id": 1,
                 "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S2</p></body></html>",
                 "label_y": 162.0,
+                "label_visible": 0,
                 "output_y": 162.0,
                 "label_x": 432.0,
                 "input_y": 162.0
@@ -813,6 +817,7 @@
                 "up_id": 2,
                 "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S3</p></body></html>",
                 "label_y": 339.0,
+                "label_visible": 0,
                 "output_y": 339.0,
                 "label_x": 263.5,
                 "input_y": 339.0
@@ -837,6 +842,7 @@
                 "up_id": 2,
                 "label": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">S4</p></body></html>",
                 "label_y": 339.0,
+                "label_visible": 0,
                 "output_y": 339.0,
                 "label_x": 462.5,
                 "input_y": 339.0

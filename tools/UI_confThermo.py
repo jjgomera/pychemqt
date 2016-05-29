@@ -151,6 +151,22 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             except ValueError:
                 pass
 
+    @property
+    def kwargs(self):
+        kw = {}
+        kw["K"] = self.K.currentText().split(" (")[0]
+        kw["alfa"] = self.alfa.currentText()
+        kw["mix"] = self.mixing_rule.currentText()
+        kw["H"] = self.H.currentText().split(" (")[0]
+        kw["Cp_ideal"] = self.Cp_ideal.currentIndex()
+        kw["MEoS"] = self.MEoS.isChecked()
+        kw["iapws"] = self.iapws.isChecked()
+        kw["GERG"] = self.GERG.isChecked()
+        kw["freesteam"] = self.freesteam.isChecked()
+        kw["coolProp"] = self.coolProp.isChecked()
+        kw["refprop"] = self.refprop.isChecked()
+        return kw
+
     def value(self, config):
         """Function result for wizard"""
         if not config.has_section("Thermo"):

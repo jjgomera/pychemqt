@@ -503,6 +503,7 @@
                 "input_angle": 0,
                 "input_y": 342.0,
                 "label_y": 342.0,
+                "label_visible": 0,
                 "output_y": 342.0,
                 "output_x": 315.0,
                 "up_id": 1,
@@ -527,6 +528,7 @@
                 "input_angle": 0,
                 "input_y": 302.0,
                 "label_y": 302.0,
+                "label_visible": 0,
                 "output_y": 302.0,
                 "output_x": 535.0,
                 "up_id": 1,
@@ -563,6 +565,7 @@
                     2
                 ],
                 "label_x": 16.666666666666668,
+                "label_visible": 0,
                 "label_y": -20.0
             },
             "2": {
@@ -575,6 +578,7 @@
                 "angle": 0,
                 "down_id": [],
                 "label_x": 17.666666666666668,
+                "label_visible": 0,
                 "label_y": -20.0
             }
         },

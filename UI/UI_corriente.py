@@ -134,6 +134,7 @@ class Ui_corriente(QtWidgets.QWidget):
             self.setCorriente(corriente)
         else:
             self.corriente = Corriente()
+            self.repaint()
         self.setReadOnly(readOnly)
         self.PageNotas.textChanged.connect(self.corriente.setNotas)
 
@@ -175,7 +176,8 @@ class Ui_corriente(QtWidgets.QWidget):
         if self.semaforo.available() > 0:
             if isinstance(self, QtWidgets.QDialog):
                 self.status.setState(4)
-            kwargs = {str(variable): valor}
+            kwargs = self.pageConfig.kwargs
+            kwargs[variable] = valor
             self.salida(**kwargs)
 
     def clear(self):
@@ -185,6 +187,7 @@ class Ui_corriente(QtWidgets.QWidget):
         """Función que crea la instancia corriente"""
         if not kwargs:
             kwargs = self.pageDefinition.kwargs()
+            kwargs.update(self.pageConfig.kwargs)
             kwargs["solido"] = self.pageSolids.solido
         if not self.evaluate.isRunning():
             self.evaluate.start(self.corriente, kwargs)
@@ -820,7 +823,8 @@ class SolidDefinition(QtWidgets.QWidget):
                     self.distribucionTamanos.setColumn(1, self.solido.fracciones)
                 self.diametroParticula.setValue(self.solido.diametro_medio)
             else:
-                print(self.solido.kwargs)
+                pass
+                # print("solido", self.solido.kwargs)
             self.semaforo.release(1)
 
     def setReadOnly(self, bool):
@@ -1127,12 +1131,12 @@ if __name__ == "__main__":
 #    corriente = SolidDefinition(solido)
 #    corriente.show()
 
-    kw = {"iapws": True, "GERG": True, "K": "SRK", "H": "SRK", "mix": "Melhem", "Cp_ideal": 1}
-    diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
-    fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
-    solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.], solido=solido, **kw)
-    dialogo = Corriente_Dialog(corriente)
+    kw = {"iapws": False, "MEoS": True, "K": "SRK", "H": "SRK", "mix": "Melhem", "Cp_ideal": 1}
+    # diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
+    # fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
+    # solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
+    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.], **kw)
+    dialogo = Corriente_Dialog()
     dialogo.show()
 
     # corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.0, 0.5, 0.35, 0.15])

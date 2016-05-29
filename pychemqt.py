@@ -28,7 +28,7 @@ import urllib.error
 
 # Parse command line options
 desc = """pychemqt intended as a free software tool for calculation and \
-design of unit operations in chemical engineering."""
+design of chemical engineering unit operations."""
 further = """For any suggestions, comments, bug ... you can contact me at \
 https://github.com/jjgomera/pychemqt or by email jjgomera@gmail.com."""
 
@@ -49,7 +49,7 @@ path = os.path.dirname(os.path.realpath(sys.argv[0]))
 sys.path.append(path)
 
 # Define pychemqt environment
-os.environ["pychemqt"] = path + os.path.sep
+os.environ["pychemqt"] = path + os.sep
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 # Check mandatory external dependences
@@ -57,7 +57,7 @@ conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 try:
     from PyQt5 import QtCore, QtGui, QtWidgets
 except ImportError as err:
-    print("PyQt5 don't found, you need install it")
+    print("PyQt5 could not be found, you must install it.")
     raise err
 
 # Qt application definition
@@ -82,14 +82,14 @@ try:
     import scipy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python scipy library don't found, you need install it")
+        "pychemqt", "scipy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
     if minor < 14:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "scipy version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of scipy is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # numpy
@@ -97,14 +97,14 @@ try:
     import numpy
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python numpy library don't found, you need install it")
+        "pychemqt", "numpy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, numpy.version.version.split("."))
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "numpy version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of numpy is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # matplotlib
@@ -112,14 +112,14 @@ try:
     import matplotlib
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
-        "pychemqt", "Python matplotlib don't found, you need install it")
+        "pychemqt", "matplotlib could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
     if mayor < 1 or minor < 4:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "matplotlib version too old, try to install a updated version")  # noqa
+            "pychemqt", "Your version of matplotlib is too old, you must update it.")  # noqa
         raise ImportError(msg)
 
 # TODO: Disable python-graph external dependence, functional mock up in
@@ -142,7 +142,7 @@ for module, use in optional_modules:
         __import__(module)
         os.environ[module] = "True"
     except ImportError:
-        print("%s don't found, %s" % (module, use))
+        print("%s could not be found, %s" % (module, use))
         os.environ[module] = ""
 
 
@@ -153,8 +153,11 @@ else:
     loglevel = args.loglevel
 loglevel = getattr(logging, loglevel.upper())
 
-if not os.path.isfile(conf_dir + "pychemqt.log"):
-    os.mknod(conf_dir + "pychemqt.log")
+try:
+    open(conf_dir + "pychemqt.log", 'x')
+except FileExistsError:
+    pass
+
 fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
 logging.basicConfig(filename=conf_dir+"pychemqt.log", filemode="w",
                     level=loglevel, datefmt="%d-%b-%Y %H:%M:%S", format=fmt)
@@ -163,7 +166,7 @@ logging.info(
 
 
 class SplashScreen(QtWidgets.QSplashScreen):
-    """Class to defne a splash screen to show progress of loading"""
+    """Class to define a splash screen to show loading progress"""
     def __init__(self):
         QtWidgets.QSplashScreen.__init__(
             self,
@@ -212,7 +215,7 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
-        with open(os.environ["pychemqt"] + "dat/costindex.dat") as cost_index:
+        with open(os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")) as cost_index:
             lista = cost_index.readlines()[-1][:-1].split(" ")
             with open(conf_dir + "CostIndex.dat", "w") as archivo:
                 for data in lista:
@@ -221,12 +224,12 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
 # Checking currency rates
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking currency data"))
-if not os.path.isfile(conf_dir+"moneda.dat"):
+if not os.path.isfile(conf_dir + "moneda.dat"):
     try:
-        firstrun.getrates(conf_dir+"moneda.dat")
+        firstrun.getrates(conf_dir + "moneda.dat")
     except urllib.error.URLError:
-        origen = os.environ["pychemqt"]+"dat"+os.sep+"moneda.dat"
-        shutil.copy(origen, conf_dir+"moneda.dat")
+        origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
+        shutil.copy(origen, conf_dir + "moneda.dat")
         print(QtWidgets.QApplication.translate("pychemqt",
               "Internet connection error, using archived currency rates"))
 
