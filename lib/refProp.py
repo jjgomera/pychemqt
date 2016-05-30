@@ -67,21 +67,10 @@ class RefProp(Thermo):
               "S": 0.0,
               "U": 0.0}
 
-    status = 0
-    msg = "Unknown variables"
-
-    def __init__(self, **kwargs):
-        self.kwargs = RefProp.kwargs.copy()
-        self.__call__(**kwargs)
-
     def __call__(self, **kwargs):
         if len(kwargs["fluido"]) == 1:
             kwargs["fraccionMolar"] = [1.]
-        self.kwargs.update(kwargs)
-
-        if self.calculable:
-            self.status = 1
-            self.calculo()
+        Thermo.__call__(self, **kwargs)
 
     @property
     def calculable(self):

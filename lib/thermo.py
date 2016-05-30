@@ -49,8 +49,8 @@ data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temper
         (QApplication.translate("pychemqt", "Compresibility"), "Z", unidades.Dimensionless),
         (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
         (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav", unidades.InvTemperature),
-        (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa", unidades.InvPressure),
+        (QApplication.translate("pychemqt", "Volumetric Expansivity"), "alfav", unidades.InvTemperature),
+        (QApplication.translate("pychemqt", "Isothermal compresibility"), "kappa", unidades.InvPressure),
         (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
         (QApplication.translate("pychemqt", "Isothermal stress"), "betap", unidades.Density),
         (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule", unidades.TemperaturePressure),
@@ -316,5 +316,56 @@ class Fluid_MEOS(Fluid):
 class Thermo(object):
     """Class with common functionality for special thermo model, children class
     are iapws, coolprop, refprop"""
-    # TODO: Add here the common functionality of model
-    pass
+
+    status = 0
+    msg = "Unknown variables"
+
+    def __init__(self, **kwargs):
+        self.kwargs = self.__class__.kwargs.copy()
+        self.__call__(**kwargs)
+
+    def __call__(self, **kwargs):
+        self.kwargs.update(kwargs)
+
+        if self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = "Solved"
+
+    def _cp0(self, cp0):
+        "Set ideal properties to state"""
+        self.v0 = unidades.SpecificVolume(cp0.v)
+        self.rho0 = unidades.Density(1./cp0.v)
+        self.h0 = unidades.Enthalpy(cp0.h)
+        self.u0 = unidades.Enthalpy(self.h0-self.P*self.v0)
+        self.s0 = unidades.SpecificHeat(cp0.s)
+        self.a0 = unidades.Enthalpy(self.u0-self.T*self.s0)
+        self.g0 = unidades.Enthalpy(self.h0-self.T*self.s0)
+
+        self.cp0 = unidades.SpecificHeat(cp0.cp)
+        self.cv0 = unidades.SpecificHeat(cp0.cv)
+        self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
+        self.w0 = unidades.Speed(cp0.w)
+        self.gamma0 = unidades.Dimensionless(cp0.gamma)
+
+    def derivative(self, z, x, y, fase):
+        """Calculate generic partial derivative: (δz/δx)y
+        where x, y, z can be: P, T, v, u, h, s, g, a"""
+        dT = {"P": 0,
+              "T": 1,
+              "v": fase.v*fase.alfav,
+              "u": fase.cp-self.P*fase.v*fase.alfav,
+              "h": fase.cp,
+              "s": fase.cp/self.T,
+              "g": -fase.s,
+              "a": -self.P*fase.v*fase.alfav-fase.s}
+        dP = {"P": 1,
+              "T": 0,
+              "v": -fase.v*fase.kappa,
+              "u": fase.v*(self.P*fase.kappa-self.T*fase.alfav),
+              "h": fase.v*(1-self.T*fase.alfav),
+              "s": -fase.v*fase.alfav,
+              "g": fase.v,
+              "a": self.P*fase.v*fase.kappa}
+        return (dP[z]*dT[y]-dT[z]*dP[y])/(dP[x]*dT[y]-dT[x]*dP[y])
+

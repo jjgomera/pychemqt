@@ -2934,6 +2934,7 @@ def _Bound_hs(h, s):
 
 def prop0(T, P):
     """Ideal gas properties"""
+    P = P*1e-6  # Convert to MPa
     if T <= 1073.15:
         Tr = 540/T
         Pr = P/1.
@@ -3045,8 +3046,7 @@ class IAPWS97(Thermo):
               "s": None,
               "v": 0.0,
               "l": 0.5893}
-    status = 0
-    msg = "Unknown variables"
+
     __doi__ = [
         {"autor": "IAPWS",
          "title": "Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
@@ -3056,18 +3056,6 @@ class IAPWS97(Thermo):
          "title": "The IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
          "ref": "J. Eng. Gas Turbines & Power 122, 150-182 (2000)",
          "doi": "10.1115/1.483186"}]
-
-    def __init__(self, **kwargs):
-        self.kwargs = IAPWS97.kwargs.copy()
-        self.__call__(**kwargs)
-
-    def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
-
-        if self.calculable:
-            self.status = 1
-            self.calculo()
-            self.msg = "Solved"
 
     @property
     def calculable(self):
@@ -3308,6 +3296,9 @@ class IAPWS97(Thermo):
         self.v = unidades.SpecificVolume(propiedades["v"])
         self.rho = unidades.Density(1/self.v)
 
+        cp0 = prop0(self.T, self.P)
+        self._cp0(cp0)
+
         self.Liquido = Fluid()
         self.Gas = Fluid()
         if self.x == 0:
@@ -3353,30 +3344,31 @@ class IAPWS97(Thermo):
         fase.M = unidades.Dimensionless(M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1./fase.v)
+        fase.Z = unidades.Dimensionless(self.P*fase.v/R/1000*self.M/self.T)
 
         fase.h = unidades.Enthalpy(estado["h"], "kJkg")
         fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
         fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
+        fase.f = unidades.Pressure(self.P*exp((fase.g-self.g0)/R/self.T))
 
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
         fase.w = unidades.Speed(estado["w"])
 
-        fase.Z = unidades.Dimensionless(self.P*fase.v/R/1000*self.M/self.T)
         fase.alfav = unidades.InvTemperature(estado["alfav"])
         fase.kappa = unidades.InvPressure(estado["kt"], "MPa")
 
         fase.mu = unidades.Viscosity(_Viscosity(fase.rho, self.T))
-        fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
+        fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
+        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
         fase.epsilon = unidades.Dimensionless(_Dielectric(fase.rho, self.T))
         fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
         fase.n = unidades.Dimensionless(_Refractive(fase.rho, self.T, self.kwargs["l"]))
 
-        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
         fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
         fase.deltat = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase))
         fase.gamma = unidades.Dimensionless(-fase.v/self.P/1000*self.derivative("P", "v", "s", fase))
@@ -3388,21 +3380,6 @@ class IAPWS97(Thermo):
             fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
             fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
 
-        cp0 = prop0(self.T, self.P.MPa)
-        fase.v0 = unidades.SpecificVolume(cp0.v)
-        fase.rho0 = unidades.Density(1./cp0.v)
-        fase.h0 = unidades.Enthalpy(cp0.h)
-        fase.u0 = unidades.Enthalpy(fase.h0-self.P*fase.v0)
-        fase.s0 = unidades.SpecificHeat(cp0.s)
-        fase.a0 = unidades.Enthalpy(fase.u0-self.T*fase.s0)
-        fase.g0 = unidades.Enthalpy(fase.h0-self.T*fase.s0)
-
-        fase.cp0 = unidades.SpecificHeat(cp0.cp)
-        fase.cv0 = unidades.SpecificHeat(cp0.cv)
-        fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv0)
-        fase.w0 = unidades.Speed(cp0.w)
-        fase.gamma0 = unidades.Dimensionless(cp0.gamma)
-        fase.f = unidades.Pressure(self.P*exp((fase.g-fase.g0)/R/self.T))
 
     def getphase(self, fld):
         """Return fluid phase"""
@@ -3429,27 +3406,6 @@ class IAPWS97(Thermo):
                 return QApplication.translate("pychemqt", "Saturated liquid")
             else:
                 return QApplication.translate("pychemqt", "Liquid")
-
-    def derivative(self, z, x, y, fase):
-        """Calculate generic partial derivative: (δz/δx)y
-        where x, y, z can be: P, T, v, u, h, s, g, a"""
-        dT = {"P": 0,
-              "T": 1,
-              "v": fase.v*fase.alfav,
-              "u": fase.cp-self.P*fase.v*fase.alfav,
-              "h": fase.cp,
-              "s": fase.cp/self.T,
-              "g": -fase.s,
-              "a": -self.P*fase.v*fase.alfav-fase.s}
-        dP = {"P": 1,
-              "T": 0,
-              "v": -fase.v*fase.kappa,
-              "u": fase.v*(self.P*fase.kappa-self.T*fase.alfav),
-              "h": fase.v*(1-self.T*fase.alfav),
-              "s": -fase.v*fase.alfav,
-              "g": fase.v,
-              "a": self.P*fase.v*fase.kappa}
-        return (dP[z]*dT[y]-dT[z]*dP[y])/(dP[x]*dT[y]-dT[x]*dP[y])
 
 
 class IAPWS97_PT(IAPWS97):
@@ -3480,7 +3436,6 @@ class IAPWS97_Tx(IAPWS97):
     """Derivated class for direct T and x input"""
     def __init__(self, T, x):
         IAPWS97.__init__(self, T=T, x=x)
-
 
 
 if __name__ == "__main__":

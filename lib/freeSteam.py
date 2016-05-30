@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
-# Library to use freesteam library to calculate water properties with IAPWS-IF97
-# to meos calculation or in stream calculations.
+# Library to use freesteam library to calculate water properties with
+# IAPWS-IF97 to meos calculation or in stream calculations.
 # http://freesteam.sourceforge.net/
 # This library is optional, pychemqt has a python implementation for IAPWS-IF97
-# in file lib/iapws.py, but if freesteam is available in your system this in c++
-# is faster
+# in file lib/iapws.py, but if freesteam is available in your system this is
+# faster because is implemented in c++
 
 #   - Freesteam: Class with properties calculations
 ###############################################################################
+
 
 from math import exp
 
@@ -39,7 +40,7 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from .thermo import Fluid, Thermo
+from lib.thermo import Fluid, Thermo
 
 
 class Freesteam(Thermo):
@@ -67,26 +68,20 @@ class Freesteam(Thermo):
               "x": None,
               "h": 0.0,
               "s": 0.0,
-              "v": 0.0}
+              "v": 0.0,
+              "l": 0.5893}
+    __doi__ = [
+        {"autor": "Freesteam",
+         "title": "Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
+         "ref": "",
+         "doi": ""}]
 
-    status = 0
-    msg = "Unknown variables"
-
-    def __init__(self, **kwargs):
-        self.kwargs = Freesteam.kwargs.copy()
-        self.__call__(**kwargs)
-
-    def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
-
-        if self.calculable:
-            self.status = 1
-            self.calculo()
-            self.msg = ""
+    method = [freesteam.steam_pT, freesteam.steam_ph, freesteam.steam_ps,
+              freesteam.steam_pv, freesteam.steam_Ts, freesteam.steam_Tx]
 
     @property
     def calculable(self):
-        self._thermo = ""
+        self._thermo = -1
         if self.kwargs["T"] and self.kwargs["P"]:
             self._thermo = 0
             self.var1 = self.kwargs["P"]
@@ -114,8 +109,7 @@ class Freesteam(Thermo):
         return self._thermo+1
 
     def calculo(self):
-        func = [freesteam.steam_pT, freesteam.steam_ph, freesteam.steam_ps,
-                freesteam.steam_pv, freesteam.steam_Ts, freesteam.steam_Tx][self._thermo]
+        func = self.method[self._thermo]
         fluido = func(self.var1, self.var2)
 
         self.M = unidades.Dimensionless(mEoS.H2O.M)
@@ -128,6 +122,7 @@ class Freesteam(Thermo):
         self.momentoDipolar = mEoS.H2O.momentoDipolar
 
         self.phase = self.getphase(fluido)
+        self.region = fluido.region
         self.x = unidades.Dimensionless(fluido.x)
         self.name = mEoS.H2O.name
         self.synonim = mEoS.H2O.synonym
@@ -135,35 +130,55 @@ class Freesteam(Thermo):
 
         self.T = unidades.Temperature(fluido.T)
         self.P = unidades.Pressure(fluido.p)
+        self.Tr = unidades.Dimensionless(self.T/self.Tc)
+        self.Pr = unidades.Dimensionless(self.P/self.Pc)
         self.rho = unidades.Density(fluido.rho)
         self.v = unidades.SpecificVolume(1./self.rho)
 
+        cp0 = iapws.prop0(self.T, self.P)
+        self._cp0(cp0)
+
         self.Liquido = Fluid()
         self.Gas = Fluid()
-        if self.x < 1:
-            # Liquid phase
+        if self.x == 0:
+            # only liquid phase
+            self.fill(self, fluido)
+            self.fill(self.Liquido, fluido)
+            self.Liquido.sigma = unidades.Tension(freesteam.surftens_T(self.T))
+
+            self.Hvap = unidades.Enthalpy(None)
+            self.Svap = unidades.SpecificHeat(None)
+        elif self.x == 1:
+            # only vapor phase
+            self.fill(self, fluido)
+            self.fill(self.Gas, fluido)
+
+            self.Hvap = unidades.Enthalpy(None)
+            self.Svap = unidades.SpecificHeat(None)
+        else:
+            # two phases
             liquido = freesteam.steam_Tx(fluido.T, 0.)
             self.fill(self.Liquido, liquido)
-            self.Liquido.sigma = unidades.Tension(iapws._Tension(self.T))
-        if self.x > 0:
+            self.Liquido.sigma = unidades.Tension(freesteam.surftens_T(self.T))
             vapor = freesteam.steam_Tx(fluido.T, 1.)
             self.fill(self.Gas, vapor)
 
-        if self.x in (0, 1):
-            self.fill(self, fluido)
-        else:
-            self.h = unidades.Enthalpy(self.x*self.Vapor.h+(1-self.x)*self.Liquido.h)
-            self.s = unidades.SpecificHeat(self.x*self.Vapor.s+(1-self.x)*self.Liquido.s)
-            self.u = unidades.SpecificHeat(self.x*self.Vapor.u+(1-self.x)*self.Liquido.u)
-            self.a = unidades.Enthalpy(self.x*self.Vapor.a+(1-self.x)*self.Liquido.a)
-            self.g = unidades.Enthalpy(self.x*self.Vapor.g+(1-self.x)*self.Liquido.g)
+            self.h = unidades.Enthalpy(self.x*self.Gas.h+(1-self.x)*self.Liquido.h)
+            self.s = unidades.SpecificHeat(self.x*self.Gas.s+(1-self.x)*self.Liquido.s)
+            self.u = unidades.SpecificHeat(self.x*self.Gas.u+(1-self.x)*self.Liquido.u)
+            self.a = unidades.Enthalpy(self.x*self.Gas.a+(1-self.x)*self.Liquido.a)
+            self.g = unidades.Enthalpy(self.x*self.Gas.g+(1-self.x)*self.Liquido.g)
 
             self.cv = unidades.SpecificHeat(None)
             self.cp = unidades.SpecificHeat(None)
             self.cp_cv = unidades.Dimensionless(None)
             self.w = unidades.Speed(None)
 
+            self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
+            self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
+
     def fill(self, fase, estado):
+        fase._bool = True
         fase.M = self.M
         fase.rho = unidades.Density(estado.rho)
         fase.v = unidades.SpecificVolume(estado.v)
@@ -174,6 +189,7 @@ class Freesteam(Thermo):
         fase.u = unidades.Enthalpy(estado.u)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
+        fase.f = unidades.Pressure(self.P*exp((fase.g-self.g0)/R/self.T))
 
         fase.cv = unidades.SpecificHeat(estado.cv)
         fase.cp = unidades.SpecificHeat(estado.cp)
@@ -181,28 +197,22 @@ class Freesteam(Thermo):
         fase.w = unidades.Speed(estado.w)
 
         fase.mu = unidades.Viscosity(estado.mu)
-        fase.k = unidades.ThermalConductivity(estado.k)
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
-        fase.dielec = unidades.Dimensionless(iapws._Dielectric(estado.rho, self.T))
+        fase.k = unidades.ThermalConductivity(estado.k)
+        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.epsilon = unidades.Dimensionless(iapws._Dielectric(estado.rho, self.T))
         fase.Prandt = unidades.Dimensionless(estado.mu*estado.cp/estado.k)
+        fase.n = unidades.Dimensionless(iapws._Refractive(fase.rho, self.T, self.kwargs["l"]))
 
-#            fase.joule=unidades.TemperaturePressure(self.Liquido["hjt"], "KkPa")
-#        fase.kappa=unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
-#        fase.alfav=unidades.InvTemperature(-estado.PFC.drhodT_constp()/estado.rho)
+        fase.alfav = unidades.InvTemperature(1/fase.v*estado.deriv("vTp"))
+        fase.kappa = unidades.InvPressure(-1/fase.v*estado.deriv("vpT"))
 
-        cp0 = iapws.prop0(self.T, self.P)
-        fase.v0 = unidades.SpecificVolume(cp0.v)
-        fase.h0 = unidades.Enthalpy(cp0.h)
-        fase.u0 = unidades.Enthalpy(fase.h0-self.P*1000*fase.v0)
-        fase.s0 = unidades.SpecificHeat(cp0.s)
-        fase.a0 = unidades.Enthalpy(fase.u0-self.T*fase.s0)
-        fase.g0 = unidades.Enthalpy(fase.h0-self.T*fase.s0)
-        fase.cp0 = unidades.SpecificHeat(cp0.cp)
-        fase.cv0 = unidades.SpecificHeat(cp0.cv)
-        fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv0)
-        fase.w0 = cp0.w
-#        fase.gamma0 = cp0.gamma
-        fase.f = unidades.Pressure(self.P*exp((fase.g-fase.g0)/R/self.T))
+        fase.joule = unidades.TemperaturePressure(estado.deriv("Tph"))
+        fase.deltat = unidades.EnthalpyPressure(estado.deriv("hpT"))
+        fase.gamma = unidades.Dimensionless(-fase.v/self.P/1000*estado.deriv("pvs"))
+
+        fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
+        fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
 
     def getphase(self, fld):
         """Return fluid phase with translation support"""
@@ -232,10 +242,10 @@ class Freesteam(Thermo):
 
 
 if __name__ == '__main__':
-#    fluido=Freesteam(T=373.15, x=1)
-#    print fluido.h.kJkg, fluido.P
-    vapor = freesteam.steam_Tx(370, 1)
-    for key, value in vapor.__dict__.items():
-        print(key, value)
-    print(dir(vapor))
-    print(ord(vapor.region))
+    fluido=Freesteam(T=373.15, x=1)
+    print(fluido.h.kJkg, fluido.P)
+#    vapor = freesteam.steam_Tx(370, 1)
+#    for key, value in vapor.__dict__.items():
+#        print(key, value)
+#    print(dir(vapor))
+#    print(vapor.region)
