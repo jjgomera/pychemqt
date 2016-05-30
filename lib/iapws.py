@@ -3315,10 +3315,16 @@ class IAPWS97(Thermo):
             self.fill(self, propiedades)
             self.fill(self.Liquido, propiedades)
             self.Liquido.sigma = unidades.Tension(_Tension(self.T))
+
+            self.Hvap = unidades.Enthalpy(None)
+            self.Svap = unidades.SpecificHeat(None)
         elif self.x == 1:
             # only vapor phase
             self.fill(self, propiedades)
             self.fill(self.Gas, propiedades)
+
+            self.Hvap = unidades.Enthalpy(None)
+            self.Svap = unidades.SpecificHeat(None)
         else:
             # two phases
             liquido = _Region1(self.T, self.P.MPa)
@@ -3337,6 +3343,9 @@ class IAPWS97(Thermo):
             self.cp = unidades.SpecificHeat(None)
             self.cp_cv = unidades.Dimensionless(None)
             self.w = unidades.Speed(None)
+
+            self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
+            self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
 
     def fill(self, fase, estado):
         """Fill phase properties"""

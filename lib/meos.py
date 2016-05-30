@@ -2563,7 +2563,7 @@ class MEoS(Fluid_MEOS):
         """Thermal conductivity calculation"""
         if self._thermal:
             if self._thermal["eq"] == 0:
-                k = self.__getattribute__(self._thermal["method"])(rho, T, fase)*1e3
+                k = self.__getattribute__(self._thermal["method"])(rho, T, fase)
 
             elif self._thermal["eq"] == 1:
                 # Dilute gas terms

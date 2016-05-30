@@ -535,13 +535,13 @@ class Corriente(config.Entity):
                 self.cv0 = compuesto.cv0
                 self.cp0_cv = compuesto.cp0_cv
                 self.gamma0 = compuesto.gamma0
+                self.Hvap = compuesto.Hvap
+                self.Svap = compuesto.Svap
 
             if self._thermo == "meos":
                 self.virialB = compuesto.virialB
                 self.virialC = compuesto.virialC
                 self.invT = compuesto.invT
-                self.Hvap = compuesto.Hvap
-                self.Svap = compuesto.Svap
 
 
 #        if self.__class__!=mEoS.H2O:
@@ -931,13 +931,13 @@ class Corriente(config.Entity):
             state["cvo"] = self.cv0
             state["cpo/cv"] = self.cp0_cv
             state["gammao"] = self.gamma0
+            state["Hvap"] = self.Hvap
+            state["Svap"] = self.Svap
 
         if self._thermo == "meos":
             state["virialB"] = self.virialB
             state["virialC"] = self.virialC
             state["invT"] = self.invT
-            state["Hvap"] = self.Hvap
-            state["Svap"] = self.Svap
 
         state["fluxType"] = self.tipoFlujo
         self.mezcla.writeStatetoJSON(state)
@@ -988,13 +988,13 @@ class Corriente(config.Entity):
             self.cv0 = unidades.Entropy(state["cvo"])
             self.cp0_cv = unidades.Dimensionless(state["cpo/cv"])
             self.gamma0 = unidades.Dimensionless(state["gammao"])
+            self.Hvap = unidades.Enthalpy(state["Hvap"])
+            self.Svap = unidades.SpecificHeat(state["Svap"])
 
         if self._thermo == "meos":
             self.virialB = unidades.SpecificVolume(state["virialB"])
             self.virialC = unidades.SpecificVolume_square(state["virialC"])
             self.invT = unidades.InvTemperature(state["invT"])
-            self.Hvap = unidades.Enthalpy(state["Hvap"])
-            self.Svap = unidades.SpecificHeat(state["Svap"])
 
         self.tipoFlujo = state["fluxType"]
         self.mezcla = Mezcla()
