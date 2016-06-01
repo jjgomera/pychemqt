@@ -34,6 +34,7 @@ from math import exp
 
 from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
+
 try:
     import freesteam
 except:
@@ -76,9 +77,6 @@ class Freesteam(Thermo):
          "ref": "",
          "doi": ""}]
 
-    method = [freesteam.steam_pT, freesteam.steam_ph, freesteam.steam_ps,
-              freesteam.steam_pv, freesteam.steam_Ts, freesteam.steam_Tx]
-
     @property
     def calculable(self):
         self._thermo = -1
@@ -109,7 +107,9 @@ class Freesteam(Thermo):
         return self._thermo+1
 
     def calculo(self):
-        func = self.method[self._thermo]
+        method = [freesteam.steam_pT, freesteam.steam_ph, freesteam.steam_ps,
+                  freesteam.steam_pv, freesteam.steam_Ts, freesteam.steam_Tx]
+        func = method[self._thermo]
         fluido = func(self.var1, self.var2)
 
         self.M = unidades.Dimensionless(mEoS.H2O.M)
