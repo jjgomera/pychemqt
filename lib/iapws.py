@@ -30,7 +30,7 @@ from scipy.optimize import fsolve
 from PyQt5.QtWidgets import QApplication
 
 from . import unidades
-from .thermo import Fluid, Thermo
+from .thermo import Fluid, ThermoWater
 
 
 # Constants
@@ -2960,7 +2960,7 @@ def prop0(T, P):
     return prop0
 
 
-class IAPWS97(Thermo):
+class IAPWS97(ThermoWater):
     """Class to model a state for liquid water or steam with the IAPWS-IF97
 
     Incoming properties:

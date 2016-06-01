@@ -41,10 +41,10 @@ except:
     pass
 
 from lib import unidades, mEoS, iapws
-from lib.thermo import Fluid, Thermo
+from lib.thermo import Fluid, ThermoWater
 
 
-class Freesteam(Thermo):
+class Freesteam(ThermoWater):
     """Class to define a water stream
     It can be defined by the pair:
         P,T
@@ -122,7 +122,6 @@ class Freesteam(Thermo):
         self.momentoDipolar = mEoS.H2O.momentoDipolar
 
         self.phase = self.getphase(fluido)
-        self.region = fluido.region
         self.x = unidades.Dimensionless(fluido.x)
         self.name = mEoS.H2O.name
         self.synonim = mEoS.H2O.synonym

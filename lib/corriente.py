@@ -859,10 +859,7 @@ class Corriente(config.Entity):
                 phases = [self.Liquido, self.Gas]
 
             complejos = ""
-            if self._thermo == "meos":
-                data = meos.data
-            else:
-                data = thermo.data
+            data = self.cmp.properties()
             for propiedad, key, unit in data:
                 if key in self.Gas.__dict__ or key in self.Liquido.__dict__:
                     values = [propiedad]

@@ -41,79 +41,6 @@ from . import unidades, compuestos
 from .physics import R_atml
 from .thermo import Fluid_MEOS
 
-data = [(QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
-        (QApplication.translate("pychemqt", "Reduced temperature"), "Tr", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure),
-        (QApplication.translate("pychemqt", "Reduced Pressure"), "Pr", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Quality"), "x", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Density"), "rho", unidades.Density),
-        (QApplication.translate("pychemqt", "Volume"), "v", unidades.SpecificVolume),
-        (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Entropy"), "s", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Internal Energy"), "u", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Specific isochoric heat capacity"), "cv", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Specific isobaric heat capacity"), "cp", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Heat capacities ratio"), "cp_cv", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Speed sound"), "w", unidades.Speed),
-        (QApplication.translate("pychemqt", "Compresibility"), "Z", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Fugacity coef."), "fi", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
-        (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Vaporization heat"), "Hvap", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Vaporization entropy"), "Svap", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav", unidades.InvTemperature),
-        (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa", unidades.InvPressure),
-        (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
-        (QApplication.translate("pychemqt", "Isothermal stress"), "betap", unidades.Density),
-        (QApplication.translate("pychemqt", "Isentropic temperature-pressure"), "betas", unidades.TemperaturePressure),
-        (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule", unidades.TemperaturePressure),
-        (QApplication.translate("pychemqt", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
-        (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC", unidades.SpecificVolume_square),
-        ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
-        ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
-        ("(drho/dT)_P", "drhodT_P", unidades.DensityTemperature),
-        ("(drho/dP)_T", "drhodP_T", unidades.DensityPressure),
-        ("(dh/dT)_rho", "dhdT_rho", unidades.SpecificHeat),
-        ("(dh/dP)_T", "dhdP_T", unidades.EnthalpyPressure),
-        ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
-        ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
-        ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
-        (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks", unidades.InvPressure),
-        (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks", unidades.Pressure),
-        (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt", unidades.Pressure),
-#        Z_rho     -   (Z-1) over the density, m³/kg
-        (QApplication.translate("pychemqt", "Internal pressure"), "IntP", unidades.Pressure),
-        (QApplication.translate("pychemqt", "Negative reciprocal temperature"), "invT", unidades.InvTemperature),
-        (QApplication.translate("pychemqt", "Specific heat input"), "hInput", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Viscosity"), "mu", unidades.Viscosity),
-        (QApplication.translate("pychemqt", "Thermal conductivity"), "k", unidades.ThermalConductivity),
-        (QApplication.translate("pychemqt", "Kinematic viscosity"), "nu", unidades.Diffusivity),
-        (QApplication.translate("pychemqt", "Surface tension"), "sigma", unidades.Tension),
-        (QApplication.translate("pychemqt", "Thermal diffusivity"), "alfa", unidades.Diffusivity),
-        (QApplication.translate("pychemqt", "Prandtl number"), "Prandt", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Ideal gas Specific volume"), "v0", unidades.SpecificVolume),
-        (QApplication.translate("pychemqt", "Ideal gas Density"), "rho0", unidades.Density),
-        (QApplication.translate("pychemqt", "Ideal gas Specific enthalpy"), "h0", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Ideal gas Specific internal energy"), "u0", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Ideal gas Specific entropy"), "s0", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Ideal gas Specific Helmholtz free energy"), "a0", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Ideal gas Specific Gibbs free energy"), "g0", unidades.Enthalpy),
-        (QApplication.translate("pychemqt", "Ideal gas Specific isobaric heat capacity"), "cp0", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Ideal gas Specific isochoric heat capacity"), "cv0", unidades.SpecificHeat),
-        (QApplication.translate("pychemqt", "Ideal gas heat capacities ratio"), "cp0_cv", unidades.Dimensionless),
-        (QApplication.translate("pychemqt", "Ideal gas Isoentropic exponent"), "gamma0", unidades.Dimensionless)]
-
-propiedades = [p[0] for p in data]
-keys = [p[1] for p in data]
-units = [p[2] for p in data]
-properties = dict(list(zip(keys, propiedades)))
-inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
-
 
 class MEoS(Fluid_MEOS):
     """General class for implement multiparameter equation of state
@@ -2686,6 +2613,77 @@ class MEoS(Fluid_MEOS):
             k = None
         return unidades.ThermalConductivity(k)
 
+    @classmethod
+    def properties(cls):
+        l = [
+            (QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
+            (QApplication.translate("pychemqt", "Reduced temperature"), "Tr", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Reduced Pressure"), "Pr", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Quality"), "x", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Density"), "rho", unidades.Density),
+            (QApplication.translate("pychemqt", "Volume"), "v", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Entropy"), "s", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Internal Energy"), "u", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Specific isochoric heat capacity"), "cv", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Specific isobaric heat capacity"), "cp", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Heat capacities ratio"), "cp_cv", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Speed sound"), "w", unidades.Speed),
+            (QApplication.translate("pychemqt", "Compresibility"), "Z", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Fugacity coef."), "fi", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Vaporization heat"), "Hvap", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Vaporization entropy"), "Svap", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Volumetric Expansitivy"), "alfav", unidades.InvTemperature),
+            (QApplication.translate("pychemqt", "Isotermic compresibility"), "kappa", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
+            (QApplication.translate("pychemqt", "Isothermal stress"), "betap", unidades.Density),
+            (QApplication.translate("pychemqt", "Isentropic temperature-pressure"), "betas", unidades.TemperaturePressure),
+            (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule", unidades.TemperaturePressure),
+            (QApplication.translate("pychemqt", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC", unidades.SpecificVolume_square),
+            ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
+            ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
+            ("(drho/dT)_P", "drhodT_P", unidades.DensityTemperature),
+            ("(drho/dP)_T", "drhodP_T", unidades.DensityPressure),
+            ("(dh/dT)_rho", "dhdT_rho", unidades.SpecificHeat),
+            ("(dh/dP)_T", "dhdP_T", unidades.EnthalpyPressure),
+            ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
+            ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
+            ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
+            (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt", unidades.Pressure),
+            #        Z_rho     -   (Z-1) over the density, m³/kg
+            (QApplication.translate("pychemqt", "Internal pressure"), "IntP", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Negative reciprocal temperature"), "invT", unidades.InvTemperature),
+            (QApplication.translate("pychemqt", "Specific heat input"), "hInput", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Viscosity"), "mu", unidades.Viscosity),
+            (QApplication.translate("pychemqt", "Thermal conductivity"), "k", unidades.ThermalConductivity),
+            (QApplication.translate("pychemqt", "Kinematic viscosity"), "nu", unidades.Diffusivity),
+            (QApplication.translate("pychemqt", "Surface tension"), "sigma", unidades.Tension),
+            (QApplication.translate("pychemqt", "Thermal diffusivity"), "alfa", unidades.Diffusivity),
+            (QApplication.translate("pychemqt", "Prandtl number"), "Prandt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Ideal gas Specific volume"), "v0", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Ideal gas Density"), "rho0", unidades.Density),
+            (QApplication.translate("pychemqt", "Ideal gas Specific enthalpy"), "h0", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Ideal gas Specific internal energy"), "u0", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Ideal gas Specific entropy"), "s0", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Ideal gas Specific Helmholtz free energy"), "a0", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Ideal gas Specific Gibbs free energy"), "g0", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Ideal gas Specific isobaric heat capacity"), "cp0", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Ideal gas Specific isochoric heat capacity"), "cv0", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Ideal gas heat capacities ratio"), "cp0_cv", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Ideal gas Isoentropic exponent"), "gamma0", unidades.Dimensionless)]
+        return l
+
 
 class MEoSBlend(MEoS):
     """Special meos class to implement pseudocomponent blend and defining its
@@ -2717,6 +2715,14 @@ class MEoSBlend(MEoS):
             suma += n*Tita**(i/2.)
         P = Pj*exp(Tj/T*suma)
         return unidades.Pressure(P, "MPa")
+
+
+data = MEoS.properties()
+propiedades = [p[0] for p in data]
+keys = [p[1] for p in data]
+units = [p[2] for p in data]
+properties = dict(list(zip(keys, propiedades)))
+inputData = [data[0], data[2], data[4], data[5], data[6], data[7], data[8], data[9]]
 
 
 if __name__ == "__main__":
@@ -3025,5 +3031,5 @@ if __name__ == "__main__":
     dme=MEoS(T=400, P=0.1, eq=1)
     print("%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (dme.T, dme.rho, dme.h.kJkg, dme.s.kJkgK, dme.cv.kJkgK, dme.cp.kJkgK, dme.w))
 
-#300,00	0,10000	1,6025	0,31238	0,52152	0,52033	3,6153	-0,00038001	0,00000066198	17,837	22,741
+# 300,00	0,10000	1,6025	0,31238	0,52152	0,52033	3,6153	-0,00038001	0,00000066198	17,837	22,741
 
