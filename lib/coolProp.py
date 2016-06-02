@@ -29,33 +29,17 @@ from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
 
 try:
-    from CoolProp import phase_constants, param_constants
-    from CoolProp.State import State
-    from CoolProp.CoolProp import FluidsList, get_CAS_code, DerivTerms, get_aliases
-except:
-    pass
+    import CoolProp as CP
+except ImportError as e:
+    raise e
 
-from . import unidades
-from .thermo import Fluid, Thermo
+from lib import unidades
+from lib.thermo import Fluid, Thermo
 
 
 class CoolProp(Thermo):
-    """Stream class using coolProp external library"""
-    kwargs = {"fluido": None,
-              "fraccion": [1],
-
-              "T": 0.0,
-              "P": 0.0,
-              "x": None,
-              "rho": 0.0,
-              "H": 0.0,
-              "S": 0.0}
-
-    status = 0
-    msg = "Unknown variables"
-
-    def __init__(self, **kwargs):
-        """Parameters needed to define it are:
+    """Stream class using coolProp external library
+    Parameters needed to define it are:
 
         -fluido: index of fluid
         -fraccion: molar fraction
@@ -66,17 +50,16 @@ class CoolProp(Thermo):
         -H: Enthalpy, J/kg
         -S: Entropy, J/kgK
         -x: Quality, -
-        """
-        self.kwargs = CoolProp.kwargs.copy()
-        self.__call__(**kwargs)
+    """
+    kwargs = {"fluido": None,
+              "fraccion": [1],
 
-    def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
-
-        if self.calculable:
-            self.status = 1
-            self.calculo()
-            self.msg = ""
+              "T": 0.0,
+              "P": 0.0,
+              "x": None,
+              "rho": 0.0,
+              "H": 0.0,
+              "S": 0.0}
 
     @property
     def calculable(self):
@@ -128,27 +111,27 @@ class CoolProp(Thermo):
         return args
 
     def calculo(self):
-        fluido = FluidsList()[__all__[self.kwargs["fluido"]]]
+        fluido = CP.FluidsList()[__all__[self.kwargs["fluido"]]]
         args = self.args()
-        estado = State(fluido, args)
+        estado = CP.State(fluido, args)
 
-        self.M = unidades.Dimensionless(estado.Props(param_constants.iMM))
-        self.Pc = unidades.Pressure(estado.Props(param_constants.iPcrit), "kPa")
-        self.Tc = unidades.Temperature(estado.Props(param_constants.iTcrit))
-        self.rhoc = unidades.Density(estado.Props(param_constants.iRhocrit))
+        self.M = unidades.Dimensionless(estado.Props(CP.iMM))
+        self.Pc = unidades.Pressure(estado.Props(CP.iPcrit), "kPa")
+        self.Tc = unidades.Temperature(estado.Props(CP.iTcrit))
+        self.rhoc = unidades.Density(estado.Props(CP.iRhocrit))
 
         self.name = fluido
-        alias = get_aliases(fluido)
+        alias = CP.get_aliases(fluido)
         if len(alias) >= 2:
             self.synonim = alias[1]
         else:
             self.synonim = ""
-        self.CAS = get_CAS_code(fluido)
+        self.CAS = CP.get_CAS_code(fluido)
 
-        self.Tt = unidades.Temperature(estado.Props(param_constants.iPtriple))
+        self.Tt = unidades.Temperature(estado.Props(CP.iPtriple))
         self.Tb = unidades.Temperature(None)
-        self.f_accent = unidades.Dimensionless(estado.Props(param_constants.iAccentric))
-        # self.momentoDipolar = unidades.DipoleMoment(estado.Props(param_constants.iDipole))
+        self.f_accent = unidades.Dimensionless(estado.Props(CP.iAccentric))
+        # self.momentoDipolar = unidades.DipoleMoment(estado.Props(CP.iDipole))
         self.momentoDipolar = unidades.DipoleMoment(None)
         self.Rgas = unidades.SpecificHeat(R/self.M)
 
@@ -165,7 +148,7 @@ class CoolProp(Thermo):
         if self.x == 0:
             # liquid phase
             self.fill(self.Liquido, estado)
-            self.Liquido.sigma = unidades.Tension(estado.Props(param_constants.iI))
+            self.Liquido.sigma = unidades.Tension(estado.Props(CP.iI))
             self.fill(self, estado)
         elif self.x == 1:
             # vapor phase
@@ -175,7 +158,7 @@ class CoolProp(Thermo):
             # Two phase
             estado.update_Trho(estado.T, estado.PFC.rhoL())
             self.fill(self.Liquido, estado)
-            self.Liquido.sigma = unidades.Tension(estado.Props(param_constants.iI))
+            self.Liquido.sigma = unidades.Tension(estado.Props(CP.iI))
             estado.update_Trho(estado.T, estado.PFC.rhoV())
             self.fill(self.Gas, estado)
 
@@ -194,18 +177,18 @@ class CoolProp(Thermo):
         fase.M = self.M
         fase.rho = unidades.Density(estado.rho)
         fase.v = unidades.SpecificVolume(1./fase.rho)
-        fase.Z = unidades.Dimensionless(DerivTerms("Z", self.T, fase.rho, self.name))
+        fase.Z = unidades.Dimensionless(CP.DerivTerms("Z", self.T, fase.rho, self.name))
 
         fase.h = unidades.Enthalpy(estado.h, "kJkg")
         fase.s = unidades.SpecificHeat(estado.s, "kJkgK")
         fase.u = unidades.Enthalpy(estado.u, "kJkg")
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
-        fase.g = unidades.Enthalpy(estado.Props(param_constants.iG), "kJkg")
+        fase.g = unidades.Enthalpy(estado.Props(CP.iG), "kJkg")
 
         fase.cv = unidades.SpecificHeat(estado.cv, "kJkgK")
         fase.cp = unidades.SpecificHeat(estado.cp, "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
-        fase.w = unidades.Speed(estado.Props(param_constants.iA))
+        fase.w = unidades.Speed(estado.Props(CP.iA))
 
         fase.mu = unidades.Viscosity(estado.visc)
         fase.k = unidades.ThermalConductivity(estado.k, "kWmK")
@@ -214,31 +197,31 @@ class CoolProp(Thermo):
         fase.Prandt = unidades.Dimensionless(estado.Prandtl)
 
         # fase.joule = unidades.TemperaturePressure(self.Liquido["hjt"], "KkPa")
-        fase.kappa = unidades.InvPressure(DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
+        fase.kappa = unidades.InvPressure(CP.DerivTerms("IsothermalCompressibility", self.T, fase.rho, self.name), "kPa")
         fase.alfav = unidades.InvTemperature(-estado.PFC.drhodT_constp()/estado.rho)
 
-        fase.cp0 = unidades.SpecificHeat(estado.Props(param_constants.iC0), "kJkgK")
+        fase.cp0 = unidades.SpecificHeat(estado.Props(CP.iC0), "kJkgK")
         fase.cp0_cv = unidades.Dimensionless(fase.cp0/fase.cv)
 
     def getphase(self, estado):
         """Return fluid phase with translation support"""
         phase = estado.Phase()
-        if phase == phase_constants.iSupercritical:
+        if phase == CP.iphase_supercritical:
             if self.T > self.Tc:
                 return QApplication.translate("pychemqt", "Supercritical fluid"), 1.
             else:
                 return QApplication.translate("pychemqt", "Compressible liquid"), 1.
-        elif phase == phase_constants.iGas:
+        elif phase == CP.iphase_gas:
             if estado.superheat > 0:
                 return QApplication.translate("pychemqt", "Vapor"), 1.
             else:
                 return QApplication.translate("pychemqt", "Saturated vapor"), 1.
-        elif phase == phase_constants.iLiquid:
+        elif phase == CP.iphase_liquid:
             if estado.subcooling > 0:
                 return QApplication.translate("pychemqt", "Liquid"), 0.
             else:
                 return QApplication.translate("pychemqt", "Saturated liquid"), 0.
-        elif phase == phase_constants.iTwoPhase:
+        elif phase == CP.iphase_twophase:
                 return QApplication.translate("pychemqt", "Two phases"), estado.Q
 
 

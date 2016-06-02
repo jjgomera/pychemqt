@@ -350,75 +350,34 @@ class Corriente(config.Entity):
         P = unidades.Pressure(self.kwargs.get("P", None))
         x = self.kwargs.get("x", None)
 
-        Config = config.getMainWindowConfig()
-        if self.kwargs["MEoS"] is not None:
-            MEoS = self.kwargs["MEoS"]
-        else:
-            MEoS = Config.getboolean("Thermo", "MEoS")
-        if self.kwargs["coolProp"] is not None:
-            COOLPROP = self.kwargs["coolProp"]
-        else:
-            COOLPROP = Config.getboolean("Thermo", "coolprop")
-        if self.kwargs["refprop"] is not None:
-            REFPROP  = self.kwargs["refprop"]
-        else:
-            REFPROP = Config.getboolean("Thermo", "refprop")
-        if self.kwargs["iapws"] is not None:
-            _iapws = self.kwargs["iapws"]
-        else:
-            _iapws = Config.getboolean("Thermo", "iapws")
-        IAPWS = _iapws and len(self.ids) == 1 and self.ids[0] == 62
-        if self.kwargs["freesteam"] is not None:
-            _freesteam = self.kwargs["freesteam"]
-        else:
-            _freesteam = Config.getboolean("Thermo", "freesteam")
-        FREESTEAM = _freesteam and len(self.ids) == 1 and self.ids[0] == 62
-        if self.kwargs["GERG"] is not None:
-            GERG  = self.kwargs["GERG"]
-        else:
-            GERG = Config.getboolean("Thermo", "GERG")
-
+        self._method()
         setData = True
-        mEoS_available = self.ids[0] in mEoS.id_mEoS
-        GERG_available = True
-        REFPROP_available = True
-        COOLPROP_available = self.ids[0] in coolProp.__all__
-        for id in self.ids:
-            if id not in gerg.id_GERG:
-                GERG_available = False
-            if id not in refProp.__all__:
-                REFPROP_available = False
 
-        if IAPWS and FREESTEAM:
+        if self._thermo == "freesteam":
             compuesto = freeSteam.Freesteam(**self.kwargs)
-            self._thermo = "freesteam"
-        elif IAPWS:
+        elif self._thermo == "iapws":
             compuesto = iapws.IAPWS97(**self.kwargs)
-            self._thermo = "iapws"
-        elif MEoS and REFPROP and REFPROP_available:
+        elif self._thermo == "refprop":
             fluido = [refProp.__all__[id] for id in self.ids]
             compuesto = refProp.RefProp(fluido=fluido, **self.kwargs)
-            self._thermo = "refprop"
-        elif GERG and GERG_available:
+        elif self._thermo == "gerg":
             ids = []
             for id in self.ids:
                 ids.append(gerg.id_GERG.index(id))
             kwargs = self.kwargs
             kwargs["mezcla"] = self.mezcla
             compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
-            self._thermo = "gerg"
-        elif MEoS and len(self.ids) == 1 and COOLPROP and COOLPROP_available:
+        elif self._thermo == "coolprop":
+            # TODO: Add support for multicomponent
             compuesto = coolProp.CoolProp(fluido=self.ids[0], **self.kwargs)
-            self._thermo = "coolprop"
-        elif MEoS and len(self.ids) == 1 and mEoS_available:
+        elif self._thermo == "meos":
             if self.tipoTermodinamica == "TP":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
             elif self.tipoTermodinamica == "Tx":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, x=x)
             elif self.tipoTermodinamica == "Px":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
-            self._thermo = "meos"
-        else:
+        elif self._thermo == "eos":
             if self.kwargs["K"]:
                 index = K_name.index(self.kwargs["K"])
                 K = EoS.K[index]
@@ -432,7 +391,6 @@ class Corriente(config.Entity):
             else:
                 H = EoS.H[Config.getint("Thermo","H")]
 
-            self._thermo = "eos"
             setData = False
             self.M = unidades.Dimensionless(self.mezcla.M)
             self.Tc = self.mezcla.Tc
@@ -535,13 +493,13 @@ class Corriente(config.Entity):
                 self.cv0 = compuesto.cv0
                 self.cp0_cv = compuesto.cp0_cv
                 self.gamma0 = compuesto.gamma0
+                self.Hvap = compuesto.Hvap
+                self.Svap = compuesto.Svap
 
             if self._thermo == "meos":
                 self.virialB = compuesto.virialB
                 self.virialC = compuesto.virialC
                 self.invT = compuesto.invT
-                self.Hvap = compuesto.Hvap
-                self.Svap = compuesto.Svap
 
 
 #        if self.__class__!=mEoS.H2O:
@@ -603,6 +561,81 @@ class Corriente(config.Entity):
             self.calculo()
             self.kwargs["caudalVolumetrico"] = Q
             self.kwargs["caudalMolar"] = None
+
+    def _method(self):
+        """Find the thermodynamic method to use"""
+        Config = config.getMainWindowConfig()
+
+        # MEoS availability,
+        if self.kwargs["MEoS"] is not None:
+            _meos = self.kwargs["MEoS"]
+        else:
+            _meos = Config.getboolean("Thermo", "MEoS")
+        mEoS_available = self.ids[0] in mEoS.id_mEoS
+        MEoS = _meos and len(self.ids) == 1 and mEoS_available
+
+        # iapws availability
+        if self.kwargs["iapws"] is not None:
+            _iapws = self.kwargs["iapws"]
+        else:
+            _iapws = Config.getboolean("Thermo", "iapws")
+        IAPWS = _iapws and len(self.ids) == 1 and self.ids[0] == 62
+
+        # freesteam availability
+        if self.kwargs["freesteam"] is not None:
+            _freesteam = self.kwargs["freesteam"]
+        else:
+            _freesteam = Config.getboolean("Thermo", "freesteam")
+        FREESTEAM = _freesteam and len(self.ids) == 1 and \
+            self.ids[0] == 62 and os.environ["freesteam"]
+
+        COOLPROP_available = True
+        GERG_available = True
+        REFPROP_available = True
+        for id in self.ids:
+            if id not in coolProp.__all__:
+                COOLPROP_available = False
+            if id not in refProp.__all__:
+                REFPROP_available = False
+            if id not in gerg.id_GERG:
+                GERG_available = False
+
+        # coolprop availability
+        if self.kwargs["coolProp"] is not None:
+            _coolprop = self.kwargs["coolProp"]
+        else:
+            _coolprop = Config.getboolean("Thermo", "coolprop")
+        COOLPROP = _coolprop and os.environ["coolprop"] and COOLPROP_available
+
+        # refprop availability
+        if self.kwargs["refprop"] is not None:
+            _refprop = self.kwargs["refprop"]
+        else:
+            _refprop = Config.getboolean("Thermo", "refprop")
+        REFPROP = _refprop and os.environ["refprop"] and REFPROP_available
+
+        # GERG availability
+        if self.kwargs["GERG"] is not None:
+            _gerg = self.kwargs["GERG"]
+        else:
+            _gerg = Config.getboolean("Thermo", "GERG")
+            GERG = _gerg and GERG_available
+
+        # Final selection
+        if IAPWS and FREESTEAM:
+            self._thermo = "freesteam"
+        elif IAPWS:
+            self._thermo = "iapws"
+        elif MEoS and REFPROP:
+            self._thermo = "refprop"
+        elif MEoS and COOLPROP:
+            self._thermo = "coolprop"
+        elif MEoS and GERG:
+            self._thermo = "gerg"
+        elif MEoS:
+            self._thermo = "meos"
+        else:
+            self._thermo = "eos"
 
     def setSolid(self, solid):
         self.solido = solid
@@ -826,10 +859,7 @@ class Corriente(config.Entity):
                 phases = [self.Liquido, self.Gas]
 
             complejos = ""
-            if self._thermo == "meos":
-                data = meos.data
-            else:
-                data = thermo.data
+            data = self.cmp.properties()
             for propiedad, key, unit in data:
                 if key in self.Gas.__dict__ or key in self.Liquido.__dict__:
                     values = [propiedad]
@@ -931,13 +961,13 @@ class Corriente(config.Entity):
             state["cvo"] = self.cv0
             state["cpo/cv"] = self.cp0_cv
             state["gammao"] = self.gamma0
+            state["Hvap"] = self.Hvap
+            state["Svap"] = self.Svap
 
         if self._thermo == "meos":
             state["virialB"] = self.virialB
             state["virialC"] = self.virialC
             state["invT"] = self.invT
-            state["Hvap"] = self.Hvap
-            state["Svap"] = self.Svap
 
         state["fluxType"] = self.tipoFlujo
         self.mezcla.writeStatetoJSON(state)
@@ -988,13 +1018,13 @@ class Corriente(config.Entity):
             self.cv0 = unidades.Entropy(state["cvo"])
             self.cp0_cv = unidades.Dimensionless(state["cpo/cv"])
             self.gamma0 = unidades.Dimensionless(state["gammao"])
+            self.Hvap = unidades.Enthalpy(state["Hvap"])
+            self.Svap = unidades.SpecificHeat(state["Svap"])
 
         if self._thermo == "meos":
             self.virialB = unidades.SpecificVolume(state["virialB"])
             self.virialC = unidades.SpecificVolume_square(state["virialC"])
             self.invT = unidades.InvTemperature(state["invT"])
-            self.Hvap = unidades.Enthalpy(state["Hvap"])
-            self.Svap = unidades.SpecificHeat(state["Svap"])
 
         self.tipoFlujo = state["fluxType"]
         self.mezcla = Mezcla()

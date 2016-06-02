@@ -4,7 +4,7 @@ pychemqt is intended to be a free software tool for calculation and design of un
 Dependencies
 --------------------
 
-* `python3 <http://www.p7ython.org/>`__, version 3.x required
+* `python3 <http://www.python.org/>`__, version 3.x required
 * `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
 * `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
 * `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data

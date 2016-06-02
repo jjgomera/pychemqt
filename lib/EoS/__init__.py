@@ -29,9 +29,9 @@ from . import virial
 
 
 K = cubic._all + BWRS._all + Lee_Kesler._all + Grayson_Streed._all
-K_name = [k.__name__ for k in K]
+K_name = [k.__title__.split(" (")[0] for k in K]
 H = cubic._all + BWRS._all + Lee_Kesler._all
-H_name = [h.__name__ for h in H]
+H_name = [h.__title__.split(" (")[0] for h in H]
 
 mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (QApplication.translate("pychemqt", "Ideal"),
