@@ -216,10 +216,10 @@ splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
         with open(os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")) as cost_index:
-            lista = cost_index.readlines()[-1][:-1].split(" ")
+            lista = cost_index.readlines()[-1].split(" ")
             with open(conf_dir + "CostIndex.dat", "w") as archivo:
                 for data in lista:
-                    archivo.write(data + os.linesep)
+                    archivo.write(data.replace(os.linesep, "") + os.linesep)
 
 # Checking currency rates
 splash.showMessage(QtWidgets.QApplication.translate(
