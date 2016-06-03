@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
-
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
@@ -25,11 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-# To delete
-os.environ["pychemqt"]="/home/jjgomera/pychemqt/"
-
 from PyQt5 import QtGui, QtWidgets
-
 
 from lib import sql
 from UI import viewComponents
@@ -81,16 +76,19 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.BaseDatos = QtWidgets.QTableWidget()
         self.BaseDatos.setMinimumWidth(375)
         self.BaseDatos.verticalHeader().hide()
-        self.BaseDatos.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.BaseDatos.setEditTriggers(
+            QtWidgets.QAbstractItemView.NoEditTriggers)
         self.BaseDatos.setShowGrid(False)
         self.BaseDatos.setRowCount(0)
         self.BaseDatos.setColumnCount(3)
-        self.BaseDatos.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Id"))
+        self.BaseDatos.setHorizontalHeaderItem(
+            0, QtWidgets.QTableWidgetItem("Id"))
         self.BaseDatos.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
             QtWidgets.QApplication.translate("pychemqt", "Name")))
         self.BaseDatos.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem(
             QtWidgets.QApplication.translate("pychemqt", "Formula")))
-        self.BaseDatos.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.BaseDatos.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
         self.BaseDatos.horizontalHeader().setStretchLastSection(True)
         self.BaseDatos.currentCellChanged.connect(self.checkButton)
         self.BaseDatos.doubleClicked.connect(self.mostrarPropiedades)
@@ -105,7 +103,8 @@ class UI_databank_widget(QtWidgets.QWidget):
         sql.databank.execute("select * from compuestos")
         for i in sql.databank:
             self.BaseDatos.setRowCount(self.BaseDatos.rowCount()+1)
-            self.BaseDatos.setItem(i[0]-1, 0, QtWidgets.QTableWidgetItem(str(i[0])))
+            self.BaseDatos.setItem(
+                i[0]-1, 0, QtWidgets.QTableWidgetItem(str(i[0])))
             self.BaseDatos.setItem(i[0]-1, 1, QtWidgets.QTableWidgetItem(i[2]))
             self.BaseDatos.setItem(i[0]-1, 2, QtWidgets.QTableWidgetItem(i[1]))
             self.BaseDatos.setRowHeight(self.BaseDatos.rowCount()-1, 20)
@@ -114,7 +113,8 @@ class UI_databank_widget(QtWidgets.QWidget):
         for i in sql.databank_Custom:
             filas = self.BaseDatos.rowCount()
             self.BaseDatos.setRowCount(filas+1)
-            self.BaseDatos.setItem(filas, 0, QtWidgets.QTableWidgetItem(str(i[0])))
+            self.BaseDatos.setItem(
+                filas, 0, QtWidgets.QTableWidgetItem(str(i[0])))
             self.BaseDatos.setItem(filas, 1, QtWidgets.QTableWidgetItem(i[2]))
             self.BaseDatos.setItem(filas, 2, QtWidgets.QTableWidgetItem(i[1]))
             self.BaseDatos.setRowHeight(self.BaseDatos.rowCount()-1, 20)
@@ -157,7 +157,8 @@ class UI_databank_widget(QtWidgets.QWidget):
 
     @property
     def currentIndice(self):
-        return float(self.BaseDatos.item(self.BaseDatos.currentRow(), 0).text())
+        value = self.BaseDatos.item(self.BaseDatos.currentRow(), 0).text()
+        return float(value)
 
     def currentRow(self):
         return self.BaseDatos.currentRow()
@@ -185,8 +186,8 @@ class UI_databank(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.databank = UI_databank_widget()
         layout.addWidget(self.databank)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
