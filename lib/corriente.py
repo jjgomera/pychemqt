@@ -37,7 +37,7 @@ from lib import meos, thermo
 from lib.solids import Solid
 from lib.mezcla import Mezcla
 from lib.psycrometry import PsychroState
-from lib.thermo import Fluid, Fluid_MEOS
+from lib.thermo import Thermo, ThermoWater, Fluid_MEOS
 
 
 class Corriente(config.Entity):
@@ -332,6 +332,7 @@ class Corriente(config.Entity):
         return self.tipoTermodinamica and self.tipoFlujo
 
     def calculo(self):
+        Config = config.getMainWindowConfig()
         if self.kwargs["mezcla"]:
             self.mezcla = self.kwargs["mezcla"]
         else:
@@ -368,8 +369,7 @@ class Corriente(config.Entity):
             kwargs["mezcla"] = self.mezcla
             compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
         elif self._thermo == "coolprop":
-            # TODO: Add support for multicomponent
-            compuesto = coolProp.CoolProp(fluido=self.ids[0], **self.kwargs)
+            compuesto = coolProp.CoolProp(fluido=self.ids, **self.kwargs)
         elif self._thermo == "meos":
             if self.tipoTermodinamica == "TP":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
@@ -605,7 +605,7 @@ class Corriente(config.Entity):
             _coolprop = self.kwargs["coolProp"]
         else:
             _coolprop = Config.getboolean("Thermo", "coolprop")
-        COOLPROP = _coolprop and os.environ["coolprop"] and COOLPROP_available
+        COOLPROP = _coolprop and os.environ["CoolProp"] and COOLPROP_available
 
         # refprop availability
         if self.kwargs["refprop"] is not None:
@@ -874,7 +874,7 @@ class Corriente(config.Entity):
                     complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
                     complejos += os.linesep
 
-            txt += doc + os.linesep + os.linesep + txtphases + complejos
+            txt += doc + os.linesep + txtphases + complejos
 
         return txt
 
@@ -882,17 +882,18 @@ class Corriente(config.Entity):
         """Return a text repr of class with all properties"""
         if self._thermo == "meos":
             title = QApplication.translate("pychemqt", "Advanced MEoS properties")
-            doc = self.cmp._constants["__doi__"]["autor"] + "; " + \
-                self.cmp._constants["__doi__"]["title"] + "; " + \
-                self.cmp._constants["__doi__"]["ref"]
+            doc_param = [self.cmp._constants["__doi__"]]
         else:
             title = QApplication.translate("pychemqt", "Advanced thermo properties")
-            doc = self.cmp.__doi__[0]["autor"] + "; " + \
-                self.cmp.__doi__[0]["title"]
+            doc_param = self.cmp.__doi__
+        doc = ""
+        for doi in doc_param:
+            doc += doi["autor"] + "; " + doi["title"] + "; " + doi["ref"]
+            doc += os.linesep
 
-        txt = os.linesep + os.linesep + os.linesep + "#---------------"
+        txt = os.linesep + os.linesep + "#---------------"
         txt += title + "-------------------#" + os.linesep
-        txt += os.linesep + doc + os.linesep
+        txt += doc
         return txt
 
     @classmethod
@@ -1038,9 +1039,12 @@ class Corriente(config.Entity):
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
 
-        if self._thermo in ["iapws", "freesteam", "coolprop", "refprop"]:
-            self.Liquido = Fluid()
-            self.Gas = Fluid()
+        if self._thermo in ["iapws", "freesteam"]:
+            self.Liquido = ThermoWater()
+            self.Gas = ThermoWater()
+        elif self._thermo in ["coolprop", "refprop"]:
+            self.Liquido = Thermo()
+            self.Gas = Thermo()
         elif self._thermo == "meos":
             self.Liquido = Fluid_MEOS()
             self.Gas = Fluid_MEOS()
@@ -1061,7 +1065,7 @@ class Corriente(config.Entity):
             fluido = [refProp.__all__[id] for id in self.ids]
             self.cmp = refProp.refProp(fluido=fluido)
         elif self._thermo == "coolprop":
-            self.cmp = coolProp.CoolProp(fluido=self.ids[0])
+            self.cmp = coolProp.CoolProp(fluido=self.ids)
         elif self._thermo == "meos":
             eq = state["meos_eq"]
             self.cmp = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](eq=eq)

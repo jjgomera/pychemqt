@@ -3057,6 +3057,15 @@ class IAPWS97(ThermoWater):
          "ref": "J. Eng. Gas Turbines & Power 122, 150-182 (2000)",
          "doi": "10.1115/1.483186"}]
 
+    M = unidades.Dimensionless(M)
+    Pc = unidades.Pressure(Pc, "MPa")
+    Tc = unidades.Temperature(Tc)
+    rhoc = unidades.Density(rhoc)
+    Tt = unidades.Temperature(Tt)
+    Tb = unidades.Temperature(Tb)
+    f_accent = unidades.Dimensionless(0.3443)
+    momentoDipolar = unidades.DipoleMoment(1.855, "Debye")
+
     @property
     def calculable(self):
         """Check if class is calculable by its kwargs"""
@@ -3272,16 +3281,6 @@ class IAPWS97(ThermoWater):
         else:
             raise NotImplementedError("Bad incoming variables")
 
-        self.M = unidades.Dimensionless(M)
-        self.Pc = unidades.Pressure(Pc, "MPa")
-        self.Tc = unidades.Temperature(Tc)
-        self.rhoc = unidades.Density(rhoc)
-        self.Tt = unidades.Temperature(Tt)
-        self.Tb = unidades.Temperature(Tb)
-
-        self.f_accent = unidades.Dimensionless(0.3443)
-        self.momentoDipolar = unidades.DipoleMoment(1.855, "Debye")
-
         self.x = unidades.Dimensionless(propiedades["x"])
         self.region = propiedades["region"]
         self.phase = self.getphase(propiedades)
@@ -3299,8 +3298,8 @@ class IAPWS97(ThermoWater):
         cp0 = prop0(self.T, self.P)
         self._cp0(cp0)
 
-        self.Liquido = Fluid()
-        self.Gas = Fluid()
+        self.Liquido = ThermoWater()
+        self.Gas = ThermoWater()
         if self.x == 0:
             # only liquid phase
             self.fill(self, propiedades)
