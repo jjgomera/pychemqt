@@ -12,8 +12,8 @@ Dependencies
 Optional applications that are required for pychemqt to work with full functionality:
 
 * `freesteam <http://freesteam.sourceforge.net/>`__: package for calculating thermodynamic properties of water by IAPWS-IF97
+* `coolprop <http://coolprop.org/>`__: package for calculating thermodynamic properties using multiparameter equations of state, required 6.x version.
 * `python-refprop <https://github.com/BenThelen/python-refprop>`__: package for calculating thermodynamic properties using `refprop <http://www.nist.gov/srd/nist23.cfm>`__ NIST application
-* `coolprop <http://coolprop.org/>`__: package for calculating thermodynamic properties using multiparameter equations of state
 * `oasa <http://bkchem.zirael.org/oasa_en.html>`__: used to show compound extended formula in database
 * `ezodf <https://bitbucket.org/mozman/ezodf>`__: package for integration with OpenDocument spreadsheet (ods)
 * `openpyxl <https://bitbucket.org/ericgazoni/openpyxl>`__: package for integration with Microsoft Excel 2007/2010 (xlsx)
