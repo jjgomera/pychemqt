@@ -2657,9 +2657,9 @@ class MEoS(Fluid_MEOS):
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
             (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Adiabatic compresibility"), "ks", unidades.InvPressure),
-            (QApplication.translate("pychemqt", "Isothermal modulus"), "Ks", unidades.Pressure),
-            (QApplication.translate("pychemqt", "Adiabatic modulus"), "Kt", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Isentropic compresibility"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Isentropic bulk modulus"), "Ks", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg
             (QApplication.translate("pychemqt", "Internal pressure"), "IntP", unidades.Pressure),
             (QApplication.translate("pychemqt", "Negative reciprocal temperature"), "invT", unidades.InvTemperature),

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 ###############################################################################
@@ -269,8 +269,17 @@ class Thermo(object):
     """Class with common functionality for special thermo model, children class
     are iapws, coolprop, refprop"""
 
+    _bool = False
     status = 0
     msg = "Unknown variables"
+    kwargs = {}
+
+    h = 0
+    s = 0
+    cp = 0
+    cv = 0
+    cp_cv = 0
+    cp0 = 0
 
     def __init__(self, **kwargs):
         self.kwargs = self.__class__.kwargs.copy()
@@ -283,6 +292,12 @@ class Thermo(object):
             self.status = 1
             self.calculo()
             self.msg = "Solved"
+
+    def calculable(self):
+        pass
+
+    def calculo(self):
+        pass
 
     def _cp0(self, cp0):
         "Set ideal properties to state"""
@@ -370,6 +385,95 @@ class Thermo(object):
             (QApplication.translate("pychemqt", "Ideal gas Isoentropic exponent"), "gamma0", unidades.Dimensionless)]
         return l
 
+    def writeStatetoJSON(self, state, fase):
+        fluid = {}
+        if self._bool:
+            fluid["M"] = self.M
+            fluid["v"] = self.v
+
+            fluid["h"] = self.h
+            fluid["s"] = self.s
+            fluid["u"] = self.u
+            fluid["a"] = self.a
+            fluid["g"] = self.g
+
+            fluid["cv"] = self.cv
+            fluid["cp"] = self.cp
+            fluid["cp/cv"] = self.cp_cv
+            fluid["w"] = self.w
+
+            fluid["Z"] = self.Z
+            fluid["alfav"] = self.alfav
+            fluid["kappa"] = self.kappa
+
+            fluid["mu"] = self.mu
+            fluid["k"] = self.k
+            fluid["nu"] = self.nu
+            fluid["Prandt"] = self.Prandt
+
+            fluid["alfa"] = self.alfa
+            fluid["joule"] = self.joule
+            fluid["deltat"] = self.deltat
+            fluid["gamma"] = self.gamma
+
+            fluid["alfap"] = self.alfap
+            fluid["betap"] = self.betap
+            fluid["f"] = self.f
+
+            fluid["volFlow"] = self.Q
+            fluid["massFlow"] = self.caudalmasico
+            fluid["molarFlow"] = self.caudalmolar
+            fluid["fraction"] = self.fraccion
+            fluid["massFraction"] = self.fraccion_masica
+            fluid["massUnitFlow"] = self.caudalunitariomasico
+            fluid["molarUnitFlow"] = self.caudalunitariomolar
+        state[fase] = fluid
+
+    def readStatefromJSON(self, fluid):
+        if fluid:
+            self._bool = True
+
+            self.M = unidades.Dimensionless(fluid["M"])
+            self.v = unidades.SpecificVolume(fluid["v"])
+            self.rho = unidades.Density(1/self.v)
+
+            self.h = unidades.Enthalpy(fluid["h"])
+            self.s = unidades.SpecificHeat(fluid["s"])
+            self.u = unidades.Enthalpy(fluid["u"])
+            self.a = unidades.Enthalpy(fluid["a"])
+            self.g = unidades.Enthalpy(fluid["g"])
+
+            self.cv = unidades.SpecificHeat(fluid["cv"])
+            self.cp = unidades.SpecificHeat(fluid["cp"])
+            self.cp_cv = unidades.Dimensionless(fluid["cp/cv"])
+            self.w = unidades.Speed(fluid["w"])
+
+            self.Z = unidades.Dimensionless(fluid["Z"])
+            self.alfav = unidades.InvTemperature(fluid["alfav"])
+            self.kappa = unidades.InvPressure(fluid["kappa"])
+
+            self.mu = unidades.Viscosity(fluid["mu"])
+            self.k = unidades.ThermalConductivity(fluid["k"])
+            self.nu = unidades.Diffusivity(fluid["nu"])
+            self.Prandt = unidades.Dimensionless(fluid["Prandt"])
+
+            self.alfa = unidades.Diffusivity(fluid["alfa"])
+            self.joule = unidades.TemperaturePressure(fluid["joule"])
+            self.deltat = unidades.EnthalpyPressure(fluid["deltat"])
+            self.gamma = unidades.Dimensionless(fluid["gamma"])
+
+            self.alfap = unidades.Dimensionless(fluid["alfap"])
+            self.betap = unidades.Dimensionless(fluid["betap"])
+            self.f = unidades.Pressure(fluid["f"])
+
+            self.Q = unidades.VolFlow(fluid["volFlow"])
+            self.caudalmasico = unidades.MassFlow(fluid["massFlow"])
+            self.caudalmolar = unidades.MolarFlow(fluid["molarFlow"])
+            self.fraccion = [unidades.Dimensionless(x) for x in fluid["fraction"]]
+            self.fraccion_masica = [unidades.Dimensionless(x) for x in fluid["massFraction"]]
+            self.caudalunitariomasico = [unidades.MassFlow(x) for x in fluid["massUnitFlow"]]
+            self.caudalunitariomolar = [unidades.MolarFlow(x) for x in fluid["molarUnitFlow"]]
+
 
 class ThermoWater(Thermo):
     """Custom specified thermo instance to add special properties for water"""
@@ -383,4 +487,15 @@ class ThermoWater(Thermo):
             prop.insert(-11, p)
         return prop
 
+    def writeStatetoJSON(self, state, fase):
+        Thermo.writeStatetoJSON(self, state, fase)
+        if self._bool:
+            state[fase]["n"] = self.n
+            state[fase]["epsilon"] = self.epsilon
+
+    def readStatefromJSON(self, fluid):
+        Thermo.readStatefromJSON(self, fluid)
+        if fluid:
+            self.epsilon = unidades.Dimensionless(fluid["epsilon"])
+            self.n = unidades.Dimensionless(fluid["n"])
 

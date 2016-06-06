@@ -37,7 +37,7 @@ from lib import meos, thermo
 from lib.solids import Solid
 from lib.mezcla import Mezcla
 from lib.psycrometry import PsychroState
-from lib.thermo import Fluid, Fluid_MEOS
+from lib.thermo import Thermo, ThermoWater, Fluid_MEOS
 
 
 class Corriente(config.Entity):
@@ -369,8 +369,7 @@ class Corriente(config.Entity):
             kwargs["mezcla"] = self.mezcla
             compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
         elif self._thermo == "coolprop":
-            # TODO: Add support for multicomponent
-            compuesto = coolProp.CoolProp(fluido=self.ids[0], **self.kwargs)
+            compuesto = coolProp.CoolProp(fluido=self.ids, **self.kwargs)
         elif self._thermo == "meos":
             if self.tipoTermodinamica == "TP":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
@@ -606,7 +605,7 @@ class Corriente(config.Entity):
             _coolprop = self.kwargs["coolProp"]
         else:
             _coolprop = Config.getboolean("Thermo", "coolprop")
-        COOLPROP = _coolprop and os.environ["coolprop"] and COOLPROP_available
+        COOLPROP = _coolprop and os.environ["CoolProp"] and COOLPROP_available
 
         # refprop availability
         if self.kwargs["refprop"] is not None:
@@ -1040,9 +1039,12 @@ class Corriente(config.Entity):
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
 
-        if self._thermo in ["iapws", "freesteam", "coolprop", "refprop"]:
-            self.Liquido = Fluid()
-            self.Gas = Fluid()
+        if self._thermo in ["iapws", "freesteam"]:
+            self.Liquido = ThermoWater()
+            self.Gas = ThermoWater()
+        elif self._thermo in ["coolprop", "refprop"]:
+            self.Liquido = Thermo()
+            self.Gas = Thermo()
         elif self._thermo == "meos":
             self.Liquido = Fluid_MEOS()
             self.Gas = Fluid_MEOS()
@@ -1063,7 +1065,7 @@ class Corriente(config.Entity):
             fluido = [refProp.__all__[id] for id in self.ids]
             self.cmp = refProp.refProp(fluido=fluido)
         elif self._thermo == "coolprop":
-            self.cmp = coolProp.CoolProp(fluido=self.ids[0])
+            self.cmp = coolProp.CoolProp(fluido=self.ids)
         elif self._thermo == "meos":
             eq = state["meos_eq"]
             self.cmp = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](eq=eq)

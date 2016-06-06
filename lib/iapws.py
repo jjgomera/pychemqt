@@ -3299,8 +3299,8 @@ class IAPWS97(ThermoWater):
         cp0 = prop0(self.T, self.P)
         self._cp0(cp0)
 
-        self.Liquido = Fluid()
-        self.Gas = Fluid()
+        self.Liquido = ThermoWater()
+        self.Gas = ThermoWater()
         if self.x == 0:
             # only liquid phase
             self.fill(self, propiedades)
