@@ -41,7 +41,46 @@ cp python/freesteam.py /usr/local/lib/python3.4/dist-packages/
 #CoolProp
 #package for calculating thermodynamic properties with advanced equations
 ########################################################################
+
 apt-get install pip3
 pip3 install CoolProp
 
+
+########################################################################
+#refProp
+#package for calculating thermodynamic properties with advanced equations
+########################################################################
+
+# This library is a python wrapper to work with a installed copy of REFPROP.
+# In order to legally obtain a copy of the REFPROP software and fortran source
+# codes, use the following web page: http://www.nist.gov/srd/nist23.cfm.
+# Once purchased, the software will be delivered as a windows self extracting
+# installation file (.exe). In order to access the files required by this python module,
+# you can install REFPROP using this self extracting installation file or extract files.
+
+# First at all instal the dependences
+apt-get install dos2unix gfortran
+
+# Download the python library
+git clone https://github.com/BenThelen/python-refprop.git
+
+# Compile the REFPROP source files
+cd python-refprop
+./rp2so
+# The script need root privileges to run
+# The script ask for the refprop files folder and the destination folder for compiled files,
+
+# We suppose the python3 library (for python3.2) is going to work in other python3 versions
+cp python3.2/multiRP.py /usr/local/lib/python3.4/dist-packages
+cp python3.2/refprop.py /usr/local/lib/python3.4/dist-packages
+cp python3.2/rptest.py /usr/local/lib/python3.4/dist-packages
+
+
+
+
+
 pip3 install ezodf
+
+#OASA  used to show compound extended formula in database
+#Luego de instalado bkchem
+sudo python /usr/lib/bkchem/bkchem/oasa/setup.py install
