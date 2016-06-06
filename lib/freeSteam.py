@@ -72,9 +72,19 @@ class Freesteam(ThermoWater):
               "l": 0.5893}
     __doi__ = [
         {"autor": "Freesteam",
-         "title": "Revised Release on the IAPWS Industrial Formulation 1997 for the Thermodynamic Properties of Water and Steam",
+         "title": "Revised Release on the IAPWS Industrial Formulation 1997 "
+                  "for the Thermodynamic Properties of Water and Steam",
          "ref": "",
          "doi": ""}]
+
+    M = unidades.Dimensionless(mEoS.H2O.M)
+    Pc = unidades.Pressure(freesteam.PCRIT)
+    Tc = unidades.Temperature(freesteam.TCRIT)
+    rhoc = unidades.Density(freesteam.RHOCRIT*M)
+    Tt = mEoS.H2O.Tt
+    Tb = mEoS.H2O.Tb
+    f_accent = unidades.Dimensionless(mEoS.H2O.f_acent)
+    momentoDipolar = mEoS.H2O.momentoDipolar
 
     @property
     def calculable(self):
@@ -110,15 +120,6 @@ class Freesteam(ThermoWater):
                   freesteam.steam_pv, freesteam.steam_Ts, freesteam.steam_Tx]
         func = method[self._thermo]
         fluido = func(self.var1, self.var2)
-
-        self.M = unidades.Dimensionless(mEoS.H2O.M)
-        self.Pc = unidades.Pressure(freesteam.PCRIT)
-        self.Tc = unidades.Temperature(freesteam.TCRIT)
-        self.rhoc = unidades.Density(freesteam.RHOCRIT*self.M)
-        self.Tt = mEoS.H2O.Tt
-        self.Tb = mEoS.H2O.Tb
-        self.f_accent = unidades.Dimensionless(mEoS.H2O.f_acent)
-        self.momentoDipolar = mEoS.H2O.momentoDipolar
 
         self.phase = self.getphase(fluido)
         self.x = unidades.Dimensionless(fluido.x)
