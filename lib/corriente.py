@@ -332,6 +332,7 @@ class Corriente(config.Entity):
         return self.tipoTermodinamica and self.tipoFlujo
 
     def calculo(self):
+        Config = config.getMainWindowConfig()
         if self.kwargs["mezcla"]:
             self.mezcla = self.kwargs["mezcla"]
         else:
@@ -874,7 +875,7 @@ class Corriente(config.Entity):
                     complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
                     complejos += os.linesep
 
-            txt += doc + os.linesep + os.linesep + txtphases + complejos
+            txt += doc + os.linesep + txtphases + complejos
 
         return txt
 
@@ -882,17 +883,18 @@ class Corriente(config.Entity):
         """Return a text repr of class with all properties"""
         if self._thermo == "meos":
             title = QApplication.translate("pychemqt", "Advanced MEoS properties")
-            doc = self.cmp._constants["__doi__"]["autor"] + "; " + \
-                self.cmp._constants["__doi__"]["title"] + "; " + \
-                self.cmp._constants["__doi__"]["ref"]
+            doc_param = [self.cmp._constants["__doi__"]]
         else:
             title = QApplication.translate("pychemqt", "Advanced thermo properties")
-            doc = self.cmp.__doi__[0]["autor"] + "; " + \
-                self.cmp.__doi__[0]["title"]
+            doc_param = self.cmp.__doi__
+        doc = ""
+        for doi in doc_param:
+            doc += doi["autor"] + "; " + doi["title"] + "; " + doi["ref"]
+            doc += os.linesep
 
-        txt = os.linesep + os.linesep + os.linesep + "#---------------"
+        txt = os.linesep + os.linesep + "#---------------"
         txt += title + "-------------------#" + os.linesep
-        txt += os.linesep + doc + os.linesep
+        txt += doc
         return txt
 
     @classmethod
