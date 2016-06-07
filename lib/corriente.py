@@ -35,7 +35,7 @@ from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
 from lib import meos, thermo
 from lib.solids import Solid
-from lib.mezcla import Mezcla
+from lib.mezcla import Mezcla, _mix_from_molarflow_and_molarfraction
 from lib.psycrometry import PsychroState
 from lib.thermo import Thermo, ThermoWater, Fluid_MEOS
 
@@ -529,20 +529,26 @@ class Corriente(config.Entity):
                 self.Gas.Q = unidades.VolFlow(self.Q*(1-self.x))
                 self.Gas.caudalmasico = unidades.MassFlow(self.caudalmasico*self.x)
                 self.Gas.caudalmolar = unidades.MolarFlow(self.caudalmolar*self.x)
-                self.Gas.fraccion = [unidades.Dimensionless(1)]
-                self.Gas.fraccion_masica = [unidades.Dimensionless(1)]
-                self.Gas.caudalunitariomasico = [self.Gas.caudalmasico]
-                self.Gas.caudalunitariomolar = [self.Gas.caudalmolar]
+                kw = _mix_from_molarflow_and_molarfraction(
+                    self.Gas.caudalmolar, self.Gas.fraccion, self.componente)
+                self.Gas.caudalunitariomasico = [
+                    unidades.MassFlow(f) for f in kw["unitMassFlow"]]
+                self.Gas.caudalunitariomolar = [
+                    unidades.MolarFlow(f) for f in kw["unitMolarFlow"]]
+                self.Gas.ids = self.ids
 
             if self.x < 1:
                 self.Liquido.Q = unidades.VolFlow(self.Q*(1-self.x))
                 self.Liquido.caudalmasico = unidades.MassFlow(self.caudalmasico*(1-self.x))
                 self.Liquido.caudalmolar = unidades.MolarFlow(self.caudalmolar*(1-self.x))
-                self.Liquido.fraccion = [unidades.Dimensionless(1)]
-                self.Liquido.fraccion_masica = [unidades.Dimensionless(1)]
-                self.Liquido.caudalunitariomasico = [self.Liquido.caudalmasico]
-                self.Liquido.caudalunitariomolar = [self.Liquido.caudalmolar]
+                kw = _mix_from_molarflow_and_molarfraction(
+                    self.Liquido.caudalmolar, self.Liquido.fraccion, self.componente)
+                self.Liquido.caudalunitariomasico = [
+                    unidades.MassFlow(f) for f in kw["unitMassFlow"]]
+                self.Liquido.caudalunitariomolar = [
+                    unidades.MolarFlow(f) for f in kw["unitMolarFlow"]]
                 self.Liquido.sigma = compuesto.Liquido.sigma
+                self.Liquido.ids = self.ids
 
         if Config.get("Components", "Solids"):
             if self.kwargs["solido"]:
@@ -626,9 +632,9 @@ class Corriente(config.Entity):
             self._thermo = "freesteam"
         elif IAPWS:
             self._thermo = "iapws"
-        elif MEoS and REFPROP:
+        elif _meos and REFPROP:
             self._thermo = "refprop"
-        elif MEoS and COOLPROP:
+        elif _meos and COOLPROP:
             self._thermo = "coolprop"
         elif MEoS and GERG:
             self._thermo = "gerg"
@@ -670,6 +676,7 @@ class Corriente(config.Entity):
             del old_kwargs["T"]
         if "mezcla" in kwargs:
             old_kwargs.update(kwargs["mezcla"].kwargs)
+            del kwargs["mezcla"]
         old_kwargs.update(kwargs)
         return Corriente(**old_kwargs)
 

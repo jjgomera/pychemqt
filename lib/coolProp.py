@@ -169,8 +169,8 @@ class CoolProp(Thermo):
     """Stream class using coolProp external library
     Parameters needed to define it are:
 
-        -fluido: index of fluid
-        -fraction: molar fraction
+        -ids: index of fluid
+        -fraccionMolar: molar fraction
 
         -T: Temperature, Kelvin
         -P: Pressure, Pa
@@ -179,8 +179,8 @@ class CoolProp(Thermo):
         -S: Entropy, J/kgK
         -x: Quality, -
     """
-    kwargs = {"fluido": [],
-              "fraction": [],
+    kwargs = {"ids": [],
+              "fraccionMolar": [],
 
               "T": 0.0,
               "P": 0.0,
@@ -204,12 +204,12 @@ class CoolProp(Thermo):
         """Check in the class is fully defined"""
         # Check mix state
         self._multicomponent = False
-        if len(self.kwargs["fluido"]) > 1:
+        if len(self.kwargs["ids"]) > 1:
             self._multicomponent = True
 
         # Check supported fluid
         COOLPROP_available = True
-        for id in self.kwargs["fluido"]:
+        for id in self.kwargs["ids"]:
             if id not in __all__ and id not in noIds:
                 COOLPROP_available = False
                 if not COOLPROP_available:
@@ -217,7 +217,7 @@ class CoolProp(Thermo):
 
         # Check correct fluid definition
         if self._multicomponent:
-            if len(self.kwargs["fraction"]) == len(self.kwargs["fluido"]):
+            if len(self.kwargs["fraccionMolar"]) == len(self.kwargs["ids"]):
                 self._definition = True
             else:
                 self._definition = False
@@ -256,7 +256,7 @@ class CoolProp(Thermo):
 
     def _name(self):
         lst = []
-        for fld in self.kwargs["fluido"]:
+        for fld in self.kwargs["ids"]:
             if fld in __all__:
                 lst.append(__all__[fld])
             elif fld in noIds:
@@ -269,7 +269,7 @@ class CoolProp(Thermo):
         args = self.args()
         estado = CP.AbstractState("HEOS", fluido)
         if self._multicomponent:
-            estado.set_mole_fractions(self.kwargs["fraction"])
+            estado.set_mole_fractions(self.kwargs["fraccionMolar"])
         estado.update(self._par, *args)
 
         self.M = unidades.Dimensionless(estado.molar_mass()*1000)
@@ -284,29 +284,29 @@ class CoolProp(Thermo):
         Cmps = [Componente(int(i)) for i in self.kwargs["fluido"]]
 
         # Calculate critic temperature, API procedure 4B1.1 pag 304
-        V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraction"], Cmps)])
-        k = [xi*cmp.Vc/V for xi, cmp in zip(self.kwargs["fraction"], Cmps)]
+        V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+        k = [xi*cmp.Vc/V for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)]
         Tcm = sum([ki*cmp.Tc for ki, cmp in zip(k, Cmps)])
         self.Tc = unidades.Temperature(Tcm)
 
         # Calculate pseudocritic temperature
-        tpc = sum([x*cmp.Tc for x, cmp in zip(self.kwargs["fraction"], Cmps)])
+        tpc = sum([x*cmp.Tc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
 
         # Calculate pseudocritic pressure
-        ppc = sum([x*cmp.Pc for x, cmp in zip(self.kwargs["fraction"], Cmps)])
+        ppc = sum([x*cmp.Pc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
 
         # Calculate critic pressure, API procedure 4B2.1 pag 307
         sumaw = 0
-        for xi, cmp in zip(self.kwargs["fraction"], Cmps):
+        for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps):
             sumaw += xi*cmp.f_acent
         pc = ppc+ppc*(5.808+4.93*sumaw)*(self.Tc-tpc)/tpc
         self.Pc = unidades.Pressure(pc)
 
         # Calculate critic volume, API procedure 4B3.1 pag 314
         sumaxvc23 = sum([xi*cmp.Vc**(2./3) for xi, cmp in
-                         zip(self.kwargs["fraction"], Cmps)])
+                         zip(self.kwargs["fraccionMolar"], Cmps)])
         k = [xi*cmp.Vc**(2./3)/sumaxvc23 for xi, cmp in
-             zip(self.kwargs["fraction"], Cmps)]
+             zip(self.kwargs["fraccionMolar"], Cmps)]
 
         # TODO: Calculate C value from component type.
         # For now it suppose all are hidrycarbon (C=0)
@@ -324,7 +324,7 @@ class CoolProp(Thermo):
         self.Tt = unidades.Temperature(estado.Ttriple())
         estado2 = CP.AbstractState("HEOS", fluido)
         if self._multicomponent:
-            estado2.set_mole_fractions(self.kwargs["fraction"])
+            estado2.set_mole_fractions(self.kwargs["fraccionMolar"])
         estado2.update(CP.PQ_INPUTS, 101325, 1)
         self.Tb = unidades.Temperature(estado2.T())
         self.f_accent = unidades.Dimensionless(estado.acentric_factor())
@@ -337,7 +337,7 @@ class CoolProp(Thermo):
         if self._multicomponent:
             string = fluido.replace("&", " (%0.2f), ")
             string += " (%0.2f)"
-            self.name = string % tuple(self.kwargs["fraction"])
+            self.name = string % tuple(self.kwargs["fraccionMolar"])
             self.CAS = ""
             self.synonim = ""
         else:
@@ -392,7 +392,7 @@ class CoolProp(Thermo):
              'd3alphar_dDelta3', 'd3alphar_dDelta_dTau2', 'd3alphar_dTau3', 'dalpha0_dDelta', 'dalpha0_dTau', 'dalphar_dDelta', 'dalphar_dTau',
              'first_saturation_deriv', 'first_two_phase_deriv', 'first_two_phase_deriv_splined',
              'fluid_param_string', 'get_binary_interaction_double',
-             'get_binary_interaction_string', 'get_mass_fractions', 'get_mole_fractions', 'get_phase_envelope_data', 'has_melting_line',
+             'get_binary_interaction_string', 'get_phase_envelope_data', 'has_melting_line',
              'ideal_curve',
              'melting_line', 'pmax',
              'rhomass', 'rhomass_reducing', 'rhomolar_critical', 'rhomolar_reducing',
@@ -457,7 +457,7 @@ class CoolProp(Thermo):
         if self._multicomponent:
             fase.fi = []
             fase.f = []
-            for i in range(len(self.kwargs["fluido"])):
+            for i in range(len(self.kwargs["ids"])):
                 fase.fi.append(unidades.Dimensionless(
                     estado.fugacity_coefficient(i)))
                 fase.f.append(unidades.Pressure(estado.fugacity(i)))
@@ -534,6 +534,8 @@ class CoolProp(Thermo):
         fase.k = unidades.ThermalConductivity(estado.conductivity())
         fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
         fase.Prandt = unidades.Dimensionless(estado.Prandtl())
+        fase.fraccion = estado.get_mole_fractions()
+        fase.fraccion_masica = estado.get_mass_fractions()
 
     def getphase(self, estado):
         """Return fluid phase with translation support"""
@@ -557,5 +559,5 @@ class CoolProp(Thermo):
             return QApplication.translate("pychemqt", "Two phases"), estado.Q()
 
 if __name__ == '__main__':
-    fluido = CoolProp(fluido=[62], fraction=[1], T=300, P=101325)
+    fluido = CoolProp(ids=[62], fraccionMolar=[1], T=300, P=101325)
     print(fluido.P, fluido.Pc)

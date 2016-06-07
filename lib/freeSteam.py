@@ -220,6 +220,8 @@ class Freesteam(ThermoWater):
 
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
         fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
+        fase.fraccion = [1]
+        fase.fraccion_masica = [1]
 
     def getphase(self, fld):
         """Return fluid phase with translation support"""

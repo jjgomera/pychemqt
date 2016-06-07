@@ -29,12 +29,12 @@ from PyQt5 import QtGui, QtWidgets
 optional_modules = (
     ("freesteam", QtWidgets.QApplication.translate(
         "pychemqt", "freesteam thermal option disabled")),
-    ("oasa", QtWidgets.QApplication.translate(
-        "pychemqt", "graphic formula disabled")),
     ("CoolProp", QtWidgets.QApplication.translate(
         "pychemqt", "coolprop thermal option disabled")),
     ("refprop", QtWidgets.QApplication.translate(
         "pychemqt", "refprop thermal option disabled")),
+    ("oasa", QtWidgets.QApplication.translate(
+        "pychemqt", "graphic formula disabled")),
     ("ezodf", QtWidgets.QApplication.translate(
         "pychemqt", "openoffice/libreoffice interaction disabled")),
     ("openpyxl", QtWidgets.QApplication.translate(
