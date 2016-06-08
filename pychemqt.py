@@ -165,6 +165,10 @@ else:
     loglevel = args.loglevel
 loglevel = getattr(logging, loglevel.upper())
 
+# Checking config folder
+if not os.path.isdir(conf_dir):
+    os.mkdir(conf_dir)
+
 try:
     open(conf_dir + "pychemqt.log", 'x')
 except FileExistsError:  # noqa
@@ -208,10 +212,6 @@ if not args.nosplash:
 from lib import firstrun  # noqa
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking config files..."))
-
-# Checking config folder
-if not os.path.isdir(conf_dir):
-    os.mkdir(conf_dir)
 
 # Checking config file
 if not os.path.isfile(conf_dir + "pychemqtrc"):
