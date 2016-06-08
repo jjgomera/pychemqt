@@ -42,8 +42,11 @@ N_comp = databank.fetchone()[0]
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 databank_Custom_name = conf_dir + 'databank.db'
 databank_Custom = sqlite3.connect(databank_Custom_name).cursor()
-databank_Custom.execute("SELECT COUNT(*) AS Total FROM compuestos")
-N_comp_Custom = databank_Custom.fetchone()[0]
+try:
+    databank_Custom.execute("SELECT COUNT(*) AS Total FROM compuestos")
+    N_comp_Custom = databank_Custom.fetchone()[0]
+except sqlite3.OperationalError:
+    N_comp_Custom = 0
 
 
 def createDatabase(name):
