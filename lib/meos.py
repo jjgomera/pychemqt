@@ -893,8 +893,8 @@ class MEoS(Fluid_MEOS):
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
 
         fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
-        fase.fi = unidades.Dimensionless(estado["fugacity"])
-        fase.f = unidades.Pressure(fase.fi*self.P)
+        fase.fi = unidades.Dimensionless([estado["fugacity"]])
+        fase.f = unidades.Pressure([f*self.P for f in fase.fi])
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)

@@ -193,7 +193,7 @@ class Freesteam(ThermoWater):
         fase.u = unidades.Enthalpy(estado.u)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.f = unidades.Pressure(self.P*exp((fase.g-self.g0)/R/self.T))
+        fase.f = unidades.Pressure([self.P*exp((fase.g-self.g0)/R/self.T)])
 
         fase.cv = unidades.SpecificHeat(estado.cv)
         fase.cp = unidades.SpecificHeat(estado.cp)

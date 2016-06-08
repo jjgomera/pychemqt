@@ -188,7 +188,7 @@ class Mezcla(config.Entity):
 
         self.kwargs = Mezcla.kwargs.copy()
         self.kwargs.update(kwargs)
-        if self.kwargs["ids"] is not None:
+        if self.kwargs["ids"]:
             self.ids = self.kwargs.get("ids")
         else:
             Config = config.getMainWindowConfig()

@@ -464,7 +464,7 @@ class Thermo(object):
 
             self.alfap = unidades.Dimensionless(fluid["alfap"])
             self.betap = unidades.Dimensionless(fluid["betap"])
-            self.f = unidades.Pressure(fluid["f"])
+            self.f = [unidades.Pressure(f) for f in fluid["f"]]
 
             self.Q = unidades.VolFlow(fluid["volFlow"])
             self.caudalmasico = unidades.MassFlow(fluid["massFlow"])

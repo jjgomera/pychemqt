@@ -107,7 +107,7 @@ class Corriente(config.Entity):
               "distribucion_fraccion": [],
               "distribucion_diametro": [],
 
-              "ids": None,
+              "ids": [],
               "solids": None,
               "K": "",
               "alfa": "",
@@ -369,7 +369,9 @@ class Corriente(config.Entity):
             kwargs["mezcla"] = self.mezcla
             compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
         elif self._thermo == "coolprop":
-            compuesto = coolProp.CoolProp(fluido=self.ids, **self.kwargs)
+            if not self.kwargs["ids"]:
+                self.kwargs["ids"] = self.ids
+            compuesto = coolProp.CoolProp(**self.kwargs)
         elif self._thermo == "meos":
             if self.tipoTermodinamica == "TP":
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
@@ -851,7 +853,7 @@ class Corriente(config.Entity):
             doc = self._doc()
 
             if 0 < self.x < 1:
-                param = "%-40s\t%20s\t%20s"
+                param = "%-40s\t%-20s\t%-20s"
             else:
                 param = "%-40s\t%s"
             if self.x == 0:
@@ -868,15 +870,22 @@ class Corriente(config.Entity):
             complejos = ""
             data = self.cmp.properties()
             for propiedad, key, unit in data:
-                if key in self.Gas.__dict__ or key in self.Liquido.__dict__:
+                if key == "sigma":
+                    if self.x < 1:
+                        complejos += "%-40s\t%s" % (propiedad, self.Liquido.sigma.str)
+                        complejos += os.linesep
+                elif key == "f":
+                    complejos += propiedad + os.linesep
+                    for i, cmp in enumerate(self.componente):
+                        values = ["  " + cmp.nombre]
+                        for phase in phases:
+                            values.append(phase.__getattribute__(key)[i].str)
+                        complejos += param % tuple(values) +os.linesep
+                elif key in self.Gas.__dict__ or key in self.Liquido.__dict__:
                     values = [propiedad]
                     for phase in phases:
                         values.append(phase.__getattribute__(key).str)
                     complejos += param % tuple(values) +os.linesep
-                elif key == "sigma":
-                    if self.x < 1:
-                        complejos += "%-40s\t%s" % (propiedad, self.Liquido.sigma.str)
-                        complejos += os.linesep
                 else:
                     complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
                     complejos += os.linesep

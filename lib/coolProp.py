@@ -217,7 +217,8 @@ class CoolProp(Thermo):
 
         # Check correct fluid definition
         if self._multicomponent:
-            if len(self.kwargs["fraccionMolar"]) == len(self.kwargs["ids"]):
+            if self.kwargs["ids"] and len(self.kwargs["fraccionMolar"]) == \
+                    len(self.kwargs["ids"]):
                 self._definition = True
             else:
                 self._definition = False
@@ -261,7 +262,7 @@ class CoolProp(Thermo):
                 lst.append(__all__[fld])
             elif fld in noIds:
                 lst.append(fld)
-            name = "&".join(lst)
+        name = "&".join(lst)
         return name
 
     def calculo(self):
@@ -281,7 +282,7 @@ class CoolProp(Thermo):
 
         # Calculate critical properties with mezcla method
         # Coolprop for mixtures can fail and it's slow
-        Cmps = [Componente(int(i)) for i in self.kwargs["fluido"]]
+        Cmps = [Componente(int(i)) for i in self.kwargs["ids"]]
 
         # Calculate critic temperature, API procedure 4B1.1 pag 304
         V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
@@ -462,8 +463,8 @@ class CoolProp(Thermo):
                     estado.fugacity_coefficient(i)))
                 fase.f.append(unidades.Pressure(estado.fugacity(i)))
         else:
-            fase.fi = unidades.Dimensionless(1)
-            fase.f = unidades.Pressure(self.P)
+            fase.fi = unidades.Dimensionless([1])
+            fase.f = unidades.Pressure([self.P])
 
         fase.cv = unidades.SpecificHeat(estado.cvmass())
         fase.cp = unidades.SpecificHeat(estado.cpmass())
