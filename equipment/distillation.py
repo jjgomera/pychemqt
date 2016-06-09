@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2016, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,261 +15,340 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+###############################################################################
+# library for distillation equipment calculation
+# - Flash
+# - Tower
+# - ColumnFUG
+###############################################################################
 
-###Modulo que define los equipos de destilación
 
 import os
 
 from scipy import log, exp, pi, log10, linspace
 from scipy.optimize import fsolve
-from PyQt5.QtWidgets import  QApplication
+from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
 from lib.corriente import Corriente
 from lib.plot import Plot
-from .parents import equipment
-from .heatExchanger import Heat_Exchanger
+from equipment.parents import equipment
+from equipment.heatExchanger import Heat_Exchanger
 
 
 class Flash(equipment):
-    """Clase que modela los tambores flash.
+    """Class to model a flash separation equipment
 
-    Parámetros:
-        entrada: instancia de la clase corriente que define la corriente de entrada en la bomba
-        flash: método de cálculo
-            0   -   Usar P y T de la entrada
+    Parameters:
+        entrada: Corriente instance to define the input stream to equipment
+        flash: Calculate method
+            0 - Use temperature and pressure of input stream
 
-    Coste:
+    Cost:
         orientacion:
-            0   -   Horizontal
-            1   -   Vertical
+            0 - Horizontal
+            1 - Vertical
         material:
-            0   -   Carbon steel
-            1   -   Stainless steel 304
-            2   -   Stainless steel 316
-            3   -   Carpenter 20CB-3
-            4   -   Nickel 200
-            5   -   Monel 400
-            6   -   Inconel 600
-            7   -   Incoloy 825
-            8   -   Titanium
-        densidad: densidad del material
-        diametro: diametro recipiente
-        longitud
-        espesor: espesor de la cubierta
-        cabeza: tipo de cabeza del recipiente
-            0   -   Ellipsoidal
-            1   -   Hemispherical
-            2   -   Bumped
-            3   -   Flat
-        espesor_cabeza: espesor de la cubierta en la cabeza
+            0 - Carbon steel
+            1 - Stainless steel 304
+            2 - Stainless steel 316
+            3 - Carpenter 20CB-3
+            4 - Nickel 200
+            5 - Monel 400
+            6 - Inconel 600
+            7 - Incoloy 825
+            8 - Titanium
+        densidad: Material density
+        diametro: Equipment diameter
+        longitud: Height of equipment
+        espesor: Width of cover
+        cabeza: type of cover
+            0 - Ellipsoidal
+            1 - Hemispherical
+            2 - Bumped
+            3 - Flat
+        espesor_cabeza: Width of head of cover
         reborde: longitud reborde
     """
-    title=QApplication.translate("pychemqt", "Flash Separator")
-    help=""
-    kwargs={"entrada": None,
-                    "flash": 0,
+    title = QApplication.translate("pychemqt", "Flash Separator")
+    help = ""
+    kwargs = {
+        "entrada": None,
+        "flash": 0,
 
-                    "f_install": 1.7,
-                    "Base_index": 0.0,
-                    "Current_index": 0.0,
-                    "orientacion": 0,
-                    "material": 0,
-                    "densidad": 0.0,
-                    "diametro": 0.0,
-                    "longitud": 0.0,
-                    "espesor": 0.0,
-                    "cabeza": 0,
-                    "espesor_cabeza": 0.0,
-                    "reborde": 0.0}
+        "f_install": 1.7,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "orientacion": 0,
+        "material": 0,
+        "densidad": 0.0,
+        "diametro": 0.0,
+        "longitud": 0.0,
+        "espesor": 0.0,
+        "cabeza": 0,
+        "espesor_cabeza": 0.0,
+        "reborde": 0.0}
 
-    kwargsInput=("entrada", )
-    kwargsList=("flash", "orientacion", "material", "cabeza")
-    kwargsValue=("diametro", "longitud", "espesor", "espesor_cabeza", "reborde")
-    calculateCostos=("C_adq", "C_inst", "Peso", "Volumen")
-    indiceCostos=3
+    kwargsInput = ("entrada", )
+    kwargsList = ("flash", "orientacion", "material", "cabeza")
+    kwargsValue = ("diametro", "longitud", "espesor", "espesor_cabeza",
+                   "reborde")
+    calculateCostos = ("C_adq", "C_inst", "Peso", "Volumen")
+    indiceCostos = 3
 
-    TEXT_FLASH=[QApplication.translate("pychemqt", "Use P and T from input stream")]
-    TEXT_ORIENTATION=[QApplication.translate("pychemqt", "Horizontal"),
-                            QApplication.translate("pychemqt", "Vertical")]
-    TEXT_MATERIAL=[QApplication.translate("pychemqt", "Carbon steel"),
-                                QApplication.translate("pychemqt", "Stainless steel 304"),
-                                QApplication.translate("pychemqt", "Stainless steel 316"),
-                                QApplication.translate("pychemqt", "Carpenter 20CB-3"),
-                                QApplication.translate("pychemqt", "Nickel 200"),
-                                QApplication.translate("pychemqt", "Monel 400"),
-                                QApplication.translate("pychemqt", "Inconel 600"),
-                                QApplication.translate("pychemqt", "Incoloy 825"),
-                                QApplication.translate("pychemqt", "Titanium")]
-    TEXT_HEAD=[QApplication.translate("pychemqt", "Ellipsoidal"),
-                                QApplication.translate("pychemqt", "Hemispherical"),
-                                QApplication.translate("pychemqt", "Bumped"),
-                                QApplication.translate("pychemqt", "Flat")]
-
+    TEXT_FLASH = [
+        QApplication.translate("pychemqt", "Use P and T from input stream")]
+    TEXT_ORIENTATION = [QApplication.translate("pychemqt", "Horizontal"),
+                        QApplication.translate("pychemqt", "Vertical")]
+    TEXT_MATERIAL = [
+        QApplication.translate("pychemqt", "Carbon steel"),
+        QApplication.translate("pychemqt", "Stainless steel 304"),
+        QApplication.translate("pychemqt", "Stainless steel 316"),
+        QApplication.translate("pychemqt", "Carpenter 20CB-3"),
+        QApplication.translate("pychemqt", "Nickel 200"),
+        QApplication.translate("pychemqt", "Monel 400"),
+        QApplication.translate("pychemqt", "Inconel 600"),
+        QApplication.translate("pychemqt", "Incoloy 825"),
+        QApplication.translate("pychemqt", "Titanium")]
+    TEXT_HEAD = [
+        QApplication.translate("pychemqt", "Ellipsoidal"),
+        QApplication.translate("pychemqt", "Hemispherical"),
+        QApplication.translate("pychemqt", "Bumped"),
+        QApplication.translate("pychemqt", "Flat")]
 
     @property
     def isCalculable(self):
-        if self.kwargs["f_install"] and self.kwargs["Base_index"] and self.kwargs["Current_index"] and self.kwargs["diametro"] and self.kwargs["longitud"] and self.kwargs["espesor"] :
-            self.statusCoste=True
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"] and self.kwargs["diametro"] and \
+                self.kwargs["longitud"] and self.kwargs["espesor"]:
+            self.statusCoste = True
         else:
-            self.statusCoste=False
+            self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg=QApplication.translate("pychemqt", "undefined input")
-            self.status=0
+            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.status = 0
             return
 
-        self.msg=""
-        self.status=1
+        self.msg = ""
+        self.status = 1
         return True
 
-
     def calculo(self):
-        self.entrada=self.kwargs["entrada"]
-        if self.kwargs["flash"]==0:
-            Vapor=self.entrada.clone(mezcla=self.entrada.Gas)
-            Liquido=self.entrada.clone(mezcla=self.entrada.Liquido)
-            self.salida=[Vapor, Liquido]
-        self.Tout=Vapor.T
-        self.Pout=Vapor.P
-        self.VaporMolarFlow=Vapor.caudalmolar
-        self.VaporMassFlow=Vapor.caudalmasico
-        self.VaporVolFlow=Vapor.Q
-        self.VaporMolarComposition=Vapor.fraccion
-        self.VaporMassComposition=Vapor.fraccion_masica
-        self.LiquidMolarFlow=Liquido.caudalmolar
-        self.LiquidMassFlow=Liquido.caudalmasico
-        self.LiquidVolFlow=Liquido.Q
-        self.LiquidMolarComposition=Liquido.fraccion
-        self.LiquidMassComposition=Liquido.fraccion_masica
+        self.entrada = self.kwargs["entrada"]
+        if self.kwargs["flash"] == 0:
+            Vapor = self.entrada.clone(
+                fraccionMolar=self.entrada.Gas.fraccion,
+                caudalMasico=self.entrada.Gas.caudalmasico)
+            Liquido = self.entrada.clone(
+                fraccionMolar=self.entrada.Liquido.fraccion,
+                caudalMasico=self.entrada.Liquido.caudalmasico)
+            self.salida = [Vapor, Liquido]
+        self.Tout = Vapor.T
+        self.Pout = Vapor.P
+        self.VaporMolarFlow = Vapor.caudalmolar
+        self.VaporMassFlow = Vapor.caudalmasico
+        self.VaporVolFlow = Vapor.Q
+        self.VaporMolarComposition = Vapor.fraccion
+        self.VaporMassComposition = Vapor.fraccion_masica
+        self.LiquidMolarFlow = Liquido.caudalmolar
+        self.LiquidMassFlow = Liquido.caudalmasico
+        self.LiquidVolFlow = Liquido.Q
+        self.LiquidMolarComposition = Liquido.fraccion
+        self.LiquidMassComposition = Liquido.fraccion_masica
 
     def volumen(self):
-        self.Di=unidades.Length(0)
-        self.L=unidades.Length(0)
-        self.reborde=0
-        self.espesor=0
-        self.espesor_cabeza=0
+        self.Di = unidades.Length(0)
+        self.L = unidades.Length(0)
+        self.reborde = 0
+        self.espesor = 0
+        self.espesor_cabeza = 0
 
-        V_carcasa=pi/4*self.Di**2*self.L
+        V_carcasa = pi/4*self.Di**2*self.L
 
-        if self.kwargs["cabeza"]==0:
-            V_cabeza=4./3*pi/8*self.Di**3
-        elif self.kwargs["cabeza"]==1:
-            V_cabeza=4./3*pi/8/2*self.Di**3
-        elif self.kwargs["cabeza"]==2:
-            V_cabeza=0.215483/2*self.Di**3
+        if self.kwargs["cabeza"] == 0:
+            V_cabeza = 4./3*pi/8*self.Di**3
+        elif self.kwargs["cabeza"] == 1:
+            V_cabeza = 4./3*pi/8/2*self.Di**3
+        elif self.kwargs["cabeza"] == 2:
+            V_cabeza = 0.215483/2*self.Di**3
         else:
-            V_cabeza=0.
+            V_cabeza = 0.
 
-        self.V=unidades.Volume(V_carcasa+V_cabeza)
-
+        self.V = unidades.Volume(V_carcasa+V_cabeza)
 
     def peso(self):
-        W_carcasa=pi/4*(self.De**2-self.Di**2)*self.L*self.densidad
+        W_carcasa = pi/4*(self.De**2-self.Di**2)*self.L*self.densidad
 
-        if self.kwargs["cabeza"]==3:
-            W_cabeza=pi/4*self.Di**2*self.espesor_cabeza*self.densidad
+        if self.kwargs["cabeza"] == 3:
+            W_cabeza = pi/4*self.Di**2*self.espesor_cabeza*self.densidad
         else:
-            ratio=self.De/self.espesor_cabeza
-            if self.kwargs["cabeza"]==0:
-                if ratio>20:
-                    hb=1.24
+            ratio = self.De/self.espesor_cabeza
+            if self.kwargs["cabeza"] == 0:
+                if ratio > 20:
+                    hb = 1.24
                 else:
-                    hb=1.3
-            elif self.kwargs["cabeza"]==2:
-                if ratio>50:
-                    hb=1.09
-                elif ratio>30:
-                    hb=1.11
+                    hb = 1.3
+            elif self.kwargs["cabeza"] == 2:
+                if ratio > 50:
+                    hb = 1.09
+                elif ratio > 30:
+                    hb = 1.11
                 else:
-                    hb=1.15
+                    hb = 1.15
             else:
-                if ratio>30:
-                    hb=1.6
-                elif ratio>18:
-                    hb=1.65
+                if ratio > 30:
+                    hb = 1.6
+                elif ratio > 18:
+                    hb = 1.65
                 else:
-                    hb=1.70
-            Do=hb*self.De+2*self.reborde
-            W_cabeza=pi/4*Do**2*self.espesor_cabeza*self.densidad
+                    hb = 1.70
+            Do = hb*self.De+2*self.reborde
+            W_cabeza = pi/4*Do**2*self.espesor_cabeza*self.densidad
 
-        self.W=unidades.Mass(W_carcasa+2*W_cabeza)
-
+        self.W = unidades.Mass(W_carcasa+2*W_cabeza)
 
     def coste(self):
+        CI = self.kwargs["Current_index"]
+        BI = self.kwargs["Base_index"]
+
         if self.kwargs["densidad"]:
-            self.densidad=unidades.Density(self.kwargs["densidad"])
+            self.densidad = unidades.Density(self.kwargs["densidad"])
         else:
-            self.densidad=unidades.Density(501, "lbft3") #La densidad del acero inoxidable 304
-        self.Di=unidades.Length(self.kwargs["diametro"])
-        self.L=unidades.Length(self.kwargs["longitud"])
-        self.espesor=unidades.Length(self.kwargs["espesor"])
-        espesor_cabeza=self.kwargs["espesor_cabeza"]
+            # Use density of Stainless Steel 304
+            self.densidad = unidades.Density(501, "lbft3")
+        self.Di = unidades.Length(self.kwargs["diametro"])
+        self.L = unidades.Length(self.kwargs["longitud"])
+        self.espesor = unidades.Length(self.kwargs["espesor"])
         if self.kwargs["espesor_cabeza"]:
-            self.espesor_cabeza=unidades.Length(self.kwargs["espesor_cabeza"])
+            self.espesor_cabeza = unidades.Length(
+                self.kwargs["espesor_cabeza"])
         else:
-            self.espesor_cabeza=self.espesor
-        self.reborde=unidades.Length(self.kwargs["reborde"])
-        self.De=unidades.Length(self.Di+2*espesor)
+            self.espesor_cabeza = self.espesor
+        self.reborde = unidades.Length(self.kwargs["reborde"])
+        self.De = unidades.Length(self.Di+2*self.espesor)
 
         self.volumen()
         self.peso()
 
-        Fm=[1., 1.7, 2.1, 3.2, 5.4, 3.6, 3.9, 3.7, 7.7][self.kwargs["material"]]
+        ind_material = self.kwargs["material"]
+        Fm = [1., 1.7, 2.1, 3.2, 5.4, 3.6, 3.9, 3.7, 7.7][ind_material]
 
-        if self.kwargs["tipo"]==0:
-            Cb=exp(8.571-0.233*log(self.W.lb)+0.04333*log(self.W.lb)**2)
-            Ca=1370*self.Di.ft**0.2029
+        if self.kwargs["tipo"] == 0:
+            Cb = exp(8.571-0.233*log(self.W.lb)+0.04333*log(self.W.lb)**2)
+            Ca = 1370*self.Di.ft**0.2029
         else:
-            Cb=exp(9.1-0.2889*log(self.W.lb)+0.04576*log(self.W.lb)**2)
-            Ca=246*self.Di.ft**0.7396*self.L.ft**0.7068
+            Cb = exp(9.1-0.2889*log(self.W.lb)+0.04576*log(self.W.lb)**2)
+            Ca = 246*self.Di.ft**0.7396*self.L.ft**0.7068
 
-        C=Fm*Cb+Ca
+        C = Fm*Cb+Ca
 
-        self.C_adq=unidades.Currency(C * self.kwargs["Current_index"] / self.kwargs["Base_index"])
-        self.C_inst=unidades.Currency(self.C_adq*self.kwargs["f_install"])
-
+        self.C_adq = unidades.Currency(C*CI/BI)
+        self.C_inst = unidades.Currency(self.C_adq*self.kwargs["f_install"])
 
     def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Mode"), self.TEXT_FLASH[self.kwargs["flash"]])+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Temperature"), self.salida[0].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+=os.linesep+"#"+QApplication.translate("pychemqt", "Vapor Output Molar Composition")+os.linesep
-        for componente, fraccion in zip(self.salida[0].componente, self.salida[0].fraccion):
-            txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Vapor Output Mass Flow"), self.salida[0].caudalmolar.str)+os.linesep
-        txt+=os.linesep+"#"+QApplication.translate("pychemqt", "Liquid Output Molar Composition")+os.linesep
-        for componente, fraccion in zip(self.salida[1].componente, self.salida[1].fraccion):
-            txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Liquid Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
+        txt = "#---------------"
+        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += "-----------------#" + os.linesep
+        txt += self.propertiesToText(range(3)) + os.linesep
+
+        txt += self.propertiesToText(range(3, 6))
+        txt += QApplication.translate(
+            "pychemqt", "Vapor Output Molar Composition") + os.linesep
+        for cmp, xi in zip(self.salida[0].componente, self.salida[0].fraccion):
+            txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
+
+        txt += os.linesep
+        txt += self.propertiesToText(range(8, 11))
+        txt += QApplication.translate(
+            "pychemqt", "Liquid Output Molar Composition") + os.linesep
+        for cmp, xi in zip(self.salida[1].componente, self.salida[1].fraccion):
+            txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        list=[(QApplication.translate("pychemqt", "Mode"), ("TEXT_FLASH", "flash"), str),
-                (QApplication.translate("pychemqt", "Output Temperature"), "Tout", unidades.Temperature),
-                (QApplication.translate("pychemqt", "Output Pressure"), "Pout", unidades.Pressure),
-                (QApplication.translate("pychemqt", "Vapor Output Molar Flow"), "VaporMolarFlow", unidades.MolarFlow),
-                (QApplication.translate("pychemqt", "Vapor Output Mass Flow"), "VaporMassFlow", unidades.MassFlow),
-                (QApplication.translate("pychemqt", "Vapor Output Volumetric Flow"), "VaporVolFlow", unidades.VolFlow),
-                (QApplication.translate("pychemqt", "Vapor Output Molar Composition"), "VaporMolarComposition", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Vapor Output Mass Composition"), "VaporMassComposition", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Liquid Output Molar Flow"), "LiquidMolarFlow", unidades.MolarFlow),
-                (QApplication.translate("pychemqt", "Liquid Output Mass Flow"), "LiquidMassFlow", unidades.MassFlow),
-                (QApplication.translate("pychemqt", "Liquid Output Volumetric Flow"), "LiquidVolFlow", unidades.VolFlow),
-                (QApplication.translate("pychemqt", "Liquid Output Molar Composition"), "LiquidMolarComposition", unidades.Dimensionless),
-                (QApplication.translate("pychemqt", "Liquid Output Mass Composition"), "LiquidMassComposition", unidades.Dimensionless),
-                ]
-        return list
+        l = [(QApplication.translate("pychemqt", "Mode"),
+              ("TEXT_FLASH", "flash"), str),
+             (QApplication.translate("pychemqt", "Output Temperature"),
+              "Tout", unidades.Temperature),
+             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+              unidades.Pressure),
+             (QApplication.translate("pychemqt", "Vapor Output Molar Flow"),
+              "VaporMolarFlow", unidades.MolarFlow),
+             (QApplication.translate("pychemqt", "Vapor Output Mass Flow"),
+              "VaporMassFlow", unidades.MassFlow),
+             (QApplication.translate(
+                 "pychemqt", "Vapor Output Volumetric Flow"), "VaporVolFlow",
+                 unidades.VolFlow),
+             (QApplication.translate(
+                 "pychemqt", "Vapor Output Molar Composition"),
+                 "VaporMolarComposition", unidades.Dimensionless),
+             (QApplication.translate(
+                 "pychemqt", "Vapor Output Mass Composition"),
+                 "VaporMassComposition", unidades.Dimensionless),
+             (QApplication.translate("pychemqt", "Liquid Output Molar Flow"),
+              "LiquidMolarFlow", unidades.MolarFlow),
+             (QApplication.translate("pychemqt", "Liquid Output Mass Flow"),
+              "LiquidMassFlow", unidades.MassFlow),
+             (QApplication.translate(
+                 "pychemqt", "Liquid Output Volumetric Flow"),
+                 "LiquidVolFlow", unidades.VolFlow),
+             (QApplication.translate(
+                 "pychemqt", "Liquid Output Molar Composition"),
+                 "LiquidMolarComposition", unidades.Dimensionless),
+             (QApplication.translate(
+                 "pychemqt", "Liquid Output Mass Composition"),
+                 "LiquidMassComposition", unidades.Dimensionless)]
+        return l
 
     def propertiesListTitle(self, index):
         """Define los titulos para los popup de listas"""
-        lista=[comp.nombre for comp in self.kwargs["entrada"].componente]
-        return lista
+        l = [comp.nombre for comp in self.kwargs["entrada"].componente]
+        return l
+
+    def writeStatetoJSON(self, state):
+        """Write instance parameter to file"""
+        state["Tout"] = self.Tout
+        state["Pout"] = self.Pout
+        state["VaporMolarFlow"] = self.VaporMolarFlow
+        state["VaporVolFlow"] = self.VaporVolFlow
+        state["VaporMolarComposition"] = self.VaporMolarComposition
+        state["VaporMassComposition"] = self.VaporMassComposition
+        state["LiquidMolarFlow"] = self.LiquidMolarFlow
+        state["LiquidVolFlow"] = self.LiquidVolFlow
+        state["LiquidMolarComposition"] = self.LiquidMolarComposition
+        state["LiquidMassComposition"] = self.LiquidMassComposition
+        state["statusCoste"] = self.statusCoste
+        if self.statusCoste:
+            state["C_adq"] = self.C_adq
+            state["C_inst"] = self.C_inst
+
+    def readStatefromJSON(self, state):
+        """Load instance parameter from saved file"""
+        self.Tout = unidades.Temperature(state["Tout"])
+        self.Pout = unidades.Pressure(state["Pout"])
+        self.VaporMolarFlow = unidades.MassFlow(state["VaporMolarFlow"])
+        self.VaporVolFlow = unidades.VolFlow(state["VaporVolFlow"])
+        self.VaporMolarComposition = [
+            unidades.MolarFlow(p) for p in state["VaporMolarComposition"]]
+        self.VaporMassComposition = [
+            unidades.MassFlow(p) for p in state["VaporMassComposition"]]
+        self.LiquidMolarFlow = unidades.MolarFlow(state["LiquidMolarFlow"])
+        self.LiquidVolFlow = unidades.VolFlow(state["LiquidVolFlow"])
+        self.LiquidMolarComposition = [
+            unidades.MolarFlow(p) for p in state["LiquidMolarComposition"]]
+        self.LiquidMassComposition = [
+            unidades.MassFlow(p) for p in state["LiquidMassComposition"]]
+
+        self.statusCoste = state["statusCoste"]
+        if self.statusCoste:
+            self.C_adq = unidades.Currency(state["C_adq"])
+            self.C_inst = unidades.Currency(state["C_inst"])
+        self.salida = [None]
 
 
 class Tower(equipment):
@@ -826,15 +905,22 @@ if __name__ == '__main__':
 #    blend=Corriente(T=340, P=101325, caudalMasico=1, fraccionMolar=[0.3, 0.5, 0.05, 0.15])
 #    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.9866, HK=3, HKsplit=0.639, R_Rmin=1.1, feed=0)
 
-    T = unidades.Temperature(205, "F")
-    P = unidades.Pressure(315, "psi")
-    blend=Corriente(T=T, P=P, caudalMasico=1, fraccionMolar=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
+    # P = unidades.Pressure(315, "psi")
+    # blend=Corriente(T=T, P=P, caudalMasico=1, fraccionMolar=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
 #    columna=ColumnFUG(entrada=blend, LK=0, LKsplit=0.96666, HK=3, HKsplit=0.95, R_Rmin=1.2)
 #    print columna.DutyCondenser
-    print((blend.mezcla.ids))
-#    entrada=Corriente(T=340, P=101325, caudalMasico=0.01, ids=[10, 38, 22, 61], fraccionMolar=[.3, 0.5, 0.05, 0.15])
-#    flash=Flash(entrada=entrada)
-#    print flash.status, flash.msg
+    # print((blend.mezcla.ids))
+    # kw = {"MEoS": True, "coolProp": True}
+    # entrada = Corriente(T=300, x=0.5, caudalMasico=0.01, ids=[5, 6, 7, 8],
+                        # fraccionMolar=[.3, 0.5, 0.05, 0.15], **kw)
+    kw = {"MEoS": True, "coolProp": True, "ids": [5, 6, 7, 8, 10]}
+    entrada = Corriente(**kw)
+    entrada(T=300)
+    entrada(x=0.5)
+    entrada(caudalMasico=0.01)
+    entrada(fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25])
+    flash = Flash(entrada=entrada)
+    print(flash.propTxt())
 
 #    from scipy import *
 #    from scipy.integrate import odeint
