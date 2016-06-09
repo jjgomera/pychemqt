@@ -37,7 +37,7 @@ from lib import meos, thermo
 from lib.solids import Solid
 from lib.mezcla import Mezcla, _mix_from_molarflow_and_molarfraction
 from lib.psycrometry import PsychroState
-from lib.thermo import Thermo, ThermoWater, Fluid_MEOS
+from lib.thermo import ThermoWater, ThermoAdvanced, Fluid_MEOS
 
 
 class Corriente(config.Entity):
@@ -874,7 +874,7 @@ class Corriente(config.Entity):
                     if self.x < 1:
                         complejos += "%-40s\t%s" % (propiedad, self.Liquido.sigma.str)
                         complejos += os.linesep
-                elif key == "f":
+                elif key in ["f", "fi"]:
                     complejos += propiedad + os.linesep
                     for i, cmp in enumerate(self.componente):
                         values = ["  " + cmp.nombre]
@@ -1059,8 +1059,8 @@ class Corriente(config.Entity):
             self.Liquido = ThermoWater()
             self.Gas = ThermoWater()
         elif self._thermo in ["coolprop", "refprop"]:
-            self.Liquido = Thermo()
-            self.Gas = Thermo()
+            self.Liquido = ThermoAdvanced()
+            self.Gas = ThermoAdvanced()
         elif self._thermo == "meos":
             self.Liquido = Fluid_MEOS()
             self.Gas = Fluid_MEOS()

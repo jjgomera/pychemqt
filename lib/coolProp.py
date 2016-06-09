@@ -33,7 +33,7 @@ except ImportError as e:
     raise e
 
 from lib import unidades
-from lib.thermo import Fluid, Thermo
+from lib.thermo import Fluid, ThermoAdvanced
 from lib.compuestos import Componente
 
 
@@ -165,7 +165,7 @@ __all__ = {
 }
 
 
-class CoolProp(Thermo):
+class CoolProp(ThermoAdvanced):
     """Stream class using coolProp external library
     Parameters needed to define it are:
 
@@ -356,8 +356,8 @@ class CoolProp(Thermo):
         cp0 = self._prop0(estado)
         self._cp0(cp0)
 
-        self.Liquido = Thermo()
-        self.Gas = Thermo()
+        self.Liquido = ThermoAdvanced()
+        self.Gas = ThermoAdvanced()
         if self.x == 0:
             # liquid phase
             self.fill(self.Liquido, estado)
@@ -530,6 +530,10 @@ class CoolProp(Thermo):
         fase.hInput = unidades.Enthalpy(
             -fase.rho*estado.first_partial_deriv(CP.iHmass, CP.iDmass, CP.iP))
 
+        fase.virialB = unidades.SpecificVolume(estado.Bvirial())
+        fase.virialC = unidades.SpecificVolume_square(estado.Cvirial())
+        fase.invT = unidades.InvTemperature(-1/self.T)
+
         fase.mu = unidades.Viscosity(estado.viscosity())
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.k = unidades.ThermalConductivity(estado.conductivity())
@@ -537,6 +541,7 @@ class CoolProp(Thermo):
         fase.Prandt = unidades.Dimensionless(estado.Prandtl())
         fase.fraccion = estado.get_mole_fractions()
         fase.fraccion_masica = estado.get_mass_fractions()
+        fase.epsilon = unidades.Dimensionless(None)
 
     def getphase(self, estado):
         """Return fluid phase with translation support"""

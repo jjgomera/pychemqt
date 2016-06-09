@@ -345,17 +345,26 @@ class Thermo(object):
             (QApplication.translate("pychemqt", "Reduced Pressure"), "Pr", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Quality"), "x", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Density"), "rho", unidades.Density),
+            (QApplication.translate("pychemqt", "Molar Density"), "rhoM", unidades.MolarDensity),
             (QApplication.translate("pychemqt", "Volume"), "v", unidades.SpecificVolume),
             (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Molar Enthalpy"), "hM", unidades.MolarEnthalpy),
             (QApplication.translate("pychemqt", "Entropy"), "s", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Molar Entropy"), "sM", unidades.MolarSpecificHeat),
             (QApplication.translate("pychemqt", "Internal Energy"), "u", unidades.Enthalpy),
-            (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Molar Internal Energy"), "uM", unidades.MolarEnthalpy),
             (QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Molar Helmholtz Free Energy"), "aM", unidades.MolarEnthalpy),
+            (QApplication.translate("pychemqt", "Gibbs Free Energy"), "g", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Molar Gibbs Free Energy"), "gM", unidades.MolarEnthalpy),
             (QApplication.translate("pychemqt", "Specific isochoric heat capacity"), "cv", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Molar Specific isochoric heat capacity"), "cvM", unidades.MolarSpecificHeat),
             (QApplication.translate("pychemqt", "Specific isobaric heat capacity"), "cp", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Molar Specific isobaric heat capacity"), "cpM", unidades.MolarSpecificHeat),
             (QApplication.translate("pychemqt", "Heat  capacities ratio"), "cp_cv", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Speed sound"), "w", unidades.Speed),
             (QApplication.translate("pychemqt", "Compresibility"), "Z", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Fugacity coefficient"), "fi", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Volumetric Expansivity"), "alfav", unidades.InvTemperature),
@@ -418,6 +427,7 @@ class Thermo(object):
 
             fluid["alfap"] = self.alfap
             fluid["betap"] = self.betap
+            fluid["fi"] = self.fi
             fluid["f"] = self.f
 
             fluid["volFlow"] = self.Q
@@ -464,6 +474,7 @@ class Thermo(object):
 
             self.alfap = unidades.Dimensionless(fluid["alfap"])
             self.betap = unidades.Dimensionless(fluid["betap"])
+            self.fi = [unidades.Dimensionless(f) for f in fluid["fi"]]
             self.f = [unidades.Pressure(f) for f in fluid["f"]]
 
             self.Q = unidades.VolFlow(fluid["volFlow"])
@@ -473,6 +484,15 @@ class Thermo(object):
             self.fraccion_masica = [unidades.Dimensionless(x) for x in fluid["massFraction"]]
             self.caudalunitariomasico = [unidades.MassFlow(x) for x in fluid["massUnitFlow"]]
             self.caudalunitariomolar = [unidades.MolarFlow(x) for x in fluid["molarUnitFlow"]]
+
+            self.rhoM = unidades.MolarDensity(self.rho/self.M)
+            self.hM = unidades.MolarEnthalpy(self.h/self.M)
+            self.sM = unidades.MolarSpecificHeat(self.s/self.M)
+            self.uM = unidades.MolarEnthalpy(self.u/self.M)
+            self.aM = unidades.MolarEnthalpy(self.a/self.M)
+            self.gM = unidades.MolarEnthalpy(self.g/self.M)
+            self.cvM = unidades.MolarSpecificHeat(self.cv/self.M)
+            self.cpM = unidades.MolarSpecificHeat(self.cp/self.M)
 
 
 class ThermoWater(Thermo):
@@ -498,4 +518,89 @@ class ThermoWater(Thermo):
         if fluid:
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
             self.n = unidades.Dimensionless(fluid["n"])
+
+
+class ThermoAdvanced(Thermo):
+    """Custom specified thermo instance to add special properties for advanced
+    model as coolprop, refprop and meos"""
+    @classmethod
+    def properties(cls):
+        prop = Thermo.properties()[:]
+        l = [
+            (QApplication.translate("pychemqt", "Isentropic temperature-pressure"), "betas", unidades.TemperaturePressure),
+            (QApplication.translate("pychemqt", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC", unidades.SpecificVolume_square),
+            ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
+            ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
+            ("(drho/dT)_P", "drhodT_P", unidades.DensityTemperature),
+            ("(drho/dP)_T", "drhodP_T", unidades.DensityPressure),
+            ("(dh/dT)_rho", "dhdT_rho", unidades.SpecificHeat),
+            ("(dh/dP)_T", "dhdP_T", unidades.EnthalpyPressure),
+            ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
+            ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
+            ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
+            (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Isentropic compresibility"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Isentropic bulk modulus"), "Ks", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
+            #        Z_rho     -   (Z-1) over the density, m³/kg
+            (QApplication.translate("pychemqt", "Internal pressure"), "IntP", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Negative reciprocal temperature"), "invT", unidades.InvTemperature),
+            (QApplication.translate("pychemqt", "Specific heat input"), "hInput", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Dielectric constant"), "epsilon", unidades.Dimensionless)]
+        for p in l:
+            prop.insert(34, p)
+        return prop
+
+    def writeStatetoJSON(self, state, fase):
+        Thermo.writeStatetoJSON(self, state, fase)
+        if self._bool:
+            state[fase]["betas"] = self.betas
+            state[fase]["Gruneisen"] = self.Gruneisen
+            state[fase]["virialB"] = self.virialB
+            state[fase]["virialC"] = self.virialC
+            state[fase]["dpdT_rho"] = self.dpdT_rho
+            state[fase]["dpdrho_T"] = self.dpdrho_T
+            state[fase]["drhodT_P"] = self.drhodT_P
+            state[fase]["drhodP_T"] = self.drhodP_T
+            state[fase]["dhdT_rho"] = self.dhdT_rho
+            state[fase]["dhdP_T"] = self.dhdP_T
+            state[fase]["dhdT_P"] = self.dhdT_P
+            state[fase]["dhdrho_T"] = self.dhdrho_T
+            state[fase]["dhdP_rho"] = self.dhdP_rho
+            state[fase]["kt"] = self.kt
+            state[fase]["ks"] = self.ks
+            state[fase]["Ks"] = self.Ks
+            state[fase]["Kt"] = self.Kt
+            state[fase]["IntP"] = self.IntP
+            state[fase]["invT"] = self.invT
+            state[fase]["hInput"] = self.hInput
+            state[fase]["epsilon"] = self.epsilon
+
+    def readStatefromJSON(self, fluid):
+        Thermo.readStatefromJSON(self, fluid)
+        if fluid:
+            self.betas = unidades.TemperaturePressure(fluid["betas"])
+            self.Gruneisen = unidades.Dimensionless(fluid["Gruneisen"])
+            self.virialB = unidades.SpecificVolume(fluid["virialB"])
+            self.virialC = unidades.SpecificVolume_square(fluid["virialC"])
+            self.dpdT_rho = unidades.PressureTemperature(fluid["dpdT_rho"])
+            self.dpdrho_T = unidades.PressureDensity(fluid["dpdrho_T"])
+            self.drhodT_P = unidades.DensityTemperature(fluid["drhodT_P"])
+            self.drhodP_T = unidades.DensityPressure(fluid["drhodP_T"])
+            self.dhdT_rho = unidades.SpecificHeat(fluid["dhdT_rho"])
+            self.dhdP_T = unidades.EnthalpyPressure(fluid["dhdP_T"])
+            self.dhdT_P = unidades.SpecificHeat(fluid["dhdT_P"])
+            self.dhdrho_T = unidades.EnthalpyDensity(fluid["dhdrho_T"])
+            self.dhdP_rho = unidades.EnthalpyPressure(fluid["dhdP_rho"])
+            self.kt = unidades.Dimensionless(fluid["kt"])
+            self.ks = unidades.InvPressure(fluid["ks"])
+            self.Ks = unidades.Pressure(fluid["Ks"])
+            self.Kt = unidades.Pressure(fluid["Kt"])
+            self.IntP = unidades.Pressure(fluid["IntP"])
+            self.invT = unidades.InvTemperature(fluid["invT"])
+            self.hInput = unidades.Enthalpy(fluid["hInput"])
+            self.epsilon = unidades.Dimensionless(fluid["epsilon"])
+
 
