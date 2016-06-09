@@ -78,9 +78,14 @@ class Freesteam(ThermoWater):
          "doi": ""}]
 
     M = unidades.Dimensionless(mEoS.H2O.M)
-    Pc = unidades.Pressure(freesteam.PCRIT)
-    Tc = unidades.Temperature(freesteam.TCRIT)
-    rhoc = unidades.Density(freesteam.RHOCRIT*M)
+    try:
+        Pc = unidades.Pressure(freesteam.PCRIT)
+        Tc = unidades.Temperature(freesteam.TCRIT)
+        rhoc = unidades.Density(freesteam.RHOCRIT*M)
+    except:
+        Pc = unidades.Pressure(iapws.Pc, "MPa")
+        Tc = unidades.Temperature(iapws.Tc)
+        rhoc = unidades.Density(iapws.rhoc)
     Tt = mEoS.H2O.Tt
     Tb = mEoS.H2O.Tb
     f_accent = unidades.Dimensionless(mEoS.H2O.f_acent)
