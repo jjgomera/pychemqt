@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import QApplication
 try:
     import CoolProp as CP
 except ImportError as e:
-    raise e
+    pass
 
 from lib import unidades
 from lib.thermo import Fluid, ThermoAdvanced
