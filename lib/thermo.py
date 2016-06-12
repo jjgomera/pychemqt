@@ -367,8 +367,8 @@ class Thermo(object):
             (QApplication.translate("pychemqt", "Fugacity coefficient"), "fi", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Volumetric Expansivity"), "alfav", unidades.InvTemperature),
-            (QApplication.translate("pychemqt", "Isothermal compresibility"), "kappa", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Volume Expansivity"), "alfav", unidades.InvTemperature),  # 1/V dV/dt = -1/D dD/dt
+            (QApplication.translate("pychemqt", "Isothermal compresibility"), "kappa", unidades.InvPressure),  # -1/V dV/dp = 1/D dD/dp
             (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
             (QApplication.translate("pychemqt", "Isothermal stress"), "betap", unidades.Density),
             (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule", unidades.TemperaturePressure),
@@ -540,9 +540,9 @@ class ThermoAdvanced(Thermo):
             ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
-            (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Isentropic compresibility"), "ks", unidades.InvPressure),
-            (QApplication.translate("pychemqt", "Isentropic bulk modulus"), "Ks", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Isothermal expansion coeffient"), "kt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Isentropic expansion coefficient"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Adiabatic bulk modulus"), "Ks", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg
             (QApplication.translate("pychemqt", "Internal pressure"), "IntP", unidades.Pressure),
@@ -602,5 +602,4 @@ class ThermoAdvanced(Thermo):
             self.invT = unidades.InvTemperature(fluid["invT"])
             self.hInput = unidades.Enthalpy(fluid["hInput"])
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
-
 

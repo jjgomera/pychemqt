@@ -359,8 +359,9 @@ class Corriente(config.Entity):
         elif self._thermo == "iapws":
             compuesto = iapws.IAPWS97(**self.kwargs)
         elif self._thermo == "refprop":
-            fluido = [refProp.__all__[id] for id in self.ids]
-            compuesto = refProp.RefProp(fluido=fluido, **self.kwargs)
+            if not self.kwargs["ids"]:
+                self.kwargs["ids"] = self.ids
+            compuesto = refProp.RefProp(**self.kwargs)
         elif self._thermo == "gerg":
             ids = []
             for id in self.ids:
@@ -494,7 +495,7 @@ class Corriente(config.Entity):
                 self.cp0 = compuesto.cp0
                 self.cv0 = compuesto.cv0
                 self.cp0_cv = compuesto.cp0_cv
-                self.gamma0 = compuesto.gamma0
+                # self.gamma0 = compuesto.gamma0
                 self.Hvap = compuesto.Hvap
                 self.Svap = compuesto.Svap
 
@@ -1078,10 +1079,9 @@ class Corriente(config.Entity):
         elif self._thermo == "iapws":
             self.cmp = iapws.IAPWS97()
         elif self._thermo == "refprop":
-            fluido = [refProp.__all__[id] for id in self.ids]
-            self.cmp = refProp.refProp(fluido=fluido)
+            self.cmp = refProp.refProp(ids=self.ids)
         elif self._thermo == "coolprop":
-            self.cmp = coolProp.CoolProp(fluido=self.ids)
+            self.cmp = coolProp.CoolProp(ids=self.ids)
         elif self._thermo == "meos":
             eq = state["meos_eq"]
             self.cmp = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](eq=eq)

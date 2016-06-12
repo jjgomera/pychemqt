@@ -3350,7 +3350,8 @@ class IAPWS97(ThermoWater):
         fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.f = unidades.Pressure([self.P*exp((fase.g-self.g0)/R/self.T)])
+        fase.fi = unidades.Pressure([exp((fase.g-self.g0)/R/self.T)])
+        fase.f = unidades.Pressure([self.P*fase.fi])
 
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")

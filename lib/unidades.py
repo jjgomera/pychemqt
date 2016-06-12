@@ -929,6 +929,9 @@ class SpecificVolume_square(unidad):
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
 
+# TODO: Add unit for fourth virial coefficient, only useful for refprop library
+# when work in qt loop
+
 
 class MolarVolume(unidad):
     """Class that models a specific molar volume measure
