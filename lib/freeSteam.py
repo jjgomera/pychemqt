@@ -78,9 +78,14 @@ class Freesteam(ThermoWater):
          "doi": ""}]
 
     M = unidades.Dimensionless(mEoS.H2O.M)
-    Pc = unidades.Pressure(freesteam.PCRIT)
-    Tc = unidades.Temperature(freesteam.TCRIT)
-    rhoc = unidades.Density(freesteam.RHOCRIT*M)
+    try:
+        Pc = unidades.Pressure(freesteam.PCRIT)
+        Tc = unidades.Temperature(freesteam.TCRIT)
+        rhoc = unidades.Density(freesteam.RHOCRIT*M)
+    except:
+        Pc = unidades.Pressure(iapws.Pc, "MPa")
+        Tc = unidades.Temperature(iapws.Tc)
+        rhoc = unidades.Density(iapws.rhoc)
     Tt = mEoS.H2O.Tt
     Tb = mEoS.H2O.Tb
     f_accent = unidades.Dimensionless(mEoS.H2O.f_acent)
@@ -220,6 +225,8 @@ class Freesteam(ThermoWater):
 
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
         fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
+        fase.fraccion = [1]
+        fase.fraccion_masica = [1]
 
     def getphase(self, fld):
         """Return fluid phase with translation support"""

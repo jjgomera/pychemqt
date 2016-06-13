@@ -20,6 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 ###############################################################################
 # Module with mixture definition
+#   -Mixture definition procedures:
+#      _mix_from_unitmassflow
+#      _mix_from_unitmolarflow
+#      _mix_from_massflow_and_molarfraction
+#      _mix_from_massflow_and_massfraction
+#      _mix_from_molarflow_and_molarfraction
+#      _mix_from_molarflow_and_massfraction
+
 #   -Mezcla: Mixture related calculation
 ###############################################################################
 
@@ -30,6 +38,118 @@ from lib.compuestos import Componente
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
+
+
+def _mix_from_unitmassflow(unitMassFlow, cmps):
+    """Calculate mixture composition properties with known unitMassFlow"""
+    massFlow = sum(unitMassFlow)
+    unitMolarFlow = [mass/cmp.M for mass, cmp in zip(unitMassFlow, cmps)]
+    molarFlow = sum(unitMolarFlow)
+    molarFraction = [mi/molarFlow for mi in unitMolarFlow]
+    massFraction = [mi/massFlow for mi in unitMassFlow]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
+
+
+def _mix_from_unitmolarflow(unitMolarFlow, cmps):
+    """Calculate mixture composition properties with known unitMolarFlow"""
+    molarFlow = sum(unitMolarFlow)
+    unitMassFlow = [mol*cmp.M for mol, cmp in zip(unitMolarFlow, cmps)]
+    massFlow = sum(unitMassFlow)
+    molarFraction = [mi/molarFlow for mi in unitMolarFlow]
+    massFraction = [mi/massFlow for mi in unitMassFlow]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
+
+
+def _mix_from_massflow_and_molarfraction(massFlow, molarFraction, cmps):
+    """Calculate mixture composition properties with known massFlow and
+    molarFraction"""
+    pesos = [x*cmp.M for x, cmp in zip(molarFraction, cmps)]
+    M = sum(pesos)
+    molarFlow = massFlow/M
+    massFraction = [peso/M for peso in pesos]
+    unitMassFlow = [x*massFlow for x in massFraction]
+    unitMolarFlow = [x*molarFlow for x in molarFraction]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
+
+
+def _mix_from_massflow_and_massfraction(massFlow, massFraction, cmps):
+    """Calculate mixture composition properties with known massFlow and
+    massFraction"""
+    unitMassFlow = [x*massFlow for x in massFraction]
+    unitMolarFlow = [mass/cmp.M for mass, cmp in zip(unitMassFlow, cmps)]
+    molarFlow = sum(unitMolarFlow)
+    molarFraction = [mi/molarFlow for mi in unitMolarFlow]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
+
+
+def _mix_from_molarflow_and_molarfraction(molarFlow, molarFraction, cmps):
+    """Calculate mixture composition properties with known molarFlow and
+    molarFraction"""
+    unitMolarFlow = [x*molarFlow for x in molarFraction]
+    unitMassFlow = [mol*cmp.M for mol, cmp in zip(unitMolarFlow, cmps)]
+    massFlow = sum(unitMassFlow)
+    massFraction = [mi/massFlow for mi in unitMassFlow]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
+
+
+def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
+    """Calculate mixture composition properties with known molarFlow and
+    massFraction"""
+    moles = [x/cmp.M for x, cmp in zip(massFraction, cmps)]
+    M = sum(moles)
+    massFlow = molarFlow*M
+    molarFraction = [mol/molarFlow for mol in moles]
+    unitMassFlow = [x*massFlow for x in massFraction]
+    unitMolarFlow = [x*molarFlow for x in molarFraction]
+
+    kw = {}
+    kw["unitMassFlow"] = unitMassFlow
+    kw["unitMolarFlow"] = unitMolarFlow
+    kw["molarFlow"] = molarFlow
+    kw["massFlow"] = massFlow
+    kw["molarFraction"] = molarFraction
+    kw["massFraction"] = massFraction
+    return kw
 
 
 class Mezcla(config.Entity):
@@ -95,47 +215,28 @@ class Mezcla(config.Entity):
 
         # calculate all concentration units
         if tipo == 1:
-            caudalMasico = sum(caudalUnitarioMasico)
-            caudalUnitarioMolar = [mass/componente.M for mass, componente in
-                                   zip(caudalUnitarioMasico, self.componente)]
-            caudalMolar = sum(caudalUnitarioMolar)
-            fraccionMolar = [mi/caudalMolar for mi in caudalUnitarioMolar]
-            fraccionMasica = [mi/caudalMasico for mi in caudalUnitarioMasico]
+            kw = _mix_from_unitmassflow(caudalUnitarioMasico, self.componente)
         elif tipo == 2:
-            caudalMolar = sum(caudalUnitarioMolar)
-            caudalUnitarioMasico = [mol*componente.M for mol, componente in
-                                    zip(caudalUnitarioMolar, self.componente)]
-            caudalMasico = sum(caudalUnitarioMasico)
-            fraccionMolar = [mi/caudalMolar for mi in caudalUnitarioMolar]
-            fraccionMasica = [mi/caudalMasico for mi in caudalUnitarioMasico]
+            kw = _mix_from_unitmolarflow(caudalUnitarioMolar, self.componente)
         elif tipo == 3:
-            pesos = [x*componente.M for x, componente in
-                     zip(fraccionMolar, self.componente)]
-            M = sum(pesos)
-            caudalMolar = caudalMasico/M
-            fraccionMasica = [peso/M for peso in pesos]
-            caudalUnitarioMasico = [x*caudalMasico for x in fraccionMasica]
-            caudalUnitarioMolar = [x*caudalMolar for x in fraccionMolar]
+            kw = _mix_from_massflow_and_molarfraction(
+                caudalMasico, fraccionMolar, self.componente)
         elif tipo == 4:
-            caudalUnitarioMasico = [caudalMasico*x for x in fraccionMasica]
-            caudalUnitarioMolar = [mass/componente.M for mass, componente in
-                                   zip(caudalUnitarioMasico, self.componente)]
-            caudalMolar = sum(caudalUnitarioMolar)
-            fraccionMolar = [mi/caudalMolar for mi in caudalUnitarioMolar]
+            kw = _mix_from_massflow_and_massfraction(
+                caudalMasico, fraccionMasica, self.componente)
         elif tipo == 5:
-            caudalUnitarioMolar = [caudalMolar*x for x in fraccionMolar]
-            caudalUnitarioMasico = [mol*componente.M for mol, componente in
-                                    zip(caudalUnitarioMolar, self.componente)]
-            caudalMasico = sum(caudalUnitarioMasico)
-            fraccionMasica = [mi/caudalMasico for mi in caudalUnitarioMasico]
+            kw = _mix_from_molarflow_and_molarfraction(
+                caudalMolar, fraccionMolar, self.componente)
         elif tipo == 6:
-            moles = [x/componente.M for x, componente in
-                     zip(fraccionMasica, self.componente)]
-            M = sum(moles)
-            caudalMasico = caudalMolar*M
-            fraccionMolar = [mol/caudalMolar for mol in moles]
-            caudalUnitarioMasico = [x*caudalMasico for x in fraccionMasica]
-            caudalUnitarioMolar = [x*caudalMolar for x in fraccionMolar]
+            kw = _mix_from_molarflow_and_massfraction(
+                caudalMolar, fraccionMasica, self.componente)
+
+        caudalMolar = kw["molarFlow"]
+        caudalMasico = kw["massFlow"]
+        caudalUnitarioMasico = kw["unitMassFlow"]
+        caudalUnitarioMolar = kw["unitMolarFlow"]
+        fraccionMolar = kw["molarFraction"]
+        fraccionMasica = kw["massFraction"]
 
 #        # Clean component with null composition
 #        self.zeros = []
@@ -196,7 +297,7 @@ class Mezcla(config.Entity):
         pc = self.ppc+self.ppc*(5.808+4.93*sumaw)*(self.Tc-self.tpc)/self.tpc
         self.Pc = unidades.Pressure(pc)
 
-        # Calculate acentric factor, API procedure 6B2.2-6 pag 523"""
+        # Calculate acentric factor, API procedure 6B2.2-6 pag 523
         self.f_acent = sum([xi*cmp.f_acent for xi, cmp in
                             zip(self.fraccion, self.componente)])
         self.f_acent_mod = sum([xi*cmp.f_acent_mod for xi, cmp in

@@ -89,7 +89,8 @@ else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
     if minor < 14:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of scipy is too old, you must update it.")  # noqa
+            "pychemqt",
+            "Your version of scipy is too old, you must update it.")
         raise ImportError(msg)
 
 # numpy
@@ -104,7 +105,8 @@ else:
     mayor, minor, corr = map(int, numpy.version.version.split("."))
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of numpy is too old, you must update it.")  # noqa
+            "pychemqt",
+            "Your version of numpy is too old, you must update it.")
         raise ImportError(msg)
 
 # matplotlib
@@ -119,7 +121,8 @@ else:
     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
     if mayor < 1 or minor < 4:
         msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Your version of matplotlib is too old, you must update it.")  # noqa
+            "pychemqt",
+            "Your version of matplotlib is too old, you must update it.")
         raise ImportError(msg)
 
 # TODO: Disable python-graph external dependence, functional mock up in
@@ -144,6 +147,15 @@ for module, use in optional_modules:
     except ImportError:
         print("%s could not be found, %s" % (module, use))
         os.environ[module] = ""
+    else:
+        # Check required version
+        if module == "CoolProp":
+            import CoolProp.CoolProp as CP
+            version = CP.get_global_param_string("version")
+            mayor, minor, rev = map(int, version.split("."))
+            if mayor < 6:
+                print("Find CoolProp %s but CoolProp 6 required" % version)
+                os.environ[module] = ""
 
 
 # Logging configuration
@@ -153,9 +165,13 @@ else:
     loglevel = args.loglevel
 loglevel = getattr(logging, loglevel.upper())
 
+# Checking config folder
+if not os.path.isdir(conf_dir):
+    os.mkdir(conf_dir)
+
 try:
     open(conf_dir + "pychemqt.log", 'x')
-except FileExistsError:
+except FileExistsError:  # noqa
     pass
 
 fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
@@ -197,10 +213,6 @@ from lib import firstrun  # noqa
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking config files..."))
 
-# Checking config folder
-if not os.path.isdir(conf_dir):
-    os.mkdir(conf_dir)
-
 # Checking config file
 if not os.path.isfile(conf_dir + "pychemqtrc"):
     Preferences = firstrun.Preferences()
@@ -215,7 +227,8 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
-        with open(os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")) as cost_index:
+        orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
+        with open(orig) as cost_index:
             lista = cost_index.readlines()[-1].split(" ")
             with open(conf_dir + "CostIndex.dat", "w") as archivo:
                 for data in lista:

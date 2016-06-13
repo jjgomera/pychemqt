@@ -957,6 +957,8 @@ class MEoS(Fluid_MEOS):
             else:
                 fase.Prandt = None
             fase.epsilon = unidades.Dimensionless(self._Dielectric(fase.rho, self.T))
+        fase.fraccion = [1]
+        fase.fraccion_masica = [1]
 
     def _saturation(self, T=None):
         """Saturation calculation for two phase search"""

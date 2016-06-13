@@ -3378,7 +3378,8 @@ class IAPWS97(ThermoWater):
         else:
             fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
             fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
-
+        fase.fraccion = [1]
+        fase.fraccion_masica = [1]
 
     def getphase(self, fld):
         """Return fluid phase"""
