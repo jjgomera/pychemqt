@@ -483,7 +483,7 @@ class CoolProp(ThermoAdvanced):
         fase.joule = unidades.TemperaturePressure(
             estado.first_partial_deriv(CP.iT, CP.iP, CP.iHmass))
         fase.Gruneisen = unidades.Dimensionless(
-            estado.first_partial_deriv(CP.iP, CP.iT, CP.iDmass))
+            fase.v/fase.cv*estado.first_partial_deriv(CP.iP, CP.iT, CP.iDmass))
         fase.alfav = unidades.InvTemperature(
             estado.isobaric_expansion_coefficient())
         fase.kappa = unidades.InvPressure(estado.isothermal_compressibility())

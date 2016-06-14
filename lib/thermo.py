@@ -603,3 +603,116 @@ class ThermoAdvanced(Thermo):
             self.hInput = unidades.Enthalpy(fluid["hInput"])
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
 
+
+class ThermoRefProp(ThermoAdvanced):
+    """Custom specified thermo instance to add special properties for advanced
+    model as coolprop, refprop and meos"""
+    @classmethod
+    def properties(cls):
+        prop = ThermoAdvanced.properties()[:]
+        l = [
+            (QApplication.translate("pychemqt", "Ideal Pressure"), "P0", unidades.Pressure),
+            (QApplication.translate("pychemqt", "Residual Pressure"), "P_Pideal", unidades.Pressure),
+            (QApplication.translate("pychemqt", "K value"), "K", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Heat Capacity along the saturation line"), "csat", unidades.SpecificHeat),
+            ("dP/dT [sat]", "dpdt_sat", unidades.PressureTemperature),
+            (QApplication.translate("pychemqt", "Cv two phases"), "cv2p", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Excess volume"), "vE", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Excess internal energy"), "eE", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Excess enthalpy"), "hE", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Excess entropy"), "sE", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Excess Helmholtz energy"), "aE", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Excess Gibbs energy"), "gE", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Residual pressure"), "pr", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Residual internal energy"), "er", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Residual enthalpy"), "hr", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Residual entropy"), "sr", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Residual Helmholtz energy"), "ar", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Residual Gibbs energy"), "gr", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Residual isobaric heat capacity"), "cpr", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Residual isochoric heat capacity"), "cvr", unidades.SpecificHeat),
+            (QApplication.translate("pychemqt", "Supercompressibility factor"), "fpv", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Chemical potential"), "chempot", unidades.Enthalpy),
+            (QApplication.translate("pychemqt", "Fourth virial coefficient"), "viriald", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Second acoustic virial coefficient"), "virialba", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Third acoustic virial coefficient"), "virialca", unidades.SpecificVolue_square),
+            ("dc/dT", "dcdt", unidades.Dimensionless),
+            ("d²c/dT²", "dcdt2", unidades.Dimensionless),
+            ("db/dT", "dbdt", unidades.Dimensionless),
+            ("b12", "b12", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Critical flow factor"), "cstar", unidades.Dimensionless)]
+
+        for p in l:
+            prop.append(p)
+        return prop
+
+    def writeStatetoJSON(self, state, fase):
+        Thermo.writeStatetoJSON(self, state, fase)
+        if self._bool:
+            state[fase]["K"] = self.K
+            state[fase]["P0"] = self.P0
+            state[fase]["P_Pideal"] = self.P_Pideal
+            state[fase]["csat"] = self.csat
+            state[fase]["dpdt_sat"] = self.dpdt_sat
+            state[fase]["cv2p"] = self.cv2p
+            state[fase]["vE"] = self.vE
+            state[fase]["eE"] = self.eE
+            state[fase]["hE"] = self.hE
+            state[fase]["sE"] = self.sE
+            state[fase]["aE"] = self.aE
+            state[fase]["gE"] = self.gE
+            state[fase]["pr"] = self.pr
+            state[fase]["er"] = self.er
+            state[fase]["hr"] = self.hr
+            state[fase]["sr"] = self.sr
+            state[fase]["ar"] = self.ar
+            state[fase]["gr"] = self.gr
+            state[fase]["cpr"] = self.cpr
+            state[fase]["cvr"] = self.cvr
+            state[fase]["fpv"] = self.fpv
+            state[fase]["chempot"] = self.chempot
+            state[fase]["viriald"] = self.viriald
+            state[fase]["virialba"] = self.virialba
+            state[fase]["virialca"] = self.virialca
+            state[fase]["dcdt"] = self.dcdt
+            state[fase]["dcdt2"] = self.dcdt2
+            state[fase]["dbdt"] = self.dbdt
+            state[fase]["b12"] = self.b12
+            state[fase]["cstar"] = self.cstar
+
+    def readStatefromJSON(self, fluid):
+        Thermo.readStatefromJSON(self, fluid)
+        if fluid:
+            self.K = [unidades.Dimensionless(k) for k in fluid["K"]]
+            self.P0 = unidades.Pressure(fluid["P0"])
+            self.P_Pideal = unidades.Pressure(fluid["P_Pideal"])
+            self.csat = unidades.Dimensionless(fluid["csat"])
+            self.dpdt_sat = unidades.Dimensionless(fluid["dpdt_sat"])
+            self.cv2p = unidades.Dimensionless(fluid["cv2p"])
+            self.vE = unidades.SpecificVolume(fluid["vE"])
+            self.eE = unidades.Enthapy(fluid["eE"])
+            self.hE = unidades.Enthapy(fluid["hE"])
+            self.sE = unidades.SpecificHeat(fluid["sE"])
+            self.aE = unidades.Enthapy(fluid["aE"])
+            self.gE = unidades.Enthapy(fluid["gE"])
+            self.pr = unidades.Pressure(fluid["pr"])
+            self.er = unidades.Enthapy(fluid["er"])
+            self.hr = unidades.Enthapy(fluid["hr"])
+            self.sr = unidades.SpecificHeat(fluid["sr"])
+            self.ar = unidades.Enthapy(fluid["ar"])
+            self.gr = unidades.Enthapy(fluid["gr"])
+            self.cpr = unidades.SpecificHeat(fluid["cpr"])
+            self.cvr = unidades.SpecificHeat(fluid["cvr"])
+            self.fpv = unidades.Dimensionless(fluid["fpv"])
+            self.chempot = [unidades.Dimensionless(m) for m in fluid["chempot"]]
+            self.viriald = unidades.Dimensionless(fluid["viriald"])
+            self.virialba = unidades.SpecificVolume(fluid["virialba"])
+            self.virialca = unidades.SpecificVolume_square(fluid["virialca"])
+            self.dcdt = unidades.Dimensionless(fluid["dcdt"])
+            self.dcdt2 = unidades.Dimensionless(fluid["dcdt2"])
+            self.dbdt = unidades.Dimensionless(fluid["dbdt"])
+            self.b12 = unidades.SpecificVolume(fluid["b12"])
+            self.cstar = unidades.Dimensionless(fluid["cstar"])
+
+
+
