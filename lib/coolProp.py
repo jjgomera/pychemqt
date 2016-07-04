@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # optional method to meos tools calculations and to multicomponent streams
 ###############################################################################
 
+from math import exp
 
 from PyQt5.QtWidgets import QApplication
 
@@ -275,53 +276,57 @@ class CoolProp(ThermoAdvanced):
 
         self.M = unidades.Dimensionless(estado.molar_mass()*1000)
 
-        # Disabled CoolProp, see issue #1087
-        # self.Tc = unidades.Temperature(estado.T_critical())
-        # self.Pc = unidades.Pressure(estado.p_critical())
-        # self.rhoc = unidades.Density(estado.rhomass_critical())
+        if self._multicomponent:
+            # Disabled CoolProp critical properties for multicomponent, see issue #1087
 
-        # Calculate critical properties with mezcla method
-        # Coolprop for mixtures can fail and it's slow
-        Cmps = [Componente(int(i)) for i in self.kwargs["ids"]]
+            # Calculate critical properties with mezcla method
+            # Coolprop for mixtures can fail and it's slow
+            Cmps = [Componente(int(i)) for i in self.kwargs["ids"]]
 
-        # Calculate critic temperature, API procedure 4B1.1 pag 304
-        V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
-        k = [xi*cmp.Vc/V for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)]
-        Tcm = sum([ki*cmp.Tc for ki, cmp in zip(k, Cmps)])
-        self.Tc = unidades.Temperature(Tcm)
+            # Calculate critic temperature, API procedure 4B1.1 pag 304
+            V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+            k = [xi*cmp.Vc/V for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)]
+            Tcm = sum([ki*cmp.Tc for ki, cmp in zip(k, Cmps)])
+            self.Tc = unidades.Temperature(Tcm)
 
-        # Calculate pseudocritic temperature
-        tpc = sum([x*cmp.Tc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+            # Calculate pseudocritic temperature
+            tpc = sum([x*cmp.Tc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
 
-        # Calculate pseudocritic pressure
-        ppc = sum([x*cmp.Pc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+            # Calculate pseudocritic pressure
+            ppc = sum([x*cmp.Pc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
 
-        # Calculate critic pressure, API procedure 4B2.1 pag 307
-        sumaw = 0
-        for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps):
-            sumaw += xi*cmp.f_acent
-        pc = ppc+ppc*(5.808+4.93*sumaw)*(self.Tc-tpc)/tpc
-        self.Pc = unidades.Pressure(pc)
+            # Calculate critic pressure, API procedure 4B2.1 pag 307
+            sumaw = 0
+            for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps):
+                sumaw += xi*cmp.f_acent
+            pc = ppc+ppc*(5.808+4.93*sumaw)*(self.Tc-tpc)/tpc
+            self.Pc = unidades.Pressure(pc)
 
-        # Calculate critic volume, API procedure 4B3.1 pag 314
-        sumaxvc23 = sum([xi*cmp.Vc**(2./3) for xi, cmp in
-                         zip(self.kwargs["fraccionMolar"], Cmps)])
-        k = [xi*cmp.Vc**(2./3)/sumaxvc23 for xi, cmp in
-             zip(self.kwargs["fraccionMolar"], Cmps)]
+            # Calculate critic volume, API procedure 4B3.1 pag 314
+            sumaxvc23 = sum([xi*cmp.Vc**(2./3) for xi, cmp in
+                             zip(self.kwargs["fraccionMolar"], Cmps)])
+            k = [xi*cmp.Vc**(2./3)/sumaxvc23 for xi, cmp in
+                 zip(self.kwargs["fraccionMolar"], Cmps)]
 
-        # TODO: Calculate C value from component type.
-        # For now it suppose all are hidrycarbon (C=0)
-        C = 0
+            # TODO: Calculate C value from component type.
+            # For now it suppose all are hidrycarbon (C=0)
+            C = 0
 
-        V = [[-1.4684*abs((cmpi.Vc-cmpj.Vc)/(cmpi.Vc+cmpj.Vc))+C
-              for cmpj in Cmps] for cmpi in Cmps]
-        v = [[V[i][j]*(cmpi.Vc+cmpj.Vc)/2. for j, cmpj in enumerate(
-            Cmps)] for i, cmpi in enumerate(Cmps)]
-        suma1 = sum([ki*cmp.Vc for ki, cmp in zip(k, Cmps)])
-        suma2 = sum([ki*kj*v[i][j] for j, kj in enumerate(k)
-                     for i, ki in enumerate(k)])
-        self.rhoc = unidades.Density((suma1+suma2)*self.M)
+            V = [[-1.4684*abs((cmpi.Vc-cmpj.Vc)/(cmpi.Vc+cmpj.Vc))+C
+                  for cmpj in Cmps] for cmpi in Cmps]
+            v = [[V[i][j]*(cmpi.Vc+cmpj.Vc)/2. for j, cmpj in enumerate(
+                Cmps)] for i, cmpi in enumerate(Cmps)]
+            suma1 = sum([ki*cmp.Vc for ki, cmp in zip(k, Cmps)])
+            suma2 = sum([ki*kj*v[i][j] for j, kj in enumerate(k)
+                         for i, ki in enumerate(k)])
+            self.rhoc = unidades.Density((suma1+suma2)*self.M)
 
+        else:
+            self.Tc = unidades.Temperature(estado.T_critical())
+            self.Pc = unidades.Pressure(estado.p_critical())
+            self.rhoc = unidades.Density(estado.rhomass_critical())
+
+        self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
         self.Tt = unidades.Temperature(estado.Ttriple())
         estado2 = CP.AbstractState("HEOS", fluido)
         if self._multicomponent:
@@ -424,23 +429,18 @@ class CoolProp(ThermoAdvanced):
 
     def _prop0(self, estado):
         """Ideal gas properties"""
-        R = estado.gas_constant()/self.M
         tau = self.Tc/self.T
         fio = estado.alpha0()
         fiot = estado.dalpha0_dTau()
         fiott = estado.d2alpha0_dTau2()
 
-        propiedades = Fluid()
-        propiedades.v = R*self.T/self.P
-        propiedades.h = R*self.T*(1+tau*fiot)
-        propiedades.s = R*(tau*fiot-fio)
-        propiedades.cv = -R*tau**2*fiott
-        propiedades.cp = R*(-tau**2*fiott+1)
-        propiedades.alfap = 1/self.T
-        propiedades.betap = self.rho
-        propiedades.w = (R*self.T*1000/(1+tau**2/abs(fiott)))**0.5
-        propiedades.gamma = 1/propiedades.v/self.P/1000 * \
-            estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass)
+        propiedades = {}
+        propiedades["v"] = self.R*self.T/self.P.kPa
+        propiedades["h"] = self.R*self.T*(1+tau*fiot)*1000
+        propiedades["s"] = self.R*(tau*fiot-fio)*1000
+        propiedades["cv"] = -self.R*tau**2*fiott*1000
+        propiedades["cp"] = self.R*(-tau**2*fiott+1)*1000
+        propiedades["w"] = (self.R*self.T*1000/(1+tau**2/abs(fiott)))**0.5
         return propiedades
 
     def fill(self, fase, estado):
@@ -463,22 +463,23 @@ class CoolProp(ThermoAdvanced):
                     estado.fugacity_coefficient(i)))
                 fase.f.append(unidades.Pressure(estado.fugacity(i)))
         else:
-            fase.fi = unidades.Dimensionless([1])
-            fase.f = unidades.Pressure([self.P])
+            fase.fi = [unidades.Dimensionless(exp((fase.g-self.g0)/self.R/self.T))]
+            fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado.cvmass())
         fase.cp = unidades.SpecificHeat(estado.cpmass())
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.gamma = fase.cp_cv
         fase.w = unidades.Speed(estado.speed_sound())
 
-        fase.rhoM = unidades.MolarDensity(estado.rhomolar())
-        fase.hM = unidades.MolarEnthalpy(estado.hmolar())
-        fase.sM = unidades.MolarSpecificHeat(estado.smolar())
-        fase.uM = unidades.MolarEnthalpy(estado.umolar())
+        fase.rhoM = unidades.MolarDensity(estado.rhomolar(), "molm3")
+        fase.hM = unidades.MolarEnthalpy(estado.hmolar(), "Jmol")
+        fase.sM = unidades.MolarSpecificHeat(estado.smolar(), "JmolK")
+        fase.uM = unidades.MolarEnthalpy(estado.umolar(), "Jmol")
         fase.aM = unidades.MolarEnthalpy(fase.a*self.M)
         fase.gM = unidades.MolarEnthalpy(fase.g*self.M)
-        fase.cvM = unidades.MolarSpecificHeat(estado.cvmolar())
-        fase.cpM = unidades.MolarSpecificHeat(estado.cpmolar())
+        fase.cvM = unidades.MolarSpecificHeat(estado.cvmolar(), "JmolK")
+        fase.cpM = unidades.MolarSpecificHeat(estado.cpmolar(), "JmolK")
 
         fase.joule = unidades.TemperaturePressure(
             estado.first_partial_deriv(CP.iT, CP.iP, CP.iHmass))
@@ -487,21 +488,21 @@ class CoolProp(ThermoAdvanced):
         fase.alfav = unidades.InvTemperature(
             estado.isobaric_expansion_coefficient())
         fase.kappa = unidades.InvPressure(estado.isothermal_compressibility())
+        fase.kappas = unidades.InvPressure(
+            -1/fase.v*self.derivative("v", "P", "s", fase))
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-        fase.betap = unidades.Density(
-            fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
+        fase.betap = unidades.Density(-1/self.P*self.derivative("P", "v", "T", fase))
         fase.betas = unidades.TemperaturePressure(
             estado.first_partial_deriv(CP.iT, CP.iP, CP.iSmass))
-        fase.gamma = unidades.Dimensionless(
-            fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
 
         fase.kt = unidades.Dimensionless(
             fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
-        fase.Kt = unidades.Pressure(
-            fase.rho*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
         fase.Ks = unidades.Pressure(
+            fase.rho*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
+        fase.Kt = unidades.Pressure(
             fase.rho*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
-        fase.ks = unidades.InvPressure(1/fase.Ks)
+        fase.ks = unidades.Dimensionless(
+            fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
         fase.dhdT_rho = unidades.SpecificHeat(
             estado.first_partial_deriv(CP.iHmass, CP.iT, CP.iDmass))
         fase.dhdT_P = unidades.SpecificHeat(
