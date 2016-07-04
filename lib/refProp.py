@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 from PyQt5.QtWidgets import QApplication
-from scipy.constants import R
 
 try:
     # import multiRP
@@ -330,7 +329,6 @@ class RefProp(ThermoRefProp):
         x = self._x()
         var1 = self.kwargs[self._thermo[0]]
         var2 = self.kwargs[self._thermo[1]]
-        print(self._thermo, var1, var2)
 
         # unit conversion to refprop accepted units
         # P in kPa, U,H in kJ/kg, S in kJ/kgK
@@ -412,8 +410,6 @@ class RefProp(ThermoRefProp):
         self.rho = unidades.Density(flash["D"]*self.M)
         self.v = unidades.SpecificVolume(1./self.rho)
 
-        self._cp0(flash)
-
         if flash["nc"] == 1:
             name = refprop.name(flash["nc"])
             self.name = name["hname"]
@@ -421,6 +417,7 @@ class RefProp(ThermoRefProp):
             self.CAS = name["hcas"]
 
             info = refprop.info(flash["nc"])
+            self.R = unidades.SpecificHeat(info["Rgas"]/self.M)
             self.Tt = unidades.Temperature(info["ttrp"])
             self.Tb = unidades.Temperature(info["tnbpt"])
             self.f_accent = unidades.Dimensionless(info["acf"])
@@ -434,11 +431,15 @@ class RefProp(ThermoRefProp):
             self.synonim = ""
             self.CAS = ""
 
+            rmix = refprop.rmix2(flash["x"])
+            self.R = unidades.SpecificHeat(rmix["Rgas"]/self.M)
             self.Tt = unidades.Temperature(None)
             self.Tb = unidades.Temperature(None)
             self.f_accent = unidades.Dimensionless(None)
             self.momentoDipolar = unidades.DipoleMoment(None)
             self._doc = {}
+
+        self._cp0(flash)
 
         self.Liquido = ThermoRefProp()
         self.Gas = ThermoRefProp()
@@ -500,23 +501,33 @@ class RefProp(ThermoRefProp):
 
     def _cp0(self, flash):
         "Set ideal properties to state"""
-        p0 = refprop.therm0(flash["t"], flash["D"], flash["x"])["p"]
-        self.v0 = unidades.SpecificVolume(R/self.M*self.T/self.P.kPa)
+        cp0 = refprop.therm0(flash["t"], flash["D"], flash["x"])
+        self.v0 = unidades.SpecificVolume(self.R*self.T/self.P.kPa)
         self.rho0 = unidades.Density(1/self.v0)
-        self.P0 = unidades.Pressure(p0, "kPa")
+        self.P0 = unidades.Pressure(cp0["p"], "kPa")
         self.P_Pideal = unidades.Pressure(self.P-self.P0)
 
-        cp0 = refprop.therm0(float(self.T), self.rho0/self.M, flash["x"])
         self.h0 = unidades.Enthalpy(cp0["h"]/self.M, "kJkg")
         self.u0 = unidades.Enthalpy(cp0["e"]/self.M, "kJkg")
         self.s0 = unidades.SpecificHeat(cp0["s"]/self.M, "kJkgK")
         self.a0 = unidades.Enthalpy(cp0["A"]/self.M, "kJkg")
         self.g0 = unidades.Enthalpy(cp0["G"]/self.M, "kJkg")
+        self.w0 = unidades.Speed(cp0["w"])
+
+        cp0 = refprop.therm0(float(self.T), self.rho0/self.M, flash["x"])
         self.cp0 = unidades.SpecificHeat(cp0["cp"]/self.M, "kJkgK")
         self.cv0 = unidades.SpecificHeat(cp0["cv"]/self.M, "kJkgK")
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
-        self.w0 = unidades.Speed(cp0["w"])
-        # self.gamma0 = unidades.Dimensionless(cp0.gamma)
+        self.gamma0 = self.cp0_cv
+
+        self.rhoM0 = unidades.MolarDensity(self.rho0/self.M)
+        self.hM0 = unidades.MolarEnthalpy(self.h0*self.M)
+        self.uM0 = unidades.MolarEnthalpy(self.u0*self.M)
+        self.sM0 = unidades.MolarSpecificHeat(self.s0*self.M)
+        self.aM0 = unidades.MolarEnthalpy(self.a0*self.M)
+        self.gM0 = unidades.MolarEnthalpy(self.g0*self.M)
+        self.cpM0 = unidades.MolarSpecificHeat(self.cp0*self.M)
+        self.cvM0 = unidades.MolarSpecificHeat(self.cv0*self.M)
 
     def fill(self, fase, T, rho, x):
         if sum(x) != 1:
@@ -540,9 +551,10 @@ class RefProp(ThermoRefProp):
         fase.cv = unidades.SpecificHeat(thermo["cv"]/fase.M, "JgK")
         fase.cp = unidades.SpecificHeat(thermo["cp"]/fase.M, "JgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.gamma = fase.cp_cv
         fase.w = unidades.Speed(thermo["w"])
 
-        fase.rhoM = unidades.MolarDensity(fase.rho*self.M)
+        fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
         fase.hM = unidades.MolarEnthalpy(fase.h*self.M)
         fase.sM = unidades.MolarSpecificHeat(fase.s*self.M)
         fase.uM = unidades.MolarEnthalpy(fase.u*self.M)
@@ -561,25 +573,19 @@ class RefProp(ThermoRefProp):
         fase.cvr = unidades.SpecificHeat(residual["cvr"]/fase.M, "JgK")
         fase.cpr = unidades.SpecificHeat(residual["cpr"]/fase.M, "JgK")
 
-        '''Compute miscellaneous thermodynamic properties
-        betas--Adiabatic compressibility
-        thrott--Isothermal throttling coefficient
-        '''
-        fase.joule = unidades.TemperaturePressure(thermo["hjt"], "KkPa")
         fase.alfav = unidades.InvTemperature(thermo["beta"])
         fase.kappa = unidades.InvPressure(thermo["xkappa"], "kPa")
-        # fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-        # fase.betap = unidades.Density(
-            # fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
-        # fase.betas = unidades.TemperaturePressure(
-            # estado.first_partial_deriv(CP.iT, CP.iP, CP.iSmass))
-        # fase.gamma = unidades.Dimensionless(
-            # fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
+        fase.kappas = unidades.InvPressure(thermo3["betas"], "kPa")
+        fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
+        fase.deltat = unidades.EnthalpyPressure(thermo3["thrott"]/fase.M, "kJkgkPa")
+        fase.joule = unidades.TemperaturePressure(thermo["hjt"], "KkPa")
+        fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
+        fase.betap = unidades.Density(-1/self.P*self.derivative("P", "v", "T", fase))
 
-        fase.kt = unidades.Dimensionless(thermo3["xkt"])
         fase.Kt = unidades.Pressure(thermo3["xkkt"], "kPa")
         fase.Ks = unidades.Pressure(thermo3["bs"], "kPa")
-        fase.ks = unidades.InvPressure(thermo3["xisenk"], "kPa")
+        fase.kt = unidades.Dimensionless(thermo3["xkt"])
+        fase.ks = unidades.Dimensionless(thermo3["xisenk"])
 
         dh = refprop.dhd1(T, rho, x)
         fase.dhdT_rho = unidades.SpecificHeat(dh["dhdt_D"]/fase.M, "kJkgK")
@@ -600,7 +606,7 @@ class RefProp(ThermoRefProp):
 
         fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
         fase.IntP = unidades.Pressure(thermo3["pint"], "kPa")
-        fase.hInput = unidades.Enthalpy(thermo3["spht"]/fase.M)
+        fase.hInput = unidades.Enthalpy(thermo3["spht"]/fase.M, "kJkg")
         fase.invT = unidades.InvTemperature(-1/self.T)
 
         fpv = refprop.fpv(T, rho, self.P.kPa, x)["Fpv"]
@@ -614,22 +620,22 @@ class RefProp(ThermoRefProp):
         fase.f = [unidades.Pressure(f_i, "kPa") for f_i in f]
 
         b = refprop.virb(T, x)["b"]
-        fase.virialb = unidades.SpecificVolume(b/self.M)
+        fase.virialB = unidades.SpecificVolume(b/self.M)
         c = refprop.virc(T, x)["c"]
-        fase.virialc = unidades.SpecificVolume_square(c/self.M**2)
+        fase.virialC = unidades.SpecificVolume_square(c/self.M**2)
         # viriald don't supported for windows
         d = refprop.vird(T, x)["d"]
-        fase.viriald = unidades.Dimensionless(d/self.M**3)
+        fase.virialD = unidades.Dimensionless(d/self.M**3)
         ba = refprop.virba(T, x)["ba"]
-        fase.virialba = unidades.SpecificVolume(ba/self.M)
+        fase.virialBa = unidades.SpecificVolume(ba/self.M)
         ca = refprop.virca(T, x)["ca"]
-        fase.virialca = unidades.SpecificVolume_square(ca/self.M**2)
+        fase.virialCa = unidades.SpecificVolume_square(ca/self.M**2)
         dcdt = refprop.dcdt(T, x)["dct"]
-        fase.dcdt = unidades.Dimensionless(dcdt/self.M**2)
+        fase.dCdt = unidades.Dimensionless(dcdt/self.M**2)
         dcdt2 = refprop.dcdt2(T, x)["dct2"]
-        fase.dcdt2 = unidades.Dimensionless(dcdt2/self.M**2)
+        fase.dCdt2 = unidades.Dimensionless(dcdt2/self.M**2)
         dbdt = refprop.dbdt(T, x)["dbt"]
-        fase.dbdt = unidades.Dimensionless(dbdt/self.M)
+        fase.dBdt = unidades.Dimensionless(dbdt/self.M)
 
         b12 = refprop.b12(T, x)["b"]
         fase.b12 = unidades.SpecificVolume(b12*fase.M)
@@ -690,7 +696,7 @@ if __name__ == '__main__':
     # from PyQt5 import QtWidgets
     # app = QtWidgets.QApplication(sys.argv)
 
-    fluido = RefProp(ids=[62], T=300, P=1e6)
+    # fluido = RefProp(ids=[62], T=300, P=1e6)
     # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
           # % (fluido.rho, fluido.u.kJkg, fluido.h.kJkg, fluido.s.kJkgK,
              # fluido.cv.kJkgK, fluido.cp.kJkgK, fluido.cp0.kJkgK,
@@ -740,3 +746,56 @@ if __name__ == '__main__':
     # pprint.pprint(fluido.__dict__)
     # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g" % (fluido.vE, fluido.uE.kJkg, fluido.hE.kJkg, fluido.sE.kJkgK, fluido.aE.kJkg, fluido.gE.kJkg))
     # print(fluido.M, fluido.Tc, fluido.Pc.MPa, fluido.rhoc)
+
+    # Code for advanced thermal test
+    from lib.mEoS.H2O import H2O
+    from lib.coolProp import CoolProp
+    from lib.iapws import IAPWS97
+    from lib.freeSteam import Freesteam
+
+    P = 2e4
+    T = 300
+
+    # Fluid definition, r refprop used as reference fluid, choose a m fluid to
+    # test against reference
+    r = RefProp(ids=[62], T=T, P=P)
+
+    # m = H2O(T=300, P=2e6)
+    # ierr = 1e-5
+    # m = CoolProp(ids=[62], fraccionMolar=[1], T=300, P=2e6)
+    # ierr = 1e-5
+    # m = IAPWS97(T=T, P=P)
+    # ierr = 1
+    m = Freesteam(T=T, P=P)
+    ierr = 1
+
+    for prop, key, unit in m.properties():
+        if key == "sigma":
+            try:
+                error = abs(r.Liquido.__getattribute__(key)-m.Liquido.__getattribute__(key))/r.Liquido.__getattribute__(key)*100
+                if error > ierr:
+                    msg = "ERROR %0.5g%s" % (error, "%")
+                    print("%s: %0.9g %0.9g %s" % (key, r.Liquido.__getattribute__(key), m.Liquido.__getattribute__(key), msg))
+            except ZeroDivisionError:
+                print(key, "no implementado")
+        elif key == "n":
+            pass
+        elif isinstance(r.__getattribute__(key), list):
+            error = 0
+            for v1, v2 in zip(r.__getattribute__(key), m.__getattribute__(key)):
+                error2 = abs(v1-v2)/v1*100
+                if error2 > error:
+                    error = error2
+                if error > ierr:
+                    msg = "ERROR %0.5g%s" % (error, "%")
+                    print("%s: " % key, r.__getattribute__(key), m.__getattribute__(key), msg)
+        else:
+            try:
+                error = abs(r.__getattribute__(key)-m.__getattribute__(key))/r.__getattribute__(key)*100
+                if error > ierr:
+                    msg = "ERROR %0.5g%s" % (error, "%")
+                    print("%s: %0.9g %0.9g %s" % (key, r.__getattribute__(key), m.__getattribute__(key), msg))
+            except ZeroDivisionError:
+                if r.__getattribute__(key) == m.__getattribute__(key):
+                    pass
+

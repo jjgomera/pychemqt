@@ -211,7 +211,8 @@ class MEoS(Fluid_MEOS):
         dhdrho_P  -   Derivatives, dh/drho at constant P, kJ·m³/kg²
         dhdP_rho  -   Derivatives, dh/dP at constant rho, kJ/kg·MPa
         kt        -   Isothermal Expansion Coefficient
-        ks        -   Adiabatic Compressibility, 1/MPa
+        ks        -   Adiabatic Expansion Coefficient
+        # ks        -   Adiabatic Compressibility, 1/MPa
         Ks        -   Adiabatic bulk modulus, MPa
         Kt        -   Isothermal bulk modulus, MPa
 
@@ -687,11 +688,9 @@ class MEoS(Fluid_MEOS):
         self.cp0 = unidades.SpecificHeat(cp0.cp)
         self.cpM0 = unidades.MolarSpecificHeat(self.cp0/self.M)
         self.cv0 = unidades.SpecificHeat(cp0.cv)
+        self.cvM0 = unidades.MolarSpecificHeat(self.cv0/self.M)
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
-        if self.rho0:
-            self.gamma0 = unidades.Dimensionless(-self.v0/self.P/1000*self.derivative("P", "v", "s", cp0))
-        else:
-            self.gamma0 = 0
+        self.gamma0 = self.cp0_cv
 
         self.Liquido = Fluid_MEOS()
         self.Gas = Fluid_MEOS()
@@ -893,11 +892,12 @@ class MEoS(Fluid_MEOS):
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
 
         fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
-        fase.fi = unidades.Dimensionless([estado["fugacity"]])
-        fase.f = unidades.Pressure([f*self.P for f in fase.fi])
+        fase.fi = [unidades.Dimensionless(estado["fugacity"])]
+        fase.f = [unidades.Pressure(f*self.P) for f in fase.fi]
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.gamma = fase.cp_cv
 #        fase.cps = estado["cps"]
         fase.w = unidades.Speed(estado["w"])
 
@@ -919,13 +919,13 @@ class MEoS(Fluid_MEOS):
         if fase.rho:
             fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
             fase.kappa = unidades.InvPressure(-self.derivative("v", "P", "T", fase)/fase.v)
+            fase.kappas = unidades.InvPressure(-1/fase.v*self.derivative("v", "P", "s", fase))
             fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
-            fase.gamma = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "s", fase))
 
             fase.kt = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "T", fase))
-            fase.ks = unidades.InvPressure(-self.derivative("v", "P", "s", fase)/fase.v)
-            fase.Kt = unidades.Pressure(-fase.v*self.derivative("P", "v", "s", fase))
-            fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
+            fase.ks = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "s", fase))
+            fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "s", fase))
+            fase.Kt = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
             fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
             fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
             fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
@@ -953,7 +953,7 @@ class MEoS(Fluid_MEOS):
             else:
                 fase.alfa = None
             if fase.mu and fase.k:
-                fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
+                fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
             else:
                 fase.Prandt = None
             fase.epsilon = unidades.Dimensionless(self._Dielectric(fase.rho, self.T))
@@ -2659,7 +2659,7 @@ class MEoS(Fluid_MEOS):
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
             (QApplication.translate("pychemqt", "Isothermal expansion"), "kt", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Isentropic compresibility"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Isentropic compresibility"), "ks", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Isentropic bulk modulus"), "Ks", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg

@@ -301,19 +301,19 @@ class Thermo(object):
 
     def _cp0(self, cp0):
         "Set ideal properties to state"""
-        self.v0 = unidades.SpecificVolume(cp0.v)
-        self.rho0 = unidades.Density(1./cp0.v)
-        self.h0 = unidades.Enthalpy(cp0.h)
+        self.v0 = unidades.SpecificVolume(cp0["v"])
+        self.rho0 = unidades.Density(1./cp0["v"])
+        self.h0 = unidades.Enthalpy(cp0["h"])
         self.u0 = unidades.Enthalpy(self.h0-self.P*self.v0)
-        self.s0 = unidades.SpecificHeat(cp0.s)
+        self.s0 = unidades.SpecificHeat(cp0["s"])
         self.a0 = unidades.Enthalpy(self.u0-self.T*self.s0)
         self.g0 = unidades.Enthalpy(self.h0-self.T*self.s0)
 
-        self.cp0 = unidades.SpecificHeat(cp0.cp)
-        self.cv0 = unidades.SpecificHeat(cp0.cv)
+        self.cp0 = unidades.SpecificHeat(cp0["cp"])
+        self.cv0 = unidades.SpecificHeat(cp0["cv"])
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
-        self.w0 = unidades.Speed(cp0.w)
-        self.gamma0 = unidades.Dimensionless(cp0.gamma)
+        self.w0 = unidades.Speed(cp0["w"])
+        self.gamma0 = self.cp0_cv
 
     def derivative(self, z, x, y, fase):
         """Calculate generic partial derivative: (δz/δx)y
@@ -368,9 +368,10 @@ class Thermo(object):
             (QApplication.translate("pychemqt", "Fugacity"), "f", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Volume Expansivity"), "alfav", unidades.InvTemperature),  # 1/V dV/dt = -1/D dD/dt
-            (QApplication.translate("pychemqt", "Isothermal compresibility"), "kappa", unidades.InvPressure),  # -1/V dV/dp = 1/D dD/dp
-            (QApplication.translate("pychemqt", "Relative pressure"), "alfap", unidades.InvTemperature),
-            (QApplication.translate("pychemqt", "Isothermal stress"), "betap", unidades.Density),
+            (QApplication.translate("pychemqt", "Isothermal compresibility"), "kappa", unidades.InvPressure),  # -1/V (dV/dP)T = 1/D (dD/dP)T
+            (QApplication.translate("pychemqt", "Adiabatic compresibility"), "kappas", unidades.InvPressure),  # -1/V (dV/dP)s = 1/D (dD/dP)s
+            (QApplication.translate("pychemqt", "Relative pressure coerricient"), "alfap", unidades.InvTemperature),  # 1/P (dP/dT)v
+            (QApplication.translate("pychemqt", "Isothermal stress coefficient"), "betap", unidades.Density),  # -1/P (dP/dv)T = 1/P (dP/dD)T
             (QApplication.translate("pychemqt", "Joule-Thomson coefficient"), "joule", unidades.TemperaturePressure),
             (QApplication.translate("pychemqt", "Isothermal throttling coefficient"), "deltat", unidades.EnthalpyPressure),
             (QApplication.translate("pychemqt", "Vaporization heat"), "Hvap", unidades.Enthalpy),
@@ -540,8 +541,8 @@ class ThermoAdvanced(Thermo):
             ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
-            (QApplication.translate("pychemqt", "Isothermal expansion coeffient"), "kt", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Isentropic expansion coefficient"), "ks", unidades.InvPressure),
+            (QApplication.translate("pychemqt", "Isothermal expansion coefficient"), "kt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Isentropic expansion coefficient"), "ks", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Adiabatic bulk modulus"), "Ks", unidades.Pressure),
             (QApplication.translate("pychemqt", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg
@@ -633,12 +634,12 @@ class ThermoRefProp(ThermoAdvanced):
             (QApplication.translate("pychemqt", "Residual isochoric heat capacity"), "cvr", unidades.SpecificHeat),
             (QApplication.translate("pychemqt", "Supercompressibility factor"), "fpv", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Chemical potential"), "chempot", unidades.Enthalpy),
-            (QApplication.translate("pychemqt", "Fourth virial coefficient"), "viriald", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Second acoustic virial coefficient"), "virialba", unidades.SpecificVolume),
-            (QApplication.translate("pychemqt", "Third acoustic virial coefficient"), "virialca", unidades.SpecificVolue_square),
-            ("dc/dT", "dcdt", unidades.Dimensionless),
-            ("d²c/dT²", "dcdt2", unidades.Dimensionless),
-            ("db/dT", "dbdt", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Fourth virial coefficient"), "virialD", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "Second acoustic virial coefficient"), "virialBa", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "Third acoustic virial coefficient"), "virialCa", unidades.SpecificVolume_square),
+            ("dC/dT", "dCdt", unidades.Dimensionless),
+            ("d²C/dT²", "dCdt2", unidades.Dimensionless),
+            ("dB/dT", "dBdt", unidades.Dimensionless),
             ("b12", "b12", unidades.SpecificVolume),
             (QApplication.translate("pychemqt", "Critical flow factor"), "cstar", unidades.Dimensionless)]
 

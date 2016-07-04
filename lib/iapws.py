@@ -2944,19 +2944,14 @@ def prop0(T, P):
         Pr = P/1.
         go, gop, gopp, got, gott, gopt = Region5_cp0(Tr, Pr)
 
-    prop0 = Fluid()
-    prop0.v = Pr*gop*R*T/P/1000
-    prop0.h = Tr*got*R*T
-    prop0.s = R*(Tr*got-go)
-    prop0.cp = -R*Tr**2*gott
-    prop0.cv = R*(-Tr**2*gott+(gop-Tr*gopt)**2/gopp)
+    prop0 = {}
+    prop0["v"] = Pr*gop*R*T/P/1000
+    prop0["h"] = Tr*got*R*T*1000
+    prop0["s"] = R*(Tr*got-go)*1000
+    prop0["cp"] = -R*Tr**2*gott*1000
+    prop0["cv"] = R*(-Tr**2*gott+(gop-Tr*gopt)**2/gopp)*1000
 
-    prop0.w = (R*T*1000/(1+1/Tr**2/gott))**0.5
-    prop0.alfav = 1/T
-    prop0.kappa = 1/P
-    # FIXME: Ideal Isentropic exponent dont work
-    # prop0.gamma = -prop0.v/P/1000*derivative("P", "v", "s", prop0)
-    prop0.gamma = 1.
+    prop0["w"] = (R*T*1000/(1+1/Tr**2/gott))**0.5
     return prop0
 
 
@@ -3350,35 +3345,46 @@ class IAPWS97(ThermoWater):
         fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.fi = unidades.Pressure([exp((fase.g-self.g0)/R/self.T)])
-        fase.f = unidades.Pressure([self.P*fase.fi])
+        fase.fi = [unidades.Dimensionless(exp((fase.g-self.g0)/R/self.T))]
+        fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.gamma = fase.cp_cv
         fase.w = unidades.Speed(estado["w"])
+
+        fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
+        fase.hM = unidades.MolarEnthalpy(fase.h*self.M)
+        fase.sM = unidades.MolarSpecificHeat(fase.s*self.M)
+        fase.uM = unidades.MolarEnthalpy(fase.u*self.M)
+        fase.aM = unidades.MolarEnthalpy(fase.a*self.M)
+        fase.gM = unidades.MolarEnthalpy(fase.g*self.M)
+        fase.cvM = unidades.MolarSpecificHeat(fase.cv*self.M)
+        fase.cpM = unidades.MolarSpecificHeat(fase.cp*self.M)
 
         fase.alfav = unidades.InvTemperature(estado["alfav"])
         fase.kappa = unidades.InvPressure(estado["kt"], "MPa")
+        fase.kappas = unidades.InvPressure(-1/fase.v*self.derivative("v", "P", "s", fase))
 
         fase.mu = unidades.Viscosity(_Viscosity(fase.rho, self.T))
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.k = unidades.ThermalConductivity(_ThCond(fase.rho, self.T))
         fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
         fase.epsilon = unidades.Dimensionless(_Dielectric(fase.rho, self.T))
-        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp*1000/fase.k)
+        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
         fase.n = unidades.Dimensionless(_Refractive(fase.rho, self.T, self.kwargs["l"]))
 
         fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
         fase.deltat = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase))
-        fase.gamma = unidades.Dimensionless(-fase.v/self.P/1000*self.derivative("P", "v", "s", fase))
 
+        fase.betap = unidades.Density(-1/self.P*self.derivative("P", "v", "T", fase))
         if self.region==3:
             fase.alfap = unidades.Density(estado["alfap"])
-            fase.betap = unidades.Density(estado["betap"])
+            # fase.betap = unidades.Density(estado["betap"])
         else:
             fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-            fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
+            # fase.betap = unidades.Density(-1/self.P/1000*self.derivative("P", "v", "T", fase))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
 

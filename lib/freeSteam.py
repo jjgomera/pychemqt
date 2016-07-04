@@ -198,13 +198,23 @@ class Freesteam(ThermoWater):
         fase.u = unidades.Enthalpy(estado.u)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.fi = unidades.Pressure([exp((fase.g-self.g0)/R/self.T)])
-        fase.f = unidades.Pressure([self.P*fase.fi])
+        fase.fi = [unidades.Pressure(exp((fase.g-self.g0)/R/self.T))]
+        fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado.cv)
         fase.cp = unidades.SpecificHeat(estado.cp)
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
+        fase.gamma = fase.cp_cv
         fase.w = unidades.Speed(estado.w)
+
+        fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
+        fase.hM = unidades.MolarEnthalpy(fase.h*self.M)
+        fase.sM = unidades.MolarSpecificHeat(fase.s*self.M)
+        fase.uM = unidades.MolarEnthalpy(fase.u*self.M)
+        fase.aM = unidades.MolarEnthalpy(fase.a*self.M)
+        fase.gM = unidades.MolarEnthalpy(fase.g*self.M)
+        fase.cvM = unidades.MolarSpecificHeat(fase.cv*self.M)
+        fase.cpM = unidades.MolarSpecificHeat(fase.cp*self.M)
 
         fase.mu = unidades.Viscosity(estado.mu)
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
@@ -216,13 +226,14 @@ class Freesteam(ThermoWater):
         fase.n = unidades.Dimensionless(
             iapws._Refractive(fase.rho, self.T, self.kwargs["l"]))
 
-        fase.alfav = unidades.InvTemperature(1/fase.v*estado.deriv("vTp"))
+        # fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
+        fase.alfav = unidades.InvTemperature(estado.deriv("vTp")/fase.v)
         fase.kappa = unidades.InvPressure(-1/fase.v*estado.deriv("vpT"))
+        fase.kappas = unidades.InvPressure(
+            -1/fase.v*self.derivative("v", "P", "s", fase))
 
         fase.joule = unidades.TemperaturePressure(estado.deriv("Tph"))
         fase.deltat = unidades.EnthalpyPressure(estado.deriv("hpT"))
-        fase.gamma = unidades.Dimensionless(
-            -fase.v/self.P/1000*estado.deriv("pvs"))
 
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
         fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
