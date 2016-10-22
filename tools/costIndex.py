@@ -179,21 +179,22 @@ class Ui_CostIndex(QtWidgets.QDialog):
         """Overwrite accept signal to save changes"""
         with open(config.conf_dir+"CostIndex.dat", "w") as archivo:
             if self.custom:
-                print("custom", file=archivo)
+                archivo.write("custom\n")
             else:
-                print(self.fecha.currentText(), file=archivo)
-            print(self.index.value, file=archivo)
-            print(self.equipos.value, file=archivo)
-            print(self.cambiadores_calor.value, file=archivo)
-            print(self.maquinaria.value, file=archivo)
-            print(self.tuberias.value, file=archivo)
-            print(self.instrumentos.value, file=archivo)
-            print(self.bombas.value, file=archivo)
-            print(self.equipos_electricos.value, file=archivo)
-            print(self.soportes.value, file=archivo)
-            print(self.construccion.value, file=archivo)
-            print(self.edificios.value, file=archivo)
-            print(self.ingenieria.value, file=archivo)
+                archivo.write(self.fecha.currentText()+"\n")
+
+            archivo.write(self.index.value+"\n")
+            archivo.write(self.equipos.value+"\n")
+            archivo.write(self.cambiadores_calor.value+"\n")
+            archivo.write(self.maquinaria.value+"\n")
+            archivo.write(self.tuberias.value+"\n")
+            archivo.write(self.instrumentos.value+"\n")
+            archivo.write(self.bombas.value+"\n")
+            archivo.write(self.equipos_electricos.value+"\n")
+            archivo.write(self.soportes.value+"\n")
+            archivo.write(self.construccion.value+"\n")
+            archivo.write(self.edificios.value+"\n")
+            archivo.write(self.ingenieria.value+"\n")
             QtWidgets.QDialog.accept(self)
 
 
