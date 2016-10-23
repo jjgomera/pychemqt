@@ -137,7 +137,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
             self.ingenieria.setValue(float(texto[12]))
 
             if texto[0]:
-                self.fecha.setCurrentIndex(self.fecha.findText(texto[0]))
+                self.fecha.setCurrentIndex(self.fecha.findText(texto[0][:-1]))
             else:
                 self.fecha.setCurrentIndex(-1)
         self.fecha.currentIndexChanged.connect(self.loadData)
