@@ -18,10 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# Library to implement a library for chemical elements as mendeleev table
+###############################################################################
 
-###############################################################################
-# Library to implement a library for chemical component from mendeleev table
-###############################################################################
 
 import sqlite3
 from configparser import ConfigParser
@@ -45,7 +45,8 @@ def cleanFloat(flo):
     return value
 
 color_serie = ["#DDDDDD", "#795681", "#B92D2D", "#B8873A", "#D7C848",
-               "#94738F", "#6186AC", "#88AE62", "#949692", "#BF924E", "#C44343"]
+               "#94738F", "#6186AC", "#88AE62", "#949692", "#BF924E",
+               "#C44343"]
 color_phase = ["#DDDDDD", "#BB8F4A", "#7BB245", "#5D82A8"]
 NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date",
                   "atomic_mass", "atomic_volume", "atomic_radius",
@@ -78,7 +79,9 @@ elif PROP in NUMERIC_VALUES:
         PMIN = 0
         CATEGORIES = linspace(PMIN, PMAX, NUM)
 else:
-    databank.execute("SELECT %s, COUNT(*) c FROM ELEMENTS GROUP BY %s HAVING c > 0" % (PROP, PROP))
+    query = "SELECT %s, COUNT(*) c FROM ELEMENTS GROUP BY %s HAVING c > 0" % (
+        PROP, PROP)
+    databank.execute(query)
     CATEGORIES = []
     for category, count in databank:
         CATEGORIES.append(category)
@@ -143,6 +146,7 @@ class Elemental(object):
            color
            notes
         """
+
         if id > 118:
             id = 118
         databank.execute("SELECT * FROM ELEMENTS WHERE id=='%i'" % id)
@@ -215,12 +219,6 @@ class Elemental(object):
             elif str[-1] == ")":
                 value = float(str.split("(")[1].split(",")[0])
                 aproximate = True
-#        var = func(value, unit)
         if aproximate:
             value.code = "stimated"
         return value
-
-if __name__ == '__main__':
-    for i in range(1, 119):
-        elemento = Elemental(i)
-        print(elemento.symbol, elemento.lattice_edges)
