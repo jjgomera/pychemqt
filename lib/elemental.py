@@ -204,7 +204,9 @@ class Elemental(object):
         self.notes = data[39]
 
         # Isotopes
-        databank.execute("SELECT * FROM ISOTOPES WHERE atomic_number==?", (self.id, ))
+        query = "SELECT * FROM ISOTOPES WHERE atomic_number==?" + \
+            "ORDER BY mass_number"
+        databank.execute(query, (self.id, ))
         self.isotopes = []
         for data in databank:
             self.isotopes.append((int(data[4]), data[2], data[3]))
