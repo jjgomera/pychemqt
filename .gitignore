@@ -62,3 +62,6 @@ docs/_build/
 
 # documentation   
 doc/
+
+# Script propios
+.script/

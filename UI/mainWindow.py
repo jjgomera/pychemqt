@@ -38,8 +38,8 @@ from lib.EoS import K, H
 from equipment import *  # noqa
 from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
                    UI_confThermo, UI_confUnits, UI_confResolution, UI_databank,
-                   UI_Tables, UI_unitConverter, UI_steamTables,
-                   UI_psychrometry, costIndex, doi, dependences)
+                   UI_Tables, UI_unitConverter, UI_psychrometry, costIndex,
+                   doi, dependences)
 from UI.conversor_unidades import moneda
 
 __version__ = "0.1.0"
@@ -279,15 +279,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Show a basic Mendeleiev periodic table"),
             parent=self)
-        steamTablesAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "&Steam Tables"),
-            slot=self.tablasVapor,
-            shortcut="F7",
-            icon="button/steamTables",
-            tip=QtWidgets.QApplication.translate(
-                "pychemqt",
-                "Open a water-steam table and graphic application"),
-            parent=self)
         psychrometricChartAction = createAction(
             QtWidgets.QApplication.translate(
                 "pychemqt", "&Psicrometric Chart"),
@@ -367,7 +358,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.BarraHerramientas.addAction(conversorUnidadesAction)
         self.BarraHerramientas.addAction(currencyAction)
         self.BarraHerramientas.addAction(TablaPeriodicaAction)
-        self.BarraHerramientas.addAction(steamTablesAction)
         self.BarraHerramientas.addAction(psychrometricChartAction)
         self.BarraHerramientas.addAction(externalProgramAction)
         self.BarraHerramientas.addSeparator()
@@ -817,7 +807,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuHerramientas.addAction(conversorUnidadesAction)
         self.menuHerramientas.addAction(currencyAction)
         self.menuHerramientas.addAction(TablaPeriodicaAction)
-        self.menuHerramientas.addAction(steamTablesAction)
         self.menuMEoS = UI_Tables.plugin(parent=self)
         self.menuHerramientas.addAction(self.menuMEoS.menuAction())
         self.menuHerramientas.addAction(psychrometricChartAction)
@@ -1511,12 +1500,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched periodic table aplication"))
         Tabla_Periodica.exec_()
-
-    def tablasVapor(self):
-        SteamTables = UI_steamTables.Ui_SteamTables()
-        self.updateStatus(QtWidgets.QApplication.translate(
-            "pychemqt", "Launched steam-water properties aplication"))
-        SteamTables.exec_()
 
     def diagramaPsicrometrico(self):
         Psychrometry = UI_psychrometry.UI_Psychrometry()
