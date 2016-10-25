@@ -504,7 +504,7 @@ class ElementDialog(QtWidgets.QDialog):
             self.radio_atomico = QtWidgets.QLabel(
                 str(elemento.atomic_radius) + " pm")
         else:
-            self.radio_atomico = QtWidgets.QLabel(elemento.atomic_radius)
+            self.radio_atomico = QtWidgets.QLabel(str(elemento.atomic_radius))
         lyt_A.addWidget(self.radio_atomico, 3, 2)
         lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Covalent radius:")), 4, 1)
