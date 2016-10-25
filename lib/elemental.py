@@ -27,12 +27,29 @@ import sqlite3
 from configparser import ConfigParser
 
 from numpy import linspace, logspace, log
+from PyQt5.QtCore import QLocale
 
 from lib.config import conf_dir
 from lib.utilities import colors
 
+# Connection to database with element data
 connection = sqlite3.connect('dat/elemental.db')
 databank = connection.cursor()
+
+# Load system locale to implement a custon translation system (non qt)
+locale = QLocale.system().name().upper()
+if "_" in locale:
+    locale = locale.split("_")[0]
+
+databank.execute("PRAGMA table_info(TRANSLATION)")
+translation = []
+for i, name, type_, other, other2, primary_key in databank:
+    if "name_" in name:
+        translation.append(name.split("_")[-1])
+if locale in translation:
+    tr_available = True
+else:
+    tr_available = False
 
 
 def cleanFloat(flo):
@@ -153,7 +170,6 @@ class Elemental(object):
         data = databank.fetchone()
 
         self.id = int(data[0])
-        self.name = data[1]
         self.altname = data[2]
         self.symbol = data[3]
         self.serie = data[4]
@@ -202,6 +218,15 @@ class Elemental(object):
         self.T_debye = self._unit(data[37])
         self.color = data[38]
         self.notes = data[39]
+
+        # Translation
+        self.name = data[1]
+        if tr_available:
+            qu = "SELECT name_%s FROM TRANSLATION WHERE id==%i" % (locale, id)
+            databank.execute(qu)
+            tr_name = databank.fetchone()[0]
+            if tr_name:
+                self.name = tr_name
 
         # Isotopes
         query = "SELECT * FROM ISOTOPES WHERE atomic_number==?" + \
