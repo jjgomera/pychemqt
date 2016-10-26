@@ -39,7 +39,7 @@ from configparser import ConfigParser
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from UI.conversor_unidades import UI_conversorUnidades, moneda
+from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 from lib import config
 from lib.utilities import representacion

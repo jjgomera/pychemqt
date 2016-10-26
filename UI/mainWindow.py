@@ -40,7 +40,6 @@ from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
                    UI_confThermo, UI_confUnits, UI_confResolution, UI_databank,
                    UI_Tables, UI_unitConverter, UI_psychrometry, costIndex,
                    doi, dependences)
-from UI.conversor_unidades import moneda
 
 __version__ = "0.1.0"
 
@@ -1518,7 +1517,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         Conversor.exec_()
 
     def conversor_moneda(self):
-        Conversor = moneda()
+        Conversor = UI_unitConverter.moneda()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched currency converter aplication"))
         Conversor.exec_()

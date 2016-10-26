@@ -23,6 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-__all__ = ["BIP", "bombaCurva", "conversor_unidades", "delegate", "flujo",
-           "entrada_datos", "mainWindow", "newComponent", "plots",
-           "texteditor", "UI_corriente", "viewComponents", "widgets", "wizard"]
+__all__ = ["BIP", "bombaCurva", "delegate", "flujo", "entrada_datos",
+           "mainWindow", "newComponent", "plots", "texteditor",
+           "UI_corriente", "viewComponents", "widgets", "wizard"]
