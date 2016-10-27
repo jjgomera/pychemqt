@@ -297,9 +297,9 @@ class UI_Psychrometry(QtWidgets.QDialog):
         """Show/Hide left toolbar with additional funcionality"""
         self.inputs.setVisible(checked)
         if checked:
-            image = "arrow-right-double.png"
-        else:
             image = "arrow-left-double.png"
+        else:
+            image = "arrow-right-double.png"
         self.buttonShowToolbox.setIcon(QtGui.QIcon(
             os.environ["pychemqt"] + os.path.join("images", "button", image)))
 
@@ -441,7 +441,6 @@ class UI_Psychrometry(QtWidgets.QDialog):
             if state.w <= state.ws:
                 self.inputs.setState(state)
                 self.createCrux(state)
-                self.plt.showPointData(state)
             else:
                 self.plt.clearPointData()
 
@@ -455,7 +454,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         """Update horizontal and vertical lines to show click point"""
         self.plt.lx.set_ydata(state.w)
         self.plt.ly.set_xdata(state.tdb.config())
-        self.plt.draw()
+        self.plt.showPointData(state)
 
     def setProgressValue(self, value):
         self.progressBar.setValue(value)
