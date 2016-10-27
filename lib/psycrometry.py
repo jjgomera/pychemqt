@@ -18,13 +18,36 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module for psychrometry calculation
+#
+#    Simple calculation procedures:
+#     - _Pbar: Calculate atmospheric pressure for a specified altitude
+#     - _height: Calculate altitude for a specified atmospheric pressure
+#     - _Tbar: Calculate standard Tdb for a specified altitude
+#     - _Psat: Calculate saturation pressure for a specified Tdb
+#     - _Tsat: CAlculate saturation pressure for a specified pressure
+#     - _W: Saturation humidty calculation procedure
+#     - _h: Specific enthalpy calculation procedure
+#     - _v: Specific volume calculation procedure
+#     - _W_twb: Humidity ratio calculation procedure
+#     - _Tdb: Dry bulb temperature calculation procedure
+#     - _Tdb_V: Tdb calculation procedure from specified volume
+#     - _W_V: Humidity ratio calculation procedure from  specified volume
+#     - _tdp: Dew point temperature calculation procedure
+#     - _twb: Wet bulb temperature calculation procedure
+
+#    - PsyState: Psychrometric state general class with common functionality
+#    - PsyIdeal: Psychrometric state model using idial gas equation
+#    - PsyVirial: Unimplemented
+#    - PsyCoolprop: Psychrometric state model using CoolProp library
+#    - PsyRefprop: Unimplemented
+#    - PsychroState: Preferences defined psychrometric stated used
 ###############################################################################
 
-import os
+
 from configparser import ConfigParser
+import os
 
 from PyQt5.QtWidgets import QApplication
 from scipy.optimize import fsolve
@@ -36,7 +59,8 @@ except:
     pass
 
 from lib.config import conf_dir
-from lib import unidades
+from lib.unidades import (Temperature, Pressure, Dimensionless, SpecificVolume,
+                          Density, Enthalpy)
 
 
 def _Pbar(Z):
@@ -98,7 +122,8 @@ def _Psat(Tdb):
         C11 = 0.000041764768
         C12 = -0.000000014452093
         C13 = 6.5459673
-        pws = exp(C8/Tdb + C9 + C10*Tdb + C11*Tdb**2 + C12*Tdb**3 + C13*log(Tdb))
+        pws = exp(C8/Tdb + C9 + C10*Tdb + C11*Tdb**2 + C12*Tdb**3 +
+                  C13*log(Tdb))
     else:
         raise NotImplementedError("Incoming out of bound")
 
@@ -201,7 +226,8 @@ def _W_twb(tdb, twb, P):
     Pvs = _Psat(twb)
     Ws = 0.62198*Pvs/(P-Pvs)
     if tdb >= 0:
-        w = ((2501-2.381*twb_C)*Ws-1.006*(tdb-twb))/(2501+1.805*tdb_C-4.186*twb_C)
+        w = ((2501-2.381*twb_C)*Ws-1.006*(tdb-twb)) / \
+            (2501+1.805*tdb_C-4.186*twb_C)
     else:
         w = ((2830-0.24*twb_C)*Ws-1.006*(tdb-twb))/(2830+1.86*tdb_C-2.1*twb_C)
     return w
@@ -269,9 +295,9 @@ def _tdp(Pw):
     C17 = 0.09486
     C18 = 0.4569
 
-    alpha = log(Pw/1000.)
-    Tdp1 = C14 + C15*alpha + C16*alpha**2 + C17*alpha**3 + C18*(Pw/1000.)**0.1984
-    Tdp2 = 6.09 + 12.608*alpha + 0.4959*alpha**2
+    a = log(Pw/1000.)
+    Tdp1 = C14 + C15*a + C16*a**2 + C17*a**3 + C18*(Pw/1000.)**0.1984
+    Tdp2 = 6.09 + 12.608*a + 0.4959*a**2
     if 0 <= Tdp1 <= 93:
         t = Tdp1
     elif Tdp2 < 0:
@@ -300,9 +326,11 @@ def _twb(tdb, W, P):
         Ws = 0.62198*Pvs/(P-Pvs)
         twb_C = twb - 273.15
         if tdb >= 0:
-            w = ((2501.-2.326*twb_C)*Ws-1.006*(tdb_C-twb_C))/(2501.+1.86*tdb_C-4.186*twb_C)-W
+            w = ((2501.-2.326*twb_C)*Ws-1.006*(tdb_C-twb_C)) / \
+                (2501.+1.86*tdb_C-4.186*twb_C)-W
         else:
-            w = ((2830-0.24*twb_C)*Ws-1.006*(tdb-twb))/(2830+1.86*tdb_C-2.1*twb_C)
+            w = ((2830-0.24*twb_C)*Ws-1.006*(tdb-twb)) / \
+                (2830+1.86*tdb_C-2.1*twb_C)
         return w
 
     twb = fsolve(f, tdb)[0]
@@ -324,7 +352,7 @@ class PsyState(object):
         h: Mixture enthalpy
         v: Mixture specified volume
 
-    P: mandatory input for barometric pressure, z is an alternate pressure input
+    P: mandatory input for barometric pressure, z as an alternative P input
     it needs other two input parameters:
         0 - tdb, w
         1 - tdb, HR
@@ -333,7 +361,6 @@ class PsyState(object):
         4 - tdp, HR
         5 - tdp, twb
         6 - twb, w
-
     """
     kwargs = {"z": 0.0,
               "P": 0.0,
@@ -397,8 +424,8 @@ class PsyState(object):
         twb = self.kwargs.get("twb", 0)
         w = self.kwargs.get("w", None)
         HR = self.kwargs.get("HR", None)
-        h = self.kwargs.get("h", None)
-        v = self.kwargs.get("v", 0)
+        # h = self.kwargs.get("h", None)
+        # v = self.kwargs.get("v", 0)
 
         self.mode = -1
         if tdb and w is not None:
@@ -430,19 +457,19 @@ class PsyState(object):
 
     def calculo(self):
         tdp, tdb, twb, P, Pvs, Pv, ws, w, HR, v, h = self._lib()
-        self.tdp = unidades.Temperature(tdp)
-        self.tdb = unidades.Temperature(tdb)
-        self.twb = unidades.Temperature(twb)
-        self.P = unidades.Pressure(P)
-        self.Pvs = unidades.Pressure(Pvs)
-        self.Pv = unidades.Pressure(Pv)
-        self.ws = unidades.Dimensionless(ws, txt="kgw/kgda")
-        self.w = unidades.Dimensionless(w, txt="kgw/kgda")
-        self.HR = unidades.Dimensionless(HR, txt="%")
-        self.mu = unidades.Dimensionless(w/ws*100)
-        self.v = unidades.SpecificVolume(v)
-        self.rho = unidades.Density(1/v)
-        self.h = unidades.Enthalpy(h, "kJkg")
+        self.tdp = Temperature(tdp)
+        self.tdb = Temperature(tdb)
+        self.twb = Temperature(twb)
+        self.P = Pressure(P)
+        self.Pvs = Pressure(Pvs)
+        self.Pv = Pressure(Pv)
+        self.ws = Dimensionless(ws, txt="kgw/kgda")
+        self.w = Dimensionless(w, txt="kgw/kgda")
+        self.HR = Dimensionless(HR, txt="%")
+        self.mu = Dimensionless(w/ws*100)
+        self.v = SpecificVolume(v)
+        self.rho = Density(1/v)
+        self.h = Enthalpy(h, "kJkg")
         self.Xa = 1/(1+self.w/0.62198)
         self.Xw = 1-self.Xa
 
@@ -468,8 +495,6 @@ class PsyState(object):
         return t
 
 
-
-
 #    def _Volume(self, T, Xa, eos=0):
 #        if eos:
 #            return _V_Virial(T, Xa)
@@ -478,7 +503,7 @@ class PsyState(object):
 #
 #    def _V_Ideal(self, T, Xa):
 #        """volumen por unidad de masa de aire seco"""
-#        return unidades.SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
+#        return SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
 #
 #    def Virial(self, T, Xa):
 #        """Método que devuelve los coeficientes de la ecuación del virial
@@ -508,14 +533,14 @@ class PsyState(object):
 #            v=vm[0].real
 #        else:
 #            v=vm[2].real
-#        return unidades.SpecificVolume(v/self.aire.M/Xa)
+#        return SpecificVolume(v/self.aire.M/Xa)
 #
 #    def _h(self, Td, w):
 #        """Enthalpy calculation procedure"""
 #        cp_air = self.Air.Cp_Gas_DIPPR(Td)
 #        cp_water = self.Water.Cp_Gas_DIPPR(Td)
 #        h = (Td-273.15)*(cp_air+cp_water*w)
-#        return unidades.Enthalpy(h, "kJkg")
+#        return Enthalpy(h, "kJkg")
 #
 #    def _HS(self, Td):
 #        """Saturation humidity calculation procedure"""
@@ -536,7 +561,7 @@ class PsyState(object):
 #        def f(Tw):
 #            return self.Humedad_Absoluta(Tw)-w-Cs/Hv*(Td-Tw)
 #        Tw = fsolve(f, Td)
-#        return unidades.Temperature(Tw)
+#        return Temperature(Tw)
 
 
 class PsyIdeal(PsyState):
@@ -613,14 +638,14 @@ class PsyIdeal(PsyState):
 
         elif self.mode == 5:
             # Tdp and Twb
-#            Pv = _Psat(tdp)
+            # Pv = _Psat(tdp)
             pass
 
         elif self.mode == 6:
             # Tdb and h
             pass
 #            self.Tdb = tdb
-#            self.h = unidades.Enthalpy(h, "kJkg")
+#            self.h = Enthalpy(h, "kJkg")
 #            f = lambda w: self.Entalpia(self.Tdb, w).kJkg-h
 #            self.w = fsolve(f, 0.001)
 #            self.Hs = self.Humedad_Absoluta(tdb)
@@ -629,7 +654,7 @@ class PsyIdeal(PsyState):
 #            self.Xa = 1/(1+self.w*self.aire.M/self.agua.M)
 #            self.Xw = 1-self.Xa
 #            self.V = self.Volumen(tdb, self.Xa)
-#            self.rho = unidades.Density(1/self.V)
+#            self.rho = Density(1/self.V)
 
         return tdp, tdb, twb, P, Pvs, Pv, ws, w, HR, v, h
 
@@ -638,6 +663,7 @@ class PsyIdeal(PsyState):
         """Funtion to calculate point in chart"""
         Preferences = ConfigParser()
         Preferences.read(conf_dir+"pychemqtrc")
+        parent.setProgressValue(0)
 
         data = {}
         P = parent.inputs.P.value
@@ -650,7 +676,7 @@ class PsyIdeal(PsyState):
             Pv = _Psat(ti)
             Pvs.append(Pv)
             Hs.append(0.62198*Pv/(P-Pv))
-            parent.progressBar.setValue(5*len(Hs)/len(t))
+            parent.setProgressValue(5*len(Hs)/len(t))
         data["t"] = t
         data["Hs"] = Hs
 
@@ -660,10 +686,10 @@ class PsyIdeal(PsyState):
         for w in H:
             if w:
                 Pv = w*P/(0.62198+w)
-                th.append(unidades.Temperature(_tdp(Pv)).config())
+                th.append(Temperature(_tdp(Pv)).config())
             else:
                 tmin = Preferences.getfloat("Psychr", "isotdbStart")
-                th.append(unidades.Temperature(tmin).config())
+                th.append(Temperature(tmin).config())
         data["H"] = H
         data["th"] = th
 
@@ -677,7 +703,7 @@ class PsyIdeal(PsyState):
                 pv = pvs*i/100
                 Hr[i].append(0.62198*pv/(P-pv))
                 cont += 1
-                parent.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
+                parent.setProgressValue(5+10*cont/len(hr)/len(Hs))
         data["Hr"] = Hr
 
         # Twb
@@ -688,9 +714,9 @@ class PsyIdeal(PsyState):
             H = concatenate((arange(_W(P, T), 0, -0.001), [0.]))
             Tw = []
             for h in H:
-                Tw.append(unidades.Temperature(_Tdb(T, h, P)).config())
+                Tw.append(Temperature(_Tdb(T, h, P)).config())
             cont += 1
-            parent.progressBar.setValue(15+75*cont/len(lines))
+            parent.setProgressValue(15+75*cont/len(lines))
             Twb[T] = (H, Tw)
         data["Twb"] = Twb
 
@@ -700,10 +726,10 @@ class PsyIdeal(PsyState):
         for cont, v in enumerate(lines):
             ts = _Tdb_V(v, P)
             T = linspace(ts, v*P/287.055, 50)
-            Td = [unidades.Temperature(ti).config() for ti in T]
+            Td = [Temperature(ti).config() for ti in T]
             _W_V
             H = [_W_V(ti, P, v) for ti in T]
-            parent.progressBar.setValue(90+10*cont/len(lines))
+            parent.setProgressValue(90+10*cont/len(lines))
             V[v] = (Td, H)
         data["v"] = V
 
@@ -725,8 +751,8 @@ class PsyCoolprop(PsyState):
         twb = self.kwargs.get("twb", 0)
         w = self.kwargs.get("w", None)
         HR = self.kwargs.get("HR", None)
-        h = self.kwargs.get("h", None)
-        v = self.kwargs.get("v", 0)
+        # h = self.kwargs.get("h", None)
+        # v = self.kwargs.get("v", 0)
 
         self._mode = 0
         if tdb and w is not None:
@@ -743,7 +769,7 @@ class PsyCoolprop(PsyState):
         return bool(self._mode)
 
     def args(self):
-        # Correct coolprop custom namespace versus pychemqt namespace
+        # Corrºect coolprop custom namespace versus pychemqt namespace
         if "Tdb" in self._mode:
             self.kwargs["Tdb"] = self.kwargs["tdb"]
         if "Twb" in self._mode:
@@ -805,6 +831,7 @@ class PsyCoolprop(PsyState):
         """Funtion to calculate point in chart"""
         Preferences = ConfigParser()
         Preferences.read(conf_dir+"pychemqtrc")
+        parent.setProgressValue(0)
 
         data = {}
         P = parent.inputs.P.value
@@ -815,7 +842,7 @@ class PsyCoolprop(PsyState):
         Hs = []
         for tdb in t:
             Hs.append(HAProps("W", "P", P_kPa, "Tdb", tdb, "RH", 1))
-            parent.progressBar.setValue(5*len(Hs)/len(t))
+            parent.setProgressValue(5*len(Hs)/len(t))
         data["t"] = t
         data["Hs"] = Hs
 
@@ -825,10 +852,10 @@ class PsyCoolprop(PsyState):
         for w in H:
             if w:
                 tdp = HAProps("Tdp", "P", 101.325, "W", w, "RH", 1)
-                th.append(unidades.Temperature(tdp).config())
+                th.append(Temperature(tdp).config())
             else:
                 tmin = Preferences.getfloat("Psychr", "isotdbStart")
-                th.append(unidades.Temperature(tmin).config())
+                th.append(Temperature(tmin).config())
         data["H"] = H
         data["th"] = th
 
@@ -839,7 +866,7 @@ class PsyCoolprop(PsyState):
         for i in hr:
             Hr[i] = []
             for tdb in t:
-                Hr[i].append(HAProps("W", "P", P_kPa, "Tdb", tdb, "RH", i/100.))
+                Hr[i].append(HAProps("W", "P", P_kPa, "Tdb", tdb, "RH", i/100))
                 cont += 1
                 parent.progressBar.setValue(5+10*cont/len(hr)/len(Hs))
         data["Hr"] = Hr
@@ -851,8 +878,8 @@ class PsyCoolprop(PsyState):
         for T in lines:
             ws = HAProps("W", "P", P_kPa, "RH", 1, "Tdb", T)
             H = [ws, 0]
-            Tw = [unidades.Temperature(T).config(),
-                  unidades.Temperature(HAProps("Tdb", "P", P_kPa, "Twb", T, "RH", 0)).config()]
+            _td = HAProps("Tdb", "P", P_kPa, "Twb", T, "RH", 0)
+            Tw = [Temperature(T).config(), Temperature(_td).config()]
             cont += 1
             parent.progressBar.setValue(15+75*cont/len(lines))
             Twb[T] = (H, Tw)
@@ -861,13 +888,18 @@ class PsyCoolprop(PsyState):
         # v
         lines = cls.LineList("isochor", Preferences)
         V = {}
-        rh = arange(1,-0.05,-0.05)
+        # rh = arange(1, -0.05, -0.05)
+        rh = arange(0.00, 1.05, 0.05)
         for cont, v in enumerate(lines):
             w = []
             Td = []
             for r in rh:
-                w.append(HAProps("W", "P", P_kPa, "RH", r, "V", v))
-                Td.append(unidades.Temperature(HAProps("Tdb", "P", P_kPa, "RH", r, "V", v)).config())
+                try:
+                    w.append(HAProps("W", "P", P_kPa, "RH", r, "V", v))
+                    _td = HAProps("Tdb", "P", P_kPa, "RH", r, "V", v)
+                    Td.append(Temperature(_td).config())
+                except ValueError:
+                    pass
             parent.progressBar.setValue(90+10*cont/len(lines))
             V[v] = (Td, w)
         data["v"] = V
@@ -892,6 +924,10 @@ if Preferences.getboolean("Psychr", "virial"):
         PsychroState = PsyRefprop
     else:
         PsychroState = PsyVirial
+
+    # TODO: Enable other option when availables
+    PsychroState = PsyCoolprop
+
 else:
     PsychroState = PsyIdeal
 

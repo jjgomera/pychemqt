@@ -354,7 +354,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         else:
             self.progressBar.setVisible(True)
             self.status.setText(QtWidgets.QApplication.translate(
-                "pychemqt", "Calculating data, be patient..."))
+                "pychemqt", "Calculating data..."))
             QtWidgets.QApplication.processEvents()
             data = PsychroState.calculatePlot(self)
             pickle.dump(data, open(filename, "wb"))
@@ -456,6 +456,10 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.plt.lx.set_ydata(state.w)
         self.plt.ly.set_xdata(state.tdb.config())
         self.plt.draw()
+
+    def setProgressValue(self, value):
+        self.progressBar.setValue(value)
+        QtWidgets.QApplication.processEvents()
 
 
 if __name__ == "__main__":
