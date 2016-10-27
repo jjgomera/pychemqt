@@ -295,7 +295,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
 
     def showToolBar(self, checked):
         """Show/Hide left toolbar with additional funcionality"""
-        self.inputs.setVisible(not checked)
+        self.inputs.setVisible(checked)
         if checked:
             image = "arrow-right-double.png"
         else:
