@@ -35,7 +35,7 @@ class mpl(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         self.ax = self.fig.add_subplot(111)
-        self.ax.figure.subplots_adjust(left=0.08, right=0.92, bottom=0.1, top=0.95)
+        # self.ax.figure.subplots_adjust(left=0.08, right=0.92, bottom=0.1, top=0.95)
         FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 

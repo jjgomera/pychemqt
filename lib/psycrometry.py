@@ -495,75 +495,6 @@ class PsyState(object):
         return t
 
 
-#    def _Volume(self, T, Xa, eos=0):
-#        if eos:
-#            return _V_Virial(T, Xa)
-#        else:
-#            return _V_Ideal(T, Xa)
-#
-#    def _V_Ideal(self, T, Xa):
-#        """volumen por unidad de masa de aire seco"""
-#        return SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
-#
-#    def Virial(self, T, Xa):
-#        """Método que devuelve los coeficientes de la ecuación del virial
-#        Temperatura en kelvin
-#        X fracción molar de aire en la mezcla"""
-#        Baa = 0.349568e2-0.668772e4/T-0.210141e7/T**2+0.924746e8/T**3
-#        Caaa = 0.125975e4-0.190905e6/T+0.632467e8/T**2
-#        Bww = R_atml*T*(0.7e-8-0.147184e-8*exp(1734.29/T))
-#        Cwww = R_atml**2*T**2*(0.104e-14-0.335297e-17*exp(3645.09/T))**2*Bww**2
-#
-#        Xw = 1-Xa
-#        Baw = 0.32366097e2-0.141138e5/T-0.1244535e7/T**2-0.2348789e10/T**4
-#        Caaw = 0.482737e3+0.105678e6/T-0.656394e8/T**2+0.299444e11/T**3 - \
-#            0.319317e13/T**4
-#        Caww = -1e-6*exp(
-#            -0.10728876e2+0.347802e4/T-0.383383e6/T**2+0.33406e8/T**3)
-#        Bm = Xa**2*Baa+2*Xa*Xw*Baw+Xw**2*Bww
-#        Cm = Xa**3*Caaa+3*Xa**2*Xw*Caaw+3*Xa*Xw**2*Caww+Xw**3*Cwww
-#        return Bm, Cm
-#
-#    def _V_Virial(self, T, Xa):
-#        """volumen por unidad de masa de aire seco"""
-#        # FIXME: Don't work, for now use ideal gas equation
-#        Bm, Cm=self.Virial(T, Xa)
-#        vm=roots([1, -R_atml*T/self.P.atm, -R_atml*T*Bm/self.P.atm,-R_atml*T*Cm/self.P.atm])
-#        if vm[0].imag==0.0:
-#            v=vm[0].real
-#        else:
-#            v=vm[2].real
-#        return SpecificVolume(v/self.aire.M/Xa)
-#
-#    def _h(self, Td, w):
-#        """Enthalpy calculation procedure"""
-#        cp_air = self.Air.Cp_Gas_DIPPR(Td)
-#        cp_water = self.Water.Cp_Gas_DIPPR(Td)
-#        h = (Td-273.15)*(cp_air+cp_water*w)
-#        return Enthalpy(h, "kJkg")
-#
-#    def _HS(self, Td):
-#        """Saturation humidity calculation procedure"""
-#        pv = self._Ps(Td)
-#        return self.Water.M*pv/(self.Air.M*(self.P-pv))
-#
-#    def _Ps(self, Td):
-#        """Saturation pressure calculation procedure"""
-#        if Td < 273.15:
-#            return _Sublimation_Pressure(Td)
-#        else:
-#            return _PSat_T(Td)
-#
-#    def _Tw(self, Td, w):
-#        Hv = self.agua.Hv_DIPPR(Td)
-#        Cs = self.Calor_Especifico_Humedo(Td, w)
-#
-#        def f(Tw):
-#            return self.Humedad_Absoluta(Tw)-w-Cs/Hv*(Td-Tw)
-#        Tw = fsolve(f, Td)
-#        return Temperature(Tw)
-
-
 class PsyIdeal(PsyState):
     """Psychrometric state using ideal gas equation"""
     def _lib(self):
@@ -739,6 +670,71 @@ class PsyIdeal(PsyState):
 class PsyVirial(PsyState):
     """Psychrometric state using virial equation of state"""
     pass
+
+#    def _V_Ideal(self, T, Xa):
+#        """volumen por unidad de masa de aire seco"""
+#        return SpecificVolume(R_atml*T/self.P.atm/self.aire.M/Xa)
+#
+#    def Virial(self, T, Xa):
+#        """Método que devuelve los coeficientes de la ecuación del virial
+#        Temperatura en kelvin
+#        X fracción molar de aire en la mezcla"""
+#        ashrae-d-rp257-20070911
+#        ASHRAE-D-RP-1485-20091216
+#        Baa = 0.349568e2-0.668772e4/T-0.210141e7/T**2+0.924746e8/T**3
+#        Caaa = 0.125975e4-0.190905e6/T+0.632467e8/T**2
+#        Bww = R_atml*T*(0.7e-8-0.147184e-8*exp(1734.29/T))
+#        Cwww = R_atml**2*T**2*(0.104e-14-0.335297e-17*exp(3645.09/T))**2*Bww**2
+#
+#        Xw = 1-Xa
+#        Baw = 0.32366097e2-0.141138e5/T-0.1244535e7/T**2-0.2348789e10/T**4
+#        Caaw = 0.482737e3+0.105678e6/T-0.656394e8/T**2+0.299444e11/T**3 - \
+#            0.319317e13/T**4
+#        Caww = -1e-6*exp(
+#            -0.10728876e2+0.347802e4/T-0.383383e6/T**2+0.33406e8/T**3)
+#        Bm = Xa**2*Baa+2*Xa*Xw*Baw+Xw**2*Bww
+#        Cm = Xa**3*Caaa+3*Xa**2*Xw*Caaw+3*Xa*Xw**2*Caww+Xw**3*Cwww
+#        return Bm, Cm
+#
+#    def _V_Virial(self, T, Xa):
+#        """volumen por unidad de masa de aire seco"""
+#        # FIXME: Don't work, for now use ideal gas equation
+#        Bm, Cm=self.Virial(T, Xa)
+#        vm=roots([1, -R_atml*T/self.P.atm, -R_atml*T*Bm/self.P.atm,-R_atml*T*Cm/self.P.atm])
+#        if vm[0].imag==0.0:
+#            v=vm[0].real
+#        else:
+#            v=vm[2].real
+#        return SpecificVolume(v/self.aire.M/Xa)
+#
+#    def _h(self, Td, w):
+#        """Enthalpy calculation procedure"""
+#        cp_air = self.Air.Cp_Gas_DIPPR(Td)
+#        cp_water = self.Water.Cp_Gas_DIPPR(Td)
+#        h = (Td-273.15)*(cp_air+cp_water*w)
+#        return Enthalpy(h, "kJkg")
+#
+#    def _HS(self, Td):
+#        """Saturation humidity calculation procedure"""
+#        pv = self._Ps(Td)
+#        return self.Water.M*pv/(self.Air.M*(self.P-pv))
+#
+#    def _Ps(self, Td):
+#        """Saturation pressure calculation procedure"""
+#        if Td < 273.15:
+#            return _Sublimation_Pressure(Td)
+#        else:
+#            return _PSat_T(Td)
+#
+#    def _Tw(self, Td, w):
+#        Hv = self.agua.Hv_DIPPR(Td)
+#        Cs = self.Calor_Especifico_Humedo(Td, w)
+#
+#        def f(Tw):
+#            return self.Humedad_Absoluta(Tw)-w-Cs/Hv*(Td-Tw)
+#        Tw = fsolve(f, Td)
+#        return Temperature(Tw)
+
 
 
 class PsyCoolprop(PsyState):
@@ -926,7 +922,11 @@ if Preferences.getboolean("Psychr", "virial"):
         PsychroState = PsyVirial
 
     # TODO: Enable other option when availables
-    PsychroState = PsyCoolprop
+    if PsychroState == PsyRefprop or PsychroState == PsyVirial:
+        if os.environ["CoolProp"] == "True":
+            PsychroState = PsyCoolprop
+        else:
+            PsychroState = PsyIdeal
 
 else:
     PsychroState = PsyIdeal
