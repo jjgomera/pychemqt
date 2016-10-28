@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 from functools import partial
+import logging
 import os
 import pickle
 
@@ -301,6 +302,8 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.Preferences = ConfigParser()
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.plot()
+        logging.info(QtWidgets.QApplication.translate(
+            "pychemqt", "Started psychrometric chart tool"))
 
     def savePNG(self):
         """Save chart image to png file"""

@@ -47,6 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
+import logging
 import os
 
 from PyQt5.QtWidgets import QApplication
@@ -415,6 +416,9 @@ class PsyState(object):
         if self.calculable:
             self.status = 1
             self.calculo()
+            logging.debug(QApplication.translate(
+                "pychemqt", "Calculate psychrometric point"))
+            logging.debug(self.kwargs)
             self.msg = "Solved"
 
     @property
@@ -765,7 +769,7 @@ class PsyCoolprop(PsyState):
         return bool(self._mode)
 
     def args(self):
-        # Corrºect coolprop custom namespace versus pychemqt namespace
+        # Correct coolprop custom namespace versus pychemqt namespace
         if "Tdb" in self._mode:
             self.kwargs["Tdb"] = self.kwargs["tdb"]
         if "Twb" in self._mode:
