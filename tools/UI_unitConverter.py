@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+import logging
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -150,6 +151,8 @@ class UI_unitConverter(QtWidgets.QDialog):
             self.lista.addItem(unidad.__title__)
 
         self.lista.setCurrentRow(-1)
+        logging.info(QtWidgets.QApplication.translate(
+            "pychemqt", "Starting unit converte tool"))
 
     def showChildWindow(self):
         """Show child window with selected unit converter"""

@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+import logging
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -237,6 +238,8 @@ class qtelemental(QtWidgets.QDialog):
 
         elemento = Elemental(1)
         self.actualizar(elemento)
+        logging.info(QtWidgets.QApplication.translate(
+            "pychemqt", "Starting periodic table tool"))
 
     def actualizar(self, elemento):
         """Update botton info with data for current element"""
