@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module with wizard project configuration
 # when it creates a new pychemqt project it execute this wizard to configure:
@@ -33,11 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # launch in thermo page of wizard to autoselect a good stimation of values
 ###############################################################################
 
+
 from configparser import ConfigParser
 import os
 
 from PyQt5 import QtGui, QtWidgets
-
 
 from lib.config import conf_dir
 from lib.unidades import Temperature, Pressure
@@ -107,8 +106,8 @@ class AutoDialog(QtWidgets.QDialog):
         self.Pmax = Entrada_con_unidades(Pressure)
         layout.addWidget(self.Pmax, 4, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 5, 1, 1, 2)
@@ -128,26 +127,30 @@ class Wizard(QtWidgets.QWizard):
         botonAuto = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Auto"))
         botonAuto.setToolTip(QtWidgets.QApplication.translate(
-            "pychemqt", "Choose good values from project components and conditions"))
+            "pychemqt",
+            "Choose good values from project components and conditions"))
         self.setButton(QtWidgets.QWizard.CustomButton1, botonAuto)
-#        layout=QtCore.QtList()
-#        layout << QtGui.QWizard.CustomButton1 << QtGui.QWizard.Stretch << QtGui.QWizard.BackButton << QtGui.QWizard.NextButton << QtGui.QWizard.FinishButton
-#        self.setButtonLayout(layout)
         self.customButtonClicked.connect(self.auto)
 
         page1_welcome = QtWidgets.QWizardPage()
-        page1_welcome.setTitle(QtWidgets.QApplication.translate("pychemqt",
-                                                            "Welcome"))
-        page1_welcome.setSubTitle(QtWidgets.QApplication.translate("pychemqt",
+        page1_welcome.setTitle(
+            QtWidgets.QApplication.translate("pychemqt", "Welcome"))
+        page1_welcome.setSubTitle(QtWidgets.QApplication.translate(
+            "pychemqt",
             "That's the configuration wizard of a new project from pychemqt"))
         page1_welcome.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/pychemqt_98.png"))
-        page1_welcome.setPixmap(QtWidgets.QWizard.WatermarkPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/logo_2.jpg"))
+        page1_welcome.setPixmap(
+            QtWidgets.QWizard.WatermarkPixmap, QtGui.QPixmap(
+                os.environ["pychemqt"]+"/images/logo_2.jpg"))
         lyt = QtWidgets.QVBoxLayout(page1_welcome)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", """<html><body>
-This wizard let's you configure all parameters necessary in a pychemqt's project<br>
-All options will be changed later using the options in menu Edit, and this wizard<br>
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt",
+            """<html><body>
+This wizard let's you configure all parameters necessary in a pychemqt's
+project<br>
+All options will can be changed later using the options in menu Edit, and this
+wizard<br>
 can be run at any time later.<br>
 These are the options you must expecific next:<br>
 
