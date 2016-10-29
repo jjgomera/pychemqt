@@ -18,9 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-import os
-import json
 from configparser import ConfigParser
+import json
+import logging
+import os
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
@@ -142,6 +143,8 @@ class unidad(float):
         for key in self.__class__.rates:
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
+        logging.debug("%s, %f" % (self.__class__.__name__, self._data))
+
     def __new__(cls, data, unit="", magnitud=""):
         if not magnitud:
             magnitud = cls.__name__
@@ -249,6 +252,7 @@ with support for class unidad operations: txt, config. func."""
         else:
             self._data = data
             self.code = ""
+        logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
     def __new__(cls, data, txt=""):
         """Discard superfluous parameters for this class"""
@@ -339,6 +343,7 @@ class Temperature(unidad):
         self.F = K2F(self._data)
         self.R = K2R(self._data)
         self.Re = K2Re(self._data)
+        logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
@@ -523,7 +528,8 @@ class Area(unidad):
              "acre": k.acre}
     __text__ = ['m²', 'cm²', 'mm²', "km2", 'inch²', 'ft²', 'yd²',
                 'ha', 'acre']
-    __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha', "acre"]
+    __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha',
+                 "acre"]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
 
@@ -575,16 +581,17 @@ class Volume(unidad):
                 'galon UK', 'oil', 'bbl', 'bblUK', 'onza', 'onza UK']
     __units__ = ['m3', 'cc', 'l', 'yd3', 'ft3', 'inch3', 'galUS', 'galUK',
                  'bbl', 'bblUS', "bblUK", 'onz', 'onzUK']
-    __tooltip__ = ['m³', 'cm³',
-                   QApplication.translate("pychemqt", "liter"),
-                   'yd³', 'ft³', 'inch³',
-                   QApplication.translate("pychemqt", "US liquid gallon"),
-                   QApplication.translate("pychemqt", "Imperial gallon"),
-                   QApplication.translate("pychemqt", "US fluid barrel"),
-                   QApplication.translate("pychemqt", "UK fluid barrel"),
-                   QApplication.translate("pychemqt", "Oil barrel"),
-                   QApplication.translate("pychemqt", "US customary fluid ounce"),
-                   QApplication.translate("pychemqt", "Imperial fluid ounce")]
+    __tooltip__ = [
+        'm³', 'cm³',
+        QApplication.translate("pychemqt", "liter"),
+        'yd³', 'ft³', 'inch³',
+        QApplication.translate("pychemqt", "US liquid gallon"),
+        QApplication.translate("pychemqt", "Imperial gallon"),
+        QApplication.translate("pychemqt", "US fluid barrel"),
+        QApplication.translate("pychemqt", "UK fluid barrel"),
+        QApplication.translate("pychemqt", "Oil barrel"),
+        QApplication.translate("pychemqt", "US customary fluid ounce"),
+        QApplication.translate("pychemqt", "Imperial fluid ounce")]
     _magnitudes = [
         ("Volume", QApplication.translate("pychemqt", "Volume")),
         ("VolLiq", QApplication.translate("pychemqt", "Liquid Volume")),
@@ -868,9 +875,9 @@ class SpecificVolume(unidad):
                 'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb',
                 'ft³/ton UK', 'ft³/ton US', 'ft³/slug', 'ft³/onza',
                 'in³/onza', 'gallon UK/onza', 'gallon US/onza']
-    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
-                 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
-                 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb',
+                 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS',
+                 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
 
@@ -923,9 +930,9 @@ class SpecificVolume_square(unidad):
                 'in⁶/lb²', 'gallon UK²/lb²', 'gallon US²/lb²', 'barril²/lb²',
                 'ft⁶/ton UK²', 'ft⁶/ton US²', 'ft⁶/slug²', 'ft⁶/onza²',
                 'in⁶/onza²', 'gallon UK²/onza²', 'gallon US²/onza²']
-    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb',
-                 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK',
-                 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+    __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb',
+                 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS',
+                 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
 
@@ -1200,6 +1207,7 @@ class Pressure(unidad):
         self.barg = (self.Pa-k.atm)/k.bar
         self.psig = (self.Pa-k.atm)/k.psi
         self.kgcm2g = (self.Pa-k.atm)*k.centi**2/k.g
+        logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
@@ -1524,7 +1532,8 @@ class SpecificHeat(unidad):
              "BtulbF": k.Btu/k.lb/k.Rankine}
     _magnitudes = [
         ("SpecificHeat", QApplication.translate("pychemqt", "Specific Heat")),
-        ("SpecificEntropy", QApplication.translate("pychemqt", "Specific Entropy"))]
+        ("SpecificEntropy", QApplication.translate(
+            "pychemqt", "Specific Entropy"))]
     __text__ = ['J/kg·K', 'kJ/kg·K', 'kcal/kg·K', 'cal/g·K', 'kcal/g·K',
                 'kWh/kg·K', 'Btu/lb·F']
     __units__ = ['JkgK', 'kJkgK', 'kcalkgK', 'calgK', 'kcalgK', 'kWhkgK',
@@ -1533,7 +1542,7 @@ class SpecificHeat(unidad):
         "SpecificHeat": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
                          "cgs": "calgK", "english": "BtulbF"},
         "SpecificEntropy": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
-                         "cgs": "calgK", "english": "BtulbF"}}
+                            "cgs": "calgK", "english": "BtulbF"}}
 
 
 class MolarSpecificHeat(unidad):
@@ -1563,10 +1572,10 @@ class MolarSpecificHeat(unidad):
              "kcalmolK": k.calorie*k.kilo**2,
              "kWhkmolK": k.kilo*k.hour,
              "BtulbmolF": k.Btu/k.lb/k.Rankine}
-    __text__ = ['J/kmol·K', 'kJ/kmol·K', 'kJ/mol·K', 'kcal/kmol·K', 'cal/mol·K', 'kcal/mol·K',
-                'kWh/kmol·K', 'Btu/lbmol·F']
-    __units__ = ['JkmolK', 'kJkmolK', 'kJmolK', 'kcalkmolK', 'calmolK', 'kcalmolK', 'kWhkmolK',
-                 'BtulbmolF']
+    __text__ = ['J/kmol·K', 'kJ/kmol·K', 'kJ/mol·K', 'kcal/kmol·K',
+                'cal/mol·K', 'kcal/mol·K', 'kWh/kmol·K', 'Btu/lbmol·F']
+    __units__ = ['JkmolK', 'kJkmolK', 'kJmolK', 'kcalkmolK', 'calmolK',
+                 'kcalmolK', 'kWhkmolK', 'BtulbmolF']
     __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
                      "cgs": "calmolK", "english": "BtulbmolF"}
 
@@ -1846,7 +1855,8 @@ class Diffusivity(unidad):
                  "inch2h", "St", "cSt"]
     _magnitudes = [
         ("Diffusivity", QApplication.translate("pychemqt", "Diffusivity")),
-        ("KViscosity", QApplication.translate("pychemqt", "Kinematic viscosity"))]
+        ("KViscosity", QApplication.translate(
+            "pychemqt", "Kinematic viscosity"))]
     __units_set__ = {
         "Diffusivity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
                         "cgs": "cm2s", "english": "ft2s"},
@@ -2170,7 +2180,8 @@ class PotencialElectric(unidad):
              "statVcm": k.statV/k.centi}
     __text__ = ["V/m", "kV/m", "MV/m", "V/cm", "kV/cm", "MV/cm", "statV/m",
                 "statV/cm"]
-    __units__ = ["Vm", "kVm", "MVm", "Vcm", "kVcm", "MVcm", "statVm", "statVcm"]
+    __units__ = ["Vm", "kVm", "MVm", "Vcm", "kVcm", "MVcm", "statVm",
+                 "statVcm"]
     __units_set__ = {"altsi": "Vm", "si": "Vm", "metric": "Vm", "cgs": "Vcm",
                      "english": "statVm"}
 
@@ -2377,8 +2388,10 @@ class EnthalpyPressure(unidad):
              "Jkgatm": 1./101325,
              "kJkgatm": 1./101.325,
              "Btulbpsi": k.Btu/k.lb/k.psi}
-    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa', "J/kgatm", "kJ/kgatm", "Btu/lb psi"]
-    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm", "Btulbpsi"]
+    __text__ = ['J/kgPa', 'kJ/kgkPa', 'kJ/kgMPa', "J/kgatm", "kJ/kgatm",
+                "Btu/lb psi"]
+    __units__ = ['JkgPa', 'kJkgkPa', 'kJkgMPa', "Jkgatm", "kJkgatm",
+                 "Btulbpsi"]
     __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
                      "cgs": "kJkgkPa", "english": "Btulbpsi"}
 
@@ -2553,7 +2566,7 @@ class Currency(unidad):
     try:
         archivo = open(filename, "r")
         rates = json.load(archivo)
-    except (FileNotFoundError, TypeError):
+    except (FileNotFoundError, TypeError):  # noqa
         getrates(filename)
         archivo = open(filename, "r")
         rates = json.load(archivo)
@@ -2659,8 +2672,7 @@ if os.environ["icu"] == "True":
         i = title_sorted.index(unit.__title__)
         _all[i] = unit
 else:
-    sortfunc = lambda item: item.__title__
-    _all = sorted(unidad.__subclasses__(), key=sortfunc)
+    _all = sorted(unidad.__subclasses__(), key=lambda item: item.__title__)
 
 _magnitudes = []
 for unit in _all:
@@ -2670,45 +2682,30 @@ _magnitudes.append(("Dimensionless",
                     QApplication.translate("pychemqt", "Dimensionless"),
                     Dimensionless))
 
-# For get a fresh new list of magnitudes when we add some new, the list can be
-# add at start of lib/firstrun.py file:
-#magnitudes=[]
-#for magnitud, title, unit in _magnitudes:
-#    magnitudes.append(magnitud)
-#print(magnitudes)
-
-
-# Run this when add some new magnitude to rebuild units_set
-#unit_set={}
-#for unidad in _all:
-#    if unidad._magnitudes:
-#        unit_set.update(unidad.__units_set__)
-#    else:
-#        unit_set[unidad.__name__]=unidad.__units_set__
-#
-#sets={}
-#for set in ("altsi", "si", "metric", "cgs", "english"):
-#    sets[set]=[]
-#    for magnitud, titulo, unidad in _magnitudes[:-1]:
-#        sets[set].append(unidad.__units__.index(unit_set[magnitud][set]))
-#print(sets)
 
 units_set = {
-    'altsi': [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 0, 0, 1, 4, 0, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 9, 3, 0, 4, 4, 1, 1, 0, 0, 1, 1, 1, 1, 0, 2, 2, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0],
-    'english': [2, 1, 6, 6, 10, 8, 4, 4, 4, 4, 6, 2, 3, 3, 9, 13, 7, 7, 2, 5, 12, 6, 8, 11, 12, 12, 12, 10, 0, 5, 7, 6, 5, 5, 5, 6, 4, 6, 3, 1, 0, 2, 14, 3, 6, 7, 7, 5, 6, 1, 2, 3, 3, 5, 3, 5, 2, 9, 3, 4, 4, 4, 4, 4, 7, 5, 0, 5],
-    'cgs': [1, 0, 3, 3, 8, 4, 1, 1, 1, 1, 5, 1, 1, 1, 6, 6, 5, 5, 1, 1, 3, 4, 3, 3, 6, 6, 6, 9, 3, 2, 23, 1, 1, 1, 1, 1, 1, 3, 1, 0, 0, 1, 10, 10, 3, 23, 23, 0, 5, 0, 1, 1, 1, 0, 2, 1, 0, 7, 1, 1, 5, 1, 1, 1, 3, 1, 0, 1],
-    'si': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 3, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    'metric': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+    'altsi': [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 1, 1, 1, 1, 1,
+              0, 2, 2, 2, 2, 2, 0, 0, 1, 4, 0, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0,
+              9, 3, 0, 4, 4, 1, 1, 0, 0, 1, 1, 1, 1, 0, 2, 2, 1, 0, 2, 0, 0,
+              0, 0, 0, 0, 0],
+    'english': [2, 1, 6, 6, 10, 8, 4, 4, 4, 4, 6, 2, 3, 3, 9, 13, 7, 7, 2, 5,
+                12, 6, 8, 11, 12, 12, 12, 10, 0, 5, 7, 6, 5, 5, 5, 6, 4, 6, 3,
+                1, 0, 2, 14, 3, 6, 7, 7, 5, 6, 1, 2, 3, 3, 5, 3, 5, 2, 9, 3,
+                4, 4, 4, 4, 4, 7, 5, 0, 5],
+    'cgs': [1, 0, 3, 3, 8, 4, 1, 1, 1, 1, 5, 1, 1, 1, 6, 6, 5, 5, 1, 1, 3, 4,
+            3, 3, 6, 6, 6, 9, 3, 2, 23, 1, 1, 1, 1, 1, 1, 3, 1, 0, 0, 1, 10,
+            10, 3, 23, 23, 0, 5, 0, 1, 1, 1, 0, 2, 1, 0, 7, 1, 1, 5, 1, 1, 1,
+            3, 1, 0, 1],
+    'si': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 0, 0, 0, 0, 0, 0,
+           2, 2, 2, 2, 2, 0, 3, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 8, 1,
+           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           0, 0],
+    'metric': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0,
+               7, 7, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0,
+               0, 0, 0, 0, 0]}
+
 
 if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-
-    P=Pressure(5, "MPa")
-    print(P)
-
-    T=Temperature(5, "K")
-    print(T, type(T.K), T.C)
-
-    c = Dimensionless(None)
-    print(c)
+    import doctest
+    doctest.testmod()
