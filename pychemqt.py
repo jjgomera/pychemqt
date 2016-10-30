@@ -190,8 +190,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
         QtWidgets.QApplication.flush()
 
     def showMessage(self, msg):
-        """Método para mostrar mensajes en la parte inferior de la ventana de
-        splash"""
+        """Procedure to update message in splash"""
         align = QtCore.Qt.Alignment(QtCore.Qt.AlignBottom |
                                     QtCore.Qt.AlignRight |
                                     QtCore.Qt.AlignAbsolute)
@@ -202,6 +201,7 @@ class SplashScreen(QtWidgets.QSplashScreen):
     def clearMessage(self):
         QtWidgets.QSplashScreen.clearMessage(self)
         QtWidgets.QApplication.processEvents()
+
 
 splash = SplashScreen()
 if not args.nosplash:
@@ -218,7 +218,8 @@ if not os.path.isfile(conf_dir + "pychemqtrc"):
     Preferences = firstrun.Preferences()
     Preferences.write(open(conf_dir + "pychemqtrc", "w"))
 
-# FIXME: Hasta que no sepa como prescindir de este archivo sera necesario
+# FIXME: This file might not to be useful but for now I use it to save project
+# configuration data
 if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
     Config = firstrun.config()
     Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
@@ -246,13 +247,11 @@ if not os.path.isfile(conf_dir + "moneda.dat"):
         print(QtWidgets.QApplication.translate("pychemqt",
               "Internet connection error, using archived currency rates"))
 
-# Checkin database with custom components
+# Checking database with custom components
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking custom database..."))
-from lib.sql import createDatabase  # noqa
 if not os.path.isfile(conf_dir + "databank.db"):
-    createDatabase(conf_dir + "databank.db")
-
+    firstrun.createDatabase(conf_dir + "databank.db")
 
 # Import internal libraries
 splash.showMessage(QtWidgets.QApplication.translate(
@@ -263,12 +262,14 @@ from equipment import UI_equipments, equipments  # noqa
 from tools import *  # noqa
 from plots import *  # noqa
 
-
+# Load main program UI
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Loading main window..."))
 from UI.mainWindow import UI_pychemqt  # noqa
 pychemqt = UI_pychemqt()
 
+# Load project files, opened in last pychemqt session and/or specified in
+# command line
 msg = QtWidgets.QApplication.translate("pychemqt", "Loading project files")
 splash.showMessage(msg + "...")
 logging.info(msg)

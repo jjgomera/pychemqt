@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Module for properties database function
-#   -createDatabase: Create empty database
 #   -transformElement
 #   -inserElementsFromArray: Insert element to a database
 #   -updateElement: Update element with indice in database
@@ -41,175 +40,12 @@ N_comp = databank.fetchone()[0]
 
 conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
 databank_Custom_name = conf_dir + 'databank.db'
-databank_Custom = sqlite3.connect(databank_Custom_name).cursor()
-try:
+if os.path.isfile(databank_Custom_name):
+    databank_Custom = sqlite3.connect(databank_Custom_name).cursor()
     databank_Custom.execute("SELECT COUNT(*) AS Total FROM compuestos")
     N_comp_Custom = databank_Custom.fetchone()[0]
-except sqlite3.OperationalError:
+else:
     N_comp_Custom = 0
-
-
-def createDatabase(name):
-    """Create empty database"""
-    conn = sqlite3.connect(name)
-    curs = conn.cursor()
-    curs.execute("""
-                 CREATE TABLE compuestos (
-                 id  INTEGER PRIMARY KEY,
-                 formula TEXT,
-                 nombre  TEXT,
-                 peso_molecular FLOAT,
-                 tc          FLOAT,
-                 pc          FLOAT,
-                 vc          FLOAT,
-                 API         FLOAT,
-                 Cp_ideal_A    FLOAT,
-                 Cp_ideal_B    FLOAT,
-                 Cp_ideal_C    FLOAT,
-                 Cp_ideal_D    FLOAT,
-                 Cp_ideal_E    FLOAT,
-                 Cp_ideal_F    FLOAT,
-                 antoine_A   FLOAT,
-                 antoine_B   FLOAT,
-                 antoine_C   FLOAT,
-                 henry_A     FLOAT,
-                 henry_B     FLOAT,
-                 henry_C     FLOAT,
-                 henry_D     FLOAT,
-                 visco_A     FLOAT,
-                 visco_B     FLOAT,
-                 tension_A       FLOAT,
-                 tension_B       FLOAT,
-                 rhoS_DIPPR_EQ   INTEGER,
-                 rhoS_DIPPR_A   FLOAT,
-                 rhoS_DIPPR_B   FLOAT,
-                 rhoS_DIPPR_C   FLOAT,
-                 rhoS_DIPPR_D   FLOAT,
-                 rhoS_DIPPR_E  FLOAT,
-                 rhoS_DIPPR_tmin   FLOAT,
-                 rhoS_DIPPR_tmax   FLOAT,
-                 rhoL_DIPPR_EQ   INTEGER,
-                 rhoL_DIPPR_A   FLOAT,
-                 rhoL_DIPPR_B   FLOAT,
-                 rhoL_DIPPR_C   FLOAT,
-                 rhoL_DIPPR_D   FLOAT,
-                 rhoL_DIPPR_E  FLOAT,
-                 rhoL_DIPPR_tmin   FLOAT,
-                 rhoL_DIPPR_tmax   FLOAT,
-                 Pv_DIPPR_EQ   INTEGER,
-                 Pv_DIPPR_A   FLOAT,
-                 Pv_DIPPR_B   FLOAT,
-                 Pv_DIPPR_C   FLOAT,
-                 Pv_DIPPR_D   FLOAT,
-                 Pv_DIPPR_E  FLOAT,
-                 Pv_DIPPR_tmin   FLOAT,
-                 Pv_DIPPR_tmax   FLOAT,
-                 Hv_DIPPR_EQ   INTEGER,
-                 Hv_DIPPR_A   FLOAT,
-                 Hv_DIPPR_B   FLOAT,
-                 Hv_DIPPR_C   FLOAT,
-                 Hv_DIPPR_D   FLOAT,
-                 Hv_DIPPR_E  FLOAT,
-                 Hv_DIPPR_tmin   FLOAT,
-                 Hv_DIPPR_tmax   FLOAT,
-                 CpS_DIPPR_EQ   INTEGER,
-                 CpS_DIPPR_A   FLOAT,
-                 CpS_DIPPR_B   FLOAT,
-                 CpS_DIPPR_C   FLOAT,
-                 CpS_DIPPR_D   FLOAT,
-                 CpS_DIPPR_E  FLOAT,
-                 CpS_DIPPR_tmin   FLOAT,
-                 CpS_DIPPR_tmax   FLOAT,
-                 CpL_DIPPR_EQ   INTEGER,
-                 CpL_DIPPR_A   FLOAT,
-                 CpL_DIPPR_B   FLOAT,
-                 CpL_DIPPR_C   FLOAT,
-                 CpL_DIPPR_D   FLOAT,
-                 CpL_DIPPR_E  FLOAT,
-                 CpL_DIPPR_tmin   FLOAT,
-                 CpL_DIPPR_tmax   FLOAT,
-                 CpG_DIPPR_EQ   INTEGER,
-                 CpG_DIPPR_A   FLOAT,
-                 CpG_DIPPR_B   FLOAT,
-                 CpG_DIPPR_C   FLOAT,
-                 CpG_DIPPR_D   FLOAT,
-                 CpG_DIPPR_E  FLOAT,
-                 CpG_DIPPR_tmin   FLOAT,
-                 CpG_DIPPR_tmax   FLOAT,
-                 muL_DIPPR_EQ   INTEGER,
-                 muL_DIPPR_A   FLOAT,
-                 muL_DIPPR_B   FLOAT,
-                 muL_DIPPR_C   FLOAT,
-                 muL_DIPPR_D   FLOAT,
-                 muL_DIPPR_E  FLOAT,
-                 muL_DIPPR_tmin   FLOAT,
-                 muL_DIPPR_tmax   FLOAT,
-                 muG_DIPPR_EQ   INTEGER,
-                 muG_DIPPR_A   FLOAT,
-                 muG_DIPPR_B   FLOAT,
-                 muG_DIPPR_C   FLOAT,
-                 muG_DIPPR_D   FLOAT,
-                 muG_DIPPR_E  FLOAT,
-                 muG_DIPPR_tmin   FLOAT,
-                 muG_DIPPR_tmax   FLOAT,
-                 ThcondL_DIPPR_EQ   INTEGER,
-                 ThcondL_DIPPR_A   FLOAT,
-                 ThcondL_DIPPR_B   FLOAT,
-                 ThcondL_DIPPR_C   FLOAT,
-                 ThcondL_DIPPR_D   FLOAT,
-                 ThcondL_DIPPR_E  FLOAT,
-                 ThcondL_DIPPR_tmin   FLOAT,
-                 ThcondL_DIPPR_tmax   FLOAT,
-                 ThcondG_DIPPR_EQ   INTEGER,
-                 ThcondG_DIPPR_A   FLOAT,
-                 ThcondG_DIPPR_B   FLOAT,
-                 ThcondG_DIPPR_C   FLOAT,
-                 ThcondG_DIPPR_D   FLOAT,
-                 ThcondG_DIPPR_E  FLOAT,
-                 ThcondG_DIPPR_tmin   FLOAT,
-                 ThcondG_DIPPR_tmax   FLOAT,
-                 tension_DIPPR_EQ   INTEGER,
-                 tension_DIPPR_A   FLOAT,
-                 tension_DIPPR_B   FLOAT,
-                 tension_DIPPR_C   FLOAT,
-                 tension_DIPPR_D   FLOAT,
-                 tension_DIPPR_E  FLOAT,
-                 tension_DIPPR_tmin   FLOAT,
-                 tension_DIPPR_tmax   FLOAT,
-                 momento_dipolar     FLOAT,
-                 constante_volumen_liquido   FLOAT,
-                 constante_rackett   FLOAT,
-                 densidad_especifica     FLOAT,
-                 factor_acentrico    FLOAT,
-                 parametro_solubilidad   FLOAT,
-                 watson      FLOAT,
-                 MSRK_A    FLOAT,
-                 MSRK_B    FLOAT,
-                 Stiehl  FLOAT,
-                 t_ebullicion  FLOAT,
-                 t_fusion  FLOAT,
-                 CAS_id  TEXT,
-                 formula_alternativa TEXT,
-                 UNIFAC  TEXT,
-                 diametro_molecular  FLOAT,
-                 Eps_k   FLOAT,
-                 UNIQUAC_area    FLOAT,
-                 UNIQUAC_volumen FLOAT,
-                 factor_acentrico_modificado FLOAT,
-                 calor_formacion_gas FLOAT,
-                 energia_libre_gas   FLOAT,
-                 volumen_wilson  FLOAT,
-                 calor_combustion_neto FLOAT,
-                 calor_combustion_bruto   FLOAT,
-                 nombre_alternativo TEXT,
-                 volumen_caracteristico FLOAT,
-                 calor_formacion_solido  FLOAT,
-                 energia_libre_solido    FLOAT,
-                 parametro_polar FLOAT,
-                 smile   TEXT)
-                 """)
-    conn.commit()
-    conn.close()
 
 
 def transformElement(elemento):
@@ -444,7 +280,3 @@ def copyElement(indice):
                  str((1001+N_comp_Custom, ) + vals))
     conn.commit()
     conn.close()
-
-
-if __name__ == "__main__":
-    copyElement(5)
