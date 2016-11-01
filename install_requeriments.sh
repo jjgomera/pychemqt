@@ -47,6 +47,14 @@ pip3 install CoolProp
 
 
 ########################################################################
+# IAPWS
+# External package to implement the IAPWS standard
+########################################################################
+
+pip3 install iapws
+
+
+########################################################################
 #refProp
 #package for calculating thermodynamic properties with advanced equations
 ########################################################################

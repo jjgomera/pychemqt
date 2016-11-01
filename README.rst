@@ -8,6 +8,7 @@ Dependencies
 * `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
 * `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
 * `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data
+* `iapws <http://https://github.com/jjgomera/iapws/>`__: python library for thermodynamic properties of water by IAPWS standards
 
 Optional applications that are required for pychemqt to work with full functionality:
 

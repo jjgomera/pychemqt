@@ -125,6 +125,16 @@ else:
             "Your version of matplotlib is too old, you must update it.")
         raise ImportError(msg)
 
+# iapws
+# Externalized version of iapws, to avoid duple maintenance
+try:
+    import iapws
+except ImportError as err:
+    msg = QtWidgets.QApplication.translate(
+        "pychemqt", "iapws could not be found, you must install it.")
+    print(msg)
+    raise err
+
 # TODO: Disable python-graph external dependence, functional mock up in
 # project yet useless
 # python-graph

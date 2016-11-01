@@ -32,12 +32,11 @@ from PyQt5.QtWidgets import QApplication
 
 from lib.physics import R_atml, R
 from lib import unidades, config
-from lib import EoS, mEoS, gerg, iapws, freeSteam, refProp, coolProp
-from lib import meos, thermo
+from lib import EoS, mEoS, gerg, iapws97, freeSteam, refProp, coolProp
 from lib.solids import Solid
 from lib.mezcla import Mezcla, _mix_from_molarflow_and_molarfraction
 from lib.psycrometry import PsychroState
-from lib.thermo import ThermoWater, ThermoAdvanced, Fluid_MEOS
+from lib.thermo import ThermoWater, ThermoAdvanced
 
 
 class Corriente(config.Entity):
@@ -357,7 +356,7 @@ class Corriente(config.Entity):
         if self._thermo == "freesteam":
             compuesto = freeSteam.Freesteam(**self.kwargs)
         elif self._thermo == "iapws":
-            compuesto = iapws.IAPWS97(**self.kwargs)
+            compuesto = iapws97.IAPWS97(**self.kwargs)
         elif self._thermo == "refprop":
             if not self.kwargs["ids"]:
                 self.kwargs["ids"] = self.ids
@@ -1077,7 +1076,7 @@ class Corriente(config.Entity):
         if self._thermo == "freesteam":
             self.cmp = freeSteam.Freesteam()
         elif self._thermo == "iapws":
-            self.cmp = iapws.IAPWS97()
+            self.cmp = iapws97.IAPWS97()
         elif self._thermo == "refprop":
             self.cmp = refProp.refProp(ids=self.ids)
         elif self._thermo == "coolprop":

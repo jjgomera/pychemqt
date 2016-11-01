@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from scipy import exp
+from iapws import _Viscosity, _ThCond, _Dielectric
 
 from lib import unidades
-from lib.iapws import _Viscosity, _ThCond, _Dielectric
 from lib.meos import MEoS
 
 

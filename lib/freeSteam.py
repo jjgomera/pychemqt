@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # IAPWS-IF97 to meos calculation or in stream calculations.
 # http://freesteam.sourceforge.net/
 # This library is optional, pychemqt has a python implementation for IAPWS-IF97
-# in file lib/iapws.py, but if freesteam is available in your system this is
+# in file lib/iapws97.py, but if freesteam is available in your system this is
 # faster because is implemented in c++
 
 #   - Freesteam: Class with properties calculations
@@ -34,13 +34,15 @@ from math import exp
 
 from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
+import iapws
+from iapws.iapws97 import prop0
 
 try:
     import freesteam
 except:
     pass
 
-from lib import unidades, mEoS, iapws
+from lib import unidades, mEoS
 from lib.thermo import ThermoWater
 
 
@@ -139,7 +141,11 @@ class Freesteam(ThermoWater):
         self.rho = unidades.Density(fluido.rho)
         self.v = unidades.SpecificVolume(1./self.rho)
 
-        cp0 = iapws.prop0(self.T, self.P)
+        cp0 = prop0(self.T, self.P.MPa)
+        cp0["h"] *= 1000
+        cp0["s"] *= 1000
+        cp0["cp"] *= 1000
+        cp0["cv"] *= 1000
         self._cp0(cp0)
 
         self.Liquido = ThermoWater()

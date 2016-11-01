@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 __all__ = ["EoS", "mEoS", "adimensional", "bip", "compuestos", "config",
            "coolProp", "corriente", "datasheet", "elemental", "eos",
-           "firstrun", "freeSteam", "friction", "gerg", "heatTransfer",
-           "iapws", "meos", "petro", "physics", "pipeDatabase", "plot",
-           "project", "psycrometry", "reaction", "refProp", "sql", "thermo",
-           "thread", "unidades", "utilities"]
+           "firstrun", "freeSteam", "friction", "gerg", "heatTransfer", "meos",
+           "petro", "physics", "pipeDatabase", "plot", "project",
+           "psycrometry", "reaction", "refProp", "sql", "thermo", "thread",
+           "unidades", "utilities"]
