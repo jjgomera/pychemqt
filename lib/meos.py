@@ -672,28 +672,28 @@ class MEoS(Fluid_MEOS):
 
         # Ideal properties
         cp0 = self._prop0(rho, self.T)
-        self.v0 = unidades.SpecificVolume(cp0.v)
+        self.v0 = unidades.SpecificVolume(cp0["v"])
         self.rho0 = unidades.Density(1./self.v0)
         self.rhoM0 = unidades.MolarDensity(self.rho0/self.M)
-        self.h0 = unidades.Enthalpy(cp0.h)
+        self.h0 = unidades.Enthalpy(cp0["h"])
         self.hM0 = unidades.MolarEnthalpy(self.h0/self.M)
         self.u0 = unidades.Enthalpy(self.h0-self.P*self.v0)
         self.uM0 = unidades.MolarEnthalpy(self.u0/self.M)
-        self.s0 = unidades.SpecificHeat(cp0.s)
+        self.s0 = unidades.SpecificHeat(cp0["s"])
         self.sM0 = unidades.MolarSpecificHeat(self.s0/self.M)
         self.a0 = unidades.Enthalpy(self.u0-self.T*self.s0)
         self.aM0 = unidades.MolarEnthalpy(self.a0/self.M)
         self.g0 = unidades.Enthalpy(self.h0-self.T*self.s0)
         self.gM0 = unidades.MolarEnthalpy(self.g0/self.M)
-        self.cp0 = unidades.SpecificHeat(cp0.cp)
+        self.cp0 = unidades.SpecificHeat(cp0["cp"])
         self.cpM0 = unidades.MolarSpecificHeat(self.cp0/self.M)
-        self.cv0 = unidades.SpecificHeat(cp0.cv)
+        self.cv0 = unidades.SpecificHeat(cp0["cv"])
         self.cvM0 = unidades.MolarSpecificHeat(self.cv0/self.M)
         self.cp0_cv = unidades.Dimensionless(self.cp0/self.cv0)
         self.gamma0 = self.cp0_cv
 
-        self.Liquido = Fluid_MEOS()
-        self.Gas = Fluid_MEOS()
+        self.Liquido = ThermoAdvanced()
+        self.Gas = ThermoAdvanced()
         if x == 0:
             # liquid phase
             self.fill(self.Liquido, propiedades)
@@ -1404,19 +1404,18 @@ class MEoS(Fluid_MEOS):
         """Ideal gas properties"""
         delta = rho/self.rhoc
         tau = self.Tc/T
-        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(self._constants["cp"], tau, delta)
+        fio, fiot, fiott, fiod, fiodd, fiodt = self._phi0(
+            self._constants["cp"], tau, delta)
 
-        propiedades = Fluid_MEOS()
+        propiedades = {}
         if rho:
-            propiedades.v = self.R*T/self.P
+            propiedades["v"] = self.R*T/self.P
         else:
-            propiedades.v = float("inf")
-        propiedades.h = self.R*T*(1+tau*fiot)
-        propiedades.s = self.R*(tau*fiot-fio)
-        propiedades.cv = -self.R*tau**2*fiott
-        propiedades.cp = self.R*(-tau**2*fiott+1)
-        propiedades.alfap = 1/T
-        propiedades.betap = rho
+            propiedades["v"] = float("inf")
+        propiedades["h"] = self.R*T*(1+tau*fiot)
+        propiedades["s"] = self.R*(tau*fiot-fio)
+        propiedades["cv"] = -self.R*tau**2*fiott
+        propiedades["cp"] = self.R*(-tau**2*fiott+1)
         return propiedades
 
     def _PHIO(self, cp):
