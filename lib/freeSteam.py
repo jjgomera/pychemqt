@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp
 
-from PyQt5.QtWidgets import QApplication
 from scipy.constants import R
 import iapws
 from iapws.iapws97 import prop0
@@ -128,14 +127,16 @@ class Freesteam(ThermoWater):
         func = method[self._thermo]
         fluido = func(self.var1, self.var2)
 
-        self.phase = self.getphase(fluido)
         self.x = unidades.Dimensionless(fluido.x)
         self.name = mEoS.H2O.name
+        self.region = fluido.region
         self.synonim = mEoS.H2O.synonym
         self.CAS = mEoS.H2O.CASNumber
 
         self.T = unidades.Temperature(fluido.T)
         self.P = unidades.Pressure(fluido.p)
+        self.phase = self.getphase(Tc=self.Tc, Pc=self.Pc, T=self.T, P=self.P,
+                                   x=self.x, region=self.region)
         self.Tr = unidades.Dimensionless(self.T/self.Tc)
         self.Pr = unidades.Dimensionless(self.P/self.Pc)
         self.rho = unidades.Density(fluido.rho)
@@ -204,7 +205,8 @@ class Freesteam(ThermoWater):
         fase.u = unidades.Enthalpy(estado.u)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.fi = [unidades.Pressure(exp((fase.g-self.g0)/R/self.T))]
+        fi = exp((fase.g-self.g0)/1000/R*self.M/self.T)
+        fase.fi = [unidades.Pressure(fi)]
         fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado.cv)
@@ -245,32 +247,6 @@ class Freesteam(ThermoWater):
         fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
-
-    def getphase(self, fld):
-        """Return fluid phase with translation support"""
-        # check if fld above critical pressure
-        if fld.p > self.Pc:
-            # check if fld above critical pressure
-            if fld.T > self.Tc:
-                return QApplication.translate("pychemqt", "Supercritical fluid")
-            else:
-                return QApplication.translate("pychemqt", "Compressible liquid")
-        # check if fld above critical pressure
-        elif fld.T > self.Tc:
-            return QApplication.translate("pychemqt", "Gas")
-        # check quality
-        if fld.x >= 1.:
-            if self.kwargs["x"] == 1.:
-                return QApplication.translate("pychemqt", "Saturated vapor")
-            else:
-                return QApplication.translate("pychemqt", "Vapor")
-        elif 0 < fld.x < 1:
-            return QApplication.translate("pychemqt", "Two phases")
-        elif fld.x <= 0.:
-            if self.kwargs["x"] == 0.:
-                return QApplication.translate("pychemqt", "Saturated liquid")
-            else:
-                return QApplication.translate("pychemqt", "Liquid")
 
 
 if __name__ == '__main__':

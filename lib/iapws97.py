@@ -100,13 +100,16 @@ class IAPWS97(ThermoWater):
 
     Usage:
     >>> water=IAPWS97(T=170+273.15,x=0.5)
-    >>> "%0.4f %0.4f %0.1f %0.2f" % (water.Liquido.cp.kJkgK, water.Gas.cp.kJkgK, water.Liquido.w, water.Gas.w)
+    >>> "%0.4f %0.4f %0.1f %0.2f" % (water.Liquido.cp.kJkgK, \
+        water.Gas.cp.kJkgK, water.Liquido.w, water.Gas.w)
     '4.3695 2.5985 1418.3 498.78'
     >>> water=IAPWS97(T=325+273.15,x=0.5)
-    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" % (water.P.MPa, water.Liquido.v, water.Gas.v, water.Liquido.h.kJkg, water.Gas.h.kJkg)
+    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" % (water.P.MPa, water.Liquido.v, \
+        water.Gas.v, water.Liquido.h.kJkg, water.Gas.h.kJkg)
     '12.0505 0.00152830 0.0141887 1493.37 2684.48'
     >>> water=IAPWS97(T=50+273.15,P=611.2127)
-    >>> "%0.4f %0.4f %0.2f %0.3f %0.2f" % (water.cp0.kJkgK, water.cv0.kJkgK, water.h0.kJkg, water.s0.kJkgK, water.w0)
+    >>> "%0.4f %0.4f %0.2f %0.3f %0.2f" % (water.cp0.kJkgK, water.cv0.kJkgK, \
+        water.h0.kJkg, water.s0.kJkgK, water.w0)
     '1.8714 1.4098 2594.66 9.471 444.93'
     """
 
@@ -143,10 +146,15 @@ class IAPWS97(ThermoWater):
             kwargs["s"] /= 1e3
 
         st = IAPWS(**kwargs)
+        self.status = st.status
+        self.msg = st.msg
+        if self.status:
+            self.calculo(st)
 
+    def calculo(self, st):
         self.x = unidades.Dimensionless(st.x)
         self.region = st.region
-        self.phase = st.phase
+        self.phase = self.getphase(phase=st.phase)
         self.name = st.name
         self.synonim = st.synonim
         self.CAS = st.CAS
@@ -289,4 +297,3 @@ class IAPWS97_Tx(IAPWS97):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-

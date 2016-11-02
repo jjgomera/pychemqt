@@ -520,18 +520,52 @@ class ThermoWater(Thermo):
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
             self.n = unidades.Dimensionless(fluid["n"])
 
+    def getphase(self, **kwargs):
+        """Return fluid phase
+        kwarg:
+            phase: direct msg
+            Tc, Pc, T, P, x, region: to calculate by iapws"""
+        data = {
+            "Supercritical fluid": QApplication.translate(
+                "pychemqt", "Supercritical fluid"),
+            "Gas": QApplication.translate("pychemqt", "Gas"),
+            "Compressible liquid": QApplication.translate(
+                "pychemqt", "Compressible liquid"),
+            "Critical point": QApplication.translate(
+                "pychemqt", "Critical point"),
+            "Saturated vapor": QApplication.translate(
+                "pychemqt", "Saturated vapor"),
+            "Saturated liquid": QApplication.translate(
+                "pychemqt", "Saturated liquid"),
+            "Two phases": QApplication.translate("pychemqt", "Two phases"),
+            "Vapour": QApplication.translate("pychemqt", "Vapour"),
+            "Liquid": QApplication.translate("pychemqt", "Liquid"),
+            "Unknown": QApplication.translate("pychemqt", "Unknown")}
+
+        if "phase" in kwargs:
+            phase = kwargs["phase"]
+        else:
+            phase = getphase(**kwargs)
+        return data[phase]
+
 
 class ThermoAdvanced(Thermo):
     """Custom specified thermo instance to add special properties for advanced
     model as coolprop, refprop and meos"""
+
     @classmethod
     def properties(cls):
         prop = Thermo.properties()[:]
         l = [
-            (QApplication.translate("pychemqt", "Isentropic temperature-pressure"), "betas", unidades.TemperaturePressure),
-            (QApplication.translate("pychemqt", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
-            (QApplication.translate("pychemqt", "3er virial coefficient"), "virialC", unidades.SpecificVolume_square),
+            (QApplication.translate(
+                "pychemqt", "Isentropic temperature-pressure"),
+                "betas", unidades.TemperaturePressure),
+            (QApplication.translate("pychemqt", "Gruneisen parameter"),
+             "Gruneisen", unidades.Dimensionless),
+            (QApplication.translate("pychemqt", "2nd virial coefficient"),
+             "virialB", unidades.SpecificVolume),
+            (QApplication.translate("pychemqt", "3er virial coefficient"),
+             "virialC", unidades.SpecificVolume_square),
             ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
             ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
             ("(drho/dT)_P", "drhodT_P", unidades.DensityTemperature),
