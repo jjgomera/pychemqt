@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 #   - getMainWindowConfig: Return config of current project
 #   - setMainWindowConfig: Update currentconfig variable
 #   - Entity: General class for model object
-#   - Fluid: dict class wiih custom properties
 #
 #   Variables:
 #   - conf_dir: User configuration path

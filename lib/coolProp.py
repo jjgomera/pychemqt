@@ -34,7 +34,7 @@ except ImportError as e:
     pass
 
 from lib import unidades
-from lib.thermo import Fluid, ThermoAdvanced
+from lib.thermo import ThermoAdvanced
 from lib.compuestos import Componente
 
 
@@ -195,8 +195,11 @@ class CoolProp(ThermoAdvanced):
               "Smass": None}
 
     __doi__ = [
-        {"autor": "Bell, Ian H. and Wronski, Jorrit and Quoilin, Sylvain and Lemort, Vincent",
-         "title": "Pure and Pseudo-pure Fluid Thermophysical Property Evaluation and the Open-Source Thermophysical Property Library CoolProp",
+        {"autor": "Bell, Ian H. and Wronski, Jorrit and Quoilin, Sylvain and"
+                  "Lemort, Vincent",
+         "title": "Pure and Pseudo-pure Fluid Thermophysical Property"
+                  "Evaluation and the Open-Source Thermophysical Property"
+                  "Library CoolProp",
          "ref": "Ind. Eng. Chem. Res., 2014, 53 (6), pp 2498–2508",
          "doi": "10.1021/ie4033999"}]
 
@@ -390,24 +393,6 @@ class CoolProp(ThermoAdvanced):
             self.fill(self.Gas, vapor)
             self.fill(self, estado)
 
-            ['Tmax', 'Tmin', 'all_critical_points',
-             'apply_simple_mixing_rule', 'build_phase_envelope', 'change_EOS',
-             'conductivity_contributions', 'conformal_state', 'criticality_contour_values',
-             'd2alpha0_dDelta2', 'd2alpha0_dDelta_dTau', 'd2alpha0_dTau2', 'd2alphar_dDelta2', 'd2alphar_dDelta_dTau',
-             'd2alphar_dTau2', 'd3alpha0_dDelta2_dTau', 'd3alpha0_dDelta3', 'd3alpha0_dDelta_dTau2', 'd3alpha0_dTau3', 'd3alphar_dDelta2_dTau',
-             'd3alphar_dDelta3', 'd3alphar_dDelta_dTau2', 'd3alphar_dTau3', 'dalpha0_dDelta', 'dalpha0_dTau', 'dalphar_dDelta', 'dalphar_dTau',
-             'first_saturation_deriv', 'first_two_phase_deriv', 'first_two_phase_deriv_splined',
-             'fluid_param_string', 'get_binary_interaction_double',
-             'get_binary_interaction_string', 'get_phase_envelope_data', 'has_melting_line',
-             'ideal_curve',
-             'melting_line', 'pmax',
-             'rhomass', 'rhomass_reducing', 'rhomolar_critical', 'rhomolar_reducing',
-             'saturated_liquid_keyed_output', 'saturated_vapor_keyed_output', 'saturation_ancillary', 'second_partial_deriv',
-             'second_saturation_deriv', 'second_two_phase_deriv', 'set_binary_interaction_double', 'set_binary_interaction_string',
-             'tangent_plane_distance', 'trivial_keyed_output', 'true_critical_point',
-             'update', 'update_with_guesses', 'viscosity_contributions']
-
-
         # Calculate special properties useful only for one phase
         if self._multicomponent:
             self.Liquido.sigma = unidades.Tension(None)
@@ -548,22 +533,29 @@ class CoolProp(ThermoAdvanced):
         """Return fluid phase with translation support"""
         phase = estado.phase()
         if phase == CP.iphase_supercritical:
-            if self.T > self.Tc:
-                return QApplication.translate("pychemqt", "Supercritical fluid"), 1.
-            else:
-                return QApplication.translate("pychemqt", "Compressible liquid"), 1.
+            msg = QApplication.translate("pychemqt", "Supercritical fluid")
+            x = 1
+        elif phase == CP.iphase_supercritical_liquid:
+            msg = QApplication.translate("pychemqt", "Supercritical liquid")
+            x = 1
+        elif phase == CP.iphase_supercritical_gas:
+            msg = QApplication.translate("pychemqt", "Supercritical gas")
+            x = 1
         elif phase == CP.iphase_gas:
-            # if estado.superheat > 0:
-                return QApplication.translate("pychemqt", "Vapor"), 1.
-            # else:
-                # return QApplication.translate("pychemqt", "Saturated vapor"), 1.
+            msg = QApplication.translate("pychemqt", "Vapor")
+            x = 1
         elif phase == CP.iphase_liquid:
-            # if estado.subcooling > 0:
-                return QApplication.translate("pychemqt", "Liquid"), 0.
-            # else:
-                # return QApplication.translate("pychemqt", "Saturated liquid"), 0.
+            msg = QApplication.translate("pychemqt", "Liquid")
+            x = 0
         elif phase == CP.iphase_twophase:
-            return QApplication.translate("pychemqt", "Two phases"), estado.Q()
+            msg = QApplication.translate("pychemqt", "Two phases")
+            x = estado.Q()
+        elif phase == CP.iphase_critical_point:
+            msg = QApplication.translate("pychemqt", "Critical point")
+            x = 1
+
+        return msg, x
+
 
 if __name__ == '__main__':
     fluido = CoolProp(ids=[62], fraccionMolar=[1], T=300, P=101325)

@@ -1058,12 +1058,9 @@ class Corriente(config.Entity):
         if self._thermo in ["iapws", "freesteam"]:
             self.Liquido = ThermoWater()
             self.Gas = ThermoWater()
-        elif self._thermo in ["coolprop", "refprop"]:
+        elif self._thermo in ["coolprop", "refprop", "meos"]:
             self.Liquido = ThermoAdvanced()
             self.Gas = ThermoAdvanced()
-        elif self._thermo == "meos":
-            self.Liquido = Fluid_MEOS()
-            self.Gas = Fluid_MEOS()
         else:
             self.Liquido = Mezcla()
             self.Gas = Mezcla()

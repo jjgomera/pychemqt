@@ -29,20 +29,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from itertools import product
 from PyQt5.QtWidgets import QApplication
-from scipy import exp, log, log10, sin, sinh, cosh, tanh, arctan, __version__
-if int(__version__.split(".")[1]) < 10:
+from scipy import exp, log, log10, sin, sinh, cosh, tanh, arctan
+try:
     from scipy.constants import Bolzmann as Boltzmann
-else:
+except:
     from scipy.constants import Boltzmann
 from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
-from . import unidades, compuestos
-from .physics import R_atml
-from .thermo import Fluid_MEOS
+from lib import unidades, compuestos
+from lib.physics import R_atml
+from lib.thermo import ThermoAdvanced
 
 
-class MEoS(Fluid_MEOS):
+class MEoS(ThermoAdvanced):
     """General class for implement multiparameter equation of state
     Each child class must define parameters for do calculations:
         name: Name of component

@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Implementation of GERG-2004 and 2008 update
 # Multiparameter equation of state for mixtures with
@@ -30,17 +29,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 # TODO: Not implemented gas-liquid equilibrium yet
 
-import pickle
 import os
+import pickle
 
 from scipy import exp, log, zeros, r_
 from scipy.constants import R
 from scipy.optimize import fsolve
 
-from . import unidades
-from .physics import R_atml
+from lib import unidades
+from lib.physics import R_atml
 from lib import mEoS
-from .thermo import Fluid
+from lib.thermo import ThermoAdvanced
 
 Tref = 298.15
 Pref = 101325.
@@ -447,8 +446,8 @@ class GERG(object):
         self.xv = yi
         if self.kwargs["mezcla"]:
             self.Pc = self.kwargs["mezcla"].Pc
-        self.Liquido = Fluid()
-        self.Gas = Fluid()
+        self.Liquido = ThermoAdvanced()
+        self.Gas = ThermoAdvanced()
 
     def fug(self, rho, T, nfirni=None):
         if not nfirni:

@@ -750,7 +750,7 @@ if __name__ == '__main__':
     # Code for advanced thermal test
     from lib.mEoS.H2O import H2O
     from lib.coolProp import CoolProp
-    from lib.iapws import IAPWS97
+    from lib.iapws97 import IAPWS97
     from lib.freeSteam import Freesteam
 
     P = 2e4
@@ -760,14 +760,14 @@ if __name__ == '__main__':
     # test against reference
     r = RefProp(ids=[62], T=T, P=P)
 
-    # m = H2O(T=300, P=2e6)
-    # ierr = 1e-5
-    # m = CoolProp(ids=[62], fraccionMolar=[1], T=300, P=2e6)
+    m = H2O(T=T, P=P)
+    ierr = 1e-5
+    # m = CoolProp(ids=[62], fraccionMolar=[1], T=T, P=P)
     # ierr = 1e-5
     # m = IAPWS97(T=T, P=P)
     # ierr = 1
-    m = Freesteam(T=T, P=P)
-    ierr = 1
+    # m = Freesteam(T=T, P=P)
+    # ierr = 1
 
     for prop, key, unit in m.properties():
         if key == "sigma":
