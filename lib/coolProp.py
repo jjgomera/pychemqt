@@ -24,7 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # optional method to meos tools calculations and to multicomponent streams
 ###############################################################################
 
-from math import exp
+
+from math import exp, log
 
 from PyQt5.QtWidgets import QApplication
 
@@ -280,23 +281,28 @@ class CoolProp(ThermoAdvanced):
         self.M = unidades.Dimensionless(estado.molar_mass()*1000)
 
         if self._multicomponent:
-            # Disabled CoolProp critical properties for multicomponent, see issue #1087
+            # Disabled CoolProp critical properties for multicomponent,
+            # see issue #1087
 
             # Calculate critical properties with mezcla method
             # Coolprop for mixtures can fail and it's slow
             Cmps = [Componente(int(i)) for i in self.kwargs["ids"]]
 
             # Calculate critic temperature, API procedure 4B1.1 pag 304
-            V = sum([xi*cmp.Vc for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
-            k = [xi*cmp.Vc/V for xi, cmp in zip(self.kwargs["fraccionMolar"], Cmps)]
+            V = sum([xi*cmp.Vc for xi, cmp in
+                     zip(self.kwargs["fraccionMolar"], Cmps)])
+            k = [xi*cmp.Vc/V for xi, cmp in
+                 zip(self.kwargs["fraccionMolar"], Cmps)]
             Tcm = sum([ki*cmp.Tc for ki, cmp in zip(k, Cmps)])
             self.Tc = unidades.Temperature(Tcm)
 
             # Calculate pseudocritic temperature
-            tpc = sum([x*cmp.Tc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+            tpc = sum([x*cmp.Tc for x, cmp in
+                       zip(self.kwargs["fraccionMolar"], Cmps)])
 
             # Calculate pseudocritic pressure
-            ppc = sum([x*cmp.Pc for x, cmp in zip(self.kwargs["fraccionMolar"], Cmps)])
+            ppc = sum([x*cmp.Pc for x, cmp in
+                       zip(self.kwargs["fraccionMolar"], Cmps)])
 
             # Calculate critic pressure, API procedure 4B2.1 pag 307
             sumaw = 0
@@ -448,7 +454,9 @@ class CoolProp(ThermoAdvanced):
                     estado.fugacity_coefficient(i)))
                 fase.f.append(unidades.Pressure(estado.fugacity(i)))
         else:
-            fase.fi = [unidades.Dimensionless(exp((fase.g-self.g0)/self.R/self.T))]
+            fase.fi = [unidades.Dimensionless(
+                exp(estado.alphar()+estado.delta()*estado.dalphar_dDelta() -
+                    log(1+estado.delta()*estado.dalphar_dDelta())))]
             fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado.cvmass())
@@ -476,18 +484,21 @@ class CoolProp(ThermoAdvanced):
         fase.kappas = unidades.InvPressure(
             -1/fase.v*self.derivative("v", "P", "s", fase))
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-        fase.betap = unidades.Density(-1/self.P*self.derivative("P", "v", "T", fase))
+        fase.betap = unidades.Density(
+            -1/self.P*self.derivative("P", "v", "T", fase))
         fase.betas = unidades.TemperaturePressure(
             estado.first_partial_deriv(CP.iT, CP.iP, CP.iSmass))
 
         fase.kt = unidades.Dimensionless(
-            fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
+            fase.rho/self.P*estado.first_partial_deriv(
+                CP.iP, CP.iDmass, CP.iT))
         fase.Ks = unidades.Pressure(
             fase.rho*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
         fase.Kt = unidades.Pressure(
             fase.rho*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iT))
         fase.ks = unidades.Dimensionless(
-            fase.rho/self.P*estado.first_partial_deriv(CP.iP, CP.iDmass, CP.iSmass))
+            fase.rho/self.P*estado.first_partial_deriv(
+                CP.iP, CP.iDmass, CP.iSmass))
         fase.dhdT_rho = unidades.SpecificHeat(
             estado.first_partial_deriv(CP.iHmass, CP.iT, CP.iDmass))
         fase.dhdT_P = unidades.SpecificHeat(
@@ -523,7 +534,7 @@ class CoolProp(ThermoAdvanced):
         fase.mu = unidades.Viscosity(estado.viscosity())
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.k = unidades.ThermalConductivity(estado.conductivity())
-        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
         fase.Prandt = unidades.Dimensionless(estado.Prandtl())
         fase.fraccion = estado.get_mole_fractions()
         fase.fraccion_masica = estado.get_mass_fractions()

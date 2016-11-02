@@ -116,8 +116,7 @@ class MEoS(ThermoAdvanced):
               "ref": None,
               "refvalues": None,
               "rho0": 0,
-              "T0": 0,
-              "recursion": True}
+              "T0": 0}
     status = 0
     msg = QApplication.translate("pychemqt", "Unknown Variables")
     __doi__ = {
@@ -884,16 +883,16 @@ class MEoS(ThermoAdvanced):
         fase.M = unidades.Dimensionless(self.M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1/fase.v)
+        fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
 
         fase.h = unidades.Enthalpy(estado["h"], "kJkg")
         fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
         fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-
-        fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
         fase.fi = [unidades.Dimensionless(estado["fugacity"])]
         fase.f = [unidades.Pressure(f*self.P) for f in fase.fi]
+
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
@@ -912,51 +911,73 @@ class MEoS(ThermoAdvanced):
 
         fase.alfap = unidades.InvTemperature(estado["alfap"])
         fase.betap = unidades.Density(estado["betap"])
-
-        fase.joule = unidades.TemperaturePressure(self.derivative("T", "P", "h", fase))
-        fase.Gruneisen = unidades.Dimensionless(fase.v/fase.cv*self.derivative("P", "T", "v", fase))
+        fase.joule = unidades.TemperaturePressure(
+            self.derivative("T", "P", "h", fase))
+        fase.Gruneisen = unidades.Dimensionless(
+            fase.v/fase.cv*self.derivative("P", "T", "v", fase))
 
         if fase.rho:
-            fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
-            fase.kappa = unidades.InvPressure(-self.derivative("v", "P", "T", fase)/fase.v)
-            fase.kappas = unidades.InvPressure(-1/fase.v*self.derivative("v", "P", "s", fase))
-            fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
-
-            fase.kt = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "T", fase))
-            fase.ks = unidades.Dimensionless(-fase.v/self.P*self.derivative("P", "v", "s", fase))
-            fase.Ks = unidades.Pressure(-fase.v*self.derivative("P", "v", "s", fase))
-            fase.Kt = unidades.Pressure(-fase.v*self.derivative("P", "v", "T", fase))
-            fase.dhdT_rho = unidades.SpecificHeat(self.derivative("h", "T", "rho", fase))
-            fase.dhdT_P = unidades.SpecificHeat(self.derivative("h", "T", "P", fase))
-            fase.dhdP_T = unidades.EnthalpyPressure(self.derivative("h", "P", "T", fase)) #deltat
+            fase.alfav = unidades.InvTemperature(
+                self.derivative("v", "T", "P", fase)/fase.v)
+            fase.kappa = unidades.InvPressure(
+                -self.derivative("v", "P", "T", fase)/fase.v)
+            fase.kappas = unidades.InvPressure(
+                -1/fase.v*self.derivative("v", "P", "s", fase))
+            fase.betas = unidades.TemperaturePressure(
+                self.derivative("T", "P", "s", fase))
+            fase.kt = unidades.Dimensionless(
+                -fase.v/self.P*self.derivative("P", "v", "T", fase))
+            fase.ks = unidades.Dimensionless(
+                -fase.v/self.P*self.derivative("P", "v", "s", fase))
+            fase.Ks = unidades.Pressure(
+                -fase.v*self.derivative("P", "v", "s", fase))
+            fase.Kt = unidades.Pressure(
+                -fase.v*self.derivative("P", "v", "T", fase))
+            fase.dhdT_rho = unidades.SpecificHeat(
+                self.derivative("h", "T", "rho", fase))
+            fase.dhdT_P = unidades.SpecificHeat(
+                self.derivative("h", "T", "P", fase))
+            fase.dhdP_T = unidades.EnthalpyPressure(
+                self.derivative("h", "P", "T", fase))  # deltat
             fase.deltat = fase.dhdP_T
-            fase.dhdP_rho = unidades.EnthalpyPressure(self.derivative("h", "P", "rho", fase))
+            fase.dhdP_rho = unidades.EnthalpyPressure(
+                self.derivative("h", "P", "rho", fase))
             fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
-            fase.dhdrho_P = unidades.EnthalpyDensity(estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
-            fase.dpdT_rho = unidades.PressureTemperature(self.derivative("P", "T", "rho", fase))
+            fase.dhdrho_P = unidades.EnthalpyDensity(
+                estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
+            fase.dpdT_rho = unidades.PressureTemperature(
+                self.derivative("P", "T", "rho", fase))
             fase.dpdrho_T = unidades.PressureDensity(estado["dpdrho"])
             fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
             fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
 
             fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
-            fase.IntP = unidades.Pressure(self.T*self.derivative("P", "T", "rho", fase)-self.P)
-            fase.hInput = unidades.Enthalpy(fase.v*self.derivative("h", "v", "P", fase))
-        if self.kwargs["recursion"]:
-            fase.mu = self._Viscosity(fase.rho, self.T, fase)
-            fase.k = self._ThCond(fase.rho, self.T, fase)
-            if fase.mu and fase.rho:
-                fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
-            else:
-                fase.nu = None
-            if fase.k and fase.rho:
-                fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
-            else:
-                fase.alfa = None
-            if fase.mu and fase.k:
-                fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
-            else:
-                fase.Prandt = None
-            fase.epsilon = unidades.Dimensionless(self._Dielectric(fase.rho, self.T))
+            fase.IntP = unidades.Pressure(
+                self.T*self.derivative("P", "T", "rho", fase)-self.P)
+            fase.hInput = unidades.Enthalpy(
+                fase.v*self.derivative("h", "v", "P", fase))
+
+            fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
+            fase.virialC = unidades.SpecificVolume_square(
+                estado["C"]/self.rhoc**2)
+            fase.invT = unidades.InvTemperature(-1/self.T)
+
+        fase.mu = self._Viscosity(fase.rho, self.T, fase)
+        fase.k = self._ThCond(fase.rho, self.T, fase)
+        if fase.mu and fase.rho:
+            fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
+        else:
+            fase.nu = unidades.Diffusivity(None)
+        if fase.k and fase.rho:
+            fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
+        else:
+            fase.alfa = unidades.Diffusivity(None)
+        if fase.mu and fase.k:
+            fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+        else:
+            fase.Prandt = unidades.Dimensionless(None)
+        fase.epsilon = unidades.Dimensionless(
+            self._Dielectric(fase.rho, self.T))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
 

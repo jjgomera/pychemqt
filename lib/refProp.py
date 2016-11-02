@@ -653,7 +653,7 @@ class RefProp(ThermoRefProp):
         fase.mu = unidades.Viscosity(transport["eta"], "muPas")
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.k = unidades.ThermalConductivity(transport["tcx"])
-        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
         fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
 
         dielec = refprop.dielec(T, rho, x)
@@ -760,10 +760,10 @@ if __name__ == '__main__':
     # test against reference
     r = RefProp(ids=[62], T=T, P=P)
 
-    m = H2O(T=T, P=P)
-    ierr = 1e-5
-    # m = CoolProp(ids=[62], fraccionMolar=[1], T=T, P=P)
+    # m = H2O(T=T, P=P)
     # ierr = 1e-5
+    m = CoolProp(ids=[62], fraccionMolar=[1], T=T, P=P)
+    ierr = 1e-5
     # m = IAPWS97(T=T, P=P)
     # ierr = 1
     # m = Freesteam(T=T, P=P)

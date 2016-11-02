@@ -227,24 +227,23 @@ class Freesteam(ThermoWater):
         fase.mu = unidades.Viscosity(estado.mu)
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         fase.k = unidades.ThermalConductivity(estado.k)
-        fase.alfa = unidades.Diffusivity(fase.k/1000/fase.rho/fase.cp)
+        fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
         fase.epsilon = unidades.Dimensionless(
             iapws._Dielectric(estado.rho, self.T))
         fase.Prandt = unidades.Dimensionless(estado.mu*estado.cp/estado.k)
         fase.n = unidades.Dimensionless(
             iapws._Refractive(fase.rho, self.T, self.kwargs["l"]))
 
-        # fase.alfav = unidades.InvTemperature(self.derivative("v", "T", "P", fase)/fase.v)
-        fase.alfav = unidades.InvTemperature(estado.deriv("vTp")/fase.v)
-        fase.kappa = unidades.InvPressure(-1/fase.v*estado.deriv("vpT"))
+        fase.alfav = unidades.InvTemperature(estado.deriv("Tpv")/fase.v)
+        fase.kappa = unidades.InvPressure(-estado.deriv("pTv")/fase.v)
         fase.kappas = unidades.InvPressure(
             -1/fase.v*self.derivative("v", "P", "s", fase))
 
         fase.joule = unidades.TemperaturePressure(estado.deriv("Tph"))
-        fase.deltat = unidades.EnthalpyPressure(estado.deriv("hpT"))
+        fase.deltat = unidades.EnthalpyPressure(estado.deriv("pTh"))
 
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-        fase.betap = unidades.Density(-1/self.P/1000*estado.deriv("pvT"))
+        fase.betap = unidades.Density(-1/self.P*estado.deriv("vTp"))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
 

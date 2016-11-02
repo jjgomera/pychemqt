@@ -494,7 +494,7 @@ class Corriente(config.Entity):
                 self.cp0 = compuesto.cp0
                 self.cv0 = compuesto.cv0
                 self.cp0_cv = compuesto.cp0_cv
-                # self.gamma0 = compuesto.gamma0
+                self.gamma0 = compuesto.gamma0
                 self.Hvap = compuesto.Hvap
                 self.Svap = compuesto.Svap
 
@@ -627,7 +627,7 @@ class Corriente(config.Entity):
             _gerg = self.kwargs["GERG"]
         else:
             _gerg = Config.getboolean("Thermo", "GERG")
-            GERG = _gerg and GERG_available
+        GERG = _gerg and GERG_available
 
         # Final selection
         if IAPWS and FREESTEAM:
