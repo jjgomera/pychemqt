@@ -29,8 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # TODO: Don't work when it's used in qt loop, as library work great
 
 
-from PyQt5.QtWidgets import QApplication
-
 try:
     # import multiRP
     import refprop
@@ -38,9 +36,9 @@ except:
     pass
 
 from lib import unidades
-from lib.thermo import ThermoRefProp
-from lib.config import Preferences
+# from lib.config import Preferences
 from lib.mezcla import _mix_from_unitmassflow, _mix_from_unitmolarflow
+from lib.thermo import ThermoRefProp
 
 
 __all__ = {212: "helium",
@@ -185,7 +183,7 @@ class RefProp(ThermoRefProp):
             some allowable choices for hmix:
                 'NBS':  use NIST recommendation for specified fluid/mixture
                 'HMX':  mixture Helmholtz model for thermodynamic properties
-                'ECS':  extended corresponding states for viscosity or therm. cond.
+                'ECS':  extended corresponding states for viscosity or th cond
                 'STX':  surface tension mixture model
         hcomp--component model(s) to use for property specified in htype
             [array (1..nc) of character*3]:
@@ -293,9 +291,11 @@ class RefProp(ThermoRefProp):
             self._mix = 1
         elif len(self.kwargs["fraccionMasica"]) == len(self.kwargs["ids"]):
             self._mix = 2
-        elif len(self.kwargs["caudalUnitarioMolar"]) == len(self.kwargs["ids"]):
+        elif len(self.kwargs["caudalUnitarioMolar"]) == \
+                len(self.kwargs["ids"]):
             self._mix = 3
-        elif len(self.kwargs["caudalUnitarioMasico"]) == len(self.kwargs["ids"]):
+        elif len(self.kwargs["caudalUnitarioMasico"]) == \
+                len(self.kwargs["ids"]):
             self._mix = 4
 
         # Check correct fluid definition
@@ -402,13 +402,32 @@ class RefProp(ThermoRefProp):
 
         args = self.args()
         flash = refprop.flsh(*args)
-        self.phase, self.x = self.getphase(flash)
+
+        # check if ['q'] in fld
+        if 'q' in flash.keys():
+            x = flash['q']
+        elif 'h' in flash.keys():
+            x = refprop.flsh('ph', flash['p'], flash['h'], flash['x'])['q']
+        elif 's' in flash.keys():
+            x = refprop.flsh('ps', flash['p'], flash['s'], flash['x'])['q']
+        if 0 < x < 1:
+            region = 4
+        else:
+            region = 1
+
+        if x < 0:
+            x = 0
+        elif x > 1:
+            x = 1
+        self.x = unidades.Dimensionless(x)
         self.T = unidades.Temperature(flash["t"])
         self.P = unidades.Pressure(flash["p"], "kPa")
         self.Tr = unidades.Dimensionless(self.T/self.Tc)
         self.Pr = unidades.Dimensionless(self.P/self.Pc)
         self.rho = unidades.Density(flash["D"]*self.M)
         self.v = unidades.SpecificVolume(1./self.rho)
+        self.phase = self.getphase(Tc=self.Tc, Pc=self.Pc, T=self.T, P=self.Pc,
+                                   x=self.x, region=region)
 
         if flash["nc"] == 1:
             name = refprop.name(flash["nc"])
@@ -495,7 +514,8 @@ class RefProp(ThermoRefProp):
         for i in range(1, flash["nc"]+1):
             dat = refprop.dptsatk(i, flash["t"], kph=2)
             self.csat.append(unidades.SpecificHeat(dat["csat"]/self.M, "JgK"))
-            self.dpdt_sat.append(unidades.PressureTemperature(dat["dpdt"], "kPaK"))
+            self.dpdt_sat.append(
+                unidades.PressureTemperature(dat["dpdt"], "kPaK"))
             cv2 = refprop.cv2pk(i, flash["t"], flash["D"])
             self.cv2p.append(unidades.SpecificHeat(cv2["cv2p"]/self.M, "JgK"))
 
@@ -577,10 +597,13 @@ class RefProp(ThermoRefProp):
         fase.kappa = unidades.InvPressure(thermo["xkappa"], "kPa")
         fase.kappas = unidades.InvPressure(thermo3["betas"], "kPa")
         fase.alfap = unidades.Density(fase.alfav/self.P/fase.kappa)
-        fase.deltat = unidades.EnthalpyPressure(thermo3["thrott"]/fase.M, "kJkgkPa")
+        fase.deltat = unidades.EnthalpyPressure(
+            thermo3["thrott"]/fase.M, "kJkgkPa")
         fase.joule = unidades.TemperaturePressure(thermo["hjt"], "KkPa")
-        fase.betas = unidades.TemperaturePressure(self.derivative("T", "P", "s", fase))
-        fase.betap = unidades.Density(-1/self.P*self.derivative("P", "v", "T", fase))
+        fase.betas = unidades.TemperaturePressure(
+            self.derivative("T", "P", "s", fase))
+        fase.betap = unidades.Density(
+            -1/self.P*self.derivative("P", "v", "T", fase))
 
         fase.Kt = unidades.Pressure(thermo3["xkkt"], "kPa")
         fase.Ks = unidades.Pressure(thermo3["bs"], "kPa")
@@ -592,15 +615,21 @@ class RefProp(ThermoRefProp):
         fase.dhdT_P = unidades.SpecificHeat(dh["dhdt_p"]/fase.M, "kJkgK")
         fase.dhdP_T = unidades.EnthalpyPressure(dh["dhdp_t"]/fase.M, "kJkgkPa")
         # dhdtp_D : fix in library
-        fase.dhdP_rho = unidades.EnthalpyPressure(dh["dhdtp_D"]/fase.M, "kJkgkPa")
-        fase.dhdrho_T = unidades.EnthalpyDensity(dh["dhdD_t"]/fase.M**2, "kJkgkgm3")
-        fase.dhdrho_P = unidades.EnthalpyDensity(dh["dhdD_p"]/fase.M**2, "kJkgkgm3")
+        fase.dhdP_rho = unidades.EnthalpyPressure(
+            dh["dhdtp_D"]/fase.M, "kJkgkPa")
+        fase.dhdrho_T = unidades.EnthalpyDensity(
+            dh["dhdD_t"]/fase.M**2, "kJkgkgm3")
+        fase.dhdrho_P = unidades.EnthalpyDensity(
+            dh["dhdD_p"]/fase.M**2, "kJkgkgm3")
 
         fase.dpdT_rho = unidades.PressureTemperature(thermo["dpdt"], "kPaK")
-        fase.dpdrho_T = unidades.PressureDensity(thermo["dpdD"]/fase.M, "kPakgm3")
+        fase.dpdrho_T = unidades.PressureDensity(
+            thermo["dpdD"]/fase.M, "kPakgm3")
         # TODO: Add unit for derivative d^2p/dD^2 [kPa-L^2/mol^2]
-        fase.d2pdrho2 = unidades.Dimensionless(thermo["d2pdD2"]/fase.M**2/1000)  # MPa·m⁶/kg²
-        fase.drhodP_T = unidades.DensityPressure(thermo["dDdp"]*fase.M, "kgm3kPa")
+        # MPa·m⁶/kg²
+        fase.d2pdrho2 = unidades.Dimensionless(thermo["d2pdD2"]/fase.M**2/1000)
+        fase.drhodP_T = unidades.DensityPressure(
+            thermo["dDdp"]*fase.M, "kgm3kPa")
         fase.drhodT_P = unidades.DensityTemperature(thermo["dDdt"]*fase.M)
         fase.Gruneisen = unidades.Dimensionless(fase.v/fase.cv*fase.dpdT_rho)
 
@@ -659,44 +688,13 @@ class RefProp(ThermoRefProp):
         dielec = refprop.dielec(T, rho, x)
         fase.epsilon = unidades.Dimensionless(dielec["de"])
 
-    def getphase(self, fld):
-        """Return fluid phase
-        Override refprop original function with translation support"""
-        # check if fld above critical pressure
-        if fld['p'] > self.Pc.kPa:
-            # check if fld above critical pressure
-            if fld['t'] > self.Tc:
-                return QApplication.translate("pychemqt", "Supercritical fluid"), 1.
-            else:
-                return QApplication.translate("pychemqt", "Compressible liquid"), 1.
-        # check if fld above critical pressure
-        elif fld['t'] > self.Tc:
-            return QApplication.translate("pychemqt", "Gas"), 1.
-        # check if ['q'] in fld
-        if 'q' not in list(fld.keys()):
-            if 'h' in list(fld.keys()):
-                fld['q'] = refprop.flsh('ph', fld['p'], fld['h'], fld['x'])['q']
-            elif 's' in list(fld.keys()):
-                fld['q'] = refprop.flsh('ps', fld['p'], fld['s'], fld['x'])['q']
-        # check q
-        if fld['q'] > 1:
-            return QApplication.translate("pychemqt", "Vapor"), 1.
-        elif fld['q'] == 1:
-            return QApplication.translate("pychemqt", "Saturated vapor"), 1.
-        elif 0 < fld['q'] < 1:
-            return QApplication.translate("pychemqt", "Two phases"), fld['q']
-        elif fld['q'] == 0:
-            return QApplication.translate("pychemqt", "Saturated liquid"), 0.
-        elif fld['q'] < 0:
-            return QApplication.translate("pychemqt", "Liquid"), 0.
-
 
 if __name__ == '__main__':
-    # import sys
-    # from PyQt5 import QtWidgets
-    # app = QtWidgets.QApplication(sys.argv)
+    import sys
+    from PyQt5 import QtWidgets
+    app = QtWidgets.QApplication(sys.argv)
 
-    # fluido = RefProp(ids=[62], T=300, P=1e6)
+    fluido = RefProp(ids=[62], T=300, P=1e6)
     # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
           # % (fluido.rho, fluido.u.kJkg, fluido.h.kJkg, fluido.s.kJkgK,
              # fluido.cv.kJkgK, fluido.cp.kJkgK, fluido.cp0.kJkgK,
@@ -747,55 +745,55 @@ if __name__ == '__main__':
     # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g" % (fluido.vE, fluido.uE.kJkg, fluido.hE.kJkg, fluido.sE.kJkgK, fluido.aE.kJkg, fluido.gE.kJkg))
     # print(fluido.M, fluido.Tc, fluido.Pc.MPa, fluido.rhoc)
 
-    # Code for advanced thermal test
-    from lib.mEoS.H2O import H2O
-    from lib.coolProp import CoolProp
-    from lib.iapws97 import IAPWS97
-    from lib.freeSteam import Freesteam
+#     # Code for advanced thermal test
+    # from lib.mEoS.H2O import H2O
+    # from lib.coolProp import CoolProp
+    # from lib.iapws97 import IAPWS97
+    # from lib.freeSteam import Freesteam
 
-    P = 2e4
-    T = 300
+    # P = 2e4
+    # T = 300
 
-    # Fluid definition, r refprop used as reference fluid, choose a m fluid to
-    # test against reference
-    r = RefProp(ids=[62], T=T, P=P)
+    # # Fluid definition, r refprop used as reference fluid, choose a m fluid to
+    # # test against reference
+    # r = RefProp(ids=[62], T=T, P=P)
 
-    # m = H2O(T=T, P=P)
+    # # m = H2O(T=T, P=P)
+    # # ierr = 1e-5
+    # m = CoolProp(ids=[62], fraccionMolar=[1], T=T, P=P)
     # ierr = 1e-5
-    m = CoolProp(ids=[62], fraccionMolar=[1], T=T, P=P)
-    ierr = 1e-5
-    # m = IAPWS97(T=T, P=P)
-    # ierr = 1
-    # m = Freesteam(T=T, P=P)
-    # ierr = 1
+    # # m = IAPWS97(T=T, P=P)
+    # # ierr = 1
+    # # m = Freesteam(T=T, P=P)
+    # # ierr = 1
 
-    for prop, key, unit in m.properties():
-        if key == "sigma":
-            try:
-                error = abs(r.Liquido.__getattribute__(key)-m.Liquido.__getattribute__(key))/r.Liquido.__getattribute__(key)*100
-                if error > ierr:
-                    msg = "ERROR %0.5g%s" % (error, "%")
-                    print("%s: %0.9g %0.9g %s" % (key, r.Liquido.__getattribute__(key), m.Liquido.__getattribute__(key), msg))
-            except ZeroDivisionError:
-                print(key, "no implementado")
-        elif key == "n":
-            pass
-        elif isinstance(r.__getattribute__(key), list):
-            error = 0
-            for v1, v2 in zip(r.__getattribute__(key), m.__getattribute__(key)):
-                error2 = abs(v1-v2)/v1*100
-                if error2 > error:
-                    error = error2
-                if error > ierr:
-                    msg = "ERROR %0.5g%s" % (error, "%")
-                    print("%s: " % key, r.__getattribute__(key), m.__getattribute__(key), msg)
-        else:
-            try:
-                error = abs(r.__getattribute__(key)-m.__getattribute__(key))/r.__getattribute__(key)*100
-                if error > ierr:
-                    msg = "ERROR %0.5g%s" % (error, "%")
-                    print("%s: %0.9g %0.9g %s" % (key, r.__getattribute__(key), m.__getattribute__(key), msg))
-            except ZeroDivisionError:
-                if r.__getattribute__(key) == m.__getattribute__(key):
-                    pass
+    # for prop, key, unit in m.properties():
+        # if key == "sigma":
+            # try:
+                # error = abs(r.Liquido.__getattribute__(key)-m.Liquido.__getattribute__(key))/r.Liquido.__getattribute__(key)*100
+                # if error > ierr:
+                    # msg = "ERROR %0.5g%s" % (error, "%")
+                    # print("%s: %0.9g %0.9g %s" % (key, r.Liquido.__getattribute__(key), m.Liquido.__getattribute__(key), msg))
+            # except ZeroDivisionError:
+                # print(key, "no implementado")
+        # elif key == "n":
+            # pass
+        # elif isinstance(r.__getattribute__(key), list):
+            # error = 0
+            # for v1, v2 in zip(r.__getattribute__(key), m.__getattribute__(key)):
+                # error2 = abs(v1-v2)/v1*100
+                # if error2 > error:
+                    # error = error2
+                # if error > ierr:
+                    # msg = "ERROR %0.5g%s" % (error, "%")
+                    # print("%s: " % key, r.__getattribute__(key), m.__getattribute__(key), msg)
+        # else:
+            # try:
+                # error = abs(r.__getattribute__(key)-m.__getattribute__(key))/r.__getattribute__(key)*100
+                # if error > ierr:
+                    # msg = "ERROR %0.5g%s" % (error, "%")
+                    # print("%s: %0.9g %0.9g %s" % (key, r.__getattribute__(key), m.__getattribute__(key), msg))
+            # except ZeroDivisionError:
+                # if r.__getattribute__(key) == m.__getattribute__(key):
+                    # pass
 

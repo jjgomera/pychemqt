@@ -114,6 +114,34 @@ class Thermo(object):
               "a": self.P*fase.v*fase.kappa}
         return (dP[z]*dT[y]-dT[z]*dP[y])/(dP[x]*dT[y]-dT[x]*dP[y])
 
+    def getphase(self, **kwargs):
+        """Return fluid phase
+        kwarg:
+            phase: direct msg
+            Tc, Pc, T, P, x, region: to calculate by iapws"""
+        data = {
+            "Supercritical fluid": QApplication.translate(
+                "pychemqt", "Supercritical fluid"),
+            "Gas": QApplication.translate("pychemqt", "Gas"),
+            "Compressible liquid": QApplication.translate(
+                "pychemqt", "Compressible liquid"),
+            "Critical point": QApplication.translate(
+                "pychemqt", "Critical point"),
+            "Saturated vapor": QApplication.translate(
+                "pychemqt", "Saturated vapor"),
+            "Saturated liquid": QApplication.translate(
+                "pychemqt", "Saturated liquid"),
+            "Two phases": QApplication.translate("pychemqt", "Two phases"),
+            "Vapour": QApplication.translate("pychemqt", "Vapour"),
+            "Liquid": QApplication.translate("pychemqt", "Liquid"),
+            "Unknown": QApplication.translate("pychemqt", "Unknown")}
+
+        if "phase" in kwargs:
+            phase = kwargs["phase"]
+        else:
+            phase = getphase(**kwargs)
+        return data[phase]
+
     @classmethod
     def properties(cls):
         l = [
@@ -165,7 +193,7 @@ class Thermo(object):
             (QApplication.translate(
                 "pychemqt", "Molar Specific isobaric heat capacity"), "cpM",
                 unidades.MolarSpecificHeat),
-            (QApplication.translate("pychemqt", "Heat  capacities ratio"),
+            (QApplication.translate("pychemqt", "Heat capacities ratio"),
              "cp_cv", unidades.Dimensionless),
             (QApplication.translate("pychemqt", "Speed sound"), "w",
              unidades.Speed),
@@ -184,7 +212,7 @@ class Thermo(object):
             (QApplication.translate("pychemqt", "Adiabatic compresibility"),
              "kappas", unidades.InvPressure),  # -1/V (dV/dP)s = 1/D (dD/dP)s
             (QApplication.translate(
-                "pychemqt", "Relative pressure coerricient"), "alfap",
+                "pychemqt", "Relative pressure coefficient"), "alfap",
                 unidades.InvTemperature),  # 1/P (dP/dT)v
             (QApplication.translate(
                 "pychemqt", "Isothermal stress coefficient"), "betap",
@@ -374,34 +402,6 @@ class ThermoWater(Thermo):
         if fluid:
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
             self.n = unidades.Dimensionless(fluid["n"])
-
-    def getphase(self, **kwargs):
-        """Return fluid phase
-        kwarg:
-            phase: direct msg
-            Tc, Pc, T, P, x, region: to calculate by iapws"""
-        data = {
-            "Supercritical fluid": QApplication.translate(
-                "pychemqt", "Supercritical fluid"),
-            "Gas": QApplication.translate("pychemqt", "Gas"),
-            "Compressible liquid": QApplication.translate(
-                "pychemqt", "Compressible liquid"),
-            "Critical point": QApplication.translate(
-                "pychemqt", "Critical point"),
-            "Saturated vapor": QApplication.translate(
-                "pychemqt", "Saturated vapor"),
-            "Saturated liquid": QApplication.translate(
-                "pychemqt", "Saturated liquid"),
-            "Two phases": QApplication.translate("pychemqt", "Two phases"),
-            "Vapour": QApplication.translate("pychemqt", "Vapour"),
-            "Liquid": QApplication.translate("pychemqt", "Liquid"),
-            "Unknown": QApplication.translate("pychemqt", "Unknown")}
-
-        if "phase" in kwargs:
-            phase = kwargs["phase"]
-        else:
-            phase = getphase(**kwargs)
-        return data[phase]
 
 
 class ThermoAdvanced(Thermo):
