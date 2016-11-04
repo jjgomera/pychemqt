@@ -278,6 +278,15 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Show a basic Mendeleiev periodic table"),
             parent=self)
+        TablesAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "MEOS"),
+            slot=self.meos,
+            shortcut="F7",
+            icon="button/tables",
+            tip=QtWidgets.QApplication.translate(
+                "pychemqt",
+                "Open a advanced thermodynamic properties application"),
+            parent=self)
         psychrometricChartAction = createAction(
             QtWidgets.QApplication.translate(
                 "pychemqt", "&Psicrometric Chart"),
@@ -357,6 +366,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.BarraHerramientas.addAction(conversorUnidadesAction)
         self.BarraHerramientas.addAction(currencyAction)
         self.BarraHerramientas.addAction(TablaPeriodicaAction)
+        self.BarraHerramientas.addAction(TablesAction)
         self.BarraHerramientas.addAction(psychrometricChartAction)
         self.BarraHerramientas.addAction(externalProgramAction)
         self.BarraHerramientas.addSeparator()
@@ -806,7 +816,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuHerramientas.addAction(conversorUnidadesAction)
         self.menuHerramientas.addAction(currencyAction)
         self.menuHerramientas.addAction(TablaPeriodicaAction)
-        self.menuMEoS = UI_Tables.plugin(parent=self)
+        self.menuMEoS = UI_Tables.Menu(parent=self)
         self.menuHerramientas.addAction(self.menuMEoS.menuAction())
         self.menuHerramientas.addAction(psychrometricChartAction)
         self.menuHerramientas.addSeparator()
@@ -1499,6 +1509,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched periodic table aplication"))
         Tabla_Periodica.exec_()
+
+    def meos(self):
+        dialog = UI_Tables.Dialog(self.currentConfig, self)
+        dialog.exec_()
 
     def diagramaPsicrometrico(self):
         Psychrometry = UI_psychrometry.UI_Psychrometry()

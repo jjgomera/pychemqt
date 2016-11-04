@@ -92,19 +92,11 @@ prop_pickle = ["T", "P", "rho", "v", "h", "s", "u", "g", "a", "cv", "cp", "w",
                "mu", "k", "nu", "alfa", "Prandt"]
 
 
-# Plugin to import in mainwindow, it implement all meos functionality as QMenu
-class plugin(QtWidgets.QMenu):
-    """QMenu to import in mainwindow with all meos addon functionality"""
-    def __init__(self, parent=None):
-        title = QtWidgets.QApplication.translate("pychemqt", "MEoS properties")
-        super(plugin, self).__init__(title, parent)
-        self.aboutToShow.connect(self.aboutToShow_menu)
+class plugin(object):
+    """Common functionality to add to menu and dialog"""
 
-    def aboutToShow_menu(self):
-        """Populate menu, check if fluid and reference state are defined to
-        enable/disable calculation/plot option"""
-        self.clear()
-        self.config = self.parent().currentConfig
+    def _txt(self):
+        """Common widget names"""
         if self.config.has_option("MEoS", "fluid"):
             fTxt = mEoS.__all__[self.config.getint("MEoS", "fluid")].name
         else:
@@ -115,78 +107,8 @@ class plugin(QtWidgets.QMenu):
             refTxt = QtWidgets.QApplication.translate(
                 "pychemqt", "Reference State")
         propTxt = QtWidgets.QApplication.translate("pychemqt", "Properties")
-        flAction = createAction(fTxt, slot=self.showChooseFluid, parent=self)
-        refAction = createAction(refTxt, slot=self.showReference, parent=self)
-        pAction = createAction(propTxt, slot=self.showProperties, parent=self)
 
-        menuCalculate = QtWidgets.QMenu(QtWidgets.QApplication.translate(
-            "pychemqt", "Calculate"), parent=self)
-        saturationAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Saturation"),
-            slot=self.showSaturation, parent=self)
-        menuCalculate.addAction(saturationAction)
-        IsopropertyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Isoproperty"),
-            slot=self.showIsoproperty, parent=self)
-        menuCalculate.addAction(IsopropertyAction)
-        menuCalculate.addSeparator()
-        SpecifyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Specified point"),
-            slot=self.addTableSpecified, parent=self)
-        menuCalculate.addAction(SpecifyAction)
-
-        menuPlot = QtWidgets.QMenu(
-            QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
-        Plot_T_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-s diagram"),
-            slot=partial(self.plot, "s", "T"), parent=self)
-        menuPlot.addAction(Plot_T_s_Action)
-        Plot_T_rho_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-rho diagram"),
-            slot=partial(self.plot, "rho", "T"), parent=self)
-        menuPlot.addAction(Plot_T_rho_Action)
-        Plot_P_h_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-h diagram"),
-            slot=partial(self.plot, "h", "P"), parent=self)
-        menuPlot.addAction(Plot_P_h_Action)
-        Plot_P_v_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-v diagram"),
-            slot=partial(self.plot, "v", "P"), parent=self)
-        menuPlot.addAction(Plot_P_v_Action)
-        Plot_P_T_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-T diagram"),
-            slot=partial(self.plot, "T", "P"), parent=self)
-        menuPlot.addAction(Plot_P_T_Action)
-        Plot_h_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "h-s diagram"),
-            slot=partial(self.plot, "s", "h"), parent=self)
-        menuPlot.addAction(Plot_h_s_Action)
-        Plot_v_u_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "v-u diagram"),
-            slot=partial(self.plot, "u", "v"), parent=self)
-        menuPlot.addAction(Plot_v_u_Action)
-        Plot2DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Other Plots"),
-            slot=self.plot2D, parent=self)
-        menuPlot.addAction(Plot2DAction)
-        menuPlot.addSeparator()
-        Plot3DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "3D Plot"),
-            slot=self.plot3D, parent=self)
-        menuPlot.addAction(Plot3DAction)
-
-        self.addAction(flAction)
-        self.addAction(refAction)
-        self.addAction(pAction)
-        self.addSeparator()
-        self.addAction(menuCalculate.menuAction())
-        self.addAction(menuPlot.menuAction())
-        self.addSeparator()
-
-        if not (self.config.has_option("MEoS", "fluid") and
-                self.config.has_option("MEoS", "reference")):
-            menuCalculate.setEnabled(False)
-            menuPlot.setEnabled(False)
+        return fTxt, refTxt, propTxt
 
     def showChooseFluid(self):
         """Show dialog to choose/view fluid"""
@@ -201,14 +123,12 @@ class plugin(QtWidgets.QMenu):
                             str(dlg.generalized.isChecked()))
             self.config.set("MEoS", "visco", str(dlg.visco.currentIndex()))
             self.config.set("MEoS", "thermal", str(dlg.thermal.currentIndex()))
-            if not self.config.has_option("MEoS", "properties"):
-                self.config.set("MEoS", "properties",
-                                str(Ui_Properties._default))
-                self.config.set("MEoS", "phase", "0")
-                self.config.set("MEoS", "propertiesOrder",
-                                str(list(range(64))))
+            self.checkProperties()
             self.parent().dirty[self.parent().idTab] = True
             self.parent().saveControl()
+            if self.__class__.__name__ == "Dialog":
+                fTxt = mEoS.__all__[dlg.lista.currentRow()].name
+                self.fluido.setText(fTxt)
 
     def showReference(self):
         """Show dialog to choose reference state,
@@ -239,14 +159,11 @@ class plugin(QtWidgets.QMenu):
             self.config.set("MEoS", "Pref", str(refP))
             self.config.set("MEoS", "ho", str(refH))
             self.config.set("MEoS", "so", str(refS))
-            if not self.config.has_option("MEoS", "properties"):
-                self.config.set("MEoS", "properties",
-                                str(Ui_Properties._default))
-                self.config.set("MEoS", "phase", "0")
-                self.config.set("MEoS", "propertiesOrder",
-                                str(list(range(64))))
+            self.checkProperties()
             self.parent().dirty[self.parent().idTab] = True
             self.parent().saveControl()
+            if self.__class__.__name__ == "Dialog":
+                self.reference.setText(refName)
 
     def checkProperties(self):
         """Add default properties to show to configuration automatic when
@@ -254,7 +171,7 @@ class plugin(QtWidgets.QMenu):
         if not self.config.has_option("MEoS", "properties"):
             self.config.set("MEoS", "properties", str(Ui_Properties._default))
             self.config.set("MEoS", "phase", "0")
-            self.config.set("MEoS", "propertiesOrder", list(range(64)))
+            self.config.set("MEoS", "propertiesOrder", str(list(range(64))))
 
     def showProperties(self):
         """Show dialog to choose/sort properties to show in tables"""
@@ -794,6 +711,124 @@ class plugin(QtWidgets.QMenu):
                 fc = fluid(T=fluid.Tc, rho=fluid.rhoc)
                 t.append(fc.__getattribute__(prop[name]))
         return t
+
+
+# Plugin to import in mainwindow, it implement all meos functionality as QMenu
+class Menu(QtWidgets.QMenu, plugin):
+    """QMenu to import in mainwindow with all meos addon functionality"""
+    def __init__(self, parent=None):
+        title = QtWidgets.QApplication.translate("pychemqt", "MEoS properties")
+        super(Menu, self).__init__(title, parent)
+        self.aboutToShow.connect(self.aboutToShow_menu)
+
+    def aboutToShow_menu(self):
+        """Populate menu, check if fluid and reference state are defined to
+        enable/disable calculation/plot option"""
+        self.clear()
+        self.config = self.parent().currentConfig
+
+        fTxt, refTxt, propTxt = self._txt()
+        flAction = createAction(fTxt, slot=self.showChooseFluid, parent=self)
+        refAction = createAction(refTxt, slot=self.showReference, parent=self)
+        pAction = createAction(propTxt, slot=self.showProperties, parent=self)
+
+        menuCalculate = QtWidgets.QMenu(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate"), parent=self)
+        saturationAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Saturation"),
+            slot=self.showSaturation, parent=self)
+        menuCalculate.addAction(saturationAction)
+        IsopropertyAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Isoproperty"),
+            slot=self.showIsoproperty, parent=self)
+        menuCalculate.addAction(IsopropertyAction)
+        menuCalculate.addSeparator()
+        SpecifyAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Specified point"),
+            slot=self.addTableSpecified, parent=self)
+        menuCalculate.addAction(SpecifyAction)
+
+        menuPlot = QtWidgets.QMenu(
+            QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
+        Plot_T_s_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "T-s diagram"),
+            slot=partial(self.plot, "s", "T"), parent=self)
+        menuPlot.addAction(Plot_T_s_Action)
+        Plot_T_rho_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "T-rho diagram"),
+            slot=partial(self.plot, "rho", "T"), parent=self)
+        menuPlot.addAction(Plot_T_rho_Action)
+        Plot_P_h_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-h diagram"),
+            slot=partial(self.plot, "h", "P"), parent=self)
+        menuPlot.addAction(Plot_P_h_Action)
+        Plot_P_v_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-v diagram"),
+            slot=partial(self.plot, "v", "P"), parent=self)
+        menuPlot.addAction(Plot_P_v_Action)
+        Plot_P_T_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-T diagram"),
+            slot=partial(self.plot, "T", "P"), parent=self)
+        menuPlot.addAction(Plot_P_T_Action)
+        Plot_h_s_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "h-s diagram"),
+            slot=partial(self.plot, "s", "h"), parent=self)
+        menuPlot.addAction(Plot_h_s_Action)
+        Plot_v_u_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "v-u diagram"),
+            slot=partial(self.plot, "u", "v"), parent=self)
+        menuPlot.addAction(Plot_v_u_Action)
+        Plot2DAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Other Plots"),
+            slot=self.plot2D, parent=self)
+        menuPlot.addAction(Plot2DAction)
+        menuPlot.addSeparator()
+        Plot3DAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "3D Plot"),
+            slot=self.plot3D, parent=self)
+        menuPlot.addAction(Plot3DAction)
+
+        self.addAction(flAction)
+        self.addAction(refAction)
+        self.addAction(pAction)
+        self.addSeparator()
+        self.addAction(menuCalculate.menuAction())
+        self.addAction(menuPlot.menuAction())
+        self.addSeparator()
+
+        if not (self.config.has_option("MEoS", "fluid") and
+                self.config.has_option("MEoS", "reference")):
+            menuCalculate.setEnabled(False)
+            menuPlot.setEnabled(False)
+
+
+# Dialog with all meos functionality, to associate to a button in tools toolbar
+class Dialog(QtWidgets.QDialog, plugin):
+    """Dialog to choose fluid for meos plugins calculations"""
+    def __init__(self, config=None, parent=None):
+        super(Dialog, self).__init__(parent)
+        if config is None:
+            config = parent.currentConfig
+        self.config = config
+        self.setWindowTitle(
+            QtWidgets.QApplication.translate("pychemqt", "Choose fluid"))
+        layout = QtWidgets.QGridLayout(self)
+
+        fTxt, refTxt, propTxt = self._txt()
+        self.fluido = QtWidgets.QPushButton(fTxt)
+        self.fluido.clicked.connect(self.showChooseFluid)
+        layout.addWidget(self.fluido, 1, 1)
+        self.reference = QtWidgets.QPushButton(refTxt)
+        self.reference.clicked.connect(self.showReference)
+        layout.addWidget(self.reference, 2, 1)
+        self.propiedades = QtWidgets.QPushButton(propTxt)
+        self.propiedades.clicked.connect(self.showProperties)
+        layout.addWidget(self.propiedades, 3, 1)
+
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox.clicked.connect(self.reject)
+        layout.addWidget(btBox, 5, 2)
+
 
 
 # Dialogs for configuration:
@@ -4571,9 +4606,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     conf = config.getMainWindowConfig()
-    SteamTables = AddPoint(conf)
-#    SteamTables=AddLine(None)
-#    SteamTables=transportDialog(mEoS.__all__[2])
+    # SteamTables = AddPoint(conf)
+    # SteamTables=AddLine(None)
+    # SteamTables=transportDialog(mEoS.__all__[2])
+    SteamTables = Dialog(conf)
 
     SteamTables.show()
     sys.exit(app.exec_())
