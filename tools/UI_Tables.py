@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library with meos plugin functionality
 #
-#   plugin: QMenu to import in mainwindow with all meos addon functionality
-#       Implement the plugin functionality with a menu to show in mainwindow
+#   plugin: Implement meos functionality to common use in menu and dialog
+#   Menu: QMenu to add to mainwindow mainmenu with all meos addon functionality
+#   Dialog: QDialog with all meos functionality
 #
 #   Dialogs for configuration:
 #   - Ui_ChooseFluid: Dialog to choose fluid for calculations
@@ -2136,7 +2137,11 @@ class Ui_Properties(QtWidgets.QDialog):
         self.prop.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.prop.setItemDelegateForColumn(0, CheckEditor(self))
         for i in range(64):
-            self.prop.setItem(i, 0, QtWidgets.QTableWidgetItem(str(values[i])))
+            if values[i] == 1:
+                val = "1"
+            else:
+                val = ""
+            self.prop.setItem(i, 0, QtWidgets.QTableWidgetItem(val))
             name = meos.propiedades[self.order[i]]
             self.prop.setItem(i, 1, QtWidgets.QTableWidgetItem(name))
             self.prop.setRowHeight(i, 20)
@@ -2172,7 +2177,7 @@ class Ui_Properties(QtWidgets.QDialog):
         if txt == "0":
             newtxt = "1"
         else:
-            newtxt = "0"
+            newtxt = ""
         self.prop.item(fila, 0).setText(newtxt)
 
     def Down(self):
@@ -2210,7 +2215,11 @@ class Ui_Properties(QtWidgets.QDialog):
         elif self.buttonBox.buttonRole(boton) == \
                 QtWidgets.QDialogButtonBox.ResetRole:
             for i, propiedad in enumerate(self._default):
-                self.prop.item(i, 0).setText(str(propiedad))
+                if propiedad == 1:
+                    val = "1"
+                else:
+                    val = ""
+                self.prop.item(i, 0).setText(val)
             self.checkFase.setChecked(False)
 
     def properties(self):
