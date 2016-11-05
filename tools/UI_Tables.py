@@ -77,20 +77,16 @@ from scipy.optimize import fsolve
 from matplotlib.font_manager import FontProperties
 
 from lib import meos, mEoS, unidades, plot, config
+from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable
-from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
-                        MarkerCombo, ColorSelector, InputFond, Status, Tabla)
-from UI.delegate import CheckEditor
 from tools.codeEditor import SimplePythonEditor
 from tools.UI_Preferences import NumericFactor
+from UI.delegate import CheckEditor
+from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
+                        MarkerCombo, ColorSelector, InputFond, Status, Tabla)
 
 
-prop_pickle = ["T", "P", "rho", "v", "h", "s", "u", "g", "a", "cv", "cp", "w",
-               "Z", "gamma", "fi", "alfav", "kappa", "alfap", "betap", "betas",
-               "joule", "Gruneisen", "virialB", "virialC", "dpdT_rho",
-               "dpdrho_T", "drhodT_P", "drhodP_T", "dhdT_rho", "dhdP_T",
-               "dhdT_P", "dhdrho_T", "dhdP_rho", "kt", "ks", "Kt", "Ks",
-               "mu", "k", "nu", "alfa", "Prandt"]
+N_PROP = len(ThermoAdvanced.properties())
 
 
 class plugin(object):
@@ -110,6 +106,66 @@ class plugin(object):
         propTxt = QtWidgets.QApplication.translate("pychemqt", "Properties")
 
         return fTxt, refTxt, propTxt
+
+    def _menuCalculate(self):
+        menu = QtWidgets.QMenu(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate"), parent=self)
+        saturationAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Saturation"),
+            slot=self.showSaturation, parent=self)
+        menu.addAction(saturationAction)
+        IsopropertyAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Isoproperty"),
+            slot=self.showIsoproperty, parent=self)
+        menu.addAction(IsopropertyAction)
+        menu.addSeparator()
+        SpecifyAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Specified point"),
+            slot=self.addTableSpecified, parent=self)
+        menu.addAction(SpecifyAction)
+        return menu
+
+    def _menuPlot(self):
+        menu = QtWidgets.QMenu(
+            QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
+        Plot_T_s_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "T-s diagram"),
+            slot=partial(self.plot, "s", "T"), parent=self)
+        menu.addAction(Plot_T_s_Action)
+        Plot_T_rho_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "T-rho diagram"),
+            slot=partial(self.plot, "rho", "T"), parent=self)
+        menu.addAction(Plot_T_rho_Action)
+        Plot_P_h_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-h diagram"),
+            slot=partial(self.plot, "h", "P"), parent=self)
+        menu.addAction(Plot_P_h_Action)
+        Plot_P_v_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-v diagram"),
+            slot=partial(self.plot, "v", "P"), parent=self)
+        menu.addAction(Plot_P_v_Action)
+        Plot_P_T_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "P-T diagram"),
+            slot=partial(self.plot, "T", "P"), parent=self)
+        menu.addAction(Plot_P_T_Action)
+        Plot_h_s_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "h-s diagram"),
+            slot=partial(self.plot, "s", "h"), parent=self)
+        menu.addAction(Plot_h_s_Action)
+        Plot_v_u_Action = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "v-u diagram"),
+            slot=partial(self.plot, "u", "v"), parent=self)
+        menu.addAction(Plot_v_u_Action)
+        Plot2DAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Other Plots"),
+            slot=self.plot2D, parent=self)
+        menu.addAction(Plot2DAction)
+        menu.addSeparator()
+        Plot3DAction = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "3D Plot"),
+            slot=self.plot3D, parent=self)
+        menu.addAction(Plot3DAction)
+        return menu
 
     def showChooseFluid(self):
         """Show dialog to choose/view fluid"""
@@ -172,7 +228,8 @@ class plugin(object):
         if not self.config.has_option("MEoS", "properties"):
             self.config.set("MEoS", "properties", str(Ui_Properties._default))
             self.config.set("MEoS", "phase", "0")
-            self.config.set("MEoS", "propertiesOrder", str(list(range(64))))
+            self.config.set("MEoS", "propertiesOrder",
+                            str(list(range(N_PROP))))
 
     def showProperties(self):
         """Show dialog to choose/sort properties to show in tables"""
@@ -327,8 +384,8 @@ class plugin(object):
             j = dlg.ejeY.currentIndex()
             if j >= i:
                 j += 1
-            x = prop_pickle[i]
-            y = prop_pickle[j]
+            x = ThermoAdvanced.propertiesKey()[i]
+            y = ThermoAdvanced.propertiesKey()[j]
 
             if dlg.Xscale.isChecked():
                 xscale = "log"
@@ -353,9 +410,9 @@ class plugin(object):
                 k += 1
             if j >= i:
                 j += 1
-            x = prop_pickle[i]
-            y = prop_pickle[j]
-            z = prop_pickle[k]
+            x = ThermoAdvanced.propertiesKey()[i]
+            y = ThermoAdvanced.propertiesKey()[j]
+            z = ThermoAdvanced.propertiesKey()[k]
             self.plot(x, y, z=z)
 
     def plot(self, x, y, xscale=None, yscale=None, z=""):
@@ -472,7 +529,7 @@ class plugin(object):
                 QtWidgets.QApplication.processEvents()
             if fluidos:
                 data["melting"] = {}
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     dat_propiedad = []
                     for fluido in fluidos:
                         num = fluido.__getattribute__(x)
@@ -499,7 +556,7 @@ class plugin(object):
                 QtWidgets.QApplication.processEvents()
             if fluidos:
                 data["sublimation"] = {}
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     dat_propiedad = []
                     for fluido in fluidos:
                         num = fluido.__getattribute__(x)
@@ -531,7 +588,7 @@ class plugin(object):
                 QtWidgets.QApplication.processEvents()
 
             data["saturation_%i" % fase] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -552,7 +609,7 @@ class plugin(object):
                                   len(values), self.parent().progressBar)
 
             data["x"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -593,7 +650,7 @@ class plugin(object):
                                   "P", "T", P, value, 40, i, 10,
                                   len(values), self.parent().progressBar)
             data["T"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -613,7 +670,7 @@ class plugin(object):
                                   "T", "P", T, value, 50, i, 10,
                                   len(values), self.parent().progressBar)
             data["P"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -633,7 +690,7 @@ class plugin(object):
                                   "T", "v", T, value, 60, i, 10,
                                   len(values), self.parent().progressBar)
             data["v"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -653,7 +710,7 @@ class plugin(object):
                                   "T", "h", T, value, 70, i, 10,
                                   len(values), self.parent().progressBar)
             data["h"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -673,7 +730,7 @@ class plugin(object):
                                   "T", "s", T, value, 80, i, 20,
                                   len(values), self.parent().progressBar)
             data["s"][value] = {}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
@@ -732,63 +789,8 @@ class Menu(QtWidgets.QMenu, plugin):
         flAction = createAction(fTxt, slot=self.showChooseFluid, parent=self)
         refAction = createAction(refTxt, slot=self.showReference, parent=self)
         pAction = createAction(propTxt, slot=self.showProperties, parent=self)
-
-        menuCalculate = QtWidgets.QMenu(QtWidgets.QApplication.translate(
-            "pychemqt", "Calculate"), parent=self)
-        saturationAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Saturation"),
-            slot=self.showSaturation, parent=self)
-        menuCalculate.addAction(saturationAction)
-        IsopropertyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Isoproperty"),
-            slot=self.showIsoproperty, parent=self)
-        menuCalculate.addAction(IsopropertyAction)
-        menuCalculate.addSeparator()
-        SpecifyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Specified point"),
-            slot=self.addTableSpecified, parent=self)
-        menuCalculate.addAction(SpecifyAction)
-
-        menuPlot = QtWidgets.QMenu(
-            QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
-        Plot_T_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-s diagram"),
-            slot=partial(self.plot, "s", "T"), parent=self)
-        menuPlot.addAction(Plot_T_s_Action)
-        Plot_T_rho_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-rho diagram"),
-            slot=partial(self.plot, "rho", "T"), parent=self)
-        menuPlot.addAction(Plot_T_rho_Action)
-        Plot_P_h_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-h diagram"),
-            slot=partial(self.plot, "h", "P"), parent=self)
-        menuPlot.addAction(Plot_P_h_Action)
-        Plot_P_v_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-v diagram"),
-            slot=partial(self.plot, "v", "P"), parent=self)
-        menuPlot.addAction(Plot_P_v_Action)
-        Plot_P_T_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-T diagram"),
-            slot=partial(self.plot, "T", "P"), parent=self)
-        menuPlot.addAction(Plot_P_T_Action)
-        Plot_h_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "h-s diagram"),
-            slot=partial(self.plot, "s", "h"), parent=self)
-        menuPlot.addAction(Plot_h_s_Action)
-        Plot_v_u_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "v-u diagram"),
-            slot=partial(self.plot, "u", "v"), parent=self)
-        menuPlot.addAction(Plot_v_u_Action)
-        Plot2DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Other Plots"),
-            slot=self.plot2D, parent=self)
-        menuPlot.addAction(Plot2DAction)
-        menuPlot.addSeparator()
-        Plot3DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "3D Plot"),
-            slot=self.plot3D, parent=self)
-        menuPlot.addAction(Plot3DAction)
-
+        menuCalculate = self._menuCalculate()
+        menuPlot = self._menuPlot()
         self.addAction(flAction)
         self.addAction(refAction)
         self.addAction(pAction)
@@ -826,10 +828,24 @@ class Dialog(QtWidgets.QDialog, plugin):
         self.propiedades.clicked.connect(self.showProperties)
         layout.addWidget(self.propiedades, 3, 1)
 
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 4, 1)
+        menuCalculate = self._menuCalculate()
+        self.calculate = QtWidgets.QPushButton(menuCalculate.title())
+        self.calculate.setMenu(menuCalculate)
+        layout.addWidget(self.calculate, 5, 1)
+        menuPlot = self._menuPlot()
+        self.plot = QtWidgets.QPushButton(menuPlot.title())
+        self.plot.setMenu(menuPlot)
+        layout.addWidget(self.plot, 5, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 1, 1, 3)
         btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         btBox.clicked.connect(self.reject)
-        layout.addWidget(btBox, 5, 2)
-
+        layout.addWidget(btBox, 7, 1, 1, 3)
 
 
 # Dialogs for configuration:
@@ -861,7 +877,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.helpRequested.connect(self.info)
-        layout.addWidget(self.buttonBox, 1, 2, 1, 1)
+        layout.addWidget(self.buttonBox, 1, 2)
 
         self.widget = QtWidgets.QWidget(self)
         self.widget.setVisible(False)
@@ -1140,7 +1156,7 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
             self.eq.addItem(eq["__name__"])
 
     def more(self):
-        """Show parameter for transpor and ancillary equations"""
+        """Show parameter for transport and ancillary equations"""
         dialog = transportDialog(self.element, parent=self)
         dialog.show()
 
@@ -2107,7 +2123,7 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
 
 class Ui_Properties(QtWidgets.QDialog):
     """Dialog for select and sort shown properties in tables"""
-    _default = [1, 0, 1, 0, 0, 1, 0, 1, 1]+[0]*55
+    _default = [1, 0, 1, 0, 0, 1, 0, 1, 1]+[0]*(N_PROP-9)
 
     def __init__(self, config=None, parent=None):
         super(Ui_Properties, self).__init__(parent)
@@ -2122,12 +2138,12 @@ class Ui_Properties(QtWidgets.QDialog):
         else:
             values = self._default
             fase = False
-            self.order = list(range(64))
+            self.order = list(range(N_PROP))
 
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Select Properties"))
         layout = QtWidgets.QGridLayout(self)
-        self.prop = QtWidgets.QTableWidget(len(meos.propiedades), 2)
+        self.prop = QtWidgets.QTableWidget(len(ThermoAdvanced.properties()), 2)
         self.prop.verticalHeader().hide()
         self.prop.horizontalHeader().hide()
         self.prop.horizontalHeader().setStretchLastSection(True)
@@ -2136,13 +2152,13 @@ class Ui_Properties(QtWidgets.QDialog):
         self.prop.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.prop.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.prop.setItemDelegateForColumn(0, CheckEditor(self))
-        for i in range(64):
-            if values[i] == 1:
+        for i, value in enumerate(values):
+            if value == 1:
                 val = "1"
             else:
                 val = ""
             self.prop.setItem(i, 0, QtWidgets.QTableWidgetItem(val))
-            name = meos.propiedades[self.order[i]]
+            name = ThermoAdvanced.propertiesName()[self.order[i]]
             self.prop.setItem(i, 1, QtWidgets.QTableWidgetItem(name))
             self.prop.setRowHeight(i, 20)
             self.prop.openPersistentEditor(self.prop.item(i, 0))
@@ -2503,21 +2519,21 @@ class TablaMEoS(Tabla):
         for row in rows:
             if title == QtWidgets.QApplication.translate(
                     "pychemqt", "Melting Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     del data["melting"][x][row]
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Sublimation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     del data["sublimation"][x][row]
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Saturation Line") or \
                     title == QtWidgets.QApplication.translate(
                         "pychemqt", "Liquid Saturation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     del data["saturation_0"][x][row]
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Vapor Saturation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     del data["saturation_1"][x][row]
             else:
                 units = {"P": unidades.Pressure,
@@ -2531,7 +2547,7 @@ class TablaMEoS(Tabla):
                 unit = units[var]
                 value = float(txt.split(" ")[0])
                 stdValue = unit(value, "conf")
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     del data[var][stdValue][x][row]
         plot._saveData(data)
 
@@ -2575,24 +2591,24 @@ class TablaMEoS(Tabla):
             data = plot._getData()
             if title == QtWidgets.QApplication.translate(
                     "pychemqt", "Melting Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     data["melting"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Sublimation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     data["sublimation"].insert(
                         row, dlg.fluid.__getattribute__(x))
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Saturation Line") or \
                     title == QtWidgets.QApplication.translate(
                         "pychemqt", "Liquid Saturation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     data["saturation_0"].insert(
                         row, dlg.fluid.__getattribute__(x))
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Vapor Saturation Line"):
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     data["saturation_1"].insert(
                         row, dlg.fluid.__getattribute__(x))
             else:
@@ -2608,7 +2624,7 @@ class TablaMEoS(Tabla):
                 value = float(txt.split(" ")[0])
                 stdValue = unit(value, "conf")
 
-                for x in prop_pickle:
+                for x in ThermoAdvanced.propertiesKey():
                     data[var][stdValue][x].insert(
                         row, dlg.fluid.__getattribute__(x))
             plot._saveData(data)
@@ -3655,7 +3671,7 @@ class Plot2D(QtWidgets.QDialog):
         self.Xscale = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
         layout_GroupX.addWidget(self.Xscale)
-        for prop in prop_pickle:
+        for prop in ThermoAdvanced.propertiesKey():
             self.ejeX.addItem(meos.properties[prop])
 
         group_Ejey = QtWidgets.QGroupBox(
@@ -3680,7 +3696,7 @@ class Plot2D(QtWidgets.QDialog):
     def ejeXChanged(self, int):
         """Fill variables available in ejeY, all except the active in ejeX"""
         self.ejeY.clear()
-        prop2 = prop_pickle[:]
+        prop2 = ThermoAdvanced.propertiesKey()[:]
         del prop2[int]
         for prop in prop2:
             self.ejeY.addItem(meos.properties[prop])
@@ -3698,7 +3714,7 @@ class Plot3D(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Axis X")), 1, 1)
         self.ejeX = QtWidgets.QComboBox()
-        for prop in prop_pickle:
+        for prop in ThermoAdvanced.propertiesKey():
             self.ejeX.addItem(meos.properties[prop])
         layout.addWidget(self.ejeX, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
@@ -3723,7 +3739,7 @@ class Plot3D(QtWidgets.QDialog):
     def ejeXChanged(self, int):
         """Fill variables available in ejeY, all except the active in ejeX"""
         self.ejeY.clear()
-        prop2 = prop_pickle[:]
+        prop2 = ThermoAdvanced.propertiesKey()[:]
         del prop2[int]
         for prop in prop2:
             self.ejeY.addItem(meos.properties[prop])
@@ -3731,7 +3747,7 @@ class Plot3D(QtWidgets.QDialog):
     def ejeYChanged(self, int):
         """Fill variables available in ejeZ, all except the actives in other"""
         self.ejeZ.clear()
-        prop2 = prop_pickle[:]
+        prop2 = ThermoAdvanced.propertiesKey()[:]
         intX = self.ejeX.currentIndex()
         del prop2[intX]
         del prop2[int]
@@ -4007,7 +4023,7 @@ class EditPlot(QtWidgets.QWidget):
                 unit = unidades.Dimensionless
 
             line = {value: {}}
-            for x in prop_pickle:
+            for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)

@@ -269,6 +269,18 @@ class Thermo(object):
                 unidades.Dimensionless)]
         return l
 
+    @classmethod
+    def propertiesName(cls):
+        return [prop[0] for prop in cls.properties()]
+
+    @classmethod
+    def propertiesKey(cls):
+        return [prop[1] for prop in cls.properties()]
+
+    @classmethod
+    def propertiesUnit(cls):
+        return [prop[2] for prop in cls.properties()]
+
     def writeStatetoJSON(self, state, fase):
         fluid = {}
         if self._bool:
