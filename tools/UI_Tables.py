@@ -1178,7 +1178,28 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
 
         # Cp tab
         if "ao_log" in eq["cp"]:
-            pass
+            tab1 = QtWidgets.QWidget()
+            tabWidget.addTab(
+                tab1, QtWidgets.QApplication.translate("pychemqt", "Phi0"))
+            gridLayout_Ideal = QtWidgets.QGridLayout(tab1)
+            label = QtWidgets.QLabel()
+            label.setAlignment(QtCore.Qt.AlignCenter)
+            label.setPixmap(QtGui.QPixmap(
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS ideal.png")))
+            gridLayout_Ideal.addWidget(label, 1, 1, 1, 3)
+            self.Tabla_Cp_poly = Tabla(
+                2, horizontalHeader=["n", "d"], stretch=False, readOnly=True)
+            gridLayout_Ideal.addWidget(self.Tabla_Cp_poly, 2, 1)
+            self.Tabla_Cp_exp = Tabla(
+                2, horizontalHeader=["m", "θ"], stretch=False, readOnly=True)
+            gridLayout_Ideal.addWidget(self.Tabla_Cp_exp, 2, 2)
+            self.Tabla_Cp_hyp = Tabla(
+                2, horizontalHeader=["l", "ψ"], stretch=False, readOnly=True)
+            gridLayout_Ideal.addWidget(self.Tabla_Cp_hyp, 2, 3)
+
+
+
         else:
             tab1 = QtWidgets.QWidget()
             tabWidget.addTab(
@@ -1187,23 +1208,25 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label = QtWidgets.QLabel()
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"] + "/images/equation/MEoS ideal.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS ideal.png")))
             gridLayout_Ideal.addWidget(label, 1, 1, 1, 3)
-            self.Tabla_Cp_poly = Tabla(2, horizontalHeader=["n", "d"],
-                                       stretch=False, readOnly=True)
+            self.Tabla_Cp_poly = Tabla(
+                2, horizontalHeader=["n", "d"], stretch=False, readOnly=True)
             gridLayout_Ideal.addWidget(self.Tabla_Cp_poly, 2, 1)
-            self.Tabla_Cp_exp = Tabla(2, horizontalHeader=["m", "θ"],
-                                      stretch=False, readOnly=True)
+            self.Tabla_Cp_exp = Tabla(
+                2, horizontalHeader=["m", "θ"], stretch=False, readOnly=True)
             gridLayout_Ideal.addWidget(self.Tabla_Cp_exp, 2, 2)
-            self.Tabla_Cp_hyp = Tabla(2, horizontalHeader=["l", "ψ"],
-                                      stretch=False, readOnly=True)
+            self.Tabla_Cp_hyp = Tabla(
+                2, horizontalHeader=["l", "ψ"], stretch=False, readOnly=True)
             gridLayout_Ideal.addWidget(self.Tabla_Cp_hyp, 2, 3)
 
         if eq["__type__"] == "Helmholtz":
             label = QtWidgets.QLabel()
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"] + "/images/equation/MEoS.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS.png")))
             gridLayout.addWidget(label, 2, 1)
 
             # Polinomial tab
@@ -1215,10 +1238,12 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label = QtWidgets.QLabel()
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"] + "/images/equation/MEoS lineal.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS lineal.png")))
             gridLayout_pol.addWidget(label, 1, 1)
-            self.Tabla_lineal = Tabla(3, horizontalHeader=["n", "t", "d"],
-                                      stretch=False, readOnly=True)
+            self.Tabla_lineal = Tabla(
+                3, horizontalHeader=["n", "t", "d"], stretch=False,
+                readOnly=True)
             gridLayout_pol.addWidget(self.Tabla_lineal, 2, 1)
 
             # Exponencial tab
@@ -1246,7 +1271,8 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label = QtWidgets.QLabel()
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"]+"/images/equation/MEoS gaussian.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS gaussian.png")))
             gridLayout_gauss.addWidget(label, 1, 1)
             self.Tabla_gauss = Tabla(
                 7, horizontalHeader=["n", "t", "d", "η", "ε", "β", "γ"],
@@ -1263,12 +1289,13 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
                 os.environ["pychemqt"] +
-                "/images/equation/MEoS non analitic.png"))
+                os.path.join("images", "equation", "MEoS non analitic.png")))
             gridLayout_NA.addWidget(label, 1, 1)
             label2 = QtWidgets.QLabel()
             label2.setAlignment(QtCore.Qt.AlignCenter)
             label2.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"] + "/images/equation/MEoS delta.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS delta.png")))
             gridLayout_NA.addWidget(label2, 2, 1)
             self.Tabla_noanalytic = Tabla(
                 8, horizontalHeader=["n", "a", "b", "A", "B", "C", "D", "β"],
@@ -1285,7 +1312,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
                 os.environ["pychemqt"] +
-                "/images/equation/MEoS Hard Sphere.png"))
+                os.path.join("images", "equation", "MEoS Hard Sphere.png")))
             gridLayout_HE.addWidget(label, 1, 1, 1, 2)
             gridLayout_HE.addWidget(QtWidgets.QLabel("φ:"), 2, 1)
             self.fi = Entrada_con_unidades(float, readOnly=True)
@@ -1303,10 +1330,11 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             label = QtWidgets.QLabel()
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setPixmap(QtGui.QPixmap(
-                os.environ["pychemqt"] + "/images/equation/MEoS MBWR.png"))
+                os.environ["pychemqt"] +
+                os.path.join("images", "equation", "MEoS MBWR.png")))
             gridLayout_MBWR.addWidget(label, 1, 1)
-            self.Tabla_MBWR = Tabla(1, horizontalHeader=["b"],
-                                    stretch=False, readOnly=True)
+            self.Tabla_MBWR = Tabla(
+                1, horizontalHeader=["b"], stretch=False, readOnly=True)
             gridLayout_MBWR.addWidget(self.Tabla_MBWR, 2, 1)
 
         self.fill(eq)
@@ -1315,7 +1343,17 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
         format = {"format": 1, "total": 5}
 
         if "ao_log" in eq["cp"]:
-            pass
+            self.Tabla_Cp_poly.setColumn(
+                0, eq["cp"]["ao_pow"], **format)
+            self.Tabla_Cp_poly.setColumn(1, eq["cp"]["pow"], **format)
+            self.Tabla_Cp_poly.resizeColumnsToContents()
+            self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
+            self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **format)
+            self.Tabla_Cp_exp.resizeColumnsToContents()
+            if "hyp" in eq["cp"]:
+                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
+                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
+                self.Tabla_Cp_hyp.resizeColumnsToContents()
         else:
             self.Tabla_Cp_poly.setColumn(
                 0, [eq["cp"]["ao"]] + eq["cp"]["an"], **format)
