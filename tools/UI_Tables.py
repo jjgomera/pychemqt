@@ -1126,7 +1126,7 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
         self.eq.currentIndexChanged.connect(self.stacked.setCurrentIndex)
 
         self.moreButton = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "More..."))
+            QtWidgets.QApplication.translate("pychemqt", "Others"))
         self.moreButton.clicked.connect(self.more)
         layout.addWidget(self.moreButton, 9, 1)
         btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
@@ -1197,8 +1197,6 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             self.Tabla_Cp_hyp = Tabla(
                 2, horizontalHeader=["l", "ψ"], stretch=False, readOnly=True)
             gridLayout_Ideal.addWidget(self.Tabla_Cp_hyp, 2, 3)
-
-
 
         else:
             tab1 = QtWidgets.QWidget()
@@ -1477,7 +1475,15 @@ class transportDialog(QtWidgets.QDialog):
             tab1, QtWidgets.QApplication.translate("pychemqt", "Dielectric"))
         gridLayout_dielectric = QtWidgets.QGridLayout(tab1)
 
-        if element._dielectric:
+        if element._Dielectric != meos.MEoS._Dielectric:
+            label = QtWidgets.QLabel(element._Dielectric.__doc__)
+            label.setWordWrap(True)
+            gridLayout_dielectric.addWidget(label, 1, 1)
+            self.codigo_Dielectric = SimplePythonEditor()
+            self.codigo_Dielectric.setText(
+                inspect.getsource(element._Dielectric))
+            gridLayout_dielectric.addWidget(self.codigo_Dielectric, 2, 1)
+        elif element._dielectric:
             label = QtWidgets.QLabel(element._Dielectric.__doc__)
             label.setWordWrap(True)
             gridLayout_dielectric.addWidget(label, 1, 1)
@@ -1493,15 +1499,6 @@ class transportDialog(QtWidgets.QDialog):
                     0, i, QtWidgets.QTableWidgetItem(str(valor)))
                 i += 1
             self.Table_Dielectric.resizeColumnsToContents()
-
-        elif element._Dielectric != meos.MEoS._Dielectric:
-            label = QtWidgets.QLabel(element._Dielectric.__doc__)
-            label.setWordWrap(True)
-            gridLayout_dielectric.addWidget(label, 1, 1)
-            self.codigo_Dielectric = SimplePythonEditor()
-            self.codigo_Dielectric.setText(
-                inspect.getsource(element._Dielectric))
-            gridLayout_dielectric.addWidget(self.codigo_Dielectric, 2, 1)
         else:
             gridLayout_dielectric.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1517,7 +1514,14 @@ class transportDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Surface Tension"))
         gridLayout_surface = QtWidgets.QGridLayout(tab2)
 
-        if element._surface:
+        if element._Surface != meos.MEoS._Surface:
+            label = QtWidgets.QLabel(element._Surface.__doc__)
+            label.setWordWrap(True)
+            gridLayout_surface.addWidget(label, 1, 1)
+            self.codigo_Surface = SimplePythonEditor()
+            self.codigo_Surface.setText(inspect.getsource(element._Surface))
+            gridLayout_surface.addWidget(self.codigo_Surface, 2, 1)
+        elif element._surface:
             label = QtWidgets.QLabel(element._Surface.__doc__)
             label.setWordWrap(True)
             gridLayout_surface.addWidget(label, 1, 1)
@@ -1529,14 +1533,6 @@ class transportDialog(QtWidgets.QDialog):
             self.Table_Surface.setColumn(1, element._surface["exp"])
             gridLayout_surface.addWidget(self.Table_Surface, 2, 1)
             self.Table_Surface.resizeColumnsToContents()
-
-        elif element._Surface != meos.MEoS._Surface:
-            label = QtWidgets.QLabel(element._Surface.__doc__)
-            label.setWordWrap(True)
-            gridLayout_surface.addWidget(label, 1, 1)
-            self.codigo_Surface = SimplePythonEditor()
-            self.codigo_Surface.setText(inspect.getsource(element._Surface))
-            gridLayout_surface.addWidget(self.codigo_Surface, 2, 1)
         else:
             gridLayout_surface.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1552,7 +1548,16 @@ class transportDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Liquid Density"))
         gridLayout_liquid_density = QtWidgets.QGridLayout(tab5)
 
-        if element._liquid_Density:
+        if element._Liquid_Density != meos.MEoS._Liquid_Density:
+            label = QtWidgets.QLabel(element._Liquid_Density.__doc__)
+            label.setWordWrap(True)
+            gridLayout_liquid_density.addWidget(label, 1, 1)
+            self.codigo_Liquid_Density = SimplePythonEditor()
+            self.codigo_Liquid_Density.setText(
+                inspect.getsource(element._Liquid_Density))
+            gridLayout_liquid_density.addWidget(
+                self.codigo_Liquid_Density, 2, 1)
+        elif element._liquid_Density:
             label = QtWidgets.QLabel(element._Liquid_Density.__doc__)
             label.setWordWrap(True)
             gridLayout_liquid_density.addWidget(label, 1, 1)
@@ -1567,16 +1572,6 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_liquid_density.addWidget(
                 self.Table_Liquid_Density, 2, 1)
             self.Table_Liquid_Density.resizeColumnsToContents()
-
-        elif element._Liquid_Density != meos.MEoS._Liquid_Density:
-            label = QtWidgets.QLabel(element._Liquid_Density.__doc__)
-            label.setWordWrap(True)
-            gridLayout_liquid_density.addWidget(label, 1, 1)
-            self.codigo_Liquid_Density = SimplePythonEditor()
-            self.codigo_Liquid_Density.setText(
-                inspect.getsource(element._Liquid_Density))
-            gridLayout_liquid_density.addWidget(
-                self.codigo_Liquid_Density, 2, 1)
         else:
             gridLayout_liquid_density.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1592,7 +1587,15 @@ class transportDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Vapor Density"))
         gridLayout_vapor_density = QtWidgets.QGridLayout(tab6)
 
-        if element._vapor_Density:
+        if element._Vapor_Density != meos.MEoS._Vapor_Density:
+            label = QtWidgets.QLabel(element._Vapor_Density.__doc__)
+            label.setWordWrap(True)
+            gridLayout_vapor_density.addWidget(label, 1, 1)
+            self.codigo_Vapor_Density = SimplePythonEditor()
+            self.codigo_Vapor_Density.setText(
+                inspect.getsource(element._Vapor_Density))
+            gridLayout_vapor_density.addWidget(self.codigo_Vapor_Density, 2, 1)
+        elif element._vapor_Density:
             label = QtWidgets.QLabel(element._Vapor_Density.__doc__)
             label.setWordWrap(True)
             gridLayout_vapor_density.addWidget(label, 1, 1)
@@ -1605,15 +1608,6 @@ class transportDialog(QtWidgets.QDialog):
                 1, element._vapor_Density["exp"])
             gridLayout_vapor_density.addWidget(self.Table_Vapor_Density, 2, 1)
             self.Table_Vapor_Density.resizeColumnsToContents()
-
-        elif element._Vapor_Density != meos.MEoS._Vapor_Density:
-            label = QtWidgets.QLabel(element._Vapor_Density.__doc__)
-            label.setWordWrap(True)
-            gridLayout_vapor_density.addWidget(label, 1, 1)
-            self.codigo_Vapor_Density = SimplePythonEditor()
-            self.codigo_Vapor_Density.setText(
-                inspect.getsource(element._Vapor_Density))
-            gridLayout_vapor_density.addWidget(self.codigo_Vapor_Density, 2, 1)
         else:
             gridLayout_vapor_density.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1629,7 +1623,16 @@ class transportDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Vapor Pressure"))
         gridLayout_vapor_pressure = QtWidgets.QGridLayout(tab7)
 
-        if element._vapor_Pressure:
+        if element._Vapor_Pressure != meos.MEoS._Vapor_Pressure:
+            label = QtWidgets.QLabel(element._Vapor_Pressure.__doc__)
+            label.setWordWrap(True)
+            gridLayout_vapor_pressure.addWidget(label, 1, 1)
+            self.codigo_Vapor_Pressure = SimplePythonEditor()
+            self.codigo_Vapor_Pressure.setText(
+                inspect.getsource(element._Vapor_Pressure))
+            gridLayout_vapor_pressure.addWidget(
+                self.codigo_Vapor_Pressure, 2, 1)
+        elif element._vapor_Pressure:
             label = QtWidgets.QLabel(element._Vapor_Pressure.__doc__)
             label.setWordWrap(True)
             gridLayout_vapor_pressure.addWidget(label, 1, 1)
@@ -1644,16 +1647,6 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_vapor_pressure.addWidget(
                 self.Table_Vapor_Pressure, 2, 1)
             self.Table_Vapor_Pressure.resizeColumnsToContents()
-
-        elif element._Vapor_Pressure != meos.MEoS._Vapor_Pressure:
-            label = QtWidgets.QLabel(element._Vapor_Pressure.__doc__)
-            label.setWordWrap(True)
-            gridLayout_vapor_pressure.addWidget(label, 1, 1)
-            self.codigo_Vapor_Pressure = SimplePythonEditor()
-            self.codigo_Vapor_Pressure.setText(
-                inspect.getsource(element._Vapor_Pressure))
-            gridLayout_vapor_pressure.addWidget(
-                self.codigo_Vapor_Pressure, 2, 1)
         else:
             gridLayout_vapor_pressure.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1669,7 +1662,16 @@ class transportDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Melting Pressure"))
         gridLayout_melting_pressure = QtWidgets.QGridLayout(tab8)
 
-        if element._melting:
+        if element._Melting_Pressure != meos.MEoS._Melting_Pressure:
+            label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
+            label.setWordWrap(True)
+            gridLayout_melting_pressure.addWidget(label, 1, 1)
+            self.codigo_Melting_Pressure = SimplePythonEditor()
+            self.codigo_Melting_Pressure.setText(
+                inspect.getsource(element._Melting_Pressure))
+            gridLayout_melting_pressure.addWidget(
+                self.codigo_Melting_Pressure, 2, 1)
+        elif element._melting:
             label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
             label.setWordWrap(True)
             gridLayout_melting_pressure.addWidget(label, 1, 1)
@@ -1686,16 +1688,6 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_melting_pressure.addWidget(
                 self.Table_Melting_Pressure, 2, 1)
             self.Table_Melting_Pressure.resizeColumnsToContents()
-
-        elif element._Melting_Pressure != meos.MEoS._Melting_Pressure:
-            label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
-            label.setWordWrap(True)
-            gridLayout_melting_pressure.addWidget(label, 1, 1)
-            self.codigo_Melting_Pressure = SimplePythonEditor()
-            self.codigo_Melting_Pressure.setText(
-                inspect.getsource(element._Melting_Pressure))
-            gridLayout_melting_pressure.addWidget(
-                self.codigo_Melting_Pressure, 2, 1)
         else:
             gridLayout_melting_pressure.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1704,7 +1696,7 @@ class transportDialog(QtWidgets.QDialog):
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
-        # T ab sublimation presure
+        # Tab sublimation presure
         tab9 = QtWidgets.QWidget()
         tabWidget.addTab(
             tab9,
@@ -1712,7 +1704,16 @@ class transportDialog(QtWidgets.QDialog):
                 "pychemqt", "Sublimation Pressure"))
         gridLayout__sublimation_pressure = QtWidgets.QGridLayout(tab9)
 
-        if element._sublimation:
+        if element._Sublimation_Pressure != meos.MEoS._Sublimation_Pressure:
+            label = QtWidgets.QLabel(element._Sublimation_Pressure.__doc__)
+            label.setWordWrap(True)
+            gridLayout__sublimation_pressure.addWidget(label, 1, 1)
+            self.codigo_Sublimation_Pressure = SimplePythonEditor()
+            self.codigo_Sublimation_Pressure.setText(
+                inspect.getsource(element._Sublimation_Pressure))
+            gridLayout__sublimation_pressure.addWidget(
+                self.codigo_Sublimation_Pressure, 2, 1)
+        elif element._sublimation:
             label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
             label.setWordWrap(True)
             gridLayout__sublimation_pressure.addWidget(label, 1, 1)
@@ -1735,16 +1736,6 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout__sublimation_pressure.addWidget(
                 self.Table_Sublimation_Pressure, 2, 1)
             self.Table_Sublimation_Pressure.resizeColumnsToContents()
-
-        elif element._Sublimation_Pressure != meos.MEoS._Sublimation_Pressure:
-            label = QtWidgets.QLabel(element._Sublimation_Pressure.__doc__)
-            label.setWordWrap(True)
-            gridLayout__sublimation_pressure.addWidget(label, 1, 1)
-            self.codigo_Sublimation_Pressure = SimplePythonEditor()
-            self.codigo_Sublimation_Pressure.setText(
-                inspect.getsource(element._Sublimation_Pressure))
-            gridLayout__sublimation_pressure.addWidget(
-                self.codigo_Sublimation_Pressure, 2, 1)
         else:
             gridLayout__sublimation_pressure.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1764,13 +1755,16 @@ class transportDialog(QtWidgets.QDialog):
             label = QtWidgets.QLabel(element._PengRobinson.__doc__)
             label.setWordWrap(True)
             gridLayout_PengRobinson.addWidget(label, 1, 1, 1, 3)
-            gridLayout_PengRobinson.addWidget(QtWidgets.QLabel("C"), 2, 1)
+            gridLayout_PengRobinson.addItem(QtWidgets.QSpacerItem(
+                10, 10, QtWidgets.QSizePolicy.Fixed,
+                QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 3)
+            gridLayout_PengRobinson.addWidget(QtWidgets.QLabel("C"), 3, 1)
             self.PR = Entrada_con_unidades(
                 float, decimales=6, value=element._PR, readOnly=True)
-            gridLayout_PengRobinson.addWidget(self.PR, 2, 2)
+            gridLayout_PengRobinson.addWidget(self.PR, 3, 2)
             gridLayout_PengRobinson.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 3, 1, 1, 3)
+                QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
         else:
             gridLayout_PengRobinson.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
@@ -1794,10 +1788,11 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
         super(Widget_Viscosity_Data, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
         if eq["eq"] == 0:
-            doc = element.__getattribute__(element, eq["method"]).__doc__
-            ref = QtWidgets.QLabel(doc)
+            txt = element.__getattribute__(element, eq["method"]).__doc__
         else:
-            ref = QtWidgets.QLabel(eq["__doc__"])
+            txt = " ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
+                            eq["__doi__"]["ref"]))
+        ref = QtWidgets.QLabel(txt)
         ref.setWordWrap(True)
         gridLayout.addWidget(ref, 1, 1, 1, 3)
 
@@ -2009,10 +2004,11 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
         super(Widget_Conductivity_Data, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
         if eq["eq"] == 0:
-            doc = element.__getattribute__(element, eq["method"]).__doc__
-            ref = QtWidgets.QLabel(doc)
+            txt = element.__getattribute__(element, eq["method"]).__doc__
         else:
-            ref = QtWidgets.QLabel(eq["__doc__"])
+            txt = " ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
+                            eq["__doi__"]["ref"]))
+        ref = QtWidgets.QLabel(txt)
         ref.setWordWrap(True)
         gridLayout.addWidget(ref, 1, 1, 1, 3)
 

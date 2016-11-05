@@ -572,9 +572,9 @@ class H2O(MEoS):
     _viscosity = visco0, visco1
 
     def _visco0(self, rho, T, fase):
-        """IAPWS, Release on the IAPWS Formulation 2008 for the Viscosity of
-        Ordinary Water Substance (International Association for the Properties
-        of Water and Steam, 2008)"""
+        """IAPWS, Release on the IAPWS Formulation 2008 for the Viscosity of \
+Ordinary Water Substance (International Association for the Properties of \
+Water and Steam, 2008)"""
         ref = H2O()
         ref._ref("OTO")
         estado = ref._Helmholtz(rho, 1.5*647.096)
@@ -589,8 +589,8 @@ class H2O(MEoS):
     _thermal = thermo0,
 
     def _thermo0(self, rho, T, fase):
-        """IAPWS, Release on the IAPWS Formulation 2011 for the Thermal
-        Conductivity of Ordinary Water Substance"""
+        """IAPWS, Release on the IAPWS Formulation 2011 for the Thermal \
+Conductivity of Ordinary Water Substance"""
         ref = H2O()
         ref._ref("OTO")
         estado = ref._Helmholtz(rho, 1.5*647.096)
