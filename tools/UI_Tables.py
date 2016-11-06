@@ -2564,81 +2564,104 @@ class TablaMEoS(Tabla):
 
         # Delete point from data plot
         plot = self._getPlot()
-        data = plot._getData()
-        pref = QtWidgets.QApplication.translate("pychemqt", "Table from ")
-        title = self.windowTitle().split(pref)[1]
-        for row in rows:
-            if title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Melting Line"):
-                for x in ThermoAdvanced.propertiesKey():
-                    del data["melting"][x][row]
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Sublimation Line"):
-                for x in ThermoAdvanced.propertiesKey():
-                    del data["sublimation"][x][row]
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Saturation Line") or \
-                    title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Liquid Saturation Line"):
-                for x in ThermoAdvanced.propertiesKey():
-                    del data["saturation_0"][x][row]
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Vapor Saturation Line"):
-                for x in ThermoAdvanced.propertiesKey():
-                    del data["saturation_1"][x][row]
-            else:
-                units = {"P": unidades.Pressure,
-                         "T": unidades.Temperature,
-                         "h": unidades.Enthalpy,
-                         "s": unidades.Enthalpy,
-                         "v": unidades.SpecificVolume,
-                         "rho": unidades.Density}
-                var = str(title.split(" = ")[0])
-                txt = title.split(" = ")[1]
-                unit = units[var]
-                value = float(txt.split(" ")[0])
-                stdValue = unit(value, "conf")
-                for x in ThermoAdvanced.propertiesKey():
-                    del data[var][stdValue][x][row]
-        plot._saveData(data)
+        if plot:
+            data = plot._getData()
+            pref = QtWidgets.QApplication.translate("pychemqt", "Table from ")
+            title = self.windowTitle().split(pref)[1]
+            for row in rows:
+                if title == QtWidgets.QApplication.translate(
+                        "pychemqt", "Melting Line"):
+                    for x in ThermoAdvanced.propertiesKey():
+                        del data["melting"][x][row]
+                elif title == QtWidgets.QApplication.translate(
+                        "pychemqt", "Sublimation Line"):
+                    for x in ThermoAdvanced.propertiesKey():
+                        del data["sublimation"][x][row]
+                elif title == QtWidgets.QApplication.translate(
+                        "pychemqt", "Saturation Line") or \
+                        title == QtWidgets.QApplication.translate(
+                            "pychemqt", "Liquid Saturation Line"):
+                    for x in ThermoAdvanced.propertiesKey():
+                        del data["saturation_0"][x][row]
+                elif title == QtWidgets.QApplication.translate(
+                        "pychemqt", "Vapor Saturation Line"):
+                    for x in ThermoAdvanced.propertiesKey():
+                        del data["saturation_1"][x][row]
+                else:
+                    units = {"P": unidades.Pressure,
+                             "T": unidades.Temperature,
+                             "h": unidades.Enthalpy,
+                             "s": unidades.Enthalpy,
+                             "v": unidades.SpecificVolume,
+                             "rho": unidades.Density}
+                    var = str(title.split(" = ")[0])
+                    txt = title.split(" = ")[1]
+                    unit = units[var]
+                    value = float(txt.split(" ")[0])
+                    stdValue = unit(value, "conf")
+                    for x in ThermoAdvanced.propertiesKey():
+                        del data[var][stdValue][x][row]
+            plot._saveData(data)
 
-        # Delete point from data
-        for line in plot.plot.ax.lines:
-            if str(line.get_label()) == str(title):
-                xdata = line._x
-                ydata = line._y
-                for row in rows:
-                    xdata = delete(xdata, row)
-                    ydata = delete(ydata, row)
-                line.set_xdata(xdata)
-                line.set_ydata(ydata)
-                plot.plot.draw()
-                break
+            # Delete point from data
+            for line in plot.plot.ax.lines:
+                if str(line.get_label()) == str(title):
+                    xdata = line._x
+                    ydata = line._y
+                    for row in rows:
+                        xdata = delete(xdata, row)
+                        ydata = delete(ydata, row)
+                    line.set_xdata(xdata)
+                    line.set_ydata(ydata)
+                    plot.plot.draw()
+                    break
         self.parent.statusbar.clearMessage()
 
     def add(self, row):
         """Add point to a table and to saved file"""
         pref = QtWidgets.QApplication.translate("pychemqt", "Table from ")
-        title = self.windowTitle().split(pref)[1]
-        melting = title == QtWidgets.QApplication.translate(
-            "pychemqt", "Melting Line")
+        if pref in self.windowTitle():
+            title = self.windowTitle().split(pref)[1]
+            melting = title == QtWidgets.QApplication.translate(
+                "pychemqt", "Melting Line")
+        else:
+            melting = False
+
         dlg = AddPoint(self.parent.currentConfig, melting, self.parent)
         if dlg.exec_():
             if dlg.checkBelow.isChecked():
                 row += 1
+
             plot = self.Plot
             if plot is None:
                 plot = self._getPlot()
 
-            datatoTable = []
-            datatoTable.append(dlg.fluid.__getattribute__(plot.x).config())
-            datatoTable.append(dlg.fluid.__getattribute__(plot.y).config())
+            if plot is None:
+                # If table has no associated plot, define as normal point
+                units = []
+                for ui, order in zip(self.units, self.orderUnit):
+                    if ui is unidades.Dimensionless:
+                        units.append("")
+                    else:
+                        units.append(ui.__units__[order])
+                datatoTable = _getData(
+                    dlg.fluid, self.keys, self.parent.currentConfig, units)
+            else:
+                # If table has a associated plot, use the values of that
+                datatoTable = []
+                datatoTable.append(dlg.fluid.__getattribute__(plot.x).config())
+                datatoTable.append(dlg.fluid.__getattribute__(plot.y).config())
 
             # Add point to table
-            self.addRow(datatoTable, row)
+            self.addRow(None, row)
+            self.setRow(0, datatoTable)
+            # self.addRow(datatoTable, row)
             self.data = insert(self.data, row, datatoTable)
 
             # Add point to data plot
+            if plot is None:
+                return
+
             data = plot._getData()
             if title == QtWidgets.QApplication.translate(
                     "pychemqt", "Melting Line"):
@@ -2766,7 +2789,7 @@ class TablaMEoS(Tabla):
     def setRow(self, row, data):
         """Add data to a row"""
         self.blockSignals(True)
-        self.data.append(data)
+        self.data.insert(row, data)
         for column, data in enumerate(data):
             if isinstance(data, str):
                 txt = data

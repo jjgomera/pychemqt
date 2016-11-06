@@ -427,7 +427,7 @@ class Tabla(QtWidgets.QTableWidget):
         else:
             data=[representacion(i) for i in data]
         self.blockSignals(True)
-        if index:
+        if index is not None:
             i = index
         else:
             i=self.rowCount()
