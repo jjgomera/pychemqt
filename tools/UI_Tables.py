@@ -2202,12 +2202,14 @@ class Ui_Properties(QtWidgets.QDialog):
 
         self.ButtonArriba = QtWidgets.QToolButton()
         self.ButtonArriba.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/arrow-up.png")))
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "arrow-up.png"))))
         self.ButtonArriba.clicked.connect(self.Up)
         layout.addWidget(self.ButtonArriba, 3, 2, 1, 1)
         self.ButtonAbajo = QtWidgets.QToolButton()
         self.ButtonAbajo.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/arrow-down.png")))
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "arrow-down.png"))))
         self.ButtonAbajo.clicked.connect(self.Down)
         layout.addWidget(self.ButtonAbajo, 4, 2, 1, 1)
 
@@ -2218,6 +2220,13 @@ class Ui_Properties(QtWidgets.QDialog):
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Reset | QtWidgets.QDialogButtonBox.Ok |
             QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox.addButton(
+            QtWidgets.QApplication.translate("pychemqt", "Mark all"),
+            QtWidgets.QDialogButtonBox.ResetRole)
+        self.buttonBox.addButton(
+            QtWidgets.QApplication.translate("pychemqt", "No Mark"),
+            QtWidgets.QDialogButtonBox.ResetRole)
+        self.btYes = QtWidgets.QPushButton
         self.buttonBox.clicked.connect(self.buttonClicked)
         layout.addWidget(self.buttonBox, 8, 1, 1, 2)
 
@@ -2262,15 +2271,22 @@ class Ui_Properties(QtWidgets.QDialog):
         elif self.buttonBox.buttonRole(boton) == \
                 QtWidgets.QDialogButtonBox.RejectRole:
             self.reject()
-        elif self.buttonBox.buttonRole(boton) == \
-                QtWidgets.QDialogButtonBox.ResetRole:
-            for i, propiedad in enumerate(self._default):
+        else:
+            if boton == \
+                    self.buttonBox.button(QtWidgets.QDialogButtonBox.Reset):
+                values = self._default
+            elif boton.text() == \
+                    QtWidgets.QApplication.translate("pychemqt", "No Mark"):
+                values = [0]*N_PROP
+            else:
+                values = [1]*N_PROP
+
+            for i, propiedad in enumerate(values):
                 if propiedad == 1:
                     val = "1"
                 else:
                     val = ""
                 self.prop.item(i, 0).setText(val)
-            self.checkFase.setChecked(False)
 
     def properties(self):
         """Properties list"""
