@@ -2304,7 +2304,7 @@ def createTabla(config, title, fluidos=None, parent=None):
     # Add two phases properties if requested
     if config.getboolean("MEoS", "phase"):
         for i in range(len(propiedades)-1, -1, -1):
-            if keys[i] in meos._fase.__dict__:
+            if keys[i] in ThermoAdvanced.propertiesPhase():
                 txt = [propiedades[i]]
                 prefix = QtWidgets.QApplication.translate("pychemqt", "Liquid")
                 txt.append(prefix+os.linesep+propiedades[i])
@@ -2331,13 +2331,13 @@ def createTabla(config, title, fluidos=None, parent=None):
             else:
                 columnInput.append(True)
             if config.getboolean("MEoS", "phase") and \
-                    key in meos._fase.__dict__:
+                    key in ThermoAdvanced.propertiesPhase():
                 columnInput.append(True)
                 columnInput.append(True)
 
         if config.getboolean("MEoS", "phase"):
             for i in range(len(keys)-1, -1, -1):
-                if keys[i] in meos._fase.__dict__:
+                if keys[i] in ThermoAdvanced.propertiesPhase():
                     keys[i:i+1] = [keys[i], "", ""]
 
         tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades,
@@ -2369,9 +2369,10 @@ def get_propiedades(config):
     units = []
     for indice, bool in zip(order, booleanos):
         if bool:
-            propiedades.append(meos.propiedades[indice])
-            keys.append(meos.keys[indice])
-            units.append(meos.units[indice])
+            name, key, unit = ThermoAdvanced.properties()[indice]
+            propiedades.append(name)
+            keys.append(key)
+            units.append(unit)
     return propiedades, keys, units
 
 
@@ -2396,7 +2397,7 @@ def _getData(fluido, keys, config, unit=None):
                     txt = p.config()
             fila.append(txt)
             if config.getboolean("MEoS", "phase") and \
-                    key in meos._fase.__dict__:
+                    key in ThermoAdvanced.propertiesPhase():
                 p = fluido.Liquido.__getattribute__(key)
                 if p is None:
                     txt = QtWidgets.QApplication.translate(

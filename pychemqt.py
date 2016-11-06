@@ -72,8 +72,8 @@ myTranslator = QtCore.QTranslator()
 if myTranslator.load("pychemqt_" + locale, os.environ["pychemqt"] + "i18n"):
     app.installTranslator(myTranslator)
 qtTranslator = QtCore.QTranslator()
-if qtTranslator.load("qt_" + locale,
-   QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)):
+path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)
+if qtTranslator.load("qt_" + locale, path):
     app.installTranslator(qtTranslator)
 
 

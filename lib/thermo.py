@@ -281,6 +281,25 @@ class Thermo(object):
     def propertiesUnit(cls):
         return [prop[2] for prop in cls.properties()]
 
+    @classmethod
+    def propertiesGlobal(cls):
+        """List properties only availables for global stream, not defined by
+        phase"""
+        prop = ["T", "Tr", "P", "Pr", "x", "Hvap", "Svap", "v0", "rho0", "h0",
+                "u0", "s0", "a0", "g0", "cp0", "cv0", "cp0_cv", "gamma0"]
+        return prop
+
+    @classmethod
+    def propertiesPhase(cls):
+        """List properties availables for single phase"""
+        single = cls.propertiesGlobal()
+        total = cls.propertiesKey()
+        prop = []
+        for p in total:
+            if p not in single:
+                prop.append(p)
+        return prop
+
     def writeStatetoJSON(self, state, fase):
         fluid = {}
         if self._bool:
@@ -467,6 +486,14 @@ class ThermoAdvanced(Thermo):
             prop.insert(34, p)
         return prop
 
+    @classmethod
+    def propertiesGlobal(cls):
+        """List properties only availables for global stream, not defined by
+        phase"""
+        prop = Thermo.propertiesGlobal()
+        prop.append("invT")
+        return prop
+
     def writeStatetoJSON(self, state, fase):
         Thermo.writeStatetoJSON(self, state, fase)
         if self._bool:
@@ -540,7 +567,7 @@ class ThermoRefProp(ThermoAdvanced):
             (QApplication.translate("pychemqt", "Excess volume"),
              "vE", unidades.SpecificVolume),
             (QApplication.translate("pychemqt", "Excess internal energy"),
-             "eE", unidades.Enthalpy),
+             "uE", unidades.Enthalpy),
             (QApplication.translate("pychemqt", "Excess enthalpy"),
              "hE", unidades.Enthalpy),
             (QApplication.translate("pychemqt", "Excess entropy"),
@@ -552,7 +579,7 @@ class ThermoRefProp(ThermoAdvanced):
             (QApplication.translate("pychemqt", "Residual pressure"),
              "pr", unidades.SpecificVolume),
             (QApplication.translate("pychemqt", "Residual internal energy"),
-             "er", unidades.Enthalpy),
+             "ur", unidades.Enthalpy),
             (QApplication.translate("pychemqt", "Residual enthalpy"),
              "hr", unidades.Enthalpy),
             (QApplication.translate("pychemqt", "Residual entropy"),
@@ -590,6 +617,18 @@ class ThermoRefProp(ThermoAdvanced):
             prop.append(p)
         return prop
 
+    @classmethod
+    def propertiesGlobal(cls):
+        """List properties only availables for global stream, not defined by
+        phase"""
+        prop = ThermoAdvanced.propertiesGlobal()
+        new = ["P0", "P_Pideal", "K", "csat", "dpdt_sat", "cv2p", "vE", "uE",
+               "hE", "sE", "aE", "gE", "pr", "ur", "hr", "sr", "ar", "gr",
+               "cpr", "cvr", "fpv", "chempot", "b12", "cstar"]
+        for p in new:
+            prop.append(p)
+        return prop
+
     def writeStatetoJSON(self, state, fase):
         ThermoAdvanced.writeStatetoJSON(self, state, fase)
         if self._bool:
@@ -600,13 +639,13 @@ class ThermoRefProp(ThermoAdvanced):
             state[fase]["dpdt_sat"] = self.dpdt_sat
             state[fase]["cv2p"] = self.cv2p
             state[fase]["vE"] = self.vE
-            state[fase]["eE"] = self.eE
+            state[fase]["uE"] = self.uE
             state[fase]["hE"] = self.hE
             state[fase]["sE"] = self.sE
             state[fase]["aE"] = self.aE
             state[fase]["gE"] = self.gE
             state[fase]["pr"] = self.pr
-            state[fase]["er"] = self.er
+            state[fase]["ur"] = self.ur
             state[fase]["hr"] = self.hr
             state[fase]["sr"] = self.sr
             state[fase]["ar"] = self.ar
@@ -634,13 +673,13 @@ class ThermoRefProp(ThermoAdvanced):
             self.dpdt_sat = unidades.Dimensionless(fluid["dpdt_sat"])
             self.cv2p = unidades.Dimensionless(fluid["cv2p"])
             self.vE = unidades.SpecificVolume(fluid["vE"])
-            self.eE = unidades.Enthapy(fluid["eE"])
+            self.uE = unidades.Enthapy(fluid["uE"])
             self.hE = unidades.Enthapy(fluid["hE"])
             self.sE = unidades.SpecificHeat(fluid["sE"])
             self.aE = unidades.Enthapy(fluid["aE"])
             self.gE = unidades.Enthapy(fluid["gE"])
             self.pr = unidades.Pressure(fluid["pr"])
-            self.er = unidades.Enthapy(fluid["er"])
+            self.ur = unidades.Enthapy(fluid["ur"])
             self.hr = unidades.Enthapy(fluid["hr"])
             self.sr = unidades.SpecificHeat(fluid["sr"])
             self.ar = unidades.Enthapy(fluid["ar"])
