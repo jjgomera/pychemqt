@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module to define common graphics widget for pychemqt
 #   -Status: Label with status (for equipment, stream)
@@ -34,26 +33,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #       project is loaded
 ###############################################################################
 
-import os
+
 from configparser import ConfigParser
+import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from tools.UI_unitConverter import UI_conversorUnidades, moneda
-from UI.delegate import CellEditor
 from lib import config
 from lib.utilities import representacion
 from lib.corriente import Corriente
+from tools.UI_unitConverter import UI_conversorUnidades, moneda
+from UI.delegate import CellEditor
 
 
 class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, QtWidgets.QApplication.translate("pychemqt", "Underspecified"), "yellow"),
+        (0, QtWidgets.QApplication.translate("pychemqt", "Underspecified"),
+         "yellow"),
         (1, QtWidgets.QApplication.translate("pychemqt", "Solved"), "green"),
-        (2, QtWidgets.QApplication.translate("pychemqt", "Ignored"), "Light gray"),
+        (2, QtWidgets.QApplication.translate("pychemqt", "Ignored"),
+         "Light gray"),
         (3, QtWidgets.QApplication.translate("pychemqt", "Warning"), "green"),
-        (4, QtWidgets.QApplication.translate("pychemqt", "Calculating..."), "Cyan"),
+        (4, QtWidgets.QApplication.translate("pychemqt", "Calculating..."),
+         "Cyan"),
         (5, QtWidgets.QApplication.translate("pychemqt", "Error"),  "red"))
 
     def __init__(self, state=0, text="", parent=None):
@@ -77,7 +80,7 @@ class Status(QtWidgets.QLabel):
         self.oldText = ""
 
     def setState(self, state, text=""):
-        """Método que modifica el estado"""
+        """Change the state"""
 
         if state == 2:
             self.oldState = self.state
@@ -90,7 +93,8 @@ class Status(QtWidgets.QLabel):
             self.setText(self.status[state][1]+": "+text)
         else:
             self.setText(self.status[state][1])
-        self.setStyleSheet("QLabel { background-color: %s}" % self.status[state][2])
+        self.setStyleSheet(
+            "QLabel { background-color: %s}" % self.status[state][2])
         QtWidgets.QApplication.processEvents()
         self.state = state
 
@@ -100,90 +104,99 @@ class Status(QtWidgets.QLabel):
 
 
 class Entrada_con_unidades(QtWidgets.QWidget):
-    """Clase que define el widget con entrada de datos y boton de dialogo de unidades"""
+    """Customized widget with unit functionality"""
+
     valueChanged = QtCore.pyqtSignal(float)
-    def __init__(self, unidad, UIconfig=None, retornar=True, \
-                 readOnly=False, boton=True, texto=True, textounidad="", title="", \
-                 value=None, start=0, max=float("inf"), min=0, \
-                 decimales=4, tolerancia=4, parent=None, width=85, \
-                 resaltado=False, spinbox=False, suffix="", step=0.01, \
-                 colorReadOnly=None, colorResaltado=None, frame=True, showNull=False):
+
+    def __init__(self, unidad, UIconfig=None, retornar=True, readOnly=False,
+                 boton=True, texto=True, textounidad="", title="", value=None,
+                 start=0, max=float("inf"), min=0, decimales=4, tolerancia=4,
+                 parent=None, width=85, resaltado=False, spinbox=False,
+                 suffix="", step=0.01, colorReadOnly=None, colorResaltado=None,
+                 frame=True, showNull=False):
         """
-        unidad: la unidad que se va a usar
-        UIconfig: magnitud secundaria en el caso de que sea diferente a la magnitud principal, por ejemplo entropia que usa la unidad del calor específico pero en la configuración puede definirse diferente que el propio calor específico
-        retornar: boolean que indica si al cerrar el dialogo de unidades se cambia el valor de la entrada
-        readOnly: boolean que indica si la entrada es editable
-        boton: boolean que indica si se muestra el botón de unidades
-        texto: boolean que indica si se muestra a la derecha del botón el texto con la unidad
-        textounidad: texto a usar en el caso de unidades no habituales, magnitues adimensionales...
-        title: update title property
-        value: opcionalmente se puede definir el valor inicial del widget
-        start: valor inicial en el caso de que se use spinbox
-        max: valor máximo que puede tomar el valor
-        min: valor minimo que puede tomar el valor
-        decimales: indica el número de decimales a mostrar en la entrada
-        tolerancia: valor del exponente de la notación cientifica por encima del cual se usara notación cientifica
-        width: anchura de la entrada de texto
-        resaltado: boolean que indica si se debe mostrar la entrada resaltada
-        suffix: texto añadido en la representación del valor
-        spinbox: boolean que indica si se debe responder a las flechas arriba y abajo como si fuera un spinbox
-        step: valor que indica el incremento que tendrá el valor al presionar las techas de fecha arriba y abajo, como el step de un spinbox
-        colorResaltado: color del resaltado
-        colorReadOnly: color de las entradas con readOnly
-        frame: booleano que indica si se muestra frame
-        showNull: boolean que indica si se muestra valor cuando sea cero
+        Units:
+            unidad: The unit (lib/unidades class) to use, mandatory
+            UIconfig: Magnitud necessary if the main unit have several meaning
+            title: Update unit title property
+            retornar: Boolean to let or avoid the conversion window update
+                the value of widget
+            value: Inicial value of widget
+            max: Maximum value for widget
+            min: Minimum value for widget
+            decimales: Decimal number count to show of value
+            tolerancia: Value of exponent over than to use exponential notation
+        UI:
+            readOnly: Boolean, set widget readOnly property
+            frame: Boolean, show the frame of widget or not
+            width: Width of value widget
+            boton: Boolean, show or not the button for unit conversion dialog
+            texto: Boolean, show the unit text at right of value
+            textounidad: Alternate text to show as unit text
+            suffix: Text added to value in value representation
+            showNull: Boolean, show value if it's 0
+            resaltado: Boolean, use base color in widget
+            colorResaltado: Color to use as base color if value
+            colorReadOnly: Color to use is the widget is readOnly
+        Spinbox functionality:
+            spinbox: boolean to specified a QSpinbox use, with mouse response
+            start: initial value for spinbox mouse interaction
+            step: value of step at mouse spingox interaction
         """
         super(Entrada_con_unidades, self).__init__(parent)
         self.resize(self.minimumSize())
-        self.unidad=unidad
+        self.unidad = unidad
 
         if title:
-            self.unidad.__title__=title
-        if unidad==float or unidad==int:
-            self.magnitud=None
+            self.unidad.__title__ = title
+        if unidad == float or unidad == int:
+            self.magnitud = None
         else:
-            self.magnitud=unidad.__name__
-        if unidad==int and spinbox and step==0.01:
-            step=1
-        self.decimales=decimales
-        self.tolerancia=tolerancia
-        self.step=step
-        self.spinbox=spinbox
-        self.max=max
-        self.suffix=suffix
-        self.min=min
-        self.start=start
-        self.textounidad=textounidad
-        self.boton=boton
-        self.resaltado=resaltado
-        self.showNull=showNull
+            self.magnitud = unidad.__name__
+        if unidad == int and spinbox and step == 0.01:
+            step = 1
+        self.decimales = decimales
+        self.tolerancia = tolerancia
+        self.step = step
+        self.spinbox = spinbox
+        self.max = max
+        self.suffix = suffix
+        self.min = min
+        self.start = start
+        self.textounidad = textounidad
+        self.boton = boton
+        self.resaltado = resaltado
+        self.showNull = showNull
 
-        Config=ConfigParser()
+        Config = ConfigParser()
         Config.read(config.conf_dir+"pychemqtrc")
         if colorReadOnly:
-            self.colorReadOnly=colorReadOnly
+            self.colorReadOnly = colorReadOnly
         else:
-            self.colorReadOnly=QtGui.QColor(Config.get("General", 'Color_ReadOnly'))
+            self.colorReadOnly = QtGui.QColor(
+                Config.get("General", 'Color_ReadOnly'))
         if colorResaltado:
-            self.colorResaltado=colorResaltado
+            self.colorResaltado = colorResaltado
         else:
-            self.colorResaltado=QtGui.QColor(Config.get("General", 'Color_Resaltado'))
+            self.colorResaltado = QtGui.QColor(
+                Config.get("General", 'Color_Resaltado'))
 
         if UIconfig:
-            self.UIconfig=UIconfig
+            self.UIconfig = UIconfig
         else:
-            self.UIconfig=self.magnitud
-        self.retornar=retornar
+            self.UIconfig = self.magnitud
+        self.retornar = retornar
         layout = QtWidgets.QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.entrada = QtWidgets.QLineEdit()
         self.entrada.setFixedSize(width, 24)
         self.entrada.editingFinished.connect(self.entrada_editingFinished)
-        self.entrada.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        if unidad==int:
-            if max==float("inf"):
-                max=1000000000
+        self.entrada.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        if unidad == int:
+            if max == float("inf"):
+                max = 1000000000
             validator = QtGui.QIntValidator(min, max, self)
         else:
             validator = QtGui.QDoubleValidator(min, max, decimales, self)
@@ -193,10 +206,10 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.setReadOnly(readOnly)
         self.setRetornar(self.retornar)
         self.setFrame(frame)
-        layout.addWidget(self.entrada,0,1,1,3)
+        layout.addWidget(self.entrada, 0, 1, 1, 3)
 
-        if value==None:
-            self.value=self.unidad(0)
+        if value is None:
+            self.value = self.unidad(0)
         else:
             self.setValue(value)
         if self.magnitud:
@@ -205,141 +218,164 @@ class Entrada_con_unidades(QtWidgets.QWidget):
                 self.unidades.setFixedSize(12, 24)
                 self.unidades.setVisible(False)
                 self.unidades.clicked.connect(self.unidades_clicked)
-                layout.addWidget(self.unidades,0,1)
+                layout.addWidget(self.unidades, 0, 1)
 
         if boton:
-            self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/editDelete.png")), "")
+            self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+                os.environ["pychemqt"] +
+                os.path.join("images", "button", "editDelete.png"))), "")
             self.botonClear.setFixedSize(12, 24)
             self.botonClear.setVisible(False)
             self.botonClear.clicked.connect(self.clear)
-            layout.addWidget(self.botonClear,0,3)
+            layout.addWidget(self.botonClear, 0, 3)
 
         if texto:
             self.texto = QtWidgets.QLabel()
             self.texto.setAlignment(QtCore.Qt.AlignVCenter)
             self.texto.setIndent(5)
-            txt=""
+            txt = ""
             if self.UIconfig:
-                txt+=self.value.text(self.UIconfig)
+                txt += self.value.text(self.UIconfig)
             if textounidad:
-                txt+=textounidad
+                txt += textounidad
             self.texto.setText(txt)
-            layout.addWidget(self.texto,0,4)
+            layout.addWidget(self.texto, 0, 4)
 
-        layout.addItem(QtWidgets.QSpacerItem(0,0,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),0,5)
+        layout.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed), 0, 5)
         self.setResaltado(resaltado)
 
     def unidades_clicked(self):
-        if self.magnitud=="Currency":
-            dialog=moneda(self.value)
+        """Show the unit converter dialog"""
+        if self.magnitud == "Currency":
+            dialog = moneda(self.value)
         else:
-            dialog=UI_conversorUnidades(self.unidad, self.value)
+            dialog = UI_conversorUnidades(self.unidad, self.value)
+
         if dialog.exec_() and self.retornar:
-            self.entrada.setText(representacion(dialog.value.config(self.UIconfig))+self.suffix)
-            oldvalue=self.value
-            self.value=dialog.value
-            if oldvalue!=self.value:
+            # Change the value if change and retornar if active
+            self.entrada.setText(
+                representacion(dialog.value.config(self.UIconfig))+self.suffix)
+            oldvalue = self.value
+            self.value = dialog.value
+            if oldvalue != self.value:
                 self.valueChanged.emit(self.value)
 
     def entrada_editingFinished(self):
+        """Change the value at finish of edit"""
         if not self.readOnly:
+            # Filter suffix and fix bad numeric , interpretation
             if self.suffix:
-                txt=self.entrada.text().split(self.suffix).replace(',', '.')
+                txt = self.entrada.text().split(self.suffix).replace(',', '.')
             else:
-                txt=self.entrada.text().replace(',', '.')
-            if self.unidad!=int:
+                txt = self.entrada.text().replace(',', '.')
+            if self.unidad != int:
                 self.entrada.setText(
                     representacion(float(txt), decimales=self.decimales,
                                    tol=self.tolerancia)+self.suffix)
-            oldvalue=self.value
+            oldvalue = self.value
             if self.magnitud:
-                self.value=self.unidad(float(txt), "conf", magnitud=self.UIconfig)
+                self.value = self.unidad(
+                    float(txt), "conf", magnitud=self.UIconfig)
             else:
-                self.value=self.unidad(txt)
-            if self.value!=oldvalue:
+                self.value = self.unidad(txt)
+            if self.value != oldvalue:
                 self.valueChanged.emit(self.value)
                 self.setToolTip()
 
     def clear(self):
+        """Clear value"""
         self.entrada.setText("")
-        self.value=None
+        self.value = None
 
     def setResaltado(self, bool):
-        self.resaltado=bool
+        self.resaltado = bool
         paleta = QtGui.QPalette()
         if bool:
-            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor(self.colorResaltado))
+            paleta.setColor(
+                QtGui.QPalette.Base, QtGui.QColor(self.colorResaltado))
         elif self.readOnly:
-            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor(self.colorReadOnly))
+            paleta.setColor(
+                QtGui.QPalette.Base, QtGui.QColor(self.colorReadOnly))
         else:
             paleta.setColor(QtGui.QPalette.Base, QtGui.QColor("white"))
         self.entrada.setPalette(paleta)
 
     def setReadOnly(self, readOnly):
         self.entrada.setReadOnly(readOnly)
-        self.readOnly=readOnly
+        self.readOnly = readOnly
         self.setResaltado(self.resaltado)
 
     def setNotReadOnly(self, editable):
         self.setReadOnly(not editable)
 
     def setRetornar(self, retornar):
-        self.retornar=retornar
+        self.retornar = retornar
 
     def setValue(self, value):
-        self.value=self.unidad(value)
+        self.value = self.unidad(value)
         if value or self.showNull:
             if self.magnitud:
-                self.entrada.setText(self.value.format(magnitud=self.UIconfig)+self.suffix)
-            elif self.unidad==float:
-                self.entrada.setText(representacion(self.value, decimales=self.decimales, tol=self.tolerancia)+self.suffix)
+                self.entrada.setText(
+                    self.value.format(magnitud=self.UIconfig)+self.suffix)
+            elif self.unidad == float:
+                self.entrada.setText(
+                    representacion(self.value, decimales=self.decimales,
+                                   tol=self.tolerancia)+self.suffix)
             else:
                 self.entrada.setText(str(self.value)+self.suffix)
             self.setToolTip()
 
     def setFrame(self, frame):
         self.entrada.setFrame(frame)
-        self.frame=frame
+        self.frame = frame
 
     def setToolTip(self):
-        Preferences=ConfigParser()
+        """Define the tooltip with the values in confguration"""
+        Preferences = ConfigParser()
         Preferences.read(config.conf_dir+"pychemqtrc")
         if Preferences.getboolean("Tooltip", "Show"):
-            Config=ConfigParser()
+            Config = ConfigParser()
             Config.read(config.conf_dir+"pychemqtrc")
             try:
-                lista=eval(Config.get('Tooltip',self.magnitud))
-            except: lista=[]
-            if len(lista)>0:
-                valores=[]
+                lista = eval(Config.get('Tooltip', self.magnitud))
+            except:
+                lista = []
+            if len(lista) > 0:
+                valores = []
                 for i in lista:
-                    valores.append(representacion(self.value.__getattribute__(self.value.__units__[i]), self.decimales, self.tolerancia)+" "+self.value.__text__[i])
+                    valores.append(representacion(
+                        self.value.__getattribute__(self.value.__units__[i]),
+                        self.decimales, self.tolerancia) + " " +
+                        self.value.__text__[i])
                 self.entrada.setToolTip(os.linesep.join(valores))
 
     def keyPressEvent(self, e):
-        """Metodo para poder manejar la pulsación de las techas arriba y abajo tal y como si fuera un spinbox"""
-
+        """Manage the key press to emulate a QSpinbox"""
         if not self.readOnly:
             if e.key() in [QtCore.Qt.Key_Insert, QtCore.Qt.Key_Backspace]:
                 self.clear()
             if self.spinbox:
                 if not self.value:
-                    self.value=self.start
-                if e.key()==QtCore.Qt.Key_Up:
-                    valor=self.value+self.step
-                    if valor>self.max:
+                    self.value = self.start
+                if e.key() == QtCore.Qt.Key_Up:
+                    valor = self.value+self.step
+                    if valor > self.max:
                         self.setValue(self.max)
                     else:
                         self.setValue(valor)
-                elif e.key()==QtCore.Qt.Key_Down:
-                    valor=self.value-self.step
-                    if valor<self.min:
+                elif e.key() == QtCore.Qt.Key_Down:
+                    valor = self.value-self.step
+                    if valor < self.min:
                         self.setValue(self.min)
                     else:
                         self.setValue(valor)
                 self.valueChanged.emit(self.value)
 
     def enterEvent(self, event):
+        """When mouse enter in widget show the unidades and clear button, and
+        add margin to let space to clear button"""
         if self.magnitud and self.boton:
             self.unidades.setVisible(True)
         if self.value and self.boton and not self.readOnly:
@@ -347,6 +383,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             self.entrada.setTextMargins(0, 0, 10, 0)
 
     def leaveEvent(self, event):
+        """When mouse leave the widget undo the enterEvent actions"""
         if self.magnitud and self.boton:
             self.unidades.setVisible(False)
         if self.value and self.boton and not self.readOnly:
@@ -358,6 +395,7 @@ class Tabla(QtWidgets.QTableWidget):
     """Clase que genera tablas personalizadas para entrada de datos"""
     editingFinished = QtCore.pyqtSignal()
     rowFinished = QtCore.pyqtSignal(list)
+
     def __init__(self, columnas=0, horizontalHeader=None, verticalHeaderLabels=None,
                  verticalHeader=True, filas=0, stretch=True, verticalOffset=0,
                  dinamica=False, external=False, orientacion=QtCore.Qt.AlignRight,
@@ -586,24 +624,26 @@ class Tabla(QtWidgets.QTableWidget):
             self.setCurrentCell(self.currentRow()-1, self.currentColumn())
 
 
-
-
 class ClickableLabel(QtWidgets.QLabel):
+    """Custom QLabel with clicked functionality"""
     clicked = QtCore.pyqtSignal()
+
     def mousePressEvent(self, event):
         self.clicked.emit()
 
+
 class ColorSelector(QtWidgets.QWidget):
-    """Clase que define el widget que permite seleccionar colores"""
+    """Color selector widget"""
     valueChanged = QtCore.pyqtSignal('QString')
 
-    def __init__(self, color=None, alpha=255, hasAlpha=False, parent=None):
+    def __init__(self, color="#ffffff", alpha=255, isAlpha=False, parent=None):
         super(ColorSelector, self).__init__(parent)
-        self.alpha=alpha
-        lyt=QtWidgets.QHBoxLayout(self)
+
+        lyt = QtWidgets.QHBoxLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
         lyt.setSpacing(0)
-        self.RGB=QtWidgets.QLineEdit()
+
+        self.RGB = QtWidgets.QLineEdit()
         self.RGB.editingFinished.connect(self.rgbChanged)
         self.RGB.setFixedSize(80, 24)
         lyt.addWidget(self.RGB)
@@ -611,39 +651,58 @@ class ColorSelector(QtWidgets.QWidget):
         self.button.setFixedSize(24, 24)
         self.button.clicked.connect(self.ColorButtonClicked)
         lyt.addWidget(self.button)
-        if hasAlpha:
-            lyt.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
-            lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Alpha")))
-            self.transparencia=Entrada_con_unidades(int, width=50, min=0, max=255, spinbox=True, value=alpha)
-            self.transparencia.valueChanged.connect(self.setAlpha)
-            lyt.addWidget(self.transparencia)
-        lyt.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
-        if color:
-            self.setColor(color)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
 
-    def setAlpha(self, alfa):
-        self.alpha=alfa
+        if isAlpha:
+            self.isAlpha = QtGui.QColor.HexArgb
+        else:
+            self.isAlpha = QtGui.QColor.HexRgb
+
+        r = int(color[1:3], 16)
+        g = int(color[3:5], 16)
+        b = int(color[5:7], 16)
+        color = QtGui.QColor(r, g, b, alpha)
+        self.setColor(color)
 
     def setColor(self, color):
-        self.color=QtGui.QColor(color)
-        self.button.setStyleSheet("background: %s;" %color)
-        self.RGB.setText(color)
+        """Set new color value and update text and button color"""
+        self.color = color
+        self.button.setStyleSheet("background: %s;" % color.name(self.isAlpha))
+        self.RGB.setText(color.name(self.isAlpha))
 
     def ColorButtonClicked(self):
-        """Dialogo de selección de color"""
-        dialog=QtWidgets.QColorDialog(self.button.palette().color(QtGui.QPalette.Button), self)
-        if dialog.exec_():
-            self.setColor(dialog.currentColor().name())
-            self.valueChanged.emit(dialog.currentColor().name())
+        """Show the QColorDialog to let user choose new color"""
+        dlg = QtWidgets.QColorDialog(self.color, self)
+        if self.isAlpha:
+            dlg.setOption(QtWidgets.QColorDialog.ShowAlphaChannel)
+        if dlg.exec_():
+            self.setColor(dlg.currentColor())
+            self.valueChanged.emit(dlg.currentColor().name())
 
     def rgbChanged(self):
-        try:
-            color=QtGui.QColor(self.RGB.text())
-        except:
-            pass
+        """Let user define the color manually"""
+        txt = self.RGB.text()
+
+        # Avoid the editing finished with no changes
+        if txt == self.color.name(self.isAlpha):
+            return
+
+        # Define the new color from text
+        if self.isAlpha:
+            alpha = int(txt[1:3], 16)
+            r = int(txt[3:5], 16)
+            g = int(txt[5:7], 16)
+            b = int(txt[7:9], 16)
+            color = QtGui.QColor(r, g, b, alpha)
         else:
-            self.setColor(self.RGB.text())
-            self.valueChanged.emit(self.RGB.text())
+            color = QtGui.QColor(txt)
+
+        # Only accept new value if it's valid
+        if color.isValid():
+            self.setColor(color)
+            self.valueChanged.emit(color.name(self.isAlpha))
 
 
 class DragButton(QtWidgets.QToolButton):
@@ -1098,9 +1157,13 @@ if __name__ == "__main__":
     from lib import unidades
 
     app = QtWidgets.QApplication(sys.argv)
+
     ui = QtWidgets.QDialog()
     layout = QtWidgets.QVBoxLayout(ui)
     widget = Entrada_con_unidades(unidades.Pressure)
     layout.addWidget(widget)
+
+    widget2 = ColorSelector(isAlpha=False)
+    layout.addWidget(widget2)
     ui.show()
     sys.exit(app.exec_())
