@@ -876,12 +876,17 @@ class PathConfig(QtWidgets.QWidget):
 
 
 class LineConfig(QtWidgets.QGroupBox):
+    """Custom QGroupbox with all matplotlib Line configuration"""
 
     def __init__(self, confSection, title, parent=None):
+        """
+        confSection: Name key to identify the line
+        title: Title to use in QGroupbox
+        """
         super(LineConfig, self).__init__(title, parent)
-        self.confSection=confSection
+        self.conf = confSection
 
-        layout= QtWidgets.QHBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
         self.Grosor = QtWidgets.QDoubleSpinBox()
         self.Grosor.setFixedWidth(60)
         self.Grosor.setAlignment(QtCore.Qt.AlignRight)
@@ -895,19 +900,25 @@ class LineConfig(QtWidgets.QGroupBox):
         layout.addWidget(self.Marca)
         self.ColorButton = ColorSelector()
         layout.addWidget(self.ColorButton)
-        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+
+        # TODO: Add support for other properties of line:
+        #     alpha
+        #     markersize, markerfacecolor, markeredgewidth, markeredgecolor
 
     def setConfig(self, config, section="MEOS"):
-        self.ColorButton.setColor(config.get(section, self.confSection+'Color'))
-        self.Grosor.setValue(config.getfloat(section, self.confSection+'lineWidth'))
-        self.Linea.setCurrentValue(config.get(section, self.confSection+'lineStyle'))
-        self.Marca.setCurrentValue(config.get(section, self.confSection+'marker'))
+        self.ColorButton.setColor(config.get(section, self.conf+'Color'))
+        self.Grosor.setValue(config.getfloat(section, self.conf+'lineWidth'))
+        self.Linea.setCurrentValue(config.get(section, self.conf+'lineStyle'))
+        self.Marca.setCurrentValue(config.get(section, self.conf+'marker'))
 
     def value(self, config, section="MEOS"):
-        config.set(section, self.confSection+"Color", self.ColorButton.color.name())
-        config.set(section, self.confSection+"lineWidth", str(self.Grosor.value()))
-        config.set(section, self.confSection+"lineStyle", self.Linea.currentValue())
-        config.set(section, self.confSection+"marker", self.Marca.currentValue())
+        config.set(section, self.conf+"Color", self.ColorButton.color.name())
+        config.set(section, self.conf+"lineWidth", str(self.Grosor.value()))
+        config.set(section, self.conf+"lineStyle", self.Linea.currentValue())
+        config.set(section, self.conf+"marker", self.Marca.currentValue())
         return config
 
     @classmethod
@@ -919,52 +930,64 @@ class LineConfig(QtWidgets.QGroupBox):
         return config
 
 
-class customCombo(QtWidgets.QComboBox):
-    key=None
-    image= None
-    text=None
+class CustomCombo(QtWidgets.QComboBox):
+    """General custom QComboBox"""
     valueChanged = QtCore.pyqtSignal("QString")
 
-
     def __init__(self, parent=None):
-        super(customCombo, self).__init__(parent)
+        super(CustomCombo, self).__init__(parent)
         self.setIconSize(QtCore.QSize(35, 18))
-        self.currentIndexChanged.connect(self.emitir)
-        if self.image and self.text:
-            for key in self.key:
-                self.addItem(QtGui.QIcon(QtGui.QPixmap(self.image[key])), self.text[key])
-        elif self.image:
-            for key in self.key:
-                self.addItem(QtGui.QIcon(QtGui.QPixmap(self.image[key])), "")
-        elif self.text:
-            for key in self.key:
-                self.addItem(self.text[key])
+        self.currentIndexChanged.connect(self.emit)
+        self._populate()
 
     def setCurrentValue(self, value):
-        ind=self.key.index(value)
+        ind = self.key.index(value)
         self.setCurrentIndex(ind)
 
     def currentValue(self):
         return self.key[self.currentIndex()]
 
-    def emitir(self, ind):
+    def emit(self, ind):
         self.valueChanged.emit(self.key[ind])
 
 
+class LineStyleCombo(CustomCombo):
+    """Custom QComboBox for select matplotlib line styles"""
+    key = ["None", "-", "--", ":", "-."]
+    image = {
+        "None":  "",
+        "-": os.path.join("images", "button", "solid_line.png"),
+        "--": os.path.join("images", "button", "dash_line.png"),
+        ":": os.path.join("images", "button", "dot_line.png"),
+        "-.": os.path.join("images", "button", "dash_dot_line.png")}
 
-class LineStyleCombo(customCombo):
-    key=["None", "-", "--", ":", "-."]
-    image={"None":  "",
-        "-":  os.environ["pychemqt"]+"/images/button/solid_line.png",
-        "--":  os.environ["pychemqt"]+"/images/button/dash_line.png",
-        ":":  os.environ["pychemqt"]+"/images/button/dot_line.png",
-        "-.":  os.environ["pychemqt"]+"/images/button/dash_dot_line.png"}
+    def _populate(self):
+        for key in self.key:
+            self.addItem(QtGui.QIcon(QtGui.QPixmap(
+                os.environ["pychemqt"] + self.image[key])), "")
 
-class MarkerCombo(customCombo):
-    key=["None", ".", ",", "o", "v", "^", "<", ">", "1", "2", "3", "4", "8", "s", "p", "*", "h", "H", "+", "x", "D", "d", "|", "_"]
-    text={"None": "", ".":	"point", ",":	"pixel", "o":	"circle", "v":	"triangle_down", "^":	"triangle_up", "<":	"triangle_left", ">":	"triangle_right", "1":	"tri_down",
-        "2":	"tri_up", "3": "tri_left", "4": "tri_right", "8":	"octagon", "s":	"square", "p":	"pentagon", "*":	"star", "h":	"hexagon1", "H":	"hexagon2", "+":	"plus",
-        "x":	"x", "D":	"diamond", "d":	"thin_diamond", "|":	"vline", "_":	"hline"}
+
+class MarkerCombo(CustomCombo):
+    """Custom QComboBox for select matplotlib line marker"""
+    key = ["None", ".", ",", "o", "v", "^", "<", ">", "1", "2", "3", "4", "8",
+           "s", "p", "*", "h", "H", "+", "x", "D", "d", "|", "_"]
+    text = {"None": "", ".": "point", ",": "pixel", "o": "circle",
+            "v": "triangle_down", "^": "triangle_up", "<": "triangle_left",
+            ">": "triangle_right", "1": "tri_down", "2": "tri_up",
+            "3": "tri_left", "4": "tri_right", "8": "octagon", "s": "square",
+            "p": "pentagon", "*": "star", "h": "hexagon1", "H": "hexagon2",
+            "+": "plus", "x": "x", "D": "diamond", "d": "thin_diamond",
+            "|": "vline", "_": "hline"}
+
+    def _populate(self):
+        for key in self.key:
+            txt = self.text[key]
+            if txt:
+                image = os.environ["pychemqt"] + \
+                    os.path.join("images", "marker", "%s.png" % txt)
+                self.addItem(QtGui.QIcon(QtGui.QPixmap(image)), self.text[key])
+            else:
+                self.addItem(self.text[key])
 
 
 class InputFond(QtWidgets.QWidget):
@@ -1143,7 +1166,7 @@ class FlowLayout(QtWidgets.QLayout):
 def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
                  checkable=False, button=False, parent=None):
     if not tip:
-        tip=text
+        tip = text
     action = QtWidgets.QAction(text, parent)
     if icon:
         action.setIcon(QtGui.QIcon(config.IMAGE_PATH + icon))
@@ -1209,10 +1232,8 @@ if __name__ == "__main__":
     layout.addWidget(w2)
     w3 = PathConfig()
     layout.addWidget(w3)
-    w4 = PathConfig(save=True)
+    w4 = LineConfig("saturation", "Line Style")
     layout.addWidget(w4)
-    w5 = PathConfig(folder=True)
-    layout.addWidget(w5)
 
     ui.show()
     sys.exit(app.exec_())
