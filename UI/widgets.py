@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 import os
+import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -668,6 +669,9 @@ class ColorSelector(QtWidgets.QWidget):
 
     def setColor(self, color):
         """Set new color value and update text and button color"""
+        # Accept color args as a #rgb string too
+        if type(color) == str:
+            color = QtGui.QColor(color)
         self.color = color
         self.button.setStyleSheet("background: %s;" % color.name(self.isAlpha))
         self.RGB.setText(color.name(self.isAlpha))
@@ -711,12 +715,9 @@ class DragButton(QtWidgets.QToolButton):
     def __init__(self, parent=None):
         super(DragButton, self).__init__(parent)
 
-
-
     def mouseMoveEvent(self, event):
         self.startDrag()
         QtWidgets.QToolButton.mouseMoveEvent(self, event)
-
 
     def startDrag(self):
         if self.icon().isNull():
@@ -745,14 +746,16 @@ class TreeEquipment(QtWidgets.QTreeWidget):
     def updateList(self, items):
         self.clear()
         self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Stream.setText(0, QtWidgets.QApplication.translate("pychemqt", "Streams"))
+        self.Stream.setText(
+            0, QtWidgets.QApplication.translate("pychemqt", "Streams"))
         self.Stream.setExpanded(True)
         self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Equipment.setText(0, QtWidgets.QApplication.translate("pychemqt", "Equipments"))
+        self.Equipment.setText(
+            0, QtWidgets.QApplication.translate("pychemqt", "Equipments"))
         self.Equipment.setExpanded(True)
-        ext=[]
-        ins=[]
-        outs=[]
+
+        ins = []
+        outs = []
         for stream in items["in"]:
             for stream in items["in"][stream].down:
                 ins.append(stream.id)
@@ -761,69 +764,108 @@ class TreeEquipment(QtWidgets.QTreeWidget):
                 outs.append(stream.id)
 
         for key in sorted(items["stream"].keys()):
-            id=items["stream"][key].id
+            id = items["stream"][key].id
             if id in ins:
-                item=QtWidgets.QTreeWidgetItem(self.Stream, 1)
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 1)
                 item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/in.svg")))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "in.svg"))))
             elif id in outs:
-                item=QtWidgets.QTreeWidgetItem(self.Stream, 2)
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 2)
                 item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/out.svg")))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "out.svg"))))
             else:
-                item=QtWidgets.QTreeWidgetItem(self.Stream, 3)
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 3)
                 item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equipment/stream.png")))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "stream.png"))))
 
         for equipment in items["equip"]:
-            item=QtWidgets.QTreeWidgetItem(self.Equipment, 4)
-            item.setText(0, "%i - %s" %(items["equip"][equipment].id, items["equip"][equipment].name))
-            item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(items["equip"][equipment].imagen)))
+            item = QtWidgets.QTreeWidgetItem(self.Equipment, 4)
+            item.setText(0, "%i - %s" % (
+                items["equip"][equipment].id, items["equip"][equipment].name))
+            item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                items["equip"][equipment].imagen)))
 
 
 class PathConfig(QtWidgets.QWidget):
-    """widget con la funcion de entrada de ruta de archivos, ejecutables..."""
+    """Custom widget for a file path show and configure functionality"""
     valueChanged = QtCore.pyqtSignal('QString')
-    def __init__(self, title, path="", patron="", msg="", parent=None):
+
+    def __init__(self, title="", path="", patron="", msg="", folder=False,
+                 save=False, parent=None):
+        """
+        title: Optional text an right of widget
+        path: Inicial value for file path
+        patron: File format to filter in file search dialog
+        msg: Title of dialog file
+        """
         super(PathConfig, self).__init__(parent)
-        self.patron=patron
-        self.msg=msg
+
+        self.folder = folder
+        self.save = save
+
         layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(QtWidgets.QLabel(title))
-        layout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
+
+        if title:
+            layout.addWidget(QtWidgets.QLabel(title))
+            layout.addItem(QtWidgets.QSpacerItem(
+                10, 10, QtWidgets.QSizePolicy.Fixed,
+                QtWidgets.QSizePolicy.Fixed))
+
         self.path = QtWidgets.QLineEdit()
         self.path.setFixedHeight(24)
         self.path.textEdited.connect(self.pathEdited)
         layout.addWidget(self.path)
-        self.boton=QtWidgets.QPushButton(QtWidgets.QApplication.translate("pychemqt", "Browse"))
+        self.boton = QtWidgets.QPushButton(
+            QtWidgets.QApplication.translate("pychemqt", "Browse"))
         self.boton.setFixedHeight(24)
         self.boton.clicked.connect(self.select)
         layout.addWidget(self.boton)
 
-        self.path.setText(path)
+        # Define default values for parameters don't defined
+        if not patron:
+            patron = QtWidgets.QApplication.translate(
+                "pychemqt", "All files") + "(*)"
+        elif patron == "exe":
+            if sys.platform == "win32":
+                patron = QtWidgets.QApplication.translate(
+                    "pychemqt", "Executable files") + "(*.exe *.bat)"
+            else:
+                patron = QtWidgets.QApplication.translate(
+                    "pychemqt", "All files") + "(*)"
+        self.patron = patron
+
+        if not msg:
+            msg = QtWidgets.QApplication.translate(
+                "pychemqt", "Select path of file")
+        self.msg = msg
+        self.setText(path)
 
     def text(self):
         return self.path.text()
+
     def setText(self, text):
         self.path.setText(text)
 
     def select(self):
-        if not self.patron:
-            patron = QtWidgets.QApplication.translate("pychemqt", "All files")+"(*)"
-        elif self.patron=="exe":
-            if sys.platform=="win32":
-                patron = QtWidgets.QApplication.translate("pychemqt", "Executable files")+ "(*.exe *.bat)"
-            else:
-                patron = QtWidgets.QApplication.translate("pychemqt", "All files")+"(*)"
+        """Open the QFileDialog to select the file path"""
+        dir = os.path.dirname(str(self.path.text()))
+        if self.save:
+            ruta = QtWidgets.QFileDialog.getSaveFileName(
+                self, self.msg, dir, self.patron)[0]
+        elif self.folder:
+            ruta = QtWidgets.QFileDialog.getExistingDirectory(
+                self, self.msg, dir)
         else:
-            patron=self.patron
-        if not self.msg:
-            msg = QtWidgets.QApplication.translate("pychemqt", "Select path of file")
-        else:
-            msg=self.msg
-        dir=os.path.dirname(str(self.path.text()))
-        ruta = QtWidgets.QFileDialog.getOpenFileName(self, msg, dir, patron)[0]
+            ruta = QtWidgets.QFileDialog.getOpenFileName(
+                self, self.msg, dir, self.patron)[0]
         if ruta:
             self.path.setText(ruta)
             self.valueChanged.emit(ruta)
@@ -1138,11 +1180,12 @@ def okToContinue(parent, dirty, func, parameters):
         parameters: parameter of func"""
     if not dirty:
         return True
-    dialog = QtWidgets.QMessageBox.question(parent,
+    dialog = QtWidgets.QMessageBox.question(
+        parent,
         QtWidgets.QApplication.translate("pychemqt", "Unsaved changes"),
         QtWidgets.QApplication.translate("pychemqt", "Save unsaved changes?"),
-        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Cancel,
-        QtWidgets.QMessageBox.Yes)
+        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
+        QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Yes)
     if dialog == QtWidgets.QMessageBox.Cancel:
         return False
     elif dialog == QtWidgets.QMessageBox.No:
@@ -1153,17 +1196,23 @@ def okToContinue(parent, dirty, func, parameters):
 
 
 if __name__ == "__main__":
-    import sys
     from lib import unidades
 
     app = QtWidgets.QApplication(sys.argv)
 
     ui = QtWidgets.QDialog()
     layout = QtWidgets.QVBoxLayout(ui)
-    widget = Entrada_con_unidades(unidades.Pressure)
-    layout.addWidget(widget)
 
-    widget2 = ColorSelector(isAlpha=False)
-    layout.addWidget(widget2)
+    w = Entrada_con_unidades(unidades.Pressure)
+    layout.addWidget(w)
+    w2 = ColorSelector(isAlpha=True)
+    layout.addWidget(w2)
+    w3 = PathConfig()
+    layout.addWidget(w3)
+    w4 = PathConfig(save=True)
+    layout.addWidget(w4)
+    w5 = PathConfig(folder=True)
+    layout.addWidget(w5)
+
     ui.show()
     sys.exit(app.exec_())
