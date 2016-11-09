@@ -128,7 +128,7 @@ class Entrada_Datos(QtWidgets.QDialog):
                            verticalHeader=False, stretch=False)
         self.tabla.setConnected()
         if data:
-            self.tabla.setMatrix(data)
+            self.tabla.setData(data)
             self.tabla.addRow()
         elif t and property:
             self.tabla.setColumn(0, t)
@@ -171,7 +171,7 @@ class Entrada_Datos(QtWidgets.QDialog):
             self, QtWidgets[0].QCoreApplication.translate("pychemqt", "Open text file"), "./"))
         if fname:
             data = loadtxt(fname)
-            self.tabla.setMatrix(data)
+            self.tabla.setData(data)
             self.tabla.addRow()
 
     def Guardar(self):
@@ -205,7 +205,7 @@ class Entrada_Datos(QtWidgets.QDialog):
 
     @property
     def data(self):
-        return self.tabla.getMatrix()
+        return self.tabla.getData()
 
 
 if __name__ == "__main__":

@@ -83,7 +83,7 @@ from tools.codeEditor import SimplePythonEditor
 from tools.UI_Preferences import NumericFactor
 from UI.delegate import CheckEditor
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
-                        MarkerCombo, ColorSelector, InputFond, Status, Tabla)
+                        MarkerCombo, ColorSelector, InputFont, Status, Tabla)
 
 
 N_PROP = len(ThermoAdvanced.properties())
@@ -2338,7 +2338,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         tabla = TablaMEoS(
             len(propiedades), horizontalHeader=propiedades, stretch=False,
             readOnly=True, units=units, parent=parent)
-        tabla.setMatrix(data)
+        tabla.setData(data)
     else:
         columnInput = []
         for key in keys:
@@ -2764,7 +2764,7 @@ class TablaMEoS(Tabla):
             self.addRow()
             self.setCurrentCell(row+1, column)
 
-    def setMatrix(self, data):
+    def setData(self, data):
         """Override Tabla method to adapt functionality"""
         if self.readOnly:
             self.data = data
@@ -2866,7 +2866,7 @@ class TablaMEoS(Tabla):
             ext = str(dialog.selectedNameFilter().split(".")[-1][:-1])
 
             if fname:
-                exportTable(self.data, fname, ext, self.encabezadoHorizontal)
+                exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
 
     def writeToStream(self, stream):
         stream.writeInt32(self.columnCount())
@@ -2998,7 +2998,7 @@ class TablaMEoS(Tabla):
 
         tabla = TablaMEoS(*args, **kwargs)
         tabla.setWindowTitle(title)
-        tabla.setMatrix(data)
+        tabla.setData(data)
         if not readOnly:
             tabla.fluid = fluid
             tabla.Point = fluid()
@@ -3509,7 +3509,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
         tabla = TablaMEoS(self.dim, horizontalHeader=HHeader, units=units,
                           stretch=False, readOnly=True, parent=self.parent)
-        tabla.setMatrix(transpose(data))
+        tabla.setData(transpose(data))
         tabla.verticalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
 
@@ -4389,7 +4389,7 @@ class AxisWidget(QtWidgets.QGroupBox):
         lyt = QtWidgets.QGridLayout(self)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Label")), 1, 1)
-        self.label = InputFond()
+        self.label = InputFont()
         lyt.addWidget(self.label, 1, 2)
         self.scale = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
@@ -4708,7 +4708,8 @@ if __name__ == "__main__":
     # SteamTables = AddPoint(conf)
     # SteamTables=AddLine(None)
     # SteamTables=transportDialog(mEoS.__all__[2])
-    SteamTables = Dialog(conf)
+    # SteamTables = Dialog(conf)
+    SteamTables = EditAxis()
 
     SteamTables.show()
     sys.exit(app.exec_())

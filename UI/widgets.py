@@ -19,18 +19,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Module to define common graphics widget for pychemqt
+# Module to define common graphics widget
 #   -Status: Label with status (for equipment, stream)
 #   -Entrada_con_unidades: Composite widget for unit values for input/view
 #   -Tabla: Custom tablewidget tablewidget with added functionality
 #   -ClickableLabel: Label with custom clicked signal
 #   -ColorSelector: Composite widget for colour definition
 #   -DragButton: Button with drag & drop support
-#   -TreeEquipment:
-#   -
+#   -PathConfig: Custom widget for file path show and configure
+#   -LineConfig: Custom QGroupbox with all matplotlib Line configuration
+#   -CustomCombo: General custom QComboBox
+#   -LineStyleCombo: Custom QComboBox for select matplotlib line styles
+#   -MarkerCombo: Custom QComboBox for select matplotlib line marker
+#   -InputFont: Custom widget to edit a text input with font and color support
+#   -Table_Graphics: Custom widget to implement a popup in PFD
 
-#   -TabWidget: Custom tabwidget to show a message in mainwindow when no
-#       project is loaded
+#   -createAction
+#   -okToContinue: Function to ask user if any unsaved change
 ###############################################################################
 
 
@@ -393,199 +398,223 @@ class Entrada_con_unidades(QtWidgets.QWidget):
 
 
 class Tabla(QtWidgets.QTableWidget):
-    """Clase que genera tablas personalizadas para entrada de datos"""
+    """QTableWidget with custom functionality"""
     editingFinished = QtCore.pyqtSignal()
     rowFinished = QtCore.pyqtSignal(list)
 
-    def __init__(self, columnas=0, horizontalHeader=None, verticalHeaderLabels=None,
-                 verticalHeader=True, filas=0, stretch=True, verticalOffset=0,
-                 dinamica=False, external=False, orientacion=QtCore.Qt.AlignRight,
-                 verticalHeaderModel="", readOnly=False, columnReadOnly=None,
-                 num=True, delegateforRow=None, parent=None):
+    def __init__(self, columnas=0, filas=0, stretch=True, dinamica=False,
+                 readOnly=False, columnReadOnly=None,
+                 horizontalHeader=None, verticalHeader=True,
+                 verticalHeaderLabels=None, verticalHeaderModel="",
+                 verticalOffset=0, orientacion=QtCore.Qt.AlignRight,
+                 delegate=CellEditor, delegateforRow=None,
+                 parent=None):
         """
-        columnas: número de columnas
-        horizontalHeader: texto de título de columnas
-        verticalHeaderLabels: texto de título de filas
-        verticalHeader: boolean que indica si será visible el verticalHeader
-        filas: número de filas iniciales
-        stretch: indica si la ultima columla coge todo el espacio disponible
-        verticalOffset: indice que indica las filas que no se usaran para el rellenado (usadas por widget por ejemplo)
-        verticalHeaderModel: Texto que se usa en el caso que la tabla sea dinamica y el verticalHeader visible
+        columnas: Column count of widget
+        filas: Row count, this value is initial and can be changed
+        stretch: Boolean, stretch the last column to fill all space available
+        dinamica: Boolean, let user fill the data adding new row when last
+            are filled
+        readOnly: Boolean, set the readOnly state of widget
+        columnReadOnly: Array with boolean for column readOnly state, used when
+            the readOnly state is different for each column
+
+        horizontalHeader: Array with text for top header,
+            Null don't show the top header
+        verticalHeader: Boolean, to show or hide the right header
+        verticalHeaderLabels: Array with text for right header
+        verticalHeaderModel: If the table is dinamica and the right header is
+            show, this are the text model to generate new vertical header label
+
+        verticalOffset: Index, row don't included in fill data, used for show
+            info, widget...
+        orientation: Horizontal text alignment general for cell in tables,
+            default is right as normal for numbers
+
+        delegate: QItemDelegate subclass to configure cell editor
+            default CellEditor with float appropiate functionality
+        delegateforRow: delegate with specific values for row
         """
-        QtWidgets.QTableWidget.__init__(self, parent)
-        self.columnas=columnas
-        self.encabezadoHorizontal=horizontalHeader
-        self.encabezadoVertical=verticalHeaderLabels
-        self.filas=filas+verticalOffset
-        self.verticalOffset=verticalOffset
-        self.orientacion=orientacion
-        self.verticalHeaderBool=verticalHeader
-        self.verticalHeaderModel=verticalHeaderModel
-        self.readOnly=readOnly
-        if columnReadOnly==None:
-            self.columnReadOnly=[self.readOnly]*self.columnas
-        else:
-            self.columnReadOnly=columnReadOnly
-        if dinamica and not external:
-            self.cellChanged.connect(self.tabla_cellChanged)
-        self.dinamica=dinamica
-        self.external=external
-        if num:
-            self.setItemDelegate(CellEditor(self))
-        self.delegateforRow=delegateforRow
+        super(Tabla, self).__init__(parent)
+
+        # Dimensions
+        self.columnas = columnas
+        self.filas = filas+verticalOffset
+        self.verticalOffset = verticalOffset
         self.setColumnCount(self.columnas)
-#        self.setAlternatingRowColors(True)
-        self.setGridStyle(QtCore.Qt.DotLine)
-        if readOnly:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        else:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
-        self.horizontalHeader().setStretchLastSection(stretch)
+
+        # Header labels
         if not verticalHeader:
             self.verticalHeader().hide()
         if not horizontalHeader:
             self.horizontalHeader().hide()
-        self.iniciar(self.filas)
+        else:
+            self.setHorizontalHeaderLabels(horizontalHeader)
 
-    def setConnected(self):
-        self.cellChanged.connect(self.tabla_cellChanged)
-        self.dinamica=True
-        if self.rowCount()==0:
-            self.addRow()
+        self.horizontalHeaderLabel = horizontalHeader
+        self.verticalHeaderLabel = verticalHeaderLabels
+        self.verticalHeaderBool = verticalHeader
+        self.verticalHeaderModel = verticalHeaderModel
+        self.horizontalHeader().setStretchLastSection(stretch)
 
-    def iniciar(self, filas):
+        # readOnly state
+        self.readOnly = readOnly
+        if readOnly:
+            self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        else:
+            self.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        if columnReadOnly is None:
+            self.columnReadOnly = [self.readOnly]*self.columnas
+        else:
+            self.columnReadOnly = columnReadOnly
+            for i in range(self.columnCount()):
+                self.setColumnReadOnly(i, columnReadOnly[i])
+
+        # Delegate functionality
+        if delegate:
+            self.setItemDelegate(delegate(self))
+        self.delegateforRow = delegateforRow
+
+        if dinamica:
+            self.cellChanged.connect(self.tabla_cellChanged)
+        self.dinamica = dinamica
+
+#        self.setAlternatingRowColors(True)
+        self.setGridStyle(QtCore.Qt.DotLine)
+        self.orientacion = orientacion
         for i in range(filas):
             self.addRow()
-        if self.encabezadoHorizontal:
-            for i, titulo in enumerate(self.encabezadoHorizontal):
-                self.setHorizontalHeaderItem(i,QtWidgets.QTableWidgetItem(titulo))
+
+    def setConnected(self):
+        """The dynamic state can be defined at start or call this procedure"""
+        self.cellChanged.connect(self.tabla_cellChanged)
+        self.dinamica = True
+        if self.rowCount() == 0:
+            self.addRow()
 
     def addRow(self, data=None, index=None):
+        """Add row to widget
+        data: Array with data to fill new row
+        index: Index to add row, default add row at endo of table"""
         if not data:
-            data=[""]*self.columnas
+            data = [""]*self.columnas
         else:
-            data=[representacion(i) for i in data]
-        self.blockSignals(True)
+            data = [representacion(i) for i in data]
         if index is not None:
-            i = index
+            row = index
         else:
-            i=self.rowCount()
-        self.insertRow(i)
-#        self.setRowCount(i+1)
-        self.setRowHeight(i, 22)
+            row = self.rowCount()
+        self.insertRow(row)
+        self.setRowHeight(row, 22)
+
         if self.delegateforRow:
-            delegate=self.delegateforRow(self.parent())
-            self.setItemDelegateForRow(i, delegate)
+            delegate = self.delegateforRow(self.parent())
+            self.setItemDelegateForRow(row, delegate)
 
-        Config=ConfigParser()
+        Config = ConfigParser()
         Config.read(config.conf_dir+"pychemqtrc")
+        inactivo = QtGui.QColor(Config.get("General", 'Color_ReadOnly'))
         for j in range(self.columnCount()):
-            self.setItem(i, j, QtWidgets.QTableWidgetItem(data[j]))
-            self.item(i, j).setTextAlignment(self.orientacion|QtCore.Qt.AlignVCenter)
+            self.setItem(row, j, QtWidgets.QTableWidgetItem(data[j]))
+            self.item(row, j).setTextAlignment(
+                self.orientacion | QtCore.Qt.AlignVCenter)
 
-            inactivo=QtGui.QColor(Config.get("General", 'Color_ReadOnly'))
-            activo=QtGui.QColor(Config.get("General", 'Color_Resaltado'))
             if self.columnReadOnly[j]:
-                flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
-                self.item(i, j).setBackground(inactivo)
+                flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+                self.item(row, j).setBackground(inactivo)
             else:
-                flags=QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
-            self.item(i, j).setFlags(flags)
+                flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | \
+                    QtCore.Qt.ItemIsSelectable
+            self.item(row, j).setFlags(flags)
 
         if self.verticalHeaderBool:
-            if self.encabezadoVertical:
-                self.setVerticalHeaderItem(i,QtWidgets.QTableWidgetItem(self.encabezadoVertical[i]))
+            if self.verticalHeaderLabel:
+                txt = self.verticalHeaderLabel[row]
             elif self.verticalHeaderModel:
-                self.setVerticalHeaderItem(i,QtWidgets.QTableWidgetItem(self.verticalHeaderModel+str(i)))
-        self.blockSignals(False)
+                txt = self.verticalHeaderModel+str(row)
+            self.setVerticalHeaderItem(row, QtWidgets.QTableWidgetItem(txt))
 
-        if self.dinamica and self.rowCount()>1:
-            columna=self.columnReadOnly.index(False)
-            self.setCurrentCell(i, columna)
+        # Set focus to first editable cell in new row
+        if self.dinamica and self.rowCount() > 1:
+            columna = self.columnReadOnly.index(False)
+            self.setCurrentCell(row, columna)
 
-    def tabla_cellChanged(self,i,j):
-        """Método que añade una nueva línea si es necesario"""
-        self.blockSignals(True)
-        nueva_linea=True
-        col=0
-        while col<self.columnas:
-            if self.item(i,col).text()!="" or self.columnReadOnly[col]:
-                col+=1
+    def tabla_cellChanged(self, i, j):
+        """When edit a cell, check status tu add new row"""
+        new_line = True
+        col = 0
+        while col < self.columnas:
+            if self.item(i, col).text() != "" or self.columnReadOnly[col]:
+                col += 1
             else:
-                nueva_linea=False
+                new_line = False
                 break
-        if nueva_linea and i==self.rowCount()-1:
+        if new_line and i == self.rowCount()-1:
             self.addRow()
-            fila=self.getRow(i, num=False)
+            fila = self.getRow(i)
             self.rowFinished.emit(fila)
-        self.blockSignals(False)
 
+    def getValue(self, row, column):
+        """Get value from cell in row and column"""
+        txt = self.item(row, column).text()
+        try:
+            value = float(txt)
+        except ValueError:
+            value = txt
+        return value
 
-    def getValue(self, fila, columna):
-        if self.item(fila, columna).text():
-            return float(self.item(fila, columna).text())
-        else:
-            return None
-
-    def setValue(self, fila, columna, value, orientacion=None):
-        if not orientacion:
-            orientacion=self.orientacion
+    def setValue(self, row, column, value, **fmt):
+        """Set value for cell in row and column with text formating"""
         if isinstance(value, float) or isinstance(value, int):
-            value=str(value)
-        self.item(fila, columna).setText(value)
-        self.item(fila, columna).setTextAlignment(orientacion|QtCore.Qt.AlignVCenter)
+            value = representacion(value, **fmt)
+        self.item(row, column).setText(value)
+        self.item(row, column).setTextAlignment(
+            self.orientacion | QtCore.Qt.AlignVCenter)
 
-    def setColumn(self, columna, data, **format):
-        while len(data)>self.rowCount()-self.verticalOffset:
+    def setColumn(self, column, data, **fmt):
+        """Set data for a complete column"""
+        while len(data) > self.rowCount()-self.verticalOffset:
             self.addRow()
-        self.blockSignals(True)
-        for fila, dato in enumerate(data):
-            self.item(fila, columna).setText(representacion(dato, **format))
-        self.blockSignals(False)
+        for row, dato in enumerate(data):
+            self.setValue(row, column, dato, **fmt)
 
-    def getColumn(self, columna, fill=True):
-        lista=[]
-        for i in range(self.verticalOffset, self.rowCount()):
-            if self.item(i, columna).text():
-                lista.append(float(self.item(i, columna).text()))
-            elif fill:
-                lista.append(0)
-        return lista
+    def getColumn(self, column):
+        """Get column data as array"""
+        lst = []
+        for row in range(self.verticalOffset, self.rowCount()):
+            lst.append(self.getValue(row, column))
+        return lst
 
-    def getRow(self, fila, num=True):
-        lista=[]
-        if num:
-            for i in range(self.columnCount()):
-                lista.append(float(self.item(fila, i).text()))
-        else:
-            for i in range(self.columnCount()):
-                lista.append(self.item(fila, i).text())
-        return lista
+    def getRow(self, row):
+        """Get row data as array"""
+        lst = []
+        for column in range(self.columnCount()):
+            lst.append(self.getValue(row, column))
+        return lst
 
-    def getMatrix(self):
-        matriz=[]
-        for i in range(self.verticalOffset, self.rowCount()-1):
-            lista=[]
-            for j in range(self.columnCount()):
-                lista.append(float(self.item(i, j).text()))
-            matriz.append(lista)
+    def getData(self):
+        """Get all table data as array"""
+        matriz = []
+        for row in range(self.verticalOffset, self.rowCount()-1):
+            lst = self.getRow(row)
+            matriz.append(lst)
         return matriz
 
-    def setMatrix(self, matriz):
-        self.blockSignals(True)
-
+    def setData(self, matriz):
+        """Set table data"""
         for i in range(self.rowCount(), len(matriz)+self.verticalOffset):
             self.addRow()
         for fila in range(self.rowCount()-self.verticalOffset):
             for columna, dato in enumerate(matriz[fila]):
-                self.setItem(fila+self.verticalOffset, columna, QtWidgets.QTableWidgetItem(representacion(dato)))
-                self.item(fila+self.verticalOffset, columna).setTextAlignment(self.orientacion|QtCore.Qt.AlignVCenter)
+                self.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(
+                    self.verticalHeaderModel+str(i)))
+                self.item(fila+self.verticalOffset, columna).setTextAlignment(
+                    self.orientacion | QtCore.Qt.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
             self.setRowHeight(i+self.verticalOffset, 20)
-        self.editingFinished.emit()
-        self.blockSignals(False)
 
     def clear(self, size=True):
+        """Clear table, remove all data and optionally remove all row"""
         if size:
             self.setRowCount(1+self.verticalOffset)
         for fila in range(self.rowCount()):
@@ -593,13 +622,15 @@ class Tabla(QtWidgets.QTableWidget):
                     self.item(fila+self.verticalOffset, columna).setText("")
 
     def setColumnReadOnly(self, column, bool):
+        """Set readonly estate per column"""
         if bool:
-            flags=QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
         else:
-            flags=QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | \
+                QtCore.Qt.ItemIsSelectable
 
-        for i in range(self.rowCount()):
-            self.item(i, column).setFlags(flags)
+        for row in range(self.rowCount()):
+            self.item(row, column).setFlags(flags)
 
     def leaveEvent(self, event):
         if self.isEnabled():
@@ -607,22 +638,6 @@ class Tabla(QtWidgets.QTableWidget):
 
     def focusOutEvent(self, event):
         self.clearSelection()
-
-    def keyPressEvent(self, e):
-        if e.key()==QtCore.Qt.Key_Delete:
-            for rango in self.selectedRanges():
-                for i in range(rango.topRow(), rango.bottomRow()+1):
-                    for j in range(rango.leftColumn(), rango.rightColumn()+1):
-                        self.item(i, j).setText("")
-            if self.dinamica:
-                for i in sorted(self.selectionModel().selectedRows(), reverse=True):
-                    self.removeRow(i.row())
-                if self.rowCount()==0:
-                    self.iniciar(1)
-        elif e.key()==QtCore.Qt.Key_Down:
-            self.setCurrentCell(self.currentRow()+1, self.currentColumn())
-        elif e.key()==QtCore.Qt.Key_Up:
-            self.setCurrentCell(self.currentRow()-1, self.currentColumn())
 
 
 class ClickableLabel(QtWidgets.QLabel):
@@ -733,63 +748,6 @@ class DragButton(QtWidgets.QToolButton):
         drag.setHotSpot(QtCore.QPoint(12, 12))
         drag.setPixmap(pixmap)
         drag.start(QtCore.Qt.CopyAction)
-
-
-class TreeEquipment(QtWidgets.QTreeWidget):
-
-    def __init__(self, parent=None):
-        super(TreeEquipment, self).__init__(parent)
-        self.setIconSize(QtCore.QSize(30, 30))
-        self.headerItem().setHidden(True)
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-
-    def updateList(self, items):
-        self.clear()
-        self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Stream.setText(
-            0, QtWidgets.QApplication.translate("pychemqt", "Streams"))
-        self.Stream.setExpanded(True)
-        self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
-        self.Equipment.setText(
-            0, QtWidgets.QApplication.translate("pychemqt", "Equipments"))
-        self.Equipment.setExpanded(True)
-
-        ins = []
-        outs = []
-        for stream in items["in"]:
-            for stream in items["in"][stream].down:
-                ins.append(stream.id)
-        for stream in items["out"]:
-            for stream in items["out"][stream].up:
-                outs.append(stream.id)
-
-        for key in sorted(items["stream"].keys()):
-            id = items["stream"][key].id
-            if id in ins:
-                item = QtWidgets.QTreeWidgetItem(self.Stream, 1)
-                item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "in.svg"))))
-            elif id in outs:
-                item = QtWidgets.QTreeWidgetItem(self.Stream, 2)
-                item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "out.svg"))))
-            else:
-                item = QtWidgets.QTreeWidgetItem(self.Stream, 3)
-                item.setText(0, str(id))
-                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "stream.png"))))
-
-        for equipment in items["equip"]:
-            item = QtWidgets.QTreeWidgetItem(self.Equipment, 4)
-            item.setText(0, "%i - %s" % (
-                items["equip"][equipment].id, items["equip"][equipment].name))
-            item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                items["equip"][equipment].imagen)))
 
 
 class PathConfig(QtWidgets.QWidget):
@@ -990,23 +948,31 @@ class MarkerCombo(CustomCombo):
                 self.addItem(self.text[key])
 
 
-class InputFond(QtWidgets.QWidget):
-
+class InputFont(QtWidgets.QWidget):
+    """Custom widget to edit a text input with font and color support"""
     textChanged = QtCore.pyqtSignal("QString")
     fontChanged = QtCore.pyqtSignal("QFont")
     colorChanged = QtCore.pyqtSignal("QString")
 
-    def __init__(self, text=None, font=None, parent=None):
-        super(InputFond, self).__init__(parent)
+    def __init__(self, text="", font=None, color="#000000", parent=None):
+        """
+        text: Initial txt for widget
+        font: QFont instance to initialize widget
+        color: Inicial color to widget, in code #rrggbb
+        """
+        super(InputFont, self).__init__(parent)
 
-        layout= QtWidgets.QHBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        self.lineEdit=QtWidgets.QLineEdit()
-        self.lineEdit.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Preferred)
+        self.lineEdit = QtWidgets.QLineEdit()
+        self.lineEdit.setSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         layout.addWidget(self.lineEdit)
-        self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/font.png")), "")
+        self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "font.png"))), "")
         self.fontButton.setFixedSize(24, 24)
         self.fontButton.setIconSize(QtCore.QSize(24, 24))
         self.fontButton.clicked.connect(self.fontButtonClicked)
@@ -1016,10 +982,20 @@ class InputFond(QtWidgets.QWidget):
         self.colorButton.clicked.connect(self.colorButtonClicked)
         layout.addWidget(self.colorButton)
 
+        self.font = font
+        self.setRGB(color)
+        self.setText(text)
         self.lineEdit.textChanged.connect(self.textChanged.emit)
 
     def setText(self, txt):
+        self.txt = txt
         self.lineEdit.setText(txt)
+
+    def setRGB(self, rgb):
+        """Wrap method to set color with a #rrggbb code"""
+        color = QtGui.QColor(rgb)
+        if color.isValid():
+            self.setColor(color)
 
     def setColor(self, color):
         self.colorButton.setPalette(QtGui.QPalette(color))
@@ -1027,34 +1003,39 @@ class InputFond(QtWidgets.QWidget):
         paleta.setColor(QtGui.QPalette.Text, color)
         self.lineEdit.setPalette(paleta)
         self.colorChanged.emit(color.name())
+        self.color = color
+
+    def setFont(self, font):
+        self.font = font
+        self.lineEdit.setFont(font)
+        self.fontChanged.emit(font)
 
     def colorButtonClicked(self):
-        """Dialogo de selección de color"""
-        dialog=QtWidgets.QColorDialog(self.colorButton.palette().color(QtGui.QPalette.Button), self)
-        if dialog.exec_():
-            self.setColor(dialog.currentColor())
+        """Show QColorDialog to change the color"""
+        dlg = QtWidgets.QColorDialog(self.color, self)
+        if dlg.exec_():
+            self.setColor(dlg.currentColor())
 
     def fontButtonClicked(self):
-        """Dialogo de selección de color"""
-        dialog=QtWidgets.QFontDialog(self.lineEdit.font())
-        if dialog.exec_():
-            self.lineEdit.setFont(dialog.currentFont())
-            self.fontChanged.emit(dialog.currentFont())
-
-
+        """Show QFontDialog to choose the font"""
+        dlg = QtWidgets.QFontDialog(self.lineEdit.font())
+        if dlg.exec_():
+            self.setFont(dlg.currentFont())
 
 
 class Table_Graphics(QtWidgets.QWidget):
-    """Clase que define la tabla mostrada como popups al pasar el raton por encima de una entity"""
+    """Custom widget to implement as popup in PFD when mouse over stream and
+    equipment graphic item, to show the status of entity and the properties
+    desired if availables"""
     def __init__(self, entity, id, preferences, parent=None):
         super(Table_Graphics, self).__init__(parent)
         self.setWindowFlags(QtCore.Qt.Popup)
-        layout=QtWidgets.QVBoxLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         if isinstance(entity, Corriente):
-            title="Stream %i" %id
+            title = "Stream %i" % id
         else:
-            title="Equipment %i" %id
-        label=QtWidgets.QLabel(title)
+            title = "Equipment %i" % id
+        label = QtWidgets.QLabel(title)
         label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(label)
         line = QtWidgets.QFrame()
@@ -1063,104 +1044,18 @@ class Table_Graphics(QtWidgets.QWidget):
         layout.addWidget(line)
         if entity:
             if entity.status:
-                textos=entity.popup(preferences)
+                textos = entity.popup(preferences)
                 for txt, tooltip, j in textos:
-                        label=QtWidgets.QLabel(txt)
-                        label.setToolTip(tooltip)
-                        if j:
-                            label.setAlignment(QtCore.Qt.AlignRight)
-                        layout.addWidget(label)
+                    label = QtWidgets.QLabel(txt)
+                    label.setToolTip(tooltip)
+                    if j:
+                        label.setAlignment(QtCore.Qt.AlignRight)
+                    layout.addWidget(label)
             else:
                 layout.addWidget(QtWidgets.QLabel(entity.msg))
         else:
-            layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Undefined")))
-
-
-class FlowLayout(QtWidgets.QLayout):
-    def __init__(self, margin=0, spacing=0, parent=None):
-        super(FlowLayout, self).__init__(parent)
-
-        if parent is not None:
-            self.setMargin(margin)
-
-        self.setSpacing(spacing)
-
-        self.itemList = []
-
-    def __del__(self):
-        item = self.takeAt(0)
-        while item:
-            item = self.takeAt(0)
-
-    def addItem(self, item):
-        self.itemList.append(item)
-
-    def count(self):
-        return len(self.itemList)
-
-    def itemAt(self, index):
-        if index >= 0 and index < len(self.itemList):
-            return self.itemList[index]
-
-        return None
-
-    def takeAt(self, index):
-        if index >= 0 and index < len(self.itemList):
-            return self.itemList.pop(index)
-
-        return None
-
-    def expandingDirections(self):
-        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
-
-    def hasHeightForWidth(self):
-        return True
-
-    def heightForWidth(self, width):
-        height = self.doLayout(QtCore.QRect(0, 0, width, 0), True)
-        return height
-
-    def setGeometry(self, rect):
-        super(FlowLayout, self).setGeometry(rect)
-        self.doLayout(rect, False)
-
-    def sizeHint(self):
-        return self.minimumSize()
-
-    def minimumSize(self):
-        size = QtCore.QSize()
-
-        for item in self.itemList:
-            size = size.expandedTo(item.minimumSize())
-
-        size = QtCore.QSize(
-            size.width()+self.contentsMargins().left()+self.contentsMargins().right(),
-            size.height()+self.contentsMargins().bottom()+self.contentsMargins().top())
-        return size
-
-    def doLayout(self, rect, testOnly):
-        x = rect.x()
-        y = rect.y()
-        lineHeight = 0
-
-        for item in self.itemList:
-            wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Horizontal)*self.spacing()
-            spaceY = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Vertical)*self.spacing()
-            nextX = x + item.sizeHint().width() + spaceX
-            if nextX - spaceX > rect.right() and lineHeight > 0:
-                x = rect.x()
-                y = y + lineHeight + spaceY
-                nextX = x + item.sizeHint().width() + spaceX
-                lineHeight = 0
-
-            if not testOnly:
-                item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), item.sizeHint()))
-
-            x = nextX
-            lineHeight = max(lineHeight, item.sizeHint().height())
-
-        return y + lineHeight - rect.y()
+            layout.addWidget(QtWidgets.QLabel(
+                QtWidgets.QApplication.translate("pychemqt", "Undefined")))
 
 
 def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
@@ -1234,6 +1129,10 @@ if __name__ == "__main__":
     layout.addWidget(w3)
     w4 = LineConfig("saturation", "Line Style")
     layout.addWidget(w4)
+    w5 = InputFont(text="foo bar", color="#0000ff")
+    layout.addWidget(w5)
+    w6 = Tabla(columnas=1, filas=1, verticalHeaderModel="C", dinamica=True)
+    layout.addWidget(w6)
 
     ui.show()
     sys.exit(app.exec_())

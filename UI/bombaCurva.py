@@ -121,7 +121,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
 #            self.curva=curva[-1]
 #            self.diametro.setValue(self.curva[0])
 #            self.rpm.setValue(self.curva[1])
-#            self.Tabla.setMatrix(self.curva[2:])
+#            self.Tabla.setData(self.curva[2:])
 #            self.Tabla.addRow()
             self.actualizarPlot()
         else:
@@ -234,7 +234,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         h=[Length(i).__getattribute__(Length.__units__[self.unidadesCarga.currentIndex()]) for i in self.curva[3]]
         P=[Power(i).__getattribute__(Power.__units__[self.unidadesPotencia.currentIndex()]) for i in self.curva[4]]
         n=[Length(i).__getattribute__(Length.__units__[self.unidadesNPSH.currentIndex()]) for i in self.curva[5]]
-        self.Tabla.setMatrix(transpose([q, h, P, n]))
+        self.Tabla.setData(transpose([q, h, P, n]))
         self.Tabla.addRow()
 
     def actualizarPlot(self):

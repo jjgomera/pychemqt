@@ -1414,7 +1414,7 @@ class View_Component(QtWidgets.QDialog):
         nuevo_elemento.append(str(self.CAS_number.text()))
         nuevo_elemento.append(str(self.formula2.text()))
 
-        UNIFAC=self.UNIFAC.getMatrix()
+        UNIFAC=self.UNIFAC.getData()
         nuevo_elemento.append(UNIFAC)
 
         nuevo_elemento.append(self.diametroMolecular.value)

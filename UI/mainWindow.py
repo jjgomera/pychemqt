@@ -30,7 +30,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
 import plots as charts
-from UI.widgets import createAction, ClickableLabel, TreeEquipment, FlowLayout
+from UI.widgets import createAction, ClickableLabel
 from lib.config import (conf_dir, QTSETTING_FILE, setMainWindowConfig,
                         IMAGE_PATH)
 from lib.project import Project
@@ -49,7 +49,8 @@ other_window_names = [cl.__name__ for cl in other_window]
 
 
 class TabWidget(QtWidgets.QTabWidget):
-    """Customize an empty tabwidget to show a welcome and information message"""
+    """Custom QTableWidget to populate a empty page with a welcome and
+    information message"""
     def paintEvent(self, event):
         if self.count():
             QtWidgets.QTabWidget.paintEvent(self, event)
@@ -72,6 +73,161 @@ You can start by creating a new project or opening an existing project.""",
                 None)
             rect.setLeft(150)
             painter.drawText(rect, QtCore.Qt.AlignVCenter, txt)
+
+
+class TreeEquipment(QtWidgets.QTreeWidget):
+    """Custom QTrreWidget to list the equipment and stream from the active
+    project"""
+
+    def __init__(self, parent=None):
+        super(TreeEquipment, self).__init__(parent)
+        self.setIconSize(QtCore.QSize(30, 30))
+        self.headerItem().setHidden(True)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+    def updateList(self, items):
+        self.clear()
+        self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
+        self.Stream.setText(
+            0, QtWidgets.QApplication.translate("pychemqt", "Streams"))
+        self.Stream.setExpanded(True)
+        self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
+        self.Equipment.setText(
+            0, QtWidgets.QApplication.translate("pychemqt", "Equipments"))
+        self.Equipment.setExpanded(True)
+
+        ins = []
+        outs = []
+        for stream in items["in"]:
+            for stream in items["in"][stream].down:
+                ins.append(stream.id)
+        for stream in items["out"]:
+            for stream in items["out"][stream].up:
+                outs.append(stream.id)
+
+        for key in sorted(items["stream"].keys()):
+            id = items["stream"][key].id
+            if id in ins:
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 1)
+                item.setText(0, str(id))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "in.svg"))))
+            elif id in outs:
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 2)
+                item.setText(0, str(id))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "out.svg"))))
+            else:
+                item = QtWidgets.QTreeWidgetItem(self.Stream, 3)
+                item.setText(0, str(id))
+                item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                    os.environ["pychemqt"] +
+                    os.path.join("images", "equipment", "stream.png"))))
+
+        for equipment in items["equip"]:
+            item = QtWidgets.QTreeWidgetItem(self.Equipment, 4)
+            item.setText(0, "%i - %s" % (
+                items["equip"][equipment].id, items["equip"][equipment].name))
+            item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
+                items["equip"][equipment].imagen)))
+
+
+class FlowLayout(QtWidgets.QLayout):
+    def __init__(self, margin=0, spacing=0, parent=None):
+        super(FlowLayout, self).__init__(parent)
+
+        if parent is not None:
+            self.setMargin(margin)
+
+        self.setSpacing(spacing)
+
+        self.itemList = []
+
+    def __del__(self):
+        item = self.takeAt(0)
+        while item:
+            item = self.takeAt(0)
+
+    def addItem(self, item):
+        self.itemList.append(item)
+
+    def count(self):
+        return len(self.itemList)
+
+    def itemAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList[index]
+
+        return None
+
+    def takeAt(self, index):
+        if index >= 0 and index < len(self.itemList):
+            return self.itemList.pop(index)
+
+        return None
+
+    def expandingDirections(self):
+        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        height = self.doLayout(QtCore.QRect(0, 0, width, 0), True)
+        return height
+
+    def setGeometry(self, rect):
+        super(FlowLayout, self).setGeometry(rect)
+        self.doLayout(rect, False)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        size = QtCore.QSize()
+
+        for item in self.itemList:
+            size = size.expandedTo(item.minimumSize())
+
+        size = QtCore.QSize(
+            size.width() + self.contentsMargins().left() +
+            self.contentsMargins().right(),
+            size.height() + self.contentsMargins().bottom() +
+            self.contentsMargins().top())
+        return size
+
+    def doLayout(self, rect, testOnly):
+        x = rect.x()
+        y = rect.y()
+        lineHeight = 0
+
+        for item in self.itemList:
+            wid = item.widget()
+            spaceX = self.spacing() + wid.style().layoutSpacing(
+                QtWidgets.QSizePolicy.PushButton,
+                QtWidgets.QSizePolicy.PushButton,
+                QtCore.Qt.Horizontal)*self.spacing()
+            spaceY = self.spacing() + wid.style().layoutSpacing(
+                QtWidgets.QSizePolicy.PushButton,
+                QtWidgets.QSizePolicy.PushButton,
+                QtCore.Qt.Vertical)*self.spacing()
+            nextX = x + item.sizeHint().width() + spaceX
+            if nextX - spaceX > rect.right() and lineHeight > 0:
+                x = rect.x()
+                y = y + lineHeight + spaceY
+                nextX = x + item.sizeHint().width() + spaceX
+                lineHeight = 0
+
+            if not testOnly:
+                item.setGeometry(QtCore.QRect(
+                    QtCore.QPoint(x, y), item.sizeHint()))
+
+            x = nextX
+            lineHeight = max(lineHeight, item.sizeHint().height())
+
+        return y + lineHeight - rect.y()
 
 
 class UI_pychemqt(QtWidgets.QMainWindow):

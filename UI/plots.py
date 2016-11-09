@@ -72,7 +72,7 @@ class Binary_distillation(QtWidgets.QDialog):
         self.plot.axes2D.clear()
         self.plot.data([0, 1], [0, 1], x, y, 'ro')
 
-        self.tabla.setMatrix(transpose([x, y]))
+        self.tabla.setData(transpose([x, y]))
 
     def calculo(self):
         ind1=self.Comp1.currentIndex()

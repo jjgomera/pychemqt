@@ -886,7 +886,7 @@ class SolidDefinition(QtWidgets.QWidget):
     def botonGenerar_clicked(self):
         dialog = SolidDistribution(self)
         if dialog.exec_():
-            self.distribucionTamanos.setMatrix(dialog.matriz)
+            self.distribucionTamanos.setData(dialog.matriz)
 
     def calculo(self, key=None, value=None, **kw):
         if key:

@@ -124,7 +124,7 @@ class UI_equipment(UI_equip):
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
             verticalHeader=False, orientacion=QtCore.Qt.AlignLeft,
-            num=False, delegateforRow=TableDelegate, parent=self)
+            delegate=None, delegateforRow=TableDelegate, parent=self)
         self.datamap.setEnabled(False)
         self.datamap.cellChanged.connect(self.cellChanged)
         self.datamap.rowFinished.connect(self.addRow)
