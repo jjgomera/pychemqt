@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-import logging
 import os
 import random
 
@@ -80,7 +79,8 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
     else:
         coma = "."
 
-    if -10**tol > float or (-10**-tol < float < 10**-tol and float != 0) or float > 10**tol:
+    if -10**tol > float or (-10**-tol < float < 10**-tol and float != 0) or \
+            float > 10**tol:
         format = 2
     if float == 0:
         decimales = 1
@@ -250,7 +250,7 @@ def formatLine(config, section, name):
     format["ls"] = config.get(section, name+"lineStyle")
     format["lw"] = config.getfloat(section, name+"lineWidth")
     format["color"] = config.get(section, name+"Color")
-    format["alpha"] = config.get(section, name+"alpha")/255
+    format["alpha"] = config.getfloat(section, name+"alpha")/255
 
     format["marker"] = config.get(section, name+"marker")
     format["ms"] = config.getfloat(section, name+"markersize")
