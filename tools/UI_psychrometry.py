@@ -53,6 +53,7 @@ class PsychroPlot(mpl):
     def __init__(self, *args, **kwargs):
         mpl.__init__(self, *args, **kwargs)
         self.notes = []
+        self.state = None
 
     def config(self, chart=True):
         self.ax.set_autoscale_on(False)
@@ -82,6 +83,17 @@ class PsychroPlot(mpl):
 
         self.lx = self.ax.axhline(color='b')  # the horiz line
         self.ly = self.ax.axvline(color='b')  # the vert line
+
+    def createCrux(self, state, chart):
+        """Update horizontal and vertical lines to show click point"""
+        self.state = state
+        if chart:
+            self.lx.set_ydata(state.w)
+            self.ly.set_xdata(state.tdb.config())
+        else:
+            self.lx.set_ydata(state.tdb.config())
+            self.ly.set_xdata(state.w)
+        self.showPointData(state, chart)
 
     def showPointData(self, state, chart=True):
         """Update data of current cursor point in plot annotates"""
@@ -267,7 +279,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         layout.addWidget(self.plt, 1, 3, 2, 2)
 
         self.inputs = PsychroInput()
-        self.inputs.stateChanged.connect(self.createCrux)
+        self.inputs.stateChanged.connect(self.plt.createCrux)
         self.inputs.pressureChanged.connect(self.plot)
         layout.addWidget(self.inputs, 1, 1, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
@@ -294,9 +306,15 @@ class UI_Psychrometry(QtWidgets.QDialog):
             os.environ["pychemqt"] +
             os.path.join("images", "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
-        btBox.addButton(butonPNG, QtWidgets.QDialogButtonBox.AcceptRole)
+        butonPNG.clicked.connect(self.savePNG)
+        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "configure.png")),
+            QtWidgets.QApplication.translate("pychemqt", "Configure"))
+        butonConfig.clicked.connect(self.configure)
         btBox.rejected.connect(self.reject)
-        btBox.accepted.connect(self.savePNG)
+        btBox.layout().insertWidget(0, butonPNG)
+        btBox.layout().insertWidget(0, butonConfig)
         layout.addWidget(btBox, 3, 4)
 
         self.showToolBar(False)
@@ -317,6 +335,14 @@ class UI_Psychrometry(QtWidgets.QDialog):
             if fname.split(".")[-1] != "png":
                 fname += ".png"
             self.plt.fig.savefig(fname, facecolor='#eeeeee')
+
+    def configure(self):
+        from UI.prefPsychrometric import Dialog
+        dlg = Dialog(self.Preferences)
+        if dlg.exec_():
+            self.Preferences = dlg.value(self.Preferences)
+            self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
+            self.plot()
 
     def showToolBar(self, checked):
         """Show/Hide left toolbar with additional funcionality"""
@@ -370,8 +396,10 @@ class UI_Psychrometry(QtWidgets.QDialog):
 
     def plot(self):
         """Plot chart"""
+        self.plt.clearPointData()
         self.plt.ax.clear()
-        self.plt.config(self.Preferences.getboolean("Psychr", "chart"))
+        chart = self.Preferences.getboolean("Psychr", "chart")
+        self.plt.config(chart)
         filename = conf_dir+"%s_%i.pkl" % (
             PsychroState().__class__.__name__, self.inputs.P.value)
         if os.path.isfile(filename):
@@ -392,11 +420,11 @@ class UI_Psychrometry(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Plotting..."))
         QtWidgets.QApplication.processEvents()
 
-
+        # Saturation line
         t = [Temperature(ti).config() for ti in data["t"]]
         Hs = data["Hs"]
         format = formatLine(self.Preferences, "Psychr", "saturation")
-        if self.Preferences.getboolean("Psychr", "chart"):
+        if chart:
             self.plt.plot(t, Hs, **format)
         else:
             self.plt.plot(Hs, t, **format)
@@ -405,7 +433,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         # vertical in mollier diagram
         format = formatLine(self.Preferences, "Psychr", "isotdb")
         for i, T in enumerate(t):
-            if self.Preferences.getboolean("Psychr", "chart"):
+            if chart:
                 self.plt.plot([T, T], [0, Hs[i]], **format)
             else:
                 self.plt.plot([0, Hs[i]], [T, T], **format)
@@ -417,7 +445,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         tm = Temperature(self.Preferences.getfloat("Psychr", "isotdbEnd"))
         format = formatLine(self.Preferences, "Psychr", "isow")
         for i, H in enumerate(H):
-            if self.Preferences.getboolean("Psychr", "chart"):
+            if chart:
                 self.plt.plot([th[i], tm.config()], [H, H], **format)
             else:
                 self.plt.plot([H, H], [th[i], tm.config()], **format)
@@ -425,7 +453,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         # Iso relative humidity lines
         format = formatLine(self.Preferences, "Psychr", "isohr")
         for Hr, H0 in list(data["Hr"].items()):
-            if self.Preferences.getboolean("Psychr", "chart"):
+            if chart:
                 self.plt.plot(t, H0, **format)
                 self.drawlabel("isohr", t, H0, Hr, "%")
             else:
@@ -437,7 +465,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         for T, (H, Tw) in list(data["Twb"].items()):
             value = Temperature(T).config()
             txt = Temperature.text()
-            if self.Preferences.getboolean("Psychr", "chart"):
+            if chart:
                 self.plt.plot(Tw, H, **format)
                 self.drawlabel("isotwb", Tw, H, value, txt)
             else:
@@ -449,13 +477,15 @@ class UI_Psychrometry(QtWidgets.QDialog):
         for v, (Td, H) in list(data["v"].items()):
             value = SpecificVolume(v).config()
             txt = SpecificVolume.text()
-            if self.Preferences.getboolean("Psychr", "chart"):
+            if chart:
                 self.plt.plot(Td, H, **format)
                 self.drawlabel("isochor", Td, H, value, txt)
             else:
                 self.plt.plot(H, Td, **format)
                 self.drawlabel("isochor", H, Td, value, txt)
 
+        if self.plt.state:
+            self.plt.createCrux(self.plt.state, chart)
         self.plt.draw()
         self.status.setText("%s %s" % (
             QtWidgets.QApplication.translate("pychemqt", "Using"),
@@ -464,13 +494,14 @@ class UI_Psychrometry(QtWidgets.QDialog):
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
         if event.xdata and event.ydata:
-            if self.Preferences.getboolean("Psychr", "chart"):
+            chart = self.Preferences.getboolean("Psychr", "chart")
+            if chart:
                 state = self.createState(event.xdata, event.ydata)
             else:
                 state = self.createState(event.ydata, event.xdata)
             if state.w <= state.ws:
                 self.inputs.setState(state)
-                self.createCrux(state)
+                self.plt.createCrux(state, chart)
             else:
                 self.plt.clearPointData()
 
@@ -479,17 +510,6 @@ class UI_Psychrometry(QtWidgets.QDialog):
         tdb = Temperature(x, "conf")
         punto = PsychroState(P=self.inputs.P.value, tdb=tdb, w=y)
         return punto
-
-    def createCrux(self, state):
-        """Update horizontal and vertical lines to show click point"""
-        if self.Preferences.getboolean("Psychr", "chart"):
-            self.plt.lx.set_ydata(state.w)
-            self.plt.ly.set_xdata(state.tdb.config())
-        else:
-            self.plt.lx.set_ydata(state.tdb.config())
-            self.plt.ly.set_xdata(state.w)
-        chart = self.Preferences.getboolean("Psychr", "chart")
-        self.plt.showPointData(state, chart)
 
     def setProgressValue(self, value):
         self.progressBar.setValue(value)
