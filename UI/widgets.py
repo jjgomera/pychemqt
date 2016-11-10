@@ -45,9 +45,9 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from lib import config
-from lib.utilities import representacion
+from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
+from lib.utilities import representacion
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 
@@ -175,7 +175,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.showNull = showNull
 
         Config = ConfigParser()
-        Config.read(config.conf_dir+"pychemqtrc")
+        Config.read(conf_dir+"pychemqtrc")
         if colorReadOnly:
             self.colorReadOnly = colorReadOnly
         else:
@@ -340,10 +340,10 @@ class Entrada_con_unidades(QtWidgets.QWidget):
     def setToolTip(self):
         """Define the tooltip with the values in confguration"""
         Preferences = ConfigParser()
-        Preferences.read(config.conf_dir+"pychemqtrc")
+        Preferences.read(conf_dir+"pychemqtrc")
         if Preferences.getboolean("Tooltip", "Show"):
             Config = ConfigParser()
-            Config.read(config.conf_dir+"pychemqtrc")
+            Config.read(conf_dir+"pychemqtrc")
             try:
                 lista = eval(Config.get('Tooltip', self.magnitud))
             except:
@@ -512,7 +512,7 @@ class Tabla(QtWidgets.QTableWidget):
             self.setItemDelegateForRow(row, delegate)
 
         Config = ConfigParser()
-        Config.read(config.conf_dir+"pychemqtrc")
+        Config.read(conf_dir+"pychemqtrc")
         inactivo = QtGui.QColor(Config.get("General", 'Color_ReadOnly'))
         for j in range(self.columnCount()):
             self.setItem(row, j, QtWidgets.QTableWidgetItem(data[j]))
@@ -1133,7 +1133,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
         tip = text
     action = QtWidgets.QAction(text, parent)
     if icon:
-        action.setIcon(QtGui.QIcon(config.IMAGE_PATH + icon))
+        action.setIcon(QtGui.QIcon(IMAGE_PATH + icon))
     if shortcut:
         action.setShortcut(shortcut)
     action.setToolTip(tip)
@@ -1146,7 +1146,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
     if button:
         boton = DragButton(parent)
 
-        boton.setIcon(QtGui.QIcon(QtGui.QPixmap(config.IMAGE_PATH + icon)))
+        boton.setIcon(QtGui.QIcon(QtGui.QPixmap(IMAGE_PATH + icon)))
         boton.setToolTip(tip)
         boton.setStatusTip(tip)
         if slot:
