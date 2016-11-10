@@ -479,7 +479,7 @@ class Tabla(QtWidgets.QTableWidget):
             self.cellChanged.connect(self.tabla_cellChanged)
         self.dinamica = dinamica
 
-#        self.setAlternatingRowColors(True)
+        # self.setAlternatingRowColors(True)
         self.setGridStyle(QtCore.Qt.DotLine)
         self.orientacion = orientacion
         for i in range(filas):
@@ -682,11 +682,12 @@ class ColorSelector(QtWidgets.QWidget):
         color = QtGui.QColor(r, g, b, alpha)
         self.setColor(color)
 
-    def setColor(self, color):
+    def setColor(self, color, alpha=255):
         """Set new color value and update text and button color"""
         # Accept color args as a #rgb string too
         if type(color) == str:
             color = QtGui.QColor(color)
+            color.setAlpha(alpha)
         self.color = color
         self.button.setStyleSheet("background: %s;" % color.name(self.isAlpha))
         self.RGB.setText(color.name(self.isAlpha))
@@ -844,47 +845,125 @@ class LineConfig(QtWidgets.QGroupBox):
         super(LineConfig, self).__init__(title, parent)
         self.conf = confSection
 
-        layout = QtWidgets.QHBoxLayout(self)
-        self.Grosor = QtWidgets.QDoubleSpinBox()
-        self.Grosor.setFixedWidth(60)
-        self.Grosor.setAlignment(QtCore.Qt.AlignRight)
-        self.Grosor.setRange(0.1, 5)
-        self.Grosor.setDecimals(1)
-        self.Grosor.setSingleStep(0.1)
-        layout.addWidget(self.Grosor)
-        self.Linea = LineStyleCombo()
-        layout.addWidget(self.Linea)
-        self.Marca = MarkerCombo()
-        layout.addWidget(self.Marca)
-        self.ColorButton = ColorSelector()
-        layout.addWidget(self.ColorButton)
-        layout.addItem(QtWidgets.QSpacerItem(
+        layout = QtWidgets.QVBoxLayout(self)
+        lyt1 = QtWidgets.QHBoxLayout()
+        self.Width = QtWidgets.QDoubleSpinBox()
+        self.Width.setFixedWidth(60)
+        self.Width.setAlignment(QtCore.Qt.AlignRight)
+        self.Width.setRange(0.1, 5)
+        self.Width.setDecimals(1)
+        self.Width.setSingleStep(0.1)
+        self.Width.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Line width"))
+        lyt1.addWidget(self.Width)
+        self.Style = LineStyleCombo()
+        self.Style.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Line style"))
+        lyt1.addWidget(self.Style)
+        self.Color = ColorSelector(isAlpha=True)
+        self.Color.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Line color"))
+        lyt1.addWidget(self.Color)
+        self.Marker = MarkerCombo()
+        self.Marker.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Line marker"))
+        self.Marker.currentIndexChanged.connect(self.changeMarker)
+        lyt1.addWidget(self.Marker)
+        lyt1.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Fixed))
+        layout.addLayout(lyt1)
 
         # TODO: Add support for other properties of line:
         #     alpha
         #     markersize, markerfacecolor, markeredgewidth, markeredgecolor
+        lyt2 = QtWidgets.QHBoxLayout()
+        self.MarkerSize = QtWidgets.QDoubleSpinBox()
+        self.MarkerSize.setFixedWidth(60)
+        self.MarkerSize.setAlignment(QtCore.Qt.AlignRight)
+        self.MarkerSize.setRange(0.1, 5)
+        self.MarkerSize.setDecimals(1)
+        self.MarkerSize.setSingleStep(0.1)
+        self.MarkerSize.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Marker size"))
+        lyt2.addWidget(self.MarkerSize)
+        self.MarkerColor = ColorSelector()
+        self.MarkerColor.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Marker face color"))
+        lyt2.addWidget(self.MarkerColor)
+        self.EdgeSize = QtWidgets.QDoubleSpinBox()
+        self.EdgeSize.setFixedWidth(60)
+        self.EdgeSize.setAlignment(QtCore.Qt.AlignRight)
+        self.EdgeSize.setRange(0.1, 5)
+        self.EdgeSize.setDecimals(1)
+        self.EdgeSize.setSingleStep(0.1)
+        self.EdgeSize.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Marker edge width"))
+        lyt2.addWidget(self.EdgeSize)
+        self.EdgeColor = ColorSelector()
+        self.EdgeColor.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Marker edge color"))
+        lyt2.addWidget(self.EdgeColor)
+        layout.addLayout(lyt2)
+
+    def changeMarker(self, index):
+        self.MarkerSize.setVisible(index)
+        self.MarkerColor.setVisible(index)
+        self.EdgeSize.setVisible(index)
+        self.EdgeColor.setVisible(index)
 
     def setConfig(self, config, section="MEOS"):
-        self.ColorButton.setColor(config.get(section, self.conf+'Color'))
-        self.Grosor.setValue(config.getfloat(section, self.conf+'lineWidth'))
-        self.Linea.setCurrentValue(config.get(section, self.conf+'lineStyle'))
-        self.Marca.setCurrentValue(config.get(section, self.conf+'marker'))
+        # Remove in next version release, for now raise a Deprecation Warning
+        if config.has_option(section, self.conf+"alpha"):
+            alfa = config.get(section, self.conf+"alpha")
+            self.MarkerSize.setValue(config.getfloat(
+                section, self.conf+'markersize'))
+            self.MarkerColor.setColor(config.get(
+                section, self.conf+'markerfacecolor'), alfa)
+            self.EdgeSize.setValue(config.getfloat(
+                section, self.conf+'markeredgewidth'))
+            self.EdgeColor.setColor(config.get(
+                section, self.conf+'markeredgecolor'), alfa)
+        else:
+            alfa = 255
+            self.MarkerSize.setValue(3)
+            self.MarkerColor.setColor("#ff0000", alfa)
+            self.EdgeSize.setValue(1)
+            self.EdgeColor.setColor("#000000", alfa)
+
+        self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
+        self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
+        self.Style.setCurrentValue(config.get(section, self.conf+'lineStyle'))
+        self.Marker.setCurrentValue(config.get(section, self.conf+'marker'))
 
     def value(self, config, section="MEOS"):
-        config.set(section, self.conf+"Color", self.ColorButton.color.name())
-        config.set(section, self.conf+"lineWidth", str(self.Grosor.value()))
-        config.set(section, self.conf+"lineStyle", self.Linea.currentValue())
-        config.set(section, self.conf+"marker", self.Marca.currentValue())
+        config.set(section, self.conf+"Color", self.Color.color.name())
+        config.set(section, self.conf+"alpha", self.Color.color.alpha())
+        config.set(section, self.conf+"lineWidth", str(self.Width.value()))
+        config.set(section, self.conf+"lineStyle", self.Style.currentValue())
+        config.set(section, self.conf+"marker", self.Marker.currentValue())
+        config.set(section, self.conf+"markersize",
+                   str(self.MarkerSize.value()))
+        config.set(section, self.conf+"markerfacecolor",
+                   self.MarkerColor.color.name())
+        config.set(section, self.conf+"markeredgewidth",
+                   str(self.EdgeSize.value()))
+        config.set(section, self.conf+"markeredgecolor",
+                   self.EdgeColor.color.name())
+
         return config
 
     @classmethod
     def default(cls, config, confSection, section="MEOS"):
         config.set(section, confSection+"Color", "#000000")
+        config.set(section, confSection+"alpha", 255)
         config.set(section, confSection+"lineWidth", "0.5")
         config.set(section, confSection+"lineStyle", "-")
         config.set(section, confSection+"marker", "None")
+        config.set(section, confSection+"markersize", 3)
+        config.set(section, confSection+"markerfacecolor", "#ff0000")
+        config.set(section, confSection+"markeredgewidth", 1)
+        config.set(section, confSection+"markeredgecolor", "#000000")
         return config
 
 

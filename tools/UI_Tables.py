@@ -78,7 +78,7 @@ from matplotlib.font_manager import FontProperties
 
 from lib import meos, mEoS, unidades, plot, config
 from lib.thermo import ThermoAdvanced
-from lib.utilities import representacion, exportTable
+from lib.utilities import representacion, exportTable, formatLine
 from tools.codeEditor import SimplePythonEditor
 from tools.UI_Preferences import NumericFactor
 from UI.delegate import CheckEditor
@@ -4472,12 +4472,7 @@ def getLineFormat(Preferences, name):
     """get matplotlib line format from preferences
         Preferences: configparser instance with pycheqmt preferences
         name: name of isoline"""
-    format = {}
-    format["ls"] = Preferences.get("MEOS", name+"lineStyle")
-    format["lw"] = Preferences.getfloat("MEOS", name+"lineWidth")
-    format["color"] = Preferences.get("MEOS", name+"Color")
-    format["marker"] = Preferences.get("MEOS", name+"marker")
-    format["ms"] = 3
+    format = formatLine(Prefernces, "MEOS", name)
 
     # Anotation
     if name != "saturation":

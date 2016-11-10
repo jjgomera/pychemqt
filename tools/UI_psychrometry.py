@@ -40,6 +40,7 @@ from lib.config import conf_dir
 from lib.plot import mpl
 from lib.unidades import (Temperature, Pressure, Length, Mass,
                           SpecificVolume, Enthalpy)
+from lib.utilities import formatLine
 from UI.widgets import Entrada_con_unidades
 
 
@@ -391,54 +392,38 @@ class UI_Psychrometry(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Plotting..."))
         QtWidgets.QApplication.processEvents()
 
-        tm = Temperature(self.Preferences.getfloat("Psychr", "isotdbEnd"))
 
         t = [Temperature(ti).config() for ti in data["t"]]
         Hs = data["Hs"]
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "saturationlineStyle")
-        format["lw"] = self.Preferences.getfloat(
-            "Psychr", "saturationlineWidth")
-        format["color"] = self.Preferences.get("Psychr", "saturationColor")
-        format["marker"] = self.Preferences.get("Psychr", "saturationmarker")
-        format["markersize"] = 3
+        format = formatLine(self.Preferences, "Psychr", "saturation")
         if self.Preferences.getboolean("Psychr", "chart"):
             self.plt.plot(t, Hs, **format)
         else:
             self.plt.plot(Hs, t, **format)
 
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "isotdblineStyle")
-        format["lw"] = self.Preferences.getfloat("Psychr", "isotdblineWidth")
-        format["color"] = self.Preferences.get("Psychr", "isotdbColor")
-        format["marker"] = self.Preferences.get("Psychr", "isotdbmarker")
-        format["markersize"] = 3
+        # Iso dew bulb temperaure lines, vertial lines in normal h-Tdb plot,
+        # vertical in mollier diagram
+        format = formatLine(self.Preferences, "Psychr", "isotdb")
         for i, T in enumerate(t):
             if self.Preferences.getboolean("Psychr", "chart"):
                 self.plt.plot([T, T], [0, Hs[i]], **format)
             else:
                 self.plt.plot([0, Hs[i]], [T, T], **format)
 
+        # Iso humidity lines, horizontal lines in normal h-Tdb plot, vertical
+        # in mollier diagram
         H = data["H"]
         th = data["th"]
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "isowlineStyle")
-        format["lw"] = self.Preferences.getfloat("Psychr", "isowlineWidth")
-        format["color"] = self.Preferences.get("Psychr", "isowColor")
-        format["marker"] = self.Preferences.get("Psychr", "isowmarker")
-        format["markersize"] = 3
+        tm = Temperature(self.Preferences.getfloat("Psychr", "isotdbEnd"))
+        format = formatLine(self.Preferences, "Psychr", "isow")
         for i, H in enumerate(H):
             if self.Preferences.getboolean("Psychr", "chart"):
                 self.plt.plot([th[i], tm.config()], [H, H], **format)
             else:
                 self.plt.plot([H, H], [th[i], tm.config()], **format)
 
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "isohrlineStyle")
-        format["lw"] = self.Preferences.getfloat("Psychr", "isohrlineWidth")
-        format["color"] = self.Preferences.get("Psychr", "isohrColor")
-        format["marker"] = self.Preferences.get("Psychr", "isohrmarker")
-        format["markersize"] = 3
+        # Iso relative humidity lines
+        format = formatLine(self.Preferences, "Psychr", "isohr")
         for Hr, H0 in list(data["Hr"].items()):
             if self.Preferences.getboolean("Psychr", "chart"):
                 self.plt.plot(t, H0, **format)
@@ -447,12 +432,8 @@ class UI_Psychrometry(QtWidgets.QDialog):
                 self.plt.plot(H0, t, **format)
                 self.drawlabel("isohr", H0, t, Hr, "%")
 
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "isotwblineStyle")
-        format["lw"] = self.Preferences.getfloat("Psychr", "isotwblineWidth")
-        format["color"] = self.Preferences.get("Psychr", "isotwbColor")
-        format["marker"] = self.Preferences.get("Psychr", "isotwbmarker")
-        format["markersize"] = 3
+        # Iso wet bulb temperature lines
+        format = formatLine(self.Preferences, "Psychr", "isotwb")
         for T, (H, Tw) in list(data["Twb"].items()):
             value = Temperature(T).config()
             txt = Temperature.text()
@@ -463,12 +444,8 @@ class UI_Psychrometry(QtWidgets.QDialog):
                 self.plt.plot(H, Tw, **format)
                 self.drawlabel("isotwb", H, Tw, value, txt)
 
-        format = {}
-        format["ls"] = self.Preferences.get("Psychr", "isochorlineStyle")
-        format["lw"] = self.Preferences.getfloat("Psychr", "isochorlineWidth")
-        format["color"] = self.Preferences.get("Psychr", "isochorColor")
-        format["marker"] = self.Preferences.get("Psychr", "isochormarker")
-        format["markersize"] = 3
+        # Isochor lines
+        format = formatLine(self.Preferences, "Psychr", "isochor")
         for v, (Td, H) in list(data["v"].items()):
             value = SpecificVolume(v).config()
             txt = SpecificVolume.text()

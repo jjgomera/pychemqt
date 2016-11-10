@@ -194,6 +194,10 @@ def Preferences():
     config.set("MEOS", "saturation"+"lineWidth", "1.0")
     config.set("MEOS", "saturation"+"lineStyle", "-")
     config.set("MEOS", "saturation"+"marker", "None")
+    config.set("MEOS", "saturation"+"markersize", 3)
+    config.set("MEOS", "saturation"+"markerfacecolor", "#ff0000")
+    config.set("MEOS", "saturation"+"markeredgewidth", 1)
+    config.set("MEOS", "saturation"+"markeredgecolor", "#000000")
     config.set("MEOS", "grid", "False")
     config.set("MEOS", "definition", "1")
     lineas = ["Isotherm", "Isobar", "Isoenthalpic", "Isoentropic", "Isochor",
@@ -210,6 +214,10 @@ def Preferences():
         config.set("MEOS", linea+"lineWidth", "0.5")
         config.set("MEOS", linea+"lineStyle", "-")
         config.set("MEOS", linea+"marker", "None")
+        config.set("MEOS", linea+"markersize", 3)
+        config.set("MEOS", linea+"markerfacecolor", "#ff0000")
+        config.set("MEOS", linea+"markeredgewidth", 1)
+        config.set("MEOS", linea+"markeredgecolor", "#000000")
 
         config.set("MEOS", linea+"Label", "False")
         config.set("MEOS", linea+"Variable", "False")
@@ -226,23 +234,27 @@ def Preferences():
     config.set("Psychr", "saturation"+"lineWidth", "0.5")
     config.set("Psychr", "saturation"+"lineStyle", "-")
     config.set("Psychr", "saturation"+"marker", "None")
+    config.set("Psychr", "saturation"+"markersize", 3)
+    config.set("Psychr", "saturation"+"markerfacecolor", "#ff0000")
+    config.set("Psychr", "saturation"+"markeredgewidth", 1)
+    config.set("Psychr", "saturation"+"markeredgecolor", "#000000")
     lineas = ["IsoTdb", "IsoW", "IsoHR", "IsoTwb", "Isochor"]
     values = [
         {"start": 274.0, "end": 330.0, "step": 1.0, "color": "#000000",
-         "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
-         "position": 50},
+         "linewidth": 0.5, "linestyle": ":", "label": "False",
+         "units": "False", "position": 50},
         {"start": 0.0, "end": 0.04, "step": 0.001, "color": "#000000",
-         "linewidth": 0.5, "linestyle": ":", "label": "False", "units": "False",
-         "position": 50},
+         "linewidth": 0.5, "linestyle": ":", "label": "False",
+         "units": "False", "position": 50},
         {"start": 10.0, "end": 100.0, "step": 10.0, "color": "#000000",
-         "linewidth": 0.5, "linestyle": "--", "label": "True", "units": "True",
-         "position": 85},
+         "linewidth": 0.5, "linestyle": "--", "label": "True",
+         "units": "True", "position": 85},
         {"start": 250.0, "end": 320.0, "step": 1.0, "color": "#aa0000",
-         "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
-         "position": 90},
+         "linewidth": 0.8, "linestyle": ":", "label": "False",
+         "units": "False", "position": 90},
         {"start": 0.8, "end": 1.0, "step": 0.01, "color": "#00aa00",
-         "linewidth": 0.8, "linestyle": ":", "label": "False", "units": "False",
-         "position": 90}]
+         "linewidth": 0.8, "linestyle": ":", "label": "False",
+         "units": "False", "position": 90}]
     for linea, value in zip(lineas, values):
         config.set("Psychr", linea+"Start", str(value["start"]))
         config.set("Psychr", linea+"End", str(value["end"]))
@@ -253,6 +265,10 @@ def Preferences():
         config.set("Psychr", linea+"lineWidth", str(value["linewidth"]))
         config.set("Psychr", linea+"lineStyle", str(value["linestyle"]))
         config.set("Psychr", linea+"marker", "None")
+        config.set("Psychr", linea+"markersize", 3)
+        config.set("Psychr", linea+"markerfacecolor", "#ff0000")
+        config.set("Psychr", linea+"markeredgewidth", 1)
+        config.set("Psychr", linea+"markeredgecolor", "#000000")
         config.set("Psychr", linea+"Label", str(value["label"]))
         config.set("Psychr", linea+"Units", str(value["units"]))
         config.set("Psychr", linea+"Position", str(value["position"]))

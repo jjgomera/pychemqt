@@ -24,11 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - representacion: Function for string representation of float values
 #   - colors: Function to generate colors
 #   - exportTable; Save data to a file
+#   - formatLine: Return a matplotlib line formatting kw
 ###############################################################################
 
 
-import random
+import logging
 import os
+import random
 
 from PyQt5.QtWidgets import QApplication
 
@@ -236,6 +238,37 @@ def spreadsheetColumn(index):
         index = index // 26
         letters += chr(mod + 64)
     return "".join(reversed(letters))
+
+
+def formatLine(config, section, name):
+    """Return a matplotlib line formatting kw
+        config: Configparser instance
+        section: Section name in Configparser
+        name: Line name prefix
+    """
+    format = {}
+    format["ls"] = config.get(section, name+"lineStyle")
+    format["lw"] = config.getfloat(section, name+"lineWidth")
+    format["color"] = config.get(section, name+"Color")
+    format["marker"] = config.get(section, name+"marker")
+
+    # Remove in next version release, for now raise a Deprecation Warning
+    if config.has_option(section, name+"alpha"):
+        format["alpha"] = config.get(section, name+"alpha")/255
+        format["ms"] = config.getfloat(section, name+"markersize")
+        format["mfc"] = config.get(section, name+"markerfacecolor")
+        format["mew"] = config.getfloat(section, name+"markeredgewidth")
+        format["mec"] = config.get(section, name+"markeredgecolor")
+    else:
+        format["alpha"] = 1
+        format["ms"] = 3
+        format["mfc"] = "#ff0000"
+        format["mew"] = 1
+        format["mec"] = "#000000"
+        logging.warning("Using some configuration option, run preferences "
+                        "dialog for upgrade your .pychemqtrc")
+
+    return format
 
 
 if __name__ == "__main__":
