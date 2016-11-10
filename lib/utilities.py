@@ -250,23 +250,13 @@ def formatLine(config, section, name):
     format["ls"] = config.get(section, name+"lineStyle")
     format["lw"] = config.getfloat(section, name+"lineWidth")
     format["color"] = config.get(section, name+"Color")
-    format["marker"] = config.get(section, name+"marker")
+    format["alpha"] = config.get(section, name+"alpha")/255
 
-    # Remove in next version release, for now raise a Deprecation Warning
-    if config.has_option(section, name+"alpha"):
-        format["alpha"] = config.get(section, name+"alpha")/255
-        format["ms"] = config.getfloat(section, name+"markersize")
-        format["mfc"] = config.get(section, name+"markerfacecolor")
-        format["mew"] = config.getfloat(section, name+"markeredgewidth")
-        format["mec"] = config.get(section, name+"markeredgecolor")
-    else:
-        format["alpha"] = 1
-        format["ms"] = 3
-        format["mfc"] = "#ff0000"
-        format["mew"] = 1
-        format["mec"] = "#000000"
-        logging.warning("Using some configuration option, run preferences "
-                        "dialog for upgrade your .pychemqtrc")
+    format["marker"] = config.get(section, name+"marker")
+    format["ms"] = config.getfloat(section, name+"markersize")
+    format["mfc"] = config.get(section, name+"markerfacecolor")
+    format["mew"] = config.getfloat(section, name+"markeredgewidth")
+    format["mec"] = config.get(section, name+"markeredgecolor")
 
     return format
 

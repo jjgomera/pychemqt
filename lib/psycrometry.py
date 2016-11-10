@@ -393,18 +393,18 @@ class PsyState(object):
         ("twb", "HR")
         ]
 
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H absoluta, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "H relativa, densidad"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, entalpía"))
-#        self.variables.addItem(QtGui.QApplication.translate("pychemqt", "Tª rocio, densidad"))
+#        QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
+#        QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
+#        QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
+#        QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
+#        QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
+#        QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
+#        QApplication.translate("pychemqt", "H absoluta, entalpía"))
+#        QApplication.translate("pychemqt", "H relativa, entalpía"))
+#        QApplication.translate("pychemqt", "H absoluta, densidad"))
+#        QApplication.translate("pychemqt", "H relativa, densidad"))
+#        QApplication.translate("pychemqt", "Tª rocio, entalpía"))
+#        QApplication.translate("pychemqt", "Tª rocio, densidad"))
 
     def __init__(self, **kwargs):
         self.kwargs = self.__class__.kwargs.copy()
@@ -673,7 +673,8 @@ class PsyIdeal(PsyState):
 
 class PsyVirial(PsyState):
     """Psychrometric state using virial equation of state"""
-    pass
+    def _lib(self):
+        pass
 
 #    def _V_Ideal(self, T, Xa):
 #        """volumen por unidad de masa de aire seco"""

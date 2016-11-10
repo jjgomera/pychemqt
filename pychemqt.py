@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import argparse
+from configparser import ConfigParser
 import logging
 import os
 import shutil
@@ -224,9 +225,28 @@ splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking config files..."))
 
 # Checking config file
+default_Preferences = firstrun.Preferences()
 if not os.path.isfile(conf_dir + "pychemqtrc"):
-    Preferences = firstrun.Preferences()
-    Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+    default_Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+else:
+    # Check Preferences options to find set new options
+    Preferences = ConfigParser()
+    Preferences.read(conf_dir + "pychemqtrc")
+    change = False
+    for section in default_Preferences.sections():
+        if not Preferences.has_section(section):
+            Preferences.add_section(section)
+            change = True
+        for option in default_Preferences.options(section):
+            if not Preferences.has_option(section, option):
+                value = default_Preferences.get(section, option)
+                Preferences.set(section, option, value)
+                change = True
+                logging.warning("Using default configuration option for " +
+                                "%s:%s" % (section, option) +
+                                ", run preferences dialog for configure")
+    if change:
+        default_Preferences.write(open(conf_dir + "pychemqtrc", "w"))
 
 # FIXME: This file might not to be useful but for now I use it to save project
 # configuration data

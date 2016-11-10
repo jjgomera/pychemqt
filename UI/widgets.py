@@ -874,9 +874,6 @@ class LineConfig(QtWidgets.QGroupBox):
             QtWidgets.QSizePolicy.Fixed))
         layout.addLayout(lyt1)
 
-        # TODO: Add support for other properties of line:
-        #     alpha
-        #     markersize, markerfacecolor, markeredgewidth, markeredgecolor
         lyt2 = QtWidgets.QHBoxLayout()
         self.MarkerSize = QtWidgets.QDoubleSpinBox()
         self.MarkerSize.setFixedWidth(60)
@@ -906,6 +903,8 @@ class LineConfig(QtWidgets.QGroupBox):
         lyt2.addWidget(self.EdgeColor)
         layout.addLayout(lyt2)
 
+        self.changeMarker(0)
+
     def changeMarker(self, index):
         self.MarkerSize.setVisible(index)
         self.MarkerColor.setVisible(index)
@@ -913,28 +912,19 @@ class LineConfig(QtWidgets.QGroupBox):
         self.EdgeColor.setVisible(index)
 
     def setConfig(self, config, section="MEOS"):
-        # Remove in next version release, for now raise a Deprecation Warning
-        if config.has_option(section, self.conf+"alpha"):
-            alfa = config.get(section, self.conf+"alpha")
-            self.MarkerSize.setValue(config.getfloat(
-                section, self.conf+'markersize'))
-            self.MarkerColor.setColor(config.get(
-                section, self.conf+'markerfacecolor'), alfa)
-            self.EdgeSize.setValue(config.getfloat(
-                section, self.conf+'markeredgewidth'))
-            self.EdgeColor.setColor(config.get(
-                section, self.conf+'markeredgecolor'), alfa)
-        else:
-            alfa = 255
-            self.MarkerSize.setValue(3)
-            self.MarkerColor.setColor("#ff0000", alfa)
-            self.EdgeSize.setValue(1)
-            self.EdgeColor.setColor("#000000", alfa)
-
+        alfa = config.getfloat(section, self.conf+"alpha")
         self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
         self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
         self.Style.setCurrentValue(config.get(section, self.conf+'lineStyle'))
         self.Marker.setCurrentValue(config.get(section, self.conf+'marker'))
+        self.MarkerSize.setValue(
+            config.getfloat(section, self.conf+'markersize'))
+        self.MarkerColor.setColor(
+            config.get(section, self.conf+'markerfacecolor'), alfa)
+        self.EdgeSize.setValue(
+            config.getfloat(section, self.conf+'markeredgewidth'))
+        self.EdgeColor.setColor(
+            config.get(section, self.conf+'markeredgecolor'), alfa)
 
     def value(self, config, section="MEOS"):
         config.set(section, self.conf+"Color", self.Color.color.name())
