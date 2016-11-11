@@ -311,7 +311,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
             os.environ["pychemqt"] +
             os.path.join("images", "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
-        butonPNG.clicked.connect(self.savePNG)
+        butonPNG.clicked.connect(self.plt.savePNG)
         butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
             os.environ["pychemqt"] +
             os.path.join("images", "button", "configure.png")),
@@ -328,18 +328,6 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.plot()
         logging.info(QtWidgets.QApplication.translate(
             "pychemqt", "Started psychrometric chart tool"))
-
-    def savePNG(self):
-        """Save chart image to png file"""
-        fmt = "Portable Network Graphics (*.png)"
-        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
-            self,
-            QtWidgets.QApplication.translate("pychemqt", "Save chart to file"),
-            "./", fmt)
-        if fname and ext == fmt:
-            if fname.split(".")[-1] != "png":
-                fname += ".png"
-            self.plt.fig.savefig(fname, facecolor='#eeeeee')
 
     def configure(self):
         from UI.prefPsychrometric import Dialog

@@ -65,6 +65,19 @@ class mpl(FigureCanvasQTAgg):
         self.ax.plot(*args, **kwargs)
         self.draw()
 
+    def savePNG(self):
+        """Save chart image to png file"""
+        fmt = "Portable Network Graphics (*.png)"
+        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            QtWidgets.QApplication.translate("pychemqt", "Save chart to file"),
+            "./", fmt)
+        if fname and ext == fmt:
+            if fname.split(".")[-1] != "png":
+                fname += ".png"
+            self.fig.savefig(fname, facecolor='#eeeeee')
+
+
 
 class matplotlib(FigureCanvasQTAgg):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
