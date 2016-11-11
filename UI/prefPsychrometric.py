@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library to configure the psychrometric chart
 #
-#   - ConfPsychrometric: Psychrometric chart configuration
+#   - Widget: Psychrometric chart configuration
+#   - Dialog: Dialog tool for standalone use
 ###############################################################################
 
 import os
@@ -33,8 +34,7 @@ from UI.widgets import LineConfig
 from UI.prefMEOS import Isolinea
 
 
-# class ConfPsychrometric(QtWidgets.QDialog):
-class widget(QtWidgets.QWidget):
+class Widget(QtWidgets.QWidget):
     """Phychrometric chart configuration"""
     lineas = [
         ("IsoTdb", unidades.Temperature,
@@ -54,7 +54,7 @@ class widget(QtWidgets.QWidget):
 
     def __init__(self, config, parent=None):
         """constructor, config optional parameter to input project config"""
-        super(widget, self).__init__(parent)
+        super(Widget, self).__init__(parent)
         lyt = QtWidgets.QGridLayout(self)
         scroll = QtWidgets.QScrollArea()
         lyt.addWidget(scroll)
@@ -156,7 +156,7 @@ class Dialog(QtWidgets.QDialog):
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Define project thermodynamic methods"))
         layout = QtWidgets.QVBoxLayout(self)
-        self.widget = widget(config)
+        self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)

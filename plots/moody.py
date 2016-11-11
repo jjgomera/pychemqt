@@ -85,6 +85,7 @@ class Moody(QtWidgets.QDialog):
         layout = QtWidgets.QGridLayout(self)
         layout.setColumnStretch(3, 1)
         self.plt = mpl(self)
+        self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         layout.addWidget(self.plt, 2, 1, 1, 4)
 
         btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
@@ -130,6 +131,28 @@ class Moody(QtWidgets.QDialog):
         self.plt.fig.text(0.97, 0.5, txt, rotation=90, size='10',
                           va="center", ha="center")
 
+    def click(self, event):
+        """Update input and graph annotate when mouse click over chart"""
+        Re = event.xdata
+        f = event.ydata
+        method = self.Preferences.getint("Moody", "method")
+        fanning = self.Preferences.getboolean("Moody", "fanning")
+        F = f_list[method]
+
+        if Re < 2400:
+            if fanning:
+                f = 16/Re
+            else:
+                f = 64/Re
+        else:
+            f_min = F(Re, 0)
+            if f < f_min:
+                Re = f = 0
+
+        self.plt.lx.set_ydata(f)
+        self.plt.ly.set_xdata(Re)
+        self.plt.draw()
+
     def plot(self):
         """Plot the Moody chart using the indicate method """
         fanning = self.Preferences.getboolean("Moody", "fanning")
@@ -142,6 +165,11 @@ class Moody(QtWidgets.QDialog):
 
         self.plt.ax.set_autoscale_on(False)
         self.plt.ax.clear()
+
+        kw = formatLine(self.Preferences, "Moody", "crux")
+        self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
+        self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
+
         xlabel = QtWidgets.QApplication.translate(
             "pychemqt", "Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
         self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
