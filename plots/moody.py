@@ -23,17 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from configparser import ConfigParser
 import os
 import json
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from scipy import logspace, log10
 from matplotlib.patches import ConnectionPatch
 
-from lib.config import conf_dir, Preferences
+from lib.config import conf_dir
 from lib.friction import f_list
 from lib.plot import mpl
-from lib.utilities import representacion
+from lib.utilities import formatLine, representacion
 from UI.widgets import Entrada_con_unidades
 
 
@@ -42,9 +43,11 @@ Re_turbulent = logspace(log10(2400), 8, 50)
 Re_fully = logspace(log10(4000), 8, 50)
 
 
-def calculate(eD, F):
-    fanning = Preferences.getboolean("Moody", "fanning")
-    method = Preferences.getint("Moody", "method")
+def calculate(config):
+    fanning = config.getboolean("Moody", "fanning")
+    method = config.getint("Moody", "method")
+    eD = eval(config.get("Moody", "eD"))
+    F = f_list[method]
 
     dat = {}
     dat["fanning"] = fanning
@@ -81,36 +84,67 @@ class Moody(QtWidgets.QDialog):
         self.setWindowTitle(self.title)
         layout = QtWidgets.QGridLayout(self)
         layout.setColumnStretch(3, 1)
-        self.diagrama = mpl(self)
-        layout.addWidget(self.diagrama, 2, 1, 1, 4)
+        self.plt = mpl(self)
+        layout.addWidget(self.plt, 2, 1, 1, 4)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self.reject)
-        txt = QtWidgets.QApplication.translate("pychemqt", "Calculate point")
-        self.buttonCalculation = QtWidgets.QPushButton(txt)
-        self.buttonBox.addButton(self.buttonCalculation,
-                                 QtWidgets.QDialogButtonBox.ActionRole)
-        self.buttonCalculation.clicked.connect(self.calculate)
-        layout.addWidget(self.buttonBox, 3, 1, 1, 4)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "image.png")),
+            QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
+        butonPNG.clicked.connect(self.plt.savePNG)
+        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "configure.png")),
+            QtWidgets.QApplication.translate("pychemqt", "Configure"))
+        butonConfig.clicked.connect(self.configure)
+        butonCalculate = QtWidgets.QPushButton(QtGui.QIcon(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "calculator.png")),
+            QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
+        butonCalculate.clicked.connect(self.calculate)
+        btBox.rejected.connect(self.reject)
+        btBox.layout().insertWidget(0, butonPNG)
+        btBox.layout().insertWidget(0, butonCalculate)
+        btBox.layout().insertWidget(0, butonConfig)
+        layout.addWidget(btBox, 3, 1, 1, 4)
 
-        self.__plot()
+        self.Preferences = ConfigParser()
+        self.Preferences.read(conf_dir+"pychemqtrc")
+        self.config()
+        self.plot()
 
-    def __plot(self):
+    def configure(self):
+        from UI.prefMoody import Dialog
+        dlg = Dialog(self.Preferences)
+        if dlg.exec_():
+            self.Preferences = dlg.value(self.Preferences)
+            self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
+            self.plot()
+
+    def config(self):
+        """Initialization action in plot don't neccesary to update in plot"""
+
+        txt = QtWidgets.QApplication.translate(
+            "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
+        self.plt.fig.text(0.97, 0.5, txt, rotation=90, size='10',
+                          va="center", ha="center")
+
+    def plot(self):
         """Plot the Moody chart using the indicate method """
-        fanning = Preferences.getboolean("Moody", "fanning")
-        method = Preferences.getint("Moody", "method")
+        fanning = self.Preferences.getboolean("Moody", "fanning")
+        method = self.Preferences.getint("Moody", "method")
 
         if fanning:
             x = 4
         else:
             x = 1
 
-        self.diagrama.ax.clear()
-        self.diagrama.ax.set_autoscale_on(False)
+        self.plt.ax.set_autoscale_on(False)
+        self.plt.ax.clear()
         xlabel = QtWidgets.QApplication.translate(
             "pychemqt", "Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
-        self.diagrama.ax.set_xlabel(xlabel, ha='center', size='10')
+        self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
         if fanning:
             ylabel = QtWidgets.QApplication.translate(
                 "pychemqt", "Fanning Friction factor")
@@ -119,22 +153,20 @@ class Moody(QtWidgets.QDialog):
             ylabel = QtWidgets.QApplication.translate(
                 "pychemqt", "Darcy Friction factor")
             formula = r"$f_d=\frac{2hDg}{LV^2}$"
-        self.diagrama.ax.set_ylabel(ylabel+",  " + formula, size='10')
-        txt = QtWidgets.QApplication.translate(
-            "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
-        self.diagrama.fig.text(0.97, 0.5, txt, rotation=90, size='10',
-                               va="center", ha="center")
-        self.diagrama.ax.grid(True)
-        self.diagrama.ax.set_xlim(600, 1e8)
-        self.diagrama.ax.set_ylim(0.008/x, 0.11/x)
-        self.diagrama.ax.set_xscale("log")
-        self.diagrama.ax.set_yscale("log")
+        self.plt.ax.set_ylabel(ylabel+",  " + formula, size='10')
+        self.plt.ax.grid(True)
+        self.plt.ax.set_xlim(600, 1e8)
+        self.plt.ax.set_ylim(0.008/x, 0.11/x)
+        self.plt.ax.set_xscale("log")
+        self.plt.ax.set_yscale("log")
+
         xticks = [7e2, 8e2, 9e2, 1e3, 2e3, 3e3, 4e3, 5e3, 6e3, 7e3, 8e3, 9e3,
                   1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4, 8e4, 9e4, 1e5, 2e5, 3e5,
                   4e5, 5e5, 6e5, 7e5, 8e5, 9e5, 1e6, 2e6, 3e6, 4e6, 5e6, 6e6,
                   7e6, 8e6, 9e6, 1e7, 2e7, 3e7, 4e7, 5e7, 6e7, 7e7, 8e7, 9e7]
-        self.diagrama.ax.set_xticks(xticks, minor=False)
-        self.diagrama.ax.set_yticks([], minor=True)
+        self.plt.ax.set_xticks(xticks, minor=False)
+        self.plt.ax.set_yticks([], minor=True)
+
         if fanning:
             yticks = [2e-3, 2.5e-3, 3e-3, 3.5e-3, 4e-3, 5e-3, 6e-3, 7e-3, 8e-3,
                       9e-3, 1e-2, 1.1e-2, 1.2e-2, 1.3e-2, 1.4e-2, 1.5e-2,
@@ -155,94 +187,93 @@ class Moody(QtWidgets.QDialog):
                            "", 2, "", "", "", "", 2.5, "", "", "", "", 3, "",
                            "", "", "", 4, "", "", "", "", 5, "", "", "", "", 6,
                            "", "", "", "", 7, "", 8, "", 9, "", r"$10^{-1}$"]
-        self.diagrama.ax.set_yticks(yticks)
-        self.diagrama.ax.set_yticklabels(ytickslabel)
-
-        eD = [0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 4e-4, 6e-4, 8e-4,
-              .001, .0015, .002, .003, .004, .006, .008, .01, .0125, .015,
-              .0175, .02, .025, .03, .035, .04, .045, .05, .06, .07]
-        F = f_list[method]
+        self.plt.ax.set_yticks(yticks)
+        self.plt.ax.set_yticklabels(ytickslabel)
 
         if not os.path.isfile(conf_dir+"moody.dat"):
-            calculate(eD, F)
+            calculate(self.Preferences)
 
         load = False
         with open(conf_dir+"moody.dat", "r") as file:
             try:
                 dat = json.load(file)
             except ValueError:
-                calculate(eD, F)
+                calculate(self.Preferences)
                 load = True
 
             if dat["fanning"] != fanning or dat["method"] != method:
-                calculate(eD, F)
+                calculate(self.Preferences)
                 load = True
 
-        # Reload file if is create in las with statement
+        # Reload file if it's created in last with statement
         if load:
             with open(conf_dir+"moody.dat", "r") as file:
                 dat = json.load(file)
 
         # Plot data
-        self.diagrama.ax.plot(Re_laminar, dat["laminar"], "k")
+        kw = formatLine(self.Preferences, "Moody", "line")
+        self.plt.ax.plot(Re_laminar, dat["laminar"], **kw)
         for eD, f in dat["turbulent"].items():
-            self.diagrama.ax.plot(Re_turbulent, f, "k")
+            self.plt.ax.plot(Re_turbulent, f, **kw)
             title = " " + representacion(eD, tol=4.5)
             if f[-1] > 0.008/x:
-                self.diagrama.ax.text(1e8, f[-1], title, size="x-small",
-                                      ha='left', va='center')
-        # self.diagrama.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
+                self.plt.ax.text(1e8, f[-1], title, size="x-small",
+                                 ha='left', va='center')
+
+        # self.plt.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
 
         # Add explicative legend
         # Laminar zone
-        self.diagrama.ax.add_artist(
+        self.plt.ax.add_artist(
             ConnectionPatch((600, 0.009/x), (2400, 0.009/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Laminar flux")
-        self.diagrama.ax.text(1200, 0.0091/x, txt, size="small", va="bottom",
-                              ha="center")
+        self.plt.ax.text(1200, 0.0091/x, txt, size="small", va="bottom",
+                         ha="center")
 
         # Critic zone
-        self.diagrama.ax.add_artist(
+        self.plt.ax.add_artist(
             ConnectionPatch((2400, 0.009/x), (4000, 0.009/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Critic\nzone")
-        self.diagrama.ax.text(3200, 0.0091/x, txt, size="small", va="bottom",
-                              ha="center")
+        self.plt.ax.text(3200, 0.0091/x, txt, size="small", va="bottom",
+                         ha="center")
 
         # Transition zone
-        self.diagrama.ax.add_artist(
+        self.plt.ax.add_artist(
             ConnectionPatch((4000, 0.095/x), (10000, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
-        self.diagrama.ax.text(7000, 0.104/x, txt, size="small", va="top",
-                              ha="center")
+        self.plt.ax.text(7000, 0.104/x, txt, size="small", va="top",
+                         ha="center")
 
         # Turbulent zone
-        self.diagrama.ax.add_artist(
+        self.plt.ax.add_artist(
             ConnectionPatch((10000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate(
             "pychemqt", "Turbulent flux fully developed")
-        self.diagrama.ax.text(1e6, 0.104/x, txt, size="small", va="top",
-                              ha="center")
+        self.plt.ax.text(1e6, 0.104/x, txt, size="small", va="top",
+                         ha="center")
 
         # Smooth tubes
-        self.diagrama.ax.add_artist(
+        self.plt.ax.add_artist(
             ConnectionPatch((1e6, 0.009/x), (1.5e6, 0.011/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=20, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Smooth tubes")
-        self.diagrama.ax.text(1e6, 0.009/x, txt, size="small", va="top",
-                              ha="right")
+        self.plt.ax.text(1e6, 0.009/x, txt, size="small", va="top",
+                         ha="right")
 
         # Laminar equation
         if fanning:
             txt = r"$f=\frac{16}{Re}$"
         else:
             txt = r"$f=\frac{64}{Re}$"
-        self.diagrama.ax.text(1.4e3, 0.042/x, txt, size="12",
-                              va="top", ha="center", rotation=-66)
+        self.plt.ax.text(1.4e3, 0.042/x, txt, size="12",
+                         va="top", ha="center", rotation=-66)
         # TODO: Calculate the angle dynamically
+
+        self.plt.draw()
 
     def calculate(self):
         dialog = CalculateDialog()

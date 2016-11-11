@@ -1178,6 +1178,31 @@ def f_friccion(Re, eD=0, metodo=0, geometria=0, adicional=0):
     return Dimensionless(f_friccion)
 
 
+def eD(Re, f):
+    """Calculates relative roughness
+
+    Parameters
+    ------------
+    Re : float
+        Reynolds number, [-]
+    f : float
+        Friction factor, [-]
+
+    Returns
+    -------
+    eD : float
+        Relative roughness of a pipe, [-]
+
+    References
+    ----------
+    [1] .. Colebrook, C. F. and White, C. M. (1937). "Experiments with Fluid
+    Friction in Roughened Pipes". Proceedings of the Royal Society of London.
+    Series A, Mathematical and Physical Sciences 161 (906): 367–381.
+    """
+    eD = (10**(-0.5/f**0.5)-2.51/Re/f**0.5)*3.7
+    return eD
+
+
 # Fitting K
 # Crane, Flow-of-Fluids-Through-Valve Pag 107
 def K_contraction(tita, beta):
