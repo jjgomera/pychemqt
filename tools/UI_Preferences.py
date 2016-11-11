@@ -32,9 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - ConfTooltipEntity: Entity properties in popup window configuration
 #   - ConfmEoS: mEoS parameter configuration dialog
 #       ConfLine: Composite widget with line format configuration tools
-#   - ConfPsychrometric: Phychrometric chart configuration
-#   - ConfMoody: Moody chart configuration
 ###############################################################################
+
 
 import os
 import sys
@@ -50,10 +49,9 @@ from UI.delegate import CheckEditor, comboLine
 from tools import UI_confResolution
 from lib import unidades, corriente
 from lib.utilities import representacion
-from lib.friction import f_list
 from lib.firstrun import calculator, editor, shell, which
 from equipment import equipments
-from UI import prefMEOS, prefPsychrometric
+from UI import prefMEOS, prefPsychrometric, prefMoody
 
 
 class ConfLine(QtWidgets.QWidget):
@@ -1198,49 +1196,6 @@ class ConfmEoS(QtWidgets.QDialog):
         return config
 
 
-class ConfMoody(QtWidgets.QDialog):
-    """Moody chart configuration"""
-    def __init__(self, config=None, parent=None):
-        super(ConfMoody, self).__init__(parent)
-        layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Method:"))
-        layout.addWidget(label, 1, 1)
-        self.metodos = QtWidgets.QComboBox()
-        for f in f_list:
-            line = f.__doc__.split("\n")[1]
-            year = line.split(" ")[-1]
-            name = line.split(" ")[-3]
-            doc = name + " " + year
-            self.metodos.addItem(doc)
-        layout.addWidget(self.metodos, 1, 2)
-        self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Calculate fanning friction factor"))
-        layout.addWidget(self.fanning, 2, 1, 1, 2)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
-
-        if config and config.has_section("Moody"):
-            self.metodos.setCurrentIndex(config.getint("Moody", 'method'))
-            self.fanning.setChecked(config.getboolean("Moody", 'fanning'))
-
-    def value(self, config):
-        if not config.has_section("Moody"):
-            config.add_section("Moody")
-        config.set("Moody", "method", str(self.metodos.currentIndex()))
-        config.set("Moody", "fanning", str(self.fanning.isChecked()))
-        return config
-
-    @classmethod
-    def default(cls, config):
-        config.add_section("")
-        config.set("Moody", "method", "0")
-        config.set("Moody", "fanning", "False")
-        return config
-
-
 class Preferences(QtWidgets.QDialog):
     """Preferences main dialog"""
     classes = [
@@ -1262,7 +1217,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
-        ("button/psychrometric.png", ConfMoody,
+        ("button/psychrometric.png", prefMoody,
          QtWidgets.QApplication.translate("pychemqt", "Moody chart"))]
 
     def __init__(self, config=None, parent=None):

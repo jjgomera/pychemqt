@@ -294,6 +294,30 @@ def Preferences():
     config.add_section("Moody")
     config.set("Moody", "fanning", "False")
     config.set("Moody", "method", "0")
+    config.set("Moody", "ed", "[0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, "
+               "4e-4, 6e-4, 8e-4, .001, .0015, .002, .003, .004, .006, .008, "
+               ".01, .0125, .015, .0175, .02, .025, .03, .035, .04, .045, "
+               ".05, .06, .07]")
+
+    config.set("Moody", "line"+"Color", "#000000")
+    config.set("Moody", "line"+"alpha", "255")
+    config.set("Moody", "line"+"lineWidth", "0.5")
+    config.set("Moody", "line"+"lineStyle", "-")
+    config.set("Moody", "line"+"marker", "None")
+    config.set("Moody", "line"+"markersize", "3")
+    config.set("Moody", "line"+"markerfacecolor", "#ff0000")
+    config.set("Moody", "line"+"markeredgewidth", "1")
+    config.set("Moody", "line"+"markeredgecolor", "#000000")
+
+    config.set("Moody", "crux"+"Color", "#0000ff")
+    config.set("Moody", "crux"+"alpha", "255")
+    config.set("Moody", "crux"+"lineWidth", "0.5")
+    config.set("Moody", "crux"+"lineStyle", "-")
+    config.set("Moody", "crux"+"marker", "None")
+    config.set("Moody", "crux"+"markersize", "3")
+    config.set("Moody", "crux"+"markerfacecolor", "#ff0000")
+    config.set("Moody", "crux"+"markeredgewidth", "1")
+    config.set("Moody", "crux"+"markeredgecolor", "#000000")
 
     return config
 
