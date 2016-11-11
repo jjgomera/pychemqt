@@ -40,7 +40,8 @@ class Isolinea(QtWidgets.QDialog):
         """Constructor
             unit: subclass of unidad to define the isoline type
             ConfSection: title of isoline
-            config: config of pychemqt project"""
+            config: config of pychemqt project
+        """
         super(Isolinea, self).__init__(parent)
         self.ConfSection = ConfSection
         self.magnitud = unit.__name__

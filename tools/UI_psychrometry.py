@@ -55,34 +55,39 @@ class PsychroPlot(mpl):
         self.notes = []
         self.state = None
 
-    def config(self, chart=True):
+    def config(self, config):
         self.ax.set_autoscale_on(False)
+        chart = config.getboolean("Psychr", "chart")
         xlabel = "Tdb, " + Temperature.text()
         ylabel = "%s, %s/%s" % (
             QtWidgets.QApplication.translate("pychemqt", "Absolute humidity"),
             Mass.text(), Mass.text())
-        tmin = Temperature(274).config()
-        tmax = Temperature(329).config()
+
+        tmin = Temperature(config.getfloat("Psychr", "isotdbStart")).config()
+        tmax = Temperature(config.getfloat("Psychr", "isotdbEnd")).config()
+        wmin = Temperature(config.getfloat("Psychr", "isowStart")).config()
+        wmax = Temperature(config.getfloat("Psychr", "isowEnd")).config()
 
         if chart:
             self.ax.set_xlabel(xlabel, size="large")
             self.ax.set_ylabel(ylabel, size="large")
             self.ax.set_xlim(tmin, tmax)
-            self.ax.set_ylim(0, 0.04)
+            self.ax.set_ylim(wmin, wmax)
             self.ax.yaxis.set_ticks_position("right")
             self.ax.yaxis.set_label_position("right")
             self.ax.figure.subplots_adjust(left=0.05, top=0.95)
         else:
             self.ax.set_xlabel(ylabel, size="large")
             self.ax.set_ylabel(xlabel, size="large")
-            self.ax.set_xlim(0, 0.04)
+            self.ax.set_xlim(wmin, wmax)
             self.ax.set_ylim(tmin, tmax)
             self.ax.xaxis.set_ticks_position("top")
             self.ax.xaxis.set_label_position("top")
             self.ax.figure.subplots_adjust(right=0.95, bottom=0.05)
 
-        self.lx = self.ax.axhline(color='b')  # the horiz line
-        self.ly = self.ax.axvline(color='b')  # the vert line
+        kw = formatLine(config, "Psychr", "crux")
+        self.lx = self.ax.axhline(**kw)  # the horiz line
+        self.ly = self.ax.axvline(**kw)  # the vert line
 
     def createCrux(self, state, chart):
         """Update horizontal and vertical lines to show click point"""
@@ -399,7 +404,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.plt.clearPointData()
         self.plt.ax.clear()
         chart = self.Preferences.getboolean("Psychr", "chart")
-        self.plt.config(chart)
+        self.plt.config(self.Preferences)
         filename = conf_dir+"%s_%i.pkl" % (
             PsychroState().__class__.__name__, self.inputs.P.value)
         if os.path.isfile(filename):

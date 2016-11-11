@@ -40,8 +40,9 @@ class widget(QtWidgets.QWidget):
         ("IsoTdb", unidades.Temperature,
          QtWidgets.QApplication.translate(
              "pychemqt", "Iso dry bulb temperature")),
-        ("IsoW", unidades.Pressure,
-         QtWidgets.QApplication.translate("pychemqt", "Iso humidity ratio")),
+        ("IsoW", float,
+         QtWidgets.QApplication.translate(
+             "pychemqt", "Iso absolute humidity")),
         ("IsoHR", unidades.SpecificHeat,
          QtWidgets.QApplication.translate(
              "pychemqt", "Iso relative humidity")),
@@ -92,6 +93,10 @@ class widget(QtWidgets.QWidget):
             "saturation", QtWidgets.QApplication.translate(
                 "pychemqt", "Saturation Line Style"))
         layout.addWidget(self.satlineconfig, 5, 1, 1, 2)
+        self.cruxlineconfig = LineConfig(
+            "crux", QtWidgets.QApplication.translate(
+                "pychemqt", "Crux Line Style"))
+        layout.addWidget(self.cruxlineconfig, 6, 1, 1, 2)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Isolines"))
         layout.addWidget(group, 7, 1, 1, 2)
@@ -125,6 +130,7 @@ class widget(QtWidgets.QWidget):
             self.coolProp.setChecked(config.getboolean("Psychr", 'coolprop'))
             self.refprop.setChecked(config.getboolean("Psychr", 'refprop'))
             self.satlineconfig.setConfig(config, "Psychr")
+            self.cruxlineconfig.setConfig(config, "Psychr")
 
     def value(self, config):
         """Return value for main dialog"""
@@ -136,6 +142,7 @@ class widget(QtWidgets.QWidget):
         config.set("Psychr", "coolprop", str(self.coolProp.isChecked()))
         config.set("Psychr", "refprop", str(self.refprop.isChecked()))
         config = self.satlineconfig.value(config, "Psychr")
+        config = self.cruxlineconfig.value(config, "Psychr")
 
         for indice in range(self.Isolineas.count()):
             config = self.Isolineas.widget(indice).value(config)

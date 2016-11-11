@@ -232,6 +232,7 @@ def Preferences():
     config.set("Psychr", "virial", "False")
     config.set("Psychr", "coolprop", "False")
     config.set("Psychr", "refprop", "False")
+
     config.set("Psychr", "saturation"+"Color", "#000000")
     config.set("Psychr", "saturation"+"alpha", "255")
     config.set("Psychr", "saturation"+"lineWidth", "0.5")
@@ -241,6 +242,17 @@ def Preferences():
     config.set("Psychr", "saturation"+"markerfacecolor", "#ff0000")
     config.set("Psychr", "saturation"+"markeredgewidth", "1")
     config.set("Psychr", "saturation"+"markeredgecolor", "#000000")
+
+    config.set("Psychr", "crux"+"Color", "#0000ff")
+    config.set("Psychr", "crux"+"alpha", "255")
+    config.set("Psychr", "crux"+"lineWidth", "0.5")
+    config.set("Psychr", "crux"+"lineStyle", "-")
+    config.set("Psychr", "crux"+"marker", "None")
+    config.set("Psychr", "crux"+"markersize", "3")
+    config.set("Psychr", "crux"+"markerfacecolor", "#ff0000")
+    config.set("Psychr", "crux"+"markeredgewidth", "1")
+    config.set("Psychr", "crux"+"markeredgecolor", "#000000")
+
     lineas = ["IsoTdb", "IsoW", "IsoHR", "IsoTwb", "Isochor"]
     values = [
         {"start": 274.0, "end": 330.0, "step": 1.0, "color": "#000000",
