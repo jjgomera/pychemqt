@@ -24,8 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
-import os
 import json
+import os
 
 from PyQt5 import QtGui, QtWidgets
 from scipy import logspace, log10

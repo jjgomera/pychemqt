@@ -104,8 +104,9 @@ class plugin(object):
             refTxt = QtWidgets.QApplication.translate(
                 "pychemqt", "Reference State")
         propTxt = QtWidgets.QApplication.translate("pychemqt", "Properties")
+        confTxt = QtWidgets.QApplication.translate("pychemqt", "Configure")
 
-        return fTxt, refTxt, propTxt
+        return fTxt, refTxt, propTxt, confTxt
 
     def _menuCalculate(self):
         menu = QtWidgets.QMenu(QtWidgets.QApplication.translate(
@@ -242,6 +243,15 @@ class plugin(object):
             self.config.set("MEoS", "propertiesOrder", str(dlg.order))
             self.parent().dirty[self.parent().idTab] = True
             self.parent().saveControl()
+
+    def configure(self):
+        from UI.prefMEOS import Dialog
+        Config = ConfigParser()
+        Config.read(config.conf_dir + "pychemqtrc")
+        dlg = Dialog(Config)
+        if dlg.exec_():
+            Config = dlg.value(Config)
+            Config.write(open(config.conf_dir+"pychemqtrc", "w"))
 
     def showSaturation(self):
         """Show dialog to define input for a two-phase saturation table"""
@@ -785,15 +795,17 @@ class Menu(QtWidgets.QMenu, plugin):
         self.clear()
         self.config = self.parent().currentConfig
 
-        fTxt, refTxt, propTxt = self._txt()
+        fTxt, refTxt, propTxt, confTxt = self._txt()
         flAction = createAction(fTxt, slot=self.showChooseFluid, parent=self)
         refAction = createAction(refTxt, slot=self.showReference, parent=self)
         pAction = createAction(propTxt, slot=self.showProperties, parent=self)
+        confAction = createAction(confTxt, slot=self.configure, parent=self)
         menuCalculate = self._menuCalculate()
         menuPlot = self._menuPlot()
         self.addAction(flAction)
         self.addAction(refAction)
         self.addAction(pAction)
+        self.addAction(confAction)
         self.addSeparator()
         self.addAction(menuCalculate.menuAction())
         self.addAction(menuPlot.menuAction())
@@ -817,35 +829,38 @@ class Dialog(QtWidgets.QDialog, plugin):
             QtWidgets.QApplication.translate("pychemqt", "Choose fluid"))
         layout = QtWidgets.QGridLayout(self)
 
-        fTxt, refTxt, propTxt = self._txt()
-        self.fluido = QtWidgets.QPushButton(fTxt)
-        self.fluido.clicked.connect(self.showChooseFluid)
-        layout.addWidget(self.fluido, 1, 1)
-        self.reference = QtWidgets.QPushButton(refTxt)
-        self.reference.clicked.connect(self.showReference)
-        layout.addWidget(self.reference, 2, 1)
-        self.propiedades = QtWidgets.QPushButton(propTxt)
-        self.propiedades.clicked.connect(self.showProperties)
-        layout.addWidget(self.propiedades, 3, 1)
+        fTxt, refTxt, propTxt, confTxt = self._txt()
+        fluid = QtWidgets.QPushButton(fTxt)
+        fluid.clicked.connect(self.showChooseFluid)
+        layout.addWidget(fluid, 1, 1)
+        ref = QtWidgets.QPushButton(refTxt)
+        ref.clicked.connect(self.showReference)
+        layout.addWidget(ref, 2, 1)
+        prop = QtWidgets.QPushButton(propTxt)
+        prop.clicked.connect(self.showProperties)
+        layout.addWidget(prop, 3, 1)
+        conf = QtWidgets.QPushButton(confTxt)
+        conf.clicked.connect(self.configure)
+        layout.addWidget(conf, 4, 1)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 4, 1)
+            QtWidgets.QSizePolicy.Fixed), 5, 1)
         menuCalculate = self._menuCalculate()
-        self.calculate = QtWidgets.QPushButton(menuCalculate.title())
-        self.calculate.setMenu(menuCalculate)
-        layout.addWidget(self.calculate, 5, 1)
+        calculate = QtWidgets.QPushButton(menuCalculate.title())
+        calculate.setMenu(menuCalculate)
+        layout.addWidget(calculate, 6, 1)
         menuPlot = self._menuPlot()
-        self.plot = QtWidgets.QPushButton(menuPlot.title())
-        self.plot.setMenu(menuPlot)
-        layout.addWidget(self.plot, 5, 2)
+        plot = QtWidgets.QPushButton(menuPlot.title())
+        plot.setMenu(menuPlot)
+        layout.addWidget(plot, 6, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 1, 1, 3)
+            QtWidgets.QSizePolicy.Expanding), 7, 1, 1, 3)
         btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         btBox.clicked.connect(self.reject)
-        layout.addWidget(btBox, 7, 1, 1, 3)
+        layout.addWidget(btBox, 8, 1, 1, 3)
 
 
 # Dialogs for configuration:

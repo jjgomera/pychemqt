@@ -21,11 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library to configure MEOS tool
 #
-#   - ConfmEoS: mEoS parameter configuration dialog
 #   - Isolinea: widget to configure isolines for mEoS
-#   - ConfLine: Composite widget with line format configuration tools
+#   - Widget: mEoS parameter configuration dialog
+#   - Dialog: Dialog tool for standalone use
 ###############################################################################
 
+
+import os
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -180,3 +182,142 @@ class Isolinea(QtWidgets.QDialog):
                    str(self.Posicion.value()))
         return config
 
+
+class Widget(QtWidgets.QDialog):
+    """Config mEoS parameter dialog"""
+    lineas = [
+        ("Isotherm", unidades.Temperature,
+         QtWidgets.QApplication.translate("pychemqt", "Isotherm")),
+        ("Isobar", unidades.Pressure,
+         QtWidgets.QApplication.translate("pychemqt", "Isobar")),
+        ("Isoenthalpic", unidades.Enthalpy,
+         QtWidgets.QApplication.translate("pychemqt", "Isoenthalpic")),
+        ("Isoentropic", unidades.SpecificHeat,
+         QtWidgets.QApplication.translate("pychemqt", "Isoentropic")),
+        ("Isochor", unidades.SpecificVolume,
+         QtWidgets.QApplication.translate("pychemqt", "Isochor")),
+        ("Isoquality", float,
+         QtWidgets.QApplication.translate("pychemqt", "Isoquality"))]
+
+    def __init__(self, config, parent=None):
+        """constructor, config optional parameter to input project config"""
+        super(Widget, self).__init__(parent)
+
+        lyt = QtWidgets.QGridLayout(self)
+        scroll = QtWidgets.QScrollArea()
+        lyt.addWidget(scroll)
+
+        dlg = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(dlg)
+
+        self.coolProp = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use external library coolProp (faster)"))
+        self.coolProp.setEnabled(False)
+        layout.addWidget(self.coolProp, 3, 1, 1, 2)
+        self.refprop = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use external library refprop (fastest)"))
+        self.refprop.setEnabled(False)
+        layout.addWidget(self.refprop, 4, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 4, 1)
+        self.lineconfig = LineConfig(
+            "saturation", QtWidgets.QApplication.translate(
+                "pychemqt", "Saturation Line Style"))
+        layout.addWidget(self.lineconfig, 5, 1, 1, 2)
+        group = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "Isolines"))
+        layout.addWidget(group, 6, 1, 1, 2)
+        layoutgroup = QtWidgets.QGridLayout(group)
+        self.comboIsolineas = QtWidgets.QComboBox()
+        layoutgroup.addWidget(self.comboIsolineas, 1, 1)
+        self.Isolineas = QtWidgets.QStackedWidget()
+        self.comboIsolineas.currentIndexChanged.connect(
+            self.Isolineas.setCurrentIndex)
+        layoutgroup.addWidget(self.Isolineas, 2, 1)
+        for nombre, unidad, text in self.lineas:
+            self.comboIsolineas.addItem(text)
+            self.Isolineas.addWidget(Isolinea(unidad, nombre, config))
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Plot Definition")), 7, 1)
+        quality = [QtWidgets.QApplication.translate("pychemqt", "Very Low"),
+                   QtWidgets.QApplication.translate("pychemqt", "Low"),
+                   QtWidgets.QApplication.translate("pychemqt", "Medium"),
+                   QtWidgets.QApplication.translate("pychemqt", "High"),
+                   QtWidgets.QApplication.translate("pychemqt", "Ultra High")]
+        self.definition = QtWidgets.QComboBox()
+        for q in quality:
+            self.definition.addItem(q)
+        layout.addWidget(self.definition, 7, 2)
+        self.grid = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Draw grid"))
+        layout.addWidget(self.grid, 9, 1, 1, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 2)
+
+        scroll.setWidget(dlg)
+
+        if os.environ["CoolProp"]:
+            self.coolProp.setEnabled(True)
+        if os.environ["refprop"]:
+            self.refprop.setEnabled(True)
+
+        if config.has_section("MEOS"):
+            self.coolProp.setChecked(config.getboolean("MEOS", 'coolprop'))
+            self.refprop.setChecked(config.getboolean("MEOS", 'refprop'))
+            self.grid.setChecked(config.getboolean("MEOS", 'grid'))
+            self.definition.setCurrentIndex(
+                config.getint("MEOS", 'definition'))
+            self.lineconfig.setConfig(config)
+
+    def value(self, config):
+        """Return value for main dialog"""
+        if not config.has_section("MEOS"):
+            config.add_section("MEOS")
+
+        config.set("MEOS", "coolprop", str(self.coolProp.isChecked()))
+        config.set("MEOS", "refprop", str(self.refprop.isChecked()))
+        config = self.lineconfig.value(config)
+        config.set("MEOS", "grid", str(self.grid.isChecked()))
+        config.set("MEOS", "definition", str(self.definition.currentIndex()))
+
+        for indice in range(self.Isolineas.count()):
+            config = self.Isolineas.widget(indice).value(config)
+        return config
+
+
+class Dialog(QtWidgets.QDialog):
+    """Dialog to config thermal method calculations"""
+    def __init__(self, config=None, parent=None):
+        super(Dialog, self).__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Define project thermodynamic methods"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = Widget(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
+
+
+if __name__ == "__main__":
+    import sys
+    from configparser import ConfigParser
+    app = QtWidgets.QApplication(sys.argv)
+
+    conf_dir = os.path.expanduser('~') + "/.pychemqt/"
+    config = ConfigParser()
+    config.read(conf_dir+"pychemqtrc")
+
+    Dialog = Dialog(config)
+    Dialog.show()
+    sys.exit(app.exec_())
