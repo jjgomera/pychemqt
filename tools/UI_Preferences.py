@@ -56,18 +56,16 @@ class ConfGeneral(QtWidgets.QDialog):
     """General configuration options"""
     def __init__(self, config=None, parent=None):
         super(ConfGeneral, self).__init__(parent)
+
         layout = QtWidgets.QGridLayout(self)
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            0, 1, 1, 4)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Highlight color:")), 1, 1, 1, 1)
+            "pychemqt", "Highlight color:")), 1, 1)
         self.ColorButtonResaltado = ColorSelector()
-        layout.addWidget(self.ColorButtonResaltado, 1, 2, 1, 1)
+        layout.addWidget(self.ColorButtonResaltado, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Readonly color:")), 2, 1, 1, 1)
+            "pychemqt", "Readonly color:")), 2, 1)
         self.ColorButtonReadOnly = ColorSelector()
-        layout.addWidget(self.ColorButtonReadOnly, 2, 2, 1, 1)
+        layout.addWidget(self.ColorButtonReadOnly, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Fixed,
             QtWidgets.QSizePolicy.Fixed), 3, 1)
@@ -118,25 +116,20 @@ class ConfGeneral(QtWidgets.QDialog):
         config.set("General", "Tray", str(self.showTrayIcon.isChecked()))
         return config
 
-    @classmethod
-    def default(cls, config):
-        config.add_section("General")
-        config.set("General", "Color_Resaltado", "#ffff00")
-        config.set("General", "Color_ReadOnly", "#eaeaea")
-        config.set("General", "Recent_Files", "10")
-        config.set("General", "Load_Last_Project", "True")
-        config.set("General", "Tray", "False")
-        return config
-
 
 class ConfPFD(QtWidgets.QDialog):
     """Flow Diagram configuration"""
     def __init__(self, config=None, parent=None):
         super(ConfPFD, self).__init__(parent)
-        layout = QtWidgets.QGridLayout(self)
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            0, 1, 1, 4)
+
+        lyt = QtWidgets.QGridLayout(self)
+        lyt.setContentsMargins(0, 0, 0, 0)
+        scroll = QtWidgets.QScrollArea()
+        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        lyt.addWidget(scroll)
+        dlg = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(dlg)
+
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Input color")), 1, 1)
         self.ColorButtonEntrada = ColorSelector()
@@ -163,6 +156,7 @@ class ConfPFD(QtWidgets.QDialog):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 14, 1, 1, 4)
+        scroll.setWidget(dlg)
 
         if config and config.has_section("PFD"):
             self.ColorButtonEntrada.setColor(
@@ -202,35 +196,17 @@ class ConfPFD(QtWidgets.QDialog):
         config.set("PFD", "Dash_offset", str(self.lineFormat.dashOffset.value))
         return config
 
-    @classmethod
-    def default(cls, config):
-        config.add_section("PFD")
-        config.set("PFD", "x", "800")
-        config.set("PFD", "y", "600")
-        config.set("PFD", "Color_Entrada", "#c80000")
-        config.set("PFD", "Color_Salida", "#0000c8")
-        config.set("PFD", "Color_Stream", "#000000")
-        config.set("PFD", "Width", "1.0")
-        config.set("PFD", "Union", "0")
-        config.set("PFD", "Miter_limit", "2.0")
-        config.set("PFD", "Punta", "0")
-        config.set("PFD", "Guion", "0")
-        config.set("PFD", "Dash_offset", "0.0")
-        return config
-
 
 class ConfTooltipUnit(QtWidgets.QDialog):
     """Tooltip with unit alternate value configuration"""
     def __init__(self, config, parent=None):
         super(ConfTooltipUnit, self).__init__(parent)
+
         layout = QtWidgets.QGridLayout(self)
         self.checkShow = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Show Tool Tips"))
         self.checkShow.toggled.connect(self.checkShow_Toggled)
         layout.addWidget(self.checkShow, 1, 1)
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            2, 1)
 
         self.groupsystems = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate(
@@ -317,38 +293,18 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             config.set("Tooltip", unidades._magnitudes[i][0], str(lista))
         return config
 
-    @classmethod
-    def default(cls, config):
-        config.add_section("Tooltip")
-        config.set("Tooltip", "Show", "True")
-        for i, magnitud in enumerate(unidades._magnitudes[:-1]):
-            lista = []
-            if magnitud[2]._magnitudes:
-                si = magnitud[2].__units_set__[magnitud[0]]["si"]
-                eng = magnitud[2].__units_set__[magnitud[0]]["english"]
-            else:
-                si = magnitud[2].__units_set__["si"]
-                eng = magnitud[2].__units_set__["english"]
-            lista.append(magnitud[2].__units__.index(si))
-            lista.append(magnitud[2].__units__.index(eng))
-            config.set("Tooltip", magnitud[0], str(lista))
-        return config
-
 
 class ConfTooltipEntity(QtWidgets.QDialog):
     """Entity properties in popup window configuration"""
     def __init__(self, config, parent=None):
         super(ConfTooltipEntity, self).__init__(parent)
-        layout = QtWidgets.QVBoxLayout(self)
 
+        layout = QtWidgets.QVBoxLayout(self)
         self.eleccion = QtWidgets.QComboBox()
         layout.addWidget(self.eleccion)
         self.stacked = QtWidgets.QStackedWidget()
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         layout.addWidget(self.stacked)
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Preferred,
-            QtWidgets.QSizePolicy.Preferred))
 
         self.tabla = [QtWidgets.QTableWidget()]
         self.tabla[0].setRowCount(len(corriente.Corriente.propertiesNames()))
@@ -416,17 +372,6 @@ class ConfTooltipEntity(QtWidgets.QDialog):
                     lista.append(j)
             config.set("TooltipEntity", equipments[i].__name__, str(lista))
 
-        return config
-
-    @classmethod
-    def default(cls, config):
-        config.add_section("TooltipEntity")
-        config.set(
-            "TooltipEntity", "Corriente",
-            str(list(range(len(corriente.Corriente.propertiesNames())))))
-        for i, equipo in enumerate(equipments):
-            config.set("TooltipEntity", equipments[i].__name__,
-                       str(list(range(len(equipo.propertiesNames())))))
         return config
 
 
@@ -658,31 +603,24 @@ class ConfFormat(QtWidgets.QTableWidget):
             config.set("NumericFormat", magnitud[0], str(self.config[i]))
         return config
 
-    @classmethod
-    def default(cls, config):
-        config.add_section("NumericFormat")
-        for i, magnitud in enumerate(unidades._magnitudes):
-            kwarg = {'total': 0, 'signo': False, 'decimales': 4, 'format': 0}
-            config.set("NumericFormat", magnitud[0], str(kwarg))
-        return config
-
 
 class ConfPetro(QtWidgets.QDialog):
     """Petro new component configuration"""
     def __init__(self, config=None, parent=None):
         super(ConfPetro, self).__init__(parent)
+
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Molecular weight:")), 1, 1, 1, 1)
+            "pychemqt", "Molecular weight:")), 1, 1)
         Pm = ["Riazi Daubert", "Riazi Daubert extended", "Lee Kesler",
               "Sim Daubert", "API", "ASTM", "Goossens", "TWu"]
         self.Peso_molecular = QtWidgets.QComboBox()
         for p in Pm:
             self.Peso_molecular.addItem(p)
-        layout.addWidget(self.Peso_molecular, 1, 2, 1, 1)
+        layout.addWidget(self.Peso_molecular, 1, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critics properties:")), 2, 1, 1, 1)
+            "pychemqt", "Critics properties:")), 2, 1)
         Critical = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
                     "Lee Kesler", "Cavett", "Sim Daubert",
                     "Watansiri Owens Starling", "Edmister", "Magoulas", "Twu",
@@ -690,66 +628,66 @@ class ConfPetro(QtWidgets.QDialog):
         self.critical = QtWidgets.QComboBox()
         for c in Critical:
             self.critical.addItem(c)
-        layout.addWidget(self.critical, 2, 2, 1, 1)
+        layout.addWidget(self.critical, 2, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critic volume:")), 3, 1, 1, 1)
+            "pychemqt", "Critic volume:")), 3, 1)
         vc = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
               "Watansiri Owens Starling", "Twu", "Tsonopoulos",
               "Hall Yarborough", "API"]
         self.vc = QtWidgets.QComboBox()
         for v in vc:
             self.vc.addItem(v)
-        layout.addWidget(self.vc, 3, 2, 1, 1)
+        layout.addWidget(self.vc, 3, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Acentric factor:")), 4, 1, 1, 1)
+            "pychemqt", "Acentric factor:")), 4, 1)
         self.factor_acentrico = QtWidgets.QComboBox()
         self.factor_acentrico.addItem("Edmister")
         self.factor_acentrico.addItem("Lee Kesler")
         self.factor_acentrico.addItem("Watansiri Owens Starling")
         self.factor_acentrico.addItem("Magoulas")
-        layout.addWidget(self.factor_acentrico, 4, 2, 1, 1)
-        layout.addWidget(QtWidgets.QLabel("Z<sub>c</sub>:"), 5, 1, 1, 1)
+        layout.addWidget(self.factor_acentrico, 4, 2)
+        layout.addWidget(QtWidgets.QLabel("Z<sub>c</sub>:"), 5, 1)
         self.Zc = QtWidgets.QComboBox()
         self.Zc.addItem("Lee Kesler")
         self.Zc.addItem("Haugen")
         self.Zc.addItem("Reid")
         self.Zc.addItem("Salerno")
         self.Zc.addItem("Nath")
-        layout.addWidget(self.Zc, 5, 2, 1, 1)
+        layout.addWidget(self.Zc, 5, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "T boiling:")), 6, 1, 1, 1)
+            "pychemqt", "T boiling:")), 6, 1)
         self.t_ebull = QtWidgets.QComboBox()
         self.t_ebull.addItem("Riazi Daubert extended")
         self.t_ebull.addItem("Riazi Adwani")
         self.t_ebull.addItem("Edmister")
         self.t_ebull.addItem("Soreide")
-        layout.addWidget(self.t_ebull, 6, 2, 1, 1)
+        layout.addWidget(self.t_ebull, 6, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "PNA descomposition:")), 7, 1, 1, 1)
+            "pychemqt", "PNA descomposition:")), 7, 1)
         self.PNA = QtWidgets.QComboBox()
         self.PNA.addItem("Peng Robinson")
         self.PNA.addItem("Bergman")
         self.PNA.addItem("Riazi")
         self.PNA.addItem("van Nes van Westen")
-        layout.addWidget(self.PNA, 7, 2, 1, 1)
+        layout.addWidget(self.PNA, 7, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Destilate curve conversion:")), 12, 1, 1, 1)
+            "pychemqt", "Destilate curve conversion:")), 12, 1)
         self.Curvas = QtWidgets.QComboBox()
         self.Curvas.addItem("Riazi")
         self.Curvas.addItem("Daubert")
-        layout.addWidget(self.Curvas, 12, 2, 1, 1)
+        layout.addWidget(self.Curvas, 12, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "% Hydrogen:")), 13, 1, 1, 1)
+            "pychemqt", "% Hydrogen:")), 13, 1)
         self.Hidrogeno = QtWidgets.QComboBox()
         self.Hidrogeno.addItem("Riazi")
         self.Hidrogeno.addItem("Goossens")
         self.Hidrogeno.addItem("ASTM")
         self.Hidrogeno.addItem("Jenkins Walsh")
-        layout.addWidget(self.Hidrogeno, 13, 2, 1, 1)
+        layout.addWidget(self.Hidrogeno, 13, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 0, 1, 3)
+            QtWidgets.QSizePolicy.Expanding), 15, 1, 1, 3)
 
         if config.has_section("petro"):
             self.Peso_molecular.setCurrentIndex(
@@ -778,20 +716,6 @@ class ConfPetro(QtWidgets.QDialog):
         config.set("petro", "PNA", str(self.PNA.currentIndex()))
         config.set("petro", "H", str(self.Hidrogeno.currentIndex()))
         config.set("petro", "curva", str(self.Curvas.currentIndex()))
-        return config
-
-    @classmethod
-    def default(cls, config):
-        config.add_section("petro")
-        config.set("petro", "molecular_weight", "0")
-        config.set("petro", "critical", "0")
-        config.set("petro", "vc", "0")
-        config.set("petro", "f_acent", "0")
-        config.set("petro", "t_ebull", "0")
-        config.set("petro", "Zc", "0")
-        config.set("petro", "PNA", "0")
-        config.set("petro", "H", "0")
-        config.set("petro", "curva", "0")
         return config
 
 
@@ -957,31 +881,28 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "Applications")),
         ("button/tooltip.png", ConfTooltipEntity,
          QtWidgets.QApplication.translate("pychemqt", "Tooltips in PFD")),
-        ("button/steamTables.png", prefMEOS.Widget,
+        ("button/tables.png", prefMEOS.Widget,
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
-        ("button/psychrometric.png", prefMoody.Widget,
+        ("button/moody.png", prefMoody.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Moody chart"))]
 
-    def __init__(self, config=None, parent=None):
+    def __init__(self, config, parent=None):
         """Constructor, opcional config parameter to input project config"""
         super(Preferences, self).__init__(parent)
-        if not config:
-            config = self.default()
         self.config = config
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Preferences"))
         layout = QtWidgets.QGridLayout(self)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            1, 1, 1, 1)
+            1, 1)
         self.stacked = QtWidgets.QStackedWidget()
-        layout.addWidget(self.stacked, 1, 2, 1, 1)
+        layout.addWidget(self.stacked, 1, 2)
         self.lista = QtWidgets.QListWidget()
-        self.lista.setFixedWidth(175)
-        self.lista.setIconSize(QtCore.QSize(30, 30))
-        layout.addWidget(self.lista, 1, 0, 1, 1)
+        self.lista.setIconSize(QtCore.QSize(20, 20))
+        layout.addWidget(self.lista, 1, 0)
         for icon, dialog, title in self.classes:
             self.stacked.addWidget(dialog(config))
             icon = QtGui.QIcon(QtGui.QPixmap(
@@ -1000,13 +921,6 @@ class Preferences(QtWidgets.QDialog):
         config = self.config
         for indice in range(self.stacked.count()):
             config = self.stacked.widget(indice).value(config)
-        return config
-
-    @classmethod
-    def default(cls):
-        config = ConfigParser()
-        for icon, title, dialog in cls.classes:
-            config = dialog.default(config)
         return config
 
 

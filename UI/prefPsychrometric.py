@@ -56,7 +56,9 @@ class Widget(QtWidgets.QWidget):
         """constructor, config optional parameter to input project config"""
         super(Widget, self).__init__(parent)
         lyt = QtWidgets.QGridLayout(self)
+        lyt.setContentsMargins(0, 0, 0, 0)
         scroll = QtWidgets.QScrollArea()
+        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
         lyt.addWidget(scroll)
 
         dlg = QtWidgets.QWidget()
