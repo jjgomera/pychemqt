@@ -32,7 +32,7 @@ from scipy import logspace, log10
 from matplotlib.patches import ConnectionPatch
 
 from lib.config import conf_dir
-from lib.friction import f_list
+from lib.friction import f_list, eD
 from lib.plot import mpl
 from lib.utilities import formatLine, representacion
 from UI.widgets import Entrada_con_unidades
@@ -132,11 +132,13 @@ class Moody(QtWidgets.QDialog):
                           va="center", ha="center")
         self.plt.fig.subplots_adjust(
             left=0.1, right=0.9, bottom=0.12, top=0.98)
+        self.note = None
 
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
         Re = event.xdata
         f = event.ydata
+        ed = None
         method = self.Preferences.getint("Moody", "method")
         fanning = self.Preferences.getboolean("Moody", "fanning")
         F = f_list[method]
@@ -150,9 +152,31 @@ class Moody(QtWidgets.QDialog):
             f_min = F(Re, 0)
             if f < f_min:
                 Re = f = 0
+            else:
+                ed = eD(Re, f)
+
+        self.createCrux(Re, f, ed)
+
+    def _txt(self, Re, f, ed):
+        if ed is None:
+            txt = "Re: %0.4g\nf: %0.4g" % (Re, f)
+        else:
+            txt = "Re: %0.4g\ne/D: %0.4g\nf: %0.4g" % (Re, ed, f)
+        return txt
+
+    def createCrux(self, Re, f, ed):
+        """Create a crux in selected point of plot and show data at bottom
+        right corner"""
+        if f and Re:
+            txt = self._txt(Re, f, ed)
 
         self.plt.lx.set_ydata(f)
         self.plt.ly.set_xdata(Re)
+        if self.note:
+            self.note.remove()
+            self.note = None
+        if f and Re:
+            self.note = self.plt.fig.text(0.85, 0.08, txt, size="6", va="top")
         self.plt.draw()
 
     def plot(self):
@@ -243,9 +267,9 @@ class Moody(QtWidgets.QDialog):
         # Plot data
         kw = formatLine(self.Preferences, "Moody", "line")
         self.plt.ax.plot(Re_laminar, dat["laminar"], **kw)
-        for eD, f in dat["turbulent"].items():
+        for ed, f in dat["turbulent"].items():
             self.plt.ax.plot(Re_turbulent, f, **kw)
-            title = " " + representacion(eD, tol=4.5)
+            title = " " + representacion(ed, tol=4.5)
             if f[-1] > 0.008/x:
                 self.plt.ax.text(1e8, f[-1], title, size="x-small",
                                  ha='left', va='center')
@@ -274,7 +298,7 @@ class Moody(QtWidgets.QDialog):
             ConnectionPatch((4000, 0.095/x), (28000, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
-        self.plt.ax.text(12000, 0.098/x, txt, size="small", va="bottom",
+        self.plt.ax.text(11000, 0.098/x, txt, size="small", va="bottom",
                          ha="center", backgroundcolor="#ffffff")
 
         # Turbulent zone
@@ -306,8 +330,12 @@ class Moody(QtWidgets.QDialog):
         self.plt.draw()
 
     def calculate(self):
-        dialog = CalculateDialog()
-        dialog.exec_()
+        dlg = CalculateDialog()
+        if dlg.exec_():
+            Re = dlg.Re.value
+            f = dlg.f.value
+            eD = dlg.eD.value
+            self.createCrux(Re, f, eD)
 
 
 class CalculateDialog(QtWidgets.QDialog):
@@ -348,7 +376,8 @@ class CalculateDialog(QtWidgets.QDialog):
         layout.addWidget(self.f, 5, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Close)
+        self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
 

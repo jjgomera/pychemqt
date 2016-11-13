@@ -79,8 +79,8 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
     else:
         coma = "."
 
-    if -10**tol > float or (-10**-tol < float < 10**-tol and float != 0) or \
-            float > 10**tol:
+    if -10**tol > float or (-10**-tol < float < 10**(-tol+1) and
+                            float != 0) or float > 10**tol:
         format = 2
     if float == 0:
         decimales = 1
