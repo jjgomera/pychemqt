@@ -67,7 +67,7 @@ def calculate(config):
         dat["turbulent"] = turb
 
     # Line to define the fully desarrolled turbulent flux
-    # dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2 for R in Re_fully]
+    dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2/x for R in Re_fully]
 
     # Save to file
     with open(conf_dir+"moody.dat", "w") as file:
@@ -130,6 +130,8 @@ class Moody(QtWidgets.QDialog):
             "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
         self.plt.fig.text(0.97, 0.5, txt, rotation=90, size='10',
                           va="center", ha="center")
+        self.plt.fig.subplots_adjust(
+            left=0.1, right=0.9, bottom=0.12, top=0.98)
 
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
@@ -248,49 +250,49 @@ class Moody(QtWidgets.QDialog):
                 self.plt.ax.text(1e8, f[-1], title, size="x-small",
                                  ha='left', va='center')
 
-        # self.plt.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
+        self.plt.ax.plot(Re_fully, dat["fully"], "k", lw=0.5, ls=":")
 
         # Add explicative legend
         # Laminar zone
         self.plt.ax.add_artist(
-            ConnectionPatch((600, 0.009/x), (2400, 0.009/x), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+            ConnectionPatch((600, 0.01/x), (2400, 0.01/x), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Laminar flux")
-        self.plt.ax.text(1200, 0.0091/x, txt, size="small", va="bottom",
-                         ha="center")
+        self.plt.ax.text(1200, 0.0095/x, txt, size="small", va="top",
+                         ha="center", backgroundcolor="#ffffff")
 
         # Critic zone
         self.plt.ax.add_artist(
-            ConnectionPatch((2400, 0.009/x), (4000, 0.009/x), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+            ConnectionPatch((2400, 0.01/x), (4000, 0.01/x), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Critic\nzone")
-        self.plt.ax.text(3200, 0.0091/x, txt, size="small", va="bottom",
-                         ha="center")
+        self.plt.ax.text(3200, 0.0095/x, txt, size="small", va="top",
+                         ha="center", backgroundcolor="#ffffff")
 
         # Transition zone
         self.plt.ax.add_artist(
-            ConnectionPatch((4000, 0.095/x), (10000, 0.095/x), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+            ConnectionPatch((4000, 0.095/x), (28000, 0.095/x), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
-        self.plt.ax.text(7000, 0.104/x, txt, size="small", va="top",
-                         ha="center")
+        self.plt.ax.text(12000, 0.098/x, txt, size="small", va="bottom",
+                         ha="center", backgroundcolor="#ffffff")
 
         # Turbulent zone
         self.plt.ax.add_artist(
-            ConnectionPatch((10000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+            ConnectionPatch((28000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate(
             "pychemqt", "Turbulent flux fully developed")
-        self.plt.ax.text(1e6, 0.104/x, txt, size="small", va="top",
-                         ha="center")
+        self.plt.ax.text(1e6, 0.098/x, txt, size="small", va="bottom",
+                         ha="center", backgroundcolor="#ffffff")
 
         # Smooth tubes
         self.plt.ax.add_artist(
-            ConnectionPatch((1e6, 0.009/x), (1.5e6, 0.011/x), "data", "data",
-                            arrowstyle="<|-|>", mutation_scale=20, fc="w"))
+            ConnectionPatch((1e6, 0.0095/x), (1.5e6, 0.011/x), "data", "data",
+                            arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Smooth tubes")
         self.plt.ax.text(1e6, 0.009/x, txt, size="small", va="top",
-                         ha="right")
+                         ha="center", backgroundcolor="#ffffff")
 
         # Laminar equation
         if fanning:
