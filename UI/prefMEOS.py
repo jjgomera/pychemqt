@@ -295,7 +295,7 @@ class Dialog(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Define project thermodynamic methods"))
+            "pychemqt", "Multiparameter equation of state configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)

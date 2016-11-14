@@ -49,7 +49,7 @@ from lib import unidades, corriente
 from lib.utilities import representacion
 from lib.firstrun import calculator, editor, shell, which
 from equipment import equipments
-from UI import prefMEOS, prefPsychrometric, prefMoody
+from UI import prefElemental, prefMEOS, prefPsychrometric, prefMoody
 
 
 class ConfGeneral(QtWidgets.QDialog):
@@ -758,38 +758,6 @@ class ConfApplications(QtWidgets.QDialog):
         self.maximized = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Show maximized"))
         layoutTerminal.addWidget(self.maximized, 5, 1, 1, 3)
-
-        qtelemental = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Periodic table"))
-        layout.addWidget(qtelemental, 4, 1)
-        layoutelemental = QtWidgets.QGridLayout(qtelemental)
-        layoutelemental.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color by element:")),
-            1, 1)
-        colorby = ["Element", "serie", "group", "period", "block", "phase",
-                   "lattice_type", "space_group", "density_Solid",
-                   "density_Liq", "density_Gas", "date", "atomic_mass",
-                   "atomic_volume", "atomic_radius", "covalent_radius",
-                   "vanderWaals_radius", "electronegativity",
-                   "electron_affinity", "first_ionization", "Tf", "Tb",
-                   "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
-        self.ElementalColorby = QtWidgets.QComboBox()
-        for c in colorby:
-            self.ElementalColorby.addItem(c)
-        layoutelemental.addWidget(self.ElementalColorby, 1, 2)
-        layoutelemental.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color definition")),
-            2, 1)
-        self.ElementalDefinition = QtWidgets.QSpinBox()
-        self.ElementalDefinition.setMaximumWidth(50)
-        self.ElementalDefinition.setMinimum(5)
-        layoutelemental.addWidget(self.ElementalDefinition, 2, 2)
-        self.ElementalLog = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
-        layoutelemental.addWidget(self.ElementalLog, 3, 1, 1, 2)
-        layoutelemental.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 4, 3)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 10, 1)
@@ -813,12 +781,6 @@ class ConfApplications(QtWidgets.QDialog):
                 config.get("Applications", 'foregroundColor'))
             self.BackgroundColor.setColor(
                 config.get("Applications", 'backgroundColor'))
-            self.ElementalColorby.setCurrentText(
-                config.get("Applications", 'elementalColorby'))
-            self.ElementalDefinition.setValue(
-                config.getint("Applications", 'elementalDefinition'))
-            self.ElementalLog.setChecked(
-                config.getboolean("Applications", 'elementalLog'))
 
         self.ipython.setEnabled(bool(which("ipython3")))
 
@@ -839,28 +801,6 @@ class ConfApplications(QtWidgets.QDialog):
                    self.ForegroundColor.color.name())
         config.set("Applications", "backgroundColor",
                    self.BackgroundColor.color.name())
-        config.set("Applications", "elementalColorby",
-                   self.ElementalColorby.currentText())
-        config.set("Applications", "elementalDefinition",
-                   str(self.ElementalDefinition.value()))
-        config.set("Applications", "elementalLog",
-                   str(self.ElementalLog.isChecked()))
-        return config
-
-    @classmethod
-    def default(cls, config):
-        config.add_section("Applications")
-        config.set("Applications", "Calculator", calculator)
-        config.set("Applications", "TextViewer", editor)
-        config.set("Applications", "Shell", shell)
-        config.set("Applications", "ipython", False)
-        config.set("Applications", "maximized", False)
-        config.set("Applications", "foregroundColor", "#ffffff")
-        config.set("Applications", "backgroundColor", "#000000")
-        config.set("Applications", "elementalColorby", "serie")
-        config.set("Applications", "elementalDefinition", "10")
-        config.set("Applications", "elementalLog", "False")
-
         return config
 
 
@@ -871,6 +811,8 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "General")),
         ("button/PFD.png", ConfPFD,
          QtWidgets.QApplication.translate("pychemqt", "PFD")),
+        ("button/tooltip.png", ConfTooltipEntity,
+         QtWidgets.QApplication.translate("pychemqt", "Tooltips in PFD")),
         ("button/tooltip.png", ConfTooltipUnit,
          QtWidgets.QApplication.translate("pychemqt", "Tooltips in units")),
         ("button/format_numeric.png", ConfFormat,
@@ -879,8 +821,8 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "Pseudocomponents")),
         ("button/applications.png", ConfApplications,
          QtWidgets.QApplication.translate("pychemqt", "Applications")),
-        ("button/tooltip.png", ConfTooltipEntity,
-         QtWidgets.QApplication.translate("pychemqt", "Tooltips in PFD")),
+        ("button/periodicTable.png", prefElemental.Widget,
+         QtWidgets.QApplication.translate("pychemqt", "Elemental table")),
         ("button/tables.png", prefMEOS.Widget,
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric.Widget,
@@ -894,15 +836,15 @@ class Preferences(QtWidgets.QDialog):
         self.config = config
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Preferences"))
+
         layout = QtWidgets.QGridLayout(self)
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            1, 1)
-        self.stacked = QtWidgets.QStackedWidget()
-        layout.addWidget(self.stacked, 1, 2)
         self.lista = QtWidgets.QListWidget()
         self.lista.setIconSize(QtCore.QSize(20, 20))
-        layout.addWidget(self.lista, 1, 0)
+        self.lista.setSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+        layout.addWidget(self.lista, 1, 1)
+        self.stacked = QtWidgets.QStackedWidget()
+        layout.addWidget(self.stacked, 1, 2)
         for icon, dialog, title in self.classes:
             self.stacked.addWidget(dialog(config))
             icon = QtGui.QIcon(QtGui.QPixmap(
@@ -914,7 +856,7 @@ class Preferences(QtWidgets.QDialog):
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 2, 0, 1, 3)
+        layout.addWidget(self.buttonBox, 2, 2)
 
     def value(self):
         """Return value for wizard"""
