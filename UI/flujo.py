@@ -114,7 +114,7 @@ class ConfLineDialog(QtWidgets.QDialog, ConfLine):
         buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
-        self.layout().addWidget(buttonBox, 10, 1, 1, 5)
+        self.layout().addWidget(buttonBox)
 
 
 class TextItemDlg(QtWidgets.QDialog):

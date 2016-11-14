@@ -48,7 +48,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
-from UI.delegate import comboLine
 from lib.utilities import representacion
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
@@ -955,21 +954,31 @@ class ConfLine(QtWidgets.QWidget):
 
     def __init__(self, pen=None, parent=None):
         super(ConfLine, self).__init__(parent)
-        lyt = QtWidgets.QGridLayout(self)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color:")), 0, 1)
+        lyt = QtWidgets.QVBoxLayout(self)
+
+        lyt1 = QtWidgets.QHBoxLayout()
+        lyt1.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Line")))
         self.ColorButtonLine = ColorSelector()
-        lyt.addWidget(self.ColorButtonLine, 0, 2, 1, 4)
+        self.ColorButtonLine.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Default line color"))
+        lyt1.addWidget(self.ColorButtonLine)
+        self.width = Entrada_con_unidades(
+            float, width=50, decimales=1, spinbox=True, step=0.1,
+            textounidad="px")
+        self.width.entrada.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Line Width"))
+        lyt1.addWidget(self.width)
+        lyt.addLayout(lyt1)
 
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Width:")), 1, 1)
-        self.width = Entrada_con_unidades(float, width=50, decimales=1,
-                                          spinbox=True, step=0.1,
-                                          textounidad="px")
-        lyt.addWidget(self.width, 1, 2, 1, 4)
-
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Join:")), 2, 1)
+        lyt2 = QtWidgets.QHBoxLayout()
+        lyt2.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Join")))
+        self.mitterLimit = Entrada_con_unidades(
+            float, width=50, decimales=1, spinbox=True, step=0.1)
+        self.mitterLimit.entrada.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Mitter Limit"))
+        lyt2.addWidget(self.mitterLimit)
         toolJoinMitter = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-join-miter.png"
         toolJoinMitter.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -979,7 +988,7 @@ class ConfLine(QtWidgets.QWidget):
             "pychemqt",
             "Join mitter: The triangular notch between the two lines is not "
             "filled"))
-        lyt.addWidget(toolJoinMitter, 2, 2)
+        lyt2.addWidget(toolJoinMitter)
         toolJoinBevel = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-join-bevel.png"
         toolJoinBevel.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -989,7 +998,7 @@ class ConfLine(QtWidgets.QWidget):
             "pychemqt",
             "Join bevel: The triangular notch between the two lines is "
             "filled"))
-        lyt.addWidget(toolJoinBevel, 2, 3)
+        lyt2.addWidget(toolJoinBevel)
         toolJoinRound = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-join-round.png"
         toolJoinRound.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -998,24 +1007,18 @@ class ConfLine(QtWidgets.QWidget):
         toolJoinRound.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt",
             "Join round: A circular arc between the two lines is filled"))
-        lyt.addWidget(toolJoinRound, 2, 4)
+        lyt2.addWidget(toolJoinRound)
 
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Mitter Limit:")), 3, 1)
-        self.mitterLimit = Entrada_con_unidades(float, width=50, decimales=1,
-                                                spinbox=True, step=0.1)
-        lyt.addWidget(self.mitterLimit, 3, 2, 1, 4)
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            4, 1, 1, 4)
         self.groupJoint = QtWidgets.QButtonGroup()
         self.groupJoint.addButton(toolJoinMitter)
         self.groupJoint.addButton(toolJoinBevel)
         self.groupJoint.addButton(toolJoinRound)
         self.groupJoint.buttonClicked["int"].connect(self.mitterlimitEnabled)
+        lyt.addLayout(lyt2)
 
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Cap:")), 5, 1)
+        lyt3 = QtWidgets.QHBoxLayout()
+        lyt3.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Cap")))
         toolCapFlat = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-cap-butt.png"
         toolCapFlat.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -1025,7 +1028,7 @@ class ConfLine(QtWidgets.QWidget):
             "pychemqt",
             "Flat Cap: A square line end that does not cover the end point of "
             "the line"))
-        lyt.addWidget(toolCapFlat, 5, 2)
+        lyt3.addWidget(toolCapFlat)
         toolCapRound = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-cap-round.png"
         toolCapRound.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -1033,7 +1036,7 @@ class ConfLine(QtWidgets.QWidget):
         toolCapRound.setCheckable(True)
         toolCapRound.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Round Cap: A rounded line end"))
-        lyt.addWidget(toolCapRound, 5, 3)
+        lyt3.addWidget(toolCapRound)
         toolCapSquare = QtWidgets.QToolButton()
         image = os.environ["pychemqt"]+"/images/button/stroke-cap-square.png"
         toolCapSquare.setIcon(QtGui.QIcon(QtGui.QPixmap(image)))
@@ -1043,27 +1046,28 @@ class ConfLine(QtWidgets.QWidget):
             "pychemqt",
             "Square Cap: A square line end that covers the end point and "
             "extends beyond it by half the line width"))
-        lyt.addWidget(toolCapSquare, 5, 4)
+        lyt3.addWidget(toolCapSquare)
+
         self.groupCap = QtWidgets.QButtonGroup()
         self.groupCap.addButton(toolCapFlat)
         self.groupCap.addButton(toolCapRound)
         self.groupCap.addButton(toolCapSquare)
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            6, 1, 1, 4)
+        lyt.addLayout(lyt3)
 
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Dashes:")), 7, 1)
-        self.guion = comboLine()
-        lyt.addWidget(self.guion, 7, 2, 1, 3)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Dash offset:")), 8, 1)
-        self.dashOffset = Entrada_con_unidades(float, width=50, decimales=1,
-                                               spinbox=True, step=0.1)
-        lyt.addWidget(self.dashOffset, 8, 2, 1, 4)
+        lyt4 = QtWidgets.QHBoxLayout()
+        lyt4.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Dash")))
+        self.guion = PFDLineCombo()
+        lyt4.addWidget(self.guion)
+        self.dashOffset = Entrada_con_unidades(
+            float, width=50, decimales=1, spinbox=True, step=0.1)
+        self.dashOffset.entrada.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Dash offset"))
+        lyt4.addWidget(self.dashOffset)
+        lyt.addLayout(lyt4)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 9, 5, 1, 1)
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding))
 
         if pen:
             self.ColorButtonLine.setColor(pen.color().name())
@@ -1126,6 +1130,20 @@ class LineStyleCombo(CustomCombo):
         for key in self.key:
             self.addItem(QtGui.QIcon(QtGui.QPixmap(
                 os.environ["pychemqt"] + self.image[key])), "")
+
+
+class PFDLineCombo(LineStyleCombo):
+    """Custom QComboBox for select PFD line styles for stream"""
+    key = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine,
+           QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
+    image = {
+        key[0]: os.path.join("images", "button", "solid_line.png"),
+        key[1]: os.path.join("images", "button", "dash_line.png"),
+        key[2]: os.path.join("images", "button", "dot_line.png"),
+        key[3]: os.path.join("images", "button", "dash_dot_line.png"),
+        key[4]: os.path.join("images", "button", "dash_dot_dot_line.png")}
+
+    valueChanged = QtCore.pyqtSignal(int)
 
 
 class MarkerCombo(CustomCombo):
