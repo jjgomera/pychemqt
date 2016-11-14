@@ -24,12 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import sqlite3
-from configparser import ConfigParser
 
 from numpy import linspace, logspace, log
 from PyQt5.QtCore import QLocale
 
-from lib.config import conf_dir
 from lib.utilities import colors
 
 # Connection to database with element data
@@ -53,11 +51,12 @@ else:
 
 
 def cleanFloat(flo):
-    try:
-        value = float(flo)
-    except ValueError:
-        value = float(flo.split("(")[1].split(",")[0])
-    except TypeError:
+    if flo:
+        try:
+            value = float(flo)
+        except ValueError:
+            value = float(flo.split("(")[1].split(",")[0])
+    else:
         value = 0
     return value
 
@@ -71,48 +70,48 @@ NUMERIC_VALUES = ["density_Solid", "density_Liq", "density_Gas", "date",
                   "electron_affinity", "first_ionization", "Tf", "Tb",
                   "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
 
-Preferences = ConfigParser()
-Preferences.read(conf_dir+"pychemqtrc")
-PROP = Preferences.get("Applications", "elementalColorby")
-NUM = Preferences.getint("Applications", "elementalDefinition")
-LOG = Preferences.getboolean("Applications", "elementalLog")
 
-PMIN = None
-PMAX = None
-if PROP == "phase":
-    CATEGORIES = ["", "Solid", "Liquid", "Gas"]
-elif PROP in NUMERIC_VALUES:
-    databank.execute("SELECT %s FROM ELEMENTS" % PROP)
-    PMAX = 0
-    for st, in databank:
-        value = cleanFloat(st)
-        if value > PMAX:
-            PMAX = value
+def _configValues(Preferences):
+    PROP = Preferences.get("Applications", "elementalColorby")
+    NUM = Preferences.getint("Applications", "elementalDefinition")
+    LOG = Preferences.getboolean("Applications", "elementalLog")
 
-    if LOG:
-        PMIN = 1
-        CATEGORIES = logspace(log(PMIN), log(PMAX), NUM)
+    PMIN = None
+    PMAX = None
+    if PROP == "phase":
+        CATEGORIES = ["", "Solid", "Liquid", "Gas"]
+        COLORS = color_phase
+    elif PROP in NUMERIC_VALUES:
+        databank.execute("SELECT %s FROM ELEMENTS" % PROP)
+        PMAX = 0
+        for st, in databank:
+            value = cleanFloat(st)
+            if value > PMAX:
+                PMAX = value
+
+        if LOG:
+            PMIN = 1
+            CATEGORIES = logspace(log(PMIN), log(PMAX), NUM)
+        else:
+            PMIN = 0
+            CATEGORIES = linspace(PMIN, PMAX, NUM)
+        COLORS = colors(NUM, scale=True)
+    elif PROP == "Element":
+        CATEGORIES = []
+        COLORS = []
     else:
-        PMIN = 0
-        CATEGORIES = linspace(PMIN, PMAX, NUM)
-else:
-    query = "SELECT %s, COUNT(*) c FROM ELEMENTS GROUP BY %s HAVING c > 0" % (
-        PROP, PROP)
-    databank.execute(query)
-    CATEGORIES = []
-    for category, count in databank:
-        CATEGORIES.append(category)
+        q = "SELECT %s, COUNT(*) c FROM ELEMENTS GROUP BY %s HAVING c > 0" % (
+            PROP, PROP)
+        databank.execute(q)
+        CATEGORIES = []
+        for category, count in databank:
+            CATEGORIES.append(category)
+        if PROP == "serie":
+            COLORS = color_serie
+        else:
+            COLORS = colors(len(CATEGORIES))
 
-if PROP == "serie":
-    COLORS = color_serie
-elif PROP == "phase":
-    COLORS = color_phase
-elif PROP == "ELEMENTS":
-    COLORS = []
-elif PROP in NUMERIC_VALUES:
-    COLORS = colors(NUM, scale=True)
-else:
-    COLORS = colors(len(CATEGORIES))
+    return CATEGORIES, PROP, COLORS, PMAX
 
 
 class Elemental(object):

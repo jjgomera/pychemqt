@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - qtelemental: Periodic table
 #   - boton: Element button in periodic table
 #   - ElementDialog: Dialog to show properties of components
-#
 ###############################################################################
 
 
+from configparser import ConfigParser
 import logging
 import os
 
@@ -34,7 +34,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI.widgets import Entrada_con_unidades, Tabla
 from lib import unidades
-from lib.elemental import Elemental, CATEGORIES, PROP, COLORS, PMAX, cleanFloat
+from lib.elemental import Elemental, _configValues, cleanFloat
+from lib.config import conf_dir
 
 
 font7 = QtGui.QFont()
@@ -61,21 +62,15 @@ class qtelemental(QtWidgets.QDialog):
             os.environ["pychemqt"]+"/images/button/PeriodicTableIcon.png")))
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Periodic Table"))
+
+        self.Preferences = ConfigParser()
+        self.Preferences.read(conf_dir+"pychemqtrc")
+
         layout = QtWidgets.QGridLayout(self)
         layout.setSpacing(2)
-        for i in range(1, 119):
-            element = Elemental(i)
-            b = boton(element, self)
-            if element.group == 0:
-                if i < 80:
-                    j = i-58
-                else:
-                    j = i-90
-                layout.addWidget(b, element.period+4, j+4, 1, 1)
-            elif i == 57 or i == 89:
-                layout.addWidget(b, element.period+4, element.group, 1, 1)
-            else:
-                layout.addWidget(b, element.period, element.group, 1, 1)
+
+        self.populate()
+
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             8, 0, 1, 20)
@@ -98,6 +93,13 @@ class qtelemental(QtWidgets.QDialog):
         asterisco2_.setFont(font20)
         asterisco2_.setAlignment(alignment)
         layout.addWidget(asterisco2_, 11, 2)
+
+        butonConfig = QtWidgets.QToolButton()
+        butonConfig.setIcon(QtGui.QIcon(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "configure.png")))
+        butonConfig.clicked.connect(self.configure)
+        layout.addWidget(butonConfig, 11, 1)
 
         self.Info = QtWidgets.QFrame()
         layout.addWidget(self.Info, 0, 5, 3, 3)
@@ -241,6 +243,22 @@ class qtelemental(QtWidgets.QDialog):
         logging.info(QtWidgets.QApplication.translate(
             "pychemqt", "Starting periodic table tool"))
 
+    def populate(self):
+        CATEGORIES, PROP, COLORS, PMAX = _configValues(self.Preferences)
+        for i in range(1, 119):
+            element = Elemental(i)
+            b = boton(element, CATEGORIES, PROP, COLORS, PMAX, self)
+            if element.group == 0:
+                if i < 80:
+                    j = i-58
+                else:
+                    j = i-90
+                self.layout().addWidget(b, element.period+4, j+4)
+            elif i == 57 or i == 89:
+                self.layout().addWidget(b, element.period+4, element.group)
+            else:
+                self.layout().addWidget(b, element.period, element.group)
+
     def actualizar(self, elemento):
         """Update botton info with data for current element"""
         self.numero_atomico.setText(str(elemento.id))
@@ -285,10 +303,18 @@ class qtelemental(QtWidgets.QDialog):
         else:
             widget.setText("<font color={:}>{:}</font>".format(color, data))
 
+    def configure(self):
+        from UI.prefElemental import Dialog
+        dlg = Dialog(self.Preferences)
+        if dlg.exec_():
+            self.Preferences = dlg.value(self.Preferences)
+            self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
+            self.populate()
+
 
 class boton(QtWidgets.QPushButton):
     """Button widget to define a element"""
-    def __init__(self, element, parent=None):
+    def __init__(self, element, CATEGORIES, PROP, COLORS, PMAX, parent=None):
         """Constructor,
         element: the atomic number, used as id to tagged button
         """
@@ -300,6 +326,8 @@ class boton(QtWidgets.QPushButton):
         self.Element = element
 
         if COLORS and not PMAX:
+            if PROP == "group_element":
+                PROP = "group"
             prop = element.__getattribute__(PROP)
             color = COLORS[CATEGORIES.index(prop)]
         elif PMAX:
@@ -656,3 +684,11 @@ class ElementDialog(QtWidgets.QDialog):
         else:
             widget = QtWidgets.QLabel(str(data))
         return widget
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Form = qtelemental()
+    Form.show()
+    sys.exit(app.exec_())
