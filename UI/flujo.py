@@ -41,7 +41,7 @@ from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
 from UI.widgets import createAction, Table_Graphics, PathConfig
-from tools.UI_Preferences import ConfLine
+from UI.prefPFD import ConfLineDialog
 from equipment import *
 from equipment.parents import equipment
 
@@ -103,18 +103,6 @@ class SelectStreamProject(QtWidgets.QDialog):
         self.stream.clear()
         for stream in sorted(self.project["stream"].keys()):
             self.stream.addItem(stream)
-
-
-class ConfLineDialog(QtWidgets.QDialog, ConfLine):
-    """Dialogo de definición de formatos de líneas"""
-
-    def __init__(self, pen=None, parent=None):
-        super(ConfLineDialog, self).__init__(pen)
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Edit format line"))
-        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
-        self.layout().addWidget(buttonBox)
 
 
 class TextItemDlg(QtWidgets.QDialog):

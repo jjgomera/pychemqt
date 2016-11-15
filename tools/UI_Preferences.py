@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #
 #   Preferences: Preferences main dialog
 #   - ConfGeneral: General configuration options
-#   - ConfPFD: Flow Diagram configuration
 #   - ConfTooltipUnit: Tooltip with unit alternate value configuration
 #   - ConfFormat: Numeric format configuration
 #       NumericFactor: Numeric format configuration dialog
@@ -41,15 +40,13 @@ from configparser import ConfigParser
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from UI.widgets import (Entrada_con_unidades, ColorSelector, ConfLine,
-                        PathConfig)
+from UI.widgets import Entrada_con_unidades, ColorSelector, PathConfig
 from UI.delegate import CheckEditor
-from tools import UI_confResolution
 from lib import unidades, corriente
 from lib.utilities import representacion
-from lib.firstrun import calculator, editor, shell, which
+from lib.firstrun import which
 from equipment import equipments
-from UI import prefElemental, prefMEOS, prefPsychrometric, prefMoody
+from UI import prefElemental, prefMEOS, prefMoody, prefPFD, prefPsychrometric
 
 
 class ConfGeneral(QtWidgets.QDialog):
@@ -114,86 +111,6 @@ class ConfGeneral(QtWidgets.QDialog):
         config.set("General", "Load_Last_Project",
                    str(self.loadLastProject.isChecked()))
         config.set("General", "Tray", str(self.showTrayIcon.isChecked()))
-        return config
-
-
-class ConfPFD(QtWidgets.QDialog):
-    """Flow Diagram configuration"""
-    def __init__(self, config=None, parent=None):
-        super(ConfPFD, self).__init__(parent)
-
-        lyt = QtWidgets.QGridLayout(self)
-        lyt.setContentsMargins(0, 0, 0, 0)
-        scroll = QtWidgets.QScrollArea()
-        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
-        lyt.addWidget(scroll)
-        dlg = QtWidgets.QWidget()
-        layout = QtWidgets.QGridLayout(dlg)
-
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Input color")), 1, 1)
-        self.ColorButtonEntrada = ColorSelector()
-        layout.addWidget(self.ColorButtonEntrada, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Output color:")), 2, 1)
-        self.ColorButtonSalida = ColorSelector()
-        layout.addWidget(self.ColorButtonSalida, 2, 2)
-
-        group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Line format"))
-        layout.addWidget(group, 3, 1, 1, 3)
-        lyt = QtWidgets.QHBoxLayout(group)
-        self.lineFormat = ConfLine()
-        lyt.addWidget(self.lineFormat)
-
-        group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "PFD resolution"))
-        layout.addWidget(group, 4, 1, 1, 3)
-        lyt = QtWidgets.QHBoxLayout(group)
-        self.resolution = UI_confResolution.UI_confResolution_widget(config)
-        lyt.addWidget(self.resolution)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 14, 1, 1, 4)
-        scroll.setWidget(dlg)
-
-        if config and config.has_section("PFD"):
-            self.ColorButtonEntrada.setColor(
-                config.get("PFD", 'Color_Entrada'))
-            self.ColorButtonSalida.setColor(config.get("PFD", 'Color_Salida'))
-            self.lineFormat.ColorButtonLine.setColor(
-                config.get("PFD", 'Color_Stream'))
-            self.lineFormat.groupJoint.button(
-                (config.getint("PFD", 'Union')+2)*-1).setChecked(True)
-            self.lineFormat.mitterLimit.setValue(
-                config.getfloat("PFD", 'Miter_limit'))
-            self.lineFormat.groupCap.button(
-                (config.getint("PFD", 'Punta')+2)*-1).setChecked(True)
-            self.lineFormat.guion.setCurrentIndex(
-                config.getint("PFD", 'Guion'))
-            self.lineFormat.dashOffset.setValue(
-                config.getfloat("PFD", 'Dash_offset'))
-            self.lineFormat.width.setValue(config.getfloat("PFD", 'Width'))
-
-    def value(self, config):
-        if not config.has_section("PFD"):
-            config.add_section("PFD")
-        config = self.resolution.value(config)
-        config.set("PFD", "Color_Entrada",
-                   self.ColorButtonEntrada.color.name())
-        config.set("PFD", "Color_Salida", self.ColorButtonSalida.color.name())
-        config.set("PFD", "Color_Stream",
-                   self.lineFormat.ColorButtonLine.color.name())
-        config.set("PFD", "Width", str(self.lineFormat.width.value))
-        config.set("PFD", "Union",
-                   str(abs(self.lineFormat.groupJoint.checkedId())-2))
-        config.set("PFD", "Miter_limit",
-                   str(self.lineFormat.mitterLimit.value))
-        config.set("PFD", "Punta",
-                   str(abs(self.lineFormat.groupCap.checkedId())-2))
-        config.set("PFD", "Guion", str(self.lineFormat.guion.currentIndex()))
-        config.set("PFD", "Dash_offset", str(self.lineFormat.dashOffset.value))
         return config
 
 
@@ -809,7 +726,7 @@ class Preferences(QtWidgets.QDialog):
     classes = [
         ("pychemqt.png", ConfGeneral,
          QtWidgets.QApplication.translate("pychemqt", "General")),
-        ("button/PFD.png", ConfPFD,
+        ("button/PFD.png", prefPFD.Widget,
          QtWidgets.QApplication.translate("pychemqt", "PFD")),
         ("button/tooltip.png", ConfTooltipEntity,
          QtWidgets.QApplication.translate("pychemqt", "Tooltips in PFD")),
