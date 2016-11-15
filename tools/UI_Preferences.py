@@ -32,21 +32,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-import os
-import sys
+from configparser import ConfigParser
 from functools import partial
 from math import pi
-from configparser import ConfigParser
+import os
+import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from UI.widgets import Entrada_con_unidades, ColorSelector, PathConfig
-from UI.delegate import CheckEditor
 from lib import unidades, corriente
-from lib.utilities import representacion
 from lib.firstrun import which
+from lib.utilities import representacion
 from equipment import equipments
 from UI import prefElemental, prefMEOS, prefMoody, prefPFD, prefPsychrometric
+from UI.delegate import CheckEditor
+from UI.widgets import Entrada_con_unidades, ColorSelector, PathConfig
 
 
 class ConfGeneral(QtWidgets.QDialog):
@@ -119,17 +119,16 @@ class ConfTooltipUnit(QtWidgets.QDialog):
     def __init__(self, config, parent=None):
         super(ConfTooltipUnit, self).__init__(parent)
 
-        layout = QtWidgets.QGridLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         self.checkShow = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Show Tool Tips"))
         self.checkShow.toggled.connect(self.checkShow_Toggled)
-        layout.addWidget(self.checkShow, 1, 1)
+        layout.addWidget(self.checkShow)
 
         self.groupsystems = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate(
                 "pychemqt", "Systems of measurement"))
-        self.groupsystems.setFixedHeight(50)
-        layout.addWidget(self.groupsystems, 3, 1)
+        layout.addWidget(self.groupsystems)
         lytSystems = QtWidgets.QHBoxLayout(self.groupsystems)
         self.SI = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "SI"))
@@ -143,15 +142,22 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "English"))
         self.English.toggled.connect(partial(self.systems, "english"))
         lytSystems.addWidget(self.English)
+        self.Metric = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Metric"))
+        self.Metric.toggled.connect(partial(self.systems, "metric"))
+        lytSystems.addWidget(self.Metric)
+        self.CGS = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "CGS"))
+        self.CGS.toggled.connect(partial(self.systems, "cgs"))
+        lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            4, 1)
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
 
         self.eleccion = QtWidgets.QComboBox()
-        layout.addWidget(self.eleccion, 8, 1)
+        layout.addWidget(self.eleccion)
         self.stacked = QtWidgets.QStackedWidget()
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
-        layout.addWidget(self.stacked, 9, 1)
+        layout.addWidget(self.stacked)
 
         self.tabla = []
         for i, magnitud in enumerate(unidades._magnitudes[:-1]):
@@ -177,6 +183,11 @@ class ConfTooltipUnit(QtWidgets.QDialog):
 
         if config.has_section("Tooltip"):
             self.checkShow.setChecked(config.getboolean("Tooltip", "Show"))
+            self.SI.setChecked(config.getboolean("Tooltip", "SI"))
+            self.AltSI.setChecked(config.getboolean("Tooltip", "AltSI"))
+            self.English.setChecked(config.getboolean("Tooltip", "English"))
+            self.Metric.setChecked(config.getboolean("Tooltip", "Metric"))
+            self.CGS.setChecked(config.getboolean("Tooltip", "CGS"))
 
     def rellenar(self, magnitud, tabla, config):
         if config.has_section("Tooltip"):
@@ -194,7 +205,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         if bool:
             txt = "true"
         else:
-            txt = "false"
+            txt = ""
         for tabla, value in enumerate(unidades.units_set[set][:-1]):
             self.tabla[tabla].item(value, 0).setText(txt)
 
@@ -202,6 +213,12 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         if not config.has_section("Tooltip"):
             config.add_section("Tooltip")
         config.set("Tooltip", "Show", str(self.checkShow.isChecked()))
+        config.set("Tooltip", "SI", str(self.SI.isChecked()))
+        config.set("Tooltip", "CGS", str(self.CGS.isChecked()))
+        config.set("Tooltip", "AltSI", str(self.AltSI.isChecked()))
+        config.set("Tooltip", "English", str(self.English.isChecked()))
+        config.set("Tooltip", "Metric", str(self.Metric.isChecked()))
+
         for i, tabla in enumerate(self.tabla):
             lista = []
             for j in range(tabla.rowCount()):

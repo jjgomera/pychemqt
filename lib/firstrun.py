@@ -37,23 +37,21 @@ import urllib.request
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
 # magnitude are added
-magnitudes = ['Acceleration', 'PackingDP', 'SpecificHeat', 'SpecificEntropy',
-              'HeatTransfCoef', 'ThermalConductivity', 'Density', 'DenLiq',
-              'DenGas', 'MolarDensity', 'DensityPressure',
-              'DensityTemperature', 'Diffusivity', 'KViscosity', 'Energy',
-              'Work', 'Enthalpy', 'MolarEnthalpy', 'EnthalpyDensity',
-              'EnthalpyPressure', 'Entropy', 'HeatFlux', 'MolarFlow',
-              'MassFlow', 'VolFlow', 'QLiq', 'QGas', 'Fouling', 'Frequency',
-              'Force', 'DeltaP', 'Length', 'ParticleDiameter', 'Thickness',
-              'PipeDiameter', 'Head', 'Mass', 'MolarSpecificHeat', 'Mol',
-              'DipoleMoment', 'Currency', 'SolubilityParameter', 'EnergyFlow',
-              'Power', 'PotencialElectric', 'Pressure', 'InvPressure',
-              'PressureTemperature', 'PressureDensity', 'V2V',
-              'CakeResistance', 'Temperature', 'InvTemperature',
-              'TemperaturePressure', 'Tension', 'SpecificVolume_square',
-              'Time', 'UA', 'DeltaT', 'Speed', 'Viscosity', 'Volume',
-              'VolLiq', 'VolGas', 'MolarVolume', 'SpecificVolume', 'Angle',
-              'Area', 'Dimensionless']
+magnitudes = [
+    'Acceleration', 'Angle', 'Area', 'CakeResistance', 'Currency', 'Density',
+    'DenLiq', 'DenGas', 'DensityPressure', 'DensityTemperature', 'Diffusivity',
+    'KViscosity', 'DipoleMoment', 'PotencialElectric', 'Energy', 'Work',
+    'Enthalpy', 'EnthalpyDensity', 'EnthalpyPressure', 'Entropy', 'Force',
+    'Fouling', 'Frequency', 'V2V', 'HeatFlux', 'HeatTransfCoef', 'Length',
+    'ParticleDiameter', 'Thickness', 'PipeDiameter', 'Head', 'Mass',
+    'MassFlow', 'Mol', 'MolarDensity', 'MolarEnthalpy', 'MolarFlow',
+    'MolarSpecificHeat', 'MolarVolume', 'PackingDP', 'EnergyFlow', 'Power',
+    'Pressure', 'DeltaP', 'InvPressure', 'PressureTemperature',
+    'PressureDensity', 'SolubilityParameter', 'SpecificHeat',
+    'SpecificEntropy', 'SpecificVolume', 'Speed', 'Tension', 'Temperature',
+    'DeltaT', 'InvTemperature', 'TemperaturePressure', 'ThermalConductivity',
+    'SpecificVolume_square', 'Time', 'UA', 'Viscosity', 'Volume', 'VolLiq',
+    'VolGas', 'VolFlow', 'QLiq', 'QGas', 'Dimensionless']
 
 # See end of equipment.__init__.py to know how to get this list, check when new
 # fully functional are added
@@ -146,6 +144,11 @@ def Preferences():
     # Tooltip
     config.add_section("Tooltip")
     config.set("Tooltip", "Show", "True")
+    config.set("Tooltip", "SI", "False")
+    config.set("Tooltip", "CGS", "False")
+    config.set("Tooltip", "AltSI", "False")
+    config.set("Tooltip", "English", "False")
+    config.set("Tooltip", "Metric", "False")
     for i, magnitud in enumerate(magnitudes[:-1]):
         config.set("Tooltip", magnitud, "[0,1]")
 
