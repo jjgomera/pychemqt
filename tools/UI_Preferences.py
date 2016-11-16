@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - ConfGeneral: General configuration options
 #   - ConfTooltipUnit: Tooltip with unit alternate value configuration
 #   - ConfFormat: Numeric format configuration
-#       NumericFactor: Numeric format configuration dialog
 #   - ConfPetro: Petro new component configuration
 #   - ConfApplications: External applications configuration
 #   - ConfTooltipEntity: Entity properties in popup window configuration
@@ -46,7 +45,7 @@ from lib.utilities import representacion
 from equipment import equipments
 from UI import prefElemental, prefMEOS, prefMoody, prefPFD, prefPsychrometric
 from UI.delegate import CheckEditor
-from UI.widgets import Entrada_con_unidades, ColorSelector, PathConfig
+from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
 
 class ConfGeneral(QtWidgets.QDialog):
@@ -309,173 +308,6 @@ class ConfTooltipEntity(QtWidgets.QDialog):
         return config
 
 
-class NumericFactor(QtWidgets.QDialog):
-    """Numeric format configuration dialog"""
-    def __init__(self, config, unit=None, order=0, parent=None):
-        super(NumericFactor, self).__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Format"))
-        layout = QtWidgets.QGridLayout(self)
-        self.checkFixed = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Fixed decimal point"))
-        layout.addWidget(self.checkFixed, 1, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Total digits")), 2, 2)
-        self.TotalDigits = Entrada_con_unidades(
-            int, width=45, value=0, boton=False, spinbox=True, min=0, max=12,
-            showNull=True)
-        layout.addWidget(self.TotalDigits, 2, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Decimal digits")), 3, 2)
-        self.DecimalDigits = Entrada_con_unidades(
-            int, width=45, value=4, boton=False, spinbox=True, min=1, max=12)
-        layout.addWidget(self.DecimalDigits, 3, 3)
-        self.checkSignificant = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Significant figures"))
-        layout.addWidget(self.checkSignificant, 4, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Figures")), 5, 2)
-        self.FiguresSignificatives = Entrada_con_unidades(
-            int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
-        layout.addWidget(self.FiguresSignificatives, 5, 3)
-        self.checkExp = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Exponential preferred"))
-        layout.addWidget(self.checkExp, 6, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Figures")), 7, 2)
-        self.FiguresExponential = Entrada_con_unidades(
-            int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
-        layout.addWidget(self.FiguresExponential, 7, 3)
-        layout.addItem(QtWidgets.QSpacerItem(
-            30, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            8, 1)
-        self.checkExpVariable = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Exponential for big/small values"))
-        layout.addWidget(self.checkExpVariable, 9, 1, 1, 3)
-        self.labelTolerancia = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tolerance"))
-        layout.addWidget(self.labelTolerancia, 10, 2)
-        self.Tolerance = Entrada_con_unidades(
-            int, width=45, value=4, boton=False, spinbox=True, min=0, max=12)
-        layout.addWidget(self.Tolerance, 10, 3)
-        self.checkSign = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Show sign in positive values"))
-        layout.addWidget(self.checkSign, 11, 1, 1, 3)
-        self.checkThousand = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Show thousand separator"))
-        layout.addWidget(self.checkThousand, 12, 1, 1, 3)
-
-        self.checkFixed.toggled.connect(self.TotalDigits.setNotReadOnly)
-        self.checkFixed.toggled.connect(self.DecimalDigits.setNotReadOnly)
-        self.checkSignificant.toggled.connect(
-            self.FiguresSignificatives.setNotReadOnly)
-        self.checkExp.toggled.connect(self.ExpToggled)
-        self.checkExp.toggled.connect(self.FiguresExponential.setNotReadOnly)
-        self.checkExpVariable.toggled.connect(self.Tolerance.setNotReadOnly)
-        self.checkExpVariable.toggled.connect(self.labelTolerancia.setEnabled)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            13, 1)
-        self.muestra = QtWidgets.QLabel()
-        layout.addWidget(self.muestra, 14, 1, 1, 3)
-
-        buttonBox = QtWidgets.QDialogButtonBox()
-        buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel |
-                                     QtWidgets.QDialogButtonBox.Ok)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
-        layout.addWidget(buttonBox, 20, 1, 1, 3)
-
-        self.checkFixed.setChecked(config["format"] == 0)
-        self.TotalDigits.setNotReadOnly(config["format"] == 0)
-        self.DecimalDigits.setNotReadOnly(config["format"] == 0)
-        self.checkSignificant.setChecked(config["format"] == 1)
-        self.FiguresSignificatives.setNotReadOnly(config["format"] == 1)
-        self.checkExp.setChecked(config["format"] == 2)
-        self.FiguresExponential.setNotReadOnly(config["format"] == 2)
-        if config["format"] == 0:
-            self.DecimalDigits.setValue(config["decimales"])
-        elif config["format"] == 1:
-            self.FiguresSignificatives.setValue(config["decimales"])
-        else:
-            self.FiguresExponential.setValue(config["decimales"])
-        if "total" in config:
-            self.TotalDigits.setValue(config["total"])
-        if "exp" in config:
-            self.checkExpVariable.setChecked(config["exp"])
-        if "tol" in config:
-            self.Tolerance.setValue(config["tol"])
-        self.Tolerance.setNotReadOnly(config.get("exp", False))
-        if "signo" in config:
-            self.checkSign.setChecked(config["signo"])
-        if "thousand" in config:
-            self.checkThousand.setChecked(config["thousand"])
-
-        self.updateMuestra()
-        self.checkFixed.toggled.connect(self.updateMuestra)
-        self.checkSignificant.toggled.connect(self.updateMuestra)
-        self.checkExp.toggled.connect(self.updateMuestra)
-        self.checkExpVariable.toggled.connect(self.updateMuestra)
-        self.TotalDigits.valueChanged.connect(self.updateMuestra)
-        self.DecimalDigits.valueChanged.connect(self.updateMuestra)
-        self.FiguresSignificatives.valueChanged.connect(self.updateMuestra)
-        self.FiguresExponential.valueChanged.connect(self.updateMuestra)
-        self.Tolerance.valueChanged.connect(self.updateMuestra)
-        self.checkSign.toggled.connect(self.updateMuestra)
-        self.checkThousand.toggled.connect(self.updateMuestra)
-
-        if unit and unit.__text__:
-            layout.addItem(QtWidgets.QSpacerItem(
-                20, 10, QtWidgets.QSizePolicy.Fixed,
-                QtWidgets.QSizePolicy.Fixed), 15, 1, 1, 3)
-            self.muestra = QtWidgets.QLabel()
-            layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-                "pychemqt", "Convert units")), 16, 1)
-            self.unit = QtWidgets.QComboBox()
-            for txt in unit.__text__:
-                self.unit.addItem(txt)
-            self.unit.setCurrentIndex(order)
-            layout.addWidget(self.unit, 16, 2, 1, 2)
-
-    def ExpToggled(self, bool):
-        self.FiguresExponential.setNotReadOnly(bool)
-        self.checkExpVariable.setDisabled(bool)
-        if self.checkExpVariable.isChecked():
-            self.labelTolerancia.setDisabled(False)
-            self.Tolerance.setReadOnly(True)
-
-    def updateMuestra(self):
-        kwargs = self.args()
-        txt = QtWidgets.QApplication.translate("pychemqt", "Sample") + ": " + \
-            representacion(pi*1e4, **kwargs)
-        self.muestra.setText(txt)
-
-    def args(self):
-        kwarg = {}
-        if self.checkFixed.isChecked():
-            kwarg["format"] = 0
-            kwarg["total"] = self.TotalDigits.value
-            kwarg["decimales"] = self.DecimalDigits.value
-        elif self.checkSignificant.isChecked():
-            kwarg["format"] = 1
-            kwarg["decimales"] = self.FiguresSignificatives.value
-        else:
-            kwarg["format"] = 2
-            kwarg["decimales"] = self.FiguresExponential.value
-        kwarg["exp"] = self.checkExpVariable.isEnabled() and \
-            self.checkExpVariable.isChecked()
-        kwarg["tol"] = self.Tolerance.value
-        kwarg["signo"] = self.checkSign.isChecked()
-        kwarg["thousand"] = self.checkThousand.isChecked()
-        return kwarg
-
-
 class ConfFormat(QtWidgets.QTableWidget):
     """Numeric format configuration"""
     def __init__(self, config=None, parent=None):
@@ -508,7 +340,7 @@ class ConfFormat(QtWidgets.QTableWidget):
         self.cellDoubleClicked.connect(self.showConfDialog)
 
     def showConfDialog(self, fila, columna):
-        dialog = NumericFactor(self.config[fila], self)
+        dialog = NumericFactor(self.config[fila], parent=self)
         if dialog.exec_():
             config = dialog.args()
             self.config[fila] = config

@@ -80,10 +80,10 @@ from lib import meos, mEoS, unidades, plot, config
 from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable, formatLine
 from tools.codeEditor import SimplePythonEditor
-from tools.UI_Preferences import NumericFactor
 from UI.delegate import CheckEditor
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
-                        MarkerCombo, ColorSelector, InputFont, Status, Tabla)
+                        MarkerCombo, ColorSelector, InputFont, Status, Tabla,
+                        NumericFactor)
 
 
 N_PROP = len(ThermoAdvanced.properties())
