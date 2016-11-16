@@ -640,9 +640,6 @@ class Tabla(QtWidgets.QTableWidget):
         if self.isEnabled():
             self.editingFinished.emit()
 
-    def focusOutEvent(self, event):
-        self.clearSelection()
-
 
 class ClickableLabel(QtWidgets.QLabel):
     """Custom QLabel with clicked functionality"""

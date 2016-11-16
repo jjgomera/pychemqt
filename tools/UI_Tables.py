@@ -2496,7 +2496,6 @@ class TablaMEoS(Tabla):
         self.verticalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.verticalHeader().customContextMenuRequested.connect(
             self.vHeaderClicked)
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.itemSelectionChanged.connect(self.selectPoint)
         self.data = []
         if not self.readOnly:
@@ -2739,7 +2738,7 @@ class TablaMEoS(Tabla):
                     del line
                     del plot.plot.ax.lines[i]
 
-        # Add new selected points
+            # Add new selected points
             x = []
             y = []
             for item in self.selectedItems():
@@ -2850,9 +2849,9 @@ class TablaMEoS(Tabla):
         menu.exec_(event.globalPos())
 
     def copy(self, event):
-        """Copy selected value to clipboard"""
-        widget = self.itemAt(self.viewport().mapFromGlobal(event.globalPos()))
-        QtWidgets.QApplication.clipboard().setText(widget.text())
+        """Copy selected values to clipboard"""
+        txt = [w.text() for w in self.selectedItems()]
+        QtWidgets.QApplication.clipboard().setText(" ".join(txt))
 
     def exportCSV(self):
         """Export data table as a csv file"""
@@ -4245,7 +4244,7 @@ class EditAxis(QtWidgets.QDialog):
         lb.setSizePolicy(
             QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         lytTitle.addWidget(lb)
-        self.title = InputFond()
+        self.title = InputFont()
         lytTitle.addWidget(self.title)
         layout.addLayout(lytTitle, 1, 1, 1, self.fig.dim)
 
