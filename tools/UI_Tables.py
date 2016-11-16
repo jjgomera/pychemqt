@@ -2756,6 +2756,10 @@ class TablaMEoS(Tabla):
         """Add new value to kwargs for point, and show properties if it is
         calculable
         row, column: index for modified cell in table"""
+        txt = self.item(row, column).text()
+        if not txt:
+            return
+
         key = self.keys[column]
         unit = self.units[column]
         if unit is unidades.Dimensionless:
@@ -2829,11 +2833,14 @@ class TablaMEoS(Tabla):
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Copy"),
             slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy,
-            icon=os.environ["pychemqt"]+"/images/button/editCopy", parent=self)
+            icon=os.environ["pychemqt"] +
+            os.path.join("images", "button", "editCopy"),
+            parent=self)
         export = createAction(
             QtWidgets.QApplication.translate("pychemqt", "E&xport to csv"),
             self.exportCSV,
-            icon=os.environ["pychemqt"]+"/images/button/export",
+            icon=os.environ["pychemqt"] +
+            os.path.join("images", "button", "export"),
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Export table to file"),
             parent=self)
@@ -2869,19 +2876,12 @@ class TablaMEoS(Tabla):
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
         patron = ";;".join(pat)
 
-        dialog = QtWidgets.QFileDialog(
-            self,
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Export table to file"),
-            dir, patron)
-        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptOpen)
-        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
-        if dialog.exec_():
-            fname = str(dialog.selectedFiles().join(""))
-            ext = str(dialog.selectedNameFilter().split(".")[-1][:-1])
-
-            if fname:
-                exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
+        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
+            self, QtWidgets.QApplication.translate(
+                "pychemqt", "Export table to file"), dir, patron)
+        if fname and ext:
+            ext = ext.split(".")[-1][:-1]
+            exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
 
     def writeToStream(self, stream):
         stream.writeInt32(self.columnCount())

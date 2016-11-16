@@ -125,43 +125,41 @@ def colors(number, mix="", scale=False):
     return colors
 
 
-def exportTable(matrix, fname, format, title=None):
+def exportTable(matrix, fname, ext, title=None):
     """Save data to a file
     Inputs
         matrix: array with data to save
         fname: name of file to save
-        format: name of format to save
+        ext: name of format to save
             csv | ods | xls | xlsx
         title: column title array, optional
     """
-    sheetTitle = str(QApplication.translate("pychemqt", "Table"))
-    if fname.split(".")[-1] != format:
-        fname += ".%s" % format
+    sheetTitle = QApplication.translate("pychemqt", "Table")
+    if fname.split(".")[-1] != ext:
+        fname += ".%s" % ext
 
     # Format title
+    header = []
     if title:
-        header = []
         for ttl in title:
             line = str(ttl).split(os.linesep)
             if line[-1] != "[-]":
                 line[-1] = "["+line[-1]+"]"
             header.append(" ".join(line))
-        c_newline = bytes.maketrans(os.linesep, " ")
 
-    if format == "csv":
+    if ext == "csv":
         import csv
-        with open(fname, "w") as archivo:
-            writer = csv.writer(archivo, delimiter='\t', quotechar='"',
-                                quoting=csv.QUOTE_NONE)
+        with open(fname, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=header)
 
-            # Add Data
-            if title:
-                writer.writerow([ttl.translate(c_newline) for ttl in header])
-            c_float = bytes.maketrans(".", ",")
+            writer.writeheader()
             for row in matrix:
-                writer.writerow([str(data).translate(c_float) for data in row])
+                kw = {}
+                for ttl, value in zip(header, row):
+                    kw[ttl] = value
+                writer.writerow(kw)
 
-    elif format == "ods":
+    elif ext == "ods":
         import ezodf
         spreadsheet = ezodf.newdoc("ods", fname)
         sheets = spreadsheet.sheets
@@ -178,7 +176,7 @@ def exportTable(matrix, fname, format, title=None):
                 sheet["%s%i" % (spreadsheetColumn(i), j+2)].set_value(data)
         spreadsheet.save()
 
-    elif format == "xls":
+    elif ext == "xls":
         import xlwt
         spreadsheet = xlwt.Workbook()
         sheet = spreadsheet.add_sheet(sheetTitle)
@@ -197,7 +195,7 @@ def exportTable(matrix, fname, format, title=None):
                 sheet.write(j+1, i, data)
         spreadsheet.save(fname)
 
-    elif format == "xlsx":
+    elif ext == "xlsx":
         import openpyxl
         from openpyxl.styles import Font
         spreadsheet = openpyxl.Workbook()
@@ -223,13 +221,15 @@ def exportTable(matrix, fname, format, title=None):
 
     else:
         raise ValueError(QApplication.translate(
-            "pychemqt", "Unsopported format") + " " + format)
+            "pychemqt", "Unsopported format") + " " + ext)
 
 
 def spreadsheetColumn(index):
     """Procedure to convert index column in AAA spreadsheet column namestyle
     Input:
         index: index of column start with 0
+    Return:
+        column letter code, ej: A, C
     """
     index += 1
     letters = ""
