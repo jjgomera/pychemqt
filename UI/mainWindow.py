@@ -1320,16 +1320,16 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 ventanas = self.centralwidget.currentWidget().subWindowList()
                 for ind, win in enumerate(ventanas[1:]):
                     ventana = {}
-                    ventana["class"] = window.widget().__class__
+                    ventana["class"] = win.widget().__class__.__name__
                     ventana["x"] = win.pos().x()
                     ventana["y"] = win.pos().y()
                     ventana["height"] = win.size().height()
-                    vetnana["width"] = win.size().width()
+                    ventana["width"] = win.size().width()
 
                     widget = {}
                     win.widget().writeToJSON(widget)
                     ventana["window"] = widget
-                    other["ind"] = ventana
+                    other[ind] = ventana
                 data["other"] = other
 
                 json.dump(data, file, indent=4)
@@ -1426,20 +1426,20 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.list.updateList(
                 mdiArea.subWindowList()[0].widget().scene().objects)
 
-            for ventana in data["other"]:
+            for i, ventana in data["other"].items():
                 name = ventana["class"]
                 indice = other_window_names.index(name)
-                widget = other_window[indice]()
-                widget.readFromJSON(ventana)
-                mdiArea.addSubWindow(widget)
+                widget = other_window[indice]
+                instance = widget.readFromJSON(ventana["window"], self)
+                mdiArea.addSubWindow(instance)
                 x = ventana["x"]
                 y = ventana["y"]
                 pos = QtCore.QPoint(x, y)
                 h = ventana["height"]
                 w = ventana["width"]
                 size = QtCore.QSize(w, h)
-                mdiArea.subWindowList()[ventana+1].move(pos)
-                mdiArea.subWindowList()[ventana+1].resize(size)
+                mdiArea.subWindowList()[-1].move(pos)
+                mdiArea.subWindowList()[-1].resize(size)
 
             self.centralwidget.addTab(
                 mdiArea, os.path.splitext(os.path.basename(str(fname)))[0])

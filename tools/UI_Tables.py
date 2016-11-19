@@ -2882,138 +2882,67 @@ class TablaMEoS(Tabla):
             ext = ext.split(".")[-1][:-1]
             exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
 
-    def writeToStream(self, stream):
-        stream.writeInt32(self.columnCount())
+    def writeToJSON(self, data):
+        """Write instance parameter to file"""
+        data["column"] = self.columnCount()
 
         # Save titles
-        stream.writeString(self.windowTitle())
-        for col in range(self.columnCount()):
-            stream.writeQString(self.horizontalHeaderItem(col).text())
+        data["title"] = self.windowTitle()
+        data["htitle"] = []
+        for column in range(data["column"]):
+            data["htitle"].append(self.horizontalHeaderItem(column).text())
 
         # Save units as index
         all = unidades._all
         all.append(unidades.Dimensionless)
-        for unit in self.units:
-            stream.writeInt32(all.index(unit))
+        data["unit"] = [all.index(unit) for unit in self.units]
 
-        # Save keys if necesary
-        stream.writeBool(self.readOnly)
+        # Save keys if necessary
+        data["readOnly"] = self.readOnly
         if not self.readOnly:
-            stream.writeInt32(mEoS.__all__.index(self.fluid))
-            for key in self.keys:
-                stream.writeString(key)
-            for boolean in self.columnReadOnly:
-                stream.writeBool(boolean)
+            data["fluid"] = mEoS.__all__.index(self.fluid)
+            data["keys"] = self.keys
+            data["columnReadOnly"] = self.columnReadOnly
 
         # Save order unit
-        for index in self.orderUnit:
-            stream.writeInt32(index)
+        data["orderUnit"] = self.orderUnit
 
         # Save format
-        for format in self.format:
-            stream.writeInt32(format.get("format", 1))
-            stream.writeInt32(format.get("decimales", 6))
-            stream.writeBool(format.get("signo", False))
-            stream.writeInt32(format.get("total", 10))
-            stream.writeBool(format.get("exp", False))
-            stream.writeInt32(format.get("tol", 6))
-            stream.writeBool(format.get("thousand", False))
+        data["format"] = self.format
 
         # Save data if exist
-        stream.writeInt32(len(self.data))
-        for row in self.data:
-            stream.writeInt32(len(row))
-            for data in row:
-                bool = isinstance(data, str)
-                stream.writeBool(bool)
-                if bool:
-                    stream.writeQString(data)
-                else:
-                    stream.writeFloat(data)
+        data["data"] = self.data
 
     @classmethod
-    def readFromStream(cls, stream, parent):
-        columnCount = stream.readInt32()
-
-        # Get titles
-        title = stream.readString()
-        propiedades = []
-        for col in range(columnCount):
-            propiedades.append(stream.readQString())
+    def readFromJSON(self, data, parent):
+        """Load data table from saved file"""
 
         # Get units
         all = unidades._all
         all.append(unidades.Dimensionless)
-        units = []
-        for i in range(columnCount):
-            index = stream.readInt32()
-            units.append(all[index])
-
-        # Get keys if neccesary
-        readOnly = stream.readBool()
-        if not readOnly:
-            index = stream.readInt32()
-            fluid = mEoS.__all__[index]
-            keys = []
-            for i in range(columnCount):
-                keys.append(stream.readString())
-            columnReadOnly = []
-            for i in range(columnCount):
-                columnReadOnly.append(stream.readBool())
-
-        # Get OrderUnit
-        orderUnit = []
-        for i in range(columnCount):
-            orderUnit.append(stream.readInt32())
-
-        # Get format
-        format = []
-        for col in range(columnCount):
-            fr = {}
-            fr["format"] = stream.readInt32()
-            fr["decimales"] = stream.readInt32()
-            fr["signo"] = stream.readBool()
-            fr["total"] = stream.readInt32()
-            fr["exp"] = stream.readBool()
-            fr["tol"] = stream.readInt32()
-            fr["thousand"] = stream.readBool()
-            format.append(fr)
-
-        # Get data
-        data = []
-        datalen = stream.readInt32()
-        for row in range(datalen):
-            rowlen = stream.readInt32()
-            lista = []
-            for element in range(rowlen):
-                boolean = stream.readBool()
-                if boolean:
-                    lista.append(stream.readQString())
-                else:
-                    lista.append(stream.readFloat())
-            data.append(lista)
+        units = [all[i] for i in data["unit"]]
 
         # Create Tabla
-        args = (columnCount, )
         kwargs = {}
-        kwargs["horizontalHeader"] = propiedades
-        kwargs["format"] = format
+        kwargs["horizontalHeader"] = data["htitle"]
+        kwargs["format"] = data["format"]
         kwargs["stretch"] = False
         kwargs["parent"] = parent
         kwargs["units"] = units
-        kwargs["orderUnit"] = orderUnit
+        kwargs["orderUnit"] = data["orderUnit"]
 
-        if readOnly:
+        if data["readOnly"]:
             kwargs["readOnly"] = True
         else:
-            kwargs["filas"] = datalen+1
-            kwargs["keys"] = keys
-            kwargs["columnReadOnly"] = columnReadOnly
+            kwargs["filas"] = len(data["data"])+1
+            kwargs["keys"] = data["keys"]
+            kwargs["columnReadOnly"] = data["columnReadOnly"]
 
-        tabla = TablaMEoS(*args, **kwargs)
-        tabla.setWindowTitle(title)
-        tabla.setData(data)
-        if not readOnly:
+        tabla = TablaMEoS(data["column"], **kwargs)
+        tabla.setWindowTitle(data["title"])
+        tabla.setData(data["data"])
+        if not data["readOnly"]:
+            fluid = mEoS.__all__[data["fluid"]]
             tabla.fluid = fluid
             tabla.Point = fluid()
         return tabla
