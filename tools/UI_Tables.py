@@ -2550,19 +2550,26 @@ class TablaMEoS(Tabla):
                 rows.append(item.row())
         rows.sort(reverse=True)
 
-        deleteAction = createAction(
+        actionCopy = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "&Copy"),
+            slot=self.copy, shortcut=QtGui.QKeySequence.Copy,
+            icon=os.environ["pychemqt"] +
+            os.path.join("images", "button", "editCopy"),
+            parent=self)
+        actionDelete = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Delete Point"),
             icon=os.environ["pychemqt"]+"/images/button/editDelete",
             slot=partial(self.delete, rows), parent=self)
-        inserPoint = createAction(
+        actionInsert = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Insert Point"),
             icon=os.environ["pychemqt"]+"/images/button/add",
             slot=partial(self.add, row), parent=self)
 
         menu = QtWidgets.QMenu()
-        menu.addAction(deleteAction)
+        menu.addAction(actionCopy)
         menu.addSeparator()
-        menu.addAction(inserPoint)
+        menu.addAction(actionDelete)
+        menu.addAction(actionInsert)
         menu.exec_(self.mapToGlobal(position))
 
     def delete(self, rows):
@@ -2848,7 +2855,7 @@ class TablaMEoS(Tabla):
         menu.addAction(export)
         menu.exec_(event.globalPos())
 
-    def copy(self, event):
+    def copy(self, event=None):
         """Copy selected values to clipboard"""
         txt = [w.text() for w in self.selectedItems()]
         QtWidgets.QApplication.clipboard().setText(" ".join(txt))
