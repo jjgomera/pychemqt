@@ -2556,10 +2556,16 @@ class TablaMEoS(Tabla):
             icon=os.environ["pychemqt"] +
             os.path.join("images", "button", "editCopy"),
             parent=self)
+        if not self.selectedItems():
+            actionCopy.setEnabled(False)
+
         actionDelete = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Delete Point"),
             icon=os.environ["pychemqt"]+"/images/button/editDelete",
             slot=partial(self.delete, rows), parent=self)
+        if not rows:
+            actionDelete.setEnabled(False)
+
         actionInsert = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Insert Point"),
             icon=os.environ["pychemqt"]+"/images/button/add",
@@ -2650,6 +2656,7 @@ class TablaMEoS(Tabla):
 
         dlg = AddPoint(self.parent.currentConfig, melting, self.parent)
         if dlg.exec_():
+            self.blockSignals(True)
             if dlg.checkBelow.isChecked():
                 row += 1
 
@@ -2674,10 +2681,8 @@ class TablaMEoS(Tabla):
                 datatoTable.append(dlg.fluid.__getattribute__(plot.y).config())
 
             # Add point to table
-            self.addRow(None, row)
-            self.setRow(0, datatoTable)
-            # self.addRow(datatoTable, row)
-            self.data = insert(self.data, row, datatoTable)
+            self.addRow(index=row)
+            self.setRow(row, datatoTable)
 
             # Add point to data plot
             if plot is None:
@@ -2733,6 +2738,8 @@ class TablaMEoS(Tabla):
                     line.set_ydata(ydata)
                     plot.plot.draw()
                     break
+
+            self.blockSignals(False)
 
     def selectPoint(self):
         """Show selected point in table in asociated plot if exist"""
