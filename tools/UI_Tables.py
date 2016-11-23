@@ -2460,6 +2460,7 @@ class TablaMEoS(Tabla):
     """Tabla customize to show meos data, add context menu options, save and
     load support in project"""
     Plot = None
+    icon = os.path.join(config.IMAGE_PATH, "button", "table.png")
 
     def __init__(self, *args, **kwargs):
         """Manage special parameter dont recognize in Tabla"""

@@ -1271,6 +1271,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         y = self.config[-1].getint("PFD", "y")
         scene.setSceneRect(0, 0, x, y)
         PFD.setScene(scene)
+        PFD.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "PFD.png"))))
         mdiarea.addSubWindow(PFD)
         PFD.show()
 
@@ -1431,6 +1433,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 indice = other_window_names.index(name)
                 widget = other_window[indice]
                 instance = widget.readFromJSON(ventana["window"], self)
+                instance.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(widget.icon)))
                 mdiArea.addSubWindow(instance)
                 x = ventana["x"]
                 y = ventana["y"]
