@@ -246,7 +246,7 @@ class RefProp(ThermoRefProp):
               "D": 0.0,
               "H": 0.0,
               "S": 0.0,
-              "U": 0.0,
+              "u": 0.0,
               "E": 0.0,
 
               # Configuration parameters
@@ -267,6 +267,10 @@ class RefProp(ThermoRefProp):
               "hcomp": ""
               # setktv don't implemented
               }
+
+    def _new(self, **kw):
+        """Create a new instance"""
+        return self.__class__(ids=self.kwargs["ids"], **kw)
 
     @property
     def calculable(self):
@@ -312,8 +316,8 @@ class RefProp(ThermoRefProp):
             self.kwargs["Q"] = self.kwargs["x"]
         if self.kwargs["rho"] != RefProp.kwargs["rho"]:
             self.kwargs["D"] = self.kwargs["rho"]
-        if self.kwargs["U"] != RefProp.kwargs["U"]:
-            self.kwargs["E"] = self.kwargs["U"]
+        if self.kwargs["u"] != RefProp.kwargs["u"]:
+            self.kwargs["E"] = self.kwargs["u"]
 
         # Check thermo definition
         self._thermo = ""

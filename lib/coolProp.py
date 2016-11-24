@@ -177,8 +177,8 @@ class CoolProp(ThermoAdvanced):
         -T: Temperature, Kelvin
         -P: Pressure, Pa
         -rho: Density, kg/m3
-        -H: Enthalpy, J/kg
-        -S: Entropy, J/kgK
+        -h: Enthalpy, J/kg
+        -s: Entropy, J/kgK
         -x: Quality, -
     """
     kwargs = {"ids": [],
@@ -189,10 +189,13 @@ class CoolProp(ThermoAdvanced):
               "x": None,
               "Q": None,
               "rho": 0.0,
+              "v": 0.0,
               "Dmass": 0.0,
-              "H": None,
+              "h": None,
               "Hmass": None,
-              "S": None,
+              "u": None,
+              "Umass": None,
+              "s": None,
               "Smass": None}
 
     __doi__ = [
@@ -203,6 +206,30 @@ class CoolProp(ThermoAdvanced):
                   "Library CoolProp",
          "ref": "Ind. Eng. Chem. Res., 2014, 53 (6), pp 2498–2508",
          "doi": "10.1021/ie4033999"}]
+
+    def __call__(self, **kwargs):
+        self.kwargs.update(kwargs)
+
+        if self.calculable:
+            self.status = 1
+            self.calculo()
+            self.msg = "Solved"
+        elif self._definition and not self._multicomponent and "ids" in kwargs:
+            fluido = self._name()
+            estado = CP.AbstractState("HEOS", fluido)
+            self.Tc = unidades.Temperature(estado.T_critical())
+            self.Pc = unidades.Pressure(estado.p_critical())
+            self.rhoc = unidades.Density(estado.rhomass_critical())
+
+            self.M = unidades.Dimensionless(estado.molar_mass()*1000)
+            self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
+            self.Tt = unidades.Temperature(estado.Ttriple())
+            self.f_accent = unidades.Dimensionless(estado.acentric_factor())
+
+            self.name = fluido
+            self.CAS = estado.fluid_param_string("CAS")
+            self.synonim = estado.fluid_param_string("aliases")
+            self.formula = estado.fluid_param_string("formula")
 
     @property
     def calculable(self):
@@ -227,23 +254,31 @@ class CoolProp(ThermoAdvanced):
                 self._definition = True
             else:
                 self._definition = False
-        else:
+        elif self.kwargs["ids"]:
             self._definition = True
+        else:
+            self._definition = False
 
         # Update the kwargs with the special coolprop namespace
         if self.kwargs["x"] != CoolProp.kwargs["x"]:
             self.kwargs["Q"] = self.kwargs["x"]
+        if self.kwargs["v"] != CoolProp.kwargs["v"]:
+            self.kwargs["rho"] = 1/self.kwargs["v"]
         if self.kwargs["rho"] != CoolProp.kwargs["rho"]:
             self.kwargs["Dmass"] = self.kwargs["rho"]
-        if self.kwargs["S"] != CoolProp.kwargs["S"]:
-            self.kwargs["Smass"] = self.kwargs["S"]
-        if self.kwargs["H"] != CoolProp.kwargs["H"]:
-            self.kwargs["Hmass"] = self.kwargs["H"]
+        if self.kwargs["s"] != CoolProp.kwargs["s"]:
+            self.kwargs["Smass"] = self.kwargs["s"]
+        if self.kwargs["h"] != CoolProp.kwargs["h"]:
+            self.kwargs["Hmass"] = self.kwargs["h"]
+        if self.kwargs["u"] != CoolProp.kwargs["u"]:
+            self.kwargs["Umass"] = self.kwargs["u"]
 
         # Check thermo definition
         self._thermo = ""
         for def_ in ["P-T", "Q-T", "P-Q", "Dmass-T", "Dmass-P", "Hmass-P",
-                     "P-Smass", "Hmass-Smass"]:
+                     "P-Smass", "Hmass-Smass", "Hmass-T", "T-Umass", "P-Umass",
+                     "Dmass-Hmass", "Dmass-Smass", "Dmass-Umass",
+                     "Hmass-Umass", "Smass-Umass"]:
             inputs = def_.split("-")
             if self.kwargs[inputs[0]] != CoolProp.kwargs[inputs[0]] and \
                     self.kwargs[inputs[1]] != CoolProp.kwargs[inputs[1]]:
@@ -259,6 +294,10 @@ class CoolProp(ThermoAdvanced):
 
         args = [var1, var2]
         return args
+
+    def _new(self, **kw):
+        """Create a new instance"""
+        return self.__class__(ids=self.kwargs["ids"], **kw)
 
     def _name(self):
         lst = []
@@ -355,10 +394,12 @@ class CoolProp(ThermoAdvanced):
             self.name = string % tuple(self.kwargs["fraccionMolar"])
             self.CAS = ""
             self.synonim = ""
+            self.formula = ""
         else:
             self.name = fluido
             self.CAS = estado.fluid_param_string("CAS")
             self.synonim = estado.fluid_param_string("aliases")
+            self.formula = estado.fluid_param_string("formula")
 
         self.P = unidades.Pressure(estado.p())
         self.T = unidades.Temperature(estado.T())
@@ -413,7 +454,7 @@ class CoolProp(ThermoAdvanced):
         self.virialC = unidades.SpecificVolume_square(estado.Cvirial())
         self.invT = unidades.InvTemperature(-1/self.T)
 
-        if self.Tt <= self.T <= self.Tc:
+        if 0 < self.x < 1:
             self.Hvap = unidades.Enthalpy(self.Gas.h-self.Liquido.h)
             self.Svap = unidades.SpecificHeat(self.Gas.s-self.Liquido.s)
         else:
@@ -571,5 +612,7 @@ class CoolProp(ThermoAdvanced):
 
 
 if __name__ == '__main__':
-    fluido = CoolProp(ids=[62], fraccionMolar=[1], T=300, P=101325)
+    fluido = CoolProp(ids=[62])
+    fluido(T=300)
+    fluido(P=101325)
     print(fluido.P, fluido.Pc)

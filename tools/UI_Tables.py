@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library with meos plugin functionality
 #
+#   getMethod: Return the thermo method name to use
+#   getClassFluid: Return the thermo class to calculate
 #   plugin: Implement meos functionality to common use in menu and dialog
 #   Menu: QMenu to add to mainwindow mainmenu with all meos addon functionality
 #   Dialog: QDialog with all meos functionality
@@ -76,7 +78,7 @@ from numpy import (arange, append, concatenate, linspace,
 from scipy.optimize import fsolve
 from matplotlib.font_manager import FontProperties
 
-from lib import meos, mEoS, unidades, plot, config
+from lib import meos, mEoS, coolProp, refProp, unidades, plot, config
 from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable, formatLine
 from tools.codeEditor import SimplePythonEditor
@@ -87,6 +89,39 @@ from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
 
 
 N_PROP = len(ThermoAdvanced.properties())
+
+
+def getClassFluid(conf):
+    """Return the thermo class to calculate"""
+    pref = ConfigParser()
+    pref.read(config.conf_dir + "pychemqtrc")
+
+    if pref.getboolean("MEOS", 'coolprop') and \
+            pref.getboolean("MEOS", 'refprop'):
+        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        fluid = refProp.RefProp(ids=[id])
+    elif pref.getboolean("MEOS", 'coolprop'):
+        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        fluid = coolProp.CoolProp(ids=[id])
+    else:
+        fluid = mEoS.__all__[conf.getint("MEoS", "fluid")]()
+
+    return fluid
+
+
+def getMethod(conf):
+    """Return the thermo method name to use"""
+    pref = ConfigParser()
+    pref.read(config.conf_dir + "pychemqtrc")
+
+    if pref.getboolean("MEOS", 'coolprop') and \
+            pref.getboolean("MEOS", 'refprop'):
+        txt = "REFPROP"
+    elif pref.getboolean("MEOS", 'coolprop'):
+        txt = "COOLPROP"
+    else:
+        txt = "MEOS"
+    return txt
 
 
 class plugin(object):
@@ -262,7 +297,8 @@ class plugin(object):
             fix = dlg.variableFix.value
             incr = dlg.Incremento.value
             value = arange(start, end+incr, incr)
-            fluid = mEoS.__all__[self.config.getint("MEoS", "fluid")]
+            fluid = getClassFluid(self.config)
+            method = getMethod(self.config)
 
             fluidos = []
             if dlg.VL.isChecked():
@@ -273,27 +309,27 @@ class plugin(object):
                         vconfig = unidades.Temperature(val).str
                         self.parent().statusbar.showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "T", vconfig, txt))
-                        fluidos.append(fluid(T=val, x=0.5))
+                        fluidos.append(fluid._new(T=val, x=0.5))
                 elif dlg.VariarPresion.isChecked():
                     for val in value:
                         vconfig = unidades.Temperature(val).str
                         self.parent().statusbar.showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "P", vconfig, txt))
-                        fluidos.append(fluid(P=val, x=0.5))
+                        fluidos.append(fluid._new(P=val, x=0.5))
                 elif dlg.VariarXconT.isChecked():
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
                         self.parent().statusbar.showMessage(
                             "%s: T =%s  x = %s, %s" % (
                                 fluid.name, fconfig, val, txt))
-                        fluidos.append(fluid(T=fix, x=val))
+                        fluidos.append(fluid._new(T=fix, x=val))
                 elif dlg.VariarXconP.isChecked():
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
                         self.parent().statusbar.showMessage(
                             "%s: P =%s  x = %s, %s" % (
                                 fluid.name, fconfig, val, txt))
-                        fluidos.append(fluid(P=fix, x=val))
+                        fluidos.append(fluid._new(P=fix, x=val))
 
             else:
                 if dlg.SL.isChecked():
@@ -308,19 +344,19 @@ class plugin(object):
                 if dlg.VariarTemperatura.isChecked():
                     for val in value:
                         p = func(val)
-                        fluidos.append(fluid(T=val, P=p))
+                        fluidos.append(fluid._new(T=val, P=p))
                         self.parent().statusbar.showMessage(
                             "%s: %s=%0.2f, %s" % (fluid.name, "T", val, txt))
                 else:
                     for p in value:
                         T = fsolve(lambda T: p-func(T), fluid.Tt)
-                        fluidos.append(fluid(T=T, P=p))
+                        fluidos.append(fluid._new(T=T, P=p))
                         self.parent().statusbar.showMessage(
                             "%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt))
 
             title = QtWidgets.QApplication.translate(
-                "pychemqt",
-                "Table %s: %s changing %s" % (fluid.name, txt, "T"))
+                "pychemqt", "Table %s: %s changing %s (%s)" % (
+                    fluid.name, txt, "T", method))
             self.addTable(fluidos, title)
             self.parent().statusbar.clearMessage()
 
@@ -344,7 +380,9 @@ class plugin(object):
             value2 = arange(start, end, incr)
             if (end-start) % incr == 0:
                 value2 = append(value2, end)
-            fluid = mEoS.__all__[self.config.getint("MEoS", "fluid")]
+
+            fluid = getClassFluid(self.config)
+            method = getMethod(self.config)
             kwarg = {}
             for key in ("eq", "visco", "thermal"):
                 kwarg[key] = self.config.getint("MEoS", key)
@@ -359,11 +397,12 @@ class plugin(object):
                     v2conf = dlg.unidades[j](v2).str
                 self.parent().statusbar.showMessage(
                     "%s: %s =%s, %s =%s" % (fluid.name, X, v1conf, Y, v2conf))
-                fluidos.append(fluid(**kwarg))
+                fluidos.append(fluid._new(**kwarg))
             unitX = dlg.unidades[i].text()
             title = QtWidgets.QApplication.translate(
-                "pychemqt", "%s: %s =%s %s changing %s" % (
-                    fluid.formula, X, v1conf, unitX, meos.propiedades[j]))
+                "pychemqt", "%s: %s =%s %s changing %s (%s)" % (
+                    fluid.formula, X, v1conf, unitX, meos.propiedades[j],
+                    method))
             self.addTable(fluidos, title)
 
     def addTable(self, fluidos, title):
@@ -376,13 +415,13 @@ class plugin(object):
 
     def addTableSpecified(self):
         """Add blank table to mainwindow to calculata point data"""
-        fluid = mEoS.__all__[self.config.getint("MEoS", "fluid")]
-        name = fluid.formula
-        title = "%s: %s" % (name, QtWidgets.QApplication.translate(
-            "pychemqt", "Specified state points"))
+        fluid = getClassFluid(self.config)
+        name = fluid.name
+        method = getMethod(self.config)
+        title = "%s: %s (%s)" % (name, QtWidgets.QApplication.translate(
+            "pychemqt", "Specified state points"), method)
         tabla = createTabla(self.config, title, None, self.parent())
-        tabla.fluid = fluid
-        tabla.Point = fluid()
+        tabla.Point = fluid
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         tabla.show()
 
@@ -2655,7 +2694,7 @@ class TablaMEoS(Tabla):
         else:
             melting = False
 
-        dlg = AddPoint(self.parent.currentConfig, melting, self.parent)
+        dlg = AddPoint(self.Point._new(), melting, self.parent)
         if dlg.exec_():
             self.blockSignals(True)
             if dlg.checkBelow.isChecked():
@@ -2792,7 +2831,7 @@ class TablaMEoS(Tabla):
             data = _getData(self.Point, self.keys, self.parent.currentConfig,
                             units)
             self.setRow(row, data)
-            self.Point = self.fluid()
+            self.Point = self.Point._new()
 
             self.addRow()
             self.setCurrentCell(row+1, column)
@@ -2915,7 +2954,16 @@ class TablaMEoS(Tabla):
         # Save keys if necessary
         data["readOnly"] = self.readOnly
         if not self.readOnly:
-            data["fluid"] = mEoS.__all__.index(self.fluid)
+            if isinstance(self.Point, meos.MEoS):
+                data["method"] = "meos"
+                data["fluid"] = mEoS.__all__.index(self.Point.__class__)
+            elif isinstance(self.Point, coolProp.CoolProp):
+                data["method"] = "coolprop"
+                data["fluid"] = self.Point.kwargs["ids"][0]
+            else:
+                data["method"] = "refprop"
+                data["fluid"] = self.Point.kwargs["ids"][0]
+
             data["keys"] = self.keys
             data["columnReadOnly"] = self.columnReadOnly
 
@@ -2957,9 +3005,14 @@ class TablaMEoS(Tabla):
         tabla.setWindowTitle(data["title"])
         tabla.setData(data["data"])
         if not data["readOnly"]:
-            fluid = mEoS.__all__[data["fluid"]]
-            tabla.fluid = fluid
-            tabla.Point = fluid()
+            if data["method"] == "meos":
+                fluid = mEoS.__all__[data["fluid"]]()
+            elif data["method"] == "coolprop":
+                fluid = coolProp.CoolProp(ids=[data["fluid"]])
+            elif data["method"] == "refprop":
+                fluid = refProp.RefProp(ids=[data["fluid"]])
+            tabla.Point = fluid
+
         return tabla
 
 
@@ -3247,14 +3300,16 @@ class AddPoint(QtWidgets.QDialog):
     """Dialog to add new point to line2D"""
     keys = ["T", "P", "x", "rho", "v", "h", "s", "u"]
 
-    def __init__(self, config, melting=False, parent=None):
-        """config: configParser Instance with currentproject configuration"""
+    def __init__(self, fluid, melting=False, parent=None):
+        """
+        fluid: initial fluid instance
+        melting: boolean to add melting line calculation
+        """
         super(AddPoint, self).__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Add Point to line"))
         layout = QtWidgets.QGridLayout(self)
-        fluid = mEoS.__all__[config.getint("MEoS", "fluid")]
-        self.fluid = fluid()
+        self.fluid = fluid
 
         self.Inputs = []
         for i, (title, key, unit) in enumerate(meos.inputData):
@@ -3270,7 +3325,7 @@ class AddPoint(QtWidgets.QDialog):
         self.status = Status(self.fluid.status, self.fluid.msg)
         layout.addWidget(self.status, i+1, 1, 1, 2)
 
-        if fluid._melting:
+        if isinstance(fluid, meos.MEoS) and fluid._melting:
             self.checkMelting = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "Melting Point"))
             self.checkMelting.setChecked(melting)
@@ -3313,7 +3368,8 @@ class AddPoint(QtWidgets.QDialog):
         """Update fluid instance with new parameter key with value"""
         self.status.setState(4)
         QtWidgets.QApplication.processEvents()
-        if self.checkMelting.isChecked() and key == "T":
+        if isinstance(self.fluid, meos.MEoS) and self.fluid._melting and \
+                self.checkMelting.isChecked() and key == "T":
             P = self.fluid._Melting_Pressure(value)
             self.fluid(**{key: value, "P": P})
         else:

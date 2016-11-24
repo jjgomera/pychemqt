@@ -54,6 +54,10 @@ class Thermo(object):
         self.kwargs = self.__class__.kwargs.copy()
         self.__call__(**kwargs)
 
+    def _new(self, **kw):
+        """Create a new instance"""
+        return self.__class__(**kw)
+
     def __call__(self, **kwargs):
         self.kwargs.update(kwargs)
 
