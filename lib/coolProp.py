@@ -376,10 +376,12 @@ class CoolProp(ThermoAdvanced):
             # liquid phase
             self.fill(self.Liquido, estado)
             self.fill(self, estado)
+            self.fillNone(self.Gas)
         elif self.x == 1:
             # vapor phase
             self.fill(self.Gas, estado)
             self.fill(self, estado)
+            self.fillNone(self.Liquido)
         else:
             # Two phase
             liquido = CP.AbstractState("HEOS", fluido)

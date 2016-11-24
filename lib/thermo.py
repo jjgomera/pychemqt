@@ -300,6 +300,20 @@ class Thermo(object):
                 prop.append(p)
         return prop
 
+    def fillNone(self, fase):
+        """Fill properties in null phase with a explicative msg"""
+        fase._bool = False
+        if self.x == 0:
+            txt = QApplication.translate("pychemqt", "Subcooled")
+        elif self.Tr < 1 and self.Pr < 1:
+            txt = QApplication.translate("pychemqt", "Superheated")
+        elif self.Tr == 1 and self.Pr == 1:
+            txt = QApplication.translate("pychemqt", "Critic point")
+        else:
+            txt = QApplication.translate("pychemqt", "Supercritical")
+        for key in self.propertiesPhase():
+            fase.__setattr__(key, txt)
+
     def writeStatetoJSON(self, state, fase):
         fluid = {}
         if self._bool:

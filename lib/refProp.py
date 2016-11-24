@@ -466,10 +466,12 @@ class RefProp(ThermoRefProp):
             # liquid phase
             self.fill(self.Liquido, flash["t"], flash["Dliq"], flash["xliq"])
             self.fill(self, flash["t"], flash["Dliq"], flash["xliq"])
+            self.fillNone(self.Gas)
         elif self.x == 1:
             # vapor phase
             self.fill(self.Gas, flash["t"], flash["Dvap"], flash["xvap"])
             self.fill(self, flash["t"], flash["Dvap"], flash["xvap"])
+            self.fillNone(self.Liquido)
         else:
             # Two phase
             self.fill(self.Liquido, flash["t"], flash["Dliq"], flash["xliq"])

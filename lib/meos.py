@@ -741,7 +741,7 @@ class MEoS(ThermoAdvanced):
             self.virialB = unidades.SpecificVolume(propiedades["B"]/self.rhoc)
             self.virialC = unidades.SpecificVolume_square(propiedades["C"]/self.rhoc**2)
 
-        if self.Tt <= T <= self.Tc:
+        if 0 < self.x < 1:
             self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
             self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
         else:
@@ -861,21 +861,6 @@ class MEoS(ThermoAdvanced):
             return T
         else:
             return rho, T
-
-    def fillNone(self, fase):
-        """Fill properties in null phase with a explicative msg"""
-        fase._bool = False
-        if self.x == 0:
-            txt = QApplication.translate("pychemqt", "Subcooled")
-        elif self.Tr < 1 and self.Pr < 1:
-            txt = QApplication.translate("pychemqt", "Superheated")
-        elif self.Tr == 1 and self.Pr == 1:
-            txt = QApplication.translate("pychemqt", "Critic point")
-        else:
-            txt = QApplication.translate("pychemqt", "Supercritical")
-        for key in Fluid_MEOS.__dict__:
-            if key[0] != "_"  and key[-4:] != "JSON":
-                fase.__setattr__(key, txt)
 
     def fill(self, fase, estado):
         """Fill phase properties"""
