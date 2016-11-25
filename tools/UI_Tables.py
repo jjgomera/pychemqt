@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library with meos plugin functionality
 #
-#   getMethod: Return the thermo method name to use
 #   getClassFluid: Return the thermo class to calculate
+#   getMethod: Return the thermo method name to use
 #   plugin: Implement meos functionality to common use in menu and dialog
 #   Menu: QMenu to add to mainwindow mainmenu with all meos addon functionality
 #   Dialog: QDialog with all meos functionality
@@ -118,7 +118,7 @@ def getClassFluid(conf):
     return fluid
 
 
-def getMethod(conf):
+def getMethod():
     """Return the thermo method name to use"""
     pref = ConfigParser()
     pref.read(config.conf_dir + "pychemqtrc")
@@ -324,7 +324,7 @@ class plugin(object):
             incr = dlg.Incremento.value
             value = arange(start, end+incr, incr)
             fluid = getClassFluid(self.config)
-            method = getMethod(self.config)
+            method = getMethod()
 
             fluidos = []
             if dlg.VL.isChecked():
@@ -418,7 +418,7 @@ class plugin(object):
             v1conf = dlg.unidades[i](value1).str
 
             fluid = getClassFluid(self.config)
-            method = getMethod(self.config)
+            method = getMethod()
 
             kwarg = {}
             # Define option parameter for transport method, only available
@@ -459,7 +459,7 @@ class plugin(object):
         """Add blank table to mainwindow to calculata point data"""
         fluid = getClassFluid(self.config)
         name = fluid.name
-        method = getMethod(self.config)
+        method = getMethod()
         title = "%s: %s (%s)" % (name, QtWidgets.QApplication.translate(
             "pychemqt", "Specified state points"), method)
         tabla = createTabla(self.config, title, None, self.parent())
@@ -3174,15 +3174,17 @@ class Ui_Saturation(QtWidgets.QDialog):
         layout.addWidget(self.buttonBox, 10, 1, 1, 4)
 
         if config:
-            self.fluido = mEoS.__all__[config.getint("MEoS", "fluid")]
-            if self.fluido._Melting_Pressure != meos.MEoS._Melting_Pressure \
-                    or self.fluido._melting:
+            self.fluido = getClassFluid(config)
+            if isinstance(self.fluido, meos.MEoS) and (
+                self.fluido._Melting_Pressure != meos.MEoS._Melting_Pressure
+                    or self.fluido._melting):
                 self.SL.setEnabled(True)
             else:
                 self.SL.setEnabled(False)
-            if self.fluido._Sublimation_Pressure != \
-                    meos.MEoS._Sublimation_Pressure or \
-                    self.fluido._sublimation:
+            if isinstance(self.fluido, meos.MEoS) and (
+                self.fluido._sublimation or
+                self.fluido._Sublimation_Pressure !=
+                    meos.MEoS._Sublimation_Pressure):
                 self.SV.setEnabled(True)
             else:
                 self.SV.setEnabled(False)
