@@ -320,9 +320,11 @@ class plugin(object):
             # Get values
             start = dlg.Inicial.value
             end = dlg.Final.value
-            fix = dlg.variableFix.value
             incr = dlg.Incremento.value
-            value = arange(start, end+incr, incr)
+            fix = dlg.variableFix.value
+            value = arange(start, end, incr)
+            if (end-start) % incr == 0:
+                value = append(value, end)
             fluid = getClassFluid(self.config)
             method = getMethod()
 
@@ -3176,8 +3178,8 @@ class Ui_Saturation(QtWidgets.QDialog):
         if config:
             self.fluido = getClassFluid(config)
             if isinstance(self.fluido, meos.MEoS) and (
-                self.fluido._Melting_Pressure != meos.MEoS._Melting_Pressure
-                    or self.fluido._melting):
+                self.fluido._Melting_Pressure != meos.MEoS._Melting_Pressure or
+                    self.fluido._melting):
                 self.SL.setEnabled(True)
             else:
                 self.SL.setEnabled(False)
