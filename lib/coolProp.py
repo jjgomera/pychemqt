@@ -430,7 +430,7 @@ class CoolProp(ThermoAdvanced):
                 xi = estado.mole_fractions_liquid()
                 liquido.set_mole_fractions(xi)
             liquido.specify_phase(CP.iphase_liquid)
-            liquido.update(self._par, *args)
+            liquido.update(CP.QT_INPUTS, 0, self.T)
             self.fill(self.Liquido, liquido)
 
             vapor = CP.AbstractState("HEOS", fluido)
@@ -438,7 +438,7 @@ class CoolProp(ThermoAdvanced):
                 yi = estado.mole_fractions_vapor()
                 vapor.set_mole_fractions(yi)
             vapor.specify_phase(CP.iphase_gas)
-            vapor.update(self._par, *args)
+            vapor.update(CP.QT_INPUTS, 1, self.T)
             self.fill(self.Gas, vapor)
             self.fill(self, estado)
 
@@ -614,5 +614,5 @@ class CoolProp(ThermoAdvanced):
 if __name__ == '__main__':
     fluido = CoolProp(ids=[62])
     fluido(T=300)
-    fluido(P=101325)
-    print(fluido.P, fluido.Pc)
+    fluido(x=.5)
+    print(fluido.Liquido.rho, fluido.Gas.rho)
