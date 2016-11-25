@@ -1433,7 +1433,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 indice = other_window_names.index(name)
                 widget = other_window[indice]
                 instance = widget.readFromJSON(ventana["window"], self)
-                instance.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(widget.icon)))
                 mdiArea.addSubWindow(instance)
                 x = ventana["x"]
                 y = ventana["y"]

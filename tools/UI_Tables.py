@@ -83,6 +83,7 @@ from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable, formatLine
 from tools.codeEditor import SimplePythonEditor
 from UI.delegate import CheckEditor
+from UI.prefMEOS import Dialog as ConfDialog
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
                         MarkerCombo, ColorSelector, InputFont, Status, Tabla,
                         NumericFactor)
@@ -92,18 +93,26 @@ N_PROP = len(ThermoAdvanced.properties())
 
 
 def getClassFluid(conf):
-    """Return the thermo class to calculate"""
+    """Return the thermo class to calculate
+    Really return the base instance to add kwargs to calculate"""
     pref = ConfigParser()
     pref.read(config.conf_dir + "pychemqtrc")
 
     if pref.getboolean("MEOS", 'coolprop') and \
             pref.getboolean("MEOS", 'refprop'):
+        # RefProp case, the base instance with the ids kwargs to define the
+        # defined compount
         id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
         fluid = refProp.RefProp(ids=[id])
+
     elif pref.getboolean("MEOS", 'coolprop'):
+        # CoolProp case, the base instance with the ids kwargs to define the
+        # defined compount
         id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
         fluid = coolProp.CoolProp(ids=[id])
+
     else:
+        # MEOS case, the instance of specified mEoS subclass
         fluid = mEoS.__all__[conf.getint("MEoS", "fluid")]()
 
     return fluid
@@ -128,7 +137,12 @@ class plugin(object):
     """Common functionality to add to menu and dialog"""
 
     def _txt(self):
-        """Common widget names"""
+        """Common widget names
+        fTxt: Fluid name, dynamic by configuration
+        refTxt: Reference state name, dynamic by configuration
+        propTxt: Properties option name, fixed
+        confTxt: Configure option name, fixed
+        """
         if self.config.has_option("MEoS", "fluid"):
             fTxt = mEoS.__all__[self.config.getint("MEoS", "fluid")].name
         else:
@@ -144,6 +158,7 @@ class plugin(object):
         return fTxt, refTxt, propTxt, confTxt
 
     def _menuCalculate(self):
+        """QMenu for table actions"""
         menu = QtWidgets.QMenu(QtWidgets.QApplication.translate(
             "pychemqt", "Calculate"), parent=self)
         saturationAction = createAction(
@@ -162,6 +177,7 @@ class plugin(object):
         return menu
 
     def _menuPlot(self):
+        """QMenu for plot actions"""
         menu = QtWidgets.QMenu(
             QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
         Plot_T_s_Action = createAction(
@@ -207,6 +223,7 @@ class plugin(object):
         """Show dialog to choose/view fluid"""
         dlg = Ui_ChooseFluid(self.config)
         if dlg.exec_():
+            # Update configuration
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
             self.config.set("MEoS", "fluid", str(dlg.lista.currentRow()))
@@ -219,6 +236,8 @@ class plugin(object):
             self.checkProperties()
             self.parent().dirty[self.parent().idTab] = True
             self.parent().saveControl()
+
+            # Update button text in dialog case
             if self.__class__.__name__ == "Dialog":
                 fTxt = mEoS.__all__[dlg.lista.currentRow()].name
                 self.fluido.setText(fTxt)
@@ -229,6 +248,7 @@ class plugin(object):
         Don't implemented yet"""
         dlg = Ui_ReferenceState(self.config)
         if dlg.exec_():
+            # Get values
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
             if dlg.OTO.isChecked():
@@ -239,14 +259,16 @@ class plugin(object):
             elif dlg.IIR.isChecked():
                 refName, refT, refP, refH, refS = "IIR", 273.15, 101325, 200, 1
             elif dlg.ASHRAE.isChecked():
-                refName, refT, refP, refH, refS = ("ASHRAE", 233.15, 101325,
-                                                   0, 0)
+                refName, refT, refP, refH, refS = "ASHRAE", 233.15, 101325,
+                refH, refS = 0, 0
             else:
                 refName = "Custom"
                 refT = dlg.T.value
                 refP = dlg.P.value
                 refH = dlg.h.value
                 refS = dlg.s.value
+
+            # Update configuration
             self.config.set("MEoS", "reference", refName)
             self.config.set("MEoS", "Tref", str(refT))
             self.config.set("MEoS", "Pref", str(refP))
@@ -255,12 +277,14 @@ class plugin(object):
             self.checkProperties()
             self.parent().dirty[self.parent().idTab] = True
             self.parent().saveControl()
+
+            # Update button text in dialog case
             if self.__class__.__name__ == "Dialog":
                 self.reference.setText(refName)
 
     def checkProperties(self):
-        """Add default properties to show to configuration automatic when
-        choose fluid or reference state and properties are not defined"""
+        """Add default properties to configuration automatic when choose
+        fluid or reference state and properties are not defined"""
         if not self.config.has_option("MEoS", "properties"):
             self.config.set("MEoS", "properties", str(Ui_Properties._default))
             self.config.set("MEoS", "phase", "0")
@@ -271,6 +295,7 @@ class plugin(object):
         """Show dialog to choose/sort properties to show in tables"""
         dlg = Ui_Properties(self.config)
         if dlg.exec_():
+            # Update configuration
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
             self.config.set("MEoS", "properties", str(dlg.properties()))
@@ -280,10 +305,10 @@ class plugin(object):
             self.parent().saveControl()
 
     def configure(self):
-        from UI.prefMEOS import Dialog
+        """Direct access to configuration"""
         Config = ConfigParser()
         Config.read(config.conf_dir + "pychemqtrc")
-        dlg = Dialog(Config)
+        dlg = ConfDialog(Config)
         if dlg.exec_():
             Config = dlg.value(Config)
             Config.write(open(config.conf_dir+"pychemqtrc", "w"))
@@ -292,6 +317,7 @@ class plugin(object):
         """Show dialog to define input for a two-phase saturation table"""
         dlg = Ui_Saturation(self.config)
         if dlg.exec_():
+            # Get values
             start = dlg.Inicial.value
             end = dlg.Final.value
             fix = dlg.variableFix.value
@@ -302,21 +328,25 @@ class plugin(object):
 
             fluidos = []
             if dlg.VL.isChecked():
+                # Liquid-Gas line
                 txt = QtWidgets.QApplication.translate(
                     "pychemqt", "Liquid-Gas Line")
                 if dlg.VariarTemperatura.isChecked():
+                    # Changing temperature
                     for val in value:
                         vconfig = unidades.Temperature(val).str
                         self.parent().statusbar.showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "T", vconfig, txt))
                         fluidos.append(fluid._new(T=val, x=0.5))
                 elif dlg.VariarPresion.isChecked():
+                    # Changing pressure
                     for val in value:
                         vconfig = unidades.Temperature(val).str
                         self.parent().statusbar.showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "P", vconfig, txt))
                         fluidos.append(fluid._new(P=val, x=0.5))
                 elif dlg.VariarXconT.isChecked():
+                    # Changing quality with fixed Temperature
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
                         self.parent().statusbar.showMessage(
@@ -324,6 +354,7 @@ class plugin(object):
                                 fluid.name, fconfig, val, txt))
                         fluidos.append(fluid._new(T=fix, x=val))
                 elif dlg.VariarXconP.isChecked():
+                    # Changing quality with fixed pressure
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
                         self.parent().statusbar.showMessage(
@@ -332,6 +363,8 @@ class plugin(object):
                         fluidos.append(fluid._new(P=fix, x=val))
 
             else:
+                # Melting and sublimation line, only supported for meos
+                # internal method
                 if dlg.SL.isChecked():
                     func = fluid._Melting_Pressure
                     txt = QtWidgets.QApplication.translate(
@@ -366,6 +399,8 @@ class plugin(object):
         if dlg.exec_():
             self.parent().updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "Launch MEoS Isoproperty calculation..."))
+
+            # Get data from dialog
             i = dlg.fix.currentIndex()
             j = dlg.vary.currentIndex()
             if j >= i:
@@ -380,13 +415,18 @@ class plugin(object):
             value2 = arange(start, end, incr)
             if (end-start) % incr == 0:
                 value2 = append(value2, end)
+            v1conf = dlg.unidades[i](value1).str
 
             fluid = getClassFluid(self.config)
             method = getMethod(self.config)
+
             kwarg = {}
-            for key in ("eq", "visco", "thermal"):
-                kwarg[key] = self.config.getint("MEoS", key)
-            v1conf = dlg.unidades[i](value1).str
+            # Define option parameter for transport method, only available
+            # for internal meos method
+            if method == "MEOS":
+                for key in ("eq", "visco", "thermal"):
+                    kwarg[key] = self.config.getint("MEoS", key)
+
             fluidos = []
             for v2 in value2:
                 kwarg[X] = value1
@@ -401,7 +441,7 @@ class plugin(object):
             unitX = dlg.unidades[i].text()
             title = QtWidgets.QApplication.translate(
                 "pychemqt", "%s: %s =%s %s changing %s (%s)" % (
-                    fluid.formula, X, v1conf, unitX, meos.propiedades[j],
+                    fluid.name, X, v1conf, unitX, meos.propiedades[j],
                     method))
             self.addTable(fluidos, title)
 
@@ -411,6 +451,8 @@ class plugin(object):
         title: Text title for window table"""
         tabla = createTabla(self.config, title, fluidos, self.parent())
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
+        wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         tabla.show()
 
     def addTableSpecified(self):
@@ -423,6 +465,8 @@ class plugin(object):
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
+        wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         tabla.show()
 
     def plot2D(self):
@@ -850,6 +894,7 @@ class Menu(QtWidgets.QMenu, plugin):
         self.addAction(menuPlot.menuAction())
         self.addSeparator()
 
+        # Disable calculation action if fluid and reference are not defined
         if not (self.config.has_option("MEoS", "fluid") and
                 self.config.has_option("MEoS", "reference")):
             menuCalculate.setEnabled(False)
@@ -893,6 +938,12 @@ class Dialog(QtWidgets.QDialog, plugin):
         plot = QtWidgets.QPushButton(menuPlot.title())
         plot.setMenu(menuPlot)
         layout.addWidget(plot, 6, 2)
+
+        # Disable calculation action if fluid and reference are not defined
+        if not (self.config.has_option("MEoS", "fluid") and
+                self.config.has_option("MEoS", "reference")):
+            calculate.setEnabled(False)
+            plot.setEnabled(False)
 
         layout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
@@ -2365,6 +2416,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         """
     propiedades, keys, units = get_propiedades(config)
 
+    # Add the unit suffix to properties title
     for i, unit in enumerate(units):
         sufx = unit.text()
         if not sufx:
@@ -2383,17 +2435,24 @@ def createTabla(config, title, fluidos=None, parent=None):
                 propiedades[i:i+1] = txt
                 units[i:i+1] = [units[i]]*3
 
+    # Define common argument for TableMEoS
+    kw = {}
+    kw["horizontalHeader"] = propiedades
+    kw["stretch"] = False
+    kw["units"] = units
+    kw["parent"] = parent
+
     if fluidos:
+        # Generate a readOnly table filled of data
+        tabla = TablaMEoS(len(propiedades), readOnly=True, **kw)
         data = []
         for fluido in fluidos:
             fila = _getData(fluido, keys, config)
             data.append(fila)
-
-        tabla = TablaMEoS(
-            len(propiedades), horizontalHeader=propiedades, stretch=False,
-            readOnly=True, units=units, parent=parent)
         tabla.setData(data)
+
     else:
+        # Generate a dinamic table empty
         columnInput = []
         for key in keys:
             if key in ["P", "T", "x", "rho", "v", "h", "s"]:
@@ -2404,15 +2463,16 @@ def createTabla(config, title, fluidos=None, parent=None):
                     key in ThermoAdvanced.propertiesPhase():
                 columnInput.append(True)
                 columnInput.append(True)
+        kw["columnReadOnly"] = columnInput
 
+        # Discard the keys from single phase state as input values
         if config.getboolean("MEoS", "phase"):
             for i in range(len(keys)-1, -1, -1):
                 if keys[i] in ThermoAdvanced.propertiesPhase():
                     keys[i:i+1] = [keys[i], "", ""]
+        kw["keys"] = keys
 
-        tabla = TablaMEoS(len(propiedades), horizontalHeader=propiedades,
-                          filas=1, units=units, keys=keys, stretch=False,
-                          columnReadOnly=columnInput, parent=parent)
+        tabla = TablaMEoS(len(propiedades), filas=1, **kw)
 
     prefix = QtWidgets.QApplication.translate("pychemqt", "Table")
     tabla.setWindowTitle(prefix+": "+title)
@@ -2446,52 +2506,55 @@ def get_propiedades(config):
     return propiedades, keys, units
 
 
-def _getData(fluido, keys, config, unit=None):
+def _getData(fluid, keys, config, unit=None):
     """Procedure to get values of properties in fluid
     Input:
-        fluido: fluid instance to get values
+        fluid: fluid instance to get values
         keys: array with desired parameter to get
         config: project configuration
         unit: unidades subclass
         """
     fila = []
     for i, key in enumerate(keys):
-        if key:
-            p = fluido.__getattribute__(key)
+        if not key:
+            continue
+        p = fluid.__getattribute__(key)
+        if p is None:
+            txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
+        else:
+            if unit and unit[i]:
+                txt = p.__getattribute__(unit[i])
+            else:
+                txt = p.config()
+        fila.append(txt)
+
+        # Add two phases properties is requested
+        if config.getboolean("MEoS", "phase") and \
+                key in ThermoAdvanced.propertiesPhase():
+            # Liquid
+            p = fluid.Liquido.__getattribute__(key)
             if p is None:
                 txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
-            else:
+            elif isinstance(p, unidades.unidad):
                 if unit and unit[i]:
                     txt = p.__getattribute__(unit[i])
                 else:
                     txt = p.config()
+            else:
+                txt = p
             fila.append(txt)
-            if config.getboolean("MEoS", "phase") and \
-                    key in ThermoAdvanced.propertiesPhase():
-                p = fluido.Liquido.__getattribute__(key)
-                if p is None:
-                    txt = QtWidgets.QApplication.translate(
-                        "pychemqt", "undefined")
-                elif isinstance(p, unidades.unidad):
-                    if unit and unit[i]:
-                        txt = p.__getattribute__(unit[i])
-                    else:
-                        txt = p.config()
+            # Gas
+            p = fluid.Gas.__getattribute__(key)
+            if p is None:
+                txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
+            elif isinstance(p, unidades.unidad):
+                if unit and unit[i]:
+                    txt = p.__getattribute__(unit[i])
                 else:
-                    txt = p
-                fila.append(txt)
-                p = fluido.Gas.__getattribute__(key)
-                if p is None:
-                    txt = QtWidgets.QApplication.translate(
-                        "pychemqt", "undefined")
-                elif isinstance(p, unidades.unidad):
-                    if unit and unit[i]:
-                        txt = p.__getattribute__(unit[i])
-                    else:
-                        txt = p.config()
-                else:
-                    txt = p
-                fila.append(txt)
+                    txt = p.config()
+            else:
+                txt = p
+            fila.append(txt)
     return fila
 
 
@@ -2502,7 +2565,13 @@ class TablaMEoS(Tabla):
     icon = os.path.join(config.IMAGE_PATH, "button", "table.png")
 
     def __init__(self, *args, **kwargs):
-        """Manage special parameter dont recognize in Tabla"""
+        """Constructor with additional kwargs don't recognize in Tabla
+        keys: array with keys properties
+        units: array of unidades subclasses
+        orderUnit: array of index of unit magnitud to show
+        format: array of dict with numeric format
+        """
+        # Manage special parameter dont recognize in Tabla
         self.parent = kwargs.get("parent", None)
         if "keys" in kwargs:
             self.keys = kwargs["keys"]
@@ -2529,6 +2598,7 @@ class TablaMEoS(Tabla):
                 {"format": 1, "decimales": 6, "signo": False}]*args[0]
 
         super(TablaMEoS, self).__init__(*args, **kwargs)
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         self.horizontalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(
@@ -2829,6 +2899,8 @@ class TablaMEoS(Tabla):
             data = float(self.item(row, column).text())
             value = unit(data, unit.__units__[self.orderUnit[column]])
         self.Point(**{key: value})
+
+        # If the Point is calculated, get data
         if self.Point.status:
             units = []
             for ui, order in zip(self.units, self.orderUnit):
