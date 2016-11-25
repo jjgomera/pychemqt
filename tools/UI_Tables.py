@@ -2629,6 +2629,10 @@ class TablaMEoS(Tabla):
             self.removeRow(row)
             delete(self.data, row)
 
+        # Update verticalHeader
+        for row in range(self.rowCount()):
+            self.setVHeader(row)
+
         # Delete point from data plot
         plot = self._getPlot()
         if plot:
@@ -2723,6 +2727,10 @@ class TablaMEoS(Tabla):
             # Add point to table
             self.addRow(index=row)
             self.setRow(row, datatoTable)
+
+            # Update verticalHeader
+            for row in range(self.rowCount()):
+                self.setVHeader(row)
 
             # Add point to data plot
             if plot is None:

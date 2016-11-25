@@ -529,6 +529,15 @@ class Tabla(QtWidgets.QTableWidget):
                     QtCore.Qt.ItemIsSelectable
             self.item(row, j).setFlags(flags)
 
+        self.setVHeader(row)
+
+        # Set focus to first editable cell in new row
+        if self.dinamica and self.rowCount() > 1:
+            columna = self.columnReadOnly.index(False)
+            self.setCurrentCell(row, columna)
+
+    def setVHeader(self, row):
+        """Set vertical header text"""
         if self.verticalHeaderBool:
             if self.verticalHeaderLabel:
                 txt = self.verticalHeaderLabel[row]
@@ -537,11 +546,6 @@ class Tabla(QtWidgets.QTableWidget):
             else:
                 txt = str(row+1)
             self.setVerticalHeaderItem(row, QtWidgets.QTableWidgetItem(txt))
-
-        # Set focus to first editable cell in new row
-        if self.dinamica and self.rowCount() > 1:
-            columna = self.columnReadOnly.index(False)
-            self.setCurrentCell(row, columna)
 
     def tabla_cellChanged(self, i, j):
         """When edit a cell, check status tu add new row"""
