@@ -3829,7 +3829,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
 class Plot2D(QtWidgets.QDialog):
     """Dialog for select a special 2D plot"""
-    def __init__(self, config=None, parent=None):
+    def __init__(self, parent=None):
         super(Plot2D, self).__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Setup 2D Plot"))
@@ -3843,8 +3843,8 @@ class Plot2D(QtWidgets.QDialog):
         self.Xscale = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
         layout_GroupX.addWidget(self.Xscale)
-        for prop in ThermoAdvanced.propertiesKey():
-            self.ejeX.addItem(meos.properties[prop])
+        for prop in ThermoAdvanced.propertiesName():
+            self.ejeX.addItem(prop)
 
         group_Ejey = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Axis Y"))
@@ -3865,17 +3865,31 @@ class Plot2D(QtWidgets.QDialog):
         self.ejeXChanged(0)
         self.ejeX.currentIndexChanged.connect(self.ejeXChanged)
 
-    def ejeXChanged(self, int):
+    def ejeXChanged(self, index):
         """Fill variables available in ejeY, all except the active in ejeX"""
+        # Save current status to restore
+        current = self.ejeY.currentIndex()
+        if current == -1:
+            current = 0
+
+        # Refill ejeY combo
         self.ejeY.clear()
-        prop2 = ThermoAdvanced.propertiesKey()[:]
-        del prop2[int]
-        for prop in prop2:
-            self.ejeY.addItem(meos.properties[prop])
+        props = ThermoAdvanced.propertiesName()
+        del props[index]
+        for prop in props:
+            self.ejeY.addItem(prop)
+
+        # Restore inicial state
+        if index == 0 and current == 0:
+            self.ejeY.setCurrentIndex(0)
+        elif index <= current:
+            self.ejeY.setCurrentIndex(current)
+        else:
+            self.ejeY.setCurrentIndex(current+1)
 
 
 class Plot3D(QtWidgets.QDialog):
-    """Widget de configuracion inicial de graficos 3D"""
+    """Dialog for configure a 3D plot"""
 
     def __init__(self, parent=None):
         super(Plot3D, self).__init__(parent)
@@ -3886,8 +3900,8 @@ class Plot3D(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Axis X")), 1, 1)
         self.ejeX = QtWidgets.QComboBox()
-        for prop in ThermoAdvanced.propertiesKey():
-            self.ejeX.addItem(meos.properties[prop])
+        for prop in ThermoAdvanced.propertiesName():
+            self.ejeX.addItem(prop)
         layout.addWidget(self.ejeX, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Axis Y")), 2, 1)
@@ -3908,23 +3922,51 @@ class Plot3D(QtWidgets.QDialog):
         self.ejeY.currentIndexChanged.connect(self.ejeYChanged)
         self.ejeXChanged(0)
 
-    def ejeXChanged(self, int):
+    def ejeXChanged(self, index):
         """Fill variables available in ejeY, all except the active in ejeX"""
-        self.ejeY.clear()
-        prop2 = ThermoAdvanced.propertiesKey()[:]
-        del prop2[int]
-        for prop in prop2:
-            self.ejeY.addItem(meos.properties[prop])
+        # Save current status to restore
+        current = self.ejeY.currentIndex()
+        if current == -1:
+            current = 0
 
-    def ejeYChanged(self, int):
+        # Refill ejeY combo
+        self.ejeY.clear()
+        props = ThermoAdvanced.propertiesName()
+        del props[index]
+        for prop in props:
+            self.ejeY.addItem(prop)
+
+        # Restore inicial state
+        if index == 0 and current == 0:
+            self.ejeY.setCurrentIndex(0)
+        elif index <= current:
+            self.ejeY.setCurrentIndex(current)
+        else:
+            self.ejeY.setCurrentIndex(current+1)
+
+    def ejeYChanged(self, indY):
         """Fill variables available in ejeZ, all except the actives in other"""
+        # Save current status to restore
+        current = self.ejeZ.currentIndex()
+        if current == -1:
+            current = 0
+
+        # Refill ejeY combo
         self.ejeZ.clear()
-        prop2 = ThermoAdvanced.propertiesKey()[:]
-        intX = self.ejeX.currentIndex()
-        del prop2[intX]
-        del prop2[int]
+        prop2 = ThermoAdvanced.propertiesName()[:]
+        indX = self.ejeX.currentIndex()
+        del prop2[indX]
+        del prop2[indY]
         for prop in prop2:
-            self.ejeZ.addItem(meos.properties[prop])
+            self.ejeZ.addItem(prop)
+
+        # Restore inicial state
+        if indX == 0 and indY == 0 and current == 0:
+            self.ejeZ.setCurrentIndex(0)
+        elif indY <= current or indX <= current:
+            self.ejeZ.setCurrentIndex(current)
+        else:
+            self.ejeZ.setCurrentIndex(current+1)
 
 
 class EditPlot(QtWidgets.QWidget):
@@ -4802,7 +4844,7 @@ if __name__ == "__main__":
     # SteamTables=AddLine(None)
     # SteamTables=transportDialog(mEoS.__all__[2])
     # SteamTables = Dialog(conf)
-    SteamTables = EditAxis()
+    SteamTables = Plot3D()
 
     SteamTables.show()
     sys.exit(app.exec_())
