@@ -725,7 +725,7 @@ class StreamProperties(QtWidgets.QTableWidget):
                 self.CpLiquido.setValue(stream.Liquido.cp)
                 self.ViscosidadLiquido.setValue(stream.Liquido.mu)
                 self.ConductividadLiquido.setValue(stream.Liquido.k)
-                self.Tension.setValue(stream.Liquido.sigma)
+                self.Tension.setValue(stream.sigma)
 
 
 class SolidDefinition(QtWidgets.QWidget):

@@ -181,7 +181,7 @@ class IAPWS97(ThermoWater):
             # only liquid phase
             self.fill(self, st.Liquid)
             self.fill(self.Liquido, st.Liquid)
-            self.Liquido.sigma = unidades.Tension(st.sigma)
+            self.sigma = unidades.Tension(st.sigma)
             self.Hvap = unidades.Enthalpy(None)
             self.Svap = unidades.SpecificHeat(None)
 
@@ -195,7 +195,7 @@ class IAPWS97(ThermoWater):
         else:
             # two phases
             self.fill(self.Liquido, st.Liquid)
-            self.Liquido.sigma = unidades.Tension(st.sigma)
+            self.sigma = unidades.Tension(st.sigma)
             self.fill(self.Gas, st.Vapor)
 
             self.h = unidades.Enthalpy(st.h)

@@ -161,7 +161,7 @@ class Scrubber(Separador_SolidGas):
     def calculo(self):
         Gas = self.kwargs["entradaGas"]
         Liquido = self.kwargs["entradaLiquido"]
-        sigma = Liquido.Liquido.sigma
+        sigma = Liquido.sigma
         rhoL = Liquido.Liquido.rho
         muL = Liquido.Liquido.mu
 

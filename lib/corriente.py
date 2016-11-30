@@ -549,7 +549,7 @@ class Corriente(config.Entity):
                     unidades.MassFlow(f) for f in kw["unitMassFlow"]]
                 self.Liquido.caudalunitariomolar = [
                     unidades.MolarFlow(f) for f in kw["unitMolarFlow"]]
-                self.Liquido.sigma = compuesto.Liquido.sigma
+                self.Liquido.sigma = compuesto.sigma
                 self.Liquido.ids = self.ids
 
         if Config.get("Components", "Solids"):
