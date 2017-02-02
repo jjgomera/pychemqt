@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+import os
 from math import exp, log
 
 from PyQt5.QtWidgets import QApplication
@@ -215,21 +216,22 @@ class CoolProp(ThermoAdvanced):
             self.calculo()
             self.msg = "Solved"
         elif self._definition and not self._multicomponent and "ids" in kwargs:
-            fluido = self._name()
-            estado = CP.AbstractState("HEOS", fluido)
-            self.Tc = unidades.Temperature(estado.T_critical())
-            self.Pc = unidades.Pressure(estado.p_critical())
-            self.rhoc = unidades.Density(estado.rhomass_critical())
+            if os.environ["CoolProp"] == "True":
+                fluido = self._name()
+                estado = CP.AbstractState("HEOS", fluido)
+                self.Tc = unidades.Temperature(estado.T_critical())
+                self.Pc = unidades.Pressure(estado.p_critical())
+                self.rhoc = unidades.Density(estado.rhomass_critical())
 
-            self.M = unidades.Dimensionless(estado.molar_mass()*1000)
-            self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
-            self.Tt = unidades.Temperature(estado.Ttriple())
-            self.f_accent = unidades.Dimensionless(estado.acentric_factor())
+                self.M = unidades.Dimensionless(estado.molar_mass()*1000)
+                self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
+                self.Tt = unidades.Temperature(estado.Ttriple())
+                self.f_accent = unidades.Dimensionless(estado.acentric_factor())
 
-            self.name = fluido
-            self.CAS = estado.fluid_param_string("CAS")
-            self.synonim = estado.fluid_param_string("aliases")
-            self.formula = estado.fluid_param_string("formula")
+                self.name = fluido
+                self.CAS = estado.fluid_param_string("CAS")
+                self.synonim = estado.fluid_param_string("aliases")
+                self.formula = estado.fluid_param_string("formula")
 
     @property
     def calculable(self):
