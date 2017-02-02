@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 from math import exp
+import os
 
 from scipy.constants import R
 import iapws
@@ -78,19 +79,19 @@ class Freesteam(ThermoWater):
          "ref": "",
          "doi": ""}]
 
-    M = unidades.Dimensionless(mEoS.H2O.M)
-    try:
+    M = unidades.Dimensionless(iapws._iapws.M)
+    if os.environ["freesteam"] == "True":
         Pc = unidades.Pressure(freesteam.PCRIT)
         Tc = unidades.Temperature(freesteam.TCRIT)
         rhoc = unidades.Density(freesteam.RHOCRIT*M)
-    except:
-        Pc = unidades.Pressure(iapws.Pc, "MPa")
-        Tc = unidades.Temperature(iapws.Tc)
-        rhoc = unidades.Density(iapws.rhoc)
-    Tt = mEoS.H2O.Tt
-    Tb = mEoS.H2O.Tb
-    f_accent = unidades.Dimensionless(mEoS.H2O.f_acent)
-    momentoDipolar = mEoS.H2O.momentoDipolar
+    else:
+        Pc = unidades.Pressure(iapws._iapws.Pc, "MPa")
+        Tc = unidades.Temperature(iapws._iapws.Tc)
+        rhoc = unidades.Density(iapws._iapws.rhoc)
+    Tt = iapws._iapws.Tt
+    Tb = iapws._iapws.Tb
+    f_accent = unidades.Dimensionless(iapws._iapws.f_acent)
+    momentoDipolar = iapws._iapws.Dipole
 
     @property
     def calculable(self):
