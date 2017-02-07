@@ -120,7 +120,7 @@ except ImportError as err:
     raise err
 else:
     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
-    if mayor < 1 or minor < 4:
+    if mayor < 1:
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
             "Your version of matplotlib is too old, you must update it.")
