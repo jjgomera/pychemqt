@@ -2449,7 +2449,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         tabla = TablaMEoS(len(propiedades), readOnly=True, **kw)
         data = []
         for fluido in fluidos:
-            fila = _getData(fluido, keys, config)
+            fila = _getData(fluido, keys, config.getboolean("MEoS", "phase"))
             data.append(fila)
         tabla.setData(data)
 
@@ -2508,21 +2508,29 @@ def get_propiedades(config):
     return propiedades, keys, units
 
 
-def _getData(fluid, keys, config, unit=None):
+def _getData(fluid, keys, phase=True, unit=None, table=True):
     """Procedure to get values of properties in fluid
     Input:
         fluid: fluid instance to get values
         keys: array with desired parameter to get
-        config: project configuration
+        phase: boolean to get the properties values for both phases
         unit: unidades subclass
-        """
+        table: boolean if the values are for a table, the none values are repr
+            as text msg
+    """
+    # Define the undefined values
+    if table:
+        undef = QtWidgets.QApplication.translate("pychemqt", "undefined")
+    else:
+        undef = None
+
     fila = []
     for i, key in enumerate(keys):
         if not key:
             continue
         p = fluid.__getattribute__(key)
         if p is None:
-            txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
+            txt = undef
         else:
             if unit and unit[i]:
                 txt = p.__getattribute__(unit[i])
@@ -2531,12 +2539,11 @@ def _getData(fluid, keys, config, unit=None):
         fila.append(txt)
 
         # Add two phases properties is requested
-        if config.getboolean("MEoS", "phase") and \
-                key in ThermoAdvanced.propertiesPhase():
+        if phase and key in ThermoAdvanced.propertiesPhase():
             # Liquid
             p = fluid.Liquido.__getattribute__(key)
             if p is None:
-                txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
+                txt = undef
             elif isinstance(p, unidades.unidad):
                 if unit and unit[i]:
                     txt = p.__getattribute__(unit[i])
@@ -2548,7 +2555,7 @@ def _getData(fluid, keys, config, unit=None):
             # Gas
             p = fluid.Gas.__getattribute__(key)
             if p is None:
-                txt = QtWidgets.QApplication.translate("pychemqt", "undefined")
+                txt = undef
             elif isinstance(p, unidades.unidad):
                 if unit and unit[i]:
                     txt = p.__getattribute__(unit[i])
@@ -2788,8 +2795,8 @@ class TablaMEoS(Tabla):
                         units.append("")
                     else:
                         units.append(ui.__units__[order])
-                datatoTable = _getData(
-                    dlg.fluid, self.keys, self.parent.currentConfig, units)
+                phase = self.parent.currentConfig.getboolean("MEoS", "phase")
+                datatoTable = _getData(dlg.fluid, self.keys, phase, units)
             else:
                 # If table has a associated plot, use the values of that
                 datatoTable = []
@@ -2910,8 +2917,8 @@ class TablaMEoS(Tabla):
                     units.append("")
                 else:
                     units.append(ui.__units__[order])
-            data = _getData(self.Point, self.keys, self.parent.currentConfig,
-                            units)
+            phase = self.parent.currentConfig.getboolean("MEoS", "phase")
+            data = _getData(self.Point, self.keys, phase, units)
             self.setRow(row, data)
             self.Point = self.Point._new()
 
@@ -3628,6 +3635,7 @@ class PlotMEoS(QtWidgets.QWidget):
                 data = pickle.load(archivo, fix_imports=False, errors="strict")
             return data
         elif os.path.isfile(filenameHard):
+            print(filenameHard)
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
                 data = pickle.load(archivo, encoding="latin1")
             self._saveData(data)

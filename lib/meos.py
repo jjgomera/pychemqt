@@ -723,16 +723,16 @@ class MEoS(ThermoAdvanced):
             self.aM = unidades.MolarEnthalpy(self.a*self.M)
             self.gM = unidades.MolarEnthalpy(self.g*self.M)
 
-            self.Z = unidades.Dimensionless(x*self.Gas.Z+(1-x)*self.Liquido.Z)
-            self.f = unidades.Pressure(x*self.Gas.f+(1-x)*self.Liquido.f)
-            self.Z_rho = unidades.SpecificVolume(x*self.Gas.Z_rho+(1-x)*self.Liquido.Z_rho)
-            self.IntP = unidades.Pressure(x*self.Gas.IntP+(1-x)*self.Liquido.IntP)
+            # self.Z = unidades.Dimensionless(x*self.Gas.Z+(1-x)*self.Liquido.Z)
+            # self.f = unidades.Pressure(x*self.Gas.f+(1-x)*self.Liquido.f)
+            # self.Z_rho = unidades.SpecificVolume(x*self.Gas.Z_rho+(1-x)*self.Liquido.Z_rho)
+            # self.IntP = unidades.Pressure(x*self.Gas.IntP+(1-x)*self.Liquido.IntP)
 
         # Calculate special properties useful only for one phase
         if x < 1 and self.Tt <= T <= self.Tc:
-            self.Liquido.sigma = unidades.Tension(self._Surface())
+            self.sigma = unidades.Tension(self._Surface())
         else:
-            self.Liquido.sigma = unidades.Tension(None)
+            self.sigma = unidades.Tension(None)
 
         if 0 < x < 1:
             self.virialB = unidades.SpecificVolume(vapor["B"]/self.rhoc)
@@ -2439,7 +2439,6 @@ class MEoS(ThermoAdvanced):
         elif self._thermal["critical"] == 3:
             qd = self._thermal["qd"]
             Tref = self._thermal["Tcref"]
-#            ref = self.__class__(T=Tref, rho=rho, recursion=False)
             x_T = self.Pc*rho/self.rhoc**2*self.derivative("rho", "P", "T", fase)
             x_Tr = self.Pc*rho/self.rhoc**2*self.derivative("rho", "P", "T", fase)*Tref/T
             delchi = x_T-x_Tr
@@ -3035,7 +3034,7 @@ if __name__ == "__main__":
 #    agua=H2O(T=298.15, P=0.101325, visco=0, thermal=0)
 #    print  agua.P.MPa, agua.rho
 
-    dme=MEoS(T=400, P=0.1, eq=1)
+    dme=DME(T=400, P=0.1, eq=1)
     print("%0.1f %0.5f %0.3f %0.5f %0.5f %0.5f %0.2f" % (dme.T, dme.rho, dme.h.kJkg, dme.s.kJkgK, dme.cv.kJkgK, dme.cp.kJkgK, dme.w))
 
 # 300,00	0,10000	1,6025	0,31238	0,52152	0,52033	3,6153	-0,00038001	0,00000066198	17,837	22,741

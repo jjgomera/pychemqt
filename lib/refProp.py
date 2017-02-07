@@ -490,9 +490,9 @@ class RefProp(ThermoRefProp):
         if self.x < 1 and self.T <= self.Tc:
             surten = refprop.surten(flash["t"], flash["Dliq"], flash["Dvap"],
                                     flash["xliq"], flash["xvap"])
-            self.Liquido.sigma = unidades.Tension(surten["sigma"])
+            self.sigma = unidades.Tension(surten["sigma"])
         else:
-            self.Liquido.sigma = unidades.Tension(None)
+            self.sigma = unidades.Tension(None)
 
         if 0 < self.x < 1:
             self.Hvap = unidades.Enthalpy(self.Gas.h-self.Liquido.h)

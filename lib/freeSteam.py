@@ -156,7 +156,7 @@ class Freesteam(ThermoWater):
             # only liquid phase
             self.fill(self, fluido)
             self.fill(self.Liquido, fluido)
-            self.Liquido.sigma = unidades.Tension(freesteam.surftens_T(self.T))
+            self.sigma = unidades.Tension(freesteam.surftens_T(self.T))
 
             self.Hvap = unidades.Enthalpy(None)
             self.Svap = unidades.SpecificHeat(None)
@@ -171,7 +171,7 @@ class Freesteam(ThermoWater):
             # two phases
             liquido = freesteam.steam_Tx(fluido.T, 0.)
             self.fill(self.Liquido, liquido)
-            self.Liquido.sigma = unidades.Tension(freesteam.surftens_T(self.T))
+            self.sigma = unidades.Tension(freesteam.surftens_T(self.T))
             vapor = freesteam.steam_Tx(fluido.T, 1.)
             self.fill(self.Gas, vapor)
 

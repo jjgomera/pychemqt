@@ -446,11 +446,11 @@ class CoolProp(ThermoAdvanced):
 
         # Calculate special properties useful only for one phase
         if self._multicomponent:
-            self.Liquido.sigma = unidades.Tension(None)
+            self.sigma = unidades.Tension(None)
         elif x < 1 and self.Tt <= self.T <= self.Tc:
-            self.Liquido.sigma = unidades.Tension(estado.surface_tension())
+            self.sigma = unidades.Tension(estado.surface_tension())
         else:
-            self.Liquido.sigma = unidades.Tension(None)
+            self.sigma = unidades.Tension(None)
 
         self.virialB = unidades.SpecificVolume(estado.Bvirial())
         self.virialC = unidades.SpecificVolume_square(estado.Cvirial())
