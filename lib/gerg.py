@@ -68,9 +68,9 @@ class GERG(object):
                    mEoS.H2S, mEoS.nC9, mEoS.nC10]
 
     Fij = pickle.load(open(os.path.join(os.environ["pychemqt"], "dat",
-                                        "mEoS_Fij.pkl", "rb")))
+                                        "mEoS_Fij.pkl"), "rb"))
     Prop_c = pickle.load(open(os.path.join(os.environ["pychemqt"], "dat",
-                                           "mEoS_Tc.pkl", "rb")))
+                                           "mEoS_Tc.pkl"), "rb"))
 
     fir_ij = {
         "0-1": {
