@@ -129,7 +129,7 @@ else:
 # iapws
 # Externalized version of iapws, to avoid duple maintenance
 try:
-    import iapws
+    import iapws  # noqa
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
         "pychemqt", "iapws could not be found, you must install it.")
@@ -144,7 +144,7 @@ except ImportError as err:
     # from pygraph.algorithms.cycles import find_cycle  # noqa
 # except ImportError as err:
     # msg = QtWidgets.QApplication.translate(
-        # "pychemqt", "Python-graph don't found, you need install it")
+    #     "pychemqt", "Python-graph don't found, you need install it")
     # print(msg)
     # raise err
 
@@ -319,7 +319,13 @@ for fname in filename:
         logging.info(msg + ": " + fname)
         pychemqt.fileOpen(fname)
 
+
+# Manage error message to avoid print to console
+def exceptfunction(error, msg, traceback):
+    sys.__excepthook__(error, msg, traceback)
+sys.excepthook = exceptfunction  # noqa
+
+# Finish splash and start qt main loop
 pychemqt.show()
 splash.finish(pychemqt)
-
 sys.exit(app.exec_())
