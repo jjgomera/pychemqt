@@ -18,16 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 import os
 import inspect
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-from lib import mEoS
+from lib import meos, mEoS
 from equipment import equipments
-from tools import HelpView
 
 objects = inspect.getmembers(mEoS)
 
@@ -39,8 +37,8 @@ for nombre, objeto in objects:
             inspect.getdoc(function)
 #            print inspect.getdoc(function)
 
-#print os.path.curdir
-#print glob.glob(os.path.curdir+"/*/*.py")
+# print os.path.curdir
+# print glob.glob(os.path.curdir+"/*/*.py")
 
 
 class ShowReference(QtWidgets.QDialog):
@@ -59,9 +57,9 @@ class ShowReference(QtWidgets.QDialog):
         self.tree.setHeaderItem(header)
         layout.addWidget(self.tree)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
+        bttBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        bttBox.rejected.connect(self.reject)
+        layout.addWidget(bttBox)
 
         self.fill()
         self.tree.itemDoubleClicked.connect(self.open)
@@ -69,20 +67,20 @@ class ShowReference(QtWidgets.QDialog):
     def fill(self):
         """Fill tree with documentation entries"""
         # Equipment
-        itemEquipment = QtWidgets.QTreeWidgetItem([QtWidgets.QApplication.translate(
-            "pychemqt", "Equipments")])
+        itemEquipment = QtWidgets.QTreeWidgetItem(
+            [QtWidgets.QApplication.translate("pychemqt", "Equipments")])
         self.tree.addTopLevelItem(itemEquipment)
         for equip in equipments:
             itemequip = QtWidgets.QTreeWidgetItem([equip.__name__])
             itemEquipment.addChild(itemequip)
             for link in equip.__doi__:
-                item = QtWidgets.QTreeWidgetItem([link["doi"], "%s: %s. %s" %(
+                item = QtWidgets.QTreeWidgetItem([link["doi"], "%s: %s. %s" % (
                     link["autor"], link["title"], link["ref"])])
                 itemequip.addChild(item)
 
         # MEoS
         link = []
-        objects = [mEoS.MEoS]+mEoS.__all__
+        objects = [meos.MEoS]+mEoS.__all__
 
         for objeto in objects:
             item = QtWidgets.QTreeWidgetItem([objeto.__name__, ""])
@@ -95,18 +93,22 @@ class ShowReference(QtWidgets.QDialog):
                     if lastline[:17] == "http://dx.doi.org" and \
                             lastline not in link:
                         link.append(lastline)
-                        item.addChild(QtWidgets.QTreeWidgetItem([name, lastline]))
+                        child = QtWidgets.QTreeWidgetItem([name, lastline])
+                        item.addChild(child)
 
             listas = ["eq", "_viscosity", "_thermal"]
             for lista in listas:
-                if lista in objeto.__dict__:
+                if lista in objeto.__dict__ and objeto.__dict__[lista]:
                     for eq in objeto.__dict__[lista]:
                         if eq and "__doi__" in eq:
                             item.addChild(QtWidgets.QTreeWidgetItem(
-                                [eq["__name__"], eq["__doi__"]]))
+                                [eq["__doi__"]["doi"], "%s: %s, %s" % (
+                                    eq["__doi__"]["autor"],
+                                    eq["__doi__"]["title"],
+                                    eq["__doi__"]["ref"])]))
 
     def open(self, item, int):
-        """Open file if exist in doc/doi folder or open a browser in paper link"""
+        """Open file if exist in doc/doi folder or open a browser with link"""
         if item.parent():
             text = item.text(0)
             code = str(text).replace("/", "_")
@@ -114,9 +116,8 @@ class ShowReference(QtWidgets.QDialog):
             if os.path.isfile(file):
                 os.system('evince "'+file+'"')
             else:
-                explorer = HelpView.HelpView(text, QtCore.QUrl(
-                    "http://dx.doi.org/%s" %text))
-                explorer.exec_()
+                url = QtCore.QUrl("http://dx.doi.org/%s" % text)
+                QtGui.QDesktopServices.openUrl(url)
 
 
 if __name__ == "__main__":

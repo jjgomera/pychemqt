@@ -18,23 +18,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Dialog to common data entry
 #   -Entrada_Datos: Dialog to data entry
 #   -eqDIPPR: Widget for select DIPPR equation
 ###############################################################################
 
+
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 from numpy import loadtxt
 
-from .widgets import Tabla
-from tools.HelpView import HelpView
-from UI.widgets import Entrada_con_unidades
 from lib.unidades import Temperature
+from UI.widgets import Entrada_con_unidades, Tabla
 
 
 class eqDIPPR(QtWidgets.QWidget):
@@ -47,7 +44,8 @@ class eqDIPPR(QtWidgets.QWidget):
         self.eqDIPPR = QtWidgets.QSpinBox()
         self.eqDIPPR.setValue(value)
         self.eqDIPPR.setRange(1, 9)
-        self.eqDIPPR.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.eqDIPPR.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
         txt = """
     1:     Y = A+B*T+C*T²+D*T³+E*T⁴
@@ -121,8 +119,9 @@ class Entrada_Datos(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonDelete.clicked.connect(self.Borrar)
         gridLayout.addWidget(self.botonDelete, 1, 3)
-        gridLayout.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
-                                             QtWidgets.QSizePolicy.Expanding), 1, 4)
+        gridLayout.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 1, 4)
 
         self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
@@ -146,16 +145,19 @@ class Entrada_Datos(QtWidgets.QDialog):
             lyt.addWidget(self.labelTc)
             self.tc = Entrada_con_unidades(Temperature, value=tcValue)
             lyt.addWidget(self.tc)
-            lyt.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
-                                          QtWidgets.QSizePolicy.Expanding))
+            lyt.addItem(QtWidgets.QSpacerItem(
+                0, 0, QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Expanding))
             gridLayout.addItem(lyt, 4, 1, 1, 4)
             self.showTc(1)
 
         if help:
             botones = QtWidgets.QDialogButtonBox.Help | \
-                QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+                QtWidgets.QDialogButtonBox.Cancel | \
+                QtWidgets.QDialogButtonBox.Ok
         else:
-            botones = QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+            botones = QtWidgets.QDialogButtonBox.Cancel | \
+                QtWidgets.QDialogButtonBox.Ok
         self.boton = QtWidgets.QDialogButtonBox(botones)
         self.boton.accepted.connect(self.accept)
         self.boton.rejected.connect(self.reject)
@@ -167,16 +169,20 @@ class Entrada_Datos(QtWidgets.QDialog):
         self.tc.setVisible(value in (7, 9))
 
     def Abrir(self):
-        fname = str(QtWidgets.QFileDialog.getOpenFileName(
-            self, QtWidgets[0].QCoreApplication.translate("pychemqt", "Open text file"), "./"))
+        fname = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            QtWidgets.QApplication.translate("pychemqt", "Open text file"),
+            "./")
         if fname:
             data = loadtxt(fname)
             self.tabla.setData(data)
             self.tabla.addRow()
 
     def Guardar(self):
-        fname = str(QtWidgets.QFileDialog.getSaveFileName(
-            self, QtWidgets[0].QCoreApplication.translate("pychemqt", "Save data to file"), "./"))
+        fname = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            QtWidgets.QApplication.translate("pychemqt", "Save data to file"),
+            "./")
         if fname:
             with open(fname, 'w') as file:
                 file.write("#"+self.title+"\n")
@@ -200,8 +206,8 @@ class Entrada_Datos(QtWidgets.QDialog):
 
     def ayuda(self):
         """Show help file"""
-        Dialog = HelpView(self.windowTitle(), QtCore.QUrl(self.helpFile))
-        Dialog.exec_()
+        url = QtCore.QUrl(self.helpFile)
+        QtGui.QDesktopServices.openUrl(url)
 
     @property
     def data(self):
@@ -215,6 +221,6 @@ if __name__ == "__main__":
     encabezado = ["Diametro, μm", "Fracción másica", "acumulado"]
     ui = Entrada_Datos(horizontalHeader=encabezado, title=titulo, help=True,
                        DIPPR=True, helpFile=os.environ["pychemqt"] +
-                       "doc/doc/pychemqt.UI.entrada_datos.html")
+                       "/doc/pychemqt.UI.entrada_datos.html")
     ui.show()
     sys.exit(app.exec_())

@@ -20,24 +20,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Library for equipment common functionality
-#   * equipment: libreria de funcionamiento
-#   * UI_equip: Gui
+#   * equipment: Base class of equipment library
+#   * UI_equip: Base class of equipment UI functionality
 ###############################################################################
 
+
 from functools import partial
-import os
 import logging
+import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
-from lib.config import Entity
+from lib.config import Entity, IMAGE_PATH
 from lib.thread import Evaluate
-from UI import texteditor
-from UI.widgets import Status
-from UI import UI_corriente
-from tools.HelpView import HelpView
 from tools.costIndex import indiceBase, indiceActual
+from UI.texteditor import TextEditor
+from UI.UI_corriente import Ui_corriente
+from UI.widgets import Status
 
 
 class equipment(Entity):
@@ -171,9 +170,9 @@ class equipment(Entity):
         txt += QtWidgets.QApplication.translate("pychemqt", "Input properties")
         txt += "-----------------#"+os.linesep
         mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG + 1, "%")
-        for key, value in list(self.kwargs.items()):
-            if value and key not in ["f_install", "Base_index", "Current_index"]:
-                txt += mask % (key, value) + os.linesep
+        for key, val in list(self.kwargs.items()):
+            if val and key not in ["f_install", "Base_index", "Current_index"]:
+                txt += mask % (key, val) + os.linesep
         txt += os.linesep
 
         txt += self.propTxt()
@@ -185,12 +184,12 @@ class equipment(Entity):
 
     @classmethod
     def propertiesNames(cls):
-        prop = cls.propertiesEquipment()
-        prop.append((QtWidgets.QApplication.translate("pychemqt", "Notes"),
-                     "notasPlain", str))
-        prop.append((QtWidgets.QApplication.translate("pychemqt", "Object Type"),
-                     "className", str))
-        return prop
+        p = cls.propertiesEquipment()
+        p.append((QtWidgets.QApplication.translate("pychemqt", "Notes"),
+                  "notasPlain", str))
+        p.append((QtWidgets.QApplication.translate("pychemqt", "Object Type"),
+                  "className", str))
+        return p
 
     @classmethod
     def propertiesEquipment(cls):
@@ -218,8 +217,8 @@ class UI_equip(QtWidgets.QDialog):
         """
         super(UI_equip, self).__init__(parent)
         self.setWindowTitle(equipment.title)
-        icono = os.environ["pychemqt"] + \
-            "/images/equipment/%s.png" % equipment.__name__.lower()
+        icono = os.path.join(IMAGE_PATH, "equipment",
+                             "%s.png" % equipment.__name__.lower())
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(icono)))
         self.evaluate = Evaluate()
         self.evaluate.finished.connect(self.rellenar)
@@ -230,82 +229,87 @@ class UI_equip(QtWidgets.QDialog):
         self.status = Status()
         layout.addWidget(self.status, 1, 0, 1, 1)
         self.checkIgnorar = QtWidgets.QCheckBox()
-        self.checkIgnorar.setText(QtWidgets.QApplication.translate("pychemqt",
-                                                               "Ignore"))
+        self.checkIgnorar.setText(
+            QtWidgets.QApplication.translate("pychemqt", "Ignore"))
         self.checkIgnorar.toggled.connect(self.ignorar)
         layout.addWidget(self.checkIgnorar, 1, 1, 1, 1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok |
-                                                QtWidgets.QDialogButtonBox.Help)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok |
+            QtWidgets.QDialogButtonBox.Help)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.helpRequested.connect(self.ayuda)
         layout.addWidget(self.buttonBox, 1, 2, 1, 1)
 
         if not equipment.help:
-            self.buttonBox.button(QtWidgets.QDialogButtonBox.Help).setVisible(False)
+            button = self.buttonBox.button(QtWidgets.QDialogButtonBox.Help)
+            button.setVisible(False)
 
         # Input tab
         if entrada:
             self.Entrada = QtWidgets.QTabWidget()
             self.tabWidget.addTab(
-                self.Entrada, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/in.svg"),
-            QtWidgets.QApplication.translate("pychemqt", "Input"))
+                self.Entrada,
+                QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "in.svg")),
+                QtWidgets.QApplication.translate("pychemqt", "Input"))
         elif entrada is None:
             pass
         else:
-            self.Entrada = UI_corriente.Ui_corriente()
+            self.Entrada = Ui_corriente()
             self.Entrada.Changed.connect(partial(self.changeParams, "entrada"))
             self.tabWidget.addTab(
-                self.Entrada, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/in.svg"),
-            QtWidgets.QApplication.translate("pychemqt", "Input"))
+                self.Entrada,
+                QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "in.svg")),
+                QtWidgets.QApplication.translate("pychemqt", "Input"))
 
         # Calcule tab
         if calculo:
             self.tabCalculo = QtWidgets.QWidget()
-            self.tabWidget.addTab(self.tabCalculo,
-                QtGui.QIcon(os.environ["pychemqt"]+"/images/button/calculator.png"),
+            self.tabWidget.addTab(
+                self.tabCalculo,
+                QtGui.QIcon(os.path.join(
+                    IMAGE_PATH, "button", "calculator.png")),
                 QtWidgets.QApplication.translate("pychemqt", "Calculation"))
 
         # Cost tab
         if equipment.indiceCostos is not None:
             self.tabCostos = QtWidgets.QWidget()
-            self.tabWidget.addTab(self.tabCostos,
-                QtGui.QIcon(os.environ["pychemqt"]+"/images/button/currency.png"),
+            self.tabWidget.addTab(
+                self.tabCostos,
+                QtGui.QIcon(os.path.join(
+                    IMAGE_PATH, "button", "currency.png")),
                 QtWidgets.QApplication.translate("pychemqt", "Cost"))
 
         # Output tab
         if salida:
             self.Salida = QtWidgets.QTabWidget()
             self.tabWidget.addTab(
-                self.Salida, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/out.svg"),
-            QtWidgets.QApplication.translate("pychemqt", "Output"))
+                self.Salida,
+                QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "out.svg")),
+                QtWidgets.QApplication.translate("pychemqt", "Output"))
         elif salida is None:
             pass
         else:
-            self.Salida = UI_corriente.Ui_corriente(readOnly=True)
+            self.Salida = Ui_corriente(readOnly=True)
             self.tabWidget.addTab(
-                self.Salida, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/equipment/out.svg"),
-            QtWidgets.QApplication.translate("pychemqt", "Output"))
+                self.Salida,
+                QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "out.svg")),
+                QtWidgets.QApplication.translate("pychemqt", "Output"))
 
         # Notes tab
-        self.tabNotas = texteditor.TextEditor()
+        self.tabNotas = TextEditor()
         self.tabWidget.addTab(
-            self.tabNotas, QtGui.QIcon(os.environ["pychemqt"] +
-            "/images/button/editor.png"),
+            self.tabNotas,
+            QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "editor.png")),
             QtWidgets.QApplication.translate("pychemqt", "Notes"))
         self.tabNotas.notas.textChanged.connect(self.cambiar_notas)
 
     def addSalida(self, title, **kw):
-        widget = UI_corriente.Ui_corriente(readOnly=True, **kw)
+        widget = Ui_corriente(readOnly=True, **kw)
         self.Salida.addTab(widget, title)
 
     def addEntrada(self, title, key, **kw):
-        widget = UI_corriente.Ui_corriente(**kw)
+        widget = Ui_corriente(**kw)
         widget.Changed.connect(partial(self.changeParams, key))
         self.Entrada.addTab(widget, title)
 
@@ -325,8 +329,8 @@ class UI_equip(QtWidgets.QDialog):
 
     def ayuda(self):
         """Show help page"""
-        Dialog = HelpView(self.windowTitle(), QtCore.QUrl(self.Equipment.help))
-        Dialog.exec_()
+        url = QtCore.QUrl(self.Equipment.help)
+        QtGui.QDesktopServices.openUrl(url)
 
     def setEquipment(self, equipment):
         self.Equipment = equipment
@@ -391,8 +395,8 @@ class UI_equip(QtWidgets.QDialog):
         for combo in self.Equipment.kwargsList:
             self.__getattribute__(combo).setCurrentIndex(
                 self.Equipment.kwargs[combo])
-        for check in self.Equipment.kwargsCheck:
-            self.__getattribute__(check).setChecked(self.Equipment.kwargs[check])
+        for chck in self.Equipment.kwargsCheck:
+            self.__getattribute__(chck).setChecked(self.Equipment.kwargs[chck])
         if self.Equipment.indiceCostos is not None:
             self.Costos.setFactor(self.Equipment.kwargs["f_install"])
             self.Costos.setBase(self.Equipment.kwargs["Base_index"])
