@@ -39,8 +39,12 @@ indiceBase = ["Jan-1982", 313.95, 336.19, 326.01, 312.03, 383.18, 297.63,
 indiceActual = []
 with open(config.conf_dir+"CostIndex.dat", "r") as archivo:
     indiceActual.append(archivo.readline()[:-1])
-    for ind in range(1, 13):
-        indiceActual.append(float(archivo.readline()))
+    while True:
+        data = archivo.readline().rstrip("\n")
+        if data:
+            indiceActual.append(float(data))
+            if len(indiceActual) == 13:
+                break
 
 
 class Ui_CostIndex(QtWidgets.QDialog):

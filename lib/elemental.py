@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+import os
 import sqlite3
 
 from numpy import linspace, logspace, log
@@ -30,8 +31,10 @@ from PyQt5.QtCore import QLocale
 
 from lib.utilities import colors
 
+
 # Connection to database with element data
-connection = sqlite3.connect('dat/elemental.db')
+connection = sqlite3.connect(os.path.join(
+    os.environ["pychemqt"], "dat", "elemental.db"))
 databank = connection.cursor()
 
 # Load system locale to implement a custon translation system (non qt)

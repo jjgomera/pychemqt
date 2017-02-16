@@ -33,13 +33,13 @@ import os
 import sqlite3
 
 
-databank_name = os.environ["pychemqt"] + 'dat'+os.sep+'databank.db'
+databank_name = os.path.join(os.environ["pychemqt"], 'dat', 'databank.db')
 databank = sqlite3.connect(databank_name).cursor()
 databank.execute("SELECT COUNT(*) AS Total FROM compuestos")
 N_comp = databank.fetchone()[0]
 
-conf_dir = os.path.expanduser('~') + os.sep+".pychemqt"+os.sep
-databank_Custom_name = conf_dir + 'databank.db'
+conf_dir = os.path.join(os.path.expanduser('~'), ".pychemqt")
+databank_Custom_name = conf_dir + os.sep + 'databank.db'
 if os.path.isfile(databank_Custom_name):
     databank_Custom = sqlite3.connect(databank_Custom_name).cursor()
     databank_Custom.execute("SELECT COUNT(*) AS Total FROM compuestos")
