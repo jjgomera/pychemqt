@@ -32,3 +32,5 @@ Finally to install iapws run the command:
 
     * py -m pip install https://github.com/jjgomera/iapws/archive/master.zip
 
+
+To get pychemqt download the zip file from https://github.com/jjgomera/pychemqt/archive/master.zip and unzip whatever you want. To run doble click over the main script pychemqt.py.
