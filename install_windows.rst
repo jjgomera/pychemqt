@@ -29,5 +29,6 @@ To install both we are going to use the cmd terminal and using the command:
 Remerber it can use TAB to autocomplete command. Respect the order because scipy depend numpy, first install numpy wheel.
 
 Finally to install iapws run the command:
+
     * py -m pip install https://github.com/jjgomera/iapws/archive/master.zip
 
