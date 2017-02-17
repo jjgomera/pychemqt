@@ -36,6 +36,7 @@ from lib import config
 indiceBase = ["Jan-1982", 313.95, 336.19, 326.01, 312.03, 383.18, 297.63,
               421.1, 235.42, 338.2, 263.92, 290.13, 303.26]
 
+# Load data from config file
 indiceActual = []
 with open(config.conf_dir+"CostIndex.dat", "r") as archivo:
     indiceActual.append(archivo.readline()[:-1])
@@ -117,6 +118,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 14, 1, 1, 3)
 
+        # Fill all widget data
         self.indices = []
         with open(os.environ["pychemqt"] + "dat/costindex.dat") as archivo:
             texto = archivo.readlines()
@@ -125,25 +127,24 @@ class Ui_CostIndex(QtWidgets.QDialog):
                 self.fecha.addItem(dato[0])
                 self.indices.append(dato[1:])
 
-        with open(config.conf_dir+"CostIndex.dat") as archivo:
-            texto = archivo.readlines()
-            self.index.setValue(float(texto[1]))
-            self.equipos.setValue(float(texto[2]))
-            self.cambiadores_calor.setValue(float(texto[3]))
-            self.maquinaria.setValue(float(texto[4]))
-            self.tuberias.setValue(float(texto[5]))
-            self.instrumentos.setValue(float(texto[6]))
-            self.bombas.setValue(float(texto[7]))
-            self.equipos_electricos.setValue(float(texto[8]))
-            self.soportes.setValue(float(texto[9]))
-            self.construccion.setValue(float(texto[10]))
-            self.edificios.setValue(float(texto[11]))
-            self.ingenieria.setValue(float(texto[12]))
+        fecha = indiceActual[0]
+        self.index.setValue(indiceActual[1])
+        self.equipos.setValue(indiceActual[2])
+        self.cambiadores_calor.setValue(indiceActual[3])
+        self.maquinaria.setValue(indiceActual[4])
+        self.tuberias.setValue(indiceActual[5])
+        self.instrumentos.setValue(indiceActual[6])
+        self.bombas.setValue(indiceActual[7])
+        self.equipos_electricos.setValue(indiceActual[8])
+        self.soportes.setValue(indiceActual[9])
+        self.construccion.setValue(indiceActual[10])
+        self.edificios.setValue(indiceActual[11])
+        self.ingenieria.setValue(indiceActual[12])
+        if fecha:
+            self.fecha.setCurrentIndex(self.fecha.findText(fecha))
+        else:
+            self.fecha.setCurrentIndex(-1)
 
-            if texto[0]:
-                self.fecha.setCurrentIndex(self.fecha.findText(texto[0][:-1]))
-            else:
-                self.fecha.setCurrentIndex(-1)
         self.fecha.currentIndexChanged.connect(self.loadData)
 
     def setCustom(self):
