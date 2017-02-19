@@ -1052,7 +1052,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.systemtray.setContextMenu(self.menuHerramientas)
 
         # Iniciar valores
-        if os.path.isfile(QTSETTING_FILE):
+        if sys.platform == "win32" or os.path.isfile(QTSETTING_FILE):
             settings = QtCore.QSettings()
             self.recentFiles = settings.value("RecentFiles")
             self.lastFile = settings.value("LastFile")
