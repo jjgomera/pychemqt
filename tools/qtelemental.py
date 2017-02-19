@@ -348,7 +348,7 @@ class boton(QtWidgets.QPushButton):
 
         else:
             color = self.Element.color
-        self.setPalette(QtGui.QPalette(QtGui.QColor(color)))
+        self.setStyleSheet("QPushButton { background-color: %s }" % color)
         self.setText(self.Element.symbol)
         self.clicked.connect(self.press)
 
