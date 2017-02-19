@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module to define TextEditor widget, define common text functionality:
 # fontcolor, fontstyle, fontweigh, alignment, bold, italic...
@@ -26,9 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 import os
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 from UI.widgets import createAction
 
 
@@ -40,7 +37,8 @@ class TextEditor(QtWidgets.QWidget):
         """Constructor, opcional parameter texto to set initial value"""
         super(TextEditor, self).__init__(parent)
         self.texto = texto
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Notes"))
+        self.setWindowTitle(
+            QtWidgets.QApplication.translate("pychemqt", "Notes"))
         gridLayout = QtWidgets.QVBoxLayout(self)
 
         toolbar = QtWidgets.QToolBar()
@@ -67,53 +65,53 @@ class TextEditor(QtWidgets.QWidget):
         toolbar.addWidget(self.FontSize)
 
         self.actionNegrita = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-text-bold.png",
+            icon=os.path.join("button", "format-text-bold.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Bold"),
             slot=self.Negrita, checkable=True)
         toolbar.addAction(self.actionNegrita)
         self.actionCursiva = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-text-italic.png",
+            icon=os.path.join("button", "format-text-italic.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Italic"),
             slot=self.Cursiva, checkable=True)
         toolbar.addAction(self.actionCursiva)
         self.actionSubrayado = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-text-underline.png",
+            icon=os.path.join("button", "format-text-underline.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Underline"),
             slot=self.Subrayado, checkable=True)
         toolbar.addAction(self.actionSubrayado)
         self.actionTachado = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-text-strikethrough.png",
+            icon=os.path.join("button", "format-text-strikethrough.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Strike through"),
             slot=self.Tachado, checkable=True)
         toolbar.addAction(self.actionTachado)
         self.actionSuperScript = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/font-superscript.png",
+            icon=os.path.join("button", "font-superscript.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Superscript"),
             slot=self.Superindice, checkable=True)
         toolbar.addAction(self.actionSuperScript)
         self.actionSubScript = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/font-subscript.png",
+            icon=os.path.join("button", "font-subscript.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Subscript"),
             slot=self.Subindice, checkable=True)
         toolbar.addAction(self.actionSubScript)
         toolbar.addSeparator()
         self.actionAlinearIzquierda = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-justify-left.png",
+            icon=os.path.join("button", "format-justify-left.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Align left"),
             slot=self.izquierda, checkable=True)
         toolbar.addAction(self.actionAlinearIzquierda)
         self.actionCentrar = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-justify-center.png",
+            icon=os.path.join("button", "format-justify-center.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Center"),
             slot=self.centrar, checkable=True)
         toolbar.addAction(self.actionCentrar)
         self.actionJustificar = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-justify-fill.png",
+            icon=os.path.join("button", "format-justify-fill.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Justify"),
             slot=self.justificar, checkable=True)
         toolbar.addAction(self.actionJustificar)
         self.actionAlinearDerecha = createAction(
-            icon=os.environ["pychemqt"]+"/images/button/format-justify-right.png",
+            icon=os.path.join("button", "format-justify-right.png"),
             text=QtWidgets.QApplication.translate("pychemqt", "Align right"),
             slot=self.derecha, checkable=True)
         toolbar.addAction(self.actionAlinearDerecha)
@@ -260,6 +258,7 @@ class TextEditor(QtWidgets.QWidget):
             format = QtGui.QTextCharFormat()
             format.setForeground(dialog.currentColor())
             self.MergeFormat(format)
+
 
 if __name__ == "__main__":
     import sys
