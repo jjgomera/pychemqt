@@ -123,6 +123,7 @@ class Wizard(QtWidgets.QWizard):
         self.setOptions(QtWidgets.QWizard.ExtendedWatermarkPixmap |
                         QtWidgets.QWizard.IndependentPages |
                         QtWidgets.QWizard.HaveCustomButton1)
+        self.setWizardStyle(QtWidgets.QWizard.ModernStyle)
 
         botonAuto = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Auto"))
@@ -139,10 +140,10 @@ class Wizard(QtWidgets.QWizard):
             "pychemqt",
             "That's the configuration wizard of a new project from pychemqt"))
         page1_welcome.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/pychemqt_98.png"))
+            os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         page1_welcome.setPixmap(
             QtWidgets.QWizard.WatermarkPixmap, QtGui.QPixmap(
-                os.environ["pychemqt"]+"/images/logo_2.jpg"))
+                os.path.join(os.environ["pychemqt"], "images", "logo_2.jpg")))
         lyt = QtWidgets.QVBoxLayout(page1_welcome)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt",
@@ -169,7 +170,7 @@ These are the options you must expecific next:<br>
         page2_components.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Add componentes from database"))
         page2_components.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/pychemqt_98.png"))
+            os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page2_components)
         self.componentes = UI_confComponents.UI_confComponents_widget(config)
         self.componentes.componentChanged.connect(self.button(
@@ -185,7 +186,7 @@ These are the options you must expecific next:<br>
             "pychemqt", "The thermodynamics properties are the basic of \
 pychemqt, a bad selection would be disastrous for the results"))
         page3_thermo.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/pychemqt_98.png"))
+            os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page3_thermo)
         self.thermo = UI_confThermo.UI_confThermo_widget(config)
         lyt.addWidget(self.thermo)
@@ -198,7 +199,7 @@ pychemqt, a bad selection would be disastrous for the results"))
             "pychemqt", "The transport properties are important too for good \
 simulation results"))
         page4_transport.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/pychemqt_98.png"))
+            os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page4_transport)
         self.transport = UI_confTransport.UI_confTransport_widget(config)
         lyt.addWidget(self.transport)
@@ -211,7 +212,7 @@ simulation results"))
             "pychemqt", "The preferred units are not necessary for the \
 simulation, but a good election let you only focus in simulation"))
         page5_units.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/pychemqt_98.png"))
+            os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page5_units)
         self.units = UI_confUnits.UI_confUnits_widget(config)
         lyt.addWidget(self.units)
