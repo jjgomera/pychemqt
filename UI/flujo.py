@@ -301,7 +301,7 @@ class GraphicsEntity(object):
     """Clase que modela la funcionalidad comun a corrientes y equipos en el PFD"""
 
     def view(self):
-        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as temp:
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt", encoding="utf-8") as temp:
             temp.write(QtWidgets.QApplication.translate("pychemqt", "Project Name") + ": " +
                        self.scene().parent().currentFilename + os.linesep)
             if isinstance(self.entity, Corriente):
