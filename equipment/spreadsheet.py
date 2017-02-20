@@ -91,6 +91,7 @@ class Spreadsheet(equipment):
     def calculo(self):
         ext = self.kwargs["filename"].split(".")[-1]
         if ext == "ods":
+            self._dependence = "ezodf"
             spreadsheet = ezodf.opendoc(self.kwargs["filename"])
             self.sheets = [name for name in spreadsheet.sheets.names()]
             if self.kwargs["datamap"]:
@@ -128,6 +129,7 @@ class Spreadsheet(equipment):
                 spreadsheet.save()
 
         elif ext == "xlsx":
+            self._dependence = "openpyxl"
             spreadsheet = openpyxl.load_workbook(self.kwargs["filename"])
             self.sheets = spreadsheet.get_sheet_names()
             if self.kwargs["datamap"]:

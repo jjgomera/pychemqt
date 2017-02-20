@@ -207,12 +207,15 @@ class Project(object):
 
         # write equipments
         equipment = {}
+        dependences = set()  #  Set of external dependences used
         for key, equip in self.items.items():
             if key[0] == "e":
                 eq = {}
                 eq["id"] = equipments.index(equip.__class__)
                 equip.writeToJSON(eq)
                 equipment[key] = eq
+                if equip._dependence:
+                    dependences.add(equip._dependence)
         data["equipment"] = equipment
 
         # write streams
@@ -225,7 +228,12 @@ class Project(object):
             stream["ind_down"] = item[3]
             item[4].writeToJSON(stream)
             streams[id] = stream
+            if item[4]._dependence:
+                dependences.add(item[4]._dependence)
         data["stream"] = streams
+
+        # write external dependences necessaries for the project
+        data["external_dependences"] = dependences
 
     def readFromJSON(self, data, huella=True):
         """Read project from stream

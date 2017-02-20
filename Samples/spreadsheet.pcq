@@ -421,6 +421,7 @@
         }
     },
     "other": {},
+    "external_dependences": ["ezodf"],
     "equipment": {
         "e1": {
             "notasPlain": "",
@@ -449,6 +450,7 @@
             },
             "id": 12,
             "msg": "usando rendimientos por defecto",
+            "external_dependences": "",
             "notas": ""
         },
         "e2": {
@@ -470,7 +472,7 @@
                         "cell": "B6"
                     }
                 },
-                "filename": "/home/jjgomera/pychemqt/ejemplo.ods"
+                "filename": "/home/jjgomera/Programacion/pychemqt/Samples/ejemplo.ods"
             },
             "status": 1,
             "bool": true,
@@ -482,6 +484,7 @@
             },
             "id": 19,
             "msg": "",
+            "external_dependences": "ezodf",
             "notas": ""
         }
     },

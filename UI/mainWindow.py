@@ -1332,6 +1332,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     win.widget().writeToJSON(widget)
                     ventana["window"] = widget
                     other[ind] = ventana
+
+                    # Add dependences from other windows
+                    if widget["external_dependences"]:
+                        data["external_dependences"].add(
+                            widget["external_dependences"])
+
                 data["other"] = other
 
                 json.dump(data, file, indent=4)
@@ -1380,17 +1386,20 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if fname:
             try:
                 self.loadFile(fname)
-                self.activeControl(True)
+            except ImportError as e:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    QtWidgets.QApplication.translate("pychemqt", "Error"),
+                    e.msg)
             except Exception as error:
                 QtWidgets.QMessageBox.critical(
                     self,
                     QtWidgets.QApplication.translate("pychemqt", "Error"),
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Failed to load file") + "\n" + fname)
-                self.activeControl(False)
-                del self.filename[-1]
                 raise error
-#                print(error)
+            else:
+                self.activeControl(True)
 
     def loadFile(self, fname=None):
         if not fname:
@@ -1401,12 +1410,29 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 return
 
         if fname:
+            with open(fname, "r") as file:
+                data = json.load(file)
+
+            # Check availability of optional dependences necessary for the file
+            if "external_dependences" in data:
+                available = True
+                for dep in data["external_dependences"]:
+                    if os.environ[dep] != "True":
+                        available = False
+                        break
+
+                if not available:
+                    msg = QtWidgets.QApplication.translate(
+                        "pychemqt", "Failed to load")
+                    msg += " " + fname + os.linesep
+                    msg += QtWidgets.QApplication.translate(
+                            "pychemqt", "This project require")
+                    msg += ": %s" % ", ".join(data["external_dependences"])
+                    raise ImportError(msg)
+
             self.dirty.append(False)
             self.filename.append(fname)
             self.addRecentFile(fname)
-
-            with open(fname, "r") as file:
-                data = json.load(file)
 
             project = Project()
             project.readFromJSON(data)

@@ -40,12 +40,12 @@ import os
 from PyQt5 import QtWidgets
 
 # TODO: Delete when it isn´t necessary debug
-# os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
+# os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
 # os.environ["freesteam"] = "False"
 # os.environ["oasa"] = "False"
-# os.environ["CoolProp"] = "True"
+# os.environ["CoolProp"] = "False"
 # os.environ["refprop"] = "False"
-# os.environ["ezodf"] = "True"
+# os.environ["ezodf"] = "False"
 # os.environ["openpyxl"] = "False"
 # os.environ["xlwt"] = "False"
 # os.environ["icu"] = "False"
@@ -57,7 +57,8 @@ from lib.sql import databank
 
 
 conf_dir = os.path.expanduser('~') + os.sep + ".pychemqt" + os.sep
-QTSETTING_FILE = os.path.join(os.path.expanduser('~'), ".config", "pychemqt", "pychemqt.conf")
+QTSETTING_FILE = os.path.join(
+    os.path.expanduser('~'), ".config", "pychemqt", "pychemqt.conf")
 IMAGE_PATH = os.path.join(os.environ["pychemqt"], "images") + os.sep
 
 Preferences = ConfigParser()
@@ -144,6 +145,7 @@ class Entity(object):
     kwargs_forbidden = ["entrada"]
     notas = ""
     notasPlain = ""
+    _dependence = ""
 
     def __init__(self, **kwargs):
         """
@@ -228,6 +230,7 @@ class Entity(object):
         data["status"] = self.status
         data["msg"] = self.msg
         data["bool"] = self._bool
+        data["external_dependences"] = self._dependence
         data["notas"] = self.notas
         data["notasPlain"] = self.notasPlain
         if self.status:
@@ -252,6 +255,10 @@ class Entity(object):
         self.status = data["status"]
         self.msg = data["msg"]
         self._bool = data["bool"]
+        try:
+            self._dependence = data["external_dependences"]
+        except KeyError:
+            self._dependence = ""
         self.notas = data["notas"]
         self.notasPlain = data["notasPlain"]
         if self.status:

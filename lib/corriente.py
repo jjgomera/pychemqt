@@ -632,12 +632,15 @@ class Corriente(config.Entity):
         # Final selection
         if IAPWS and FREESTEAM:
             self._thermo = "freesteam"
+            self._dependence = "freesteam"
         elif IAPWS:
             self._thermo = "iapws"
         elif _meos and REFPROP:
             self._thermo = "refprop"
+            self._dependence = "refprop"
         elif _meos and COOLPROP:
             self._thermo = "coolprop"
+            self._dependence = "CoolProp"
         elif MEoS and GERG:
             self._thermo = "gerg"
         elif MEoS:

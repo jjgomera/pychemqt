@@ -3046,12 +3046,15 @@ class TablaMEoS(Tabla):
             if isinstance(self.Point, meos.MEoS):
                 data["method"] = "meos"
                 data["fluid"] = mEoS.__all__.index(self.Point.__class__)
+                data["external_dependences"] = ""
             elif isinstance(self.Point, coolProp.CoolProp):
                 data["method"] = "coolprop"
                 data["fluid"] = self.Point.kwargs["ids"][0]
+                data["external_dependences"] = "CoolProp"
             else:
                 data["method"] = "refprop"
                 data["fluid"] = self.Point.kwargs["ids"][0]
+                data["external_dependences"] = "refprop"
 
             data["keys"] = self.keys
             data["columnReadOnly"] = self.columnReadOnly

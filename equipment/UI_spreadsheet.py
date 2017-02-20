@@ -247,7 +247,7 @@ if __name__ == "__main__":
                          ids=[62], fraccionMolar=[1.])
     project.setInput(1, caliente)
 
-    spreadsheet = Spreadsheet(filename="/media/datos/ejemplo.xlsx",
+    spreadsheet = Spreadsheet(filename="/home/jjgomera/Programacion/pychemqt/Samples/ejemplo.ods",
                               project=project)
     app = QtWidgets.QApplication(sys.argv)
     dialogo = UI_equipment(spreadsheet, project=project)
