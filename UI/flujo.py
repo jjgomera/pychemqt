@@ -317,7 +317,7 @@ class GraphicsEntity(object):
 
     def exportExcel(self):
         msg = QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
-        patrones = QtCore.QStringList()
+        patrones = []
         if os.environ["ezodf"]:
             patrones.append(QtWidgets.QApplication.translate("pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
         if os.environ["xlwt"]:
@@ -325,7 +325,7 @@ class GraphicsEntity(object):
                 QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL") + " (*.xls)")
         if os.environ["openpyxl"]:
             patrones.append(QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
-        patron = patrones.join(";;")
+        patron = ";;".join(patrones)
         dir = os.path.dirname(str(self.scene().parent().currentFilename))
         ruta = str(QtWidgets.QFileDialog.getSaveFileName(self.scene().parent(), msg, dir, patron)[0])
         if ruta:
