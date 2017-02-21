@@ -360,7 +360,12 @@ class Corriente(config.Entity):
         elif self._thermo == "refprop":
             if not self.kwargs["ids"]:
                 self.kwargs["ids"] = self.ids
-            compuesto = refProp.RefProp(**self.kwargs)
+
+            # Avoid overwrite refprop H parameter
+            kwargs = self.kwargs.copy()
+            del kwargs["H"]
+
+            compuesto = refProp.RefProp(**kwargs)
         elif self._thermo == "gerg":
             ids = []
             for id in self.ids:
