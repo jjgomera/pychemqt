@@ -1340,6 +1340,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
                 data["other"] = other
 
+                # python set are not serializable so convert to lis s
+                data["external_dependences"] = list(
+                    data["external_dependences"])
+
                 json.dump(data, file, indent=4)
 
             self.dirty[self.idTab] = False
