@@ -36,7 +36,7 @@ from lib import EoS, mEoS, gerg, iapws97, freeSteam, refProp, coolProp
 from lib.solids import Solid
 from lib.mezcla import Mezcla, _mix_from_molarflow_and_molarfraction
 from lib.psycrometry import PsychroState
-from lib.thermo import ThermoWater, ThermoAdvanced
+from lib.thermo import ThermoWater, ThermoAdvanced, ThermoRefProp
 
 
 class Corriente(config.Entity):
@@ -486,28 +486,10 @@ class Corriente(config.Entity):
             self.rho = compuesto.rho
             self.Q = unidades.VolFlow(compuesto.v*self.caudalmasico)
 
+            # harcoded thermo derived global properties in corriente for avoid
+            # losing data
             if self._thermo != "eos":
-                self.Tr = compuesto.Tr
-                self.Pr = compuesto.Pr
-                self.v0 = compuesto.v0
-                self.rho0 = compuesto.rho0
-                self.h0 = compuesto.h0
-                self.u0 = compuesto.u0
-                self.s0 = compuesto.s0
-                self.a0 = compuesto.a0
-                self.g0 = compuesto.g0
-                self.cp0 = compuesto.cp0
-                self.cv0 = compuesto.cv0
-                self.cp0_cv = compuesto.cp0_cv
-                self.gamma0 = compuesto.gamma0
-                self.Hvap = compuesto.Hvap
-                self.Svap = compuesto.Svap
-
-            if self._thermo == "meos":
-                self.virialB = compuesto.virialB
-                self.virialC = compuesto.virialC
-                self.invT = compuesto.invT
-
+                compuesto._fillCorriente(self)
 
 #        if self.__class__!=mEoS.H2O:
 #            agua=mEoS.H2O(T=self.T, P=self.P.MPa)
@@ -857,6 +839,7 @@ class Corriente(config.Entity):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
 
+        # Add advanced properties to report
         if self.calculable and self._thermo != "eos":
             doc = self._doc()
 
@@ -888,12 +871,19 @@ class Corriente(config.Entity):
                         values = ["  " + cmp.nombre]
                         for phase in phases:
                             values.append(phase.__getattribute__(key)[i].str)
-                        complejos += param % tuple(values) +os.linesep
+                        complejos += param % tuple(values) + os.linesep
+                elif key in ["K", "csat", "dpdt_sat", "cv2p", "chempot"]:
+                    complejos += propiedad + os.linesep
+                    for i, cmp in enumerate(self.componente):
+                        values = ["  " + cmp.nombre]
+                        values.append(self.__getattribute__(key)[i].str)
+                        complejos += "%-40s\t%s" % tuple(values)
+                        complejos += os.linesep
                 elif key in self.Gas.__dict__ or key in self.Liquido.__dict__:
                     values = [propiedad]
                     for phase in phases:
                         values.append(phase.__getattribute__(key).str)
-                    complejos += param % tuple(values) +os.linesep
+                    complejos += param % tuple(values) + os.linesep
                 else:
                     complejos += "%-40s\t%s" % (propiedad, self.__getattribute__(key).str)
                     complejos += os.linesep
@@ -973,26 +963,7 @@ class Corriente(config.Entity):
         state["SG"] = self.SG
 
         if self._thermo != "eos":
-            state["Tr"] = self.Tr
-            state["Pr"] = self.Pr
-            state["vo"] = self.v0
-            state["rhoo"] = self.rho0
-            state["ho"] = self.h0
-            state["uo"] = self.u0
-            state["so"] = self.s0
-            state["ao"] = self.a0
-            state["go"] = self.g0
-            state["cpo"] = self.cp0
-            state["cvo"] = self.cv0
-            state["cpo/cv"] = self.cp0_cv
-            state["gammao"] = self.gamma0
-            state["Hvap"] = self.Hvap
-            state["Svap"] = self.Svap
-
-        if self._thermo == "meos":
-            state["virialB"] = self.virialB
-            state["virialC"] = self.virialC
-            state["invT"] = self.invT
+            self.cmp._writeGlobalState(self, state)
 
         state["fluxType"] = self.tipoFlujo
         self.mezcla.writeStatetoJSON(state)
@@ -1029,28 +1000,6 @@ class Corriente(config.Entity):
         self.Q = unidades.VolFlow(state["Q"])
         self.SG = unidades.Dimensionless(state["SG"])
 
-        if self._thermo != "eos":
-            self.Tr = unidades.Dimensionless(state["Tr"])
-            self.Pr = unidades.Dimensionless(state["Pr"])
-            self.v0 = unidades.SpecificVolume(state["vo"])
-            self.rho0 = unidades.Density(state["rhoo"])
-            self.h0 = unidades.Power(state["ho"])
-            self.u0 = unidades.Power(state["uo"])
-            self.s0 = unidades.Entropy(state["so"])
-            self.a0 = unidades.Power(state["ao"])
-            self.g0 = unidades.Power(state["go"])
-            self.cp0 = unidades.Entropy(state["cpo"])
-            self.cv0 = unidades.Entropy(state["cvo"])
-            self.cp0_cv = unidades.Dimensionless(state["cpo/cv"])
-            self.gamma0 = unidades.Dimensionless(state["gammao"])
-            self.Hvap = unidades.Enthalpy(state["Hvap"])
-            self.Svap = unidades.SpecificHeat(state["Svap"])
-
-        if self._thermo == "meos":
-            self.virialB = unidades.SpecificVolume(state["virialB"])
-            self.virialC = unidades.SpecificVolume_square(state["virialC"])
-            self.invT = unidades.InvTemperature(state["invT"])
-
         self.tipoFlujo = state["fluxType"]
         self.mezcla = Mezcla()
         self.mezcla.readStatefromJSON(state["mezcla"])
@@ -1063,32 +1012,41 @@ class Corriente(config.Entity):
         self.caudalunitariomasico = self.mezcla.caudalunitariomasico
         self.caudalunitariomolar = self.mezcla.caudalunitariomolar
 
-        if self._thermo in ["iapws", "freesteam"]:
-            self.Liquido = ThermoWater()
-            self.Gas = ThermoWater()
-        elif self._thermo in ["coolprop", "refprop", "meos"]:
-            self.Liquido = ThermoAdvanced()
-            self.Gas = ThermoAdvanced()
-        else:
-            self.Liquido = Mezcla()
-            self.Gas = Mezcla()
-
-        self.Liquido.readStatefromJSON(state["liquid"])
-        self.Gas.readStatefromJSON(state["gas"])
-        if state["liquid"]:
-            self.Liquido.sigma = unidades.Tension(state["liquid"]["sigma"])
-
+        # Define the advanced thermo component if is necessary
         if self._thermo == "freesteam":
             self.cmp = freeSteam.Freesteam()
         elif self._thermo == "iapws":
             self.cmp = iapws97.IAPWS97()
         elif self._thermo == "refprop":
-            self.cmp = refProp.refProp(ids=self.ids)
+            self.cmp = refProp.RefProp(ids=self.ids)
         elif self._thermo == "coolprop":
             self.cmp = coolProp.CoolProp(ids=self.ids)
         elif self._thermo == "meos":
             eq = state["meos_eq"]
             self.cmp = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](eq=eq)
+
+        # Load advanced properties from global phase
+        if self._thermo != "eos":
+            self.cmp._readGlobalState(self, state)
+
+        # Load state for phases
+        if self._thermo in ["iapws", "freesteam"]:
+            self.Liquido = ThermoWater()
+            self.Gas = ThermoWater()
+        elif self._thermo in ["coolprop", "meos"]:
+            self.Liquido = ThermoAdvanced()
+            self.Gas = ThermoAdvanced()
+        elif self._thermo == "refprop":
+            self.Liquido = ThermoRefProp()
+            self.Gas = ThermoRefProp()
+        else:
+            self.Liquido = Mezcla()
+            self.Gas = Mezcla()
+        self.Liquido.readStatefromJSON(state["liquid"])
+        self.Gas.readStatefromJSON(state["gas"])
+
+        if state["liquid"]:
+            self.Liquido.sigma = unidades.Tension(state["liquid"]["sigma"])
 
 
 class PsyStream(config.Entity):

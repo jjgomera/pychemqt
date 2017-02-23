@@ -286,6 +286,13 @@ class Thermo(object):
         return [prop[2] for prop in cls.properties()]
 
     @classmethod
+    def _dictUnit(cls):
+        d = {}
+        for name, key, unit in cls.properties():
+            d[key] = unit
+        return d
+
+    @classmethod
     def propertiesGlobal(cls):
         """List properties only availables for global stream, not defined by
         phase"""
@@ -303,6 +310,30 @@ class Thermo(object):
             if p not in single:
                 prop.append(p)
         return prop
+
+    def _fillCorriente(self, corriente):
+        """Procedure to populate the corriente with the global advanced
+        properties
+        corriente: instance of corriente to populate"""
+        for prop in self.propertiesGlobal():
+            corriente.__setattr__(prop, self.__getattribute__(prop))
+
+    def _writeGlobalState(self, corriente, state):
+        """Procedure to populate a state dict with the global advanced
+        properties
+        corriente: instance of corriente to populate
+        state: dict properties"""
+        for prop in self.propertiesGlobal():
+            state[prop] = corriente.__getattribute__(prop)
+
+    def _readGlobalState(self, corriente, state):
+        units = self._dictUnit()
+        for prop in self.propertiesGlobal():
+            if prop in ["K", "csat", "dpdt_sat", "cv2p", "chempot"]:
+                value = [units[prop](p) for p in state[prop]]
+            else:
+                value = units[prop](state[prop])
+            corriente.__setattr__(prop, value)
 
     def fillNone(self, fase):
         """Fill properties in null phase with a explicative msg"""
@@ -650,68 +681,19 @@ class ThermoRefProp(ThermoAdvanced):
     def writeStatetoJSON(self, state, fase):
         ThermoAdvanced.writeStatetoJSON(self, state, fase)
         if self._bool:
-            state[fase]["K"] = self.K
-            state[fase]["P0"] = self.P0
-            state[fase]["P_Pideal"] = self.P_Pideal
-            state[fase]["csat"] = self.csat
-            state[fase]["dpdt_sat"] = self.dpdt_sat
-            state[fase]["cv2p"] = self.cv2p
-            state[fase]["vE"] = self.vE
-            state[fase]["uE"] = self.uE
-            state[fase]["hE"] = self.hE
-            state[fase]["sE"] = self.sE
-            state[fase]["aE"] = self.aE
-            state[fase]["gE"] = self.gE
-            state[fase]["pr"] = self.pr
-            state[fase]["ur"] = self.ur
-            state[fase]["hr"] = self.hr
-            state[fase]["sr"] = self.sr
-            state[fase]["ar"] = self.ar
-            state[fase]["gr"] = self.gr
-            state[fase]["cpr"] = self.cpr
-            state[fase]["cvr"] = self.cvr
-            state[fase]["fpv"] = self.fpv
-            state[fase]["chempot"] = self.chempot
-            state[fase]["viriald"] = self.viriald
-            state[fase]["virialba"] = self.virialba
-            state[fase]["virialca"] = self.virialca
-            state[fase]["dcdt"] = self.dcdt
-            state[fase]["dcdt2"] = self.dcdt2
-            state[fase]["dbdt"] = self.dbdt
-            state[fase]["b12"] = self.b12
-            state[fase]["cstar"] = self.cstar
+            state[fase]["virialD"] = self.virialD
+            state[fase]["virialBa"] = self.virialBa
+            state[fase]["virialCa"] = self.virialCa
+            state[fase]["dCdt"] = self.dCdt
+            state[fase]["dCdt2"] = self.dCdt2
+            state[fase]["dBdt"] = self.dBdt
 
     def readStatefromJSON(self, fluid):
         ThermoAdvanced.readStatefromJSON(self, fluid)
         if fluid:
-            self.K = [unidades.Dimensionless(k) for k in fluid["K"]]
-            self.P0 = unidades.Pressure(fluid["P0"])
-            self.P_Pideal = unidades.Pressure(fluid["P_Pideal"])
-            self.csat = unidades.Dimensionless(fluid["csat"])
-            self.dpdt_sat = unidades.Dimensionless(fluid["dpdt_sat"])
-            self.cv2p = unidades.Dimensionless(fluid["cv2p"])
-            self.vE = unidades.SpecificVolume(fluid["vE"])
-            self.uE = unidades.Enthapy(fluid["uE"])
-            self.hE = unidades.Enthapy(fluid["hE"])
-            self.sE = unidades.SpecificHeat(fluid["sE"])
-            self.aE = unidades.Enthapy(fluid["aE"])
-            self.gE = unidades.Enthapy(fluid["gE"])
-            self.pr = unidades.Pressure(fluid["pr"])
-            self.ur = unidades.Enthapy(fluid["ur"])
-            self.hr = unidades.Enthapy(fluid["hr"])
-            self.sr = unidades.SpecificHeat(fluid["sr"])
-            self.ar = unidades.Enthapy(fluid["ar"])
-            self.gr = unidades.Enthapy(fluid["gr"])
-            self.cpr = unidades.SpecificHeat(fluid["cpr"])
-            self.cvr = unidades.SpecificHeat(fluid["cvr"])
-            self.fpv = unidades.Dimensionless(fluid["fpv"])
-            self.chempot = [unidades.Dimensionless(m)
-                            for m in fluid["chempot"]]
-            self.viriald = unidades.Dimensionless(fluid["viriald"])
-            self.virialba = unidades.SpecificVolume(fluid["virialba"])
-            self.virialca = unidades.SpecificVolume_square(fluid["virialca"])
-            self.dcdt = unidades.Dimensionless(fluid["dcdt"])
-            self.dcdt2 = unidades.Dimensionless(fluid["dcdt2"])
-            self.dbdt = unidades.Dimensionless(fluid["dbdt"])
-            self.b12 = unidades.SpecificVolume(fluid["b12"])
-            self.cstar = unidades.Dimensionless(fluid["cstar"])
+            self.virialD = unidades.Dimensionless(fluid["virialD"])
+            self.virialBa = unidades.SpecificVolume(fluid["virialBa"])
+            self.virialCa = unidades.SpecificVolume_square(fluid["virialCa"])
+            self.dCdt = unidades.Dimensionless(fluid["dCdt"])
+            self.dCdt2 = unidades.Dimensionless(fluid["dCdt2"])
+            self.dBdt = unidades.Dimensionless(fluid["dBdt"])

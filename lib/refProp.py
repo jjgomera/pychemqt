@@ -268,6 +268,15 @@ class RefProp(ThermoRefProp):
               # setktv don't implemented
               }
 
+    __doi__ = [
+        {"autor": "Lemmon, E.W., Huber, M.L., McLinden, M.O.",
+         "title": "NIST Standard Reference Database 23:  Reference Fluid"
+                  "Thermodynamic and Transport Properties-REFPROP, Version"
+                  "9.1, National Institute of Standards and Technology,"
+                  "Standard Reference Data Program, Gaithersburg, 2013.",
+         "ref": "",
+         "doi": ""}]
+
     def _new(self, **kw):
         """Create a new instance"""
         return self.__class__(ids=self.kwargs["ids"], **kw)
@@ -311,7 +320,7 @@ class RefProp(ThermoRefProp):
         else:
             self._definition = True
 
-        # Update the kwargs with the special coolprop namespace
+        # Update the kwargs with the special refprop namespace
         if self.kwargs["x"] != RefProp.kwargs["x"]:
             self.kwargs["Q"] = self.kwargs["x"]
         if self.kwargs["rho"] != RefProp.kwargs["rho"]:
@@ -499,11 +508,11 @@ class RefProp(ThermoRefProp):
             self.Svap = unidades.SpecificHeat(self.Gas.s-self.Liquido.s)
             self.K = []
             for x, y in zip(self.Liquido.fraccion, self.Gas.fraccion):
-                self.K.append(y/x)
+                self.K.append(unidades.Dimensionless(y/x))
         else:
             self.Hvap = unidades.Enthalpy(None)
             self.Svap = unidades.SpecificHeat(None)
-            self.K = [1]*flash["nc"]
+            self.K = [unidades.Dimensionless(1)]*flash["nc"]
 
         # NOT supported on Windows
         excess = refprop.excess(flash["t"], flash["D"], flash["x"])
