@@ -876,7 +876,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.setRenderHint(QtGui.QPainter.TextAntialiasing)
         self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor("#aaaaaa"), QtCore.Qt.Dense7Pattern))
         self.setMouseTracking(True)
-        self.setAcceptDrops(True)
+        # self.setAcceptDrops(True)
         self.PFD = PFD
 
     #    def wheelEvent(self, event):
@@ -898,32 +898,32 @@ class GraphicsView(QtWidgets.QGraphicsView):
         if self.PFD:
             event.ignore()
 
-            #    def dragEnterEvent(self, event):
-            #        if event.mimeData().hasFormat("application/x-equipment"):
-            #            event.accept()
-            #        else:
-            #            event.ignore()
-            #
-            #    def dragMoveEvent(self, event):
-            #        if event.mimeData().hasFormat("application/x-equipment"):
-            #            event.setDropAction(QtCore.Qt.CopyAction)
-            #            event.accept()
-            #        else:
-            #            event.ignore()
-            #
-            #    def dropEvent(self, event):
-            #        if event.mimeData().hasFormat("application/x-equipment"):
-            #            data = event.mimeData().data("application/x-equipment")
-            #            stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
-            #            icon = QtGui.QIcon()
-            #            stream >> icon
-            #            event.setDropAction(QtCore.Qt.CopyAction)
-            #            print event.pos()
-            #            event.accept()
-            #            self.updateGeometry()
-            #            self.update()
-            #        else:
-            #            event.ignore()
+    # def dragEnterEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # event.accept()
+        # else:
+            # event.ignore()
+
+    # def dragMoveEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # event.setDropAction(QtCore.Qt.CopyAction)
+            # event.accept()
+        # else:
+            # event.ignore()
+
+    # def dropEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # data = event.mimeData().data("application/x-equipment")
+            # stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
+            # icon = QtGui.QIcon()
+            # stream >> icon
+            # event.setDropAction(QtCore.Qt.CopyAction)
+            # print(event.pos())
+            # event.accept()
+            # self.updateGeometry()
+            # self.update()
+        # else:
+            # event.ignore()
 
     def zoom(self, value):
         factor = value / 100.0

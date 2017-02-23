@@ -736,24 +736,24 @@ class DragButton(QtWidgets.QToolButton):
     def __init__(self, parent=None):
         super(DragButton, self).__init__(parent)
 
-    def mouseMoveEvent(self, event):
-        self.startDrag()
-        QtWidgets.QToolButton.mouseMoveEvent(self, event)
+    # def mouseMoveEvent(self, event):
+        # self.startDrag()
+        # QtWidgets.QToolButton.mouseMoveEvent(self, event)
 
-    def startDrag(self):
-        if self.icon().isNull():
-            return
-        data = QtCore.QByteArray()
-        stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
-        stream << self.icon()
-        mimeData = QtCore.QMimeData()
-        mimeData.setData("application/x-equipment", data)
-        drag = QtGui.QDrag(self)
-        drag.setMimeData(mimeData)
-        pixmap = self.icon().pixmap(24, 24)
-        drag.setHotSpot(QtCore.QPoint(12, 12))
-        drag.setPixmap(pixmap)
-        drag.start(QtCore.Qt.CopyAction)
+    # def startDrag(self):
+        # if self.icon().isNull():
+            # return
+        # data = QtCore.QByteArray()
+        # stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
+        # stream << self.icon()
+        # mimeData = QtCore.QMimeData()
+        # mimeData.setData("application/x-equipment", data)
+        # drag = QtGui.QDrag(self)
+        # drag.setMimeData(mimeData)
+        # pixmap = self.icon().pixmap(24, 24)
+        # drag.setHotSpot(QtCore.QPoint(12, 12))
+        # drag.setPixmap(pixmap)
+        # drag.exec_(QtCore.Qt.CopyAction)
 
 
 class PathConfig(QtWidgets.QWidget):
