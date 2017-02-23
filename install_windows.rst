@@ -34,3 +34,10 @@ Finally to install iapws run the command:
 
 
 To get pychemqt download the zip file from https://github.com/jjgomera/pychemqt/archive/master.zip and unzip whatever you want. To run doble click over the main script pychemqt.py.
+
+
+Optional dependences:
+The spreedsheet support is easy to get, runnin the command:
+    * py -m pip install ezodf lxml
+    * py -m pip install openpyxl
+    * py -m pip install xlwt

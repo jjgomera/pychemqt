@@ -2,13 +2,34 @@
 # -*- coding: utf-8 -*-
 
 
-#Script for dependences instalation in a debian based distribution, tested in a debian stable
+#Script for dependences instalation in a debian based distribution,
+#tested in a debian jessie and stretch
 
 
 ########################################################################
 #Mandatory dependences
 ########################################################################
-apt-get install python3 python3-pyqt5 python3-numpy python3-scipy python3-matplotlib 
+apt-get install python3 python3-numpy python3-scipy python3-matplotlib 
+apt-get install python3-pyqt5 
+
+
+
+########################################################################
+# IAPWS
+# External package to implement the IAPWS standard
+# Preferred the github option to get the last version
+########################################################################
+
+#pip3 install iapws
+pip3 install https://github.com/jjgomera/iapws/archive/master.zip
+
+
+########################################################################
+# pyqt5-qscintilla
+# pagkage to show code
+########################################################################
+
+apt-get python3-pyqt5.qsci
 
 
 ########################################################################
@@ -17,7 +38,10 @@ apt-get install python3 python3-pyqt5 python3-numpy python3-scipy python3-matplo
 ########################################################################
 
 # We need scons and swig3.0 to compile
-apt-get install scons swig3.0 python3.4-dev
+apt-get install scons swig3.0 libgsl0-dev
+# Probably you have yet but anyway you need install the development files
+# of current python3 version
+apt-get install python-dev
 
 # Proceed to download and compile freesteam
 wget -Nc https://sourceforge.net/projects/freesteam/files/freesteam/2.1/freesteam-2.1.tar.bz2
@@ -27,14 +51,19 @@ scons
 
 # scons only work for python2.x, so the python binding created work only for the python2.x
 # installed in your system
+# Check your python3 version installed:
+#    python3.4 in jessie
+#    python3.5 in stretch
 # For create the python3 binding:
 swig3.0 -o python/freesteam_wrap.c -python python/freesteam.i
-gcc -o python/freesteam_wrap.os -c -Wall -W -Wconversion -Wimplicit -fPIC -I. -I/usr/include/python3.4 python/freesteam_wrap.c
+gcc -o python/freesteam_wrap.os -c -Wall -W -Wconversion -Wimplicit -fPIC -I. -I/usr/include/python3.5 python/freesteam_wrap.c
 gcc -o python/_freesteam.so -shared python/freesteam_wrap.os -L. -L/usr/libs -lfreesteam
 
-# Finally move the python3 binding to a forder in path
-cp python/_freesteam.so /usr/local/lib/python3.4/dist-packages/
-cp python/freesteam.py /usr/local/lib/python3.4/dist-packages/
+# Finally move the python3 binding to a forder in path, need root user
+cp python/_freesteam.so /usr/local/lib/python3.5/dist-packages/
+cp python/freesteam.py /usr/local/lib/python3.5/dist-packages/
+cp libfreesteam.so /usr/lib
+cp libfreesteam.so.1 /usr/lib
 
 
 ########################################################################
@@ -44,14 +73,6 @@ cp python/freesteam.py /usr/local/lib/python3.4/dist-packages/
 
 apt-get install pip3
 pip3 install CoolProp
-
-
-########################################################################
-# IAPWS
-# External package to implement the IAPWS standard
-########################################################################
-
-pip3 install iapws
 
 
 ########################################################################
@@ -79,15 +100,20 @@ cd python-refprop
 # The script ask for the refprop files folder and the destination folder for compiled files,
 
 # We suppose the python3 library (for python3.2) is going to work in other python3 versions
-cp python3.2/multiRP.py /usr/local/lib/python3.4/dist-packages
-cp python3.2/refprop.py /usr/local/lib/python3.4/dist-packages
-cp python3.2/rptest.py /usr/local/lib/python3.4/dist-packages
+cp python3.2/multiRP.py /usr/local/lib/python3.5/dist-packages
+cp python3.2/refprop.py /usr/local/lib/python3.5/dist-packages
+cp python3.2/rptest.py /usr/local/lib/python3.5/dist-packages
 
 
+########################################################################
+# spreedsheet supoort
 
-
-
-pip3 install ezodf
+########################################################################
+#lxml is a required dependendence of ezodf don't configured in setup
+#so we need install too
+pip3 install ezodf lxml
+pip3 install openpyxl
+pip3 install xlwt
 
 #OASA  used to show compound extended formula in database
 #Luego de instalado bkchem
