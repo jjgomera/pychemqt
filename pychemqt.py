@@ -67,6 +67,17 @@ app.setOrganizationName("pychemqt")
 app.setOrganizationDomain("pychemqt")
 app.setApplicationName("pychemqt")
 
+
+# Check qt configuration file
+settings = QtCore.QSettings()
+if not settings.contains("LastFile"):
+    filename = QtCore.QVariant()
+    settings.setValue("LastFile", filename)
+    recentFiles = QtCore.QVariant()
+    settings.setValue("RecentFiles", recentFiles)
+    settings.setValue("Geometry", QtCore.QVariant())
+    settings.setValue("MainWindow/State", QtCore.QVariant())
+
 # Translation
 locale = QtCore.QLocale.system().name()
 myTranslator = QtCore.QTranslator()

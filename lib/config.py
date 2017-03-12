@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 #
 #   Variables:
 #   - conf_dir: User configuration path
-#   - QTSETTING_FILE: Path of qt application configuration
 #   - Preferences: ConfigParser instance with pychemqt preferences
 #   - currentConfig: ConfirParser instance with the current pychemqt open
 #   project or the last open project
@@ -57,8 +56,6 @@ from lib.sql import databank
 
 
 conf_dir = os.path.expanduser('~') + os.sep + ".pychemqt" + os.sep
-QTSETTING_FILE = os.path.join(
-    os.path.expanduser('~'), ".config", "pychemqt", "pychemqt.conf")
 IMAGE_PATH = os.path.join(os.environ["pychemqt"], "images") + os.sep
 
 Preferences = ConfigParser()

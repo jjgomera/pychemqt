@@ -31,8 +31,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from UI import newComponent, flujo, wizard, plots, viewComponents
 import plots as charts
 from UI.widgets import createAction, ClickableLabel
-from lib.config import (conf_dir, QTSETTING_FILE, setMainWindowConfig,
-                        IMAGE_PATH)
+from lib.config import (conf_dir, setMainWindowConfig, IMAGE_PATH)
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *  # noqa
@@ -1052,19 +1051,18 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.systemtray.setContextMenu(self.menuHerramientas)
 
         # Iniciar valores
-        if sys.platform == "win32" or os.path.isfile(QTSETTING_FILE):
-            settings = QtCore.QSettings()
-            self.recentFiles = settings.value("RecentFiles")
-            self.lastFile = settings.value("LastFile")
+        settings = QtCore.QSettings()
+        self.recentFiles = settings.value("RecentFiles")
+        self.lastFile = settings.value("LastFile")
+        if settings.value("Geometry"):
             self.restoreGeometry(settings.value("Geometry"))
-            self.restoreState(settings.value("MainWindow/State"))
-            if self.recentFiles is None:
-                self.recentFiles = []
-            self.menuRecentFiles.setEnabled(bool(self.recentFiles))
         else:
+            self.showMaximized()
+        if settings.value("MainWindow/State"):
+            self.restoreState(settings.value("MainWindow/State"))
+        if self.recentFiles is None:
             self.recentFiles = []
-            self.menuRecentFiles.setEnabled(False)
-            self.lastFile = []
+        self.menuRecentFiles.setEnabled(bool(self.recentFiles))
 
         self.updateStatus("Loaded pychemqt")
         self.activeControl(False)
