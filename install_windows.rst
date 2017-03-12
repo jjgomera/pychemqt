@@ -2,7 +2,24 @@ The procedure to install dependences in windows isn't so easy as in POSIX. I'll 
 
 Current versions:
     * python v3.6
-    * Link checked at 17/02/17
+    * Link checked at 12/03/17
+    * Procedure checked in windows 7 and windows 10
+
+
+Using Anaconda
+--------------
+If the disk space isn't problem, we can install a python distribution with full of packages to boost it, like anaconda:
+
+    * x86: https://repo.continuum.io/archive/Anaconda3-4.3.1-Windows-x86.exe
+    * amd64: https://repo.continuum.io/archive/Anaconda3-4.3.1-Windows-x86_64.exe
+
+We need only install iapws run the command from a power shell:
+
+    * pip install https://github.com/jjgomera/iapws/archive/master.zip
+
+
+Install only python and neccessary library
+------------------------------------------
 
 First we need install python3, from his `page <https://www.python.org/downloads/release/python-360/>`__, it depends of your computer architecture, x86, x86-64:
 
@@ -28,16 +45,15 @@ To install both we are going to use the cmd terminal and using the command:
 
 Remerber it can use TAB to autocomplete command. Respect the order because scipy depend numpy, first install numpy wheel.
 
-Finally to install iapws run the command:
-
-    * py -m pip install https://github.com/jjgomera/iapws/archive/master.zip
-
-
-To get pychemqt download the zip file from https://github.com/jjgomera/pychemqt/archive/master.zip and unzip whatever you want. To run doble click over the main script pychemqt.py.
-
-
 Optional dependences:
-The spreedsheet support is easy to get, runnin the command:
+The spreedsheet support is easy to get, running the command:
+
     * py -m pip install ezodf lxml
     * py -m pip install openpyxl
     * py -m pip install xlwt
+
+
+Get pychemqt code
+-----------------
+
+To get pychemqt download the zip file from https://github.com/jjgomera/pychemqt/archive/master.zip and unzip whatever you want. To run doble click over the main script pychemqt.py.
