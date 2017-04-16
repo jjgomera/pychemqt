@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-from math import log, exp
+from math import log, exp, pi, atan
 
 from lib.meos import MEoSBlend
 from lib import unidades
@@ -240,18 +240,26 @@ class Air(MEoSBlend):
               }
 
     def _visco0(self, rho, T, fase=None):
+        """Equation for the Viscosity
 
+        Parameters
+        ----------
+        rho : float
+            Density [kg/m³]
+        T : float
+            Temperature [K]
+
+        Returns
+        -------
+        mu : float
+            Viscosity [Pa·s]
+        """
         ek = 103.3
         sigma = 0.36
-        rhoc = 10.4477*self.M
-        tau = self.Tc/T
+        M = 28.9586
+        rhoc = 10.4477*M
+        tau = 132.6312/T
         delta = rho/rhoc
-
-        n_poly = [10.72, 1.122, 0.002019, -8.876, -0.02916]
-        t_poly = [.2, .05, 2.4, .6, 3.6]
-        d_poly = [1, 4, 9, 1, 8]
-        l_poly = [0, 0, 0, 1, 1]
-        g_poly = [0, 0, 0, 1, 1]
 
         b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
         T_ = log(T/ek)
@@ -260,15 +268,23 @@ class Air(MEoSBlend):
             suma += bi*T_**i
         omega = exp(suma)
 
-        Nchapman = 0.0266958
-        muo = Nchapman*(self.M*T)**0.5/(sigma**2*omega)
+        # Eq 2
+        muo = 0.0266958*(M*T)**0.5/(sigma**2*omega)
 
+        n_poly = [10.72, 1.122, 0.002019, -8.876, -0.02916]
+        t_poly = [.2, .05, 2.4, .6, 3.6]
+        d_poly = [1, 4, 9, 1, 8]
+        l_poly = [0, 0, 0, 1, 1]
+        g_poly = [0, 0, 0, 1, 1]
+
+        # Eq 3
         mur = 0
         for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
             mur += n*tau**t*delta**d*exp(-g*delta**l)
 
-        return unidades.Viscosity(muo+mur, "muPas")
-
+        # Eq 1
+        mu = muo+mur
+        return unidades.Viscosity(mu, "muPas")
 
     visco1 = {"eq": 1, "omega": 1,
               "__name__": "Lemmon (2004)",
@@ -339,20 +355,28 @@ class Air(MEoSBlend):
                }
 
     def _thermo0(self, rho, T, fase=None):
+        """Equation for the thermal conductivity
 
+        Parameters
+        ----------
+        rho : float
+            Density [kg/m³]
+        T : float
+            Temperature [K]
+        fase: dict
+            phase properties
+
+        Returns
+        -------
+        k : float
+            Thermal conductivity [W/mK]
+        """
         ek = 103.3
         sigma = 0.36
-        rhoc = 10.4477*self.M
-        tau = self.Tc/T
+        M = 28.9586
+        rhoc = 10.4477*M
+        tau = 132.6312/T
         delta = rho/rhoc
-
-        N = [10.72, 1.122, 0.002019]
-        t = [.2, .05, 2.4]
-        n_poly = [-8.876, -0.02916]
-        t_poly = [.6, 3.6]
-        d_poly = [1, 8]
-        l_poly = [1, 1]
-        g_poly = [1, 1]
 
         b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
         T_ = log(T/ek)
@@ -361,19 +385,63 @@ class Air(MEoSBlend):
             suma += bi*T_**i
         omega = exp(suma)
 
-        Nchapman = 0.0266958
-        muo = Nchapman*(self.M*T)**0.5/(sigma**2*omega)
+        # Eq 2
+        muo = 0.0266958*(M*T)**0.5/(sigma**2*omega)
 
-        lo = N[0]*muo+N[1]**tau**t[1]+N[2]*tau**t[2]
+        # Eq 5
+        N = [1.308, 1.405, -1.036]
+        t = [-1.1, -0.3]
+        lo = N[0]*muo+N[1]*tau**t[0]+N[2]*tau**t[1]
+
+        n_poly = [8.743, 14.76, -16.62, 3.793, -6.142, -0.3778]
+        t_poly = [0.1, 0, 0.5, 2.7, 0.3, 1.3]
+        d_poly = [1, 2, 3, 7, 7, 11]
+        g_poly = [0, 0, 1, 1, 1, 1]
+        l_poly = [0, 0, 2, 2, 2, 2]
+
+        # Eq 6
         lr = 0
         for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
             lr += n*tau**t*delta**d*exp(-g*delta**l)
 
-        # TODO: Critical enchancement
         lc = 0
+        # FIXME: Tiny desviation in the test in paper, 0.06% at critical point
+        if fase:
+            qd = 0.31
+            Gamma = 0.055
+            Xio = 0.11
+            Tref = 265.262
+            k = 1.380658e-23  # J/K
 
-        return unidades.ThermalConductivity(lo+lr+lc, "mWmK")
+            # Eq 11
+            X = self.Pc*1e-3*rho/rhoc**2*fase.drhodP_T
 
+            ref = Air()
+            st = ref._Helmholtz(rho, Tref)
+            drho = 1e3/self.R/Tref/(1+2*delta*st["fird"]+delta**2*st["firdd"])
+
+            Xref = self.Pc*1e-3*rho/rhoc**2*drho
+
+            # Eq 10
+            bracket = X-Xref*Tref/T
+            if bracket > 0:
+                Xi = Xio*(bracket/Gamma)**(0.63/1.2415)
+
+                Xq = Xi/qd
+                # Eq 8
+                Omega = 2/pi*((fase.cp-fase.cv)/fase.cp*atan(Xq) +
+                              fase.cv/fase.cp*(Xq))
+                # Eq 9
+                Omega0 = 2/pi*(1-exp(-1/(1/Xq+Xq**2/3*rhoc**2/rho**2)))
+
+                # Eq 7
+                lc = rho*fase.cp*k*1.01*T/6/pi/Xi/fase.mu*(Omega-Omega0)*1e15
+            else:
+                lc = 0
+
+        # Eq 4
+        k = lo+lr+lc
+        return unidades.ThermalConductivity(k, "mWmK")
 
     thermo1 = {"eq": 1,
                "__name__": "Lemmon (2004)",
