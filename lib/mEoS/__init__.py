@@ -194,7 +194,7 @@ if __name__ == "__main__":
 #    import timeit
 #    def test():
     for module in __all__:
-        if "H2O" not in module.__module__:
+        if "D2O" not in module.__module__:
             continue
         print(module.__module__)
         inst = module()

@@ -299,31 +299,31 @@ class NH3(MEoS):
                     # Appendix II, pag 1664
                     """
                     >>> st=NH3(T=200, P=1e5)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     507.47
                     >>> st=NH3(T=290, P=1e6)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     142.93
                     >>> st=NH3(T=250, P=1e7)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     233.81
                     >>> st=NH3(T=300, P=1e5)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     10.16
                     >>> st=NH3(T=350, P=1.8e7)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     91.36
                     >>> st=NH3(T=400, P=5e7)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     77.29
                     >>> st=NH3(T=490, P=1e6)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     17.49
                     >>> st=NH3(T=550, P=1e5)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     19.79
                     >>> st=NH3(T=680, P=5e7)
-                    >>> print "%0.2f" % st.mu.muPas
+                    >>> print("%0.2f" % st.mu.muPas)
                     31.90
                     """
                     # Appendix III, pag 1667
