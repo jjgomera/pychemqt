@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 from PyQt5.QtWidgets import QApplication
-from iapws._iapws import getphase
+from iapws._utils import getphase
 from lib import unidades
 
 

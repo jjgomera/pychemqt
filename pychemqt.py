@@ -146,6 +146,13 @@ except ImportError as err:
         "pychemqt", "iapws could not be found, you must install it.")
     print(msg)
     raise err
+else:
+    if iapws.__version__ != "1.2":
+        msg = QtWidgets.QApplication.translate(
+            "pychemqt",
+            "Your version of iapws is too old, you must update it.")
+        raise ImportError(msg)
+
 
 # TODO: Disable python-graph external dependence, functional mock up in
 # project yet useless
