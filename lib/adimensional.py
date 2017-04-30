@@ -52,7 +52,7 @@ from .unidades import Dimensionless
 
 
 def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
-    """Calculates Archimedes number `Ar` for two phases densities, a
+    r"""Calculates Archimedes number `Ar` for two phases densities, a
     geometric length `L` or any viscosity definition.
 
     .. math::
@@ -108,7 +108,7 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
 
 
 def Bi(h, L, k):
-    """Calculates Biot number `Bi` for heat transfer coefficient `h`,
+    r"""Calculates Biot number `Bi` for heat transfer coefficient `h`,
     geometric length `L`, and thermal conductivity `k`.
 
     .. math::
@@ -153,7 +153,7 @@ def Bi(h, L, k):
 
 
 def Bo(rhol, rhog, sigma, L):
-    """Calculates Bond number, `Bo` also known as Eotvos number.
+    r"""Calculates Bond number, `Bo` also known as Eotvos number.
 
     .. math::
         Bo = \frac{g(\rho_l-\rho_g)L^2}{\sigma}
@@ -183,7 +183,7 @@ def Bo(rhol, rhog, sigma, L):
 
 
 def Euler(dP, rho, V):
-    """Calculates Euler number or `Eu` for a fluid of velocity `V` and
+    r"""Calculates Euler number or `Eu` for a fluid of velocity `V` and
     density `rho` experiencing a pressure drop `dP`.
 
     .. math::
@@ -220,7 +220,7 @@ def Euler(dP, rho, V):
 
 
 def Fo(k, L, t):
-    """Calculates Fourier number `Fo`.
+    r"""Calculates Fourier number `Fo`.
 
     .. math::
         Fo = \frac{kt}{l^2}
@@ -258,7 +258,7 @@ def Fo(k, L, t):
 
 
 def Fr(V, L, g=g):
-    """Calculates Froude number `Fr` for velocity `V` and geometric length
+    r"""Calculates Froude number `Fr` for velocity `V` and geometric length
     `L`. If desired, gravity can be specified as well. Normally the function
     returns the result of the equation below.
 
@@ -303,7 +303,7 @@ def Fr(V, L, g=g):
 
 
 def Ga(L, rho=None, mu=None, nu=None, g=g):
-    """Calculates Galilei number `Ga`.
+    r"""Calculates Galilei number `Ga`.
 
     .. math::
         Ar=\frac{gL^3}{v^2}
@@ -349,7 +349,7 @@ def Ga(L, rho=None, mu=None, nu=None, g=g):
 
 
 def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
-    """Calculates Grashof number or `Gr` for a fluid with the given
+    r"""Calculates Grashof number or `Gr` for a fluid with the given
     properties, temperature difference, and characteristic length.
 
     .. math::
@@ -415,7 +415,7 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
 
 
 def Gz(k, D, t=None, L=None, V=None):
-    """Calculates Graetz number `Gz`.
+    r"""Calculates Graetz number `Gz`.
 
     .. math::
         Gz = \frac{D^2}{kt}
@@ -471,7 +471,7 @@ def Ka():
 
 
 def Kn(path, L):
-    """Calculates Knudsen number or `Kn`.
+    r"""Calculates Knudsen number or `Kn`.
 
     .. math::
         Kn = \frac{\lambda}{L}
@@ -505,7 +505,7 @@ def Kn(path, L):
 
 
 def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
-    """Calculates Lewis number or `Le`.
+    r"""Calculates Lewis number or `Le`.
 
     .. math::
         Le = \frac{k}{\rho C_p D} = \frac{\alpha}{D}
@@ -557,7 +557,7 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
 
 
 def Mach(V, c):
-    """Calculates Mach number or `Ma` for a fluid.
+    r"""Calculates Mach number or `Ma` for a fluid.
 
     .. math::
         Ma = \frac{V}{c}
@@ -590,10 +590,10 @@ def Mach(V, c):
 
 
 def Nu(alfa, L, k):
-    """Calculates Nusselt number or `Nu`.
+    r"""Calculates Nusselt number or `Nu`.
 
     .. math::
-        Nu = \frac{\alfa L}{k}
+        Nu = \frac{\alpha L}{k}
 
     Parameters
     ----------
@@ -629,7 +629,7 @@ def Nu(alfa, L, k):
 
 
 def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
-    """Calculates heat transfer Peclet number or `Pe`
+    r"""Calculates heat transfer Peclet number or `Pe`
 
     .. math::
         Pe = \frac{VL\rho C_p}{k} = \frac{LV}{\alpha}
@@ -680,7 +680,7 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
 
 
 def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
-    """Calculates Prandtl number or `Pr` for a fluid with the given
+    r"""Calculates Prandtl number or `Pr` for a fluid with the given
     parameters.
 
     .. math::
@@ -715,7 +715,8 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     Notes
     -----
     .. math::
-        Pr=\frac{\text{kinematic viscosity}}{\text{thermal diffusivity}} = \frac{\text{momendum diffusivity}}{\text{thermal diffusivity}}  # noqa
+        Pr=\frac{\text{kinematic viscosity}}{\text{thermal diffusivity}} = \
+            \frac{\text{momendum diffusivity}}{\text{thermal diffusivity}}
 
     An error is raised if none of the required input sets are provided.
 
@@ -741,7 +742,7 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
 
 
 def Ra(Pr, Gr):
-    """Calculates Rayleigh number or `Ra` using Prandtl number `Pr` and
+    r"""Calculates Rayleigh number or `Ra` using Prandtl number `Pr` and
     Grashof number `Gr` for a fluid with the given
     properties, temperature difference, and characteristic length used
     to calculate `Gr` and `Pr`.
@@ -774,7 +775,7 @@ def Ra(Pr, Gr):
 
 
 def Re(D, V, rho=None, mu=None, nu=None):
-    """Calculates Reynolds number or `Re` for a fluid with the given
+    r"""Calculates Reynolds number or `Re` for a fluid with the given
     properties for the specified velocity and diameter.
 
     .. math::
@@ -805,8 +806,9 @@ def Re(D, V, rho=None, mu=None, nu=None):
     -----
     .. math::
         Re = \frac{\text{Momentum}}{\text{Viscosity}}
-        Can be seen as a ratio of inertial forces to frictional forces.
-        It's the crucial criterium to define the flow mode: laminar, turbulent.
+
+    Can be seen as a ratio of inertial forces to frictional forces.
+    It's the crucial criterium to define the flow mode: laminar, turbulent.
 
     Examples
     --------
@@ -826,7 +828,7 @@ def Re(D, V, rho=None, mu=None, nu=None):
 
 
 def Sh(K, L, D):
-    """Calculates Sherwood number or `Sh`.
+    r"""Calculates Sherwood number or `Sh`.
 
     .. math::
         Sh = \frac{KL}{D}
@@ -862,7 +864,7 @@ def Sh(K, L, D):
 
 
 def Sc(D, mu=None, nu=None, rho=None):
-    """Calculates Schmidt number or `Sc`.
+    r"""Calculates Schmidt number or `Sc`.
 
     .. math::
         Sc = \frac{\mu}{D\rho} = \frac{\nu}{D}
@@ -911,10 +913,10 @@ def Sc(D, mu=None, nu=None, rho=None):
 
 
 def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
-    """Calculate Stanton number `St`
+    r"""Calculate Stanton number `St`
 
     .. math::
-        St = \frac{Nu}{Pe} = \frac{\alfa}{\rhoc_pV}
+        St = \frac{Nu}{Pe} = \frac{\alpha}{\rho c_pV}
 
     Inputs either of any of the following sets:
 
@@ -947,7 +949,7 @@ def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
 
 
 def We(V, L, rho, sigma):
-    """Calculates Weber number, `We`, for a fluid with the given density,
+    r"""Calculates Weber number, `We`, for a fluid with the given density,
     surface tension, velocity, and geometric parameter (usually diameter
     of bubble).
 
