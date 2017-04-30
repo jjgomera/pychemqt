@@ -296,6 +296,7 @@ texinfo_documents = [
 intersphinx_mapping = {'https://docs.python.org/': None}
 
 
+# Avoid print the copyright intro in each module documentation
 def setup(app):
     from sphinx.ext.autodoc import cut_lines
     app.connect('autodoc-process-docstring', cut_lines(15, what=['module']))
