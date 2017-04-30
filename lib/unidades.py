@@ -287,25 +287,14 @@ with support for class unidad operations: txt, config. func."""
 
 
 class Temperature(unidad):
-    """Class that models a temperature measure
-    Supported units:
-
-    * Kelvin (K) default
-    * Celsius (C)
-    * Fahrenheit (F)
-    * Rankine (R)
-    * Reaumur (Re)
-
-    >>> T=Temperature(25, "C")
-    >>> print T.K, T.C, T.F
-    298.15 25.0 77.0
-    """
     __title__ = QApplication.translate("pychemqt", "Temperature")
     __text__ = ['K', 'ºC', 'ºR', 'ºF', 'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
+    __test__ = [{"input": {"value": 25, "unit": "C"},
+                 "prop": {"K": 298.15, "C": 25, "F": 77}}]
 
     def __init__(self, data, unit="K", magnitud=""):
 
@@ -398,22 +387,11 @@ class DeltaT(unidad):
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
+    __test__ = [{"input": {"value": 25, "unit": "C"},
+                 "prop": {"K": 25, "F": 45}}]
 
 
 class Angle(unidad):
-    """Class that models a angle measure
-    Supported units:
-
-    * radian (rad) default
-    * grade (deg)
-    * minute (min)
-    * second (sec)
-    * gradian (grad)
-
-    >>> angle=Angle(25, "deg")
-    >>> print angle.rad
-    0.436332312999
-    """
     __title__ = QApplication.translate("pychemqt", "Angle")
     rates = {"rad": 1.,
              "deg": 2*k.pi/360,
@@ -429,28 +407,11 @@ class Angle(unidad):
                    QApplication.translate("pychemqt", "Gradian")]
     __units_set__ = {"altsi": "rad", "si": "rad", "metric": "rad",
                      "cgs": "rad", "english": "rad"}
+    __test__ = [{"input": {"value": 25, "unit": "deg"},
+                 "prop": {"rad": 0.436332312999}}]
 
 
 class Length(unidad):
-    """Class that models a length measure
-    Supported units:
-
-    * meter (m) default
-    * millimeter (mm)
-    * centimeter (cm)
-    * micrometer (micra)
-    * kilometer (km)
-    * inch (inch)
-    * foot (ft)
-    * yard (yd)
-    * milla (milla)
-    * milla nautica (milla_nau)
-    * amstrong (A)
-
-    >>> L=Length(12, "inch")
-    >>> print L.m, L.inch, L.ft
-    0.3048 12.0 1.0
-    """
     __title__ = QApplication.translate("pychemqt", "Length")
     rates = {"m": 1.,
              "cm": k.centi,
@@ -478,7 +439,8 @@ class Length(unidad):
                    QApplication.translate("pychemqt", "yard"),
                    QApplication.translate("pychemqt", "mile"),
                    QApplication.translate("pychemqt", "nautical mile"),
-                   QApplication.translate("pychemqt", "icometer"), "Ångström"]
+                   QApplication.translate("pychemqt", "picometer"),
+                   "Ångström"]
     _magnitudes = [
         ("Length", QApplication.translate("pychemqt", "Length")),
         ("ParticleDiameter", QApplication.translate("pychemqt",
@@ -497,25 +459,11 @@ class Length(unidad):
                          "cgs": "cm", "english": "inch"},
         "Head": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
                  "english": "ft"}}
+    __test__ = [{"input": {"value": 12, "unit": "inch"},
+                 "prop": {"m": 0.3048, "inch": 12, "ft": 1}}]
 
 
 class Area(unidad):
-    """Class that models a area measure
-    Supported units:
-
-    * square meter (m2) default
-    * square centimeter (cm2)
-    * square milimeter (mm2)
-    * square foot (ft2)
-    * square inch (in2)
-    * square yard (yd2)
-    * hectare (ha)
-    * acre (acre)
-
-    >>> S=Area(1, "ft2")
-    >>> print S.m2, S.inch2
-    0.09290304 144.0
-    """
     __title__ = QApplication.translate("pychemqt", "Area")
     rates = {"m2": 1.,
              "cm2": k.centi**2,
@@ -530,34 +478,22 @@ class Area(unidad):
                 'ha', 'acre']
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha',
                  "acre"]
+    __tooltip__ = [QApplication.translate("pychemqt", "square meter"),
+                   QApplication.translate("pychemqt", "square centimeter"),
+                   QApplication.translate("pychemqt", "square milimeter"),
+                   QApplication.translate("pychemqt", "square kilometer"),
+                   QApplication.translate("pychemqt", "square inch"),
+                   QApplication.translate("pychemqt", "square foot"),
+                   QApplication.translate("pychemqt", "square yard"),
+                   QApplication.translate("pychemqt", "hectarea"),
+                   QApplication.translate("pychemqt", "acre")]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
+    __test__ = [{"input": {"value": 1, "unit": "ft2"},
+                 "prop": {"m2": 0.09290304, "inch2": 144}}]
 
 
 class Volume(unidad):
-    """Class that models a volume measure
-    Supported units:
-
-    * cubic meter (m3) default
-    * cubic centimeter (cc)
-    * liter (l)
-    * mililiter (ml)
-    * cubic yard (yd3)
-    * cubic foot (ft3)
-    * cubic inch (inch3)
-    * US gallon (galUS)
-    * british gallon (galUK)
-    * US liquid quart (qtUSliq)
-    * US dry quart (qtUSdry)
-    * british quart (qtUK)
-    * barrel of petrolium (bbl)
-    * ounce (onz)
-    * british ounce (onzUK)
-
-    >>> V=Volume(1, "bbl")
-    >>> print V.l, V.ft3, V.galUS
-    158.987294928 5.61458333333 42.0
-    """
     __title__ = QApplication.translate("pychemqt", "Volume")
     rates = {"m3": 1.,
              "cc": k.centi**3,
@@ -603,22 +539,12 @@ class Volume(unidad):
                    "english": "ft3"},
         "VolGas": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
                    "english": "ft3"}}
+    __test__ = [{"input": {"value": 1, "unit": "bbl"},
+                 "prop": {"l": 158.987294928, "ft3": 5.61458333333,
+                          "galUS": 42}}]
 
 
 class Time(unidad):
-    """Class that models a time measure
-    Supported units:
-
-    * second (s) default
-    * minute (min)
-    * hour (h)
-    * day (day)
-    * year (year)
-
-    >>> t=Time(1, "day")
-    >>> print t.min, t.h
-    1440.0 24.0
-    """
     __title__ = QApplication.translate("pychemqt", "Time")
     rates = {"s": 1.,
              "min": k.minute,
@@ -634,24 +560,11 @@ class Time(unidad):
                    QApplication.translate("pychemqt", "year")]
     __units_set__ = {"altsi": "h", "si": "h", "metric": "h", "cgs": "s",
                      "english": "h"}
+    __test__ = [{"input": {"value": 1, "unit": "day"},
+                 "prop": {"min": 1440, "h": 24}}]
 
 
 class Frequency(unidad):
-    """Class that models a frequency measure
-    Supported units:
-
-    * rpm default
-    * rps
-    * rph
-    * Hz
-    * rad/s (rads)
-    * rad/min (radmin)
-    * rad/hour (radhr)
-
-    >>> t=Frequency(1, "rads")
-    >>> print t.rpm
-    9.54929658551
-    """
     __title__ = QApplication.translate("pychemqt", "Frequency")
     rates = {"rpm": 1.,
              "rph": 1./60,
@@ -664,34 +577,11 @@ class Frequency(unidad):
     __units__ = ['rpm', 'rps', 'rph', 'Hz', 'rads', 'radmin', "radh"]
     __units_set__ = {"altsi": "rpm", "si": "Hz", "metric": "Hz", "cgs": "Hz",
                      "english": "rpm"}
+    __test__ = [{"input": {"value": 1, "unit": "rads"},
+                 "prop": {"rpm": 9.54929658551}}]
 
 
 class Speed(unidad):
-    """Class that models a speed measure
-    Supported units:
-
-    * meter per second (ms) default
-    * centimeter per second (cms)
-    * milimeter per second (mms)
-    * kilometer per second (kms)
-    * meter per minute (mmin)
-    * kilometer per minute (kmmin)
-    * kilometer per hour (kmh)
-    * meter per day (mday)
-    * kilometer per day (kmday)
-    * foot per second (fts)
-    * foot per minute (ftmin)
-    * foot per hour (fth)
-    * foot per day (ftday)
-    * inch per second (inchs)
-    * inch per minute (inchmin)
-    * mille per hour (mph)
-    * knot (kt)
-
-    >>> V=Speed(1, "ms")
-    >>> print V.mmin, V.kmh, V.fts
-    60.0 3.6 3.28083989501
-    """
     __title__ = QApplication.translate("pychemqt", "Speed")
     rates = {"ms": 1.,
              "cms": k.centi,
@@ -719,21 +609,11 @@ class Speed(unidad):
                    QApplication.translate("pychemqt", "Knot")]
     __units_set__ = {"altsi": "ms", "si": "ms", "metric": "ms", "cgs": "cms",
                      "english": "fts"}
+    __test__ = [{"input": {"value": 1, "unit": "ms"},
+                 "prop": {"mmin": 60, "kmh": 3.6, "fts": 3.28083989501}}]
 
 
 class Acceleration(unidad):
-    """Class that models a acceleration measure
-    Supported units:
-
-    * meter per square second (ms2) default
-    * centimeter per square second (cms2)
-    * foot per square second (fts2)
-    * inch per square second (inchs2)
-
-    >>> g=Acceleration(9.81)
-    >>> print g.fts2
-    32.1850393701
-    """
     __title__ = QApplication.translate("pychemqt", "Acceleration")
     rates = {"ms2": 1.,
              "cms2": k.centi,
@@ -751,29 +631,11 @@ class Acceleration(unidad):
                  "ftmin2", "inchmin2"]
     __units_set__ = {"altsi": "ms2", "si": "ms2", "metric": "ms2",
                      "cgs": "cms2", "english": "fts2"}
+    __test__ = [{"input": {"value": 9.81, "unit": "ms2"},
+                 "prop": {"fts2": 32.1850393701}}]
 
 
 class Mass(unidad):
-    """Class that models a mass measure
-    Supported units:
-
-    * kilogram (kg) default
-    * gram (g)
-    * miligram (mg)
-    * tonne (Ton)
-    * pound (lb)
-    * grain (gr)
-    * ounce avoirdupois (oz)
-    * slug (slug)
-    * hundredweight US (cwtUS)
-    * hundredweight UK (cwtUK)
-    * short tonne (TonUK)
-    * long tonne (TonUS)
-
-    >>> M=Mass(1, "lb")
-    >>> print M.kg, M.g, M.oz
-    0.45359237 453.59237 16.0
-    """
     __title__ = QApplication.translate("pychemqt", "Mass")
     rates = {"kg": 1.,
              "g": 1./k.kilo,
@@ -803,20 +665,11 @@ class Mass(unidad):
                    QApplication.translate("pychemqt", "short ton (US)")]
     __units_set__ = {"altsi": "kg", "si": "kg", "metric": "kg", "cgs": "g",
                      "english": "lb"}
+    __test__ = [{"input": {"value": 1, "unit": "lb"},
+                 "prop": {"kg": 0.45359237, "g": 453.59237, "oz": 16}}]
 
 
 class Mol(unidad):
-    """Class that models a mol measure
-    Supported units:
-
-    * kilomol (kmol) default
-    * mol (mol)
-    * milimol (mmol)
-
-    >>> M=Mol(1, "kmol")
-    >>> print M.mol, M.lbmol
-    1000.0 2.20462262185
-    """
     __title__ = QApplication.translate("pychemqt", "Mol")
     rates = {"kmol": 1.,
              "mol": 1./k.kilo,
@@ -826,31 +679,11 @@ class Mol(unidad):
     __units__ = ['kmol', 'mol', 'mmol', "lbmol"]
     __units_set__ = {"altsi": "kmol", "si": "kmol", "metric": "kmol",
                      "cgs": "mol", "english": "lbmol"}
+    __test__ = [{"input": {"value": 1, "unit": "kmol"},
+                 "prop": {"mol": 1000, "lbmol": 2.20462262185}}]
 
 
 class SpecificVolume(unidad):
-    """Class that models a specific volume measure
-    Supported units:
-
-    * cubic meter per kilogram (m3kg) default
-    * liter per kilogram (lkg) (same as cc/g, and  ml/g)
-    * cubic meter per gram (m3g)
-    * cubic centimeter per kilogram (cckg)
-    * cubic foot per pound (ft3lb)
-    * cubic inch  per pound (in3lb)
-    * british gallon per pound (galUKlb)
-    * gallon per pound(galUSlb)
-    * barrel per pound (bbllb)
-    * cubic foot per slug (ft3slug)
-    * cubic foot per ounce (ft3oz)
-    * cubic inch per ounce (inch3oz)
-    * british gallon  per ounce (galUKoz)
-    * gallon per ounce (galUSoz)
-
-    >>> R=SpecificVolume(50, "lkg")
-    >>> print  R.m3kg, R.ft3lb
-    0.05 0.800923168698
-    """
     __title__ = QApplication.translate("pychemqt", "Specific Volume")
     rates = {"m3kg": 1.,
              "lg": 1.,
@@ -880,32 +713,11 @@ class SpecificVolume(unidad):
                  'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
+    __test__ = [{"input": {"value": 50, "unit": "lkg"},
+                 "prop": {"m3kg": 0.05, "ft3lb": 0.800923168698}}]
 
 
 class SpecificVolume_square(unidad):
-    """Class that models a specific volume squarre measure (useful too for
-    third virial coefficient
-    Supported units:
-
-    * cubic meter per kilogram (m3kg) default
-    * liter per kilogram (lkg) (same as cc/g, and  ml/g)
-    * cubic meter per gram (m3g)
-    * cubic centimeter per kilogram (cckg)
-    * cubic foot per pound (ft3lb)
-    * cubic inch  per pound (in3lb)
-    * british gallon per pound (galUKlb)
-    * gallon per pound(galUSlb)
-    * barrel per pound (bbllb)
-    * cubic foot per slug (ft3slug)
-    * cubic foot per ounce (ft3oz)
-    * cubic inch per ounce (inch3oz)
-    * british gallon  per ounce (galUKoz)
-    * gallon per ounce (galUSoz)
-
-    >>> R=SpecificVolume_square(50, "lkg")
-    >>> print  R.m3kg, R.ft3lb
-    5e-05 0.0128295584431
-    """
     __title__ = QApplication.translate("pychemqt", "Third virial coefficient")
     rates = {"m3kg": 1.,
              "lg": 1.,
@@ -935,26 +747,14 @@ class SpecificVolume_square(unidad):
                  'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
+    __test__ = [{"input": {"value": 50, "unit": "lkg"},
+                 "prop": {"m3kg": 5e-5, "ft3lb": 0.0128295584431}}]
 
 # TODO: Add unit for fourth virial coefficient, only useful for refprop library
 # when work in qt loop
 
 
 class MolarVolume(unidad):
-    """Class that models a specific molar volume measure
-    Supported units:
-
-    * cubic meter per kilomol (m3kmol) default
-    * liter per kilomol (lkmol) (same as cc/mol, and  ml/mol)
-    * cubic meter per mol (m3mol)
-    * cubic centimeter per kilomol (cckmol)
-    * cubic foot per poundmol (ft3lbmol)
-    * cubic inch per poundmol (in3lbmol)
-
-    >>> R=MolarVolume(50, "lkmol")
-    >>> print  R.m3kmol, R.ft3lbmol
-    0.05 0.800923168698
-    """
     __title__ = QApplication.translate("pychemqt", "Molar Volume")
     rates = {"m3kmol": 1.,
              "lmol": 1.,
@@ -971,33 +771,11 @@ class MolarVolume(unidad):
                  'cckmol', 'ft3lbmol', 'inch3lbmol']
     __units_set__ = {"altsi": "m3kmol", "si": "m3kmol", "metric": "m3kmol",
                      "cgs": "ccmol", "english": "ft3lbmol"}
+    __test__ = [{"input": {"value": 50, "unit": "lkmol"},
+                 "prop": {"m3kmol": 0.05, "ft3lbmol": 0.800923168698}}]
 
 
 class Density(unidad):
-    """Class that models a density measure
-    Supported units:
-
-    * kilogram per cubic foot (kgm3) default (same as gr/l)
-    * kilogram per liter (kgl) (same as g/cc, g/ml)
-    * gram per cubic meter (gm3)
-    * kilogram per cubic centimeter (kgcc)
-    * pound per cubic foot (lbft3)
-    * pound per cubic inch (lbin3)
-    * pound per british gallon (lbgalUK)
-    * pound per gallon (lbgalUS)
-    * pound per barril (lbbbl)
-    * short tonne per cubic foot (tonUKft3)
-    * long tonne per cubic foot (tonUSft3)
-    * slug per cubic foot (slugft3)
-    * ounce per cubic foot (ozft3)
-    * ounce per cubic inch (ozin3)
-    * ounce per british gallon (ozgalUK)
-    * ounce per gallon (ozgalUS)
-
-    >>> R=Density(1, "kgl")
-    >>> print R.kgm3, R.lbft3
-    1000.0 62.4279605761
-    """
     __title__ = QApplication.translate("pychemqt", "Density")
     rates = {"kgm3": 1.,
              "gl": 1.,
@@ -1036,23 +814,11 @@ class Density(unidad):
                    "cgs": "gcc", "english": "lbft3"},
         "DenGas": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
                    "cgs": "gcc", "english": "lbft3"}}
+    __test__ = [{"input": {"value": 1, "unit": "kgl"},
+                 "prop": {"kgm3": 1000, "lbft3": 62.4279605761}}]
 
 
 class MolarDensity(unidad):
-    """Class that models a molar density measure
-    Supported units:
-
-    * kilomol per cubic foot (kmolm3) default (same as mol/l)
-    * kilomol per liter (kmoll) (same as mol/cc, mol/ml)
-    * mol per cubic meter (molm3)
-    * kilomol per cubic centimeter (kmolcc)
-    * lbmol per cubic foot (lbft3)
-    * lbmol per cubic inch (lbin3)
-
-    >>> R=MolarDensity(1, "kmolm3")
-    >>> print R.molcc, R.lbmolft3
-    1.0 0.0624279605761
-    """
     __title__ = QApplication.translate("pychemqt", "Molar Density")
     rates = {"kmolm3": 1.,
              "moll": 1.,
@@ -1067,27 +833,11 @@ class MolarDensity(unidad):
     __units__ = ['kmolm3', 'molcc', 'molm3', 'kmolcc', 'lbmolft3', 'lbmolin3']
     __units_set__ = {"altsi": "kmolm3", "si": "kmolm3", "metric": "kmolm3",
                      "cgs": "molcc", "english": "lbmolft3"}
+    __test__ = [{"input": {"value": 1, "unit": "kmolm3"},
+                 "prop": {"molcc": 0.001, "lbmolft3": 0.0624279605761}}]
 
 
 class Force(unidad):
-    """Class that models a force measure
-    Supported units:
-
-    * Newton (N) default
-    * Kilonewton (kN)
-    * dyn (dyn)
-    * kilogram force (kgf)
-    * gram force (gf)
-    * pound force (lbf)
-    * ounce force (ozf)
-    * poundal (pdl)
-    * Long tonne force (TonfUS)
-    * Short tonne force (TonfUK)
-
-    >>> F=Force(1, "pdl")
-    >>> print F.N, F.kgf, F.dyn
-    0.138254954376 0.0140980818502 13825.4954376
-    """
     __title__ = QApplication.translate("pychemqt", "Force")
     rates = {"N": 1.,
              "kN": k.kilo,
@@ -1103,44 +853,20 @@ class Force(unidad):
                 "TonfUK", "TonfUS"]
     __units__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "pdl", "TonfUK",
                  "TonfUS"]
+    __tooltip__ = ["Newton", "Kilonewton", "Dyna",
+                   QApplication.translate("pychemqt", "Kilogram force"),
+                   QApplication.translate("pychemqt", "Gram force"),
+                   QApplication.translate("pychemqt", "Pound force"),
+                   QApplication.translate("pychemqt", "Ounze force"),
+                   "Poundal", "TonfUK", "TonfUS"]
     __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn",
                      "english": "lbf"}
+    __test__ = [{"input": {"value": 1, "unit": "pdl"},
+                 "prop": {"N": 0.138254954376, "kgf": 0.0140980818502,
+                          "dyn": 13825.4954376}}]
 
 
 class Pressure(unidad):
-    """Class that models a pressure measure
-    Supported units:
-
-    * Pascal (Pa) default
-    * Megapascal (MPa)
-    * Hectopascal (hPa)
-    * Kilopascal (kPa)
-    * Bar (bar)
-    * Bar gauge (barg)
-    * Milibar (mbar)
-    * Pound per square inch (psi)
-    * Pound per square inch gauge (psig)
-    * Atmosphere (atm)
-    * Atmosphere technical, kg/cm2 (kgcm2)
-    * Atmosphere technical gauge (kgcm2g)
-    * Milimeter of water column (mmH2O)
-    * Meter of water column (mH2O)
-    * Centimeter of water column (cmH2O)
-    * Inch of water column (inH2O)
-    * Foot of water column (ftH2O)
-    * Milimeter of mercury column (mmHg)
-    * Torricelli (torr)
-    * Centimeter of mercury column (cmHg)
-    * Inch of mercury column (inHg)
-    * Foot of mercury column (ftHg)
-    * Pound per cubic curadrado (lbcm2)
-    * Pound per cubic foot (lbft2)
-    * Dyn per cubic centimeter (dyncm2)
-
-    >>> P=Pressure(760, "mmHg")
-    >>> print P.bar, P.atm, P.psi, P.kgcm2g
-    1.01325 1.0 14.6959487755 0.0
-    """
     __title__ = QApplication.translate("pychemqt", "Pressure")
     rates = {"Pa": 1.,
              "MPa": k.mega,
@@ -1173,8 +899,42 @@ class Pressure(unidad):
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
+    __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
+                   QApplication.translate("pychemqt", "Bar gauge"),
+                   "Milibar",
+                   QApplication.translate("pychemqt", "Pound per square inch"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square inch gauge"),
+                   QApplication.translate("pychemqt", "Atmosphere"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical, kg/cm²"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of water column"),
+                   QApplication.translate("pychemqt", "Meter of water column"),
+                   QApplication.translate("pychemqt", "Inch of water column"),
+                   QApplication.translate("pychemqt", "Foot of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Inch of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Foot of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square centimeter"),
+                   QApplication.translate("pychemqt", "Pound per square foot"),
+                   QApplication.translate(
+                       "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
+    __test__ = [{"input": {"value": 760, "unit": "mmHg"},
+                 "prop": {"bar": 1.01325, "atm": 1, "psi": 14.6959487755,
+                          "kgcm2g": 0}}]
 
     def __init__(self, data, unit="Pa", magnitud=""):
 
@@ -1238,39 +998,6 @@ class Pressure(unidad):
 
 
 class DeltaP(unidad):
-    """Class that models a delta pressure measure
-    Supported units:
-
-    * Pascal (Pa) default
-    * Megapascal (MPa)
-    * Hectopascal (hPa)
-    * Kilopascal (kPa)
-    * Bar (bar)
-    * Bar gauge (barg)
-    * Milibar (mbar)
-    * Pound per square inch (psi)
-    * Pound per square inch gauge (psig)
-    * Atmosphere (atm)
-    * Atmosphere technical, kg/cm2 (kgcm2)
-    * Atmosphere technical gauge (kgcm2g)
-    * Milimeter of water column (mmH2O)
-    * Meter of water column (mH2O)
-    * Centimeter of water column (cmH2O)
-    * Inch of water column (inH2O)
-    * Foot of water column (ftH2O)
-    * Milimeter of mercury column (mmHg)
-    * Torricelli (torr)
-    * Centimeter of mercury column (cmHg)
-    * Inch of mercury column (inHg)
-    * Foot of mercury column (ftHg)
-    * Pound per cubic curadrado (lbcm2)
-    * Pound per cubic foot (lbft2)
-    * Dyn per cubic centimeter (dyncm2)
-
-    >>> P=Pressure(760, "mmHg")
-    >>> print P.bar, P.atm, P.psi, P.kgcm2g
-    1.01325 1.0 14.6959487755 0.0
-    """
     __title__ = QApplication.translate("pychemqt", "Pressure increase")
     rates = {"Pa": 1.,
              "MPa": k.mega,
@@ -1306,41 +1033,45 @@ class DeltaP(unidad):
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
+    __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
+                   QApplication.translate("pychemqt", "Bar gauge"),
+                   "Milibar",
+                   QApplication.translate("pychemqt", "Pound per square inch"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square inch gauge"),
+                   QApplication.translate("pychemqt", "Atmosphere"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical, kg/cm²"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of water column"),
+                   QApplication.translate("pychemqt", "Meter of water column"),
+                   QApplication.translate("pychemqt", "Inch of water column"),
+                   QApplication.translate("pychemqt", "Foot of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Inch of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Foot of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square centimeter"),
+                   QApplication.translate("pychemqt", "Pound per square foot"),
+                   QApplication.translate(
+                       "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
+    __test__ = [{"input": {"value": 760, "unit": "mmHg"},
+                 "prop": {"bar": 1.01325, "atm": 1, "psi": 14.6959487755,
+                          "kgcm2": 1.03323}}]
 
 
 class Energy(unidad):
-    """Class that models a energy measure
-    Supported units:
-
-    * Joule (J) default
-    * Kilojoule (kJ)
-    * Megajoule (MJ)
-    * Calorie (cal)
-    * Kilocalorie (kcal)
-    * Calorie international (cal_i)
-    * Erg (erg)
-    * Btu (Btu)
-    * kiloBtu (kBtu)
-    * MegaBtu (MBtu)
-    * Watt-hour (Wh)
-    * Kilowatt-hour (KWh)
-    * Megawatt-hour (MWh)
-    * TonTNT (TNT)
-    * Horsepower-hour (HPh)
-    * Metric horsepower·hour (CVh)
-    * Kilogram force per meter (kgfm)
-    * Pound force per foot (lbfft)
-    * Gigaelectronvolt (GeV)
-    * Barrel petrol (oil)
-    * Tonne of oil equivalent (toe)
-    * Tonne of coal equivalent (tce)
-
-    >>> E=Energy(1, "kcal")
-    >>> print E.J, E.Btu, E.Wh
-    4184.0 3.96566683139 1.16222222222
-    """
     __title__ = QApplication.translate("pychemqt", "Energy")
     rates = {"J": 1.,
              "kJ": k.kilo,
@@ -1373,32 +1104,38 @@ class Energy(unidad):
     _magnitudes = [
         ("Energy", QApplication.translate("pychemqt", "Energy")),
         ("Work", QApplication.translate("pychemqt", "Work"))]
+    __text__ = [
+        QApplication.translate("pychemqt", "Joule"),
+        QApplication.translate("pychemqt", "Kilojoule"),
+        QApplication.translate("pychemqt", "Megajoule"),
+        QApplication.translate("pychemqt", "Calorie"),
+        QApplication.translate("pychemqt", "Kilocalorie"),
+        QApplication.translate("pychemqt", "Calorie international"),
+        QApplication.translate("pychemqt", "Erg"),
+        QApplication.translate("pychemqt", "Btu"),
+        QApplication.translate("pychemqt", "KiloBtu"),
+        QApplication.translate("pychemqt", "MegaBtu"),
+        QApplication.translate("pychemqt", "Watt-hour"),
+        QApplication.translate("pychemqt", "Kilowatt-hour"),
+        QApplication.translate("pychemqt", "Megawatt-hour"),
+        QApplication.translate("pychemqt", "Horsepower-hour"),
+        'kgf/m', 'lbf/ft',
+        QApplication.translate("pychemqt", "Ton TNT equivalent"),
+        QApplication.translate("pychemqt", "Metric horsepower-hour"),
+        QApplication.translate("pychemqt", "Gigaelectronvolt"),
+        QApplication.translate("pychemqt", "Barrel petrol"),
+        QApplication.translate("pychemqt", "Tonne of oil equivalent"),
+        QApplication.translate("pychemqt", "Tonne of coal equivalent")]
     __units_set__ = {
         "Energy": {"altsi": "MJ", "si": "MJ", "metric": "J", "cgs": "erg",
                    "english": "MBtu"},
         "Work": {"altsi": "MJ", "si": "kWh", "metric": "J", "cgs": "erg",
                  "english": "HPh"}}
+    __test__ = [{"input": {"value": 1, "unit": "kcal"},
+                 "prop": {"J": 4184, "Btu": 3.96566683139, "Wh": 1.162222}}]
 
 
 class Enthalpy(unidad):
-    """Class that models a enthalpy measure
-    Supported units:
-
-    * Joule per kilogram (Jkg) default
-    * Kilojoule per kilogram (kJkg)
-    * Megajoule per kilogram (MJkg)
-    * Kilowatt hour per kilogram (kWhkg)
-    * Calorie per kilogram (calkg)
-    * Kilocalorie per kilogram (kcalkg)
-    * Calorie per gram (calg)
-    * Calorie per pound (callb)
-    * Kilocalorie per gram (kcalg)
-    * Btu per pound (Btulb)
-
-    >>> H=Enthalpy(-5, "Btulb")
-    >>> print H.kJkg, H.kcalkg
-    -11.63 -2.77963671128
-    """
     __title__ = QApplication.translate("pychemqt", "Enthalpy")
     rates = {"Jkg": 1.,
              "kJkg": k.kilo,
@@ -1418,27 +1155,11 @@ class Enthalpy(unidad):
                  'Btulb']
     __units_set__ = {"altsi": "kJkg", "si": "Jkg", "metric": "Jkg",
                      "cgs": "calg", "english": "Btulb"}
+    __test__ = [{"input": {"value": -5, "unit": "Btulb"},
+                 "prop": {"kJkg": -11.63, "kcalkg": -2.77963671128}}]
 
 
 class MolarEnthalpy(unidad):
-    """Class that models a enthalpy measure in molar base
-    Supported units:
-
-    * Joule per kilogram (Jkmol) default
-    * Kilojoule per kilogram (kJkmol)
-    * Megajoule per kilogram (MJkmol)
-    * Kilowatt hour per kilogram (kWhkmol)
-    * Calorie per kilogram (calkmol)
-    * Kilocalorie per kilogram (kcalkmol)
-    * Calorie per gram (calmol)
-    * Calorie per pound (callbmol)
-    * Kilocalorie per gram (kcalmol)
-    * Btu per pound (Btulbmol)
-
-    >>> H=MolarEnthalpy(-5, "Btulbmol")
-    >>> print H.kJkmol, H.kcalkmol
-    -11.63 -2.77963671128
-    """
     __title__ = QApplication.translate("pychemqt", "Molar Enthalpy")
     rates = {"Jkmol": 1.,
              "kJkmol": k.kilo,
@@ -1458,30 +1179,11 @@ class MolarEnthalpy(unidad):
                  'callbmol', 'Btulbmol']
     __units_set__ = {"altsi": "kJkmol", "si": "Jkmol", "metric": "Jkmol",
                      "cgs": "calmol", "english": "Btulbmol"}
+    __test__ = [{"input": {"value": -5, "unit": "Btulbmol"},
+                 "prop": {"kJkmol": -11.63, "kcalkmol": -2.77963671128}}]
 
 
 class Entropy(unidad):
-    """Class that models a entropy measure
-    Supported units:
-
-    * Joule per kelvin (JK) default
-    * Kilojoule per kelvin(kJK)
-    * Megajoule per kelvin (MJK)
-    * Calorie per kelvin (calK)
-    * Kilocalorie per kelvin (kcalK)
-    * Megacalorie per kelvin (McalK)
-    * Watt hour per kelvin (WhK)
-    * Kilowatt hour per kelvin (kWhK)
-    * Megawatt hour per kelvin (MWhK)
-    * Horsepower hour per fahrenheit (HPhF)
-    * Btu per fahrenheit (BtuF)
-    * KiloBtu per fahrenheit (kBtuF)
-    * MegaBtu per fahrenheit (MBtuF)
-
-    >>> S=Entropy(30, "BtuF")
-    >>> print S.kJK, S.kcalK
-    56.9730160415 13.616877639
-    """
     __title__ = QApplication.translate("pychemqt", "Entropy")
     rates = {"JK": 1.,
              "kJK": k.kilo,
@@ -1502,25 +1204,11 @@ class Entropy(unidad):
                  'MWhK', 'hphF', 'BtuF', 'kBtuF', 'MBtuF']
     __units_set__ = {"altsi": "kJK", "si": "JK", "metric": "JK",
                      "cgs": "calK", "english": "MBtuF"}
+    __test__ = [{"input": {"value": 30, "unit": "BtuF"},
+                 "prop": {"kJK": 56.9730160415, "kcalK": 13.616877639}}]
 
 
 class SpecificHeat(unidad):
-    """Class that models a specific heat measure
-    Supported units:
-
-    * Joule per kilogram kelvin (JkgK) default
-    * Kilojoule per kilogram kelvin (kJkgK)
-    * Joule per gram kelvin (JgK)
-    * Calorie per kilogram kelvin (kcalkgK)
-    * Calorie per gram kelvin (calgK)
-    * Kilocalorie per gram kelvin (kcalgK)
-    * Kilowatt hour per kilogram kelvin (kWhkgK)
-    * Btu per pound fahrenheit (BtulbF)
-
-    >>> C=SpecificHeat(1, "BtulbF")
-    >>> print C.kJkgK, C.kcalkgK
-    4.1868 1.00066921606
-    """
     __title__ = QApplication.translate("pychemqt", "Specific Heat")
     rates = {"JkgK": 1.,
              "kJkgK": k.kilo,
@@ -1543,25 +1231,11 @@ class SpecificHeat(unidad):
                          "cgs": "calgK", "english": "BtulbF"},
         "SpecificEntropy": {"altsi": "kJkgK", "si": "JkgK", "metric": "JkgK",
                             "cgs": "calgK", "english": "BtulbF"}}
+    __test__ = [{"input": {"value": 1, "unit": "BtulbF"},
+                 "prop": {"kJkgK": 4.1868, "kcalkgK": 1.00066921606}}]
 
 
 class MolarSpecificHeat(unidad):
-    """Class that models a specific heat measure with molar base
-    Supported units:
-
-    * Joule per kilomol kelvin (JkmolK) default
-    * Kilojoule per kilomol kelvin (kJkmolK)
-    * Joule per mol kelvin (JmolK)
-    * Calorie per kilomol kelvin (kcalkmolK)
-    * Calorie per mol kelvin (calmolK)
-    * Kilocalorie per mol kelvin (kcalmolK)
-    * Kilowatt hour per kilomol kelvin (kWhkmolK)
-    * Btu per poundmol fahrenheit (BtulbmolF)
-
-    >>> C=MolarSpecificHeat(1, "BtulbmolF")
-    >>> print C.kJkmolK, C.kcalkmolK
-    4.1868 1.00066921606
-    """
     __title__ = QApplication.translate("pychemqt", "Molar Specific Heat")
     rates = {"JkmolK": 1.,
              "kJkmolK": k.kilo,
@@ -1578,33 +1252,11 @@ class MolarSpecificHeat(unidad):
                  'kcalmolK', 'kWhkmolK', 'BtulbmolF']
     __units_set__ = {"altsi": "kJkmolK", "si": "JkmolK", "metric": "JkmolK",
                      "cgs": "calmolK", "english": "BtulbmolF"}
+    __test__ = [{"input": {"value": 1, "unit": "BtulbmolF"},
+                 "prop": {"kJkmolK": 4.1868, "kcalkmolK": 1.00066921606}}]
 
 
 class Power(unidad):
-    """Class that models a power measure
-    Supported units:
-
-    * Watt (W) default
-    * Kilowattt (kW)
-    * Megawatt (MW)
-    * Horsepower (hp)
-    * Metric horsepower (CV)
-    * Calorie per second (cals)
-    * Kilocalorie per hour (kcalh)
-    * Joule per hour (Jh)
-    * Erg per second (ergs)
-    * Btu per hour (Btuh)
-    * Megabtu per hour (MBtuh)
-    * Btu per minute (Btumin)
-    * Btu per second (Btus)
-    * Foot pound force per hour (ftlbfh)
-    * Foot pound force per minute (ftlbfmin)
-    * Foot pound force per second (ftlbfs)
-
-    >>> W=Power(5, "Btuh")
-    >>> print W.kW, W.hp, W.kcalh
-    0.00146535535086 0.00196507389461 1.26082200361
-    """
     __title__ = QApplication.translate("pychemqt", "Power")
     rates = {"W": 1.,
              "kW": k.kilo,
@@ -1630,6 +1282,23 @@ class Power(unidad):
     __units__ = ['W', 'kW', 'MW', 'hp', 'CV', 'cals', 'kcalh', 'Jh', 'kJh',
                  'MJh', 'ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs',
                  'ftlbfmin', 'ftlbfh']
+    __tooltip__ = [
+        QApplication.translate("pychemqt", "Watt"),
+        QApplication.translate("pychemqt", "Kilowatt"),
+        QApplication.translate("pychemqt", "Megawatt"),
+        QApplication.translate("pychemqt", "Horsepower"),
+        QApplication.translate("pychemqt", "Metric horsepower"),
+        QApplication.translate("pychemqt", "Calorie per second"),
+        QApplication.translate("pychemqt", "Kilocalorie per hour"),
+        QApplication.translate("pychemqt", "Joule per hour"),
+        QApplication.translate("pychemqt", "Kilojoule per hour"),
+        QApplication.translate("pychemqt", "Megajoule per hour"),
+        QApplication.translate("pychemqt", "Erg per second"),
+        QApplication.translate("pychemqt", "Btu per second"),
+        QApplication.translate("pychemqt", "Btu per minute"),
+        QApplication.translate("pychemqt", "Btu per hour"),
+        QApplication.translate("pychemqt", "MegaBtu per hour"),
+        'ft/lbf·s', 'ft/lbf·min', 'ft/lbf·h']
     _magnitudes = [
         ("EnergyFlow", QApplication.translate("pychemqt", "Energy Flow")),
         ("Power", QApplication.translate("pychemqt", "Power"))]
@@ -1638,39 +1307,12 @@ class Power(unidad):
                        "cgs": "ergs", "english": "MBtuh"},
         "Power": {"altsi": "hp", "si": "kW", "metric": "Jh", "cgs": "ergs",
                   "english": "hp"}}
+    __test__ = [{"input": {"value": 5, "unit": "Btuh"},
+                 "prop": {"kW": 0.00146535535086, "hp": 0.00196507389461,
+                          "kcalh": 1.26082200361}}]
 
 
 class MassFlow(unidad):
-    """Class that models a mass flow measure
-    Supported units:
-
-    * kg per second (kgs) default
-    * kg per minute (kgmin)
-    * kg per hour (kgh)
-    * g per second (gs)
-    * g per minute (gmin)
-    * g per hour (gh)
-    * Tonne per second (Tons)
-    * Tonne per minute (Tonmin)
-    * Tonne per hour (Tonh)
-    * pound per second (lbs)
-    * pound per minute (lbmin)
-    * pound per hour (lbh)
-    * Short Tonne per second (TonUKs)
-    * Long Tonne per second (TonUSs)
-    * Short Tonne per minute (TonUKmin)
-    * Long Tonne per minute (TonUSmin)
-    * Short Tonne per hour (TonUKh)
-    * Long Tonne per hour (TonUSh)
-    * Short Tonne per day (TonUKday)
-    * Long Tonne per day (TonUSday)
-    * Short Tonne per year (TonUKyear)
-    * Long Tonne per year (TonUSyear)
-
-    >>> G=MassFlow(1, "gs")
-    >>> print G.kgh, G.lbh, G.gmin
-    3.6 7.93664143866 60.0
-    """
     __title__ = QApplication.translate("pychemqt", "Mass Flow")
     rates = {"kgs": 1.,
              "kgmin": 1./k.minute,
@@ -1700,26 +1342,11 @@ class MassFlow(unidad):
                  'TonUKh', 'TonUSh', 'TonUKday', 'TonUSday']
     __units_set__ = {"altsi": "kgh", "si": "kgh", "metric": "kgs", "cgs": "gs",
                      "english": "lbh"}
+    __test__ = [{"input": {"value": 1, "unit": "gs"},
+                 "prop": {"kgh": 3.6, "lbh": 7.93664143866, "gmin": 60}}]
 
 
 class MolarFlow(unidad):
-    """Class that models a molar flow measure
-    Supported units:
-
-    * kmol per second (kmols) default
-    * kmol per minute (kmolmin)
-    * kmol per hour (kmolh)
-    * gmol per second (mols)
-    * gmol per minute (molmin)
-    * gmol per hour (gmolh)
-    * lbmol per second (lbmols)
-    * lbmol per minute (lbmolmin)
-    * lbmol per hour (lbmolh)
-
-    >>> G=MolarFlow(1, "mols")
-    >>> print G.kmolh, G.lbmolh, G.molmin
-    3.6 7.93664143866 60.0
-    """
     __title__ = QApplication.translate("pychemqt", "Molar Flow")
     rates = {"kmols": 1.,
              "kmolmin": 1./k.minute,
@@ -1736,41 +1363,12 @@ class MolarFlow(unidad):
                  'lbmols', 'lbmolmin', 'lbmolh']
     __units_set__ = {"altsi": "kmolh", "si": "kmolh", "metric": "kmols",
                      "cgs": "mols", "english": "lbmolh"}
+    __test__ = [{"input": {"value": 1, "unit": "mols"},
+                 "prop": {"kmolh": 3.6, "lbmolh": 7.93664143866,
+                          "molmin": 60}}]
 
 
 class VolFlow(unidad):
-    """Class that models a volumetric flow measure
-    Supported units:
-
-    * cubic meters per second (m3s) default
-    * cubic meters per minute (m3min)
-    * cubic meters per hour (m3h)
-    * liters per second (ls)
-    * liters per minute (lmin)
-    * liters per hour (lh)
-    * cubic centimeters per second (ccs, cm3s)
-    * cubic centimeters per minute (ccmin)
-    * cubic centimeters per hour (cch)
-    * cubic foot per second (ft3s)
-    * cubic foot per minute (ft3min)
-    * kilo cubic foot per minute (kft3min)
-    * cubic foot per hour (ft3h)
-    * mega cubic foot per day (mft3day)
-    * British gallon per hour (galUKh)
-    * Gallon per hour (galUSh)
-    * British gallon per minute (galUKmin)
-    * Gallon per minute (galUSmin)
-    * British gallon per second (galUKs)
-    * Gallon per second (galUSs)
-    * Barrel per day (bblday)
-    * Barrel per hour (bblh)
-    * Barrel per minute (bblmin)
-    * Barrel per second (bbls)
-
-    >>> V=VolFlow(1, "lmin")
-    >>> print V.m3h, V.ft3min, V.ccs
-    0.06 0.0353146667215 16.6666666667
-    """
     __title__ = QApplication.translate("pychemqt", "Volumetric Flow")
     rates = {"m3s": 1.,
              "m3min": 1./k.minute,
@@ -1817,27 +1415,12 @@ class VolFlow(unidad):
                  "english": "ft3h"},
         "QGas": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
                  "english": "ft3h"}}
+    __test__ = [{"input": {"value": 1, "unit": "lmin"},
+                 "prop": {"m3h": 0.06, "ft3min": 0.0353146667215,
+                          "ccs": 16.6666666667}}]
 
 
 class Diffusivity(unidad):
-    """Class that models a diffusivity measure (useful for kinematic viscosity)
-    Supported units:
-
-    * Square meter per second (m2s) default
-    * Square centimeter per second (cm2s)
-    * Square milimeter per second (mm2s)
-    * Square foot per second (ft2s)
-    * Square inch per second (inch2s)
-    * Square meter per hour (m2h)
-    * Square foot per hour (ft2h)
-    * Square inch per hour (inch2h)
-    * Stokes (St)
-    * Centistokes (cSt)
-
-    >>> k=Diffusivity(5, "St")
-    >>> print k.m2s, k.ft2s
-    0.0005 0.00538195520835
-    """
     __title__ = QApplication.translate("pychemqt", "Diffusivity")
     rates = {"m2s": 1.,
              "cm2s": k.centi**2,
@@ -1857,30 +1440,18 @@ class Diffusivity(unidad):
         ("Diffusivity", QApplication.translate("pychemqt", "Diffusivity")),
         ("KViscosity", QApplication.translate(
             "pychemqt", "Kinematic viscosity"))]
+    __tooltip__ = ["m²/s", "cm²/s", "mm²/s", "ft²/s", "inch²/s", "m²/h",
+                   "ft²/h", "inch²/h", "Stokes", "Centistokes"]
     __units_set__ = {
         "Diffusivity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
                         "cgs": "cm2s", "english": "ft2s"},
         "KViscosity": {"altsi": "m2s", "si": "m2s", "metric": "m2s",
                        "cgs": "cm2s", "english": "ft2s"}}
+    __test__ = [{"input": {"value": 5, "unit": "St"},
+                 "prop": {"m2s": 0.0005, "ft2s": 0.00538195520835}}]
 
 
 class HeatFlux(unidad):
-    """Class that models a heat flux measure
-    Supported units:
-
-    * W/m2 (Wm2) default
-    * kW/m2 (kWm2)
-    * cal/hm2 (calhm2)
-    * cal/sm2 (calsm2)
-    * cal/scm2 (calscm2)
-    * kcal/m2h (kcalhm2)
-    * Btu/ft2h (Btuhft2)
-    * Btu/ft2s (Btusft2)
-
-    >>> H=HeatFlux(1, "Btuhft2")
-    >>> print H.Wm2, H.kcalhm2
-    3.15459074506 2.71427501965
-    """
     __title__ = QApplication.translate("pychemqt", "Heat Flux")
     rates = {"Wm2": 1.,
              "kWm2": k.kilo,
@@ -1895,27 +1466,11 @@ class HeatFlux(unidad):
                  "Btuhft2", "Btusft2"]
     __units_set__ = {"altsi": "Wm2", "si": "Wm2", "metric": "Wm2",
                      "cgs": "calscm2", "english": "Btuhft2"}
+    __test__ = [{"input": {"value": 1, "unit": "Btuhft2"},
+                 "prop": {"Wm2": 3.15459074506, "kcalhm2": 2.71427501965}}]
 
 
 class ThermalConductivity(unidad):
-    """Class that models a thermal conductivity measure
-    Supported units:
-
-    * Watt per meter Kelvin (WmK) default
-    * Joule per hour meter Kelvin (JhmK)
-    * Kilojoule per hour meter Kelvin (kJhmK)
-    * Calorie per second, centimeter kelvin (calscmK)
-    * Calorie per hour, centimeter kelvin (calhcmK)
-    * Calorie per hour, milimeter kelvin (calhmmK)
-    * Kilocalorie per hour meter kelvin (kcalhmK)
-    * Pound force per second fahrenheit (lbfsF)
-    * Pound pie per square second fahrenheit (lbfts3F)
-    * Btu per hour foot fahrenheit (BtuhftF)
-
-    >>> k=ThermalConductivity(50)
-    >>> print k.WmK, k.BtuhftF, k.kcalhmK
-    50.0 28.8894658271 43.0210325048
-    """
     __title__ = QApplication.translate("pychemqt", "Thermal Conductivity")
     rates = {"WmK": 1.,
              "mWmK": 1./k.kilo,
@@ -1936,28 +1491,11 @@ class ThermalConductivity(unidad):
                  'kcalhmK', 'lbfsF', 'lbfts3F', 'BtuhftF']
     __units_set__ = {"altsi": "mWmK", "si": "WmK", "metric": "WmK",
                      "cgs": "calscmK", "english": "lbfts3F"}
+    __test__ = [{"input": {"value": 50, "unit": "WmK"},
+                 "prop": {"BtuhftF": 28.8894658271, "kcalhmK": 43.0210325048}}]
 
 
 class UA(unidad):
-    """Class that models a UA measure
-    Supported units:
-
-    * Watt per Kelvin (WK) default
-    * kilowatt per Kelvin (kWK)
-    * miliwatt per kelvin (mWK)
-    * Joule per hour Kelvin (JhK)
-    * Kilojoule per hour Kelvin (kJhK)
-    * Calorie per hour Kelvin (calhK)
-    * Kilocalorie per hour Kelvin (kcalhK)
-    * Calorie per second Kelvin (calsK)
-    * Kilocalorie per second Kelvin (kcalsK)
-    * Btu per hour fahrenheit (BtuhF)
-    * Btu per second fahrenheit (BtusF)
-
-    >>> h=UA(1, "BtuhF")
-    >>> print h.WK, h.kcalhK
-    5.67826334111 4.88569503537
-    """
     __title__ = QApplication.translate("pychemqt", "UA")
     rates = {"WK": 1.,
              "kWK": k.kilo,
@@ -1976,29 +1514,11 @@ class UA(unidad):
                  'calsK', 'kcalsK', 'BtuhF', 'BtusF']
     __units_set__ = {"altsi": "mWK", "si": "WK", "metric": "WK",
                      "cgs": "calsK", "english": "BtuhF"}
+    __test__ = [{"input": {"value": 1, "unit": "BtuhF"},
+                 "prop": {"WK": 5.67826334111, "kcalhK": 4.88569503537}}]
 
 
 class HeatTransfCoef(unidad):
-    """Class that models a heat transfer coefficient measure
-    Supported units:
-
-    * Watt per m2 Kelvin (Wm2K) default
-    * kilowatt per m2 Kelvin (kWm2K)
-    * Joule per hour m2 Kelvin (Jhm2K)
-    * Kilojoule per hour m2 Kelvin (kJhm2K)
-    * Calorie per hour m2 Kelvin (calhm2K)
-    * Kilocalorie per hour m2 Kelvin (kcalhm2K)
-    * Calorie per second m2 Kelvin (calsm2K)
-    * Kilocalorie per second m2 Kelvin (kcalsm2K)
-    * Calorie per second cm2 Kelvin (calscm2K)
-    * Kilocalorie per second cm2 Kelvin (kcalscm2K)
-    * Btu per hour foot2 fahrenheit (Btuhft2F)
-    * Btu per second foot2 fahrenheit (Btusft2F)
-
-    >>> h=HeatTransfCoef(1, "Btuhft2F")
-    >>> print h.Wm2K, h.kcalhm2K
-    5.67826334111 4.88569503537
-    """
     __title__ = QApplication.translate("pychemqt", "Heat Transfer Coefficient")
     rates = {"Wm2K": 1.,
              "kWm2K": k.kilo,
@@ -2020,30 +1540,11 @@ class HeatTransfCoef(unidad):
                  'Btusft2F']
     __units_set__ = {"altsi": "Wm2K", "si": "Wm2K", "metric": "Wm2K",
                      "cgs": "calscm2K", "english": "Btuhft2F"}
+    __test__ = [{"input": {"value": 1, "unit": "Btuhft2F"},
+                 "prop": {"Wm2K": 5.67826334111, "kcalhm2K": 4.88569503537}}]
 
 
 class Fouling(unidad):
-    """Class that models a fouling factor resistence, inverse of heat
-    transmision coefficient
-    Supported units:
-
-    * m2 Kelvin per Watt (m2KW) default
-    * m2 Kelvin per kilowatt (m2KkW)
-    * hour m2 Kelvin per Joule (hm2KJ)
-    * hour m2 Kelvin per Kilojoule (hm2KkJ)
-    * hour m2 Kelvin per Calorie (hm2Kcal)
-    * hour m2 Kelvin per Kilocalorie (hm2Kkcal)
-    * second m2 Kelvin per Calorie (sm2Kcal)
-    * second m2 Kelvin per Kilocalorie (sm2Kkcal)
-    * second cm2 Kelvin per Calorie (scm2Kcal)
-    * second cm2 Kelvin per Kilocalorie (scm2Kkcal)
-    * hour foot2 fahrenheit per Btu (hft2FBtu)
-    * second foot2 fahrenheit per Btu (sft2FBtu)
-
-    >>> h=Fouling(1, "hft2FBtu")
-    >>> print h.m2KW, h.hm2Kkcal
-    0.176110183682 0.204679169035
-    """
     __title__ = QApplication.translate("pychemqt", "Fouling Factor")
     rates = {"m2KW": 1.,
              "m2KkW": 1./k.kilo,
@@ -2065,20 +1566,11 @@ class Fouling(unidad):
                  'sft2FBtu']
     __units_set__ = {"altsi": "m2KW", "si": "m2KW", "metric": "m2KW",
                      "cgs": "scm2Kkcal", "english": "hft2FBtu"}
+    __test__ = [{"input": {"value": 1, "unit": "hft2FBtu"},
+                 "prop": {"m2KW": 0.176110183682, "hm2Kkcal": 0.204679169035}}]
 
 
 class Tension(unidad):
-    """Class that models a surface tension measure
-    Supported units:
-
-    * Newton per meter (Nm) default
-    * Dyn per centimeter (dyncm)
-    * Pound force per foot (lbfft)
-
-    >>> s=Tension(1, "lbfft")
-    >>> print s.Nm, s.dyncm
-    14.5939029372 14593.9029372
-    """
     __title__ = QApplication.translate("pychemqt", "Surface Tension")
     rates = {"Nm": 1.,
              "mNm": k.milli,
@@ -2088,28 +1580,11 @@ class Tension(unidad):
     __units__ = ['Nm', 'mNm', 'dyncm', 'lbfft']
     __units_set__ = {"altsi": "mNm", "si": "Nm", "metric": "Nm",
                      "cgs": "dyncm", "english": "lbfft"}
+    __test__ = [{"input": {"value": 1, "unit": "lbfft"},
+                 "prop": {"Nm": 14.5939029372, "dyncm": 14593.9029372}}]
 
 
 class Viscosity(unidad):
-    """Class that models a viscosity measure
-    Supported units:
-
-    * Pascal per second (Pas) default
-    * Milipascal per second (mPas)
-    * Micropascal per second (muPas)
-    * Dinas second per square centimeter (dynscm2)
-    * Poise (P)
-    * Centipoise (cP)
-    * Reyn (reyn)
-    * Pound per foot second (lbfts)
-    * Pound force second per square foot (lbfft2)
-    * Pound force second per square inch (lbfinch2)
-    * Pound per foot hour (lbfth)
-
-    >>> m=Viscosity(1, "P")
-    >>> print m.cP, m.Pas, m.lbfth
-    100.0 0.1 241.90883105
-    """
     __title__ = QApplication.translate("pychemqt", "Viscosity")
     rates = {"Pas": 1.,
              "mPas": k.milli,
@@ -2127,22 +1602,19 @@ class Viscosity(unidad):
                 'reyn', 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP',
                  'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
+    __tooltip__ = [QApplication.translate("pychemqt", "Pascal per second"),
+                   QApplication.translate("pychemqt", "Milipascal per second"),
+                   QApplication.translate(
+                       "pychemqt", "Micropascal per second"),
+                   "Poise", "Centipoise", 'dyn/s·cm²', 'microPoise',
+                   "Reyn", 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas",
                      "cgs": "dynscm2", "english": "cP"}
+    __test__ = [{"input": {"value": 1, "unit": "P"},
+                 "prop": {"cP": 100, "Pas": 0.1, "lbfth": 241.90883105}}]
 
 
 class SolubilityParameter(unidad):
-    """Class that models a solubility parameter measure
-    Supported units:
-
-    * raiz(J/m3) (Jm3) default
-    * raiz(cal/cc) (calcc)
-    * raiz(Btuft3) (Btuft3)
-
-    >>> S=SolubilityParameter(1, "Btuft3")
-    >>> print S.Jm3, S.calcc
-    193.025764622 0.0943668467764
-    """
     __title__ = QApplication.translate("pychemqt", "Solubility Parameter")
     rates = {"Jm3": 1.,
              "calcc": (k.calorie*k.mega)**0.5,
@@ -2151,24 +1623,11 @@ class SolubilityParameter(unidad):
     __units__ = ["Jm3", "calcc", "Btuft3"]
     __units_set__ = {"altsi": "Jm3", "si": "Jm3", "metric": "Jm3",
                      "cgs": "calcc", "english": "Btuft3"}
+    __test__ = [{"input": {"value": 1, "unit": "Btuft3"},
+                 "prop": {"Jm3": 193.025764622, "calcc": 0.0943668467764}}]
 
 
 class PotencialElectric(unidad):
-    """Class that models a potencia electric measure
-    Supported units:
-    * Volt per meter (Vm) default
-    * Kilovolt per meter (kVm)
-    * Megavolt per meter (MVm)
-    * Volt per centimeter (Vcm)
-    * Kilovolt per centimeter (kVcm)
-    * Megavolt per centimeter (MVcm)
-    * Statvolt per meter (statVm)
-    * statvolt per centimeter (statVcm)
-
-    >>> e=PotencialElectric(3, "statVcm")
-    >>> print e.Vm
-    90000.0
-    """
     __title__ = QApplication.translate("pychemqt", "Electric Potencial")
     rates = {"Vm": 1.,
              "kVm": k.kilo,
@@ -2184,38 +1643,25 @@ class PotencialElectric(unidad):
                  "statVcm"]
     __units_set__ = {"altsi": "Vm", "si": "Vm", "metric": "Vm", "cgs": "Vcm",
                      "english": "statVm"}
+    __test__ = [{"input": {"value": 3, "unit": "statVcm"},
+                 "prop": {"Vm": 90000}}]
 
 
 class DipoleMoment(unidad):
-    """Class that models a solubility parameter measure
-    Supported units:
-    * Coulomb per meter (Cm) default
-    * debyes (Debye)
-
-    >>> dp=DipoleMoment(1, "Debye")
-    >>> print dp.Cm, dp.Debye
-    3.33564095198e-30 1.0
-    """
     __title__ = QApplication.translate("pychemqt", "Dipole Moment")
     rates = {"Cm": 1.,
              "Debye": k.debye}
     __text__ = ['C·m', 'Debye']
     __units__ = ['Cm', 'Debye']
+    __tooltip__ = [QApplication.translate("pychemqt", "Coulomb per meter"),
+                   "Debye"]
     __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
                      "english": "Debye"}
+    __test__ = [{"input": {"value": 1, "unit": "Debye"},
+                 "prop": {"Cm": 3.33564095198e-30, "Debye": 1}}]
 
 
 class CakeResistance(unidad):
-    """Class that models a a cake resistence measure
-    Supported units:
-    * meter per kilogram (mkg) default
-    * cm per gram (cmg)
-    * foot per pound (ftlb)
-
-    >>> dp=CakeResistance(1, "ftlb")
-    >>> print dp.mkg
-    0.67196897514
-    """
     __title__ = QApplication.translate("pychemqt", "Cake Resistance")
     rates = {"mkg": 1.,
              "cmg": k.centi/k.kilo,
@@ -2224,18 +1670,11 @@ class CakeResistance(unidad):
     __units__ = ['mkg', 'cmg', "ftlb"]
     __units_set__ = {"altsi": "mkg", "si": "mkg", "metric": "mkg",
                      "cgs": "cmg", "english": "ftlb"}
+    __test__ = [{"input": {"value": 1, "unit": "ftlb"},
+                 "prop": {"mkg": 0.67196897514}}]
 
 
 class PackingDP(unidad):
-    """Class that models a packing drop pressure measure
-    Supported units:
-    * mmH2O per meter (mmH2Om) default
-    * inH2O per foot (inH2Oft)
-
-    >>> dp=PackingDP(1, "inH2Oft")
-    >>> print dp.mmH2Om
-    83.3333333333
-    """
     __title__ = QApplication.translate("pychemqt", "Packing Pressure drop")
     rates = {"mmH2Om": 1.,
              "inH2Oft": k.inch/k.milli/k.foot}
@@ -2243,21 +1682,11 @@ class PackingDP(unidad):
     __units__ = ['mmH2Om', 'inH2Oft']
     __units_set__ = {"altsi": "mmH2Om", "si": "mmH2Om", "metric": "mmH2Om",
                      "cgs": "mmH2Om", "english": "inH2Oft"}
+    __test__ = [{"input": {"value": 1, "unit": "inH2Oft"},
+                 "prop": {"mmH2Om": 83.3333333333}}]
 
 
 class V2V(unidad):
-    """Class that models a volume ratio (Ratio gas-oil)
-    Supported units:
-
-    * cubic meter/cubic meter (m3m3) default
-    * cubic foot/cubic foot (ft3ft3)
-    * liter/liter (ll)
-    * cubic foot/oil (ft3bbl)
-
-    >>> V=V2V(1, "ft3bbl")
-    >>> print V.m3m3
-    0.178107606679
-    """
     __title__ = QApplication.translate("pychemqt", "Gas-Oil ratio")
     rates = {"m3m3": 1.,
              "ft3ft3": 1.,
@@ -2265,24 +1694,14 @@ class V2V(unidad):
              "ft3bbl": k.foot**3/k.bbl}
     __text__ = ["m³m³", "ft/bbl"]
     __units__ = ["m3m3", "ft3bbl"]
+    __tooltip__ = ['m³/m³', 'cubic foot/oil barrel']
     __units_set__ = {"altsi": "m3m3", "si": "m3m3", "metric": "m3m3",
                      "cgs": "m3m3", "english": "ft3bbl"}
+    __test__ = [{"input": {"value": 1, "unit": "ft3bbl"},
+                 "prop": {"m3m3": 0.178107606679}}]
 
 
 class InvTemperature(unidad):
-    """Class that models a  inverse temperature measure
-    Supported units:
-
-    * Kelvin (default)
-    * Celsius
-    * Fahrenheit
-    * Rankine
-    * Reaumur
-
-    >>> T=InvTemperature(25, "C")
-    >>> print T.K, T.F
-    25.0 13.8888888889
-    """
     __title__ = QApplication.translate("pychemqt", "Temperature inverse")
     rates = {"K": 1.,
              "C": 1.,
@@ -2291,44 +1710,15 @@ class InvTemperature(unidad):
              "Re": 1./k.Reaumur}
     __text__ = ['1/K', '1/ºC', '1/ºR', '1/ºF', '1/ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
+    __tooltip__ = ['1/Kelvin', '1/Celsius', '1/Rankine', '1/Fahrenheit',
+                   '1/Reaumur']
     __units_set__ = {"altsi": "C", "si": "K", "metric": "C", "cgs": "C",
                      "english": "F"}
+    __test__ = [{"input": {"value": 25, "unit": "C"},
+                 "prop": {"K": 25, "F": 13.888888889}}]
 
 
 class InvPressure(unidad):
-    """Class that models a inverse pressure measure
-    Supported units:
-
-    * Pascal (Pa) default
-    * Megapascal (MPa)
-    * Hectopascal (hPa)
-    * Kilopascal (kPa)
-    * Bar (bar)
-    * Bar gauge (barg)
-    * Milibar (mbar)
-    * Pound per square inch (psi)
-    * Pound per square inch gauge (psig)
-    * Atmosphere (atm)
-    * Atmosphere technical, kg/cm2 (kgcm2)
-    * Atmosphere technical gauge (kgcm2g)
-    * Milimeter of water column (mmH2O)
-    * Meter of water column (mH2O)
-    * Centimeter of water column (cmH2O)
-    * Inch of water column (inH2O)
-    * Foot of water column (ftH2O)
-    * Milimeter of mercury column (mmHg)
-    * Torricelli (torr)
-    * Centimeter of mercury column (cmHg)
-    * Inch of mercury column (inHg)
-    * Foot of mercury column (ftHg)
-    * Pound per cubic curadrado (lbcm2)
-    * Pound per cubic foot (lbft2)
-    * Dyn per cubic centimeter (dyncm2)
-
-    >>> P=Pressure(760, "mmHg")
-    >>> print P.bar, P.atm, P.psi, P.kgcm2g
-    1.01325 1.0 14.6959487755 0.0
-    """
     __title__ = QApplication.translate("pychemqt", "Pressure inverse")
     rates = {"Pa": 1.,
              "MPa": 1./k.mega,
@@ -2365,22 +1755,44 @@ class InvPressure(unidad):
                  'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
+    __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
+                   QApplication.translate("pychemqt", "Bar gauge"),
+                   "Milibar",
+                   QApplication.translate("pychemqt", "Pound per square inch"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square inch gauge"),
+                   QApplication.translate("pychemqt", "Atmosphere"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical, kg/cm²"),
+                   QApplication.translate(
+                       "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of water column"),
+                   QApplication.translate("pychemqt", "Meter of water column"),
+                   QApplication.translate("pychemqt", "Inch of water column"),
+                   QApplication.translate("pychemqt", "Foot of water column"),
+                   QApplication.translate(
+                       "pychemqt", "Milimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Centimeter of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Inch of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Foot of mercury column"),
+                   QApplication.translate(
+                       "pychemqt", "Pound per square centimeter"),
+                   QApplication.translate("pychemqt", "Pound per square foot"),
+                   QApplication.translate(
+                       "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
+    __test__ = [{"input": {"value": 1, "unit": "mmHg"},
+                 "prop": {"bar": 750.062, "atm": 760, "psi": 51.7149}}]
 
 
 class EnthalpyPressure(unidad):
-    """Class that models a enthalpy per pressure measure
-    Supported units:
-
-    * Joule per kilogram pascal(JkgPa) default
-    * Kilojoule per kilogram kilopascal (kJkgkPa)
-    * Kilojoule per kilogram megapascal (kJkgMPa)
-
-    >>> H=EnthalpyPressure(5, "JkgPa")
-    >>> print H.JkgPa, H.kJkgMPa
-    5.0 5000.0
-    """
     __title__ = QApplication.translate("pychemqt", "Enthalpy per pressure")
     rates = {"JkgPa": 1.,
              "kJkgkPa": 1.,
@@ -2394,19 +1806,11 @@ class EnthalpyPressure(unidad):
                  "Btulbpsi"]
     __units_set__ = {"altsi": "kJkgkPa", "si": "JkgPa", "metric": "JkgPa",
                      "cgs": "kJkgkPa", "english": "Btulbpsi"}
+    __test__ = [{"input": {"value": 5, "unit": "JkgPa"},
+                 "prop": {"JkgPa": 5, "kJkgMPa": 5000}}]
 
 
 class EnthalpyDensity(unidad):
-    """Class that models a enthalpy per density measure
-    Supported units:
-
-    * Joule per kilogram per kilogram cubic meter(Jkgkgm3) default
-    * Kilojoule per kilogram kilopascal (kJkgkgm3)
-
-    >>> H=EnthalpyPressure(5, "JkgPa")
-    >>> print H.JkgPa, H.kJkgMPa
-    5.0 5000.0
-    """
     __title__ = QApplication.translate("pychemqt", "Enthalpy per density")
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo,
@@ -2415,20 +1819,11 @@ class EnthalpyDensity(unidad):
     __units__ = ['Jkgkgm3', 'kJkgkgm3', "Btulb2ft3"]
     __units_set__ = {"altsi": "kJkgkgm3", "si": "Jkgkgm3", "metric": "Jkgkgm3",
                      "cgs": "kJkgkgm3", "english": "Btulb2ft3"}
+    __test__ = [{"input": {"value": 5, "unit": "Jkgkgm3"},
+                 "prop": {"kJkgkgm3": 0.005}}]
 
 
 class TemperaturePressure(unidad):
-    """Class that models a Temperature/Pressure measure
-    Supported units:
-
-    * Kelvin per pascal(KPa) default
-    * Kelvin per kilopascal (KkPa)
-    * Kelvin per megapascal (KMPa)
-
-    >>> H=TemperaturePressure(1, "KPa")
-    >>> print H.KPa, H.KkPa
-    1.0 1000.0
-    """
     __title__ = QApplication.translate("pychemqt", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
@@ -2440,23 +1835,11 @@ class TemperaturePressure(unidad):
     __units__ = ['KPa', 'KkPa', "Kbar", 'KMPa', "Katm", "Fpsi"]
     __units_set__ = {"altsi": "KkPa", "si": "KPa", "metric": "KPa",
                      "cgs": "KPa", "english": "Fpsi"}
+    __test__ = [{"input": {"value": 1, "unit": "KPa"},
+                 "prop": {"KPa": 1, "KkPa": 1000}}]
 
 
 class PressureTemperature(unidad):
-    """Class that models a Pressure/Temperature measure
-    Supported units:
-
-    * pascal per Kelvin (PaK) default
-    * kilopascal per Kelvin (kPaK)
-    * bar per Kelvin (barK)
-    * atmosphere per Kelvin (atmK)
-    * megapascal per Kelvin (MPaK)
-    * psi per Fahrenheit (psiF)
-
-    >>> H=PressureTemperature(1000, "PaK")
-    >>> print H.kPaK, H.atmK
-    1.0 0.00986923266716
-    """
     __title__ = QApplication.translate("pychemqt", "Pressure per Temperature")
     rates = {"PaK": 1.,
              "kPaK": k.kilo,
@@ -2468,21 +1851,11 @@ class PressureTemperature(unidad):
     __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK", "psiF"]
     __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK",
                      "cgs": "PaK", "english": "psiF"}
+    __test__ = [{"input": {"value": 1000, "unit": "PaK"},
+                 "prop": {"kPaK": 1, "atmK": 0.00986923266716}}]
 
 
 class PressureDensity(unidad):
-    """Class that models a Pressure/density measure
-    Supported units:
-
-    * pascal per kg/m3 (Pakgm3) default
-    * kilopascal per kg/m3 (kPakgm3)
-    * megapascal per kg/m3 (MPakgm3)
-    * atmosphere per kg/m3 (atmkgm3)
-
-    >>> H=PressureDensity(1000, "Pakgm3")
-    >>> print H.kPakgm3, H.atmkgm3
-    1.0 0.00986923266716
-    """
     __title__ = QApplication.translate("pychemqt", "Pressure per density")
     rates = {"Pakgm3": 1.,
              "kPakgm3": k.kilo,
@@ -2497,21 +1870,11 @@ class PressureDensity(unidad):
                  "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
                      "cgs": "Pagcc", "english": "psilbft3"}
+    __test__ = [{"input": {"value": 1e3, "unit": "Pakgm3"},
+                 "prop": {"kPakgm3": 1, "atmkgm3": 0.00986923266716}}]
 
 
 class DensityPressure(unidad):
-    """Class that models a Density/Pressure measure
-    Supported units:
-
-    * kg/m3 per pascal (kgm3Pa) default
-    * kg/m3 per kilopascal (kgm3kPa)
-    * kg/m3 per megapascal (kgm3MPa)
-    * kg/m3 per atmosphere (kgm3atm)
-
-    >>> H=DensityPressure(5, "lbft3psi")
-    >>> print H.kgm3Pa, H.kgm3atm
-    0.0116164084484 1177.03258603
-    """
     __title__ = QApplication.translate("pychemqt", "Density per pressure")
     rates = {"kgm3Pa": 1.,
              "kgm3kPa": k.milli,
@@ -2526,20 +1889,12 @@ class DensityPressure(unidad):
                  "lbft3psi"]
     __units_set__ = {"altsi": "kgm3kPa", "si": "kgm3Pa", "metric": "kgm3kPa",
                      "cgs": "gccPa", "english": "lbft3psi"}
+    __test__ = [{"input": {"value": 5, "unit": "lbft3psi"},
+                 "prop": {"kgm3Pa": 0.0116164084484,
+                          "kgm3atm": 1177.03258603}}]
 
 
 class DensityTemperature(unidad):
-    """Class that models a Density/Temperature measure
-    Supported units:
-
-    * kg/m3 per kelvin (kgm3K) default
-    * g/cm3 per Kelvin (gccK)
-    * lb/ft3 per farenheit (lbft3F)
-
-    >>> H=DensityTemperature(1, "gccK")
-    >>> print H.kgm3K, H.lbft3F
-    1000.0 34.6822003201
-    """
     __title__ = QApplication.translate("pychemqt", "Density per temperature")
     rates = {"kgm3K": 1.,
              "gccK": 1./k.liter,
@@ -2548,6 +1903,8 @@ class DensityTemperature(unidad):
     __units__ = ['kgm3K', 'gccK', "lbft3F"]
     __units_set__ = {"altsi": "kgm3K", "si": "kgm3K", "metric": "kgm3K",
                      "cgs": "gccK", "english": "lbft3F"}
+    __test__ = [{"input": {"value": 1, "unit": "gccK"},
+                 "prop": {"kgm3K": 1000, "lbft3F": 34.6822003201}}]
 
 
 class Currency(unidad):
@@ -2658,6 +2015,7 @@ class Currency(unidad):
             txt = self.text(self.magnitud)
             return " "+txt+num
 
+
 if os.environ["icu"] == "True":
     import icu
     locale = QtCore.QLocale.system().name()
@@ -2683,19 +2041,14 @@ _magnitudes.append(("Dimensionless",
                     Dimensionless))
 
 unit_set = {}
-for unidad in _all:
-    if unidad._magnitudes:
-        unit_set.update(unidad.__units_set__)
+for unit in _all:
+    if unit._magnitudes:
+        unit_set.update(unit.__units_set__)
     else:
-        unit_set[unidad.__name__] = unidad.__units_set__
+        unit_set[unit.__name__] = unit.__units_set__
 
 units_set = {}
 for set in ("altsi", "si", "metric", "cgs", "english"):
     units_set[set] = []
-    for magnitud, titulo, unidad in _magnitudes[:-1]:
-        units_set[set].append(unidad.__units__.index(unit_set[magnitud][set]))
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    for magnitud, titulo, unit in _magnitudes[:-1]:
+        units_set[set].append(unit.__units__.index(unit_set[magnitud][set]))
