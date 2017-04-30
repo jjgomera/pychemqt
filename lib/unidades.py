@@ -363,19 +363,6 @@ class Temperature(unidad):
 
 
 class DeltaT(unidad):
-    """Class that models a delta temperature measure
-    Supported units:
-
-    * Kelvin (default)
-    * Celsius
-    * Fahrenheit
-    * Rankine
-    * Reaumur
-
-    >>> T=DeltaT(25, "C")
-    >>> print T.K, T.F
-    25.0 45.0
-    """
     __title__ = QApplication.translate("pychemqt", "Temperature increase")
     rates = {"K": 1.,
              "C": 1.,
@@ -2031,6 +2018,55 @@ if os.environ["icu"] == "True":
         _all[i] = unit
 else:
     _all = sorted(unidad.__subclasses__(), key=lambda item: item.__title__)
+
+
+# Documenting unidad subclasses
+for _clas in _all:
+    if _clas.__doc__:
+        continue
+    doc = QApplication.translate(
+        "pychemqt", "Class to model a %s measure" % _clas.__title__)
+    doc += os.linesep + os.linesep
+    doc += QApplication.translate("pychemqt", "Supported units") + "::"
+    doc += os.linesep
+    default = True
+    for i, key in enumerate(_clas.__units__):
+        # Add list of supported unit with name and symbol
+        if _clas.__tooltip__:
+            name = _clas.__tooltip__[i]
+        else:
+            name = _clas.__text__[i]
+        doc += "    * %s (%s)" % (name, key)
+
+        # Mark the default unit
+        if default:
+            doc += " (%s)" % QApplication.translate("pychemqt", "default")
+            default = False
+        doc += os.linesep + os.linesep
+
+    # Add doctest example
+    doc += "Examples" + os.linesep
+    doc += "--------" + os.linesep + os.linesep
+    title = _clas.__name__
+    for test in _clas.__test__:
+        doc += ">>> %s = %s(%g, '%s')" % (
+            title[0], title, test["input"]["value"], test["input"]["unit"])
+        doc += os.linesep + ">>> "
+        template = []
+        values = []
+        for key in test["prop"].keys():
+            template.append("%g")
+            values.append("%s.%s" % (title[0], key))
+        doc += '"%s"' % " ".join(template)
+        doc += ' % (' + ", ".join(values)
+        doc += ")" + os.linesep
+        values = []
+        for value in test["prop"].values():
+            values.append("%g" % value)
+        doc += "'" + " ".join(values) + "'" + os.linesep
+    doc += os.linesep + os.linesep
+    _clas.__doc__ = doc
+
 
 _magnitudes = []
 for unit in _all:
