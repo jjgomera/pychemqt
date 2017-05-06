@@ -63,6 +63,7 @@ def cleanFloat(flo):
         value = 0
     return value
 
+
 color_serie = ["#DDDDDD", "#795681", "#B92D2D", "#B8873A", "#D7C848",
                "#94738F", "#6186AC", "#88AE62", "#949692", "#BF924E",
                "#C44343"]
