@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from doctest import DocTestSuite
+from unittest import TestSuite
 
-from lib import unidades
-from lib import adimensional
+from lib import adimensional, petro, unidades
 
-TestUnidades = DocTestSuite(unidades)
-TestAdimensional = DocTestSuite(adimensional)
+
+TestLib = TestSuite()
+TestLib.addTest(DocTestSuite(unidades))
+TestLib.addTest(DocTestSuite(adimensional))
+TestLib.addTest(DocTestSuite(petro))
