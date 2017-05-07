@@ -766,320 +766,336 @@ def D86_EFV(curva, SG, reverse=False):
 
 def SD_TBP(curva):
     """Conversión de la curva de destilación SD a TBP atmosférica, API procedure 3A3.1, pag 268"""
-    a=[0.20312, 0.20312, 0.02175, 0.02175, 0.08055, 0.08055, 0.25088, 0.25088, 0.37475, 0.37475, 0.90427, 0.03849]
-    b=[1.4296, 1.4296, 2.0253, 2.0253, 1.6988, 1.6988, 1.3975, 1.3975, 1.2938, 1.2938, 0.8723, 1.9733]
-    TBP50=curva[6]
-    i=[a[i]*(curva[i+1]-curva[i])**b[i] for i in range(13)]
-    tbp=[TBP50-i[0]-i[1]-i[2]-i[3]-i[4]-i[5], TBP50-i[0]-i[1]-i[2]-i[3]-i[4], TBP50-i[0]-i[1]-i[2]-i[3], TBP50-i[0]-i[1]-i[2], TBP50-i[0]-i[1], TBP50-i[0], TBP50, TBP50+i[6], TBP50+i[6]+i[7], TBP50+i[6]+i[7]+i[8], TBP50+i[6]+i[7]+i[8]+i[9], TBP50+i[6]+i[7]+i[8]+i[9]+i[10], TBP50+i[6]+i[7]+i[8]+i[9]+i[10]+i[11]]
+    a = [0.20312, 0.20312, 0.02175, 0.02175, 0.08055, 0.08055, 0.25088, 0.25088, 0.37475, 0.37475, 0.90427, 0.03849]
+    b = [1.4296, 1.4296, 2.0253, 2.0253, 1.6988, 1.6988, 1.3975, 1.3975, 1.2938, 1.2938, 0.8723, 1.9733]
+    TBP50 = curva[6]
+    i = [a[i]*(curva[i+1]-curva[i])**b[i] for i in range(13)]
+    tbp = [TBP50-i[0]-i[1]-i[2]-i[3]-i[4]-i[5], TBP50-i[0]-i[1]-i[2]-i[3]-i[4], TBP50-i[0]-i[1]-i[2]-i[3], TBP50-i[0]-i[1]-i[2], TBP50-i[0]-i[1], TBP50-i[0], TBP50, TBP50+i[6], TBP50+i[6]+i[7], TBP50+i[6]+i[7]+i[8], TBP50+i[6]+i[7]+i[8]+i[9], TBP50+i[6]+i[7]+i[8]+i[9]+i[10], TBP50+i[6]+i[7]+i[8]+i[9]+i[10]+i[11]]
     return [unidades.Temperature(T) for T in tbp]
-
 
 
 def D1160_TBP_10mmHg(curva, reverse=False):
     """Conversión de la curva de destilación D1160 a TBP ambas a 10 mmHg
     Edmister, W. C. and Okamoto, K. K., "Applied Hydrocarbon Thermodynamics, Part 13: Equilibrium Flash Vaporization Correlations for Heavy Oils Under Subatmospheric Pressures," Petroleum Refiner, Vol. 38, No. 9, 1959, pp. 271-288.
     reverse: para indicar que la conversión es la inversa, de TBP a D1160"""
-    DT1=curva[6]-curva[4]
-    DT2=curva[4]-curva[2]
-    DT3=curva[2]-curva[0]
-    F30=0.3+1.2775*DT1-5.539e-3*DT1**2+2.7486e-5*DT1**3
-    F10=0.3+1.2775*DT2-5.539e-3*DT2**2+2.7486e-5*DT2**3
-    F0=2.2566*DT3-266.2e-4*DT3**2+1.4093e-4*DT3**3
-    F5=F0
-    F20=(F10+F30)/2
-    F40=F30/2
-    F=[F0, F5, F10, F20, F30, F40]
+    DT1 = curva[6]-curva[4]
+    DT2 = curva[4]-curva[2]
+    DT3 = curva[2]-curva[0]
+    F30 = 0.3+1.2775*DT1-5.539e-3*DT1**2+2.7486e-5*DT1**3
+    F10 = 0.3+1.2775*DT2-5.539e-3*DT2**2+2.7486e-5*DT2**3
+    F0 = 2.2566*DT3-266.2e-4*DT3**2+1.4093e-4*DT3**3
+    F5 = F0
+    F20 = (F10+F30)/2
+    F40 = F30/2
+    F = [F0, F5, F10, F20, F30, F40]
     if reverse:
-        tbp=[curva[i+2]+Fi for i, Fi in enumerate(F)] + curva[6:]
+        tbp = [curva[i+2]+Fi for i, Fi in enumerate(F)] + curva[6:]
     else:
-        tbp=[curva[i+2]-Fi for i, Fi in enumerate(F)] + curva[6:]
+        tbp = [curva[i+2]-Fi for i, Fi in enumerate(F)] + curva[6:]
     return [unidades.Temperature(T) for T in tbp]
 
-"""
-    0 nombre del crudo
-    1 origen
-    2 fecha
-    3 API
-    4 SULFUR
-    5 MSULFUR          ?
-    6 NITROGEN
-    7 POURPOINT
-    8 VISC70F
-    9 VISC100F
-    10 VANADIUM         ppm
-    11 NICKEL               ppm
-    12 CONC               ?     carbon residuo
-    13 ASPH                ?    asphaltenes?
-    14 NPENTANE        ?
-    15 REIDVP
-    16 FLASHPOINT
-    17 HSULFIDE
-    18 NNMGKOH, neutr. no. mg KOH/g
-    19 BOTTWATER
-    20 ASHCONT          ?  cenizas?
-    21 SALT                 ?unit
-    22 C1LV        %vol
-    23 C2LV
-    24 C3LV
-    25 IC4LV
-    26 NC4LV
-    27 IC5LV
-    28 NC5LV
-    29 Indice
-"""
 
-crudo=[[],
-    ["ABU AL BU KHOOSH","ABU DHABI, U.A.E.",1978,31.6,2,None,None,-24.5,10.8,6.7,12,7,4.3,None,None,3.5,None,None,None,None,None,None,0,0.02,0.24,0.12,0.66,0.85,0.89,1],
-    ["MURBAN","ABU DHABI, U.A.E.",1983,40.45,0.78,25,0.047,-11,4.8,2.7,1,0.7,1.35,0.08,None,3.46,None,None,0.16,0.05,None,None,0,0,0.3,0.3,1.3,1.1,1.7,2],
-    ["UMM SHAIF (ABU DHABI)","ABU DHABI, U.A.E.",1983,37.4,1.51,None,0.0609,-22,4.7,3.6,3,0.8,2.2,0.13,None,7.05,None,None,0.02,None,0.004,1.5,0,0.1,0.5,0.6,1.5,1.1,1.9,3],
-    ["ZAKUM (LOWER)","ABU DHABI, U.A.E.",1983,40.6,1.05,50,0.0525,-6,4.28,2.9,0.36,0.3,1.56,0.05,None,8.37,None,None,0.06,None,0.003,1,0,0.1,0.6,0.5,2,1.6,2.5,4],
-    ["ZAKUM (UPPER)","ABU DHABI, U.A.E.",1981,33.1,2,None,0.0973,-16,None,None,8.77,6.9,4.42,None,None,None,None,None,None,None,None,None,0,0.14,0.56,0.56,1.25,1.45,1.52,5],
-    ["SAHARAN BLEND (43.7 A)","ALGERIA",1983,43.7,0.09,None,None,-55,4.27,None,None,None,0.91,None,None,8.1,None,None,None,None,None,3,0,0,0.43,0.4,2.12,1.44,2.65,6],
-    ["SAHARAN BLEND (45.5 A)","ALGERIA",1983,45.5,0.053,None,None,None,3.41,None,None,None,None,None,None,8.7,None,None,None,None,None,None,0,0,0.43,0.4,2.12,1.44,2.65,7],
-    ["ZARZAITINE","ALGERIA",1983,43,0.07,None,0.04,10,4.71,3.27,1,3,0.9,0.35,None,6.6,None,None,0.1,0.2,None,1,0,0.08,0.99,0.43,2.34,1.44,2.02,8],
-    ["CABINDA","ANGOLA",1983,31.7,0.17,None,0.2,65,None,18.98,2.4,15.9,3.64,None,None,3.8,None,None,None,None,None,18,0,0.06,0.49,0.24,0.8,0.4,0.69,9],
-    ["PALANCA","ANGOLA",1985,40.14,0.11,None,0.08,27,6.07,3.09,0.1,0.1,0.9,0.18,None,None,None,None,0.05,0.1,None,None,0,0.11,1.04,0.51,1.93,1.17,1.8,10],
-    ["TAKULA","ANGOLA",1983,32.4,0.085,None,0.165,60,None,None,1.27,16.68,3.75,None,None,None,None,None,None,None,None,None,0,0.1,0.4,0.4,0.9,1.04,1.09,11],
-    ["BENIN","BENIN",1983,22.7,0.38,None,0.29,-15,None,None,2.13,24.42,7.51,None,None,None,None,None,None,None,None,None,0,0.04,0.18,0.18,0.4,0.47,0.49,12],
-    ["GAROUPA","BRAZIL",1980,30,0.68,None,None,-40,None,None,8.46,6.05,3.21,None,None,None,None,None,None,None,None,None,0,0.07,0.27,0.27,0.6,0.7,0.73,13],
-    ["SERGIPANO PLATFORMA","BRAZIL",1980,38.4,0.19,None,None,64,16.4,8.468,0.38,4.17,2.01,None,None,4.53,None,None,None,None,None,97,0,0.14,0.58,0.58,1.31,1.52,1.59,14],
-    ["SERGIPANO TERRA","BRAZIL",1980,24.1,0.41,None,None,43,438,135.8,1.8,27.38,7.89,None,None,3.32,None,None,None,None,None,79,0,0.06,0.25,0.25,0.55,0.64,0.67,15],
-    ["CHAMPION EXPORT","BRUNEI",1983,23.9,0.12,None,None,-33,None,None,0.3,1,None,None,None,None,None,None,0.5,None,None,None,0,0.02,0.09,0.09,0.2,0.15,0.15,16],
-    ["SERIA","BRUNEI",1986,40.5,0.0627,4,0.0162,50,2.64,2.12,0.691,0.921,0.21,None,None,4.3,None,None,0.15,None,None,15,0,0,0.5,0.5,1.2,0.9,0.9,17],
-    ["BOW RIVER HEAVY","CANADA (ALBERTA)",1983,26.7,2.1,None,0.155,-58,34.1,18.7,54,20.7,6.7,None,None,4.9,None,None,None,None,None,None,0,0,0.41,0.34,1.13,1.51,1.4,18],
-    ["COLD LAKE","CANADA (ALBERTA)",1983,13.2,4.11,None,0.42,None,5673,1263,173,73,None,None,None,None,None,None,None,None,None,None,0,0,0,0,0,0,0,19],
-    ["FEDERATED PIPELINE","CANADA (ALBERTA)",1983,39.7,0.201,None,0.11,14,4.3,2.7,0.59,0.98,1.46,None,None,7.5,None,None,0.08,None,None,None,0,0.09,0.9,0.45,1.99,1.2,2.1,20],
-    ["GULF ALBERTA","CANADA (ALBERTA)",1983,35.1,0.98,None,0.12,-17.5,None,4.86,9,10.1,None,None,None,None,None,58.1,None,None,None,None,0,0.19,0.78,0.78,1.75,2.03,2.13,21],
-    ["LLOYDMINSTER BLENDED","CANADA (ALBERTA)",1983,20.7,3.15,None,0.228,-26,None,101,105,52.7,9.18,None,None,None,54,None,0.78,0.3,None,87.6,0,0,0,0,0.48,1.39,1.4,22],
-    ["RAINBOW","CANADA (ALBERTA)",1983,40.7,0.5,None,0.0928,36.5,None,3.77,0.5,0.85,1.65,None,None,None,None,10.2,0.08,None,None,None,0,0,0.76,0.47,2.17,1.3,1.8,23],
-    ["RANGELAND SOUTH","CANADA (ALBERTA)",1983,39.5,0.752,None,0.0463,-40,4.89,2.85,1.4,1.2,0.69,None,None,None,40,20.1,0.12,None,None,None,0,0.18,0.77,0.6,1.67,2.02,2.4,24],
-    ["WAINWRIGHT-KINSELLA","CANADA (ALBERTA)",1983,23.1,2.58,None,0.0269,-38,121.1,98.4,79.9,40.3,6.7,None,None,None,106,None,None,0.1,None,None,0,0,0,0,0.1,0.2,0.2,25],
-    ["KOLE MARINE","CAMEROON",1985,32.57,0.33,None,0.31,16,11,6.5,9,23,3.7,0.47,None,None,None,None,None,0.3,0.01,None,0,0.07,0.76,0.44,1.37,1.08,1.13,26],
-    ["SHENGLI","CHINA",1983,24.2,1,None,None,70,324,165,None,None,None,None,None,None,None,None,1.16,None,None,None,0,0.02,0.1,0.1,0.23,0.26,0.27,27],
-    ["DAQUING (TACHING)","CHINA",1984,32.6,0.09,None,0.15,86,60.05,34.25,1,4,3.05,0.075,None,1.85,None,None,0.05,0.05,None,0.5,0,0.01,0.1,0.09,0.45,0.22,0.55,28],
-    ["CANO LIMON","COLOMBIA",1989,29.3,0.51,None,None,30,27.77,15.06,15.03,34.637,4.25,None,None,0.7,None,None,0.166,None,None,2,0,0.005,0.02024,0.02784,0.06528,0.17472,0.22352,29],
-    ["DJENO BLEND","CONGO (BRAZZAVILLE)",1983,27.58,0.23,401,0.2,16,93.1,39.1,3,30,6.2,0.95,None,None,None,None,1.41,0.05,0.009,None,0,0.12,0.63,0.35,0.96,0.61,0.96,30],
-    ["EMERAUDE","CONGO (BRAZZAVILLE)",1973,23.6,0.6,8.8,0.14,-38,208,47.3,5,50,7.57,1.57,None,3.1,None,0.15,3.72,0.2,0.04,None,0,0.02,0.36,0.31,0.73,0.66,0.61,31],
-    ["FATEH","DUBAI, U.A.E.",1983,31.05,2,None,0.17,16,12.34,7.48,42,14,4.62,1.7,None,5.4,None,None,0.09,3.6,None,None,0,0.08,0.7,0.31,0.92,0.9,1.5,32],
-    ["BELAYIM","EGYPT",1983,27.5,2.2,None,0.17,4,None,51.27,79.5,54.6,7.25,None,None,6.5,None,None,None,None,None,None,0,0.17,0.69,0.34,1.23,1.5,1.1,34],
-    ["GULF OF SUEZ","EGYPT",1983,31.9,1.52,None,0.22,35,None,8.74,41,25,3.6,None,None,8.3,None,None,None,None,None,None,0,0.14,0.56,0.56,1.25,1.45,1.53,35],
-    ["RAS GHARIB","EGYPT",1977,21.5,3.64,None,None,35,247,81.3,None,None,9.5,None,None,None,None,None,None,None,None,None,0,0.02,0.22,0.13,0.5,0.58,0.61,36],
-    ["GAMBA","GABON",1984,31.43,0.09,6,0.17,91,77.6,26.8,1.2,29,3.37,0.05,None,None,None,3,0.22,0.14,None,None,0,0.02,0.12,0.22,0.27,0.64,0.15,37],
-    ["LUCINA MARINE","GABON",1975,39.6,0.05,None,0.08,59,None,None,1.3,1.2,None,0.06,None,None,None,None,None,0.1,0.05,None,0,0.11,0.94,0.54,1.36,0.81,1.44,38],
-    ["MANDJI BLEND","GABON",1983,30.1,1.11,None,None,48,33.7,17.9,65,55,4.7,0.7,None,None,None,None,None,0.05,0.05,None,0,0.07,0.57,0.4,1.02,0.9,0.98,39],
-    ["SALT POND","GHANA",1983,37.4,0.097,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,0,0.07,0.3,0.3,0.93,1.09,1.14,40],
-    ["BOMBAY HIGH","INDIA",1982,39.2,0.15,None,0.015,45,6.47,3.75,0.1,1.4,1.2,0.28,None,5.1,None,None,0.15,0.2,0.01,15,0,0,0.51,0.51,1.41,1.3,2.2,41],
-    ["ARDJUNA","INDONESIA",1982,35.2,0.105,None,0.028,75,4.85,3.74,0.5,3,1.38,None,1.2,5.3,None,0.5,0.16,0.1,None,1.95,0,0.01,0.48,0.69,1.41,1.99,1.44,42],
-    ["ATTAKA","INDONESIA",1982,43.3,0.04,6,None,-11,1.73,1.34,1,1,0.12,0.05,None,6.89,None,3,0.27,None,0.01,None,0,0,0.6,1.46,2.43,1.93,1.75,43],
-    ["BEKAPAI","INDONESIA",1983,41.2,0.08,None,None,-6,2.51,2.02,0.1,0.3,0.207,0.08,None,3.9,50,None,0.53,"trazas",0.004,2,0,0.02,0.42,0.38,0.83,0.94,0.86,44],
-    ["CINTA","INDONESIA",1985,33.4,0.08,None,0,100,98.93,36.37,None,None,5.85,0.06,None,None,50,None,0.32,"trazas",0.008,10,0,0,0.02,0.03,0.09,0.12,0.22,45],
-    ["DURI (SUMATRAN HEAVY)","INDONESIA",1989,21.3,0.18,None,None,55,1115,308,1.9,32.3,None,None,None,0.44,120,None,1,1.4,0.038,1.62,0,0,0,0,0,0,0,46],
-    ["MINAS (SUMATRAN LIGHT)","INDONESIA",1983,34.5,0.081,None,0,97,23.2,16.6,0.6,8.99,2.5,0.3,None,1.3,23,None,0.35,0.3,0.01,2,0,0.01,0.07,0.05,0.14,0.16,0.23,47],
-    ["UDANG","INDONESIA",1983,38,0.05,10,0.0475,100,16.8,12.5,0.9,3.5,3,None,None,None,None,None,None,None,None,None,0,0.02,0.08,0.08,0.18,0.44,0.46,48],
-    ["WALIO EXPORT MIX","INDONESIA",1983,35.4,0.68,None,None,20,6.5,4.9,12,8.8,2.28,None,None,2.4,None,None,0.3,0.05,None,14.1,0,0.04,0.16,0.16,0.37,0.84,0.88,49],
-    ["ABOOZAR (ARDESHIR)","IRAN",1977,26.9,2.48,None,0.16,-30,36.6,18.3,71,21,None,None,None,5.5,None,310,1.96,None,None,55,0,0.11,0.56,0.27,1.03,0.8,1.09,50],
-    ["BAHRGANSAR/NOWRUZ","IRAN",1976,27.1,2.45,None,0.26,-27,None,20.4,72,25,7.9,None,None,8,None,None,None,None,None,30.6,0,0.06,0.52,0.29,1.11,1.3,2,51],
-    ["DORROOD (DARIUS)","IRAN",1983,33.6,2.35,None,0.0545,-5,None,5.65,23,8,5,2,None,6.5,None,260,None,None,None,4.5,0,0,0.3,0.6,1.6,1.6,2.25,52],
-    ["FOROOZAN (FEREIDOON)","IRAN",1983,31.3,2.5,None,0.067,-35,15.3,None,36,11,6.5,None,None,5.7,None,None,0.7,None,None,None,0,0.13,0.51,0.51,1.15,1.98,2.07,53],
-    ["IRANIAN HEAVY","IRAN",1983,30.9,1.73,243,0.23,5,16.8,9.4,116,30.5,5.25,1.9,None,6.6,None,None,0.14,0.05,0.01,21,0,0.08,0.61,0.4,1.31,0.88,1.35,54],
-    ["IRANIAN LIGHT","IRAN",1983,33.8,1.35,None,0.17,-20,10.58,6.41,35,13,3.5,None,None,6.5,None,None,0.06,0.05,0.009,2,0,0.1,0.7,0.5,1.6,1,1.4,55],
-    ["ROSTAM","IRAN",1976,35.9,1.55,None,0.07,-9,4.9,3.3,16.5,6.2,2.84,0.7,None,None,None,None,None,0.1,None,1.1,0,0.04,0.3,0.27,0.9,1.6,2.1,56],
-    ["SALMON (SASSAN)","IRAN",1976,33.9,1.91,207,0.087,-5,9.1,5.6,11.6,6.6,4.1,1.5,None,4.5,None,None,None,0.2,0.06,10,0,0.05,0.5,0.3,1.35,1.2,1.9,57],
-    ["BASRAH HEAVY","IRAQ",1983,24.7,3.5,161,None,-22,50,24,90,11,9.73,5.13,None,3,None,None,0.39,0.8,0.032,20,0,0,0.21,0.13,0.62,0.57,0.95,59],
-    ["BASRAH LIGHT","IRAQ",1983,33.7,1.95,None,0.095,5,10.6,6.5,18,5,4.18,1.1,None,None,None,None,0.14,0.1,0.005,1,0,0.09,0.59,0.3,1.3,0.9,1.6,60],
-    ["BASRAH MEDIUM","IRAQ",1983,31.1,2.58,None,None,-22,22.1,12.6,50,18,5.4,2,None,None,None,None,0.34,0.11,0.011,30,0,0.04,0.61,0.3,1.35,0.96,1.34,61],
-    ["KIRKUK BLEND","IRAQ",1983,35.1,1.97,100,0.12,-8,7.45,4.61,29,11,3.8,1.5,None,5,68,20,0.2,0.01,0.01,3,0,0,0.42,0.6,1.67,1.63,1.82,62],
-    ["NORTH RUMAILA","IRAQ",1976,33.7,1.98,None,None,-2,10.6,7.5,27,8,4.8,1.5,None,None,None,None,0.03,None,None,12.5,0,0.1,0.93,0.47,2.07,1.52,2.21,63],
-    ["ESPOIR","IVORY COAST",1983,32.25,0.34,None,0.115,16,12.88,None,1.7,5.8,None,None,None,6.3,None,None,None,0.5,None,15,0,0.07,0.49,0.25,0.47,0.85,0.86,64],
-    ["KUWAIT EXPORT","KUWAIT",1983,31.4,2.52,89,0.12,5,15.7,9.78,30,8,5.3,1.4,None,6.7,None,None,0.15,None,0.06,3,0,0,0.9,0.5,1.6,0.9,1.6,65],
-    ["AMNA","LIBYA",1983,36,0.15,None,0.12,75,34.8,16.9,0.6,5,3.7,None,None,3.9,None,None,None,None,None,8.2,0,0.02,0.27,0.23,0.77,0.69,1,66],
-    ["BREGA","LIBYA",1976,40.4,0.21,99,0.1,30,5.58,3.58,2.7,3.5,1.67,0.14,None,6.4,None,None,0.13,0.1,0.004,None,0,0,0.5,0.4,1.4,1.3,1.7,67],
-    ["BU ATTIFEL","LIBYA",1982,43.3,0.04,None,None,110,27.7,11.8,0.12,0.16,0.31,0.05,None,2.1,None,None,0.2,0.05,0.01,10.7,0,0.02,0.11,0.12,0.33,0.39,0.53,68],
-    ["ES SIDER","LIBYA",1983,37,0.45,None,0.14,45,9.35,5.56,1.7,4.8,3,2.59,None,4.8,None,None,0.002,0.045,None,None,0,0.06,0.73,0.54,1.76,1.61,1.79,69],
-    ["SARIR","LIBYA",1983,38.4,0.16,None,0.11,65,25,10,6,14,4.3,0.2,None,5,None,None,0.14,0.2,0.004,2.7,0,0.05,0.6,0.53,1.91,1.15,1.73,70],
-    ["SIRTICA","LIBYA",1982,41.3,0.45,None,None,25,4.05,2.98,3.72,9.35,2.5,0.63,None,10.4,None,15,None,None,0.004,2.9,0,0.1,0.56,0.68,1.98,2.27,2.34,71],
-    ["ZUEITINA","LIBYA",1976,41.3,0.28,None,None,45,4.84,3.41,0.72,2.67,1.39,0.1,None,4.6,None,None,0.17,0.1,None,18,0,0.1,0.7,0.6,1.6,1.7,1.7,72],
-    ["BINTULU","MALAYSIA",1984,28.1,0.08,None,0.045,21,9.7,5.54,0.35,1.72,1.69,None,None,None,None,None,0.32,None,None,None,0,0.02,0.19,0.17,0.39,0.43,0.42,73],
-    ["LABUAN","MALAYSIA",1983,32.2,0.07,None,0.01,48,3.58,2.77,0.05,0.6,0.3,0.003,None,3.4,None,None,0.12,0.2,None,12,0,0.02,0.19,0.17,0.34,0.43,0.41,74],
-    ["MIRI LIGHT","MALAYSIA",1983,32.6,0.04,None,0.0137,32,None,3,0.02,0.82,2.94,None,None,4.7,None,None,0.19,None,None,None,0,0.02,0.17,0.2,0.44,0.57,0.58,75],
-    ["TAPIS BLEND","MALAYSIA",1989,45.9,0.03,  2,0.02,43,2.98,2.06,0.049,1.85,0.48,0.077,0.28,5.83,None,  1,0.19,None,None,9.5,0,0,0.42,0.48,1,1.45,1.15,76],
-    ["TEMBUNGO","MALAYSIA",1976,37.4,0.04,None,None,25,None,2,None,None,0.08,None,None,2.8,None,None,None,None,None,2.3,0,0.08,0.36,0.36,0.8,0.54,0.55,77],
-    ["ISTHMUS","MEXICO",1991,33.3,1.492,None,0.167,-44,9.02,5.91,49.142,9.387,4.32,None,2.4,4.5,None,None,0.06,  0.06,None,2.1,0,0.05,0.37,0.23,0.97,0.87,1.48,78],
-    ["MAYA","MEXICO",1991,22.2,3.3,None,None,-33,197.21,102.02,314,52,12,None,14.8,None,None,None,0.28,None,None,None,0,0.005,0.012,0.005,0.022,0.02,0.037,79],
-    ["BURGAN","NEUTRAL ZONE",1983,23.3,3.37,None,None,-5,72.3,42.2,34,6.8,7.7,2.15,None,3.4,None,None,None,None,None,17.5,0,0.02,0.25,0.21,0.58,0.4,0.67,80],
-    ["EOCENE","NEUTRAL ZONE",1983,18.6,4.55,None,None,-20,783,315,59.2,29.4,8.9,6.3,None,1.1,None,None,0.2,None,0.021,7,0,0,0.03,0.06,0.17,0.5,0.2,81],
-    ["HOUT","NEUTRAL ZONE",1983,32.8,1.91,None,None,-13,10.5,6.03,28,6,5.01,1.65,None,4.6,None,None,0.04,None,None,None,0,0,0.35,0.49,0.96,0.84,1.03,82],
-    ["KHAFJI","NEUTRAL ZONE",1983,28.5,2.85,13,None,-31,26,17.5,55,16,8.04,4.32,None,7.6,None,None,0.18,None,0.013,8,0,0.11,0.99,0.44,1.86,1.1,2.08,83],
-    ["RATAWI","NEUTRAL ZONE",1976,23.5,4.07,None,None,15,91,36.5,55,15,9.5,4.8,None,3,None,None,0.15,None,0.036,25.2,0,0.02,0.34,0.19,0.57,0.66,0.7,84],
-    ["BONNY LIGHT","NIGERIA",1993,33.92,0.135,  6,None,27,6.63,4.13,0.8,4.3,None,None,None,None,None,  3,0.21,None,None,12,0,0.1,0.5,0.56,1.01,1.04,0.95,85],
-    ["BONNY MEDIUM","NIGERIA",1983,25.2,0.23,9,0.13,-17,17.8,12.1,1,7,1.7,0.11,None,3.1,None,None,0.33,None,None,None,0,0.08,0.17,0.09,0.25,0.3,0.3,86],
-    ["BRASS RIVER","NIGERIA",1983,42.8,0.06,None,None,45,3.83,None,2,1.7,0.5,0.05,None,6.9,None,None,0.03,None,0.0035,3.8,0,0.06,0.6,0.61,1.24,2.61,1.98,87],
-    ["ESCRAVOS","NIGERIA",1983,36.4,0.12,None,0.095,40,5.55,3.51,0.4,4.3,1.3,None,None,4,None,None,0.42,0.05,None,2,0,0.06,0.44,0.38,1.03,0.9,0.97,88],
-    ["FORCADOS","NIGERIA",1989,29.6,0.18,None,None,-15,10.12,6.15,1,8,0.94,0.09,None,3.8,None,0,0.36,None,  0.01,2.6,0,0.08,0.31,0.3,0.51,0.54,0.47,89],
-    ["PENNINGTON","NIGERIA",1983,36.6,0.07,None,None,43,None,3.06,2,1,0.7,None,None,5.1,None,None,None,None,None,2.9,0,0.1,0.3,0.4,0.7,0.9,0.9,90],
-    ["QUA IBOE","NIGERIA",1983,35.8,0.12,None,0.054,45,5.58,3.57,0.3,3.3,0.92,None,None,6,None,None,0.36,None,None,9.2,0,0.15,0.83,0.46,1.2,1.24,1.25,91],
-    ["ARGYLL","NORTH SEA",1983,38,0.18,6,None,43,9.16,4.79,3,1,None,1.26,None,None,None,3,None,0.25,0.1,4.9,0,0.02,0.25,0.21,0.94,0.79,1.34,92],
-    ["AUK","NORTH SEA",1979,37.15,0.45,None,None,50,None,4.38,6.09,1.31,3.05,1.74,None,None,None,None,0.13,None,None,None,0,0.12,0.49,0.49,1.1,1.28,1.34,93],
-    ["BEATRICE","NORTH SEA",1983,38.7,0.05,None,None,55,13.3,7.35,0.2,0.7,1.57,None,None,5.6,None,None,None,None,None,None,0,0.1,0.42,0.42,0.96,0.91,0.96,94],
-    ["BERYL","NORTH SEA",1983,37.5,0.32,None,None,30,None,2.91,2.8,0.84,1.5,None,None,5.2,None,None,None,None,None,1,0,0.12,0.5,0.5,1.12,1.3,1.36,95],
-    ["BRAE","NORTH SEA",1983,33.6,0.73,None,None,21,None,None,2.5,0.4,2.3,0.35,None,None,None,None,None,None,None,None,0,0.15,0.61,0.61,1.38,1.59,1.67,96],
-    ["BRENT BLEND","-",1995,38.3,0.4,5,0.11,-44,5.89,3.9,6,1,2.13,0.45,None,8.5,None,  1,0.1,None,None,4.6,0,0.03,0.68,0.38,1.75,1.2,1.96,97],
-    ["BUCHAN","NORTH SEA",1982,33.7,0.84,None,None,43,20.37,None,19,4,5,2.7,None,None,None,None,None,None,None,None,0,0.1,0.41,0.41,0.92,1.07,1.15,98],
-    ["CELTIC SEA","NORTH SEA",1983,44.3,0.06,None,None,15,None,None,0.06,1.25,1.18,None,None,None,None,None,None,None,None,None,0,0.19,0.79,0.79,1.76,2.04,2.14,99],
-    ["CORMORANT SOUTH","NORTH SEA",1983,35.7,0.56,None,None,21,None,5,1.34,9.36,None,0.245,None,None,None,None,0.05,None,None,None,0,0.15,0.62,0.62,1.41,1.01,1.06,101],
-    ["DAN","NORTH SEA",1983,30.4,0.34,None,None,None,None,8.9,None,None,2.5,None,None,None,None,None,None,None,None,None,0,0.04,0.18,0.18,0.4,0.46,0.49,102],
-    ["DUNLIN","NORTH SEA",1979,34.9,0.39,None,None,43,None,4.92,2.26,0.9,None,0.11,None,None,None,None,None,None,None,None,0,0.13,0.51,0.51,1.15,1.33,1.4,103],
-    ["EKOFISK","-",1989,39.2,0.169,3,0.0966,27,5.34,3.58,0.8,2.6,1.777,0.348,0.11,2.83,None,None,0.03,"trazas",  0.01,33,0,0,0,0,0.18,1.99,3.31,104],
-    ["FLOTTA BLEND","NORTH SEA",1991,34.7,1.01,None,0.14,-6,11.75,7.278,10.25,2.78,None,None,None,8.4,None,None,0.18,None,None,8.8,0,0.1,0.45,0.45,1,1.16,1.22,105],
-    ["FORTIES BLEND","NORTH SEA (UK)",1994,40.5,0.35,None,0.08,10,3.44,2.82,2,1,1.46,0.24,None,None,None,  1,0.06,0.25,0.008,0.58,0,0.138,1.458,0.701,2.787,1.804,2.92,106],
-    ["FULMAR","NORTH SEA",1983,39.3,0.26,None,None,10,None,2.55,1.83,0.37,None,0.66,None,None,None,None,0.06,None,None,None,0,0.15,0.6,0.6,1.35,1.57,1.64,107],
-    ["GORM","NORTH SEA",1983,33.9,0.23,None,None,-35,None,5.44,11,6.77,1.625,None,None,None,None,None,None,None,None,None,0,0.09,0.36,0.36,0.79,1.76,1.87,108],
-    ["GULLFAKS","NORTH SEA",1990,29.3,0.44,None,None,-71,None,10.14,2,1.3,2.08,0.137,0.44,None,None,None,0.23,None,  0.01,5.23,0,0.07,0.26,0.26,0.59,0.68,0.72,109],
-    ["HUTTON","NORTH SEA",1978,30.5,0.65,None,None,30,None,10.9,19.6,4.11,5.4,3.08,None,None,None,None,None,None,None,None,0,0.16,0.65,0.65,1.44,1.68,1.76,110],
-    ["MAGNUS","NORTH SEA",1978,39.3,0.28,None,None,27,4.56,None,4.29,1.56,1.6,0.14,None,None,None,None,None,None,None,None,0,0.23,0.94,0.94,2.09,2.44,2.55,111],
-    ["MAUREEN","NORTH SEA",1978,35.55,0.55,None,None,45,15.78,None,4.36,2.07,2.76,None,None,None,None,None,None,None,None,None,0,0.14,0.58,0.58,1.3,1.51,1.58,112],
-    ["MONTROSE","NORTH SEA",1983,39.9,0.19,None,None,30,4.96,3.27,2.07,2.65,1.82,0.18,None,4,None,None,0.28,2.3,0.3,None,0,0.11,0.58,0.38,0.99,1.03,1.25,113],
-    ["MURCHISON","NORTH SEA",1983,38,0.27,None,None,45,None,3.6,2.5,0.7,1.1,None,None,9,None,None,None,None,None,None,0,0.16,0.67,0.67,1.5,1.74,1.82,114],
-    ["NINIAN BLEND","NORTH SEA",1982,35.8,0.43,None,None,45,10.3,6.78,4.65,0.79,2.86,0.25,None,5.4,None,None,None,None,None,2,0,0.12,1.06,0.38,1.64,0.79,1.53,115],
-    ["PIPER","NORTH SEA",1979,35,1.04,None,0.0709,16,5.9,3.8,5.8,1.4,2.44,None,None,None,None,None,None,None,None,None,0,0.1,0.89,0.27,1.58,0.89,1.63,116],
-    ["STATFJORD","NORTH SEA",1990,37.8,0.28,None,0.044,27,6.01,4.64,1.11,0.51,1.24,0.07,0.31,5.5,None,None,0.06,None,None,9.8,0,0.18,0.73,0.73,1.62,1.42,1.5,117],
-    ["TARTAN","NORTH SEA",1983,41.7,0.56,None,None,16,None,11.6,2.17,0.72,0.9,None,None,10.2,None,None,None,0.04,None,None,0,0.19,0.78,0.78,1.75,2.03,2.13,118],
-    ["THISTLE","NORTH SEA",1983,37.03,0.31,None,None,54,5.87,4.26,3.28,0.83,1.9,0.19,None,7.5,None,None,0.05,None,None,None,0,0.08,0.31,0.31,0.7,0.81,0.85,119],
-    ["OMAN EXPORT","OMAN",1984,34.7,0.94,  2,None,-27,12.92,7.97,10,7,3,0.4,None,4.5,None,  3,0.19,None,None,  15,0,0.03,0.3,0.27,0.75,0.72,1.1,120],
-    ["LORETO PERUVIAN EXPORT GR","PERU",1978,33.1,0.23,None,None,25,16.2,7.79,6,1.25,4.6,None,None,2.1,None,None,None,0.05,None,1.1,0,0,0.06,0.08,0.17,1.17,1.17,121],
-    ["DUKHAN (QATAR LAND)","QATAR",1984,40.87,1.27,None,None,5,6.78,5.28,2.26,0.36,1.7,0.11,None,8.6,None,341,0.15,None,None,63,0,0.27,1.2,0.8,3.2,1.5,2,122],
-    ["QATAR MARINE","QATAR",1984,36,1.42,None,None,4,7.86,5.93,7,1.6,2.72,0.46,None,5.3,8,377,0.08,0.05,0.003,9,0,0.1,0.7,0.42,1.53,1.26,2.16,123],
-    ["ARAB LIGHT","SAUDI ARABIA",1991,33.4,1.77,None,0.09,-65,11.39,8.35,13.5,3.34,3.58,None,None,3.6,None,40,0,None,0.0044,6,0,0.011,0.255,0.204,1.05,0.915,1.807,124],
-    ["ARAB EXTRA LIGHT (BERI)","SAUDI ARABIA",1992,37.2,1.15,140,0.04,-20,6.66,5.11,2.2,0.6,2,0.22,None,4,None,60,0.09,"trazas",0.002,4,0,0,0.27,0.21,1.17,0.71,1.27,125],
-    ["ARAB MEDIUM (KHURSANIYAH)","SAUDI ARABIA",1992,28.5,2.85,None,0.11,-10,25.97,17.46,20,12,5.87,2.3,None,3.2,None,50,0.06,"trazas",0.0058,5,0,0,0.06,0.145,0.325,0.58,1.24,126],
-    ["ARAB MEDIUM (ZULUF/MARJAN)","SAUDI ARABIA",1992,28.8,2.49,None,0.15,-19,31.84,21.17,43,13.5,5.87,None,None,4.8,None,None,0.32,None,None,None,0,0,0.163703,0.163703,0.654813,0.572961,1.309625,127],
-    ["ARAB HEAVY (SAFANIYA)","SAUDI ARABIA",1991,27.4,2.8,None,0.16,-49,43.04,27.59,57.3,16.4,6.75,5.8,None,7.5,None,None,0.1,"trazas",0.011,4,0,0.11,0.51,0.34,0.98,1.01,1.78,128],
-    ["MUBAREK","SHARJAH, U.A.E.",1983,37,0.62,None,None,10,None,3.2,1.23,0.65,None,None,None,4.8,None,None,None,None,None,23,0,0.09,0.38,0.38,0.85,1,1.05,129],
-    ["SOUEDIE","SYRIA",1983,24.9,3.82,264,0.138,-22,148,25,87.7,28.4,10.2,6.5,None,5.3,None,None,0.2,0.2,None,2,0,0.07,0.48,0.26,1.14,0.9,1.6,130],
-    ["GALEOTA MIX (TRINIDAD BLEND)","TRINIDAD TOBAGO",1983,32.8,0.27,None,None,-5,None,4.32,0.3,0.6,None,None,None,2,None,None,0.84,None,None,4,0,0.02,0.17,0.15,0.23,0.27,0.28,131],
-    ["ASHTART","TUNISIA",1982,30,0.99,None,None,55,24,None,23.3,12.9,5.4,1.8,None,None,None,None,None,None,None,None,0,0.06,0.23,0.23,0.5,0.59,0.62,132],
-    ["BAXTERVILLE","MISSISSIPPI, USA",1982,16.3,3.02,None,None,5,None,None,42.4,15.4,14.4,None,None,None,None,None,None,None,None,None,0,0.01,0.03,0.03,0.07,0.08,0.09,134],
-    ["COASTAL B-2","TEXAS, USA",1983,32.2,0.22,None,None,None,4.6,3,0.46,1.54,1.59,None,None,3.9,None,None,None,None,None,None,0,0,0.38,0.47,0.38,1.1,0.7,135],
-    ["EAST TEXAS","TEXAS, USA",1982,37,0.21,None,None,35,7.3,3.9,1.17,1.53,2.11,None,None,6.9,None,None,0.11,None,None,None,0,0,0.47,0.27,1.1,0.74,1,136],
-    ["GRAND ISLE","LOUISIANA, USA",1975,34.2,0.35,2,None,5,13.3,7.7,0.74,2.53,1.79,None,None,1.6,None,None,0.41,None,None,None,0,0,0.32,0.32,0.82,0.65,0.65,137],
-    ["HUNTINGTON BEACH","CALIFORNIA, USA",1978,20.7,1.38,None,None,-25,None,None,42,130,3,None,None,None,None,None,0.85,None,None,None,0,0.03,0.12,0.12,0.26,0.31,0.32,138],
-    ["LOUISIANA LIGHT SWEET","LOUISIANA, USA",1981,36.1,0.45,4,None,-35,6.4,4.3,1.21,7.07,1.12,None,None,3.8,None,None,0.58,None,None,None,0,0,0.24,0.61,0.85,0.9,0.9,139],
-    ["OSTRICA","LOUISIANA, USA",1975,32,0.3,None,None,10,12,6.8,0.59,2.72,1.95,None,None,3.9,None,None,0.63,None,None,None,0,0.11,0.32,0.32,0.54,0.54,0.54,140],
-    ["SAN JOAQUIN VALLEY","CALIFORNIA, USA",1978,15.7,1.2,None,None,15,1553,306,68,106,8.8,None,None,1.2,None,None,2.81,None,None,None,0,0.02,0.08,0.08,0.17,0.1,0.1,141],
-    ["SEA BREEZE","TEXAS, USA",1983,37.9,0.1,None,None,30,5.2,3.6,0.13,1.17,0.84,None,None,4.3,None,None,0.31,None,None,None,0,0.11,0.33,0.44,0.68,1,2.34,142],
-    ["SOUTH LOUISIANA","LOUISIANA, USA",1982,32.8,0.28,9,None,-5,10.6,6.4,0.49,2.25,2.24,None,None,3.3,None,None,0.95,None,None,None,0,0,0.16,0.39,0.62,0.6,0.6,143],
-    ["WEST TEXAS SEMI-SWEET","TEXAS, USA",1982,39,0.27,None,None,-5,None,None,2.39,3.98,1.82,None,None,None,None,None,None,None,None,None,0,0.12,0.48,0.48,1.08,1.26,1.32,144],
-    ["WEST TEXAS SOUR","TEXAS, USA",1981,34.1,1.64,920,None,-50,7.2,4.6,6.43,3.68,3.28,None,None,5.3,None,None,0.11,None,None,None,0,0.14,0.57,0.57,1.28,1.48,1.56,145],
-    ["WILLMINGTON","CALIFORNIA, USA",1973,18.6,1.59,None,None,-30,243,77,43.6,67.4,7.45,None,None,2.2,70,None,2.16,None,None,None,0,0,0.2,0.15,0.3,0.3,0.3,146],
-    ["SOVIET EXPORT BLEND","C.I.S.",1984,31.8,1.53,None,None,10,11.3,8.25,46.68,14.74,3.89,None,None,None,None,None,None,None,None,None,0,0.09,0.38,0.38,0.85,0.99,1.03,147],
-    ["BACHAQUERO","VENEZUELA",1969,16.8,2.4,None,0.354,-10,1032,294,332,55,10.5,None,None,1.6,None,None,2.17,0.5,None,6,0,0.1,0.22,0.16,0.32,0.31,0.31,148],
-    ["BACHAQUERO HEAVY","VENEZUELA",1975,12.8,2.66,None,0.3,25,3416,943,235,50,12.6,5.7,None,0.2,None,None,2.98,1.9,0.09,10,0,0,0.03,0.03,0.07,0.09,0.12,149],
-    ["BCF-24","VENEZEULA",1990,23.5,1.68,None,None,-20,129.38,49.19,282,30.5,6.4,None,None,3.1,None,None,1.312,None,None,5,0,0.038,0.093,0.11,0.329,0.528,0.692,150],
-    ["BOSCAN","VENEZUELA",1983,10.1,5.5,None,None,50,None,19430,1200,150,14.9,12,None,0.4,112,None,1.9,1,None,15,0,0,0,0,0,0,0,151],
-    ["CEUTA EXPORT","VENEZUELA",1979,27.8,1.37,None,None,-65,15.4,10.9,159,26.5,5.95,None,None,None,None,None,0.31,None,None,None,0,0.12,0.5,0.5,1.12,1.3,1.36,152],
-    ["GUANIPA","VENEZUELA",1964,30.3,0.85,None,0.19,-20,20,10.34,51.9,14.7,5.2,2.8,None,5.6,None,None,0.3,0.2,None,None,0,0.1,0.3,0.4,1.2,1,1,153],
-    ["LAGO MEDIO","VENEZEULA",1989,32.2,1.01,None,None,-20,14.48,8.91,121.7,11.4,3,None,None,5.2,None,None,0.124,None,None,2,0,0.09,0.34,0.26,0.78,0.81,1.09,154],
-    ["LAGO TRECO","VENEZUELA",1963,26.7,1.5,None,0.19,-40,59.1,29.7,118.7,17,5.85,2,None,3.6,None,None,0.53,0.5,0.026,3,0,0.1,0.3,0.2,0.7,0.7,0.8,155],
-    ["LAGUNILLAS HEAVY","VENEZUELA",1970,17,2.19,None,0.29,-30,773,299,322.7,43.9,9.71,5.9,None,1,None,None,1.98,1,None,10,0,0.2,0.2,0.2,0.2,0.1,0.1,156],
-    ["LA ROSA MEDIUM","VENEZUELA",1983,25.3,1.73,None,None,-50,57.1,34.9,220,23,6.85,None,None,4,None,None,0.9,None,None,None,0,0.1,0.25,0.15,0.24,0.3,0.3,157],
-    ["LEONA","VENEZEULA",1990,24.4,1.51,None,None,-55,77.46,34.58,127,29,6,4.9,None,2.5,None,None,0.367,None,0.032,3.7,0,0.02,0.12,0.13,0.34,0.45,0.51,158],
-    ["MEREY","VENEZUELA",1973,18,2.28,None,None,-25,937,274,202.7,61.5,10.5,None,None,1.7,None,None,0.85,None,None,None,0,0.02,0.07,0.07,0.16,0.19,0.19,159],
-    ["MESA","VENEZEULA",1990,29.8,1.01,None,None,-30,14.03,8.44,62,14,3.39,None,None,3.2,None,None,None,None,None,2.7,0,0.03,0.15,0.17,0.45,0.62,0.73,160],
-    ["OFICINA","VENEZUELA",1967,33.3,0.78,None,None,-55,9.3,5.5,21.7,9.3,3.38,1.75,None,5.8,None,None,0.1,0.3,0.017,None,0,0,0.4,0.6,0.7,0.7,0.9,161],
-    ["PILON","VENEZUELA",1971,14.1,1.91,None,None,10,4176,1111,113.8,64.1,10,None,None,None,None,None,1.36,None,None,None,0,0,0.02,0.02,0.04,0.05,0.05,162],
-    ["TEMBLADOR","VENEZUELA",1967,21,0.83,None,None,-60,148.8,58.1,37,34,6.98,5.3,None,1.2,None,None,0.7,0.8,0.022,16,0,0,0.1,0.1,0.1,0.1,0.1,163],
-    ["ANACO WAX","VENEZUELA",1978,40.5,0.24,None,None,75,None,None,10.3,2.69,1.1,None,None,None,None,None,None,None,None,None,0,0.11,0.45,0.45,1.01,1.18,1.23,164],
-    ["TIA JUANA HEAVY (18)","VENEZUELA",1969,18.2,2.24,None,None,-40,435,188,270,34.3,9.37,3.75,None,1.3,None,None,2.82,0.1,0.056,16,0,0.1,0.3,0.2,0.3,0.2,0.1,165],
-    ["TIA JUANA LIGHT","VENEZUELA",1989,31.8,1.16,None,None,-15,31.24,13.81,91.7,10.7,4.5,1.6,None,6.4,None,None,0.284,None,0.022,2,0,0.15,0.41,0.27,0.85,1,1.47,166],
-    ["TIA JUANA MEDIUM 24","VENEZUELA",1971,24.8,1.61,None,None,-55,68,34.6,228.9,28.8,7.58,None,None,3.4,None,None,None,None,None,None,0,0.1,0.4,0.3,0.7,0.3,0.7,167],
-    ["TIA JUANA MEDIUM 26","VENEZUELA",1971,26.9,1.54,None,None,-50,43.8,27.9,192.7,29.7,6.63,3.04,None,2.2,None,None,0.63,0.05,0.04,6,0,0.1,0.5,0.3,0.8,0.5,0.6,168],
-    ["TIA JUANA PESADO (12)","VENEZUELA",1983,12.1,2.7,None,None,30,17000,3700,284,38.5,11.2,5.8,None,None,None,0.12,3.61,0.8,0.06,6,0,0,0.01,0.03,0.04,0.08,0.03,169],
-    ["TIA JUANA 102","VENEZUELA",1971,25.8,1.63,None,None,-55,53.8,33.2,205.3,21.9,7.09,2.9,None,3.6,None,None,None,0.1,0.036,3,0,0.2,0.7,0.3,0.8,0.6,0.6,170],
-    ["ZAIRE","ZAIRE",1983,31.7,0.13,None,None,80,None,20,1.5,17.8,3.58,None,None,2.2,None,None,None,0.15,None,6,0,0.05,0.2,0.2,0.44,0.52,0.54,171],
-    ["JABIRU","AUSTRALIA",1989,42.3,0.05,2,0.0179,64.4,3.602,2.564,1.0,0.5,0.28,0.045,None,2,  59,None,0.04,0.025,  0.01,3,0,0.04,0.54,0.41,1.04,0.82,0.91,172],
-    ["GIPPSLAND","AUSTRALIA",1993,47,0.09,14,0.0092,48.2,2.456,1.838,0.5,0.5,0.27,0.1,None,5.1,  59,None,0.08,  0.025,  0.01,2,0,0,0.23,0.44,1.33,3.35,3.06,173],
-    ["CHALLIS","AUSTRALIA",1989,39.5,0.07,  1,0.01,16,3,2.39,0.2,2,0.71,None,None,3.4,None,None,0.13,  0.025,None,1.6,0,0.02,0.36,0.24,0.71,0.54,0.65,174],
-    ["SKUA","AUSTRALIA",1993,41.9,0.06,None,0.0205,54,3.08,2.47,0.03,1,0.28,None,None,5.45,None,None,0.04,  0.025,None,24,0,0.02,0.36,0.24,0.71,0.54,0.65,175],
-    ["NANHAI LIGHT","CHINA",1992,40.58,0.059,None,0.09,80,6.28,3.8,0.194575,2.1177,2.049825,1.1765,None,5.45,  68,None,0.03,0.35,0.014,33.4,0,0.09,0.43,0.39,0.65,0.76,0.79,176],
-    ["BELIDA","INDONESIA",1991,45.1,0.02,1,0.02,60,6.9,4.62,0.04,0.07,0.54,1.21,None,None,  50,  10,0.19,None,0.002,1,0,0.02,0.17,0.4,0.48,1.17,0.71,177],
-    ["KAKAP","INDONESIA",1990,51.5,0.05,  1,0,48,1.8,1.49,0.4,0.03,0.29,None,None,5.3,None,None,0.06,  0.035,None,  1,0,0.04,0.69,1.16,1.38,2.15,1.66,179],
-    ["MASILA","YEMEN",1993,30.5,0.67,  1,0.096,27,20.83,11.09,11,6,4.2,1.6,None,1.74,  68,  1,0.08,0.2,0.17,None,0,0,0.03,0.04,0.23,0.31,0.62,180],
-    ["CANADIAN SWEET","CANADA",1993,37.7,0.42,None,0.1,13,4.74,3.69,4.13,2.43,1.79,None,None,6.8,None,None,None,None,None,None,0,0.01,0.66,0.48,1.8,1.7,1.79,181],
-    ["CANADIAN SOUR","CANADA",1993,37.5,0.56,None,None,None,7.01,3.85,1.13,5.14,1.64,None,None,8.6,None,None,None,None,None,None,0,0.01,0.68,0.71,2.38,1.33,1.39,182],
-    ["RABI-KOUNGA","GABON",1990,33.5,0.07,None,None,64,26.71,18.74,11,0.5,1.8,0.13,None,3.5,None,None,0.12,0.05,None,3,0,0,0.05,0.09,0.29,0.34,0.09,183],
-    ["BADAK","INDONESIA",1993,49.5,0.032,None,None,-20,1.1,0.9,0.07,0.12,0.191,0.039,None,6.3,  50,None,0.06,"trazas",None,3,0,0.02,0.34,0.85,1.77,1.16,1.13,184],
-    ["COOPER BASIN","AUSTRALIA",1991,45.2,0.02,9.1,0.021,54,3.09,2.5,0.1,0.2,0.26,0.07,None,5.3,None,None,0.09,0.035,0.001,2.3,0,0,0.01,0.21,0.68,1.53,1.77,185],
-    ["GRIFFIN","AUSTRALIA",1991,55,0.03,  1,0.0048,-54,1.23,1.03,0.002,0.48,0.1,0.03,None,5.4,None,None,0.06,  0.035,None,  1,0,0.03,0.54,0.73,1.53,1.99,2.16,186],
-    ["SALADIN","AUSTRALIA",1990,48.2,0.02,4,0.0056,-22,1.7,1.32,0.015,0.69,0.08,0.01,None,4.7,-26,None,0.01,None,  0.01,  1,0,0.04,0.58,0.4,1.26,1.17,1.48,187],
-    ["ALIF","NORTH YEMEN",1987,40.3,0.1,1,0.066,25,4.28,2.71,0.36,1.36,1.15,None,None,6.59,None,None,0.02,0.23,None,1.06,0,0.01,0.37,0.4,1.71,1.16,1.77,188],
-    ["NORTHWEST SHELF CONDENSATE","AUSTRALIA",1988,53,0.01,  0.1,0.005,-39,0.93,0.78,0.015,0.02,0.005,  0.005,0,9.7,None,None,0.02,  0.035,  0.001,4.5,0,0,0.47,1.8,4.95,3.4,3.76,189],
-    ["ANOA","INDONESIA",1990,45.2,0.04,None,0.0102,45,3.49,2.31,0.002,0.096,0.176,0.046,None,2.9,None,None,   0.03,None,None,6,0,0,0.3,0.35,0.42,0.44,0.36,190],
-    ["KATAPA","INDONESIA",None,50.8,0.06,None,None,-30,2.13,1.76,0,4.3,0.1,None,None,7.4,None,None,None,None,None,None,0,0,0.07,0.3,0.67,1.42,0.96,191],
-    ["AIRLIE","AUSTRALIA",1988,44.7,0.01,  1,0.02,5,2.45,1.84,0.1,0.5,0.17,0.06,None,4.4,None,  1,0.1,  0.01,0.006,1,0,0.002,0.178,0.546,1.733,0.87,1.068,192],
-    ["COOK INLET","USA (ALASKA)",1985,35,0.095,None,0.135,-5,7.1,5.47,2.5,3.25,3.65,None,None,7.7,  0,None,0.06,0.05,None,None,0,0.03,0.66,0.78,2.05,1.4,1.84,193],
-    ["BIMA","INDONESIA",1987,21.1,0.25,3.6,None,35,1424,387,None,None,7.72,0.14,None,1.1,94,None,2.58,0.4,0.027,89,0,0.003,0.037,0.033,0.095,0.089,0.118,194],
-    ["BARROW ISLAND","AUSTRALIA",1988,37.3,0.05,6,0.021,-65,2.61,1.97,0.013,1.3,0.23,0.055,0,4.6,  -17,None,0.1,  0.026,  0.001,  1,0,0,0.31,0.32,0.82,0.91,0.93,195],
-    ["JACKSON","AUSTRALIA",1987,43.8,0.03,3.7,0.02,75,5.31,4.22,0.1,1,0.58,0.12,0,1.25,0,None,0.08,0.1,0.005,  1.0,0,0,0,0.04,0.07,0.23,0.32,196],
-    ["HARRIET","AUSTRALIA",1987,37.9,0.05,2.6,0.04,54,3.68,2.57,0.1,0.3,0.25,0.21,0,3.55,0,None,0.05,0.05,  0.01,0.9,0,0.04,0.38,0.17,0.65,0.44,0.64,198],
-    ["WIDURI","INDONESIA",1990,33.25,0.07,None,0.119,113,None,None,3,12,2.8,0.2,None,  0.5,  122,  2,0.27,0.05,0.005,5,0,0,0.02,0.03,0.03,0.05,0.07,199],
-    ["ARUN CONDENSATE","INDONESIA",1980,54.8,0.018,None,0.0078,-15,1.11,0.92,None,None,0.001,None,None,11.6,  0,None,0.05,None,0.01,  1,0,0,0.62,3.5,6.53,6.41,4.75,200],
-    ["IKAN PARI","INDONESIA",1990,48,0.02,13,0.02,60,2.98,1.95,0.179,0.316,0.5,0.274,None,6.6,None,  1,0.02,0.5,0.002,4.3,0,0.06,0.76,0.94,1.39,1.56,1.54,201],
-    ["DULANG","MALAYSIA",1991,39,0.12,None,0.0059,86,16.72,5.82,0.58,0.17,0.36,0.1,None,None,56.3,None,0.225,0.15,0.029,13.59,0,0,0.04,0.1,0.14,0.23,0.21,202],
-    ["WEIZHOU","CHINA",1986,39.7,0.08,None,None,88,15.59,7.68,None,None,None,None,None,None,None,None,None,None,None,None,0,0.42,1.64,0.6,1.63,0.93,1.23,203],
-    ["ELK HILLS STEVENS","CALIFORNIA (USA)",1977,37.1,0.4,1,0.27,15,5.3,3.51,5,12,None,None,None,7.9,None,None,0.23,0.05,None,1,0,0,1.22,0.54,2.48,1.43,1.67,204],
-    ["HONDO BLEND","USA (CALIFORNIA)",1992,20.8,4.29,None,0.61,-5,412,191,274,131,None,None,None,None,None,None,0.4,None,None,None,0,0.029792,0.121553,0.121553,0.271707,0.3158,0.331292,205],
-    ["HONDO MONTEREY","USA (CALIFORNIA)",1992,19.4011,4.7,None,0.65,-10,798,328,301,144,None,None,None,None,None,None,0.43,None,None,None,0,0.024537,0.100112,0.100112,0.22378,0.260095,0.272854,206],
-    ["HONDO SANDSTONE","USA (CALIFORNIA)",1992,35.2,0.21,None,0.26,25,7.54,5.69,0.47,5.87,None,None,None,None,None,None,0.06,None,None,None,0,0.074872,0.305479,0.305479,0.682836,0.793648,0.832581,207],
-    ["COLD LAKE BLEND","CANADA (ALBERTA)",1992,22.6,3.6,None,0.38,-50,174,91.8,152.7,64.5,9.2,None,None,None,None,None,0.8,None,None,None,0,0.005,0.121,0.357,1.031,2.619,2.987,208],
-    ["SYNTHETIC CRUDE","CANADA (ALBERTA)",1991,38.7,0.19,None,0.0524,None,3.81,3,6.7,4.4,2.15,None,None,None,None,None,None,0.08,None,None,0,0,0.009,0.58434,2.26991,3.27461,2.67825,209],
-    ["SYNTHETIC OSA STREAM (SUNCOR)","CANADA (ALBERTA)",None,33.17,0.328,None,0.0725,-11.2,4.791,3.246,0.1,0.1,0.038,0.012,None,4.8,  -22,  0.1,None,0,None,None,0,0,"trazas",0.62,2.31,1.27,2.06,210],
-    ["MARGHAM LIGHT","DUBAI (U.A.E.)",1985,50.33,0.04,  5,None,17.6,1.47,1.22,0.1,0.1,0.03,0.05,None,9.8,None,  5,  0.01,  0.02,  0.01,1.4,0,0.33,1.34,1.34,3,3.49,3.66,211],
-    ["EAST ZEIT MIX","EGYPT",1992,39,0.89,None,0.09,30,6.65,5.14,2.33,0.96,None,None,None,None,None,None,0.13,None,None,None,0,0,0.83,0.71,2.27,1.91,2.21,212],
-    ["DRIFT RIVER","-",1985,35.3,0.09,None,0.13,0,6.9,5.32,1.294,1.272,3.385,None,None,7.5,None,None,0.03,0.05,None,None,0,0,0.45,0.45,1.4,1.15,1.65,213],
-    ["LAKE ARTHUR (HUNT PRODUCTION)","USA (LOUISIANA)",1992,41.9,0.06,None,0.00443,40,4.04,2.48,0.037,0.54,0.141,None,None,3.6,None,None,1.164,None,None,1,0,0.065,0.105,0.371,0.454,0.626,0.464,214],
-    ["OLMECA","MEXICO",1991,39.8,0.8,None,None,-38,4.05,3.2,0.9,0.1,1.5,None,1.46,None,None,None,0.029,None,None,None,0,0.025,0.102,0.102,0.228,0.265,0.278,215],
-    ["LAKEHEAD SWEET","USA (MICHIGAN)",1985,47,0.31,None,None,None,None,None,None,None,0.726,None,None,None,None,None,None,None,None,40,0,0.03,0.54,0.54,3.13,3.64,2.93,216],
-    ["NEW MEXICO MIXED INTE","USA (NEW MEXICO)",1979,37.6,0.167,None,None,65,4.6,5.13,2.43,1.24,2.56,None,None,4.1,None,None,0.078,None,None,51.2,0,0.02,0.26,0.26,0.66,0.65,0.98,217],
-    ["NEW MEXICO MIXED LIGH","-",1979,43.3,0.07,None,None,30,2.62,2.12,0.227,0.19,0.6,None,None,4.9,None,None,0.028,None,None,4.51,0,0.05,0.49,0.49,1.7,2.04,2.44,218],
-    ["DUNCAN","NORTH SEA (UK)",1983,38.49,0.18,None,None,59,6.21,4.8,1.402,1.652,None,None,None,None,None,None,None,None,0.025,None,0,0.187,0.853,0.853,1.567,1.106,1.833,219],
-    ["ALBA","NORTH SEA (UK)",1991,20,1.33,None,None,-22,340.24,116.63,33.558,9.282,5.819,0.628,None,  0.1,None,None,1.34,None,None,None,0,0.005,0.022,0.022,0.05,0.034,0.036,220],
-    ["OSEBERG","NORTH SEA (NORWAY)",1988,33.71,0.31,None,None,21.2,8.39,6.26,4,2,2.6,0.5,1.2,None,None,None,0.22,0.1,0.003,1.5,0,0.129,0.525,0.525,1.172,1.363,1.43,221],
-    ["EMERALD","NORTH SEA (NORWAY)",1991,22,0.75,None,0,-20,118.08,47.08,13,1,2.81,None,None,0.6,None,None,None,  0.05,0.02,66.6,0,0.011,0.046,0.046,0.103,0.119,0.125,222],
-    ["KITTIWAKE","NORTH SEA (UK)",1990,37,0.65,None,0.05,-11,7.46,5.68,None,None,None,None,None,None,None,None,0,None,None,None,0,0.091,0.373,0.373,0.833,0.97,1.02,223],
-    ["BASIN-CUSHING COMPOSI","USA (OKLAHOMA)",1989,34,1.95,None,0.055,None,7.72,4.85,9,5,3.18,None,None,5.5,None,None,None,0.005,None,None,0,0.01,0.44,0.44,1.43,1.28,1.59,224],
-    ["SHARJAH CONDENSATE","SHARJAH (U.A.E.)",1985,49.7,0.1,None,None,-25,1.4,0.96,0.15,None,0.05,None,None,10.2,None,None,0.01,None,None,None,0,0.32,1.29,1.29,2.89,3.36,3.53,225],
-    ["RAS AL KHAIMAN","RAS AL KHAIMAN (U.A.E.)",1984,44.3,0.147,None,0.009,15,None,None,0,0,0.02,None,None,None,None,None,None,None,None,None,0,0.08,0.34,0.34,0.75,0.87,0.91,226],
-    ["BACH HO (WHITE TIGER)","VIET NAM",1990,38.6,0.03,None,0.067,91,None,10.72,2,2,0.65,0.05,None,2.5,None,None,0.05,None,None,0.54,0,0.008,0.033,0.033,0.076,0.087,0.091,227],
-    ["DAI HUNG (BIG BEAR)","VIET NAM",1990,36.9,0.08,None,0.028,81,5.74,3.79,2,2,0.7,0.07,None,None,None,None,0.27,None,None,0.66,0,0.049,0.201,0.201,0.449,0.522,0.547,228],
-    ["TOM BROWN","USA (WYOMING)",1988,38.2,0.1,None,0.08,55,46.1,11.3,1,1,1.4,None,None,4.6,None,None,None,0.26,None,None,0,0,0.5,0.5,0.5,0.58,0.36,229],
-    ["LOKELE","CAMEROON",1984,20.73,0.46,  6,None,36,176.29,66.16,None,None,None,None,None,1.45,None,  3,2.11,0.6,None,32.9,0,0.026,0.164,0.164,0.268,0.324,0.219,231],
-    ["BURI","LIBYA", None,26.24,1.76,None,0.13,43,None,None,20,20,None,None,None,None,None,None,None,None,None,None,0,0.02,0.3,0.3,0.79,0.39,0.41,232],
-    ["ANTAN","NIGERIA",1990,32.1,0.32,None,0.21,45,23.13,6.93,5,24,2.35,1.26,None,3.4,None,None,0.426,"trazas",None,116,0,0.001,0.103,0.103,0.212,0.476,0.683,233],
-    ["INNES","NORTH SEA (UK)",1984,45.67,0.13,None,None,21.2,2.9,2.18,None,None,None,None,None,None,None,None,None,  0.05,None,None,0,0.09,0.818,0.818,2.446,1.7,3.29,234],
-    ["SIBERIAN LIGHT","RUSSIA",1993,37.8,0.42,None,None,None,6.56,4.59,None,None,None,None,None,None,None,None,None,None,None,None,0,0.08,0.32,0.32,0.72,0.83,0.88,235],
-    ["KUMKOL","KAZAKHSTAN",1993,42.5,0.07,None,0.1,50,10.31,5.4,4.6,0.2,None,"trazas",None,None,None,None,0.0615,None,None,None,0,0.14,0.56,0.56,1.25,1.46,1.53,236],
-    ["LALANG (MALACCA STRAITS)","INDONESIA",1983,39.7,0.05,None,0.043,108,10.68,7.74,5,0.416,1.4,0.3,None,None,None,None,0.1,None,None,None,0,0.05,0.23,0.23,0.49,0.83,0.86,237],
-    ["DANISH NORTH SEA","NORTH SEA (DENMARK)",1994,34.5,0.26,None,0.1235,-22,0,0,1.41,7.04,1.9451,0.0149,None,None,None,None,None,0.05,None,None,0,0.15,0.61,0.61,1.37,2.5,2.62,238],
-    ["SUNNILAND","USA (FLORIDA)",1987,24.9,3.25,1,0.2,-15,35.48,19.01,62.2,37.5,9.5,None,8.1,7.45,None,None,0.1,0.02,None,5.3,0,0.01,0.7,0.7,1.27,1.04,1.18,239],
-    ["ABU MUBARRAS","ABU DHABI (U.A.E.)",1976,38.1,0.93,None,None,-30,7.67,5.87,None,None,2.5,None,None,None,None,None,None,None,None,None,0,0.08,0.33,0.33,0.75,0.87,0.91,240],
-    ["EL BUNDUQ","ABU DHABI (U.A.E.)",1976,38.5,1.12,None,None,14,3.54,2.8,None,None,1.692,None,None,7,None,None,None,None,None,None,0,0.16,0.67,0.67,1.51,1.76,1.85,241],
-    ["HYDRA","TIMOR SEA (INDONESIA)",1994,37.5,0.08,None,0.097,50,6.59,5.06,0.088,1.1,2.4,0.37,None,3,None,None,None,0.05,None,5,0,0.05,0.2,0.2,0.46,0.53,0.56,242],
-    ["WEST TEXAS INTERMEDIA","USA (TEXAS)",1994,40.8,0.34,None,0.08,-20,4.98,3.92,1.6,1.6,1.08,None,None,6.4,None,None,0.1,None,None,24.8,0,0.06,0.6,0.6,1.685,1.16,2.118,243],
-    ["NIKISKI TERMINAL","-",1985,34.6,0.1,None,0.14,-5,7.3,5.61,0.57,1.15,2.5,None,None,7.85,None,None,0.03,0.05,None,None,0,0.1,0.46,0.46,1.33,1.28,1.78,244],
-    ["MOSLAVINA","CROATIA",None,37.35,0.4,5,0.11,-44,5.89,3.9,2,1,1,0.45,None,8.5,None,  1,0.1,None,None,4.6,0,0.03,0.68,0.38,1.75,1.2,1.96,245],
-    ["SLAVONIJA","CROATIA",None,30.9,0.4,5,0.11,-44,5.89,3.9,2,1,1,0.45,None,8.5,None,  1,0.1,None,None,4.6,0,0.08,0.61,0.4,1.31,0.88,1.35,246],
-    ["PLINSKI KONDENZAT","CROATIA",None,48.82,0.02, 5,0.11,-10,2.45,1.84,0.1,0.5,0.1,0.045,None,8.5,None,  1,0.1,None,None,4.6,0,0.03,0.68,0.38,1.75,1.2,1.96,247],
-    ["ORIENTE","ECUADOR",1989,29.2,0.88,None,0.1638,20,26.3,13.59,83.5,39.2,6.3,None,None,2.2,  60,1,0.394,0.05,0.02,1.4,0,0.08,0.41,0.23,0.87,0.82,0.98,33],
-    ["SOROOSH (CYRUS)","IRAN",1983,18.1,3.3,None,0.26,10,1381,None,101,35,12,None,None,0.3,None,70,0.5,None,None,None,0,0,0,0.1,0.2,0.4,0.5,58],
-    ["CORMORANT NORTH","NORTH SEA",1983,34.9,0.71,None,None,54,None,5.76,10.6,5.06,2.48,0.3,None,None,None,None,0.05,None,None,None,0,0.14,0.58,0.58,1.3,0.92,0.96,100],
-    ["ALASKAN NORTH SLOPE","USA (ALASKA)",1992,27.5,1.11,None,0.22,0,28.9,13.4,26,11,4.45,0.17,2.35,4.4,None,None,0.11,0.2,None,3,0,0.02,0.2,0.27,1.08,0.55,0.9,133],
-    ["KUBUTU","PAPUA NEW GUINEA",1992,44,0.04,2,0.034,35,2.18,1.8,0.014,0.385,0.66,0.05,None,None,None,  1,  0.05,0.02,None,1,0,0.02,0.62,0.69,1.65,1.83,2.06,178],
-    ["PEMBINA","CANADA (ALBERTA)",1992,38.8,0.2,24,0.07,32,5.67,3.91,0.86,1.18,1.68,0.46,None,7.5,None,25,0.02,0.05,None,1.7,0,0.11,1,0.53,1.9,1.37,1.84,197],
-    ["WYOMING SWEET (AMOCO B)","USA (WYOMING)",1989,37.2,0.33,16,0.0929,15,4.6,3,2.151,1.673,2.7,None,None,None,None,None,0.09,None,None,4.2,0,0.002,0.185,0.185,1.02,1.241,1.884,230]
-    ]
+def PourPoint(SG, Tb, v100=None):
+    """Calculate the pour point of petroleum fractions using the procedure
+    2B8 from API technical databook, pag. 235
+    The pour point is the lowest temperature at which it will flow or can be
+    poured.
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    Tb : float
+        Mean average boiling point, [K]
+    v100 : float
+        Kinematic viscosity at 100ºF, [cSt]
+
+    Returns
+    -------
+    PP : float
+        Pour point, [ªR]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 0.8 ≤ SG ≤ 1
+        * 800ºR ≤ Tb ≤ 1500ºR
+        * 2cSt ≤ v100 ≤ 960cSt
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(972, "R")
+    >>> "%0.0f" % PourPoint(0.839, T, 3).R
+    '458'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    # Check input in range of validity
+    if SG < 0.8 or SG > 1 or Tb_R < 800 or Tb_R > 1500:
+        raise NotImplementedError("Incoming out of bound")
+    elif v100 is not None and (v100 < 2 or v100 > 960):
+        raise NotImplementedError("Incoming out of bound")
+
+    if v100 is not None:
+        # Eq 2B8.1-1
+        PP = 753 + 136*(1-exp(-0.15*v100)) - 572*SG + 0.0512*v100 + 0.139*Tb_R
+    else:
+        # Eq 2B8.1-2
+        PP = 3.85e-8*Tb_R**5.49*10**-(0.712*Tb.R**0.315+0.133*SG) + 1.4
+
+    return unidades.Temperature(PP, "R")
+
+
+def AnilinePoint(SG, Tb):
+    """Calculate the aniline point of petroleum fractions using the procedure
+    2B9 from API technical databook, pag. 237
+    The aniline point is the lowest temperature at which a petroleum fraction
+    is completely miscible with an equal volume of distilled aniline.
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    Tb : float
+        Mean average boiling point, [ºR]
+
+    Returns
+    -------
+    AP : float
+        Aniline point, [ªR]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 0.7 ≤ SG ≤ 1
+        * 200ºF ≤ Tb ≤ 1100ºF
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(570.2, "F")
+    >>> "%0.1f" % AnilinePoint(0.8304, T).R
+    '635.5'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+    Tb_R = unidades.K2R(Tb)
+    Kw = Tb_R**(1/3)/SG
+
+    # Check input in range of validity
+    if SG < 0.7 or SG > 1 or Tb_F < 200 or Tb_F > 1100:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Eq 2B9.1-1
+    AP = -1253.7 - 0.139*Tb_R + 107.8*Kw + 868.7*SG
+
+    return unidades.Temperature(AP, "R")
+
+
+def SmokePoint(SG, Tb):
+    """Calculate the smoke point of petroleum fractions using the procedure 2B10
+    from API technical databook, pag. 239
+    The smoke point is the height in millimeters of the flame that is
+    produced in a lamp at standard conditions without causing smoking.
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    Tb : float
+        Mean average boiling point, [ºF]
+
+    Returns
+    -------
+    SP : float
+        Cloud point, [mm]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 0.7 ≤ SG ≤ 0.86
+        * 200ºF ≤ Tb ≤ 550ºF
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(414.5, "F")
+    >>> "%0.1f" % SmokePoint(0.853, T).mm
+    '16.7'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+    Tb_R = unidades.K2R(Tb)
+    Kw = Tb_R**(1/3)/SG
+
+    # Check input in range of validity
+    if SG < 0.7 or SG > 0.86 or Tb_F < 200 or Tb_F > 550:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Eq 2B10.1-1
+    SP = exp(-1.028+0.474*Kw-0.00168*Tb_R)
+
+    return unidades.Length(SP, "mm")
+
+
+def FreezingPoint(SG, Tb):
+    """Calculate freezing point of petroleum fractions using the procedure 2B11
+    from API technical databook, pag. 241
+    The freezing point is the temperature at which solid crystals formed on
+    cooling disappear as the temperature is raised.
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    Tb : float
+        Mean average boiling point, [ºR]
+
+    Returns
+    -------
+    FP : float
+        Cloud point, [ºR]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 0.74 ≤ SG ≤ 0.9
+        * 725ºR ≤ Tb ≤ 1130ºR
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(874.5, "R")
+    >>> "%0.0f" % CloudPoint(0.799, T).R
+    '417'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+    Kw = Tb_R**(1/3)/SG
+
+    # Check input in range of validity
+    if SG < 0.74 or SG > 0.90 or Tb_R < 725 or Tb_R > 1130:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Eq 2B11.1-1
+    FP = -2390.42 + 1826*SG + 122.49*Kw - 0.135*Tb_R
+
+    return unidades.Temperature(FP, "R")
+
+
+def CloudPoint(SG, Tb):
+    """Calculate cloud point of petroleum fractions using the procedure 2B12
+    from API technical databook, pag. 243
+    The cloud point of is the temperature at which its solid paraffin content
+    begins to solidify and separate in tiny crystals, causing the oil to appear
+    cloudy.
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    Tb : float
+        Mean average boiling point, [ºR]
+
+    Returns
+    -------
+    CP : float
+        Cloud point, [ºR]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 0.77 ≤ SG ≤ 0.93
+        * 800ºR ≤ Tb ≤ 1225ºR
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(811.5, "R")
+    >>> "%0.1f" % CloudPoint(0.787, T).R
+    '383.4'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    # Check input in range of validity
+    if SG < 0.77 or SG > 0.93 or Tb_R < 800 or Tb_R > 1225:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Eq 2B12.1-1
+    CP = 10**(-7.41+5.49*log10(Tb_R)-0.712*Tb_R**0.315-0.133*SG)
+
+    return unidades.Temperature(CP, "R")
+
+
+def CetaneIndex(API, Tb):
+    """Calculate cetane index of petroleum fractions using the procedure 2B13
+    from API technical databook, pag. 245
+    Cetane index is the number equal to the porcentage of cetane in a blend of
+    cetane and α-methyl naphthalene having the same ignition quality as a
+    sample of the petroleum fraction.
+
+    Parameters
+    ------------
+    API : float
+        API gravity, [-]
+    Tb : float
+        Mean average boiling point, [ºF]
+
+    Returns
+    -------
+    CI : float
+        Cetane Index, [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 27 ≤ API ≤ 47
+        * 360ºF ≤ Tb ≤ 700ºF
+
+    Examples
+    --------
+    >>> T = unidades.Temperature(617, "F")
+    >>> "%0.1f" % CetaneIndex(32.3, T)
+    '57.1'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+
+    # Check input in range of validity
+    if API < 27 or API > 47 or Tb_F < 360 or Tb_F > 700:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Eq 2B13.1-1
+    CI = 415.26 - 7.673*API + 0.186*Tb_F + 3.503*API*log10(Tb_F) - \
+        193.816*log10(Tb.F)
+
+    return unidades.Dimensionless(CI)
+
 
 class Petroleo(newComponente):
-    """Clase que define una fracción de petroleo de composición indeterminada
+    """Class to define a heavy oil fraction with a unknown composition
 
     Parámetros:
         nombre: nombre del componente, generalmente una fracción de petróleo
@@ -1462,66 +1478,49 @@ class Petroleo(newComponente):
         self.VI=self.Viscosity_Index()
 
         if self.hasCurve:
-            self.CI=48640/self.VABP+473.7*self.SG-456.8
+            self.CetaneI=48640/self.VABP+473.7*self.SG-456.8
         else:
-            self.CI=48640/self.Tb+473.7*self.SG-456.8
+            self.CetaneI=48640/self.Tb+473.7*self.SG-456.8
 
-        #Cálculo del pour point, API procedure 2B8.1 pag 235
-        if self.v100:
-            PP=753.+136*(1.-exp(-0.15*self.v100))-572*self.SG+0.0512*self.v100+.139*self.Tb.R
-        else:
-            PP=3.85e-8*self.Tb.R**5.49*10**-(0.712*self.Tb.R**0.315+0.133*self.SG)+1.4
-        self.PourP=unidades.Temperature(PP, "R")
-
-        #Cálculo del cloud point, API procedure 2B12.1 pag 243
-        self.CloudP=unidades.Temperature(10**(-7.41+5.49*log10(self.Tb.R)-0.712*self.Tb.R**0.315-0.133*self.SG), "R")
-
-        #Cálculo del freezing point, API procedure 2B11.1 pag 241
-        self.FreezingP=unidades.Temperature(-2390.42+1826.*self.SG+122.49*self.watson-0.135*self.Tb.R, "R")
-
-        #Cálculo del aniline point, API procedure 2B9.1 pag 237
-        self.AnilineP=unidades.Temperature(-1253.7-0.139*self.Tb.R+107.8*self.watson+868.7*self.SG, "R")
-
-        #Cálculo del smoke point, API procedure 2B10.1 pag 239
-        self.SmokeP=unidades.Length(exp(-1.028+0.474*self.watson-0.00168*self.Tb.R), "mm")
-
-        #Cálculo del cetane index de la fracción de petróleo, API procedure 2B13.1 pag 245
-        self.CI=415.26-7.673*self.API+0.186*self.Tb.F+3.503*self.API*log10(self.Tb.F)-193.816*log10(self.Tb.F)
+        self.PourP = PourPoint(self.SG, self.Tb, self.kwargs["v100"])
+        self.CloudP = CloudPoint(self.SG, self.Tb)
+        self.FreezingP = FreezingPoint(self.SG, self.Tb)
+        self.AnilineP = AnilinePoint(self.SG, self.Tb)
+        self.SmokeP = SmokePoint(self.SG, self.Tb)
+        self.CetaneI = CetaneIndex(self.API, self.Tb)
 
         #Cálculo del indice Diesel
         self.DI=self.API*self.AnilineP.F/100.
 
 
         if self.kwargs["S"]:
-            self.S=self.kwargs["S"]
+            self.S = self.kwargs["S"]
         else:
-            self.S=self.S_Riazi()
+            self.S = self.S_Riazi()
         if self.kwargs["H"]:
-            self.H=H
+            self.H = H
         else:
-            H=[self.H_Riazi, self.H_Goossens, self.H_ASTM, self.H_Jenkins_Walsh][self.Preferences.getint("petro", "H")]
-            self.H=H()
-        self.N=self.kwargs["N"]
+            H = [self.H_Riazi, self.H_Goossens, self.H_ASTM, self.H_Jenkins_Walsh][self.Preferences.getint("petro", "H")]
+            self.H = H()
+        self.N = self.kwargs["N"]
 
+    def tr(self, T):
+        return T/self.Tc
 
-
-    def tr(self,T):
-       return T/self.Tc
-
-    def pr(self,P):
+    def pr(self, P):
         return P/self.Pc.atm
 
     def SG_Riazi_Daubert(self):
-        if self.definicion==3:
-            return prop_Riazi_Daubert_Tb_I(4, self.Tb, self.I)
-        elif self.definicion==4:
-            return prop_Riazi_Daubert_M_I(4, self.M, self.I)
-        elif self.definicion==5:
-            return prop_Riazi_Daubert_Tb_CH(5, self.Tb, self.CH)
-        elif self.definicion==6:
-            return prop_Riazi_Daubert_M_CH(4, self.M, self.CH)
-        elif self.definicion==7:
-            return prop_Riazi_Daubert_v100_I(4, self.v100, self.I)
+        if self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["SG"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["SG"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["SG"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["SG"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["SG"]
 
     def SG_Riazi_Alsahhaf(self):
         if not self.kwargs["M"]:
