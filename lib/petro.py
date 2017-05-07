@@ -18,268 +18,1154 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 from configparser import ConfigParser
 import time
 
 from PyQt5.QtWidgets import QApplication
 from scipy import exp, sqrt, log10, log
-from scipy.optimize import fsolve, leastsq
+from scipy.optimize import fsolve, leastsq, newton
 from numpy.linalg import solve
 from numpy import array
 
-from . import unidades
-from .physics import R_atml, R_Btu
-from .compuestos import Componente, newComponente
-from .config import conf_dir
+from lib import unidades
+from lib.physics import R_atml, R_Btu
+from lib.compuestos import Componente, newComponente
+from lib.config import conf_dir
+from lib.petro2 import crudo
 
 
-def prop_Ahmed(propiedad, n_carbonos):
-    """Ahmed, T., G. Cady, and A. Story. “A Generalized Correlation for Characterizing the Hydrocarbon Heavy Fractions.” Paper SPE 14266, presented at the 60th Annual Technical Conference of the Society of Petroleum Engineers, Las Vegas, September 22–25, 1985.
-    Tarek Ahmed: Equation of state and PVT Analysis
-    propiedad: propiedad física a calcular
-        0 - Peso molecular
-        1 - Temperatura crítica, ºR
-        2 - Presión crítica, psi
-        3 - Temperatura fusión, ºR
-        4 - Factor acentrico
-        5 - Gravedad específica
-        6 - Volumen crítico, ft³/lb
-    n_carbonos: número de carbonos del compuesto
+_doi__ = {
+    "1":
+        {"autor": "Katz, D. L., and Firoozabadi, A.",
+         "title": "Predicting Phase Behavior of Condensate/Crude-oil Systems"
+                  "Using Methane Interaction Coefficients",
+         "ref": "Journal of Petroleum Technology, Nov. 1978, pp. 1649–1655",
+         "doi": "10.2118/6721-pa"},
+    "2":
+        {"autor": "Ahmed, T., G. Cady, and A. Story",
+         "title": "A Generalized Correlation for Characterizing the"
+                  "Hydrocarbon Heavy Fractions.",
+         "ref": "Paper SPE 14266, presented at the 60th Annual Technical"
+                "Conference of the Society of Petroleum Engineers, Las Vegas,"
+                "September 22–25, 1985.",
+         "doi": ""},
+    "3":
+        {"autor": "Riazi, M. R. and Daubert, T. E.",
+         "title": "Characterization Parameters for Petroleum Fractions",
+         "ref": "Industrial and Engineering Chemistry Research, Vol. 26, 1987,"
+                "pp. 755-759.",
+         "doi": "10.1021/ie00064a023"},
+    "4":
+        {"autor": "Riazi, M. R., and T. E. Daubert",
+         "title": "Simplify Property Predictions",
+         "ref": "Hydrocarbon Processing (March 1980): 115–116",
+         "doi": ""},
+    "5":
+        {"autor": "Twu, C.H.",
+         "title": "An Internally Consistent Correlation for Predicting the"
+                  "Critical Properties and Molecular Weights of Petroleum and"
+                  "Coal-tar Liquids",
+         "ref": "Fluid Phase Equilbria, 16: 137–150.",
+         "doi": "10.1016/0378-3812(84)85027-x"},
+    "6":
+        {"autor": "Sim, W.J. and Daubert, T.E.",
+         "title": "Prediction of Vapor-Liquid Equilibria of Undefined"
+                  "Mixtures",
+         "ref": "Industrial and Engineering Chemistry–Process Design and"
+                "Development, 19: 386 –393.",
+         "doi": "10.1021/i260075a010"},
+    "7":
+        {"autor": "Cavett, R.H.",
+         "title": "Physical data for distillation calculations, vapor-liquid"
+                  "equilibrium.",
+         "ref": "Proceedings of the 27th Meeting, API, San Francisco, Issue 3,"
+                "pp. 351–366.",
+         "doi": ""},
+    "8":
+        {"autor": "Kesler, M. G., and B. I. Lee",
+         "title": "Improve Prediction of Enthalpy of Fractions",
+         "ref": "Hydrocarbon Processing Volume 55, Issue 3, March 1976, Pages"
+                "153-158.",
+         "doi": ""},
+    "9":
+        {"autor": "Tarek Ahmed",
+         "title": "Equations of State and PVT Analysis: Applications for"
+                  "Improved Reservoir Modeling, 2nd Edition",
+         "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
+         "doi": "https://doi.org/10.1016/B978-0-12-801570-4.00002-7"},
+    "10":
+        {"autor": "Watansiri, S., Owens, V.H., Starling, K.E.",
+         "title": "Correlations for estimating critical constants, acentric"
+                  "factor, and dipole moment for undefined coal-fluid"
+                  "fractions",
+         "ref": "Ind. Eng. Chem. Process. Des. Dev. 24, 294–296",
+         "doi": "10.1021/i200029a013"},
+    "11":
+        {"autor": "Rowe, A.M.",
+         "title": "Internally Consistent Correlations for Predicting Phase"
+                  "Compositions for Use in Reservoir Compositional Simulators",
+         "ref": "Paper SPE 7475, In: Presented at the 53rd Annual Society of"
+                "Petroleum Engineers Fall Technical Conference and Exhibition,"
+                "1978.",
+         "doi": "10.2118/7475-MS"},
+    "12":
+        {"autor": "Standing, M.B.",
+         "title": "Volumetric and Phase Behavior of Oil Field Hydrocarbon"
+                  "Systems.",
+         "ref": "Society of Petroleum Engineers, Dallas, TX. 1977",
+         "doi": ""},
+    "13":
+        {"autor": "Willman, B., Teja, A.",
+         "title": "Prediction of dew points of semicontinuous natural gas and"
+                  "petroleum mixtures. 1. Characterization by use of an"
+                  "effective carbon number and ideal solution predictions",
+         "ref": "Ind. Eng. Chem. Res., 1987, 26 (5), pp 948–952",
+         "doi": "10.1021/ie00065a017"},
+    "14":
+        {"autor": "Magoulas, S., Tassios, D.",
+         "title": "Predictions of phase behavior of HT-HP reservoir fluids.",
+         "ref": "Paper SPE 37294, Society of Petroleum Engineers, Richardson,"
+                "TX, 1990.",
+         "doi": ""},
+    "15":
+        {"autor": "Sancet, J.,",
+         "title": "Heavy Faction C7+ Characterization for PR-EOS.",
+         "ref": "SPE 113025, 2007 SPE Annual Conference, November 11–14,"
+                "Anaheim, CA 2007.",
+         "doi": "10.2118/113026-stu"},
+    "16":
+        {"autor": "Silva, M.B., Rodriguez, F.",
+         "title": "Automatic fitting of equations of state for phase behavior"
+                  "matching.",
+         "ref": "Paper SPE 23703, Society of Petroleum Engineers, Richardson,"
+                "TX, 1992.",
+         "doi": "10.2118/23703-MS"},
+    "17":
+        {"autor": "Soreide, I.",
+         "title": "Improved Phase Behavior Predictions of Petroleum Reservoir"
+                  "Fluids From a Cubic Equation of State.",
+         "ref": "Doctor of engineering dissertation. Norwegian Institute of"
+                "Technology, Trondheim, 1989.",
+         "doi": ""},
+    "18":
+        {"autor": "Hall, K. R., and L. Yarborough",
+         "title": "New Simple Correlation for Predicting Critical Volume",
+         "ref": "Chemical Engineering (November 1971): 76",
+         "doi": ""},
+    "19":
+        {"autor": "Edmister, W.C.",
+         "title": "Applied Hydrocarbon Thermodynamics, Part 4, Compressibility"
+                  "Factors and Equations of State",
+         "ref": "Petroleum Refiner. 37 (April, 1958), 173–179",
+         "doi": ""},
+    "20":
+        {"autor": "API",
+         "title": "Technical Data book: Petroleum Refining 6th Edition",
+         "ref": "",
+         "doi": ""},
+
+
+    "21":
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+
+    "16":
+        {"autor": "Papay, J.A.,",
+         "title": "Termelestechnologiai Parameterek Valtozasa a Gazlelepk"
+                  "Muvelese",
+         "ref": "Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.",
+         "doi": ""},
+    "17":
+        {"autor": "Hall, K. R., and L. Yarborough",
+         "title": "A New Equation of State for Z-factor Calculations",
+         "ref": "Oil and Gas Journal (June 18, 1973): 82–92.",
+         "doi": ""},
+        }
+
+
+
+
+
+
+
+
+def _unit(key, val, unit=""):
+    """Set appropiate unit for value
+
+    Parameters
+    ------------
+    key : string
+        Property name
+    val : float
+        Property value to unitize
+    unit : string, optional
+        In case it necessary use a alternate unit
+
+    Returns
+    -------
+    x : unidades.unidad
+        A instance of appropiate unidades.unidad subclass
+
+    Notes
+    -----
+    Default use the petroleum english standards units, R, psi, ft³/lb...
     """
-    a1=[-131.11375, 915.53747, 275.56275, 434.38878, -0.50862704, 0.86714949, 5.223458e-2][propiedad]
-    a2=[24.96156, 41.421337, -12.522269, 50.125279, 8.700211e-2, 3.41434080e-3, 7.87091369e-4][propiedad]
-    a3=[-0.34079022, -0.7586849, 0.29926384, -0.9097293, -1.8484814e-3, -2.839627e-5, -1.9324432e-5][propiedad]
-    a4=[2.4941184e-3, 5.8675351e-3, -2.8452129e-3, 7.0280657e-3, 1.466389e-5, 2.4943308e-8, 1.7547264e-7][propiedad]
-    a5=[468.32575, -1.3028779e3, 1.7117226e3, -601.856510, 1.8518106, -1.1627984, 4.4017952e-2][propiedad]
-    x=a1+a2*n_carbonos+a3*n_carbonos**2+a4*n_carbonos**3+a5/n_carbonos
-    if propiedad in [1, 3]:
-        x=unidades.Temperature(x, "R")
-    elif propiedad==2:
-        x=unidades.Pressure(x, "psi")
-    elif propiedad==6:
-        x=unidades.SpecificVolume(x, "ft3lb")
+    if key in ("Tc", "Tb"):
+        if not unit:
+            unit = "R"
+        x = unidades.Temperature(val, unit)
+    elif key == "Pc":
+        if not unit:
+            unit = "psi"
+        x = unidades.Pressure(val, unit)
+    elif key == "Vc":
+        if not unit:
+            unit = "ft3lb"
+        x = unidades.SpecificVolume(val, unit)
+    else:
+        x = unidades.Dimensionless(val)
     return x
 
-def prop_Riazi_Daubert(propiedad, Tb, g):
-    """
-    Riazi, M. R., and T. E. Daubert. “Simplify Property Predictions.” Hydrocarbon Processing (March 1980): 115–116.
-    propiedad: propiedad física a calcular
-        0 - Peso molecular
-        1 - Temperatura crítica, ºR
-        2 - Presión crítica, psi
-        3 - Volumen crítico, ft³/lb
-    Tb: punto de ebullición normal, ºR
-    g: gravedad específica
-    """
-    a=[4.5673e-5, 24.2787, 3.12281e9, 7.5214e-3][propiedad]
-    b=[2.1962, 0.58848, -2.3125, 0.2896][propiedad]
-    c=[-1.0164, 0.3596, 2.3201, -0.7666][propiedad]
-    x=a*Tb.R**b*g**c
-    if propiedad==1:
-        x=unidades.Temperature(x, "R")
-    elif propiedad==2:
-        x=unidades.Pressure(x, "psi")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "ft3lb")
-    return x
 
-def prop_Riazi_Daubert_Tb_SG(propiedad, Tb, g):
-    """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - Peso molecular
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - I, parametro de Huang
-        5 - relación CH
-    Tb: punto de ebullición , K
-    g: gravedad específica
-    """
-    a=[1032.1, 9.5232, 3.195846e5, 6.049e-2, 0.0243, 3.47028][propiedad]
-    b=[9.78e-4, -9.314e-4, -8.505e-3, -2.6422e-3, 7.0294e-4, 1.485e-2][propiedad]
-    c=[-9.53384, -0.54444, -4.8014, -0.26404, 2.46832, 16.9402][propiedad]
-    d=[2.e-3, 6.48e-4, 5.749e-3, 1.971e-3, -1.0268e-3, -0.012491][propiedad]
-    e=[0.97476, 0.81067, -0.4844, 0.7506, 0.05721, -2.72522][propiedad]
-    f=[6.51274, 0.53691, 4.0846, -1.2028, -0.7199, -6.79769][propiedad]
-    x=a*Tb.K**e*g**f*exp(b*Tb.K+c*g+d*Tb.K*g)
-    if propiedad==1:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+# Generalized Correlations
+def prop_Ahmed(Nc):
+    """Calculate petroleum fractions properties with the carbon atom number as
+    the only known property
 
-def prop_Riazi_Daubert_Tb_I(propiedad, Tb, i):
-    """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - Peso molecular
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - gravedad específica
-        5 - relación CH
-    Tb: punto de ebullición , K
-    I: Parámetro de Huang
-    """
-    a=[8.9205e-6, 4.487601e5, 8.4027e23, 6.712e-3, 2.4381e7, 8.3964e-13][propiedad]
-    b=[1.55833e-5, -1.3171e-3, -0.012067, -2.72e-3, -4.194e-4, 7.7171e-3 ][propiedad]
-    c=[4.2376, -16.9097, -74.5612, 0.91548, -23.5535, 71.6531][propiedad]
-    d=[0, 4.5236e-3, 0.0342, 7.92e-3, 3.98736e-3, -0.02088][propiedad]
-    e=[2.0935, 0.6154, -1.0303, 0.5775, -0.3418, -1.3773][propiedad]
-    f=[-1.9985, 4.3469, 18.4302, -2.1548, 6.9195, -13.6139][propiedad]
-    x=a*Tb.K**e*i**f*exp(b*Tb.K+c*i+d*Tb.K*i)
-    if propiedad==1:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    Parameters
+    ------------
+    Nc : float
+        Carbon atom number [-]
 
-def prop_Riazi_Daubert_Tb_CH(propiedad, Tb, CH):
-    """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - Peso molecular
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - Parámetro de Huang
-        5 - gravedad específica
-    Tb: punto de ebullición , K
-    CH: Relación C/H
-    """
-    a=[1.81456e-3, 8.6649, 9.858968, 1.409e1, 5.60121e-3, 2.86706e-3][propiedad]
-    b=[0, 0, -3.8443e-3, -1.6594e-3, -1.7774e-4, -1.83321e-3][propiedad]
-    c=[0, 0, -0.3454, 0.05345, -6.0737e-2, -0.081635][propiedad]
-    d=[0, 0, 0, 2.6649e-4, -7.9452e-5, 6.49168e-5][propiedad]
-    e=[1.9273, 0.67221, -0.1801, 0.1657, 0.447, 0.890041][propiedad]
-    f=[-0.2727, 0.10199, 3.2223, -1.4439, 0.9896, 0.73238][propiedad]
-    x=a*exp(b*Tb.K+c*CH+d*Tb.K*CH)*Tb.K**e*CH**f
-    if propiedad==1:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        M: Molecular weight, [-]
+        Tc: Critic temperature, [ºR]
+        Pc: Critic pressure, [psi]
+        Tb: Normal boiling temperature, [ºR]
+        w: Acentric factor, [-]
+        SG: Specific gravity, [-]
+        Vc: Critic volume, [ft³/lb]
 
-def prop_Riazi_Daubert_M_SG(propiedad, M, g):
-    """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - temperatura de ebullicion, K
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - I, parametro de Huang
-        5 - relación CH
-    M: peso molecular
-    g: gravedad específica
-    """
-    a=[3.76587, 308, 3116.632, 7.529e-1, 0.42238, 2.35475][propiedad]
-    b=[3.77409e-3, -1.3478e-4, -1.8078e-3, -2.657e-3,  3.1886e-4, 9.3485e-3][propiedad]
-    c=[2.984036, -0.61641, -0.3084, 0.5287, -0.200996, 4.74695][propiedad]
-    d=[-4.25288e-3, 0, 0, 2.6012e-3, -4.2451e-4, -8.0172e-3][propiedad]
-    e=[4.0167e-1, 0.2998, -0.8063, 0.20378, -0.00843, -0.68418][propiedad]
-    f=[-1.58262, 1.0555, 12.9148, -1.3036, 1.11782, -0.7682][propiedad]
-    x=a*exp(b*M+c*g+d*M*g)*M**e*g**f
-    if propiedad in [0, 1]:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    Examples
+    --------
+    >>> "%0.0f" % prop_Ahmed(6)["Tb"].R
+    '604'
+    >>> "%0.5f" % prop_Ahmed(45)["Vc"].ft3lb
+    '0.06549'
 
-def prop_Riazi_Daubert_M_I(propiedad, M, I):
+    References
+    ----------
+    [1] .. Katz, D. L., and Firoozabadi, A. Predicting Phase Behavior of
+        Condensate/Crude-oil Systems Using Methane Interaction Coefficients
+        Journal of Petroleum Technology, Nov. 1978, pp. 1649–1655
+    [2] .. Ahmed, T., G. Cady, and A. Story. A Generalized Correlation for
+        Characterizing the Hydrocarbon Heavy Fractions. Paper SPE 14266,
+        presented at the 60th Annual Technical Conference of the Society of
+        Petroleum Engineers, Las Vegas, September 22–25, 1985.
     """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - temperatura de ebullicion, K
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - gravedad específica
-        5 - relación CH
-    M: peso molecular
-    I: parametro de Huang
-    """
-    a=[75.775, 1.347444e6, 2.025e16, 6.3429e-5, 1.1284e6, 2.9004e-13][propiedad]
-    b=[0, 2.001e-4, -0.01415, -2.0208e-3, -1.588e-3, 7.8276e-3][propiedad]
-    c=[0, 13.049, -48.5809, 14.1853, -20.594, 60.3484][propiedad]
-    d=[0, 0, 0.0451, 4.5318e-3, 7.344e-3, -2.445e-2][propiedad]
-    e=[0.4748, 0.2383, -0.8097, 0.2559, -0.0771, -0.37884][propiedad]
-    f=[0.4283, 4.0642, 12.9148, -4.60413, 6.30280, -12.34051][propiedad]
-    x=a*M**e*I**f*exp(b*M+c*I+d*M*I)
-    if propiedad in [0, 1]:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    a1 = [-131.11375, 915.53747, 275.56275, 434.38878, -0.50862704,
+          0.86714949, 5.223458e-2]
+    a2 = [24.96156, 41.421337, -12.522269, 50.125279, 8.700211e-2,
+          3.41434080e-3, 7.87091369e-4]
+    a3 = [-0.34079022, -0.7586849, 0.29926384, -0.9097293, -1.8484814e-3,
+          -2.839627e-5, -1.9324432e-5]
+    a4 = [2.4941184e-3, 5.8675351e-3, -2.8452129e-3, 7.0280657e-3,
+          1.466389e-5, 2.4943308e-8, 1.7547264e-7]
+    a5 = [468.32575, -1.3028779e3, 1.7117226e3, -601.856510, 1.8518106,
+          -1.1627984, 4.4017952e-2]
 
-def prop_Riazi_Daubert_M_CH(propiedad, M, CH):
-    """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - temperatura de ebullicion, K
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - parametro de Huang
-        5 - gravedad específica
-    M: peso molecular
-    CH: relación CH
-    """
-    a=[20.25347, 20.74, 56.26043, 1.597e1, 4.239e-2, 6.84403e-2][propiedad]
-    b=[-1.57415e-4, 1.385e-3, -2.139e-3, -2.3533e-3, -5.6946e-4, -1.48844e-3][propiedad]
-    c=[-4.5707e-2, -0.1379, -0.265, 0.1082, -6.836e-2, -0.07925][propiedad]
-    d=[9.22926e-6, -2.7e-4, 0, 3.826e-4, 0, 4.92112e-5][propiedad]
-    e=[0.512976, 0.3526, -0.6616, 0.0706, 0.1656, 0.289844][propiedad]
-    f=[0.472372, 1.4191, 2.4004, -1.3362, 0.8291, 0.919255][propiedad]
-    x=a*M**e*CH**f*exp(b*M+c*CH+d*M*CH)
-    if propiedad in [0, 1]:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    prop = {}
+    for i, key in enumerate(["M", "Tc", "Pc", "Tb", "w", "SG", "Vc"]):
+        x = a1[i] + a2[i]*Nc + a3[i]*Nc**2 + a4[i]*Nc**3 + a5[i]/Nc
+        val = _unit(key, x)
+        prop[key] = val
+    return prop
 
-def prop_Riazi_Daubert_v100_I(propiedad, v100, i):
+
+def prop_Riazi_Daubert_1980(Tb, SG):
+    """Calculate petroleum fractions properties with the Riazi (1980)
+    correlation with the boiling temperature and specific gravity as input
+    paramters
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        M: Molecular weight, [-]
+        Tc: Critic temperature, [ºR]
+        Pc: Critic pressure, [psi]
+        Vc: Critic volume, [ft3/lb]
+
+    References
+    ----------
+    [4] .. Riazi, M. R., and T. E. Daubert. Simplify Property Predictions.
+        Hydrocarbon Processing (March 1980): 115–116.
     """
-    Riazi, M. R., and T. E. Daubert. “Characterization Parameters for Petroleum Fractions.” Industrial Engineering and Chemical Research 26, no. 24 (1987): 755–759.
-    propiedad: propiedad física a calcular
-        0 - temperatura de ebullicion, K
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/g
-        4 - relación CH
-        5 - gravedad específica
-        6 - peso molecular
-    v100: viscosidad cinemática a 100 ºF en cSt
-    i: parametro de Huang
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    a = [4.5673e-5, 24.2787, -3.12281e9, -7.5214e-3]
+    b = [2.1962, 0.58848, -2.3125, 0.2896]
+    c = [-1.0164, 0.3596, 2.3201, -0.7666]
+
+    prop = {}
+    prop["Tb"] = Tb
+    prop["SG"] = SG
+
+    for i, key in enumerate(["M", "Tc", "Pc", "Vc"]):
+        x = a[i]*Tb_R**b[i]*SG**c[i]
+        val = _unit(key, x)
+        prop[key] = val
+
+    return prop
+
+
+def prop_Riazi_Daubert(tita1, val1, tita2, val2):
+    """Calculate petroleum fractions properties known two properties
+
+    Parameters
+    ------------
+    tita1 : string
+        Name of first known property
+    tita2 : string
+        Name of second known property
+    val1: float
+        First known property value
+    val2: float
+        Second known property value
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Temperatura crítica, [ºR]
+        Pc: Presión crítica, [psi]
+        Vc: Volumen crítico, [ft³/lb]
+        M: Peso molecular, [-]
+        Tb: Temperatura fusión, [ºR]
+        SG: Gravedad específica, [-]
+        I: Huang characterization factor, [-]
+        CH: Carbon/hydrogen weight ratio, [-]
+
+    Notes
+    -----
+    The available input properties for tita are:
+        Tb: Temperatura fusión, [ºR]
+        SG: Gravedad específica, [-]
+        M: Peso molecular, [-]
+        CH: Carbon/hydrogen weight ratio, [-]
+        I: Huang characterization factor, [-]
+        v1: Kinematic viscosity at 100ºF, [m²/s]
+
+    Raises
+    ------
+    NotImplementedError : If the input pair are unsupported
+
+    NotImplementedError : If input isn't in limit
+        * 80ºF ≤ T ≤ 650ºF
+        * 70 ≤ M ≤ 300
+
+    References
+    ----------
+    [3] .. Riazi, M. R., and T. E. Daubert. “Characterization Parameters for
+        Petroleum Fractions.” Industrial Engineering and Chemical Research 26,
+        no. 24 (1987): 755–759.
     """
-    a=[0.050629, 2.4522e-3, 393.306, 2.01e-10, 2.143e-12, 3.8083e7, 4e-9][propiedad]
-    b=[-6.5236e-2, -0.0291, 0, 0.16318, 0.2832, -6.1406e-2, -8.9854e-2][propiedad]
-    c=[14.9371, -1.2664, 0, 36.09011, 53.7316, -26.3934, 38.106][propiedad]
-    d=[6.029e-2, 0, 0, 0.4608, -0.91085,  0.2533, 0][propiedad]
-    e=[0.3228, 0.1884, -0.4974, 0.1417, -0.17158, -0.2353, 0.6675][propiedad]
-    f=[-3.8798, 0.7492, 2.052, -10.65067, -10.88065, 8.04224, -10.6][propiedad]
-    x=a*v100.cSt**e*i**f*exp(b*v100.cSt+c*i+d*v100.cSt*i)
-    if propiedad in [0, 1]:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.SpecificVolume(x, "cm3g")
-    return x
+    # Check correct input parameter
+    p1 = ("Tb", "M", "v1")
+    p2 = ("S", "I", "CH")
+
+    if tita1 in p2 and tita2 in p1:
+        # Invert input parameters
+        tita1, tita2 = tita2, tita1
+        val1, val2 = val2, val1
+
+    if tita1 not in p1 or tita2 not in p2:
+        raise NotImplementedError(QApplication.translate(
+            "pychemqt", "Undefined input pair"))
+    elif tita1 == "M" and (val1 < 70 or val1 > 300):
+        raise NotImplementedError(QApplication.translate(
+            "pychemqt", "Molecular weight input out of bounds"))
+    elif tita1 == "Tb" and (val1 < 300 or val1 > 620):
+        raise NotImplementedError(QApplication.translate(
+            "pychemqt", "Boiling temperature input out of bounds"))
+
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    if tita1 == "Tb":
+        val1 = unidades.K2R(val1)
+
+    par = {
+      # Table IV
+      "Tc": {
+        "Tb-SG": [10.6443, -5.1747e-4, -.54444, 3.5995e-4, .81067, .53691],
+        "Tb-I": [5.62596e5, -7.317e-4, -16.9097, 2.5131e-3, .6154, 4.3469],
+        "Tb-CH": [2.2452, 1.9152e-4, -0.06487, -6.0192e-4, 0.7699, 0.900],
+        "M-SG": [554.4, -1.3478e-4, -0.61641, 0.0, 0.2998, 1.0555],
+        "M-I": [2.4254e6, 2.001e-4, -13.049, 0.0, 0.2383, 4.0642],
+        "M-CH": [37.332, 1.3848e-3, -0.1379, -2.7e-4, 0.3526, 1.4191],
+        "v1-SG": [251.026, -3.177e-2, 1.6587, 0.0, 0.1958, -0.9431],
+        "v1-I": [4.414e3, -0.0291, -1.2664, 0.0, 0.1884, 0.7492],
+        "v1-CH": [4.939e2, -2.8e-2, -8.91e-2, 0.0, 0.1928, 0.7744]},
+
+      # Table V
+      "Pc": {
+        "Tb-SG": [6.162e6, -4.725e-3, -4.8014, 3.1939e-3, -0.4844, 4.0846],
+        "Tb-I": [2.2337e25, -6.7041e-3, -74.5612, .019, -1.0303, 18.43302],
+        "Tb-CH": [158.96, -2.1357e-3, -0.3454, 0.0, -0.1801, 3.2223],
+        "M-SG": [4.5203e4, -1.8078e-3, -0.3084, 0.0, -0.8063, 1.6015],
+        "M-I": [2.9384e17, -0.01415, -48.5809, 0.0451, -0.8097, 12.9148],
+        "M-CH": [815.99, -2.139e-3, -0.265, 0.0, -0.6616, 2.4004],
+        "v1-SG": [1.271e5, -0.2523, -5.6028, 0.355, -0.5913, 6.0793],
+        "v1-I": [6.1475e22, -0.4586, -71.905, 1.8854, -0.6395, 20.7032],
+        "v1-CH": [40.9115, 0.01906, 0.1323, 0.0, 0.471, 1.6306]},
+
+      # Table VI
+      "Vc": {
+        "Tb-SG": [6.233e-4, -1.4679e-3, -.26404, 1.095e-3, .7506, -1.2028],
+        "Tb-I": [1.3077e-3, -1.799e-3, -3.5349, 4.425e-3, .7687, -.72011],
+        "Tb-CH": [0.2048, -9.2189e-4, 0.05345, 1.4805e-4, 0.1657, -1.4439],
+        "M-SG": [1.206e-2, -2.657e-3, 0.5287, 2.6012e-3, 0.20378, -1.3036],
+        "M-I": [1.016e-6, -2.0208e-3, 14.1853, 4.5318e-3, .2556, -4.60413],
+        "M-CH": [0.2558, -2.3533e-3, 0.1082, 3.826e-4, 0.0706, -1.3362],
+        "v1-SG": [1.64424e-3, -2.04563e-1, 3.513392, 2.12365e-1, 1.19093e-1,
+                  -3.801261],
+        "v1-I": [3.219523e-12, -1.63181e-1, 36.09011, .4608, .1417, -10.65067],
+        "v1-CH": [.245582, -.11261, .086387, .016031, .046004, -1.028488]},
+
+      # Table VII
+      "M": {
+        "Tb-SG": [581.96, 5.43076e-4, -9.53384, 1.11056e-3, 0.97476,
+                  6.51274],
+        "Tb-I": [2.606e-6, 8.6574e-6, 4.2376, 0.0, 2.0935, -1.9985],
+        "Tb-CH": [3.06584e-3, 5.3305e-4, 7.9113e-2, -2.87657e1, 1.6736,
+                  -0.68681],
+        "v1-SG": [1.51723e6, -0.195411, -9.63897, .16247, .56370, 6.89383],
+        "v1-I": [4.0e-9, -8.9854e-2, 38.106, 0.0, 0.6675, -10.6],
+        "v1-CH": [84.1505, -5.976e-2, -0.10741, 0.0, 0.5596, 0.65815],
+        "v1-v2": [288.916, 0.1380, -0.7311, -5.704e-3, 0.051, 0.8411]},
+
+      # Table VIII
+      "Tb": {
+        "M-SG": [-1.58262, 3.77409e-3, 2.984036, -4.25288e-3, 6.77857,
+                 4.01673e-1],
+        "M-I": [0.4283, 0.0, 0.0, 0.0, 136.395, 0.4748],
+        "M-CH": [4.72372e-1, -1.57415e-4, -4.5707e-2, 9.22926e-6,
+                 36.45625, 5.12976e-1],
+        "v1-SG": [1.34890, -1.3051e-2, -1.68759, -2.1247e-2, 4.28375e3,
+                  2.62914e-1],
+        "v1-I": [-3.8798, -6.5236e-2, 14.9371, 6.029e-2, 9.1133e-2, .3228],
+        "v1-CH": [0.6056, -3.8093e-2, -7.7305e-2, 0.0, 444.377, 0.2899]},
+
+      # Table IX
+      "SG": {
+        "Tb-I": [6.9195, -2.33e-4, -23.5535, 2.2152e-3, 2.9806e7, -0.3418],
+        "Tb-CH": [7.3238e-1, -1.01845e-3, -8.1635e-2, 3.60649e-5,
+                  1.69916e-3, 8.90041e-1],
+        "M-I": [6.3028, -1.588e-3, -20.594, 7.344e-3, 1.1284e6, -7.71e-2],
+        "M-CH": [9.19255e-1, -1.48844e-3, -7.925e-2, 4.921118e-5,
+                 6.84403e-2, 2.89844e-1],
+        "v1-I": [8.04224, -6.1406e-2, -26.3934, .2533, 3.8083e7, -.02353],
+        "v1-CH": [1.17777, 0.02614, -0.10966, -5.654e-3, .18242, .05245]},
+
+      # Table X
+      "I": {
+        "Tb-SG": [0.022657, 3.9052e-4, 2.468316, -5.70425e-4, 5.7209e-2,
+                  -0.719895],
+        "Tb-CH": [4.307e-3, -9.8747e-5, -6.0737e-2, -4.414e-5, 0.4470, 0.9896],
+        "M-SG": [0.422375, 3.18857e-4, -0.200996, -4.24514e-4,
+                 -8.43271e-3, 1.117818],
+        "M-CH": [4.239e-2, -5.6946e-4, -6.836e-2, 0.0, 0.1656, 0.8291],
+        "v1-SG": [.26376, 1.7458e-2, .231043, -1.8441e-2, -1.1275e-2, .770779],
+        "v1-CH": [0.08716, 6.1396e-3, -7.019e-2, -2.5935e-3, .05166, .84599]},
+
+      # Table XI
+      "CH": {
+        "Tb-SG": [17.22022, 8.24983e-3, 16.9402, -6.93931e-3, -2.72522,
+                  -6.79769],
+        "Tb-I": [1.8866e-12, 4.2873e-3, 71.6531, -0.0116, -1.3773, -13.6139],
+        "M-SG": [2.35475, 9.3485e-3, 4.74695, -8.01719e-3, -0.68418, -0.7682],
+        "M-I": [2.9004e-13, 7.8276e-3, 60.3484, -0.02445, -0.37884, -12.34051],
+        "v1-SG": [2.523e-12, .482811, 29.98797, -0.55768, -.146565, -20.31303],
+        "v1-I": [2.143e-12, 0.2832, 53.7316, -0.91085, -0.17158, -10.88065]}}
+
+    prop = {}
+    prop[tita1] = val1
+    prop[tita2] = val2
+
+    for key in par.keys():
+        if key not in (tita1, tita2):
+            a, b, c, d, e, f = par["key"]["%s-%s" % (tita1, tita2)]
+            x = a*tita1**e*tita2**f*exp(b*tita1+c*tita2+d*tita1*tita2)   # Eq 3
+
+            val = _unit(key, x)
+            prop[key] = val
+
+    return prop
+
+
+def prop_Cavett(Tb, API):
+    """Calculate petroleum fractions properties with the Cavett (1980)
+    correlation. Use API as a alternate input parameter to specific gravity
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    API : float
+        API gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [ªR]
+        Pc: Critic pressure, [Pa]
+
+    References
+    ----------
+    [7] .. Cavett, R.H., 1962. Physical data for distillation calculations,
+        vapor-liquid equilibrium. Proceedings of the 27th Meeting, API, San
+        Francisco, 1962, Issue 3, pp. 351–366.
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+
+    a = [768.07121, 1.7133693, -0.0010834003, -0.0089212579, 0.38890584e-6,
+         0.5309492000e-5, 0.3271160000e-7]
+    Tc = a[0] + a[1]*Tb_F + a[2]*Tb_F**2 + a[3]*API*Tb_F + a[4]*Tb_F**3 + \
+        a[5]*API*Tb_F**2 + a[6]*API**2*Tb_F**2
+
+    b = [2.82904060, 0.94120109e-3, -0.30474749e-5, -0.20876110e-4,
+         0.15184103e-8, 0.11047899e-7, -0.48271599e-7, 0.13949619e-9]
+    Pc = 10**(b[0] + b[1]*Tb_F + b[2]*Tb_F**2 + b[3]*API*Tb_F + b[4]*Tb_F**3 +
+              b[5]*API*Tb_F**2+b[6]*API**2*Tb_F+b[7]*API**2*Tb_F**2)
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["API"] = unidades.Dimensionless(API)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    return prop
+
+
+def prop_Lee_Kesler(Tb, SG):
+    """Calculate petroleum fractions properties with the Lee-Kesker (1976)
+    correlation. Use API as a alternate input parameter to specific gravity
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [ªR]
+        Pc: Critic pressure, [Pa]
+        M: Molecular weight, [-]
+        w: Acentric factor, [-]
+
+    References
+    ----------
+    [8] .. Kesler, M. G., and B. I. Lee. Improve Prediction of Enthalpy of
+        Fractions.” Hydrocarbon Processing Volume 55, Issue 3, March 1976,
+        Pages 153-158
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    Tc = 341.7+811.1*SG+(0.4244+0.1174*SG)*Tb_R+(0.4669-3.26238*SG)*1e5/Tb_R
+    Pc = exp(8.3634-0.0566/SG-(0.24244+2.2898/SG+0.11857/SG**2)*1e-3*Tb_R +
+             (1.4685+3.648/SG+0.47227/SG**2)*1e-7*Tb_R**2 -
+             (0.42019+1.6977/SG**2)*1e-10*Tb_R**3)
+    M = -12272.6+9486.4*SG+(4.6523-3.3287*SG)*Tb_R + \
+        (1-0.77084*SG-0.02058*SG**2)*(1.3437-720.79/Tb_R)*1e7/Tb_R + \
+        (1-0.80882*SG-0.02226*SG**2)*(1.8828-181.98/Tb_R)*1e12/Tb_R**3
+
+    tr = Tb/Tc
+    Kw = Tb_R**(1./3)/SG
+    if tr > 0.8:
+        w = -7.904+0.1352*Kw-0.007465*Kw**2+8359*tr+(1.408-0.01063*Kw)/tr
+    else:
+        w = (-log(Pc/14.7)-5.92714+6.09648/tr+1.28862*log(tr)-0.169347*tr**6)/(
+            15.2518-15.6875/tr-13.4721*log(tr)+0.43577*tr**6)
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["SG"] = unidades.Dimensionless(SG)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    prop["M"] = unidades.Dimensionless(M)
+    prop["w"] = unidades.Dimensionless(w)
+    return prop
+
+
+def prop_Sim_Daubert(Tb, SG):
+    """Calculate petroleum fractions properties with the Sim-Daubert (1980)
+    computerized version of Winn (1957) graphical correlations
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        M: Molecular weight, [-]
+        Tc: Critic temperature, [ªR]
+        Pc: Critic pressure, [Pa]
+
+    References
+    ----------
+    [6] .. Sim, W.J. and Daubert, T.E., 1980, Prediction of vapor-liquid
+        equilibria of undefined mixtures, Industrial and Engineering
+        Chemistry–Process Design and Development, 19: 386 –393.
+    """
+
+    M = 5.805e-5*Tb**2.3776/SG**0.9371                                   # Eq 3
+    Pc = 6.1483e12*Tb**-2.3177*SG**2.4853                                # Eq 4
+    Tc = exp(4.2009*Tb**0.08615*SG**0.04614)                             # Eq 5
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["SG"] = unidades.Dimensionless(SG)
+    prop["M"] = unidades.Dimensionless(M)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc)
+    return prop
+
+
+def prop_Watansiri_Owens_Starling(Tb, SG, M):
+    """Calculate petroleum fractions properties with the Watansiri-Owens-
+    Starling (1985) correlation using boiling temperature and molecular weight
+    as input parameters
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    SG: float
+        Specific gravity, [-]
+    M: float
+        Molecular weight, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [atm]
+        Vc: Critic volume, [cm3/gr]
+        w: Acentric factor, [-]
+        Dm: Dipole moment, [Debye]
+
+    References
+    ----------
+    [10] .. Watansiri, S., Owens, V.H., Starling, K.E., 1985. Correlations for
+        estimating critical constants, acentric factor, and dipole moment for
+        undefined coal-fluid fractions. Ind. Eng. Chem. Process. Des. Dev. 24,
+        294–296.
+    """
+
+    Tc = exp(-0.00093906*Tb + 0.03095*log(M) + 1.11067*log(Tb) +
+             M*(0.078154*SG**0.5-0.061061*SG**(1./3.)-0.016943*SG))      # Eq 1
+    Vc = exp(80.4479 - 129.8038*SG + 63.175*SG**2 - 13.175*SG**3 +
+             1.10108*log(M) + 42.1958*log(SG))                           # Eq 2
+    Pc = exp(3.95431 + 0.70682*(Tc/Vc)**0.8-4.48*M/Tc-0.15919*Tb/M)      # Eq 3
+    w = (0.92217e-3*Tb + 0.507288*Tb/M + 382.904/M + 0.242e5*(Tb/SG)**2 -
+         0.2165e-4*Tb*M + 0.1261e-2*SG*M + 0.1265e-4*M**2 + 0.2016e-4*SG*M**2 -
+         80.6495*Tb**(1/3.)/M-0.378e-2*Tb**(2/3.)/SG**2)*Tb/M            # Eq 4
+
+    # Eq 6
+    HVNP = -10397.5 + 46.2681*Tb - 1373.91*Tb**0.5 + 4595.81*log(Tb)
+    u1 = (197.933/M + 0.039177*M)*Vc/Tc
+    u2 = 0.3185e-2*Vc + 0.956247e-2*Tb - 0.5479e-3*HVNP
+    u3 = -1.34634*w + 0.906609*log(w)
+    u4 = -4.85638 - 0.013548*M + 0.271949e-3*M**2 + 1.04024*log(M)
+    Dm = u1/u4 + u2*u3
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["M"] = unidades.Dimensionless(M)
+    prop["Tc"] = unidades.Temperature(Tc)
+    prop["Pc"] = unidades.Pressure(Pc, "atm")
+    prop["Vc"] = unidades.SpecificVolume(Vc/M, "ft3lb")
+    prop["Dm"] = unidades.DipoleMoment(Dm, "Debye")
+    return prop
+
+
+def prop_Rowe(M):
+    """Calculate petroleum fractions properties with the Rowe (1986)
+    correlations (1978) using only the molecular weight as input parameter
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [R]
+        Tb: Boiling temperature, [R]
+        Pc: Critic pressure, [psi]
+
+    References
+    ----------
+    [11] .. Rowe, A.M. Internally consistent correlations for predicting phase
+        compositions for use in reservoir compositional simulators. Paper SPE
+        7475, In: Presented at the 53rd Annual Society of Petroleum Engineers
+        Fall Technical Conference and Exhibition, 1978.
+    """
+    n = (M-2)/14                                                        # Eq D1
+    Tc = (961-10**(2.95597-(0.090597*n**(2/3.))))*1.8                   # Eq D2
+    Tb = 4.347e-4*Tc**2+265                                             # Eq D3
+    Y = -0.0134426826*n+0.6801481651                                    # Eq D4
+    C = 10**Y*1e5                                                       # Eq D5
+    Pc = C/Tc                                                           # Eq D6
+
+    prop = {}
+    prop["M"] = unidades.Dimensionless(M)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Tb"] = unidades.Temperature(Tb, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    return prop
+
+
+def prop_Standing(M, SG):
+    """Calculate petroleum fractions properties with the Standing (1977)
+    correlations based in the graphical plot of Mathews et al. (1942) using
+    molecular weight and specific gravity as input parameter
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [atm]
+
+    References
+    ----------
+    [12] .. Standing, M.B., Volumetric and Phase Behavior of Oil Field
+        Hydrocarbon Systems. Society of Petroleum Engineers, Dallas, TX. 1977
+    """
+    Tc = 608 + 364*log(M-71.2) + (2450*log(M)-3800)*log(SG)             # Eq 25
+    Pc = 1188 - 431*log(M-61.1) + (2319-852*log(M-53.7))*(SG-0.8)       # Eq 26
+
+    prop = {}
+    prop["M"] = unidades.Dimensionless(M)
+    prop["SG"] = unidades.Dimensionless(SG)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    return prop
+
+
+def prop_Willman_Teja(Tb):
+    """Calculate petroleum fractions properties with the Willman-Teja (1987)
+    correlations using only the boiling temperature as input parameter
+
+    Parameters
+    ------------
+    Tb: float
+        Boiling temperature, [K]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [MPa]
+
+    References
+    ----------
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+    [12] .. Bert Willman, Amyn S. Teja, Prediction of dew points of
+        semicontinuous natural gas and petroleum mixtures. 1. Characterization
+        by use of an effective carbon number and ideal solution predictions.
+        Ind. Eng. Chem. Res., 1987, 26 (5), pp 948–952
+    """
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    # Eq 11
+    A = [95.50441892007, 3.742203001499, 2295.53031513, -1042.57256080,
+         -22.66229823925, -1660.893846582, 439.13226915]
+
+    def f(n):
+        return A[0] + A[1]*n + A[2]*n**0.667 + A[3]*n**0.5 + A[4]*log(n) + \
+            A[5]*n**0.8 + A[6]*n**0.9 - Tb
+
+    n = fsolve(f, 10)
+
+    Tc = Tb_R*(1+(1.25127+0.137252*n)**-0.884540633)                    # Eq 12
+    Pc = (2.33761+8.16448*n)/(0.873159+0.54285*n)**2                    # Eq 13
+
+    prop = {}
+    prop["Tb"] = unidades.Dimensionless(Tb)
+    prop["Tc"] = unidades.Temperature(Tc)
+    prop["Pc"] = unidades.Pressure(Pc, "MPa")
+    return prop
+
+
+def prop_Magoulas_Tassios(M, SG):
+    """Calculate petroleum fractions properties with the Magoulas-Tassios(1990)
+    correlations using molecular weight and specific gravity as input parameter
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [MPa]
+        w: Acentric factor, [-]
+
+    References
+    ----------
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+    [14] .. Magoulas, S., Tassios, D., Predictions of phase behavior of HT-HP
+        reservoir fluids. Paper SPE 37294, Society of Petroleum Engineers,
+        Richardson, TX, 1990.
+    """
+
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    Tc = -1247.4 + 0.792*M + 1971*SG - 27000./M + 707.4/SG
+    Pc = exp(0.01901 - 0.0048442*M + 0.13239*SG + 227./M - 1.1663/SG +
+             1.2702*log(M))
+    w = -0.64235 + 0.00014667*M + 0.021876*SG - 4.539/M + 0.21699*log(M)
+
+    prop = {}
+    prop["Tb"] = unidades.Dimensionless(Tb)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    prop["w"] = unidades.Dimensionless(w)
+    return prop
+
+
+def prop_Twu(Tb, SG):
+    """Calculate petroleum fractions properties with the Two (1983)
+    correlation with the boiling temperature and specific gravity as input
+    paramters
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        M: Molecular weight, [-]
+        Tc: Critic temperature, [ºR]
+        Pc: Critic pressure, [psi]
+        Vc: Critic volume, [ft3/lb]
+
+    Examples
+    --------
+    >>> crit = prop_Twu(510, 1.097)
+    >>> "%1f %1f %1f" % (crit["Tc"].R, crit["Pc"].psi, crit["M"])
+    '1381.8 555.6 130.8'
+
+    References
+    ----------
+    [5] .. Twu, C.H., 1984, An internally consistent correlation for predicting
+        the critical properties and molecular weights of petroleum and coal-tar
+        liquids, Fluid Phase Equilbria, 16: 137–150.
+    """
+
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+
+    Tco = Tb_R/(0.533272 + 0.191017e-3*Tb_R + 0.779681e-7*Tb_R**2 -
+                0.284376e-10*Tb_R**3 + 0.959468e28/Tb_R**13)             # Eq 1
+    alfa = 1-Tb_R/Tco                                                    # Eq 5
+    Vco = (1-(0.419869 - 0.505839*alfa - 1.56436*alfa**3 -
+              9481.7*alfa**14))**-8                                      # Eq 2
+    SGo = 0.843593-0.128624*alfa-3.36159*alfa**3-13749.5*alfa**12        # Eq 3
+
+    Pco = (3.83354 + 1.19629*alfa**0.5 + 34.8888*alfa + 36.1952*alfa**2 +
+           104.193*alfa**4)**2                                           # Eq 8
+
+    # Eq 4
+    def f(M):
+        Tita = log(M)
+        return exp(5.71419 + 2.71579*Tita - 0.286590*Tita**2 - 39.8544/Tita -
+                   0.122488/Tita**2) - 24.7522*Tita + 35.3155*Tita**2 - Tb_R
+    Moo = Tb_R/(10.44-0.0052*Tb_R)
+    Mo = newton(f, Moo)
+
+    DSGt = exp(5*(SGo-SG))-1                                            # Eq 13
+    ft = DSGt*(-0.362456/Tb_R**0.5+(.0398285-0.948125/Tb_R**0.5)*DSGt)  # Eq 12
+    Tc = Tco*((1+2*ft)/(1-2*ft))**2                                     # Eq 11
+
+    DSGv = exp(4*(SGo**2-SG**2))-1                                      # Eq 16
+    fv = DSGv*(0.46659/Tb_R**0.5+(-0.182421+3.01721/Tb_R**0.5)*DSGv)    # Eq 15
+    Vc = Vco*((1+2*fv)/(1-2*fv))**2                                     # Eq 14
+
+    DSGp = exp(0.5*(SGo-SG))-1                                          # Eq 19
+    fp = DSGp*(2.53262-46.1955/Tb_R**0.5-0.00127885*Tb_R + (
+        -11.4277+252.14/Tb_R**0.5+0.00230535*Tb_R)*DSGp)                # Eq 18
+    Pc = Pco*Tc/Tco*Vco/Vc*((1+2*fp)/(1-2*fp))**2                       # Eq 17
+
+    DSGm = exp(5*(SGo-SG))-1                                            # Eq 23
+    x = abs(0.012342-0.328086/Tb_R**0.5)                                # Eq 22
+    fm = DSGm*(x+(-0.0175691+0.193168/Tb_R**0.5)*DSGm)                  # Eq 21
+    M = exp(log(Mo)*((1+2*fm)/(1-2*fm))**2)                             # Eq 20
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["SG"] = unidades.Dimensionless(SG)
+    prop["M"] = unidades.Dimensionless(M)
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    prop["Vc"] = unidades.SpecificVolume(Vc/M, "ft3lb")
+    return prop
+
+
+def prop_Sancet(M):
+    """Calculate petroleum fractions properties with the Sancet (2007)
+    correlations using only the molecular weight as input parameter
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [ºR]
+        Pc: Critic pressure, [psi]
+        Tb: Boiling temperature, [ºR]
+
+    References
+    ----------
+    [5] .. Sancet, J., Heavy Faction .. math::`C_{7+}` Characterization for
+        PR-EOS. In: SPE 113026, 2007 SPE Annual Conference, November 11–14,
+        Anaheim, CA 2007.
+    """
+    Pc = 82.82 + 653*exp(-0.007427*M)                                   # Eq 16
+    Tc = -778.5 + 383.5*log(M-4.075)                                    # Eq 17
+    Tb = 194 + 0.001241*Tc**1.869                                       # Eq 18
+
+    prop = {}
+    prop["M"] = unidades.Dimensionless(M)
+    prop["Pc"] = unidades.Pressure(Pc, "psi")
+    prop["Tc"] = unidades.Temperature(Tc, "R")
+    prop["Tb"] = unidades.Temperature(Tb, "R")
+    return prop
+
+
+def prop_Silva_Rodriguez(M):
+    """Calculate petroleum fractions properties with the Silva-Rodriguez
+    (1992) correlations
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tb: Boiling temperature, [K]
+        SG: Specific gravity, [-]
+
+    References
+    ----------
+    [16] .. Silva, M.B., Rodriguez, F., Automatic fitting of equations of state
+        for phase behavior matching. Paper SPE 23703, Society of Petroleum
+        Engineers, Richardson, TX, 1992.
+    """
+    Tb = 447.08725*log(M/64.2576)                                       # Eq A4
+    SG = 0.132467*log(Tb)+0.0116483                                     # Eq A5
+
+    prop = {}
+    prop["M"] = unidades.Dimensionless(M)
+    prop["SG"] = unidades.Dimensionless(SG)
+    prop["Tb"] = unidades.Temperature(Tb, "F")
+    return prop
+
+
+def Tb_Soreide(M, SG):
+    """Calculate petroleum fractions boiling temperature with the Soreide
+    (1989) correlations
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    Tb : float
+        Boiling temperature, [K]
+
+    References
+    ----------
+    [17] .. Soreide, I. Improved Phase Behavior Predictions of Petroleum
+        Reservoir Fluids From a Cubic Equation of State. Doctor of engineering
+        dissertation. Norwegian Institute of Technology, Trondheim, 1989.
+    """
+    Tb = 1928.3 - 1.695e5*SG**3.266/M**0.03522*exp(
+        -4.922e-3*M-4.7685*SG+3.462e-3*M*SG)                          # Eq 3.59
+    return unidades.Temperature(Tb, "R")
+
+
+def vc_Hall_Yarborough(M, SG):
+    """Calculate petroleum fractions critic volume with the Hall-Yarborough
+    (1971) correlation
+
+    Parameters
+    ------------
+    M: float
+        Molecular weight, [-]
+    SG: float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    vc : float
+        Boiling temperature, [K]
+
+    References
+    ----------
+    [18] .. Hall, K. R., and L. Yarborough. New Simple Correlation for
+        Predicting Critical Volume. Chemical Engineering (November 1971): 76.
+    """
+    Vc = 0.025*M**1.15/SG**0.7985
+    return unidades.SpecificVolume(Vc/M, "ft3lb")
+
+
+def prop_Edmister(**kwargs):
+    """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
+    from the Edmister (1958) correlations
+
+    Parameters
+    ------------
+    Tc : float
+        Critic temperature, [ºR]
+    Pc : float
+        Critic pressure, [psi]
+    Tb : float
+        Boiling temperature, [ºR]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    prop : Dict with the input parameter and the missing parameter in input
+
+    References
+    ----------
+    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
+        Compressibility Factors and Equations of State. Petroleum Refiner 37
+        (April 1958): 173–179.
+    """
+    count_available = 0
+    if "Tc" in kwargs and kwargs["Tc"]:
+        count_available += 1
+        Tc = unidades.Temperature(kwargs["Tc"])
+    else:
+        unknown = "Tc"
+
+    if "Pc" in kwargs and kwargs["Pc"]:
+        count_available += 1
+        Pc = unidades.Pressure(kwargs["Pc"])
+    else:
+        unknown = "Pc"
+
+    if "Tb" in kwargs and kwargs["Tb"]:
+        count_available += 1
+        Tb = unidades.Temperature(kwargs["Tb"])
+    else:
+        unknown = "Tb"
+    if "w" in kwargs:
+        count_available += 1
+        w = unidades.Dimensionless(kwargs["w"])
+    else:
+        unknown = "w"
+
+    if count_available != 3:
+        raise ValueError("Bad incoming variables input")
+
+    if unknown == "Tc":
+        Tc = unidades.Temperature(Tb.R*(3*log10(Pc.psi)/7/(w+1)+1), "R")
+    elif unknown == "Pc":
+        Pc = unidades.Pressure(10**(7/3.*(w+1)*(Tc.R/Tb.R-1)), "atm")
+    elif unknown == "Tb":
+        Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
+    elif unknown == "w":
+        w = unidades.Dimensionless(3*log10(Pc.atm)/7/(Tc.R/Tb.R-1)-1)
+
+    prop = {}
+    prop["Tc"] = Tc
+    prop["Pc"] = Pc
+    prop["Tb"] = Tb
+    prop["w"] = w
+    return prop
+
+
+# Zc methods
+
+    def Zc_Lee_Kesler(self):
+        """Lee, B. I. and Kesler, M. G., "A Generalized Thermodynamic Correlation Based on Three- Parameter Corresponding States," American Institute of Chemical Engineers Journal, Vot. 21, 1975,"""
+        return 0.2905-0.085*self.f_acent
+
+    def Zc_Haugen(self):
+        """Haugen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process Principles, 2nd ed. New York: Wiley, 1959, p. 577."""
+        return 1./(1.28*self.f_acent+3.41)
+
+    def Zc_Reid(self):
+        """Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21."""
+        return 0.291-0.08*self.f_acent
+
+    def Zc_Salerno(self):
+        """Salerno, S., et al. “Prediction of Vapor Pressures and Saturated Volumes.” Fluid Phase Equilibria 27 (June 10, 1985): 15–34."""
+        return 0.291-0.08*self.f_acent-0.016*self.f_acent**2
+
+    def Zc_Nath(self):
+        """Nath, J. “Acentric Factor and the Critical Volumes for Normal Fluids.” Industrial Engineering and Chemical. Fundamentals 21, no. 3 (1985): 325–326."""
+        return 0.2918-0.0928*self.f_acent
+
+
+
 
 def prop_Riazi_Adwani(propiedad, conocida, tita, SG):
     """Riazi, M. R. and Adwani, H. A., "Some Guidelines for Choosing a Characterization Method for Petroleum Fractions in Process Simulators," Chemical Engineering Research and Design, IchemE, Vol. 83, 2005.
@@ -334,72 +1220,45 @@ def prop_Riazi_Alsahhaf(propiedad, M, reverse=False):
         9 - Parámetro de solubilidad, (cal/cm³)⁰'⁵
     M: peso molecular
     reverse: indica si el cálculo es a la inversa para calcular M"""
-    tita=[1080, 1.07, 1.05, 0.34, 1.2, 0.0, -0.22, 0.3, 30.3, 8.6][propiedad]
-    a=[6.97996, 3.56073, 3.80258, 2.30884, -0.34742, 6.34492, -3.2201, -6.252, 17.45018, 2.29195][propiedad]
-    b=[0.01964, 2.93886, 3.12287, 2.96508, 0.02327, 0.7239, 0.0009, -3.64457, 9.70188, 0.54907][propiedad]
-    c=[2./3, 0.1, 0.1, 0.1, 0.55, 0.3, 1.0, 0.1, 0.1, 0.3][propiedad]
+    tita = [1080, 1.07, 1.05, 0.34, 1.2, 0.0, -0.22, 0.3, 30.3, 8.6][propiedad]
+    a = [6.97996, 3.56073, 3.80258, 2.30884, -0.34742, 6.34492, -3.2201, -6.252, 17.45018, 2.29195][propiedad]
+    b = [0.01964, 2.93886, 3.12287, 2.96508, 0.02327, 0.7239, 0.0009, -3.64457, 9.70188, 0.54907][propiedad]
+    c = [2./3, 0.1, 0.1, 0.1, 0.55, 0.3, 1.0, 0.1, 0.1, 0.3][propiedad]
 
     if reverse:
         return ((a-log(tita-M))/b)**(1./c)
     else:
-        x=tita-exp(a-b*M**c)
+        x = tita-exp(a-b*M**c)
         if propiedad == 0:
-            x=unidades.Temperature(x)
+            x = unidades.Temperature(x)
         elif propiedad in [2, 6]:
-            x=unidades.Density(x, "gcc")
-        elif propiedad==5:
-            x=unidades.Pressure(x, "bar")
-        elif propiedad==8:
-            x=unidades.Tension(x, "dyncm")
-        elif propiedad==9:
-            x=unidades.SolubilityParameter(x, "calcc")
+            x = unidades.Density(x, "gcc")
+        elif propiedad == 5:
+            x = unidades.Pressure(x, "bar")
+        elif propiedad == 8:
+            x = unidades.Tension(x, "dyncm")
+        elif propiedad == 9:
+            x = unidades.SolubilityParameter(x, "calcc")
         return x
 
-
-def Heptane_Rowe(peso_molecular):
-    """Rowe, A. M. “Internally Consistent Correlations for Predicting Phase Compositions for Use in Reservoir Compositional Simulators.” Paper SPE 7475 presented at the 53rd Annual Society of Petroleum Engineers Fall Technical Conference and Exhibition, 1978"""
-    n=(peso_molecular-2)/14
-    a=2.95597-0.090597*n**(2./3)
-    y=-0.0137726826*n
-    Tc=1.8*(961-10**a)
-    pc=10**(4.89165+y)/Tc
-    Tb=0.0004347*Tc**2+265
-    return unidades.Temperature(Tc, "R"), unidades.Pressure(pc, "psi"), unidades.Temperature(Tb, "R")
-
-def Heptane_Standing(M, g):
-    """Standing, M. B. Volumetric and Phase Behavior of Oil Field Hydrocarbon Systems. Dallas: Society of Petroleum Engineers, 1977.
-    M: peso molecular
-    g: gravedad especifica"""
-    tc=608+364*log(M-71.2)+(2450*log(M)-3800)*log(g)
-    pc=1188-431*log(M-61.1)+(2319-852*log(M-53.7)*(g-0.8))
-    return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi")
-
-def Alkanes_Willman_Teja(n, Tb):
-    """Willman, B., and A. Teja. “Prediction of Dew Points of Semicontinuous Natural Gas and Petroleum Mixtures.” Industrial Engineering and Chemical Research 226, no. 5 (1987): 948–952.
-    n: numero de carbonos
-    Tb: Temperatura de ebullicion media en R"""
-    tc=Tb*(1+(1.25127+0.137242*n)**-0.884540633)
-    pc=(339.0416805+1184.157759*n)/(0.873159+0.54285*n)**1.9265669
-    return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi")
 
 def Paraffin_Twu(Tb):
     """Twu, C. “An Internally Consistent Correlation for Predicting the Critical Properties and Molecular Weight of Petroleum and Coal-Tar Liquids.” Fluid Phase Equilibria, no. 16 (1984): 137.
     Tb: temperatura de ebullición normal"""
-    tc=Tb*(0.533272+0.191017e-3*Tb+0.779681e-7*Tb**2-0.284376e-10*Tb**3+0.959468e2/(0.01*Tb)**13)
-    alfa=1-Tb/tc
-    pc=(3.83354+1.19629*alfa**0.5+34.8888*alfa+36.1952*alfa**2+104.193*alfa**4)**2
-    vc=(1+0.419869+0.505839*alfa+1.56436*alfa**3+9481.7*alfa**14)**-8
-    g=0.843593-0.128624*alfa-3.36159*alfa**3-13749.5*alfa**12
+    tc = Tb*(0.533272+0.191017e-3*Tb+0.779681e-7*Tb**2-0.284376e-10*Tb**3+0.959468e2/(0.01*Tb)**13)
+    alfa = 1-Tb/tc
+    pc = (3.83354+1.19629*alfa**0.5+34.8888*alfa+36.1952*alfa**2+104.193*alfa**4)**2
+    vc = (1+0.419869+0.505839*alfa+1.56436*alfa**3+9481.7*alfa**14)**-8
+    g = 0.843593-0.128624*alfa-3.36159*alfa**3-13749.5*alfa**12
     return unidades.Temperature(tc, "R"), unidades.Pressure(pc, "psi"), unidades.SpecificVolume(vc, "ft3lb"), g
-
-
 
 
 def Desglose_aromaticos(Ri, m):
     """Devuelve fracciones para los aromaticos monocíclicos y policíclicos"""
-    xma=-62.8245+59.90816*Ri-0.0248335*m
-    xpa=11.88175-11.2213*Ri+0.023745*m
+    xma = -62.8245+59.90816*Ri-0.0248335*m
+    xpa = 11.88175-11.2213*Ri+0.023745*m
     return xma, xpa
+
 
 def Hydrates_Sloan(prop, T=None, P=None, y=[]):
     """Sloan, E. “Phase Equilibria of Natural Gas Hydrates.” Paper presented at the Gas Producers Association Annual Conference, New Orleans, March 19–21, 1984.
@@ -1411,13 +2270,14 @@ class Petroleo(newComponente):
 
         self.Nc=self.kwargs["Nc"]
         if self.definicion==7:
-            self.M=prop_Ahmed(0, self.kwargs["Nc"])
-            self.Tc=prop_Ahmed(1, self.kwargs["Nc"])
-            self.Pc=prop_Ahmed(2, self.kwargs["Nc"])
-            self.Vc=prop_Ahmed(6, self.kwargs["Nc"])
-            self.Tb=prop_Ahmed(3, self.kwargs["Nc"])
-            self.f_acent=prop_Ahmed(4, self.kwargs["Nc"])
-            self.SG=prop_Ahmed(5, self.kwargs["Nc"])
+            prop = prop_Ahmed(self.kwargs["Nc"])
+            self.M = prop["M"]
+            self.Tc = prop["Tc"]
+            self.Pc = prop["Pc"]
+            self.Vc = prop["Vc"]
+            self.Tb = prop["Tb"]
+            self.f_acent = prop["w"]
+            self.SG = prop["SG"]
             self.API=141.5/self.SG-131.5
 
         if self.hasRefraction:
@@ -1529,108 +2389,106 @@ class Petroleo(newComponente):
             return prop_Riazi_Alsahhaf(2, self.kwargs["M"])
 
     def peso_molecular_Riazi_Daubert(self):
-        return prop_Riazi_Daubert(0, self.Tb, self.SG)
+        return prop_Riazi_Daubert_1980(self.Tb, self.SG)["M"]
 
     def tc_Riazi_Daubert(self):
-        return unidades.Temperature(prop_Riazi_Daubert(1, self.Tb, self.SG), "R")
+        return prop_Riazi_Daubert_1980(self.Tb, self.SG)["Tc"]
 
     def pc_Riazi_Daubert(self):
-        return unidades.Pressure(prop_Riazi_Daubert(2, self.Tb, self.SG), "psi")
+        return prop_Riazi_Daubert_1980(self.Tb, self.SG)["Pc"]
 
     def vc_Riazi_Daubert(self):
-        return unidades.SpecificVolume(prop_Riazi_Daubert(3, self.Tb, self.SG), "ft3lb")
+        return prop_Riazi_Daubert_1980(self.Tb, self.SG)["Vc"]
 
     def peso_molecular_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return prop_Riazi_Daubert_Tb_SG(0, self.Tb, self.SG)
-        elif self.definicion==3:
-            return prop_Riazi_Daubert_Tb_I(0, self.Tb, self.I)
-        elif self.definicion==5:
-            return prop_Riazi_Daubert_Tb_CH(0, self.Tb, self.CH)
-        elif self.definicion==7:
-            return prop_Riazi_Daubert_v100_I(0, self.v100, self.I)
-
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["M"]
+        elif self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["M"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["M"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["M"]
 
     def tc_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return unidades.Temperature(prop_Riazi_Daubert_Tb_SG(1, self.Tb, self.SG))
-        elif self.definicion==2:
-            return unidades.Temperature(prop_Riazi_Daubert_M_SG(1, self.M, self.SG))
-        elif self.definicion==3:
-            return unidades.Temperature(prop_Riazi_Daubert_Tb_I(1, self.Tb, self.I))
-        elif self.definicion==4:
-            return unidades.Temperature(prop_Riazi_Daubert_M_I(1, self.M, self.I))
-        elif self.definicion==5:
-            return unidades.Temperature(prop_Riazi_Daubert_Tb_CH(1, self.Tb, self.CH))
-        elif self.definicion==6:
-            return unidades.Temperature(prop_Riazi_Daubert_M_CH(1, self.M, self.CH))
-        elif self.definicion==7:
-            return unidades.Temperature(prop_Riazi_Daubert_v100_I(1, self.v100, self.I))
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["Tc"]
+        elif self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["Tc"]
+        elif self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["Tc"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["Tc"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["Tc"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["Tc"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["Tc"]
 
     def pc_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return unidades.Pressure(prop_Riazi_Daubert_Tb_SG(2, self.Tb, self.SG), "bar")
-        elif self.definicion==2:
-            return unidades.Pressure(prop_Riazi_Daubert_M_SG(2, self.M, self.SG), "bar")
-        elif self.definicion==3:
-            return unidades.Pressure(prop_Riazi_Daubert_Tb_I(2, self.Tb, self.I), "bar")
-        elif self.definicion==4:
-            return unidades.Pressure(prop_Riazi_Daubert_M_I(2, self.M, self.I), "bar")
-        elif self.definicion==5:
-            return unidades.Pressure(prop_Riazi_Daubert_Tb_CH(2, self.Tb, self.CH), "bar")
-        elif self.definicion==6:
-            return unidades.Pressure(prop_Riazi_Daubert_M_CH(2, self.M, self.CH), "bar")
-        elif self.definicion==7:
-            return unidades.Pressure(prop_Riazi_Daubert_v100_I(2, self.v100, self.I), "bar")
-
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["Pc"]
+        elif self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["Pc"]
+        elif self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["Pc"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["Pc"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["Pc"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["Pc"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["Pc"]
 
     def vc_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_Tb_SG(3, self.Tb, self.SG), "lkg")
-        elif self.definicion==2:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_M_SG(3, self.M, self.SG), "lkg")
-        elif self.definicion==3:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_Tb_I(3, self.Tb, self.I), "lkg")
-        elif self.definicion==4:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_M_I(3, self.M, self.I), "lkg")
-        elif self.definicion==5:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_Tb_CH(3, self.Tb, self.CH), "lkg")
-        elif self.definicion==6:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_M_CH(3, self.M, self.CH), "lkg")
-        elif self.definicion==7:
-            return unidades.SpecificVolume(prop_Riazi_Daubert_v100_I(3, self.v100, self.I), "lkg")
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["Vc"]
+        elif self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["Vc"]
+        elif self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["Vc"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["Vc"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["Vc"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["Vc"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("M", self.v100, "I", self.I)["Vc"]
 
     def tb_Riazi_Daubert_ext(self):
-        if self.definicion==2:
-            return unidades.Temperature(prop_Riazi_Daubert_M_SG(0, self.M, self.SG))
-        elif self.definicion==4:
-            return unidades.Temperature(prop_Riazi_Daubert_M_I(0, self.M, self.I))
-        elif self.definicion==6:
-            return unidades.Temperature(prop_Riazi_Daubert_M_CH(0, self.M, self.CH))
-        elif self.definicion==7:
-            return unidades.Temperature(prop_Riazi_Daubert_v100_I(0, self.v100, self.I))
+        if self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["Tb"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["Tb"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["Tb"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["Tb"]
 
     def I_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return prop_Riazi_Daubert_Tb_SG(4, self.Tb, self.SG)
-        elif self.definicion==2:
-            return prop_Riazi_Daubert_M_SG(4, self.M, self.SG)
-        elif self.definicion==5:
-            return prop_Riazi_Daubert_Tb_CH(4, self.Tb, self.CH)
-        elif self.definicion==6:
-            return prop_Riazi_Daubert_M_CH(4, self.M, self.CH)
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["I"]
+        elif self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["I"]
+        elif self.definicion == 5:
+            return prop_Riazi_Daubert("Tb", self.Tb, "CH", self.CH)["I"]
+        elif self.definicion == 6:
+            return prop_Riazi_Daubert("M", self.M, "CH", self.CH)["I"]
 
     def CH_Riazi_Daubert_ext(self):
-        if self.definicion==1:
-            return prop_Riazi_Daubert_Tb_SG(5, self.Tb, self.SG)
-        elif self.definicion==2:
-            return prop_Riazi_Daubert_M_SG(5, self.M, self.SG)
-        elif self.definicion==3:
-            return prop_Riazi_Daubert_Tb_I(5, self.Tb, self.I)
-        elif self.definicion==4:
-            return prop_Riazi_Daubert_M_I(5, self.M, self.I)
-        elif self.definicion==7:
-            return prop_Riazi_Daubert_v100_I(5, self.v100, self.I)
+        if self.definicion == 1:
+            return prop_Riazi_Daubert("Tb", self.Tb, "SG", self.SG)["CH"]
+        elif self.definicion == 2:
+            return prop_Riazi_Daubert("M", self.M, "SG", self.SG)["CH"]
+        elif self.definicion == 3:
+            return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["CH"]
+        elif self.definicion == 4:
+            return prop_Riazi_Daubert("M", self.M, "I", self.I)["CH"]
+        elif self.definicion == 7:
+            return prop_Riazi_Daubert("v1", self.v100, "I", self.I)["CH"]
 
     def tb_Riazi_Adwani(self):
         return unidades.Temperature(prop_Riazi_Adwani(0, 1, self.M, self.SG))
@@ -3259,7 +4117,6 @@ if __name__ == '__main__':
 #    petroleo=Petroleo(P_dist=10, T_dist=v, D1160=D1160)
 
 
-#    print prop_Riazi_Daubert_M_SG(0, 252., 0.8095)
 
 #        SG=0.867566
 #        SGo=0.7
