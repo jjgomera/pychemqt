@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 from string import ascii_lowercase, digits
 import tempfile
 import time
@@ -31,6 +30,89 @@ from PyQt5.QtWidgets import QApplication
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
 from lib import unidades, config, eos, sql
+
+
+_doi__ = {
+    "1":
+        {"autor": "Lee, B. I. and Kesler, M. G.",
+         "title": "A Generalized Thermodynamic Correlation Based on"
+                  "Three-Parameter Corresponding States",
+         "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
+         "doi": "10.1002/aic.690210313"},
+
+}
+
+
+def Pv_Lee_Kesler(T, Tc, Pc, w):
+    """Calculates vapor pressure of a fluid using the Lee-Kesler correlation
+
+    The vapor pressure is given by:
+
+    .. math::
+        \ln P_r = f^{(0)} + \omega f^{(1)}
+
+        f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6
+
+        f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure [Pa]
+    w : float
+        Acentric factor [-]
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure at T [Pa]
+
+    References
+    ----------
+    [1] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+        Correlation Based on Three-Parameter Corresponding States. American
+        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    """
+    # Eq 17, pag 525
+    Tr = T/Tc
+    f0 = 5.92714 - 6.09648/Tr - 1.28862*log(Tr) + 0.169347*Tr**6
+    f1 = 15.2518 - 15.6875/Tr - 13.4721*log(Tr) + 0.43577*Tr**6
+    return unidades.Pressure(exp(f0 + w*f1)*Pc)
+
+
+def f_acent_Lee_Kesler(Tb, Tc, Pc):
+    """Calculates acentric factor of a fluid using the Lee-Kesler correlation
+
+    Parameters
+    ----------
+    Tb : float
+        Boiling temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure [Pa]
+
+    Returns
+    -------
+    w : float
+        Acentric factor [-]
+
+    References
+    ----------
+    [1] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+        Correlation Based on Three-Parameter Corresponding States. American
+        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    """
+    Tr = Tb/Tc
+    Pr = 101325/Pc
+    w = (log(Pr) - 5.92714 + 6.09648/Tr + 1.28862*log(Tr) - 0.169347*Tr**6)/(
+        15.2518 - 15.6875/Tr - 13.4721*log(Tr) + 0.43577*Tr**6)
+
+    return unidades.Dimensionless(w)
 
 
 class Componente(object):
@@ -569,9 +651,7 @@ class Componente(object):
         Método alternativo para calcular la presión de vapor, usando las
         propiedades críticas, cuando no están disponibles los parametros DIPPR
         ni de Antoine pero si las propiedades críticas, API procedure 5A1.16, pag 390"""
-        f0=5.92714-6.09648/self.tr(T)-1.28862*log(self.tr(T))+0.169347*self.tr(T)**6
-        f1=15.2518-15.6875/self.tr(T)-13.4721*log(self.tr(T))+0.43577*self.tr(T)**6
-        return unidades.Pressure(exp(f0+self.f_acent*f1)*self.Pc.atm, "atm")
+        return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
 
     def Pv_Wagner(self, T):
         """Método alternativo para el cálculo de la presión de vapor, API procedure 5A1.3 pag 366"""
