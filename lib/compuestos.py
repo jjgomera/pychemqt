@@ -39,6 +39,12 @@ _doi__ = {
                   "Three-Parameter Corresponding States",
          "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
          "doi": "10.1002/aic.690210313"},
+    "2":
+        {"autor": "Tarek Ahmed",
+         "title": "Equations of State and PVT Analysis: Applications for"
+                  "Improved Reservoir Modeling, 2nd Edition",
+         "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
+         "doi": "https://doi.org/10.1016/B978-0-12-801570-4.00002-7"},
 
 }
 
@@ -71,11 +77,24 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     Pv : float
         Vapor pressure at T [Pa]
 
+    Examples
+    --------
+    Example 1.2 from [2]_; propane at 80ºF
+
+    >>> T = unidades.Temperature(80, "F")
+    >>> Tc = unidades.Temperature(666.01, "R")
+    >>> Pc = unidades.Pressure(616.3, "psi")
+    >>> "%0.0f" % Pv_Lee_Kesler(T, Tc, Pc, 0.1522).psi
+    '144'
+
     References
     ----------
-    [1] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-        Correlation Based on Three-Parameter Corresponding States. American
-        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    .. [1] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+       Correlation Based on Three-Parameter Corresponding States. American
+       Institute of Chemical Engineers Journal, Vot. 21, 1975
+    .. [2] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+       Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+       2016, ISBN 9780128015704
     """
     # Eq 17, pag 525
     Tr = T/Tc
@@ -103,9 +122,9 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
 
     References
     ----------
-    [1] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-        Correlation Based on Three-Parameter Corresponding States. American
-        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    .. [1] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+       Correlation Based on Three-Parameter Corresponding States. American
+       Institute of Chemical Engineers Journal, Vot. 21, 1975
     """
     Tr = Tb/Tc
     Pr = 101325/Pc
