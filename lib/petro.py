@@ -163,6 +163,36 @@ _doi__ = {
          "title": "Technical Data book: Petroleum Refining 6th Edition",
          "ref": "",
          "doi": ""},
+    "21":
+        {"autor": "Salerno, S, Cascella, M., May, D., Watson, P., Tassios, D.",
+         "title": "Prediction of Vapor Pressures and Saturated Volumes with a"
+                  "Simple Cubic Equation of State: Part I. A Reliable Data"
+                  "Base",
+         "ref": "Fluid Phase Equilibria, Volume 27, 1986, Pages 15-34",
+         "doi": "10.1016/0378-3812(86)87038-8"},
+    "22":
+        {"autor": "Hougen, O. A., K. M. Watson, and R. A. Ragatz.",
+         "title": "Chemical Process Principles, 2nd ed.",
+         "ref": "New York: Wiley, 1959, p. 577.",
+         "doi": ""},
+    "23":
+        {"autor": "Reid, R., J. M. Prausnitz, and T. Sherwood.",
+         "title": "The Properties of Gases and Liquids, 3rd ed. New York:",
+                  "McGraw-Hill, 1977, p. 21.",
+         "ref": "",
+         "doi": ""},
+    "24":
+        {"autor": "Nath, J.",
+         "title": "Acentric Factor and the Critical Volumes for Normal Fluids",
+         "ref": "Industrial Engineering and Chemical. Fundamentals 21, no. 3"
+                "(1985): 325–326.",
+         "doi": "10.1021/i100007a023"},
+    "25":
+        {"autor": "Lee, B. I. and Kesler, M. G.",
+         "title": "A Generalized Thermodynamic Correlation Based on"
+                  "Three-Parameter Corresponding States",
+         "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
+         "doi": "10.1002/aic.690210313"},
 
 
     "21":
@@ -1142,27 +1172,129 @@ def prop_Edmister(**kwargs):
     return prop
 
 
-# Zc methods
+# Zc Methods
+def Zc_Hougen(w):
+    """Calculate the critical compressibility factdor Zc using the Hougen
+    correlation (1959)
 
-    def Zc_Lee_Kesler(self):
-        """Lee, B. I. and Kesler, M. G., "A Generalized Thermodynamic Correlation Based on Three- Parameter Corresponding States," American Institute of Chemical Engineers Journal, Vot. 21, 1975,"""
-        return 0.2905-0.085*self.f_acent
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
 
-    def Zc_Haugen(self):
-        """Haugen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process Principles, 2nd ed. New York: Wiley, 1959, p. 577."""
-        return 1./(1.28*self.f_acent+3.41)
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
 
-    def Zc_Reid(self):
-        """Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21."""
-        return 0.291-0.08*self.f_acent
+    References
+    ----------
+    [22] .. Hougen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process
+        Principles, 2nd ed. New York: Wiley, 1959, p. 577.
+    """
+    Zc = 1/(1.28*w+3.41)
 
-    def Zc_Salerno(self):
-        """Salerno, S., et al. “Prediction of Vapor Pressures and Saturated Volumes.” Fluid Phase Equilibria 27 (June 10, 1985): 15–34."""
-        return 0.291-0.08*self.f_acent-0.016*self.f_acent**2
+    return unidades.Dimensionless(Zc)
 
-    def Zc_Nath(self):
-        """Nath, J. “Acentric Factor and the Critical Volumes for Normal Fluids.” Industrial Engineering and Chemical. Fundamentals 21, no. 3 (1985): 325–326."""
-        return 0.2918-0.0928*self.f_acent
+
+def Zc_Reid(w):
+    """Calculate the critical compressibility factdor Zc using the Reid
+    Prausnith and Sherwood (1977) correlation
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [23] .. Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases
+        and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21.
+    """
+    Zc = 0.2918 - 0.0928*w
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Salerno(w):
+    """Calculate the critical compressibility factdor Zc using the Salerno
+    correlation (1985)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [21] .. Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
+        Prediction of Vapor Pressures and Saturated Volumes with a Simple Cubic
+        Equation of State: Part I. A Reliable Data Base, Fluid Phase
+        Equilibria, Volume 27, 1986, Pages 15-34
+    """
+    Zc = 0.291 - 0.08*w - 0.016*w**2                                     # Eq 3
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Nath(w):
+    """Calculate the critical compressibility factdor Zc using the Nath
+    correlation (1985)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [24] .. Nath, J. Acentric Factor and the Critical Volumes for Normal
+        Fluids. Industrial Engineering and Chemical. Fundamentals 21, no. 3
+        (1985): 325–326.
+    """
+    Zc = 0.2908 - 0.0825*w                                              # Eq 1
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Lee_Kesler(w):
+    """Calculate the critical compressibility factdor Zc using the Lee-Kesler
+    correlation (1975)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [25] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+        Correlation Based on Three-Parameter Corresponding States. American
+        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    """
+    Zc = 0.2905 - 0.085*w                                               # Eq 21
+
+    return unidades.Dimensionless(Zc)
 
 
 
