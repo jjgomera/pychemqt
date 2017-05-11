@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
+from math import ceil
 import time
 
 from PyQt5.QtWidgets import QApplication
@@ -177,7 +178,7 @@ _doi__ = {
          "doi": ""},
     "23":
         {"autor": "Reid, R., J. M. Prausnitz, and T. Sherwood.",
-         "title": "The Properties of Gases and Liquids, 3rd ed. New York:",
+         "title": "The Properties of Gases and Liquids, 3rd ed. New York:"
                   "McGraw-Hill, 1977, p. 21.",
          "ref": "",
          "doi": ""},
@@ -195,20 +196,20 @@ _doi__ = {
          "doi": "10.1002/aic.690210313"},
 
 
-    "21":
+    "26":
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
 
 
-    "16":
+    "36":
         {"autor": "Papay, J.A.,",
          "title": "Termelestechnologiai Parameterek Valtozasa a Gazlelepk"
                   "Muvelese",
          "ref": "Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.",
          "doi": ""},
-    "17":
+    "37":
         {"autor": "Hall, K. R., and L. Yarborough",
          "title": "A New Equation of State for Z-factor Calculations",
          "ref": "Oil and Gas Journal (June 18, 1973): 82–92.",
@@ -337,15 +338,27 @@ def prop_Riazi_Daubert_1980(Tb, SG):
         Pc: Critic pressure, [psi]
         Vc: Critic volume, [ft3/lb]
 
+    Examples
+    --------
+    Example 2.2 from [9]_: C7+ fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> p = prop_Riazi_Daubert_1980(T, 0.7365)
+    >>> "%.0f %.0f %.0f %.4f" % (p["M"], p["Tc"].R, p["Pc"].psi, p["Vc"].ft3lb)
+    '96 990 467 0.0623'
+
     References
     ----------
     [4] .. Riazi, M. R., and T. E. Daubert. Simplify Property Predictions.
         Hydrocarbon Processing (March 1980): 115–116.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
 
-    a = [4.5673e-5, 24.2787, -3.12281e9, -7.5214e-3]
+    a = [4.5673e-5, 24.2787, 3.12281e9, 7.5214e-3]
     b = [2.1962, 0.58848, -2.3125, 0.2896]
     c = [-1.0164, 0.3596, 2.3201, -0.7666]
 
@@ -405,15 +418,35 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
         * 80ºF ≤ T ≤ 650ºF
         * 70 ≤ M ≤ 300
 
+    Examples
+    --------
+    Example 2.1 from [9]_: C7+ fraction with M=150 and SG=0.78
+
+    >>> p = prop_Riazi_Daubert("M", 150, "SG", 0.78)
+    >>> "%i %i %.4f %.0f" % (p["Tc"].R, p["Pc"].psi, p["Vc"].ft3lb, p["Tb"].R)
+    '1160 320 0.0636 825'
+
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> p = prop_Riazi_Daubert("Tb", T, "SG", 0.7365)
+    >>> "%.0f %.0f %.0f %.4f" % (p["M"], p["Tc"].R, p["Pc"].psi, p["Vc"].ft3lb)
+    '97 986 466 0.0626'
+    >>> "%.3f" % prop_Edmister(Tc=p["Tc"], Pc=p["Pc"], Tb=p["Tb"])["w"]
+    '0.287'
+
     References
     ----------
     [3] .. Riazi, M. R., and T. E. Daubert. “Characterization Parameters for
         Petroleum Fractions.” Industrial Engineering and Chemical Research 26,
         no. 24 (1987): 755–759.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
     # Check correct input parameter
     p1 = ("Tb", "M", "v1")
-    p2 = ("S", "I", "CH")
+    p2 = ("SG", "I", "CH")
 
     if tita1 in p2 and tita2 in p1:
         # Invert input parameters
@@ -486,15 +519,15 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
 
       # Table VIII
       "Tb": {
-        "M-SG": [-1.58262, 3.77409e-3, 2.984036, -4.25288e-3, 6.77857,
-                 4.01673e-1],
-        "M-I": [0.4283, 0.0, 0.0, 0.0, 136.395, 0.4748],
-        "M-CH": [4.72372e-1, -1.57415e-4, -4.5707e-2, 9.22926e-6,
-                 36.45625, 5.12976e-1],
-        "v1-SG": [1.34890, -1.3051e-2, -1.68759, -2.1247e-2, 4.28375e3,
-                  2.62914e-1],
-        "v1-I": [-3.8798, -6.5236e-2, 14.9371, 6.029e-2, 9.1133e-2, .3228],
-        "v1-CH": [0.6056, -3.8093e-2, -7.7305e-2, 0.0, 444.377, 0.2899]},
+        "M-SG": [6.77857, 3.77409e-3, 2.984036, -4.25288e-3,
+                 4.01673e-1, -1.58262],
+        "M-I": [136.395, 0.0, 0.0, 0.0, 0.4748, 0.4283],
+        "M-CH": [36.45625, -1.57415e-4, -4.5707e-2, 9.22926e-6, 5.12976e-1,
+                 4.72372e-1],
+        "v1-SG": [4.28375e3, -1.3051e-2, -1.68759, -2.1247e-2, 2.62914e-1,
+                  1.34890],
+        "v1-I": [9.1133e-2, -6.5236e-2, 14.9371, 6.029e-2, .3228, -3.8798],
+        "v1-CH": [444.377, -3.8093e-2, -7.7305e-2, 0.0, 0.2899, 0.6056]},
 
       # Table IX
       "SG": {
@@ -529,13 +562,13 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
         "v1-I": [2.143e-12, 0.2832, 53.7316, -0.91085, -0.17158, -10.88065]}}
 
     prop = {}
-    prop[tita1] = val1
-    prop[tita2] = val2
+    prop[tita1] = _unit(tita1, val1)
+    prop[tita2] = _unit(tita2, val2)
 
     for key in par.keys():
         if key not in (tita1, tita2):
-            a, b, c, d, e, f = par["key"]["%s-%s" % (tita1, tita2)]
-            x = a*tita1**e*tita2**f*exp(b*tita1+c*tita2+d*tita1*tita2)   # Eq 3
+            a, b, c, d, e, f = par[key]["%s-%s" % (tita1, tita2)]
+            x = a*val1**e*val2**f*exp(b*val1+c*val2+d*val1*val2)         # Eq 3
 
             val = _unit(key, x)
             prop[key] = val
@@ -560,11 +593,24 @@ def prop_Cavett(Tb, API):
         Tc: Critic temperature, [ªR]
         Pc: Critic pressure, [Pa]
 
+    Examples
+    --------
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> API = 141.5/0.7365-131.5
+    >>> p = prop_Cavett(T, API)
+    >>> "%.1f %.0f" % (p["Tc"].R, p["Pc"].psi)
+    '978.1 466'
+
     References
     ----------
     [7] .. Cavett, R.H., 1962. Physical data for distillation calculations,
         vapor-liquid equilibrium. Proceedings of the 27th Meeting, API, San
         Francisco, 1962, Issue 3, pp. 351–366.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -606,6 +652,15 @@ def prop_Lee_Kesler(Tb, SG):
         M: Molecular weight, [-]
         w: Acentric factor, [-]
 
+    Examples
+    --------
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> p = prop_Lee_Kesler(T, 0.7365)
+    >>> "%.0f %.0f %.1f %.3f" % (p["Tc"].R, p["Pc"].psi, p["M"], p["w"])
+    '981 470 98.7 0.306'
+
     References
     ----------
     [8] .. Kesler, M. G., and B. I. Lee. Improve Prediction of Enthalpy of
@@ -619,14 +674,14 @@ def prop_Lee_Kesler(Tb, SG):
     Tb_R = unidades.K2R(Tb)
 
     Tc = 341.7+811.1*SG+(0.4244+0.1174*SG)*Tb_R+(0.4669-3.26238*SG)*1e5/Tb_R
-    Pc = exp(8.3634-0.0566/SG-(0.24244+2.2898/SG+0.11857/SG**2)*1e-3*Tb_R +
+    Pc = exp(8.3634 - 0.0566/SG - (0.24244+2.2898/SG+0.11857/SG**2)*1e-3*Tb_R +
              (1.4685+3.648/SG+0.47227/SG**2)*1e-7*Tb_R**2 -
              (0.42019+1.6977/SG**2)*1e-10*Tb_R**3)
     M = -12272.6+9486.4*SG+(4.6523-3.3287*SG)*Tb_R + \
         (1-0.77084*SG-0.02058*SG**2)*(1.3437-720.79/Tb_R)*1e7/Tb_R + \
         (1-0.80882*SG-0.02226*SG**2)*(1.8828-181.98/Tb_R)*1e12/Tb_R**3
 
-    tr = Tb/Tc
+    tr = Tb_R/Tc
     Kw = Tb_R**(1./3)/SG
     if tr > 0.8:
         w = -7.904+0.1352*Kw-0.007465*Kw**2+8359*tr+(1.408-0.01063*Kw)/tr
@@ -662,11 +717,23 @@ def prop_Sim_Daubert(Tb, SG):
         Tc: Critic temperature, [ªR]
         Pc: Critic pressure, [Pa]
 
+    Examples
+    --------
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> p = prop_Sim_Daubert(T, 0.7365)
+    >>> "%.0f %.0f %.0f" % (p["Tc"].R, p["Pc"].psi, p["M"])
+    '979 479 96'
+
     References
     ----------
     [6] .. Sim, W.J. and Daubert, T.E., 1980, Prediction of vapor-liquid
         equilibria of undefined mixtures, Industrial and Engineering
         Chemistry–Process Design and Development, 19: 386 –393.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
 
     M = 5.805e-5*Tb**2.3776/SG**0.9371                                   # Eq 3
@@ -705,22 +772,34 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
         w: Acentric factor, [-]
         Dm: Dipole moment, [Debye]
 
+    Examples
+    --------
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> T = unidades.Temperature(198, "F")
+    >>> p = prop_Watansiri_Owens_Starling(T, 0.7365, 96)
+    >>> "%.0f %.5f" % (p["Tc"].R, p["Vc"].ft3lb)
+    '980 0.06548'
+
     References
     ----------
     [10] .. Watansiri, S., Owens, V.H., Starling, K.E., 1985. Correlations for
         estimating critical constants, acentric factor, and dipole moment for
         undefined coal-fluid fractions. Ind. Eng. Chem. Process. Des. Dev. 24,
         294–296.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
 
     Tc = exp(-0.00093906*Tb + 0.03095*log(M) + 1.11067*log(Tb) +
-             M*(0.078154*SG**0.5-0.061061*SG**(1./3.)-0.016943*SG))      # Eq 1
+             M*(0.078154*SG**0.5 - 0.061061*SG**(1./3.) - 0.016943*SG))  # Eq 1
     Vc = exp(80.4479 - 129.8038*SG + 63.175*SG**2 - 13.175*SG**3 +
              1.10108*log(M) + 42.1958*log(SG))                           # Eq 2
-    Pc = exp(3.95431 + 0.70682*(Tc/Vc)**0.8-4.48*M/Tc-0.15919*Tb/M)      # Eq 3
-    w = (0.92217e-3*Tb + 0.507288*Tb/M + 382.904/M + 0.242e5*(Tb/SG)**2 -
+    Pc = exp(3.95431 + 0.70682*(Tc/Vc)**0.8 - 4.84*M/Tc - 0.15919*Tb/M)  # Eq 3
+    w = (0.92217e-3*Tb + 0.507288*Tb/M + 382.904/M + 0.242e-5*(Tb/SG)**2 -
          0.2165e-4*Tb*M + 0.1261e-2*SG*M + 0.1265e-4*M**2 + 0.2016e-4*SG*M**2 -
-         80.6495*Tb**(1/3.)/M-0.378e-2*Tb**(2/3.)/SG**2)*Tb/M            # Eq 4
+         80.6495*Tb**(1/3.)/M - 0.378e-2*Tb**(2/3.)/SG**2)*Tb/M          # Eq 4
 
     # Eq 6
     HVNP = -10397.5 + 46.2681*Tb - 1373.91*Tb**0.5 + 4595.81*log(Tb)
@@ -735,7 +814,8 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
     prop["M"] = unidades.Dimensionless(M)
     prop["Tc"] = unidades.Temperature(Tc)
     prop["Pc"] = unidades.Pressure(Pc, "atm")
-    prop["Vc"] = unidades.SpecificVolume(Vc/M, "ft3lb")
+    prop["Vc"] = unidades.SpecificVolume(Vc/M, "ccg")
+    prop["w"] = unidades.Dimensionless(w)
     prop["Dm"] = unidades.DipoleMoment(Dm, "Debye")
     return prop
 
@@ -756,12 +836,28 @@ def prop_Rowe(M):
         Tb: Boiling temperature, [R]
         Pc: Critic pressure, [psi]
 
+    Examples
+    --------
+    Example 2.3 from [9]_: Petroleum fraction with M=216 and SG=0.8605
+
+    >>> p = prop_Rowe(216)
+    >>> "%.1f" % p["Tc"].R
+    '1279.8'
+
     References
     ----------
     [11] .. Rowe, A.M. Internally consistent correlations for predicting phase
         compositions for use in reservoir compositional simulators. Paper SPE
         7475, In: Presented at the 53rd Annual Society of Petroleum Engineers
         Fall Technical Conference and Exhibition, 1978.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+
+    Notes
+    -----
+    Critical pressure examples in [9]_ don't get result, the equations isn't
+    equal in both references
     """
     n = (M-2)/14                                                        # Eq D1
     Tc = (961-10**(2.95597-(0.090597*n**(2/3.))))*1.8                   # Eq D2
@@ -796,13 +892,24 @@ def prop_Standing(M, SG):
         Tc: Critic temperature, [K]
         Pc: Critic pressure, [atm]
 
+    Examples
+    --------
+    Example 2.3 from [9]_: Petroleum fraction with M=216 and SG=0.8605
+
+    >>> p = prop_Standing(216, 0.8605)
+    >>> "%.1f %.0f" % (p["Tc"].R, p["Pc"].psi)
+    '1269.3 270'
+
     References
     ----------
     [12] .. Standing, M.B., Volumetric and Phase Behavior of Oil Field
         Hydrocarbon Systems. Society of Petroleum Engineers, Dallas, TX. 1977
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
-    Tc = 608 + 364*log(M-71.2) + (2450*log(M)-3800)*log(SG)             # Eq 25
-    Pc = 1188 - 431*log(M-61.1) + (2319-852*log(M-53.7))*(SG-0.8)       # Eq 26
+    Tc = 608 + 364*log10(M-71.2) + (2450*log10(M)-3800)*log10(SG)       # Eq 25
+    Pc = 1188 - 431*log10(M-61.1) + (2319-852*log10(M-53.7))*(SG-0.8)   # Eq 26
 
     prop = {}
     prop["M"] = unidades.Dimensionless(M)
@@ -826,35 +933,43 @@ def prop_Willman_Teja(Tb):
     prop : A dict with the calculated properties
         Tc: Critic temperature, [K]
         Pc: Critic pressure, [MPa]
+        n: Carbon number, [-]
+
+    Examples
+    --------
+    Example 2.2 from [9]_: Petroleum fraction with Tb=198ºF and SG=0.7365
+
+    >>> Tb = unidades.Temperature(198, "F")
+    >>> p = prop_Willman_Teja(Tb)
+    >>> "%.0f %.0f" % (p["Tc"].R, p["Pc"].psi)
+    '977 442'
 
     References
     ----------
     [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
-    [12] .. Bert Willman, Amyn S. Teja, Prediction of dew points of
+    [13] .. Bert Willman, Amyn S. Teja, Prediction of dew points of
         semicontinuous natural gas and petroleum mixtures. 1. Characterization
         by use of an effective carbon number and ideal solution predictions.
         Ind. Eng. Chem. Res., 1987, 26 (5), pp 948–952
     """
-    # Convert input Tb in Kelvin to Rankine to use in the correlation
-    Tb_R = unidades.K2R(Tb)
-
     # Eq 11
     A = [95.50441892007, 3.742203001499, 2295.53031513, -1042.57256080,
          -22.66229823925, -1660.893846582, 439.13226915]
 
     def f(n):
-        return A[0] + A[1]*n + A[2]*n**0.667 + A[3]*n**0.5 + A[4]*log(n) + \
+        return A[0] + A[1]*n + A[2]*n**0.667 + A[3]*n**0.5 + A[4]*log10(n) + \
             A[5]*n**0.8 + A[6]*n**0.9 - Tb
 
     n = fsolve(f, 10)
 
-    Tc = Tb_R*(1+(1.25127+0.137252*n)**-0.884540633)                    # Eq 12
+    Tc = Tb*(1+1/(1.25127+0.137242*n))                                  # Eq 12
     Pc = (2.33761+8.16448*n)/(0.873159+0.54285*n)**2                    # Eq 13
 
     prop = {}
     prop["Tb"] = unidades.Dimensionless(Tb)
+    prop["n"] = n
     prop["Tc"] = unidades.Temperature(Tc)
     prop["Pc"] = unidades.Pressure(Pc, "MPa")
     return prop
@@ -878,6 +993,14 @@ def prop_Magoulas_Tassios(M, SG):
         Pc: Critic pressure, [MPa]
         w: Acentric factor, [-]
 
+    Examples
+    --------
+    Example 2.3 from [9]_: Petroleum fraction with M=216 and SG=0.8605
+
+    >>> p = prop_Magoulas_Tassios(216, 0.8605)
+    >>> "%.0f %.0f" % (p["Tc"].R, p["Pc"].psi)
+    '1317 273'
+
     References
     ----------
     [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
@@ -887,17 +1010,14 @@ def prop_Magoulas_Tassios(M, SG):
         reservoir fluids. Paper SPE 37294, Society of Petroleum Engineers,
         Richardson, TX, 1990.
     """
-
-    # Convert input Tb in Kelvin to Rankine to use in the correlation
-    Tb_R = unidades.K2R(Tb)
-
     Tc = -1247.4 + 0.792*M + 1971*SG - 27000./M + 707.4/SG
     Pc = exp(0.01901 - 0.0048442*M + 0.13239*SG + 227./M - 1.1663/SG +
              1.2702*log(M))
     w = -0.64235 + 0.00014667*M + 0.021876*SG - 4.539/M + 0.21699*log(M)
 
     prop = {}
-    prop["Tb"] = unidades.Dimensionless(Tb)
+    prop["M"] = unidades.Dimensionless(M)
+    prop["SG"] = unidades.Dimensionless(SG)
     prop["Tc"] = unidades.Temperature(Tc, "R")
     prop["Pc"] = unidades.Pressure(Pc, "psi")
     prop["w"] = unidades.Dimensionless(w)
@@ -1002,11 +1122,22 @@ def prop_Sancet(M):
         Pc: Critic pressure, [psi]
         Tb: Boiling temperature, [ºR]
 
+    Examples
+    --------
+    Example 2.1 from [9]_: C7+ fraction with M=150 and SG=0.78
+
+    >>> p = prop_Sancet(150)
+    >>> "%.0f %.0f %.0f" % (p["Tc"].R, p["Pc"].psi, p["Tb"].R)
+    '1133 297 828'
+
     References
     ----------
     [5] .. Sancet, J., Heavy Faction .. math::`C_{7+}` Characterization for
         PR-EOS. In: SPE 113026, 2007 SPE Annual Conference, November 11–14,
         Anaheim, CA 2007.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
     Pc = 82.82 + 653*exp(-0.007427*M)                                   # Eq 16
     Tc = -778.5 + 383.5*log(M-4.075)                                    # Eq 17
@@ -1035,11 +1166,22 @@ def prop_Silva_Rodriguez(M):
         Tb: Boiling temperature, [K]
         SG: Specific gravity, [-]
 
+    Examples
+    --------
+    Example 2.1 from [9]_: C7+ fraction with M=150 and SG=0.78
+
+    >>> p = prop_Silva_Rodriguez(150)
+    >>> "%.0f %.4f" % (p["Tb"].R, p["SG"])
+    '839 0.7982'
+
     References
     ----------
     [16] .. Silva, M.B., Rodriguez, F., Automatic fitting of equations of state
         for phase behavior matching. Paper SPE 23703, Society of Petroleum
         Engineers, Richardson, TX, 1992.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
     """
     Tb = 447.08725*log(M/64.2576)                                       # Eq A4
     SG = 0.132467*log(Tb)+0.0116483                                     # Eq A5
@@ -1162,7 +1304,7 @@ def prop_Edmister(**kwargs):
     elif unknown == "Tb":
         Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
     elif unknown == "w":
-        w = unidades.Dimensionless(3*log10(Pc.atm)/7/(Tc.R/Tb.R-1)-1)
+        w = unidades.Dimensionless(3/7*log10(Pc.atm)/(Tc.R/Tb.R-1)-1)
 
     prop = {}
     prop["Tc"] = Tc
