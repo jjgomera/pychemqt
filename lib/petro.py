@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
-from math import ceil
 import time
 
 from PyQt5.QtWidgets import QApplication
@@ -194,9 +193,30 @@ _doi__ = {
                   "Three-Parameter Corresponding States",
          "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
          "doi": "10.1002/aic.690210313"},
-
-
     "26":
+        {"autor": "Riazi, M. R., Al-Sahhaf, T. A. and Sl-Shammari M. A.",
+         "title": "A Generalized Method for Estimation of Critical Constants",
+         "ref": "Fluid Phase Equilibria, Vol. 147, 1998, pp. 1-6",
+         "doi": "10.1016/s0378-3812(98)00251-9"},
+    "27":
+        {"autor": "Riazi, M. R. and A1-Sahhaf, T. A.",
+         "title": "Physical Properties of Heavy Petroleum Fractions and Crude"
+                  "Oils",
+         "ref": "Fluid Phase Equilibria, Vol. 117, 1996, pp. 217-224.",
+         "doi": "10.1016/s0378-3812(98)00251-9"},
+    "28":
+        {"autor": "Riazi, M. R. and A1-Sahhaf, T.",
+         "title": "Physical Properties of n-Alkanes and n-Alkyl Hydrocarbons: "
+                  "Application to Petroleum Mixtures",
+         "ref": "Industrial and Engineering Chemistry Research, Vol. 34, 1995,"
+                " pp. 4145-4148.",
+         "doi": "10.1021/ie00038a062"},
+
+
+
+
+
+    "27":
         {"autor": "",
          "title": "",
          "ref": "",
@@ -217,13 +237,7 @@ _doi__ = {
         }
 
 
-
-
-
-
-
-
-def _unit(key, val, unit=""):
+def _unit(key, val, unit=None):
     """Set appropiate unit for value
 
     Parameters
@@ -245,15 +259,15 @@ def _unit(key, val, unit=""):
     Default use the petroleum english standards units, R, psi, ft³/lb...
     """
     if key in ("Tc", "Tb"):
-        if not unit:
+        if unit is None:
             unit = "R"
         x = unidades.Temperature(val, unit)
     elif key == "Pc":
-        if not unit:
+        if unit is None:
             unit = "psi"
         x = unidades.Pressure(val, unit)
     elif key == "Vc":
-        if not unit:
+        if unit is None:
             unit = "ft3lb"
         x = unidades.SpecificVolume(val, unit)
     else:
@@ -363,8 +377,8 @@ def prop_Riazi_Daubert_1980(Tb, SG):
     c = [-1.0164, 0.3596, 2.3201, -0.7666]
 
     prop = {}
-    prop["Tb"] = Tb
-    prop["SG"] = SG
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["SG"] = unidades.Dimensionless(SG)
 
     for i, key in enumerate(["M", "Tc", "Pc", "Vc"]):
         x = a[i]*Tb_R**b[i]*SG**c[i]
@@ -969,7 +983,7 @@ def prop_Willman_Teja(Tb):
 
     prop = {}
     prop["Tb"] = unidades.Dimensionless(Tb)
-    prop["n"] = n
+    prop["n"] = unidades.Dimensionless(n)
     prop["Tc"] = unidades.Temperature(Tc)
     prop["Pc"] = unidades.Pressure(Pc, "MPa")
     return prop
@@ -1455,65 +1469,170 @@ def prop_Riazi_Adwani(propiedad, conocida, tita, SG):
         1   -   Peso molecular
     """
     if conocida:
-        a=[9.3369, 218.9592, 8.2365e4, 9.703e6, 1.2419e-2, 1.04908][propiedad]
-        b=[1.65e-4, -3.4e-4, -9.04e-3, -9.512e-3, 7.27e-4, 2.9e-4][propiedad]
-        c=[1.4103, -0.40852, -3.3304, -15.8092, 3.3323, -7.339e-2][propiedad]
-        d=[-7.5152e-4, -2.5e-5, 0.01006, 0.01111, -8.87e-4, -3.4e-4][propiedad]
-        e=[0.5369, 0.331, -0.9366, 1.08283, 6.438e-3, 3.484e-3][propiedad]
-        f=[-0.7276, 0.8136, 3.1353, 10.5118, -1.61166, 1.05015][propiedad]
+        a = [9.3369, 218.9592, 8.2365e4, 9.703e6, 1.2419e-2, 1.04908][propiedad]
+        b = [1.65e-4, -3.4e-4, -9.04e-3, -9.512e-3, 7.27e-4, 2.9e-4][propiedad]
+        c = [1.4103, -0.40852, -3.3304, -15.8092, 3.3323, -7.339e-2][propiedad]
+        d = [-7.5152e-4, -2.5e-5, 0.01006, 0.01111, -8.87e-4, -3.4e-4][propiedad]
+        e = [0.5369, 0.331, -0.9366, 1.08283, 6.438e-3, 3.484e-3][propiedad]
+        f = [-0.7276, 0.8136, 3.1353, 10.5118, -1.61166, 1.05015][propiedad]
     else:
-        a=[0, 35.9416, 6.9575, 6.1677e10, 3.2709e-3, 0.997][propiedad]
-        b=[0, -6.9e-4, -0.0135, -7.583e-3, 8.4377e-4, 2.9e-4][propiedad]
-        c=[0, -1.4442, -0.3129, -28.5524, 4.59487, 5.0425][propiedad]
-        d=[0, 4.91e-4, 9.174e-3, 0.01172, -1.0617e-3, -3.1e-4][propiedad]
-        e=[0, 0.7293, 0.6791, 1.20493, 0.03201, -0.00929][propiedad]
-        f=[0, 1.2771, -0.6807, 17.2074, -2.34887, 1.01772][propiedad]
-    x=a*exp(b*tita+c*SG+d*tita*SG)*tita**e*SG**f
+        a = [0, 35.9416, 6.9575, 6.1677e10, 3.2709e-3, 0.997][propiedad]
+        b = [0, -6.9e-4, -0.0135, -7.583e-3, 8.4377e-4, 2.9e-4][propiedad]
+        c = [0, -1.4442, -0.3129, -28.5524, 4.59487, 5.0425][propiedad]
+        d = [0, 4.91e-4, 9.174e-3, 0.01172, -1.0617e-3, -3.1e-4][propiedad]
+        e = [0, 0.7293, 0.6791, 1.20493, 0.03201, -0.00929][propiedad]
+        f = [0, 1.2771, -0.6807, 17.2074, -2.34887, 1.01772][propiedad]
+    x = a*exp(b*tita+c*SG+d*tita*SG)*tita**e*SG**f
     if propiedad in [0, 1]:
-        x=unidades.Temperature(x)
-    elif propiedad==2:
-        x=unidades.Pressure(x, "bar")
-    elif propiedad==3:
-        x=unidades.MolarVolume(x, "cm3mol")
-    elif propiedad==5:
-        x=unidades.Density(x, "gcm3")
+        x = unidades.Temperature(x)
+    elif propiedad == 2:
+        x = unidades.Pressure(x, "bar")
+    elif propiedad == 3:
+        x = unidades.MolarVolume(x, "cm3mol")
+    elif propiedad == 5:
+        x = unidades.Density(x, "gcm3")
     return x
 
-def prop_Riazi_Alsahhaf(propiedad, M, reverse=False):
-    """Riazi, M. R. and A1-Sahhaf, T. A., "Physical Properties of Heavy Petroleum Fractions and Crude Oils," Fluid Phase Equilibria, Vol. 117, 1996, pp. 217-224.
-    propiedad a calcular
-        0 - temperatura de ebullicion, K
-        1 - Gravedad específica
-        2 - Densidad absoluta a 20ºC, g/cm³
-        3 - Parámetro d Huang
-        4 - Tb/Tc
-        5 - Presión crítica, bar
-        6 - Densidad crítica, gr/cm³
-        7 - factor acéntrico
-        8 - tension superficial, dyn/cm
-        9 - Parámetro de solubilidad, (cal/cm³)⁰'⁵
-    M: peso molecular
-    reverse: indica si el cálculo es a la inversa para calcular M"""
-    tita = [1080, 1.07, 1.05, 0.34, 1.2, 0.0, -0.22, 0.3, 30.3, 8.6][propiedad]
-    a = [6.97996, 3.56073, 3.80258, 2.30884, -0.34742, 6.34492, -3.2201, -6.252, 17.45018, 2.29195][propiedad]
-    b = [0.01964, 2.93886, 3.12287, 2.96508, 0.02327, 0.7239, 0.0009, -3.64457, 9.70188, 0.54907][propiedad]
-    c = [2./3, 0.1, 0.1, 0.1, 0.55, 0.3, 1.0, 0.1, 0.1, 0.3][propiedad]
 
-    if reverse:
-        return ((a-log(tita-M))/b)**(1./c)
-    else:
-        x = tita-exp(a-b*M**c)
-        if propiedad == 0:
-            x = unidades.Temperature(x)
-        elif propiedad in [2, 6]:
-            x = unidades.Density(x, "gcc")
-        elif propiedad == 5:
-            x = unidades.Pressure(x, "bar")
-        elif propiedad == 8:
-            x = unidades.Tension(x, "dyncm")
-        elif propiedad == 9:
-            x = unidades.SolubilityParameter(x, "calcc")
-        return x
+def prop_Riazi_Alsahhaf(Tb, M, rho):
+    """Calculate petroleum fractions properties with the Riazi-AlSahhaf (1998)
+    correlation with the boiling temperature and liquid density at 20ºC as
+    input paramters.
+
+    Parameters
+    ------------
+    Tb : float
+        Normal boiling temperature, [K]
+    rho : float
+        Liquid density at 20ºC and 1 atm, [g/cm³]
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [MPa]
+        Vc: Critic volume, [cm³/g]
+
+    Notes
+    -----
+    This correlation generalized the Riazi-Daubert method to non-polar
+    compounds and gases.
+
+    References
+    ----------
+    [26] .. Riazi, M. R., Al-Sahhaf, T. A. and Sl-Shammari M. A. A Generalized
+        Method for Estimation of Critical Constants. Fluid Phase Equilibria,
+        Vol. 147, 1998, pp. 1-6
+    """
+    a = [1.60193, 10.74145, -8.84800]
+    b = [0.00558, 0.07434, -0.03632]
+    c = [-0.00112, -0.00047, -0.00547]
+    d = [-0.52398, -2.10482, 0.16629]
+    e = [0.00104, 0.00508, -0.00028]
+    f = [-0.06403, -1.18869, 0.04660]
+    g = [0.93857, -0.66773, 2.00241]
+    h = [-0.00085, -0.01154, 0.00587]
+    i = [0.28290, 1.53161, -0.96608]
+
+    prop = {}
+    prop["Tb"] = unidades.Temperature(Tb)
+    prop["d"] = unidades.Density(d, "gcc")
+
+    for j, key in enumerate(["Tc", "Pc", "Vc"]):
+        x = exp(a[j] + b[j]*M + c[j]*Tb + d[j]*rho + e[j]*Tb*rho) * \
+            M**f[j] * Tb**(g[j]+h[j]*M) * rho**i[j]
+        val = _unit(key, x, "")
+        prop[key] = val
+
+    return prop
+
+
+def prop_Riazi_Alsahhaf_PNA(M, cmp):
+    """Calculate petroleum fractions properties with the Riazi-AlSahhaf PNA
+    correlation with the molecular weight as input parameter.
+    The procedure calculate the phisical properties for paraphins, naphthenes
+    and aromatics constituents of fraction.
+
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [-]
+    cmp : string
+        Hydrocarbon type, P (paraffins), N (naphthenes) or A (aromatics)
+
+    Returns
+    -------
+    prop : A dict with the calculated properties
+        Tf: Freezing temperature, [K]
+        Tb: Boiling temperature, [K]
+        SG: Specific gravity, [-]
+        d20: Density at 20ºC, [g/cm³]
+        Tc: Critic temperature, [K]
+        Pc: Critic pressure, [bar]
+        Vc: Critic volume, [cm³/g]
+        w: Acentric factor, [-]
+        I: Refractive index parameter, [-]
+        sigma: Surface tension, [dyn/cm]
+
+    References
+    ----------
+    [27] .. Riazi, M. R. and A1-Sahhaf, T. A. Physical Properties of Heavy
+        Petroleum Fractions and Crude Oils. Fluid Phase Equilibria, Vol. 117,
+        1996, pp. 217-224.
+    [28] .. Riazi, M. R. and A1-Sahhaf, T. Physical Properties of n-Alkanes and
+        n-Alkyl Hydrocarbons: Application to Petroleum Mixtures. Industrial and
+        Engineering Chemistry Research, Vol. 34, 1995, pp. 4145-4148.
+    """
+    if cmp == "P":
+        tita = [397, 1070, 0.85, 0.859, 0.2833, 1.15, 0, 0.26, 0.3, 33.2]
+        a = [6.5096, 6.98291, 92.22793, 88.01379, 87.6593, -0.41966, 4.65757,
+             -3.50532, -3.06826, 5.29577]
+        b = [0.14187, 0.02013, 89.82301, 85.7446, 86.62167, 0.02436, 0.13423,
+             1.5e-6, -1.04987, 0.61653]
+        c = [0.470, 2/3, 0.01, 0.01, 0.01, 0.58, 0.5, 2.38, 0.2, 0.32]
+    elif cmp == "N":
+        tita = [370, 1028, 0.853, 0.857, 0.283, 1.2, 0, -0.255, 0.3, 30.6]
+        a = [6.52504, 6.95649, 97.72532, 85.1824, 87.55238, 0.06765, 7.25857,
+             -3.18846, -8.25682, 14.17595]
+        b = [0.04945, 0.02239, 95.73589, 83.65758, 86.97556, 0.13763, 1.13139,
+             0.1658, -5.33934, 7.02549]
+        c = [2/3, 2/3, 0.01, 0.01, 0.01, 0.35, 0.26, 0.5, 0.08, 0.12]
+    elif cmp == "A":
+        tita = [375, 1015, -0.8562, -0.854, -0.2829, 1.03, 0, -0.22, 0, 30.4]
+        a = [6.53599, 6.91062, 224.7257, 238.791, 137.0918, -0.29875, 9.77968,
+             -1.43083, -14.97, 1.98292]
+        b = [0.04912, 0.02247, 218.518, 232.315, 135.433, 0.06814, 3.07555,
+             0.12744, -9.48345, -0.0142]
+        c = [2/3, 2/3, 0.01, 0.01, 0.01, 0.5, 0.15, 0.5, 0.08, 1.0]
+
+    prop = {}
+    prop["M"] = unidades.Dimensionless(M)
+
+    properties = ["Tf", "Tb", "SG", "d20", "I", "Tc", "Pc", "Vc", "w", "sigma"]
+    for i, key in enumerate(properties):
+        x = tita[i]-exp(a[i]-b[i]*M**c[i])
+
+        # Make conversion where necessary
+        if key == "Tc":
+            x = prop["Tb"]/x
+        elif key in ["Pc", "w"]:
+            x = -x
+        elif key == "Vc":
+            x = 1/x
+
+        # Define units
+        unit = ""
+        if key == "Pc":
+            unit = "bar"
+        elif key == "Vc":
+            unit = "ccg"
+        elif key == "sigma":
+            unit = "dyncm"
+
+        val = _unit(key, x, "")
+        prop[key] = val
+
+    return prop
 
 
 def Paraffin_Twu(Tb):
