@@ -211,12 +211,13 @@ _doi__ = {
          "ref": "Industrial and Engineering Chemistry Research, Vol. 34, 1995,"
                 " pp. 4145-4148.",
          "doi": "10.1021/ie00038a062"},
+    "29":
+        {"autor": "Riazi, M. R.",
+         "title": "Characterization and Properties of Petroleum Fractions.",
+         "ref": "ASTM manual series MNL50, 2005",
+         "doi": ""},
 
-
-
-
-
-    "27":
+    "30":
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1328,170 +1329,93 @@ def prop_Edmister(**kwargs):
     return prop
 
 
-# Zc Methods
-def Zc_Hougen(w):
-    """Calculate the critical compressibility factdor Zc using the Hougen
-    correlation (1959)
+def prop_Riazi(SG, tita, val):
+    """Calculate petroleum fractions properties using the Riazi correlation.
+    This correlation is recommendated for heavy weight fractions C20-C50.
 
     Parameters
     ------------
-    w : float
-        Acentric factor, [-]
+    SG: float
+        Specific gravity, [-]
+    tita : string
+        Name of second known property
+    val float
+        known property value
 
     Returns
     -------
-    Zc : float
-        Critical compressibility factor, [-]
+    prop : A dict with the calculated properties
+        Tc: Temperatura crítica, [ºR]
+        Pc: Presión crítica, [psi]
+        Vc: Volumen crítico, [ft³/lb]
+        Tb: Temperatura fusión, [ºR]
+        d20: Liquid density at 20ºC, [g/cm³]
+        I: Huang characterization factor, [-]
+
+    Notes
+    -----
+    The available input properties for tita are:
+        Tb: Temperatura fusión, [ºR]
+        M: Peso molecular, [-]
+
+    The critic volume is calculate in mole base, so be careful to correct with
+    molecular weight
 
     References
     ----------
-    [22] .. Hougen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process
-        Principles, 2nd ed. New York: Wiley, 1959, p. 577.
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
     """
-    Zc = 1/(1.28*w+3.41)
 
-    return unidades.Dimensionless(Zc)
+    if tita not in ["M", "Tb"]:
+        raise NotImplementedError(QApplication.translate(
+            "pychemqt", "Undefined input pair"))
 
+    # Convert input Tb in Kelvin to Rankine to use in the correlation
+    if tita == "Tb":
+        val = unidades.K2R(val)
 
-def Zc_Reid(w):
-    """Calculate the critical compressibility factdor Zc using the Reid
-    Prausnith and Sherwood (1977) correlation
+    # Table 2.9
+    par = {
+      "Tc": {
+        "Tb": [35.9416, -6.9e-4, -1.4442, 4.91e-4, 0.7293, 1.2771],
+        "M": [218.9592, -3.4e-4, -0.40852, -2.5e-5, 0.331, 0.8136]},
 
-    Parameters
-    ------------
-    w : float
-        Acentric factor, [-]
+      "Pc": {
+        "Tb": [6.9575, -0.0135, -0.3129, 9.174e-3, 0.6791, -0.6807],
+        "M": [8.2365e4, -9.04e-3, -3.3304, 0.01006, -0.9366, 3.1353]},
 
-    Returns
-    -------
-    Zc : float
-        Critical compressibility factor, [-]
+      "Vc": {
+        "Tb": [6.1677e10, -7.583e-3, -28.5524, 0.01172, 1.20493, 17.2074],
+        "M": [9.703e6, -9.512e-3, -15.8092, 0.01111, 1.08283, 10.5118]},
 
-    References
-    ----------
-    [23] .. Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases
-        and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21.
-    """
-    Zc = 0.2918 - 0.0928*w
+      "Tb": {
+        "M": [9.3369, 1.65e-4, 1.4103, -7.5152e-4, 0.5369, -0.7276]},
 
-    return unidades.Dimensionless(Zc)
+      "I": {
+        "Tb": [3.2709e-3, 8.4377e-4, 4.59487, -1.0617e-3, 0.03201, -2.34887],
+        "M": [1.2419e-2, 7.27e-4, 3.3323, -8.87e-4, 6.438e-3, -1.61166]},
 
+      "d20": {
+        "Tb": [0.997, 2.9e-4, 5.0425, -3.1e-4, -0.00929, 1.01772],
+        "M": [1.04908, 2.9e-4, -7.339e-2, -3.4e-4, 3.484e-3, 1.05015]}}
 
-def Zc_Salerno(w):
-    """Calculate the critical compressibility factdor Zc using the Salerno
-    correlation (1985)
+    prop = {}
+    prop[tita] = _unit(tita, val)
 
-    Parameters
-    ------------
-    w : float
-        Acentric factor, [-]
+    for key in par.keys():
+        if key != tita and (tita != "Tb" or key != "M"):
+            a, b, c, d, e, f = par[key][tita]
+            x = a*val**e*SG**f*exp(b*val+c*SG+d*val*SG)               # Eq 2.46
 
-    Returns
-    -------
-    Zc : float
-        Critical compressibility factor, [-]
+            unit = ""
+            if key == "Pc":
+                unit = "bar"
 
-    References
-    ----------
-    [21] .. Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
-        Prediction of Vapor Pressures and Saturated Volumes with a Simple Cubic
-        Equation of State: Part I. A Reliable Data Base, Fluid Phase
-        Equilibria, Volume 27, 1986, Pages 15-34
-    """
-    Zc = 0.291 - 0.08*w - 0.016*w**2                                     # Eq 3
+            val = _unit(key, x, unit)
+            prop[key] = val
 
-    return unidades.Dimensionless(Zc)
-
-
-def Zc_Nath(w):
-    """Calculate the critical compressibility factdor Zc using the Nath
-    correlation (1985)
-
-    Parameters
-    ------------
-    w : float
-        Acentric factor, [-]
-
-    Returns
-    -------
-    Zc : float
-        Critical compressibility factor, [-]
-
-    References
-    ----------
-    [24] .. Nath, J. Acentric Factor and the Critical Volumes for Normal
-        Fluids. Industrial Engineering and Chemical. Fundamentals 21, no. 3
-        (1985): 325–326.
-    """
-    Zc = 0.2908 - 0.0825*w                                              # Eq 1
-
-    return unidades.Dimensionless(Zc)
-
-
-def Zc_Lee_Kesler(w):
-    """Calculate the critical compressibility factdor Zc using the Lee-Kesler
-    correlation (1975)
-
-    Parameters
-    ------------
-    w : float
-        Acentric factor, [-]
-
-    Returns
-    -------
-    Zc : float
-        Critical compressibility factor, [-]
-
-    References
-    ----------
-    [25] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-        Correlation Based on Three-Parameter Corresponding States. American
-        Institute of Chemical Engineers Journal, Vot. 21, 1975
-    """
-    Zc = 0.2905 - 0.085*w                                               # Eq 21
-
-    return unidades.Dimensionless(Zc)
-
-
-
-
-def prop_Riazi_Adwani(propiedad, conocida, tita, SG):
-    """Riazi, M. R. and Adwani, H. A., "Some Guidelines for Choosing a Characterization Method for Petroleum Fractions in Process Simulators," Chemical Engineering Research and Design, IchemE, Vol. 83, 2005.
-    propiedad: propiedad física a calcular
-        0 - temperatura de ebullicion, K (solamente si la variable conocida es el peso molecular)
-        1 - Temperatura crítica, K
-        2 - Presión crítica, bar
-        3 - Volumen crítico, cm³/mol
-        4 - Parámetro de Huang
-        5 - Densidad absoluta a 20ºC, g/cm³
-    conocida: propiedad conocida, cuyo valor da tita
-        0   -   Temperatura de ebullición
-        1   -   Peso molecular
-    """
-    if conocida:
-        a = [9.3369, 218.9592, 8.2365e4, 9.703e6, 1.2419e-2, 1.04908][propiedad]
-        b = [1.65e-4, -3.4e-4, -9.04e-3, -9.512e-3, 7.27e-4, 2.9e-4][propiedad]
-        c = [1.4103, -0.40852, -3.3304, -15.8092, 3.3323, -7.339e-2][propiedad]
-        d = [-7.5152e-4, -2.5e-5, 0.01006, 0.01111, -8.87e-4, -3.4e-4][propiedad]
-        e = [0.5369, 0.331, -0.9366, 1.08283, 6.438e-3, 3.484e-3][propiedad]
-        f = [-0.7276, 0.8136, 3.1353, 10.5118, -1.61166, 1.05015][propiedad]
-    else:
-        a = [0, 35.9416, 6.9575, 6.1677e10, 3.2709e-3, 0.997][propiedad]
-        b = [0, -6.9e-4, -0.0135, -7.583e-3, 8.4377e-4, 2.9e-4][propiedad]
-        c = [0, -1.4442, -0.3129, -28.5524, 4.59487, 5.0425][propiedad]
-        d = [0, 4.91e-4, 9.174e-3, 0.01172, -1.0617e-3, -3.1e-4][propiedad]
-        e = [0, 0.7293, 0.6791, 1.20493, 0.03201, -0.00929][propiedad]
-        f = [0, 1.2771, -0.6807, 17.2074, -2.34887, 1.01772][propiedad]
-    x = a*exp(b*tita+c*SG+d*tita*SG)*tita**e*SG**f
-    if propiedad in [0, 1]:
-        x = unidades.Temperature(x)
-    elif propiedad == 2:
-        x = unidades.Pressure(x, "bar")
-    elif propiedad == 3:
-        x = unidades.MolarVolume(x, "cm3mol")
-    elif propiedad == 5:
-        x = unidades.Density(x, "gcm3")
-    return x
+    return prop
 
 
 def prop_Riazi_Alsahhaf(Tb, M, rho):
@@ -1633,6 +1557,133 @@ def prop_Riazi_Alsahhaf_PNA(M, cmp):
         prop[key] = val
 
     return prop
+
+
+# Zc Methods
+def Zc_Hougen(w):
+    """Calculate the critical compressibility factdor Zc using the Hougen
+    correlation (1959)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [22] .. Hougen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process
+        Principles, 2nd ed. New York: Wiley, 1959, p. 577.
+    """
+    Zc = 1/(1.28*w+3.41)
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Reid(w):
+    """Calculate the critical compressibility factdor Zc using the Reid
+    Prausnith and Sherwood (1977) correlation
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [23] .. Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases
+        and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21.
+    """
+    Zc = 0.2918 - 0.0928*w
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Salerno(w):
+    """Calculate the critical compressibility factdor Zc using the Salerno
+    correlation (1985)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [21] .. Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
+        Prediction of Vapor Pressures and Saturated Volumes with a Simple Cubic
+        Equation of State: Part I. A Reliable Data Base, Fluid Phase
+        Equilibria, Volume 27, 1986, Pages 15-34
+    """
+    Zc = 0.291 - 0.08*w - 0.016*w**2                                     # Eq 3
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Nath(w):
+    """Calculate the critical compressibility factdor Zc using the Nath
+    correlation (1985)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [24] .. Nath, J. Acentric Factor and the Critical Volumes for Normal
+        Fluids. Industrial Engineering and Chemical. Fundamentals 21, no. 3
+        (1985): 325–326.
+    """
+    Zc = 0.2908 - 0.0825*w                                              # Eq 1
+
+    return unidades.Dimensionless(Zc)
+
+
+def Zc_Lee_Kesler(w):
+    """Calculate the critical compressibility factdor Zc using the Lee-Kesler
+    correlation (1975)
+
+    Parameters
+    ------------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zc : float
+        Critical compressibility factor, [-]
+
+    References
+    ----------
+    [25] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+        Correlation Based on Three-Parameter Corresponding States. American
+        Institute of Chemical Engineers Journal, Vot. 21, 1975
+    """
+    Zc = 0.2905 - 0.085*w                                               # Eq 21
+
+    return unidades.Dimensionless(Zc)
+
+
 
 
 def Paraffin_Twu(Tb):
