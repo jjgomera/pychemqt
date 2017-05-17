@@ -47,7 +47,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #       · f_avci (2009)
 #       · f_papaevangelou (2009)
 #       · f_brkic (2010)
-#       · f_brkic2 (2010)
 #       · f_fang (2011)
 #       · f_ghanbari (2011)
 #
@@ -63,52 +62,167 @@ from scipy.optimize import fsolve
 from lib.unidades import Dimensionless
 
 
-__doi__ = [
-    {"autor": "Colebrook, C. F. and White, C. M.",
-     "title": "Experiments with Fluid Friction in Roughened Pipes",
-     "ref": "Proceedings of the Royal Society of London. Series A,"
-            "Mathematical and Physical Sciences 161 (906): 367–381.",
-     "doi": "10.1098/rspa.1937.0150"},
-    {"autor": "Chen, H.J.",
-     "title": "An Explicit Equation for Friction Factor in Pipe",
-     "ref": "Ind. Eng. Chem. Fundamen., 1979, 18 (3), pp 296–297",
-     "doi": "10.1021/i160071a019"},
-    {"autor": "Haaland, S. E.",
-     "title": "Simple and explicit formulas for the friction factor in"
-              "turbulent flow",
-     "ref": "J. Fluids Eng., 105(1), 89–90.",
-     "doi": "10.1115/1.3240948"},
-    {"autor": "Round, G. F.",
-     "title": "An explicit approximation for the friction factor-reynolds"
-              "number relation for rough and smooth pipes",
-     "ref": "Can. J. Chem. Eng., 58: 122-123",
-     "doi": "10.1002/cjce.5450580119"},
-    {"autor": "Zigrang, D.J., Sylvester, N.D.",
-     "title": "Explicit approximations to the solution of Colebrook's"
-              "friction factor equation",
-     "ref": "AICHE J 28, 514-515.",
-     "doi": "10.1002/aic.690280323"},
-    {"autor": "Avci, A.; Karagoz, I.",
-     "title": "A Novel Explicit Equation for Friction Factor in Smooth and"
-              "Rough Pipes",
-     "ref": "J. Fluids Eng 131(6), 061203 (May 13, 2009)",
-     "doi": "10.1115/1.3129132"},
-    {"autor": "Brkić, D.",
-     "title": "An Explicit Approximation of Colebrook’s equation for fluid"
-              "flow friction factor",
-     "ref": "Petroleum Science and Technology 29 (15): 1596–1602. ",
-     "doi": "10.1080/10916461003620453"},
-    {"autor": "Romeo, E., Royo, C., Monzon, A.",
-     "title": "Improved explicit equation for estimation of the friction"
-              "factor in rough and smooth pipes.",
-     "ref": "Chem. Eng. J. 86 (3), 369–374. (2002)",
-     "doi": "10.1016/S1385-8947(01)00254-6"},
-    {"autor": "Fang X, Xua Y, Zhou Z",
-     "title": "New correlations of single-phase friction factor for"
-              "turbulent pipe flow and evaluation of existing single-phase"
-              "friction factor correlations.",
-     "ref": "Nucl Eng Des 241, 897-902. (2011)",
-     "doi": "10.1016/j.nucengdes.2010.12.019"}]
+__doi__ = {
+    1:
+        {"autor": "Colebrook, C. F. and White, C. M.",
+         "title": "Experiments with Fluid Friction in Roughened Pipes",
+         "ref": "Proceedings of the Royal Society of London. Series A,"
+                "Mathematical and Physical Sciences 161 (906): 367–381.",
+         "doi": "10.1098/rspa.1937.0150"},
+    2:
+        {"autor": "Chen, H.J.",
+         "title": "An Explicit Equation for Friction Factor in Pipe",
+         "ref": "Ind. Eng. Chem. Fundamen., 1979, 18 (3), pp 296–297",
+         "doi": "10.1021/i160071a019"},
+    3:
+        {"autor": "Chen, H.J.",
+         "title": "An Exact Solution to the Colebrook Equation",
+         "ref": "Chem. Eng., Vol. 94, No. 2, 1987, p. 196..",
+         "doi": ""},
+    4:
+        {"autor": "Moody, L. F.",
+         "title": "An approximate formula for pipe friction factors",
+         "ref": "Trans. ASME, 69(12) 1947, 1005–1006.",
+         "doi": ""},
+    5:
+        {"autor": "Churchill, S. W.",
+         "title": "Friction factor equation that spans all fluid-flow regimes",
+         "ref": "Chem. Eng., 84 (1977), 91–92.",
+         "doi": ""},
+    6:
+        {"autor": "Wood D.J.",
+         "title": "An explicit friction factor relationship",
+         "ref": "Civil Eng. ASCE 60, 1966.",
+         "doi": ""},
+    7:
+        {"autor": "Haaland, S. E.",
+         "title": "Simple and explicit formulas for the friction factor in"
+                  "turbulent flow",
+         "ref": "J. Fluids Eng., 105(1), 89–90.",
+         "doi": "10.1115/1.3240948"},
+    8:
+        {"autor": "Serghides, T. K.",
+         "title": "Estimate friction factor accurately",
+         "ref": "Chem. Eng., 91(5) 1984, 63–64.",
+         "doi": ""},
+    9:
+        {"autor": "Round, G. F.",
+         "title": "An explicit approximation for the friction factor-reynolds"
+                  "number relation for rough and smooth pipes",
+         "ref": "Can. J. Chem. Eng., 58: 122-123",
+         "doi": "10.1002/cjce.5450580119"},
+    10:
+        {"autor": "Swamee, P.K.; Jain, A.K.",
+         "title": "Explicit equations for pipe-flow problems",
+         "ref": "Journal of the Hydraulics Division (ASCE) 102 (5) 1976: "
+                "657-664.",
+         "doi": ""},
+    11:
+        {"autor": "Jain, Akalank K.",
+         "title": "Accurate Explicit Equation for Friction Factor.",
+         "ref": "Journal of the Hydraulics Division 102, 5 (1976): 674-77.",
+         "doi": ""},
+    12:
+        {"autor": "Barr, D.I.H.",
+         "title": "Solutions of the Colebrook-White functions for resistance "
+                  "to uniform turbulent flows.",
+         "ref": "Proc Inst Civil Eng 71, 1981, 529-536.",
+         "doi": "10.1680/iicep.1981.1895"},
+    13:
+        {"autor": "Zigrang, D.J., Sylvester, N.D.",
+         "title": "Explicit approximations to the solution of Colebrook's"
+                  "friction factor equation",
+         "ref": "AICHE J 28, 514-515.",
+         "doi": "10.1002/aic.690280323"},
+    14:
+        {"autor": "Tsal, R.J.",
+         "title": "Altshul-Tsal friction factor equation",
+         "ref": "Heating Piping Air Conditioning 8, 1989, 30-45.",
+         "doi": ""},
+    15:
+        {"autor": "Eck B.",
+         "title": "Technische Stromungslehre",
+         "ref": "Springer, New York, 1973.",
+         "doi": ""},
+    16:
+        {"autor": "Shacham. M.",
+         "title": "An explicit equation for friction factor in pipe.",
+         "ref": "Ind Eng Chem Fund 19 (1981), 228 - 229.",
+         "doi": ""},
+    17:
+        {"autor": "Manadilli, G.",
+         "title": "Replace implicit equations with signomial functions.",
+         "ref": "Chem Eng 104 (1997), 129-132.",
+         "doi": ""},
+    18:
+        {"autor": "Romeo, E., Royo, C., Monzon, A.",
+         "title": "Improved explicit equation for estimation of the friction"
+                  "factor in rough and smooth pipes.",
+         "ref": "Chem. Eng. J. 86 (3), 369–374. (2002)",
+         "doi": "10.1016/S1385-8947(01)00254-6"},
+    19:
+        {"autor": "Goudar, C.T., Sonnad, J.R.",
+         "title": "Comparison of the iterative approximations of the "
+                  "Colebrook-White equation.",
+         "ref": "Hydrocarb Process 87 (2008), 79-83",
+         "doi": ""},
+    20:
+        {"autor": "Buzzelli, D.",
+         "title": "Calculating friction in one step",
+         "ref": "Machine Design, 80 (2008), 54–55.",
+         "doi": ""},
+    21:
+        {"autor": "Vatankhah, A. R., Kouchakzadeh, S",
+         "title": "Full-range pipe-flow equations",
+         "ref": "Journal of Hydraulic Research Vol. 46, Iss. 4, 2008",
+         "doi": ""},
+    22:
+        {"autor": "Avci, A.; Karagoz, I.",
+         "title": "A Novel Explicit Equation for Friction Factor in Smooth and"
+                  "Rough Pipes",
+         "ref": "J. Fluids Eng 131(6), 061203 (May 13, 2009)",
+         "doi": "10.1115/1.3129132"},
+    23:
+        {"autor": "Papaevangelou, G., Evangelides, C., Tzimopoulos, C.,",
+         "title": "A new explicit relation for friction coefficient in the "
+                  "Darcy-Weisbach equation",
+         "ref": "Proceedings of the Tenth Conference on Protection and "
+                "Restoration of the Environment 166,1-7pp, PRE10 July 6-09 "
+                "2010 Corfu, Greece.",
+         "doi": ""},
+    24:
+        {"autor": "Brkić, D.",
+         "title": "An Explicit Approximation of Colebrook’s equation for fluid"
+                  "flow friction factor",
+         "ref": "Petroleum Science and Technology 29 (15): 1596–1602. ",
+         "doi": "10.1080/10916461003620453"},
+    25:
+        {"autor": "Fang X, Xua Y, Zhou Z",
+         "title": "New correlations of single-phase friction factor for"
+                  "turbulent pipe flow and evaluation of existing single-phase"
+                  "friction factor correlations.",
+         "ref": "Nucl Eng Des 241, 897-902. (2011)",
+         "doi": "10.1016/j.nucengdes.2010.12.019"},
+    26:
+        {"autor": "Ghanbari, A., Farshad, F., Rieke, H.H.",
+         "title": "Newly developed friction factor correlation for pipe flow "
+                  "and flow assurance.",
+         "ref": "J Chem Eng Mat Sci 2 (2011), 83-86.",
+         "doi": ""},
+
+
+
+
+    27:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    28:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""}}
 
 
 # Friction factor for pipes
@@ -141,51 +255,16 @@ def f_colebrook(Re, eD):
 
     References
     ----------
-    [1] .. Colebrook, C. F. and White, C. M. (1937). "Experiments with Fluid
-    Friction in Roughened Pipes". Proceedings of the Royal Society of London.
-    Series A, Mathematical and Physical Sciences 161 (906): 367–381.
+    .. [1] Colebrook, C. F. and White, C. M. Experiments with Fluid Friction
+        in Roughened Pipes. Proceedings of the Royal Society of London. Series
+        A, Mathematical and Physical Sciences 161(906) 1937: 367–381.
     """
     fo = f_chen(Re, eD)
     if eD:
         f = fsolve(lambda x: 1/x**0.5+2.0*log10(eD/3.7+2.51/Re/x**0.5), fo)
     else:
         f = fsolve(lambda x: 1/x**0.5-2.0*log10(Re*x**0.5)+0.8, fo)
-    return f[0]
-
-
-def f_chen(Re, eD):
-    """
-    Calculates friction factor `f` with Chen correlation (1991)
-
-    .. math::
-        $\frac{1}{\sqrt{f}}=-4\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}-\frac{5.02}{Re}\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}+\left(\frac{6.7}{Re}\right)^{0.9}\right)\right)$
-
-    Parameters
-    ------------
-    Re : float
-        Reynolds number, [-]
-    eD : float
-        Relative roughness of a pipe, [-]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    Notes
-    -----
-    The most satisfactory explicit friction factor correlation by [2].
-
-    References
-    ----------
-    [1] .. Chen, H-J, “An Exact Solution to the Colebrook Equation”, Chem.
-    Eng., Vol. 94, No. 2, 1987, p. 196..
-    [2] .. Gregory, G.A. and M. Fogarasi, “Alternate to Standard Friction
-    Factor Equation”, Oil Gas J., Apr 1, 1985, p. 120.
-    """
-    A = eD/3.7+(6.7/Re)**0.9
-    f = 1/(-2*log10(eD/3.7-5.02/Re*log10(A)))**2
-    return f
+    return Dimensionless(f[0])
 
 
 def f_chen1979(Re, eD):
@@ -215,12 +294,46 @@ def f_chen1979(Re, eD):
 
     References
     ----------
-    [1] .. Chen, H-J, “An Explicit Equation for Friction Factor in Pipe”, Ind.
-    Eng. Chem. Fundam., Vol. 18, No. 3, 1979, p. 297..
+    .. [2] Chen, H-J, An Explicit Equation for Friction Factor in Pipe, Ind.
+        Eng. Chem. Fundam., Vol. 18, No. 3, 1979, p. 297..
     """
+    # Eq 7
     A = eD**1.1098/2.8257+5.8506/Re**0.8981
     f = 1/(-2*log10(eD/3.7065-5.0452/Re*log10(A)))**2
-    return f
+    return Dimensionless(f)
+
+
+def f_chen(Re, eD):
+    """
+    Calculates friction factor `f` with Chen correlation (1991)
+
+    .. math::
+        $\frac{1}{\sqrt{f}}=-4\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}-\frac{5.02}{Re}\log\left(\frac{\nicefrac{\epsilon}{D}}{3.7}+\left(\frac{6.7}{Re}\right)^{0.9}\right)\right)$
+
+    Parameters
+    ------------
+    Re : float
+        Reynolds number, [-]
+    eD : float
+        Relative roughness of a pipe, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Notes
+    -----
+    The most satisfactory explicit friction factor correlation by [2].
+
+    References
+    ----------
+    .. [3] Chen, H-J, An Exact Solution to the Colebrook Equation, Chem.
+        Eng., Vol. 94, No. 2, 1987, p. 196..
+    """
+    A = eD/3.7+(6.7/Re)**0.9
+    f = 1/(-2*log10(eD/3.7-5.02/Re*log10(A)))**2
+    return Dimensionless(f)
 
 
 def f_moody(Re, eD):
@@ -251,10 +364,11 @@ def f_moody(Re, eD):
 
     References
     ----------
-    [1] .. Moody, L. F. (1947). “An approximate formula for pipe friction
-    factors.” Trans. ASME, 69(12), 1005–1006.
+    .. [4] Moody, L. F. (1947). An approximate formula for pipe friction
+    factors. Trans. ASME, 69(12), 1005–1006.
     """
-    return 5.5e-3*(1+(2e4*eD+1e6/Re)**(1./3))
+    f = 5.5e-3*(1+(2e4*eD+1e6/Re)**(1./3))
+    return Dimensionless(f)
 
 
 def f_churchill(Re, eD):
@@ -288,12 +402,13 @@ def f_churchill(Re, eD):
 
     References
     ----------
-    [1] .. Churchill, S. W. (1977). “Friction factor equation that spans all
-    fluid-flow regimes.” Chem. Eng., 84, 91–92.
+    .. [5] Churchill, S. W. (1977). Friction factor equation that spans all
+    fluid-flow regimes. Chem. Eng., 84, 91–92.
     """
     A = (2.457*log(1/(0.27*eD+(7./Re)**0.9)))**16
     B = (37530./Re)**16
-    return 8.*((8./Re)**12+(A+B)**-1.5)**(1./12)
+    f = 8.*((8./Re)**12+(A+B)**-1.5)**(1./12)
+    return Dimensionless(f)
 
 
 def f_wood(Re, eD):
@@ -326,11 +441,14 @@ def f_wood(Re, eD):
 
     References
     ----------
-    [1] .. Wood DJ (1966). An explicit friction factor relationship. Civil Eng.
+    [6] .. Wood DJ (1966). An explicit friction factor relationship. Civil Eng.
     ASCE 60
     """
-    a = -1.62*eD**0.134
-    return 0.094*eD**0.225+0.53*eD+88*eD**0.44*Re**a
+    a = 0.094*eD**0.225+0.53*eD
+    b = 88*eD**0.44
+    c = -1.62*eD**0.134
+    f = a + b*Re**c
+    return Dimensionless(f)
 
 
 def f_haaland(Re, eD):
@@ -361,10 +479,12 @@ def f_haaland(Re, eD):
 
     References
     ----------
-    [1] .. Haaland, S. E. (1983). “Simple and explicit formulas for the
-    friction factor in turbulent flow.” J. Fluids Eng., 105(1), 89–90.
+    .. [7] Haaland, S. E. (1983). Simple and explicit formulas for the
+    friction factor in turbulent flow. J. Fluids Eng., 105(1), 89–90.
     """
-    return 1/(-1.8*log10((eD/3.7)**1.11+6.9/Re))**2
+    # Eq 8
+    f = 1/(-1.8*log10((eD/3.75)**1.11+6.9/Re))**2
+    return Dimensionless(f)
 
 
 def f_serghides(Re, eD):
@@ -394,13 +514,14 @@ def f_serghides(Re, eD):
 
     References
     ----------
-    [1] .. Serghides, T. K. (1984). “Estimate friction factor accurately.”
-    Chem. Eng., 91(5), 63–64.
+    .. [8] Serghides, T. K. (1984). Estimate friction factor accurately.
+        Chem. Eng., 91(5), 63–64.
     """
     A = -2*log10(eD/3.7+12/Re)
     B = -2*log10(eD/3.7+2.51*A/Re)
     C = -2*log10(eD/3.7+2.51*B/Re)
-    return (A-(B-A)**2/(C-2*B+A))**-2
+    f = (A-(B-A)**2/(C-2*B+A))**-2
+    return Dimensionless(f)
 
 
 def f_round(Re, eD):
@@ -431,11 +552,13 @@ def f_round(Re, eD):
 
     References
     ----------
-    [1] .. Round, G. F. (1980), An explicit approximation for the friction
-    factor-reynolds number relation for rough and smooth pipes. Can. J. Chem.
-    Eng., 58: 122–123.
+    .. [9] Round, G. F. (1980), An explicit approximation for the friction
+        factor-reynolds number relation for rough and smooth pipes. Can. J.
+        Chem. Eng., 58: 122–123.
     """
-    return 1/(1.8*log10(Re/(0.135*Re*eD+6.5)))**2
+    # Eq 8
+    f = 1/(1.8*log10(Re/(0.135*Re*eD+6.5)))**2
+    return Dimensionless(f)
 
 
 def f_swamee(Re, eD):
@@ -466,10 +589,11 @@ def f_swamee(Re, eD):
 
     References
     ----------
-    [1] ..Swamee, P.K.; Jain, A.K. (1976). "Explicit equations for pipe-flow
-    problems". Journal of the Hydraulics Division (ASCE) 102 (5): 657–664.
+    .. [10] Swamee, P.K.; Jain, A.K. (1976). Explicit equations for pipe-flow
+    problems. Journal of the Hydraulics Division (ASCE) 102 (5): 657–664.
     """
-    return 1/(-2*log10(eD/3.7+(6.97/Re)**0.9))**2
+    f = 1/(-2*log10(eD/3.7+(6.97/Re)**0.9))**2
+    return Dimensionless(f)
 
 
 def f_jain(Re, eD):
@@ -500,10 +624,11 @@ def f_jain(Re, eD):
 
     References
     ----------
-    [1] .. Jain, Akalank K."Accurate Explicit Equation for Friction Factor."
+    .. [11] Jain, Akalank K. Accurate Explicit Equation for Friction Factor.
        Journal of the Hydraulics Division 102, no. 5 (May 1976): 674-77.
     """
-    return 1/(1.14-2*log10(eD+(29.843/Re)**0.9))**2
+    f = 1/(1.14-2*log10(eD+(29.843/Re)**0.9))**2
+    return Dimensionless(f)
 
 
 def f_barr(Re, eD):
@@ -529,10 +654,11 @@ def f_barr(Re, eD):
 
     References
     ----------
-    [1] .. Barr DIH (1981). Solutions of the Colebrook-White functions for
-    resistance to uniform turbulent flows.  Proc Inst Civil Eng 71, 529-536.
+    .. [12] Barr D.I.H. (1981). Solutions of the Colebrook-White functions for
+        resistance to uniform turbulent flows. Proc Inst Civil Eng 71, 529-536.
     """
-    return 1/(2*log10(eD/3.7+4.518*log10(Re/7)/Re/(1+Re**0.52/29*eD**0.7)))**2
+    f = 1/(2*log10(eD/3.7+4.518*log10(Re/7)/Re/(1+Re**0.52/29*eD**0.7)))**2
+    return Dimensionless(f)
 
 
 def f_zigrang(Re, eD):
@@ -565,11 +691,13 @@ def f_zigrang(Re, eD):
 
     References
     ----------
-    [1] .. Zigrang DJ, Sylvester ND (1982). Explicit approximations to the
+    .. [13] Zigrang DJ, Sylvester ND (1982). Explicit approximations to the
     Colebrook’s friction factor. AICHE J 28, 514-515.
     """
+    # Eq 12
     A = log10(eD/3.7-5.02/Re*log10(eD/3.7+13./Re))
-    return 1/(-2*log10(eD/3.7-5.02*A/Re))**2
+    f = 1/(-2*log10(eD/3.7-5.02*A/Re))**2
+    return Dimensionless(f)
 
 
 def f_altshul(Re, eD):
@@ -593,10 +721,11 @@ def f_altshul(Re, eD):
 
     References
     ----------
-    [1] .. Tsal RJ (1989). Altshul-Tsal friction factor equation. Heating
-    Piping Air Conditioning 8, 30-45.
+    .. [14] Tsal RJ (1989). Altshul-Tsal friction factor equation. Heating
+        Piping Air Conditioning 8, 30-45.
     """
-    return 0.11*(eD+68/Re)**0.25
+    f = 0.11*(eD+68/Re)**0.25
+    return Dimensionless(f)
 
 
 def f_tsal(Re, eD):
@@ -629,8 +758,8 @@ def f_tsal(Re, eD):
 
     References
     ----------
-    [1] .. Tsal RJ (1989). Altshul-Tsal friction factor equation. Heating
-    Piping Air Conditioning 8, 30-45.
+    .. [14] Tsal RJ (1989). Altshul-Tsal friction factor equation. Heating
+        Piping Air Conditioning 8, 30-45.
     """
     f = 0.11*(68/Re+eD)**0.25
     if f < 0.018:
@@ -660,9 +789,10 @@ def f_eck(Re, eD):
 
     References
     ----------
-    [1] .. Eck B (1973). Technische Stromungslehre. Springer, New York.
+    .. [15] Eck B. Technische Stromungslehre. Springer, New York, 1973.
     """
-    return 1/(-2*log10(eD/3.71+15/Re))**2
+    f = 1/(-2*log10(eD/3.71+15/Re))**2
+    return Dimensionless(f)
 
 
 def f_shacham(Re, eD):
@@ -693,10 +823,11 @@ def f_shacham(Re, eD):
 
     References
     ----------
-    [1] .. Shacham M (1980). An explicit equation for friction factor in pipe.
-    Ind Eng Chem Fund 19, 228 - 229.
+    .. [16] Shacham M. An explicit equation for friction factor in pipe.  Ind
+        Eng Chem Fund 19 (1980), 228 - 229.
     """
-    return 1/(-2*log10(eD/3.7-5.02/Re*log10(eD/3.7+14.5/Re)))**2
+    f = 1/(-2*log10(eD/3.7-5.02/Re*log10(eD/3.7+14.5/Re)))**2
+    return Dimensionless(f)
 
 
 def f_manadilli(Re, eD):
@@ -727,10 +858,11 @@ def f_manadilli(Re, eD):
 
     References
     ----------
-    [1] .. Manadilli G (1997). Replace implicit equations with signomial
-    functions. Chem Eng 104, 129-132.
+    .. [17] Manadilli, G. Replace implicit equations with signomial functions.
+    Chem Eng 104 (1997), 129-132.
     """
-    return 1/(-2*log10(eD/3.7+95./Re**0.983-96.82/Re))**2
+    f = 1/(-2*log10(eD/3.7+95./Re**0.983-96.82/Re))**2
+    return Dimensionless(f)
 
 
 def f_romeo(Re, eD):
@@ -763,13 +895,14 @@ def f_romeo(Re, eD):
 
     References
     ----------
-    [1] .. Romeo, E., Royo, C., Monzon, A., 2002. Improved explicit equation
-    for estimation of the friction factor in rough and smooth pipes. Chem. Eng.
-    J. 86 (3), 369–374.
+    .. [18] Romeo, E., Royo, C., Monzon, A., 2002. Improved explicit equation
+        for estimation of the friction factor in rough and smooth pipes. Chem.
+        Eng.  J. 86 (3), 369–374.
     """
     A = log10((eD/7.7918)**0.9924+(5.3326/(208.815+Re))**0.9345)
     B = log10(eD/3.827-4.567/Re*A)
-    return 1/(-2*log10(eD/3.7065-5.0272*B/Re))**2
+    f = 1/(-2*log10(eD/3.7065-5.0272*B/Re))**2
+    return Dimensionless(f)
 
 
 def f_goudar2006(Re, eD):
@@ -801,11 +934,12 @@ def f_goudar2006(Re, eD):
 
     References
     ----------
-    [1] .. Goudar CT, Sonnad JR (2008). Comparison of the iterative
-    approximations of the Colebrook-White equation. Hydrocarb Process 87, 79-83
+    .. [19] Goudar, C.T. Sonnad J.R. Comparison of the iterative approximations
+        of the Colebrook-White equation. Hydrocarb Process 87 (2008), 79-83
     """
     C = 0.124*Re*eD+log(0.4587*Re)
-    return 1/(0.8686*log(0.4587*Re/(C-0.31)**(C/(C+1))))**2
+    f = 1/(0.8686*log(0.4587*Re/(C-0.31)**(C/(C+1))))**2
+    return Dimensionless(f)
 
 
 def f_goudar(Re, eD):
@@ -826,8 +960,8 @@ def f_goudar(Re, eD):
 
     References
     ----------
-    [1] .. Goudar CT, Sonnad JR (2008). Comparison of the iterative
-    approximations of the Colebrook-White equation. Hydrocarb Process 87, 79-83
+    .. [19] Goudar, C.T. Sonnad J.R. Comparison of the iterative approximations
+        of the Colebrook-White equation. Hydrocarb Process 87 (2008), 79-83
     """
     a = 2/log(10)
     b = eD/3.7
@@ -839,7 +973,8 @@ def f_goudar(Re, eD):
     Dla = g/(g+1)*z
     Dcfa = Dla*(1+z/2/((g+1)**2+z/3*(2*g-1)))
 
-    return (a*(log(d/q)+Dcfa))**-2
+    f = (a*(log(d/q)+Dcfa))**-2
+    return Dimensionless(f)
 
 
 def f_buzzelli(Re, eD):
@@ -868,12 +1003,14 @@ def f_buzzelli(Re, eD):
 
     References
     ----------
-    [1] .. Buzzelli D (2008). Calculating friction in one step. Mach Des, 80,
-    54–55.
+    .. [20] Buzzelli, D. Calculating friction in one step. Machine Design, 80,
+        (2008) 54–55.
     """
+    # Eq 2
     A = (0.744*log(Re)-1.41)/(1+1.32*eD**0.5)
     B = eD/3.7*Re+2.51*A
-    return 1/(A-((A+2*log10(B/Re))/(1+2.18/B)))**2
+    f = 1/(A-((A+2*log10(B/Re))/(1+2.18/B)))**2
+    return Dimensionless(f)
 
 
 def f_Vatankhah(Re, eD):
@@ -894,11 +1031,12 @@ def f_Vatankhah(Re, eD):
 
     References
     ----------
-    [1] .. Vatankhah, A. R., Kouchakzadeh, S; Full-range pipe-flow equations";
-    Journal of Hydraulic Research Vol. 46, Iss. 4, 2008
+    .. [21] Vatankhah, A. R., Kouchakzadeh, S. Full-range pipe-flow equations.
+        Journal of Hydraulic Research Vol. 46, Iss. 4, 2008
     """
     S = 0.124*Re*eD+log(0.4587*Re)
-    return 1/(0.8686*log(0.4587*Re/(S-0.31)**(S/(S+0.9633))))**2
+    f = 1/(0.8686*log(0.4587*Re/(S-0.31)**(S/(S+0.9633))))**2
+    return Dimensionless(f)
 
 
 def f_avci(Re, eD):
@@ -924,10 +1062,12 @@ def f_avci(Re, eD):
 
     References
     ----------
-    [1] .. Avci, A.; Karagoz, I.; ""A Novel Explicit Equation for Friction
-    Factor in Smooth and Rough Pipes; J. Fluids Eng 131(6), 061203 (2009)
+    .. [22] Avci, A.; Karagoz, I. A Novel Explicit Equation for Friction Factor
+        in Smooth and Rough Pipes; J. Fluids Eng 131(6), 061203 (2009)
     """
-    return 6.4/(log(Re)-log(1+0.01*Re*eD*(1+10*eD**0.5)))**2.4
+    # Eq 17
+    f = 6.4/(log(Re)-log(1+0.01*Re*eD*(1+10*eD**0.5)))**2.4
+    return Dimensionless(f)
 
 
 def f_papaevangelou(Re, eD):
@@ -958,15 +1098,16 @@ def f_papaevangelou(Re, eD):
 
     References
     ----------
-    [1] .. Papaevangelou G, Evangelides C, Tzimopoulos C (2010). A new explicit
-    relation for friction coefficient in the Darcy-Weisbach equation.
-    Proceedings of the Tenth Conference on Protection and Restoration of the
-    Environment 166,1-7pp, PRE10 July 6-09 2010 Corfu, Greece.
+    .. [23] Papaevangelou, G., Evangelides, C., Tzimopoulos, C., A new explicit
+        relation for friction coefficient in the Darcy-Weisbach equation.
+        Proceedings of the Tenth Conference on Protection and Restoration of
+        the Environment 166,1-7pp, PRE10 July 6-09 2010 Corfu, Greece.
     """
-    return (0.2479-9.47e-5*(7-log10(Re))**4)/log10(eD/3.615+7.366/Re**0.9142)**2
+    f = (0.2479-9.47e-5*(7-log10(Re))**4)/log10(eD/3.615+7.366/Re**0.9142)**2
+    return Dimensionless(f)
 
 
-def f_brkic(Re, eD):
+def f_brkic(Re, eD, alternate=False):
     """
     Calculates friction factor `f` with Brkić correlation (2010a)
 
@@ -981,6 +1122,8 @@ def f_brkic(Re, eD):
         Reynolds number, [-]
     eD : float
         Relative roughness of a pipe, [-]
+    alternate : boolean
+        Choose the alternate correlation fron the paper
 
     Returns
     -------
@@ -989,44 +1132,19 @@ def f_brkic(Re, eD):
 
     References
     ----------
-    [1] .. Brkić, Dejan (2011). "An Explicit Approximation of Colebrook’s
-    equation for fluid flow friction factor". Petroleum Science and Technology
-    29 (15): 1596–1602.
+    .. [24] Brkić, Dejan. An Explicit Approximation of Colebrook’s equation for
+        fluid flow friction factor. Petroleum Science and Technology 29 (15)
+        2011: 1596–1602.
     """
-    S = log(Re/1.816*log(1.1*Re/log(1+1.1*Re)))
-    return 1/(-2*log10(10**(-0.4343*S)+eD/3.71))**2
+    S = log(Re/1.816*log(1.1*Re/log(1+1.1*Re)))                          # Eq 8
 
+    # Eq 7
+    if alternate:
+        f = 1/(-2*log10(2.18*S/Re+eD/3.71))**2
+    else:
+        f = 1/(-2*log10(10**(-0.4343*S)+eD/3.71))**2
 
-def f_brkic2(Re, eD):
-    """
-    Calculates friction factor `f` with Brkić correlation (2010b)
-    Second correlation
-
-    .. math::
-        f = [-2\log(\frac{2.18\beta}{Re}+ \frac{\epsilon}{3.71D})]^{-2}
-
-        \beta = \ln \frac{Re}{1.816\ln\left(\frac{1.1Re}{\ln(1+1.1Re)}\right)}
-
-    Parameters
-    ------------
-    Re : float
-        Reynolds number, [-]
-    eD : float
-        Relative roughness of a pipe, [-]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    References
-    ----------
-    [1] .. Brkić, Dejan (2011). "An Explicit Approximation of Colebrook’s
-    equation for fluid flow friction factor". Petroleum Science and Technology
-    29 (15): 1596–1602.
-    """
-    S = log(Re/1.816*log(1.1*Re/log(1+1.1*Re)))
-    return 1/(-2*log10(2.18*S/Re+eD/3.71))**2
+    return Dimensionless(f)
 
 
 def f_fang(Re, eD):
@@ -1058,11 +1176,13 @@ def f_fang(Re, eD):
 
     References
     ----------
-    [1] .. Fang X, Xua Y, Zhou Z (2011). New correlations of single-phase
-    friction factor for turbulent pipe flow and evaluation of existing
-    single-phase friction factor correlations. Nucl Eng Des 241, 897-902.
+    .. [25] Fang X, Xua Y, Zhou Z (2011). New correlations of single-phase
+        friction factor for turbulent pipe flow and evaluation of existing
+        single-phase friction factor correlations. Nucl Eng Des 241, 897-902.
     """
-    return 1.613/(log(0.234*eD**1.1007-60.525/Re**1.1105+56.291/Re**1.0712))**2
+    # Eq 13
+    f = 1.613/(log(0.234*eD**1.1007-60.525/Re**1.1105+56.291/Re**1.0712))**2
+    return Dimensionless(f)
 
 
 def f_ghanbari(Re, eD):
@@ -1084,9 +1204,9 @@ def f_ghanbari(Re, eD):
 
     References
     ----------
-    [1] .. Ghanbari A, Farshad F, Rieke HH (2011). Newly developed friction
-    factor correlation for pipe flow and flow assurance. J Chem Eng Mat Sci 2,
-    83-86.
+    .. [26] Ghanbari, A., Farshad, F., Rieke, H.H. Newly developed friction
+        factor correlation for pipe flow and flow assurance. J Chem Eng Mat
+        Sci 2 (2011), 83-86.
     """
     return (-1.52*log10((eD/7.21)**1.042+(2.731/Re)**0.9152))**-2.169
 
@@ -1095,7 +1215,7 @@ f_list = (f_colebrook, f_chen, f_chen1979, f_moody, f_wood, f_eck, f_altshul,
           f_churchill, f_haaland, f_serghides, f_round, f_swamee, f_jain,
           f_barr, f_zigrang, f_shacham, f_tsal, f_manadilli, f_romeo,
           f_goudar, f_goudar2006, f_buzzelli, f_Vatankhah, f_avci,
-          f_papaevangelou, f_brkic, f_brkic2, f_fang, f_ghanbari)
+          f_papaevangelou, f_brkic, f_fang, f_ghanbari)
 
 
 def f_blasius(Re):
