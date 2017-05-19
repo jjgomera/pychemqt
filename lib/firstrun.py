@@ -322,6 +322,35 @@ def Preferences():
     config.set("Moody", "crux"+"markeredgewidth", "1")
     config.set("Moody", "crux"+"markeredgecolor", "#000000")
 
+    # Standing-Katz
+    config.add_section("Standing_Katz")
+    config.set("Standing_Katz", "method", "0")
+    config.set("Standing_Katz", "Prmin", "0.8")
+    config.set("Standing_Katz", "Prmax", "10")
+    config.set("Standing_Katz", "Tr", "[1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35,"
+               "1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.]")
+
+    config.set("Standing_Katz", "line"+"Color", "#000000")
+    config.set("Standing_Katz", "line"+"alpha", "255")
+    config.set("Standing_Katz", "line"+"lineWidth", "0.5")
+    config.set("Standing_Katz", "line"+"lineStyle", "-")
+    config.set("Standing_Katz", "line"+"marker", "None")
+    config.set("Standing_Katz", "line"+"markersize", "3")
+    config.set("Standing_Katz", "line"+"markerfacecolor", "#ff0000")
+    config.set("Standing_Katz", "line"+"markeredgewidth", "1")
+    config.set("Standing_Katz", "line"+"markeredgecolor", "#000000")
+
+    config.set("Standing_Katz", "crux"+"Color", "#0000ff")
+    config.set("Standing_Katz", "crux"+"alpha", "255")
+    config.set("Standing_Katz", "crux"+"lineWidth", "0.5")
+    config.set("Standing_Katz", "crux"+"lineStyle", "-")
+    config.set("Standing_Katz", "crux"+"marker", "None")
+    config.set("Standing_Katz", "crux"+"markersize", "3")
+    config.set("Standing_Katz", "crux"+"markerfacecolor", "#ff0000")
+    config.set("Standing_Katz", "crux"+"markeredgewidth", "1")
+    config.set("Standing_Katz", "crux"+"markeredgecolor", "#000000")
+
+
     return config
 
 

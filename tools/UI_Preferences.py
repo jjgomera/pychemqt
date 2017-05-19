@@ -43,7 +43,8 @@ from lib import unidades, corriente
 from lib.firstrun import which
 from lib.utilities import representacion
 from equipment import equipments
-from UI import prefElemental, prefMEOS, prefMoody, prefPFD, prefPsychrometric
+from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric
+from UI import prefMoody, prefStandingKatz
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
@@ -594,7 +595,9 @@ class Preferences(QtWidgets.QDialog):
         ("button/psychrometric.png", prefPsychrometric.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
         ("button/moody.png", prefMoody.Widget,
-         QtWidgets.QApplication.translate("pychemqt", "Moody chart"))]
+         QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
+        ("button/moody.png", prefStandingKatz.Widget,
+         QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart"))]
 
     def __init__(self, config, parent=None):
         """Constructor, opcional config parameter to input project config"""
