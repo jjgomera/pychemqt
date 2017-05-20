@@ -1915,9 +1915,6 @@ def Z_Hall_Yarborough(Tr, Pr):
     else:
         raise ValueError("Iteration not converge")
 
-    if Tr == 1.1:
-        print(Tr, Pr, Z, Y)
-
     return unidades.Dimensionless(Z)
 
 
@@ -2737,7 +2734,7 @@ def Z_Londono_NS(Tr, Pr, pure=False):
         Z = 0.27*Pr/Tr/rho
         return 1 + C1*rho + C2*rho**2 - C3*rho**5 + C4*exp(-A15*rho**2) - Z
 
-    rho0 = Pr/Tr
+    rho0 = 0.27*Pr/Tr
     rho = fsolve(f, rho0, full_output=True)
     if rho[2] == 1:
         Z = 0.27*Pr/Tr/rho[0]

@@ -35,6 +35,8 @@ from lib.config import conf_dir
 from lib.petro import Z_list
 from lib.plot import mpl
 from lib.utilities import formatLine
+from plots.moody import Chart
+from UI.prefStandingKatz import ConfigDialog
 from UI.widgets import Entrada_con_unidades
 
 
@@ -94,56 +96,20 @@ def calculate(config, dat=None):
         json.dump(dat, file, indent=4)
 
 
-class Standing_Katz(QtWidgets.QDialog):
+class Standing_Katz(Chart):
     """Standing-Katz chart dialog"""
     title = QtWidgets.QApplication.translate(
         "pychemqt",
         "Standing and Katz compressivitity factors chart for natural gas")
+    configDialog = ConfigDialog
 
-    def __init__(self, parent=None):
-        super(Standing_Katz, self).__init__(parent)
-        self.showMaximized()
-        self.setWindowTitle(self.title)
-        layout = QtWidgets.QGridLayout(self)
-        layout.setColumnStretch(3, 1)
-        self.plt = mpl(self)
-        layout.addWidget(self.plt, 2, 1, 1, 4)
-
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "image.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
-        butonPNG.clicked.connect(self.plt.savePNG)
-        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "configure.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Configure"))
-        butonConfig.clicked.connect(self.configure)
-        butonCalculate = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "calculator.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
-        butonCalculate.clicked.connect(self.calculate)
-        btBox.rejected.connect(self.reject)
-        btBox.layout().insertWidget(0, butonPNG)
-        btBox.layout().insertWidget(0, butonCalculate)
-        btBox.layout().insertWidget(0, butonConfig)
-        layout.addWidget(btBox, 3, 1, 1, 4)
-
-        self.Preferences = ConfigParser()
-        self.Preferences.read(conf_dir+"pychemqtrc")
-        self.plot()
-
-        self.note = None
-
-    def configure(self):
-        from UI.prefStandingKatz import Dialog
-        dlg = Dialog(self.Preferences)
-        if dlg.exec_():
-            self.Preferences = dlg.value(self.Preferences)
-            self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            self.plot()
+    # def configure(self):
+        # from UI.prefStandingKatz import Dialog
+        # dlg = Dialog(self.Preferences)
+        # if dlg.exec_():
+            # self.Preferences = dlg.value(self.Preferences)
+            # self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
+            # self.plot()
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
@@ -184,6 +150,7 @@ class Standing_Katz(QtWidgets.QDialog):
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
         self.plt.lx.set_visible(False)
         self.plt.ly.set_visible(False)
+        self.note = None
 
         # Plot data
         kw = formatLine(self.Preferences, "Standing_Katz", "line")

@@ -35,6 +35,7 @@ from lib.config import conf_dir
 from lib.friction import f_list, eD
 from lib.plot import mpl
 from lib.utilities import formatLine, representacion
+from UI.prefMoody import ConfigDialog
 from UI.widgets import Entrada_con_unidades
 
 
@@ -74,12 +75,11 @@ def calculate(config):
         json.dump(dat, file, indent=4)
 
 
-class Moody(QtWidgets.QDialog):
-    """Moody chart dialog"""
-    title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
+class Chart(QtWidgets.QDialog):
+    """Generic chart dialog"""
 
     def __init__(self, parent=None):
-        super(Moody, self).__init__(parent)
+        super(Chart, self).__init__(parent)
         self.showMaximized()
         self.setWindowTitle(self.title)
         layout = QtWidgets.QGridLayout(self)
@@ -116,12 +116,33 @@ class Moody(QtWidgets.QDialog):
         self.plot()
 
     def configure(self):
-        from UI.prefMoody import Dialog
-        dlg = Dialog(self.Preferences)
+        dlg = self.configDialog(self.Preferences)
         if dlg.exec_():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
             self.plot()
+
+    def config(self):
+        """Initialization action in plot don't neccesary to update in plot"""
+        pass
+
+    def click(self, event):
+        """Define functionality when the mouse click in plot"""
+        pass
+
+    def plot(self):
+        """Plot procedure"""
+        pass
+
+    def calculate(self):
+        """Define the functionality when click the calculate point button"""
+        pass
+
+
+class Moody(Chart):
+    """Moody chart dialog"""
+    title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
+    configDialog = ConfigDialog
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""

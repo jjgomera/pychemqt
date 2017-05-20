@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Library to configure the moody chart
 #
 #   - Widget: Moody chart configuration
-#   - Dialog: Dialog tool for standalone use
+#   - ConfigDialog: Dialog tool for standalone use
 ###############################################################################
 
 
@@ -85,10 +85,10 @@ class Widget(QtWidgets.QWidget):
         return config
 
 
-class Dialog(QtWidgets.QDialog):
+class ConfigDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
+        super(ConfigDialog, self).__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
@@ -116,6 +116,6 @@ if __name__ == "__main__":
     config = ConfigParser()
     config.read(conf_dir+"pychemqtrc")
 
-    Dialog = Dialog(config)
+    Dialog = ConfigDialog(config)
     Dialog.show()
     sys.exit(app.exec_())
