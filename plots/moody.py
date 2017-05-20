@@ -295,7 +295,7 @@ class Moody(QtWidgets.QDialog):
 
         # Transition zone
         self.plt.ax.add_artist(
-            ConnectionPatch((4000, 0.095/x), (28000, 0.095/x), "data", "data",
+            ConnectionPatch((4000, 0.095/x), (40000, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate("pychemqt", "Transition Zone")
         self.plt.ax.text(11000, 0.098/x, txt, size="small", va="bottom",
@@ -303,7 +303,7 @@ class Moody(QtWidgets.QDialog):
 
         # Turbulent zone
         self.plt.ax.add_artist(
-            ConnectionPatch((28000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
+            ConnectionPatch((40000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=15, fc="w"))
         txt = QtWidgets.QApplication.translate(
             "pychemqt", "Turbulent flux fully developed")
