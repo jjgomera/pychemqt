@@ -38,8 +38,27 @@ from lib.utilities import formatLine
 from UI.widgets import Entrada_con_unidades
 
 
-def calculate(config):
-    """Plot calculate procedure"""
+def calculate(config, dat=None):
+    """Plot calculate procedure
+
+    Parameters
+    ------------
+    config : Configparser
+        pychemqt configparser configuration instance
+    dat : dict
+        dict with other method data
+
+    Returns
+    ------------
+    dat : dict
+        dict with method data
+
+    Notes
+    -----
+    This procedure is called when a new method of calculation of Z is
+    necessary. Add the new data to the input dat with the other Method
+    calculated yet
+    """
     method = config.getint("Standing_Katz", "method")
     Tr = eval(config.get("Standing_Katz", "Tr"))
     Prmin = config.getfloat("Standing_Katz", "Prmin")
@@ -48,7 +67,9 @@ def calculate(config):
 
     Pr = arange(Prmin, Prmax, 0.01)
 
-    dat = {}
+    if dat is None:
+        dat = {}
+
     lines = {}
     for t in Tr:
         pr = []
@@ -59,7 +80,12 @@ def calculate(config):
                 pr.append(p)
             except NotImplementedError:
                 pass
-        lines[t] = {"Pr": pr, "Z": z}
+            except ValueError:
+                pass
+
+        # Only save the lines with data
+        if pr:
+            lines[t] = {"Pr": pr, "Z": z}
 
     dat[method] = lines
 
@@ -144,7 +170,7 @@ class Standing_Katz(QtWidgets.QDialog):
                 load = True
 
             if method not in dat:
-                calculate(self.Preferences)
+                calculate(self.Preferences, dat)
                 load = True
 
         # Reload file if it's created in last with statement
@@ -156,9 +182,12 @@ class Standing_Katz(QtWidgets.QDialog):
         kw = formatLine(self.Preferences, "Standing_Katz", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
+        self.plt.lx.set_visible(False)
+        self.plt.ly.set_visible(False)
 
         # Plot data
         kw = formatLine(self.Preferences, "Standing_Katz", "line")
+        pzmin = 4
         for Tr in sorted(dat[str(method)].keys()):
             line = dat[str(method)][Tr]
             self.plt.ax.plot(line["Pr"], line["Z"], **kw)
@@ -181,6 +210,8 @@ class Standing_Katz(QtWidgets.QDialog):
         self.plt.ax.text(pzmin, zmin+0.1, r"$T_r$", size="12",
                          ha='left', va='center')
 
+        self.plt.draw()
+
     def calculate(self):
         dlg = CalculateDialog()
         if dlg.exec_():
@@ -193,6 +224,8 @@ class Standing_Katz(QtWidgets.QDialog):
         """Create a crux in selected point of plot and show data at bottom
         right corner"""
         txt = "Tr: %0.4g\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
+        self.plt.lx.set_visible(True)
+        self.plt.ly.set_visible(True)
         self.plt.ly.set_xdata(Pr)
         self.plt.lx.set_ydata(Z)
         if self.note:
