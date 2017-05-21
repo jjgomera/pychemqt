@@ -102,14 +102,7 @@ class Standing_Katz(Chart):
         "pychemqt",
         "Standing and Katz compressivitity factors chart for natural gas")
     configDialog = ConfigDialog
-
-    # def configure(self):
-        # from UI.prefStandingKatz import Dialog
-        # dlg = Dialog(self.Preferences)
-        # if dlg.exec_():
-            # self.Preferences = dlg.value(self.Preferences)
-            # self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            # self.plot()
+    PosLogo = 8, 0.5
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """

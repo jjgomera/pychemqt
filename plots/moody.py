@@ -30,8 +30,9 @@ import os
 from PyQt5 import QtGui, QtWidgets
 from scipy import logspace, log10
 from matplotlib.patches import ConnectionPatch
+from matplotlib import image
 
-from lib.config import conf_dir
+from lib.config import conf_dir, IMAGE_PATH
 from lib.friction import f_list, eD
 from lib.plot import mpl
 from lib.utilities import formatLine, representacion
@@ -80,7 +81,6 @@ class Chart(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super(Chart, self).__init__(parent)
-        self.showMaximized()
         self.setWindowTitle(self.title)
         layout = QtWidgets.QGridLayout(self)
         layout.setColumnStretch(3, 1)
@@ -90,18 +90,15 @@ class Chart(QtWidgets.QDialog):
 
         btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "image.png")),
+            os.path.join(IMAGE_PATH, "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
         butonPNG.clicked.connect(self.plt.savePNG)
         butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "configure.png")),
+            os.path.join(IMAGE_PATH, "button", "configure.png")),
             QtWidgets.QApplication.translate("pychemqt", "Configure"))
         butonConfig.clicked.connect(self.configure)
         butonCalculate = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "calculator.png")),
+            os.path.join(IMAGE_PATH, "button", "calculator.png")),
             QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
         butonCalculate.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
@@ -114,6 +111,10 @@ class Chart(QtWidgets.QDialog):
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.config()
         self.plot()
+
+        logo = image.imread(os.path.join(IMAGE_PATH, "pychemqt_98.png"))
+        self.logo = self.plt.fig.figimage(logo, 0, 0, zorder=1, alpha=0.5)
+        self.showMaximized()
 
     def configure(self):
         dlg = self.configDialog(self.Preferences)
@@ -138,11 +139,33 @@ class Chart(QtWidgets.QDialog):
         """Define the functionality when click the calculate point button"""
         pass
 
+    def resizeEvent(self, event):
+        """Implement resizeEvent to recalculate the new position of image"""
+        self.refixImage()
+        QtWidgets.QDialog.resizeEvent(self, event)
+
+    def refixImage(self, event=None):
+        """Recalculate image position as resize/move window"""
+        xmin, xmax = self.plt.ax.get_xlim()
+        ymin, ymax = self.plt.ax.get_ylim()
+        x, y = self.plt.ax.transData.transform_point(self.PosLogo)
+        hlogo, wlogo = self.logo.get_size()
+        if self.PosLogo[0] == 1:
+            x -= wlogo
+        if self.PosLogo[1] == 1:
+            y -= hlogo
+
+        self.logo.ox = x
+        self.logo.oy = y
+
+        self.plt.draw()
+
 
 class Moody(Chart):
     """Moody chart dialog"""
     title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
     configDialog = ConfigDialog
+    PosLogo = 5e3, 1.2e-2
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
