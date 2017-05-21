@@ -1109,7 +1109,7 @@ def f_papaevangelou(Re, eD):
 
 def f_brkic(Re, eD, alternate=False):
     """
-    Calculates friction factor `f` with Brkić correlation (2010a)
+    Calculates friction factor `f` with Brkić correlation (2010)
 
     .. math::
         f = [-2\log(10^{-0.4343\beta} + \frac{\epsilon}{3.71D})]^{-2}
@@ -1136,7 +1136,7 @@ def f_brkic(Re, eD, alternate=False):
         fluid flow friction factor. Petroleum Science and Technology 29 (15)
         2011: 1596–1602.
     """
-    S = log(Re/1.816*log(1.1*Re/log(1+1.1*Re)))                          # Eq 8
+    S = log(Re/1.816/log(1.1*Re/log(1+1.1*Re)))                          # Eq 8
 
     # Eq 7
     if alternate:
