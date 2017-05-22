@@ -30,9 +30,8 @@ from numpy import array
 
 from lib import unidades
 from lib.physics import R_atml, R_Btu
-from lib.compuestos import Componente, newComponente
+from lib.compuestos import newComponente
 from lib.config import conf_dir
-from lib.petro2 import crudo
 
 
 __doi__ = {
@@ -2960,134 +2959,14 @@ def Viscosidad_from_kinematic(tipo, mu):
         3:Grados Engler
     mu: valor de esa viscosidad
     valor obtenido en segundos o grados engler"""
-    if tipo==1:
-        parametros=[4.0984, 0.038014, 0.001919, 0.0000278, 0.00000521]
-    elif tipo==2:
-        parametros=[0.40984, 0.38014, 0.01919, 0.000278, 0.0000521]
-    elif tipo==3:
-        parametros=[0.13158, 1.1326, 0.0104, 0.00656, 0.0]
+    if tipo == 1:
+        parametros = [4.0984, 0.038014, 0.001919, 0.0000278, 0.00000521]
+    elif tipo == 2:
+        parametros = [0.40984, 0.38014, 0.01919, 0.000278, 0.0000521]
+    elif tipo == 3:
+        parametros = [0.13158, 1.1326, 0.0104, 0.00656, 0.0]
 
     return parametros[0]*mu+1/(parametros[1]+parametros[2]*mu+parametros[3]*mu**2+parametros[4]*mu**3)
-
-
-def Z_Papay(Tr, Pr):
-    """Papay, J. “A Termelestechnologiai Parameterek Valtozasa a Gazlelepk Muvelese Soran.” OGIL  MUSZ, Tud, Kuzl. [Budapest] (1985): 267–273."""
-    return 1-3.53*Pr/10**(0.9813*Tr)+0.274*Pr**2/10**(0.8157*Tr)
-
-def Z_Hall_Yarborough(Tr, Pr):
-    """Hall, K. R., and L. Yarborough. “A New Equation of State for Z-factor Calculations.” Oil and Gas Journal (June 18, 1973): 82–92."""
-    X1=-0.06125*Pr/Tr*exp(-1.2*(1-1/Tr)**2)
-    X2=14.76/Tr-9.76/Tr**2+4.58/Tr**3
-    X3=90.7/Tr-242.2/Tr**2+42.4/Tr**3
-    X4=2.18+2.82/Tr
-    def f(Y):
-        return X1+(Y+Y**2+Y**3-Y**4)/(1-Y)**3-X2*Y**2+X3*Y**X4
-    Yo=0.0125*Pr/Tr*exp(-1.2*(1-1/Tr)**2)
-    Y=fsolve(f, Yo, full_output=True)
-    if Y[2]==1:
-        return 0.06125*Pr/Tr/Y[0]*exp(-1.2*(1-1/Tr)**2)
-    else:
-        return float("nan")
-
-def Z_Dranchuk_Abu_Kassem(Tr, Pr):
-    """Dranchuk, P. M., and J. H. Abu-Kassem. “Calculate of Z-factors for Natural Gases Using Equations-of-State.” Journal of Canadian Petroleum Technology (July–September 1975): 34–36."""
-    R1=0.3265-1.07/Tr-0.5339/Tr**3+0.01569/Tr**4-0.05165/Tr**5
-    R2=0.27*Pr/Tr
-    R3=0.5475-0.7361/Tr+0.1844/Tr**2
-    R4=0.1056*(-0.7361/Tr+0.1844/Tr**2)
-    R5=0.6134/Tr**3
-    def f(g):
-        return R1*g-R2/g+R3*g**2-R4*g**5+R5*(1+0.721*g**2)*g**2*exp(-0.721*g**2)+1
-    go=0.27*Pr/Tr
-    g=fsolve(f, go, full_output=True)
-    if g[2]==1:
-        return 0.27*Pr/Tr/g[0]
-    else:
-        return float("nan")
-
-def Z_Dranchuk_Purvis_Robinson(Tr, Pr):
-    """Dranchuk, P. M., R. A. Purvis, and D. B. Robinson. “Computer Calculations of Natural Gas Compressibility Factors Using the Standing and Katz Correlation.” Technical Series, no. IP 74-008. Alberta, Canada: Institute of Petroleum, 1974."""
-    T1=0.31506237-1.0467099/Tr-0.5783272/Tr**3
-    T2=0.53530771-0.61232032/Tr
-    T3=0.61232032*0.10488813/Tr
-    T4=0.68157001/Tr**3
-    T5=0.27*Pr/Tr
-    def f(g):
-        return 1+T1*g+T2*g**2+T3*g**5+T4*g**2*(1+0.68446549*g**2)*exp(-0.68446549*g**2)-T5/g
-    go=0.27*Pr/Tr
-    g=fsolve(f, go, full_output=True)
-    if g[2]==1:
-        return 0.27*Pr/Tr/g[0]
-    else:
-        return float("nan")
-
-def Z_Beggs_Brill(Tr, Pr):
-    A=1.39*(Tr-0.92)**0.5-0.36*Tr-0.101
-    B=(0.62-0.23*Tr)*Pr+(0.066/(Tr-0.86)-0.037)*Pr**2+0.32/10**(9*(Tr-1.))*Pr**6
-    C=0.132-0.32*log10(Tr)
-    D=10.**(0.3106-0.49*Tr+0.1824*Tr**2)
-    return A+(1.-A)/exp(B)+C*Pr**D
-
-def Z_ShellOil(Tr, Pr):
-    Za=-0.101-0.36*Tr+1.3868*(Tr-0.919)**0.5
-    Zb=0.021+0.04275/(Tr-0.65)
-    Zc=0.6222-0.224*Tr
-    Zd=0.0657/(Tr-0.86)-0.037
-    Ze=0.32*exp(-19.53*(Tr-1))
-    Zf=0.122*exp(-11.3*(Tr-1))
-    Zg=Pr*(Zc+Zd*Pr+Ze*Pr**4)
-    return Za+Zb*Pr+(1-Za)*exp(-Zg)-Zf*(Pr/10)**4
-
-def Z_Sarem(Tr, Pr):
-    """Sarem, A.M.: "Z-Factor Equation Developed for Use in Digital Computers", Oil and Gas J. (Sept. 18, 1961) 118."""
-    x=(2.*Pr-15)/14.8
-    y=(2.*Tr-4)/1.9
-    Aij=[[2.1433504, 0.0831762, -0.0214670, -0.0008714, 0.0042846, -0.0016595],
-            [0.3312352, -0.1340361, 0.0668810,  -0.0271743,  0.0088512,  -0.002152],
-            [0.1057287,  -0.0503937,  0.0050925,  0.0105513,  -0.0073182,  0.0026960],
-            [0.0521840,  0.0443121,  -0.0193294,  0.0058973,  0.0015367,  -0.0028327],
-            [0.0197040,  -0.0263834, 0.019262,  -0.0115354,  0.0042910,  -0.0081303],
-            [0.0053096,  0.0089178,  -0.0108948,  0.0095594,  -0.0060114, 0.0031175]]
-    P=[lambda a: 0.7071068, lambda a: 1.224745*a, lambda a: 0.7905695*(3*a**2-1), lambda a: 0.9354145*(5*a**3-3*a), lambda a: 0.265165*(35*a**4-30*a**2+3), lambda a: 0.293151*(63*a**5-70*a**3+15*a)]
-    z=0.
-    for i in range(6):
-        for j in range(6):
-            z+=Aij[i][j]*P[i](x)*P[j](y)
-    return z
-
-def Z_Gopal(Tr, Pr):
-    """Gopal, V.N.: "Gas Z-Factor Equations Developed for Computer", Oil and Gas J. (Aug. 8, 1977) 58-60."""
-    if Pr<=1.2:
-        if Tr<=1.2:
-           return Pr*( 1.6643 *Tr - 2.2114)- 0.3647 *Tr + 1.4385
-        elif 1.2<=Tr<1.4:
-            return Pr*( 0.0522 *Tr - 0.8511 )- 0.0364 *Tr + 1.0490
-        elif 1.4<=Tr<2.0:
-            return Pr*( 0.1391 *Tr - 0.2988)+ 0.0007 *Tr + 0.9969
-        elif 2.0<=Tr<3.0:
-            return Pr*( 0.0295 *Tr - 0.0825 )+ 0.0009 *Tr + 0.9967
-    elif 1.2<=Pr<2.8:
-        if Tr<=1.2:
-            return Pr*(-1.3570 *Tr + 1.4942)+ 4.6315 *Tr - 4.7009
-        elif 1.2<=Tr<1.4:
-            return Pr*( 0.1717 *Tr - 0.3232)+ 0.5869 *Tr + 0.1229
-        elif 1.4<=Tr<2.0:
-            return Pr*( 0.0984 *Tr - 0.2053 )+ 0.0621 *Tr + 0.8580
-        elif 2.0<=Tr<3.0:
-            return Pr*( 0.0211 *Tr - 0.0527)+ 0.0127 *Tr + 0.9549
-    elif 2.8<=Pr<5.4:
-        if Tr<=1.2:
-            return Pr*(-0.3278 *Tr + 0.4752 )+ 1.8223 *Tr - 1.9036
-        elif 1.2<=Tr<1.4:
-            return Pr*(-0.2521 *Tr + 0.3871 )+ 1.6087 *Tr - 1.6635
-        elif 1.4<=Tr<2.0:
-            return Pr*(-0.0284 *Tr + 0.0625 )+ 0.4714 *Tr - 0.0011
-        elif 2.0<=Tr<3.0:
-            return Pr*( 0.0041 *Tr + 0.0039)+ 0.0607 *Tr + 0.7927
-    else:
-        return Pr*( 0.711+ 3.66 *Tr)**-1.4667-1.637/(0.319*Tr+0.522)+2.071
-
-Z_list=Z_Hall_Yarborough, Z_Dranchuk_Abu_Kassem, Z_Dranchuk_Purvis_Robinson, Z_ShellOil, Z_Beggs_Brill, Z_Sarem, Z_Gopal, Z_Papay
 
 def Tb_Presion(T, P, Kw=None, reverse=False):
     """Cálculo de la temperatura de ebullición normal a partir de la temperatura de ebullición a otra presión. Utíl para obtener datos de curva de destilación normales a partir de datos a otras presiones

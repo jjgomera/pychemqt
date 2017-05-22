@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Module to implement new component
 #   -newComponent: Main dialog class with common functionality
@@ -36,7 +35,8 @@ from UI.widgets import Entrada_con_unidades, Tabla, Status
 from UI.delegate import SpinEditor
 from UI.viewComponents import View_Component, View_Petro, View_Contribution
 from lib.unidades import Temperature, Pressure, Diffusivity
-from lib.petro import Crudo, crudo, Petroleo
+from lib.petro import Petroleo
+from lib.crude import Crudo
 from lib.compuestos import (Joback, Constantinou_Gani, Wilson_Jasperson,
                             Marrero_Pardillo, Elliott, Ambrose)
 from lib import sql
@@ -444,9 +444,11 @@ class Definicion_Petro(newComponent):
         self.crudo = QtWidgets.QComboBox()
         self.crudo.setEnabled(False)
         self.crudo.addItem("")
-        for i in crudo[1:]:
-            self.crudo.addItem("%s (%s)  API: %s %S: %s" % (i[0], i[1], i[3], i[4]))
-            # i[0]+" ("+i[1]+")"+"   API: "+str(i[3])+"  %S: "+str(i[4]))
+
+        sql.databank.execute("SELECT name, location, API, sulfur FROM CrudeOil")
+        for name, location, API, sulfur in sql.databank:
+            self.crudo.addItem("%s (%s)  API: %s %s: %s" % (
+                name, location, API, "%S", sulfur))
         self.crudo.currentIndexChanged.connect(partial(
             self.changeParams, "indice"))
         layout.addWidget(self.crudo, 23, 1, 1, 5)
