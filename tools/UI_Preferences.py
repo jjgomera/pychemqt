@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - ConfGeneral: General configuration options
 #   - ConfTooltipUnit: Tooltip with unit alternate value configuration
 #   - ConfFormat: Numeric format configuration
-#   - ConfPetro: Petro new component configuration
 #   - ConfApplications: External applications configuration
 #   - ConfTooltipEntity: Entity properties in popup window configuration
 ###############################################################################
@@ -43,7 +42,7 @@ from lib import unidades, corriente
 from lib.firstrun import which
 from lib.utilities import representacion
 from equipment import equipments
-from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric
+from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric, prefPetro
 from UI import prefMoody, prefStandingKatz
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
@@ -371,121 +370,6 @@ class ConfFormat(QtWidgets.QTableWidget):
         return config
 
 
-class ConfPetro(QtWidgets.QDialog):
-    """Petro new component configuration"""
-    def __init__(self, config=None, parent=None):
-        super(ConfPetro, self).__init__(parent)
-
-        layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Molecular weight:")), 1, 1)
-        Pm = ["Riazi Daubert", "Riazi Daubert extended", "Lee Kesler",
-              "Sim Daubert", "API", "ASTM", "Goossens", "TWu"]
-        self.Peso_molecular = QtWidgets.QComboBox()
-        for p in Pm:
-            self.Peso_molecular.addItem(p)
-        layout.addWidget(self.Peso_molecular, 1, 2)
-
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critics properties:")), 2, 1)
-        Critical = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
-                    "Lee Kesler", "Cavett", "Sim Daubert",
-                    "Watansiri Owens Starling", "Edmister", "Magoulas", "Twu",
-                    "Tsonopoulos"]
-        self.critical = QtWidgets.QComboBox()
-        for c in Critical:
-            self.critical.addItem(c)
-        layout.addWidget(self.critical, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critic volume:")), 3, 1)
-        vc = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
-              "Watansiri Owens Starling", "Twu", "Tsonopoulos",
-              "Hall Yarborough", "API"]
-        self.vc = QtWidgets.QComboBox()
-        for v in vc:
-            self.vc.addItem(v)
-        layout.addWidget(self.vc, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Acentric factor:")), 4, 1)
-        self.factor_acentrico = QtWidgets.QComboBox()
-        self.factor_acentrico.addItem("Edmister")
-        self.factor_acentrico.addItem("Lee Kesler")
-        self.factor_acentrico.addItem("Watansiri Owens Starling")
-        self.factor_acentrico.addItem("Magoulas")
-        layout.addWidget(self.factor_acentrico, 4, 2)
-        layout.addWidget(QtWidgets.QLabel("Z<sub>c</sub>:"), 5, 1)
-        self.Zc = QtWidgets.QComboBox()
-        self.Zc.addItem("Lee Kesler")
-        self.Zc.addItem("Haugen")
-        self.Zc.addItem("Reid")
-        self.Zc.addItem("Salerno")
-        self.Zc.addItem("Nath")
-        layout.addWidget(self.Zc, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "T boiling:")), 6, 1)
-        self.t_ebull = QtWidgets.QComboBox()
-        self.t_ebull.addItem("Riazi Daubert extended")
-        self.t_ebull.addItem("Riazi Adwani")
-        self.t_ebull.addItem("Edmister")
-        self.t_ebull.addItem("Soreide")
-        layout.addWidget(self.t_ebull, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "PNA descomposition:")), 7, 1)
-        self.PNA = QtWidgets.QComboBox()
-        self.PNA.addItem("Peng Robinson")
-        self.PNA.addItem("Bergman")
-        self.PNA.addItem("Riazi")
-        self.PNA.addItem("van Nes van Westen")
-        layout.addWidget(self.PNA, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Destilate curve conversion:")), 12, 1)
-        self.Curvas = QtWidgets.QComboBox()
-        self.Curvas.addItem("Riazi")
-        self.Curvas.addItem("Daubert")
-        layout.addWidget(self.Curvas, 12, 2)
-
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "% Hydrogen:")), 13, 1)
-        self.Hidrogeno = QtWidgets.QComboBox()
-        self.Hidrogeno.addItem("Riazi")
-        self.Hidrogeno.addItem("Goossens")
-        self.Hidrogeno.addItem("ASTM")
-        self.Hidrogeno.addItem("Jenkins Walsh")
-        layout.addWidget(self.Hidrogeno, 13, 2)
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 1, 1, 3)
-
-        if config.has_section("petro"):
-            self.Peso_molecular.setCurrentIndex(
-                config.getint("petro", "molecular_weight"))
-            self.critical.setCurrentIndex(config.getint("petro", "critical"))
-            self.vc.setCurrentIndex(config.getint("petro", "vc"))
-            self.factor_acentrico.setCurrentIndex(
-                config.getint("petro", "f_acent"))
-            self.t_ebull.setCurrentIndex(config.getint("petro", "t_ebull"))
-            self.Zc.setCurrentIndex(config.getint("petro", "Zc"))
-            self.PNA.setCurrentIndex(config.getint("petro", "PNA"))
-            self.Hidrogeno.setCurrentIndex(config.getint("petro", "H"))
-            self.Curvas.setCurrentIndex(config.getint("petro", "curva"))
-
-    def value(self, config):
-        if not config.has_section("petro"):
-            config.add_section("petro")
-        config.set("petro", "molecular_weight",
-                   str(self.Peso_molecular.currentIndex()))
-        config.set("petro", "critical", str(self.critical.currentIndex()))
-        config.set("petro", "vc", str(self.vc.currentIndex()))
-        config.set("petro", "f_acent",
-                   str(self.factor_acentrico.currentIndex()))
-        config.set("petro", "t_ebull", str(self.t_ebull.currentIndex()))
-        config.set("petro", "Zc", str(self.Zc.currentIndex()))
-        config.set("petro", "PNA", str(self.PNA.currentIndex()))
-        config.set("petro", "H", str(self.Hidrogeno.currentIndex()))
-        config.set("petro", "curva", str(self.Curvas.currentIndex()))
-        return config
-
-
 class ConfApplications(QtWidgets.QDialog):
     """External applications configuration"""
     def __init__(self, config=None, parent=None):
@@ -584,7 +468,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "Tooltips in units")),
         ("button/format_numeric.png", ConfFormat,
          QtWidgets.QApplication.translate("pychemqt", "Numeric format")),
-        ("button/oil.png", ConfPetro,
+        ("button/oil.png", prefPetro.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Pseudocomponents")),
         ("button/applications.png", ConfApplications,
          QtWidgets.QApplication.translate("pychemqt", "Applications")),
