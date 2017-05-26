@@ -175,6 +175,14 @@ class unidad(float):
         data *= conversion
         return data
 
+    def __add__(self, other):
+        """Support for += operation"""
+        return self.__class__(self._data+other)
+
+    def __sub__(self, other):
+        """Support for -= operation"""
+        return self.__class__(self._data-other)
+
     def config(self, magnitud=""):
         """Using config file return the value in the configurated unit"""
         if not magnitud:
