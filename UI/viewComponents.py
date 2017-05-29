@@ -29,7 +29,7 @@ from scipy import array, exp, optimize, linspace
 from lib.plot import Plot
 from lib.compuestos import Componente
 from lib import unidades, sql
-from .entrada_datos import Entrada_Datos, eqDIPPR
+from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
 from UI.widgets import Entrada_con_unidades, Tabla, okToContinue
 
@@ -516,7 +516,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
 
 
     def regresion(self):
-        dialogo=Entrada_Datos(title=self.title, DIPPR=True, horizontalHeader=["T, K", QtWidgets.QApplication.translate("pychemqt", "Property")+", "+self.unit], tc=True, tcValue=self.parent.tempCritica.value, t=self.t, property=self.data, eq=self.eq.value())
+        dialogo=InputTableDialog(title=self.title, DIPPR=True, horizontalHeader=["T, K", QtWidgets.QApplication.translate("pychemqt", "Property")+", "+self.unit], tc=True, tcValue=self.parent.tempCritica.value, t=self.t, property=self.data, eq=self.eq.value())
         if dialogo.exec_():
             t=dialogo.tabla.getColumn(0, fill=False)
             p=dialogo.tabla.getColumn(1, fill=False)

@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###################################
 ###   Diálogo de definición de reactores UI_reactor  ###
 ###################################
@@ -38,7 +37,7 @@ from lib.config import getComponents
 from UI.widgets import Status
 from equipment.parents import UI_equip
 from equipment.reactor import Reactor
-from UI import UI_corriente, entrada_datos
+from UI import UI_corriente, inputTable
 from UI.widgets import Entrada_con_unidades, Tabla
 
 
@@ -584,7 +583,7 @@ class UI_equipment(UI_equip):
 
 
     def editorPerfil(self):
-        dialog=entrada_datos.Entrada_Datos(data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
+        dialog=inputTable.InputTableDialog(data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
         if dialog.exec_():
             self.profile_T=dialog.data
 

@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Dialog to common data entry
-#   -Entrada_Datos: Dialog to data entry
+#   -InputTableWidget: Widget for table data
+#   -InputTableDialog: Dialog for table data
 #   -eqDIPPR: Widget for select DIPPR equation
 ###############################################################################
 
@@ -79,11 +80,10 @@ class eqDIPPR(QtWidgets.QWidget):
         self.eqDIPPR.clear()
 
 
-class Entrada_Datos(QtWidgets.QDialog):
+class InputTableWidget(QtWidgets.QWidget):
     """Table data input dialog"""
     def __init__(self, data=None, t=[], property=[], horizontalHeader=[],
-                 title="", help=False, helpFile="", DIPPR=False, tc=0,
-                 tcValue=None, eq=1, parent=None):
+                 title="", DIPPR=False, tc=0, tcValue=None, eq=1, parent=None):
         """
         title: window title
         data: mrray with original data
@@ -97,12 +97,10 @@ class Entrada_Datos(QtWidgets.QDialog):
         tcValue: value for critical temperature
         eq: Value for DIPPR equation
         """
-        super(Entrada_Datos, self).__init__(parent)
-        self.setWindowTitle(title)
+        super(InputTableWidget, self).__init__(parent)
         self.columnas = len(horizontalHeader)
         self.horizontalHeader = horizontalHeader
         self.title = title
-        self.helpFile = helpFile
         gridLayout = QtWidgets.QGridLayout(self)
         self.botonAbrir = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")),
@@ -151,19 +149,6 @@ class Entrada_Datos(QtWidgets.QDialog):
             gridLayout.addItem(lyt, 4, 1, 1, 4)
             self.showTc(1)
 
-        if help:
-            botones = QtWidgets.QDialogButtonBox.Help | \
-                QtWidgets.QDialogButtonBox.Cancel | \
-                QtWidgets.QDialogButtonBox.Ok
-        else:
-            botones = QtWidgets.QDialogButtonBox.Cancel | \
-                QtWidgets.QDialogButtonBox.Ok
-        self.boton = QtWidgets.QDialogButtonBox(botones)
-        self.boton.accepted.connect(self.accept)
-        self.boton.rejected.connect(self.reject)
-        self.boton.helpRequested.connect(self.ayuda)
-        gridLayout.addWidget(self.boton, 5, 1, 1, 4)
-
     def showTc(self, value):
         self.labelTc.setVisible(value in (7, 9))
         self.tc.setVisible(value in (7, 9))
@@ -204,14 +189,37 @@ class Entrada_Datos(QtWidgets.QDialog):
         self.tabla.setRowCount(1)
         self.tabla.clearContents()
 
+    @property
+    def data(self):
+        return self.tabla.getData()
+
+
+class InputTableDialog(QtWidgets.QDialog):
+    """Dialog to config thermal method calculations"""
+    def __init__(self, help=False, helpFile="", **kwargs):
+        parent = kwargs.get("parent", None)
+        super(InputTableDialog, self).__init__(parent)
+        title = kwargs.get("title", "")
+        self.setWindowTitle(title)
+        self.helpFile = helpFile
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Moody diagram configuration"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = InputTableWidget(**kwargs)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        if help:
+            self.buttonBox.addButton(QtWidgets.QDialogButtonBox.Help)
+            self.buttonBox.helpRequested.connect(self.ayuda)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
     def ayuda(self):
         """Show help file"""
         url = QtCore.QUrl(self.helpFile)
         QtGui.QDesktopServices.openUrl(url)
-
-    @property
-    def data(self):
-        return self.tabla.getData()
 
 
 if __name__ == "__main__":
@@ -219,8 +227,8 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     titulo = "Distribución de tamaño de sólidos"
     encabezado = ["Diametro, μm", "Fracción másica", "acumulado"]
-    ui = Entrada_Datos(horizontalHeader=encabezado, title=titulo, help=True,
-                       DIPPR=True, helpFile=os.environ["pychemqt"] +
-                       "/doc/pychemqt.UI.entrada_datos.html")
+    ui = InputTableDialog(horizontalHeader=encabezado, title=titulo, help=True,
+                          DIPPR=True, helpFile=os.environ["pychemqt"] +
+                          "/docs/_build/lib.reaction.html")
     ui.show()
     sys.exit(app.exec_())
