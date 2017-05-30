@@ -40,6 +40,7 @@ class eqDIPPR(QtWidgets.QWidget):
     def __init__(self, value, parent=None):
         super(eqDIPPR, self).__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Eq DIPPR") + " "))
         self.eqDIPPR = QtWidgets.QSpinBox()
@@ -48,24 +49,26 @@ class eqDIPPR(QtWidgets.QWidget):
         self.eqDIPPR.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
-        txt = """
-    1:     Y = A+B*T+C*T²+D*T³+E*T⁴
-    2:     Y = exp(A+B*T+C*ln(T)+D*T^E)
-    3:     Y = A*T^(B/(1+C*T+D*T^2))
-    4:     Y = A+B*exp(-C/T^D)
-    5:     Y = A + B/T + C/T³ + D/T⁸ + E/T⁹
-    6:     Y = A/(B^(1+(1-T/C)^D)
-    7:     Y = A*(1-Tr)^(B+C*Tr+D*Tr²+E*Tr³)
-    8:     Y = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²
-    9:     Y = A²/Tr + B - 2ACTr - ADTr² - C²Tr³/3 - CDTr⁴/2 - D²Tr⁵/5
-        """
-        var = QtWidgets.QApplication.translate("pychemqt", """where:
-                    Y Property to fit
-                    T temperature in Kelvin
-                    Tr: reduced temperature T/Tc
-                    A,B,C,D,E parameters""")
-        self.eqDIPPR.setToolTip(QtWidgets.QApplication.translate(
-            "pychemqt", "Equation") + txt + var)
+        txt = QtWidgets.QApplication.translate("pychemqt", "Equation") + "\n"
+        txt += "\t1:\tY = A+B*T+C*T²+D*T³+E*T⁴\n"
+        txt += "\t2:\tY = exp(A+B*T+C*ln(T)+D*T^E)\n"
+        txt += "\t3:\tY = A*T^(B/(1+C*T+D*T^2))\n"
+        txt += "\t4:\tY = A+B*exp(-C/T^D)\n"
+        txt += "\t5:\tY = A + B/T + C/T³ + D/T⁸ + E/T⁹\n"
+        txt += "\t6:\tY = A/(B^(1+(1-T/C)^D)\n"
+        txt += "\t7:\tY = A*(1-Tr)^(B+C*Tr+D*Tr²+E*Tr³)\n"
+        txt += "\t8:\tY = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²\n"
+        txt += "\t9:\tY = A²/Tr+B-2ACTr-ADTr²-C²Tr³/3-CDTr⁴/2-D²Tr⁵/5\n"
+        txt += QtWidgets.QApplication.translate("pychemqt", "where") + ":\n"
+        txt += "\t" + QtWidgets.QApplication.translate(
+            "pychemqt", "Y Property to fit") + "\n"
+        txt += "\t" + QtWidgets.QApplication.translate(
+            "pychemqt", "T temperature in Kelvin") + "\n"
+        txt += "\t" + QtWidgets.QApplication.translate(
+            "pychemqt", "Tr: reduced temperature T/Tc") + "\n"
+        txt += "\t" + QtWidgets.QApplication.translate(
+            "pychemqt", "A,B,C,D,E parameters")
+        self.eqDIPPR.setToolTip(txt)
         layout.addWidget(self.eqDIPPR)
         layout.addStretch()
 
@@ -85,15 +88,12 @@ class InputTableWidget(QtWidgets.QWidget):
     def __init__(self, data=None, t=[], property=[], horizontalHeader=[],
                  title="", DIPPR=False, tc=0, tcValue=None, eq=1, parent=None):
         """
-        title: window title
         data: mrray with original data
         t: values for x column, generally temperature
         property: values for 2...n columns
         horizontalHeader: List with column title
-        help: boolean to show help button
-        helpFile: Path for help file, file or url
         DIPPR: boolean to show DIPPR widget
-        tc: boolean to show critical temperature (same DIPPR eq need it)
+        tc: boolean to show critical temperature (some DIPPR eq need it)
         tcValue: value for critical temperature
         eq: Value for DIPPR equation
         """
@@ -102,21 +102,25 @@ class InputTableWidget(QtWidgets.QWidget):
         self.horizontalHeader = horizontalHeader
         self.title = title
         gridLayout = QtWidgets.QGridLayout(self)
-        self.botonAbrir = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/fileOpen.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Open"))
-        self.botonAbrir.clicked.connect(self.Abrir)
-        gridLayout.addWidget(self.botonAbrir, 1, 1)
-        self.botonGuardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/fileSave.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Save"))
-        self.botonGuardar.clicked.connect(self.Guardar)
-        gridLayout.addWidget(self.botonGuardar, 1, 2)
-        self.botonDelete = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/clear.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Clear"))
-        self.botonDelete.clicked.connect(self.Borrar)
-        gridLayout.addWidget(self.botonDelete, 1, 3)
+        gridLayout.setContentsMargins(0, 0, 0, 0)
+        openButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"]+"/images/button/fileOpen.png")), "")
+        openButton.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Load data from a file"))
+        openButton.clicked.connect(self.open)
+        gridLayout.addWidget(openButton, 1, 1)
+        saveButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"]+"/images/button/fileSave.png")), "")
+        saveButton.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Save data to a file"))
+        saveButton.clicked.connect(self.save)
+        gridLayout.addWidget(saveButton, 1, 2)
+        clearButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"]+"/images/button/clear.png")), "")
+        clearButton.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Clear data"))
+        clearButton.clicked.connect(self.delete)
+        gridLayout.addWidget(clearButton, 1, 3)
         gridLayout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 1, 4)
@@ -137,34 +141,42 @@ class InputTableWidget(QtWidgets.QWidget):
             gridLayout.addWidget(self.eqDIPPR, 3, 1, 1, 4)
             self.eqDIPPR.eqDIPPR.valueChanged.connect(self.showTc)
 
-        if tc:
-            lyt = QtWidgets.QHBoxLayout()
             self.labelTc = QtWidgets.QLabel("Tc: ", self)
-            lyt.addWidget(self.labelTc)
+            gridLayout.addWidget(self.labelTc, 4, 1)
             self.tc = Entrada_con_unidades(Temperature, value=tcValue)
-            lyt.addWidget(self.tc)
-            lyt.addItem(QtWidgets.QSpacerItem(
-                0, 0, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding))
-            gridLayout.addItem(lyt, 4, 1, 1, 4)
+            gridLayout.addWidget(self.tc, 4, 2, 1, 3)
             self.showTc(1)
 
     def showTc(self, value):
+        """Show/hide Tc widget"""
         self.labelTc.setVisible(value in (7, 9))
         self.tc.setVisible(value in (7, 9))
 
-    def Abrir(self):
-        fname = QtWidgets.QFileDialog.getOpenFileName(
+    def open(self):
+        """Load data from a test file"""
+        fname, ext = QtWidgets.QFileDialog.getOpenFileName(
             self,
             QtWidgets.QApplication.translate("pychemqt", "Open text file"),
             "./")
         if fname:
-            data = loadtxt(fname)
-            self.tabla.setData(data)
-            self.tabla.addRow()
+            try:
+                # Numpy raise error if use the fname directly and find a
+                # non-latin1 character, inclusive in comment lines
+                with open(fname, "rb") as file:
+                    data = loadtxt(file)
+                self.tabla.setData(data)
+                self.tabla.addRow()
+            except ValueError as er:
+                # Raise a error msg if the file can load by loadtxt, the user
+                # can select any type of file and the input error is possible
+                title = QtWidgets.QApplication.translate(
+                    "pychemqt", "Failed to load file")
+                msg = fname + "\n" + er.args[0]
+                QtWidgets.QMessageBox.critical(self, title, msg)
 
-    def Guardar(self):
-        fname = QtWidgets.QFileDialog.getSaveFileName(
+    def save(self):
+        """Save currend data of table to a file"""
+        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
             self,
             QtWidgets.QApplication.translate("pychemqt", "Save data to file"),
             "./")
@@ -172,11 +184,8 @@ class InputTableWidget(QtWidgets.QWidget):
             with open(fname, 'w') as file:
                 file.write("#"+self.title+"\n")
                 file.write("#")
-                try:
-                    for i in self.horizontalHeader:
-                        file.write(i+"\t")
-                except UnicodeEncodeError:
-                    pass
+                for i in self.horizontalHeader:
+                    file.write(i+"\t")
                 file.write("\n")
                 data = self.data
                 for fila in range(len(data)):
@@ -184,7 +193,7 @@ class InputTableWidget(QtWidgets.QWidget):
                         file.write(str(data[fila][columna])+"\t")
                     file.write("\n")
 
-    def Borrar(self):
+    def delete(self):
         """Clear table"""
         self.tabla.setRowCount(1)
         self.tabla.clearContents()
@@ -197,6 +206,11 @@ class InputTableWidget(QtWidgets.QWidget):
 class InputTableDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, help=False, helpFile="", **kwargs):
+        """
+        title: window title
+        help: boolean to show help button
+        helpFile: Path for help file, file or url
+        """
         parent = kwargs.get("parent", None)
         super(InputTableDialog, self).__init__(parent)
         title = kwargs.get("title", "")
