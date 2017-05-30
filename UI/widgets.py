@@ -616,6 +616,7 @@ class Tabla(QtWidgets.QTableWidget):
             for columna, dato in enumerate(matriz[fila]):
                 self.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(
                     self.verticalHeaderModel+str(i)))
+                self.item(fila, columna).setText(str(dato))
                 self.item(fila+self.verticalOffset, columna).setTextAlignment(
                     self.orientacion | QtCore.Qt.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
