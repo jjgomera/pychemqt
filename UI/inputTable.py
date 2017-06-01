@@ -85,8 +85,9 @@ class eqDIPPR(QtWidgets.QWidget):
 
 class InputTableWidget(QtWidgets.QWidget):
     """Table data input dialog"""
-    def __init__(self, data=None, t=[], property=[], horizontalHeader=[],
-                 title="", DIPPR=False, tc=0, tcValue=None, eq=1, parent=None):
+    def __init__(self, columnas, data=None, t=[], property=[],
+                 horizontalHeader=[], title="", DIPPR=False, tc=0,
+                 tcValue=None, eq=1, parent=None):
         """
         data: mrray with original data
         t: values for x column, generally temperature
@@ -98,8 +99,7 @@ class InputTableWidget(QtWidgets.QWidget):
         eq: Value for DIPPR equation
         """
         super(InputTableWidget, self).__init__(parent)
-        self.columnas = len(horizontalHeader)
-        self.horizontalHeader = horizontalHeader
+        self.columnas = columnas
         self.title = title
         gridLayout = QtWidgets.QGridLayout(self)
         gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -184,8 +184,9 @@ class InputTableWidget(QtWidgets.QWidget):
             with open(fname, 'w') as file:
                 file.write("#"+self.title+"\n")
                 file.write("#")
-                for i in self.horizontalHeader:
-                    file.write(i+"\t")
+                for i in range(self.tabla.columnCount()):
+                    item = self.tabla.horizontalHeaderItem(i)
+                    file.write(item.text()+"\t")
                 file.write("\n")
                 data = self.data
                 for fila in range(len(data)):
@@ -202,10 +203,20 @@ class InputTableWidget(QtWidgets.QWidget):
     def data(self):
         return self.tabla.getData()
 
+    def column(self, column, magnitud=None, unit="conf"):
+        """
+        column: column to get
+        magnitud: magnitud to get the values
+        unit: unit of the values in table"""
+        data = self.tabla.getColumn(column)
+        if magnitud is not None:
+            data = [magnitud(x, unit) for x in data]
+        return data
+
 
 class InputTableDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
-    def __init__(self, help=False, helpFile="", **kwargs):
+    def __init__(self, columnas, help=False, helpFile="", **kwargs):
         """
         title: window title
         help: boolean to show help button
@@ -219,7 +230,7 @@ class InputTableDialog(QtWidgets.QDialog):
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
-        self.widget = InputTableWidget(**kwargs)
+        self.widget = InputTableWidget(columnas, **kwargs)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)

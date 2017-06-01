@@ -583,7 +583,7 @@ class UI_equipment(UI_equip):
 
 
     def editorPerfil(self):
-        dialog=inputTable.InputTableDialog(data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
+        dialog=inputTable.InputTableDialog(2, data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
         if dialog.exec_():
             self.profile_T=dialog.data
 
