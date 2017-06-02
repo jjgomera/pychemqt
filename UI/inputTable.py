@@ -164,8 +164,8 @@ class InputTableWidget(QtWidgets.QWidget):
                 # non-latin1 character, inclusive in comment lines
                 with open(fname, "rb") as file:
                     data = loadtxt(file)
+                self.delete()
                 self.tabla.setData(data)
-                self.tabla.addRow()
             except ValueError as er:
                 # Raise a error msg if the file can load by loadtxt, the user
                 # can select any type of file and the input error is possible
@@ -196,8 +196,9 @@ class InputTableWidget(QtWidgets.QWidget):
 
     def delete(self):
         """Clear table"""
-        self.tabla.setRowCount(1)
+        self.tabla.setRowCount(0)
         self.tabla.clearContents()
+        self.tabla.addRow()
 
     @property
     def data(self):
