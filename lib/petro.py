@@ -341,28 +341,36 @@ __doi__ = {
                   "density and viscosity of natural gases",
          "ref": "Fluid Phase Equilibria 218:1 (2004) 1-13",
          "doi": "10.1016/j.fluid.2003.02.003"},
-
-
     51:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Riazi, M. R. and Daubert, T. E.",
+         "title": "Analytical Correlations Interconvert Distillation Curve "
+                  "Types",
+         "ref": "Oil & Gas Journal, Vol. 84, 1986, August 25, pp. 50-57",
          "doi": ""},
     52:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Daubert, T. E.",
+         "title": "Petroleum Fraction Distillation Interconversion",
+         "ref": "Hydrocarbon Processing, Vol. 73, No. 9, 1994, pp. 75-78.",
          "doi": ""},
     53:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Edmister, W. C. and Okamoto, K. K.",
+         "title": "Applied Hydrocarbon Thermodynamics, Part 13: Equilibrium "
+                  "Flash Vaporization Correlations for Heavy Oils Under "
+                  "Subatmospheric Pressures",
+         "ref": "Petroleum Refiner, Vol. 38, No. 9, 1959, pp. 271-288.",
          "doi": ""},
     54:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Riazi, M. R.",
+         "title": "Distribution Model for Properties of Hydrocarbon-Plus "
+                  "Fractions",
+         "ref": "Industrial and Engineering Chemistry Research, Vol. 28, 1989,"
+                " pp. 1731-1735.",
+         "doi": "10.1021/ie00095a026"},
+
+
+
+
+
     55:
         {"autor": "",
          "title": "",
@@ -2837,287 +2845,684 @@ Z_list = (Z_Hall_Yarborough, Z_Papay, Z_Dranchuk_Abu_Kassem,
           Z_Londono_NS, Z_Elsharkawy, Z_Hall_Iglesias)
 
 
-def Desglose_aromaticos(Ri, m):
-    """Devuelve fracciones para los aromaticos monocíclicos y policíclicos"""
-    xma = -62.8245+59.90816*Ri-0.0248335*m
-    xpa = 11.88175-11.2213*Ri+0.023745*m
-    return xma, xpa
+# Distillation curves interconversion methods Ref. [29] Pag 117
+def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
+    """Interconversion between D86 and TBP at atmospheric pressure using the
+    Riazi correlation
 
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the D86 distillation temperature
+    Xi : list
+        Volumetric cut point range
 
-def Hydrates_Sloan(prop, T=None, P=None, y=[]):
-    """Sloan, E. “Phase Equilibria of Natural Gas Hydrates.” Paper presented at the Gas Producers Association Annual Conference, New Orleans, March 19–21, 1984.
-    prop: propiedad a calcular, T, P
-    T: temperatura
-    P: presión
-    y: composición, array con las fracciones molares de los componentes subceptibles de formar hidratos, [CH4, C2H6, C3H8, i-C4H10, n-C4H10, N2, CO2, H2S]
+    reverse : boolean
+        To do the reverse conversion
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example 3.2 from [29]_
+    >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> TBP = [10, 71.1, 143.3, 204.4, 250.6, 291.7]
+    >>> TBP_K = [t+273.15 for t in TBP]
+    >>> D86 = D86_TBP_Riazi(TBP_K, X, reverse=True)
+    >>> D86_C = [t-273.15 for t in D86]
+    >>> "%.0f" % D86_C[0]
+    '32'
+
+    Example 3.3 from [29]_
+    >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> D86 = [165.6, 173.7, 193.3, 206.7, 222.8, 242.8]
+    >>> D86_K = [t+273.15 for t in D86]
+    >>> TDB = D86_TBP_Riazi(D86_K, X)
+    >>> TDB_C = [t-273.15 for t in TDB]
+    >>> "%.1f %.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
+    '134.2 157.4 190.3 209.0 230.2 254.7'
+
+    References
+    ----------
+    .. [51] Riazi, M. R. and Daubert, T. E. Analytical Correlations
+        Interconvert Distillation Curve Types. Oil & Gas Journal, Vol. 84,
+        1986, August 25, pp. 50-57
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
     """
-    T=unidades.Temperature(T)
-    P=unidades.Pressure(P, "atm")
-    A0=[1.63636, 6.41934, -7.8499, -2.17137, -37.211, 1.78857, 9.0242, -4.7071]
-    A1=[0.0,  0.0,  0.0,  0.0,  0.86564,  0.0,  0.0,  0.06192]
-    A2=[0.0,  0.0,  0.0,  0.0,  0.0,  -0.001356,  0.0,  0.0]
-    A3=[31.6621,  -290.283,  47.056,  0.0,  732.20,  -6.187,  -207.033,  82.627]
-    A4=[-49.3534,  2629.10,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
-    A5=[5.31e-6, 0.0, -1.17e-6, 0.0, 0.0, 0.0, 4.66e-5, -7.39e-6]
-    A6=[0.0, 0.0, 7.145e-4, 1.251e-3, 0.0, 0.0, -6.992e-3, 0.0]
-    A7=[0.0, -9.0e-8, 0.0, 1.0e-8, 9.37e-6, 2.5e-7, -2.89e-6, 0.0]
-    A8=[0.128525,  0.129759,  0.0,  0.166097,  -1.07657,  0.0,  -6.233e-3,  0.240869]
-    A9=[-0.78338, -1.19703,  0.12348, -2.75945, 0.0, 0.0, 0.0, -0.64405]
-    A10=[0.0, -8.46e4, 1.669e4, 0.0, 0.0, 0.0, 0.0, 0.0]
-    A11=[0.0, -71.0352, 0.0, 0.0, -66.221, 0.0, 0.0, 0.0]
-    A12=[0.0, 0.596404, 0.23319, 0.0, 0.0, 0.0, 0.27098, 0.0]
-    A13=[-5.3569, -4.7437, 0.0, 0.0, 0.0, 0.0, 0.0, -12.704]
-    A14=[0.0, 7.82e4, -4.48e4, -8.84e2, 9.17e5, 5.87e5, 0.0, 0.0]
-    A15=[-2.3e-7, 0.0, 5.5e-6, 0.0, 0.0, 0.0, 8.82e-5, -1.3e-6]
-    A16=[-2.0e-8, 0.0, 0.0, -5.4e-7, 4.98e-6, 1.0e-8, 2.55e-6, 0.0]
-    A17=[0.0, 0.0, 0.0, -1.0e-8, -1.26e-6, 1.1e-7, 0.0, 0.0]
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
 
-    def ft(T):
-        suma=1
-        k=[]
-        for i in range(len(y)):
-            k.append(exp(A0[i]+A1[i]*T+A2[i]*P.psi+A3[i]/T+A4[i]/P.psi+A5[i]*P.psi*T+A6[i]*T**2+A7[i]*P.psi**2+A8[i]*P.psi/T+A9[i]*log(P.psi/T)+A10[i]/P.psi**2+A11[i]*T/P.psi+A12[i]*T**2/P.psi+A13[i]*P.psi/T**2+A14[i]*T/P.psi**3+A15[i]*T**3+A16[i]*P.psi**3/T**2+A17[i]*T**4))
-            suma-=y[i]/k[i]
-        return suma
+    a = [0.9177, 0.5564, 0.76517, 0.9013, 0.8821, 0.9552, 0.8177]
+    b = [1.0019, 1.09, 1.0425, 1.0176, 1.0226, 1.011, 1.0355]
+    Xmin = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 1.0001]
 
-    def fp(P):
-        suma=1
-        k=[]
-        for i in range(len(y)):
-            k.append(exp(A0[i]+A1[i]*T.F+A2[i]*P+A3[i]/T.F+A4[i]/P+A5[i]*P*T.F+A6[i]*T.F**2+A7[i]*P**2+A8[i]*P/T.F+A9[i]*log(P/T.F)+A10[i]/P**2+A11[i]*T.F/P+A12[i]*T.F**2/P+A13[i]*P/T.F**2+A14[i]*T.F/P**3+A15[i]*T.F**3+A16[i]*P**3/T.F**2+A17[i]*T.F**4))
-            suma-=y[i]/k[i]
-        return suma
+    # Calculate parameters
+    A = []
+    B = []
+    for x in Xi:
+        for xmin, xmax, ai, bi in zip(Xmin, Xmax, a, b):
+            if xmin <= x < xmax:
+                A.append(ai)
+                B.append(bi)
+                break
 
-    if prop=="T":
-        t=fsolve(ft, T.F)
-        hidrate=t>T
-        lim=unidades.Temperature(t, "F")
+    # Calculate desired distillation data
+    TBP = []
+    if reverse:
+        for ai, bi, T in zip(A, B, Ti):
+            TBP.append(unidades.Temperature((1/ai)**(1/bi) * T**(1/bi)))
     else:
-        p=fsolve(fp, P.psi)
-        hidrate=p>P
-        lim=unidades.Pressure(p, "psi")
-
-    return lim, hidrate
-
-def hidrates():
-    """Método de cálculo de las condiciones de formación de hidratos en sistemas gaseosos con presencia de agua, API procedure 9B2.1, pag 947. En chemcad aparece como /Tools/Hidrates"""
-    pass
+        for ai, bi, T in zip(A, B, Ti):
+            TBP.append(unidades.Temperature(ai*T**bi))
+    return TBP
 
 
-def SUS(T, v):
-    """Cálculo de la viscosidad universal de saybolt a partir de la viscosidad cinemática, API procedure 11A1.1, pag 1027
-    T: temperatura a la que correspone el valor de viscosidad en kelvin
-    v: viscosidad cinemática en cSt"""
-    t=unidades.Temperature(T)
-    Seq=4.6324*v+(1.+0.03264*v)/(3930.2+262.7*v+23.97*v**2+1.646*v**3)*1e5
-    St=(1.+0.000061*(t.F-100))*Seq
-    return unidades.Time(St)
+def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
+    """Interconversion between D86 and TBP at atmospheric pressure using the
+    Daubert correlation, API procedure 3A1.1
 
-def SUF(T, v):
-    """Cálculo de la viscosidad saybolt furol a partir de la viscosidad cinemática a 122ºF, API procedure 11A1.4, pag 1031
-    T: temperatura a la que correspone el valor de viscosidad, puede ser 122 o 210
-    v: viscosidad cinemática en cSt"""
-    if T==122:
-        S=0.4717*v+13.924/(v**2-72.59*v+6816)
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the T0, T10, T30, T50, T70, T90, T95
+    Xi : list
+        Volumetric cut point range
+    T50 : float
+        D86 distillation at 50% point temperature
+    reverse : boolean
+        To do the reverse conversion
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example from [20]_
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> D86 = [350, 380, 404, 433, 469]
+    >>> D86_K = [unidades.F2K(t) for t in D86]
+    >>> TDB = D86_TBP_Daubert(D86_K, X, D86_K[2])
+    >>> TDB_F = [t.F for t in TDB]
+    >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(TDB_F)
+    '316.5 372.6 411.2 451.2 496.7'
+
+    Inverse case
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> TDB = [321, 371, 409, 447, 469]
+    >>> TDB_K = [unidades.F2K(t) for t in TDB]
+    >>> D86 = D86_TBP_Daubert(TDB_K, X, TDB_K[2], reverse=True)
+    >>> D86_F = [t.F for t in D86]
+    >>> "%.1f %.1f" % (D86_F[1], D86_F[2])
+    '378.4 401.9'
+
+    Example 3.3 from [29]_
+    >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> D86 = [165.6, 173.7, 193.3, 206.7, 222.8, 242.8]
+    >>> D86_K = [t+273.15 for t in D86]
+    >>> TDB = D86_TBP_Daubert(D86_K, X)
+    >>> TDB_C = [t-273.15 for t in TDB]
+    >>> "%.1f %.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
+    '133.5 154.2 189.2 210.7 232.9 258.2'
+
+    References
+    ----------
+    .. [52] Daubert, T. E. Petroleum Fraction Distillation Interconversion.
+        Hydrocarbon Processing, Vol. 73, No. 9, 1994, pp. 75-78
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Convert to Fahrenheit the input distillation temperature
+    Ti = [unidades.K2F(t) for t in Ti]
+
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+    if T50 is None:
+        T50 = Ti[3]
     else:
-        S=0.4792*v+5612/(v**2+2130)
-    return unidades.Time(S)
+        T50 = unidades.K2F(T50)
 
-def Viscosidad_to_kinematic(tipo, mu, T=100):
-    """Conversión de cualquier otro valor de visocidad a viscosidad cinemática, API procedure 11A1.6, pag 1035
-    tipo: indice que indica el tipo de de viscosidad desde la que se convierte
-        1:Redwood No.1
-        2:Redwood No.2
-        3:Grados Engler
-        4:Saybolt Furol a 122ºF
-        5:Saybolt Furol a 210ºF
-        6:Saybolt universal
-    mu: valor de esa viscosidad
-    T: temperatura en fahrenheit, únicamente util cuando se parte de un valor de la viscosidad de saybolt universal a una temperatura diferente de 100F
-    valor obtenido en centistokes"""
-    if tipo==1:
-        parametros=[0.244, 8.0, 12.5]
-    elif tipo==2:
-        parametros=[2.44, 3.410, 9.55]
-    elif tipo==3:
-        parametros=[7.6, 18, 1.7273]
-    elif tipo==4:
-        parametros=[2.12, 1.0, 8.001]
-    elif tipo==5:
-        parametros=[2.09, 2.088, 5.187]
-    elif tipo==6:
-        parametros=[0.22, 7.336, 12.816]
-        mu=mu/(1.0+0.000061*(T-100))
+    a = [7.4012, 4.9004, 3.0305, 2.5282, 3.0419, 0.11798]
+    b = [0.60244, 0.71644, 0.80076, 0.82002, 0.75497, 1.6606]
+    Xmin = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0001]
 
-    return parametros[0]*mu-parametros[1]*mu/(mu**3+parametros[2])
+    # Calculate parameters
+    A = []
+    B = []
+    for x in Xi:
+        for xmin, xmax, ai, bi in zip(Xmin, Xmax, a, b):
+            if xmin <= x < xmax:
+                A.append(ai)
+                B.append(bi)
+                break
 
-def Viscosidad_from_kinematic(tipo, mu):
-    """Conversión de viscosidad cinemática a cualquier otro valor de viscosidad, API procedure 11A1.6, pag 1036
-    tipo: indice que indica el tipo de de viscosidad desde la que se convierte
-        1:Redwood No.1
-        2:Redwood No.2
-        3:Grados Engler
-    mu: valor de esa viscosidad
-    valor obtenido en segundos o grados engler"""
-    if tipo == 1:
-        parametros = [4.0984, 0.038014, 0.001919, 0.0000278, 0.00000521]
-    elif tipo == 2:
-        parametros = [0.40984, 0.38014, 0.01919, 0.000278, 0.0000521]
-    elif tipo == 3:
-        parametros = [0.13158, 1.1326, 0.0104, 0.00656, 0.0]
-
-    return parametros[0]*mu+1/(parametros[1]+parametros[2]*mu+parametros[3]*mu**2+parametros[4]*mu**3)
-
-def Tb_Presion(T, P, Kw=None, reverse=False):
-    """Cálculo de la temperatura de ebullición normal a partir de la temperatura de ebullición a otra presión. Utíl para obtener datos de curva de destilación normales a partir de datos a otras presiones
-    T: temperatura de ebullición a baja presión en kelvin
-    P: Presión en atm
-    Kw: factor de watson
-    reverse: booleano que indica el sentido de la conversión
-        False:Calcula la temperatura de ebullición a presión atmosferíca
-        True: Calcula la temperatura de ebullición a la presión específicada"""
-    p=unidades.Pressure(P, "atm")
-    if p.mmHg<2:
-        Q=(6.76156-0.987672*log10(p.mmHg))/(3000.538-43*log10(p.mmHg))
-    elif p.mmHg<760:
-        Q=(5.994296-0.972546*log10(p.mmHg))/(2663.129-95.76*log10(p.mmHg))
+    # Calculate the desviation coefficient
+    if reverse:
+        TBP50 = exp(log(T50/0.87180)/1.0258)
+        Y = [exp(log((Ti[i+1]-T)/A[i])/B[i]) for i, T in enumerate(Ti[:-1])]
     else:
-        Q=(6.412631-0.989679*log10(p.mmHg))/(2770.085-36.*log10(p.mmHg))
+        TBP50 = 0.87180*T50**1.0258
+        Y = [A[i]*(Ti[i+1]-T)**B[i] for i, T in enumerate(Ti[:-1])]
+
+    # Calculate desired distillation data
+    TBP = [TBP50]*len(Ti)
+    for i, T in enumerate(TBP):
+        for y, x in zip(Y[i:], Xi[i:]):
+            if Xi[i] < 0.5 and x < 0.5:
+                TBP[i] -= y
+        for y, x in zip(Y[:i], Xi[:i]):
+            if Xi[i] >= 0.5 and x >= 0.5:
+                TBP[i] += y
+
+    return [unidades.Temperature(t, "F") for t in TBP]
+
+
+def SD_D86_Riazi(Ti, Xi=None, F=None):
+    """Interconversion between SD and D86
+
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the D86 distillation temperature
+    Xi : list
+        Volumetric cut point range
+    F : float
+        Parameter, :math: $F = 0.01411*SD_{10%}^0.05434*SD_{50%}^0.6147
+
+    Returns
+    -------
+    D86 : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example 3.5 from [29]_
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> SD = [33.9, 64.4, 101.7, 140.6, 182.2]
+    >>> SD_K = [t+273.15 for t in SD]
+    >>> F = 0.01411*SD_K[0]**0.05434*SD_K[2]**0.6147
+    >>> D86 = SD_D86_Riazi(SD_K, X, F)
+    >>> D86_C = [t-273.15 for t in D86]
+    >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(D86_C)
+    '53.2 70.9 96.0 131.3 168.3'
+
+    References
+    ----------
+    .. [51] Riazi, M. R. and Daubert, T. E. Analytical Correlations
+        Interconvert Distillation Curve Types. Oil & Gas Journal, Vol. 84,
+        1986, August 25, pp. 50-57
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+    if F is None:
+        F = 0.01411*Ti[1]**0.05434*Ti[3]**0.6147
+
+    # Possible typo in referencen [20]_, the a_50% parameter with a 10 factor
+    a = [5.1764, 3.7452, 4.2749, 18.445, 1.0751, 1.0849, 1.7991]
+    b = [0.7445, 0.7944, 0.7719, 0.5425, 0.9867, 0.9834, 0.9007]
+    c = [0.2879, 0.2671, 0.345, 0.7132, 0.0486, 0.0354, 0.0625]
+    Xmin = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1.0001]
+
+    # Calculate parameters
+    A = []
+    B = []
+    C = []
+    for x in Xi:
+        for xmin, xmax, ai, bi, ci in zip(Xmin, Xmax, a, b, c):
+            if xmin <= x < xmax:
+                A.append(ai)
+                B.append(bi)
+                C.append(ci)
+                break
+
+    D86 = []
+    for ai, bi, ci, T in zip(A, B, C, Ti):
+        D86.append(unidades.Temperature(ai*T**bi*F**ci))
+    return D86
+
+
+def SD_D86_Daubert(Ti, Xi=None, SD50=None):
+    """Interconversion between gas chromatography (ASTM D2887) and ASTM D86 at
+    atmospheric pressure using the Daubert correlation, API procedure 3A3.2
+
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the T0, T10, T30, T50, T70, T90, T95
+    Xi : list
+        Volumetric cut point range
+    SD50 : float
+        SD86 distillation at 50% point temperature
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example from [20]_
+    >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+    >>> SD = [77, 93, 148, 215, 285, 360, 408]
+    >>> SD_K = [unidades.F2K(t) for t in SD]
+    >>> D86 = SD_D86_Daubert(SD_K, X)
+    >>> D86_F = [t.F for t in D86]
+    >>> "%.1f %.1f %.1f %.1f %.1f %.1f %.1f" % tuple(D86_F)
+    '121.3 128.2 154.8 206.3 270.6 334.0 367.5'
+
+    Example 3.5 from [29]_
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> SD = [33.9, 64.4, 101.7, 140.6, 182.2]
+    >>> SD_K = [t+273.15 for t in SD]
+    >>> D86 = SD_D86_Daubert(SD_K, X, SD_K[2])
+    >>> D86_C = [t-273.15 for t in D86]
+    >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(D86_C)
+    '53.5 68.2 96.9 132.6 167.8'
+
+    References
+    ----------
+    .. [52] Daubert, T. E. Petroleum Fraction Distillation Interconversion.
+        Hydrocarbon Processing, Vol. 73, No. 9, 1994, pp. 75-78
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Convert to Fahrenheit the input distillation temperature
+    Ti = [unidades.K2F(t) for t in Ti]
+
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+
+    if SD50 is None:
+        SD50 = Ti[3]
+    else:
+        SD50 = unidades.K2F(SD50)
+
+    e = [0.3047, 0.06069, 0.07978, 0.14862, 0.30785, 2.6029]
+    f = [1.1259, 1.5176, 1.5386, 1.4287, 1.2341, 0.65962]
+    Xmin = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0001]
+
+    # Calculate parameters
+    E = []
+    F = []
+    for x in Xi:
+        for xmin, xmax, ei, fi in zip(Xmin, Xmax, e, f):
+            if xmin <= x < xmax:
+                E.append(ei)
+                F.append(fi)
+                break
+
+    # Calculate the desviation coefficient
+    U = [E[i]*(Ti[i+1]-T)**F[i] for i, T in enumerate(Ti[:-1])]
+
+    # Calculate desired distillation data
+    D86_50 = 0.77601*SD50**1.0395
+    D86 = [D86_50]*len(Ti)
+    for i, T in enumerate(D86):
+        for y, x in zip(U[i:], Xi[i:]):
+            if Xi[i] < 0.5 and x < 0.5:
+                D86[i] -= y
+        for y, x in zip(U[:i], Xi[:i]):
+            if Xi[i] >= 0.5 and x >= 0.5:
+                D86[i] += y
+
+    return [unidades.Temperature(t, "F") for t in D86]
+
+
+def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
+    """Interconversion between D86 and EFV
+
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the D86 distillation temperature
+    Xi : list
+        Volumetric cut point range
+    SG : float
+        Specific gravity, [-]
+    reverse : boolean
+        To do the reverse conversion
+
+    Returns
+    -------
+    EFV : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example 3.2 from [29]_
+    >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> TBP = [10, 71.1, 143.3, 204.4, 250.6, 291.7]
+    >>> TBP_K = [t+273.15 for t in TBP]
+    >>> D86 = D86_TBP_Riazi(TBP_K, X, reverse=True)
+    >>> EFV = D86_EFV(D86, X, SG=0.7862)
+    >>> EFV_C = [t-273.15 for t in EFV]
+    >>> "%.0f" % EFV_C[0]
+    '68'
+
+    References
+    ----------
+    .. [51] Riazi, M. R. and Daubert, T. E. Analytical Correlations
+        Interconvert Distillation Curve Types. Oil & Gas Journal, Vol. 84,
+        1986, August 25, pp. 50-57
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+    if SG is None:
+        SG = 0.08342*Ti[1]**0.10731*Ti[3]**0.26288
+
+    a = [2.9747, 1.4459, 0.8506, 3.268, 8.2873, 10.6266, 7.9952]
+    b = [0.8466, 0.9511, 1.0315, 0.8274, 0.6874, 0.6529, 0.6949]
+    c = [0.4209, 0.1287, 0.0817, 0.6214, 0.934, 1.1025, 1.0737]
+    Xmin = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1.0001]
+
+    # Calculate parameters
+    A = []
+    B = []
+    C = []
+    for x in Xi:
+        for xmin, xmax, ai, bi, ci in zip(Xmin, Xmax, a, b, c):
+            if xmin <= x < xmax:
+                A.append(ai)
+                B.append(bi)
+                C.append(ci)
+                break
+
+    # Calculate desired distillation data
+    EFV = []
+    if reverse:
+        for ai, bi, ci, T in zip(A, B, C, Ti):
+            EFV.append(unidades.Temperature((T/ai/SG**ci)**(1./bi)))
+    else:
+        for ai, bi, ci, T in zip(A, B, C, Ti):
+            EFV.append(unidades.Temperature(ai*T**bi*SG**ci))
+    return EFV
+
+
+def SD_TBP(Ti, Xi=None, SD50=None):
+    """Interconversion between gas chromatography (ASTM D2887) and TBP at
+    atmospheric pressure using the Daubert correlation, API procedure 3A3.1
+
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the T0, T10, T30, T50, T70, T90, T95
+    Xi : list
+        Volumetric cut point range
+    SD50 : float
+        SD86 distillation at 50% point temperature
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example from [20]_
+    >>> X = [0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
+    >>> SD = [293, 305, 324, 336, 344, 359, 369]
+    >>> SD_K = [unidades.F2K(t) for t in SD]
+    >>> TDB = SD_TBP(SD_K, X)
+    >>> TDB_F = [t.F for t in TDB]
+    >>> "%.1f %.1f %.1f %.1f %.1f %.1f %.1f" % tuple(TDB_F)
+    '322.2 327.7 332.4 336.0 339.6 350.1 357.4'
+
+    Example 3.4 from [29]_
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> SD = [151.7, 162.2, 168.9, 173.3, 181.7]
+    >>> SD_K = [t+273.15 for t in SD]
+    >>> TDB = SD_TBP(SD_K, X, SD_K[2])
+    >>> TDB_C = [t-273.15 for t in TDB]
+    >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
+    '164.3 166.9 168.9 170.9 176.8'
+
+    References
+    ----------
+    .. [52] Daubert, T. E. Petroleum Fraction Distillation Interconversion.
+        Hydrocarbon Processing, Vol. 73, No. 9, 1994, pp. 75-78
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Convert to Fahrenheit the input distillation temperature
+    Ti = [unidades.K2F(t) for t in Ti]
+
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
+
+    if SD50 is None:
+        SD50 = Ti[3]
+    else:
+        SD50 = unidades.K2F(SD50)
+
+    c = [0.15779, 0.011903, 0.05342, 0.19861, 0.31531, 0.97476, 0.02172]
+    d = [1.4296, 2.0253, 1.6988, 1.3975, 1.2938, 0.8723, 1.9733]
+    Xmin = [0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
+    Xmax = [0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 1.0001]
+
+    # Calculate parameters
+    C = []
+    D = []
+    for x in Xi:
+        for xmin, xmax, ci, di in zip(Xmin, Xmax, c, d):
+            if xmin <= x < xmax:
+                C.append(ci)
+                D.append(di)
+                break
+
+    # Calculate the desviation coefficient
+    W = [C[i]*(Ti[i+1]-T)**D[i] for i, T in enumerate(Ti[:-1])]
+
+    # Calculate desired distillation data
+    TBP = [SD50]*len(Ti)
+    for i, T in enumerate(TBP):
+        for y, x in zip(W[i:], Xi[i:]):
+            if Xi[i] < 0.5 and x < 0.5:
+                TBP[i] -= y
+        for y, x in zip(W[:i], Xi[:i]):
+            if Xi[i] >= 0.5 and x >= 0.5:
+                TBP[i] += y
+
+    return [unidades.Temperature(t, "F") for t in TBP]
+
+
+def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
+    """Interconversion between ASTM D1160 and TBP distillation curve at 10 mmHg
+
+    Parameters
+    ------------
+    Ti : list
+        Distillation data with the T0, T10, T30, T50, T70, T90, T95
+    Xi : list
+        Volumetric cut point range
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example 3.6 from [29]_
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> D1160 = [150, 205, 250, 290, 350]
+    >>> D1160_K = [t+273.15 for t in D1160]
+    >>> TDB = D1160_TBP_10mmHg(D1160_K, X)
+    >>> TDB_C = [t-273.15 for t in TDB]
+    >>> "%.1f %.1f %.0f %.0f %.0f" % tuple(TDB_C)
+    '146.6 200.9 250 290 350'
+
+    References
+    ----------
+    .. [53] Edmister, W. C. and Okamoto, K. K. Applied Hydrocarbon
+        Thermodynamics, Part 13: Equilibrium Flash Vaporization Correlations
+        for Heavy Oils Under Subatmospheric Pressures," Petroleum Refiner,
+        Vol. 38, No. 9, 1959, pp. 271-288.
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    # Define the default value for volumetric volume
+    if Xi is None:
+        Xi = [0.1, 0.3, 0.5, 0.7, 0.9, 1]
+
+    TBP = []
+    for i, T in enumerate(Ti):
+        if Xi[i] >= 0.5:
+            TBP.append(T)
+        else:
+            DT = Ti[i+1]-T
+            if Xi[i] >= 0.1:
+                F = 0.3 + 1.2775*DT - 5.539e-3*DT**2 + 2.7486e-5*DT**3
+            else:
+                F = 2.2566*DT - 266.2e-4*DT**2 + 1.4093e-4*DT**3
+            TBP.append(Ti[i+1]-F)
+
+    return [unidades.Temperature(t) for t in TBP]
+
+
+def Tb_Pressure(T, P, Kw=None, reverse=False):
+    """Conversion of boiling point at Sub or super atmospheric pressure to the
+    normal boiling point, API Procedure 5A1.19
+
+    Parameters
+    ------------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Kw: float
+        Watson characterization factor, [-]
+    reverse : boolean
+        Do the inverse calculation from normal boiling point to other pressure
+
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
+
+    Example
+    -------
+    Example from [20]_
+    >>> T = unidades.Temperature(365, "F")
+    >>> P = unidades.Pressure(10, "mmHg")
+    >>> TDB = Tb_Pressure(T, P, 12.5)
+    >>> "%.0f" % TDB
+    '602'
+
+    References
+    ----------
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    p = unidades.Pressure(P, "Pa")
+    if p.mmHg < 2:
+        Q = (6.76156-0.987672*log10(p.mmHg))/(3000.538-43*log10(p.mmHg))
+    elif p.mmHg < 760:
+        Q = (5.994296-0.972546*log10(p.mmHg))/(2663.129-95.76*log10(p.mmHg))
+    else:
+        Q = (6.412631-0.989679*log10(p.mmHg))/(2770.085-36.*log10(p.mmHg))
 
     if reverse:
-        if T<367 or not Kw:
-            F=0
-        elif T<478:
-            F=-3.2985+0.009*T*(Kw-12)
+        if T < 367 or not Kw:
+            F = 0
+        elif T < 478:
+            F = -3.2985+0.009*T*(Kw-12)
         else:
-            F=1
-        Tb_=T-1.3889*F*log10(p.atm)
-        Tb=Tb_/(748.1*Q-Tb_*(0.3861*Q-0.00051606))
+            F = 1
+        Tb_ = T-1.3889*F*log10(p.atm)
+        Tb = Tb_/(748.1*Q-Tb_*(0.3861*Q-0.00051606))
     else:
-        Tb_=748.1*Q*T/(1+T*(0.3861*Q-0.00051606))
-        if Tb_<367 or not Kw:
-            F=0
-        elif Tb_<478:
-            F=-3.2985+0.009*Tb_*(Kw-12)
+        Tb_ = 748.1*Q*T/(1+T*(0.3861*Q-0.00051606))
+        if Tb_ < 367 or not Kw:
+            F = 0
+        elif Tb_ < 478:
+            F = -3.2985+0.009*Tb_*(Kw-12)
         else:
-            F=1
-        Tb=Tb_+1.3889*F*log10(p.atm)
+            F = 1
+        Tb = Tb_+1.3889*F*log10(p.atm)
 
     return unidades.Temperature(Tb)
 
 
-def curve_Predicted(T_dist, curva):
-    """Método que predice la curva de destilación ajustando los datos existentes a un modelo matemático"""
-    funcion = lambda p, T, x: (T-p[0])/p[0]-(p[1]/p[2]*log(1/(1-x)))**(1./p[2])
-    inicio=array([curva[0], 1e-2, 1.])
-    ajuste, exito=leastsq(funcion,inicio,args=(array(curva), array(T_dist)/100.))
-    return ajuste
+def curve_Predicted(x, T):
+    """Fill the missing point of a distillation curve
 
-def T_Predicted(par, x):
-    return par[0]+par[0]*(par[1]/par[2]*log(1/(1-x/100.)))**(1./par[2])
+    Parameters
+    ------------
+    x : list
+        Array with mole/volume/weight fraction, [-]
+    T : list
+        Array with boiling point temperatures, [K]
 
+    Returns
+    -------
+    TBP : list
+        Calculated distillation data
 
+    Example
+    -------
+    Example 4.7 from [54]_
+    >>> xw = [0.261, 0.254, 0.183, 0.14, 0.01, 0.046, 0.042, 0.024, 0.015, \
+        0.009, 0.007]
+    >>> x = [sum(xw[:i+1]) for i, xi in enumerate(xw)]
+    >>> T = [365, 390, 416, 440, 461, 482, 500, 520, 539, 556, 573]
+    >>> To, A, B = curve_Predicted(x, T)
+    >>> "%.0f %.4f %.4f" % (To, A, B)
+    '350 0.1679 1.2586'
 
-def D86_TBP_Riazi(curva, reverse=False):
-    """Conversión de la curva de destilación ASTM D86 a TBP atmosférica,
-    Riazi, M. R. and Daubert, T. E., "Analytical Correlations Interconvert Distillation Curve Types," Oil & Gas Journal,
-    reverse: para indicar que la conversión es la inversa de TBP a D86"""
-    a=[0.9177, 0.9177, 0.5564, 0.5564, 0.76517, 0.76517, 0.9013, 0.9013, 0.8821, 0.8821, 0.9552, 0.8177, 0.8177]
-    b=[1.0019, 1.0019, 1.09, 1.09, 1.0425, 1.0425, 1.0176, 1.0176, 1.0226, 1.0226, 1.011, 1.0355, 1.0355]
-    TBP=[]
-    if reverse:
-        for i, D86 in enumerate(curva):
-            TBP.append(unidades.Temperature((1./a[i])**(1./b[i])*D86**(1./b[i])))
-    else:
-        for i, D86 in enumerate(curva):
-            TBP.append(unidades.Temperature(a[i]*D86**b[i]))
-    return TBP
+    References
+    ----------
+    .. [54] Riazi, M. R. Distribution Model for Properties of Hydrocarbon-Plus
+        Fractions. Industrial and Engineering Chemistry Research, Vol. 28,
+        1989, pp. 1731-1735.
+    """
+    x = array(x)
+    T = array(T)
+    p0 = [T[0], 0.1, 1]
 
-def D86_TBP_Daubert(curva, reverse=False):
-    """Conversión de la curva de destilación ASTM D86 a TBP atmosférica, API procedure 3A1.1 pag 263
-    reverse: para indicar que la conversión es la inversa de TBP a D86"""
-    a=[7.4012, 7.4012, 4.9004, 4.9004, 3.0305, 3.0305, 2.5282, 2.5282, 3.0419, 3.0419, 0.11798, 0.11798]
-    b=[0.60244, 0.60244, 0.71644, 0.71644, 0.80076, 0.80076, 0.82002, 0.82002, 0.75497, 0.75497, 1.6606, 1.6606]
-    if reverse:
-        TBP50=exp(log(curva[6]/0.87180)/1.0258)
-        i=[exp(log((curva[i+1].F-curva[i].F)/a[i])/b[i]) for i in range(13)]
-    else:
-        TBP50=0.87180*curva[6].F**1.0258
-        i=[a[i]*(curva[i+1].F-curva[i].F)**b[i] for i in range(13)]
-    tbp=[TBP50-i[0]-i[1]-i[2]-i[3]-i[4]-i[5], TBP50-i[0]-i[1]-i[2]-i[3]-i[4], TBP50-i[0]-i[1]-i[2]-i[3], TBP50-i[0]-i[1]-i[2], TBP50-i[0]-i[1], TBP50-i[0], TBP50, TBP50+i[6], TBP50+i[6]+i[7], TBP50+i[6]+i[7]+i[8], TBP50+i[6]+i[7]+i[8]+i[9], TBP50+i[6]+i[7]+i[8]+i[9]+i[10], TBP50+i[6]+i[7]+i[8]+i[9]+i[10]+i[11]]
-    return [unidades.Temperature(T, "F") for T in tbp]
+    def errf(p, xw, Tb):
+        return _Tb_Predicted(p, xw) - Tb
 
+    p, cov, info, mesg, ier = leastsq(errf, p0, args=(x, T), full_output=True)
 
-def SD_D86_Riazi(curva):
-    """Conversión de la curva de destilación SD a ASTM D86, no es reversible
-    Riazi, M. R. and Daubert, T. E., "Analytical Correlations Interconvert Distillation Curve Types," Oil & Gas Journal,"""
-    a=[5.1764, 5.1764, 3.7452, 3.7452, 4.2749, 4.2749, 1.8445, 1.8445, 1.0751, 1.0751, 1.0849, 1.0849, 1.7991]
-    b=[0.7445, 0.7445, 0.7944, 0.7944, 0.7719, 0.7719, 0.5425, 0.5425, 0.9867, 0.9867, 0.9834, 0.9834, 0.9007]
-    c=[0.2879, 0.2879, 0.2671, 0.2671, 0.345, 0.345, 0.7132, 0.7132, 0.0486, 0.0486, 0.0354, 0.0354, 0.0625]
-    D86=[]
-    F=0.01411*curva[2]**0.05434*curva[6]**0.6147
-    for i, SD in curva:
-        D86.append(unidades.Temperature(a[i]*SD**b[i]*F**c[i]))
-    return D86
-
-def SD_D86_Daubert(curva):
-    """Conversión de la curva de destilación SD a D86, API procedure 3A3.2, pag 271"""
-    e=[0.30470, 0.30470, 0.06069, 0.06069, 0.07978, 0.07978, 0.14862, 0.14862, 0.30785, 0.30785, 2.6029, 2.6029]
-    f=[1.1259, 1.1259, 1.5176, 1.5176, 1.5386, 1.5386, 1.4287, 1.4287, 1.2341, 1.2341, 0.65962, 0.65962]
-    D8650=0.77601*curva[6].F**1.0395
-    u=[e[i]*(curva[i+1].F-curva[i].F)**f[i] for i in range(13)]
-    d86=[D8650-u[0]-u[1]-u[2]-u[3]-u[4]-u[5], D8650-u[0]-u[1]-u[2]-u[3]-u[4], D8650-u[0]-u[1]-u[2]-u[3], D8650-u[0]-u[1]-u[2], D8650-u[0]-u[1], D8650-u[0], D8650, D8650+u[6], D8650+u[6]+u[7], D8650+u[6]+u[7]+u[8], D8650+u[6]+u[7]+u[8]+u[9], D8650+u[6]+u[7]+u[8]+u[9]+u[10], D8650+u[6]+u[7]+u[8]+u[9]+u[10]+u[11]]
-    return [unidades.Temperature(T, "F") for T in d86]
+    ss_err = (info['fvec']**2).sum()
+    ss_tot = ((T-T.mean())**2).sum()
+    r = 1-(ss_err/ss_tot)
+    return p, r
 
 
-def D86_EFV(curva, SG, reverse=False):
-    """Conversión de la curva de destilación ASTM D86 a EFV,
-    Riazi, M. R. and Daubert, T. E., "Analytical Correlations Interconvert Distillation Curve Types," Oil & Gas Journal,
-    reverse: para indicar que la conversión es la inversa de EFV a D86"""
-    a=[2.9747, 2.9747, 1.4459, 1.4459, 0.8506, 0.8506, 3.268, 3.268, 8.2873, 8.2873, 10.6266, 10.6266, 7.9952]
-    b=[0.8466, 0.8466, 0.9511, 0.9511, 1.0315, 1.0315, 0.8274, 0.8274, 0.6874, 0.6874, 0.6529, 0.6529, 0.6949]
-    c=[0.4209, 0.4209, 0.1287, 0.1287, 0.0817, 0.0817, 0.6214, 0.6214, 0.934, 0.934, 1.1025, 1.1025, 1.0737]
-    EFV=[]
-    if reverse:
-        for i, D86 in enumerate(curva):
-            EFV.append((D86/a/SG**c[i])**(1./b[i]))
-    else:
-        for i, D86 in enumerate(curva):
-            EFV.append(a[i]*D86**b[i]*SG**c[i])
-    return EFV
+def _Tb_Predicted(par, x):
+    """Calculate a specific point in the distillation curve"""
+    return par[0]+par[0]*(par[1]/par[2]*log(1/(1-x)))**(1./par[2])
 
 
-def SD_TBP(curva):
-    """Conversión de la curva de destilación SD a TBP atmosférica, API procedure 3A3.1, pag 268"""
-    a = [0.20312, 0.20312, 0.02175, 0.02175, 0.08055, 0.08055, 0.25088, 0.25088, 0.37475, 0.37475, 0.90427, 0.03849]
-    b = [1.4296, 1.4296, 2.0253, 2.0253, 1.6988, 1.6988, 1.3975, 1.3975, 1.2938, 1.2938, 0.8723, 1.9733]
-    TBP50 = curva[6]
-    i = [a[i]*(curva[i+1]-curva[i])**b[i] for i in range(13)]
-    tbp = [TBP50-i[0]-i[1]-i[2]-i[3]-i[4]-i[5], TBP50-i[0]-i[1]-i[2]-i[3]-i[4], TBP50-i[0]-i[1]-i[2]-i[3], TBP50-i[0]-i[1]-i[2], TBP50-i[0]-i[1], TBP50-i[0], TBP50, TBP50+i[6], TBP50+i[6]+i[7], TBP50+i[6]+i[7]+i[8], TBP50+i[6]+i[7]+i[8]+i[9], TBP50+i[6]+i[7]+i[8]+i[9]+i[10], TBP50+i[6]+i[7]+i[8]+i[9]+i[10]+i[11]]
-    return [unidades.Temperature(T) for T in tbp]
-
-
-def D1160_TBP_10mmHg(curva, reverse=False):
-    """Conversión de la curva de destilación D1160 a TBP ambas a 10 mmHg
-    Edmister, W. C. and Okamoto, K. K., "Applied Hydrocarbon Thermodynamics, Part 13: Equilibrium Flash Vaporization Correlations for Heavy Oils Under Subatmospheric Pressures," Petroleum Refiner, Vol. 38, No. 9, 1959, pp. 271-288.
-    reverse: para indicar que la conversión es la inversa, de TBP a D1160"""
-    DT1 = curva[6]-curva[4]
-    DT2 = curva[4]-curva[2]
-    DT3 = curva[2]-curva[0]
-    F30 = 0.3+1.2775*DT1-5.539e-3*DT1**2+2.7486e-5*DT1**3
-    F10 = 0.3+1.2775*DT2-5.539e-3*DT2**2+2.7486e-5*DT2**3
-    F0 = 2.2566*DT3-266.2e-4*DT3**2+1.4093e-4*DT3**3
-    F5 = F0
-    F20 = (F10+F30)/2
-    F40 = F30/2
-    F = [F0, F5, F10, F20, F30, F40]
-    if reverse:
-        tbp = [curva[i+2]+Fi for i, Fi in enumerate(F)] + curva[6:]
-    else:
-        tbp = [curva[i+2]-Fi for i, Fi in enumerate(F)] + curva[6:]
-    return [unidades.Temperature(T) for T in tbp]
-
-
+# Others properties
 def PourPoint(SG, Tb, v100=None):
     """Calculate the pour point of petroleum fractions using the procedure
     2B8 from API technical databook, pag. 235
