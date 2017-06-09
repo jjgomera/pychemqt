@@ -590,7 +590,9 @@ class Tabla(QtWidgets.QTableWidget):
         """Get column data as array"""
         lst = []
         for row in range(self.verticalOffset, self.rowCount()):
-            lst.append(self.getValue(row, column))
+            value = self.getValue(row, column)
+            if isinstance(value, float):
+                lst.append(value)
         return lst
 
     def getRow(self, row):
