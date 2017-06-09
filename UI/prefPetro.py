@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from PyQt5 import QtWidgets
 
+from lib.petro import Petroleo
+
 
 class Widget(QtWidgets.QWidget):
     """Petro new component configuration"""
@@ -90,10 +92,8 @@ class Widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "PNA descomposition:")), 7, 1)
         self.PNA = QtWidgets.QComboBox()
-        self.PNA.addItem("Peng Robinson")
-        self.PNA.addItem("Bergman")
-        self.PNA.addItem("Riazi")
-        self.PNA.addItem("van Nes van Westen")
+        for method in Petroleo.METHODS_PNA:
+            self.PNA.addItem(method)
         layout.addWidget(self.PNA, 7, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Destilate curve conversion:")), 12, 1)

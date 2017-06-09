@@ -366,32 +366,36 @@ __doi__ = {
          "ref": "Industrial and Engineering Chemistry Research, Vol. 28, 1989,"
                 " pp. 1731-1735.",
          "doi": "10.1021/ie00095a026"},
-
-
-
-
-
     55:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Van Nes, K. and Van Western, H. A.",
+         "title": "Aspects of the Constitution of Mineral Oils",
+         "ref": "Elsevier, New York, 1951",
          "doi": ""},
     56:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Ahmed, T.",
+         "title": "Hydrocarbon Phase Behavior",
+         "ref": "Gulf Publishing, Houston, TX, 1989.",
          "doi": ""},
     57:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Bergman, D. F., Tek, M. R., Katz, D. L.",
+         "title": "Retrograde Condensation in Natural Gas Pipelines",
+         "ref": "Project PR 2-29 of Pipelines Research Committee, AGA, January"
+                " 1977",
          "doi": ""},
     58:
+        {"autor": "Robinson, D.B., Peng, D.Y.",
+         "title": "The characterization of the heptanes and heavier fractions",
+         "ref": "Research Report 28. GPA, 1978. Tulsa, OK.",
+         "doi": ""},
+
+
+
+    59:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
-    59:
+    60:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -3492,9 +3496,9 @@ def curve_Predicted(x, T):
         0.009, 0.007]
     >>> x = [sum(xw[:i+1]) for i, xi in enumerate(xw)]
     >>> T = [365, 390, 416, 440, 461, 482, 500, 520, 539, 556, 573]
-    >>> To, A, B = curve_Predicted(x, T)
-    >>> "%.0f %.4f %.4f" % (To, A, B)
-    '350 0.1679 1.2586'
+    >>> parameter, r = curve_Predicted(x, T)
+    >>> "%.0f %.4f %.4f" % tuple(parameter)
+    '327 0.2028 1.3802'
 
     References
     ----------
@@ -4239,6 +4243,34 @@ class Petroleo(newComponente):
     def pr(self, P):
         return P/self.Pc.atm
 
+    def _D86_TBP(self, D86, reverse=False):
+        """Use the preferences to calcuate the TBP distillation curve from D86
+        with the desired method"""
+        index = self.Preferences.getint("petro", "curva")
+        method = [D86_TBP_Riazi, D86_TBP_Daubert][index]
+        TBP = method(D86, reverse)
+        return TBP
+
+    def _SD_D86(self, SD):
+        """Use the preferences to calcuate the D86 distillation curve from SD
+        with the desired method"""
+        index = self.Preferences.getint("petro", "curva")
+        method = [SD_D86_Riazi, SD_D86_Daubert][index]
+        D86 = method(SD)
+        return D86
+
+    def _PNA(self):
+        """Calculate the Paraffin-Naphthenes-Aromatics group composition"""
+        if self.Preferences.getint("petro", "PNA") == 0:
+            xp, xn, xa = PNA_Riazi(self.M, self.SG, self.n, d20=None, VGC=None, CH=None)
+        elif self.Preferences.getint("petro", "PNA") == 1:
+            xp, xn, xa = PNA_Bergman(Tb, SG, Kw)
+        elif self.Preferences.getint("petro", "PNA") == 2:
+            xp, xn, xa = PNA_Peng_Robinson(Nc, M, WABP)
+        else:
+            xp, xn, xa = PNA_van_Nes(M, n, d20, S)
+        return xp, xn, xa
+
     def SG_Riazi_Daubert(self):
         if self.definicion == 3:
             return prop_Riazi_Daubert("Tb", self.Tb, "I", self.I)["SG"]
@@ -4601,105 +4633,18 @@ class Petroleo(newComponente):
 
 
 
+# Erbar, J.H., 1977. Prediction of absorber oil K-values and enthalpies. Research Report 13.
+# GPA, Tulsa, OK.
+# Hopke, S.W., Lin, C.J., 1974. Application of BWRS equation to absorber oil systems.
+# In: Proceedings 53rd Annual Convention GPA, Denver, CO, pp. 63–71.
+
+
+
 
     def nT(self, T):
         """Indice de refracción a una temperatura diferente de los 20º"""
         return self.n-0.0004*(T-293.15)
 
-
-    def PNA_Riazi(self):
-        """Calculo de la composición en parafinas, naftanos y compuestos aromáticos de la fracción petrolífera, API procedure 2B4.1 pag 225"""
-        if self.has_v100:
-            if self.M<200:
-                a, b, c, d, e, f=(-13.359, 14.4591, -1.41344, 23.9825, -23.333, 0.81517)
-            else:
-                a, b, c, d, e, f=(2.5737, 1.0133, -3.573, 2.464, -3.6701, 1.96312)
-            xp=a+b*self.Ri+c*self.VGC
-            xn=d+e*self.Ri+f*self.VGC
-        elif self.has_CH:
-            if self.M<200:
-                xp=2.57-2.877*self.SG+0.02876*self.CH
-                xn=0.52641-0.7494*xp-0.021811*self.m
-            else:
-                xp=1.9842-0.27722*self.Ri-0.15643*self.CH
-                xn=0.5977-0.761745*self.Ri+0.068048*self.CH
-        else:
-            if self.M<200:
-                xp=3.7387-4.0829*self.SG+0.014772*self.m
-                xn=-1.5027+2.10152*self.SG-0.02388*self.m
-            else:
-                xp=1.9382+0.074855*self.m-0.19966*self.CH
-                xn=-0.4226-0.00777*self.m+0.107625*self.CH
-        xa=1-xp-xn
-        return xp, xn, xa
-
-    def PNA_Peng_Robinson(self):
-        """Robinson, D. B., and D. Y. Peng. “The Characterization of the Heptanes and Heavier Fractions.” Research Report 28. Tulsa, OK: GPA, 1978."""
-        Tbp=exp(log(1.8)+5.8345183+0.84909035e-1*(self.Nc-6)-0.52635428e-2*(self.Nc-6)**2+0.21252908e-3*(self.Nc-6)**3-0.44933363e-5*(self.Nc-6)**4+0.37285365e-7*(self.Nc-6)**5)
-        Tbn=exp(log(1.8)+5.8579332+0.79805995e-1*(self.Nc-6)-0.43098101e-2*(self.Nc-6)**2+0.14783123e-3*(self.Nc-6)**3-0.27095216e-5*(self.Nc-6)**4+0.19907794e-7*(self.Nc-6)**5)
-        Tba=exp(log(1.8)+5.867176+0.80436947e-1*(self.Nc-6)-0.47136506e-2*(self.Nc-6)**2+0.18233365e-3*(self.Nc-6)**3-0.38327239e-5*(self.Nc-6)**4+0.32550576e-7*(self.Nc-6)**5)
-        Mp=14.026*self.Nc+2.016
-        Mn=14.026*self.Nc-14.026
-        Ma=14.026*self.Nc-20.074
-        a=[[1, 1, 1], [Tbp*Mp, Tbn*Mn, Tba*Ma], [Mp, Mn, Ma]]
-        b=[1, self.M*self.WABP.R, self.M]
-        Xp, Xn, Xa=solve(a, b)
-        pcp=(206.126096*self.Nc+29.67136)/(0.227*self.Nc+0.34)**2
-        pcn=(206.126096*self.Nc+206.126096)/(0.227*self.Nc+0.137)**2
-        pca=(206.126096*self.Nc+295.007504)/(0.227*self.Nc+0.325)**2
-        pc=Xp*pcp+Xn*pcn+Xa*pca
-        wp=0.432*self.Nc-0.0457
-        wn=0.0432*self.Nc-0.088
-        wa=0.0445*self.Nc-0.0995
-        S=0.996704+0.00043155*self.Nc
-        S1=0.99627245+0.00043155*self.Nc
-        tcp=S*(1+(3*log10(pcp)-3.501952)/7/(1+wp))*Tbp
-        tcn=S1*(1+(3*log10(pcn)-3.501952)/7/(1+wn))*Tbn
-        tca=S1*(1+(3*log10(pca)-3.501952)/7/(1+wa))*Tba
-        tc=Xp*tcp+Xn*tcn+Xa*tca
-        return Xp, Xn, Xa
-
-    def PNA_Bergman(self):
-        """Bergman, D. F., M. R. Tek, and D. L. Katz. “Retrograde Condensation in Natural Gas Pipelines.” Project PR 2-29 of Pipelines Research Committee, AGA, January 1977."""
-        Xwa=8.47-self.watson
-        gp=0.582486+0.00069481*(self.Tb.R-460)-0.7572818e-6*(self.Tb.R-460)**2+0.3207736e-9*(self.Tb.R-460)**3
-        gn=0.694208+0.0004909267*(self.Tb.R-460)-0.659746e-6*(self.Tb.R-460)**2+0.330966e-9*(self.Tb.R-460)**3
-        ga=0.916103-0.000250418*(self.Tb.R-460)+0.357967e-6*(self.Tb.R-460)**2-0.166318e-9*(self.Tb.R-460)**3
-        a=[[1, 1], [1/gp, 1/gn]]
-        b=[1-Xwa, 1/self.SG-Xwa/ga]
-        Xwp, Xwn=solve(a, b)
-        Tcp=275.23+1.2061*(self.Tb.R-460)-0.00032984*(self.Tb.R-460)**2
-        Pcp=573.011-1.13707*(self.Tb.R-460)+0.00131625*(self.Tb.R-460)**2-0.85103e-6*(self.Tb.R-460)**3
-        wp=0.14+0.0009*(self.Tb.R-46)+0.233e-6*(self.Tb.R-460)**2
-        Tcn=156.8906+2.6077*(self.Tb.R-460)-0.003801*(self.Tb.R-460)**2+0.2544e-5*(self.Tb.R-460)**3
-        Pcn=726.414-1.3275*(self.Tb.R-460)+0.9846e-3*(self.Tb.R-460)**2-0.45169e-6*(self.Tb.R-460)**3
-        wn=wp-0.075
-        Tca=289.535+1.7017*(self.Tb.R-460)-0.0015843*(self.Tb.R-460)**2+0.82358e-6*(self.Tb.R-460)**3
-        Pca=1184.514-3.44681*(self.Tb.R-460)+0.0045312*(self.Tb.R-460)**2-0.23416e-5*(self.Tb.R-460)**3
-        wa=wp-0.1
-        pc=Xwp*Pcp+Xwn*Pcn+Xwa*Pca
-        tc=Xwp*Tcp+Xwn*Tcn+Xwa*Tca
-        w=Xwp*wp+Xwn*wn+Xwa*wa
-        return Xwp, Xwn, Xwa
-
-    def PNA_van_Nes(self):
-        """Van Nes, K. and Van Western, H. A., Aspects of the Constitution of Mineral Oils, Elsevier, New York, 1951."""
-        v=2.51*(n-1.475)-(self.d20-0.851)
-        w=(self.d20-0.851)-1.11*(self.n-1.475)
-        if v>0: a=430
-        else: a=670
-        if w>0:
-            Cr=820*w-3*self.S+10000./self.M
-            Rt=1.33+0.146*self.M*(w-0.005*self.S)
-        else:
-            Cr=1440*w-3*self.S+10600./self.M
-            Rt=1.33+0.18*self.M*(w-0.005*self.S)
-        Ra=0.44+b*v*self.M
-        Rn=Rt-Ra
-        Ca=a*v+3660/self.M
-        Cn=Cr-Ca
-        Cp=100-Cr
-        return Cp/100., Cn/100., Ca/100.
 
     def H_Riazi(self):
         return (100.-self.S)/(1.+self.CH)
