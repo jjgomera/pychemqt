@@ -387,10 +387,60 @@ __doi__ = {
          "title": "The characterization of the heptanes and heavier fractions",
          "ref": "Research Report 28. GPA, 1978. Tulsa, OK.",
          "doi": ""},
-
-
-
     59:
+        {"autor": "Riazi, M. R., Nasimi, N., and Roomi, Y.",
+         "title": "Estimating Sulfur Content of Petroleum Products and Crude"
+                  " Oils",
+         "ref": "Industrial and Engineering Chemistry Research, Vol. 38, No. "
+                "11, 1999, pp. 4507-4512",
+         "doi": "10.1021/ie990262d"},
+    60:
+        {"autor": "Goossens, A. G.",
+         "title": "Prediction of the Hydrogen Content of Petroleum Fractions",
+         "ref": "Industrial and Engineering Chemistry Research, Vol. 36, 1997, "
+                "pp. 2500-2504.",
+         "doi": "10.1021/ie960772x"},
+    61:
+        {"autor": "Jenkins, G. I. and Walsh, R. E",
+         "title": "Quick Measure of Jet Fuel Properties",
+         "ref": "Hydrocarbon Processing, Vol. 47, No. 5, 1968, pp. 161-164.",
+         "doi": ""},
+    62:
+        {"autor": "ASTM",
+         "title": "Annual Book of Standards",
+         "ref": "ASTM International, West Conshohocken, PA, 2002",
+         "doi": ""},
+
+
+
+
+
+    60:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    60:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    60:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    60:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    60:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+    60:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -4151,91 +4201,161 @@ class Petroleo(newComponente):
             self.Tb = prop["Tb"]
             self.f_acent = prop["w"]
             self.SG = prop["SG"]
-            self.API=141.5/self.SG-131.5
+            self.API = 141.5/self.SG-131.5
 
-        if self.hasRefraction:
-            if self.kwargs["n"]:
-                self.n=self.kwargs["n"]
-                self.I=(self.n**2-1)/(self.n**2+2)
-            else:
-                self.I=self.kwargs["I"]
-                self.n=((1+2*self.I)/(1-self.I))**0.5
         else:
-            self.I=self.I_Riazi_Daubert_ext()
-            self.n=((1+2*self.I)/(1-self.I))**0.5
+            # Definition with any pair of variables
+            # The curve definition is as SG + Tb with aditional properties
+            # calculated above
 
-        if self.kwargs["Kw"]:
-            self.watson=self.kwargs["Kw"]
-        else:
-            self.watson=self.Tb.R**(1./3)/self.SG
+        # self.hasSG = self.kwargs["SG"] or self.kwargs["API"] or \
+            # (self.kwargs["Kw"] and self.kwargs["Tb"])
+        # self.hasRefraction = self.kwargs["n"] or self.kwargs["I"]
 
-        if self.kwargs["CH"]:
-            self.CH=self.kwargs["CH"]
-        else:
-            self.CH=self.CH_Riazi_Daubert_ext()
+        # # Tipo Definición
+        # elif self.kwargs["Tb"] and self.hasSG:
+            # self.definicion = 1
+        # elif self.kwargs["M"] and self.hasSG:
+            # self.definicion = 2
+        # elif self.kwargs["Tb"] and self.hasRefraction:
+            # self.definicion = 3
+        # elif self.kwargs["M"] and self.hasRefraction:
+            # self.definicion = 4
+        # elif self.kwargs["Tb"] and self.kwargs["CH"]:
+            # self.definicion = 5
+        # elif self.kwargs["M"] and self.kwargs["CH"]:
+            # self.definicion = 6
+        # elif self.kwargs["v100"] and self.hasRefraction:
+            # self.definicion = 7
 
-        Tc=[self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Adwani, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Sim_Daubert, self.tc_Watansiri_Owens_Starling, self.tc_Edmister, self.tc_Magoulas, self.tc_Twu, self.tc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
-        Pc=[self.pc_Riazi_Daubert, self.pc_Riazi_Daubert_ext, self.pc_Riazi_Adwani, self.pc_Lee_Kesler, self.pc_cavett, self.pc_Sim_Daubert, self.pc_Watansiri_Owens_Starling, self.pc_Edmister, self.pc_Magoulas, self.pc_Twu, self.pc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
-        Vc=[self.vc_Riazi_Daubert, self.vc_Riazi_Daubert_ext, self.vc_Riazi_Adwani, self.vc_Watansiri_Owens_Starling, self.vc_Twu, self.vc_Hall_Yarborough][self.Preferences.getint("petro", "critical")]
-        Factor_acentrico=[self.factor_acentrico_Edmister, self.factor_acentrico_Lee_Kesler, self.factor_acentrico_Watansiri_Owens_Starling, self.factor_acentrico_Magoulas][self.Preferences.getint("petro", "f_acent")]
-        self.Tc=Tc()
-        self.Pc=Pc()
-        self.Vc=Vc()
-        self.f_acent=Factor_acentrico()
-        Zc=[self.Zc_Lee_Kesler, self.Zc_Haugen, self.Zc_Reid, self.Zc_Salerno, self.Zc_Nath][self.Preferences.getint("petro", "Zc")]
-        self.Zc=Zc()
 
-        self.Parametro_solubilidad=prop_Riazi_Alsahhaf(9, self.M), "calcc"
+
+            # Load input parameters
+            if self.kwargs["Tb"]:
+                self.Tb = unidades.Temperature(self.kwargs["Tb"])
+            if self.kwargs["M"]:
+                self.M = self.kwargs["M"]
+
+            if self.hasSG:
+                if self.kwargs["SG"]:
+                    self.SG = self.kwargs["SG"]
+                elif self.kwargs["API"]:
+                    self.SG = 141.5/(self.kwargs["API"]+131.5)
+                elif self.kwargs["Kw"] and self.kwarg["Tb"]:
+                    self.SG = self.Tb.R**(1./3)/self.kwargs["Kw"]
+                self.API = 141.5/self.SG-131.5
+
+            if self.hasRefraction:
+                if self.kwargs["n"]:
+                    self.n = self.kwargs["n"]
+                else:
+                    I = self.kwargs["I"]
+                    self.n = ((1+2*I)/(1-I))**0.5
+
+            if self.kwargs["CH"]:
+                self.CH = self.kwargs["C"]
+
+            # elif not self.hasCurve:
+                # SG=[self.SG_Riazi_Daubert, self.SG_Riazi_Alsahhaf][self.Preferences.getint("petro", "SG")]
+                # self.SG = SG()
+
+            self.API = 141.5/self.SG-131.5
+            self.I = (self.n**2-1)/(self.n**2+2)
+        # if not self.kwargs["Tb"]:
+            # Tb = [self.tb_Riazi_Daubert_ext, self.tb_Riazi_Adwani, self.tb_Edmister, self.tb_Soreide][self.Preferences.getint("petro", "t_ebull")]
+            # self.Tb = Tb()
+
+        # if not self.kwargs["M"]:
+            # Peso_Molecular = [self.peso_molecular_Riazi_Daubert, self.peso_molecular_Riazi_Daubert_ext, self.peso_molecular_Lee_Kesler, self.peso_molecular_Sim_Daubert, self.peso_molecular_API, self.peso_molecular_Goossens, self.peso_molecular_Twu][self.Preferences.getint("petro", "molecular_weight")]
+            # self.M = Peso_Molecular()
+
+        # else:
+            # self.I = self.I_Riazi_Daubert_ext()
+            # self.n = ((1+2*self.I)/(1-self.I))**0.5
+
+        # if self.kwargs["Kw"]:
+            # self.Kw = self.kwargs["Kw"]
+        # else:
+            # self.Kw = self.Tb.R**(1./3)/self.SG
+
+        # if self.kwargs["CH"]:
+            # self.CH = self.kwargs["CH"]
+        # else:
+            # self.CH = self.CH_Riazi_Daubert_ext()
+
+        # Tc = [self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Adwani, self.tc_Riazi_Daubert_ext, self.tc_Riazi_Daubert_ext, self.tc_Sim_Daubert, self.tc_Watansiri_Owens_Starling, self.tc_Edmister, self.tc_Magoulas, self.tc_Twu, self.tc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
+        # Pc = [self.pc_Riazi_Daubert, self.pc_Riazi_Daubert_ext, self.pc_Riazi_Adwani, self.pc_Lee_Kesler, self.pc_cavett, self.pc_Sim_Daubert, self.pc_Watansiri_Owens_Starling, self.pc_Edmister, self.pc_Magoulas, self.pc_Twu, self.pc_Tsonopoulos][self.Preferences.getint("petro", "critical")]
+        # Vc = [self.vc_Riazi_Daubert, self.vc_Riazi_Daubert_ext, self.vc_Riazi_Adwani, self.vc_Watansiri_Owens_Starling, self.vc_Twu, self.vc_Hall_Yarborough][self.Preferences.getint("petro", "critical")]
+        # Factor_acentrico = [self.factor_acentrico_Edmister, self.factor_acentrico_Lee_Kesler, self.factor_acentrico_Watansiri_Owens_Starling, self.factor_acentrico_Magoulas][self.Preferences.getint("petro", "f_acent")]
+        # self.Tc = Tc()
+        # self.Pc = Pc()
+        # self.Vc = Vc()
+        # self.f_acent = Factor_acentrico()
+        # Zc = [self.Zc_Lee_Kesler, self.Zc_Haugen, self.Zc_Reid, self.Zc_Salerno, self.Zc_Nath][self.Preferences.getint("petro", "Zc")]
+        # self.Zc = Zc()
+
+        # self.Parametro_solubilidad = prop_Riazi_Alsahhaf(9, self.M), "calcc"
 
         #Calculo de las viscosidades cinemáticas si no indican
-        if self.kwargs["v100"]:
-            self.v100=unidades.Diffusivity(self.kwargs["v100"])
+        if self.kwargs["v100"] and self.kwargs["v210"]:
+            self.v100 = unidades.Diffusivity(self.kwargs["v100"])
+            self.v210 = unidades.Diffusivity(self.kwargs["v210"])
+        elif self.kwargs["v100"]:
+            self.v100 = unidades.Diffusivity(self.kwargs["v100"])
+            visco = viscoAPI(self.Tb, self.Kw, v100=self.v100)
+            self.v210 = visco["v210"]
+        elif self.kwargs["v210"]:
+            self.v210 = unidades.Diffusivity(self.kwargs["v210"])
+            visco = viscoAPI(self.Tb, self.Kw)
+            self.v100 = visco["v100"]
         else:
-            self.v100=self.V100_API()
-        if self.kwargs["v210"]:
-            self.v210=unidades.Diffusivity(self.kwargs["v210"])
-        else:
-            self.v210=self.V210_API()
+            visco = viscoAPI(self.Tb, self.Kw)
+            self.v210 = visco["v210"]
+            self.v100 = visco["v100"]
 
-       #Calculo de Viscosity gravity constant (VGC), preferiblemente usando la viscosidad a 100ºF
-        if self.kwargs["v210"] and not self.kwargs["v100"]:
-            v99SUS=SUS(99+273.15, self.v210.cSt)
-            self.VGC=(self.SG-0.24-0.022*log10(v99SUS-35.5))
-        else:
-            v38SUS=SUS(38+273.15, self.v100.cSt)
-            self.VGC=(10*self.SG-1.0752*log10(v38SUS-38))/(10-log10(v38SUS-38))
+       # #Calculo de Viscosity gravity constant (VGC), preferiblemente usando la viscosidad a 100ºF
+        # if self.kwargs["v210"] and not self.kwargs["v100"]:
+            # v99SUS = SUS(99+273.15, self.v210.cSt)
+            # self.VGC = (self.SG-0.24-0.022*log10(v99SUS-35.5))
+        # else:
+            # v38SUS = SUS(38+273.15, self.v100.cSt)
+            # self.VGC = (10*self.SG-1.0752*log10(v38SUS-38))/(10-log10(v38SUS-38))
 
-        self.d20=self.SG-4.5e-3*(2.34-1.9*self.SG)
-        self.Ri=self.n-self.d20/2.
-        self.m=self.M*(self.n-1.475)
-        self.VI=self.Viscosity_Index()
+        # self.d20 = self.SG-4.5e-3*(2.34-1.9*self.SG)
+        # self.Ri = self.n-self.d20/2.
+        # self.m = self.M*(self.n-1.475)
+        # self.VI = self.Viscosity_Index()
 
-        if self.hasCurve:
-            self.CetaneI=48640/self.VABP+473.7*self.SG-456.8
-        else:
-            self.CetaneI=48640/self.Tb+473.7*self.SG-456.8
-
-        self.PourP = PourPoint(self.SG, self.Tb, self.kwargs["v100"])
-        self.CloudP = CloudPoint(self.SG, self.Tb)
-        self.FreezingP = FreezingPoint(self.SG, self.Tb)
-        self.AnilineP = AnilinePoint(self.SG, self.Tb)
-        self.SmokeP = SmokePoint(self.SG, self.Tb)
-        self.CetaneI = CetaneIndex(self.API, self.Tb)
-
-        #Cálculo del indice Diesel
-        self.DI=self.API*self.AnilineP.F/100.
-
+        # self.PourP = PourPoint(self.SG, self.Tb, self.kwargs["v100"])
+        # self.CloudP = CloudPoint(self.SG, self.Tb)
+        # self.FreezingP = FreezingPoint(self.SG, self.Tb)
+        # self.AnilineP = AnilinePoint(self.SG, self.Tb)
+        # self.SmokeP = SmokePoint(self.SG, self.Tb)
+        # self.CetaneI = CetaneIndex(self.API, self.Tb)
+        # self.DI = self.API*self.AnilineP.F/100.
 
         if self.kwargs["S"]:
             self.S = self.kwargs["S"]
         else:
-            self.S = self.S_Riazi()
+            self.S = S_Riazi(self.M, self.SG, self.Ri, self.m)
+
         if self.kwargs["H"]:
-            self.H = H
+            self.H = self.kwargs["H"]
         else:
-            H = [self.H_Riazi, self.H_Goossens, self.H_ASTM, self.H_Jenkins_Walsh][self.Preferences.getint("petro", "H")]
-            self.H = H()
+            # H = [self.H_Riazi, self.H_Goossens, self.H_ASTM, self.H_Jenkins_Walsh][self.Preferences.getint("petro", "H")]
+            self.H = self.H()
+
         self.N = self.kwargs["N"]
+
+        # Conradson carbon residue, ref [29]_ Eq 3.141
+        # HC: HC atomic ratio Eq. 2.122
+        HC = 11.9147/self.CH
+        CCR = 148 - 86.96/HC
+        if CCR < 0:
+            CCR = 0
+        elif CCR > 100:
+            CCR = 100
+        self.CCR = unidades.Dimensionless(CCR)
 
     def tr(self, T):
         return T/self.Tc
@@ -4645,30 +4765,20 @@ class Petroleo(newComponente):
         """Indice de refracción a una temperatura diferente de los 20º"""
         return self.n-0.0004*(T-293.15)
 
-
-    def H_Riazi(self):
-        return (100.-self.S)/(1.+self.CH)
-
-    def H_Goossens(self):
-        return 30.346+(82.952-65.341*self.n)/self.d20-306./self.M
-
-    def H_ASTM(self):
-        """ASTM, Annual Book of Standards, ASTM International, West Conshohocken, PA, 2002."""
-        Tb=(self.T10+self.T50+self.T90)/3.
-        return (5.2407+0.01448*Tb-7.018*self.xa)/self.SG-0.901*self.xa+0.01298*self.xa*Tb-0.01345*Tb-0.01345*Tb+5.6879
-
-    def H_Jenkins_Walsh(self):
-        """Jenkins, G. I. and Walsh, R. E, "Quick Measure of Jet Fuel Properties," Hydrocarbon Processing, Vol. 47, No. 5, 1968, pp. 161-164."""
-        return 11.17-12.89*self.SG+0.0389*self.AP
-
-    def S_Riazi(self):
-        """Riazi, M. R., Nasimi, N., and Roomi, Y., "Estimating Sulfur Content of Petroleum Products and Crude Oils," Industrial and Engineering Chemistry Research, Vol. 38, No. 11, 1999, pp. 4507-4512."""
-        if self.M<200:
-            S=177.448-170.946*self.Ri+0.2258*self.m+4.054*self.SG
+    def H(self):
+        if self.Preferences.getint("petro", "H") == 0:
+            H = H_Riazi(self.S, self.CH)
+        elif self.Preferences.getint("petro", "H") == 1:
+            H = H_Goossens(self.M, self.n, self.d20)
+        elif self.Preferences.getint("petro", "H") == 2:
+            if self.hasCurve:
+                Tb = (self.T10+self.T50+self.T90)/3.
+            else:
+                Tb = self.Tb
+            H = H_ASTM(Tb, self.SG, self.xa)
         else:
-            S=-58.02+38.463*self.Ri-0.023*self.m+22.4*self.SG
-        return S
-
+            H = H_Jenkins_Walsh(self.SG, self.AnilineP)
+        return H
 
     def Reid_Blend(self):
         """Método de cálculo de la presión de vapor Reid, API procedure 5B1.3 pag 407"""

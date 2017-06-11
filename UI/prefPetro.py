@@ -105,10 +105,8 @@ class Widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "% Hydrogen:")), 13, 1)
         self.Hidrogeno = QtWidgets.QComboBox()
-        self.Hidrogeno.addItem("Riazi")
-        self.Hidrogeno.addItem("Goossens")
-        self.Hidrogeno.addItem("ASTM")
-        self.Hidrogeno.addItem("Jenkins Walsh")
+        for method in Petroleo.METHODS_H:
+            self.Hidrogeno.addItem(method)
         layout.addWidget(self.Hidrogeno, 13, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
