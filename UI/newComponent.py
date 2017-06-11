@@ -29,17 +29,22 @@ import os
 from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from scipy import arange
 
 
-from UI.widgets import Entrada_con_unidades, Tabla, Status
-from UI.delegate import SpinEditor
-from UI.viewComponents import View_Component, View_Petro, View_Contribution
-from lib.unidades import Temperature, Pressure, Diffusivity
-from lib.petro import Petroleo
+from lib.config import IMAGE_PATH, Preferences
 from lib.crude import Crudo
 from lib.compuestos import (Joback, Constantinou_Gani, Wilson_Jasperson,
                             Marrero_Pardillo, Elliott, Ambrose)
 from lib import sql
+from lib.plot import Plot
+from lib.petro import Petroleo, curve_Predicted, _Tb_Predicted
+from lib.unidades import Temperature, Pressure, Diffusivity
+from UI import prefPetro
+from UI.delegate import SpinEditor
+from UI.inputTable import InputTableWidget
+from UI.viewComponents import View_Component, View_Petro, View_Contribution
+from UI.widgets import Entrada_con_unidades, Status
 
 
 class newComponent(QtWidgets.QDialog):
@@ -61,7 +66,8 @@ class newComponent(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.save)
         self.buttonBox.rejected.connect(self.reject)
         layoutBottom.addWidget(self.buttonBox)
-        self.layout().addLayout(layoutBottom, 30, 0, 1, 6)
+        # self.layout().addLayout(layoutBottom, 30, 0, 1, 6)
+        self.layout().addLayout(layoutBottom)
 
     def save(self):
         """Save new componente in user database"""
@@ -325,147 +331,220 @@ class Definicion_Petro(newComponent):
         super(Definicion_Petro, self).__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Petrol component definition"))
-        layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Name")), 1, 1)
-        self.nombre = QtWidgets.QLineEdit()
-        self.nombre.textChanged.connect(partial(self.changeParams, "name"))
-        layout.addWidget(self.nombre, 1, 2, 1, 4)
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Boiling point")), 3, 1)
-        self.Tb = Entrada_con_unidades(Temperature)
-        self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
-        layout.addWidget(self.Tb, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Molecular Weight")), 4, 1)
-        self.M = Entrada_con_unidades(float, textounidad="g/mol")
-        self.M.valueChanged.connect(partial(self.changeParams, "M"))
-        layout.addWidget(self.M, 4, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Specific Gravity")), 5, 1)
-        self.SG = Entrada_con_unidades(float)
-        self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
-        layout.addWidget(self.SG, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "API gravity")), 6, 1)
-        self.API = Entrada_con_unidades(float)
-        self.API.valueChanged.connect(partial(self.changeParams, "API"))
-        layout.addWidget(self.API, 6, 2)
-        layout.addWidget(QtWidgets.QLabel("K watson:"), 7, 1)
-        self.Kw = Entrada_con_unidades(float)
-        self.Kw.valueChanged.connect(partial(self.changeParams, "Kw"))
-        layout.addWidget(self.Kw, 7, 2)
-        layout.addWidget(QtWidgets.QLabel("C/H:"), 8, 1)
-        self.CH = Entrada_con_unidades(float)
-        self.CH.valueChanged.connect(partial(self.changeParams, "CH"))
-        layout.addWidget(self.CH, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(u"ν<sub>100F</sub>:"), 9, 1)
-        self.v100 = Entrada_con_unidades(Diffusivity)
-        self.v100.valueChanged.connect(partial(self.changeParams, "v100"))
-        layout.addWidget(self.v100, 9, 2)
-        layout.addWidget(QtWidgets.QLabel(u"ν<sub>210F</sub>:"), 10, 1)
-        self.v210 = Entrada_con_unidades(Diffusivity)
-        self.v210.valueChanged.connect(partial(self.changeParams, "v210"))
-        layout.addWidget(self.v210, 10, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Refraction index")), 11, 1)
-        self.n = Entrada_con_unidades(float)
-        self.n.valueChanged.connect(partial(self.changeParams, "n"))
-        layout.addWidget(self.n, 11, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Huang parameter")), 12, 1)
-        self.I = Entrada_con_unidades(float)
-        self.I.valueChanged.connect(partial(self.changeParams, "I"))
-        layout.addWidget(self.I, 12, 2)
-        layout.addWidget(QtWidgets.QLabel("%S"), 13, 1)
-        self.S = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
-        self.S.valueChanged.connect(partial(self.changeParams, "S"))
-        layout.addWidget(self.S, 13, 2)
-        layout.addWidget(QtWidgets.QLabel("%H"), 14, 1)
-        self.H = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
-        self.H.valueChanged.connect(partial(self.changeParams, "H"))
-        layout.addWidget(self.H, 14, 2)
-        layout.addWidget(QtWidgets.QLabel("%N"), 15, 1)
-        self.N = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
-        self.N.valueChanged.connect(partial(self.changeParams, "N"))
-        layout.addWidget(self.N, 15, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Carbons number")), 19, 1)
-        self.carbonos = Entrada_con_unidades(int, width=50, spinbox=True,
-                                             step=1, start=7, min=5, max=100)
-        self.N.valueChanged.connect(partial(self.changeParams, "Nc"))
-        layout.addWidget(self.carbonos, 19, 2)
+        layout = QtWidgets.QVBoxLayout(self)
+        self.toolBox = QtWidgets.QTabWidget()
+        self.toolBox.setTabPosition(QtWidgets.QTabWidget.South)
+        layout.addWidget(self.toolBox)
 
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 3, 3, 15, 1)
-        self.checkCurva = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Define destillation curve"))
-        layout.addWidget(self.checkCurva, 3, 4, 1, 2)
+        # Distillation data definition
+        distilationPage = QtWidgets.QWidget()
+        self.toolBox.addTab(
+            distilationPage,
+            QtWidgets.QApplication.translate("pychemqt", "Distillation data"))
+        lyt = QtWidgets.QGridLayout(distilationPage)
+
+        # Widget with curve functionality
+        curveWidget = QtWidgets.QWidget()
+        lytcurve = QtWidgets.QGridLayout(curveWidget)
+        lytcurve.addWidget(QtWidgets.QLabel("Curve type"), 1, 1)
         self.tipoCurva = QtWidgets.QComboBox()
-        self.tipoCurva.addItem("ASTM D86")
-        self.tipoCurva.addItem("TBP")
-        self.tipoCurva.addItem("EFV")
-        self.tipoCurva.addItem("ASTM D1186")
-        self.tipoCurva.addItem("ASTM D2887 (SD)")
-        self.tipoCurva.setEnabled(False)
-        layout.addWidget(self.tipoCurva, 4, 4, 1, 2)
-        self.textoPresion = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Pressure"))
-        self.textoPresion.setEnabled(False)
-        layout.addWidget(self.textoPresion, 5, 4)
+        for method in Petroleo.CURVE_TYPE:
+            self.tipoCurva.addItem(method)
+        self.tipoCurva.currentIndexChanged.connect(self.curveIndexChanged)
+        lytcurve.addWidget(self.tipoCurva, 1, 2)
+        self.curvaDestilacion = InputTableWidget(2)
+        self.curvaDestilacion.tabla.horizontalHeader().show()
+        self.curvaDestilacion.tabla.rowFinished.connect(self.checkStatusCurve)
+        lytcurve.addWidget(self.curvaDestilacion, 2, 1, 3, 3)
+        self.regresionButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"]+"/images/button/Regression.gif")),
+            QtWidgets.QApplication.translate("pychemqt", "Regression"))
+        self.regresionButton.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate missing required values from a curve fit"))
+        self.regresionButton.clicked.connect(self.regresionCurve)
+        lytcurve.addWidget(self.regresionButton, 2, 3)
+        self.finishButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"]+"/images/button/arrow-right.png")),
+            QtWidgets.QApplication.translate("pychemqt", "Finish"))
+        self.finishButton.clicked.connect(self.finishCurva)
+        lytcurve.addWidget(self.finishButton, 5, 3)
+        lytcurve.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Pressure")), 5, 1)
         self.presion = Entrada_con_unidades(Pressure, value=101325.)
-        self.presion.setEnabled(False)
-        self.presion.valueChanged.connect(partial(self.changeParams, "P_dist"))
-        layout.addWidget(self.presion, 5, 5)
-        self.curvaDestilacion = Tabla(
-            2, filas=1, horizontalHeader=["%dist", "Tb, "+Temperature.text()],
-            verticalHeader=False, dinamica=True)
-        self.curvaDestilacion.setEnabled(False)
-        self.curvaDestilacion.editingFinished.connect(self.changeCurva)
-        layout.addWidget(self.curvaDestilacion, 6, 4, 13, 2)
-        self.checkBlend = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Blend if its necessary"))
-        layout.addWidget(self.checkBlend, 19, 4, 1, 2)
+        self.presion.valueChanged.connect(partial(self.changeParams, "P_curve"))
+        lytcurve.addWidget(self.presion, 5, 2)
+        lytcurve.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 4)
 
-        self.checkCurva.toggled.connect(self.tipoCurva.setEnabled)
-        self.checkCurva.toggled.connect(self.presion.setEnabled)
-        self.checkCurva.toggled.connect(self.textoPresion.setEnabled)
-        self.checkCurva.toggled.connect(self.curvaDestilacion.setEnabled)
-
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 20, 1, 1, 2)
-        self.checkCrudo = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Use petrol fraction from list"))
-        self.checkCrudo.toggled.connect(self.changeUnknown)
-        layout.addWidget(self.checkCrudo, 21, 1, 1, 2)
+        # Widget with crude functionality
+        crudeWidget = QtWidgets.QWidget()
+        lytcrude = QtWidgets.QGridLayout(crudeWidget)
         self.crudo = QtWidgets.QComboBox()
-        self.crudo.setEnabled(False)
         self.crudo.addItem("")
-
-        sql.databank.execute("SELECT name, location, API, sulfur FROM CrudeOil")
+        query = "SELECT name, location, API, sulfur FROM CrudeOil"
+        sql.databank.execute(query)
         for name, location, API, sulfur in sql.databank:
             self.crudo.addItem("%s (%s)  API: %s %s: %s" % (
                 name, location, API, "%S", sulfur))
         self.crudo.currentIndexChanged.connect(partial(
-            self.changeParams, "indice"))
-        layout.addWidget(self.crudo, 23, 1, 1, 5)
-        layout.addWidget(QtWidgets.QLabel("Pseudo C+"), 24, 1)
-        self.Cplus = Entrada_con_unidades(int, width=50, spinbox=True, step=1,
-                                          min=6)
+            self.changeParams, "index"))
+        lytcrude.addWidget(self.crudo, 1, 1, 1, 2)
+        lytcrude.addWidget(QtWidgets.QLabel("Pseudo C+"), 2, 1)
+        self.Cplus = Entrada_con_unidades(int, width=50)
         self.Cplus.valueChanged.connect(partial(self.changeParams, "Cplus"))
-        layout.addWidget(self.Cplus, 24, 2)
-        self.checkCrudo.toggled.connect(self.crudo.setEnabled)
-        self.checkCrudo.toggled.connect(self.Cplus.setEnabled)
-        layout.addItem(QtWidgets.QSpacerItem(5, 5, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 29, 1, 1, 2)
+        lytcrude.addWidget(self.Cplus, 2, 2)
 
+        self.checkCurva = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate(
+                "pychemqt", "Define destillation curve"))
+        self.checkCurva.toggled.connect(curveWidget.setEnabled)
+        curveWidget.setEnabled(False)
+        lyt.addWidget(self.checkCurva, 1, 1, 1, 2)
+        lyt.addWidget(curveWidget, 2, 1, 1, 2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            3, 1)
+        self.checkCrudo = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate(
+                "pychemqt", "Use petrol fraction from list"))
+        self.checkCrudo.toggled.connect(self.changeUnknown)
+        self.checkCrudo.toggled.connect(crudeWidget.setEnabled)
+        crudeWidget.setEnabled(False)
+        lyt.addWidget(self.checkCrudo, 4, 1, 1, 2)
+        lyt.addWidget(crudeWidget, 5, 1, 1, 2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            6, 1, 1, 2)
+        self.checkBlend = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Blend if its necessary"))
+        lyt.addWidget(self.checkBlend, 7, 1, 1, 2)
+        self.cutButton = QtWidgets.QPushButton(
+            QtWidgets.QApplication.translate("pychemqt", "Define cut ranges"))
+        self.cutButton.setEnabled(False)
+        self.cutButton.clicked.connect(self.showCutRange)
+        lyt.addWidget(self.cutButton, 7, 2)
+        self.checkBlend.toggled.connect(self.cutButton.setEnabled)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            5, 5, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 8, 1)
+
+        # Definition with bulk properties
+        definitionPage = QtWidgets.QWidget()
+        self.toolBox.addTab(
+            definitionPage,
+            QtWidgets.QApplication.translate("pychemqt", "Bulk Definition"))
+
+        lyt = QtWidgets.QGridLayout(definitionPage)
+        txt = QtWidgets.QLabel("Tb")
+        txt.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Boiling point"))
+        lyt.addWidget(txt, 1, 1)
+        self.Tb = Entrada_con_unidades(Temperature)
+        self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
+        lyt.addWidget(self.Tb, 1, 2)
+        txt = QtWidgets.QLabel("M")
+        txt.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Molecular weight"))
+        lyt.addWidget(txt, 2, 1)
+        self.M = Entrada_con_unidades(float, textounidad="g/mol")
+        self.M.valueChanged.connect(partial(self.changeParams, "M"))
+        lyt.addWidget(self.M, 2, 2)
+        txt = QtWidgets.QLabel("SG")
+        txt.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "Specific Gravity"))
+        lyt.addWidget(txt, 3, 1)
+        self.SG = Entrada_con_unidades(float)
+        self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
+        lyt.addWidget(self.SG, 3, 2)
+        txt = QtWidgets.QLabel("API")
+        txt.setToolTip(
+            QtWidgets.QApplication.translate("pychemqt", "API Gravity"))
+        lyt.addWidget(txt, 4, 1)
+        self.API = Entrada_con_unidades(float)
+        self.API.valueChanged.connect(partial(self.changeParams, "API"))
+        lyt.addWidget(self.API, 4, 2)
+        txt = QtWidgets.QLabel("Kw")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Watson characterization factor"))
+        lyt.addWidget(txt, 5, 1)
+        self.Kw = Entrada_con_unidades(float)
+        self.Kw.valueChanged.connect(partial(self.changeParams, "Kw"))
+        lyt.addWidget(self.Kw, 5, 2)
+        lyt.addWidget(QtWidgets.QLabel("C/H"), 6, 1)
+        self.CH = Entrada_con_unidades(float)
+        self.CH.valueChanged.connect(partial(self.changeParams, "CH"))
+        lyt.addWidget(self.CH, 6, 2)
+        txt = QtWidgets.QLabel("ν<sub>100F</sub>")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Kinematic viscosity at 100ºF"))
+        lyt.addWidget(txt, 7, 1)
+        self.v100 = Entrada_con_unidades(Diffusivity)
+        self.v100.valueChanged.connect(partial(self.changeParams, "v100"))
+        lyt.addWidget(self.v100, 7, 2)
+        txt = QtWidgets.QLabel("ν<sub>210F</sub>")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Kinematic viscosity at 210ºF"))
+        lyt.addWidget(txt, 8, 1)
+        self.v210 = Entrada_con_unidades(Diffusivity)
+        self.v210.valueChanged.connect(partial(self.changeParams, "v210"))
+        lyt.addWidget(self.v210, 8, 2)
+        txt = QtWidgets.QLabel("n")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Refractive index"))
+        lyt.addWidget(txt, 9, 1)
+        self.n = Entrada_con_unidades(float)
+        self.n.valueChanged.connect(partial(self.changeParams, "n"))
+        lyt.addWidget(self.n, 9, 2)
+        txt = QtWidgets.QLabel("I")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Huang Parameter"))
+        lyt.addWidget(txt, 10, 1)
+        self.I = Entrada_con_unidades(float)
+        self.I.valueChanged.connect(partial(self.changeParams, "I"))
+        lyt.addWidget(self.I, 10, 2)
+        lyt.addWidget(QtWidgets.QLabel("%S"), 11, 1)
+        self.S = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
+        self.S.valueChanged.connect(partial(self.changeParams, "S"))
+        lyt.addWidget(self.S, 11, 2)
+        lyt.addWidget(QtWidgets.QLabel("%H"), 12, 1)
+        self.H = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
+        self.H.valueChanged.connect(partial(self.changeParams, "H"))
+        lyt.addWidget(self.H, 12, 2)
+        lyt.addWidget(QtWidgets.QLabel("%N"), 13, 1)
+        self.N = Entrada_con_unidades(float, spinbox=True, step=1.0, max=100)
+        self.N.valueChanged.connect(partial(self.changeParams, "N"))
+        lyt.addWidget(self.N, 13, 2)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            14, 1, 1, 2)
+        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Alternate definition, poor accuracy")), 15, 1, 1, 2)
+        txt = QtWidgets.QLabel("Nc")
+        txt.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Carbon number"))
+        lyt.addWidget(txt, 16, 1)
+        self.Nc = Entrada_con_unidades(int, width=50)
+        self.Nc.valueChanged.connect(partial(self.changeParams, "Nc"))
+        lyt.addWidget(self.Nc, 16, 2)
+
+        # Configuration
+        configPage = prefPetro.Widget(Preferences)
+        self.toolBox.addTab(
+            configPage,
+            QtGui.QIcon(IMAGE_PATH + "button/configure.png"),
+            QtWidgets.QApplication.translate("pychemqt", "Configuration"))
+
+        # Initialization section
         newComponent.loadUI(self)
+        self.curveParameters = None  # Fitting parameter for distillation curve
 
         self.Petroleo = Petroleo()
         self.Crudo = Crudo()
+        self.curveIndexChanged(0)
+        self.checkStatusCurve()
 
     @property
     def unknown(self):
@@ -480,17 +559,64 @@ class Definicion_Petro(newComponent):
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Save).setEnabled(
             self.unknown.status)
 
-    def changeCurva(self):
-        temp = self.curvaDestilacion.getColumn(0)
-        T_dist = self.curvaDestilacion.getColumn(1)
-        curvas = ["D86", "TBP", "EFV", "D1160", "SD"]
-        x = curvas.pop(self.tipoCurva.currentIndex())
+    # Curve distillation definition
+    def curveIndexChanged(self, index):
+        """Show the composition unit appropiated to the new curve selected"""
+        if index == 3:
+            header = ["wt.%", "Tb, " + Temperature.text()]
+        else:
+            header = ["Vol.%", "Tb, " + Temperature.text()]
+        self.curvaDestilacion.tabla.setHorizontalHeaderLabels(header)
+
+    def finishCurva(self):
+        """End the curve distillation definition and add the data to the
+        Petroleo instance"""
         kwargs = {}
-        kwargs[x] = temp
-        kwargs["Tdist"] = T_dist
-        for curva in curvas:
-            kwargs[curva] = []
+        curve = Petroleo.CURVE_TYPE[self.tipoCurva.currentIndex()]
+        kwargs["curveType"] = curve
+        kwargs["X_curve"] = self.curvaDestilacion.column(0)
+        kwargs["T_curve"] = self.curvaDestilacion.column(1)
+        kwargs["fit_curve"] = self.curveParameters
         self.calculo(**kwargs)
+
+    def checkStatusCurve(self):
+        """Check curren data of curve to check completeness of its definition
+        and enable/disable accordly the buttons"""
+        X = self.curvaDestilacion.column(0)
+        self.regresionButton.setEnabled(len(X) > 3)
+
+        defined = True
+        for xi in [0.1, 0.5]:
+            defined = defined and xi in X
+        regresion = self.curveParameters is not None
+        self.finishButton.setEnabled(defined or regresion)
+
+    def regresionCurve(self):
+        dlg = Plot(accept=True)
+        x = self.curvaDestilacion.column(0)
+        T = self.curvaDestilacion.column(1, Temperature)
+        dlg.addData(x, T, color="black", ls="None", marker="s", mfc="red")
+        parameters, r2 = curve_Predicted(x, T)
+        xi = arange(0, 1, 0.01)
+        Ti = [_Tb_Predicted(parameters, x_i) for x_i in xi]
+        dlg.addData(xi, Ti, color="black", lw=0.5)
+
+        # Add equation formula to plot
+        txt = r"$\frac{T-T_{o}}{T_{o}}=\left[\frac{A}{B}\ln\left(\frac{1}{1-x}"
+        txt += r"\right)\right]^{1/B}$"
+        To = Temperature(parameters[0])
+        txt2 = "\n\n\n$T_o=%s$" % To.str
+        txt2 += "\n$A=%0.4f$" % parameters[1]
+        txt2 += "\n$B=%0.4f$" % parameters[2]
+        txt2 += "\n$r^2=%0.6f$" % r2
+        dlg.plot.ax.text(0, T[-1], txt, size="14", va="top", ha="left")
+        dlg.plot.ax.text(0, T[-1], txt2, size="10", va="top", ha="left")
+        if dlg.exec_():
+            self.curveParameters = parameters
+            self.checkStatusCurve()
+
+    def showCutRange(self):
+        pass
 
 
 if __name__ == "__main__":
