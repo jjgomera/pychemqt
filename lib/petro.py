@@ -3876,100 +3876,678 @@ def CetaneIndex(API, Tb):
     return unidades.Dimensionless(CI)
 
 
+# PNA composition procedures
+def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
+    """Calculate fractional compositon of paraffins, naphthenes and aromatics
+    contained in petroleum fractions using the procedure 2B4.1 from API
+    technical databook, pag. 225
+
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [g/mol]
+    SG : float
+        Specific gravity, [-]
+    n : float
+        Refractive index, [-]
+    d20 : float
+        Density at 20ºC, [g/cm³]
+    VGC : float
+        Viscosity gravity constant, [-]
+    CH : float
+        Carbon/hydrogen ratio, [-]
+
+    Returns
+    -------
+    xp : float
+        Paraffins mole fraction, [-]
+    xn : float
+        Naphthenes mole fraction, [-]
+    xa : float
+        Aromatics mole fraction, [-]
+
+    Notes
+    -----
+    Density at 20ºC is optional and can be calculated from specific gravity.
+    VGC and CH are optional parameters, the procedure need one of them
+
+    Raises
+    ------
+    NotImplementedError : If input viscosity or CH ratio are undefined
+
+    Examples
+    --------
+    >>> "%0.3f %0.3f %0.3f" % PNA_Riazi(378, 0.9046, 1.5002, 0.9, VGC=0.8485)
+    '0.606 0.275 0.118'
+
+    References
+    ----------
+    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    if d20 is None:
+        d20 = SG-4.5e-3*(2.34-1.9*SG)
+    Ri = n-d20/2.
+    m = M*(n-1.475)
+    if VGC is not None:
+        if M <= 200:
+            a, b, c = -13.359, 14.4591, -1.41344
+            d, e, f = 23.9825, -23.333, 0.81517
+        else:
+            a, b, c = 2.5737, 1.0133, -3.573
+            d, e, f = 2.464, -3.6701, 1.96312
+        xp = a + b*Ri + c*VGC
+        xn = d + e*Ri + f*VGC
+
+    elif CH is not None:
+        if M <= 200:
+            xp = 2.57 - 2.877*SG + 0.02876*CH
+            xn = 0.52641 - 0.7494*xp - 0.021811*m
+        else:
+            xp = 1.9842 - 0.27722*Ri - 0.15643*CH
+            xn = 0.5977 - 0.761745*Ri + 0.068048*CH
+    else:
+        raise NotImplementedError()
+
+    xa = 1-xp-xn
+    return xp, xn, xa
+
+
+def PNA_Peng_Robinson(Nc, M, WABP):
+    """Calculate fractional compositon of paraffins, naphthenes and aromatics
+    contained in petroleum fractions using the Peng-Robinson procedure
+
+    Parameters
+    ------------
+    Nc : index
+        Carbon number, [-]
+    M : float
+        Molecular weight, [g/mol]
+    WABP : float
+        Weight average boiling temperature, [K]
+
+    Returns
+    -------
+    xp : float
+        Paraffins mole fraction, [-]
+    xn : float
+        Naphthenes mole fraction, [-]
+    xa : float
+        Aromatics mole fraction, [-]
+
+    Notes
+    -----
+    This method can too calculate the critical properties of fraction
+
+    References
+    ----------
+    .. [56] Ahmed, T. Hydrocarbon Phase Behavior. Gulf Publishing, Houston, TX,
+        1989.
+    .. [58] Robinson, D.B., Peng, D.Y. The characterization of the heptanes and
+        heavier fractions. Research Report 28. GPA, 1978. Tulsa, OK.
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    WABP_R = unidades.K2R(WABP)
+
+    Tbp = exp(log(1.8) + 5.8345183 + 0.84909035e-1*(Nc-6) -
+              0.52635428e-2*(Nc-6)**2 + 0.21252908e-3*(Nc-6)**3 -
+              0.44933363e-5*(Nc-6)**4 + 0.37285365e-7*(Nc-6)**5)
+    Tbn = exp(log(1.8) + 5.8579332 + 0.79805995e-1*(Nc-6) -
+              0.43098101e-2*(Nc-6)**2 + 0.14783123e-3*(Nc-6)**3 -
+              0.27095216e-5*(Nc-6)**4 + 0.19907794e-7*(Nc-6)**5)
+    Tba = exp(log(1.8) + 5.867176 + 0.80436947e-1*(Nc-6) -
+              0.47136506e-2*(Nc-6)**2 + 0.18233365e-3*(Nc-6)**3 -
+              0.38327239e-5*(Nc-6)**4 + 0.32550576e-7*(Nc-6)**5)
+
+    Mp = 14.026*Nc + 2.016
+    Mn = 14.026*Nc - 14.026
+    Ma = 14.026*Nc - 20.074
+
+    # Solve the system of equation
+    a = [[1, 1, 1], [Tbp*Mp, Tbn*Mn, Tba*Ma], [Mp, Mn, Ma]]
+    b = [1, M*WABP_R, M]
+    Xp, Xn, Xa = solve(a, b)
+
+    # Calculate the critical properties of fraction
+    # pcp = (206.126096*Nc+29.67136)/(0.227*Nc+0.34)**2
+    # pcn = (206.126096*Nc+206.126096)/(0.227*Nc+0.137)**2
+    # pca = (206.126096*Nc+295.007504)/(0.227*Nc+0.325)**2
+    # pc = Xp*pcp+Xn*pcn+Xa*pca
+
+    # wp = 0.432*Nc-0.0457
+    # wn = 0.0432*Nc-0.088
+    # wa = 0.0445*Nc-0.0995
+
+    # S = 0.996704+0.00043155*Nc
+    # S1 = 0.99627245+0.00043155*Nc
+    # tcp = S*(1+(3*log10(pcp)-3.501952)/7/(1+wp))*Tbp
+    # tcn = S1*(1+(3*log10(pcn)-3.501952)/7/(1+wn))*Tbn
+    # tca = S1*(1+(3*log10(pca)-3.501952)/7/(1+wa))*Tba
+    # tc = Xp*tcp+Xn*tcn+Xa*tca
+    return Xp, Xn, Xa
+
+
+def PNA_Bergman(Tb, SG, Kw):
+    """Calculate fractional compositon of paraffins, naphthenes and aromatics
+    contained in petroleum fractions using the Bergman procedure
+
+    Parameters
+    ------------
+    Tb : float
+        Boiling temperature, [K]
+    SG : float
+        Specific gravity, [-]
+    Kw : float
+        Watson characterization factor, [-]
+
+    Returns
+    -------
+    xp : float
+        Paraffins mole fraction, [-]
+    xn : float
+        Naphthenes mole fraction, [-]
+    xa : float
+        Aromatics mole fraction, [-]
+
+    Notes
+    -----
+    This method can too calculate the critical properties of fraction
+
+    References
+    ----------
+    .. [56] Ahmed, T. Hydrocarbon Phase Behavior. Gulf Publishing, Houston, TX,
+        1989.
+    .. [57] Bergman, D. F., Tek, M. R., Katz, D. L. Retrograde Condensation in
+        Natural Gas Pipelines. Project PR 2-29 of Pipelines Research Committee,
+        AGA, January 1977
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+
+    # Estimate gthe weight fraction of the aromatic content in fraction
+    Xwa = 8.47 - Kw
+
+    # Solve the linear equation for weight fractions of paraffins and naphtenes
+    gp = 0.582486 + 0.00069481*Tb_F - 0.7572818e-6*Tb_F**2 + \
+        0.3207736e-9*Tb_F**3
+    gn = 0.694208 + 0.0004909267*Tb_F - 0.659746e-6*Tb_F**2 + \
+        0.330966e-9*Tb_F**3
+    ga = 0.916103 - 0.000250418*Tb_F + 0.357967e-6*Tb_F**2 - \
+        0.166318e-9*Tb_F**3
+    a = [[1, 1], [1/gp, 1/gn]]
+    b = [1-Xwa, 1/SG - Xwa/ga]
+    Xwp, Xwn = solve(a, b)
+
+    # Calculate the Tc, Pc and acentric factor for each cut
+    # Tcp = 275.23 + 1.2061*Tb_F - 0.00032984*Tb_F**2
+    # Pcp = 573.011 - 1.13707*Tb_F + 0.00131625*Tb_F**2 - 0.85103e-6*Tb_F**3
+    # wp = 0.14 + 0.0009*Tb_F + 0.233e-6*Tb_F**2
+    # Tcn = 156.8906 + 2.6077*Tb_F - 0.003801*Tb_F**2 + 0.2544e-5*Tb_F**3
+    # Pcn = 726.414 - 1.3275*Tb_F + 0.9846e-3*Tb_F**2 - 0.45169e-6*Tb_F**3
+    # wn = wp-0.075
+    # Tca = 289.535 + 1.7017*Tb_F - 0.0015843*Tb_F**2 + 0.82358e-6*Tb_F**3
+    # Pca = 1184.514 - 3.44681*Tb_F + 0.0045312*Tb_F**2 - 0.23416e-5*Tb_F**3
+    # wa = wp-0.1
+    # pc=Xwp*Pcp+Xwn*Pcn+Xwa*Pca
+    # tc=Xwp*Tcp+Xwn*Tcn+Xwa*Tca
+    # w=Xwp*wp+Xwn*wn+Xwa*wa
+
+    return Xwp, Xwn, Xwa
+
+
+def PNA_van_Nes(M, n, d20, S):
+    """Calculate fractional compositon of paraffins, naphthenes and aromatics
+    contained in petroleum fractions using the Van Nes procedure
+
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [g/mol]
+    n : float
+        Refractive index, [-]
+    d20 : float
+        Density at 20ºC, [g/cm³]
+    S : float
+        Sulfur content, [-]
+
+    Returns
+    -------
+    xp : float
+        Paraffins mole fraction, [-]
+    xn : float
+        Naphthenes mole fraction, [-]
+    xa : float
+        Aromatics mole fraction, [-]
+
+    Raises
+    ------
+    NotImplementedError : If input viscosity or CH ratio are undefined
+
+    Notes
+    -----
+    This method can too calculate the total number of rings, the number of
+    aromatics rings and the naphthenic rings
+
+    References
+    ----------
+    [55] .. Van Nes, K. and Van Western, H. A. Aspects of the Constitution of
+        Mineral Oils. Elsevier, New York, 1951
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    v = 2.51*(n-1.475)-(d20-0.851)
+    w = (d20-0.851)-1.11*(n-1.475)
+    if v > 0:
+        a = 430
+    else:
+        a = 670
+    if w > 0:
+        CR = 820*w-3*S + 10000./M
+    else:
+        CR = 1440*w - 3*S + 10600./M
+    Ca = a*v + 3660/M
+    Cn = CR - Ca
+    Cp = 100 - CR
+    return Cp/100., Cn/100., Ca/100.
+
+
+# Viscosity correlation
+def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
+    """Calculate viscosity of a petroleum fraction using the API procedure
+    11A4.2 and 11A4.4
+
+    Parameters
+    ------------
+    Tb : float
+        Boiling temperature, [K]
+    Kw : float
+        Watson characterization factor, [-]
+    v100 : float, optional
+        Kinematic viscosity at 100ºF, [m²/s]
+    v210 : float, optional
+        Kinematic viscosity at 210ºF, [m²/s]
+    T : float, optional
+        Optional temperature to calculate the viscosity, [K]
+    T1 : float, optional
+        Temperature for v100 viscosity value, [K]
+    T2 : float, optional
+        Temperature for v210 viscosity value, [K]
+
+    Returns
+    -------
+    v100 : float
+        Kinematic viscosity at 100ºF, [m²/s]
+    v210 : float
+        Kinematic viscosity at 210ºF, [m²/s]
+    vT : float, optional
+        Kinematic viscosity at T input, [m²/s]
+
+    Notes
+    -----
+    By default the method calculate the viscosity at 100ºF and 210ºF, can too
+    calculate the viscosity at input T temperature
+    if T1 and T2 are different to 100ºF and 210ºF v100 and v210 input are at
+    that temperatures
+    if both viscosity are input Tb and Kw input aren't unnecesary
+
+    Examples
+    --------
+    Example A in procedure 11A4.2
+    >>> Tb = unidades.Temperature(598.7, "F")
+    >>> T = unidades.Temperature(140, "F")
+    >>> mu = viscoAPI(Tb, 11.87, T=T)
+    >>> "%0.2f %0.2f %0.2f" % (mu["v100"].cSt, mu["v210"].cSt, mu["vT"].cSt)
+    '5.94 1.88 3.57'
+
+    Example B in procedure 11A4.2
+    The values differ, in reference only use 2 decimal number in intermediate
+    >>> Tb = unidades.Temperature(647.3, "F")
+    >>> T = unidades.Temperature(304, "F")
+    >>> mu = viscoAPI(Tb, 9.955, T=T)
+    >>> "%0.2f %0.2f %0.2f" % (mu["v100"].cSt, mu["v210"].cSt, mu["vT"].cSt)
+    '39.41 5.20 2.12'
+
+    Example C in procedure 11A4.2
+    >>> Tb = unidades.Temperature(382.1, "F")
+    >>> mu = viscoAPI(Tb, 11.93)
+    >>> "%0.3f" % mu["v100"].cSt
+    '1.249'
+
+    >>> Tb = unidades.Temperature(1113.2, "F")
+    >>> mu = viscoAPI(Tb, 11.94)
+    >>> "%0.0f" % mu["v100"].cSt
+    '2612'
+
+    Example B in procedure 11A4.4
+    >>> T = unidades.Temperature(68, "F")
+    >>> T1 = unidades.Temperature(32, "F")
+    >>> T2 = unidades.Temperature(104, "F")
+    >>> v100 = unidades.Diffusivity(1.644, "cSt")
+    >>> v210 = unidades.Diffusivity(0.925, "cSt")
+    >>> mu = viscoAPI(T1=T1, T2=T2, T=T, v100=v100, v210=v210)
+    >>> "%0.3f" % mu["vT"].cSt
+    '1.201'
+
+    References
+    ----------
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    if v100 is None or v210 is None:
+        # Convert input Tb in Kelvin to Rankine to use in the correlation
+        Tb_R = unidades.K2R(Tb)
+
+    if v100 is None:
+        # Calculate the viscosity at 100ºF
+        mu_ref = 10**(-1.35579 + 8.16059e-4*Tb_R + 8.38505e-7*Tb_R**2)
+        A1 = 34.931-8.84387e-2*Tb_R+6.73513e-5*Tb_R**2-1.01394e-8*Tb_R**3
+        A2 = -2.92649+6.98405e-3*Tb_R-5.09947e-6*Tb_R**2+7.49378e-10*Tb_R**3
+        mu_cor = 10**(A1+A2*Kw)
+        v100 = unidades.Diffusivity(mu_ref+mu_cor, "cSt")
+    else:
+        v100 = unidades.Diffusivity(v100)
+
+    if v210 is None:
+        # Calculate the viscosity at 210ºF
+        mu = 10**(-1.92353+2.41071e-4*Tb_R+0.5113*log10(Tb_R*v100.cSt))
+        v210 = unidades.Diffusivity(mu, "cSt")
+    else:
+        v210 = unidades.Diffusivity(v210)
+
+    vs = {}
+    vs["v100"] = v100
+    vs["v210"] = v210
+
+    if T is not None:
+        # Calculate the viscosity at other temperature
+        T_R = unidades.K2R(T)
+        if T1 is None:
+            T1 = unidades.Temperature(100, "F")
+        T1_R = T1.R
+        if T2 is None:
+            T2 = unidades.Temperature(210, "F")
+        T2_R = T2.R
+
+        Z1 = v100.cSt+0.7+exp(-1.47-1.84*v100.cSt-0.51*v100.cSt**2)
+        Z2 = v210.cSt+0.7+exp(-1.47-1.84*v210.cSt-0.51*v210.cSt**2)
+        B = (log10(log10(Z1))-log10(log10(Z2)))/(log10(T1_R)-log10(T2_R))
+        Z = 10**(10**(log10(log10(Z1))+B*(log10(T_R)-log10(T1_R))))
+        mu = Z - 0.7 - exp(
+            -0.7487-3.295*(Z-0.7)+0.6119*(Z-0.7)**2-0.3191*(Z-0.7)**3)
+        vs["vT"] = unidades.Diffusivity(mu, "cSt")
+
+    return vs
+
+
+# Component predition
+def H_Riazi(S, CH):
+    """Calculate hydrogen content of petroleum fractions
+
+    Parameters
+    ------------
+    S : float
+        Sulfur content, [%]
+    CH : float
+        Carbon/hydrogen ratio, [-]
+
+    Returns
+    -------
+    H : float
+        Hydrogen content, [%]
+
+    Notes
+    -----
+    A Simple mass balance discarting other elements composition than hydrogen,
+    carbon and sulfur
+
+    References
+    ----------
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    """
+    H = (100-S)/(1+CH)
+    return H
+
+
+def H_Goossens(M, n, d20):
+    """Calculate hydrogen content of petroleum fractions using the correlation
+    of Goossens
+
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [-]
+    n : float
+        Refractive index, [-]
+    d20 : float
+        Liquid density at 20ºC, [g/cm³]
+
+    Returns
+    -------
+    H : float
+        Hydrogen content, [%]
+
+    References
+    ----------
+    .. [60] Goossens, A. G. Prediction of the Hydrogen Content of Petroleum
+        Fractions. Industrial and Engineering Chemistry Research, Vol. 36,
+        1997, pp. 2500-2504.
+    """
+    H = 30.346 + (82.952-65.341*n)/d20 - 306/M
+    return H
+
+
+def H_ASTM(Tb, SG, xa):
+    """Calculate hydrogen content of petroleum fractions
+
+    Parameters
+    ------------
+    Tb : float
+        Mean average boiling point, [ºR]
+    SG : float
+        Specific gravity, [-]
+    xa : float
+        Aromatics mole fraction, [-]
+
+    Returns
+    -------
+    H : float
+        Hydrogen content, [%]
+
+    References
+    ----------
+    .. [29] Riazi, M. R. Characterization and Properties of Petroleum
+        Fractions. ASTM manual series MNL50, 2005
+    .. [62] ASTM, Annual Book of Standards, ASTM International, West
+        Conshohocken, PA, 2002
+    """
+
+     H = (5.2407 + 0.01448*Tb - 7.018*xa)/SG - 0.901*xa + 0.01298*xa*Tb - \
+         0.01345*Tb + 5.6879
+     return H
+
+
+def H_Jenkins_Walsh(SG, anilineP):
+    """Calculate hydrogen content of petroleum fractions using the correlation
+    of Jenkins-Walsh
+
+    Parameters
+    ------------
+    SG : float
+        Specific gravity, [-]
+    anilineP : float
+        Aniline point, [K]
+
+    Returns
+    -------
+    H : float
+        Hydrogen content, [%]
+
+    References
+    ----------
+    .. [61] Jenkins, G. I. and Walsh, R. E. Quick Measure of Jet Fuel
+        Properties. Hydrocarbon Processing, Vol. 47, No. 5, 1968, pp. 161-164.
+    """
+    H = 11.17 - 12.89*SG + 0.0389*anilineP
+    return H
+
+
+def S_Riazi(M, SG, Ri, m):
+    """Calculate sulfur content of petroleum fractions
+
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [-]
+    SG : float
+        Specific gravity, [-]
+    Ri : float
+        Refractivity intercept, [-]
+    m : float
+        characterization factor, [-]
+
+    Returns
+    -------
+    S : float
+        Sulfur content, [%]
+
+    Examples
+    --------
+    S predicted in table 3 for a crude nº1
+    >>> "%0.2f" % S_Riazi(202, 0.837, 1.0511, -1.4849)
+    '1.19'
+
+    crude nº61
+    >>> "%0.2f" % S_Riazi(1484, 1.0209, 1.1611, 289.2786)
+    '2.85'
+
+    References
+    ----------
+    .. [59] Riazi, M. R., Nasimi, N., and Roomi, Y. Estimating Sulfur Content
+        of Petroleum Products and Crude Oils. Industrial and Engineering
+        Chemistry Research, Vol. 38, No. 11, 1999, pp. 4507-4512
+    """
+    if M < 200:
+        S = 177.448 - 170.946*Ri + 0.2258*m + 4.054*SG
+    else:
+        S = -58.02 + 38.463*Ri - 0.023*m + 22.4*SG
+    return S
+
+
 class Petroleo(newComponente):
     """Class to define a heavy oil fraction with a unknown composition
 
-    Parámetros:
-        nombre: nombre del componente, generalmente una fracción de petróleo
-        M: peso_molecular
-        Tb: temperaura normal de ebullición, K
-        SG: gravedad específica a 60ºF
-        API: gravedad API
-        CH: relación C/H
-        I: parámetro de Huang
-        n: indice de refracción
-        Nc: número de carbonos de la fracción
-        Kw: factor característico de watson
-        v100: viscosidad cinemática a 100ºF
-        v210: viscosidad cinemática a 210ºF
-        H: Porcentaje de contenido en hidrogeno de la fracción
-        S: Porcentaje de contenido en azufre de la fracción
-        N: Porcentaje de contenido en nitrógeno de la fracción
+    Parameters
+    ------------
+    M : float
+        Molecular weight, [-]
+    Tb : float
+        Mean average boiling point, [K]
+    SG : float
+        Specific gravity, [-]
+    API : float
+        API gravity, [-]
+    CH : float
+        Carbon/hydrogen ratio, [-]
+    I : float
+        Huang parameter, [-]
+    n : float
+        Refractive index, [-]
+    Kw : float
+        Watson characterization factor, [-]
+    v100 : float
+        Kinematic viscosity at 100ºF, [m²/s]
+    v210 : float
+        Kinematic viscosity at 210ºF, [m²/s]
+    H : float
+        Hydrogen content, [-]
+    S : float
+        Sulfur content, [-]
+    N : float
+        Nitrogen content, [-]
+    Nc : float
+        Fraction carbon number, [-]
 
-        Curvas de destilación:
-            -D86: Distribución de temperaturas de ebullición de la fracción según la norma ASTM D86
-            -TBP: True boiling point
-            -SD: Simulated distillation según la norma ASTM D2887
-            -EFV: Equilibrium Flash Vaporization
-            -D1160: Curva específicas a baja presión
-            -P_dist: Presión de la curva de destilación, en mmHg
-            -T_dist: array con los valores de las fracciones en porcentaje (peso o volumen) de los datos de la curva de destilación
+    curveType : string
+        Name of curve data in curve input: D86, TBP, SD, D1186, EFV
+    T_curve : list
+        Boiling point temperature, [K]
+    X_curve : list
+        Volume or weight distillation fraction array
+    P_curve : float
+        Distillation data pressure, [Pa]
+    fit_curve : array
+        Array of fit parameter of curve distillation [To, A, B]
 
-        Otros parámeros más específicos
-        Aplicadas a gasolinas:
-            oleffin: porcentaje de contenido de olefinas
-            TML: concentración de tetrametilplomo añadido en ml/galón UK
-            TEL: concentración de tetraetilplomo añadido en ml/galón UK
+    Returns
+    -------
+    The calculated instance has the necessary calculated properties to be used
+    in the flowsheet as hypotethical component.
 
-    Opciones de definición por prioridad:
-        1   -   Tb y SG
-        2   -   M y SG
-        3   -   Tb y I
-        4   -   M y I
-        5   -   Tb y CH
-        6   -   M y CH
-        7   -   v100 y I
-        8   -   Nc (opción muy poco precisa)
-        9   -   curva de destilación
+    Example
+    -------
+    Example from [20]_, procedure 2B1.1
+    >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
+    >>> D86 = [149, 230, 282, 325, 371]
+    >>> D86_K = [unidades.F2K(t) for t in D86]
+    >>> oil = Petroleo(curveType="D86", X_curve=X, T_curve=D86_K)
+    >>> "%.0f %.0f %.0f %.0f %.0f" % (\
+        oil.VABP.F, oil.MABP.F, oil.WABP.F, oil.CABP.F, oil.MeABP.F)
+    '271 241 279 264 253'
 
-    API es una forma equivalente alternativa a SG
-    Kw es una forma alternativa de indicar SG o Tb
-    n es una forma equivalente alternativa a I
+    Notes
+    -----
+    The definition can be with several input parameters::
+        * Distillation data (TBP or other). This is the prefered and accurate
+            method to define the pseudocomponent.
+        * Any combination of physical properties (Tb, SG, M, I, n, CH, v100)
+        * Nc as only paramter to calculata all the other propeties, this is the
+            less accurate method and it's not recommended.
+
+    Refractive index is equivalent as input parameter to Huang parameter.
+    Watson characterization factor is equivalent to SG or boiling temperature
+    API gravity is equivalent to SG as input paramter
     """
+    kwargs = {"M": 0.0,
+              "Tb": 0.0,
+              "SG": 0.0,
+              "API": 0.0,
+              "CH": 0.0,
+              "n": 0.0,
+              "I": 0.0,
+              "Kw": 0.0,
+              "v100": 0.0,
+              "v210": 0.0,
+              "H": 0.0,
+              "S": 0.0,
+              "N": 0.0,
+              "Nc": 0,
 
-    kwargs={"name": "",
-                    "M": 0.0,
-                    "Tb": 0.0,
-                    "SG": 0.0,
-                    "API": 0.0,
-                    "CH": 0.0,
-                    "n": 0.0,
-                    "I": 0.0,
-                    "Nc": 0,
-                    "Kw": 0.0,
-                    "v100": 0.0,
-                    "v210": 0.0,
-                    "H": 0.0,
-                    "S": 0.0,
-                    "N": 0.0,
+              "curveType": "",
+              "T_curve": [],
+              "X_curve": [],
+              "P_curve": 101325,
+              "fit_curve": []}
 
-                    "P_dist": 0.0,
-                    "T_dist": 0.0,
-                    "D86": [],
-                    "TBP": [],
-                    "EFV": [],
-                    "SD": [],
-                    "D1160": [],
+    status = 0
+    _bool = False
+    msg = ""
+    definicion = 0
+    CURVE_TYPE = ["D86", "TBP", "SD", "D1186", "EFV"]
 
-                    "oleffin": 0.0,
-                    "TEL": 0.0,
-                    "TML": 0.0,
-                    }
-
-    status=0
-    _bool=False
-    msg=""
-    definicion=0
+    METHODS_PNA = ["Riazi (API)",
+                   "Peng Robinson (1978)",
+                   "Bergman (1977)",
+                   "Van Nes (1951)"]
+    METHODS_H = ["Riazi", "Goossens", "ASTM", "Jenkins-Walsh"]
 
     def __init__(self, **kwargs):
-        self.Preferences=ConfigParser()
+        self.Preferences = ConfigParser()
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.__call__(**kwargs)
 
     def __call__(self, **kwargs):
         self.kwargs.update(kwargs)
         if kwargs:
-            self._bool=True
+            self._bool = True
         if self.isCalculable():
             self.calculo()
 
@@ -3985,214 +4563,209 @@ class Petroleo(newComponente):
         8   -   Nc (opción muy poco precisa)
         9   -   curva de destilación
         """
-        self.hasSG=self.kwargs["SG"] or self.kwargs["API"] or (self.kwargs["Kw"] and self.kwargs["Tb"])
-        self.hasRefraction=self.kwargs["n"] or self.kwargs["I"]
-        self.hasCurve=self.kwargs["D86"] or self.kwargs["TBP"] or self.kwargs["EFV"] or self.kwargs["D1160"]
+        self.status = 0
+        self.msg = QApplication.translate("pychemqt", "Insufficient input")
 
-        #Tipo Definición
-        if self.kwargs["Tb"] and self.hasSG:
-            self.definicion=1
+        self.hasSG = self.kwargs["SG"] or self.kwargs["API"] or \
+            (self.kwargs["Kw"] and self.kwargs["Tb"])
+        self.hasRefraction = self.kwargs["n"] or self.kwargs["I"]
+        self.hasCurve = self.kwargs["curveType"] and self.kwargs["T_curve"] \
+            and self.kwargs["X_curve"]
+
+        # Tipo Definición
+        if self.hasCurve or (self.kwargs["Tb"] and self.hasSG):
+            self.definicion = 1
         elif self.kwargs["M"] and self.hasSG:
-            self.definicion=2
+            self.definicion = 2
         elif self.kwargs["Tb"] and self.hasRefraction:
-            self.definicion=3
+            self.definicion = 3
         elif self.kwargs["M"] and self.hasRefraction:
-            self.definicion=4
+            self.definicion = 4
         elif self.kwargs["Tb"] and self.kwargs["CH"]:
-            self.definicion=5
+            self.definicion = 5
         elif self.kwargs["M"] and self.kwargs["CH"]:
-            self.definicion=6
+            self.definicion = 6
         elif self.kwargs["v100"] and self.hasRefraction:
-            self.definicion=7
+            self.definicion = 7
         elif self.kwargs["Nc"]:
-            self.definicion=8
-        elif self.hasCurve:
-            self.definicion=9
-        else:
-            self.status=0
-            self.msg=QApplication.translate("pychemqt", "Insufficient input")
+            self.definicion = 8
 
         if self.definicion:
-            self.status=1
-            self.msg=""
+            self.status = 1
+            self.msg = ""
             return True
 
-
     def calculo(self):
-        self.formula=""
-        if self.kwargs["name"]:
-            self.name=str(self.kwargs["name"])
-        else:
-            self.name=self.__class__.__name__+"_"+time.strftime("%d/%m/%Y-%H:%M:%S")
+        self.formula = ""
+        self.name = self.__class__.__name__ + "_" + \
+            time.strftime("%d/%m/%Y-%H:%M:%S")
 
-        self.cp=[]
-        self.Vliq=0
-        self.rackett=0
-        self.Tf=0
-        self.Hf=0
-        self.Gf=0
+        self.cp = []
+        self.Vliq = 0
+        self.rackett = 0
+        self.Tf = 0
+        self.Hf = 0
+        self.Gf = 0
 
-        if self.hasCurve==1:
-            curva=D86 or TBP or SD or EFV or D1160
-            parameters_Curva=curve_Predicted(T_dist, curva)
-            curva_normalizada=[]
-            for i in [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]:
-                if i in T_dist:
-                    curva_normalizada.append(unidades.Temperature(curva[T_dist.index(i)]))
+        if self.hasCurve:
+            # Create the complete curve, using fitting procedure o using the
+            # input kwargs parameters
+            # The curva variable has the values at normaliced volume/weight
+            # fractions
+            # 0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99
+            # 0, 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12
+            if self.kwargs["fit_curve"]:
+                parCurva = self.kwargs["fit_curve"]
+            else:
+                x = self.kwargs["X_curve"]
+                T = self.kwargs["T_curve"]
+                parCurva, r = curve_Predicted(x, T)
+
+            curva = []
+            for x in [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]:
+                if x/100 in self.kwargs["X_curve"]:
+                    index = self.kwargs["X_curve"].index(x/100)
+                    T = self.kwargs["T_curve"][index]
                 else:
-                    curva_normalizada.append(unidades.Temperature(T_Predicted(parameters_Curva, i)))
+                    T = _Tb_Predicted(parCurva, x/100)
+                curva.append(unidades.Temperature(T))
 
-            # Si SG no está disponible se puede calcular a partir de la curva de destilación Pag 117 Riazi
-            if not self.hasSG:
-                if self.kwargs["D86"]:
-                    self.SG=0.08342*curva_normalizada[2]**0.10731*curva_normalizada[6]**0.26288
-                elif self.kwargs["TBP"]:
-                    self.SG=0.10431*curva_normalizada[2]**0.12550*curva_normalizada[6]**0.20862
-                else:
-                    self.SG=0.09138*curva_normalizada[2]**-0.0153*curva_normalizada[6]**0.36844
+            # If SG isn't known, use the correlation proposed in Riazi, [29]_
+            # Eq. 3.17, Pag 102
+            if self.kwargs["curveType"] == "D86":
+                a, b, c = 0.08342, 0.10731, 0.26288
+            elif self.kwargs["curveType"] == "TBP":
+                a, b, c = 0.10431, 0.12550, 0.26288
+            elif self.kwargs["curveType"] == "EFV":
+                a, b, c = 0.09138, -0.0153, 0.36844
+            else:
+                pass
+            self.SG = a*curva[2]**b*curva[6]**c
 
-            if self.kwargs["D86"]:
-                self.D86=curva_normalizada
-                self.TBP=[D86_TBP_Riazi, D86_TBP_Daubert][self.Preferences.getint("petro", "curva")](self.D86)
-                self.EFV=D86_EFV(self.D86, self.SG)
-                self.SD=None
-                TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
-                D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
-                self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
+            # Calculate the distillation curve missing
+            P = unidades.Pressure(10, "mmHg")
+            Pcurve = self.kwargs["P_curve"]
+            X = self.kwargs["X_curve"]
+
+            if self.kwargs["curveType"] == "D86":
+                self.D86 = curva
+                self.TBP = self._D86_TBP(curva, X)
+                self.EFV = D86_EFV(curva, X, self.SG)
+                self.SD = None
+                TBP_10mHg = [Tb_Pressure(t, P, reverse=True) for t in self.TBP]
+                D1160_10mHg = D1160_TBP_10mmHg(TBP_10mHg, reverse=True)
+                self.D1160 = [Tb_Pressure(t, P) for t in D1160_10mHg]
 
             elif self.kwargs["TBP"]:
-                if P_dist.mmHg == 760:
-                    self.TBP=curva_normalizada
-                    TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
-                elif P_dist.mmHg == 10:
-                    self.TBP=[Tb_Presion(t, P_dist) for t in curva_normalizada]
-                    TBP_10mmHg=curva_normalizada
+                if Pcurve == 101325:
+                    self.TBP = curva
+                    TBP_10mmHg = [Tb_Pressure(t, P, reverse=True)
+                                  for t in self.TBP]
                 else:
-                    self.TBP=[Tb_Presion(t, P_dist) for t in curva_normalizada]
-                    TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
-                self.D86=[D86_TBP_Riazi, D86_TBP_Daubert][self.Preferences.getint("petro", "curva")](self.TBP, reverse=True)
-                self.EFV=D86_EFV(self.D86, SG)
-                self.SD=None
-                D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
-                self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
+                    self.TBP = [Tb_Pressure(t, Pcurve) for t in curva]
+                    if Pcurve == P:
+                        TBP_10mmHg = curva
+                    else:
+                        TBP_10mmHg = [Tb_Pressure(t, P, reverse=True)
+                                      for t in self.TBP]
+                self.D86 = self._D86_TBP(curva, X, reverse=True)
+                self.EFV = D86_EFV(self.D86, X, self.SG)
+                self.SD = None
+                D1160_10mmHg = D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
+                self.D1160 = [Tb_Pressure(t, 10./760) for t in D1160_10mmHg]
 
             elif self.kwargs["SD"]:
-                self.SD=curva_normalizada
-                self.D86=[SD_D86_Riazi, SD_D86_Daubert][self.Preferences.getint("petro", "curva")](self.SD)
-                self.TBP=SD_TBP(self.SD)
-                self.EFV=D86_EFV(self.D86, self.SG)
-                TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
-                D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
-                self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
+                self.SD = curva
+                self.D86 = self._SD_D86(curva, X)
+                self.TBP = SD_TBP(curva, X)
+                self.EFV = D86_EFV(self.D86, X, self.SG)
+                TBP_10mmHg = [Tb_Pressure(t, P, True) for t in self.TBP]
+                D1160_10mmHg = D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
+                self.D1160 = [Tb_Pressure(t, P) for t in D1160_10mmHg]
 
             elif self.kwargs["EFV"]:
-                if P_dist.mmHg==760:
-                    self.EFV=curva_normalizada
+                if Pcurve == 101325:
+                    self.EFV = curva
                 else:
-                    self.EFV=[Tb_Presion(t, P_dist/760.) for t in curva_normalizada]
-                self.D86=D86_EFV(self.EFV, self.SG, reverse=True)
-                self.SD=None
-                self.TBP=[D86_TBP_Riazi, D86_TBP_Daubert][self.Preferences.getint("petro", "curva")](self.D86)
-                TBP_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.TBP]
-                D1160_10mmHg=D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
-                self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
+                    self.EFV = [Tb_Pressure(t, Pcurve) for t in curva]
+                self.D86 = D86_EFV(curva, X, self.SG, reverse=True)
+                self.SD = None
+                self.TBP = self._D86_TBP(self.D86, X)
+                TBP_10mmHg = [Tb_Pressure(t, P, True) for t in self.TBP]
+                D1160_10mmHg = D1160_TBP_10mmHg(TBP_10mmHg, reverse=True)
+                self.D1160 = [Tb_Pressure(t, P) for t in D1160_10mmHg]
 
             else:
-                if P_dist.mmHg==10:
-                    D1160_10mmHg=curva_normalizada
-                    self.D1160=[Tb_Presion(t, 10./760) for t in D1160_10mmHg]
-                elif P_dist.mmHg==760:
-                    self.D1160=curva_normalizada
-                    D1160_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.D1160]
+                if Pcurve == P:
+                    D1160_10mmHg = curva
+                    self.D1160 = [Tb_Pressure(t, P) for t in D1160_10mmHg]
+                elif Pcurve == 101325:
+                    self.D1160 = curva
+                    D1160_10mmHg = [Tb_Pressure(t, P, True) for t in curva]
                 else:
-                    self.D1160=[Tb_Presion(t, P_dist) for t in curva_normalizada]
-                    D1160_10mmHg=[Tb_Presion(t, 10./760, reverse=True) for t in self.D1160]
-                TBP_10mmHg=D1160_TBP_10mmHg(D1160_10mmHg)
-                self.TBP=[Tb_Presion(t, 10./760) for t in TBP_10mmHg]
-                self.D86=[D86_TBP_Riazi, D86_TBP_Daubert][self.Preferences.getint("petro", "curva")](self.TBP, reverse=True)
-                self.EFV=D86_EFV(self.D86, self.SG)
-                self.SD=None
+                    self.D1160 = [Tb_Pressure(t, Pcurve) for t in curva]
+                    D1160_10mmHg = [Tb_Pressure(t, P, reverse=True)
+                                    for t in self.D1160]
+                TBP_10mmHg = D1160_TBP_10mmHg(D1160_10mmHg)
+                self.TBP = [Tb_Pressure(t, P) for t in TBP_10mmHg]
+                self.D86 = self._D86_TBP(self.TBP, X, reverse=True)
+                self.EFV = D86_EFV(self.D86, X, self.SG)
+                self.SD = None
 
+            # Hardcoded key temperatures in distillation curve
+            self.T5 = self.D86[1]
+            self.T10 = self.D86[2]
+            self.T20 = self.D86[3]
+            self.T30 = self.D86[4]
+            self.T40 = self.D86[5]
+            self.T50 = self.D86[6]
+            self.T60 = self.D86[7]
+            self.T70 = self.D86[8]
+            self.T80 = self.D86[9]
+            self.T90 = self.D86[10]
 
-            self.VABP=unidades.Temperature((self.D86[2]+self.D86[4]+self.D86[6]+self.D86[8]+self.D86[10])/5.)
-            SL=(self.D86[-2].F-self.D86[2].F)/80.
-            self.WABP=unidades.Temperature(self.VABP.F+exp(-3.062123-0.01829*(self.VABP.F-32)**(2./3)+4.45818*SL**0.25), "F")
-            self.MABP=unidades.Temperature(self.VABP.F-exp(-0.56379-0.007981*(self.VABP.F-32)**(2./3)+3.04729*SL**(1./3)), "F")
-            self.CABP=unidades.Temperature(self.VABP.F-exp(-0.23589-0.06906*(self.VABP.F-32)**0.45+1.8858*SL**0.45), "F")
-            self.MeABP=unidades.Temperature(self.VABP.F-exp(-0.94402-0.00865*(self.VABP.F-32)**(2./3)+2.99791*SL**(1./3)), "F")
-            if not Tb:
-                Tb=self.MeABP
+            # Calculate average boiling points
+            # Ref. [20] Procdedure 2B1.1
+            self.VABP = unidades.Temperature((
+                self.T10 + self.T30 + self.T50 + self.T70 + self.T90)/5.)
+            SL = (self.T90.F-self.T10.F)/80.
+            DT1 = -3.062123-0.01829*(self.VABP.F-32)**0.6667+4.45818*SL**0.25
+            DT2 = -0.56379-0.007981*(self.VABP.F-32)**0.6667+3.04729*SL**0.333
+            DT3 = -0.23589-0.06906*(self.VABP.F-32)**0.45+1.8858*SL**0.45
+            DT4 = -0.94402-0.00865*(self.VABP.F-32)**0.6667+2.99791*SL**0.333
+            self.WABP = unidades.Temperature(self.VABP.F+exp(DT1), "F")
+            self.MABP = unidades.Temperature(self.VABP.F-exp(DT2), "F")
+            self.CABP = unidades.Temperature(self.VABP.F-exp(DT3), "F")
+            self.MeABP = unidades.Temperature(self.VABP.F-exp(DT4), "F")
+            Tb = self.MeABP
 
+            # Reid Vapour Pressure, [29]_ Eq 3.100
+            ReidVP = 3.3922 - 0.02537*self.T5.C - 0.070739*self.T10.C + \
+                .00917*self.T30.C - .0393*self.T50.C + 6.8257e-4*self.T10.C**2
+            self.ReidVP = unidades.Pressure(ReidVP, "bar")
 
-            self.T5=self.D86[1]
-            self.T10=self.D86[2]
-            self.T30=self.D86[4]
-            self.T50=self.D86[6]
-            self.T90=self.D86[10]
-            self.ReidVP=unidades.Pressure(3.3922-0.02537*self.T5.C-0.070739*self.T10.C+0.00917*self.T30.C-0.0393*self.T50.C+6.8257e-4*self.T10.C**2, "bar")
+            # V/L Ratio, [29]_ Eq 106
+            self.VL_12 = 88.5 - 0.19*self.T70 - 42.5*self.ReidVP.bar
+            self.VL_20 = 90.6 - 0.25*self.T70 - 39.2*self.ReidVP.bar
+            self.VL_36 = 94.7 - 0.36*self.T70 - 32.3*self.ReidVP.bar
 
-            A, B, To=parameters_Curva
-            E70=100-100*exp(-B/A*(343.15-To)**B/To**B)
-            self.VL_12=88.5-0.19*E70-42.5*self.ReidVP.bar
-            self.VL_20=90.6-0.25*E70-39.2*self.ReidVP.bar
-            self.VL_36=94.7-0.36*E70-32.3*self.ReidVP.bar
-            self.CVLI=4.27+0.24*E70+0.069*self.ReidVP.bar
-            self.FVI=1000.*self.ReidVP.bar+7.*E70
+            # Critical vapor locking index, [29]_ Eq 109
+            self.CVLI = 4.27 + 0.24*self.T70 + 0.069*self.ReidVP.bar
 
-            #Cálculo de flash point, API procedure 2B7.1 pag 233
-            self.FlashPc=unidades.Temperature(0.69*self.T10-118.2, "F")
-            self.FlashPo=unidades.Temperature(0.68*self.T10-109.6, "F")
+            # Fuel volatility index, [29]_ Eq 110
+            self.FVI = 1000*self.ReidVP.bar + 7*self.T70
 
-#            Tav=To*(1+(A/B)**(1./B)*gamma(1+1./B))
-#            print Tav, self.VABP, self.WABP
+            # Flash point, API procedure 2B7.1
+            # Pensky-Martens Closed Cup (ASTM D93)
+            self.FlashPc = unidades.Temperature(0.69*self.T10.F-118.2, "F")
+            # Cleveland Open Cup (ASTM D92)
+            self.FlashPo = unidades.Temperature(0.68*self.T10.F-109.6, "F")
 
-        #Cálculo de la composición PNA
-            if self.Preferences.getint("petro", "PNA")==0:
-                self.xp, self.xn, self.xa=self.PNA_Peng_Robinson()
-            elif self.Preferences.getint("petro", "PNA")==1:
-                self.xp, self.xn, self.xa=self.PNA_Bergman()
-            elif self.Preferences.getint("petro", "PNA")==2:
-                self.xp, self.xn, self.xa=self.PNA_Riazi()
-            else:
-                self.xp, self.xn, self.xa=self.PNA_van_Nes()
+            # Calculate PNA decomposition
+            self.xp, self.xn, self.xa = self._PNA()
 
-            T=self.Tb.C/100
-            RONp=92.809-70.97*T-53.*T**2+20.*T**3+10.*T**4
-            RONi=(95.927+92.069+109.38+97.652)/4+(-157.53+57.63-38.83-20.8)/4*T+(561-65-26-58)/4*T**2-800/4.*T**3+300/4.*T**4
-            RONn=-77.536+471.59*T-418.*T**2+100.*T**3
-            RONa=145.668-54.336*T+16.276*T**2
-            self.RON=self.xp/2.*(RONp+RONi)+self.xn*RONn+self.xa*RONa
-            self.MON=22.5+0.83*self.RON-20.*self.SG-0.12*self.kwargs["oleffin"]+0.5*self.kwargs["TML"]-0.2*self.kwargs["TML"]
-
-
-        if self.hasSG:
-            if self.kwargs["SG"]:
-                self.SG=self.kwargs["SG"]
-                self.API=141.5/self.SG-131.5
-            elif self.kwargs["API"]:
-                self.API=self.kwargs["API"]
-                self.SG=141.5/(self.API+131.5)
-            elif Kw and Tb:
-                self.SG=unidades.Temperature(self.kwargs["Tb"]).R**(1./3)/self.kwargs["Kw"]
-                self.API=141.5/self.SG-131.5
-        else:
-            SG=[self.SG_Riazi_Daubert, self.SG_Riazi_Alsahhaf][self.Preferences.getint("petro", "SG")]
-            self.SG=SG()
-
-        if self.kwargs["Tb"]:
-            self.Tb=unidades.Temperature(self.kwargs["Tb"])
-        if self.kwargs["M"]:
-            self.M=self.kwargs["M"]
-        if not self.kwargs["Tb"]:
-            Tb=[self.tb_Riazi_Daubert_ext, self.tb_Riazi_Adwani, self.tb_Edmister, self.tb_Soreide][self.Preferences.getint("petro", "t_ebull")]
-            self.Tb=Tb()
-
-        if not self.kwargs["M"]:
-            Peso_Molecular=[self.peso_molecular_Riazi_Daubert, self.peso_molecular_Riazi_Daubert_ext, self.peso_molecular_Lee_Kesler, self.peso_molecular_Sim_Daubert, self.peso_molecular_API, self.peso_molecular_Goossens, self.peso_molecular_Twu][self.Preferences.getint("petro", "molecular_weight")]
-            self.M=Peso_Molecular()
-
-        self.Nc=self.kwargs["Nc"]
-        if self.definicion==7:
+        if self.definicion == 8:
+            # Simple definition known only the number of carbon atoms
             prop = prop_Ahmed(self.kwargs["Nc"])
             self.M = prop["M"]
             self.Tc = prop["Tc"]
