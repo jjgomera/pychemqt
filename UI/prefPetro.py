@@ -38,107 +38,106 @@ class Widget(QtWidgets.QWidget):
 
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Molecular weight:")), 1, 1)
-        Pm = ["Riazi Daubert", "Riazi Daubert extended", "Lee Kesler",
-              "Sim Daubert", "API", "ASTM", "Goossens", "TWu"]
-        self.Peso_molecular = QtWidgets.QComboBox()
-        for p in Pm:
-            self.Peso_molecular.addItem(p)
-        layout.addWidget(self.Peso_molecular, 1, 2)
-
+            "pychemqt", "Molecular weight")), 1, 1)
+        self.M = QtWidgets.QComboBox()
+        for p in Petroleo.METHODS_M:
+            self.M.addItem(p)
+        layout.addWidget(self.M, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critics properties:")), 2, 1)
-        Critical = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
-                    "Lee Kesler", "Cavett", "Sim Daubert",
-                    "Watansiri Owens Starling", "Edmister", "Magoulas", "Twu",
-                    "Tsonopoulos"]
+            "pychemqt", "Critic properties")), 2, 1)
         self.critical = QtWidgets.QComboBox()
-        for c in Critical:
+        for c in Petroleo.METHODS_crit:
             self.critical.addItem(c)
         layout.addWidget(self.critical, 2, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Critic volume:")), 3, 1)
-        vc = ["Riazi Daubert", "Riazi Daubert extended", "Riazi Adwani",
-              "Watansiri Owens Starling", "Twu", "Tsonopoulos",
-              "Hall Yarborough", "API"]
+            "pychemqt", "Critic volume")), 3, 1)
         self.vc = QtWidgets.QComboBox()
-        for v in vc:
+        for v in Petroleo.METHODS_Vc:
             self.vc.addItem(v)
         layout.addWidget(self.vc, 3, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Acentric factor:")), 4, 1)
-        self.factor_acentrico = QtWidgets.QComboBox()
-        self.factor_acentrico.addItem("Edmister")
-        self.factor_acentrico.addItem("Lee Kesler")
-        self.factor_acentrico.addItem("Watansiri Owens Starling")
-        self.factor_acentrico.addItem("Magoulas")
-        layout.addWidget(self.factor_acentrico, 4, 2)
-        layout.addWidget(QtWidgets.QLabel("Z<sub>c</sub>:"), 5, 1)
+            "pychemqt", "Acentric factor")), 4, 1)
+        self.f_acent = QtWidgets.QComboBox()
+        for w in Petroleo.METHODS_w:
+            self.f_acent.addItem(w)
+        layout.addWidget(self.f_acent, 4, 2)
+        layout.addWidget(QtWidgets.QLabel("Z<sub>c</sub>"), 5, 1)
         self.Zc = QtWidgets.QComboBox()
-        self.Zc.addItem("Lee Kesler")
-        self.Zc.addItem("Haugen")
-        self.Zc.addItem("Reid")
-        self.Zc.addItem("Salerno")
-        self.Zc.addItem("Nath")
+        for method in Petroleo.METHODS_Zc:
+            self.Zc.addItem(method)
         layout.addWidget(self.Zc, 5, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "T boiling:")), 6, 1)
-        self.t_ebull = QtWidgets.QComboBox()
-        self.t_ebull.addItem("Riazi Daubert extended")
-        self.t_ebull.addItem("Riazi Adwani")
-        self.t_ebull.addItem("Edmister")
-        self.t_ebull.addItem("Soreide")
-        layout.addWidget(self.t_ebull, 6, 2)
+            "pychemqt", "Boiling Temperature")), 6, 1)
+        self.Tb = QtWidgets.QComboBox()
+        for tb in Petroleo.METHODS_Tb:
+            self.Tb.addItem(tb)
+        layout.addWidget(self.Tb, 6, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "PNA descomposition:")), 7, 1)
+            "pychemqt", "Specific Gravity")), 7, 1)
+        self.SG = QtWidgets.QComboBox()
+        for sg in Petroleo.METHODS_SG:
+            self.SG.addItem(sg)
+        layout.addWidget(self.SG, 7, 2)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Refractive Index")), 8, 1)
+        self.n = QtWidgets.QComboBox()
+        for n in Petroleo.METHODS_n:
+            self.n.addItem(n)
+        layout.addWidget(self.n, 8, 2)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "PNA composition")), 9, 1)
         self.PNA = QtWidgets.QComboBox()
         for method in Petroleo.METHODS_PNA:
             self.PNA.addItem(method)
-        layout.addWidget(self.PNA, 7, 2)
+        layout.addWidget(self.PNA, 9, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Destilate curve conversion:")), 12, 1)
-        self.Curvas = QtWidgets.QComboBox()
-        self.Curvas.addItem("Riazi")
-        self.Curvas.addItem("Daubert")
-        layout.addWidget(self.Curvas, 12, 2)
+            "pychemqt", "Destilate curve conversion")), 10, 1)
+        self.curves = QtWidgets.QComboBox()
+        self.curves.addItem("Riazi")
+        self.curves.addItem("Daubert")
+        layout.addWidget(self.curves, 10, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "% Hydrogen:")), 13, 1)
-        self.Hidrogeno = QtWidgets.QComboBox()
+            "pychemqt", "Hydrogen %")), 11, 1)
+        self.H = QtWidgets.QComboBox()
         for method in Petroleo.METHODS_H:
-            self.Hidrogeno.addItem(method)
-        layout.addWidget(self.Hidrogeno, 13, 2)
+            self.H.addItem(method)
+        layout.addWidget(self.H, 11, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 15, 1, 1, 3)
 
         if config.has_section("petro"):
-            self.Peso_molecular.setCurrentIndex(
-                config.getint("petro", "molecular_weight"))
+            self.M.setCurrentIndex(
+                config.getint("petro", "M"))
             self.critical.setCurrentIndex(config.getint("petro", "critical"))
             self.vc.setCurrentIndex(config.getint("petro", "vc"))
-            self.factor_acentrico.setCurrentIndex(
+            self.f_acent.setCurrentIndex(
                 config.getint("petro", "f_acent"))
-            self.t_ebull.setCurrentIndex(config.getint("petro", "t_ebull"))
+            self.Tb.setCurrentIndex(config.getint("petro", "Tb"))
+            self.SG.setCurrentIndex(config.getint("petro", "SG"))
+            self.n.setCurrentIndex(config.getint("petro", "n"))
             self.Zc.setCurrentIndex(config.getint("petro", "Zc"))
             self.PNA.setCurrentIndex(config.getint("petro", "PNA"))
-            self.Hidrogeno.setCurrentIndex(config.getint("petro", "H"))
-            self.Curvas.setCurrentIndex(config.getint("petro", "curva"))
+            self.H.setCurrentIndex(config.getint("petro", "H"))
+            self.curves.setCurrentIndex(config.getint("petro", "curve"))
 
     def value(self, config):
         if not config.has_section("petro"):
             config.add_section("petro")
-        config.set("petro", "molecular_weight",
-                   str(self.Peso_molecular.currentIndex()))
+        config.set("petro", "M",
+                   str(self.M.currentIndex()))
         config.set("petro", "critical", str(self.critical.currentIndex()))
         config.set("petro", "vc", str(self.vc.currentIndex()))
         config.set("petro", "f_acent",
-                   str(self.factor_acentrico.currentIndex()))
-        config.set("petro", "t_ebull", str(self.t_ebull.currentIndex()))
+                   str(self.f_acent.currentIndex()))
+        config.set("petro", "Tb", str(self.Tb.currentIndex()))
+        config.set("petro", "SG", str(self.SG.currentIndex()))
+        config.set("petro", "n", str(self.n.currentIndex()))
         config.set("petro", "Zc", str(self.Zc.currentIndex()))
         config.set("petro", "PNA", str(self.PNA.currentIndex()))
-        config.set("petro", "H", str(self.Hidrogeno.currentIndex()))
-        config.set("petro", "curva", str(self.Curvas.currentIndex()))
+        config.set("petro", "H", str(self.H.currentIndex()))
+        config.set("petro", "curve", str(self.curves.currentIndex()))
         return config
 
 

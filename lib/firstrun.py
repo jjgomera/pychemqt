@@ -166,15 +166,17 @@ def Preferences():
 
     # Petro
     config.add_section("petro")
-    config.set("petro", "molecular_weight", "0")
+    config.set("petro", "M", "0")
     config.set("petro", "critical", "0")
     config.set("petro", "vc", "0")
     config.set("petro", "f_acent", "0")
-    config.set("petro", "t_ebull", "0")
+    config.set("petro", "Tb", "0")
+    config.set("petro", "SG", "0")
+    config.set("petro", "n", "0")
     config.set("petro", "Zc", "0")
     config.set("petro", "PNA", "0")
     config.set("petro", "H", "0")
-    config.set("petro", "curva", "0")
+    config.set("petro", "curve", "0")
 
     # Applications
     config.add_section("Applications")
