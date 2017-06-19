@@ -24,6 +24,7 @@ import inspect
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import lib
+from lib.config import IMAGE_PATH
 
 
 # from lib import meos, mEoS, petro
@@ -81,9 +82,18 @@ class ShowReference(QtWidgets.QDialog):
                 for key in sorted(module.__doi__.keys()):
                     link = module.__doi__[key]
                     item = QtWidgets.QTreeWidgetItem([
-                        str(key), link["autor"], link["title"], link["ref"],
+                        "", link["autor"], link["title"], link["ref"],
                         link["doi"]])
+
+                    code = link["doi"].replace("/", "_")
+                    file = os.path.join("doc", "doi", code) + ".pdf"
+                    file2 = os.path.join("doc", "doi", link["title"]) + ".pdf"
+                    if os.path.isfile(file) or os.path.isfile(file2):
+                        icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                            IMAGE_PATH, "button", "ok.png")))
+                        item.setIcon(0, icon)
                     itemModule.addChild(item)
+                self.tree.expandItem(itemModule)
 
 #         # Equipment
         # itemEquipment = QtWidgets.QTreeWidgetItem(
@@ -128,19 +138,19 @@ class ShowReference(QtWidgets.QDialog):
 
     def open(self, item, int):
         """Open file if exist in doc/doi folder or open a browser with link"""
-        if item.parent():
+        if item.parent() and not item.icon(0).isNull():
             title = item.text(2)
             text = item.text(4)
             code = str(text).replace("/", "_")
-            file = "doc/doi/"+code+".pdf"
-            file2 = "doc/doi/"+title+".pdf"
+            file = os.path.join("doc", "doi", code) + ".pdf"
+            file2 = os.path.join("doc", "doi", title) + ".pdf"
             if os.path.isfile(file):
-                os.system('evince "'+file+'"')
+                os.system('atril "'+file+'"')
             elif os.path.isfile(file2):
-                os.system('evince "'+file2+'"')
-            elif text:
-                url = QtCore.QUrl("http://dx.doi.org/%s" % text)
-                QtGui.QDesktopServices.openUrl(url)
+                os.system('atril "'+file2+'"')
+        elif item.parent():
+            url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
+            QtGui.QDesktopServices.openUrl(url)
 
 
 if __name__ == "__main__":
