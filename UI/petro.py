@@ -18,6 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# Module with petroleum fraction pseudocomponent definition UI interfaces
+#   -Definicion_Petro: Definition of crude and oil fraction
+#   -View_Petro: Dialog to show the properties of a petroleum fraction
+###############################################################################
+
+
 import os
 from functools import partial
 
