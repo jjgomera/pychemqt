@@ -29,6 +29,7 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
+from UI.petro import Definicion_Petro
 import plots as charts
 from UI.widgets import createAction, ClickableLabel
 from lib.config import (conf_dir, setMainWindowConfig, IMAGE_PATH)
@@ -1737,7 +1738,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dialog.exec_()
 
     def pseudocomponente(self):
-        Dialog = newComponent.Definicion_Petro()
+        Dialog = Definicion_Petro()
         Dialog.exec_()
 
     def newComponent_Contribution(self, name):

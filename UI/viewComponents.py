@@ -18,13 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 from functools import partial
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from scipy import array, exp, optimize, linspace
+from scipy import array, optimize, linspace
 
 from lib.plot import Plot
 from lib.compuestos import Componente
@@ -33,139 +32,6 @@ from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
 from UI.widgets import Entrada_con_unidades, Tabla, okToContinue
 
-
-class View_Petro(QtWidgets.QDialog):
-    """Clase que define el ventana con las propiedades de fracciones petrolíferas"""
-    def __init__(self, petroleo=None, parent=None):
-        super(View_Petro, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Petrol assay characteristics"))
-        layout = QtWidgets.QGridLayout(self)
-        self.nombre=QtWidgets.QLabel()
-        layout.addWidget(self.nombre,1,1,1,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Molecular Weight")),2,1)
-        self.M=Entrada_con_unidades(float, readOnly=True, textounidad="g/mol")
-        layout.addWidget(self.M,2,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Boiling Point")),3,1)
-        self.Tb=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.Tb,3,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "SG 60ºF", None)),4,1)
-        self.gravity=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.gravity,4,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "API gravity")),5,1)
-        self.API=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.API,5,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Watson Factor")),6,1)
-        self.watson=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.watson,6,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Refractive Index")),7,1)
-        self.n=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.n,7,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Huang Parameter")),8,1)
-        self.I=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.I,8,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "v100")),9,1)
-        self.v100=Entrada_con_unidades(unidades.Diffusivity, readOnly=True)
-        layout.addWidget(self.v100,9,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "v210")),10,1)
-        self.v210=Entrada_con_unidades(unidades.Diffusivity, readOnly=True)
-        layout.addWidget(self.v210,10,2)
-
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Tc")),2,4)
-        self.Tc=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.Tc,2,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pc")),3,4)
-        self.Pc=Entrada_con_unidades(unidades.Pressure, readOnly=True)
-        layout.addWidget(self.Pc,3,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Vc")),4,4)
-        self.Vc=Entrada_con_unidades(unidades.SpecificVolume, readOnly=True)
-        layout.addWidget(self.Vc,4,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Zc")),5,4)
-        self.Zc=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.Zc,5,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Acentric factor")),6,4)
-        self.f_acent=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.f_acent,6,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Refractivity Intercept")),7,4)
-        self.refractivity=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.refractivity,7,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "C-H ratio")),8,4)
-        self.CH=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.CH,8,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "% Sulfur")),9,4)
-        self.S=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.S,9,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "%H")),10,4)
-        self.H=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.H,10,5)
-
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "VGC")),2,7)
-        self.VGC=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.VGC,2,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cetane index")),3,7)
-        self.cetane=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.cetane,3,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pour point")),4,7)
-        self.pour=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.pour,4,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Aniline point")),5,7)
-        self.aniline=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.aniline,5,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Freezing point")),6,7)
-        self.freezing=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.freezing,6,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cloud point")),7,7)
-        self.cloud=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.cloud,7,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Smoke point")),8,7)
-        self.smoke=Entrada_con_unidades(unidades.Length, readOnly=True)
-        layout.addWidget(self.smoke,8,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flash point (open)")),9,7)
-        self.flashOpen=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.flashOpen,9,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Flash point (closed)")),10,7)
-        self.flashClosed=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.flashClosed,10,8)
-
-        layout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),15,3,1,1)
-        self.boton = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        self.boton.rejected.connect(self.accept)
-        layout.addWidget(self.boton,16,1,1,8)
-
-        if petroleo:
-            self.rellenar(petroleo)
-
-    def rellenar(self, petroleo):
-        self.nombre.setText(petroleo.name)
-        self.M.setValue(petroleo.M)
-        self.Tb.setValue(petroleo.Tb)
-        self.gravity.setValue(petroleo.SG)
-        self.API.setValue(petroleo.API)
-        self.watson.setValue(petroleo.watson)
-
-        self.Tc.setValue(petroleo.Tc)
-        self.Pc.setValue(petroleo.Pc)
-        self.Vc.setValue(petroleo.Vc)
-        self.Zc.setValue(petroleo.Zc)
-        self.f_acent.setValue(petroleo.f_acent)
-        self.refractivity.setValue(petroleo.Ri)
-        self.CH.setValue(petroleo.CH)
-        self.S.setValue(petroleo.S)
-        self.H.setValue(petroleo.H)
-
-        self.n.setValue(petroleo.n)
-        self.I.setValue(petroleo.I)
-        self.cetane.setValue(petroleo.CI)
-        self.aniline.setValue(petroleo.AnilineP)
-        self.cloud.setValue(petroleo.CloudP)
-        self.pour.setValue(petroleo.PourP)
-        self.freezing.setValue(petroleo.FreezingP)
-        self.smoke.setValue(petroleo.SmokeP)
-        self.v100.setValue(petroleo.v100)
-        self.v210.setValue(petroleo.v210)
-        self.VGC.setValue(petroleo.VGC)
-        if petroleo.hasCurve:
-            self.flashOpen.setValue(petroleo.self.FlashPo)
-            self.flashClosed.setValue(petroleo.self.FlashPc)
 
 class View_Contribution(QtWidgets.QDialog):
     """Ventana que muestra las propiedades del nuevo componente definido mediante los metodos de contribucion de grupo"""
