@@ -30,7 +30,7 @@ import re
 
 from PyQt5 import QtWidgets
 
-from lib.petro import Z_list
+from lib.crude import Z_list
 from UI.widgets import LineConfig, Entrada_con_unidades
 
 

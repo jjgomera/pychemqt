@@ -23,17 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from configparser import ConfigParser
 import json
 import os
 import re
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from scipy import arange
 
 from lib.config import conf_dir
-from lib.petro import Z_list
-from lib.plot import mpl
+from lib.crude import Z_list
 from lib.utilities import formatLine
 from plots.moody import Chart
 from UI.prefStandingKatz import ConfigDialog

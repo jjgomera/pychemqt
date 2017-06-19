@@ -2,14 +2,1181 @@
 # -*- coding: utf-8 -*-
 
 
+'''Pychemqt, Chemical Engineering Process simulator
+Copyright (C) 2009-2017, Juan José Gómez Romera <jjgomera@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+
+
+###############################################################################
+# Pseudocomponent definition from crude database
+###############################################################################
+
+
+import warnings
+
 from PyQt5.QtWidgets import QApplication
-from scipy import exp, log10
+from scipy import pi, exp, log10, log, sin
+from scipy.optimize import fsolve
+
+from lib.physics import R_atml
 
 from lib import unidades
 from lib.compuestos import Componente
 from lib.petro import Petroleo
-from lib.physics import R_atml
 from lib.sql import databank
+
+
+__doi__ = {
+    1:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+    9:
+        {"autor": "Tarek Ahmed",
+         "title": "Equations of State and PVT Analysis: Applications for"
+                  "Improved Reservoir Modeling, 2nd Edition",
+         "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
+         "doi": "10.1016/B978-0-12-801570-4.00002-7"},
+    30:
+        {"autor": "Papay, J.A.,",
+         "title": "Termelestechnologiai Parameterek Valtozasa a Gazlelepk"
+                  "Muvelese",
+         "ref": "Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.",
+         "doi": ""},
+    31:
+        {"autor": "Hall, K. R., and L. Yarborough",
+         "title": "A New Equation of State for Z-factor Calculations",
+         "ref": "Oil and Gas Journal (June 18, 1973): 82–92.",
+         "doi": ""},
+    32:
+        {"autor": "Dranchuk, P. M., and J. H. Abu-Kassem",
+         "title": "Calculate of Z factors for Natural Gases Using Equations "
+                  "of State",
+         "ref": "Journal of Canadian Petroleum Technology (July–September "
+                "1975): 34-36",
+         "doi": "10.2118/75-03-03"},
+    33:
+        {"autor": "Dranchuk, P.M., Purvis, R.A., Robinson, D.B.",
+         "title": "Computer Calculations of Natural Gas Compressibility "
+                  "Factors Using the Standing and Katz Correlation",
+         "ref": "Technical Series, no. IP 74–008. Institute of Petroleum, "
+                "Alberta, Canada, 1974.",
+         "doi": "10.2118/73-112"},
+    34:
+        {"autor": "Brill, J .P. and Beggs, H .D.",
+         "title": "Two-Phase Flow in Pipes",
+         "ref": "University of Tulsa, INTERCOMP Course, The Hague, 1974",
+         "doi": ""},
+    35:
+        {"autor": "Kumar, N.",
+         "title": "Compressibility factors for natural and sour reservoir "
+                  "gases by correlations and cubic equations of state",
+         "ref": "Thesis of master of science in Petroleum Engineering, 2004, "
+                "Texas Tech University.",
+         "doi": ""},
+    36:
+        {"autor": "Gopal, V.N.",
+         "title": "Gas Z-Factor Equations Developed for Computer",
+         "ref": "Oil and Gas J. (Aug. 8, 1977) 58-60",
+         "doi": ""},
+    37:
+        {"autor": "Sarem, A.M.",
+         "title": "Z-Factor Equation Developed for Use in Digital Computers.",
+         "ref": "Oil and Gas J. (Sept. 18, 1961) 118",
+         "doi": ""},
+    38:
+        {"autor": "Dranckuk, P.M., Quon, D.",
+         "title": "A General Solution of the Equations Describing Steady State"
+                  "Turbulent Compressible Flow in Circular Conduits",
+         "ref": "Journal of Canadian Petroleum Technology 3(2):60-65, 1964",
+         "doi": "10.2118/64-02-04"},
+    39:
+        {"autor": "Burnett, R.R.",
+         "title": "Calculator gives compressibility factors",
+         "ref": "Oil & Gas Journal, June 11, 1979, pp. 70-74.",
+         "doi": ""},
+    40:
+        {"autor": "Takacs., G.",
+         "title": "Comparing Methods for Calculating Z-factor",
+         "ref": "Oil & Gas Journal, May 15, 1989, pp. 43-46.",
+         "doi": ""},
+    41:
+        {"autor": "Sanjari E, Lay E.N.",
+         "title": "An accurate empirical correlation for predicting natural "
+                  "gas compressibility factors.",
+         "ref": "Journal of Natural Gas Chemistry 21(2012):184-188.",
+         "doi": "10.1016/s1003-9953(11)60352-6"},
+    42:
+        {"autor": "Heidaryan E, Moghadasi J, Rahimi M.",
+         "title": "New correlations to predict natural gas viscosity and "
+                  "compressibility factor.",
+         "ref": "Journal of Petroleum Science and Engineering 73 (2010):67-72",
+         "doi": "10.1016/j.petrol.2010.05.008"},
+    43:
+        {"autor": "Heidaryan, E., Salarabadi, A., Moghadasi, J.",
+         "title": "A novel correlation approach for prediction of natural gas "
+                  "compressibility factor.",
+         "ref": "J. Nat. Gas Chem. 19 (2) 2010, 189–192.",
+         "doi": "10.1016/s1003-9953(09)60050-5"},
+    44:
+        {"autor": "Azizi N, Behbahani R, Isazadeh M A.",
+         "title": "An efficient correlation for calculating compressibility "
+                  "factor of natural gases",
+         "ref": "Journal of Natural Gas Chemistry 19 (2010) 642-645",
+         "doi": "10.1016/s1003-9953(09)60081-5"},
+    45:
+        {"autor": "Hall, K.R., Iglesias-Silva, G.A.",
+         "title": "Improved equations for the StandingeKatz tables",
+         "ref": "Hydrocarb. Process 86 (4), 2007. 107-110",
+         "doi": ""},
+    46:
+        {"autor": "Shokir, Eissa M.El-M., El-Awad, Musaed N., Al-Quraishi, "
+                  "Adulhrahman A., Al-Mahdy, Osama A.",
+         "title": "Compressibility factor model of sweet, sour, and condensate"
+                  " gases using genetic programming",
+         "ref": "Chem. Eng. Res. Des. 90 (2012), 785-792.",
+         "doi": "10.1016/j.cherd.2011.10.006"},
+    47:
+        {"autor": "Bahadori, A., Mokhatab, S., Towler, B.F.",
+         "title": "Rapidly estimating natural gas compressibility factor",
+         "ref": "J. Nat. Gas Chem. 16 (4) 2007, 349-353.",
+         "doi": "10.1016/s1003-9953(08)60003-1"},
+    48:
+        {"autor": "Londono, F.E., Archer, R.A., Blasingame, T.A.",
+         "title": "Correlations for hydrocarbon-gas viscosity and gas "
+                  "density-validation and correlation of behavior using a "
+                  "large-scale database",
+         "ref": "SPE Reserv. Evalu. Eng. 8 (6) 2005, 561–572.",
+         "doi": "10.2118/75721-PA"},
+    49:
+        {"autor": "Chankalani, A., Mae'soumi, A., Sameni, A.",
+         "title": "An Intelligent Approach for Optimal Prediction of Gas "
+                  "Deviation Factor Using Particle Swarm Optimization and "
+                  "Genetic Algorithm",
+         "ref": "Journal of Natural Gas Science and Engineering 14(2013) "
+                "132-143",
+         "doi": "10.1016/j.jngse.2013.06.002"},
+    50:
+        {"autor": "Elsharkawy, A.M.",
+         "title": "Efficient methods for calculations of compressibility, "
+                  "density and viscosity of natural gases",
+         "ref": "Fluid Phase Equilibria 218:1 (2004) 1-13",
+         "doi": "10.1016/j.fluid.2003.02.003"}
+        }
+
+
+# Gas compresibility factor
+def Z_Papay(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Papay
+    (1985)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Examples
+    --------
+    >>> "%0.4f" % Z_Papay(2, 3)
+    '0.9422'
+
+    References
+    ----------
+    .. [30] Papay, J.A. Termelestechnologiai Parameterek Valtozasa a Gazlelepk
+        Muvelese Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+    """
+    Z = 1 - 3.53*Pr/10**(0.9813*Tr) + 0.274*Pr**2/10**(0.8157*Tr)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Hall_Yarborough(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Hall &
+    Yarborough (1973)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    [31] .. Hall, K. R., and L. Yarborough. A New Equation of State for
+        Z-factor Calculations. Oil and Gas Journal (June 18, 1973): 82–92.
+    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+        2016, ISBN 9780128015704
+    """
+    # Check input in range of validity
+    if Tr <= 1:
+        warnings.warn("Using extrapolated values")
+
+    X1 = -0.06125*Pr/Tr*exp(-1.2*(1-1/Tr)**2)
+    X2 = 14.76/Tr - 9.76/Tr**2 + 4.58/Tr**3
+    X3 = 90.7/Tr - 242.2/Tr**2 + 42.4/Tr**3
+    X4 = 2.18+2.82/Tr
+
+    def f(Y):
+        return X1+(Y+Y**2+Y**3-Y**4)/(1-Y)**3-X2*Y**2+X3*Y**X4
+
+    Yo = 0.0125*Pr/Tr*exp(-1.2*(1-1/Tr)**2)
+    Y = fsolve(f, Yo, full_output=True)
+    if Y[2] == 1 and abs(Y[1]["fvec"][0]) < 1e-5:
+        Z = 0.06125*Pr/Tr/Y[0][0]*exp(-1.2*(1-1/Tr)**2)
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+def Z_Dranchuk_Abu_Kassem(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Dranchuk-
+    Abu-Kassem (1975)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 30
+
+    References
+    ----------
+    [32] .. Dranchuk, P. M., and J. H. Abu-Kassem. Calculate of Z-factors for
+        Natural Gases Using Equations-of-State. Journal of Canadian Petroleum
+        Technology (July–September 1975): 34–36
+    """
+    # Check input in range of validity
+    if Tr < 1 or Tr > 3 or Pr < 0.2 or Pr > 30:
+        raise NotImplementedError("Incoming out of bound")
+
+    C1 = 0.3265 - 1.07/Tr - 0.5339/Tr**3 + 0.01569/Tr**4 - 0.05165/Tr**5
+    C2 = 0.5475 - 0.7361/Tr + 0.1844/Tr**2
+    C3 = 0.1056*(-0.7361/Tr + 0.1844/Tr**2)
+
+    # Eq 2
+    def f(rho):
+        C4 = 0.6134*(1+0.721*rho**2)*rho**2/Tr**3
+        Z = 0.27*Pr/Tr/rho
+        return 1 + C1*rho + C2*rho**2 - C3*rho**5 + C4*exp(-0.721*rho**2) - Z
+
+    rho0 = 0.27*Pr/Tr
+    rho = fsolve(f, rho0, full_output=True)
+    if rho[2] == 1:
+        Z = 0.27*Pr/Tr/rho[0]
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+def Z_Dranchuk_Purvis_Robinson(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Dranchuk-
+    Purvis-Robinson (1974)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.05 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 30
+
+    References
+    ----------
+    .. [33] Dranchuk, P.M., Purvis, R.A., Robinson, D.B. Computer Calculations
+        of Natural Gas Compressibility Factors Using the Standing and Katz
+        Correlation. Technical Series, no. IP 74–008. Institute of Petroleum,
+        Alberta, Canada, 1974.
+    """
+    # Check input in range of validity
+    if Tr < 1.05 or Tr > 3 or Pr < 0.2 or Pr > 30:
+        raise NotImplementedError("Incoming out of bound")
+
+    C1 = 0.31506237 - 1.0467099/Tr - 0.5783272/Tr**3
+    C2 = 0.53530771 - 0.61232032/Tr
+    C3 = 0.61232032*0.10488813/Tr
+    A8 = 0.68446549
+
+    # Eq 3
+    def f(rho):
+        C4 = 0.68157001*rho**2/Tr**3*(1+A8*rho**2)
+        Z = 0.27*Pr/Tr/rho
+        return 1 + C1*rho + C2*rho**2 + C3*rho**5 + C4*exp(-A8*rho**2) - Z
+
+    rho0 = 0.27*Pr/Tr
+    rho = fsolve(f, rho0, full_output=True)
+    if rho[2] == 1:
+        Z = 0.27*Pr/Tr/rho[0]
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+def Z_Brill_Beggs(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Brill-
+    Beggs (1974)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.15 ≤ Tr ≤ 2.4
+        * 0.2 ≤ Pr ≤ 15
+
+    References
+    ----------
+    .. [34] Brill, J .P. and Beggs, H .D. Two-Phase Flow in Pipes. University
+        of Tulsa, INTERCOMP Course, The Hague, 1974
+    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
+        gases by correlations and cubic equations of state. Thesis of master
+        of science in Petroleum Engineering, 2004, Texas Tech University.
+    """
+    # Check input in range of validity
+    if Tr < 1.15 or Tr > 2.4 or Pr < 0.2 or Pr > 15:
+        raise NotImplementedError("Incoming out of bound")
+
+    A = 1.39*(Tr-0.92)**0.5 - 0.36*Tr - 0.101
+    B = (0.62-0.23*Tr)*Pr + (0.066/(Tr-0.86)-0.037)*Pr**2 + \
+        0.32/10**(9*(Tr-1))*Pr**6
+    C = 0.132 - 0.32*log10(Tr)
+    D = 10**(0.3016-0.49*Tr+0.1824*Tr**2)
+    Z = A + (1-A)/exp(B) + C*Pr**D
+    return unidades.Dimensionless(Z)
+
+
+def Z_Gopal(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Gopal
+    (1974)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.05 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 15
+
+    References
+    ----------
+    .. [36] Gopal, V.N. Gas Z-Factor Equations Developed for Computer. Oil and
+        Gas J. (Aug. 8, 1977) 58-60
+    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
+        gases by correlations and cubic equations of state. Thesis of master
+        of science in Petroleum Engineering, 2004, Texas Tech University.
+    """
+    if Pr <= 1.2 and Tr <= 3:
+        if Tr <= 1.2:
+            A, B, C, D = 1.6643, -2.2114, -0.3647, 1.4385
+        elif 1.2 <= Tr < 1.4:
+            A, B, C, D = 0.0522, -0.8511, -0.0364, 1.0490
+        elif 1.4 <= Tr < 2.0:
+            A, B, C, D = 0.1391, -0.2988, 0.0007, 0.9969
+        elif 2.0 <= Tr <= 3.0:
+            A, B, C, D = 0.0295, -0.0825, 0.0009, 0.9967
+    elif 1.2 <= Pr < 2.8 and Tr <= 3:
+        if Tr <= 1.2:
+            A, B, C, D = -1.3570, 1.4942, 4.6315, -4.7009
+        elif 1.2 <= Tr < 1.4:
+            A, B, C, D = 0.1717, -0.3232, 0.5869, 0.1229
+        elif 1.4 <= Tr < 2.0:
+            A, B, C, D = 0.0984, -0.2053, 0.0621, 0.8580
+        elif 2.0 <= Tr <= 3.0:
+            A, B, C, D = 0.0211, -0.0527, 0.0127, 0.9549
+    elif 2.8 <= Pr <= 5.4 and Tr <= 3:
+        if Tr <= 1.2:
+            A, B, C, D = -0.3278, 0.4752, 1.8223, -1.9036
+        elif 1.2 <= Tr < 1.4:
+            A, B, C, D = -0.2521, 0.3871, 1.6087, -1.6635
+        elif 1.4 <= Tr < 2.0:
+            A, B, C, D = -0.0284, 0.0625, 0.4714, -0.0011
+        elif 2.0 <= Tr <= 3.0:
+            A, B, C, D = 0.0041, 0.0039, 0.0607, 0.7927
+    elif 5.4 <= Pr < 15:
+        Z = Pr*(0.711 + 3.66*Tr)**-1.4667 - 1.637/(0.319*Tr+0.522) + 2.071
+        return unidades.Dimensionless(Z)
+    else:
+        # Input not in range of validity
+        raise NotImplementedError("Incoming out of bound")
+
+    Z = Pr*(A*Tr+B) + C*Tr + D
+    return unidades.Dimensionless(Z)
+
+
+def Z_ShellOil(Tr, Pr):
+    """Calculate gas compressibility factor using the Shell Oil Company
+    correlation (2004)
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
+        gases by correlations and cubic equations of state. Thesis of master
+        of science in Petroleum Engineering, 2004, Texas Tech University.
+    """
+    A = -0.101 - 0.36*Tr + 1.3868*(Tr-0.919)**0.5
+    B = 0.021 + 0.04275/(Tr-0.65)
+    C = 0.6222 - 0.224*Tr
+    D = 0.0657/(Tr-0.86) - 0.037
+    E = 0.32*exp(-19.53*(Tr-1))
+    F = 0.122*exp(-11.3*(Tr-1))
+    G = Pr*(C + D*Pr + E*Pr**4)
+    Z = A + B*Pr + (1-A)*exp(-G) - F*(Pr/10)**4
+    return unidades.Dimensionless(Z)
+
+
+def Z_Sarem(Tr, Pr):
+    """Calculate gas compressibility factor using the Sarem (1969) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.05 ≤ Tr ≤ 2.95
+        * 0.1 ≤ Pr ≤ 14.9
+
+    References
+    ----------
+    .. [37] Sarem, A.M. Z-Factor Equation Developed for Use in Digital
+        Computers. Oil and Gas J. (Sept. 18, 1961) 118
+    """
+    # Check input in range of validity
+    if Tr < 1.05 or Tr > 2.95 or Pr < 0.1 or Pr > 14.9:
+        raise NotImplementedError("Incoming out of bound")
+
+    x = (2.*Pr-15)/14.8
+    y = (2.*Tr-4)/1.9
+    Aij = [
+        [2.1433504, .0831762, -.0214670, -.0008714, .0042846, -.0016595],
+        [.3312352, -.1340361, .0668810,  -.0271743,  .0088512,  -.002152],
+        [.1057287,  -.0503937,  .0050925,  .0105513,  -.0073182,  .0026960],
+        [.0521840,  .0443121,  -.0193294,  .0058973,  .0015367,  -.0028327],
+        [.0197040,  -.0263834, .019262,  -.0115354,  .0042910,  -.0081303],
+        [.0053096,  .0089178,  -.0108948,  .0095594,  -.0060114, .0031175]]
+
+    P = [lambda a: 0.7071068,
+         lambda a: 1.224745*a,
+         lambda a: 0.7905695*(3*a**2-1),
+         lambda a: 0.9354145*(5*a**3-3*a),
+         lambda a: 0.265165*(35*a**4-30*a**2+3),
+         lambda a: 0.293151*(63*a**5-70*a**3+15*a)]
+
+    Z = 0
+    for i in range(6):
+        for j in range(6):
+            Z += Aij[i][j]*P[i](x)*P[j](y)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Leung(Tr, Pr):
+    """Calculate gas compressibility factor using the Leung (1964) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Notes
+    -----
+    The correlation is in cited referencence, the parameters are least square
+    fitting by Leung.
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.1 ≤ Tr ≤ 2.6
+        * 0.5 ≤ Pr ≤ 11
+
+    References
+    ----------
+    .. [38] Dranckuk, P.M., Quon, D. A General Solution of the Equations
+        Describing Steady State Turbulent Compressible Flow in Circular
+        Conduits. Journal of Canadian Petroleum Technology 3(2):60-65, 1964
+    """
+    # Check input in range of validity
+    if Tr < 1.1 or Tr > 2.6 or Pr < 0.5 or Pr > 11:
+        raise NotImplementedError("Incoming out of bound")
+
+    Bij = [
+        [1.877, -4.936, 8.987, -5.215],
+        [0.6562, 3.692, -6.477, 3.077],
+        [0.1015, -0.5242, 0.8359, -0.3192],
+        [-0.00422, 0.0205, -0.0288, 0.00742]]
+
+    Z = 0
+    for i in range(4):
+        for j in range(4):
+            Z += Bij[i][j] * Pr**(i-1) * Tr**(1-j)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Burnett(Tr, Pr):
+    """Calculate gas compressibility factor using the Burnett (1979)
+    correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Notes
+    -----
+    The correlation is in cited referencence, the parameters are least square
+    fitting by Leung.
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.3 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 4
+
+    References
+    ----------
+    .. [39] Burnett, R.R. Calculator gives compressibility factors. Oil & Gas
+        Journal, June 11, 1979, pp. 70-74.
+    .. [40] Takacs., G. Comparing Methods for Calculating Z-factor. Oil & Gas
+        Journal, May 15, 1989, pp. 43-46.
+    """
+    # FIXME: Don't work
+    # Check input in range of validity
+    if Tr < 1.1 or Tr > 2.6 or Pr < 0.5 or Pr > 11:
+        raise NotImplementedError("Incoming out of bound")
+
+    Zo = 0.3379*log(log(Tr)) + 1.091
+    Po = 21.46*Zo - 11.9*Zo**2 - 5.9
+    N = (1.1 + 0.26*Tr + (1.04-1.42*Tr)*Pr/Po)*exp(Pr/Po)/Tr
+    Z = 1 + (Zo-1) * sin(pi/2*Pr/Po)**N
+    return unidades.Dimensionless(Z)
+
+
+def Z_Sanjari_Lay(Tr, Pr):
+    """Calculate gas compressibility factor using the Sanjari-Lay (2012)
+    correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.01 ≤ Tr ≤ 3
+        * 0.01 ≤ Pr ≤ 15
+
+    References
+    ----------
+    .. [41] Sanjari E, Lay E.N. An accurate empirical correlation for
+        predicting natural gas compressibility factors. Journal of Natural Gas
+        Chemistry 21(2012):184-188.
+    """
+    # Check input in range of validity
+    if Tr < 1.01 or Tr > 3 or Pr < 0.01 or Pr > 15:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Table 1
+    if Pr < 3:
+        A = [0, 0.007698, 0.003839, -0.467212, 1.018801, 3.805723, -0.087361,
+             7.138305, 0.083440]
+    else:
+        A = [0, 0.015642, 0.000701, 2.341511, -0.657903, 8.902112, -1.136000,
+             3.543614, 0.134041]
+
+    # Eq 16
+    Z = 1 + A[1]*Pr + A[2]*Pr**2 + A[3]*Pr**A[4]/Tr**A[5] + \
+        A[6]*Pr**(A[4]+1)/Tr**A[7] + A[8]*Pr**(A[4]+2)/Tr**(A[7]+1)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Heidaryan_Salarabadi(Tr, Pr):
+    """Calculate gas compressibility factor using the Heidaryan-Salarabadi-
+    Moghadasi (2010) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.2 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 15
+
+    References
+    ----------
+    .. [43] Heidaryan, E., Salarabadi, A., Moghadasi, J. A novel correlation
+        approach for prediction of natural gas compressibility factor. J. Nat.
+        Gas Chem. 19 (2) 2010, 189–192.
+    """
+    # Check input in range of validity
+    if Tr < 1.2 or Tr > 3 or Pr < 0.2 or Pr > 15:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Table 1
+    A = [0, 1.11532372699824, -.0790395208876, .01588138045027, .0088613449601,
+         -2.16190792611599, 1.1575311867207, -0.05367780720737,
+         0.01465569989618, -1.80997374923296, 0.95486038773032]
+
+    # Eq 5
+    num = A[1] + A[2]*log(Pr) + A[3]*log(Pr)**2 + A[4]*log(Pr)**3 + \
+        A[5]/Tr + A[6]/Tr**2
+    dem = 1 + A[7]*log(Pr) + A[8]*log(Pr)**2 + A[9]/Tr + A[10]/Tr**2
+    Z = log(num/dem)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Heidaryan_Moghadasi(Tr, Pr):
+    """Calculate gas compressibility factor using the Heidaryan-Moghadasi-
+    Rahimi (2010) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.2 ≤ Tr ≤ 3
+        * 0.2 ≤ Pr ≤ 15
+
+    References
+    ----------
+    .. [42] Heidaryan E, Moghadasi J, Rahimi M. New correlations to predict
+        natural gas viscosity and compressibility factor. Journal of Petroleum
+        Science and Engineering 73 (2010):67-72
+    """
+    # Check input in range of validity
+    if Tr < 1.2 or Tr > 3 or Pr < 0.2 or Pr > 15:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Table 1
+    if Pr < 3:
+        A = [0, 2.827793, -4.688191e-1, -1.262288, -1.536524, -4.535045,
+             6.895104e-2, 1.903869e-1, 6.200089e-1, 1.838479, 4.052367e-1,
+             1.073574]
+    else:
+        A = [0, 3.252838, -1.306424e-1, -6.449194e-1, -1.518028, -5.391019,
+             -1.379588e-2, 6.600633e-2, 6.120783e-1, 2.317431, 1.632223e-1,
+             5.660595e-1]
+
+    # Eq 8
+    num = A[1] + A[3]*log(Pr) + A[5]/Tr + A[7]*log(Pr)**2 + A[9]/Tr**2 + \
+        A[11]/Tr*log(Pr)
+    dem = 1 + A[2]*log(Pr) + A[4]/Tr + A[6]*log(Pr)**2 + A[8]/Tr**2 + \
+        A[10]/Tr*log(Pr)
+    Z = log(num/dem)
+    return unidades.Dimensionless(Z)
+
+
+def Z_Azizi(Tr, Pr):
+    """Calculate gas compressibility factor using the Azizi-Behbahani-Isazadeh
+    (2010) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.1 ≤ Tr ≤ 2
+        * 0.2 ≤ Pr ≤ 11
+
+    References
+    ----------
+    .. [44] Azizi N, Behbahani R, Isazadeh M A. An efficient correlation for
+        calculating compressibility factor of natural gases. Journal of Natural
+        Gas Chemistry 19 (2010) 642-645
+    """
+    # Check input in range of validity
+    if Tr < 1.1 or Tr > 2 or Pr < 0.2 or Pr > 11:
+        raise NotImplementedError("Incoming out of bound")
+
+    # Table 1
+    a = 0.0373142485385592
+    b = -0.0140807151485369
+    c = 0.0163263245387186
+    d = -0.0307776478819813
+    e = 13843575480.943800
+    f = -16799138540.763700
+    g = 1624178942.6497600
+    h = 13702270281.086900
+    i = -41645509.896474600
+    j = 237249967625.01300
+    k = -24449114791.1531
+    l = 19357955749.3274
+    m = -126354717916.607
+    n = 623705678.385784
+    o = 17997651104.3330
+    p = 151211393445.064
+    q = 139474437997.172
+    r = -24233012984.0950
+    s = 18938047327.5205
+    t = -141401620722.689
+
+    A = a*Tr**2.16 + b*Pr**1.028 + c*Pr**1.58/Tr**2.1 + d*log(Tr)**0.5   # Eq 2
+    B = e + f*Tr**2.4 + g*Pr**1.56 + h*Pr**0.124*Tr**3.033               # Eq 3
+    C = i/log(Tr)**1.28 + j*log(Tr)**1.37 + k*log(Pr) + l*log(Pr)**2 + \
+        m*log(Pr)*log(Tr)                                                # Eq 4
+    D = 1 + n*Tr**5.55 + o*Pr**0.68*Tr**0.33                             # Eq 5
+    E = p*log(Tr)**1.18 + q*log(Tr)**2.1 + r*log(Pr) + s*log(Pr)**2 + \
+        t*log(Pr)*log(Tr)                                                # Eq 6
+    Z = A + (B + C) / (D + E)                                            # Eq 1
+    return unidades.Dimensionless(Z)
+
+
+def Z_Shokir(Tr, Pr):
+    """Calculate gas compressibility factor using the Shokir-Awad-Quraishi
+    (2012) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [46] Shokir, Eissa M.El-M., El-Awad, Musaed N., Al-Quraishi,
+        Adulhrahman A., Al-Mahdy, Osama A. Compressibility factor model of
+        sweet, sour, and condensate gases using genetic programming. Chem. Eng.
+        Res. Des. 90 (2012), 785-792.
+    """
+    # Eq 8
+    A = 2.679562*(2*Tr-Pr-1)/((Pr**2+Tr**3)/Pr)
+    B = -7.686825*((Pr*Tr+Pr**2)/(Tr*Pr+2*Tr**2+Tr**3))
+    C = -0.000624*(Tr**2*Pr-Tr*Pr**2+Tr*Pr**3+2*Tr*Pr-2*Pr**2+2*Pr**3)
+    D = 3.067747*(Tr-Pr)/(Pr**2+Tr+Pr)
+    E = 0.068059/Tr/Pr + 0.139489*Tr**2 + 0.081873*Pr**2 - 0.041098*Tr/Pr + \
+        8.152325*Pr/Tr - 1.63028*Pr + 0.24287*Tr - 2.64988
+    Z = A + B + C + D + E
+    return unidades.Dimensionless(Z)
+
+
+def Z_Bahadori(Tr, Pr):
+    """Calculate gas compressibility factor using the Bahadori-Mokhatab-Towler
+    (2007) correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    Examples
+    --------
+    Case study in paper
+    >>> "%0.4f" % Z_Bahadori(297/197.98, 13860/4287.73)
+    '0.7689'
+
+    Raises
+    ------
+    NotImplementedError : If input isn't in limit
+        * 1.05 ≤ Tr ≤ 2.4
+        * 0.2 ≤ Pr ≤ 16
+
+    References
+    ----------
+    .. [47] Bahadori, A., Mokhatab, S., Towler, B.F. Rapidly estimating natural
+        gas compressibility factor. J. Nat. Gas Chem. 16 (4) 2007, 349-353
+    """
+    # Check input in range of validity
+    if Tr < 1.05 or Tr > 2.4 or Pr < 0.2 or Pr > 16:
+        raise NotImplementedError("Incoming out of bound")
+
+    a = 0.969469 - 1.349238*Tr + 1.443959*Tr**2 - 0.36860*Tr**3         # Eq 8
+    b = -0.107783 - 0.127013*Tr + 0.100828*Tr**2 - 0.012319*Tr**3       # Eq 9
+    c = 0.0184810 + 0.0523405*Tr - 0.050688*Tr**2 + 0.010870*Tr**3      # Eq 10
+    d = -0.000584 - 0.002146*Tr + 0.0020961*Tr**2 - 0.000459*Tr**3      # Eq 11
+    Z = a + b*Pr + c*Pr**2 + d*Pr**3                                    # Eq 7
+    return unidades.Dimensionless(Z)
+
+
+def Z_Londono_DAK(Tr, Pr, pure=False):
+    """Calculate gas compressibility factor using the Londono-Archer-Blasingame
+    (2007) correlation
+    This method implement the Dranckuk-Abu-Kassem optimized version from paper
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+    pure : boolean
+        Aditional parameter to use the parameters of combined dabase
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [48] Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
+        hydrocarbon-gas viscosity and gas density-validation and correlation
+        of behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6)
+        2005, 561–572.
+    """
+    if pure:
+        # Eq 34b
+        C1 = 0.2965749 - 1.032952/Tr - 0.05394955/Tr**3 - 0.7694/Tr**4 + \
+            0.2183666/Tr**5
+        C2 = 0.6226256 - 1.006653/Tr + 0.3116857/Tr**2
+        C3 = 0.09506539*(-1.006653/Tr + 0.3116857/Tr**2)
+        A10 = 0.7544825
+        A11 = 0.788
+
+    else:
+        # Eq 34a
+        C1 = 0.3024696 - 1.046964/Tr - 0.1078916/Tr**3 - 0.7694186/Tr**4 + \
+            0.1965439/Tr**5
+        C2 = 0.6527819 - 1.118884/Tr + 0.3951957/Tr**2
+        C3 = 0.09313593*(-1.118884/Tr + 0.3951957/Tr**2)
+        A10 = 0.8483081
+        A11 = 0.7880011
+
+    # Eq 2
+    def f(rho):
+        C4 = A10*(1+A11*rho**2)*rho**2/Tr**3
+        Z = 0.27*Pr/Tr/rho
+        return 1 + C1*rho + C2*rho**2 - C3*rho**5 + C4*exp(-A11*rho**2) - Z
+
+    rho0 = 0.27*Pr/Tr
+    rho = fsolve(f, rho0, full_output=True)
+    if rho[2] == 1:
+        Z = 0.27*Pr/Tr/rho[0]
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+def Z_Londono_NS(Tr, Pr, pure=False):
+    """Calculate gas compressibility factor using the Londono-Archer-Blasingame
+    (2007) correlation
+    This method implement the Nishiumi-Saito optimized version from paper
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+    pure : boolean
+        Aditional parameter to use the parameters of combined dabase
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [48] Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
+        hydrocarbon-gas viscosity and gas density-validation and correlation
+        of behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6)
+        2005, 561–572.
+    """
+    if pure:
+        # Eq 37b
+        A1 = 4.645095e-1
+        A2 = 1.627089
+        A3 = -9.830729e-1
+        A4 = 5.954591e-1
+        A5 = 6.183499e-1
+        A6 = 4.109793e-1
+        A7 = 8.148481e-2
+        A8 = 3.541591e-1
+        A9 = -1.941089e-2
+        A10 = -4.314707e-3
+        A11 = 2.789035e-1
+        A12 = 7.277907e-1
+        A13 = -3.207280e-1
+        A14 = 1.756311e-1
+        A15 = 7.905733e-1
+
+    else:
+        # Eq 37a
+        A1 = 2.669857e-1
+        A2 = 1.048341
+        A3 = -1.516869
+        A4 = 4.435926
+        A5 = -2.407212
+        A6 = 6.089671e-1
+        A7 = 5.174665e-1
+        A8 = 1.296739
+        A9 = -2.892824e-2
+        A10 = -1.684037e-2
+        A11 = 2.120655
+        A12 = -5.046405e-1
+        A13 = 1.802678e-1
+        A14 = 8.563869e-2
+        A15 = 4.956134e-1
+
+    C1 = A1 - A2/Tr - A3/Tr**3 - A4/Tr**4 - A5/Tr**5
+    C2 = A6 - A7/Tr - A8/Tr**2 - A9/Tr**5 - A10/Tr**24
+    C3 = A11*(A7/Tr + A8/Tr**2 + A9/Tr**5 + A10/Tr**24)
+
+    def f(rho):
+        C4 = (A12/Tr**3+A13/Tr**9+A14/Tr**18) * rho**2 * (1+A15*rho**2)
+        Z = 0.27*Pr/Tr/rho
+        return 1 + C1*rho + C2*rho**2 - C3*rho**5 + C4*exp(-A15*rho**2) - Z
+
+    rho0 = 0.27*Pr/Tr
+    rho = fsolve(f, rho0, full_output=True)
+    if rho[2] == 1:
+        Z = 0.27*Pr/Tr/rho[0]
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+def Z_Hall_Iglesias(Tr, Pr):
+    """Calculate gas compressibility factor using the correlation of Hall-
+    Iglesias (2007). This is a extension of Hall-Yarborough correlation to
+    reduced values of temperature.
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [45] Hall, K.R., Iglesias-Silva, G.A.. Improved equations for the
+        Standing-Katz tables. Hydrocarb. Process 86 (4) 2007, 107-110.
+    .. [49] Chankalani, A., Mae'soumi, A., Sameni, A. An Intelligent Approach
+        for Optimal Prediction of Gas Deviation Factor Using Particle Swarm
+        Optimization and Genetic Algorithm. Journal of Natural Gas Science and
+        Engineering 14 (2013) 132-143
+    """
+    X1 = 14.54/Tr-8.23/Tr**2+3.39*Tr**3.5
+    X2 = 90.7/Tr-242.2/Tr**2+42.4/Tr**3
+    X3 = 1.18+2.82/Tr
+    k1 = 1/(1.87+0.001*Tr**63)
+    k2 = 171.8*Tr**13
+    k3 = -3525*(1-exp(-219/Tr**63))
+
+    def f(Z):
+        Y = (0.06125*Pr*exp(-1.2*(1-1/Tr)**2))/Tr/Z
+        return Z - (1+Y+Y**2-Y**3)/(1-Y)**3 - X1*Y + X2*Y**X3 + \
+            k1*Y*exp(-k2*(Y-0.421)**2) + k3*Y**10*exp(-69279*(Y-0.374)**4)
+
+    Z = fsolve(f, 0.5, full_output=True)
+    if Z[2] != 1:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z[0])
+
+
+def Z_Elsharkawy(Tr, Pr):
+    """Calculate gas compressibility factor using the Elsharkawy (2003)
+    correlation
+
+    Parameters
+    ------------
+    Tr : float
+        Reduced temperature [-]
+    Pr : float
+        Reduced pressure [-]
+
+    Returns
+    -------
+    Z : float
+        Gas compressibility factor [-]
+
+    References
+    ----------
+    .. [50] Elsharkawy, A.M. Efficient methods for calculations of
+        compressibility, density and viscosity of natural gases. Fluid Phase
+        Equilibria 218:1 (2004) 1-13
+    """
+    C1 = 0.3265 - 1.07/Tr - 0.5339/Tr**3 + 0.01569/Tr**4 - 0.05165/Tr**5
+    C2 = 0.5475 - 0.7361/Tr + 0.1844/Tr**2
+    C3 = 0.1056*(0.7361/Tr + 0.1844/Tr**2)
+
+    # Eq 24
+    def f(rho):
+        C4 = 0.6134*(1+0.721*rho**2)*rho**2/Tr**3*3
+        Z = 0.27*Pr/Tr/rho
+        return 1 + C1*rho + C2*rho**2 - C3*rho**5 + C4*exp(-0.721*rho**2) - Z
+
+    rho0 = 0.27*Pr/Tr
+    rho = fsolve(f, rho0, full_output=True)
+    if rho[2] == 1:
+        Z = 0.27*Pr/Tr/rho[0]
+    else:
+        raise ValueError("Iteration not converge")
+
+    return unidades.Dimensionless(Z)
+
+
+Z_list = (Z_Hall_Yarborough, Z_Papay, Z_Dranchuk_Abu_Kassem,
+          Z_Dranchuk_Purvis_Robinson, Z_ShellOil, Z_Brill_Beggs, Z_Sarem,
+          Z_Gopal, Z_Leung, Z_Burnett, Z_Sanjari_Lay, Z_Heidaryan_Salarabadi,
+          Z_Heidaryan_Moghadasi, Z_Azizi, Z_Shokir, Z_Bahadori, Z_Londono_DAK,
+          Z_Londono_NS, Z_Elsharkawy, Z_Hall_Iglesias)
 
 
 class Crudo(Petroleo):
@@ -71,7 +1238,7 @@ class Crudo(Petroleo):
         self.kwargs["S"] = prop[5]
         self.kwargs["N"] = prop[6]
         self.kwargs["v100"] = prop[10]
-        Petroleo.calculo(self)
+        # Petroleo.calculo(self)
 
         self.vanadium = prop[11]
         self.nickel = prop[12]
@@ -390,7 +1557,6 @@ class Crudo(Petroleo):
         """Viscosidad de petroleos vivos (con gas disuelto)"""
         metodos=[self.Mu_Beal_presion, self.Mu_Vazquez_Beggs, self.Mu_Kartoatmodjo_Schmidt_presion][Preferences.getint("petro", "mu_live")]
         return metodos(T, P)
-
 
 
 class Water(Componente):
