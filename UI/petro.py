@@ -53,6 +53,8 @@ class View_Petro(QtWidgets.QDialog):
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Petrol assay characteristics"))
         layout = QtWidgets.QGridLayout(self)
+        self.nombre = QtWidgets.QLabel()
+        layout.addWidget(self.nombre, 1, 1, 1, 5)
         label = QtWidgets.QLabel("M")
         label.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Molecular Weight"))
@@ -222,6 +224,7 @@ class View_Petro(QtWidgets.QDialog):
         self.flashClosed.setReadOnly(bool)
 
     def rellenar(self, petroleo):
+        self.nombre.setText(petroleo.name)
         self.M.setValue(petroleo.M)
         self.Tb.setValue(petroleo.Tb)
         self.gravity.setValue(petroleo.SG)
