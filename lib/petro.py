@@ -3515,6 +3515,7 @@ class Petroleo(newComponente):
               "S": 0.0,
               "N": 0.0,
               "Nc": 0,
+              "name": "",
 
               "curveType": "",
               "T_curve": [],
@@ -3643,9 +3644,6 @@ class Petroleo(newComponente):
 
     def calculo(self):
         self.formula = ""
-        self.name = self.__class__.__name__ + "_" + \
-            time.strftime("%d/%m/%Y-%H:%M:%S")
-
         self.cp = []
         self.Vliq = 0
         self.rackett = 0
@@ -3967,6 +3965,8 @@ class Petroleo(newComponente):
         elif CCR > 100:
             CCR = 100
         self.CCR = unidades.Dimensionless(CCR)
+
+        newComponent.calculo(self)
 
     def tr(self, T):
         return T/self.Tc
