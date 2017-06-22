@@ -23,9 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # module with general library functionality of pychemqt
 ###############################################################################
 
-__all__ = ["EoS", "mEoS", "adimensional", "bip", "compuestos", "config",
-           "coolProp", "corriente", "crude", "datasheet", "elemental", "eos",
-           "firstrun", "freeSteam", "friction", "gerg", "heatTransfer", "meos",
-           "petro", "physics", "pipeDatabase", "plot", "project",
-           "psycrometry", "reaction", "refProp", "sql", "thermo", "thread",
-           "unidades", "utilities"]
+
+import glob
+import os
+
+
+files = sorted(glob.glob(os.path.join("lib", "*.py")))
+
+__all__ = ["EoS", "mEoS"]
+for file in files:
+    fname, ext = os.path.splitext(os.path.basename(file))
+    if fname != "__init__":
+        __all__.append(fname)
+
+for module in __all__:
+    child_module = "lib." + module
+    __import__(child_module)
