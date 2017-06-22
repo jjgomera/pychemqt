@@ -4,11 +4,9 @@
 from doctest import DocTestSuite
 from unittest import TestSuite
 
-from lib import adimensional, compuestos, petro, unidades
-
+import lib
 
 TestLib = TestSuite()
-TestLib.addTest(DocTestSuite(adimensional))
-TestLib.addTest(DocTestSuite(compuestos))
-TestLib.addTest(DocTestSuite(petro))
-TestLib.addTest(DocTestSuite(unidades))
+for mname in lib.__all__[2:]:
+    module = lib.__getattribute__(mname)
+    TestLib.addTest(DocTestSuite(module))
