@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Module to implement new component by group contribution methods
+# Module to implement new component by group contribution methods UI
 #   -newComponent: Main dialog class with common functionality
 #   -UI_Contribution: Definition for group contribution
 #   -View_Contribution: Dialog to show the properties of a group contribution
@@ -31,10 +31,11 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from lib.compuestos import (Joback, Constantinou_Gani, Wilson_Jasperson,
-                            Marrero_Pardillo, Elliott, Ambrose)
+from lib.newComponent import (Joback, Constantinou, Wilson_Jasperson,
+                              Marrero_Pardillo, Elliott, Ambrose)
 from lib import sql
-from lib.unidades import Temperature
+from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
+                          SolubilityParameter)
 from UI.delegate import SpinEditor
 from UI.viewComponents import View_Component
 from UI.widgets import Entrada_con_unidades, Status
@@ -60,7 +61,6 @@ class newComponent(QtWidgets.QDialog):
         self.btonBox.accepted.connect(self.save)
         self.btonBox.rejected.connect(self.reject)
         layoutBottom.addWidget(self.btonBox)
-        # self.layout().addLayout(layoutBottom, 30, 0, 1, 6)
         self.layout().addLayout(layoutBottom)
 
     def save(self):
@@ -89,120 +89,196 @@ class newComponent(QtWidgets.QDialog):
 
 
 class View_Contribution(QtWidgets.QDialog):
-    """Ventana que muestra las propiedades del nuevo componente definido mediante los metodos de contribucion de grupo"""
-    def __init__(self, petroleo=None, parent=None):
+    """Dialog to show the properties of a group contribution"""
+    def __init__(self, cmp=None, parent=None):
+        """Constructor
+        cmp: optional new component to show the properties"""
         super(View_Contribution, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate("pychemqt", "Group Contribution new component"))
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Group Contribution new component"))
         layout = QtWidgets.QGridLayout(self)
 
-        self.nombre=QtWidgets.QLabel()
-        layout.addWidget(self.nombre,1,1,1,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Molecular Weight")),2,1)
-        self.M=Entrada_con_unidades(float, readOnly=True, textounidad="g/mol")
-        layout.addWidget(self.M,2,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Boiling Point")),3,1)
-        self.Tb=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.Tb,3,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Melting Point")),4,1)
-        self.Tf=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.Tf,4,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Tc")),5,1)
-        self.Tc=Entrada_con_unidades(unidades.Temperature, readOnly=True)
-        layout.addWidget(self.Tc,5,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Pc")),6,1)
-        self.Pc=Entrada_con_unidades(unidades.Pressure, readOnly=True)
-        layout.addWidget(self.Pc,6,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Vc")),7,1)
-        self.Vc=Entrada_con_unidades(unidades.SpecificVolume, readOnly=True)
-        layout.addWidget(self.Vc,7,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "ΔHf", None)),8,1)
-        self.Hf=Entrada_con_unidades(unidades.Enthalpy, readOnly=True)
-        layout.addWidget(self.Hf,8,2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "ΔGf", None)),9,1)
-        self.Gf=Entrada_con_unidades(unidades.Enthalpy, readOnly=True)
-        layout.addWidget(self.Gf,9,2)
+        self.nombre = QtWidgets.QLabel()
+        layout.addWidget(self.nombre, 1, 1, 1, 5)
+        label = QtWidgets.QLabel("M")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Molecular Weight"))
+        layout.addWidget(label, 2, 1)
+        self.M = Entrada_con_unidades(float, textounidad="g/mol")
+        layout.addWidget(self.M, 2, 2)
+        label = QtWidgets.QLabel("Tb")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Boiling Temperature"))
+        layout.addWidget(label, 3, 1)
+        self.Tb = Entrada_con_unidades(Temperature)
+        layout.addWidget(self.Tb, 3, 2)
+        label = QtWidgets.QLabel("Tm")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Melting Temperature"))
+        layout.addWidget(label, 4, 1)
+        self.Tf = Entrada_con_unidades(Temperature)
+        layout.addWidget(self.Tf, 4, 2)
+        layout.addWidget(QtWidgets.QLabel("Tc"), 5, 1)
+        self.Tc = Entrada_con_unidades(Temperature)
+        layout.addWidget(self.Tc, 5, 2)
+        layout.addWidget(QtWidgets.QLabel("Pc"), 6, 1)
+        self.Pc = Entrada_con_unidades(Pressure)
+        layout.addWidget(self.Pc, 6, 2)
+        layout.addWidget(QtWidgets.QLabel("Vc"), 7, 1)
+        self.Vc = Entrada_con_unidades(SpecificVolume)
+        layout.addWidget(self.Vc, 7, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "ΔHm", None)),2,4)
-        self.Hm=Entrada_con_unidades(unidades.Enthalpy, readOnly=True)
-        layout.addWidget(self.Hm,2,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "ΔHv", None)),3,4)
-        self.Hv=Entrada_con_unidades(unidades.Enthalpy, readOnly=True)
-        layout.addWidget(self.Hv,3,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cpa")),4,4)
-        self.cpa=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.cpa,4,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cpb")),5,4)
-        self.cpb=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.cpb,5,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cpc")),6,4)
-        self.cpc=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.cpc,6,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Cpd")),7,4)
-        self.cpd=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.cpd,7,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "μa", None)),8,4)
-        self.mua=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.mua,8,5)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "μb", None)),9,4)
-        self.mub=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.mub,9,5)
+        label = QtWidgets.QLabel("ΔHf")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Enthalpy of formation of ideal gas"))
+        layout.addWidget(label, 8, 1)
+        self.Hf = Entrada_con_unidades(Enthalpy)
+        layout.addWidget(self.Hf, 8, 2)
+        label = QtWidgets.QLabel("ΔGf")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Gibbs free energy of formation of ideal gas"))
+        layout.addWidget(label, 9, 1)
+        self.Gf = Entrada_con_unidades(Enthalpy)
+        layout.addWidget(self.Gf, 9, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "SG 60ºF", None)),2,7)
-        self.gravity=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.gravity,2,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "API gravity")),3,7)
-        self.API=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.API,3,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Watson Factor")),4,7)
-        self.watson=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.watson,4,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Acentric factor")),5,7)
-        self.f_acent=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.f_acent,5,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Rackett")),6,7)
-        self.rackett=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.rackett,6,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Volume Liquid Constant")),7,7)
-        self.Vliq=Entrada_con_unidades(float, readOnly=True)
-        layout.addWidget(self.Vliq,7,8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Solubility Parameter")),8,7)
-        self.Parametro_solubilidad=Entrada_con_unidades(unidades.SolubilityParameter, readOnly=True)
-        layout.addWidget(self.Parametro_solubilidad,8,8)
+        label = QtWidgets.QLabel("ΔHf")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Enthalpy of fusion"))
+        layout.addWidget(label, 2, 4)
+        self.Hm = Entrada_con_unidades(Enthalpy)
+        layout.addWidget(self.Hm, 2, 5)
+        label = QtWidgets.QLabel("ΔHv")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Enthalpy of vaporization"))
+        layout.addWidget(label, 3, 4)
+        self.Hv = Entrada_con_unidades(Enthalpy)
+        layout.addWidget(self.Hv, 3, 5)
+        layout.addWidget(QtWidgets.QLabel("Cpa"), 4, 4)
+        self.cpa = Entrada_con_unidades(float)
+        layout.addWidget(self.cpa, 4, 5)
+        layout.addWidget(QtWidgets.QLabel("Cpb"), 5, 4)
+        self.cpb = Entrada_con_unidades(float)
+        layout.addWidget(self.cpb, 5, 5)
+        layout.addWidget(QtWidgets.QLabel("Cpc"), 6, 4)
+        self.cpc = Entrada_con_unidades(float)
+        layout.addWidget(self.cpc, 6, 5)
+        layout.addWidget(QtWidgets.QLabel("Cpd"), 7, 4)
+        self.cpd = Entrada_con_unidades(float)
+        layout.addWidget(self.cpd, 7, 5)
+        layout.addWidget(QtWidgets.QLabel("μa"), 8, 4)
+        self.mua = Entrada_con_unidades(float)
+        layout.addWidget(self.mua, 8, 5)
+        layout.addWidget(QtWidgets.QLabel("μb"), 9, 4)
+        self.mub = Entrada_con_unidades(float)
+        layout.addWidget(self.mub, 9, 5)
 
-        layout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),15,3,1,1)
-        self.boton = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        self.boton.rejected.connect(self.accept)
-        layout.addWidget(self.boton,16,1,1,8)
+        label = QtWidgets.QLabel("SG")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Specific gravity at 60ºF"))
+        layout.addWidget(label, 2, 7)
+        self.gravity = Entrada_con_unidades(float)
+        layout.addWidget(self.gravity, 2, 8)
+        label = QtWidgets.QLabel("API")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "API Specific gravity"))
+        layout.addWidget(label, 3, 7)
+        self.API = Entrada_con_unidades(float)
+        layout.addWidget(self.API, 3, 8)
+        label = QtWidgets.QLabel("Kw")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Watson characterization factor"))
+        layout.addWidget(label, 4, 7)
+        self.watson = Entrada_con_unidades(float)
+        layout.addWidget(self.watson, 4, 8)
 
-        if petroleo:
-            self.rellenar(petroleo)
+        label = QtWidgets.QLabel("w")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Acentric factor"))
+        layout.addWidget(label, 5, 7)
+        self.f_acent = Entrada_con_unidades(float)
+        layout.addWidget(self.f_acent, 5, 8)
+        label = QtWidgets.QLabel("Ra")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Rackett constant"))
+        layout.addWidget(label, 6, 7)
+        self.rackett = Entrada_con_unidades(float)
+        layout.addWidget(self.rackett, 6, 8)
+        label = QtWidgets.QLabel("Vliq")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Volume Liquid Constant"))
+        layout.addWidget(label, 7, 7)
+        self.Vliq = Entrada_con_unidades(float)
+        layout.addWidget(self.Vliq, 7, 8)
+        label = QtWidgets.QLabel("Sol")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Solubility Parameter"))
+        layout.addWidget(label, 8, 7)
+        self.Parametro_solubilidad = Entrada_con_unidades(SolubilityParameter)
+        layout.addWidget(self.Parametro_solubilidad, 8, 8)
 
-    def rellenar(self, petroleo):
-        self.nombre.setText(petroleo.name)
-        self.M.setValue(petroleo.M)
-        self.Tb.setValue(petroleo.Tb)
-        self.Tf.setValue(petroleo.Tf)
-        self.Tc.setValue(petroleo.Tc)
-        self.Pc.setValue(petroleo.Pc)
-        self.Vc.setValue(petroleo.Vc)
-        self.Hf.setValue(petroleo.Hf)
-        self.Gf.setValue(petroleo.Gf)
+        layout.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 15, 8)
+        btn = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btn.rejected.connect(self.accept)
+        layout.addWidget(btn, 16, 1, 1, 8)
 
-        self.Hm.setValue(petroleo.Hm)
-        self.Hv.setValue(petroleo.Hv)
-        self.cpa.setValue(petroleo.cp[0])
-        self.cpb.setValue(petroleo.cp[1])
-        self.cpc.setValue(petroleo.cp[2])
-        self.cpd.setValue(petroleo.cp[3])
+        self.setReadOnly(True)
+        if cmp:
+            self.rellenar(cmp)
 
-        self.gravity.setValue(petroleo.SG)
-        self.API.setValue(petroleo.API)
-        self.watson.setValue(petroleo.watson)
-        self.f_acent.setValue(petroleo.f_acent)
-        self.rackett.setValue(petroleo.rackett)
-        self.Vliq.setValue(petroleo.Vliq)
-        self.Parametro_solubilidad.setValue(petroleo.Parametro_solubilidad)
+    def setReadOnly(self, bool):
+        self.M.setReadOnly(bool)
+        self.Tb.setReadOnly(bool)
+        self.Tf.setReadOnly(bool)
+        self.Tc.setReadOnly(bool)
+        self.Pc.setReadOnly(bool)
+        self.Vc.setReadOnly(bool)
+        self.Hf.setReadOnly(bool)
+        self.Gf.setReadOnly(bool)
 
+        self.Hm.setReadOnly(bool)
+        self.Hv.setReadOnly(bool)
+        self.cpa.setReadOnly(bool)
+        self.cpb.setReadOnly(bool)
+        self.cpc.setReadOnly(bool)
+        self.cpd.setReadOnly(bool)
+        self.mua.setReadOnly(bool)
+        self.mub.setReadOnly(bool)
+
+        self.gravity.setReadOnly(bool)
+        self.API.setReadOnly(bool)
+        self.watson.setReadOnly(bool)
+        self.f_acent.setReadOnly(bool)
+        self.rackett.setReadOnly(bool)
+        self.Vliq.setReadOnly(bool)
+        self.Parametro_solubilidad.setReadOnly(bool)
+
+    def rellenar(self, cmp):
+        self.nombre.setText(cmp.name)
+        self.M.setValue(cmp.M)
+        self.Tb.setValue(cmp.Tb)
+        self.Tf.setValue(cmp.Tf)
+        self.Tc.setValue(cmp.Tc)
+        self.Pc.setValue(cmp.Pc)
+        self.Vc.setValue(cmp.Vc)
+        self.Hf.setValue(cmp.Hf)
+        self.Gf.setValue(cmp.Gf)
+
+        self.Hm.setValue(cmp.Hm)
+        self.Hv.setValue(cmp.Hv)
+        self.cpa.setValue(cmp.cp[0])
+        self.cpb.setValue(cmp.cp[1])
+        self.cpc.setValue(cmp.cp[2])
+        self.cpd.setValue(cmp.cp[3])
+
+        self.gravity.setValue(cmp.SG)
+        self.API.setValue(cmp.API)
+        self.watson.setValue(cmp.Kw)
+        self.f_acent.setValue(cmp.f_acent)
+        self.rackett.setValue(cmp.rackett)
+        self.Vliq.setValue(cmp.Vliq)
+        self.Parametro_solubilidad.setValue(cmp.Parametro_solubilidad)
 
 
 class Ui_Contribution(newComponent):
@@ -213,21 +289,25 @@ class Ui_Contribution(newComponent):
     def __init__(self, metodo, parent=None):
         """Metodo: name of group contribution method:
             Joback
-            Constantinou-Gani
-            Wilson-Jasperson
-            Marrero-Pardillo
+            Constantinou
+            Wilson
+            Marrero
             Elliott
             Ambrose
         """
         super(Ui_Contribution, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Select the component group for method") +" "+ metodo)
+        title = QtWidgets.QApplication.translate(
+                "pychemqt", "Select the component group for method")
+        title += " " + metodo
+        self.setWindowTitle(title)
 
         self.grupo = []
         self.indices = []
         self.contribucion = []
         self.metodo = metodo
-        layout = QtWidgets.QGridLayout(self)
+        lyt = QtWidgets.QVBoxLayout(self)
+        widget = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(widget)
         self.Grupos = QtWidgets.QTableWidget()
         self.Grupos.verticalHeader().hide()
         self.Grupos.setRowCount(0)
@@ -342,10 +422,11 @@ class Ui_Contribution(newComponent):
         self.SG = Entrada_con_unidades(float)
         self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
         layout.addWidget(self.SG, 15, 1)
+        lyt.addWidget(widget)
 
         newComponent.loadUI(self)
 
-        func = {"Constantinou": Constantinou_Gani,
+        func = {"Constantinou": Constantinou,
                 "Wilson": Wilson_Jasperson,
                 "Joback": Joback,
                 "Ambrose": Ambrose,
@@ -436,7 +517,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Definicion_Petro()
-    # Dialog = Ui_Contribution("Ambrose")
+    Dialog = Ui_Contribution("Constantinou")
     Dialog.show()
     sys.exit(app.exec_())
