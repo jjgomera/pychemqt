@@ -33,8 +33,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH
-from lib.newComponent import (Joback, Constantinou, Wilson_Jasperson,
-                              Marrero_Pardillo, Elliott, Ambrose)
+from lib.newComponent import (Joback, Constantinou, Wilson, Marrero_Pardillo,
+                              Elliott, Ambrose)
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -376,10 +376,10 @@ class Ui_Contribution(newComponent):
 
         if metodo == "Wilson":
             layout.addWidget(QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "Rings")), 8, 3)
+                QtWidgets.QApplication.translate("pychemqt", "Rings")), 7, 3)
             self.ring = QtWidgets.QSpinBox()
             self.ring.valueChanged.connect(partial(self.changeParams, "ring"))
-            layout.addWidget(self.ring, 9, 3)
+            layout.addWidget(self.ring, 8, 3)
 
         if metodo == "Marrero":
             layout.addWidget(QtWidgets.QLabel(
@@ -437,7 +437,7 @@ class Ui_Contribution(newComponent):
         newComponent.loadUI(self)
 
         func = {"Constantinou": Constantinou,
-                "Wilson": Wilson_Jasperson,
+                "Wilson": Wilson,
                 "Joback": Joback,
                 "Ambrose": Ambrose,
                 "Elliott": Elliott,
@@ -533,6 +533,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Constantinou")
+    Dialog = Ui_Contribution("Wilson")
     Dialog.show()
     sys.exit(app.exec_())

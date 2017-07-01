@@ -36,7 +36,7 @@ from lib.elemental import databank
 #   -GroupContriution: Group contribution base class with common functionality
 #   -Joback: Group contribution method of Joback
 #   -Constantinou: Group contribution method of Constaninou and Gani
-#   -Wilson_Jasperson: Group contribution method of Wilson and Jasperson
+#   -Wilson: Group contribution method of Wilson and Jasperson
 #   -Marrero_Pardillo: Group contribution method of Marrero and Pardillo
 #   -Elliott: Group contribution method of Elliott
 #   -Ambrose: Group contribution method of Ambrose
@@ -67,15 +67,19 @@ __doi__ = {
                   "Volume at 298K Using a New Group Contribution Method",
          "ref": "Fluid Phase Equil., 103: 11 (1995).",
          "doi": "10.1016/0378-3812(94)02593-p"},
-
-
-
-
     5:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Wilson, G.M. Jasperson, L.V.",
+         "title": "Critical constants Tc and Pc, estimation based on zero, "
+                  "first and second order methods",
+         "ref": "Paper given at AIChE Spring National Meeting, New Orleans, "
+                "LA, USA, February 25-29, 1996.",
          "doi": ""},
+
+
+
+
+
+
     6:
         {"autor": "",
          "title": "",
@@ -194,7 +198,7 @@ class GroupContribution(newComponente):
     The child classes with the implemented group contribution methods are:
         -Joback: Prefered
         -Constantinou: Prefered
-        -Wilson_Jasperson Contribuciones por átomos
+        -Wilson: Elemental atomic contribution with 2nd Order term for bonds
         -Marrero_Pardillo: No predice propiedades termodinámicas
         -Elliot: (UNIFAC) Prefered
         -Andrade: Hydrocarbon without heteroatoms"""
@@ -323,9 +327,9 @@ class GroupContribution(newComponente):
         """Método de cálculo del volumen crítico"""
         if self.Tc.R < 536.67:
             D = 8.75+1.987*log(self.Tb.R)+self.Tb.R/1.8
-        elif self.Tc.R > 593:
-            # FIXME: Don't work exactly
-            D = (0.398907*self.SG*(self.f_acent-592.4439)/self.M)**0.5
+        # elif self.Tc.R > 593:
+            # # FIXME: Don't work exactly
+            # D = (0.398907*self.SG*(self.f_acent-592.4439)/self.M)**0.5
         else:
             f = ((self.Tc.R-536.67)/(self.Tc.R-self.Tb.R))**0.38
             D = 8.75+1.987*log(self.Tb.R)+self.Tb.R/1.8*f
@@ -845,7 +849,7 @@ class Constantinou(GroupContribution):
     """
     coeff = {
         # The Second order term are append to the first order in each table
-        
+
         # Table 1 in [3]_
         "tc": [1.6781, 3.4920, 4.0330, 4.8823, 5.0146, 7.3691, 6.5081, 8.9582,
                11.3764, 9.9318, 3.7337, 14.6409, 8.2130, 10.3239, 10.4664,
@@ -1210,7 +1214,7 @@ class Constantinou(GroupContribution):
             cpb += c*self.coeff["cpb"][i]
             cpc += c*self.coeff["cpc"][i]
 
-        # Table 5 with functions 
+        # Table 5 with functions
         self.Tc = unidades.Temperature(181.128*log(tc))
         self.Pc = unidades.Pressure((Pc+0.10022)**-2+1.3705, "bar")
         self.Vc = unidades.SpecificVolume((vc-0.00435)/self.M)
@@ -1224,7 +1228,7 @@ class Constantinou(GroupContribution):
         self.f_acent = 0.4085*log(w+1.1507)**(1/0.5050)
         # Eq 3 in [4]_
         self.Vliq = unidades.SpecificVolume((vliq+0.01211)*self.M)
-        
+
         # Ideal gas specific heat expression from [1]_
         self.cp = [cpa-19.7779, cpb+22.5981, cpc-10.7983, 0, 0, 0]
 
@@ -1251,118 +1255,177 @@ class Constantinou(GroupContribution):
         return unidades.SpecificHeat(cp0/self.M, "JgK")
 
 
-class Wilson_Jasperson(GroupContribution):
-    """Des. Dev., 20: 94 (1981). Wilson. G. M., and L. V. Jasperson: ‘‘Critical Constants Tc, Pc, Estimation Based on Zero, First and Second Order Methods,’’ AIChE Spring Meeting, New Orleans, LA, 1996.
-    ref, properties of gases and liquids, pag 2.9
-    grupos: grupos que forman la molécula
-    contribuciones: contribuciones de cada grupo
-    Tb: Temperatura de ebullición
-    Ring: anillos que forman la molecula
-    M: peso molecular, opcional
-    SG: gravedad específica, opcional
-
-    >>> cresol_wilson=Wilson_Jasperson(group=[3, 0, 5, 41], contribution=[8, 10, 1, 1], M=108.14, Tb=464.15, ring=1)
-    >>> print cresol_wilson.Tc, cresol_wilson.f_acent
-    654.074200805 0.620089916983
+class Wilson(GroupContribution):
     """
-    coeff={
-        "M": [1.00794, 4.002602, 10.811, 12.0107, 14.0067, 15.9994, 18.9984032, 20.1797, 26.9815386, 28.0855, 30.973762, 32.065, 35.453, 39.948, 47.867, 50.9415, 69.723, 72.64, 74.9216, 78.96, 79.904, 83.798, 85.4678, 91.224, 92.90638, 95.94, 118.71, 121.76, 127.6, 126.90447, 131.293, 132.9054519, 178.49, 180.94788, 183.84, 186.207, 190.23, 200.59, 208.9804, 222, 238.02891],
-        "tc": [0.002793, 0.320000, 0.019000, 0.008532, 0.019181, 0.020341, 0.008810, 0.036400, 0.088000, 0.020000, 0.012000, 0.007271, 0.011151, 0.016800, 0.014000, 0.018600, 0.059000, 0.031000, 0.007000, 0.010300, 0.012447, 0.013300, -0.027000, 0.175000, 0.017600, 0.007000, 0.020000, 0.010000, 0.000000, 0.005900, 0.017000, -0.027500, 0.219000, 0.013000, 0.011000, 0.014000, -0.050000, 0.000000, 0.000000, 0.007000, 0.015000, 0.0350, 0.0100, -0.0075, -0.0040, 0.0000, -0.0550, 0.0170, -0.0150, 0.0170, -0.0200, 0.0020, 0.0000, -0.0250],
-        "Pc": [0.12660, 0.43400, 0.91000, 0.72983, 0.44805, 0.43360, 0.32868, 0.12600, 6.05000, 1.34000, 1.22000, 1.04713, 0.97711, 0.79600, 1.19000, 0.0, 0.0, 1.42000, 2.68000, 1.20000, 0.97151, 1.11000, 0.0, 1.11000, 2.71000, 1.69000, 1.95000, 0.0, 0.43000, 1.315930, 1.66000, 6.33000, 1.07000, 0.0, 1.08000, 0.0, 0.0, -0.08000, 0.69000, 2.05000, 2.04000, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00, 0.50, 0.00, 1.50, 1.00, 0.00, 0.00, -0.50],
-        "txt": [("H", ),
-                    ("He",),
-                    ("B",),
-                    ("C",),
-                    ("N",),
-                    ("O",),
-                    ("F",),
-                    ("Ne",),
-                    ("Al",),
-                    ("Si",),
-                    ("P",),
-                    ("S",),
-                    ("Cl",),
-                    ("Ar",),
-                    ("Ti",),
-                    ("V",),
-                    ("Ga",),
-                    ("Ge",),
-                    ("As",),
-                    ("Se",),
-                    ("Br",),
-                    ("Kr",),
-                    ("Rb",),
-                    ("Zr",),
-                    ("Nb",),
-                    ("Mo",),
-                    ("Sn",),
-                    ("Sb",),
-                    ("Te",),
-                    ("I",),
-                    ("Xe",),
-                    ("Cs",),
-                    ("Hf",),
-                    ("Ta",),
-                    ("W",),
-                    ("Re",),
-                    ("Os",),
-                    ("Hg",),
-                    ("Bi",),
-                    ("Rn",),
-                    ("U",),
-                    ("-OH, C4 or less",),
-                    ("-OH, C5 or more",),
-                    ("-O-",),
-                    ("-NH2, >NH, >N-",),
-                    ("-CHO",),
-                    (">CO",),
-                    ("-COOH",),
-                    ("-COO-",),
-                    ("-CN",),
-                    ("-NO2",),
-                    ("Organic Halides (once / molecule)",),
-                    ("-SH, -S-, -SS-",),
-                    ("Siloxane bond",)]}
+    Group contribution for definition of unknown component using the
+    Wilson-Jasperson procedure (1994)
 
-    FirstOrder=41
-    SecondOrder=54
+    Parameters
+    ----------
+    group : array
+        List with group index
+    contribution : float
+        List with group count ocurrences
+    ring : integer
+        Ring in the atom, [-]
+    Tb : float, optional
+        Normal boiling temperature, [K]
+    M : float, optional
+        Molecular weight, [-]
+    SG : float, optional
+        Specific gravity, [-]
+
+    Return
+    ------
+    A instance of newComponente with all neccessary properties to use in PFD as
+    a predefined component
+
+    Notes
+    -----
+    Tb, M and SG are optional input, anyway know them improve the estimation
+
+    Examples
+    --------
+    Example 2-4 in [1]_, 2-ethylphenol critical properties
+    >>> c1 = Wilson(Tb=477.67, ring=1)
+    >>> c2 = Wilson(Tb=477.67, ring=1)
+    >>> c1(group=[3, 0, 5], contribution=[8, 10, 1])
+    >>> c2(group=[3, 0, 5, 42], contribution=[8, 10, 1, 1])
+    >>> "%0.1f %0.2f %0.1f" % (c1.Tc, c1.Pc.bar, c2.Tc)
+    '702.9 37.94 693.6'
+
+    References
+    ----------
+    [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+        Gases and Liquids 5th Edition. McGraw-Hill
+    [5] .. Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
+        estimation based on zero, first and second order methods. Paper given
+        at AIChE Spring National Meeting, New Orleans, LA, USA, February 25-29,
+        1996.
+    """
+    coeff = {
+        "tc": [0.002793, 0.320000, 0.019000, 0.008532, 0.019181, 0.020341,
+               0.008810, 0.036400, 0.088000, 0.020000, 0.012000, 0.007271,
+               0.011151, 0.016800, 0.014000, 0.018600, 0.059000, 0.031000,
+               0.007000, 0.010300, 0.012447, 0.013300, -0.027000, 0.175000,
+               0.017600, 0.007000, 0.020000, 0.010000, 0.000000, 0.005900,
+               0.017000, -0.027500, 0.219000, 0.013000, 0.011000, 0.014000,
+               -0.050000, 0.000000, 0.000000, 0.007000, 0.015000, 0.0350,
+               0.0100, -0.0075, -0.0040, 0.0000, -0.0550, 0.0170, -0.0150,
+               0.0170, -0.0200, 0.0020, 0.0000, -0.0250],
+        "Pc": [0.12660, 0.43400, 0.91000, 0.72983, 0.44805, 0.43360, 0.32868,
+               0.12600, 6.05000, 1.34000, 1.22000, 1.04713, 0.97711, 0.79600,
+               1.19000, 0.0, 0.0, 1.42000, 2.68000, 1.20000, 0.97151, 1.11000,
+               0.0, 1.11000, 2.71000, 1.69000, 1.95000, 0.0, 0.43000, 1.315930,
+               1.66000, 6.33000, 1.07000, 0.0, 1.08000, 0.0, 0.0, -0.08000,
+               0.69000, 2.05000, 2.04000, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00,
+               0.50, 0.00, 1.50, 1.00, 0.00, 0.00, -0.50],
+        "txt": [("H",),
+                ("He",),
+                ("B",),
+                ("C",),
+                ("N",),
+                ("O",),
+                ("F",),
+                ("Ne",),
+                ("Al",),
+                ("Si",),
+                ("P",),
+                ("S",),
+                ("Cl",),
+                ("Ar",),
+                ("Ti",),
+                ("V",),
+                ("Ga",),
+                ("Ge",),
+                ("As",),
+                ("Se",),
+                ("Br",),
+                ("Kr",),
+                ("Rb",),
+                ("Zr",),
+                ("Nb",),
+                ("Mo",),
+                ("Sn",),
+                ("Sb",),
+                ("Te",),
+                ("I",),
+                ("Xe",),
+                ("Cs",),
+                ("Hf",),
+                ("Ta",),
+                ("W",),
+                ("Re",),
+                ("Os",),
+                ("Hg",),
+                ("Bi",),
+                ("Rn",),
+                ("U",),
+
+                # 2nd Order term
+                ("-OH, C4 or less",),
+                ("-OH, C5 or more",),
+                ("-O-",),
+                ("-NH2, >NH, >N-",),
+                ("-CHO",),
+                (">CO",),
+                ("-COOH",),
+                ("-COO-",),
+                ("-CN",),
+                ("-NO2",),
+                ("Organic Halides (once / molecule)",),
+                ("-SH, -S-, -SS-",),
+                ("Siloxane bond",)]}
+
+    FirstOrder = 41
+    SecondOrder = 54
 
     def isCalculable(self):
         if not self.kwargs["Tb"]:
-            self.msg=QApplication.translate("pychemqt", "undefined boiling point")
-            self.status=0
+            self.msg = QApplication.translate(
+                    "pychemqt", "undefined boiling point")
+            self.status = 0
         else:
             return GroupContribution.isCalculable(self)
 
-
     def calculo(self):
-        self.Tb=unidades.Temperature(self.kwargs["Tb"])
+        self.Tb = unidades.Temperature(self.kwargs["Tb"])
         if self.kwargs["M"]:
-            self.M=self.kwargs["M"]
+            self.M = self.kwargs["M"]
         else:
-            self.M=sum([self.coeff["M"][grupo]*contribucion for grupo, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]) if grupo<=self.FirstOrder])
+            self.M = self._M()
 
-        tc=Pc=0
-        for grupo, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc+=self.coeff["tc"][grupo]*contribucion
-            Pc+=contribucion*self.coeff["Pc"][grupo]
+        tc = Pc = 0
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            tc += c*self.coeff["tc"][i]
+            Pc += c*self.coeff["Pc"][i]
 
-        self.Tc=unidades.Temperature(self.Tb/(0.048271-0.019846*self.kwargs["ring"]+tc)**0.2)
-        self.Pc=unidades.Pressure(0.0186233*self.Tc/(-0.96601+exp(-0.00922295-0.0290403*self.kwargs["ring"]+0.041*Pc)), "bar")
+        Nr = self.kwargs["ring"]
+        self.Tc = unidades.Temperature(self.Tb/(0.048271-0.019846*Nr+tc)**0.2)
+        self.Pc = unidades.Pressure(0.0186233*self.Tc/(-0.96601+exp(
+            -0.00922295-0.0290403*Nr+0.041*Pc)), "bar")
 
         GroupContribution.calculo(self)
 
+    def _M(self):
+        """Procedure to calculate the molecular weight"""
+        M = 0
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            if i < self.FirstOrder:
+                M += c*MW[self.coeff["txt"][i][0]]
+        return M
+
     def EmpiricFormula(self):
-        string=""
-        formula=""
-        for i, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if i<self.FirstOrder:
-                if contribucion>1:
-                    string+="%s<sub>%i</sub>" % (self.coeff["txt"][i][0], contribucion)
-                    formula+="%s%i" % (self.coeff["txt"][i][0], contribucion)
-                elif contribucion==1:
-                    string+="%s" %self.coeff["txt"][i][0]
-                    formula+="%s" %self.coeff["txt"][i][0]
+        string = ""
+        formula = ""
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            if i < self.FirstOrder:
+                if c > 1:
+                    string += "%s<sub>%i</sub>" % (self.coeff["txt"][i][0], c)
+                    formula += "%s%i" % (self.coeff["txt"][i][0], c)
+                elif c == 1:
+                    string += "%s" % self.coeff["txt"][i][0]
+                    formula += "%s" % self.coeff["txt"][i][0]
         return string, formula
 
 
@@ -1851,7 +1914,7 @@ if __name__ == '__main__':
 
 #    butanol_1=Componente(160)
 #    print butanol_1.f_acent, butanol_1.Tc
-#    unknown=Constantinou_Gani(group=[0, 1, 15], contribution=[1, 3, 1])
+#    unknown=Constantinou(group=[0, 1, 15], contribution=[1, 3, 1])
 #    print unknown.f_acent, unknown.Tc
 
 #    ic5=Componente(7)
@@ -1861,7 +1924,7 @@ if __name__ == '__main__':
 
 #    cresol=Componente(177)
 #    print cresol.Tc, cresol.f_acent
-#    cresol_wilson=Wilson_Jasperson(group=[3, 0, 5, 41], contribution=[8, 10, 1, 1], M=108.14, Tb=464.15, ring=1)
+#    cresol_wilson=Wilson(group=[3, 0, 5, 41], contribution=[8, 10, 1, 1], M=108.14, Tb=464.15, ring=1)
 #    print cresol_wilson.Tc, cresol_wilson.f_acent
 
 #    cresol=Componente(177)
