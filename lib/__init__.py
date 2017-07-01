@@ -35,3 +35,7 @@ for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
     if fname != "__init__":
         __all__.append(fname)
+
+for module in __all__:
+    child_module = "lib." + module
+    __import__(child_module)
