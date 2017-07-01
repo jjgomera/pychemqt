@@ -31,9 +31,10 @@ from functools import partial
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from lib import sql
+from lib.config import IMAGE_PATH
 from lib.newComponent import (Joback, Constantinou, Wilson_Jasperson,
                               Marrero_Pardillo, Elliott, Ambrose)
-from lib import sql
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -308,36 +309,37 @@ class Ui_Contribution(newComponent):
         lyt = QtWidgets.QVBoxLayout(self)
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(widget)
-        self.Grupos = QtWidgets.QTableWidget()
-        self.Grupos.verticalHeader().hide()
-        self.Grupos.setRowCount(0)
-        self.Grupos.setColumnCount(2)
-        self.Grupos.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Nk"))
-        self.Grupos.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
+        self.Grupo = QtWidgets.QTableWidget()
+        self.Grupo.verticalHeader().hide()
+        self.Grupo.setRowCount(0)
+        self.Grupo.setColumnCount(2)
+        self.Grupo.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Nk"))
+        self.Grupo.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
             QtWidgets.QApplication.translate("pychemqt", "Group")))
-        self.Grupos.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.Grupos.setSortingEnabled(True)
-        self.Grupos.horizontalHeader().setStretchLastSection(True)
-        self.Grupos.setColumnWidth(0, 50)
-        self.Grupos.setItemDelegateForColumn(0, SpinEditor(self))
-        self.Grupos.cellChanged.connect(self.cellChanged)
-        self.Grupos.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
-        layout.addWidget(self.Grupos, 0, 0, 3, 3)
+        self.Grupo.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.Grupo.setSortingEnabled(True)
+        self.Grupo.horizontalHeader().setStretchLastSection(True)
+        self.Grupo.setColumnWidth(0, 50)
+        self.Grupo.setItemDelegateForColumn(0, SpinEditor(self))
+        self.Grupo.cellChanged.connect(self.cellChanged)
+        self.Grupo.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        layout.addWidget(self.Grupo, 0, 0, 3, 3)
 
         self.Formula = QtWidgets.QLabel()
         font = QtGui.QFont()
         font.setPointSize(12)
         self.Formula.setFont(font)
-        self.Formula.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.Formula.setAlignment(
+                QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.Formula.setFixedHeight(50)
         layout.addWidget(self.Formula, 0, 3)
         self.botonBorrar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/editDelete.png")),
+            os.path.join(IMAGE_PATH, "button", "editDelete.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Delete"))
         self.botonBorrar.clicked.connect(self.borrar)
         layout.addWidget(self.botonBorrar, 1, 3)
         self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/clear.png")),
+            os.path.join(IMAGE_PATH, "button", "clear.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonClear.clicked.connect(self.clear)
         layout.addWidget(self.botonClear, 2, 3)
@@ -348,17 +350,18 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.line, 3, 0, 1, 4)
 
         self.TablaContribuciones = QtWidgets.QListWidget()
-        self.TablaContribuciones.currentItemChanged.connect(self.selectedChanged)
+        self.TablaContribuciones.currentItemChanged.connect(self.selectChanged)
         self.TablaContribuciones.itemDoubleClicked.connect(self.add)
         layout.addWidget(self.TablaContribuciones, 4, 0, 7, 3)
         self.botonAdd = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/add.png")),
+            os.path.join(IMAGE_PATH, "button", "add.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Add"))
         self.botonAdd.setDisabled(True)
         self.botonAdd.clicked.connect(self.add)
         layout.addWidget(self.botonAdd, 4, 3)
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 5, 1, 1, 1)
+        layout.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 1)
 
         # Show widget for specific method
         if metodo in ["Constantinou", "Wilson"]:
@@ -366,59 +369,66 @@ class Ui_Contribution(newComponent):
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
             self.Order1.toggled.connect(self.Order)
-            layout.addWidget(self.Order1, 6, 3)
+            layout.addWidget(self.Order1, 9, 3)
             self.Order2 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "2nd order"))
-            layout.addWidget(self.Order2, 7, 3)
+            layout.addWidget(self.Order2, 10, 3)
 
         if metodo == "Wilson":
             layout.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate("pychemqt", "Rings")), 8, 3)
-            self.anillos = QtWidgets.QSpinBox()
-            self.anillos.valueChanged.connect(partial(self.changeParams, "ring"))
-            layout.addWidget(self.anillos, 9, 3)
+            self.ring = QtWidgets.QSpinBox()
+            self.ring.valueChanged.connect(partial(self.changeParams, "ring"))
+            layout.addWidget(self.ring, 9, 3)
 
         if metodo == "Marrero":
             layout.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate("pychemqt", "Atoms")), 8, 3)
-            self.Atomos = QtWidgets.QSpinBox()
-            self.Atomos.valueChanged.connect(partial(self.changeParams, "atomos"))
-            layout.addWidget(self.Atomos, 9, 3)
+            self.atoms = QtWidgets.QSpinBox()
+            self.atoms.valueChanged.connect(
+                    partial(self.changeParams, "atomos"))
+            layout.addWidget(self.atoms, 9, 3)
 
         if metodo == "Ambrose":
-            layout.addWidget(QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "Platt number")), 8, 3)
-            self.Platt = QtWidgets.QSpinBox()
-            self.Platt.setToolTip(QtWidgets.QApplication.translate(
-                "pychemqt", "The Platt number is the number of pairs of carbon \
-                atoms which are separated \nby three carbon-carbon bonds and \
-                is an indicator of the degree of branching in the molecule.\n\
-                The Platt number of an n-alkane is equal to the number of \
-                carbons minus three"))
-            self.Platt.valueChanged.connect(partial(self.changeParams, "platt"))
-            layout.addWidget(self.Platt, 9, 3)
+            layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+                "pychemqt", "Platt number")), 8, 3)
+            self.plat = QtWidgets.QSpinBox()
+            tr = "The Platt number is the number of pairs of carbon atoms "
+            tr += "which are separated by three carbon-carbon bonds and is an "
+            tr += "indicator of the degree of branching in the molecule. The "
+            tr += "Platt number of an n-alkane is equal to the number of "
+            tr += "carbons minus three"
+            self.plat.setToolTip(QtWidgets.QApplication.translate(
+                "pychemqt", tr))
+            self.plat.valueChanged.connect(partial(self.changeParams, "platt"))
+            layout.addWidget(self.plat, 9, 3)
 
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 1)
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 11, 0, 1, 4)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            11, 1)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Name")), 12, 0)
         self.nombre = QtWidgets.QLineEdit()
         self.nombre.textChanged.connect(partial(self.changeParams, "name"))
         layout.addWidget(self.nombre, 12, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Molecular Weight")), 13, 0)
+        label = QtWidgets.QLabel("M")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Molecular Weight"))
+        layout.addWidget(label, 13, 0)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         self.M.valueChanged.connect(partial(self.changeParams, "M"))
         layout.addWidget(self.M, 13, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Boiling point")), 14, 0)
+        label = QtWidgets.QLabel("Tb")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Experimental Boiling Temperature"))
+        layout.addWidget(label, 14, 0)
         self.Tb = Entrada_con_unidades(Temperature)
         self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
         layout.addWidget(self.Tb, 14, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Specific Gravity")), 15, 0)
+        label = QtWidgets.QLabel("SG")
+        label.setToolTip(QtWidgets.QApplication.translate(
+            "pychemqt", "Experimental Specific Gravity at 60ºF"))
+        layout.addWidget(label, 15, 0)
         self.SG = Entrada_con_unidades(float)
         self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
         layout.addWidget(self.SG, 15, 1)
@@ -448,11 +458,11 @@ class Ui_Contribution(newComponent):
             self.TablaContribuciones.item(i).setHidden(self.Order1.isChecked())
 
     def borrar(self, indice=None):
-        """Remove some group contribution from list"""
+        """Remove some group contribution from added group list"""
         if not indice:
-            indice = self.Grupos.currentRow()
+            indice = self.Grupo.currentRow()
         if indice != -1:
-            self.Grupos.removeRow(indice)
+            self.Grupo.removeRow(indice)
             del self.grupo[indice]
             del self.indices[indice]
             del self.contribucion[indice]
@@ -461,8 +471,8 @@ class Ui_Contribution(newComponent):
 
     def clear(self):
         """Clear widgets from dialog"""
-        self.Grupos.clearContents()
-        self.Grupos.setRowCount(0)
+        self.Grupo.clearContents()
+        self.Grupo.setRowCount(0)
         self.grupo = []
         self.indices = []
         self.contribucion = []
@@ -475,38 +485,44 @@ class Ui_Contribution(newComponent):
         self.status.setState(self.unknown.status, self.unknown.msg)
 
     def cellChanged(self, i, j):
+        """Process the user manual count of group contribution changed"""
         if j == 0:
-            valor = int(self.Grupos.item(i, j).text())
+            valor = int(self.Grupo.item(i, j).text())
             if valor <= 0:
                 self.borrar(i)
             else:
                 self.contribucion[i] = int(valor)
-        self.calculo(**{"group": self.indices, "contribution": self.contribucion})
+        kw = {"group": self.indices, "contribution": self.contribucion}
+        self.calculo(**kw)
 
-    def selectedChanged(self, i):
+    def selectChanged(self, i):
+        """The add button is only enabled when the group list have any selected
+        row"""
         self.botonAdd.setEnabled(i != -1)
 
     def add(self):
-        indice = self.Grupos.rowCount()
+        """Add the current selected item to the list of group"""
+        indice = self.Grupo.rowCount()
         grupo = self.TablaContribuciones.currentItem().text()
         if grupo not in self.grupo:
             self.grupo.append(grupo)
             self.indices.append(self.TablaContribuciones.currentRow())
             self.contribucion.append(1)
-            self.Grupos.setRowCount(indice+1)
-            self.Grupos.setItem(indice, 0, QtWidgets.QTableWidgetItem("1"))
-            self.Grupos.item(indice, 0).setTextAlignment(
+            self.Grupo.setRowCount(indice+1)
+            self.Grupo.setItem(indice, 0, QtWidgets.QTableWidgetItem("1"))
+            self.Grupo.item(indice, 0).setTextAlignment(
                 QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-            self.Grupos.setItem(indice, 1, QtWidgets.QTableWidgetItem(grupo))
-            self.Grupos.item(indice, 1).setFlags(
+            self.Grupo.setItem(indice, 1, QtWidgets.QTableWidgetItem(grupo))
+            self.Grupo.item(indice, 1).setFlags(
                 QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.Grupos.setRowHeight(indice, 20)
+            self.Grupo.setRowHeight(indice, 20)
         else:
             indice = self.grupo.index(grupo)
             self.contribucion[indice] += 1
-            self.Grupos.item(indice, 0).setText(str(int(
-                self.Grupos.item(indice, 0).text())+1))
-        self.calculo(**{"group": self.indices, "contribution": self.contribucion})
+            self.Grupo.item(indice, 0).setText(str(int(
+                self.Grupo.item(indice, 0).text())+1))
+        kw = {"group": self.indices, "contribution": self.contribucion}
+        self.calculo(**kw)
 
     def calculo(self, **kwargs):
         """Calculate function"""
