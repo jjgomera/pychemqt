@@ -35,7 +35,7 @@ from numpy import array
 
 from lib import unidades
 from lib.physics import R_atml, R_Btu
-from lib.compuestos import newComponente
+from lib.newComponent import newComponente
 from lib.config import conf_dir
 
 
@@ -2595,7 +2595,8 @@ def PourPoint(SG, Tb, v100=None):
     Examples
     --------
     >>> T = unidades.Temperature(972, "R")
-    >>> "%0.0f" % PourPoint(0.839, T, 3).R
+    >>> v = unidades.Diffusivity(3, "cSt")
+    >>> "%0.0f" % PourPoint(0.839, T, v).R
     '458'
 
     References
@@ -2604,12 +2605,12 @@ def PourPoint(SG, Tb, v100=None):
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
-    v100 = unidades.Diffusivity(v100)
+    v100 = unidades.Diffusivity(v100).cSt
 
     # Check input in range of validity
     if SG < 0.8 or SG > 1 or Tb_R < 800 or Tb_R > 1500:
         raise NotImplementedError("Incoming out of bound")
-    elif v100 is not None and (v100.cSt < 2 or v100.cSt > 960):
+    elif v100 is not None and (v100 < 2 or v100 > 960):
         raise NotImplementedError("Incoming out of bound")
 
     if v100 is not None:
@@ -3806,7 +3807,7 @@ class Petroleo(newComponente):
             self.FlashPo = unidades.Temperature(0.68*self.T10.F-109.6, "F")
 
             # Calculate PNA decomposition
-            self.xp, self.xn, self.xa = self._PNA()
+            # self.xp, self.xn, self.xa = self._PNA()
 
         if self.definicion == 8:
             # Simple definition known only the number of carbon atoms
@@ -3869,8 +3870,9 @@ class Petroleo(newComponente):
         else:
             self.Kw = self.Tb.R**(1./3)/self.SG
 
-        if not self.hasCurve:
+        if not self.hasSG:
             self.SG = self._SG()
+            self.API = 141.5/self.SG-131.5
 
         if not self.hasRefraction:
             self.n, self.I = self._n()
@@ -3966,7 +3968,7 @@ class Petroleo(newComponente):
             CCR = 100
         self.CCR = unidades.Dimensionless(CCR)
 
-        newComponent.calculo(self)
+        newComponente.calculo(self)
 
     def tr(self, T):
         return T/self.Tc
@@ -4191,7 +4193,7 @@ class Petroleo(newComponente):
     def _D86_TBP(self, D86, reverse=False):
         """Use the preferences to calcuate the TBP distillation curve from D86
         with the desired method"""
-        index = self.Preferences.getint("petro", "curva")
+        index = self.Preferences.getint("petro", "curve")
         method = [D86_TBP_Riazi, D86_TBP_Daubert][index]
         TBP = method(D86, reverse)
         return TBP
@@ -4199,7 +4201,7 @@ class Petroleo(newComponente):
     def _SD_D86(self, SD):
         """Use the preferences to calcuate the D86 distillation curve from SD
         with the desired method"""
-        index = self.Preferences.getint("petro", "curva")
+        index = self.Preferences.getint("petro", "curve")
         method = [SD_D86_Riazi, SD_D86_Daubert][index]
         D86 = method(SD)
         return D86
