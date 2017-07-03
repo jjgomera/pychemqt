@@ -288,6 +288,8 @@ class GroupContribution(newComponente):
 
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
+
+        self.group = self._group()
         if not self.kwargs["group"] or not self.kwargs["contribution"]:
             self.msg = QApplication.translate("pychemqt", "undefined group")
             self.status = 0
@@ -336,20 +338,35 @@ class GroupContribution(newComponente):
     def _atomos(self):
         """Procedure to calculate the atom number of atoms in molecule"""
         a = 0
-        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if i < self.FirstOrder:
-                for ele, x in self.coeff["txt"][i][1].items():
-                    a += c*x
+        for grp in self.group:
+            for x in grp.values():
+                a += x
         return a
 
     def _M(self):
         """Procedure to calculate the molecular weight"""
         M = 0
-        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if i < self.FirstOrder:
-                for ele, x in self.coeff["txt"][i][1].items():
-                    M += c*x*MW[ele]
+        for grp in self.group:
+            for ele, c in grp.items():
+                M += c*MW[ele]
         return M
+
+    def _group(self):
+        """From group contribution desglose the chemical composition"""
+        group = []
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            # Only the first order term count for this
+            if i < self.FirstOrder:
+                # Clean additional comment of group, ring flag and other,
+                # separated of main group by spaces
+                cmp = self.coeff["txt"][i][0]
+                if " " in cmp:
+                    cmp = cmp.split(" ")[0]
+
+                grp = atomic_decomposition(cmp)
+                for x in range(c):
+                    group.append(grp)
+        return group
 
     def _SG(self):
         # FIXME: Don't work
@@ -400,32 +417,37 @@ class GroupContribution(newComponente):
         V = R_atml/1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-298.15/self.Tc)**(2.0/7)) #m3/mol
         return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
 
-
     def EmpiricFormula(self):
-        if "txt" not in self.coeff:
-            return "", ""
-        C = H = N = O = S = F = Cl = Br = I = 0
-        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if i < self.FirstOrder:
-                C += self.coeff["txt"][i][1].get("C", 0)*c
-                H += self.coeff["txt"][i][1].get("H", 0)*c
-                N += self.coeff["txt"][i][1].get("N", 0)*c
-                O += self.coeff["txt"][i][1].get("O", 0)*c
-                S += self.coeff["txt"][i][1].get("S", 0)*c
-                F += self.coeff["txt"][i][1].get("F", 0)*c
-                Cl += self.coeff["txt"][i][1].get("Cl", 0)*c
-                Br += self.coeff["txt"][i][1].get("Br", 0)*c
-                I += self.coeff["txt"][i][1].get("I", 0)*c
+        "Calculate the empiric formulae of compound from group contribution"""
+
+        total = {}
+        for g in self.group:
+            for key, value in g.items():
+                if key not in total:
+                    total[key] = 0
+                total[key] += value
+
         string = ""
         formula = ""
-        for ele, txt in zip([C, H, N, O, S, F, Cl, Br, I],
-                            ["C", "H", "N", "O", "S", "F",  "Cl", "Br", "I"]):
-            if ele > 1:
-                string += "%s<sub>%i</sub>" % (txt, ele)
-                formula += "%s%i" % (txt, ele)
-            elif ele == 1:
-                string += "%s" % txt
-                formula += "%s" % txt
+        for element in ["C", "H", "N", "O", "S", "F",  "Cl", "Br", "I"]:
+            if element not in total:
+                continue
+            if total[element] > 1:
+                string += "%s<sub>%i</sub>" % (element, total[element])
+                formula += "%s%i" % (element, total[element])
+            elif total[element] == 1:
+                string += "%s" % element
+                formula += "%s" % element
+            del total[element]
+
+        # Add other element at end of formule
+        for key, value in total.items():
+            if value > 1:
+                string += "%s<sub>%i</sub>" % (key, value)
+                formula += "%s%i" % (key, value)
+            elif value == 1:
+                string += "%s" % key
+                formula += "%s" % key
 
         return string, formula
 
@@ -484,6 +506,8 @@ class Joback(GroupContribution):
     '489.94 716.0 44.09'
     >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
     '341.5'
+    >>> cmp.formula
+    'C8H10O'
 
     Example 3-1 in [1]_, 2,4 dimethylphenol ΔH and ΔG
     >>> "%0.2f %0.2f" % (cmp.Hf.kJg*cmp.M, cmp.Gf.kJg*cmp.M)
@@ -599,47 +623,47 @@ class Joback(GroupContribution):
                 -0.966, -1.34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
         # Name and element composition
-        "txt": [("CH3", {"C": 1, "H": 3}),
-                ("CH2", {"C": 1, "H": 2}),
-                ("CH", {"C": 1, "H": 1}),
-                ("C", {"C": 1}),
-                ("=CH2", {"C": 1, "H": 2}),
-                ("=CH", {"C": 1, "H": 1}),
-                ("=C", {"C": 1}),
-                ("=C=", {"C": 1}),
-                ("≡CH", {"C": 1, "H": 1}),
-                ("≡C", {"C": 1}),
-                ("CH2 (cyclic)", {"C": 1, "H": 2}),
-                ("CH (cyclic)", {"C": 1, "H": 1}),
-                ("C (cyclic)", {"C": 1}),
-                ("-CH (Aromatic)", {"C": 1, "H": 1}),
-                ("=C (Aromatic)", {"C": 1}),
-                ("F", {"F": 1}),
-                ("Cl", {"Cl": 1}),
-                ("Br", {"Br": 1}),
-                ("I", {"I": 1}),
-                ("-OH", {"O": 1, "H": 1}),
-                ("-OH (Aromatic)", {"O": 1, "H": 1}),
-                ("-O-", {"O": 1}),
-                ("-O- (cyclic)", {"O": 1}),
-                ("C=O", {"C": 1, "O": 1}),
-                ("C=O (cyclic)", {"C": 1, "O": 1}),
-                ("CH=O", {"C": 1, "H": 1, "O": 1}),
-                ("COOH", {"C": 1, "H": 1, "O": 2}),
-                ("COO", {"C": 1, "O": 2}),
-                ("=O", {"O": 1}),
-                ("NH2", {"N": 1, "H": 2}),
-                ("NH", {"N": 1, "H": 1}),
-                ("NH (cyclic)", {"N": 1, "H": 1}),
-                ("N", {"N": 1}),
-                ("=N-", {"N": 1}),
-                ("=N- (cyclic)", {"N": 1}),
-                ("=NH", {"N": 1, "H": 1}),
-                ("CN", {"C": 1, "N": 1}),
-                ("NO2", {"N": 1, "O": 2}),
-                ("SH", {"S": 1, "H": 1}),
-                ("S", {"S": 1}),
-                ("S (cyclic)",  {"S": 1})]}
+        "txt": [("CH3", ),
+                ("CH2", ),
+                ("CH", ),
+                ("C", ),
+                ("=CH2", ),
+                ("=CH", ),
+                ("=C", ),
+                ("=C=", ),
+                ("≡CH", ),
+                ("≡C", ),
+                ("CH2 (cyclic)", ),
+                ("CH (cyclic)", ),
+                ("C (cyclic)", ),
+                ("-CH (Aromatic)", ),
+                ("=C (Aromatic)", ),
+                ("F", ),
+                ("Cl", ),
+                ("Br", ),
+                ("I", ),
+                ("-OH", ),
+                ("-OH (Aromatic)", ),
+                ("-O-", ),
+                ("-O- (cyclic)", ),
+                ("C=O", ),
+                ("C=O (cyclic)", ),
+                ("CH=O", ),
+                ("COOH", ),
+                ("COO", ),
+                ("=O", ),
+                ("NH2", ),
+                ("NH", ),
+                ("NH (cyclic)", ),
+                ("N", ),
+                ("=N-", ),
+                ("=N- (cyclic)", ),
+                ("=NH", ),
+                ("CN", ),
+                ("NO2", ),
+                ("SH", ),
+                ("S", ),
+                ("S (cyclic)", )]}
 
     FirstOrder = 41
 
@@ -817,6 +841,8 @@ class Constantinou(GroupContribution):
     >>> cmp = Constantinou(group=[0, 10, 13, 16], contribution=[1, 4, 1, 1])
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '718.6 42.97 371.9'
+    >>> cmp.formula
+    'C8H10O'
 
     Example 2-3 in [1]_, butanols critical properties
     >>> b1 = Constantinou(group=[0, 1, 15], contribution=[1, 3, 1])
@@ -1106,84 +1132,84 @@ class Constantinou(GroupContribution):
                 -1.4995, -1.4825, -0.0584],
 
         # Custom dict for molecular weight and empiric formula calculation
-        "txt": [("CH3", {"C": 1, "H": 3}),
-                ("CH2", {"C": 1, "H": 2}),
-                ("CH", {"C": 1, "H": 1}),
-                ("C", {"C": 1}),
-                ("CH2=CH", {"C": 2, "H": 3}),
-                ("CH=CH", {"C": 2, "H": 2}),
-                ("CH2=C", {"C": 2, "H": 2}),
-                ("CH=C", {"C": 2, "H": 1}),
-                ("C=C", {"C": 2}),
-                ("CH2=C=CH", {"C": 3, "H": 3}),
-                ("-CH (Aromatic)", {"C": 1, "H": 1}),
-                ("=C (Aromatic)", {"C": 1}),
-                ("-CCH3 (Aromatic)", {"C": 2, "H": 3}),
-                ("-CCH2 (Aromatic)", {"C": 2, "H": 2}),
-                ("-CCH (Aromatic)", {"C": 2, "H": 1}),
-                ("-OH", {"O": 1, "H": 1}),
-                ("-OH (Aromatic)", {"O": 1, "H": 1}),
-                ("CH3CO", {"C": 2, "H": 3, "O": 1}),
-                ("CH2CO", {"C": 2, "H": 2, "O": 1}),
-                ("CHO", {"C": 1, "H": 1, "O": 1}),
-                ("CH3COO", {"C": 2, "H": 3, "O": 2}),
-                ("CH2COO", {"C": 2, "H": 2, "O": 2}),
-                ("HCOO", {"C": 1, "H": 1, "O": 2}),
-                ("CH3O", {"C": 1, "H": 3, "O": 1}),
-                ("CH2O", {"C": 1, "H": 2, "O": 1}),
-                ("CH-O", {"C": 1, "H": 1, "O": 1}),
-                ("FCH2O", {"C": 1, "H": 2, "O": 1, "F": 1}),
-                ("CH2NH2", {"C": 1, "H": 4, "N": 1}),
-                ("CHNH2", {"C": 1, "H": 3, "N": 1}),
-                ("CH3NH", {"C": 1, "H": 4, "N": 1}),
-                ("CH2NH", {"C": 1, "H": 3, "N": 1}),
-                ("CHNH", {"C": 1, "H": 2, "N": 1}),
-                ("CH3N", {"C": 1, "H": 3, "N": 1}),
-                ("CH2N", {"C": 1, "H": 2, "N": 1}),
-                ("=CNH2 (Aromatic)", {"C": 1, "H": 2, "N": 1}),
-                ("C5H4N", {"C": 5, "H": 4, "N": 1}),
-                ("C5H3N", {"C": 5, "H": 3, "N": 1}),
-                ("CH2CN", {"C": 2, "H": 2, "N": 1}),
-                ("COOH", {"C": 1, "H": 1, "O": 2}),
-                ("CH2Cl", {"C": 1, "H": 2, "Cl": 1}),
-                ("CHCl", {"C": 1, "H": 1, "Cl": 1}),
-                ("CCl", {"C": 1, "Cl": 1}),
-                ("CHCl2", {"C": 1, "H": 1, "Cl": 2}),
-                ("CCl3", {"C": 1, "Cl": 3}),
-                ("CCl2", {"C": 1, "Cl": 2}),
-                ("=CCl (Aromatic)", {"C": 1, "Cl": 1}),
-                ("CH2NO2", {"C": 1, "H": 2, "O": 2, "N": 1}),
-                ("CHNO2", {"C": 1, "H": 1, "O": 2, "N": 1}),
-                ("=CNO2 (Aromatic)", {"C": 1, "O": 2, "N": 1}),
-                ("CH2SH", {"C": 1, "H": 3, "S": 1}),
-                ("I", {"I": 1}),
-                ("Br", {"Br": 1}),
-                ("CH≡C", {"C": 2, "H": 1}),
-                ("C≡C", {"C": 2}),
-                ("Cl-C=C", {"C": 2, "Cl": 1}),
-                ("=CF (Aromatic)", {"C": 1, "F": 1}),
-                ("HCON(CH2)2", {"C": 3, "H": 5, "O": 1, "N": 1}),
-                ("CF3", {"C": 1, "F": 3}),
-                ("CF2", {"C": 1, "F": 2}),
-                ("CF", {"C": 1, "F": 1}),
-                ("COO", {"C": 1, "O": 2}),
-                ("CCl2F", {"C": 1, "F": 1,  "Cl": 2}),
-                ("HCClF", {"C": 1, "H": 1, "F": 1, "Cl": 1}),
-                ("CClF2", {"C": 1, "F": 2,  "Cl": 1}),
-                ("F (others)", {"F": 1}),
-                ("CONH2", {"C": 1, "H": 2, "O": 1, "N": 1}),
-                ("CONHCH3", {"C": 2, "H": 4, "O": 1, "N": 1}),
-                ("CONHCH2", {"C": 2, "H": 3, "O": 1, "N": 1}),
-                ("CON(CH3)2", {"C": 3, "H": 6, "O": 1, "N": 1}),
-                ("CONCH2CH2", {"C": 3, "H": 4, "O": 1, "N": 1}),
-                ("CON(CH2)2", {"C": 3, "H": 4, "O": 1, "N": 1}),
-                ("C2H5O2", {"C": 2, "H": 5, "O": 2}),
-                ("C2H4O2", {"C": 2, "H": 4, "O": 2}),
-                ("CH3S", {"C": 1, "H": 3, "S": 1}),
-                ("CH2S", {"C": 1, "H": 2, "S": 1}),
-                ("CHS", {"C": 1, "H": 1, "S": 1}),
-                ("C4H3S", {"C": 4, "H": 3, "S": 1}),
-                ("C4H2S", {"C": 4, "H": 2, "S": 1}),
+        "txt": [("CH3", ),
+                ("CH2", ),
+                ("CH", ),
+                ("C", ),
+                ("CH2=CH", ),
+                ("CH=CH", ),
+                ("CH2=C", ),
+                ("CH=C", ),
+                ("C=C", ),
+                ("CH2=C=CH", ),
+                ("-CH (Aromatic)", ),
+                ("=C (Aromatic)", ),
+                ("-CCH3 (Aromatic)", ),
+                ("-CCH2 (Aromatic)", ),
+                ("-CCH (Aromatic)", ),
+                ("-OH", ),
+                ("-COH (Aromatic)", ),
+                ("CH3CO", ),
+                ("CH2CO", ),
+                ("CHO", ),
+                ("CH3COO", ),
+                ("CH2COO", ),
+                ("HCOO", ),
+                ("CH3O", ),
+                ("CH2O", ),
+                ("CH-O", ),
+                ("FCH2O", ),
+                ("CH2NH2", ),
+                ("CHNH2", ),
+                ("CH3NH", ),
+                ("CH2NH", ),
+                ("CHNH", ),
+                ("CH3N", ),
+                ("CH2N", ),
+                ("=CNH2 (Aromatic)", ),
+                ("C5H4N", ),
+                ("C5H3N", ),
+                ("CH2CN", ),
+                ("COOH", ),
+                ("CH2Cl", ),
+                ("CHCl", ),
+                ("CCl", ),
+                ("CHCl2", ),
+                ("CCl3", ),
+                ("CCl2", ),
+                ("=CCl (Aromatic)", ),
+                ("CH2NO2", ),
+                ("CHNO2", ),
+                ("=CNO2 (Aromatic)", ),
+                ("CH2SH", ),
+                ("I", ),
+                ("Br", ),
+                ("CH≡C", ),
+                ("C≡C", ),
+                ("Cl-C=C", ),
+                ("=CF (Aromatic)", ),
+                ("HCONCH2CH2", ),
+                ("CF3", ),
+                ("CF2", ),
+                ("CF", ),
+                ("COO", ),
+                ("CCl2F", ),
+                ("HCClF", ),
+                ("CClF2", ),
+                ("F (others)", ),
+                ("CONH2", ),
+                ("CONHCH3", ),
+                ("CONHCH2", ),
+                ("CONCH3CH3", ),
+                ("CONCH2CH2", ),
+                ("CONCH2CH2", ),
+                ("C2H5O2", ),
+                ("C2H4O2", ),
+                ("CH3S", ),
+                ("CH2S", ),
+                ("CHS", ),
+                ("C4H3S", ),
+                ("C4H2S", ),
                 
                 # Second order
                 ("CH(CH3)2", ),
@@ -1339,6 +1365,8 @@ class Wilson(GroupContribution):
     >>> c2(group=[3, 0, 5, 42], contribution=[8, 10, 1, 1])
     >>> "%0.1f %0.2f %0.1f" % (c1.Tc, c1.Pc.bar, c2.Tc)
     '702.9 37.94 693.6'
+    >>> c1.formula
+    'C8H10O'
 
     References
     ----------
@@ -1461,19 +1489,6 @@ class Wilson(GroupContribution):
                 M += c*MW[self.coeff["txt"][i][0]]
         return M
 
-    def EmpiricFormula(self):
-        string = ""
-        formula = ""
-        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if i < self.FirstOrder:
-                if c > 1:
-                    string += "%s<sub>%i</sub>" % (self.coeff["txt"][i][0], c)
-                    formula += "%s%i" % (self.coeff["txt"][i][0], c)
-                elif c == 1:
-                    string += "%s" % self.coeff["txt"][i][0]
-                    formula += "%s" % self.coeff["txt"][i][0]
-        return string, formula
-
 
 class Marrero(GroupContribution):
     """
@@ -1509,6 +1524,8 @@ class Marrero(GroupContribution):
     ... contribution=[1, 1, 1, 2, 2, 1, 1])
     >>> "%0.1f %0.1f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '699.8 42.2 378.8'
+    >>> cmp.formula
+    'C8H10O'
 
     Example 2-7 in [1]_, butanols
     >>> b1 = Marrero(group=[1, 28, 41], contribution=[1, 2, 1])
@@ -1558,7 +1575,7 @@ class Marrero(GroupContribution):
     >>> "%0.1f %0.1f %0.1f" % (cmp.Tb, cmp.Tc, cmp.Vc.ccg*cmp.M)
     '519.5 787.3 405.1'
 
-    Table 8d in [6]_ for m-Terphenyl 
+    Table 8d in [6]_ for m-Terphenyl
     >>> cmp = Marrero(group=[129, 130, 141, 132, 133],
     ... contribution=[5, 4, 2, 5, 4], Tb=638)
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
@@ -1844,10 +1861,10 @@ class Marrero(GroupContribution):
                     "Bad definition, check input group and contribution")
             self.status = 0
         else:
-            return GroupContribution.isCalculable(self)
+            return True
 
     def _decomposition(self):
-        """Specific procedure to calculate the molecular weight of compound 
+        """Specific procedure to calculate the molecular weight of compound
         from group contribution"""
         group = []
         rest = {}
@@ -1940,10 +1957,6 @@ class Marrero(GroupContribution):
         self.Vc = unidades.SpecificVolume((25.1+vc)/self.M, "ccg")
 
         GroupContribution.calculo(self)
-
-    def EmpiricFormula(self):
-        return "", ""
-
 
 
 class Elliott(GroupContribution):
