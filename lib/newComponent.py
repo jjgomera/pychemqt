@@ -76,24 +76,30 @@ __doi__ = {
                 "LA, USA, February 25-29, 1996.",
          "doi": ""},
     6:
-        {"autor": "Marrero-Marejon, J., Pardillo-Fontdevila, F.",
+        {"autor": "Marrero-Morejón, J., Pardillo-Fontdevila, F.",
          "title": "Estimation of Pure Compound Properties Using "
                   "Group-Interaction Contributions",
          "ref": "AIChE J., 45: 615 (1999).",
          "doi": "10.1002/aic.690450318"},
-
-
-
-
-
     7:
+        {"autor": "Marrero-Morejon, J., Pardillo-Fontdevila, E.",
+         "title": "Estimation of Liquid Viscosity at Ambient Temperature of "
+                  "Pure Organic Compounds by Using Group-Interaction "
+                  "Contributions",
+         "ref": "Chemical Engineering Journal 79 (2000) 69-72",
+         "doi": "10.1016/s1385-8947(99)00173-4"},
+
+
+
+
+    8:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
 }
 
-# Get molecular weight of atomic element
+# Get molecular weight of atomic elements
 MW = {}
 databank.execute("SELECT symbol, atomic_mass FROM ELEMENTS")
 for symbol, m in databank:
@@ -1210,7 +1216,7 @@ class Constantinou(GroupContribution):
                 ("CHS", ),
                 ("C4H3S", ),
                 ("C4H2S", ),
-                
+
                 # Second order
                 ("CH(CH3)2", ),
                 ("C(CH3)3", ),
@@ -1394,6 +1400,7 @@ class Wilson(GroupContribution):
                1.66000, 6.33000, 1.07000, 0.0, 1.08000, 0.0, 0.0, -0.08000,
                0.69000, 2.05000, 2.04000, 0.00, 0.00, 0.00, 0.00, 0.50, 0.00,
                0.50, 0.00, 1.50, 1.00, 0.00, 0.00, -0.50],
+
         "txt": [("H",),
                 ("He",),
                 ("B",),
@@ -1582,15 +1589,26 @@ class Marrero(GroupContribution):
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '638.0 907.3 33.9 764.3'
 
+    Table 3 in [7]_ for o-phthalate
+    >>> cmp = Marrero(group=[129, 132, 133, 138, 153, 46, 28, 1],
+    ... contribution=[2, 1, 2, 1, 2, 2, 4, 2])
+    >>> "%0.2f" % cmp.mu.muPas
+    '18.58'
+
     References
     ----------
     [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    [6] .. Marrero-Marejon, J., Pardillo-Fontdevila, F. Estimation of Pure
+    [6] .. Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
         Compound Properties Using Group-Interaction Contributions. AIChE J.,
         45: 615 (1999).
+    [7] .. Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
+        Viscosity at Ambient Temperature of Pure Organic Compounds by Using
+        Group-Interaction Contributions. Chemical Engineering Journal 79
+        (2000) 69-72
     """
     coeff = {
+        # Table 5 from [6]_
         "tc": [-0.0213, -0.0227, -0.0223, -0.0189, 0.8526, 0.1792, 0.3818,
                -0.0214, 0.1117, 0.0987, -0.0370, -0.9141, -0.9166, -0.9146,
                -0.0876, -0.0205, -0.0362, -0.0606, -0.0890, 0.0267, -0.0974,
@@ -1677,6 +1695,28 @@ class Marrero(GroupContribution):
                700.06, 1232.55, 437.78, 517.75, 411.29, 422.51, 682.19, 532.24,
                1012.51, 382.25, 385.36, 387.17, 1022.45, 298.12, 673.59,
                597.59],
+
+        # Table 1 and 2 from [7]_
+        "mu": [0.4712, 0.2588, 0.2472, 0.1833, 0.0834, 0.1670, 0, -0.0926, 0,
+               0.0314, 0, 0.6294, 0.7161, 0.6086, 2.6902, 0.4020, 0.5475,
+               1.3881, 2.6110, 0.6410, 0.5904, 0, 1.3476, 0.1695, 1.9082,
+               1.9476, 0, 0.5587, 0.0975, -0.0543, -0.0417, -0.0775, -0.0488,
+               0, -0.4464, 0, -0.4327, 0, 0.7214, 0.5799, 0.3971, 2.9295,
+               0.1089, 0.2605, 1.0415, 1.9798, 0.3632, 0.2089, 1.5471, 0.2857,
+               -0.0047, 1.9082, 0.7255, 0.2785, -0.1470, 0.1181, 0, 0, 0,
+               -0.0701, 0, 0.3633, 2.9212, -0.1711, 0.2242, 0, -0.0606, 1.6883,
+               0.6492, 0, 0, 0, 0, 0, 0, 0, -0.1491, 0.2947, 0, 2.8610, 0, 0,
+               0, 0, 0.2894, 0.3306, 0, 0.3096, 0.1060, 0, 0, -0.0465, 0,
+               -0.2144, 0, 0.3593, -0.0982, 1.1338, 0, 0.1966, 1.1345, 1.2214,
+               0.2482, 0, 0, 0, 0.1831, 0, 0, 0, 0, 0.2980, 0.2136, 0.1692,
+               0.2675, -0.0704, 0.3781, 0.6534, 0.6341, 0.5436, -0.3205, 0, 0,
+               0, 0.8726, 3.1712, 0, 0, 0, 0.0952, 0.2486, 0.5734, 0.3422,
+               0.2130, 0.3708, 1.0147, 0.5751, 0.5128, 0.4700, 0.7030, 0.2292,
+               0, 0, 0.1880, -0.1932, 0.0404, -0.0847, 0.0139, 4.3481, 0.0963,
+               0.2243, 0.7089, 0, 0.1514, 1.7430, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0],
+
+        # Custom dict for molecular weight and empiric formula calculation
         "txt": [("CH3- & CH3-",),          # 0
                 ("CH3- & -CH2-",),
                 ("CH3- & >CH-",),
@@ -1731,7 +1771,7 @@ class Marrero(GroupContribution):
                 ("-CH2- & -CN",),
                 ("-CH2- & -SH",),
                 ("-CH2- & -S-",),
-                (">CH- & CH-",),
+                (">CH- & >CH-",),
                 (">CH- & >C<",),
                 (">CH- & =CH-",),
                 (">CH- & =C<",),
@@ -1916,38 +1956,31 @@ class Marrero(GroupContribution):
                         group.append(atomic_decomposition(molecule))
         return group, rest
 
-    def _atoms(self, group):
+    def _atoms(self):
         """Procedure to calculate the atom number of molecule"""
         Na = 0
-        for decomp in group:
-            for symbol, c in decomp.items():
+        for grp in self.group:
+            for symbol, c in grp.items():
                 Na += c
         return Na
-
-    def _M(self, group):
-        """Procedure to calculate the molecular weight of compound
-        from group contribution"""
-        M = 0
-        for grp in group:
-            for ele, x in grp.items():
-                M += x*MW[ele]
-        return M
 
     def calculo(self):
         if self.kwargs["M"]:
             self.M = self.kwargs["M"]
         else:
-            self.M = self._M(self.group)
+            self.M = self._M()
 
-        self.Na = self._atoms(self.group)
+        self.Na = self._atoms()
 
-        tc = Pc = vc = tb = 0
+        tc = Pc = vc = tb = mu = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             tb += c*self.coeff["tb"][i]
             tc += c*self.coeff["tc"][i]
             Pc += c*self.coeff["Pc"][i]
             vc += c*self.coeff["vc"][i]
+            mu += c*self.coeff["mu"][i]
 
+        # Table 1 equations in [6]_
         if self.kwargs["Tb"]:
             self.Tb = unidades.Temperature(self.kwargs["Tb"])
         else:
@@ -1955,6 +1988,9 @@ class Marrero(GroupContribution):
         self.Tc = unidades.Temperature(self.Tb/(0.5851-0.9286*tc-tc**2))
         self.Pc = unidades.Pressure((0.1285-0.0059*self.Na-Pc)**-2, "bar")
         self.Vc = unidades.SpecificVolume((25.1+vc)/self.M, "ccg")
+
+        # Eq 1 in [7]_
+        self.mu = unidades.Viscosity(self.M**1.279*exp(mu-7.6425), "muPas")
 
         GroupContribution.calculo(self)
 
