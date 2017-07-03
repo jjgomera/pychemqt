@@ -1372,44 +1372,6 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
-#    cresol=Componente(177)
-#    print cresol.Tb, cresol.Tc
-#    joback=Joback(group=[0, 1, 13, 14, 20], contribution=[1, 1, 4, 2, 1])
-#    print joback.Tb, joback.Tc
-
-#    butanol_1=Componente(160)
-#    print butanol_1.f_acent, butanol_1.Tc
-#    unknown=Constantinou_Gani(group=[0, 1, 15], contribution=[1, 3, 1])
-#    print unknown.f_acent, unknown.Tc
-
-#    ic5=Componente(7)
-#    print ic5.Tb, ic5.Tc
-#    elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
-#    print elliot.Tb, elliot.Tc
-
-#    cresol=Componente(177)
-#    print cresol.Tc, cresol.f_acent
-#    cresol_wilson=Wilson_Jasperson(group=[3, 0, 5, 41], contribution=[8, 10, 1, 1], M=108.14, Tb=464.15, ring=1)
-#    print cresol_wilson.Tc, cresol_wilson.f_acent
-
-#    cresol=Componente(177)
-#    print cresol.Tc, cresol.Pc.bar
-#    cresol_marrero=Marrero_Pardillo(group=[1, 36, 129, 130, 132, 140, 148], contribution=[1, 1, 1, 2, 2, 1, 1], M=122.17, atomos=19)
-#    print cresol_marrero.Tc, cresol_marrero.Pc.bar
-
-#    trimetilpentano=Componente(541)
-#    print trimetilpentano.Tc, trimetilpentano.Pc.psi, trimetilpentano.Vc.ft3lb
-#    desconocido=Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1], Tb=unidades.Temperature(229.72, "F"), M=114.23, platt=3)
-#    print desconocido.Tc.F, desconocido.Pc.psi, desconocido.Vc.ft3lb
-
-#http://en.wikipedia.org/wiki/Joback_method
-#    acetona=Componente(140)
-#    print acetona.Tc, acetona.Pc.bar
-#    joback_acetona=Joback(group=[0, 23], contribution=[2, 1])
-#    print joback_acetona.Tc, joback_acetona.Pc.bar, joback_acetona.Tb, joback_acetona.Tf
-
-
-
 #    etilbenceno=Componente(45)
 #    t=unidades.Temperature(180, "F")
 #    print "DIPPR: ", etilbenceno.Tension_DIPPR(t).dyncm
