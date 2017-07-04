@@ -88,11 +88,28 @@ __doi__ = {
                   "Contributions",
          "ref": "Chemical Engineering Journal 79 (2000) 69-72",
          "doi": "10.1016/s1385-8947(99)00173-4"},
-
-
-
-
     8:
+        {"autor": "Ambrose, D.",
+         "title": "Correlation and Estimation of Vapor-Liquid Critical "
+                  "Properties: I. Critical Temperatures of Organic Compounds",
+         "ref": "National Physical Laboratory, Teddington, NPL Rep. Chern.  "
+                "92, 1978, corrected 1980.",
+         "doi": ""},
+    9:
+        {"autor": "Ambrose, D.",
+         "title": "Correlation and Estimation of Vapor-Liquid Critical "
+                  "Properties: II. Critical Pressures and Volumes of Organic "
+                  "Compounds",
+         "ref": "National Physical Laboratory, Teddington, NPL Rep. 98, 1979",
+         "doi": ""},
+    10:
+        {"autor": "API",
+         "title": "Technical Data book: Petroleum Refining 6th Edition",
+         "ref": "",
+         "doi": ""},
+
+
+    11:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -341,7 +358,7 @@ class GroupContribution(newComponente):
         self.__dict__.clear()
         self._bool = False
 
-    def _atomos(self):
+    def _atoms(self):
         """Procedure to calculate the atom number of atoms in molecule"""
         a = 0
         for grp in self.group:
@@ -692,7 +709,7 @@ class Joback(GroupContribution):
         self.Tb = unidades.Temperature(Tb)
 
         # Equations of Table II
-        atomos = self._atomos()
+        atomos = self._atoms()
         tcsuma, pcsuma, vcsuma = 0, 0, 0
         Tf = 122.5
         Hf = 68.29
@@ -1956,14 +1973,6 @@ class Marrero(GroupContribution):
                         group.append(atomic_decomposition(molecule))
         return group, rest
 
-    def _atoms(self):
-        """Procedure to calculate the atom number of molecule"""
-        Na = 0
-        for grp in self.group:
-            for symbol, c in grp.items():
-                Na += c
-        return Na
-
     def calculo(self):
         if self.kwargs["M"]:
             self.M = self.kwargs["M"]
@@ -2004,607 +2013,425 @@ class Elliott(GroupContribution):
     Tb: Temperatura de ebullición, opcional
     SG: gravedad específica, opcional
 
-    >>> elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
-    >>> print elliot.Tb, elliot.Tc
-    333.268576405 829.20395796
+    # >>> elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
+    # >>> print elliot.Tb, elliot.Tc
+    # 333.268576405 829.20395796
     """
-    coeff={
-        "tc": [0.135, 0.131, 0.077, 0.073, 0.070, -0.015, 0.070, 0.169, 0.169, 0.169, 0.169, 0.169, 0.338, 0.069, 0.099, 0.221, 0.207, 0.136, 0.554, 0.0, 0.0, 0.278, 0.387, 0.383, 0.299, 0.457, 0.453, 0.305, 0.234, 0.230, 0.175, 0.140, 0.0, 0.301, 0.247, 0.306, 0.301, 0.247, 0.148, 0.144, 0.270, 0.0, 0.433, 0.433, 0.0, 0.512, 0.615, 0.0, 0.236, 0.178, 0.090, 0.0, 0.283, 0.196, 0.0, 0.326, 0.0, 0.165, 0.0, 0.440, 0.440, 0.440, 0.0, 0.0, 0.203, 0.0, 0.0, 0.056, 0.056, 0.125, 0.125, 0.0, 0.0, 0.082, 0.147, 0.0, 0.0, 0.340, 0.222, 0.103, 0.327, 0.209, 0.205, 0.151, 0.144, 0.245, 0.245, 0.215, 0.148, 0.0, 0.314, 0.0, 0.209, 0.327, 0.0, 0.0, 0.0, 0.0, 0.422, 0.557, 0.553, 0.670, 0.666, 0.662, 0.839, 0.609, 0.207, 0.203, 0.149, 0.0, 0.0, 0.379, 0.372, 0.0],
-        "Pc": [0.232, 0.224, 0.177, 0.186, 0.195, 0.143, 0.204, 0.360, 0.360, 0.360, 0.360, 0.360, 0.720, 0.153, 0.173, 0.375, 0.370, 0.356, 0.075, 0.0, 0.0, 0.126, 0.513, 0.504, 0.324, 0.712, 0.704, 0.455, 0.367, 0.358, 0.311, 0.249, 0.0, 0.316, 0.269, 0.324, 0.316, 0.269, 0.313, 0.304, 0.211, 0.0, 0.869, 0.869, 0.0, 0.564, 0.511, 0.0, 0.542, 0.504, 0.461, 0.0, 0.822, 0.779, 0.0, 1.161, 0.0, 0.460, 0.0, 0.617, 0.617, 0.617, 0.0, 0.0, 0.476, 0.0, 0.0, 0.816, 0.522, 0.274, 0.274, 0.0, 0.0, 0.318, 0.340, 0.0, 0.0, 0.886, 0.638, 0.391, 0.485, 0.398, 0.298, 0.251, 0.269, 0.675, 0.675, 0.645, 0.200, 0.0, 1.027, 0.0, 0.709, 0.956, 0.0, 0.0, 0.0, 0.0, 0.372, 0.605, 0.596, 0.946, 0.937, 0.929, 0.658, 0.761, 0.485, 0.476, 0.429, 0.0, 0.0, 0.960, 0.978, 0.0],
-        "vc": [40, 41, 25, 30, 37, 5, 55, 32, 32, 32, 32, 32, 64, 16, 87, 68, 95, 107, -25, 0.0, 0.0, -20, 77, 78, -8, 102, 103, -6, 41, 42, 27, -57, 0.0, 78, 62, 77, 78, 62, 111, 112, 24, 0.0, 107, 107, 0.0, 27, -31, 0.0, 79, 68, 43, 0.0, 107, 82, 0.0, 124, 0.0, 47, 0.0, 34, 34, 34, 0.0, 0.0, 65, 0.0, 0.0, -7, 6, -12, -12, 0.0, 0.0, 23, 27, 0.0, 0.0, 188, 127, 66, 47, -6, 41, 25, 37, 108, 108, 108, -15, 0.0, 143, 0.0, 104, 165, 0.0, 0.0, 0.0, 0.0, 73, 114, 115, 101, 102, 103, 55, 109, 64, 65, 49, 0.0, 0.0, 125, 137, 0.0],
-        "tb": [123, 121, 138,  97, 107,  74,  20, 257, 257, 257, 257, 257, 514, 124, 247, 282, 303, 191, 474,  0.0,  0.0, 525, 514, 512, 396, 451, 573, 426, 288, 286, 262, 323,  0.0, 437, 412, 444, 442, 418, 293, 291, 655,  0.0, 942, 942,  0.0, 794, 858,  0.0, 360, 336, 313,  0.0, 575, 552,  0.0, 598,  0.0, 358,  0.0, 692, 668, 818,  0.0,  0.0, 515,  0.0,  0.0, 525, 353, 288, 288,  0.0,  0.0, 190, 135,  0.0,  0.0, 141, 108,  91, 338, 164, 164, 164, 164,  44,  44,  61, 225,  0.0, 569,  0.0, 477, 348,  0.0,  0.0,  0.0,  17, 707, 835, 833, 862, 860, 858, 830, 495, 473, 471, 447,  0.0,  0.0,   0, 0, 0.0],
-        "hf": [-45.947, -20.763, -20.763, -3.766, -3.766, 17.119, 17.119, 53.712, 69.939, 64.145, 82.528, 104.293, 197.322, 11.189, 27.016, -19.243, 9.404, 27.671, -181.422, 0.0, 0.0, -164.609, -182.329, -164.41, -129.158, -389.737, -359.258, -332.822, -163.569, -151.143, -129.488, -140.313, 0.0, -15.505, 3.32, 5.432, 23.101, 26.718, 54.929, 69.885, 20.079, 0.0, 134.062, 139.758, 0.0, 88.298, -396.242, 0.0, -73.568, -63.795, -57.795, 0.0, -82.921, 0.0, 0.0, -107.188, 0.0, -16.752, 0.0, -66.138, -59.142, -7.365, 0.0, 0.0, -8.253, 0.0, 0.0, 57.546, 1.834, 220.803, 227.368, 0.0, 0.0, -36.097, -161.74, 0.0, 0.0, -679.195, 0.0, 0.0, -313.545, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -258.96, 0.0, 0.0, -446.835, 0.0, 0.0, 0.0, -223.398, -203.188, -67.778, -182.005, -189.888, -46.562, 0.0, -344.125, 0.0, -2.084, 18.022, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        "gf": [-8.03, 8.231, 8.231, 19.848, 19.848, 37.977, 37.977, 84.926, 92.9, 88.402, 93.745, 116.613, 221.308, 22.533, 30.485, 22.505, 41.228, 52.948, -158.589, 0.0, 0.0, -132.097, -131.366, -132.386, -107.858, -318.616, -291.188, -288.902, -105.767, -101.563, -92.099, -90.883, 0.0, 58.085, 63.051, 82.471, 95.888, 85.001, 128.602, 132.756, 68.861, 0.0, 199.958, 199.288, 0.0, 121.544, -349.439, 0.0, -33.373, -31.502, -25.261, 0.0, -35.814, 0.0, 0.0, -53.332, 0.0, -0.50, 0.0, 17.963, 18.088, 60.161, 0.0, 0.0, 16.731, 0.0, 0.0, 46.945, -1.721, 217.003, 216.328, 0.0, 0.0, -28.148, -144.549, 0.0, 0.0, -626.58, 0.0, 0.0, -281.495, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -209.337, 0.0, 0.0, -392.975, 0.0, 0.0, 0.0, 212.718, 136.742, 0.0, 0.0, -65.642, 0.0, 0.0, 241.373, 0.0, 30.222, 38.346, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        "hv": [4.116, 4.65, 4.65, 2.771, 2.771, 1.284, 1.284, 6.714, 7.37, 6.797, 8.178, 9.342, 12.318, 4.098, 12.552, 9.776, 10.185, 8.834, 24.529, 0.0, 0.0, 40.246, 18.999, 20.041, 12.909, 22.709, 17.759, 0.0, 10.919, 7.478, 5.708, 11.227, 0.0, 14.599, 11.876, 14.452, 14.481, 0.0, 6.947, 6.918, 28.453, 0.0, 31.523, 31.005, 0.0, 23.34, 43.046, 0.0, 13.78, 11.985, 9.818, 0.0, 19.208, 17.574, 0.0, 0.0, 0.0, 11.883, 0.0, 30.644, 26.277, 0.0, 0.0, 0.0, 14.931, 0.0, 0.0, 14.364, 11.423, 7.751, 11.549, 0.0, 0.0, 4.877, 0.0, 0.0, 8.901, 1.86, 8.901, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13.322, 0.0, 0.0, 8.301, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.787, 0.0, 0.0, 0.0, 0.0, 0.0, 16.921, 17.117, 13.265, 0.0, 0.0, 27.966, 0.0, 0.0],
+    coeff = {
+        "tc": [0.135, 0.131, 0.077, 0.073, 0.070, -0.015, 0.070, 0.169, 0.169,
+               0.169, 0.169, 0.169, 0.338, 0.069, 0.099, 0.221, 0.207, 0.136,
+               0.554, 0.0, 0.0, 0.278, 0.387, 0.383, 0.299, 0.457, 0.453,
+               0.305, 0.234, 0.230, 0.175, 0.140, 0.0, 0.301, 0.247, 0.306,
+               0.301, 0.247, 0.148, 0.144, 0.270, 0.0, 0.433, 0.433, 0.0,
+               0.512, 0.615, 0.0, 0.236, 0.178, 0.090, 0.0, 0.283, 0.196, 0.0,
+               0.326, 0.0, 0.165, 0.0, 0.440, 0.440, 0.440, 0.0, 0.0, 0.203,
+               0.0, 0.0, 0.056, 0.056, 0.125, 0.125, 0.0, 0.0, 0.082, 0.147,
+               0.0, 0.0, 0.340, 0.222, 0.103, 0.327, 0.209, 0.205, 0.151,
+               0.144, 0.245, 0.245, 0.215, 0.148, 0.0, 0.314, 0.0, 0.209,
+               0.327, 0.0, 0.0, 0.0, 0.0, 0.422, 0.557, 0.553, 0.670, 0.666,
+               0.662, 0.839, 0.609, 0.207, 0.203, 0.149, 0.0, 0.0, 0.379,
+               0.372, 0.0],
+        "Pc": [0.232, 0.224, 0.177, 0.186, 0.195, 0.143, 0.204, 0.360, 0.360,
+               0.360, 0.360, 0.360, 0.720, 0.153, 0.173, 0.375, 0.370, 0.356,
+               0.075, 0.0, 0.0, 0.126, 0.513, 0.504, 0.324, 0.712, 0.704,
+               0.455, 0.367, 0.358, 0.311, 0.249, 0.0, 0.316, 0.269, 0.324,
+               0.316, 0.269, 0.313, 0.304, 0.211, 0.0, 0.869, 0.869, 0.0,
+               0.564, 0.511, 0.0, 0.542, 0.504, 0.461, 0.0, 0.822, 0.779, 0.0,
+               1.161, 0.0, 0.460, 0.0, 0.617, 0.617, 0.617, 0.0, 0.0, 0.476,
+               0.0, 0.0, 0.816, 0.522, 0.274, 0.274, 0.0, 0.0, 0.318, 0.340,
+               0.0, 0.0, 0.886, 0.638, 0.391, 0.485, 0.398, 0.298, 0.251,
+               0.269, 0.675, 0.675, 0.645, 0.200, 0.0, 1.027, 0.0, 0.709,
+               0.956, 0.0, 0.0, 0.0, 0.0, 0.372, 0.605, 0.596, 0.946, 0.937,
+               0.929, 0.658, 0.761, 0.485, 0.476, 0.429, 0.0, 0.0, 0.960,
+               0.978, 0.0],
+        "vc": [40, 41, 25, 30, 37, 5, 55, 32, 32, 32, 32, 32, 64, 16, 87, 68,
+               95, 107, -25, 0.0, 0.0, -20, 77, 78, -8, 102, 103, -6, 41, 42,
+               27, -57, 0.0, 78, 62, 77, 78, 62, 111, 112, 24, 0.0, 107, 107,
+               0.0, 27, -31, 0.0, 79, 68, 43, 0.0, 107, 82, 0.0, 124, 0.0, 47,
+               0.0, 34, 34, 34, 0.0, 0.0, 65, 0.0, 0.0, -7, 6, -12, -12, 0.0,
+               0.0, 23, 27, 0.0, 0.0, 188, 127, 66, 47, -6, 41, 25, 37, 108,
+               108, 108, -15, 0.0, 143, 0.0, 104, 165, 0.0, 0.0, 0.0, 0.0, 73,
+               114, 115, 101, 102, 103, 55, 109, 64, 65, 49, 0.0, 0.0, 125,
+               137, 0.0],
+        "tb": [123, 121, 138,  97, 107,  74,  20, 257, 257, 257, 257, 257, 514,
+               124, 247, 282, 303, 191, 474, 0.0, 0.0, 525, 514, 512, 396, 451,
+               573, 426, 288, 286, 262, 323, 0.0, 437, 412, 444, 442, 418, 293,
+               291, 655, 0.0, 942, 942, 0.0, 794, 858, 0.0, 360, 336, 313, 0.0,
+               575, 552, 0.0, 598, 0.0, 358, 0.0, 692, 668, 818, 0.0, 0.0, 515,
+               0.0, 0.0, 525, 353, 288, 288, 0.0, 0.0, 190, 135, 0.0, 0.0, 141,
+               108, 91, 338, 164, 164, 164, 164, 44, 44, 61, 225, 0.0, 569,
+               0.0, 477, 348, 0.0, 0.0, 0.0, 17, 707, 835, 833, 862, 860, 858,
+               830, 495, 473, 471, 447, 0.0, 0.0, 0, 0, 0.0],
+        "hf": [-45.947, -20.763, -20.763, -3.766, -3.766, 17.119, 17.119,
+               53.712, 69.939, 64.145, 82.528, 104.293, 197.322, 11.189,
+               27.016, -19.243, 9.404, 27.671, -181.422, 0.0, 0.0, -164.609,
+               -182.329, -164.41, -129.158, -389.737, -359.258, -332.822,
+               -163.569, -151.143, -129.488, -140.313, 0.0, -15.505, 3.32,
+               5.432, 23.101, 26.718, 54.929, 69.885, 20.079, 0.0, 134.062,
+               139.758, 0.0, 88.298, -396.242, 0.0, -73.568, -63.795, -57.795,
+               0.0, -82.921, 0.0, 0.0, -107.188, 0.0, -16.752, 0.0, -66.138,
+               -59.142, -7.365, 0.0, 0.0, -8.253, 0.0, 0.0, 57.546, 1.834,
+               220.803, 227.368, 0.0, 0.0, -36.097, -161.74, 0.0, 0.0,
+               -679.195, 0.0, 0.0, -313.545, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+               0.0, 0.0, -258.96, 0.0, 0.0, -446.835, 0.0, 0.0, 0.0, -223.398,
+               -203.188, -67.778, -182.005, -189.888, -46.562, 0.0, -344.125,
+               0.0, -2.084, 18.022, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "gf": [-8.03, 8.231, 8.231, 19.848, 19.848, 37.977, 37.977, 84.926,
+               92.9, 88.402, 93.745, 116.613, 221.308, 22.533, 30.485, 22.505,
+               41.228, 52.948, -158.589, 0.0, 0.0, -132.097, -131.366,
+               -132.386, -107.858, -318.616, -291.188, -288.902, -105.767,
+               -101.563, -92.099, -90.883, 0.0, 58.085, 63.051, 82.471, 95.888,
+               85.001, 128.602, 132.756, 68.861, 0.0, 199.958, 199.288, 0.0,
+               121.544, -349.439, 0.0, -33.373, -31.502, -25.261, 0.0, -35.814,
+               0.0, 0.0, -53.332, 0.0, -0.50, 0.0, 17.963, 18.088, 60.161, 0.0,
+               0.0, 16.731, 0.0, 0.0, 46.945, -1.721, 217.003, 216.328, 0.0,
+               0.0, -28.148, -144.549, 0.0, 0.0, -626.58, 0.0, 0.0, -281.495,
+               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -209.337, 0.0, 0.0,
+               -392.975, 0.0, 0.0, 0.0, 212.718, 136.742, 0.0, 0.0, -65.642,
+               0.0, 0.0, 241.373, 0.0, 30.222, 38.346, 0.0, 0.0, 0.0, 0.0, 0.0,
+               0.0],
+        "hv": [4.116, 4.65, 4.65, 2.771, 2.771, 1.284, 1.284, 6.714, 7.37,
+               6.797, 8.178, 9.342, 12.318, 4.098, 12.552, 9.776, 10.185,
+               8.834, 24.529, 0.0, 0.0, 40.246, 18.999, 20.041, 12.909, 22.709,
+               17.759, 0.0, 10.919, 7.478, 5.708, 11.227, 0.0, 14.599, 11.876,
+               14.452, 14.481, 0.0, 6.947, 6.918, 28.453, 0.0, 31.523, 31.005,
+               0.0, 23.34, 43.046, 0.0, 13.78, 11.985, 9.818, 0.0, 19.208,
+               17.574, 0.0, 0.0, 0.0, 11.883, 0.0, 30.644, 26.277, 0.0, 0.0,
+               0.0, 14.931, 0.0, 0.0, 14.364, 11.423, 7.751, 11.549, 0.0, 0.0,
+               4.877, 0.0, 0.0, 8.901, 1.86, 8.901, 0.0, 0.0, 0.0, 0.0, 0.0,
+               0.0, 0.0, 0.0, 0.0, 0.0, 13.322, 0.0, 0.0, 8.301, 0.0, 0.0, 0.0,
+               0.0, 0.0, 0.0, 51.787, 0.0, 0.0, 0.0, 0.0, 0.0, 16.921, 17.117,
+               13.265, 0.0, 0.0, 27.966, 0.0, 0.0],
         "txt": [("CH3-",),
-                        ("CH2<",),
-                        ("RCH2<",),
-                        ("CH",),
-                        (">RCH-",),
-                        (">C<",),
-                        (">RC<",),
-                        ("CH2=CH",),
-                        ("CH=CH",),
-                        ("CH2=C",),
-                        ("CH=C",),
-                        ("C=C",),
-                        ("CH2=C=CH",),
-                        ("ACH",),
-                        ("AC-",),
-                        ("ACCH3",),
-                        ("ACCH2",),
-                        ("ACCH",),
-                        ("OH",),
-                        ("CH3OH",),
-                        ("H2O",),
-                        ("ACOH",),
-                        ("CH3CO",),
-                        ("CH2CO",),
-                        ("CHO",),
-                        ("CH3COO",),
-                        ("CH2COO",),
-                        ("HCOO",),
-                        ("CH3O",),
-                        ("CH2O",),
-                        ("CH-O",),
-                        ("FCH2O",),
-                        ("CH3NH2",),
-                        ("CH2NH2",),
-                        ("CHNH2",),
-                        ("CH3NH",),
-                        ("CH2NH",),
-                        ("CHNH",),
-                        ("CH3-RN",),
-                        ("CH2-RN",),
-                        ("ACNH2",),
-                        ("C5H5N",),
-                        ("C5H4N",),
-                        ("C5H3N",),
-                        ("CH3CN",),
-                        ("CH2CN",),
-                        ("COOH",),
-                        ("HCOOH",),
-                        ("CH2CL",),
-                        ("CHCL",),
-                        ("CCL",),
-                        ("CH2CL2",),
-                        ("CHCL2",),
-                        ("CCL2",),
-                        ("CHCL3",),
-                        ("CCL3",),
-                        ("CCL4",),
-                        ("ACCL",),
-                        ("CH3NO2",),
-                        ("CH2NO2",),
-                        ("CHNO2",),
-                        ("ACNO2",),
-                        ("CS2",),
-                        ("CH3SH",),
-                        ("CH2SH",),
-                        ("FURFURAL",),
-                        ("<CH2OH>2",),
-                        ("I",),
-                        ("Br",),
-                        ("CH===C",),
-                        ("C===C",),
-                        ("ME2SO",),
-                        ("ACRY",),
-                        ("CL<C=C>",),
-                        ("ACF",),
-                        ("DMF-1",),
-                        ("DMF-2",),
-                        ("CF3",),
-                        ("CF2",),
-                        ("CF",),
-                        ("COO",),
-                        ("SiH3",),
-                        ("SiH2",),
-                        ("SiH",),
-                        ("Si",),
-                        ("SiH2O",),
-                        ("SiHO",),
-                        ("SiO",),
-                        ("TERT-N",),
-                        ("CCL3F",),
-                        ("CCL2F",),
-                        ("HCCL2F",),
-                        ("HCCLF",),
-                        ("CCLF2",),
-                        ("HCCLF2",),
-                        ("CCLF3",),
-                        ("CCL2F2",),
-                        ("F (exceptions)",),
-                        ("CONH2",),
-                        ("CONHCH3",),
-                        ("CONHCH2",),
-                        ("CON<CH3>2",),
-                        ("CONCH3CH2",),
-                        ("CON<CH2>2",),
-                        ("C2H5O2",),
-                        ("C2H4O2",),
-                        ("CH3S",),
-                        ("CH2S",),
-                        ("CHS",),
-                        ("MORPH",),
-                        ("C4H4S",),
-                        ("C4H3S",),
-                        ("C4H2S",),
-                        ("NMP",)]
-        }
+                ("CH2<",),
+                ("RCH2<",),
+                ("CH",),
+                (">RCH-",),
+                (">C<",),
+                (">RC<",),
+                ("CH2=CH",),
+                ("CH=CH",),
+                ("CH2=C",),
+                ("CH=C",),
+                ("C=C",),
+                ("CH2=C=CH",),
+                ("ACH",),
+                ("AC-",),
+                ("ACCH3",),
+                ("ACCH2",),
+                ("ACCH",),
+                ("OH",),
+                ("CH3OH",),
+                ("H2O",),
+                ("ACOH",),
+                ("CH3CO",),
+                ("CH2CO",),
+                ("CHO",),
+                ("CH3COO",),
+                ("CH2COO",),
+                ("HCOO",),
+                ("CH3O",),
+                ("CH2O",),
+                ("CH-O",),
+                ("FCH2O",),
+                ("CH3NH2",),
+                ("CH2NH2",),
+                ("CHNH2",),
+                ("CH3NH",),
+                ("CH2NH",),
+                ("CHNH",),
+                ("CH3-RN",),
+                ("CH2-RN",),
+                ("ACNH2",),
+                ("C5H5N",),
+                ("C5H4N",),
+                ("C5H3N",),
+                ("CH3CN",),
+                ("CH2CN",),
+                ("COOH",),
+                ("HCOOH",),
+                ("CH2CL",),
+                ("CHCL",),
+                ("CCL",),
+                ("CH2CL2",),
+                ("CHCL2",),
+                ("CCL2",),
+                ("CHCL3",),
+                ("CCL3",),
+                ("CCL4",),
+                ("ACCL",),
+                ("CH3NO2",),
+                ("CH2NO2",),
+                ("CHNO2",),
+                ("ACNO2",),
+                ("CS2",),
+                ("CH3SH",),
+                ("CH2SH",),
+                ("FURFURAL",),
+                ("<CH2OH>2",),
+                ("I",),
+                ("Br",),
+                ("CH===C",),
+                ("C===C",),
+                ("ME2SO",),
+                ("ACRY",),
+                ("CL<C=C>",),
+                ("ACF",),
+                ("DMF-1",),
+                ("DMF-2",),
+                ("CF3",),
+                ("CF2",),
+                ("CF",),
+                ("COO",),
+                ("SiH3",),
+                ("SiH2",),
+                ("SiH",),
+                ("Si",),
+                ("SiH2O",),
+                ("SiHO",),
+                ("SiO",),
+                ("TERT-N",),
+                ("CCL3F",),
+                ("CCL2F",),
+                ("HCCL2F",),
+                ("HCCLF",),
+                ("CCLF2",),
+                ("HCCLF2",),
+                ("CCLF3",),
+                ("CCL2F2",),
+                ("F (exceptions)",),
+                ("CONH2",),
+                ("CONHCH3",),
+                ("CONHCH2",),
+                ("CON<CH3>2",),
+                ("CONCH3CH2",),
+                ("CON<CH2>2",),
+                ("C2H5O2",),
+                ("C2H4O2",),
+                ("CH3S",),
+                ("CH2S",),
+                ("CHS",),
+                ("MORPH",),
+                ("C4H4S",),
+                ("C4H3S",),
+                ("C4H2S",),
+                ("NMP",)]}
 
     def isCalculable(self):
         """Método que estima si el método es calculable en función de los datos disponibles, definido por cada método"""
         if not self.kwargs["M"]:
-            self.msg=QApplication.translate("pychemqt", "undefined molecular weight")
-            self.status=0
+            self.msg = QApplication.translate(
+                    "pychemqt", "undefined molecular weight")
+            self.status = 0
         else:
             return GroupContribution.isCalculable(self)
 
     def calculo(self):
-        self.M=self.kwargs["M"]
-        tc=Pc=vc=tb=hv=gf=hf=0
+        self.M = self.kwargs["M"]
+        tc = Pc = vc = tb = hv = gf = hf = 0
         for grupo, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb+=contribucion*self.coeff["tb"][grupo]
-            tc+=contribucion*self.coeff["tc"][grupo]
-            Pc+=contribucion*self.coeff["Pc"][grupo]
-            vc+=contribucion*self.coeff["vc"][grupo]
-            hv+=contribucion*self.coeff["hv"][grupo]
-            gf+=contribucion*self.coeff["gf"][grupo]
-            hf+=contribucion*self.coeff["hf"][grupo]
+            tb += contribucion*self.coeff["tb"][grupo]
+            tc += contribucion*self.coeff["tc"][grupo]
+            Pc += contribucion*self.coeff["Pc"][grupo]
+            vc += contribucion*self.coeff["vc"][grupo]
+            hv += contribucion*self.coeff["hv"][grupo]
+            gf += contribucion*self.coeff["gf"][grupo]
+            hf += contribucion*self.coeff["hf"][grupo]
 
-        if self.kwargs["Tb"] :
-            self.Tb=unidades.Temperature(self.kwargs["Tb"])
+        if self.kwargs["Tb"]:
+            self.Tb = unidades.Temperature(self.kwargs["Tb"])
         else:
-            self.Tb=unidades.Temperature(1000/(0.5+35.7/tb**0.5+1000/(142+tb)))
-        self.Tc=unidades.Temperature(self.Tb*(1+(1.28*tc)**-1))
-        self.Pc=unidades.Pressure(self.M/(0.346+Pc)**2, "bar")
-        self.Vc=unidades.SpecificVolume((172+vc)/self.M, "ccg")
-        self.Hv=unidades.Enthalpy((hv+6.829)/self.M, "kJg")
-        self.Hf=unidades.Enthalpy((hf+10.835)/self.M, "kJg")
-        self.Gf=unidades.Enthalpy((gf-14.828)/self.M, "kJg")
+            self.Tb = unidades.Temperature(1000/(0.5+35.7/tb**0.5+1000/(142+tb)))
+        self.Tc = unidades.Temperature(self.Tb*(1+(1.28*tc)**-1))
+        self.Pc = unidades.Pressure(self.M/(0.346+Pc)**2, "bar")
+        self.Vc = unidades.SpecificVolume((172+vc)/self.M, "ccg")
+        self.Hv = unidades.Enthalpy((hv+6.829)/self.M, "kJg")
+        self.Hf = unidades.Enthalpy((hf+10.835)/self.M, "kJg")
+        self.Gf = unidades.Enthalpy((gf-14.828)/self.M, "kJg")
 
         GroupContribution.calculo(self)
 
 
 class Ambrose(GroupContribution):
-    """Ambrose, D., “Correlation and Estimation of Vapor-Liquid Critical Properties, II. Critical Pressures and Critical Volumes of OrganicCompounds,”National Physical Laboratory, Teddington, NPL  Report 98 (May 1979).
-    ref, API procedure 4A1.1, pag.294
-    grupos: grupos que forman la molécula
-    contribuciones: contribuciones de cada grupo
-    platt: número de Platt, The Platt number is the number of pairs of carbon atoms which are separated by three carbon-carbon bonds and is an indicator of the degree of branching in the molecule. The Platt number of an n-alkane is equal to the number of carbons minus three. Further discussion of the Platt number is given by Wiener, J . Am. Chem. Soc., 69, 17(1947).
-    Tb: Temperatura de ebullición
-    M: peso molecular
-    SG: gravedad específica, opcional
-
-    >>> desconocido=Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1], Tb=unidades.Temperature(229.72, "F"), M=114.23, platt=3)
-    >>> print desconocido.Tc.F, desconocido.Pc.psi, desconocido.Vc.ft3lb
-    555.826906339 400.749899167 0.0639229274271
     """
-    coeff={
-            "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610, 0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495, 0.1170, 0.9240, 0.8940, 0.9440, 0.9440, 0.8640, 0.9140, 0.8340, 0.8840, 0.8840, 0.8040, 0.7240, 0.5150],
-            "tc": [0.138, 0.138, 0.095, 0.018, 0.113, 0.113, 0.070, 0.088, 0.038, 0.038, 0.09, 0.09, 0.03, 0.09, 0.075, 0.075, 0.06, 0.458, 0.448, 0.488, 0.488, 0.438, 0.478, 0.428, 0.468, 0.468, 0.418, 0.368, 0.22],
-            "vc": [55.1, 55.1, 47.1, 38.1, 45.1, 45.1, 37.1, 35.1, 35.1, 35.1, 44.5, 44.5, 44.5, 44.5, 37, 37, 29.5, 222, 222, 222, 222, 222, 222, 222, 222, 222, 222, 222, 148],
-            "txt": [("CH3", {"C": 1, "H": 3}),
-                    ("CH2", {"C": 1, "H": 2}),
-                    ("CH", {"C": 1, "H": 1}),
-                    ("C", {"C": 1}),
-                    ("=CH2", {"C": 1, "H": 2}),
-                    ("=CH-", {"C": 1, "H": 1}),
-                    ("=C", {"C": 1}),
-                    ("=C=", {"C": 1}),
-                    ("≡CH", {"C": 1, "H": 1}),
-                    ("≡C-", {"C": 1}),
-                    ("-CH2- (Cyclic)", {"C": 1, "H": 2}),
-                    ("-CH< (Ciclic)", {"C": 1, "H": 1}),
-                    ("-CH< (in fused ring)", {"C": 1, "H": 1}),
-                    (">C< (Ciclic)", {"C": 1}),
-                    ("=CH- (Cyclic)", {"C": 1, "H": 1}),
-                    ("=C< (Cyclic)", {"C": 1}),
-                    ("=C= (Cyclic)", {"C": 1}),
-                    ("Phenyl- ", {"C": 6, "H": 5}),
-                    ("o-Phenyl- ", {"C": 6, "H": 4}),
-                    ("m-Phenyl- ", {"C": 6, "H": 4}),
-                    ("p-Phenyl- ", {"C": 6, "H": 4}),
-                    ("1,2,3-Phenyl- ", {"C": 6, "H": 3}),
-                    ("1,2,4-Phenyl- ", {"C": 6, "H": 3}),
-                    ("1,2,3,4-Phenyl- ", {"C": 6, "H": 2}),
-                    ("1,2,3,5-Phenyl- ", {"C": 6, "H": 2}),
-                    ("1,2,4,5-Phenyl- ", {"C": 6, "H": 2}),
-                    ("1,2,3,4,5-Phenyl- ", {"C": 6, "H": 1}),
-                    ("1,2,4,5,6-Phenyl- ", {"C": 6}),
-                    ("=CH-CH= (in fused Aromatic ring)", {"C": 2, "H": 2})] }
+    Group contribution for definition of unknown component using the Ambrose
+    procedure as use in API Technical Databook, procedure 4A1.1
 
-    FirstOrder=29
+    Parameters
+    ----------
+    group : array
+        List with group index
+    contribution : float
+        List with group count ocurrences
+    platt : integer
+        ΔPlatt number, [-]
+    Tb : float
+        Normal boiling temperature, [K]
+    M : float, optional
+        Molecular weight, [-]
+    SG : float, optional
+        Specific gravity, [-]
+
+    Return
+    ------
+    A instance of newComponente with all neccessary properties to use in PFD as
+    a predefined component
+
+    Notes
+    -----
+    M and SG are optional input, anyway know them improve the estimation
+    The Platt number is the number of pairs of carbon atoms which are
+    separated by three carbon-carbon bonds and is an indicator of the degree
+    of branching in the molecule. The Platt number of an n-alkane is equal to
+    the number of carbons minus three.
+
+    Examples
+    --------
+    Example 1 in [10]_, 2,2,3-Trimethylpentane
+    >>> Tb = unidades.Temperature(229.72, "F")
+    >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
+    ... Tb=Tb, platt=3)
+    >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
+    '555.83 400.74 0.0639'
+    >>> cmp.formula
+    'C8H18'
+
+    Example 2 in [10]_, 2-Methyl-1-butene
+    >>> Tb = unidades.Temperature(88.09, "F")
+    >>> cmp = Ambrose(group=[0, 1, 4, 6], contribution=[2, 1, 1, 1],
+    ... Tb=Tb, platt=0)
+    >>> "%0.2f %0.1f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
+    '385.95 520.3 0.0657'
+
+    Example 3 in [10]_, cis-Decalin
+    >>> Tb = unidades.Temperature(384.47, "F")
+    >>> cmp = Ambrose(group=[10, 12], contribution=[8, 2], Tb=Tb, platt=0)
+    >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
+    '801.95 430.06 0.0562'
+
+    Example 4 in [10]_, tert-Butyl benzene
+    >>> Tb = unidades.Temperature(336.41, "F")
+    >>> cmp = Ambrose(group=[0, 3, 17], contribution=[3, 1, 1],
+    ... Tb=Tb, platt=-1)
+    >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
+    '705.82 415.97 0.0555'
+
+    Example 5 in [10]_, Anthracene
+    >>> Tb = unidades.Temperature(646.16, "F")
+    >>> cmp = Ambrose(group=[18, 28], contribution=[1, 2], M=178.23, Tb=Tb,
+    ... platt=0)
+    >>> "%0.1f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
+    '1165.3 504.64 0.0502'
+
+    References
+    ----------
+    [8] .. Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+        Properties: I. Critical Temperatures of Organic Compounds. National
+        Physical Laboratory, Teddington, NPL Rep. Chern.  92, 1978,
+        corrected 1980.
+    [9] .. Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+        Properties: II. Critical Pressures and Volumes of Organic Compounds.
+        National Physical Laboratory, Teddington, NPL Rep. 98, 1979
+    [10] .. API. Technical Data book: Petroleum Refining 6th Edition 1997
+    """
+    coeff = {
+        "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610,
+               0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495,
+               0.1170, 0.9240, 0.8940, 0.9440, 0.9440, 0.8640, 0.9140, 0.8340,
+               0.8840, 0.8840, 0.8040, 0.7240, 0.5150],
+        "tc": [0.138, 0.138, 0.095, 0.018, 0.113, 0.113, 0.070, 0.088, 0.038,
+               0.038, 0.09, 0.09, 0.03, 0.09, 0.075, 0.075, 0.06, 0.458, 0.448,
+               0.488, 0.488, 0.438, 0.478, 0.428, .468, .468, .418, .368, .22],
+        "vc": [55.1, 55.1, 47.1, 38.1, 45.1, 45.1, 37.1, 35.1, 35.1, 35.1,
+               44.5, 44.5, 44.5, 44.5, 37, 37, 29.5, 222, 222, 222, 222, 222,
+               222, 222, 222, 222, 222, 222, 148],
+        "txt": [("CH3", {"C": 1, "H": 3}),
+                ("CH2", {"C": 1, "H": 2}),
+                ("CH", {"C": 1, "H": 1}),
+                ("C", {"C": 1}),
+                ("=CH2", {"C": 1, "H": 2}),
+                ("=CH-", {"C": 1, "H": 1}),
+                ("=C", {"C": 1}),
+                ("=C=", {"C": 1}),
+                ("≡CH", {"C": 1, "H": 1}),
+                ("≡C-", {"C": 1}),
+                ("-CH2- (Cyclic)", {"C": 1, "H": 2}),
+                ("-CH< (Ciclic)", {"C": 1, "H": 1}),
+                ("-CH< (in fused ring)", {"C": 1, "H": 1}),
+                (">C< (Ciclic)", {"C": 1}),
+                ("=CH- (Cyclic)", {"C": 1, "H": 1}),
+                ("=C< (Cyclic)", {"C": 1}),
+                ("=C= (Cyclic)", {"C": 1}),
+                ("Phenyl- ", {"C": 6, "H": 5}),
+                ("o-Phenyl- ", {"C": 6, "H": 4}),
+                ("m-Phenyl- ", {"C": 6, "H": 4}),
+                ("p-Phenyl- ", {"C": 6, "H": 4}),
+                ("1,2,3-Phenyl- ", {"C": 6, "H": 3}),
+                ("1,2,4-Phenyl- ", {"C": 6, "H": 3}),
+                ("1,2,3,4-Phenyl- ", {"C": 6, "H": 2}),
+                ("1,2,3,5-Phenyl- ", {"C": 6, "H": 2}),
+                ("1,2,4,5-Phenyl- ", {"C": 6, "H": 2}),
+                ("1,2,3,4,5-Phenyl- ", {"C": 6, "H": 1}),
+                ("1,2,4,5,6-Phenyl- ", {"C": 6}),
+                ("=CH-CH= (in fused Aromatic ring)", {"C": 2, "H": 2})]}
+
+    FirstOrder = 29
 
     def isCalculable(self):
-        if not self.kwargs["M"]:
-            self.msg=QApplication.translate("pychemqt", "undefined molecular weight")
-            self.status=0
-        elif not self.kwargs["Tb"]:
-            self.msg=QApplication.translate("pychemqt", "undefined boiling point")
-            self.status=0
+        if not self.kwargs["Tb"]:
+            self.msg = QApplication.translate(
+                    "pychemqt", "undefined boiling point")
+            self.status = 0
         else:
             return GroupContribution.isCalculable(self)
 
+    def _group(self):
+        """From group contribution desglose the chemical composition"""
+        group = []
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            # Only the first order term count for this
+            if i < self.FirstOrder:
+                grp = self.coeff["txt"][i][1]
+                for x in range(c):
+                    group.append(grp)
+        return group
+
     def calculo(self):
-        self.Tb=unidades.Temperature(self.kwargs["Tb"])
-        self.M=self.kwargs["M"]
+        # Use the input properties
+        # SG is defined in base class
+        self.Tb = unidades.Temperature(self.kwargs["Tb"])
+        if self.kwargs["M"]:
+            M = self.kwargs["M"]
+        else:
+            M = self._M()
+        self.M = unidades.Dimensionless(M)
 
-        Pc=tc=vc=0
-        for grupo, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc+=contribucion*self.coeff["tc"][grupo]
-            Pc+=contribucion*self.coeff["Pc"][grupo]
-            vc+=contribucion*self.coeff["vc"][grupo]
+        Pc = tc = vc = 0
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            tc += c*self.coeff["tc"][i]
+            Pc += c*self.coeff["Pc"][i]
+            vc += c*self.coeff["vc"][i]
 
-        self.Tc=unidades.Temperature(self.Tb.R*(1+1/(1.242+tc-0.023*self.kwargs["platt"])), "R")
-        self.Pc=unidades.Pressure(14.5*self.M/(0.339+Pc-0.026*self.kwargs["platt"])**2, "psi")
-        self.Vc=unidades.SpecificVolume(0.01602*(40+vc)/self.M, "ft3lb")
+        Pt = self.kwargs["platt"]
+        self.Tc = unidades.Temperature(self.Tb*(1+1/(1.242+tc-0.023*Pt)))
+        self.Pc = unidades.Pressure(14.5*self.M/(0.339+Pc-0.026*Pt)**2, "psi")
+        self.Vc = unidades.SpecificVolume(0.01602*(40+vc)/self.M, "ft3lb")
 
         GroupContribution.calculo(self)
 
 
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-#    cresol=Componente(177)
-#    print cresol.Tb, cresol.Tc
-#    joback=Joback(group=[0, 1, 13, 14, 20], contribution=[1, 1, 4, 2, 1])
-#    print joback.Tb, joback.Tc
-
-#    butanol_1=Componente(160)
-#    print butanol_1.f_acent, butanol_1.Tc
-#    unknown=Constantinou(group=[0, 1, 15], contribution=[1, 3, 1])
-#    print unknown.f_acent, unknown.Tc
 
 #    ic5=Componente(7)
 #    print ic5.Tb, ic5.Tc
 #    elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
 #    print elliot.Tb, elliot.Tc
 
-#    cresol=Componente(177)
-#    print cresol.Tc, cresol.f_acent
-#    cresol_wilson=Wilson(group=[3, 0, 5, 41], contribution=[8, 10, 1, 1], M=108.14, Tb=464.15, ring=1)
-#    print cresol_wilson.Tc, cresol_wilson.f_acent
-
-#    cresol=Componente(177)
-#    print cresol.Tc, cresol.Pc.bar
-#    cresol_marrero=Marrero_Pardillo(group=[1, 36, 129, 130, 132, 140, 148], contribution=[1, 1, 1, 2, 2, 1, 1], M=122.17, atomos=19)
-#    print cresol_marrero.Tc, cresol_marrero.Pc.bar
-
 #    trimetilpentano=Componente(541)
 #    print trimetilpentano.Tc, trimetilpentano.Pc.psi, trimetilpentano.Vc.ft3lb
 #    desconocido=Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1], Tb=unidades.Temperature(229.72, "F"), M=114.23, platt=3)
 #    print desconocido.Tc.F, desconocido.Pc.psi, desconocido.Vc.ft3lb
 
-#http://en.wikipedia.org/wiki/Joback_method
-#    acetona=Componente(140)
-#    print acetona.Tc, acetona.Pc.bar
-#    joback_acetona=Joback(group=[0, 23], contribution=[2, 1])
-#    print joback_acetona.Tc, joback_acetona.Pc.bar, joback_acetona.Tb, joback_acetona.Tf
-
-
-
-#    etilbenceno=Componente(45)
-#    t=unidades.Temperature(180, "F")
-#    print "DIPPR: ", etilbenceno.Tension_DIPPR(t).dyncm
-#    print "Paramétrica: ", etilbenceno.Tension_Parametrica(t).dyncm
-#    print "Hakim: ", etilbenceno.Tension_Hakim(t).dyncm
-#    print "Miller: ", etilbenceno.Tension_MIller(t).dyncm
-#    print "Hydrocarbon: ", etilbenceno.Tension_Hydrocarbon(t).dyncm
-#    print "Parachor: ", etilbenceno.Tension_Parachor(t, 285.1).dyncm
-#    print "Miqueu: ", etilbenceno.Tension_Miqueu(t).dyncm
-#    print "Block Bird: ", etilbenceno.Tension_Block_Bird(t).dyncm
-
-#    ipentano=Componente(7)
-#    t=unidades.Temperature(212, "F")
-#    print "DIPPR: ", ipentano.ThCond_Gas_DIPPR(t).BtuhftF
-#    print "Misic-Thodos: ", ipentano.ThCond_Gas_Misic_Thodos(t).BtuhftF
-
-
-#    heptano=Componente(11)
-#    t=unidades.Temperature(572, "F")
-#    p=unidades.Pressure(1450, "psi")
-#    print "Crooks: ", heptano.ThCond_Gas_Crooks(t, p.atm).BtuhftF
-
-#    oxigeno=Componente(47)
-#    t=unidades.Temperature(984.6, "R")
-#    p=unidades.Pressure(6075, "psi")
-#    print "Nonhidrocarbon: ", oxigeno.ThCond_Gas_Nonhidrocarbon(t, p.atm).BtuhftF
-
-#    butilbenceno=Componente(78)
-#    t=unidades.Temperature(140, "F")
-#    print "DIPPR: ", butilbenceno.ThCond_Liquido_DIPPR(t).BtuhftF
-#    print "Pachaiyappan: ", butilbenceno.ThCond_Liquido_Pachaiyappan(t).BtuhftF
-
-#    heptano=Componente(11)
-#    t=unidades.Temperature(320, "F")
-#    print "Kanitkar Thodos: ", heptano.ThCond_Liquido_Kanitkar_Thodos(t, 197.4).BtuhftF
-#    print "Lenoir: ", heptano.ThCond_Liquido_Lenoir(t, 197.4).BtuhftF
-
-#    decano=Componente(14)
-#    t=unidades.Temperature(104, "F")
-#    print "DIPPR: ", decano.Mu_Liquido_DIPPR(t).cP
-#    print "Paramétrico: ", decano.Mu_Liquido_Parametrica(t).cP
-#    print "Letsou Steil: ", decano.Mu_Liquido_Letsou_Steil(t).cP
-#
-#    pentano=Componente(50)
-#    t=unidades.Temperature(200, "F")
-#    p=unidades.Pressure(3000, "psi")
-#    print "Graboski Broun: ", pentano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", pentano.Mu_Liquido_Lucas(t, p.atm).cP
-
-#    tetralin=Componente(376)
-#    t=unidades.Temperature(302, "F")
-#    print "DIPPR:  %0.5f" % tetralin.Pv_DIPPR(t).psi
-#    print "Antoine:   %0.5f" % tetralin.Pv_Antoine(t).psi
-#    print "Lee-Kesler:  %0.5f" % tetralin.Pv_Lee_Kesler(t).psi
-#    print "Maxwell-Bonnel: %0.5f" % tetralin.Pv_Maxwell_Bonnel(t).psi
-#    print "Wagner: %0.5f" % tetralin.Pv_Wagner(t).psi
-
-#    propano=Componente(4)
-#    t=unidades.Temperature(30, "F")
-#    print "DIPPR: ", propano.RhoL_DIPPR(t).gml
-#    print "Rackett: ", propano.RhoL_Rackett(t).gml
-#    print "Cavett: ", propano.RhoL_Cavett(t).gml
-#    print "Costald: ", propano.RhoL_Costald(t).gml
-
-#    octano=Componente(12)
-#    t=unidades.Temperature(212, "F")
-#    p=unidades.Pressure(4410, "psi")
-#    print "Thomson Brobst Hankinson: ", octano.RhoL_Thomson_Brobst_Hankinson(t, p.atm).kgl
-#    print "API: ", octano.RhoL_API(t, p.atm).kgl
-
-
-#    ciclohexano=Componente(38)      #ej pag 637
-#    t=unidades.Temperature(300, "F")
-#    p=unidades.Pressure(1000, "psi")
-#    print ciclohexano.Z_SRK(t, p.atm)
-#    print ciclohexano.Lee_Kesler_Entalpia(t, p.atm).Btulb
-#    print ciclohexano.Entropia(t, p.atm).BtulbF*1.8
-
-#    print ciclohexano.Hv_Lee_Kesler(422.04), ciclohexano.Calor_vaporizacion(422.04)
-#    print ciclohexano.Cp_Lee_Kesler(422.04, 68.046), ciclohexano.Cv_Lee_kesler(422.04, 68.046)
-
-
-#    isobutano=Componente(5)
-#    t=unidades.Temperature(370, "F")
-#    p=unidades.Pressure(4000, "psi")
-#    print isobutano.Lee_Kesler_Fugacidad(t, p.atm).psi #Ej pag 745
-#    t=unidades.Temperature(475, "F")
-#    print isobutano.Lee_Kesler_Entropia(t, p.atm).BtulbF #Ej pag 733
-
-#    print "     SRK    Lee_Kesler    BWRS"
-#    print "Z  %5.4f   %7.4f   %5.4f" % (isobutano.Z_SRK(t, p.atm), isobutano.Z_Lee_Kesler(t, p.atm), isobutano.Z_BWRS(t, p.atm))
-#    print isobutano.RhoG_Lee_Kesler(t, p.atm)
-#    print isobutano.RhoG_SRK(t, p.atm)
-#    print isobutano.RhoG_BWRS(t, p.atm)
-#    print isobutano.Entalpia_SRK(t, p.atm)
-
-#    buteno=Componente(24)
-#    print buteno.f_acent
-#    print buteno.factor_acentrico()
-
-
-#    butano=Componente(6)
-#    T=unidades.Temperature(200, "F")
-#    print unidades.Enthalpy(butano.Entalpia_formacion(T)).Btulb
-
-
-
-#    decano=Componente(14)
-#    t=unidades.Temperature(104, "F")
-#    print "DIPPR: ", decano.Mu_Liquido_DIPPR(t).cP
-#    print "Paramétrico: ", decano.Mu_Liquido_Parametrica(t).cP
-#    print "Letsou Steil: ", decano.Mu_Liquido_Letsou_Steil(t).cP
-
-#    pentano=Componente(8)
-#    t=unidades.Temperature(200, "F")
-#    p=unidades.Pressure(3000, "psi")
-#    print "Graboski Broun: ", pentano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", pentano.Mu_Liquido_Lucas(t, p.atm).cP
-
-#    metilciclohexano=Componente(39)
-#    t=unidades.Temperature(300, "K")
-#    p=unidades.Pressure(500, "bar")
-#    muo=unidades.Viscosity(0.68, "cP")
-#    print "Graboski Broun: ", metilciclohexano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", metilciclohexano.Mu_Liquido_Lucas(t, p.atm).cP
-
-
-#    decano=Componente(14)
-#    print decano.MuL_Kouzel(unidades.Temperature(120, "F"), unidades.Pressure(9940, "psi").atm, unidades.Viscosity(52.7, "cP")).cP
-
-#    propano=Componente(4)
-#    t=unidades.Temperature(176, "F")
-#    print propano.MuG_Thodos(t).cP
-
-#    metano=Componente(2)
-#    t=unidades.Temperature(543, "F")
-#    print metano.Mu_Gas(t, 1).cP
-#    print metano.Mu_Gas_Thodos(t).cP
-#    print metano.Mu_Gas_Eakin_Ellingtong(t, 50).cP
-
-#    nitrogeno=Componente(46)
-#    t=unidades.Temperature(-58, "F")
-#    p=unidades.Pressure(1677, "psi")
-#    print nitrogeno.Mu_Gas(t, p).cP
-#    print nitrogeno.Mu_Gas_Carr(t, p.atm).cP
-
-
-#    from pylab import arange, plot, show
-#    nonano=Componente(13)
-#    t=linspace(0.3,1, 10)
-#    C1=[]
-#    C2=[]
-#    C3=[]
-#    C5=[]
-#    C10=[]
-#    C30=[]
-#    for i in t:
-#        C1.append(nonano.C_API(i, 1))
-#        C2.append(nonano.C_API(i, 2))
-#        C3.append(nonano.C_API(i, 3))
-#        C5.append(nonano.C_API(i, 5))
-#        C10.append(nonano.C_API(i, 10))
-#        C30.append(nonano.C_API(i, 30))
-#        #        C3.append(nonano.RhoL_API(i, nonano.Pc*3))
-##        C5.append(nonano.RhoL_API(i, nonano.Pc*5))
-##        C10.append(nonano.RhoL_API(i, nonano.Pc*10))
-##        C30.append(nonano.RhoL_API(i, nonano.Pc*30))
-#
-#    plot(t, C1, t, C2)
-#    show()
-
-
-#    agua=Componente(62)
-#    print agua.composicion_molecular
-#    oxigeno=Componente(47)
-#    print oxigeno.composicion_molecular
-#    benceno=Componente(40)
-#    print benceno.composicion_molecular
-#    cfc=Componente(241)
-#    print cfc.composicion_molecular
-
-#    i_pentano=Componente(7)
-#    t=unidades.Temperature(68, "F")
-#    print i_pentano.Solubilidad_agua(t)
-#    benceno=Componente(40)
-#    t=unidades.Temperature(104, "F")
-#    print benceno.Solubilidad_agua(t)
-
-#    hexano=Componente(10)
-#    t=unidades.Temperature(212, "F")
-#    print hexano.Solubilidad_en_agua(t)
-
-#    fluorene=Componente(197)
-#    t=unidades.Temperature(122, "F")
-#    print fluorene.Solubilidad_en_agua(t)
-
-#    sulfuro=Componente(50)
-#    t=unidades.Temperature(77, "F")
-#    print sulfuro.Solubilidad_Henry(t, 1)
-
-#    agua=Componente(62)
-#    T=unidades.Temperature(100, "C")
-#
-#    print "Liquid Thermal Conductivity: ", agua.ThCond_Liquido(T, 1), "W/mK"
-#    print "Liquid viscosity: ", agua.Mu_Liquido(T, 1), "Pa·s"
-#    print "Liquid surface tension: ", agua.Tension(T), "N/m"
-#    print "Gas Thermal Conductivity: ", agua.ThCond_Gas(T, 1), "W/mK"
-#    print "Gas viscosity: ", agua.Mu_Gas(T, 1), "Pa·s"
-#
-#    print "Vapor pressure: ", agua.Pv(T).atm, "atm"
-
-#    propeno=Componente(23)
-#    t=unidades.Temperature(302, "F")
-#    p=unidades.Pressure(2290, "psi")
-#    print propeno.Cp_Lee_Kesler(t, p.atm).BtulbF
-#    print propeno.Cp_Cv_ratio(t, p.atm)
-
-#    SO2=Componente(51)
-#    t=unidades.Temperature(300, "C")
-#    print SO2.Mu_Gas_Chapman_Enskog(t, 1).microP
-
-#    from pylab import arange, plot, show
-#    nonano=Componente(13)
-#    p=arange(0.2*nonano.Pc,5*nonano.Pc,1)
-#    C1=[]
-#    C2=[]
-#    C3=[]
-#    C5=[]
-#    C10=[]
-#    C30=[]#    for i in p:
-#        C1.append(nonano.pr(i)*nonano.Lee_Kesler(nonano.Tc*1, i)[0]/1)
-#        C11.append(nonano.Lee_Kesler(nonano.Tc*1.1, i))
-#        C12.append(nonano.Lee_Kesler(nonano.Tc*1.2, i))
-#        C13.append(nonano.Lee_Kesler(nonano.Tc*1.3, i))
-#        C15.append(nonano.Lee_Kesler(nonano.Tc*1.5, i))
-#        C17.append(nonano.Lee_Kesler(nonano.Tc*1.7, i))
-#        C2.append(nonano.pr(i)*nonano.Lee_Kesler(nonano.Tc*2, i)[0]/2)
-#        C25.append(nonano.Lee_Kesler(nonano.Tc*2.5, i))
-#        C3.append(nonano.Lee_Kesler(nonano.Tc*3, i))
-#        C4.append(nonano.Lee_Kesler(nonano.Tc*4, i))
-#    plot(p/nonano.Pc, C1)
-#    show()
-
-#    Hidrogeno=Componente(1)
-#    print unidades.Temperature(Hidrogeno.Tc).R
-#    print unidades.Pressure(Hidrogeno.Pc, "atm").psi
-#    print Hidrogeno.f_acent
-
-#    agua=Componente(62)
-#    print agua.SRK_Z(298.15, 1)
-#    print agua.SRK_RhoG(298.15, 1).kgm3
-#    print agua.SRK_Entalpia(298.15, 1).MJkg
-
-#    agua=Componente(62)
-#    t=400
-#    print agua.BWRS_Z(298.15, 1)
-#    print agua.van_Waals_Z(t, 1), agua.PR_Z(t, 1), agua.RK_Z(t, 1), agua.HPW_Z(t, 1, -0.5)
-#    print agua.RK_Z(t, 1), agua.Wilson_Z(t, 1), agua.SRK_Z(t, 1)
-#    print agua.BWRS_RhoG(298.15, 1).kgm3
-#    print agua.BWRS_Entalpia(298.15, 1).MJkg
-
-#    print agua.PR_V(298.15, 1)
-#    print agua.PR_RhoG(298.15, 1)
-#    print agua.PR_Entalpia(t, 1).MJkg, agua.Lee_Kesler_Entalpia(t, 1).MJkg, agua.iapws_Entalpia(t, 1).MJkg
-#    print agua.Lee_Kesler_Z(t, 1), agua.SRK_Z(t, 1)
-
-#    print agua.Cp_Gas_DIPPR(400), iapws_Cp(400, 1), agua.Cp_ideal(400)
-#    print agua.Hv_Lee_Kesler(t).MJkg, agua.Hv_DIPPR(t).MJkg
-#    print agua.Lee_Kesler_Entalpia(t, 1).MJkg, agua.iapws_Entalpia(t, 1).MJkg, agua.Entalpia_ideal(t).MJkg
-#    print agua.Cp_Lee_Kesler(t, 1).JkgK*agua.M, agua.iapws_Cp(t, 1).JkgK*agua.M
-#    print agua.Lee_Kesler_Entropia(t, 1).JkgK, agua.iapws_Entropia(t, 1).JkgK
-
-#    agua=Componente(62)
-#    from scipy import arange
-#    from pylab import plot, grid, show
-#    d=arange(270, 500, 10.)
-#    y=[]
-#    y2=[]
-#    y3=[]
-#    delta=[]
-#    for i in d:
-#        y.append(agua.Lee_Kesler_Entalpia(i, 1))
-#        y2.append(agua.TB_Entalpia(i, 1))
-#        y3.append(agua.iapws_Entalpia(i, 1))
-##        delta.append(y3[-1]-y2[-1])
-#    plot(d, y, d, y2, d, y3)
-#    grid(True)
-#    show()
-#
-
-
-#    sulfuro=Componente(50)
-#    t=300
-#    p=1
-#    print sulfuro.H2S_V(t, p).ccg*sulfuro.M
-#    print sulfuro.H2S_RhoG(t, p).gcc
-#    print sulfuro.H2S_Z(t, p), sulfuro.TB_Z(t, p)
-#    print sulfuro.H2S_Fugacidad(t, p)
-#    print sulfuro.H2S_Entalpia(t, p).Jg*sulfuro.M
-
-#    agua=Componente(62)
-#    t=273
-#    p=1
-#    print agua.TB_Fugacidad(t, p), agua.Lee_Kesler_Fugacidad(t, p)
-#    print agua.TB_U_exceso(t, p), agua.TB_H_exceso(t, p), agua.TB_S_exceso(t, p), agua.TB_Cv_exceso(t, p)
-#    print agua.TB_Entalpia(t, p).MJkg, agua.Lee_Kesler_Entalpia(t, p).MJkg, agua.iapws_Entalpia(t, p).MJkg
-#    print agua.TB_Joule_Thomson(t, p)
-
-#    solido=Componente(533)
-#    print solido.PT_lib(300)
-#
-#    Hexano=Componente(10)
-#    print Hexano.Mu_Liquido(340, 1)
-
-
-
-
-#    agua=Componente(62)
-#    print [agua.Tension_Parametrica(t) for t in range(300, 350, 10)]
-#    print agua.RhoL_Tait_Costald(300, 1)
-#    print agua.Tc, agua.Pc.bar, agua.f_acent
-
+    print(atomic_decomposition("HCON(CH2)2"))
+    cmp = Joback(group=[0, 13, 14, 20], contribution=[2, 3, 3, 1])
 
