@@ -107,9 +107,14 @@ __doi__ = {
          "title": "Technical Data book: Petroleum Refining 6th Edition",
          "ref": "",
          "doi": ""},
-
-
     11:
+        {"autor": "Maloney, J.O.",
+         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
+         "ref": "McGraw Hill (2008)",
+         "doi": ""},
+
+
+    12:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -558,6 +563,16 @@ class Joback(GroupContribution):
     >>> "%0.7f" % (cmp._Visco(300))
     '0.0002942'
 
+    Example in [11]_ pag. 2-470, o-xylene
+    >>> cmp = Joback(group=[13, 14, 0], contribution=[4, 2, 2], Tb=417.58)
+    >>> "%0.2f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
+    '630.37 35.86 375.5'
+
+    Example in [11]_ pag. 2-470, sec-butanol
+    >>> cmp = Joback(group=[0, 1, 2, 19], contribution=[2, 1, 1, 1], Tb=372.7)
+    >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
+    '534.1 44.33 272.5'
+
     References
     ----------
     [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
@@ -565,6 +580,8 @@ class Joback(GroupContribution):
     [2] .. Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
         from Group-Contributions. Chemical Engineering Communications, 57:1-6
         (1987), 233-243
+    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw Hill (2008)
     """
     coeff = {
         # Table III
@@ -932,6 +949,11 @@ class Constantinou(GroupContribution):
     ... b2._Cp0(298).JgK*b2.M)
     '110.5 109.8 111.9 111.7'
 
+    Example in [11]_ pag. 2-471, 2,6-dimethylpyridine
+    >>> cmp = Constantinou(group=[0, 36, 86], contribution=[2, 1, 1])
+    >>> "%0.0f" % cmp.Tf
+    '278'
+
     References
     ----------
     [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
@@ -941,6 +963,8 @@ class Constantinou(GroupContribution):
     [4] .. Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
         acentric factor and the liquid molar volume at 298K using a new group
         contribution method. Fluid Phase Equil., 103: 11 (1995).
+    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw Hill (2008)
     """
     coeff = {
         # The Second order term are append to the first order in each table
@@ -1155,7 +1179,7 @@ class Constantinou(GroupContribution):
                 -1.4995, -1.4825, -0.0584],
 
         # Custom dict for molecular weight and empiric formula calculation
-        "txt": [("CH3", ),
+        "txt": [("CH3", ),                  # 0
                 ("CH2", ),
                 ("CH", ),
                 ("C", ),
@@ -1165,7 +1189,7 @@ class Constantinou(GroupContribution):
                 ("CH=C", ),
                 ("C=C", ),
                 ("CH2=C=CH", ),
-                ("-CH (Aromatic)", ),
+                ("-CH (Aromatic)", ),       # 10
                 ("=C (Aromatic)", ),
                 ("-CCH3 (Aromatic)", ),
                 ("-CCH2 (Aromatic)", ),
@@ -1175,7 +1199,7 @@ class Constantinou(GroupContribution):
                 ("CH3CO", ),
                 ("CH2CO", ),
                 ("CHO", ),
-                ("CH3COO", ),
+                ("CH3COO", ),               # 20
                 ("CH2COO", ),
                 ("HCOO", ),
                 ("CH3O", ),
@@ -1185,7 +1209,7 @@ class Constantinou(GroupContribution):
                 ("CH2NH2", ),
                 ("CHNH2", ),
                 ("CH3NH", ),
-                ("CH2NH", ),
+                ("CH2NH", ),                # 30
                 ("CHNH", ),
                 ("CH3N", ),
                 ("CH2N", ),
@@ -1195,7 +1219,7 @@ class Constantinou(GroupContribution):
                 ("CH2CN", ),
                 ("COOH", ),
                 ("CH2Cl", ),
-                ("CHCl", ),
+                ("CHCl", ),                 # 40
                 ("CCl", ),
                 ("CHCl2", ),
                 ("CCl3", ),
@@ -1205,7 +1229,7 @@ class Constantinou(GroupContribution):
                 ("CHNO2", ),
                 ("=CNO2 (Aromatic)", ),
                 ("CH2SH", ),
-                ("I", ),
+                ("I", ),                    # 50
                 ("Br", ),
                 ("CH≡C", ),
                 ("C≡C", ),
@@ -1215,7 +1239,7 @@ class Constantinou(GroupContribution):
                 ("CF3", ),
                 ("CF2", ),
                 ("CF", ),
-                ("COO", ),
+                ("COO", ),                  # 60
                 ("CCl2F", ),
                 ("HCClF", ),
                 ("CClF2", ),
@@ -1225,7 +1249,7 @@ class Constantinou(GroupContribution):
                 ("CONHCH2", ),
                 ("CONCH3CH3", ),
                 ("CONCH2CH2", ),
-                ("CONCH2CH2", ),
+                ("CONCH2CH2", ),            # 70
                 ("C2H5O2", ),
                 ("C2H4O2", ),
                 ("CH3S", ),
@@ -1237,7 +1261,7 @@ class Constantinou(GroupContribution):
                 # Second order
                 ("CH(CH3)2", ),
                 ("C(CH3)3", ),
-                ("CHCH3CHCH3", ),
+                ("CHCH3CHCH3", ),           # 80
                 ("CH(CH3)C(CH3)2", ),
                 ("C(CH3)2C(CH3)2", ),
                 ("3 membered ring", ),
@@ -1247,7 +1271,7 @@ class Constantinou(GroupContribution):
                 ("7 membered ring", ),
                 ("CHn=CHm-CHp=CHk (m, p (0,1); k, n (0,2)", ),
                 ("CH3-CHm=CHn (m (0,1); n (0,2))", ),
-                ("CH2-CHm=CHn (m (0,1); n (0,2))", ),
+                ("CH2-CHm=CHn (m (0,1); n (0,2))", ),           # 90
                 ("CH-CHm=CHn (m (0,1); n (0,2))", ),
                 ("Alicyclic side-chain CcyclicCm", ),
                 ("CH3CH3", ),
@@ -1257,7 +1281,7 @@ class Constantinou(GroupContribution):
                 ("Ccyclic=O", ),
                 ("ACCHO", ),
                 ("CHCOOH or CCOOH", ),
-                ("ACCOOH", ),
+                ("ACCOOH", ),                                   # 100
                 ("CH3COOCH or CH3COOC", ),
                 ("COCH2COO or COCHCOO or COCCOO", ),
                 ("CO-O-CO", ),
@@ -1267,7 +1291,7 @@ class Constantinou(GroupContribution):
                 ("CHm(OH)CHn(OH) (0<m,n<2)", ),
                 ("CHm cyclic-OH (0<m<1)", ),
                 ("CHn(OH)CHm(NHp) (0<m<1); (0<n,p<2)", ),
-                ("CHm(NH2)CHn(NH2) (0<m,n<2)", ),
+                ("CHm(NH2)CHn(NH2) (0<m,n<2)", ),               # 110
                 ("CHm cyclic-NHp-CHn cyclic (0<n,m,p<1)", ),
                 ("CHn-O-CHm=CHp (0<m<1); (0<n,p<2)", ),
                 ("AC-O-CHm (0<m<3)", ),
@@ -1277,7 +1301,7 @@ class Constantinou(GroupContribution):
                 ("CHn=CHm-I (0<m<1); (0<n<2)", ),
                 ("ACBr", ),
                 ("ACI", ),
-                ("CHm(NH2)-COOH (0<m<2)", )]
+                ("CHm(NH2)-COOH (0<m<2)", )]                    # 120
             }
 
     FirstOrder = 78
@@ -2418,6 +2442,56 @@ class Ambrose(GroupContribution):
         self.Vc = unidades.SpecificVolume(0.01602*(40+vc)/self.M, "ft3lb")
 
         GroupContribution.calculo(self)
+
+# TODO:
+# Add methods
+# Aditional reference in Perry's, pag. 2-471
+
+# Fedors method for critic volume
+# Fedors, R. F., AIChE J., 25 (1979): 202.
+
+# Pailhes method for boiling temperature
+# Pailhes, F., Fluid Phase Equilib., 41 (1988): 97.
+# Lydersen, A. L., AIChE J., 21 (1975): 510
+
+# Nannoolal method for boiling temperature
+# Nannoolal, Y., et al., Fluid Phase Equilib., 226 (2004): 45.
+
+# Domalski method for formation properties
+# Domalski, E. S., and E. D. Hearing, J. Phys. Chem. Ref. Data, 22 (1993): 805
+
+# Chickos method for melting properties
+# Chickos, J. S., et al., J. Org. Chem., 56 (1991): 927
+
+# Benson method for ideal gas specific heat
+# Benson, S. W., et al., Chem. Rev., 69 (1969): 279
+# CHETAH Version 8.0: The ASTM Computer Program for Chemical Thermodynamic and
+# Energy Release Evaluation (NIST Special Database 16)
+
+# Ruzicka method for liquid specific heat
+# Ruzicka, V., E. S. Domalski, J. Phys. Chem. Ref. Data, 22 (1993): 597, 619
+
+# Goodman method for solid specific heat
+# Goodman, B. T., et al., J. Chem. Eng. Data, 49 (2004): 24.
+
+# Kopp method for solid specific heat
+# Kopp, H., Ann. Chem. Pharm. (Liebig), 126 (1863): 362
+# Hurst, J. E., and B. K. Harrison, Chem. Eng. Comm., 112 (1992): 21
+
+# Reichenberg method for gas viscosity
+# Reichenberg, D., AIChE J., 21 (1975): 181.
+
+# Hsu method for liquid viscosity
+# Hsu, H.-C., Y.-W. Sheu, and C.-H. Tu, Chem. Eng. J., 88 (2002): 27.
+
+# Parachor method for surface tension
+# Macleod, D. B., Trans. Faraday Soc., 19 (1923): 38
+# Sugden, S. J., Chem. Soc., 125 (1924): 32
+# Knotts, T. A., et al., J. Chem. Eng. Data, 46 (2001): 1007.
+
+# Lydersen method for critical costants
+# The previous to Joback, ref in Perry 7Ed, too referenced in wikipedia
+# Lydersen, A. L. Estimation of Critical Properties of Organic Compounds. Coll. Eng. Univ. Wisconsin, Engineering Experimental Station Rept. 3, Madison, WI (1955).
 
 
 if __name__ == '__main__':
