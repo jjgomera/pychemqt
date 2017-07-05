@@ -33,8 +33,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH
-from lib.newComponent import (Joback, Constantinou, Wilson, Marrero, Elliott,
-                              Ambrose)
+from lib.newComponent import _methods
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -297,10 +296,6 @@ class Ui_Contribution(newComponent):
             Ambrose
         """
         super(Ui_Contribution, self).__init__(parent)
-        title = QtWidgets.QApplication.translate(
-                "pychemqt", "Select the component group for method")
-        title += " " + metodo
-        self.setWindowTitle(title)
 
         self.grupo = []
         self.indices = []
@@ -436,13 +431,16 @@ class Ui_Contribution(newComponent):
 
         newComponent.loadUI(self)
 
-        func = {"Constantinou": Constantinou,
-                "Wilson": Wilson,
-                "Joback": Joback,
-                "Ambrose": Ambrose,
-                "Elliott": Elliott,
-                "Marrero": Marrero}
+        func = {}
+        for f in _methods:
+            func[f.__name__] = f
+
         self.unknown = func[self.metodo]()
+
+        title = self.unknown.__title__
+        title += " " + QtWidgets.QApplication.translate(
+                "pychemqt", "new component definition")
+        self.setWindowTitle(title)
 
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
             self.TablaContribuciones.addItem(nombre[0])

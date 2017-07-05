@@ -290,11 +290,7 @@ class GroupContribution(newComponente):
               "M": 0.0,
               "Tb": 0.0,
               "SG": 0.0,
-              "name": "",
-
-              "ring": 0,
-              "atomos": 0,
-              "platt": 0}
+              "name": ""}
 
     status = 0
     _bool = False
@@ -592,6 +588,7 @@ class Joback(GroupContribution):
     [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
+    __title__ = "Joback-Reid (1987)"
     coeff = {
         # Table III
         "tc": [0.0141, 0.0189, 0.0164, 0.0067, 0.0113, 0.0129, 0.0117, 0.0026,
@@ -975,6 +972,7 @@ class Constantinou(GroupContribution):
     [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
+    __title__ = "Constantinou-Gani (1995)"
     coeff = {
         # The Second order term are append to the first order in each table
 
@@ -1433,6 +1431,10 @@ class Wilson(GroupContribution):
         at AIChE Spring National Meeting, New Orleans, LA, USA, February 25-29,
         1996.
     """
+    __title__ = "Wilson-Jasperson (1996)"
+    kwargs = GroupContribution.kwargs
+    kwargs["ring"] = 0
+
     coeff = {
         "tc": [0.002793, 0.320000, 0.019000, 0.008532, 0.019181, 0.020341,
                0.008810, 0.036400, 0.088000, 0.020000, 0.012000, 0.007271,
@@ -1658,6 +1660,8 @@ class Marrero(GroupContribution):
         Group-Interaction Contributions. Chemical Engineering Journal 79
         (2000) 69-72
     """
+    __title__ = "Marrero-Pardillo (1999)"
+
     coeff = {
         # Table 5 from [6]_
         "tc": [-0.0213, -0.0227, -0.0223, -0.0189, 0.8526, 0.1792, 0.3818,
@@ -2052,6 +2056,8 @@ class Elliott(GroupContribution):
     # >>> print elliot.Tb, elliot.Tc
     # 333.268576405 829.20395796
     """
+    __title__ = "UNIFAC (1999)"
+
     coeff = {
         "tc": [0.135, 0.131, 0.077, 0.073, 0.070, -0.015, 0.070, 0.169, 0.169,
                0.169, 0.169, 0.169, 0.338, 0.069, 0.099, 0.221, 0.207, 0.136,
@@ -2379,6 +2385,10 @@ class Ambrose(GroupContribution):
     [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
+    __title__ = "Ambrose (1980)"
+    kwargs = GroupContribution.kwargs
+    kwargs["platt"] = 0
+
     coeff = {
         "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610,
                0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495,
@@ -2576,6 +2586,7 @@ class Klincewicz(GroupContribution):
     [12] .. Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
         with Group Contribution Methods. AIChE J., 30(1), 137 (1984)
     """
+    __title__ = "Klincewicz (1984)"
     kwargs = GroupContribution.kwargs
     kwargs["nogroup"] = False
     kwargs["atoms"] = 0
@@ -2701,6 +2712,9 @@ class Klincewicz(GroupContribution):
 
         GroupContribution.calculo(self)
 
+
+_methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
+            Klincewicz]
 
 # TODO:
 # Add methods

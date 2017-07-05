@@ -944,21 +944,15 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "Pseudocomponent"),
             self.pseudocomponente)
         self.menuAddComponent.addSeparator()
-        self.menuAddComponent.addAction(
-            "Joback", partial(self.newComponent_Contribution, "Joback"))
-        self.menuAddComponent.addAction(
-            "Constantinou-Gani",
-            partial(self.newComponent_Contribution, "Constantinou"))
-        self.menuAddComponent.addAction(
-            "Wilson-Jasperson",
-            partial(self.newComponent_Contribution, "Wilson"))
-        self.menuAddComponent.addAction(
-            "Marrero-Pardillo",
-            partial(self.newComponent_Contribution, "Marrero"))
-        self.menuAddComponent.addAction(
-            "Elliott", partial(self.newComponent_Contribution, "Elliott"))
-        self.menuAddComponent.addAction(
-            "Ambrose", partial(self.newComponent_Contribution, "Ambrose"))
+
+        # Group contribution new component menu
+        self.menuNewComponent = QtWidgets.QMenu(
+            QtWidgets.QApplication.translate("pychemqt", "Group contribution"))
+        self.menuAddComponent.addAction(self.menuNewComponent.menuAction())
+        for f in newComponent._methods:
+            self.menuNewComponent.addAction(
+                f.__title__,
+                partial(self.newComponent_Contribution, f.__name__))
 
         self.menuHerramientas = QtWidgets.QMenu(
             QtWidgets.QApplication.translate("pychemqt", "&Tools"))
