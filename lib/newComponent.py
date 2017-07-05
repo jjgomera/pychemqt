@@ -1503,6 +1503,7 @@ class Wilson(GroupContribution):
     SecondOrder = 54
 
     def isCalculable(self):
+        """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
             self.msg = QApplication.translate(
                     "pychemqt", "undefined boiling point")
@@ -1929,6 +1930,7 @@ class Marrero(GroupContribution):
     FirstOrder = 29
 
     def isCalculable(self):
+        """Procedure to define the status of input parameter"""
         group, rest = self._decomposition()
         self.group = group
 
@@ -2242,7 +2244,7 @@ class Elliott(GroupContribution):
                 ("NMP",)]}
 
     def isCalculable(self):
-        """Método que estima si el método es calculable en función de los datos disponibles, definido por cada método"""
+        """Procedure to define the status of input parameter"""
         if not self.kwargs["M"]:
             self.msg = QApplication.translate(
                     "pychemqt", "undefined molecular weight")
@@ -2253,19 +2255,20 @@ class Elliott(GroupContribution):
     def calculo(self):
         self.M = self.kwargs["M"]
         tc = Pc = vc = tb = hv = gf = hf = 0
-        for grupo, contribucion in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += contribucion*self.coeff["tb"][grupo]
-            tc += contribucion*self.coeff["tc"][grupo]
-            Pc += contribucion*self.coeff["Pc"][grupo]
-            vc += contribucion*self.coeff["vc"][grupo]
-            hv += contribucion*self.coeff["hv"][grupo]
-            gf += contribucion*self.coeff["gf"][grupo]
-            hf += contribucion*self.coeff["hf"][grupo]
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            tb += c*self.coeff["tb"][i]
+            tc += c*self.coeff["tc"][i]
+            Pc += c*self.coeff["Pc"][i]
+            vc += c*self.coeff["vc"][i]
+            hv += c*self.coeff["hv"][i]
+            gf += c*self.coeff["gf"][i]
+            hf += c*self.coeff["hf"][i]
 
         if self.kwargs["Tb"]:
-            self.Tb = unidades.Temperature(self.kwargs["Tb"])
+            Tb = self.kwargs["Tb"]
         else:
-            self.Tb = unidades.Temperature(1000/(0.5+35.7/tb**0.5+1000/(142+tb)))
+            Tb = 1000/(0.5+35.7/tb**0.5+1000/(142+tb))
+        self.Tb = unidades.Temperature(Tb)
         self.Tc = unidades.Temperature(self.Tb*(1+(1.28*tc)**-1))
         self.Pc = unidades.Pressure(self.M/(0.346+Pc)**2, "bar")
         self.Vc = unidades.SpecificVolume((172+vc)/self.M, "ccg")
@@ -2279,7 +2282,8 @@ class Elliott(GroupContribution):
 class Ambrose(GroupContribution):
     """
     Group contribution for definition of unknown component using the Ambrose
-    procedure as use in API Technical Databook, procedure 4A1.1
+    procedure as use in API Technical Databook, procedure 4A1.1 with aditional
+    term from Perry's Handbook
 
     Parameters
     ----------
@@ -2347,6 +2351,12 @@ class Ambrose(GroupContribution):
     >>> "%0.1f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '1165.3 504.64 0.0502'
 
+    Example from [11]_, 2,2,4-trimethylpentane
+    >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
+    ... Tb=372.39, platt=0)
+    >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
+    '543.0 25.63 455.8'
+
     References
     ----------
     [8] .. Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
@@ -2357,19 +2367,32 @@ class Ambrose(GroupContribution):
         Properties: II. Critical Pressures and Volumes of Organic Compounds.
         National Physical Laboratory, Teddington, NPL Rep. 98, 1979
     [10] .. API. Technical Data book: Petroleum Refining 6th Edition 1997
+    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw Hill (2008)
     """
     coeff = {
         "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610,
                0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495,
                0.1170, 0.9240, 0.8940, 0.9440, 0.9440, 0.8640, 0.9140, 0.8340,
-               0.8840, 0.8840, 0.8040, 0.7240, 0.5150],
+               0.8840, 0.8840, 0.8040, 0.7240, 0.5150, None, 0.160, 0.282,
+               0.220, 0.450, 0.900, 0.470, 0.420, 0.095, 0.135, 0.170, 0.360,
+               0.270, 0.270, 0.461, 0.507, 0, 0.725, 0.663, 0.223, 0.318,
+               0.500, -0.025, 0.515, 0.183, 0.318, 0.600, 0.850, -0.065,
+               -0.170, 0.924, 0.850, 0, 0.020, -0.050, 0],
         "tc": [0.138, 0.138, 0.095, 0.018, 0.113, 0.113, 0.070, 0.088, 0.038,
                0.038, 0.09, 0.09, 0.03, 0.09, 0.075, 0.075, 0.06, 0.458, 0.448,
-               0.488, 0.488, 0.438, 0.478, 0.428, .468, .468, .418, .368, .22],
+               0.488, 0.488, 0.438, 0.478, 0.428, .468, .468, .418, .368, .22,
+               None, 0.138, 0.220, 0.220, 0.578, 1.156, 0.330, 0.370, 0.208,
+               0.208, 0.088, 0.423, 0.105, 0.090, 0.138, 0.371, 0.195, 0.159,
+               0.131, 0.180, 0.110, 0.110, 0.198, 0.220, 0.080, 0.080, 0.080,
+               0.010, -0.050, -0.200, 0.448, 0.448, 0.030, -0.040, -0.080],
         "vc": [55.1, 55.1, 47.1, 38.1, 45.1, 45.1, 37.1, 35.1, 35.1, 35.1,
                44.5, 44.5, 44.5, 44.5, 37, 37, 29.5, 222, 222, 222, 222, 222,
-               222, 222, 222, 222, 222, 222, 148],
-        "txt": [("CH3", {"C": 1, "H": 3}),
+               222, 222, 222, 222, 222, 222, 148, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 0, 0, 0],
+
+        "txt": [("CH3", {"C": 1, "H": 3}),                                # 0
                 ("CH2", {"C": 1, "H": 2}),
                 ("CH", {"C": 1, "H": 1}),
                 ("C", {"C": 1}),
@@ -2379,7 +2402,7 @@ class Ambrose(GroupContribution):
                 ("=C=", {"C": 1}),
                 ("≡CH", {"C": 1, "H": 1}),
                 ("≡C-", {"C": 1}),
-                ("-CH2- (Cyclic)", {"C": 1, "H": 2}),
+                ("-CH2- (Cyclic)", {"C": 1, "H": 2}),                     # 10
                 ("-CH< (Ciclic)", {"C": 1, "H": 1}),
                 ("-CH< (in fused ring)", {"C": 1, "H": 1}),
                 (">C< (Ciclic)", {"C": 1}),
@@ -2389,7 +2412,7 @@ class Ambrose(GroupContribution):
                 ("Phenyl- ", {"C": 6, "H": 5}),
                 ("o-Phenyl- ", {"C": 6, "H": 4}),
                 ("m-Phenyl- ", {"C": 6, "H": 4}),
-                ("p-Phenyl- ", {"C": 6, "H": 4}),
+                ("p-Phenyl- ", {"C": 6, "H": 4}),                         # 20
                 ("1,2,3-Phenyl- ", {"C": 6, "H": 3}),
                 ("1,2,4-Phenyl- ", {"C": 6, "H": 3}),
                 ("1,2,3,4-Phenyl- ", {"C": 6, "H": 2}),
@@ -2397,11 +2420,51 @@ class Ambrose(GroupContribution):
                 ("1,2,4,5-Phenyl- ", {"C": 6, "H": 2}),
                 ("1,2,3,4,5-Phenyl- ", {"C": 6, "H": 1}),
                 ("1,2,4,5,6-Phenyl- ", {"C": 6}),
-                ("=CH-CH= (in fused Aromatic ring)", {"C": 2, "H": 2})]}
+                ("=CH-CH= (in fused Aromatic ring)", {"C": 2, "H": 2}),
+                ("-OH", {"H": 1, "O": 1}),
+                ("-O-", {"O": 1}),                                        # 30
+                ("-CO-", {"C": 1, "O": 1}),
+                ("-CHO", {"C": 1, "H": 1, "O": 1}),
+                ("-COOH", {"C": 1, "H": 1, "O": 2}),
+                ("-CO-O-OC-", {"C": 2, "O": 3}),
+                ("-CO-O-", {"C": 1, "O": 2}),
+                ("-NO2", {"N": 1, "O": 2}),
+                ("-NH2", {"N": 1, "H": 2}),
+                ("-NH-", {"N": 1, "H": 1}),
+                ("-N<", {"N": 1}),
+                ("-CN", {"N": 1, "C": 1}),                                # 40
+                ("-S-", {"S": 1}),
+                ("-SH", {"S": 1, "H": 1}),
+                (">Si<", {"Si": 1}),
+                (">SiH-", {"Si": 1, "H": 1}),
+                ("-SiH3", {"Si": 1, "H": 3}),
+                (">SiO-", {"Si": 1, "O": 1}),
+                (">SiO- (cyclic)", {"Si": 1, "O": 1}),
+                ("-F", {"F": 1}),
+                ("-Cl", {"Cl": 1}),
+                ("-Br", {"Br": 1}),                                       # 50
+                ("-OH (Aromatic)", {"O": 1, "H": 1}),
+                ("C4H4 (fused ring)", {"C": 4, "H": 4}),
+                ("-F (Aromatic)", {"F": 1}),
+                ("-Cl (Aromatic)", {"Cl": 1}),
+                ("-Br (Aromatic)", {"Br": 1}),
+                ("-I (Aromatic)", {"I": 1}),
 
-    FirstOrder = 29
+                # 2nd Order terms
+                ("Double Bond", ),
+                ("Triple Bond", ),
+                ("Benzene", ),
+                ("Pyridine", ),                                           # 60
+                ("The single or first substituent on an aromatic ring", ),
+                ("The second or subsequent substituent on an aromatic ring", ),
+                ("Each pair of rign substituents in ortho positions", ),
+                ("If one of the ortho pair is -OH", )]}
+
+    FirstOrder = 57
+    SecondOrder = 65
 
     def isCalculable(self):
+        """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
             self.msg = QApplication.translate(
                     "pychemqt", "undefined boiling point")
@@ -2432,9 +2495,19 @@ class Ambrose(GroupContribution):
 
         Pc = tc = vc = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            Pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
+            if i == 29:
+                # Use special case for -OH group
+                n = 0
+                for g in self.group:
+                    n += g.get("C", 0)
+
+                tc += 0.87-0.11*n+0.003*n**2
+                Pc += 0.1-0.013*n
+                vc += 0
+            else:
+                tc += c*self.coeff["tc"][i]
+                Pc += c*self.coeff["Pc"][i]
+                vc += c*self.coeff["vc"][i]
 
         Pt = self.kwargs["platt"]
         self.Tc = unidades.Temperature(self.Tb*(1+1/(1.242+tc-0.023*Pt)))

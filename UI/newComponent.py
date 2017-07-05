@@ -33,8 +33,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH
-from lib.newComponent import (Joback, Constantinou, Wilson, Marrero_Pardillo,
-                              Elliott, Ambrose)
+from lib.newComponent import (Joback, Constantinou, Wilson, Marrero, Elliott,
+                              Ambrose)
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -441,7 +441,7 @@ class Ui_Contribution(newComponent):
                 "Joback": Joback,
                 "Ambrose": Ambrose,
                 "Elliott": Elliott,
-                "Marrero": Marrero_Pardillo}
+                "Marrero": Marrero}
         self.unknown = func[self.metodo]()
 
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
@@ -533,6 +533,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Wilson")
+    Dialog = Ui_Contribution("Ambrose")
     Dialog.show()
     sys.exit(app.exec_())
