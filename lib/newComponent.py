@@ -1394,7 +1394,7 @@ class Wilson(GroupContribution):
         List with group count ocurrences
     ring : integer
         Ring in the atom, [-]
-    Tb : float, optional
+    Tb : float
         Normal boiling temperature, [K]
     M : float, optional
         Molecular weight, [-]
@@ -1408,7 +1408,7 @@ class Wilson(GroupContribution):
 
     Notes
     -----
-    Tb, M and SG are optional input, anyway know them improve the estimation
+    M and SG are optional input, anyway know them improve the estimation
 
     Examples
     --------
@@ -2610,7 +2610,7 @@ class Klincewicz(GroupContribution):
 
         "txt": [("-CH3", ),                     # 0
                 ("-CH2-", ),
-                ("-CHz- (ring)", ),
+                ("-CH2- (ring)", ),
                 (">CH-", ),
                 (">CH- (ring)", ),
                 (">C<", ),
@@ -2657,8 +2657,7 @@ class Klincewicz(GroupContribution):
             self.msg = QApplication.translate(
                     "pychemqt", "undefined boiling point")
             self.status = 0
-
-        if self.kwargs["nogroup"]:
+        elif self.kwargs["nogroup"]:
             self.group = []
             if not self.kwargs["M"]:
                 self.msg = QApplication.translate(
