@@ -19,29 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import os
-import inspect
+import subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import lib
 from lib.config import IMAGE_PATH
-
-
-# from lib import meos, mEoS, petro
 # from equipment import equipments
-
-# objects = inspect.getmembers(mEoS)
-
-# for nombre, objeto in objects:
-    # if inspect.isclass(objeto):
-        # functions = inspect.getmembers(objeto)
-# #        print objeto, functions
-        # for name, function in functions:
-            # inspect.getdoc(function)
-# #            print inspect.getdoc(function)
-
-# print os.path.curdir
-# print glob.glob(os.path.curdir+"/*/*.py")
 
 
 class ShowReference(QtWidgets.QDialog):
@@ -80,22 +64,43 @@ class ShowReference(QtWidgets.QDialog):
                 itemModule = QtWidgets.QTreeWidgetItem(["lib/"+library])
                 self.tree.addTopLevelItem(itemModule)
                 for key in sorted(module.__doi__.keys()):
-                    link = module.__doi__[key]
-                    item = QtWidgets.QTreeWidgetItem([
-                        "", link["autor"], link["title"], link["ref"],
-                        link["doi"]])
 
-                    code = link["doi"].replace("/", "_")
-                    file = os.path.join("doc", "doi", code) + ".pdf"
-                    file2 = os.path.join("doc", "doi", link["title"]) + ".pdf"
-                    if os.path.isfile(file) or os.path.isfile(file2):
-                        icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
-                            IMAGE_PATH, "button", "ok.png")))
-                        item.setIcon(0, icon)
-                    itemModule.addChild(item)
-                self.tree.expandItem(itemModule)
+                    # Special case for submodules
+                    if library == "mEoS":
+                        itemSubModule = QtWidgets.QTreeWidgetItem([key])
+                        itemModule.addChildren([itemSubModule])
+                        for key2 in sorted(module.__doi__[key].keys()):
+                            link = module.__doi__[key][key2]
+                            item = QtWidgets.QTreeWidgetItem([
+                                key2.replace("_", ""), link["autor"],
+                                link["title"], link["ref"], link["doi"]])
+                            code = link["doi"].replace("/", "_")
+                            file = os.path.join("doc", "doi", code) + ".pdf"
+                            file2 = os.path.join(
+                                    "doc", "doi", link["title"]) + ".pdf"
+                            if os.path.isfile(file) or os.path.isfile(file2):
+                                icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                                    IMAGE_PATH, "button", "ok.png")))
+                                item.setIcon(0, icon)
+                            itemSubModule.addChild(item)
 
-#         # Equipment
+                    else:
+                        link = module.__doi__[key]
+                        item = QtWidgets.QTreeWidgetItem([
+                            "", link["autor"], link["title"], link["ref"],
+                            link["doi"]])
+
+                        code = link["doi"].replace("/", "_")
+                        file = os.path.join("doc", "doi", code) + ".pdf"
+                        file2 = os.path.join(
+                                "doc", "doi", link["title"]) + ".pdf"
+                        if os.path.isfile(file) or os.path.isfile(file2):
+                            icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                                IMAGE_PATH, "button", "ok.png")))
+                            item.setIcon(0, icon)
+                        itemModule.addChild(item)
+
+        # Equipment
         # itemEquipment = QtWidgets.QTreeWidgetItem(
             # [QtWidgets.QApplication.translate("pychemqt", "Equipments")])
         # self.tree.addTopLevelItem(itemEquipment)
@@ -107,35 +112,6 @@ class ShowReference(QtWidgets.QDialog):
                     # link["autor"], link["title"], link["ref"])])
                 # itemequip.addChild(item)
 
-        # # MEoS
-        # link = []
-        # objects = [meos.MEoS]+mEoS.__all__
-
-        # for objeto in objects:
-            # item = QtWidgets.QTreeWidgetItem([objeto.__name__, ""])
-            # self.tree.addTopLevelItem(item)
-            # functions = inspect.getmembers(objeto)
-            # for name, function in functions:
-                # doc = inspect.getdoc(function)
-                # if doc:
-                    # lastline = doc.split("\n")[-1]
-                    # if lastline[:17] == "http://dx.doi.org" and \
-                            # lastline not in link:
-                        # link.append(lastline)
-                        # child = QtWidgets.QTreeWidgetItem([name, lastline])
-                        # item.addChild(child)
-
-            # listas = ["eq", "_viscosity", "_thermal"]
-            # for lista in listas:
-                # if lista in objeto.__dict__ and objeto.__dict__[lista]:
-                    # for eq in objeto.__dict__[lista]:
-                        # if eq and "__doi__" in eq:
-                            # item.addChild(QtWidgets.QTreeWidgetItem(
-                                # [eq["__doi__"]["doi"], "%s: %s, %s" % (
-                                    # eq["__doi__"]["autor"],
-                                    # eq["__doi__"]["title"],
-                                    # eq["__doi__"]["ref"])]))
-
     def open(self, item, int):
         """Open file if exist in doc/doi folder or open a browser with link"""
         if item.parent() and not item.icon(0).isNull():
@@ -145,9 +121,9 @@ class ShowReference(QtWidgets.QDialog):
             file = os.path.join("doc", "doi", code) + ".pdf"
             file2 = os.path.join("doc", "doi", title) + ".pdf"
             if os.path.isfile(file):
-                os.system('atril "'+file+'"')
+                subprocess.Popen(['atril', file])
             elif os.path.isfile(file2):
-                os.system('atril "'+file2+'"')
+                os.system(['atril', file2])
         elif item.parent():
             url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
             QtGui.QDesktopServices.openUrl(url)
@@ -155,7 +131,6 @@ class ShowReference(QtWidgets.QDialog):
 
 if __name__ == "__main__":
     import sys
-    from lib import config
     app = QtWidgets.QApplication(sys.argv)
     dialog = ShowReference()
     dialog.show()

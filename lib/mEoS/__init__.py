@@ -189,28 +189,44 @@ __all__ = Nobles + Gases + Alkanes + Naphthenes + Alkenes + Heteroatom + \
 id_mEoS = [i.id for i in __all__]
 
 
-if __name__ == "__main__":
-    import doctest
-#    import timeit
-#    def test():
-    for module in __all__:
-        if "D2O" not in module.__module__:
+# Add references
+__doi__ = {}
+for obj in __all__:
+    subdict = {}
+    for prop in ["eq", "_viscosity", "_thermal"]:
+        if prop not in obj.__dict__ or not obj.__dict__[prop]:
             continue
-        print(module.__module__)
-        inst = module()
-        for eq in inst.eq[0:1]:
-            if "__test__" in eq:
-                inst.__doc__ += eq["__test__"]
-        if inst._viscosity is not None:
-            for eq in inst._viscosity:
-                if "__test__" in eq:
-                    inst.__doc__ += eq["__test__"]
-        if inst._thermal is not None:
-            for eq in inst._thermal:
-                if "__test__" in eq:
-                    inst.__doc__ += eq["__test__"]
-        doctest.run_docstring_examples(inst, globs={module.__name__: module})
-#    timeit.timeit("test()", setup="from __main__ import test", number=3)
+        for i, eq in enumerate(obj.__dict__[prop]):
+            if eq and "__doi__" in eq:
+                key = "%s_%i" % (prop.replace("_", ""), i)
+                subdict[key] = eq["__doi__"]
+    __doi__[obj.__name__] = subdict
 
-# TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
-# TODO: Add 2-propanol from 10.1063/1.3112608
+
+
+
+# if __name__ == "__main__":
+    # import doctest
+# #    import timeit
+# #    def test():
+    # for module in __all__:
+        # if "D2O" not in module.__module__:
+            # continue
+        # print(module.__module__)
+        # inst = module()
+        # for eq in inst.eq[0:1]:
+            # if "__test__" in eq:
+                # inst.__doc__ += eq["__test__"]
+        # if inst._viscosity is not None:
+            # for eq in inst._viscosity:
+                # if "__test__" in eq:
+                    # inst.__doc__ += eq["__test__"]
+        # if inst._thermal is not None:
+            # for eq in inst._thermal:
+                # if "__test__" in eq:
+                    # inst.__doc__ += eq["__test__"]
+        # doctest.run_docstring_examples(inst, globs={module.__name__: module})
+# #    timeit.timeit("test()", setup="from __main__ import test", number=3)
+
+# # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
+# # TODO: Add 2-propanol from 10.1063/1.3112608
