@@ -448,6 +448,9 @@ class Ui_Contribution(newComponent):
                     partial(self.changeParams, "atoms"))
             layout.addWidget(self.atoms, 17, 1)
 
+        if metodo == "Lydersen":
+            self.Tb.setResaltado(True)
+
         newComponent.loadUI(self)
 
         # Initialization variables
