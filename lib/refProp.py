@@ -26,11 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
-# TODO: Don't work when it's used in qt loop, as library work great
-
-
 try:
-    # import multiRP
     import refprop
 except:
     pass
@@ -90,7 +86,6 @@ __all__ = {212: "helium",
            971: "krypton",
            994: "xenon",
            953: "sf6",
-           645: "cf3i",
            217: "r11",
            216: "r12",
            215: "r13",
@@ -515,13 +510,21 @@ class RefProp(ThermoRefProp):
             self.K = [unidades.Dimensionless(1)]*flash["nc"]
 
         # NOT supported on Windows
-        excess = refprop.excess(flash["t"], flash["D"], flash["x"])
-        self.vE = unidades.Volume(excess["vE"]/self.M)
-        self.uE = unidades.Enthalpy(excess["eE"]/self.M, "Jg")
-        self.hE = unidades.Enthalpy(excess["hE"]/self.M, "Jg")
-        self.sE = unidades.SpecificHeat(excess["sE"]/self.M, "JgK")
-        self.aE = unidades.Enthalpy(excess["aE"]/self.M, "Jg")
-        self.gE = unidades.Enthalpy(excess["gE"]/self.M, "Jg")
+        if sys.platform != "win32":
+            excess = refprop.excess(flash["t"], flash["D"], flash["x"])
+            self.vE = unidades.Volume(excess["vE"]/self.M)
+            self.uE = unidades.Enthalpy(excess["eE"]/self.M, "Jg")
+            self.hE = unidades.Enthalpy(excess["hE"]/self.M, "Jg")
+            self.sE = unidades.SpecificHeat(excess["sE"]/self.M, "JgK")
+            self.aE = unidades.Enthalpy(excess["aE"]/self.M, "Jg")
+            self.gE = unidades.Enthalpy(excess["gE"]/self.M, "Jg")
+        else:
+            self.vE = unidades.Volume(0)
+            self.uE = unidades.Enthalpy(0)
+            self.hE = unidades.Enthalpy(0)
+            self.sE = unidades.SpecificHeat(0)
+            self.aE = unidades.Enthalpy(0)
+            self.gE = unidades.Enthalpy(0)
 
         self.csat = []
         self.dpdt_sat = []
@@ -667,9 +670,14 @@ class RefProp(ThermoRefProp):
         fase.virialB = unidades.SpecificVolume(b/self.M)
         c = refprop.virc(T, x)["c"]
         fase.virialC = unidades.SpecificVolume_square(c/self.M**2)
+
         # viriald don't supported for windows
-        d = refprop.vird(T, x)["d"]
-        fase.virialD = unidades.Dimensionless(d/self.M**3)
+        if sys.platform != "win32":
+            d = refprop.vird(T, x)["d"]
+            fase.virialD = unidades.Dimensionless(d/self.M**3)
+        else:
+            fase.virialD = unidades.Dimensionless(0)
+
         ba = refprop.virba(T, x)["ba"]
         fase.virialBa = unidades.SpecificVolume(ba/self.M)
         ca = refprop.virca(T, x)["ca"]
@@ -811,4 +819,3 @@ if __name__ == '__main__':
             # except ZeroDivisionError:
                 # if r.__getattribute__(key) == m.__getattribute__(key):
                     # pass
-
