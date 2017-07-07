@@ -212,9 +212,15 @@ class CoolProp(ThermoAdvanced):
         self.kwargs.update(kwargs)
 
         if self.calculable:
-            self.status = 1
-            self.calculo()
-            self.msg = "Solved"
+            try:
+                self.calculo()
+            except ValueError as e:
+                self.msg = e
+                self.status = 0
+            else:
+                self.status = 1
+                self.msg = "Solved"
+
         elif self._definition and not self._multicomponent and "ids" in kwargs:
             if os.environ["CoolProp"] == "True":
                 fluido = self._name()
@@ -226,12 +232,23 @@ class CoolProp(ThermoAdvanced):
                 self.M = unidades.Dimensionless(estado.molar_mass()*1000)
                 self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
                 self.Tt = unidades.Temperature(estado.Ttriple())
-                self.f_accent = unidades.Dimensionless(estado.acentric_factor())
+                self.f_accent = unidades.Dimensionless(
+                        estado.acentric_factor())
 
                 self.name = fluido
                 self.CAS = estado.fluid_param_string("CAS")
                 self.synonim = estado.fluid_param_string("aliases")
                 self.formula = estado.fluid_param_string("formula")
+
+            self.eq = self._limit(fluido, estado)
+
+    def _limit(self, name, estado):
+        eq = {}
+        eq["Tmin"] = estado.Tmin()
+        eq["Tmax"] = estado.Tmax()
+        eq["Pmin"] = CP.CoolProp.PropsSI("pmin", name)
+        eq["Pmax"] = estado.pmax()
+        return eq
 
     @property
     def calculable(self):
@@ -265,7 +282,7 @@ class CoolProp(ThermoAdvanced):
         if self.kwargs["x"] != CoolProp.kwargs["x"]:
             self.kwargs["Q"] = self.kwargs["x"]
         if self.kwargs["v"] != CoolProp.kwargs["v"]:
-            self.kwargs["rho"] = 1/self.kwargs["v"]
+            self.kwargs["Dmass"] = 1/self.kwargs["v"]
         if self.kwargs["rho"] != CoolProp.kwargs["rho"]:
             self.kwargs["Dmass"] = self.kwargs["rho"]
         if self.kwargs["s"] != CoolProp.kwargs["s"]:
@@ -285,14 +302,15 @@ class CoolProp(ThermoAdvanced):
             if self.kwargs[inputs[0]] != CoolProp.kwargs[inputs[0]] and \
                     self.kwargs[inputs[1]] != CoolProp.kwargs[inputs[1]]:
                 self._thermo = def_.replace("-", "")
+                self._inputs = inputs
                 self._par = CP.__getattribute__("%s_INPUTS" % self._thermo)
                 break
 
         return self._definition and self._thermo
 
     def args(self):
-        var1 = self.kwargs[self._thermo[0]]
-        var2 = self.kwargs[self._thermo[1]]
+        var1 = self.kwargs[self._inputs[0]]
+        var2 = self.kwargs[self._inputs[1]]
 
         args = [var1, var2]
         return args
@@ -315,6 +333,7 @@ class CoolProp(ThermoAdvanced):
         fluido = self._name()
         args = self.args()
         estado = CP.AbstractState("HEOS", fluido)
+        self.eq = self._limit(fluido, estado)
         if self._multicomponent:
             estado.set_mole_fractions(self.kwargs["fraccionMolar"])
         estado.update(self._par, *args)
@@ -615,6 +634,8 @@ class CoolProp(ThermoAdvanced):
 
 if __name__ == '__main__':
     fluido = CoolProp(ids=[62])
+    # fluido(T=300)
+    # fluido(x=.5)
     fluido(T=300)
-    fluido(x=.5)
+    fluido(h=2e7)
     print(fluido.Liquido.rho, fluido.Gas.rho)
