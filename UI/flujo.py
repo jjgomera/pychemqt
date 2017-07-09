@@ -41,7 +41,7 @@ from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
 from UI.widgets import createAction, Table_Graphics, PathConfig
-from UI.prefPFD import ConfLineDialog
+from UI.prefPFD import ConfLineDialog, Dialog
 from equipment import *
 from equipment.parents import equipment
 
@@ -950,6 +950,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
     def addActions(self, menu, pos=None):
         menu.addAction(QtWidgets.QApplication.translate("pychemqt", "Redraw"), self.update)
+        menu.addAction(QtWidgets.QApplication.translate("pychemqt", "Configure"), self.configure)
         menu.addSeparator()
         menu.addAction(createAction(QtWidgets.QApplication.translate("pychemqt", "Select All"),
                                     slot=self.selectAll,
@@ -1047,6 +1048,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.removeItem(item)
         self.update()
         self.parent().list.updateList(self.objects)
+
+    def configure(self):
+        dlg = Dialog()
+        if dlg.exec_():
+            pass
 
     def waitClick(self, numClick, type, object):
         self.object = object

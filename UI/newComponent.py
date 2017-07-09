@@ -403,7 +403,7 @@ class Ui_Contribution(newComponent):
             labelTb.setEnabled(False)
             self.Tb.setEnabled(False)
 
-        if metodo == "Wilson":
+        elif metodo == "Wilson":
             self.Tb.setResaltado(True)
             layout.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate("pychemqt", "Rings")), 16, 0)
@@ -412,10 +412,10 @@ class Ui_Contribution(newComponent):
             self.ring.valueChanged.connect(partial(self.changeParams, "ring"))
             layout.addWidget(self.ring, 16, 1)
 
-        if metodo == "Elliott":
+        elif metodo == "Elliott":
             self.M.setResaltado(True)
 
-        if metodo == "Ambrose":
+        elif metodo == "Ambrose":
             self.Tb.setResaltado(True)
             layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
                 "pychemqt", "Platt number")), 16, 0)
@@ -431,7 +431,7 @@ class Ui_Contribution(newComponent):
             self.plat.valueChanged.connect(partial(self.changeParams, "platt"))
             layout.addWidget(self.plat, 16, 1)
 
-        if metodo == "Klincewicz":
+        elif metodo == "Klincewicz":
             self.Tb.setResaltado(True)
 
             self.nogroupKlincewicz = QtWidgets.QCheckBox(
@@ -447,9 +447,6 @@ class Ui_Contribution(newComponent):
             self.atoms.valueChanged.connect(
                     partial(self.changeParams, "atoms"))
             layout.addWidget(self.atoms, 17, 1)
-
-        if metodo == "Lydersen":
-            self.Tb.setResaltado(True)
 
         newComponent.loadUI(self)
 
