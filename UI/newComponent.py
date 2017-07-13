@@ -361,7 +361,7 @@ class Ui_Contribution(newComponent):
             QtWidgets.QSizePolicy.Expanding), 7, 1)
 
         # Show selection for method with several order contributions
-        if metodo in ["Constantinou", "Wilson", "Ambrose"]:
+        if metodo in ["Constantinou", "Wilson", "Ambrose", "Nannoolal"]:
             self.Order1 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
@@ -464,7 +464,7 @@ class Ui_Contribution(newComponent):
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
             self.groupContributions.addItem(nombre[0])
 
-        if metodo in ["Constantinou", "Wilson", "Ambrose"]:
+        if metodo in ["Constantinou", "Wilson", "Ambrose", "Nannoolal"]:
             self.Order()
         if metodo == "Klincewicz":
             self.nogroupCheckToggled(False)
@@ -474,7 +474,7 @@ class Ui_Contribution(newComponent):
         for i in range(self.unknown.FirstOrder):
             self.groupContributions.item(i).setHidden(self.Order2.isChecked())
         for i in range(self.unknown.FirstOrder, self.unknown.SecondOrder):
-            self.Contributions.item(i).setHidden(self.Order1.isChecked())
+            self.groupContributions.item(i).setHidden(self.Order1.isChecked())
 
     def nogroupCheckToggled(self, boolean):
         """Set advanced properties input status for Klincewitcz method"""
@@ -558,12 +558,13 @@ class Ui_Contribution(newComponent):
     def calculo(self, **kwargs):
         """Calculate function"""
         newComponent.calculo(self, **kwargs)
-        if self.unknown.status:
+        if self.unknown.status in (1, 3):
             self.Formula.setText(self.unknown.formula)
+
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Klincewicz")
+    Dialog = Ui_Contribution("Nannoolal")
     Dialog.show()
     sys.exit(app.exec_())

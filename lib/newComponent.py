@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from itertools import permutations
 import re
 import time
 
@@ -134,9 +135,35 @@ __doi__ = {
                   "and Complex Molecules",
          "ref": "Canadian J. Chem. Eng. 84, 431-446 (2006)",
          "doi": "10.1002/cjce.5450840404"},
-
-
     15:
+        {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W.",
+         "title": "Estimation of Pure Component Properties 1. Estimation of "
+                  "the Normal Boiling Point of Non-electrolyte Organic "
+                  "Compounds Via Group Contributions and Group Interactions",
+         "ref": "Fluid Phase Equilib., 226 (2004) 45-63",
+         "doi": "10.1016/j.fluid.2004.09.001"},
+    16:
+        {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
+         "title": "Estimation of Pure Component Properties 2. Estimation of "
+                  "Critical Property Data by Group Contribution",
+         "ref": "Fluid Phase Equilib., 252 (2007) 1-27",
+         "doi": "10.1016/j.fluid.2006.11.014"},
+    17:
+        {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
+         "title": "Estimation of Pure Component Properties 3. Estimation of "
+                  "the Vapor Pressure of Non-Electrolyte Organic Compounds "
+                  "Via Group Contributions and Group Interactions",
+         "ref": "Fluid Phase Equilib., 269 (2008) 117-133",
+         "doi": "10.1016/j.fluid.2008.04.020"},
+    18:
+        {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
+         "title": "Estimation of Pure Component Properties 4. Estimation of "
+                  "the Saturted Liquid Viscosity of Non-Electrolyte Organic "
+                  "Compounds Via Group Contributions and Group Interactions",
+         "ref": "Fluid Phase Equilib., 281 (2009) 97-119",
+         "doi": "10.1016/j.fluid.2009.02.016"},
+
+    19:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -350,6 +377,8 @@ class GroupContribution(newComponente):
         The child class must implement the specific calculate procedure and
         call this method it is necessary to finish definition"""
 
+        if "Tb" not in self.__dict__:
+            self.Tb = self._Tb()
         if "f_acent" not in self.__dict__:
             self.f_acent = f_acent_Lee_Kesler(self.Tb, self.Tc, self.Pc)
         if "Hv" not in self.__dict__:
@@ -369,8 +398,6 @@ class GroupContribution(newComponente):
             self.Vc = self._Vc()
         if "cp" not in self.__dict__:
             self.cp = self._cp()
-        if "Tb" not in self.__dict__:
-            self.Tb = self._Tb()
         self.API = 141.5/self.SG-131.5
         self.txt, self.formula = self.EmpiricFormula()
         newComponente.calculo(self)
@@ -389,6 +416,13 @@ class GroupContribution(newComponente):
         for grp in self.group:
             for x in grp.values():
                 a += x
+        return a
+
+    def _atomX(self, x):
+        """Calculate the atom count of element X of the molecule"""
+        a = 0
+        for grp in self.group:
+            a += grp.get(x, 0)
         return a
 
     def _M(self):
@@ -1454,7 +1488,7 @@ class Wilson(GroupContribution):
         1996.
     """
     __title__ = "Wilson-Jasperson (1996)"
-    kwargs = GroupContribution.kwargs
+    kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0
 
     coeff = {
@@ -2408,7 +2442,7 @@ class Ambrose(GroupContribution):
         McGraw Hill (2008)
     """
     __title__ = "Ambrose (1980)"
-    kwargs = GroupContribution.kwargs
+    kwargs = GroupContribution.kwargs.copy()
     kwargs["platt"] = 0
 
     coeff = {
@@ -2609,7 +2643,7 @@ class Klincewicz(GroupContribution):
         with Group Contribution Methods. AIChE J., 30(1), 137 (1984)
     """
     __title__ = "Klincewicz (1984)"
-    kwargs = GroupContribution.kwargs
+    kwargs = GroupContribution.kwargs.copy()
     kwargs["nogroup"] = False
     kwargs["atoms"] = 0
 
@@ -3002,6 +3036,9 @@ class Valderrama(GroupContribution):
             M = self._M()
         self.M = unidades.Dimensionless(M)
 
+        if self.kwargs["Tb"]:
+            self.Tb = unidades.Temperature(self.kwargs["Tb"])
+
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             tc += c*self.coeff["tc"][i]
@@ -3017,8 +3054,460 @@ class Valderrama(GroupContribution):
         GroupContribution.calculo(self)
 
 
+class Nannoolal(GroupContribution):
+    """
+    Group contribution for definition of unknown component using the Nannoolal
+    procedure (2007)
+
+    Parameters
+    ----------
+    group : array
+        List with group index
+    contribution : float
+        List with group count ocurrences
+    M: float, optional
+        Molecular weight, [-]
+    Tb : float, optional
+        Normal boiling temperature, [K]
+    SG: float, optional
+        Specific gravity, [-]
+
+    Return
+    ------
+    A instance of newComponente with all neccessary properties to use in PFD as
+    a predefined component
+
+    Notes
+    -----
+    Tb, M and SG are optional input, anyway know them improve the estimation
+
+    Examples
+    --------
+    Table 17a in [15]_, 3,3,4,4-tetramethylhexane
+    >>> cmp = Nannoolal(group=[0, 3, 5, 131], contribution=[6, 2, 2, 1])
+    >>> "%0.1f" % cmp.Tb
+    '429.5'
+    >>> cmp.formula
+    'C10H22'
+
+    Table 17b in [15]_, di-isopropanolamine, find too in [10]_
+    >>> cmp = Nannoolal(group=[0, 6, 33, 41], contribution=[2, 4, 2, 1])
+    >>> "%0.1f" % cmp.Tb
+    '509.3'
+
+    Table 17c in [15]_, perfluoro-2-propanone
+    >>> cmp = Nannoolal(group=[6, 20, 50, 118, 119, 121],
+    ... contribution=[2, 6, 1, 1, 2, 1])
+    >>> "%0.1f" % cmp.Tb
+    '246.3'
+
+    Table 17d in [15]_, methyl m-toluate
+    >>> cmp = Nannoolal(group=[1, 2, 14, 15, 44, 126, 132],
+    ... contribution=[1, 1, 4, 2, 1, 1, 1])
+    >>> "%0.1f" % cmp.Tb
+    '490.7'
+
+    Table 42a in [16]_, 2,2,3,3-tetramethylbutane
+    >>> cmp = Nannoolal(Tb=379.6, group=[0, 5, 131], contribution=[6, 2, 1])
+    >>> "%0.1f" % cmp.Tc
+    '566.8'
+
+    Table 42b in [16]_, diethylene glycol monomethyl ether
+    >>> cmp = Nannoolal(M=120.15, group=[1, 6, 34, 37],
+    ... contribution=[1, 4, 1, 2])
+    >>> "%0.1f" % cmp.Pc.kPa
+    '3689.9'
+
+    Table 42c in [16]_, trichloro silane
+    >>> cmp = Nannoolal(group=[26, 111, 122, 133], contribution=[3, 1, 1, 1])
+    >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
+    '262.8'
+
+    Table 42d in [16]_, perfluoro-2-propanone
+    >>> cmp = Nannoolal(Tb=245.9, group=[6, 20, 50, 118, 119, 121],
+    ... contribution=[2, 6, 1, 1, 2, 1])
+    >>> "%0.1f" % cmp.Tc
+    '358.0'
+
+    References
+    ----------
+    [15] .. Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
+        of Pure Component Properties 1. Estimation of the Normal Boiling Point
+        of Non-electrolyte Organic Compounds Via Group Contributions and Group
+        Interactions. Fluid Phase Equilib., 226 (2004) 45-63
+    [16] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+        Component Properties 2. Estimation of Critical Property Data by Group
+        Contribution. Fluid Phase Equilib., 252 (2007) 1-27
+    [17] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+        Component Properties 3. Estimation of the Vapor Pressure of
+        Non-Electrolyte Organic Compounds Via Group Contributions and Group
+        Interactions. Fluid Phase Equilib., 269 (2008) 117-133
+    [18] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+        Component Properties 4. Estimation of the Saturted Liquid Viscosity of
+        Non-Electrolyte Organic Compounds Via Group Contributions and Group
+        Interactions. Fluid Phase Equilib., 281 (2009) 97-119
+    """
+    __title__ = "Nannoolal (2007)"
+    coeff = {
+        # Be careful, there are several changes in group between Tb paper and
+        # the other paper and several index ajust
+        #   - 78 : Two different group with equal parameter but different M,
+        #     the Si related copy to 110
+        #   - 71, 93: Change definition, use the critical paper definition
+        #   - Mising 98, use the 214 defined in critical (be careful to delete
+        #     in table
+        #   - Mising 112, use the 215 defined in critical
+        #   - Mising 114, use the 216 defined in critical
+        #   - 217 set at end of second order as 135
+
+        # Table 3 & 4 in [15]_
+        "tb": [177.3066, 251.8338, 157.9527, 239.4531, 240.6785, 249.5809,
+               266.8769, 201.0115, 239.4957, 222.1163, 209.9749, 250.9584,
+               291.2291, 244.3581, 235.3462, 315.4128, 348.2779, 367.9649,
+               106.5492, 49.2701, 53.1871, 78.7578, 103.5672, -19.5575,
+               330.9117, 287.1863, 267.4170, 205.7363, 292.5816, 419.4959,
+               377.6775, 556.3944, 349.9409, 390.2446, 443.8712, 488.0819,
+               361.4775, 146.4836, 820.7118, 321.1759, 441.4388, 223.0992,
+               126.2952, 1080.3139, 636.2020, 642.0427, 1142.6119, 1052.6072,
+               1364.5333, 1487.4109, 618.9782, 553.8090, 434.0811, 461.5784,
+               864.5074, 304.3321, 719.2462, 475.7958, 586.1413, 500.2434,
+               412.6276, 475.9623, 512.2893, 422.2307, 37.1936, 453.3397,
+               306.7139, 866.5843, 821.4141, 282.0181, 207.9312, 920.3617,
+               1153.1344, 494.2668, 1041.0851, 1251.2675, 778.9151, 540.0895,
+               879.7062, 660.4645, 1018.4865, 1559.9840, 510.4223, 1149.9670,
+               1209.2972, 347.7717, 664.0903, 957.6388, 928.9954, 560.1024,
+               229.2288, 606.1797, 215.3416, 273.1755, 1218.1878, 2082.3288,
+               201.3224, 0, 886.7613, 1045.0343, -109.6269, 111.0590,
+               1573.3769, 1483.1289, 1506.8136, 484.6371, 1379.4485, 659.7336,
+               492.0707, 540.0895, 971.0365, 0, 428.8911, 0, 612.9506,
+               562.1791, 761.6006,
+               -82.2328, -247.8893, -20.3996, 15.4720,
+               -172.4201, -99.8035, -62.3740, -40.0058, -27.2705, -3.5075,
+               16.1061, 25.8348, 35.8330, 51.9098, 111.8372, 40.4205, 0],
+
+        # Table 7 & 8 in [16]_
+        "tc": [41.8682, 33.1371, -1.0710, 40.0977, 30.2069, -3.8778, 52.8003,
+               9.4422, 21.2898, 26.3513, -17.0459, 51.7974, 18.9549, -29.1568,
+               16.1154, 68.2045, 68.1923, 29.8039, 15.6068, 11.0757, 18.1302,
+               19.1772, 20.8519, -24.0220, -1.3329, 2.6113, 15.5010, -16.1905,
+               60.1907, 5.2621, -21.5199, -8.6881, 84.8567, 79.3047, 49.5968,
+               130.1320, 14.0159, 12.5082, 41.3490, 18.3404, -50.6419, 17.1780,
+               -0.5820, 199.9042, 75.7089, 58.0782, 109.1930, 102.1024, 0, 0,
+               56.1572, 44.2000, -7.1070, 0.5887, 0, -7.7181, 117.1330,
+               45.1531, 0, 67.9821, 45.4406, 56.4059, -19.9737, 36.0883,
+               10.4146, 18.9903, 10.9495, 82.6239, 0, 25.4209, 72.5587, 0, 0,
+               0, 0, 164.3355, 0, 157.3401, 97.2830, 153.7225, 0, 90.9726,
+               62.3642, 0, 0, 0, 53.6350, 24.7302, 0, 38.4681, 0, 63.6504,
+               34.2058, 0, 0, 0, 27.3441, 48.1680, 0, 0, 0, 1.3231, 764.9595,
+               0, 0, 0, 0, 0, 0, 157.3401, 0, 0.2842, 0, -0.6536, 36.0361, 0,
+               0, 32.1829, 11.4437, -1.3023, -34.3037, -1.3798, -2.7180,
+               11.3251, -4.7516, 1.2823, 6.7099, 0, -33.8201, -18.4815,
+               -23.6024, -24.5802, -35.6113, 62.0286],
+
+        # Table 10 & 11 in [16]_
+        "Pc": [8.1620, 5.5262, 4.1660, 5.2623, 2.3009, -2.9925, 3.4310, 2.3665,
+               3.4027, 3.6162, -5.1299, 4.1421, 0.8765, -0.1320, 2.1064,
+               4.1826, 3.5500, 1.0997, 0.7328, 4.3757, 3.4933, 2.6558, 1.6547,
+               0.5236, -2.2611, -1.4992, 0.4883, -0.9280, 11.8687, -4.3170,
+               -2.2409, -4.7841, -7.4244, -4.4735, -1.8153, -6.8991, -12.1664,
+               2.0592, 0.1759, -4.4164, -9.0065, -0.4086, 2.3625, 3.9873,
+               4.3592, 1.0266, 0.4329, 0.5172, 0, 0, 0.1190, -2.3615, -9.4154,
+               -8.2595, 0, -4.9259, 5.1666, 7.1581, 0, -6.2791, 9.6413, 3.4731,
+               -2.2718, 2.4489, -0.5403, 8.3052, -4.7101, -5.0929, 0, 5.7270,
+               2.7602, 0, 0, 0, 0, 4.0458, 0, 12.6786, 0.2822, 0, 0, -23.9221,
+               0.7043, 0, 0, 0, 12.6128, -10.2451, 0, -4.0133, 0, -5.0403,
+               3.2023, 0, 0, 0, -4.3834, 1.5574, 0, 0, 0, 3.3971, 58.9190, 0,
+               0, 0, 0, 0, 0, 12.6786, 0, 3.8751, 0, 4.4882, -5.1116, 0, 0,
+               7.3149, 4.1439, 0.4387, -4.2678, 4.8944, 2.8103, -0.3035,
+               0.0930, 0.7061, -0.7246, 0, -8.8457, -2.2542, -3.2460, -5.3113,
+               1.0934, 8.6126],
+
+        # Table 13 & 14 in [16]_
+        "vc": [28.7855, 28.8811, 26.7237, 32.0493, 32.1108, 28.0534, 33.7577,
+               28.8792, 24.8517, 30.9323, 5.9550, 29.5901, 20.2325, 10.5669,
+               19.4020, 25.0434, 5.6704, 16.4118, -5.0331, 1.5646, 3.3646,
+               1.0897, 1.1084, 19.3190, 22.0457, 23.9279, 26.2582, 36.7624,
+               34.4110, 36.0223, 30.7004, 48.2989, 10.6790, 5.6645, 2.0869,
+               3.7778, 25.6584, 11.6284, 46.7680, 13.2571, 73.7444, 20.5722,
+               6.0178, 40.3909, 42.6733, 36.1286, 0, 64.3506, 0, 0, 30.9229,
+               25.5034, 34.7699, 38.0185, 0, 20.3127, 43.7983, 0, 0, 51.0710,
+               48.1957, 34.1240, 40.9263, 29.8612, 4.7476, -25.3680, 23.6094,
+               34.8472, 0, 75.7193, 69.5645, 0, 0, 0, 0, 0, 0, 0, 52.8789,
+               27.1026, 0, 68.0701, 0, 0, 0, 0, 0, 64.4616, 0, 20.0440, 0,
+               28.7127, 55.3822, 0, 0, 0, 29.3068, 16.3122, 0, 0, 0, 1.3597, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 37.0423, 0, 55.7432, 16.2688, 0, 0,
+               -3.8033, 27.5326, 1.5807, -2.6235, -5.3091, -6.1909, 3.2219,
+               -6.3900, -3.5964, 1.5196, 0, -4.6483, -5.0563, -6.3267, 4.9392,
+               2.8889, 19.4348],
+
+        # Name and group composition, Table 1 in [15]_
+        "txt": [                                           # 0
+                ("CH3-", ),
+                ("CH3- (N, O, F, Cl)", ),
+                ("CH3- (aromatic)", ),
+                ("-CH2- ", ),
+                (">CH- ", ),
+                (">C< ", ),
+                (">C< (N, O, F, Cl)", ),
+                (">C< (aromatic)", ),
+                ("-CH2- (ring)", ),
+                (">CH- (ring)", ),                         # 10
+                (">C< (ring) ", ),
+                (">C< (ring) (outer N, O, Cl, F)", ),
+                (">C< (ring N, O)", ),
+                (">C< (aromatic)", ),
+                ("=CH- (aromatic) ", ),
+                ("=C< (aromatic)", ),
+                ("=C< (aromatic) (N, O, Cl, F)", ),
+                ("=C< (full aromatic)", ),
+                ("F– (C, Si)", ),
+                ("-CF=C< ", ),                             # 20
+                ("F– (CF)", ),
+                ("F– (CF, CCl)", ),
+                ("F– (CF2, CCl2)", ),
+                ("F- (aromatic) ", ),
+                ("Cl– (C, Si)", ),
+                ("Cl– (CF, CCl)", ),
+                ("Cl– (CF2, CCl2)", ),
+                ("Cl– (aromatic)", ),
+                ("-CCl=C< ", ),
+                ("Br-", ),                                 # 30
+                ("Br- (aromatic)", ),
+                ("I-", ),
+                ("-OH (>C< no H)", ),
+                ("-OH (-CH2-)", ),
+                ("-OH (>C5 chain)", ),
+                ("-OH (<C5 chain)", ),
+                ("-OH (aromatic)", ),
+                ("-O-", ),
+                (">OC2<", ),
+                ("NH2-", ),                                # 40
+                ("NH2- (aromatic)", ),
+                ("-NH-", ),
+                (">N-", ),
+                ("-COOH", ),
+                ("-COO-", ),
+                ("HCOO-", ),
+                ("-COO– (ring)", ),
+                ("-CON<", ),
+                ("-CONH-", ),
+                ("-CONH2", ),                              # 50
+                (">C=O", ),
+                ("-CHO", ),
+                ("-SH", ),
+                ("-S-", ),
+                ("-S-S-", ),
+                ("-S- (aromatic) ", ),
+                ("-C≡N", ),
+                (">C=C< ", ),
+                (">C=C< (aromatic)", ),
+                (">C=C< (N, O, Cl, F)", ),                 # 60
+                ("H2C=C<", ),
+                (">C=C< (ring) ", ),
+                ("-C≡C-", ),
+                ("HC≡C-", ),
+                ("-O- (aromatic)", ),
+                ("=N- (ring C5)", ),
+                ("=N- (ring C6)", ),
+                ("NO2-", ),
+                ("NO2- (aromatic)", ),
+                (">Si<", ),                                # 70
+                (">Si< (3CH)", ),  # The definiton in Tb is >Si< (O)
+                ("NO3-", ),
+                (">PO4-", ),
+                ("O=NO-", ),
+                ("ONC-", ),
+                ("-C=O-O-C=O-", ),
+                ("COCl-", ),
+                (">BO3-", ),
+                ("COOO<", ),
+                ("OCN-", ),                                # 80
+                ("SCN-", ),
+                ("-SO2-", ),
+                (">Sn<", ),
+                ("AsCl2-", ),
+                ("-GeCl3 ", ),
+                (">Ge<", ),
+                (">C=C=C<", ),
+                (">C=C-C=C<", ),
+                (">C=C-C=C<", ),
+                ("-CHO (aromatic)", ),                     # 90
+                ("=N-", ),
+                (">C=O (aromatic)", ),
+                (">Si< (2CH)", ),  # The definiton in Tb is >Si< (F, Cl)
+                ("-O-O-", ),
+                (">C≡C-C≡C<", ),
+                ("-C=O-O-C=O- (ring)", ),
+                ("-NH- (aromatic)", ),
+                ("=C< (aromatic)", ),  # Missing 98, set 214
+                ("-OCON<", ),
+                (">N-C=O-N<", ),                          # 100
+                (">N<", ),
+                ("F– (CCl)", ),
+                ("-OCOO-", ),
+                (">SO4", ),
+                ("-SO2N<", ),
+                ("=CNC=NC=", ),
+                (">S=O", ),
+                ("(S) -C≡N", ),
+                (">N-C=O", ),
+                # Missing 110, use a dupplicate of 78    # 110
+                # with different molecular weigh
+                (">Si< (F, Cl)", ),
+                ("(N) -C≡N", ),
+                (">Si< (1CH)", ),  # Missing 112, set 215
+                (">P<", ),
+                (">Si< (no CH)", ),  # Missing 114, set 216
+                ("-ON=", ),
+                (">Se<", ),
+                (">Al<", ),
+                # 118 in Tb equal to 134 in other, delete reference
+                # So down to this is 1 index below
+
+                # Second order contributions
+                ("CO-CXy (X: F,Cl) (y>2)", ),
+                ("CXy-CO-CXy (X: F,Cl) (y>2)", ),         # 120
+                ("-CF3, -CCl3", ),
+                (">CF2, >CCl2", ),
+                ("No hydrogen", ),
+                ("One hydrogen", ),
+                ("3/4 Ring", ),
+                ("Five-ring", ),
+                ("Ortho pair(s)", ),
+                ("Meta pair(s)", ),
+                ("Para pair(s)", ),
+                ("(C)(C=)>C<", ),                         # 130
+                ("C2C-CC2", ),
+                ("C3C-CC2", ),
+                ("C3C-CC3", ),
+                ("C=C-C=O", ),  # Same as 118 in Tb
+                (">Si< (F,Cl,Br,I)", )]}  # 217 set to 135
+
+    # Group interactions definition, Table 9 in [15]_
+    # See Table 5 & 6 in [16]_ to check changes
+    GI = {
+        33: "A", 34: "A", 35: "A",
+        36: "B",
+        43: "C",
+        37: "D",
+        38: "E",
+        44: "F", 45: "F", 46: "F",
+        50: "G", 91: "G",
+        51: "H", 89: "H",
+        64: "I",
+        53: "J",
+        55: "K",
+        52: "L",
+        39: "M", 40: "M",
+        41: "N", 96: "N",
+        79: "O",
+        56: "P",
+        68: "Q",
+        65: "R",
+        66: "S"}
+
+    # Table 5 in [15]_
+    GI_Tb = {
+        "AA": 291.7985, "AM": 314.6126, "AN": 286.9698, "AL": 38.6974,
+        "AC": 146.7286, "AD": 135.3991, "AE": 226.4980, "AF": 211.6814,
+        "AG": 46.3754, "AJ": -74.0193, "AP": 306.3979, "AI": 435.0923,
+        "AS": 1334.6747, "BB": 288.6155, "BM": 797.4327, "BC": -1477.9671,
+        "BD": 130.3742, "BF": -1184.9784, "BG": 0, "BH": 43.9722,
+        "BQ": -1048.1236, "BS": -614.3624, "MM": 174.0258, "MN": 510.3473,
+        "MD": 124.3549, "MF": 182.6291, "MJ": -562.3061, "MQ": 663.8009,
+        "MI": 395.4093, "MS": 27.2735, "NN": 239.8076, "ND": 101.8475,
+        "NF": 317.0200, "NG": -215.3532, "NS": 758.9855, "LL": 217.6360,
+        "LA": 501.2778, "CC": 117.2044, "CD": 612.8821, "CF": -183.2986,
+        "CG": -55.9871, "OO": -356.5017, "OQ": -263.0807, "DD": 91.4997,
+        "DE": 178.7845, "DF": 322.5671, "DG": 15.6980, "DH": 17.0400,
+        "DJ": 394.5505, "DQ": 963.6518, "DP": 293.5974, "DI": 329.0050,
+        "EE": 1006.3880, "EH": 163.5475, "FF": 431.0990, "FG": 22.5208,
+        "FQ": -205.6165, "FP": 517.0677, "FI": 707.9404, "GG": -303.9653,
+        "GH": -391.3690, "GQ": -3628.9026, "GK": 381.0107, "GP": -574.2230,
+        "GI": 176.5481, "GS": 124.1943, "HH": 582.1763, "HQ": 140.9644,
+        "HK": 397.5750, "HI": 674.6858, "JJ": -11.9406, "QQ": 65.1432,
+        "KP": -101.2319, "KR": -348.7400, "PS": -370.9729, "IR": -888.6123,
+        "RR": 0, "SS": -271.9449}
+
+    # Table 9 in [16]_
+    GI_Tc = {
+        "AA": -434.8568, "AM": 120.9166, "AN": -30.4354, "AD": -146.7881,
+        "BB": 144.4697, "MM": -60.9217, "DM": -738.0515, "NN": -49.7641,
+        "OO": -1866.0970, "DD": 162.6878, "DE": 707.4116, "DF": 128.2740,
+        "DJ": -654.1363, "DP": 741.8565, "FF": 366.2663, "GG": 1605.5640,
+        "JJ": -861.1528, "KR": 131.7924, "IR": 24.0243, "SS": -32.3208}
+
+    # Table 12 in [16]_
+    GI_Pc = {
+        "AA": -5.6023, "AM": 69.8200, "AN": 6.1331, "AD": 7.3373,
+        "BB": 57.8350, "MM": -0.6754, "DM": -125.5983, "NN": 22.1871,
+        "DD": 2.6751, "DE": 88.8752, "DF": -1.0295, "DJ": 25.8246,
+        "FF": 0.5195, "GG": -78.2743, "JJ": 43.9001, "KR": -19.7033,
+        "IR": -35.1998, "SS": 12.5371}
+
+    # Table 15 in [16]_
+    GI_Vc = {
+        "AM": -8.0423, "AD": 19.7707, "BB": 97.5425, "MM": -57.1233,
+        "OO": 44.1062, "DD": -23.6366, "DE": -329.5074, "DF": -55.5112,
+        "DJ": -37.2468, "FF": -74.8680, "GG": -413.3976, "JJ": -403.1196,
+        "KR": 164.2930, "IR": 217.9243, "SS": -26.4556}
+
+    FirstOrder = 115
+    SecondOrder = 134
+
+    def calculo(self):
+        """Calculation procedure"""
+        # Use the input properties
+        # SG is defined in base class
+        if self.kwargs["M"]:
+            M = self.kwargs["M"]
+        else:
+            M = self._M()
+        self.M = unidades.Dimensionless(M)
+
+        nh = self._atomX("H")
+        na = self._atoms()
+        n = na-nh  # Total atoms of compound except hydrogen
+
+        tb, tc, pc, vc = 0, 0, 0, 0
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            tb += c*self.coeff["tb"][i]
+            tc += c*self.coeff["tc"][i]*1e-3
+            pc += c*self.coeff["Pc"][i]*1e-4
+            vc += c*self.coeff["vc"][i]
+
+        # Group interaction calculation
+        GI = []
+        for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
+            if i in self.GI:
+                for x in range(c):
+                    GI.append(self.GI[i])
+        m = len(GI)
+
+        for pair in permutations(GI, 2):
+            key = "".join(sorted(pair))
+            tb += self.GI_Tb.get(key, 0)/n/(m-1)
+            tc += self.GI_Tc.get(key, 0)*1e-3/n/(m-1)
+            pc += self.GI_Pc.get(key, 0)*1e-4/n/(m-1)
+            vc += self.GI_Vc.get(key, 0)/n/(m-1)
+
+        if self.kwargs["Tb"]:
+            self.Tb = unidades.Temperature(self.kwargs["Tb"])
+        else:
+            self.Tb = unidades.Temperature(tb/(n**0.6583+1.6868)+84.3395)
+        self.Tc = unidades.Temperature(self.Tb*(0.699+1/(0.9889+tc**0.8607)))
+        self.Pc = unidades.Pressure(self.M**-0.14041/(0.00939+pc)**2, "kPa")
+        self.Vc = unidades.SpecificVolume((vc/n**-.2266+86.1539)/self.M, "ccg")
+
+        try:
+            GroupContribution.calculo(self)
+        except:
+            self.msg = "Error calculation"
+            self.status = 5
+
+
 _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
-            Klincewicz, Lydersen, Valderrama]
+            Klincewicz, Lydersen, Valderrama, Nannoolal]
 
 # TODO:
 # Add methods
@@ -3030,9 +3519,6 @@ _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
 # Pailhes method for boiling temperature
 # Pailhes, F., Fluid Phase Equilib., 41 (1988): 97.
 # Lydersen, A. L., AIChE J., 21 (1975): 510
-
-# Nannoolal method for boiling temperature
-# Nannoolal, Y., et al., Fluid Phase Equilib., 226 (2004): 45.
 
 # Domalski method for formation properties
 # Domalski, E. S., and E. D. Hearing, J. Phys. Chem. Ref. Data, 22 (1993): 805
