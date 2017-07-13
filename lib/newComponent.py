@@ -45,6 +45,7 @@ from lib.elemental import databank
 #   -Klincewicz: Group contribution method of Klincewicz
 #   -Lydersen: Group contribution method of Lydersen
 #   -Valderrama: Group contribution method of Valderrama
+#   -Nannoolal: Group contribution method of Nannoolal
 ###############################################################################
 
 
@@ -3129,6 +3130,62 @@ class Nannoolal(GroupContribution):
     >>> "%0.1f" % cmp.Tc
     '358.0'
 
+    Table 15c in [17]_
+    >>> "%0.7f" % cmp.db
+    '0.1179392'
+    >>> "%0.2f" % cmp._Pv(210.16).kPa
+    '14.63'
+
+    Table 15a in [17]_, α-pinene
+    >>> cmp = Nannoolal(Tb=429, group=[0, 8, 9, 10, 61, 123, 130],
+    ... contribution=[3, 2, 2, 1, 1, 1, 2])
+    >>> "%0.7f" % cmp.db
+    '0.1078596'
+    >>> "%0.2f" % cmp._Pv(388.15).kPa
+    '31.03'
+
+    Table 15b in [17]_, 1,2-ethanediol
+    >>> cmp = Nannoolal(Tb=470.5, group=[6, 35], contribution=[2, 2])
+    >>> "%0.7f" % cmp.db
+    '1.1310491'
+    >>> "%0.2f" % cmp._Pv(410.65).kPa
+    '13.05'
+
+    Table 15d in [17]_, acrylic acid
+    >>> cmp = Nannoolal(Tb=413.6, group=[43, 60, 132], contribution=[1, 1, 1])
+    >>> "%0.7f" % cmp.db
+    '0.9163297'
+    >>> "%0.2f" % cmp._Pv(344.15).kPa
+    '6.52'
+
+    Table 15e in [17]_, glycol monoacetate
+    >>> cmp = Nannoolal(Tb=458.65, group=[0, 6, 35, 44],
+    ... contribution=[1, 2, 1, 1])
+    >>> "%0.7f" % cmp.db
+    '0.5111422'
+    >>> "%0.2f" % cmp._Pv(352.65).kPa
+    '2.24'
+
+    Table 15f in [17]_, dipropyl succinate
+    >>> cmp = Nannoolal(group=[0, 3, 6, 44], contribution=[2, 4, 2, 2])
+    >>> "%0.7f" % cmp.db
+    '0.9878298'
+
+    Table 15g in [17]_, diethanolamine
+    The example in paper has a error, the group interaction contribution has
+    the sign changed, fixing this the value get is near to experimental value
+    >>> cmp = Nannoolal(Tb=541.15, group=[6, 35, 41], contribution=[4, 2, 1])
+    >>> "%0.5f" % cmp._Pv(401.13).kPa
+    '0.40405'
+
+    Table 15h in [17]_, R122
+    >>> cmp = Nannoolal(Tb=344.25, group=[6, 20, 25, 26, 119, 122],
+    ... contribution=[2, 2, 2, 1, 1, 1])
+    >>> "%0.7f" % cmp.db
+    '0.0447374'
+    >>> "%0.4f" % cmp._Pv(297.46).kPa
+    '17.5093'
+
     References
     ----------
     [15] .. Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
@@ -3239,6 +3296,29 @@ class Nannoolal(GroupContribution):
                -3.8033, 27.5326, 1.5807, -2.6235, -5.3091, -6.1909, 3.2219,
                -6.3900, -3.5964, 1.5196, 0, -4.6483, -5.0563, -6.3267, 4.9392,
                2.8889, 19.4348],
+
+        # Table 4 & 5 in [17]_
+        "Pv": [13.3063, 91.8000, 50.1939, 54.6564, 45.7437, -31.7531, 37.8485,
+               96.1386, 22.2573, 32.8162, 4.8500, 23.6411, 49.8237, -3.6950,
+               32.7177, 69.8796, 41.5534, 43.7191, 79.5429, 51.2880, 42.0887,
+               56.9998, 142.1060, 45.9652, 93.6679, 67.8082, 55.9304, 46.0435,
+               84.9162, 104.9291, -40.1837, 134.3501, 719.3666, 758.4218,
+               700.7226, 756.0824, 441.8437, 108.4964, 286.9731, 251.9212,
+               361.7760, 193.7667, -102.7252, 1074.1000, 355.7381, 350.5184,
+               292.8046, 269.2471, 736.9540, 1216.0700, 255.8480, 252.9059,
+               123.2143, 127.3380, 222.2789, 20.1604, 226.1873, 86.4601,
+               224.2238, 134.9382, 34.2541, 97.4210, 206.6665, 128.0247,
+               48.8839, 375.0486, 126.3340, 375.8217, 238.2066, 2.8992, 9.3624,
+               603.5347, 662.0582, 510.9666, 1317.4360, 681.3525, 564.1116,
+               391.3697, 318.2350, 435.8446, 218.6012, 381.5945, 80.2735,
+               231.3919, 186.9204, 48.5026, 168.3007, 108.5277, 213.7165,
+               183.1130, 1178.1950, 158.3258, -47.3420, 186.7950, 392.2006,
+               595.1778, 268.7081, 86.9450, 612.9546, 258.9924, -316.4392,
+               64.0566, 660.2247, 554.7941, 420.7591, 0, -237.2124, 0, 0,
+               391.3697, 319.4879, -66.5670, 118.8412, -81.1543, 305.1341,
+               191.5058, 423.5251, 34.3545, 2.5030, -83.3326, -64.4854,
+               -125.9208, -47.2962, 33.9765, -7.0982, -45.0531, -3.2036, 0,
+               -20.6706, -36.3170, -1.1994, 123.7433, -15.9694, 36.7574],
 
         # Name and group composition, Table 1 in [15]_
         "txt": [                                           # 0
@@ -3452,6 +3532,20 @@ class Nannoolal(GroupContribution):
         "DJ": -37.2468, "FF": -74.8680, "GG": -413.3976, "JJ": -403.1196,
         "KR": 164.2930, "IR": 217.9243, "SS": -26.4556}
 
+    # Table 6 in [17]_
+    GI_Pv = {
+        "AA": -561.5153, "AM": 1067.6660, "AN": 42.4825, "AD": -799.5332,
+        "AE": -618.2760, "AF": -1797.6930, "AG": -1181.5990, "AP": 1431.2430,
+        "AI": 1132.0400, "BB": -97.6205, "BD": -751.6676, "BF": 548.4352,
+        "MM": 1085.8320, "MN": -206.7811, "MD": -198.2791, "MF": -1676.4770,
+        "MQ": 1659.0340, "NN": -307.1018, "ND": 65.4421, "LL": 240.3037,
+        "CC": -2601.7090, "CG": -787.8563, "OO": -3929.1300, "DD": 144.6074,
+        "DE": 1118.9580, "DF": -225.7802, "DG": 1981.2980, "DH": 362.7540,
+        "DJ": -1425.0170, "DP": 743.3353, "EE": -3748.8180, "FF": 920.3138,
+        "FG": 1594.1640, "FP": 108.1305, "FI": 1590.3210, "GG": -1270.0830,
+        "HH": 946.7309, "HI": 705.3049, "JJ": 838.3372, "QQ": -1501.3550,
+        "KR": 675.0414, "PS": 994.4996, "IR": 135.5896, "SS": -29.6785}
+
     FirstOrder = 115
     SecondOrder = 134
 
@@ -3469,12 +3563,13 @@ class Nannoolal(GroupContribution):
         na = self._atoms()
         n = na-nh  # Total atoms of compound except hydrogen
 
-        tb, tc, pc, vc = 0, 0, 0, 0
+        tb, tc, pc, vc, pv = 0, 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             tb += c*self.coeff["tb"][i]
             tc += c*self.coeff["tc"][i]*1e-3
             pc += c*self.coeff["Pc"][i]*1e-4
             vc += c*self.coeff["vc"][i]
+            pv += c*self.coeff["Pv"][i]*1e-3
 
         # Group interaction calculation
         GI = []
@@ -3490,6 +3585,7 @@ class Nannoolal(GroupContribution):
             tc += self.GI_Tc.get(key, 0)*1e-3/n/(m-1)
             pc += self.GI_Pc.get(key, 0)*1e-4/n/(m-1)
             vc += self.GI_Vc.get(key, 0)/n/(m-1)
+            pv += self.GI_Pv.get(key, 0)*1e-3/n/(m-1)
 
         if self.kwargs["Tb"]:
             self.Tb = unidades.Temperature(self.kwargs["Tb"])
@@ -3499,11 +3595,28 @@ class Nannoolal(GroupContribution):
         self.Pc = unidades.Pressure(self.M**-0.14041/(0.00939+pc)**2, "kPa")
         self.Vc = unidades.SpecificVolume((vc/n**-.2266+86.1539)/self.M, "ccg")
 
-        try:
-            GroupContribution.calculo(self)
-        except:
-            self.msg = "Error calculation"
-            self.status = 5
+        # Eq 7 in [17]_
+        self.db = pv - 0.176055
+
+        GroupContribution.calculo(self)
+
+    def _Pv(self, T):
+        """Vapor pressure calculation
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Return
+        ------
+        Pv : float
+            Vapor Pressure, [Pa]
+        """
+        # Eq 6 in [17]_
+        Trb = T/self.Tb
+        Pv = 10**((4.1012+self.db)*((Trb-1)/(Trb-0.125)))
+        return unidades.Pressure(Pv, "atm")
 
 
 _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
