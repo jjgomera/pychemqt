@@ -3186,6 +3186,28 @@ class Nannoolal(GroupContribution):
     >>> "%0.4f" % cmp._Pv(297.46).kPa
     '17.5093'
 
+    Table 28a in [18]_, N,N-diethylamine
+    >>> cmp = Nannoolal(Tb=329, group=[0, 6, 41], contribution=[2, 2, 1])
+    >>> "%0.7f %0.2f" % (cmp.dBv, cmp.Tv)
+    '4.7713112 210.38'
+    >>> "%0.4f" % cmp._Visco(308.15).mPas
+    '0.2674'
+
+    Table 28b in [18]_, ethylene glycol monopropyl
+    >>> cmp = Nannoolal(Tb=424.5, group=[0, 3, 6, 34, 37],
+    ... contribution=[1, 1, 3, 1, 1])
+    >>> "%0.7f %0.3f" % (cmp.dBv, cmp.Tv)
+    '6.0699241 301.197'
+    >>> "%0.6f" % cmp._Visco(318.15).mPas
+    '0.921814'
+
+    Table 28c in [18]_, monoethanolamine
+    >>> cmp = Nannoolal(Tb=443.45, group=[6, 35, 39], contribution=[2, 1, 1])
+    >>> "%0.7f %0.3f" % (cmp.dBv, cmp.Tv)
+    '12.3872997 382.275'
+    >>> "%0.4f" % cmp._Visco(363.15).mPas
+    '2.6135'
+
     References
     ----------
     [15] .. Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
@@ -3319,6 +3341,49 @@ class Nannoolal(GroupContribution):
                191.5058, 423.5251, 34.3545, 2.5030, -83.3326, -64.4854,
                -125.9208, -47.2962, 33.9765, -7.0982, -45.0531, -3.2036, 0,
                -20.6706, -36.3170, -1.1994, 123.7433, -15.9694, 36.7574],
+
+        # Table 5 & 6 in [18]_
+        "dBv": [13.9133, 11.7002, -11.0660, 2.1727, 4.5878, 37.0296, 21.3473,
+                5.9452, 10.8799, -7.2202, 142.1976, 61.0811, 28.7351, -12.3456,
+                -2.7840, 45.9403, 80.5124, 37.4124, 5.1640, 0, 2.8323, 0.7129,
+                -36.3189, -61.9434, 4.7579, 5.8228, 4.6555, -67.3989, -9.6209,
+                0.5164, -18.1984, -17.3110, 336.8834, 365.8067, 249.0118,
+                218.8000, 160.8315, -35.3055, 85.3693, 58.9131, 44.0698,
+                13.6479, -58.7354, 54.7891, 17.6757, 0.4267, 47.6109, 12.6717,
+                129.8293, 202.2864, 24.2524, 18.4961, 30.5022, -0.0276,
+                -13.4614, 18.5507, 23.1459, 9.5809, 152.2693, 18.5983, 21.4560,
+                19.7836, -165.0071, 13.3585, 42.7958, 151.9493, 52.5900,
+                -34.3948, -6.5626, -25.5950, -28.3943, -30.6156, 45.9972,
+                -7.3298, 369.8367, 16.3525, -2.6553, -61.2368, -7.5067, 4.1408,
+                -46.5613, 122.6902, 0, 0, 0, -70.9713, 0, 29.0985, 125.0861,
+                -14.2823, 0, -8.5352, 9.9037, 0, 0, 102.0816, 74.0520, 37.5669,
+                0, 54.4769, 0, 5.7765, 95.6531, 56.9133, 64.7133, 0, 22.9969,
+                23.2473, 0, -61.2368, 0, 64.6600, 0, 68.4952, 0, 0, 0, 0.3041,
+                0, -6.1420, -26.4635, -14.9636, -25.9017, -57.3789, -21.2204,
+                -20.1917, -34.5860, 0, -110.7391, 2.4859, -59.3670, 0, 13.1413,
+                -76.1631],
+
+        # Table 8 & 9 in [18]_
+        "Tv": [89.0803, 216.0226, 80.9698, 60.3316, 24.2637, 244.4643,
+               103.4109, -16.5212, 174.1316, -37.7584, 252.0190, 251.9299,
+               330.7100, 294.3323, 113.9028, -26.6195, 133.5499, 128.4739,
+               208.3258, 0, 35.2688, 207.3562, -15.8544, 112.1172, 329.0113,
+               313.1106, 194.6060, -8.6247, 182.7067, 456.3713, 391.6060,
+               499.2149, 1199.4010, 1198.1040, 1078.0840, 1284.7450, 1134.1640,
+               -34.9892, 612.7222, 458.7425, 705.1250, 159.5146, -284.4707,
+               1446.0240, 325.5736, 454.1671, 374.6477, 289.9690, 1150.8290,
+               1619.1650, 304.5982, 394.7932, 294.7319, 206.6432, 292.3613,
+               302.2321, 346.9998, -23.9801, 238.3242, 137.5408, 74.4489,
+               304.9257, -32.4179, 57.8131, 279.2114, 662.0051, 277.5038,
+               369.4221, 488.1136, -10.6146, -181.7627, 351.0623, -15.2801,
+               174.3672, 1098.1570, 549.1481, 394.5776, 10.3752, 365.8081,
+               164.8904, 197.1806, 1297.7560, 0, 0, 0, 35.4672, 0, 495.5141,
+               551.9254, 490.7224, 0, 669.0158, 256.5078, 0, 0, 1787.0390,
+               220.0803, 192.1303, 0, 131.2253, 0, 53.2507, 288.4140, 542.6641,
+               714.0494, 0, 797.2271, 253.5303, 0, 10.3752, 0, 377.7146, 0,
+               806.8125, 0, 0, 0, -180.3686, 0, 241.8968, 138.6555, -71.1647,
+               -115.0418, -96.7544, -153.8442, -22.1041, 24.7835, 0, 224.2439,
+               24.2539, 137.8708, 0, -54.1782, -726.4291],
 
         # Name and group composition, Table 1 in [15]_
         "txt": [                                           # 0
@@ -3546,6 +3611,24 @@ class Nannoolal(GroupContribution):
         "HH": 946.7309, "HI": 705.3049, "JJ": 838.3372, "QQ": -1501.3550,
         "KR": 675.0414, "PS": 994.4996, "IR": 135.5896, "SS": -29.6785}
 
+    # Table 7 in [18]_
+    GI_dBv = {
+        "AA": -112.4939, "AM": 1031.5920, "AN": 853.2318, "AD": -423.9834,
+        "AP": -683.0189, "AI": -557.5079, "BB": -1186.0500, "BD": -333.5638,
+        "BQ": -878.0615, "MM": 135.3183, "MD": 219.9701, "ND": -134.4625,
+        "DD": 132.0275, "DF": 44.8702, "DG": -219.5265, "DH": 546.5846,
+        "DQ": -59.3635, "FF": 964.0840, "FG": 126.0380, "FP": 539.2401,
+        "GG": 3705.4400, "HI": 50.1063, "QQ": 896.3606, "PS": -196.6361}
+
+    # Table 10 in [18]_
+    GI_Tv = {
+        "AA": -1313.5690, "AM": -41.9608, "AN": -1868.6060, "AD": -643.4378,
+        "AP": -345.7844, "AI": 50.2582, "BB": -1146.1070, "BD": -229.2406,
+        "BQ": 515.1511, "MM": 86.7249, "MD": -57.1437, "ND": 54.2025,
+        "DD": 156.7495, "DF": 273.6616, "DG": -339.6071, "DH": 1050.3190,
+        "DQ": 355.0508, "FF": 167.7204, "FG": 244.0583, "FP": 334.4856,
+        "GG": 1985.8270, "HI": 161.7447, "QQ": 1839.2630, "PS": 718.1262}
+
     FirstOrder = 115
     SecondOrder = 134
 
@@ -3563,13 +3646,15 @@ class Nannoolal(GroupContribution):
         na = self._atoms()
         n = na-nh  # Total atoms of compound except hydrogen
 
-        tb, tc, pc, vc, pv = 0, 0, 0, 0, 0
+        tb, tc, pc, vc, pv, dbv, tv = 0, 0, 0, 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             tb += c*self.coeff["tb"][i]
             tc += c*self.coeff["tc"][i]*1e-3
             pc += c*self.coeff["Pc"][i]*1e-4
             vc += c*self.coeff["vc"][i]
             pv += c*self.coeff["Pv"][i]*1e-3
+            dbv += c*self.coeff["dBv"][i]*1e-3
+            tv += c*self.coeff["Tv"][i]
 
         # Group interaction calculation
         GI = []
@@ -3586,6 +3671,8 @@ class Nannoolal(GroupContribution):
             pc += self.GI_Pc.get(key, 0)*1e-4/n/(m-1)
             vc += self.GI_Vc.get(key, 0)/n/(m-1)
             pv += self.GI_Pv.get(key, 0)*1e-3/n/(m-1)
+            dbv += self.GI_dBv.get(key, 0)*1e-3/n/(m-1)
+            tv += 2*self.GI_Tv.get(key, 0)/n/(m-1)
 
         if self.kwargs["Tb"]:
             self.Tb = unidades.Temperature(self.kwargs["Tb"])
@@ -3597,6 +3684,13 @@ class Nannoolal(GroupContribution):
 
         # Eq 7 in [17]_
         self.db = pv - 0.176055
+
+        # Eq 7 in [18]_
+        self.dBv = dbv/(n**-2.5635+0.0685)+3.777
+
+        # Eq 8 in [18]_
+        Tv = 21.8444*self.Tb**0.5+tv**0.9315/(n**0.6577+4.9259)-231.1361
+        self.Tv = unidades.Temperature(Tv)
 
         GroupContribution.calculo(self)
 
@@ -3617,6 +3711,22 @@ class Nannoolal(GroupContribution):
         Trb = T/self.Tb
         Pv = 10**((4.1012+self.db)*((Trb-1)/(Trb-0.125)))
         return unidades.Pressure(Pv, "atm")
+
+    def _Visco(self, T):
+        """Viscosity calculation
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Return
+        ------
+        mu : float
+            Viscosity, [Pas]
+        """
+        mu = 1.3*exp(-self.dBv*(T-self.Tv)/(T-self.Tv/16))
+        return unidades.Viscosity(mu, "cP")
 
 
 _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
@@ -3666,19 +3776,11 @@ _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
 # Knotts, T. A., et al., J. Chem. Eng. Data, 46 (2001): 1007.
 
 
-
 if __name__ == '__main__':
 
-#    ic5=Componente(7)
-#    print ic5.Tb, ic5.Tc
-#    elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
-#    print elliot.Tb, elliot.Tc
-
-#    trimetilpentano=Componente(541)
-#    print trimetilpentano.Tc, trimetilpentano.Pc.psi, trimetilpentano.Vc.ft3lb
-#    desconocido=Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1], Tb=unidades.Temperature(229.72, "F"), M=114.23, platt=3)
-#    print desconocido.Tc.F, desconocido.Pc.psi, desconocido.Vc.ft3lb
+    # ic5=Componente(7)
+    # print ic5.Tb, ic5.Tc
+    # elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
+    # print elliot.Tb, elliot.Tc
 
     print(atomic_decomposition("HCON(CH2)2"))
-    cmp = Joback(group=[0, 13, 14, 20], contribution=[2, 3, 3, 1])
-
