@@ -285,6 +285,7 @@ class Ui_Contribution(newComponent):
     """Dialog to define hypotethical new component with several group
     contribucion methods"""
     ViewDetails = View_Contribution
+    Group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen"]
 
     def __init__(self, metodo, parent=None):
         """Metodo: name of group contribution method:
@@ -361,7 +362,7 @@ class Ui_Contribution(newComponent):
             QtWidgets.QSizePolicy.Expanding), 7, 1)
 
         # Show selection for method with several order contributions
-        if metodo in ["Constantinou", "Wilson", "Ambrose", "Nannoolal"]:
+        if metodo in self.Group2Order:
             self.Order1 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
@@ -464,7 +465,7 @@ class Ui_Contribution(newComponent):
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
             self.groupContributions.addItem(nombre[0])
 
-        if metodo in ["Constantinou", "Wilson", "Ambrose", "Nannoolal"]:
+        if metodo in self.Group2Order:
             self.Order()
         if metodo == "Klincewicz":
             self.nogroupCheckToggled(False)
@@ -561,10 +562,9 @@ class Ui_Contribution(newComponent):
         if self.unknown.status in (1, 3):
             self.Formula.setText(self.unknown.formula)
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Nannoolal")
+    Dialog = Ui_Contribution("Wen")
     Dialog.show()
     sys.exit(app.exec_())
