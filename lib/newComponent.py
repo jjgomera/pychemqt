@@ -370,7 +370,6 @@ class GroupContribution(newComponente):
 
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
-
         self.group = self._group()
         if not self.kwargs["group"] or not self.kwargs["contribution"]:
             self.msg = QApplication.translate("pychemqt", "undefined group")
@@ -468,8 +467,9 @@ class GroupContribution(newComponente):
 
     def _SG(self):
         # FIXME: Don't work
-        volumen = self.Vliq*(5.7+3*288.71/self.Tc)
-        return 1/volumen*18
+        # volumen = self.Vliq*(5.7+3*288.71/self.Tc)
+        # return 1/volumen*18
+        return 1
 
     def _cp(self):
         """Default method to calculate the temperature dependence of ideal
@@ -512,8 +512,10 @@ class GroupContribution(newComponente):
         return V/(5.7+1611/self.Tc)  # cm3/mol
 
     def _Parametro_solubilidad(self):
-        V = R_atml/1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-298.15/self.Tc)**(2.0/7)) #m3/mol
-        return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
+        # FIXME: Don't work
+        # V = R_atml/1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-298.15/self.Tc)**(2.0/7)) #m3/mol
+        # return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
+        return 1
 
     def EmpiricFormula(self):
         "Calculate the empiric formulae of compound from group contribution"""
@@ -3787,6 +3789,8 @@ class Wen(GroupContribution):
     >>> cmp = Wen(group=[96, 101, 102], contribution=[12, 5, 1])
     >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
     '374.6'
+    >>> cmp.formula
+    'C6F5Cl'
 
     References
     ----------
@@ -4060,7 +4064,8 @@ class Wen(GroupContribution):
                 grp2 = atomic_decomposition(second)
                 if "H" in grp2 or "F" in grp2 or "Cl" in grp2 or \
                         "Br" in grp2 or "I" in grp2:
-                    group.append(grp2)
+                    for x in range(c):
+                        group.append(grp2)
             else:
                 grp = self.coeff["txt"][i][0]
 
