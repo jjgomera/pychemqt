@@ -46,6 +46,7 @@ from lib.elemental import databank
 #   -Lydersen: Group contribution method of Lydersen
 #   -Valderrama: Group contribution method of Valderrama
 #   -Nannoolal: Group contribution method of Nannoolal
+#   -Wen: Group contribution method of Wen-Qiang
 ###############################################################################
 
 
@@ -169,9 +170,15 @@ __doi__ = {
                   "Properties of Orgnic Compounds",
          "ref": "Ind. Eng. Chem. Res. 40 (2001) 6245–6250.",
          "doi": "10.1021/ie010374g"},
-
-
     20:
+        {"autor": "Hurst, J.E., Harrison, B.K.",
+         "title": "Estimation of Liquid and Solid Heat Capacities Using a "
+                  "Modified Kopp's Rule",
+         "ref": "Chem. Eng. Comm., 112 (1992): 21",
+         "doi": "10.1080/00986449208935989"},
+
+
+    21:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -267,8 +274,8 @@ class newComponente(object):
         ele.append([])
         ele.append([])
         ele.append([])
-        ele.append([])
-        ele.append([])
+        ele.append([1, self.cps, 0, 0, 0, 0, 0, self.Tc])
+        ele.append([1, self.cpl, 0, 0, 0, 0, 0, self.Tc])
         ele.append([])
         ele.append([])
         ele.append([])
@@ -406,6 +413,12 @@ class GroupContribution(newComponente):
             self.Vc = self._Vc()
         if "cp" not in self.__dict__:
             self.cp = self._cp()
+
+        # Liquid and solid specific heat from Hurst correlation
+        cps, cpl = cpLS_Hurst(self.group)
+        self.cps = unidades.SpecificHeat(cps/self.M)
+        self.cpl = unidades.SpecificHeat(cpl/self.M)
+
         self.API = 141.5/self.SG-131.5
         self.txt, self.formula = self.EmpiricFormula()
         newComponente.calculo(self)
@@ -517,16 +530,21 @@ class GroupContribution(newComponente):
         # return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
         return 1
 
-    def EmpiricFormula(self):
-        "Calculate the empiric formulae of compound from group contribution"""
-
+    @staticmethod
+    def _atomicComposition(group):
+        """Calculate of atomic composition"""
         total = {}
-        for g in self.group:
+        for g in group:
             for key, value in g.items():
                 if key not in total:
                     total[key] = 0
                 total[key] += value
+        return total
 
+    def EmpiricFormula(self):
+        "Calculate the empiric formulae of compound from group contribution"""
+
+        total = self._atomicComposition(self.group)
         string = ""
         formula = ""
         for element in ["C", "H", "N", "O", "S", "F",  "Cl", "Br", "I"]:
@@ -3807,12 +3825,12 @@ class Wen(GroupContribution):
                -0.030, 2.256, -2.322, 2.549, 13.769, 20.882, 25.177, 1.934,
                -3.377, 0.000, 0.000, -1.765, -3.163, -5.588, 0.830, 11.483,
                2.183, -7.415, 0.007, -0.651, 0.178, -4.384, -0.502, 6.664,
-               9.639, 2.262, -1.648, 0.000, 5.838, 2.218, 10.659, -2.228, 0.017,
-               3.541, -0.748, -1.248, 9.056, 4.564, 2.737, 0.007, 1.136, -0.008,
-               13.166, -0.009, -2.298, 9.242, 1.143, -11.918, 0.007, -0.953,
-               0.000, 0.000, 5.993, 3.162, 0.000, 2.707, 3.180, 6.070, 13.625,
-               7.842, 5.897, 0.004, -781.237, 2.367, 0.000, -7.274, 3.798,
-               5.571, 2.446, -1.223, 0.754, 2.852, 2.013, 7.937, 14.661,
+               9.639, 2.262, -1.648, 0.000, 5.838, 2.218, 10.659, -2.228,
+               0.017, 3.541, -0.748, -1.248, 9.056, 4.564, 2.737, 0.007, 1.136,
+               -0.008, 13.166, -0.009, -2.298, 9.242, 1.143, -11.918, 0.007,
+               -0.953, 0.000, 0.000, 5.993, 3.162, 0.000, 2.707, 3.180, 6.070,
+               13.625, 7.842, 5.897, 0.004, -781.237, 2.367, 0.000, -7.274,
+               3.798, 5.571, 2.446, -1.223, 0.754, 2.852, 2.013, 7.937, 14.661,
                10.141, -0.603, 2.172, 0.000, 0.009, 4.660, -2.465, 3.701,
                1.700, 6.344, -5.547, 5.600, 12.840, 28.472, 10.144, 18.220,
                15.436, 20.655, 11.326, 13.047, 34.349, 35.591, 34.476, 35.009,
@@ -4104,6 +4122,54 @@ class Wen(GroupContribution):
         return group
 
 
+def cpLS_Hurst(group):
+    """Calculate liquid and solid heat capacities using the Hurst-Harrison
+    method
+
+    Parameters
+    ----------
+    group : dict
+        Atomic composition of component
+
+    Return
+    ------
+    cpL : float
+        Liquid heat capacity, []
+    cpS : float
+        Soid heat capacity, []
+
+    Examples
+    --------
+    Example in [20]_, GdF3
+    >>> "%0.1f" % cpLS_Hurst(group=[{"Gd": 1, "F": 3}])[0]
+    '105.1'
+
+    References
+    ----------
+    [20] .. Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
+        Capacities Using a Modified Kopp's Rule. Chem. Eng. Comm., 112 (1992):
+        21
+    """
+    Solid = {"H": 7.56, "Li": 23.25, "Be": 12.47, "B": 10.10, "C": 10.89,
+             "N": 18.74, "O": 13.42, "F": 26.16, "Na": 26.19, "Mg": 22.69,
+             "Al": 18.07, "Si": 7.00, "S": 12.36, "CI": 24.69, "K": 28.78,
+             "Ca": 28.25, "Ti": 27.24, "V": 29.36, "Mn": 28.06, "Fe": 29.08,
+             "Co": 25.71, "Ni": 25.46, "Cu": 26.92, "Br": 25.36, "Sr": 28.41,
+             "Zr": 26.82, "Mo": 29.44, "I": 25.29, "Ba": 32.37, "W": 30.87,
+             "Hg": 27.87, "Pb": 31.60, "Misc": 26.63}
+    Liquid = {"H": 9.20, "C": 13.08, "N": 30.19, "O": 16.00, "F": 19.47,
+              "S": 32.05, "Cl": 31.91, "Br": 37.23, "Misc": 26.19}
+
+    cmp = GroupContribution._atomicComposition(group)
+
+    cpl, cps = 0, 0
+    for key, c in cmp.items():
+        cps += c*Solid.get(key, Solid["Misc"])
+        cpl += c*Liquid.get(key, Liquid["Misc"])
+
+    return cps, cpl
+
+
 _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
             Klincewicz, Lydersen, Valderrama, Nannoolal, Wen]
 
@@ -4159,3 +4225,6 @@ if __name__ == '__main__':
     # print elliot.Tb, elliot.Tc
 
     print(atomic_decomposition("HCON(CH2)2"))
+
+    group = {"C": 11, "H": 17}
+    cmp = GroupContribution._atomicComposition(group)
