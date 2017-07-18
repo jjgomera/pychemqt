@@ -33,7 +33,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH
-from lib.newComponent import _methods
+from lib.newComponent import _methods, _group2Order
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -285,7 +285,6 @@ class Ui_Contribution(newComponent):
     """Dialog to define hypotethical new component with several group
     contribucion methods"""
     ViewDetails = View_Contribution
-    Group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen"]
 
     def __init__(self, metodo, parent=None):
         """Metodo: name of group contribution method:
@@ -362,7 +361,7 @@ class Ui_Contribution(newComponent):
             QtWidgets.QSizePolicy.Expanding), 7, 1)
 
         # Show selection for method with several order contributions
-        if metodo in self.Group2Order:
+        if metodo in _group2Order:
             self.Order1 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
@@ -465,7 +464,7 @@ class Ui_Contribution(newComponent):
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
             self.groupContributions.addItem(nombre[0])
 
-        if metodo in self.Group2Order:
+        if metodo in _group2Order:
             self.Order()
         if metodo == "Klincewicz":
             self.nogroupCheckToggled(False)
@@ -565,6 +564,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Wen")
+    Dialog = Ui_Contribution("Li")
     Dialog.show()
     sys.exit(app.exec_())
