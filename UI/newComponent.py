@@ -366,14 +366,21 @@ class Ui_Contribution(newComponent):
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
             self.Order1.toggled.connect(self.Order)
-            layout.addWidget(self.Order1, 9, 3)
+            layout.addWidget(self.Order1, 10, 3)
             self.Order2 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "2nd order"))
-            layout.addWidget(self.Order2, 10, 3)
+            self.Order2.toggled.connect(self.Order)
+            layout.addWidget(self.Order2, 11, 3)
 
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            11, 1)
+            if metodo == "MarreroGani":
+                self.Order3 = QtWidgets.QRadioButton(
+                    QtWidgets.QApplication.translate("pychemqt", "3rd order"))
+                layout.addWidget(self.Order3, 12, 3)
+                self.Order3.toggled.connect(self.Order)
+
+        # layout.addItem(QtWidgets.QSpacerItem(
+            # 10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            # 12, 1)
         labelTb = QtWidgets.QLabel("Tb")
         labelTb.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Experimental Boiling Temperature"))
@@ -472,9 +479,15 @@ class Ui_Contribution(newComponent):
     def Order(self):
         """Show/Hide group of undesired order"""
         for i in range(self.unknown.FirstOrder):
-            self.groupContributions.item(i).setHidden(self.Order2.isChecked())
+            item = self.groupContributions.item(i)
+            item.setHidden(not self.Order1.isChecked())
         for i in range(self.unknown.FirstOrder, self.unknown.SecondOrder):
-            self.groupContributions.item(i).setHidden(self.Order1.isChecked())
+            item = self.groupContributions.item(i)
+            item.setHidden(not self.Order2.isChecked())
+        if self.unknown.ThirdOrder:
+            for i in range(self.unknown.SecondOrder, self.unknown.ThirdOrder):
+                item = self.groupContributions.item(i)
+                item.setHidden(not self.Order3.isChecked())
 
     def nogroupCheckToggled(self, boolean):
         """Set advanced properties input status for Klincewitcz method"""
@@ -564,6 +577,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("Li")
+    Dialog = Ui_Contribution("MarreroGani")
     Dialog.show()
     sys.exit(app.exec_())

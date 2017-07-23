@@ -364,6 +364,7 @@ class GroupContribution(newComponente):
 
     FirstOrder = 0
     SecondOrder = 0
+    ThirdOrder = 0
     cp = []
     Tb = 0
     Tf = 0
