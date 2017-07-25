@@ -3533,7 +3533,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.editAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Edit &Plot"),
             slot=self.edit,
-            icon=os.environ["pychemqt"]+"/images/button/Regression",
+            icon=os.environ["pychemqt"]+"/images/button/fit",
             parent=self)
         self.editMarginAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Edit &Margins"),

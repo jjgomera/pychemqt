@@ -292,14 +292,14 @@ class Definicion_Petro(newComponent):
         self.curvaDestilacion.tabla.rowFinished.connect(self.checkStatusCurve)
         lytcurve.addWidget(self.curvaDestilacion, 2, 1, 3, 3)
         self.regresionButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/Regression.gif")),
+            os.path.join(IMAGE_PATH, "button", "fit.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Regression"))
         self.regresionButton.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Calculate missing required values from a curve fit"))
         self.regresionButton.clicked.connect(self.regresionCurve)
         lytcurve.addWidget(self.regresionButton, 2, 3)
         self.finishButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/arrow-right.png")),
+            os.path.join(IMAGE_PATH, "button", "arrow-right.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Finish"))
         self.finishButton.clicked.connect(self.finishCurva)
         lytcurve.addWidget(self.finishButton, 5, 3)
