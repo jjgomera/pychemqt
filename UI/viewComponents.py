@@ -314,61 +314,68 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             dialog.addData(self.t, self.data, "ro")
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(self.title(), size="14")
+
+        # Annotate the equation
         formula = self.formula_DIPPR(array[0], array[1:-2])
-        dialog.addText(min(t), max(var), formula, size="14")
+        dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
+                                size="10", va="center")
+
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-        ylabel = "$"+self.prop+",\;"+self.unit+"$"
+        ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
-        hHeader = ["T, K",
-                   QtWidgets.QApplication.translate("pychemqt", "Property") +
-                   ", "+self.unit]
+        unitT = unidades.Temperature.text()
+        hHeader = ["T, %s" % unitT, "%s, %s" % (self.prop, self.unit.text())]
         dlg = InputTableDialog(
                 title=self.title(), DIPPR=True, horizontalHeader=hHeader,
                 hasTc=True, Tc=self.parent.Tc.value, t=self.t,
                 property=self.data, eq=self.eq.value())
 
         if dlg.exec_():
-            t = dlg.tabla.getColumn(0, fill=False)
-            p = dlg.tabla.getColumn(1, fill=False)
-            ecuacion = dlg.eqDIPPR.value()
-            self.parent.Tc.setValue(dlg.tc.value)
-            # self.parent.cmp.Tc=dlg.tc.value
+            t = array(dlg.widget.column(0, unidades.Temperature))
+            p = array(dlg.widget.column(1, self.unit))
+            ecuacion = dlg.widget.eqDIPPR.value()
 
-            inicio = [1, 1, 1, 1, 1]
-
-            def resto(parametros, ecuacion, t, f):
+            def errf(parametros, ecuacion, t, f):
                 var = array([ecuacion]+list(parametros))
-                return f-array([self.parent.cmp.DIPPR(ti, var)
-                                for ti in t])
+                return f-array([self.parent.cmp.DIPPR(ti, var) for ti in t])
 
             # Do the least square fitting
-            ajuste = optimize.leastsq(resto, inicio, args=(ecuacion, t, p))
+            p0 = [1, 1, 1, 1, 1]
+            coeff, cov, info, mesg, ier = optimize.leastsq(
+                    errf, p0, args=(t, p), full_output=True)
 
-            dialog = Plot()
-            dialog.addData(t, p, "ro")
-            if ajuste[1] in range(1, 5):
-                self.fill([ecuacion]+list(ajuste[0])+[min(t), max(t)])
+            ss_err = (info['fvec']**2).sum()
+            ss_tot = ((p-p.mean())**2).sum()
+            r = 1-(ss_err/ss_tot)
+
+            if ier in range(1, 5):
+                self.fill([ecuacion]+list(coeff)+[min(t), max(t)])
                 self.t = t
                 self.data = p
-                t2 = linspace(min(t), max(t), 100)
                 var = [self.parent.cmp.DIPPR(
-                    ti, [ecuacion]+list(ajuste[0])) for ti in t2]
-                dialog.addData(t2, var)
+                    ti, [ecuacion]+list(coeff)) for ti in t]
+                dialog = Plot()
+                dialog.addData(t, p, "ro")
+                dialog.addData(t, var)
                 dialog.plot.ax.grid(True)
                 dialog.plot.ax.set_title(self.title(), size="14")
                 valores = self.value
+
+                # Annotate the fitted equation and the correlation coefficient
                 formula = self.formula_DIPPR(valores[0], valores[1:-2])
-                dialog.addText(t[0]*0.95+t[-1]*0.05, max(var)*0.9+min(var)*0.1,
-                               formula, size="14")
-                dialog.addText(t[0]*0.95+t[-1]*0.05, max(var)*0.8+min(var)*0.1,
-                               "residuo=%0.2e" % sum(resto(
-                                   ajuste[0], ecuacion, t, p)), size="10")
+                dialog.plot.ax.annotate(
+                    formula, (0.05, 0.9), xycoords='axes fraction',
+                    size="10", va="center")
+                dialog.plot.ax.annotate(
+                    "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                    size="10", va="center")
+
                 dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-                ylabel = "$"+self.prop+",\;"+self.unit+"$"
+                ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
                 dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
                 self.valueChanged.emit()
             else:
@@ -376,7 +383,6 @@ class DIPPR_widget(QtWidgets.QGroupBox):
                 msg = QtWidgets.QApplication.translate(
                         "pychemqt", "Fit unsuccessfully")
                 QtWidgets.QMessageBox.warning(self, title, msg)
-            dialog.exec_()
 
 
 class Parametric_widget(QtWidgets.QGroupBox):
@@ -575,61 +581,69 @@ class Parametric_widget(QtWidgets.QGroupBox):
             dialog.addData(self.t, self.data, "ro")
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(self.title(), size="14")
+
+        # Annotate the equation
         formula = self.formula_Parametric(self.image)
-        dialog.addText(min(t), max(var), formula, size="14")
+        dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
+                                size="10", va="center")
+
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-        ylabel = "$"+self.prop+",\;"+self.unit+"$"
+        ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
-        hHeader = ["T, K", QtWidgets.QApplication.translate(
-            "pychemqt", "Property")+", "+self.unit]
+        unitT = unidades.Temperature.text()
+        hHeader = ["T, %s" % unitT, "%s, %s" % (self.prop, self.unit.text())]
         dlg = InputTableDialog(
             title=self.title(), horizontalHeader=hHeader,
             hasTc=self.image == "tensionsuperficial", Tc=self.parent.Tc.value)
         if dlg.exec_():
-            t = dlg.tabla.getColumn(0, fill=False)
-            p = dlg.tabla.getColumn(1, fill=False)
-            self.parent.Tc.setValue(dlg.tc.value)
-            self.parent.cmp.Tc = dlg.tc.value
+            t = array(dlg.widget.column(0, unidades.Temperature))
+            p = array(dlg.widget.column(1, self.unit))
 
-            # TODO: Add support for configure initial values
-            inicio = [1.]*self.count
             funcion = {
                 "viscosidad": self.parent.cmp.Mu_Liquido_Parametrica,
                 "antoine": self.parent.cmp.Pv_Antoine,
                 "tensionsuperficial": self.parent.cmp.Tension_Parametrica,
                 "henry": self.parent.cmp.constante_Henry}
 
-            def resto(parametros, t, f):
+            def errf(parametros, t, f):
                 return f-array([funcion[self.image](ti, parametros)
                                 for ti in t])
 
             # Do the least square fitting
-            ajuste = optimize.leastsq(resto, inicio, args=(t, p))
+            p0 = [1.]*self.count
+            coeff, cov, info, mesg, ier = optimize.leastsq(
+                    errf, p0, args=(t, p), full_output=True)
 
-            if ajuste[1] in range(1, 5):
-                self.fill(list(ajuste[0]))
+            ss_err = (info['fvec']**2).sum()
+            ss_tot = ((p-p.mean())**2).sum()
+            r = 1-(ss_err/ss_tot)
+
+            if ier in range(1, 5):
+                self.fill(list(coeff))
                 self.t = t
                 self.data = p
                 dialog = Plot()
                 dialog.addData(t, p, "ro")
-                t2 = linspace(t[0], t[-1], 100)
-                var = [funcion[self.image](ti, ajuste[0]) for ti in t2]
-                dialog.addData(t2, var)
+                var = [funcion[self.image](ti, coeff) for ti in t]
+                dialog.addData(t, var)
                 dialog.plot.ax.grid(True)
                 dialog.plot.ax.set_title(self.title(), size="14")
 
-                formula = self.formula_Parametric(self.image, tuple(ajuste[0]))
-                dialog.addText(t[0]*0.95+t[-1]*0.05, max(var)*0.9+min(var)*0.1,
-                               formula, size="14")
-                dialog.addText(t[0]*0.95+t[-1]*0.05, max(var)*0.8+min(var)*0.1,
-                               "residuo=%0.2e" % sum(resto(ajuste[0], t, p)),
-                               size="10")
+                # Annotate the fitted equation and the correlation coefficient
+                formula = self.formula_Parametric(self.image, tuple(coeff))
+                dialog.plot.ax.annotate(
+                    formula, (0.05, 0.9), xycoords='axes fraction',
+                    size="10", va="center")
+                dialog.plot.ax.annotate(
+                    "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                    size="10", va="center")
+
                 dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-                ylabel = "$"+self.prop+",\;"+self.unit+"$"
+                ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
                 dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
                 dialog.exec_()
                 self.valueChanged.emit()
@@ -883,18 +897,18 @@ class View_Component(QtWidgets.QDialog):
             QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 4)
 
         self.cpGasDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Cp ideal gas DIPPR"), "cal/mol K", index,
-            "Cp_g", parent=self)
+            "pychemqt", "Cp ideal gas DIPPR"), unidades.MolarSpecificHeat,
+            index, "Cp_g", parent=self)
         self.cpGasDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpGasDIPPR, 1, 2)
         self.cpLiquidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Cp liquid DIPPR"), "cal/mol K", index, "Cp_l",
-            parent=self)
+            "pychemqt", "Cp liquid DIPPR"), unidades.MolarSpecificHeat, index,
+            "Cp_l", parent=self)
         self.cpLiquidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpLiquidDIPPR, 2, 1)
         self.cpSolidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Cp solid DIPPR"), "cal/mol K", index, "Cp_s",
-            parent=self)
+            "pychemqt", "Cp solid DIPPR"), unidades.MolarSpecificHeat, index,
+            "Cp_s", parent=self)
         self.cpSolidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpSolidDIPPR, 2, 2)
         lytCp.addItem(QtWidgets.QSpacerItem(
@@ -908,12 +922,12 @@ class View_Component(QtWidgets.QDialog):
         lytRho = QtWidgets.QGridLayout(tab3)
 
         self.RhoSolid = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Solid Density DIPPR"), "kmol/m^3", index,
+            "pychemqt", "Solid Density DIPPR"), unidades.MolarDensity, index,
             "\\rho_s", parent=self)
         self.RhoSolid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoSolid, 1, 1)
         self.RhoLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Density DIPPR"), "kmol/m^3", index,
+            "pychemqt", "Liquid Density DIPPR"), unidades.MolarDensity, index,
             "\\rho_l", parent=self)
         self.RhoLiquid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoLiquid, 1, 2)
@@ -927,18 +941,18 @@ class View_Component(QtWidgets.QDialog):
             "pychemqt", "&Viscosity"))
         lytMu = QtWidgets.QGridLayout(tab4)
         self.muLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Viscosity DIPPR"), "Pa s", index, "\\mu_l",
-            parent=self)
+            "pychemqt", "Liquid Viscosity DIPPR"), unidades.Viscosity, index,
+            "\\mu_l", parent=self)
         self.muLiquid.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muLiquid, 1, 1)
         self.muGas = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Gas Viscosity DIPPR"), "Pa s", index, "\\mu_g",
-            parent=self)
+            "pychemqt", "Gas Viscosity DIPPR"), unidades.Viscosity, index,
+            "\\mu_g", parent=self)
         self.muGas.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muGas, 1, 2)
         self.muParametric = Parametric_widget(
                 QtWidgets.QApplication.translate("pychemqt", "Viscosity"),
-                "cP", index, "\\mu_g", parent=self)
+                unidades.Viscosity, index, "\\mu_g", parent=self)
         self.muParametric.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muParametric, 2, 1)
         lytMu.addItem(QtWidgets.QSpacerItem(
@@ -952,18 +966,18 @@ class View_Component(QtWidgets.QDialog):
         lytVapor = QtWidgets.QGridLayout(tab5)
 
         self.Hv = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Heat of vaporization DIPPR"), "J/kmol", index,
-            "H_v", parent=self)
+            "pychemqt", "Heat of vaporization DIPPR"), unidades.MolarEnthalpy,
+            index, "H_v", parent=self)
         self.Hv.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.Hv, 1, 1)
         self.PvDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Vapor Pressure DIPPR"), "Pa", index, "P_v",
-            parent=self)
+            "pychemqt", "Vapor Pressure DIPPR"), unidades.Pressure, index,
+            "P_v", parent=self)
         self.PvDIPPR.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvDIPPR, 1, 2)
         self.PvAntoine = Parametric_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Antoine Vapor Pressure"), "mmHg", index, "P_v",
-            parent=self)
+            "pychemqt", "Antoine Vapor Pressure"), unidades.Pressure, index,
+            "P_v", parent=self)
         self.PvAntoine.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvAntoine, 2, 1)
         lytVapor.addItem(QtWidgets.QSpacerItem(
@@ -977,23 +991,23 @@ class View_Component(QtWidgets.QDialog):
         lytThermal = QtWidgets.QGridLayout(tab6)
 
         self.ThermalLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Thermal Conductivity DIPPR"), "W/m K", index,
-            "\\lambda_l", parent=self)
+            "pychemqt", "Liquid Thermal Conductivity DIPPR"),
+            unidades.ThermalConductivity, index, "\\lambda_l", parent=self)
         self.ThermalLiquid.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalLiquid, 1, 1)
         self.ThermalGas = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Gas Thermal Conductivity DIPPR"), "W/m K", index,
-            "\lambda_v", parent=self)
+            "pychemqt", "Gas Thermal Conductivity DIPPR"),
+            unidades.ThermalConductivity, index, "\lambda_v", parent=self)
         self.ThermalGas.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalGas, 1, 2)
         self.SigmaDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
-            "pychemqt", "Surface Tension DIPPR"), "N/m", index, "\sigma",
-            parent=self)
+            "pychemqt", "Surface Tension DIPPR"), unidades.Tension, index,
+            "\sigma", parent=self)
         self.SigmaDIPPR.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaDIPPR, 2, 1)
         self.SigmaParametric = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Surface Tension"),
-            "N/m", index, "\sigma", parent=self)
+            unidades.Tension, index, "\sigma", parent=self)
         self.SigmaParametric.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaParametric, 2, 2)
         lytThermal.addItem(QtWidgets.QSpacerItem(
@@ -1009,7 +1023,7 @@ class View_Component(QtWidgets.QDialog):
 
         self.Henry = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Henry Costant"),
-            "psia/Xg", index, "K_H", parent=self)
+            unidades.Dimensionless, index, "K_H", parent=self)
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
 

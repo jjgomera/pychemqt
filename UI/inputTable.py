@@ -86,16 +86,16 @@ class eqDIPPR(QtWidgets.QWidget):
 class InputTableWidget(QtWidgets.QWidget):
     """Table data input dialog"""
     def __init__(self, columnas, data=None, t=[], property=[],
-                 horizontalHeader=[], title="", DIPPR=False, tc=0,
-                 tcValue=None, eq=1, parent=None):
+                 horizontalHeader=[], title="", DIPPR=False, hasTc=0,
+                 Tc=None, eq=1, parent=None):
         """
         data: mrray with original data
         t: values for x column, generally temperature
         property: values for 2...n columns
         horizontalHeader: List with column title
         DIPPR: boolean to show DIPPR widget
-        tc: boolean to show critical temperature (some DIPPR eq need it)
-        tcValue: value for critical temperature
+        hasTc: boolean to show critical temperature (some DIPPR eq need it)
+        Tc: value for critical temperature
         eq: Value for DIPPR equation
         """
         super(InputTableWidget, self).__init__(parent)
@@ -123,7 +123,7 @@ class InputTableWidget(QtWidgets.QWidget):
         gridLayout.addWidget(clearButton, 1, 3)
         gridLayout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 4)
+            QtWidgets.QSizePolicy.Fixed), 1, 4)
 
         self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
@@ -143,7 +143,7 @@ class InputTableWidget(QtWidgets.QWidget):
 
             self.labelTc = QtWidgets.QLabel("Tc: ", self)
             gridLayout.addWidget(self.labelTc, 4, 1)
-            self.tc = Entrada_con_unidades(Temperature, value=tcValue)
+            self.tc = Entrada_con_unidades(Temperature, value=Tc)
             gridLayout.addWidget(self.tc, 4, 2, 1, 3)
             self.showTc(1)
 
@@ -217,7 +217,7 @@ class InputTableWidget(QtWidgets.QWidget):
 
 class InputTableDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
-    def __init__(self, columnas, help=False, helpFile="", **kwargs):
+    def __init__(self, columnas=2, help=False, helpFile="", **kwargs):
         """
         title: window title
         help: boolean to show help button
