@@ -2822,7 +2822,7 @@ class Lydersen(GroupContribution):
         List with group count ocurrences
     M: float, optional
         Molecular weight, [-]
-    Tb : float, optional
+    Tb : float
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
@@ -2834,7 +2834,7 @@ class Lydersen(GroupContribution):
 
     Notes
     -----
-    Tb, M and SG are optional input, anyway know them improve the estimation
+    M and SG are optional input, anyway know them improve the estimation
 
     Examples
     --------
@@ -2932,6 +2932,15 @@ class Lydersen(GroupContribution):
                 ]}
 
     FirstOrder = 47
+
+    def isCalculable(self):
+        """Procedure to define the status of input parameter"""
+        if not self.kwargs["Tb"]:
+            self.msg = QApplication.translate(
+                    "pychemqt", "undefined boiling point")
+            self.status = 0
+        else:
+            return GroupContribution.isCalculable(self)
 
     def calculo(self):
         """Calculation procedure"""
