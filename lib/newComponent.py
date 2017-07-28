@@ -5223,10 +5223,48 @@ _group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen", "Li",
                 "MarreroGani"]
 
 
-# Other method not implement, not general with only a calculated property
+# Other methods not implement, poor accuracy
+
+# Daubert, T.E., Bartakovits, R.
+# Prediction of Critical Temperature and Pressure of Organic Compounds by Group
+# Contribution
+# Ind. Eng. Chem. Res., 28, 638 (1989)
+# Jalowka, J.W., Daubert, T.E.
+# Group Contribution Method to Predict Critical Temperature and Pressure of
+# Hydrocarbons
+# Ind. Eng. Process Des. Dev., 25, 139 (1986).
+
+# Somayajulu, G.R.
+# Estimation procedures for critical constants
+# J. Chem. Eng. Data 1989, 34, 106–120
+
+# Wang, Q., Ma, P., Jia, Q., Xia, S.
+# Position Group Contribution Method for the Prediction of Critical
+# Temperatures of Organic Compounds
+# J. Chem. Eng. Data 2008, 53, 1103-1109
+# Wang, Q., Jia, Q., Ma, P.
+# Position Group Contribution Method for the Prediction of Critical Pressure of
+# Organic Compounds
+# J. Chem. Eng. Data 2008, 53, 1877-1885
+# Jia, Q., Wang, Q., Ma, P.
+# Position Group Contribution Method for the Prediction of Critical Volume of
+# Organic Compounds
+# J. Chem. Eng. Data 2008, 53, 2606-2612
+
+# Fishtine, S.H.
+# The Modified Lydersen Method for Predicting the Critical Constants of Pure
+# Substanes
+# Zeitschrift für Physikalische Chemie Neue Folge, 123 (1980), 39-49
+
+
+# Other method not implement because calculate only a property, not general
+# and don't appropiated to define a compound
 # Aditional reference in Perry's, pag. 2-471
 
-# Fedors methods critic temperature and volume
+# Vetere, A.
+# An Empirical Method for Evaluating Critical Molar Volumes
+# AIChE I., 22,950 (1976); Errata, ibtd., 23,406 (1977)
+
 # Fedors, R.F.
 # A Method to Estimate Critical Volumes
 # AIChE J., 25(1), 202 (1979).
@@ -5234,23 +5272,85 @@ _group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen", "Li",
 # A Relationship between Chemical Structure and the Critical Temperature
 # Chem. Eng. Commun., 16, 149 (1982).
 
-# Pailhes method for boiling temperature
-# Pailhes, F., Fluid Phase Equilib., 41 (1988): 97.
-# Lydersen, A. L., AIChE J., 21 (1975): 510
+# Pailhes, F.
+# Estimation of the Boiling Temperature at Normal Pressure for Organic
+# Compounds from their Chemical Formula and a Known Boiling Temperature at Low
+# Pressure
+# Fluid Phase Equilib., 41 (1988) 97-107
+
+# Dalmazzone, D., Salmon, A., Guella, S.
+# A second order group contribution method for the prediction of critical
+# temperatures and enthalpies of vaporization of organic compounds
+# Fluid Phase Equilib. 242, (2006) 29–42.
+
+# Thinh, T.P., Trong, T.K.
+# Estimation of Standard Heats of Formation ΔHf, Standard Entropies of
+# Formation ΔSf, Standard Free Energies of Formation ΔGf and Absolute Entropies
+# S of Hydrocarbons from Group Contributions: An Accurate Approach
+# Can. J.  Chern. Eng. 54 (1976), 344-357
+
+# van Krevelen, S.W., Chermin, H.A.G.
+# Estimation of the Free Enthalpy (Gibbs Free Energy) of Formation of Organic
+# Compounds from Group Contributions
+# Chem. Eng. Sci. 1 (1951) 66-80
+
+# Ruzicka method for liquid specific heat
+# Ruzicka, V., Domalski, E.S.
+# J. Phys. Chem. Ref. Data, 22 (1993): 597, 619
+
+# Benson method for ideal gas specific heat
+# Benson, S.W., Cruickshank, F.R., Golden, n.M., Haugen, G.R., O'Neal, H.E.,
+# Rogers, A.S., Shaw, R., Walsh, R.
+# Additivity Rules for the Estimation of Thermochemical Properties
+# Chem. Rev. 69 (1969) 279
+# Benson, S.W., Buss, J.H.
+# Additivity Rules for the Estimation of Molecular Properties. Thermodynamic
+# Properties
+# J. Chem. Phys. 29 (1958) 546-572
+# Cohen, N., Benson, S.W.
+# Estimation of Heats of Formation of Organic Compounds by Additivity Methods
+# Chem. Rev. 93 (1993) 2419-2438
+# O'Neal, H.E., Benson, S.W.
+# Entropies and Heat Capacities of Cyclic and Polycyclic Compounds
+# J. Chem. Eng. Data 15 (1970) 266-276
+
+# Rihani, D.N., Doraiswamy, L.K.
+# Estimation of Heat Capacity of Organic Compounds from Group Contributions
+# Ind. Eng. Chern. Fundam. 4, (1965) 17-21
+
+# Verma, K.K., Doraiswamy, L.K.
+# Estimation of Heats of Formation of Organic Compounds
+# Ind. Eng. Chern. Fundam. 4, (1965) 389-396
+
+# van Velzen, D., Cardozo, R.L., Langenkarnp, H.
+# A Liquid Viscosity-Temperature-Chemical Constitution Relation for Organic
+# Compounds
+# Ind. Eng. Chem. Fundam. 11 (1972) 20-25
+
+# Franklin, I.L.
+# Prediction of Heat and Free Energies of Organic Compounds
+# Ind. Eng. Chem. 41, (1949) 1070-1076
+
+# Chickos, J.S., Braton, C.M., Hesse, D.G.
+# Estimating Entropies and Enthalpies of Fusion of Organic Compounds
+# J. Org. Chem. 56 (1991) 927-938
+# Chickos, J.S., Hosseini, S.
+# A Group Additivity Approach for the Estimation of Vapor Pressures of Liquid
+# Hydrocarbons from 298 to 500 K
+# J. Org. Chem. 58 (1993) 5345-5350
+# Chickos, J.S., Hesse, D.G., Liebman, J.F., Panshin, S.Y.
+# Estimations of the Heats of Vaporization of Simple Hydrocarbon Derivatives at
+# 298 K
+# J. Org. Chem. 53 (1988) 3424-3429
+# Chickos, J.S., Hesse, D.G., Liebman, J.F.
+# Estimating Entropies and Enthalpies of Fusion of Hydrocarbons
+# J. Org. Chem. 55 (1990) 3833-3840
+# Chickos, J.S., Annunziata, R., Ladon, L.H., Liebman, J.F.
+# Estimating Heats of Sublimation of Hydrocarbons. A Semiempirical Approach
+# J. Org. Chem. 51 (1986) 4311-4314
 
 # Domalski method for formation properties
 # Domalski, E. S., and E. D. Hearing, J. Phys. Chem. Ref. Data, 22 (1993): 805
-
-# Chickos method for melting properties
-# Chickos, J. S., et al., J. Org. Chem., 56 (1991): 927
-
-# Benson method for ideal gas specific heat
-# Benson, S. W., et al., Chem. Rev., 69 (1969): 279
-# CHETAH Version 8.0: The ASTM Computer Program for Chemical Thermodynamic and
-# Energy Release Evaluation (NIST Special Database 16)
-
-# Ruzicka method for liquid specific heat
-# Ruzicka, V., E. S. Domalski, J. Phys. Chem. Ref. Data, 22 (1993): 597, 619
 
 # Goodman method for solid specific heat
 # Goodman, B. T., et al., J. Chem. Eng. Data, 49 (2004): 24.
@@ -5265,16 +5365,3 @@ _group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen", "Li",
 # Macleod, D. B., Trans. Faraday Soc., 19 (1923): 38
 # Sugden, S. J., Chem. Soc., 125 (1924): 32
 # Knotts, T. A., et al., J. Chem. Eng. Data, 46 (2001): 1007.
-
-
-if __name__ == '__main__':
-
-    # ic5=Componente(7)
-    # print ic5.Tb, ic5.Tc
-    # elliot=Elliott(group=[0, 5], contribution=[4, 1], M=72)
-    # print elliot.Tb, elliot.Tc
-
-    print(atomic_decomposition("HCON(CH2)2"))
-
-    group = {"C": 11, "H": 17}
-    cmp = GroupContribution._atomicComposition(group)
