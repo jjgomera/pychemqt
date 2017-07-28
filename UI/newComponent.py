@@ -33,7 +33,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH
-from lib.newComponent import _methods, _group2Order
+from lib.newComponent import _methods
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
 from UI.delegate import SpinEditor
@@ -292,10 +292,21 @@ class Ui_Contribution(newComponent):
         """
         super(Ui_Contribution, self).__init__(parent)
 
+        # Initialization variables
         self.grupo = []
         self.indices = []
         self.contribucion = []
-        self.metodo = metodo
+
+        func = {}
+        for f in _methods:
+            func[f.__name__] = f
+        self.unknown = func[metodo]()
+
+        title = self.unknown.__title__
+        title += " " + QtWidgets.QApplication.translate(
+                "pychemqt", "new component definition")
+        self.setWindowTitle(title)
+
         lyt = QtWidgets.QVBoxLayout(self)
         widget = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(widget)
@@ -349,7 +360,7 @@ class Ui_Contribution(newComponent):
         self.groupContributions = QtWidgets.QListWidget()
         self.groupContributions.currentItemChanged.connect(self.selectChanged)
         self.groupContributions.itemDoubleClicked.connect(self.add)
-        layout.addWidget(self.groupContributions, 6, 0, 7, 3)
+        layout.addWidget(self.groupContributions, 6, 0, 6, 3)
         self.btnAdd = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "add.png"))),
             QtWidgets.QApplication.translate("pychemqt", "Add"))
@@ -361,26 +372,26 @@ class Ui_Contribution(newComponent):
             QtWidgets.QSizePolicy.Expanding), 7, 1)
 
         # Show selection for method with several order contributions
-        if metodo in _group2Order:
+        if self.unknown.SecondOrder:
             self.Order1 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "1st order"))
             self.Order1.setChecked(True)
             self.Order1.toggled.connect(self.Order)
-            layout.addWidget(self.Order1, 10, 3)
+            layout.addWidget(self.Order1, 9, 3)
             self.Order2 = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "2nd order"))
             self.Order2.toggled.connect(self.Order)
-            layout.addWidget(self.Order2, 11, 3)
+            layout.addWidget(self.Order2, 10, 3)
 
-            if metodo == "MarreroGani":
+            if self.unknown.ThirdOrder:
                 self.Order3 = QtWidgets.QRadioButton(
                     QtWidgets.QApplication.translate("pychemqt", "3rd order"))
-                layout.addWidget(self.Order3, 12, 3)
+                layout.addWidget(self.Order3, 11, 3)
                 self.Order3.toggled.connect(self.Order)
 
-        # layout.addItem(QtWidgets.QSpacerItem(
-            # 10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
-            # 12, 1)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            12, 1)
         labelTb = QtWidgets.QLabel("Tb")
         labelTb.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Experimental Boiling Temperature"))
@@ -457,21 +468,10 @@ class Ui_Contribution(newComponent):
 
         newComponent.loadUI(self)
 
-        # Initialization variables
-        func = {}
-        for f in _methods:
-            func[f.__name__] = f
-        self.unknown = func[self.metodo]()
-
-        title = self.unknown.__title__
-        title += " " + QtWidgets.QApplication.translate(
-                "pychemqt", "new component definition")
-        self.setWindowTitle(title)
-
         for i, nombre in enumerate(self.unknown.coeff["txt"]):
             self.groupContributions.addItem(nombre[0])
 
-        if metodo in _group2Order:
+        if self.unknown.SecondOrder:
             self.Order()
         if metodo == "Klincewicz":
             self.nogroupCheckToggled(False)

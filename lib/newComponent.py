@@ -5219,9 +5219,6 @@ def cpLS_Hurst(group):
 _methods = [Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose,
             Klincewicz, Lydersen, Valderrama, Nannoolal, Wen, Li, MarreroGani]
 
-_group2Order = ["Constantinou", "Wilson", "Ambrose", "Nannoolal", "Wen", "Li",
-                "MarreroGani"]
-
 
 # Other methods not implement, poor accuracy
 
