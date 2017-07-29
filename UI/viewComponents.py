@@ -1267,7 +1267,7 @@ class View_Component(QtWidgets.QDialog):
         self.formula1.setText(self.cmp.formula)
         if self.cmp.smile != "" and os.environ["oasa"] == "True":
             self.formula2.setPixmap(
-                QtGui.QPixmap(self.cmp.archivo_imagen.name))
+                QtGui.QPixmap(self.cmp.imageFile.name))
             self.smile.setText(self.cmp.smile)
         if self.cmp.UNIFAC != []:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))

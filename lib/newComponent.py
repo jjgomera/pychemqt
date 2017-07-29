@@ -27,7 +27,7 @@ from scipy.constants import R
 from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
-from lib.compuestos import f_acent_Lee_Kesler
+from lib.compuestos import atomic_decomposition, f_acent_Lee_Kesler
 from lib.physics import R_atml
 from lib.elemental import databank
 
@@ -208,45 +208,6 @@ MW = {}
 databank.execute("SELECT symbol, atomic_mass FROM ELEMENTS")
 for symbol, m in databank:
     MW[symbol] = m
-
-
-def atomic_decomposition(cmp):
-    """Procedure to decompose a molecular string representation in its atomic
-    composition
-
-    Parameters
-    ------------
-    cmp : string
-        Compound test representation
-
-    Returns
-    -------
-    kw : dict
-        Dictionary with the atomic decomposition of compound
-
-    Examples
-    --------
-    >>> kw = atomic_decomposition("CH3")
-    >>> "%i %i" % (kw["C"], kw["H"])
-    '1 3'
-    >>> kw = atomic_decomposition("COO")
-    >>> "%i %i" % (kw["C"], kw["O"])
-    '1 2'
-    >>> kw = atomic_decomposition("CH3COOCl")
-    >>> "%i %i %i %i" % (kw["C"], kw["H"], kw["O"], kw["Cl"])
-    '2 3 2 1'
-    """
-    kw = {}
-    for element, c in re.findall("([A-Z][a-z]*)([0-9]*)", cmp):
-        if element not in kw:
-            kw[element] = 0
-
-        if not c:
-            c = 1
-        else:
-            c = int(c)
-        kw[element] += c
-    return kw
 
 
 class newComponente(object):

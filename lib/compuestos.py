@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from string import ascii_lowercase, digits
-import tempfile
 import os
+import re
+import tempfile
 
 from scipy import exp, cosh, sinh, log, log10, roots, absolute, sqrt
 from scipy.optimize import fsolve
@@ -45,6 +45,45 @@ __doi__ = {
          "doi": "10.1016/B978-0-12-801570-4.00002-7"},
 
 }
+
+
+def atomic_decomposition(cmp):
+    """Procedure to decompose a molecular string representation in its atomic
+    composition
+
+    Parameters
+    ------------
+    cmp : string
+        Compound test representation
+
+    Returns
+    -------
+    kw : dict
+        Dictionary with the atomic decomposition of compound
+
+    Examples
+    --------
+    >>> kw = atomic_decomposition("CH3")
+    >>> "%i %i" % (kw["C"], kw["H"])
+    '1 3'
+    >>> kw = atomic_decomposition("COO")
+    >>> "%i %i" % (kw["C"], kw["O"])
+    '1 2'
+    >>> kw = atomic_decomposition("CH3COOCl")
+    >>> "%i %i %i %i" % (kw["C"], kw["H"], kw["O"], kw["Cl"])
+    '2 3 2 1'
+    """
+    kw = {}
+    for element, c in re.findall("([A-Z][a-z]*)([0-9]*)", cmp):
+        if element not in kw:
+            kw[element] = 0
+
+        if not c:
+            c = 1
+        else:
+            c = int(c)
+        kw[element] += c
+    return kw
 
 
 def Pv_Lee_Kesler(T, Tc, Pc, w):
@@ -133,193 +172,161 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
 
 
 class Componente(object):
-    """Clase que define los compuestos químicos con todas sus caracteristicas,
-    algunas sacadas de la base de datos, otras calculadas a partir de estas
-    Introduciendo el id del componente de la base de datos quedaría perfectamente definido"""
+    """Class to define a chemical compound from the database"""
 
-    def __init__(self, indice=None):
-        if not indice:
+    def __init__(self, id=None):
+        """id: index of compound in database"""
+        if not id:
             return
-        self.indice=indice
-        self.Config=config.getMainWindowConfig()
-        componente=sql.getElement(indice)
-        self.formula=componente[1]
-        self.nombre=componente[2]
-        self.M=componente[3]
-        self.SG=componente[124]
-        if componente[4]!=None:
-            self.Tc=unidades.Temperature(componente[4])
+        self.id = id
+        self.Config = config.getMainWindowConfig()
+        componente = sql.getElement(id)
+        self.formula = componente[1]
+        self.nombre = componente[2]
+        self.M = componente[3]
+        self.SG = componente[124]
+        if componente[4] != None:
+            self.Tc = unidades.Temperature(componente[4])
         else:
-            self.Tc=self._Tc_Nokay()
-        self.Pc=unidades.Pressure(componente[5], "atm")
-        self.Tb=unidades.Temperature(componente[131])
-        self.Tf=unidades.Temperature(componente[132])
-        if componente[125]!=0:
-            self.f_acent=componente[125]
-        elif self.Pc!=0 and self.Tc!=0:
-            self.f_acent=self.factor_acentrico_Lee_Kesler()
+            self.Tc = self._Tc_Nokay()
+        self.Pc = unidades.Pressure(componente[5], "atm")
+        self.Tb = unidades.Temperature(componente[131])
+        self.Tf = unidades.Temperature(componente[132])
+        if componente[125] != 0:
+            self.f_acent = componente[125]
+        elif self.Pc != 0 and self.Tc != 0:
+            self.f_acent = self.factor_acentrico_Lee_Kesler()
         else:
-            self.f_acent=0
-        if componente[6]!=0:
-            self.Vc=unidades.SpecificVolume(componente[6])
-        elif self.f_acent!=0 and self.Tc!=0 and self.Pc!=0:
-            self.Vc=self.vc_Riedel()
+            self.f_acent = 0
+        if componente[6] != 0:
+            self.Vc = unidades.SpecificVolume(componente[6])
+        elif self.f_acent != 0 and self.Tc != 0 and self.Pc != 0:
+            self.Vc = self.vc_Riedel()
         else:
-            self.Vc=0
+            self.Vc = 0
         if self.Tc:
-            self.Zc=self.Pc*self.Vc/R/self.Tc
+            self.Zc = self.Pc*self.Vc/R/self.Tc
         else:
-            self.Zc=0
-        if componente[7]!=0:
-            self.API=componente[7]
-        elif componente[124]!=0:
-            self.API=141.5/componente[124]-131.5
+            self.Zc = 0
+        if componente[7] != 0:
+            self.API = componente[7]
+        elif componente[124] != 0:
+            self.API = 141.5/componente[124]-131.5
         else:
-            self.API=0
-        self.cp=componente[8:14]
-        self.antoine=componente[14:17]
-        self.henry=componente[17:21]
-        self.viscosidad_parametrica=componente[21:23]
-        self.tension_superficial_parametrica=componente[23:25]
-        self.densidad_solido=componente[25:33]
-        self.densidad_liquido=componente[33:41]
-        self.presion_vapor=componente[41:49]
-        self.calor_vaporizacion=componente[49:57]
-        self.capacidad_calorifica_solido=componente[57:65]
-        self.capacidad_calorifica_liquido=componente[65:73]
-        self.capacidad_calorifica_gas=componente[73:81]
-        self.viscosidad_liquido=componente[81:89]
-        self.viscosidad_gas=componente[89:97]
-        self.conductividad_liquido=componente[97:105]
-        self.conductividad_gas=componente[105:113]
-        self.tension_superficial=componente[113:121]
-        self.momento_dipolar=unidades.DipoleMoment(componente[121])
-        if componente[123]!=0.0:
-            self.rackett=componente[123]
+            self.API = 0
+        self.cp = componente[8:14]
+        self.antoine = componente[14:17]
+        self.henry = componente[17:21]
+        self.viscosidad_parametrica = componente[21:23]
+        self.tension_superficial_parametrica = componente[23:25]
+        self.densidad_solido = componente[25:33]
+        self.densidad_liquido = componente[33:41]
+        self.presion_vapor = componente[41:49]
+        self.calor_vaporizacion = componente[49:57]
+        self.capacidad_calorifica_solido = componente[57:65]
+        self.capacidad_calorifica_liquido = componente[65:73]
+        self.capacidad_calorifica_gas = componente[73:81]
+        self.viscosidad_liquido = componente[81:89]
+        self.viscosidad_gas = componente[89:97]
+        self.conductividad_liquido = componente[97:105]
+        self.conductividad_gas = componente[105:113]
+        self.tension_superficial = componente[113:121]
+        self.momento_dipolar = unidades.DipoleMoment(componente[121])
+        if componente[123] != 0.0:
+            self.rackett = componente[123]
         else:
-            self.rackett=self.Rackett()
-        if componente[122]!=0.0:
-            self.Vliq=componente[122]
+            self.rackett = self.Rackett()
+        if componente[122] != 0.0:
+            self.Vliq = componente[122]
 #        elif self.Pc!=0 and self.Tc>298.15 :
 #            self.Vliq=self.Volumen_Liquido_Constante()
         else:
-            self.Vliq=0
+            self.Vliq = 0
 
-        if componente[126]!=0.0:
-            self.parametro_solubilidad=unidades.SolubilityParameter(componente[126])
+        if componente[126] != 0.0:
+            self.parametro_solubilidad = unidades.SolubilityParameter(componente[126])
         else:
-            self.parametro_solubilidad=self.Parametro_Solubilidad()
-        self.Kw=componente[127]
-        self.MSRK=componente[128:130]
-        if componente[130]!=0.0:
-            self.stiehl=componente[130]
+            self.parametro_solubilidad = self.Parametro_Solubilidad()
+        self.Kw = componente[127]
+        self.MSRK = componente[128:130]
+        if componente[130] != 0.0:
+            self.stiehl = componente[130]
         else:
-            self.stiehl=0
-        #FIXME: No esta bien
+            self.stiehl = 0
+        # FIXME: No esta bien
 #            self.stiehl=self.Stiehl_Polar_factor()
-        self.CASNumber=componente[133]
-        self.formula_alternativa=componente[134]
-        self.UNIFAC=eval(componente[135])
-        self.diametro_molecular=componente[136]
-        self.ek=componente[137]
-        self.UNIQUAC_area=componente[138]
-        self.UNIQUAC_volumen=componente[139]
-        if componente[140]==0.0:
-            self.f_acent_mod=componente[125]
+        self.CASNumber = componente[133]
+        self.formula_alternativa = componente[134]
+        self.UNIFAC = eval(componente[135])
+        self.diametro_molecular = componente[136]
+        self.ek = componente[137]
+        self.UNIQUAC_area = componente[138]
+        self.UNIQUAC_volumen = componente[139]
+        if componente[140] == 0.0:
+            self.f_acent_mod = componente[125]
         else:
-            self.f_acent_mod=componente[140]
-        self.calor_formacion=unidades.Enthalpy(componente[141]/self.M)
-        self.energia_formacion=unidades.Enthalpy(componente[142]/self.M)
-        self.wilson=componente[143]
-        self.calor_combustion_neto=unidades.Enthalpy(componente[144]/self.M)
-        self.calor_combustion_bruto=unidades.Enthalpy(componente[145]/self.M)
-        self.nombre_alternativo=componente[146]
-        self.V_char=componente[147]
-        self.calor_formacion_solido=componente[148]
-        self.energia_formacion_solido=componente[149]
-        self.parametro_polar=componente[150]
-        self.smile=componente[151]
-        if self.smile!="" and os.environ["oasa"] == "True":
+            self.f_acent_mod = componente[140]
+        self.calor_formacion = unidades.Enthalpy(componente[141]/self.M)
+        self.energia_formacion = unidades.Enthalpy(componente[142]/self.M)
+        self.wilson = componente[143]
+        self.calor_combustion_neto = unidades.Enthalpy(componente[144]/self.M)
+        self.calor_combustion_bruto = unidades.Enthalpy(componente[145]/self.M)
+        self.nombre_alternativo = componente[146]
+        self.V_char = componente[147]
+        self.calor_formacion_solido = componente[148]
+        self.energia_formacion_solido = componente[149]
+        self.parametro_polar = componente[150]
+        self.smile = componente[151]
+        if self.smile != "" and os.environ["oasa"] == "True":
             import oasa
             # Install bkchem and create symbolic link for oasa
             # ln -s /usr/lib/bkchem/bkchem/oasa/oasa /usr/local/lib/python2.7/dist-packages
-            molecula=oasa.smiles.text_to_mol(self.smile,calc_coords=40)
-            self.archivo_imagen=tempfile.NamedTemporaryFile("w+r", suffix=".svg")
-            oasa.svg_out.mol_to_svg(molecula, self.archivo_imagen.name)
+            mol = oasa.smiles.text_to_mol(self.smile, calc_coords=40)
+            self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
+            oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
-        #TODO: Añadir las contribuciones de grupos de parachor a la base de datos
-        self.parachor=[]
-        #TODO: Añadir las parámetros de la ecuación de wagner de la presión de vapor, de momento usamos los datos del tetralin
-        self.wagner=[-7.4138E+00, 9.5219E-01, -1.5111E+00, -4.9487E+00, 427, 1296]
-        #TODO: Añadir los tipos de cada elemento
-        self.hidrocarburo=True
-        self.Van_Veltzen=[] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
-        #TODO: Añadir caraceristicas químicas del componente
-        self.isCiclico=False
-        self.isHidrocarburo=True
-        self.isLineal=True
-        self.isAlcohol=False
+        # TODO: Añadir las contribuciones de grupos de parachor a la base de datos
+        self.parachor = []
+        # TODO: Añadir las parámetros de la ecuación de wagner de la presión de vapor, de momento usamos los datos del tetralin
+        self.wagner = [-7.4138E+00, 9.5219E-01, -1.5111E+00, -4.9487E+00, 427, 1296]
+        # TODO: Añadir los tipos de cada elemento
+        self.hidrocarburo = True
+        self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
+        # TODO: Añadir caraceristicas químicas del componente
+        self.isCiclico = False
+        self.isHidrocarburo = True
+        self.isLineal = True
+        self.isAlcohol = False
 
-        #TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
-        self.SRKGraboski=[0, 0]
+        # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
+        self.SRKGraboski = [0, 0]
 
-        #TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles.pdf
-        self.Melhem=[0, 0]          #Alcoholes en archivo de abajo
-        self.Almeida=[0, 0]
+        # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles.pdf
+        self.Melhem = [0, 0]          #Alcoholes en archivo de abajo
+        self.Almeida = [0, 0]
 
-        #TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
-        self.Mathias=0
-        self.MathiasCopeman=[0, 0, 0]
-        self.Adachi=[0, 0]
-        self.Andoulakis=[0, 0, 0]
-        self.Yu_Lu=[0, 0, 0]
+        # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
+        self.Mathias = 0
+        self.MathiasCopeman = [0, 0, 0]
+        self.Adachi = [0, 0]
+        self.Andoulakis = [0, 0, 0]
+        self.Yu_Lu = [0, 0, 0]
 
-
-        #Desglosar formula en elementos y átomos de cada elemento
-        formula=self.formula
-        elementos=[]
-        atomos=[]
-        while len(formula)>0:
-            letras=1
-            numeros=0
-            if len(formula)>1 and formula[1] in ascii_lowercase:
-                letras+=1
-            while len(formula)>letras+numeros and formula[letras+numeros] in digits:
-                numeros+=1
-            elementos.append(formula[:letras])
-            if numeros==0:
-                atomos.append(1)
-            else:
-                atomos.append(int(formula[letras:letras+numeros]))
-            formula=formula[letras+numeros:]
-        self.composicion_molecular=[elementos, atomos]
-        if 'C' in elementos:
-            self.C=atomos[elementos.index("C")]
-        else:
-            self.C=0
-        if 'H' in elementos:
-            self.H=atomos[elementos.index("H")]
-        else:
-            self.C=0
-        if 'O' in elementos:
-            self.O=atomos[elementos.index("O")]
-        else:
-            self.O=0
-        if 'N' in elementos:
-            self.N=atomos[elementos.index("N")]
-        else:
-            self.N=0
-        if 'S' in elementos:
-            self.S=atomos[elementos.index("S")]
-        else:
-            self.S=0
+        # Desglosar formula en elementos y átomos de cada elemento
+        decmp = atomic_decomposition(self.formula)
+        self.C = decmp.get("C", 0)
+        self.H = decmp.get("H", 0)
+        self.O = decmp.get("O", 0)
+        self.N = decmp.get("N", 0)
+        self.S = decmp.get("S", 0)
 
         if self.C and self.H:
-            self.HC=self.H/self.C
+            self.HC = self.H/self.C
 
-    def tr(self,T):
-       return T/self.Tc
-    def pr(self,P):
+    def tr(self, T):
+        return T/self.Tc
+
+    def pr(self, P):
         return P/self.Pc
 
 
@@ -726,7 +733,7 @@ class Componente(object):
     def ThCond_Liquido_Pachaiyappan(self, T):
         """Método alternativo para el cálculo de la conductividad de líquidos a baja presión, API procedure 12A1.2, pag 1141"""
         #TODO: Alguna forma mejor de definir los compuestos lineales hay que encontrar, quizá añadiendo un parámetro a la base de datos , branched True o False
-        if self.indice in [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844, 1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31, 35, 56, 57, 58]:
+        if self.id in [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844, 1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31, 35, 56, 57, 58]:
             n=1.001
             C=1.676e-3
         else:
@@ -785,7 +792,7 @@ class Componente(object):
                 return self.ThCond_Gas_DIPPR(T)
             else:
                 return self.ThCond_Gas_Misic_Thodos(T)
-        elif self.indice in [1, 46, 47, 48, 50, 51, 111]:
+        elif self.id in [1, 46, 47, 48, 50, 51, 111]:
             return self.ThCond_Gas_Nonhidrocarbon(T, P)
         else:
             # TODO: fix crooks methods with lost lee_kesler library
@@ -831,19 +838,19 @@ class Componente(object):
         """
         t=unidades.Temperature(T)
         p=unidades.Pressure(P, "atm")
-        if self.indice==1:
+        if self.id==1:
             par=[4.681e-3, 2.e-4, -3.6e-8, 0.0, 0.0, 0.0, 1.7e-3]
-        elif self.indice==46:
+        elif self.id==46:
             par=[4.561e-3, 1.61e-5, 0.0, 2.56e-9, 5.299e-3, 2.47e-3, 0.0]
-        elif self.indice==47:
+        elif self.id==47:
             par=[5.95e-4, 1.71e-5, 0.0, -2.10e-8, 5.869e-3, 6.995e-3, 0.0]
-        elif self.indice==48:
+        elif self.id==48:
             par=[1.757e-3, 1.55e-5, 0.0, 2.08e-8, 5.751e-3, 5.6e-3, 0.0]
-        elif self.indice==50:
+        elif self.id==50:
             par=[-1.51e-3, 2.25e-5, 3.32e-10, 0.0, 0.0, 0.0, 0.0]
-        elif self.indice==51:
+        elif self.id==51:
             par=[2.5826e-2, 1.35e-5, 0.0, -4.4e-7, 1.026e-2, -2.631e-2, 0.0]
-        elif self.indice==111:
+        elif self.id==111:
             par=[-1.02e-3, 1.35e-5, 4.17e-9, 0.0, 0.0, 0.0, 0.0]
 
         k=par[0]+par[1]*t.R+par[2]*t.R**2+par[3]*p.psi+par[4]*p.psi/t.R**1.2+par[5]/(0.4*p.psi-0.001*t.R)**0.015+par[6]*log(p.psi)
@@ -905,7 +912,7 @@ class Componente(object):
         """Método alternativo para el cálculo de la viscosidad de gases a baja presión, solo necesita las propiedades críticas, API procedure 11B1.3, pag 1099"""
         t=unidades.Temperature(T)
         Tr=self.tr(T)
-        if self.indice==1:
+        if self.id==1:
             if Tr<=1.5:
                 mu=3.7e-5*t.R**0.94
             else:
@@ -1075,13 +1082,13 @@ class Componente(object):
 
         mur=mur0+self.f_acent*mur1
         #TODO: Para implementar correctamente este método hay que añadir a la base de datos los datos de la viscosidad en el punto crítico. De momento usaremos el procedimiento DIPPR como alternativa para obtener un valor de viscosidad en las condiciones estandart y una minitabla para los elementos que aparecen en la tabla 11A5.4 del API Databook
-        if 1<self.indice<=21 and self.indice!=7:
-            muc=[0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350, 0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315, 0.0328, 0.0337, 0.0348, 0.0355, 0.0362][self.indice]
-        elif self.indice==90:
+        if 1<self.id<=21 and self.id!=7:
+            muc=[0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350, 0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315, 0.0328, 0.0337, 0.0348, 0.0355, 0.0362][self.id]
+        elif self.id==90:
             muc=0.0370
-        elif self.indice==91:
+        elif self.id==91:
             muc=0.0375
-        elif self.indice==92:
+        elif self.id==92:
             muc=0.0388
         else:
 #            muc=self.Mu_critica().cP
