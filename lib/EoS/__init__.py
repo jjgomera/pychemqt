@@ -37,9 +37,11 @@ mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (QApplication.translate("pychemqt", "Ideal"),
             "DIPPR")
 
+__all__ = [BWRS, cubic, Grayson_Streed, Lee_Kesler, virial]
+
 # Add references
 # each submodule must define its custom __doi__
 __doi__ = {}
-for obj in [BWRS, cubic, Grayson_Streed, Lee_Kesler, virial]:
+for obj in __all__:
     if "__doi__" in obj.__dict__:
         __doi__[obj.__name__] = obj.__doi__
