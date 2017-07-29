@@ -27,6 +27,35 @@ from scipy.constants import R
 
 from lib.eos import EoS
 
+
+__doi__ = {
+    1:
+        {"autor": "Dymond, J.H., Marsh, K.N., Wilhoit, R.C., Wong, K.C., "
+                  "Frenkel, M.,",
+         "title": "Virial Coefficients of Pure Gases (Landolt-Börnstein - "
+                  "Group IV Physical Chemistry 21A)",
+         "ref": "Springer-Verlag",
+         "doi": "10.1007/10693952_16"},
+    2:
+        {"autor": "Tsonopoulos, C.",
+         "title": "An empirical correlation of second virial coefficients",
+         "ref": "AICHE Journal 20, pp 263 (1974)",
+         "doi": "10.1002/aic.690200209"},
+    3:
+        {"autor": "Orbey, H., Vera, J.H.",
+         "title": "Correlation for the third virial coefficient using Tc, Pc "
+                  "and ω as parameters",
+         "ref": "AIChE Journal 29, 107 (1983)",
+         "doi": "10.1002/aic.690290115"},
+    4:
+        {"autor": "Liu, D.X., Xiang, H.W.",
+         "title": "Corresponding-States Correlation and Prediction of Third "
+                  "Virial Coefficients for a Wide Range of Substances",
+         "ref": "Int. J. Thermophysics 24(6), 1667-1680 (2003)",
+         "doi": "10.1023/b:ijot.0000004098.98614.38"},
+}
+
+
 B_Database = {
     98: [3.4162e1, -1.2087e4, -7.6702e5, -1.96e7],
     630: [9.1039e1, -5.9081e4, 1.0478e7, 3.0463e9],
@@ -231,7 +260,7 @@ B_Database = {
 
 
 def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
-    r"""Calculate the second virial coefficient as explain in [1]
+    """Calculate the 2nd virial coefficient using the Tsonopoulos correlation
 
     Parameters
     ----------
@@ -251,9 +280,9 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     B : float
         Second virial coefficient [m³/mol]
     B1 : float
-        T(dC/dT) [m³/mol]
+        T(dB/dT) [m³/mol]
     B2 : float
-        T²(d²C/dT²) [m³/mol]
+        T²(d²B/dT²) [m³/mol]
 
     Notes
     -----
@@ -261,12 +290,10 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     correlations are general and possibly not applicable to the compounds
     not availables in the B_database
 
-    Examples
-    --------
-
     References
     ----------
-    [1] .. Tsonopoulos, C.: An empirical correlation of second virial coefficients, AICHE Journal 20, pp 263 (1974)
+    .. [2] Tsonopoulos, C. An empirical correlation of second virial
+        coefficients. AICHE Journal 20, pp 263 (1974)
     """
     Tr = T/Tc
     if mu:
@@ -282,13 +309,15 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     f3 = -1/Tr**8
     f = f0 + w*f1 + a*f2 + b*f3
     B = f*R*Tc/Pc
-    f0t = 0.33*Tc/T**2+2*0.1385*Tc**2/T**3+3*0.0121*Tc**3/Tr**4+8*0.000607*Tc**8/T**9
+    f0t = 0.33*Tc/T**2 + 2*0.1385*Tc**2/T**3 + 3*0.0121*Tc**3/Tr**4 + \
+        8*0.000607*Tc**8/T**9
     f1t = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
     f2t = -6*Tc**6/T**7
     f3t = 8*Tc**8/T**9
     ft = f0t + w*f1t + a*f2t + b*f3t
     B1 = ft*R*Tc/Pc
-    f0tt = -2*0.33*Tc/T**3-2*3*0.1385*Tc**2/T**4-3*4*0.0121*Tc**3/Tr**5-8*9*0.000607*Tc**8/T**10
+    f0tt = -2*0.33*Tc/T**3 - 2*3*0.1385*Tc**2/T**4 - 3*4*0.0121*Tc**3/Tr**5 - \
+        8*9*0.000607*Tc**8/T**10
     f1tt = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
     f2tt = 6*7*Tc**6/T**8
     f3tt = -8*9*Tc**8/T**10
@@ -299,7 +328,8 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
 
 
 def C_Orbey_Vera(T, Tc, Pc, w):
-    r"""Calculate the third virial coefficient as explain in [1]
+    """Calculate the third virial coefficient using the Orbey-Vera correlation
+
     Parameters
     ----------
     T : float
@@ -323,28 +353,30 @@ def C_Orbey_Vera(T, Tc, Pc, w):
     Examples
     --------
     Selected points from Table 2 of paper
-    Benzene at tr 0.877
-    >>> Tc = 562.05
-    >>> Pc = 4895001.63075
-    >>> w = 0.2103
-    >>> print("%.3f" % (C_Orbey_Vera(0.877*Tc, Tc, Pc, w)[0]*1e9,))
-    41.424
+    >>> from lib.mEoS.Benzene import Benzene as Bz
+    >>> "%.1f" % (C_Orbey_Vera(0.877*Bz.Tc, Bz.Tc, Bz.Pc, Bz.f_acent)[0]*1e9)
+    '41.5'
+    >>> "%.1f" % (C_Orbey_Vera(1.019*Bz.Tc, Bz.Tc, Bz.Pc, Bz.f_acent)[0]*1e9)
+    '35.8'
 
     References
     ----------
-    [1] .. Orbey, H., Vera, J.H.: Correlation for the third virial coefficient using Tc, Pc and ω as parameters, AIChE Journal 29, 107 (1983)
+    [3] .. Orbey, H., Vera, J.H.: Correlation for the third virial coefficient
+        using Tc, Pc and ω as parameters, AIChE Journal 29, 107 (1983)
     """
     Tr = T/Tc
     g0 = 0.01407+0.02432/Tr**2.8-0.00313/Tr**10.5
     g1 = -0.02676+0.0177/Tr**2.8+0.04/Tr**3-0.003/Tr**6-0.00228/Tr**10.5
     g = g0+w*g1
     C = g*R**2*Tc**2/Pc**2
-    g0t = -2.8*0.02432*Tc**2.8/T**3.8+10.5*0.00313*Tc**10.5/T**11.5
-    g1t = -2.8*0.0177*Tc**2.8/T**3.8-3*0.04*Tc**3/Tr**4-0.003*Tc**6/T**7+10.5*0.00228*Tc**10.5/T**11.5
+    g0t = -2.8*0.02432*Tc**2.8/T**3.8 + 10.5*0.00313*Tc**10.5/T**11.5
+    g1t = -2.8*0.0177*Tc**2.8/T**3.8 - 3*0.04*Tc**3/Tr**4 - \
+        0.003*Tc**6/T**7 + 10.5*0.00228*Tc**10.5/T**11.5
     gt = g0t+w*g1t
     C1 = gt*R**2*Tc**2/Pc**2*T
-    g0tt = 2.8*3.8*0.02432*Tc**2.8/T**4.8-10.5*11.5*0.00313*Tc**10.5/T**12.5
-    g1tt = 2.8*3.8*0.0177*Tc**2.8/T**4.8+3*4*0.04*Tc**3/Tr**5-0.003*Tc**6/T**8-10.5*11.5*0.00228*Tc**10.5/T**12.5
+    g0tt = 2.8*3.8*0.02432*Tc**2.8/T**4.8 - 10.5*11.5*0.00313*Tc**10.5/T**12.5
+    g1tt = 2.8*3.8*0.0177*Tc**2.8/T**4.8 + 3*4*0.04*Tc**3/Tr**5 - \
+        0.003*Tc**6/T**8 - 10.5*11.5*0.00228*Tc**10.5/T**12.5
     gtt = g0tt+w*g1tt
     C2 = gtt*R**2*Tc**2/Pc**2*T**2
 
@@ -352,7 +384,7 @@ def C_Orbey_Vera(T, Tc, Pc, w):
 
 
 def C_Liu_Xiang(T, Tc, Pc, w, Zc):
-    r"""Calculate the third virial coefficient as explain in [1]
+    """Calculate the third virial coefficient using the Liu-Xiang correlation
 
     Parameters
     ----------
@@ -378,24 +410,35 @@ def C_Liu_Xiang(T, Tc, Pc, w, Zc):
 
     References
     ----------
-    [1] .. Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and Prediction of Third Virial Coefficients for a Wide Range of Substances. International Journal of Thermophysics, November 2003, Volume 24, Issue 6, pp 1667-1680
+    [4] .. Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and
+        Prediction of Third Virial Coefficients for a Wide Range of Substances.
+        International Journal of Thermophysics, November 2003, Volume 24,
+        Issue 6, pp 1667-1680
     """
     Tr = T/Tc
     X = (Zc-0.29)**2
 
-    g0 = 0.1623538+0.3087440/Tr**3-0.01790184/Tr**6-0.02789157/Tr**11
-    g1 = -0.5390344+1.783526/Tr**3-1.055391/Tr**6+0.09955867/Tr**11
-    g2 = 34.22804-74.76559/Tr**3+279.9220/Tr**6-62.85431/Tr**11
+    g0 = 0.1623538 + 0.3087440/Tr**3 - 0.01790184/Tr**6 - 0.02789157/Tr**11
+    g1 = -0.5390344 + 1.783526/Tr**3 - 1.055391/Tr**6 + 0.09955867/Tr**11
+    g2 = 34.22804 - 74.76559/Tr**3 + 279.9220/Tr**6 - 62.85431/Tr**11
     g = g0+w*g1+X*g2
     C = g*R**2*Tc**2/Pc**2
-    g0t = -3*0.3087440*Tc**3/T**4+6*0.01790184*Tc**6/T**7+11*0.02789157*Tc**11/T**12
-    g1t = -3*1.783526*Tc**3/T**4+6*1.055391*Tc**6/T**7-11*0.09955867*Tc**11/T**12
-    g2t = 3*74.76559*Tc**3/Tr**4-6*279.9220*Tc**6/T**7+11*62.85431*Tc**11/T**12
+
+    g0t = -3*0.3087440*Tc**3/T**4 + 6*0.01790184*Tc**6/T**7 + \
+        11*0.02789157*Tc**11/T**12
+    g1t = -3*1.783526*Tc**3/T**4 + 6*1.055391*Tc**6/T**7 - \
+        11*0.09955867*Tc**11/T**12
+    g2t = 3*74.76559*Tc**3/Tr**4 - 6*279.9220*Tc**6/T**7 + \
+        11*62.85431*Tc**11/T**12
     gt = g0t+w*g1t+X*g2t
     C1 = gt*R**2*Tc**2/Pc**2*T
-    g0tt = 3*4*0.3087440*Tc**3/T**5-6*7*0.01790184*Tc**6/T**8-11*12*0.02789157*Tc**11/T**13
-    g1tt = 3*4*1.783526*Tc**3/T**5-6*7*1.055391*Tc**6/T**8+11*12*0.09955867*Tc**11/T**13
-    g2tt = -3*4*74.76559*Tc**3/Tr**5+6*7*279.9220*Tc**6/T**8-11*12*62.85431*Tc**11/T**13
+
+    g0tt = 3*4*0.3087440*Tc**3/T**5 - 6*7*0.01790184*Tc**6/T**8 - \
+        11*12*0.02789157*Tc**11/T**13
+    g1tt = 3*4*1.783526*Tc**3/T**5 - 6*7*1.055391*Tc**6/T**8 + \
+        11*12*0.09955867*Tc**11/T**13
+    g2tt = -3*4*74.76559*Tc**3/Tr**5 + 6*7*279.9220*Tc**6/T**8 - \
+        11*12*62.85431*Tc**11/T**13
     gtt = g0tt+w*g1tt+X*g2tt
     C2 = gtt*R**2*Tc**2/Pc**2*T**2
 
@@ -405,34 +448,12 @@ def C_Liu_Xiang(T, Tc, Pc, w, Zc):
 class Virial(EoS):
     """Class to model virial equation of state"""
 
-    __doi__ = {
-        "database":
-            {"autor": "Dymond, J.H., Marsh, K.N., Wilhoit, R.C., Wong, K.C., Frenkel, M.,",
-             "title": "Virial Coefficients of Pure Gases (Landolt-Börnstein - Group IV Physical Chemistry 21A)",
-             "ref": "Springer-Verlag",
-             "doi": "10.1007/10693952_16"},
-        "Tsonopoulos":
-            {"autor": "Tsonopoulos, C.",
-             "title": "An empirical correlation of second virial coefficients",
-             "ref": "AICHE Journal 20, pp 263 (1974)",
-             "doi": "10.1002/aic.690200209"},
-        "Orbey-Vera":
-            {"autor": "Orbey, H., Vera, J.H.",
-             "title": "Correlation for the third virial coefficient using Tc, Pc and ω as parameters",
-             "ref": "AIChE Journal 29, 107 (1983)",
-             "doi": "10.1002/aic.690290115"},
-        "Liu-Xiang":
-            {"autor": "Liu, D.X., Xiang, H.W.",
-             "title": "Corresponding-States Correlation and Prediction of Third Virial Coefficients for a Wide Range of Substances",
-             "ref": "Int. J. Thermophysics 24(6), 1667-1680 (2003)",
-             "doi": "10.1023/b:ijot.0000004098.98614.38"},
-    }
-
     def __init__(self, *args, **kwargs):
         EoS.__init__(self, *args, **kwargs)
         self._physics(*args)
 
     def _Bi(self):
+        """Second virial coefficient muxture contributions"""
         B = []
         Bt = []
         Btt = []
@@ -461,13 +482,15 @@ class Virial(EoS):
             else:
                 # Use general correlation
                 Bi, Bit, Bitt = B_Tsonopoulos(
-                    self.T, comp.Tc, comp.Pc, comp.f_acent, comp.momento_dipolar)
+                        self.T, comp.Tc, comp.Pc, comp.f_acent,
+                        comp.momento_dipolar)
         B.append(Bi)
         Bt.append(Bit)
         Btt.append(Bitt)
         return B, Bt, Btt
 
     def _Ci(self):
+        """Third virial coefficient muxture contributions"""
         C = []
         Ct = []
         Ctt = []
@@ -484,6 +507,7 @@ class Virial(EoS):
         return C, Ct, Ctt
 
     def B(self):
+        """Second virial coefficient calculation"""
         Bi, Bit, Bitt = self._Bi()
         B, Bt, Btt = 0, 0, 0
         for i, xi in enumerate(self.fraccion):
@@ -496,7 +520,7 @@ class Virial(EoS):
                     ci = self.componente[i]
                     cj = self.componente[j]
                     Tcij = (ci.Tc*cj.Tc)**0.5
-                    Pcij = 4*Tcij*(ci.Zc+cj.Zc)/(ci.Vc**(1./3)+cj.Vc**(1./3))**3
+                    Pcij = 4*Tcij*(ci.Zc+cj.Zc)/(ci.Vc**(1/3)+cj.Vc**(1/3))**3
                     wij = 0.5*(ci.f_acent+cj.f_acent)
                     Bij, Bijt, Bijtt = self._B_Tsonopoulos(Tcij, Pcij, wij)
                 B += xi*xj*Bij
@@ -505,6 +529,7 @@ class Virial(EoS):
         return B, Bt, Btt
 
     def C(self):
+        """Third virial coefficient calculation"""
         Ci, Cit, Citt = self._Ci()
         Cij = zeros((len(Ci), len(Ci)))
         Cijt = zeros((len(Ci), len(Ci)))
@@ -536,6 +561,7 @@ class Virial(EoS):
         return C, Ct, Ctt
 
     def _physics(self, T, P, mezcla):
+        """Properties of Gases calculation. Explanation in [1]_ section 1.4"""
         B, B1, B2 = self.B()
         C, C1, C2 = self.C()
 
