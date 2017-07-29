@@ -66,13 +66,17 @@ class ShowReference(QtWidgets.QDialog):
                 for key in sorted(module.__doi__.keys()):
 
                     # Special case for submodules
-                    if library == "mEoS":
+                    if "EoS" in library:
                         itemSubModule = QtWidgets.QTreeWidgetItem([key])
                         itemModule.addChildren([itemSubModule])
                         for key2 in sorted(module.__doi__[key].keys()):
                             link = module.__doi__[key][key2]
+                            if library == "EoS":
+                                title = ""
+                            else:
+                                title = key2.replace("_", "")
                             item = QtWidgets.QTreeWidgetItem([
-                                key2.replace("_", ""), link["autor"],
+                                title, link["autor"],
                                 link["title"], link["ref"], link["doi"]])
                             code = link["doi"].replace("/", "_")
                             file = os.path.join("doc", "doi", code) + ".pdf"
