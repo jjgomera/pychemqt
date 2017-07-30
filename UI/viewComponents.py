@@ -26,7 +26,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from scipy import array, optimize, linspace
 
 from lib.plot import Plot
-from lib.compuestos import Componente
+from lib.compuestos import Componente, Pv_Antoine
 from lib import unidades, sql
 from lib.config import IMAGE_PATH
 from UI.inputTable import InputTableDialog, eqDIPPR
@@ -443,16 +443,16 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.btnFit.setFixedSize(QtCore.QSize(32, 32))
         self.btnFit.clicked.connect(self.fit)
         layout.addWidget(self.btnFit, 1, 1, 2, 1)
-        self.buttonPlot = QtWidgets.QToolButton()
-        self.buttonPlot.setToolTip(QtWidgets.QApplication.translate(
+        self.btnPlot = QtWidgets.QToolButton()
+        self.btnPlot.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Plot equation vs temperature"))
-        self.buttonPlot.setIcon(QtGui.QIcon(QtGui.QPixmap(
+        self.btnPlot.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "plot.png"))))
-        self.buttonPlot.setIconSize(QtCore.QSize(32, 32))
-        self.buttonPlot.setFixedSize(QtCore.QSize(32, 32))
-        self.buttonPlot.clicked.connect(self.plot)
-        self.buttonPlot.setEnabled(False)
-        layout.addWidget(self.buttonPlot, 1, 2, 2, 1)
+        self.btnPlot.setIconSize(QtCore.QSize(32, 32))
+        self.btnPlot.setFixedSize(QtCore.QSize(32, 32))
+        self.btnPlot.clicked.connect(self.plot)
+        self.btnPlot.setEnabled(False)
+        layout.addWidget(self.btnPlot, 1, 2, 2, 1)
 
         txt = ["A", "B", "C", "D"]
         self.coeff = []
@@ -487,7 +487,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             self.array = array
             for i, valor in enumerate(array):
                 self.coeff[i].setValue(valor)
-            self.buttonPlot.setEnabled(True)
+            self.btnPlot.setEnabled(True)
 
     def setReadOnly(self, bool):
         """Set widget readOnly state"""
@@ -515,7 +515,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             entrada.clear()
         self.t = []
         self.data = []
-        self.buttonPlot.setEnabled(False)
+        self.btnPlot.setEnabled(False)
 
     def formula_Parametric(self, eq, args=None):
         """Calculate the formula of a parametric equation in a latex format
@@ -527,6 +527,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         args : list
             Coefficient of parametric equation
         """
+        args = tuple(args)
         if eq == "viscosidad":
             if not args:
                 args = self.parent.cmp.viscosidad_parametrica
@@ -554,15 +555,16 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
     def plot(self):
         """Plot the current DIPPR correlation equation"""
-        if self.parent.cmp.Tf:
+        if self.parent.cmp and self.parent.cmp.Tf:
             tmin = self.parent.cmp.Tf
-        elif self.parent.cmp.presion_vapor != [0]*8:
+        elif self.parent.cmp and self.parent.cmp.presion_vapor != [0]*8:
             tmin = self.parent.cmp.presion_vapor[-2]
         else:
             tmin = 300
-        if self.parent.cmp.Tb:
+
+        if self.parent.cmp and self.parent and self.parent.cmp.Tb:
             tmax = self.parent.cmp.Tb
-        elif self.parent.cmp.presion_vapor != [0]*8:
+        elif self.parent.cmp and self.parent.cmp.presion_vapor != [0]*8:
             tmax = self.parent.cmp.presion_vapor[-1]
         else:
             tmax = 500
@@ -570,20 +572,21 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
         funcion = {
             "viscosidad": self.parent.cmp.Mu_Liquido_Parametrica,
-            "antoine": self.parent.cmp.Pv_Antoine,
+            "antoine": Pv_Antoine,
             "tensionsuperficial": self.parent.cmp.Tension_Parametrica,
             "henry": self.parent.cmp.constante_Henry}
 
-        var = [funcion[self.image](ti) for ti in t]
+        value = self.value
+        var = [funcion[self.image](ti, value) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
-        if self.t and self.data:
+        if self.t.any() and self.data.any():
             dialog.addData(self.t, self.data, "ro")
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(self.title(), size="14")
 
         # Annotate the equation
-        formula = self.formula_Parametric(self.image)
+        formula = self.formula_Parametric(self.image, value)
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
@@ -594,18 +597,18 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
-        unitT = unidades.Temperature.text()
-        hHeader = ["T, %s" % unitT, "%s, %s" % (self.prop, self.unit.text())]
+        hHeader = ["T", "%s" % self.prop]
         dlg = InputTableDialog(
             title=self.title(), horizontalHeader=hHeader,
-            hasTc=self.image == "tensionsuperficial", Tc=self.parent.Tc.value)
+            hasTc=self.image == "tensionsuperficial", Tc=self.parent.Tc.value,
+            unit=[unidades.Temperature, self.unit])
         if dlg.exec_():
-            t = array(dlg.widget.column(0, unidades.Temperature))
-            p = array(dlg.widget.column(1, self.unit))
+            t = array(dlg.widget.column(0))
+            p = array(dlg.widget.column(1))
 
             funcion = {
                 "viscosidad": self.parent.cmp.Mu_Liquido_Parametrica,
-                "antoine": self.parent.cmp.Pv_Antoine,
+                "antoine": Pv_Antoine,
                 "tensionsuperficial": self.parent.cmp.Tension_Parametrica,
                 "henry": self.parent.cmp.constante_Henry}
 

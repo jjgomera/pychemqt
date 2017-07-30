@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from functools import partial
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -87,7 +88,7 @@ class InputTableWidget(QtWidgets.QWidget):
     """Table data input dialog"""
     def __init__(self, columnas, data=None, t=[], property=[],
                  horizontalHeader=[], title="", DIPPR=False, hasTc=0,
-                 Tc=None, eq=1, parent=None):
+                 Tc=None, eq=1, unit=[], parent=None):
         """
         data: mrray with original data
         t: values for x column, generally temperature
@@ -97,10 +98,12 @@ class InputTableWidget(QtWidgets.QWidget):
         hasTc: boolean to show critical temperature (some DIPPR eq need it)
         Tc: value for critical temperature
         eq: Value for DIPPR equation
+        unit: List of unidades classes for column definition
         """
         super(InputTableWidget, self).__init__(parent)
         self.columnas = columnas
         self.title = title
+        self.unit = unit
         gridLayout = QtWidgets.QGridLayout(self)
         gridLayout.setContentsMargins(0, 0, 0, 0)
         openButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
@@ -128,6 +131,13 @@ class InputTableWidget(QtWidgets.QWidget):
         self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
         self.tabla.setConnected()
+        if unit:
+            hHeader = []
+            for unit, title in zip(self.unit, horizontalHeader):
+                hHeader.append("%s, %s" % (title, unit.text()))
+            self.tabla.setHorizontalHeaderLabels(hHeader)
+            self.tabla.horizontalHeader().sectionClicked.connect(self.editUnit)
+
         if data:
             self.tabla.setData(data)
             self.tabla.addRow()
@@ -210,9 +220,43 @@ class InputTableWidget(QtWidgets.QWidget):
         magnitud: magnitud to get the values
         unit: unit of the values in table"""
         data = self.tabla.getColumn(column)
+        if self.unit:
+            magnitud = self.unit[column]
+            tx = self.tabla.horizontalHeaderItem(column).text().split(", ")[-1]
+            unit = magnitud.__units__[magnitud.__text__.index(tx)]
+
         if magnitud is not None:
             data = [magnitud(x, unit) for x in data]
         return data
+
+    def editUnit(self, col):
+        """Show dialog to config input unit"""
+        unit = self.unit[col]
+        widget = QtWidgets.QComboBox(self.tabla)
+        for txt in unit.__text__:
+            widget.addItem(txt)
+        txt = self.tabla.horizontalHeaderItem(col).text().split(", ")[-1]
+        widget.setCurrentText(txt)
+
+        # Define Unit combobox geometry
+        size = self.tabla.horizontalHeader().sectionSize(col)
+        pos = self.tabla.horizontalHeader().sectionPosition(col)
+        h = self.tabla.horizontalHeader().height()
+        geometry = QtCore.QRect(pos, 0, size, h)
+        widget.setGeometry(geometry)
+        widget.currentIndexChanged["int"].connect(
+            partial(self.updateHeader, col))
+        widget.show()
+        widget.showPopup()
+
+    def updateHeader(self, col, index):
+        """Change the text in header"""
+        widget = self.sender()
+        txt = self.tabla.horizontalHeaderItem(col).text()
+        newtxt = "%s, %s" % (txt.split(",")[0], widget.currentText())
+        self.tabla.setHorizontalHeaderItem(
+                col, QtWidgets.QTableWidgetItem(newtxt))
+        widget.close()
 
 
 class InputTableDialog(QtWidgets.QDialog):
@@ -228,8 +272,6 @@ class InputTableDialog(QtWidgets.QDialog):
         title = kwargs.get("title", "")
         self.setWindowTitle(title)
         self.helpFile = helpFile
-        self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = InputTableWidget(columnas, **kwargs)
         layout.addWidget(self.widget)
@@ -250,11 +292,11 @@ class InputTableDialog(QtWidgets.QDialog):
 
 if __name__ == "__main__":
     import sys
+    from lib import unidades
     app = QtWidgets.QApplication(sys.argv)
-    titulo = "Distribución de tamaño de sólidos"
-    encabezado = ["Diametro, μm", "Fracción másica", "acumulado"]
-    ui = InputTableDialog(horizontalHeader=encabezado, title=titulo, help=True,
-                          DIPPR=True, helpFile=os.environ["pychemqt"] +
-                          "/docs/_build/lib.reaction.html")
+    hHeader = ["T", "\mu"]
+    ui = InputTableDialog(
+        title="titulo", horizontalHeader=hHeader,
+        unit=[unidades.Temperature, unidades.Viscosity])
     ui.show()
     sys.exit(app.exec_())
