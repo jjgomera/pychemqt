@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+import math
 import os
 import re
 import tempfile
@@ -31,18 +32,38 @@ from lib import unidades, config, eos, sql
 
 
 __doi__ = {
-    "1":
-        {"autor": "Lee, B. I. and Kesler, M. G.",
-         "title": "A Generalized Thermodynamic Correlation Based on"
-                  "Three-Parameter Corresponding States",
-         "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
-         "doi": "10.1002/aic.690210313"},
-    "2":
+    1:
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""},
+    2:
         {"autor": "Tarek Ahmed",
          "title": "Equations of State and PVT Analysis: Applications for"
                   "Improved Reservoir Modeling, 2nd Edition",
          "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
          "doi": "10.1016/B978-0-12-801570-4.00002-7"},
+    3:
+        {"autor": "Antoine, C.",
+         "title": "Tensions des Vapeurs: Nouvelle Relation Entre les Tensions "
+                  "et les Tempé",
+         "ref": "Compt.Rend. 107:681-684 (1888)",
+         "doi": ""},
+
+    "3":
+        {"autor": "Lee, B. I. and Kesler, M. G.",
+         "title": "A Generalized Thermodynamic Correlation Based on"
+                  "Three-Parameter Corresponding States",
+         "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
+         "doi": "10.1002/aic.690210313"},
+
+    23:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+
 
 }
 
@@ -84,6 +105,54 @@ def atomic_decomposition(cmp):
             c = int(c)
         kw[element] += c
     return kw
+
+
+def Pv_Antoine(T, args, base=math.e, Punit="mmHg"):
+    """Vapor Pressure calculation procedure using the Antoine equation
+
+    .. math::
+        \log_{\text{base}} P^{\text{sat}} = A - \frac{B}{T+C}
+
+    Parameters
+    ----------
+    T : float
+        Temperature of fluid, [K]
+    args : list
+        Coefficients for Antoine equation
+    base : float, optional
+        The base of logarithm in equation, default e
+    Punit : string, optional
+        Code of pressure unit calculated
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Notes
+    -----
+    The coefficient of equation saved in database are for pressure in mmHg and
+    with a exponential dependence. If it defines parameters for a new component
+    it can configure this values, the saved equation will be converted to the
+    appropiate format in database
+
+    Examples
+    --------
+    Example 7-1 in [1]_, furan at 309.429 K
+    >>> P = Pv_Antoine(309.429, (4.1199, 1070.2, -44.32), base=10, Punit="bar")
+    >>> "%0.4f" % P.bar
+    '1.2108'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [2] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
+       Tensions et les Tempé. Compt.Rend. 107:681-684.
+    """
+    A, B, C = args
+    Pv = base**(A-B/(T+C))
+    return unidades.Pressure(Pv, Punit)
 
 
 def Pv_Lee_Kesler(T, Tc, Pc, w):
@@ -173,11 +242,14 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
 
 class Componente(object):
     """Class to define a chemical compound from the database"""
+    _bool = False
 
     def __init__(self, id=None):
         """id: index of compound in database"""
         if not id:
             return
+
+        self._bool = True
         self.id = id
         self.Config = config.getMainWindowConfig()
         componente = sql.getElement(id)
@@ -329,6 +401,8 @@ class Componente(object):
     def pr(self, P):
         return P/self.Pc
 
+    def __bool__(self):
+        return self._bool
 
 #Metodos de estimacion de propiedades no disponibles en la base de datos
     def _Tc_Nokay(self, tipo):
@@ -573,7 +647,7 @@ class Componente(object):
         de la ecuación modificada de Rackett:    V=R*Tc/Pc*(Zra)[1 + (1 − Tr)^2/7]
         API procedure 6A2.13 pag.454
         Spencer, F. F., and R. P. Danner. “Prediction of Bubble-Point Density of Mixtures,” Journal of Chemi-
-   cal Engineering Data 18, no. 2 (1973): 230–234"""
+        cal Engineering Data 18, no. 2 (1973): 230–234"""
         V=R_atml*self.Tc/self.Pc.atm*self.rackett**(1.+(1.-self.tr(T))**(2./7))
         return unidades.Density(1/V*self.M)
 
