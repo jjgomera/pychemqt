@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from itertools import permutations
-import re
 import time
 
 from scipy import exp, log
@@ -191,16 +190,7 @@ __doi__ = {
          "title": "Group-contribution based estimation of pure component "
                   "properties",
          "ref": "Fluid Phase Equilib. 183-184 (2001), 183–208.",
-         "doi": "10.1016_s0378-3812(01)00431-9"},
-
-
-
-    23:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-}
+         "doi": "10.1016_s0378-3812(01)00431-9"}}
 
 
 # Get molecular weight of atomic elements
@@ -306,6 +296,9 @@ class newComponente(object):
         ele.append(0)
         ele.append("")
 
+        # Add antoine and wagner parameters for vapor pressure
+        ele.append([])
+        ele.append([])
         return ele
 
 

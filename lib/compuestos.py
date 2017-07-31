@@ -49,22 +49,31 @@ __doi__ = {
                   "et les Tempé",
          "ref": "Compt.Rend. 107:681-684 (1888)",
          "doi": ""},
-
-    "3":
+    4:
         {"autor": "Lee, B. I. and Kesler, M. G.",
          "title": "A Generalized Thermodynamic Correlation Based on"
                   "Three-Parameter Corresponding States",
          "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
          "doi": "10.1002/aic.690210313"},
+    5:
+        {"autor": "API",
+         "title": "Technical Data book: Petroleum Refining 6th Edition",
+         "ref": "",
+         "doi": ""},
+    6:
+        {"autor": "Wagner, W.",
+         "title": "New Vapour Pressure Measurements for Argon and Nitrogen "
+                  "and a New Method for Establishing Rational Vapour Pressure "
+                  "Equations",
+         "ref": "Cryogenics 13, 8 (1973) 470-82",
+         "doi": "10.1016/0011-2275(73)90003-9"},
 
-    23:
+
+    5:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
-
-
-
 }
 
 
@@ -107,11 +116,19 @@ def atomic_decomposition(cmp):
     return kw
 
 
-def Pv_Antoine(T, args, base=math.e, Punit="mmHg"):
+# Vapor pressure correlation
+def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     """Vapor Pressure calculation procedure using the Antoine equation
 
     .. math::
         \log_{\text{base}} P^{\text{sat}} = A - \frac{B}{T+C}
+
+    The method implement too the extended Antoine Equation
+
+    .. math::
+        \log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}
+        
+        x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)
 
     Parameters
     ----------
@@ -119,6 +136,8 @@ def Pv_Antoine(T, args, base=math.e, Punit="mmHg"):
         Temperature of fluid, [K]
     args : list
         Coefficients for Antoine equation
+    Tc : float, optional
+        Critical temperature, [K]
     base : float, optional
         The base of logarithm in equation, default e
     Punit : string, optional
@@ -131,6 +150,9 @@ def Pv_Antoine(T, args, base=math.e, Punit="mmHg"):
 
     Notes
     -----
+    The length of args define the method to use, if args has three elements use
+    the original version, if has seven element and define Tc use the advanced
+    method.
     The coefficient of equation saved in database are for pressure in mmHg and
     with a exponential dependence. If it defines parameters for a new component
     it can configure this values, the saved equation will be converted to the
@@ -150,8 +172,16 @@ def Pv_Antoine(T, args, base=math.e, Punit="mmHg"):
     .. [2] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
        Tensions et les Tempé. Compt.Rend. 107:681-684.
     """
-    A, B, C = args
-    Pv = base**(A-B/(T+C))
+    if len(args) == 3:
+        A, B, C = args
+        Pv = base**(A-B/(T+C))
+    elif len(args) == 7 and Tc is not None:
+        A, B, C, n, E, F, to = args
+        x = (T-to)/Tc
+        if x <= 0:
+            Pv = base**(A-B/(T+C))
+        else:
+            Pv = base**(A - B/(T+C) + 0.43429*x**n + E*x**8 + F*x**12)
     return unidades.Pressure(Pv, Punit)
 
 
@@ -185,7 +215,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
     Examples
     --------
-    Example 1.2 from [2]_; propane at 80ºF
+    Example 1.2 from [4]_; propane at 80ºF
 
     >>> T = unidades.Temperature(80, "F")
     >>> Tc = unidades.Temperature(666.01, "R")
@@ -195,7 +225,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
     References
     ----------
-    .. [1] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
        Correlation Based on Three-Parameter Corresponding States. American
        Institute of Chemical Engineers Journal, Vot. 21, 1975
     .. [2] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
@@ -207,6 +237,64 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     f0 = 5.92714 - 6.09648/Tr - 1.28862*log(Tr) + 0.169347*Tr**6
     f1 = 15.2518 - 15.6875/Tr - 13.4721*log(Tr) + 0.43577*Tr**6
     return unidades.Pressure(exp(f0 + w*f1)*Pc)
+
+
+def Pv_Wagner(T, Tc, Pc, args):
+    """Calculates vapor pressure of a fluid using the Wagner correlation
+
+    .. math::
+        \ln P^{v}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5}
+        + d\tau^5} {T_r}
+
+        \tau = 1 - \frac{T}{T_c}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    args : list
+        Coefficients for equation
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Notes
+    -----
+    Same compound has the parameters of this equations saved in database
+
+    Examples
+    --------
+    Example in [5]_, n-octane at 100ºF
+    >>> T = unidades.Temperature(100, "F")
+    >>> Tc = unidades.Temperature(564.22, "F")
+    >>> Pc = unidades.Pressure(360.7, "psi")
+    >>> Pv = Pv_Wagner(T, Tc, Pc, (-8.0092, 1.8442, -3.2907, -3.5457))
+    >>> "%0.3f" % Pv.psi
+    '0.538'
+
+    References
+    ----------
+    .. [6] Wagner, W. New Vapour Pressure Measurements for Argon and Nitrogen
+       and a New Method for Establishing Rational Vapour Pressure Equations.
+       Cryogenics 13, 8 (1973) 470-82.
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    a, b, c, d = args
+    Tr = T/Tc
+    X1 = (1-Tr)/Tr
+    X2 = (1-Tr)**1.5/Tr
+    X3 = (1-Tr)**2.6/Tr
+    X4 = (1-Tr)**5./Tr
+    Pv = Pc*exp(a*X1 + b*X2 + c*X3 + d*X4)
+    return unidades.Pressure(Pv)
 
 
 def f_acent_Lee_Kesler(Tb, Tc, Pc):
@@ -228,7 +316,7 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
 
     References
     ----------
-    .. [1] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
        Correlation Based on Three-Parameter Corresponding States. American
        Institute of Chemical Engineers Journal, Vot. 21, 1975
     """
@@ -287,7 +375,12 @@ class Componente(object):
         else:
             self.API = 0
         self.cp = componente[8:14]
+
+        # Added additional term to antoine equation
         self.antoine = componente[14:17]
+        if componente[152]:
+            self.antoine += componente[152:156]
+
         self.henry = componente[17:21]
         self.viscosidad_parametrica = componente[21:23]
         self.tension_superficial_parametrica = componente[23:25]
@@ -357,10 +450,10 @@ class Componente(object):
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
+        self.wagner = componente[156:]
+
         # TODO: Añadir las contribuciones de grupos de parachor a la base de datos
         self.parachor = []
-        # TODO: Añadir las parámetros de la ecuación de wagner de la presión de vapor, de momento usamos los datos del tetralin
-        self.wagner = [-7.4138E+00, 9.5219E-01, -1.5111E+00, -4.9487E+00, 427, 1296]
         # TODO: Añadir los tipos de cada elemento
         self.hidrocarburo = True
         self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
@@ -705,17 +798,16 @@ class Componente(object):
 
     def Pv(self, T):
         """Procedimiento que define el método más apropiado para el cálculo de la presión de vapor"""
-        Pv=self.Config.getint("Transport","Pv")
-        T=unidades.Temperature(T)
-        if Pv==0 and self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
+        method = self.Config.getint("Transport", "Pv")
+        if method == 0 and self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
             return self.Pv_DIPPR(T)
-        elif Pv==1 and self.antoine:
-            return self.Pv_Antoine(T)
-        elif Pv==2 and self.Pc and self.Tc and self.f_acent:
-            return self.Pv_Lee_Kesler(T)
-        elif Pv==3 and self.Kw and self.Tb:
+        elif method == 1 and self.antoine:
+            return Pv_Antoine(T, self.antoine)
+        elif method == 2 and self.Pc and self.Tc and self.f_acent:
+            return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 3 and self.Kw and self.Tb:
             return self.Pv_Maxwell_Bonnel(T)
-        elif Pv==4 and self.wagner and self.wagner[4]<=T.R<=self.wagner[5]:
+        elif method == 4 and self.wagner and self.wagner[4]<=T.R<=self.wagner[5]:
             return self.Pv_Wagner(T)
         else:
             if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
@@ -736,20 +828,6 @@ class Componente(object):
         Los parámetros se encuentran en la base de datos en decimoquinta posición
         Presión de vapor obtenida en Pa"""
         return unidades.Pressure(self.DIPPR(T,self.presion_vapor))
-
-    def Pv_Antoine(self,T,parameters=None):
-        """Presión de vapor de Antoine
-        Los parámetros de la ecuación se encuentran en la base de datos"""
-        if parameters==None:
-            parameters=self.antoine
-        return unidades.Pressure(exp(parameters[0]-parameters[1]/(T+parameters[2])), "mmHg")
-
-    def Pv_Lee_Kesler(self, T):
-        """Denominado en Chemcad Curl Pitzer.
-        Método alternativo para calcular la presión de vapor, usando las
-        propiedades críticas, cuando no están disponibles los parametros DIPPR
-        ni de Antoine pero si las propiedades críticas, API procedure 5A1.16, pag 390"""
-        return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
 
     def Pv_Wagner(self, T):
         """Método alternativo para el cálculo de la presión de vapor, API procedure 5A1.3 pag 366"""
