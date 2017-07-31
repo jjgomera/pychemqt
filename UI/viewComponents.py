@@ -26,7 +26,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from scipy import array, optimize, linspace
 
 from lib.plot import Plot
-from lib.compuestos import Componente, Pv_Antoine
+from lib.compuestos import Componente, Pv_Antoine, Pv_Wagner
 from lib import unidades, sql
 from lib.config import IMAGE_PATH
 from UI.inputTable import InputTableDialog, eqDIPPR
@@ -401,7 +401,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         id : integer
             Index of compound in database to show
         prop : string
-            Latex representation of property to show in matplotlib
+            code name of property to show
         array : list
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
@@ -414,16 +414,14 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.t = []
         self.data = []
 
-        dict_count = {"K_H": 4, "\sigma": 2, "P_v": 3, "\\mu_g": 2}
+        dict_prop = {"henry": "K_H", "tension": "\sigma", "antoine": "P_v",
+                     "wagner": "P_v", "viscosity": "\\mu_g"}
+        self.prop_latex = dict_prop[prop]
+
+        dict_count = {"henry": 4, "tension": 2, "antoine": 3, "wagner": 4,
+                      "viscosity": 2}
         count = dict_count[prop]
         self.count = count
-
-        dict_image = {"K_H": "henry",
-                      "\sigma": "tensionsuperficial",
-                      "P_v": "antoine",
-                      "\\mu_g": "viscosidad"}
-        image = dict_image[prop]
-        self.image = image
 
         layout = QtWidgets.QGridLayout(self)
         self.formula = QtWidgets.QLabel()
@@ -431,7 +429,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.formula.setFrameShadow(QtWidgets.QFrame.Plain)
         self.formula.setAlignment(QtCore.Qt.AlignCenter)
         self.formula.setPixmap(QtGui.QPixmap(os.path.join(
-            IMAGE_PATH, "equation", "%s.gif" % self.image)))
+            IMAGE_PATH, "equation", "%s.gif" % self.prop)))
         self.formula.setScaledContents(False)
         layout.addWidget(self.formula, 0, 1, 1, 5)
         self.btnFit = QtWidgets.QToolButton()
@@ -461,9 +459,30 @@ class Parametric_widget(QtWidgets.QGroupBox):
             self.coeff.append(Entrada_con_unidades(float))
             self.coeff[-1].valueChanged.connect(self.valueChanged.emit)
             layout.addWidget(self.coeff[-1], 1+i, 5)
+
+        if prop == "antoine":
+            self.advancedCoeff = []
+            self.advancedLabel = []
+            self.advancedLabel.append(QtWidgets.QLabel("to"))
+            layout.addWidget(self.advancedLabel[-1], 4, 1)
+            self.advancedCoeff.append(Entrada_con_unidades(float))
+            layout.addWidget(self.advancedCoeff[-1], 4, 2)
+            self.advancedLabel.append(QtWidgets.QLabel("n"))
+            layout.addWidget(self.advancedLabel[-1], 5, 1)
+            self.advancedCoeff.append(Entrada_con_unidades(float))
+            layout.addWidget(self.advancedCoeff[-1], 5, 2)
+            self.advancedLabel.append(QtWidgets.QLabel("E"))
+            layout.addWidget(self.advancedLabel[-1], 4, 4)
+            self.advancedCoeff.append(Entrada_con_unidades(float))
+            layout.addWidget(self.advancedCoeff[-1], 4, 5)
+            self.advancedLabel.append(QtWidgets.QLabel("F"))
+            layout.addWidget(self.advancedLabel[-1], 5, 4)
+            self.advancedCoeff.append(Entrada_con_unidades(float))
+            layout.addWidget(self.advancedCoeff[-1], 5, 5)
+
         layout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2+count, 3)
+            QtWidgets.QSizePolicy.Expanding), 10, 3)
 
         self.changeId(id)
         if array:
@@ -480,14 +499,26 @@ class Parametric_widget(QtWidgets.QGroupBox):
             self.setReadOnly(True)
             self.btnFit.setEnabled(False)
 
+        if self.prop == "antoine":
+            for entrada in self.advancedCoeff:
+                entrada.setVisible(False)
+            for label in self.advancedLabel:
+                label.setVisible(False)
+
     def fill(self, array):
-        """Populate the widgets with the DIPPR coefficient in array in format
-        [eq, A, B, C, D, E, Tmin, Tmax]"""
-        if array != (0, )*self.count:
-            self.array = array
-            for i, valor in enumerate(array):
+        """Populate the widgets with the parametric coefficient in array"""
+        self.array = array
+        for i, valor in enumerate(array):
+            if valor:
                 self.coeff[i].setValue(valor)
-            self.btnPlot.setEnabled(True)
+        self.btnPlot.setEnabled(True)
+
+        if self.prop == "antoine" and array[3]:
+            for entrada, value in zip(self.advancedCoeff, array[3:]):
+                entrada.setVisible(True)
+                entrada.setValue(value)
+            for label in self.advancedLabel:
+                label.setVisible(True)
 
     def setReadOnly(self, bool):
         """Set widget readOnly state"""
@@ -509,6 +540,20 @@ class Parametric_widget(QtWidgets.QGroupBox):
         else:
             return []
 
+    @property
+    def advancedValue(self):
+        valor = []
+        for entrada in self.advancedCoeff:
+            elemento = entrada.value
+            if elemento:
+                valor.append(elemento)
+            else:
+                valor.append(0)
+        if sum(valor):
+            return valor
+        else:
+            return []
+
     def clear(self):
         """Clear widget contents"""
         for entrada in self.coeff:
@@ -516,6 +561,10 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.t = []
         self.data = []
         self.btnPlot.setEnabled(False)
+
+        if self.prop == "antoine":
+            for entrada in self.advancedCoeff:
+                entrada.clear()
 
     def formula_Parametric(self, eq, args=None):
         """Calculate the formula of a parametric equation in a latex format
@@ -528,7 +577,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             Coefficient of parametric equation
         """
         args = tuple(args)
-        if eq == "viscosidad":
+        if eq == "viscosity":
             if not args:
                 args = self.parent.cmp.viscosidad_parametrica
             string = "$\\log\\mu="
@@ -540,7 +589,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 args = self.parent.cmp.antoine
             string = "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}}$" % args
 
-        elif eq == "tensionsuperficial":
+        elif eq == "tension":
             if not args:
                 args = self.parent.cmp.tension_superficial_parametrica
             string = "$\\sigma=%0.2f\\left(1-T_{r}\\right)^{%0.2f}$" % args
@@ -550,6 +599,11 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 args = self.parent.cmp.henry
             string = "$\\lnH=\\frac"
             string += "{%0.2f}{T}%+0.2f\\cdot\\lnT%+0.2f\\cdot T%+0.2f$" % args
+
+        elif eq == "wagner":
+            string = "$Tr\\lnPr="
+            string += "%0.2f\\tau+%0.2f\\tau^1.5+%0.2f\\tau^2.6+%0.2f" % args
+            string += "\\tau^5"
 
         return string
 
@@ -571,22 +625,23 @@ class Parametric_widget(QtWidgets.QGroupBox):
         t = linspace(tmin, tmax, 100)
 
         funcion = {
-            "viscosidad": self.parent.cmp.Mu_Liquido_Parametrica,
+            "viscosity": self.parent.cmp.Mu_Liquido_Parametrica,
             "antoine": Pv_Antoine,
-            "tensionsuperficial": self.parent.cmp.Tension_Parametrica,
+            "wagner": Pv_Wagner,
+            "tension": self.parent.cmp.Tension_Parametrica,
             "henry": self.parent.cmp.constante_Henry}
 
         value = self.value
-        var = [funcion[self.image](ti, value) for ti in t]
+        var = [funcion[self.prop](ti, value) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
-        if self.t.any() and self.data.any():
+        if self.t and self.data:
             dialog.addData(self.t, self.data, "ro")
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(self.title(), size="14")
 
         # Annotate the equation
-        formula = self.formula_Parametric(self.image, value)
+        formula = self.formula_Parametric(self.prop, value)
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
@@ -600,20 +655,21 @@ class Parametric_widget(QtWidgets.QGroupBox):
         hHeader = ["T", "%s" % self.prop]
         dlg = InputTableDialog(
             title=self.title(), horizontalHeader=hHeader,
-            hasTc=self.image == "tensionsuperficial", Tc=self.parent.Tc.value,
+            hasTc=self.prop == "tension", Tc=self.parent.Tc.value,
             unit=[unidades.Temperature, self.unit])
         if dlg.exec_():
             t = array(dlg.widget.column(0))
             p = array(dlg.widget.column(1))
 
             funcion = {
-                "viscosidad": self.parent.cmp.Mu_Liquido_Parametrica,
+                "viscosity": self.parent.cmp.Mu_Liquido_Parametrica,
                 "antoine": Pv_Antoine,
-                "tensionsuperficial": self.parent.cmp.Tension_Parametrica,
+                "wagner": Pv_Wagner,
+                "tension": self.parent.cmp.Tension_Parametrica,
                 "henry": self.parent.cmp.constante_Henry}
 
             def errf(parametros, t, f):
-                return f-array([funcion[self.image](ti, parametros)
+                return f-array([funcion[self.prop](ti, parametros)
                                 for ti in t])
 
             # Do the least square fitting
@@ -627,17 +683,17 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
             if ier in range(1, 5):
                 self.fill(list(coeff))
-                self.t = t
-                self.data = p
+                self.t = list(t)
+                self.data = list(p)
                 dialog = Plot()
                 dialog.addData(t, p, "ro")
-                var = [funcion[self.image](ti, coeff) for ti in t]
+                var = [funcion[self.prop](ti, coeff) for ti in t]
                 dialog.addData(t, var)
                 dialog.plot.ax.grid(True)
                 dialog.plot.ax.set_title(self.title(), size="14")
 
                 # Annotate the fitted equation and the correlation coefficient
-                formula = self.formula_Parametric(self.image, tuple(coeff))
+                formula = self.formula_Parametric(self.prop, tuple(coeff))
                 dialog.plot.ax.annotate(
                     formula, (0.05, 0.9), xycoords='axes fraction',
                     size="10", va="center")
@@ -646,7 +702,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                     size="10", va="center")
 
                 dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-                ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
+                ylabel = "$"+self.prop_latex+",\;"+self.unit.text()+"$"
                 dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
                 dialog.exec_()
                 self.valueChanged.emit()
@@ -955,7 +1011,7 @@ class View_Component(QtWidgets.QDialog):
         lytMu.addWidget(self.muGas, 1, 2)
         self.muParametric = Parametric_widget(
                 QtWidgets.QApplication.translate("pychemqt", "Viscosity"),
-                unidades.Viscosity, index, "\\mu_g", parent=self)
+                unidades.Viscosity, index, "viscosity", parent=self)
         self.muParametric.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muParametric, 2, 1)
         lytMu.addItem(QtWidgets.QSpacerItem(
@@ -980,9 +1036,14 @@ class View_Component(QtWidgets.QDialog):
         lytVapor.addWidget(self.PvDIPPR, 1, 2)
         self.PvAntoine = Parametric_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Antoine Vapor Pressure"), unidades.Pressure, index,
-            "P_v", parent=self)
+            "antoine", parent=self)
         self.PvAntoine.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvAntoine, 2, 1)
+        self.PvWagner = Parametric_widget(QtWidgets.QApplication.translate(
+            "pychemqt", "Wagner Vapor Pressure"), unidades.Pressure, index,
+            "wagner", parent=self)
+        self.PvWagner.valueChanged.connect(self.setDirty)
+        lytVapor.addWidget(self.PvWagner, 2, 2)
         lytVapor.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 3, 1)
@@ -1010,7 +1071,7 @@ class View_Component(QtWidgets.QDialog):
         lytThermal.addWidget(self.SigmaDIPPR, 2, 1)
         self.SigmaParametric = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Surface Tension"),
-            unidades.Tension, index, "\sigma", parent=self)
+            unidades.Tension, index, "tension", parent=self)
         self.SigmaParametric.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaParametric, 2, 2)
         lytThermal.addItem(QtWidgets.QSpacerItem(
@@ -1026,7 +1087,7 @@ class View_Component(QtWidgets.QDialog):
 
         self.Henry = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Henry Costant"),
-            unidades.Dimensionless, index, "K_H", parent=self)
+            unidades.Dimensionless, index, "henry", parent=self)
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
 
@@ -1241,6 +1302,7 @@ class View_Component(QtWidgets.QDialog):
         self.SigmaDIPPR.clear()
         self.muParametric.clear()
         self.PvAntoine.clear()
+        self.PvWagner.clear()
         self.SigmaParametric.clear()
         self.Henry.clear()
         self.MSRKa.clear()
@@ -1325,6 +1387,7 @@ class View_Component(QtWidgets.QDialog):
 
         self.muParametric.fill(self.cmp.viscosidad_parametrica)
         self.PvAntoine.fill(self.cmp.antoine)
+        self.PvWagner.fill(self.cmp.wagner)
         self.SigmaParametric.fill(self.cmp.tension_superficial_parametrica)
         self.Henry.fill(self.cmp.henry)
 
@@ -1365,18 +1428,18 @@ class View_Component(QtWidgets.QDialog):
             self.watson.setValue(self.cmp.Kw)
 
     def getComponent(self):
-        nuevo_elemento = []
-        nuevo_elemento.append(str(self.formula1.text()))
+        new = []
+        new.append(str(self.formula1.text()))
         if self.index == 0:
-            nuevo_elemento.append(str(self.name.text()))
+            new.append(str(self.name.text()))
         else:
-            nuevo_elemento.append(str(self.name.text()).split(" - ")[1])
+            new.append(str(self.name.text()).split(" - ")[1])
 
-        nuevo_elemento.append(self.M.value)
-        nuevo_elemento.append(self.Tc.value)
-        nuevo_elemento.append(self.Pc.value)
-        nuevo_elemento.append(self.Vc.value)
-        nuevo_elemento.append(self.API.value)
+        new.append(self.M.value)
+        new.append(self.Tc.value)
+        new.append(self.Pc.value)
+        new.append(self.Vc.value)
+        new.append(self.API.value)
 
         cpideal = []
         cpideal.append(self.cpa.value)
@@ -1385,68 +1448,72 @@ class View_Component(QtWidgets.QDialog):
         cpideal.append(self.cpd.value)
         cpideal.append(self.cpe.value)
         cpideal.append(self.cpf.value)
-        nuevo_elemento.append(cpideal)
+        new.append(cpideal)
 
-        nuevo_elemento.append(self.PvAntoine.value)
-        nuevo_elemento.append(self.Henry.value)
-        nuevo_elemento.append(self.muParametric.value)
-        nuevo_elemento.append(self.SigmaParametric.value)
+        new.append(self.PvAntoine.value)
+        new.append(self.Henry.value)
+        new.append(self.muParametric.value)
+        new.append(self.SigmaParametric.value)
 
-        nuevo_elemento.append(self.RhoSolid.value)
-        nuevo_elemento.append(self.RhoLiquid.value)
-        nuevo_elemento.append(self.PvDIPPR.value)
-        nuevo_elemento.append(self.Hv.value)
-        nuevo_elemento.append(self.cpSolidDIPPR.value)
-        nuevo_elemento.append(self.cpLiquidDIPPR.value)
-        nuevo_elemento.append(self.cpGasDIPPR.value)
-        nuevo_elemento.append(self.muLiquid.value)
-        nuevo_elemento.append(self.muGas.value)
-        nuevo_elemento.append(self.ThermalLiquid.value)
-        nuevo_elemento.append(self.ThermalGas.value)
-        nuevo_elemento.append(self.SigmaDIPPR.value)
+        new.append(self.RhoSolid.value)
+        new.append(self.RhoLiquid.value)
+        new.append(self.PvDIPPR.value)
+        new.append(self.Hv.value)
+        new.append(self.cpSolidDIPPR.value)
+        new.append(self.cpLiquidDIPPR.value)
+        new.append(self.cpGasDIPPR.value)
+        new.append(self.muLiquid.value)
+        new.append(self.muGas.value)
+        new.append(self.ThermalLiquid.value)
+        new.append(self.ThermalGas.value)
+        new.append(self.SigmaDIPPR.value)
 
-        nuevo_elemento.append(self.Dipole.value)
-        nuevo_elemento.append(self.VolLiqConstant.value)
-        nuevo_elemento.append(self.rackett.value)
-        nuevo_elemento.append(self.SG.value)
-        nuevo_elemento.append(self.w.value)
-        nuevo_elemento.append(self.SolubilityPar.value)
-        nuevo_elemento.append(self.watson.value)
+        new.append(self.Dipole.value)
+        new.append(self.VolLiqConstant.value)
+        new.append(self.rackett.value)
+        new.append(self.SG.value)
+        new.append(self.w.value)
+        new.append(self.SolubilityPar.value)
+        new.append(self.watson.value)
 
         msrk = []
         msrk.append(self.MSRKa.value)
         msrk.append(self.MSRKb.value)
-        nuevo_elemento.append(msrk)
+        new.append(msrk)
 
-        nuevo_elemento.append(self.stiehl.value)
-        nuevo_elemento.append(self.Tb.value)
-        nuevo_elemento.append(self.Tm.value)
-        nuevo_elemento.append(str(self.CAS.text()))
-        nuevo_elemento.append(str(self.formula2.text()))
+        new.append(self.stiehl.value)
+        new.append(self.Tb.value)
+        new.append(self.Tm.value)
+        new.append(str(self.CAS.text()))
+        new.append(str(self.formula2.text()))
 
         UNIFAC = self.UNIFAC.getData()
-        nuevo_elemento.append(UNIFAC)
+        new.append(UNIFAC)
 
-        nuevo_elemento.append(self.MolecularDiameter.value)
-        nuevo_elemento.append(self.EpsK.value)
-        nuevo_elemento.append(self.UNIQUACArea.value)
-        nuevo_elemento.append(self.UNIQUACVolume.value)
-        nuevo_elemento.append(self.wMod.value)
-        nuevo_elemento.append(self.calorFormacionGas.value)
-        nuevo_elemento.append(self.energiaGibbsGas.value)
-        nuevo_elemento.append(self.wilson.value)
-        nuevo_elemento.append(self.NetHeat.value)
-        nuevo_elemento.append(self.GrossHeat.value)
+        new.append(self.MolecularDiameter.value)
+        new.append(self.EpsK.value)
+        new.append(self.UNIQUACArea.value)
+        new.append(self.UNIQUACVolume.value)
+        new.append(self.wMod.value)
+        new.append(self.calorFormacionGas.value)
+        new.append(self.energiaGibbsGas.value)
+        new.append(self.wilson.value)
+        new.append(self.NetHeat.value)
+        new.append(self.GrossHeat.value)
 
-        nuevo_elemento.append(str(self.alternateName.text()))
-        nuevo_elemento.append(0)
-        nuevo_elemento.append(0)
-        nuevo_elemento.append(0)
+        new.append(str(self.alternateName.text()))
+        new.append(0)
+        new.append(0)
+        new.append(0)
 
-        nuevo_elemento.append(self.PolarParameter.value)
-        nuevo_elemento.append(str(self.smile.text()))
+        new.append(self.PolarParameter.value)
+        new.append(str(self.smile.text()))
 
-        return nuevo_elemento
+        # Added Antoine and Wagner vapor pressure
+        new.append(self.PvAntoine.advancedValue)
+        new.append(self.PvWagner.value)
+
+        return new
 
     def buttonClicked(self, boton):
         role = self.btnBox.buttonRole(boton)
@@ -1518,6 +1585,6 @@ class View_Component(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = View_Component(0)
+    Dialog = View_Component(1)
     Dialog.show()
     sys.exit(app.exec_())

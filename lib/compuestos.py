@@ -378,8 +378,7 @@ class Componente(object):
 
         # Added additional term to antoine equation
         self.antoine = componente[14:17]
-        if componente[152]:
-            self.antoine += componente[152:156]
+        self.antoine += componente[152:156]
 
         self.henry = componente[17:21]
         self.viscosidad_parametrica = componente[21:23]
