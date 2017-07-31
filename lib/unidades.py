@@ -1099,7 +1099,7 @@ class Energy(unidad):
     _magnitudes = [
         ("Energy", QApplication.translate("pychemqt", "Energy")),
         ("Work", QApplication.translate("pychemqt", "Work"))]
-    __text__ = [
+    __tooltip__ = [
         QApplication.translate("pychemqt", "Joule"),
         QApplication.translate("pychemqt", "Kilojoule"),
         QApplication.translate("pychemqt", "Megajoule"),
