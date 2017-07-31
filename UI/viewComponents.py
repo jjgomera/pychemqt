@@ -508,9 +508,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
     def fill(self, array):
         """Populate the widgets with the parametric coefficient in array"""
         self.array = array
-        for i, valor in enumerate(array):
-            if valor:
-                self.coeff[i].setValue(valor)
+        for input, value in zip(self.coeff, array):
+            if value:
+                input.setValue(value)
         self.btnPlot.setEnabled(True)
 
         if self.prop == "antoine" and array[3]:
@@ -525,6 +525,10 @@ class Parametric_widget(QtWidgets.QGroupBox):
         for entrada in self.coeff:
             entrada.setReadOnly(bool)
         self.btnFit.setDisabled(bool)
+
+        if self.prop == "antoine":
+            for entrada in self.advancedCoeff:
+                entrada.setReadOnly(bool)
 
     @property
     def value(self):
@@ -587,7 +591,16 @@ class Parametric_widget(QtWidgets.QGroupBox):
         elif eq == "antoine":
             if not args:
                 args = self.parent.cmp.antoine
-            string = "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}}$" % args
+            string = "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}" % args[:3]
+            if args[4]:
+                string += "+0.43429\\left(T%+0.2f\\right)^{%0.2f}" % args[3:5]
+            if args[5]:
+                string += "%+0.2f\\left(T%+0.2f\\right)^{8}" % (
+                    args[5], args[3])
+            if args[6]:
+                string += "%+0.2f\\left(T%+0.2f\\right)^{12}" % (
+                    args[6], args[3])
+            string += "}$"
 
         elif eq == "tension":
             if not args:
@@ -632,7 +645,11 @@ class Parametric_widget(QtWidgets.QGroupBox):
             "henry": self.parent.cmp.constante_Henry}
 
         value = self.value
-        var = [funcion[self.prop](ti, value) for ti in t]
+        kw = {}
+        if self.prop == "antoine":
+            value += self.advancedValue
+            kw["Tc"] = self.parent.cmp.Tc
+        var = [funcion[self.prop](ti, value, **kw) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
         if self.t and self.data:
@@ -1585,6 +1602,6 @@ class View_Component(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = View_Component(1)
+    Dialog = View_Component(5)
     Dialog.show()
     sys.exit(app.exec_())
