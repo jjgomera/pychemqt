@@ -67,9 +67,16 @@ __doi__ = {
                   "Equations",
          "ref": "Cryogenics 13, 8 (1973) 470-82",
          "doi": "10.1016/0011-2275(73)90003-9"},
-
-
     7:
+        {"autor": "Ambrose, D., Walton, J.",
+         "title": "Vapour Pressures up to Their Critical Temperatures of "
+                  "Normal Alkanes and 1-Alkanols",
+         "ref": "Pure & Appl. Chem. 61(8) 1395-1403 (1989)",
+         "doi": "10.1351/pac198961081395"},
+
+
+
+    8:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -296,6 +303,67 @@ def Pv_Wagner(T, Tc, Pc, args):
     Pv = Pc*exp(a*X1 + b*X2 + c*X3 + d*X4)
     return unidades.Pressure(Pv)
 
+
+def Pv_AmbroseWalton(T, Tc, Pc, w):
+    """Calculates vapor pressure of a fluid using the Ambrose-Walton
+    corresponding-states correlation
+
+    .. math::
+        \ln P_r=f^{(0)}+\omegaf^{(1)}+\omega^2f^{(2)}
+
+        f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}
+        -1.06841\tau^5}{T_r}
+
+        f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}
+        -7.46628\tau^5}{T_r}
+
+        f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}
+        +3.25259\tau^5}{T_r}
+
+        \tau = 1-T_{r}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Examples
+    --------
+    Example 7-3 from [2]_; ethylbenzene at 347.25 K.
+
+    >>> "%0.4f" % Pv_AmbroseWalton(347.25, 617.15, 36.09E5, 0.304).bar
+    '0.1328'
+    >>> "%0.3f" % Pv_AmbroseWalton(460, 617.15, 36.09E5, 0.304).bar
+    '3.325'
+
+    References
+    ----------
+    .. [7] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+        Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
+        1395-1403 (1989)
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    t = 1 - T/Tc
+    f0 = (-5.97616*t + 1.29874*t**1.5 - 0.60394*t**2.5 - 1.06841*t**5)/Tr
+    f1 = (-5.03365*t + 1.11505*t**1.5 - 5.41217*t**2.5 - 7.46628*t**5)/Tr
+    f2 = (-0.64771*t + 2.41539*t**1.5 - 4.26979*t**2.5 + 3.25259*t**5)/Tr
+
+    # Eq 8
+    Pv = Pc*exp(f0 + w*f1 + w**2*f2)
+    return unidades.Pressure(Pv)
 
 def f_acent_Lee_Kesler(Tb, Tc, Pc):
     """Calculates acentric factor of a fluid using the Lee-Kesler correlation
@@ -806,19 +874,21 @@ class Componente(object):
             return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
         elif method == 3 and self.Kw and self.Tb:
             return self.Pv_Maxwell_Bonnel(T)
-        elif method == 4 and self.wagner and self.wagner[4]<=T.R<=self.wagner[5]:
-            return self.Pv_Wagner(T)
+        elif method == 4 and self.wagner:
+            return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
+        elif method == 5 and self.Pc and self.Tc and self.f_acent:
+            return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
         else:
             if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
                 return self.Pv_DIPPR(T)
             elif self.antoine:
-                return self.Pv_Antoine(T)
+                return Pv_Antoine(T, self.antoine)
             elif self.Pc and self.Tc and self.f_acent:
-                return self.Pv_Lee_Kesler(T)
+                return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
             elif self.Kw and self.Tb:
                 return self.Pv_Maxwell_Bonnel(T)
-            elif self.wagner and self.wagner[4]<=T.R<=self.wagner[5]:
-                return self.Pv_Wagner(T)
+            elif self.wagner:
+                return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
             else:
                 print("Ningún método disponible")
 
@@ -827,15 +897,6 @@ class Componente(object):
         Los parámetros se encuentran en la base de datos en decimoquinta posición
         Presión de vapor obtenida en Pa"""
         return unidades.Pressure(self.DIPPR(T,self.presion_vapor))
-
-    def Pv_Wagner(self, T):
-        """Método alternativo para el cálculo de la presión de vapor, API procedure 5A1.3 pag 366"""
-        Tr=self.tr(T)
-        X1=(1-Tr)/Tr
-        X2=(1-Tr)**1.5/Tr
-        X3=(1-Tr)**2.6/Tr
-        X4=(1-Tr)**5./Tr
-        return unidades.Pressure(exp(self.wagner[0]*X1+self.wagner[1]*X2+self.wagner[2]*X3+self.wagner[3]*X4)*self.Pc)
 
     def Pv_Maxwell_Bonnel(self, T):
         """Método alternativo de cálculo de la presión de vapor, cuando no se dispone de los parametros DIPPR, ni de los valores de las propiedades críticas del elemento. Necesita el factor de Watson. API procedure 5A1.18  Pag. 394"""
