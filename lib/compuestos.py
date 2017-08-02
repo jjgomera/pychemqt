@@ -469,6 +469,119 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
     Pv = Pc*exp(f0 + w*f1 + w**2*f2)
     return unidades.Pressure(Pv)
 
+
+def Pv_Riedel(T, Tc, Pc, Tb):
+    """Calculate vapor pressure of a fluid using the Rieel corresponding-states
+    correlation
+
+    .. math::
+        \ln P_{\text{vp}} = A - \frac{B}{T} + C\ln T + DT^{6}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Tb : float
+        Normal boiling temperature, [K]
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Examples
+    --------
+    Example 7-4 from [2]_; ethylbenzene
+
+    >>> "%0.3f" % Pv_Riedel(347.25, 617.15, 36.09E5, 409.36).bar
+    '0.131'
+    >>> "%0.2f" % Pv_Riedel(460, 617.15, 36.09E5, 409.36).bar
+    '3.35'
+
+    References
+    ----------
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Tbr = Tb/Tc
+
+    # TODO: Define the K values by vetere dependences of chemical
+    K = 0.0838
+
+    fib = -35 + 36/Tbr + 42*log(Tbr) - Tbr**6
+    alfa_c = (3.758*K*fib+log(Pc*1e-5/1.01325))/(K*fib-log(Tbr))
+    Q = K*(3.758-alfa_c)
+    Pv = Pc*exp(-35*Q + 36*Q/Tr + (42*Q+alfa_c)*log(Tr) - Q*Tr**6)
+    return unidades.Pressure(Pv)
+
+
+def Pv_MaxwellBonnel(T, Tb, Kw):
+    """Calculates vapor pressure of a fluid using the Maxell-Bonnel correlation
+    as explain in [5]_, procedure 5A1.18, Pag. 394
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tb : float
+        Normal boiling temperature, [K]
+    Kw : float
+        Watson factor, [-]
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Notes
+    -----
+    This method isn't recomended, only when none or other methods are
+    applicable
+
+    Examples
+    --------
+    Example in [5]_, tetralin at 302ºF
+    >>> T = unidades.Temperature(302, "F")
+    >>> Tb = unidades.Temperature(405.7, "F")
+    >>> Pv = Pv_MaxwellBonnel(T, Tb, 9.78)
+    >>> "%0.1f" % Pv.psi
+    '3.1'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_F = unidades.K2F(Tb)
+    Tb_R = unidades.K2R(Tb)
+    T_R = unidades.K2R(T)
+
+    if Tb_F > 400:
+        f = 1.0
+    elif Tb_F < 200:
+        f = 0.0
+    else:
+        f = (Tb_R-659.7)/200
+
+    def P(Tb):
+        X = (Tb/T_R-0.0002867*Tb)/(748.1-0.2145*Tb)
+        if X > 0.0022:
+            p = 10**((3000.538*X-6.761560)/(43*X-0.987672))
+        elif X < 0.0013:
+            p = 10**((2770.085*X-6.412631)/(36*X-0.989679))
+        else:
+            p = 10**((2663.129*X-5.994296)/(95.76*X-0.972546))
+        return p
+
+    Tb = fsolve(lambda Tb: Tb-Tb_R+2.5*f*(Kw-12)*log10(P(Tb)/760), Tb)
+    p = P(Tb)
+    return unidades.Pressure(p, "mmHg")
+
 def f_acent_Lee_Kesler(Tb, Tc, Pc):
     """Calculates acentric factor of a fluid using the Lee-Kesler correlation
 
@@ -922,7 +1035,7 @@ class Componente(object):
         elif method == 2 and self.Pc and self.Tc and self.f_acent:
             return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
         elif method == 3 and self.Kw and self.Tb:
-            return self.Pv_Maxwell_Bonnel(T)
+            return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         elif method == 4 and self.wagner:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
         elif method == 5 and self.Pc and self.Tc and self.f_acent:
@@ -941,27 +1054,7 @@ class Componente(object):
             elif self.Pc and self.Tc and self.Tb:
                 return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
             elif self.Kw and self.Tb:
-                return self.Pv_Maxwell_Bonnel(T)
-            else:
-                print("Ningún método disponible")
-
-    def Pv_Maxwell_Bonnel(self, T):
-        """Método alternativo de cálculo de la presión de vapor, cuando no se dispone de los parametros DIPPR, ni de los valores de las propiedades críticas del elemento. Necesita el factor de Watson. API procedure 5A1.18  Pag. 394"""
-        if self.Tb.F>400: f=1.0
-        elif self.Tb.F <200: f=0.0
-        else: f=(self.Tb.R-659.7)/200
-
-        def P(Tb):
-            X=(Tb/T/1.8-0.0002867*Tb)/(748.1-0.2145*Tb)
-            if X > 0.0022: p=10**((3000.538*X-6.761560)/(43*X-0.987672))
-            elif X < 0.0013: p=10**((2770.085*X-6.412631)/(36*X-0.989679))
-            else: p=10**((2663.129*X-5.994296)/(95.76*X-0.972546))
-            return p
-
-        Tb=fsolve(lambda Tb: Tb-self.Tb.R+2.5*f*(self.Kw-12)*log10(P(Tb)/760), self.Tb)
-        p=P(Tb)
-        return unidades.Pressure(p, "mmHg")
-
+                return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
 
     def ThCond_Liquido(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1135"""
