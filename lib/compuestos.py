@@ -73,10 +73,16 @@ __doi__ = {
                   "Normal Alkanes and 1-Alkanols",
          "ref": "Pure & Appl. Chem. 61(8) 1395-1403 (1989)",
          "doi": "10.1351/pac198961081395"},
-
-
-
     8:
+        {"autor": "Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A.",
+         "title": "An Accurate Generalized Model for Predict Vapor Pressure "
+                  "of Refrigerants",
+         "ref": "International Journal of Refrigeration 36 (2013) 1327-1332",
+         "doi": "10.1016/j.ijrefrig.2013.01.007"},
+
+
+
+    9:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -582,6 +588,61 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
     p = P(Tb)
     return unidades.Pressure(p, "mmHg")
 
+
+def Sanjari(T, Tc, Pc, w):
+    """Calculates vapor pressure of a fluid using the Sanjari correlation
+    pressure, and acentric factor.
+
+    The vapor pressure of a chemical at `T` is given by:
+
+    .. math::
+        P_{v} = P_c\exp(f^{(0)} + \omegaf^{(1)} + \omega^2f^{(2)})
+
+        f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}
+
+        f^{(1)} = a_5 + \frac{a_6}{T_r} + a_7\ln T_r + a_8 T_r^{1.9}
+
+        f^{(2)} = a_9 + \frac{a_{10}}{T_r} + a_{11}\ln T_r + a_{12} T_r^{1.9}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Pv : float
+        Vapor pressure, [Pa]
+
+    Notes
+    -----
+    This method have been developed fitting data of refrigerants, be careful
+    when use with other type of compound.
+
+    References
+    ----------
+    .. [8] Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
+        Generalized Model for Predict Vapor Pressure of Refrigerants
+        International Journal of Refrigeration 36 (2013) 1327-1332
+    """
+    # Table 2
+    a = [None, 6.83377, -5.76051, 0.90654, -1.16906, 5.32034, -28.1460,
+         -58.0352, 23.57466, 18.19967, 16.33839, 65.6995, -35.9739]
+
+    Tr = T/Tc
+    f0 = a[1] + a[2]/Tr + a[3]*log(Tr) + a[4]*Tr**1.9
+    f1 = a[5] + a[6]/Tr + a[7]*log(Tr) + a[8]*Tr**1.9
+    f2 = a[9] + a[10]/Tr + a[11]*log(Tr) + a[12]*Tr**1.9
+    Pv = Pc*exp(f0 + w*f1 + w**2*f2)
+    return unidades.Pressure(Pv)
+    
+
 def f_acent_Lee_Kesler(Tb, Tc, Pc):
     """Calculates acentric factor of a fluid using the Lee-Kesler correlation
 
@@ -618,7 +679,7 @@ class Componente(object):
     _bool = False
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
-                  "Riedel", "Maxwell-Bonnel"]
+                  "Riedel", "Sanjari", "Maxwell-Bonnel"]
 
     def __init__(self, id=None):
         """id: index of compound in database"""
@@ -1043,7 +1104,9 @@ class Componente(object):
             return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
         elif method == 5 and self.Pc and self.Tc and self.Tb:
             return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
-        elif method == 6 and self.Kw and self.Tb:
+        elif method == 6 and self.Pc and self.Tc and self.Tb:
+            return Sanjari(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 7 and self.Kw and self.Tb:
             return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
             if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
