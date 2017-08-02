@@ -18,13 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Transport properties config section
 ###############################################################################
 
+
 from PyQt5 import QtCore, QtWidgets
 
+from lib.compuestos import Componente
 
 
 class UI_confTransport_widget(QtWidgets.QWidget):
@@ -80,11 +81,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Vapor Pressure:")), 7, 0)
         self.Pv = QtWidgets.QComboBox()
-        self.Pv.addItem("DIPPR")
-        self.Pv.addItem("Antoine")
-        self.Pv.addItem("Lee-Kesler")
-        self.Pv.addItem("Maxwell-Bonnel")
-        self.Pv.addItem("Wagner")
+        for method in Componente.METHODS_Pv:
+            self.Pv.addItem(method)
         layout.addWidget(self.Pv, 7, 1)
         label_7 = QtWidgets.QLabel()
         label_7.setAlignment(QtCore.Qt.AlignCenter)
@@ -160,11 +158,11 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confTransport_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
+        btnBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        btnBox.accepted.connect(self.accept)
+        btnBox.rejected.connect(self.reject)
+        layout.addWidget(btnBox)
 
     def value(self, config):
         """Function to wizard result"""

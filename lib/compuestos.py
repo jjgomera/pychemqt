@@ -540,7 +540,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
 
     Notes
     -----
-    This method isn't recomended, only when none or other methods are
+    This method isn't recomended, only when none of other methods are
     applicable
 
     Examples
@@ -616,6 +616,9 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
 class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
+
+    METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
+                  "Riedel", "Maxwell-Bonnel"]
 
     def __init__(self, id=None):
         """id: index of compound in database"""
@@ -1030,18 +1033,18 @@ class Componente(object):
         method = self.Config.getint("Transport", "Pv")
         if method == 0 and self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
             return DIPPR("Pv", T, self.presion_vapor)
-        elif method == 1 and self.antoine:
-            return Pv_Antoine(T, self.antoine)
-        elif method == 2 and self.Pc and self.Tc and self.f_acent:
-            return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
-        elif method == 3 and self.Kw and self.Tb:
-            return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
-        elif method == 4 and self.wagner:
+        elif method == 1 and self.wagner:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
-        elif method == 5 and self.Pc and self.Tc and self.f_acent:
+        elif method == 2 and self.antoine:
+            return Pv_Antoine(T, self.antoine)
+        elif method == 3 and self.Pc and self.Tc and self.f_acent:
             return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
-        elif method == 6 and self.Pc and self.Tc and self.Tb:
+        elif method == 4 and self.Pc and self.Tc and self.f_acent:
+            return Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 5 and self.Pc and self.Tc and self.Tb:
             return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
+        elif method == 6 and self.Kw and self.Tb:
+            return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
             if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
                 return DIPPR("Pv", T, self.presion_vapor)
