@@ -123,6 +123,110 @@ def atomic_decomposition(cmp):
     return kw
 
 
+def DIPPR(prop, T, args, Tc=None, M=None):
+    """Procedure to implement the DIPPR equations valid to calculate several
+    physical properties of compounds. The parameters of the
+
+    Parameters
+    ----------
+    prop : string
+        Property to calculate, any of:
+        rhoS, rhoL, rhoG, Hv, cpS, cpL, cpG, muL, muG, kL, kG, sigma
+    T : float
+        Temperature, [K]
+    args : list
+        Coefficients for DIPPR equation, [eq, A, B, C, D, E, Tmin, Tmax]
+    Tc : float, optional
+        Critical temperature, [K]
+    M : float, optional
+        Molecular weight, [g/mol]
+
+    Notes
+    -----
+    The properties this method can calculate, and the units for the calculated
+    properties are:
+
+        -rhoS: Solid density, [kmol/m³]
+        -rhoL: Liquid density, [kmol/m³]
+        -rhoG: Vapor density, [kmol/m³]
+        -Pv: Vapor pressure, [Pa]
+        -Hv: Heat of vaporization, [J/kmol]
+        -cpS: Solid heat capacity, [J/kmol·K]
+        -cpL: Liquid heat capacity, [J/kmol·K]
+        -cpG: Ideal gas heat capacity, [J/kmol·K]
+        -muL: Liquid viscosity, [Pa·s]
+        -muG: Vapor viscosity, [Pa·s]
+        -kL: Liquid thermal conductivity, [W/m·K]
+        -kG: Vapor thermal conductivity, [W/m·K]
+        -sigma: Surface Tension, [N/m]
+
+    The first element in args define the equation to use:
+
+        Eq 1:   Y = A+B*T+C*T^2+D*T^3+E*T^4
+        Eq 2:   Y = exp(A+B*T+C*ln(T)+D*T^E)
+        Eq 3:   Y = A*T^B/(1+C*T+D*T^2)
+        Eq 4:   Y = A+B*exp(-C/T^D)
+        Eq 5:   Y = A + B*T + C*T^3 + D*T^8 + E*T^9
+        Eq 6:   Y = A/(B^(1+(1-T/C)^D)
+        Eq 7:   Y = A*(1-Tr)^(B+C*Tr+D*Tr^2+E*Tr^3)
+        Eq 8:   Y = A+ B*((C/T)/sinh(C/T))^2 + D*((E/T)/cosh(E/T))^2
+        Eq 9:   Y = A²/Tr + B - 2ACTr - ADTr² - C²Tr³/3 - CDTr⁴/2 - D²Tr⁵/5
+
+        where: T: Temperature, [K]
+            Tr: Reduced temperature T/Tc
+            A,B,C,D,E: Parameters of equation
+
+    This parameters are available in the pychemqt database for many compounds
+    Some equation as 7 and 9 need aditional parameter Tc of compound
+    """
+    # Multiplier for return the properties in mass base
+    mul = 1
+
+    # Select unit of property to return
+    if "rho" in prop:
+        unit = unidades.Density
+        mul = M
+    elif prop == "Pv":
+        unit = unidades.Pressure
+    elif prop == "Hv":
+        unit = unidades.MolarEnthalpy
+        mul = M
+    elif "cp" in prop:
+        unit = unidades.SpecificHeat
+        mul = M
+    elif "mu" in prop:
+        unit = unidades.Viscosity
+    elif "k" in prop:
+        unit = unidades.ThermalConductivity
+    elif prop == "sigma":
+        unit = unidades.Tension
+
+    eq, A, B, C, D, E, Tmin, Tmax = args
+    if eq == 1:
+        value = A + B*T + C*T**2 + D*T**3 + E*T**4
+    elif eq == 2:
+        value = exp(A + B/T + C*log(T) + D*T**E)
+    elif eq == 3:
+        value = A*T**B/(1+C/T+D/T**2)
+    elif eq == 4:
+        value = A + B*exp(-C/T**D)
+    elif eq == 5:
+        value = A + B/T + C/T**3 + D/T**8 + E/T**9
+    elif eq == 6:
+        value = A/(B**(1+((1-T/C)**D)))
+    elif eq == 7:
+        Tr = T/Tc
+        value = A*(1-Tr)**(B+C*Tr + D*Tr**2 + E*Tr**3)
+    elif eq == 8:
+        value = A + B*(C/T/sinh(C/T))**2 + D*(E/T/cosh(E/T))**2
+    elif eq == 9:
+        Tr = T/Tc
+        value = A**2/Tr + B - 2*A*C*Tr - A*D*Tr**2 - C**2*Tr**3/3 - \
+            C*D*Tr**4/2 - D**2*Tr**5/5
+
+    return unit(value*mul)
+
+
 # Vapor pressure correlation
 def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     """Vapor Pressure calculation procedure using the Antoine equation
@@ -697,66 +801,10 @@ class Componente(object):
         return unidades.Enthalpy(self.calor_formacion/self.M)+unidades.Enthalpy((Cpf-Cpi), "calg")
 
 
-#Propieadades fisicas
-    def DIPPR(self,T,parametros):
-        """Función generica para calcular las propiedes fisicas paramétricas usando
-        las ecuaciones DIPPR. Las propiedades disponibles y las unidades en que se obtienen los valores son:
-
-            Solid density                       (kmol/m3)
-            Liquid density                      (kmol/m3)
-            Vapor pressure                      (Pa)
-            Heat of vaporization                (J/kmol)
-            Solid heat capacity                 (J/kmol-K)
-            Liquid heat capacity                (J/kmol-K)
-            Ideal gas heat capacity             (J/kmol-K)
-            Liquid viscosity                    (Pa-sec)
-            Vapor viscosity                     (Pa-sec)
-            Liquid thermal conductivity         (W/m-K)
-            Vapor thermal conductivity          (W/m-K)
-            Surface Tension                     (N/m)
-
-        A continuación las diferentes ecuaciones:
-
-        Ecuación 1:     Y = A+B*T+C*T^2+D*T^3+E*T^4
-        Ecuación 2:     Y = exp(A+B*T+C*ln(T)+D*T^E)
-        Ecuación 3:     Y = A*T^B/(1+C*T+D*T^2)
-        Ecuación 4:     Y = A+B*exp(-C/T^D)
-        Ecuación 5:     Y = A + B*T + C*T^3 + D*T^8 + E*T^9
-        Ecuación 6:     Y = A/(B^(1+(1-T/C)^D)
-        Ecuación 7:     Y = A*(1-Tr)^(B+C*Tr+D*Tr^2+E*Tr^3)
-        Ecuación 8:     Y = A+ B*((C/T)/sinh(C/T))^2 + D*((E/T)/cosh(E/T))^2
-        Ecuación 9:     Y = A^2/Tr + B - 2ACTr - ADTr^2 - C^2Tr^3/3 - CDTr^4/2 - D^2Tr^5/5
-
-        siendo: T la temperatura en kelvin
-                Tr la temperatura reducida T/Tc
-                A,B,C,D,E los parametros
-
-        Estos parámetros vendrán dados en la base de datos, para cada propiedad física"""
-
-        ecuacion=parametros[0]
-        if ecuacion == 1:
-            return parametros[1]+parametros[2]*T+parametros[3]*T**2+parametros[4]*T**3+parametros[5]*T**4
-        elif ecuacion == 2:
-            return exp(parametros[1]+parametros[2]/T+parametros[3]*log(T)+parametros[4]*T**parametros[5])
-        elif ecuacion == 3:
-            return parametros[1]*T**parametros[2]/(1+parametros[3]/T+parametros[4]/T**2)
-        elif ecuacion == 4:
-            return parametros[1]+parametros[2]*exp(-parametros[3]/T**parametros[4])
-        elif ecuacion == 5:
-            return parametros[1]+parametros[2]/T+parametros[3]/T**3+parametros[4]/T**8+parametros[5]/T**9
-        elif ecuacion == 6:
-            return parametros[1]/(parametros[2]**(1+((1-T/parametros[3])**parametros[4])))
-        elif ecuacion == 7:
-            return parametros[1]*(1-self.tr(T))**(parametros[2]+parametros[3]*self.tr(T)+parametros[4]*self.tr(T)**2+parametros[5]*self.tr(T)**3)
-        elif ecuacion == 8:
-            return parametros[1]+parametros[2]*(parametros[3]/T/sinh(parametros[3]/T))**2+parametros[4]*(parametros[5]/T/cosh(parametros[5]/T))**2
-        elif ecuacion == 9:
-            return parametros[1]**2/self.tr(T)+parametros[2]-2*parametros[1]*parametros[3]*self.tr(T)-parametros[1]*parametros[4]*self.tr(T)**2-parametros[3]**2*self.tr(T)**3/3-parametros[3]*parametros[4]*self.tr(T)**4/2-parametros[4]**2*self.tr(T)**5/5
-
-
+    # Propieadades fisicas
     def RhoS(self,T):
         """Cálculo de la densidad del sólido usando las ecuaciones DIPPR"""
-        return unidades.Density(self.DIPPR(T,self.densidad_solido)*self.M)
+        return DIPPR("rhoS", T, self.densidad_solido, M=self.M)
 
 
     def RhoL(self, T, P):
@@ -791,7 +839,7 @@ class Componente(object):
         """Cálculo de la densidad del líquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimocuarta posición
         densidad obtenida en kg/m3"""
-        return unidades.Density(self.DIPPR(T,self.densidad_liquido)*self.M)
+        return DIPPR("rhoL", T, self.densidad_liquido, M=self.M)
 
     def RhoL_Cavett(self, T):
         """Método alternativo para calcular la densidad de liquidos haciendo uso
@@ -864,10 +912,11 @@ class Componente(object):
 
 
     def Pv(self, T):
-        """Procedimiento que define el método más apropiado para el cálculo de la presión de vapor"""
+        """Vapor pressure calculation procedure using the method defined in
+        preferences"""
         method = self.Config.getint("Transport", "Pv")
         if method == 0 and self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
-            return self.Pv_DIPPR(T)
+            return DIPPR("Pv", T, self.presion_vapor)
         elif method == 1 and self.antoine:
             return Pv_Antoine(T, self.antoine)
         elif method == 2 and self.Pc and self.Tc and self.f_acent:
@@ -878,25 +927,23 @@ class Componente(object):
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
         elif method == 5 and self.Pc and self.Tc and self.f_acent:
             return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 6 and self.Pc and self.Tc and self.Tb:
+            return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
         else:
             if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
-                return self.Pv_DIPPR(T)
+                return DIPPR("Pv", T, self.presion_vapor)
+            elif self.wagner:
+                return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
             elif self.antoine:
                 return Pv_Antoine(T, self.antoine)
             elif self.Pc and self.Tc and self.f_acent:
                 return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
+            elif self.Pc and self.Tc and self.Tb:
+                return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
             elif self.Kw and self.Tb:
                 return self.Pv_Maxwell_Bonnel(T)
-            elif self.wagner:
-                return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
             else:
                 print("Ningún método disponible")
-
-    def Pv_DIPPR(self,T):
-        """Cálculo de la presión de vapor usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimoquinta posición
-        Presión de vapor obtenida en Pa"""
-        return unidades.Pressure(self.DIPPR(T,self.presion_vapor))
 
     def Pv_Maxwell_Bonnel(self, T):
         """Método alternativo de cálculo de la presión de vapor, cuando no se dispone de los parametros DIPPR, ni de los valores de las propiedades críticas del elemento. Necesita el factor de Watson. API procedure 5A1.18  Pag. 394"""
@@ -940,7 +987,7 @@ class Componente(object):
         """Cálculo de la conductividad terminca del líquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en vigesimosegunda posición
         Conductividad termica obtenida en W/(m·K), API procedure 12A1.1, pag 1137"""
-        return unidades.ThermalConductivity(self.DIPPR(T,self.conductividad_liquido))
+        return DIPPR("kL", T, self.conductividad_liquido)
 
     def ThCond_Liquido_Pachaiyappan(self, T):
         """Método alternativo para el cálculo de la conductividad de líquidos a baja presión, API procedure 12A1.2, pag 1141"""
@@ -1015,7 +1062,7 @@ class Componente(object):
         """Cálculo de la conductividad terminca del gas usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en vigesimotercera posición
         Conductividad termica obtenida en W/(m·K), API procedure 12B1.1 pag 1158"""
-        return unidades.ThermalConductivity(self.DIPPR(T,self.conductividad_gas))
+        return self.DIPPR("kG", T, self.conductividad_gas)
 
     def ThCond_Gas_Misic_Thodos(self, T):
         """Método alternativo para el cálculo de la conductividad térmica de gases a baja presión <4 atm, API Procedure 12B1.2 pag.1162"""
@@ -1090,7 +1137,7 @@ class Componente(object):
         Los parámetros se encuentran en la base de datos en vigesimoprimera posición
         Viscosidad obtenida en Pa·s
         API procedure 11B1.1, pag 1091"""
-        return unidades.Viscosity(self.DIPPR(T,self.viscosidad_gas))
+        return DIPPR("muG", T, self.viscosidad_gas)
 
     def Mu_Gas_Chapman_Enskog(self,T):
         """Método alternativo para calcular la viscosidad de gases (a baja presión):
@@ -1233,7 +1280,7 @@ class Componente(object):
         Los parámetros se encuentran en la base de datos en vigésima posición
         Viscosidad obtenida en Pa·s
         API procedure 11A2.1, pag 1038"""
-        return unidades.Viscosity(self.DIPPR(T,self.viscosidad_liquido))
+        return DIPPR("muL", T, self.viscosidad_liquido)
 
     def Mu_Liquido_Parametrica(self, T, parameters=None):
         """Cálculo paramétrico de la viscosidad del líquido"""
@@ -1378,7 +1425,7 @@ class Componente(object):
 
     def Tension_DIPPR(self,T):
         """Cálculo de la tensión superficial del líquido usando las ecuaciones DIPPR"""
-        return unidades.Tension(self.DIPPR(T,self.tension_superficial))
+        return DIPPR("sigma", T, self.tension_superficial)
 
     def Tension_Parametrica(self, T, parameters=None):
         """Cálculo paramétrico de la tensión superficial
@@ -1439,7 +1486,7 @@ class Componente(object):
         """Cálculo del calor de vaporización usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimosexta posición
         Calor de vaporización obtenido en (J/kmol)"""
-        return unidades.Enthalpy(self.DIPPR(T,self.calor_vaporizacion)/self.M)
+        return DIPPR("Hv", T, self.calor_vaporizacion, self.M)
 
     def Hv_Lee_Kesler(self, T):
         """Método alternativo para el cálculo del calor de vaporización haciendo uso de las propiedades críticas
@@ -1456,13 +1503,13 @@ class Componente(object):
         """Cálculo de la capacidad calorifica del solido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoseptima posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return unidades.SpecificHeat(self.DIPPR(T,self.capacidad_calorifica_solido)/self.M)
+        return DIPPR("cpS", T, self.capacidad_calorifica_solido, self.M)
 
     def Cp_Liquido_DIPPR(self,T):
         """Cálculo de la capacidad calorifica del liquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoctava posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return unidades.SpecificHeat(self.DIPPR(T,self.capacidad_calorifica_liquido)/self.M)
+        return DIPPR("cpL", T, self.capacidad_calorifica_liquido, self.M)
 
     def Cp_Hadden(self, T):
         """Método alternativo para el cálculo de la capacidad calorífica en líquidos por debajo de su punto de ebullición
@@ -1473,7 +1520,7 @@ class Componente(object):
         """Cálculo de la capacidad calorifica del gas ideal usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimonovena posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return unidades.SpecificHeat(self.DIPPR(T,self.capacidad_calorifica_gas)/self.M)
+        return DIPPR("cpG", T, self.capacidad_calorifica_gas, self.M)
 
     def Cp_Lee_Kesler(self, T, P, fase=None):
         """Método alternativo para el cálculo de la capacidad calorífica

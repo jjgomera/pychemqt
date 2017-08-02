@@ -227,7 +227,9 @@ def updateElement(elemento, indice):
         "energia_libre_gas", "volumen_wilson", "calor_combustion_neto",
         "calor_combustion_bruto", "nombre_alternativo",
         "volumen_caracteristico", "calor_formacion_solido",
-        "energia_libre_solido", "parametro_polar", "smile"]
+        "energia_libre_solido", "parametro_polar", "smile", "antoine_to",
+        "antoine_n", "antoine_E", "antoine_F", "wagner_a", "wagner_b",
+        "wargner_c", "wagner_d"]
     vals = transformElement(elemento)
 
     conn = sqlite3.connect(databank_Custom_name)
