@@ -615,8 +615,8 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
         elif eq == "wagner":
             string = "$Tr\\lnPr="
-            string += "%0.2f\\tau+%0.2f\\tau^1.5+%0.2f\\tau^2.6+%0.2f" % args
-            string += "\\tau^5"
+            string += "%0.2f\\tau%+0.2f\\tau^{1.5}%+0.2f\\tau^3%+0.2f" % args
+            string += "\\tau^6$"
 
         return string
 
@@ -644,12 +644,16 @@ class Parametric_widget(QtWidgets.QGroupBox):
             "tension": self.parent.cmp.Tension_Parametrica,
             "henry": self.parent.cmp.constante_Henry}
 
-        value = self.value
+        coeff = self.value
+        args = [coeff]
         kw = {}
         if self.prop == "antoine":
-            value += self.advancedValue
+            coeff += self.advancedValue
             kw["Tc"] = self.parent.cmp.Tc
-        var = [funcion[self.prop](ti, value, **kw) for ti in t]
+        elif self.prop == "wagner":
+            args.append(self.parent.cmp.Tc)
+            args.append(self.parent.cmp.Pc)
+        var = [funcion[self.prop](ti, *args, **kw) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
         if self.t and self.data:
@@ -658,7 +662,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.set_title(self.title(), size="14")
 
         # Annotate the equation
-        formula = self.formula_Parametric(self.prop, value)
+        formula = self.formula_Parametric(self.prop, coeff)
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
@@ -684,10 +688,17 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 "wagner": Pv_Wagner,
                 "tension": self.parent.cmp.Tension_Parametrica,
                 "henry": self.parent.cmp.constante_Henry}
+            eq = funcion[self.prop]
+            args = []
+            kw = {}
+            if self.prop == "antoine":
+                kw["Tc"] = self.parent.Tc.value
+            elif self.prop == "wagner":
+                args.append(self.parent.Tc.value)
+                args.append(self.parent.Pc.value)
 
-            def errf(parametros, t, f):
-                return f-array([funcion[self.prop](ti, parametros)
-                                for ti in t])
+            def errf(coeff, t, f):
+                return f-array([eq(ti, coeff, *args, **kw) for ti in t])
 
             # Do the least square fitting
             p0 = [1.]*self.count
@@ -704,7 +715,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 self.data = list(p)
                 dialog = Plot()
                 dialog.addData(t, p, "ro")
-                var = [funcion[self.prop](ti, coeff) for ti in t]
+                var = [eq(ti, coeff, *args, **kw) for ti in t]
                 dialog.addData(t, var)
                 dialog.plot.ax.grid(True)
                 dialog.plot.ax.set_title(self.title(), size="14")
@@ -1602,6 +1613,6 @@ class View_Component(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = View_Component(5)
+    Dialog = View_Component(0)
     Dialog.show()
     sys.exit(app.exec_())

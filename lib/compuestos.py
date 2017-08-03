@@ -68,12 +68,18 @@ __doi__ = {
          "ref": "Cryogenics 13, 8 (1973) 470-82",
          "doi": "10.1016/0011-2275(73)90003-9"},
     7:
+        {"autor": "McGarry, J.",
+         "title": "Correlation and Perediction of the Vapor Pressures of Pure"
+                  "Liquids over Large Pressure Ranges",
+         "ref": "Ind. Eng. Chem. Process. Des. Dev. 22 (1983) 313-322",
+         "doi": "10.1021/i200021a023"},
+    8:
         {"autor": "Ambrose, D., Walton, J.",
          "title": "Vapour Pressures up to Their Critical Temperatures of "
                   "Normal Alkanes and 1-Alkanols",
          "ref": "Pure & Appl. Chem. 61(8) 1395-1403 (1989)",
          "doi": "10.1351/pac198961081395"},
-    8:
+    9:
         {"autor": "Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A.",
          "title": "An Accurate Generalized Model for Predict Vapor Pressure "
                   "of Refrigerants",
@@ -81,8 +87,7 @@ __doi__ = {
          "doi": "10.1016/j.ijrefrig.2013.01.007"},
 
 
-
-    9:
+    10:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -356,12 +361,12 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     return unidades.Pressure(exp(f0 + w*f1)*Pc)
 
 
-def Pv_Wagner(T, Tc, Pc, args):
+def Pv_Wagner(T, args, Tc, Pc):
     """Calculates vapor pressure of a fluid using the Wagner correlation
 
     .. math::
-        \ln P^{v}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{2.5}
-        + d\tau^5} {T_r}
+        \ln P^{v}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{3}
+        + d\tau^6} {T_r}
 
         \tau = 1 - \frac{T}{T_c}
 
@@ -383,34 +388,26 @@ def Pv_Wagner(T, Tc, Pc, args):
 
     Notes
     -----
-    Same compound has the parameters of this equations saved in database
-
-    Examples
-    --------
-    Example in [5]_, n-octane at 100ºF
-    >>> T = unidades.Temperature(100, "F")
-    >>> Tc = unidades.Temperature(564.22, "F")
-    >>> Pc = unidades.Pressure(360.7, "psi")
-    >>> Pv = Pv_Wagner(T, Tc, Pc, (-8.0092, 1.8442, -3.2907, -3.5457))
-    >>> "%0.3f" % Pv.psi
-    '0.538'
+    Same compound has the parameters of this equations saved in database. This
+    method implement the origintal form of Wagner as in [6]_, with the
+    parameters from McGarry. API use other same different form.
 
     References
     ----------
     .. [6] Wagner, W. New Vapour Pressure Measurements for Argon and Nitrogen
-       and a New Method for Establishing Rational Vapour Pressure Equations.
-       Cryogenics 13, 8 (1973) 470-82.
+        and a New Method for Establishing Rational Vapour Pressure Equations.
+        Cryogenics 13, 8 (1973) 470-82.
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
+        New York: McGraw-Hill Professional, 2000.
     .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [7] McGarry, J. Correlation and Perediction of the Vapor Pressures of
+        Pure Liquids over Large Pressure Ranges. Ind. Eng. Chem. Process. Des.
+        Dev. 22 (1983) 313-322
     """
     a, b, c, d = args
     Tr = T/Tc
-    X1 = (1-Tr)/Tr
-    X2 = (1-Tr)**1.5/Tr
-    X3 = (1-Tr)**2.6/Tr
-    X4 = (1-Tr)**5./Tr
-    Pv = Pc*exp(a*X1 + b*X2 + c*X3 + d*X4)
+    tau = 1-Tr
+    Pv = Pc/Tr*exp(a*tau + b*tau**1.5 + c*tau**3 + d*tau**6)            # Eq 14
     return unidades.Pressure(Pv)
 
 
@@ -459,7 +456,7 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
 
     References
     ----------
-    .. [7] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
         Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
         1395-1403 (1989)
     .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
@@ -627,7 +624,7 @@ def Sanjari(T, Tc, Pc, w):
 
     References
     ----------
-    .. [8] Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
+    .. [9] Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
         Generalized Model for Predict Vapor Pressure of Refrigerants
         International Journal of Refrigeration 36 (2013) 1327-1332
     """
