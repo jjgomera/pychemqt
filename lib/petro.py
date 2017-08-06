@@ -24,8 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
-import time
-import warnings
 
 from PyQt5.QtWidgets import QApplication
 from scipy import exp, sqrt, log10, log
@@ -37,6 +35,7 @@ from lib import unidades
 from lib.physics import R_atml, R_Btu
 from lib.newComponent import newComponente
 from lib.config import conf_dir
+from lib.compuestos import prop_Edmister
 
 
 __doi__ = {
@@ -156,12 +155,6 @@ __doi__ = {
         {"autor": "Hall, K. R., and L. Yarborough",
          "title": "New Simple Correlation for Predicting Critical Volume",
          "ref": "Chemical Engineering (November 1971): 76",
-         "doi": ""},
-    19:
-        {"autor": "Edmister, W.C.",
-         "title": "Applied Hydrocarbon Thermodynamics, Part 4, Compressibility"
-                  "Factors and Equations of State",
-         "ref": "Petroleum Refiner. 37 (April, 1958), 173–179",
          "doi": ""},
     20:
         {"autor": "API",
@@ -1429,75 +1422,6 @@ def M_Goossens(Tb, d20):
     b = 1.52869 + 0.06486*log(Tb/(1078-Tb))
     M = 0.01077*Tb**b/d20
     return {"M": unidades.Dimensionless(M)}
-
-
-def prop_Edmister(**kwargs):
-    """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
-    from the Edmister (1958) correlations
-
-    Parameters
-    ------------
-    Tc : float
-        Critic temperature, [ºR]
-    Pc : float
-        Critic pressure, [psi]
-    Tb : float
-        Boiling temperature, [ºR]
-    w : float
-        Acentric factor, [-]
-
-    Returns
-    -------
-    prop : Dict with the input parameter and the missing parameter in input
-
-    References
-    ----------
-    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
-        Compressibility Factors and Equations of State. Petroleum Refiner 37
-        (April 1958): 173–179.
-    """
-    count_available = 0
-    if "Tc" in kwargs and kwargs["Tc"]:
-        count_available += 1
-        Tc = unidades.Temperature(kwargs["Tc"])
-    else:
-        unknown = "Tc"
-
-    if "Pc" in kwargs and kwargs["Pc"]:
-        count_available += 1
-        Pc = unidades.Pressure(kwargs["Pc"])
-    else:
-        unknown = "Pc"
-
-    if "Tb" in kwargs and kwargs["Tb"]:
-        count_available += 1
-        Tb = unidades.Temperature(kwargs["Tb"])
-    else:
-        unknown = "Tb"
-    if "w" in kwargs:
-        count_available += 1
-        w = unidades.Dimensionless(kwargs["w"])
-    else:
-        unknown = "w"
-
-    if count_available != 3:
-        raise ValueError("Bad incoming variables input")
-
-    if unknown == "Tc":
-        Tc = unidades.Temperature(Tb.R*(3*log10(Pc.psi)/7/(w+1)+1), "R")
-    elif unknown == "Pc":
-        Pc = unidades.Pressure(10**(7/3.*(w+1)*(Tc.R/Tb.R-1)), "atm")
-    elif unknown == "Tb":
-        Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
-    elif unknown == "w":
-        w = unidades.Dimensionless(3/7*log10(Pc.atm)/(Tc.R/Tb.R-1)-1)
-
-    prop = {}
-    prop["Tc"] = Tc
-    prop["Pc"] = Pc
-    prop["Tb"] = Tb
-    prop["w"] = w
-    return prop
 
 
 def w_Korsten(Tb, Tc, Pc):

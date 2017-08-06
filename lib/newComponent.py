@@ -26,7 +26,7 @@ from scipy.constants import R
 from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
-from lib.compuestos import atomic_decomposition, f_acent_Lee_Kesler
+from lib.compuestos import atomic_decomposition, facent_LeeKesler
 from lib.physics import R_atml
 from lib.elemental import databank
 
@@ -367,7 +367,7 @@ class GroupContribution(newComponente):
         if "Tb" not in self.__dict__:
             self.Tb = self._Tb()
         if "f_acent" not in self.__dict__:
-            self.f_acent = f_acent_Lee_Kesler(self.Tb, self.Tc, self.Pc)
+            self.f_acent = facent_LeeKesler(self.Tb, self.Tc, self.Pc)
         if "Hv" not in self.__dict__:
             self.Hv = self._Calor_vaporizacion()
 

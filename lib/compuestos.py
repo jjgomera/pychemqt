@@ -85,12 +85,25 @@ __doi__ = {
                   "of Refrigerants",
          "ref": "International Journal of Refrigeration 36 (2013) 1327-1332",
          "doi": "10.1016/j.ijrefrig.2013.01.007"},
-
-
     10:
+        {"autor": "Letsou, A., Stiel, L.I.",
+         "title": "Viscosity of Saturated Nonpolar Liquids at Elevated "
+                  "Pressures",
+         "ref": "AIChE Journal 19(2) (1973) 409-411",
+         "doi": "10.1002/aic.690190241"},
+
+
+
+    11:
         {"autor": "",
          "title": "",
          "ref": "",
+         "doi": ""},
+    19:
+        {"autor": "Edmister, W.C.",
+         "title": "Applied Hydrocarbon Thermodynamics, Part 4, Compressibility"
+                  "Factors and Equations of State",
+         "ref": "Petroleum Refiner. 37 (April, 1958), 173–179",
          "doi": ""},
 }
 
@@ -586,7 +599,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
     return unidades.Pressure(p, "mmHg")
 
 
-def Sanjari(T, Tc, Pc, w):
+def Pv_Sanjari(T, Tc, Pc, w):
     """Calculates vapor pressure of a fluid using the Sanjari correlation
     pressure, and acentric factor.
 
@@ -638,9 +651,106 @@ def Sanjari(T, Tc, Pc, w):
     f2 = a[9] + a[10]/Tr + a[11]*log(Tr) + a[12]*Tr**1.9
     Pv = Pc*exp(f0 + w*f1 + w**2*f2)
     return unidades.Pressure(Pv)
-    
 
-def f_acent_Lee_Kesler(Tb, Tc, Pc):
+
+def Tension_Parametric(T, args, Tc):
+    """Calculates surface tension of fluid using a paremtric equation
+
+    .. math::
+        $\sigma=A\left(1-T_{r}\right)^{B}$
+
+        Tr = \frac{T}{T_c}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    args : list
+        Coefficients for equation
+    Tc : float
+        Critical temperature, [K]
+
+    Returns
+    -------
+    sigma : float
+        Surface tension, [N/m]
+
+    Notes
+    -----
+    The parameters for several compound are in database
+    """
+    A, B = args
+    Tr = T/Tc
+    sigma = A*(1-Tr)**B
+    return unidades.Tension(sigma)
+
+
+def MuL_Parametric(T, args):
+    """Calculates liquid viscosity using a paremtric equation
+
+    .. math::
+        \log\mu = A\left(\frac{1}{T}-\frac{1}{B}\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    args : list
+        Coefficients for equation
+
+    Returns
+    -------
+    mu : float
+        Liquid viscosity, [Pa·s]
+
+    Notes
+    -----
+    The parameters for several compound are in database
+    """
+    A, B = args
+    mu = 10**(A*(1/T-1/B))
+    return unidades.Viscosity(mu, "cP")
+
+
+def MuL_LetsouStiel(T, M, Tc, Pc, w):
+    r"""Calculate the viscosity of a liquid using the Letsou-Stiel correlation
+
+    .. math::
+        \mu = (\xi^{(0)} + \omega \xi^{(1)})/\xi
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    mu : float
+        Viscosity, [Pa·s]
+
+    References
+    ----------
+    .. [10] Letsou, A., Stiel, L.I. Viscosity of Saturated Nonpolar Liquids at
+        Elevated Pressures. AIChE Journal 19(2) (1973) 409-411
+    """
+    Pc_atm = unidades.Pressure(Pc).atm
+
+    x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
+    x0 = 0.015178 - 0.021351*Tr + 0.007503*Tr**2
+    x1 = 0.042559 - 0.07675*Tr + 0.034007*Tr**2
+    mu = (x0+w*x1)/x
+    return unidades.Viscosity(mu, "cP")
+
+
+def facent_LeeKesler(Tb, Tc, Pc):
     """Calculates acentric factor of a fluid using the Lee-Kesler correlation
 
     Parameters
@@ -824,25 +934,28 @@ class Componente(object):
             self.API = 0
         self.cp = componente[8:14]
 
-        # Added additional term to antoine equation
+        # Parametric parameters
         self.antoine = componente[14:17]
         self.antoine += componente[152:156]
-
+        self.wagner = componente[156:160]
+        self._parametricMu = componente[21:23]
+        self._parametricSigma = componente[23:25]
         self.henry = componente[17:21]
-        self.viscosidad_parametrica = componente[21:23]
-        self.tension_superficial_parametrica = componente[23:25]
-        self.densidad_solido = componente[25:33]
-        self.densidad_liquido = componente[33:41]
-        self.presion_vapor = componente[41:49]
-        self.calor_vaporizacion = componente[49:57]
-        self.capacidad_calorifica_solido = componente[57:65]
-        self.capacidad_calorifica_liquido = componente[65:73]
-        self.capacidad_calorifica_gas = componente[73:81]
-        self.viscosidad_liquido = componente[81:89]
-        self.viscosidad_gas = componente[89:97]
-        self.conductividad_liquido = componente[97:105]
-        self.conductividad_gas = componente[105:113]
-        self.tension_superficial = componente[113:121]
+
+        # DIPPR parameters
+        self._dipprRhoS = componente[25:33]
+        self._dipprRhoL = componente[33:41]
+        self._dipprPv = componente[41:49]
+        self._dipprHv = componente[49:57]
+        self._dipprCpS = componente[57:65]
+        self._dipprCpL = componente[65:73]
+        self._dipprCpG = componente[73:81]
+        self._dipprMuL = componente[81:89]
+        self._dipprMuG = componente[89:97]
+        self._dipprKL = componente[97:105]
+        self._dipprKG = componente[105:113]
+        self._dipprSigma = componente[113:121]
+
         self.momento_dipolar = unidades.DipoleMoment(componente[121])
         if componente[123] != 0.0:
             self.rackett = componente[123]
@@ -897,7 +1010,6 @@ class Componente(object):
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
-        self.wagner = componente[156:]
 
         # TODO: Añadir las contribuciones de grupos de parachor a la base de datos
         self.parachor = []
@@ -977,7 +1089,7 @@ class Componente(object):
 
     def Parametro_Solubilidad(self):
         """Método de cálculo del parametro de solubilidad, API databook pag 812"""
-        if self.calor_vaporizacion==(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0):
+        if self._dipprHv==(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0):
             Par=0
         else:
             DH=self.Hv_DIPPR(298.15).calg
@@ -1048,7 +1160,7 @@ class Componente(object):
     # Propieadades fisicas
     def RhoS(self,T):
         """Cálculo de la densidad del sólido usando las ecuaciones DIPPR"""
-        return DIPPR("rhoS", T, self.densidad_solido, M=self.M)
+        return DIPPR("rhoS", T, self._dipprRhoS, M=self.M)
 
 
     def RhoL(self, T, P):
@@ -1056,7 +1168,7 @@ class Componente(object):
         rhoL=self.Config.getint("Transport","RhoL")
         corr=self.Config.getint("Transport","Corr_RhoL")
         if P<1013250:
-            if rhoL==0 and self.densidad_liquido and self.densidad_liquido[6]<=T<=self.densidad_liquido[7]:
+            if rhoL==0 and self._dipprRhoL and self._dipprRhoL[6]<=T<=self._dipprRhoL[7]:
                 return self.RhoL_DIPPR(T)
             elif rhoL==1 and self.rackett!=0 and T<self.Tc:
                 return self.RhoL_Rackett(T)
@@ -1065,7 +1177,7 @@ class Componente(object):
             elif rhoL==3:
                 return self.RhoL_Costald(T)
             else:
-                if self.densidad_liquido and self.densidad_liquido[6]<=T<=self.densidad_liquido[7]:
+                if self._dipprRhoL and self._dipprRhoL[6]<=T<=self._dipprRhoL[7]:
                     return self.RhoL_DIPPR(T)
                 elif self.rackett!=0 and T<self.Tc:
                     return self.RhoL_Rackett(T)
@@ -1083,7 +1195,7 @@ class Componente(object):
         """Cálculo de la densidad del líquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimocuarta posición
         densidad obtenida en kg/m3"""
-        return DIPPR("rhoL", T, self.densidad_liquido, M=self.M)
+        return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
 
     def RhoL_Cavett(self, T):
         """Método alternativo para calcular la densidad de liquidos haciendo uso
@@ -1159,8 +1271,9 @@ class Componente(object):
         """Vapor pressure calculation procedure using the method defined in
         preferences"""
         method = self.Config.getint("Transport", "Pv")
-        if method == 0 and self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
-            return DIPPR("Pv", T, self.presion_vapor)
+        if method == 0 and self._dipprPv and \
+                self._dipprPv[6]<=T<=self._dipprPv[7]:
+            return DIPPR("Pv", T, self._dipprPv)
         elif method == 1 and self.wagner:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
         elif method == 2 and self.antoine:
@@ -1172,12 +1285,12 @@ class Componente(object):
         elif method == 5 and self.Pc and self.Tc and self.Tb:
             return Pv_Riedel(T, self.Tc, self.Pc, self.Tb)
         elif method == 6 and self.Pc and self.Tc and self.Tb:
-            return Sanjari(T, self.Tc, self.Pc, self.f_acent)
+            return Pv_Sanjari(T, self.Tc, self.Pc, self.f_acent)
         elif method == 7 and self.Kw and self.Tb:
             return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
-            if self.presion_vapor and self.presion_vapor[6]<=T<=self.presion_vapor[7]:
-                return DIPPR("Pv", T, self.presion_vapor)
+            if self._dipprPv and self._dipprPv[6]<=T<=self._dipprPv[7]:
+                return DIPPR("Pv", T, self._dipprPv)
             elif self.wagner:
                 return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
             elif self.antoine:
@@ -1195,13 +1308,13 @@ class Componente(object):
         corr=self.Config.getint("Transport","Corr_ThCondL")
         p=unidades.Pressure(P, "atm")
         if p.psi<500:
-            if ThCondL==0 and self.conductividad_liquido and self.conductividad_liquido[6]<=T<=self.conductividad_liquido[7]:
+            if ThCondL==0 and self._dipprKL and self._dipprKL[6]<=T<=self._dipprKL[7]:
                 return self.ThCond_Liquido_DIPPR(T)
             elif ThCondL==1 and T<self.Tc:
                 return self.ThCond_Liquido_Pachaiyappan(T)
             else:
 #                print "Warning: Thermal conductivity of %s out of range" % self.nombre
-                return self.ThCond_Liquido_DIPPR(self.conductividad_liquido[7])
+                return self.ThCond_Liquido_DIPPR(self.i_dipprKL[7])
 
         else:
             if corr==0:
@@ -1213,7 +1326,7 @@ class Componente(object):
         """Cálculo de la conductividad terminca del líquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en vigesimosegunda posición
         Conductividad termica obtenida en W/(m·K), API procedure 12A1.1, pag 1137"""
-        return DIPPR("kL", T, self.conductividad_liquido)
+        return DIPPR("kL", T, self._dipprKL)
 
     def ThCond_Liquido_Pachaiyappan(self, T):
         """Método alternativo para el cálculo de la conductividad de líquidos a baja presión, API procedure 12A1.2, pag 1141"""
@@ -1273,7 +1386,7 @@ class Componente(object):
         ThCondG=self.Config.getint("Transport","ThCondG")
         p=unidades.Pressure(P)
         if p.psi<50:
-            if ThCondG==0 and self.conductividad_gas and self.conductividad_gas[6]<=T<=self.conductividad_gas[7]:
+            if ThCondG==0 and self._dipprKG and self._dipprKG[6]<=T<=self._dipprKG[7]:
                 return self.ThCond_Gas_DIPPR(T)
             else:
                 return self.ThCond_Gas_Misic_Thodos(T)
@@ -1288,7 +1401,7 @@ class Componente(object):
         """Cálculo de la conductividad terminca del gas usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en vigesimotercera posición
         Conductividad termica obtenida en W/(m·K), API procedure 12B1.1 pag 1158"""
-        return self.DIPPR("kG", T, self.conductividad_gas)
+        return self.DIPPR("kG", T, self._dipprKG)
 
     def ThCond_Gas_Misic_Thodos(self, T):
         """Método alternativo para el cálculo de la conductividad térmica de gases a baja presión <4 atm, API Procedure 12B1.2 pag.1162"""
@@ -1346,7 +1459,7 @@ class Componente(object):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
         MuG=self.Config.getint("Transport","MuG")
         if P/self.Pc<0.6:
-           if MuG==0 and self.viscosidad_gas and self.viscosidad_gas[6]<=T<=self.viscosidad_gas[7]:
+           if MuG==0 and self._dipprMuG and self._dipprMuG[6]<=T<=self._dipprMuG[7]:
                 return self.Mu_Gas_DIPPR(T)
            elif MuG==1:
                return self.Mu_Gas_Chapman_Enskog(T)
@@ -1363,7 +1476,7 @@ class Componente(object):
         Los parámetros se encuentran en la base de datos en vigesimoprimera posición
         Viscosidad obtenida en Pa·s
         API procedure 11B1.1, pag 1091"""
-        return DIPPR("muG", T, self.viscosidad_gas)
+        return DIPPR("muG", T, self._dipprMuG)
 
     def Mu_Gas_Chapman_Enskog(self,T):
         """Método alternativo para calcular la viscosidad de gases (a baja presión):
@@ -1464,27 +1577,31 @@ class Componente(object):
     def Mu_Liquido(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
         #Comparacion de métodos: pag 405 Vismanath
-        MuL=self.Config.getint("Transport","MuL")
-        corr=self.Config.getint("Transport","Corr_MuL")
-        if P<1013250:
-            if MuL==0 and self.viscosidad_liquido and self.viscosidad_liquido[6]<=T<=self.viscosidad_liquido[7]:
-                return self.Mu_Liquido_DIPPR(T)
-            elif MuL==1 and self.viscosidad_parametrica[0]!=0 and self.viscosidad_parametrica[1]!=0:
-                return self.Mu_Liquido_Parametrica(T)
-            elif MuL==2 and self.Tc!=0 and self.Pc!=0 and self.f_acent!=0:
-                return self.Mu_Liquido_Letsou_Steil(T)
+        MuL = self.Config.getint("Transport", "MuL")
+        corr = self.Config.getint("Transport", "Corr_MuL")
+
+        if P < 1013250:
+            if MuL == 0 and self._dipprMuL and \
+                    self._dipprMuL[6] <= T <= self._dipprMuL[7]:
+                return DIPPR("muL", T, self._dipprMuL)
+            elif MuL == 1 and self._parametricMu:
+                return MuL_Parametric(T, self._parametricMu)
+            elif MuL == 2 and self.Tc and self.Pc and self.f_acent:
+                return MuL_LetsouStiel(
+                        T, self.M, self.Tc, self.Pc, self.f_acent)
             elif MuL==3 and self.Van_Veltzen:
                 return self.Mu_Liquido_Van_Veltzen(T)
             else:
-                if  self.viscosidad_liquido and self.viscosidad_liquido[6]<=T<=self.viscosidad_liquido[7]:
-                    return self.Mu_Liquido_DIPPR(T)
-                elif self.viscosidad_parametrica[0]!=0 and self.viscosidad_parametrica[1]!=0:
-                    return self.Mu_Liquido_Parametrica(T)
-                elif self.Tc!=0 and self.Pc!=0 and self.f_acent!=0:
-                    return self.Mu_Liquido_Letsou_Steil(T)
+                if self._dipprMuL and \
+                        self._dipprMuL[6] <= T <= self._dipprMuL[7]:
+                    return DIPPR("muL", T, self._dipprMuL)
+                elif self._parametricMu:
+                    return MuL_Parametric(T, self._parametricMu)
+                elif self.Tc and self.Pc and self.f_acent and self.M:
+                    return MuL_LetsouStiel(
+                            T, self.M, self.Tc, self.Pc, self.f_acent)
                 elif self.Van_Veltzen:
                     return self.Mu_Liquido_Van_Veltzen(T)
-                else: print("Ningún método disponible")
         else:
             if corr==0 and self.Tb<650:
             #En realidad el criterio de corte es los hidrocarburos de menos de 20 átomos de carbono (hidrocarburos de bajo peso molecular), pero aprovechando que la temperatura de ebullición es proporcional al peso molecular podemos usar esta
@@ -1501,29 +1618,9 @@ class Componente(object):
                 else:
                     return self.Mu_Liquido_Kouzel(T, P)
 
-    def Mu_Liquido_DIPPR(self,T):
-        """Cálculo de la viscosidad del líquido usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en vigésima posición
-        Viscosidad obtenida en Pa·s
-        API procedure 11A2.1, pag 1038"""
-        return DIPPR("muL", T, self.viscosidad_liquido)
-
-    def Mu_Liquido_Parametrica(self, T, parameters=None):
-        """Cálculo paramétrico de la viscosidad del líquido"""
-        if parameters==None:
-            parameters=self.viscosidad_parametrica
-        return unidades.Viscosity(10**(parameters[0]*(1./T-1/parameters[1])), "cP")
-
     def Mu_Liquido_Van_Veltzen(self, T):
         """Método alternativo para calcular la viscosidad de líquidos haciendo uso de la contribución de los grupos moleculares, API procedure 11A2.3, pag 1048"""
         #TODO: Método dificil de implementar debido a que se tiene que calcular la contribución de grupos
-
-    def Mu_Liquido_Letsou_Steil(self, T):
-        """Método alternativo para el cálculo de la viscosidad en líquidos."""
-        x= self.Tc**(1./6)/self.M**0.5/self.Pc.atm**(2./3)
-        x0=0.015178-0.021351*self.tr(T)+0.007503*self.tr(T)**2
-        x1=0.042559-0.07675*self.tr(T)+0.034007*self.tr(T)**2
-        return unidades.Viscosity((x0+self.f_acent*x1)/x, "cP")
 
     def Mu_Liquido_Lucas(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de líquidos a alta presión
@@ -1622,11 +1719,12 @@ class Componente(object):
 
     def Tension(self, T):
         """Procedimiento que define el método más apropiado para el cálculo de la tensión superficial"""
-        tension=self.Config.getint("Transport","Tension")
-        if tension==0 and self.tension_superficial and self.tension_superficial[6]<=T<=self.tension_superficial[7]:
-            return self.Tension_DIPPR(T)
-        elif tension==1 and self.tension_superficial_parametrica:
-            return self.Tension_Parametrica(T)
+        tension = self.Config.getint("Transport", "Tension")
+        if tension == 0 and self._dipprSigma and \
+                self._dipprSigma[6] <= T <= self._dipprSigma[7]:
+            return DIPPR("sigma", T, self._dipprSigma)
+        elif tension == 1 and self._parametricSigma:
+            return Tension_Parametric(T, self._parametricSigma, self.Tc)
         elif tension==2 and self.parachor:
             return self.Tension_Parachor(T)
         elif tension==3:
@@ -1636,10 +1734,11 @@ class Componente(object):
         elif tension==5 and self.Kw:
             return self.Tension_Hydrocarbon(T)
         else:
-            if self.tension_superficial and self.tension_superficial[6]<=T<=self.tension_superficial[7]:
-                return self.Tension_DIPPR(T)
-            elif self.tension_superficial_parametrica:
-                return self.Tension_Parametrica(T)
+            if self._dipprSigma and \
+                    self._dipprSigma[6] <= T <= self._dipprSigma[7]:
+                return DIPPR("sigma", T, self._dipprSigma)
+            elif self._parametricSigma:
+                return Tension_Parametric(T, self._parametricSigma, self.Tc)
             elif self.parachor:
                 return self.Tension_Parachor(T)
             elif self.stiehl:
@@ -1648,21 +1747,6 @@ class Componente(object):
                 return self.Tension_Hydrocarbon(T)
             else:
                 return self.Tension_MIller(T)
-
-    def Tension_DIPPR(self,T):
-        """Cálculo de la tensión superficial del líquido usando las ecuaciones DIPPR"""
-        return DIPPR("sigma", T, self.tension_superficial)
-
-    def Tension_Parametrica(self, T, parameters=None):
-        """Cálculo paramétrico de la tensión superficial
-        ST = A*(1-Tr)^B
-        donde:  ST Tensión superficial in Newtons/metro
-                Tr Temperatura reducida
-        A,B: Los parámetros de la ecuación que se encuentran en la base de datos
-        en forma de lista en la posición duodécima"""
-        if parameters==None:
-            parameters=self.tension_superficial_parametrica
-        return unidades.Tension(parameters[0]*(1-self.tr(T))**parameters[1])
 
     def Tension_Hakim(self, T):
         """Método alternativo para el cálculo de la tensión superficial de líquidos.
@@ -1712,7 +1796,7 @@ class Componente(object):
         """Cálculo del calor de vaporización usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimosexta posición
         Calor de vaporización obtenido en (J/kmol)"""
-        return DIPPR("Hv", T, self.calor_vaporizacion, self.M)
+        return DIPPR("Hv", T, self._dipprHv, self.M)
 
     def Hv_Lee_Kesler(self, T):
         """Método alternativo para el cálculo del calor de vaporización haciendo uso de las propiedades críticas
@@ -1729,13 +1813,13 @@ class Componente(object):
         """Cálculo de la capacidad calorifica del solido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoseptima posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return DIPPR("cpS", T, self.capacidad_calorifica_solido, self.M)
+        return DIPPR("cpS", T, self._dipprCpS, self.M)
 
     def Cp_Liquido_DIPPR(self,T):
         """Cálculo de la capacidad calorifica del liquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoctava posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return DIPPR("cpL", T, self.capacidad_calorifica_liquido, self.M)
+        return DIPPR("cpL", T, self._dipprCpL, self.M)
 
     def Cp_Hadden(self, T):
         """Método alternativo para el cálculo de la capacidad calorífica en líquidos por debajo de su punto de ebullición
@@ -1746,7 +1830,7 @@ class Componente(object):
         """Cálculo de la capacidad calorifica del gas ideal usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimonovena posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return DIPPR("cpG", T, self.capacidad_calorifica_gas, self.M)
+        return DIPPR("cpG", T, self._dipprCpG, self.M)
 
     def Cp_Lee_Kesler(self, T, P, fase=None):
         """Método alternativo para el cálculo de la capacidad calorífica
