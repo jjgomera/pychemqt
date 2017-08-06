@@ -84,6 +84,13 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         for method in Componente.METHODS_Pv:
             self.Pv.addItem(method)
         layout.addWidget(self.Pv, 7, 1)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Acentric factor:")), 8, 0)
+        self.w = QtWidgets.QComboBox()
+        for method in Componente.METHODS_facent:
+            self.w.addItem(method)
+        layout.addWidget(self.w, 8, 1)
+        label_7 = QtWidgets.QLabel()
         label_7 = QtWidgets.QLabel()
         label_7.setAlignment(QtCore.Qt.AlignCenter)
         label_7.setText(QtWidgets.QApplication.translate(
@@ -116,6 +123,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.Corr_ThCondL.setCurrentIndex(config.getint("Transport", "Corr_ThCondL"))
             self.ThCondG.setCurrentIndex(config.getint("Transport", "ThCondG"))
             self.Pv.setCurrentIndex(config.getint("Transport", "Pv"))
+            self.w.setCurrentIndex(config.getint("Transport", "f_acent"))
 
     def value(self, config):
         """Function to wizard result"""
@@ -131,6 +139,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "Corr_ThCondL", str(self.Corr_ThCondL.currentIndex()))
         config.set("Transport", "ThCondG", str(self.ThCondG.currentIndex()))
         config.set("Transport", "Pv", str(self.Pv.currentIndex()))
+        config.set("Transport", "f_acent", str(self.w.currentIndex()))
         return config
 
     @classmethod
@@ -146,6 +155,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "Corr_ThCondL", "0")
         config.set("Transport", "ThCondG", "0")
         config.set("Transport", "Pv", "0")
+        config.set("Transport", "f_acent", "0")
         return config
 
 

@@ -671,12 +671,117 @@ def f_acent_Lee_Kesler(Tb, Tc, Pc):
     return unidades.Dimensionless(w)
 
 
+def prop_Edmister(**kwargs):
+    """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
+    from the Edmister (1958) correlations
+
+    Parameters
+    ------------
+    Tc : float
+        Critic temperature, [ºR]
+    Pc : float
+        Critic pressure, [psi]
+    Tb : float
+        Boiling temperature, [ºR]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    prop : Dict with the input parameter and the missing parameter in input
+
+    References
+    ----------
+    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
+        Compressibility Factors and Equations of State. Petroleum Refiner 37
+        (April 1958): 173–179.
+    """
+    count_available = 0
+    if "Tc" in kwargs and kwargs["Tc"]:
+        count_available += 1
+        Tc = unidades.Temperature(kwargs["Tc"])
+    else:
+        unknown = "Tc"
+
+    if "Pc" in kwargs and kwargs["Pc"]:
+        count_available += 1
+        Pc = unidades.Pressure(kwargs["Pc"])
+    else:
+        unknown = "Pc"
+
+    if "Tb" in kwargs and kwargs["Tb"]:
+        count_available += 1
+        Tb = unidades.Temperature(kwargs["Tb"])
+    else:
+        unknown = "Tb"
+    if "w" in kwargs:
+        count_available += 1
+        w = unidades.Dimensionless(kwargs["w"])
+    else:
+        unknown = "w"
+
+    if count_available != 3:
+        raise ValueError("Bad incoming variables input")
+
+    if unknown == "Tc":
+        Tc = unidades.Temperature(Tb.R*(3*log10(Pc.psi)/7/(w+1)+1), "R")
+    elif unknown == "Pc":
+        Pc = unidades.Pressure(10**(7/3.*(w+1)*(Tc.R/Tb.R-1)), "atm")
+    elif unknown == "Tb":
+        Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
+    elif unknown == "w":
+        w = unidades.Dimensionless(3/7*log10(Pc.atm)/(Tc.R/Tb.R-1)-1)
+
+    prop = {}
+    prop["Tc"] = Tc
+    prop["Pc"] = Pc
+    prop["Tb"] = Tb
+    prop["w"] = w
+    return prop
+
+
+def facent_AmbroseWalton(Pvr):
+    """Calculates acentric factor of a fluid using the Ambrose-Walton
+    corresponding-states correlation
+
+    Parameters
+    ----------
+    Pvr : float
+        Reduced vapor pressure of compound at 0.7Tc, [-]
+
+    Returns
+    -------
+    w : float
+        Acentric factor [-]
+
+    References
+    ----------
+    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+        Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
+        1395-1403 (1989)
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = 0.7
+    t = 1-Tr
+    f0 = (-5.97616*t + 1.29874*t**1.5 - 0.60394*t**2.5 - 1.06841*t**5)/Tr
+    f1 = (-5.03365*t + 1.11505*t**1.5 - 5.41217*t**2.5 - 7.46628*t**5)/Tr
+    f2 = (-0.64771*t + 2.41539*t**1.5 - 4.26979*t**2.5 + 3.25259*t**5)/Tr
+    coef = roots([f2, f1, f0-log(Pvr)])
+
+    if absolute(coef[0]) < absolute(coef[1]):
+        return coef[0]
+    else:
+        return coef[1]
+
+
 class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
+    METHODS_facent = ["Lee-Kesler", "Edmister","Ambrose-Walton"]
 
     def __init__(self, id=None):
         """id: index of compound in database"""
@@ -691,17 +796,14 @@ class Componente(object):
         self.nombre = componente[2]
         self.M = componente[3]
         self.SG = componente[124]
-        if componente[4] != None:
-            self.Tc = unidades.Temperature(componente[4])
-        else:
-            self.Tc = self._Tc_Nokay()
+        self.Tc = unidades.Temperature(componente[4])
         self.Pc = unidades.Pressure(componente[5], "atm")
         self.Tb = unidades.Temperature(componente[131])
         self.Tf = unidades.Temperature(componente[132])
         if componente[125] != 0:
             self.f_acent = componente[125]
-        elif self.Pc != 0 and self.Tc != 0:
-            self.f_acent = self.factor_acentrico_Lee_Kesler()
+        elif self.Pc and self.Tc and self.Tb:
+            self.f_acent = self._f_acent()
         else:
             self.f_acent = 0
         if componente[6] != 0:
@@ -842,22 +944,19 @@ class Componente(object):
     def __bool__(self):
         return self._bool
 
-#Metodos de estimacion de propiedades no disponibles en la base de datos
-    def _Tc_Nokay(self, tipo):
-        """Estimación de la temperatura crítica usando el método Nokay (Perry Cap II, Pag.342)
-        Como parámetro opcional necesita el tipo de hidrocarburo de que se trata:
-        0:Parafina
-        1:Naftano
-        2:Olefina
-        3:Acetileno
-        4:Diolefin
-        5:Aromático
-        Lo ideal sería no necesitar este parametro pero a ver como encuentro la forma, lease sin añadir ese parámetro en la base de datos de componentes"""
-        #TODO: Puede que usando los grupos UNIFAC
-        A=[1.35940, 0.65812, 1.09534, 0.74673, 0.1384, 1.0615]
-        B=[0.43684, -0.07165, 0.27749, 0.30381, -0.39618, 0.22732]
-        C=[0.56224, 0.81196, 0.65563, 0.79987, 0.99481, 0.66929]
-        return unidades.Temperature(10**(A[tipo]+B[tipo]*log10(self.SG)+C[tipo]*log10(self.Tb)))
+    # Calculation of undefined properties of compound
+    def _f_acent(self):
+        """Acentric factor calculation in compounds with undefined property"""
+        method = self.Config.getint("Transport", "f_acent")
+        if method == 0:
+            return facent_LeeKesler(self.Tb, self.Tc, self.Pc)
+        elif method == 1:
+            return prop_Edmister(Tb=self.Tb, Tc=self.Tc, Pc=self.Pc)
+        elif method == 2:
+            Pvr = self.Pv(0.7*self.Tc)/self.Pc
+            return facent_AmbroseWalton(Pvr)
+
+
 
     def vc_Riedel(self):
         """Estimación del volumen crítico haciendo uso del método de Riedel. API procedure 4A3.1 pag. 302
@@ -865,35 +964,6 @@ class Componente(object):
         riedel=5.811+4.919*self.f_acent
         return unidades.SpecificVolume(R_atml*self.Tc/self.Pc.atm/(3.72+0.26*(riedel-7))/self.M)
 
-    def factor_acentrico_Lee_Kesler(self):
-        """Estimación del factor acéntrico en componentes que no dispongan de ese valor, API,procedure 2A1.1 pag.210 """
-        if self.Tb!=0:
-            Tr=self.Tb/self.Tc
-            Pr=1/self.Pc.atm
-        else:
-            Tr=0.7
-            Pv=self.Pv_DIPPR(self.Tc*Tr)
-            Pr=Pv.atm/self.Pc.atm
-        return (log(Pr)-5.92714+6.09648/Tr+1.28862*log(Tr)-0.169347*Tr**6)/(15.2518-15.6875/Tr-13.4721*log(Tr)+0.43577*Tr**6)
-
-    def factor_acentrico_Ambrose(self):
-        """Estimación del factor acéntrico en componentes que no dispongan de ese valor,
-       ref. propiedades físicas de líquidos y gases, pag.235 """
-        if self.Tb!=0:
-            Tr=self.Tb/self.Tc
-            Pr=1/self.Pc.atm
-        else:
-            Tr=0.7
-            pv=self.Pv_DIPPR(self.Tc*Tr)/self.Pc.atm
-            t=1-Tr
-            f0=(-5.97616*t+1.29874*t**1.5-0.60394*t**2.5-1.06841*t**5)/Tr
-            f1=(-5.03365*t+1.11505*t**1.5-5.41217*t**2.5-7.46628*t**5)/Tr
-            f2=(-0.64771*t+2.41539*t**1.5-4.26979*t**2.5+3.25259*t**5)/Tr
-            coef=roots([f2, f1, f0-log(pv)])
-            if absolute(coef[0])<absolute(coef[1]):
-                self.f_acent=coef[0]
-            else:
-                self.f_acent=coef[1]
 
     def Rackett(self):
         """Método alternativa para el calculo de la constante de Rackett en aquellos componentes que no dispongan de ella a partir del factor acéntrico.
