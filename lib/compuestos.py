@@ -885,13 +885,50 @@ def facent_AmbroseWalton(Pvr):
         return coef[1]
 
 
+def Vc_Riedel(Tc, Pc, w, M):
+    """Calculates critical volume of a fluid using the Riedel correlation
+    as explain in [5]_, procedure 4A3.1, Pag. 302
+
+    Parameters
+    ----------
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    Vc : float
+        Critical volume, [Pa]
+
+    Examples
+    --------
+    Example in [5]_, n-nonane
+    >>> Tc = unidades.Temperature(610.68, "F")
+    >>> Pc = unidades.Pressure(331.8, "psi")
+    >>> "%0.3f" % Vc_Riedel(Tc, Pc, 0.4368, 128.2551).ft3lb
+    '0.068'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    alfa = 5.811 + 4.919*w
+    Vc = R*1000*Tc/Pc/(3.72+0.26*(alfa-7))/M
+    return unidades.SpecificVolume(Vc, "lg")
+
+
 class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
-    METHODS_facent = ["Lee-Kesler", "Edmister","Ambrose-Walton"]
+    METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
 
     def __init__(self, id=None):
         """id: index of compound in database"""
@@ -919,7 +956,7 @@ class Componente(object):
         if componente[6] != 0:
             self.Vc = unidades.SpecificVolume(componente[6])
         elif self.f_acent != 0 and self.Tc != 0 and self.Pc != 0:
-            self.Vc = self.vc_Riedel()
+            self.Vc = Vc_Riedel(self.Tc, self.Pc, self.f_acent, self.M)
         else:
             self.Vc = 0
         if self.Tc:
@@ -1067,15 +1104,6 @@ class Componente(object):
         elif method == 2:
             Pvr = self.Pv(0.7*self.Tc)/self.Pc
             return facent_AmbroseWalton(Pvr)
-
-
-
-    def vc_Riedel(self):
-        """Estimación del volumen crítico haciendo uso del método de Riedel. API procedure 4A3.1 pag. 302
-        Volumen obtenido en l/mol"""
-        riedel=5.811+4.919*self.f_acent
-        return unidades.SpecificVolume(R_atml*self.Tc/self.Pc.atm/(3.72+0.26*(riedel-7))/self.M)
-
 
     def Rackett(self):
         """Método alternativa para el calculo de la constante de Rackett en aquellos componentes que no dispongan de ella a partir del factor acéntrico.

@@ -303,14 +303,7 @@ class newComponente(object):
 
 
 class GroupContribution(newComponente):
-    """Base class for group contribution methods
-    The child classes with the implemented group contribution methods are:
-        -Joback: Prefered
-        -Constantinou: Prefered
-        -Wilson: Elemental atomic contribution with 2nd Order term for bonds
-        -Marrero: Without thermodynamics predictions
-        -Elliot: (UNIFAC) Prefered
-        -Andrade: Hydrocarbon without heteroatoms"""
+    """Base class for group contribution methods"""
 
     kwargs = {"group": [],
               "contribution": [],
