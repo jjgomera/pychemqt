@@ -91,10 +91,16 @@ __doi__ = {
                   "Pressures",
          "ref": "AIChE Journal 19(2) (1973) 409-411",
          "doi": "10.1002/aic.690190241"},
-
-
-
     11:
+        {"autor": "Riazi, M.R., Faghri, A.",
+         "title": "Thermal Conductivity of Liquid and Vapor Hydrocarbon "
+                  "Systems: Pentanes and Heavier at Low Pressures",
+         "ref": "Ind. Eng. Chem. Process Des. Dev. 24 (1985) 398-401",
+         "doi": "10.1021/i200029a030"},
+
+
+
+    12:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -920,6 +926,109 @@ def Vc_Riedel(Tc, Pc, w, M):
     alfa = 5.811 + 4.919*w
     Vc = R*1000*Tc/Pc/(3.72+0.26*(alfa-7))/M
     return unidades.SpecificVolume(Vc, "lg")
+
+
+def ThL_RiaziFaghri(T, Tb, SG):
+    """Calculates thermal conductivity of liquid hydrocarbon at low pressure
+    using the Riazi-Faghri correlation.
+
+    .. math::
+        \kappa = aT_{b}^{b}SG^{c}
+
+        a = \exp\left(-4.5093-0.6844t-0.1305t^{2}\right)
+
+        b = 0.3003+0.0918t+0.0195t^{2}
+
+        c = 0.0129+0.0894t+0.0292t^{2}
+
+    where t = T(F)/100
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tb : float
+        Normal boiling temperature, [K]
+    SG : float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [Btu/hftºF]
+
+    Notes
+    -----
+    Range of validity:
+        0ºF ≤ T ≤ 300ºF
+
+    References
+    ----------
+    .. [11] Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
+        Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
+        Chem. Process Des. Dev. 24 (1985) 398-401
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+    t = unidades.K2F(T)/100
+    A = exp(-4.5093-0.6844*t-0.1305*t**2)                               # Eq 9
+    B = 0.3003+0.0918*t+0.0195*t**2                                    # Eq 10
+    C = 0.1029+0.0894*t+0.0292*t**2                                    # Eq 11
+    k = 1.7307*A*Tb_R**B*SG**C                                          # Eq 7
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
+
+def ThG_RiaziFaghri(T, Tb, SG):
+    """Calculates thermal conductivity of gas hydrocarbon at low pressure
+    using the Riazi-Faghri correlation.
+
+    .. math::
+        \kappa = aT_{b}^{b}SG^{c}
+
+        a = \exp\left(-4.5093-0.6844t-0.1305t^{2}\right)
+
+        b = 0.3003+0.0918t+0.0195t^{2}
+
+        c = 0.0129+0.0894t+0.0292t^{2}
+
+    where t = T(F)/100
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tb : float
+        Normal boiling temperature, [K]
+    SG : float
+        Specific gravity, [-]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [Btu/hftºF]
+
+    Notes
+    -----
+    Range of validity:
+        150ºF ≤ T ≤ 550ºF
+        0.65 ≤ SG ≤ 0.9
+
+    References
+    ----------
+    .. [11] Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
+        Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
+        Chem. Process Des. Dev. 24 (1985) 398-401
+    """
+    # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
+    Tb_R = unidades.K2R(Tb)
+    t = unidades.K2F(T)/100
+    A = exp(21.78-8.07986*t+1.12981*t**2-0.05309*t**3)                 # Eq 16
+    B = -4.13948+1.29924*t-0.17813*t**2+0.00833*t**3                   # Eq 17
+    C = 0.19876-0.0313*t-0.00567*t**2                                  # Eq 18
+    k = A*Tb_R**B*SG**C                                                # Eq 7
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
+
 
 
 class Componente(object):
