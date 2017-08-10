@@ -97,10 +97,18 @@ __doi__ = {
                   "Systems: Pentanes and Heavier at Low Pressures",
          "ref": "Ind. Eng. Chem. Process Des. Dev. 24 (1985) 398-401",
          "doi": "10.1021/i200029a030"},
-
-
-
     12:
+        {"autor": "Gharagheizi, F., Ilani-Kashkouli, P., Sattari, M., "
+                  "Mohammadi, A.H., Ramjugernath, D., Richon, D.",
+         "title": "Development of a General Model for Determination of "
+                  "Thermal Conductivity of Liquid Chemical Compounds at "
+                  "Atmospheric Pressure",
+         "ref": "AIChE Journal 59 (2013) 1702-1708",
+         "doi": "10.1002/aic.13938"},
+
+
+
+    13:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -978,6 +986,52 @@ def ThL_RiaziFaghri(T, Tb, SG):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+def ThL_Gharagheizi(T, Pc, Tb, M, w):
+    """Calculates the thermal conductivity of liquid using the Gharagheizi
+    correlation.
+
+    .. math::
+        \kappa = 10^{-4}\left(10\omega+2P_c-2T+4+1.908\left(T_b+\frac{1.009B^2}
+        {M^2}\right)+\frac{3.9287M^4}{B^4}+\frac{A}{B^8}\right)
+
+        A = 3.8588M^8\left(1.0045B+6.5152M-8.9756\right)
+
+        B = 16.0407M+2T_b-27.9074
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Tb : float
+        Normal boiling temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity [W/m·k]
+
+    References
+    ----------
+    .. [12] Gharagheizi, F., Ilani-Kashkouli, P., Sattari, M., Mohammadi, A.H.,
+        Ramjugernath, D., Richon, D. Development of a General Model for
+        Determination of Thermal Conductivity of Liquid Chemical Compounds at
+        Atmospheric Pressure. AIChE Journal 59 (2013) 1702-1708
+    """
+
+    Pc_bar = Pc*1e-5
+    B = 16.0407*M+2*Tb-27.9074                                          # Eq 6
+    A = 3.8588*M**8*(1.0045*B + 6.5152*M - 8.9756)                      # Eq 5
+    k = 1e-4*(10*w + 2*Pc_bar - 2*T + 4 + 1.908*(Tb+1.009*B**2/M**2) +
+              3.9287*M**4/B**4 + A/B**8)                                # Eq 4
+    return unidades.ThermalConductivity(k)
+
+
 def ThG_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -1495,17 +1549,6 @@ class Componente(object):
         Vm=1/rho
         k=C*self.M**n/Vm*(3+20*(1-self.tr(T))**(2./3))/(3+20*(1-293.15/self.Tc)**(2./3))
         return unidades.ThermalConductivity(k, "BtuhftF")
-
-    def ThCond_Liquido_Riazi_Faghri(self, T):
-        """Método de cálculo de la conductividad térmica de hidrocarburos pesados a baja presión,
-        Riazi, M. R. and Faghri, A., "Thermal Conductivity of Liquid and Vapor Hydrocarbon Systems: Pentanes and Heavier at Low Pressures," Industrial and Engineering Chemistry, Process Design and Development, Vol. 24, No. 2, 1985, pp. 398-401."""
-        t=(1.8*T-460)/100
-        A=exp(-4.5093-0.6844*t-0.1305*t**2)
-        B=0.3003+0.0918*t+0.01195*t**2
-        C=0.1029+0.0894*t+0.0292*t**2
-        k=1.7307*A*self.Tb.R**B*self.SG**C
-        return unidades.Conductividad_termica(k)
-
 
     def ThCond_Liquido_Kanitkar_Thodos(self, T, P):
         """Método alternativo para el cálculo de la conductividad de líquidos por encima del punto de ebullición, API procedure 12A1.3, pag 1143"""
