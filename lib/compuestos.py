@@ -105,10 +105,15 @@ __doi__ = {
                   "Atmospheric Pressure",
          "ref": "AIChE Journal 59 (2013) 1702-1708",
          "doi": "10.1002/aic.13938"},
-
-
-
     13:
+        {"autor": "Lakshmi, D.S., Prasad, D.H.L.",
+         "title": "A Rapid Estimation Method for Thermal Conductivity of Pure "
+                  "Liquids",
+         "ref": "The Chemical Engineering Journal 48 (1992) 211-14",
+         "doi": "10.1016/0300-9467(92)80037-B"},
+
+
+    14:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1029,6 +1034,36 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
     A = 3.8588*M**8*(1.0045*B + 6.5152*M - 8.9756)                      # Eq 5
     k = 1e-4*(10*w + 2*Pc_bar - 2*T + 4 + 1.908*(Tb+1.009*B**2/M**2) +
               3.9287*M**4/B**4 + A/B**8)                                # Eq 4
+    return unidades.ThermalConductivity(k)
+
+
+def ThL_LakshmiPrasad(T, M):
+    """Estimates thermal conductivity of pure liquids as a function of
+    temperature using a reference fluid approach. Low accuracy but quick.
+    Developed using several organic fluids.
+
+    .. math::
+        \lambda = 0.0655-0.0005T + \frac{1.3855-0.00197T}{M^{0.5}}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/k]
+
+    References
+    ----------
+    .. [13] Lakshmi, D.S., Prasad, D.H.L. A Rapid Estimation Method for Thermal
+        Conductivity of Pure Liquids. The Chemical Engineering Journal 48
+        (1992) 211-14
+    """
+    k = 0.0655 - 0.0005*T + (1.3855 - 0.00197*T)/M**0.5
     return unidades.ThermalConductivity(k)
 
 
