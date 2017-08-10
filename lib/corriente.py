@@ -441,7 +441,7 @@ class Corriente(config.Entity):
             self.Gas.h = unidades.Power(0)
             if self.x < 1:
                 # There is liquid phase
-                Hl = (self.Liquido.Entalpia_ideal(self.T).Jg-self.Liquido.Hv_DIPPR(self.T).Jg)*self.Liquido.caudalmasico.gh
+                Hl = (self.Liquido._Ho(self.T).Jg-self.Liquido.Hv_DIPPR(self.T).Jg)*self.Liquido.caudalmasico.gh
                 self.Liquido.h = unidades.Power(Hl-R*self.T/self.M*self.H_exc[1]*(1-self.x)*self.Liquido.caudalmasico.gh, "Jh")
                 self.Liquido.cp = self.Liquido.Cp_Liquido(T)
                 self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
@@ -452,7 +452,7 @@ class Corriente(config.Entity):
                 self.Liquido.Prandt = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
             if self.x > 0:
                 # There is gas phase
-                Hg = self.Gas.Entalpia_ideal(self.T).Jg*self.Gas.caudalmasico.gh
+                Hg = self.Gas._Ho(self.T).Jg*self.Gas.caudalmasico.gh
                 self.Gas.h = unidades.Power(Hg-R*self.T/self.M*self.H_exc[0]*self.x*self.Gas.caudalmasico.gh, "Jh")
                 self.Gas.cp = self.Gas.Cp_Gas(T, self.P.atm)
                 self.Gas.rho = unidades.Density(self.P.atm/self.Gas.Z/R_atml/self.T*self.M, "gl")

@@ -400,7 +400,7 @@ def TB_lib(compuesto, T):
 
     def TB_Entalpia(self, T, P):
         """Método de cálculo de la entalpía mediante la ecuación de estado de Trebble-Bishnoi"""
-        Ho=self.Entalpia_ideal(T)
+        Ho=self._Ho(T)
         Delta=self.TB_H_exceso(T, P)
         return unidades.Enthalpy(Delta+Ho)
 
@@ -412,7 +412,7 @@ def TB_lib(compuesto, T):
 
     def TB_Entropia(self, T, P):
         """Método de cálculo de la entropía mediante la ecuación de estado de Trebble-Bishnoi"""
-        So=self.Entropia_ideal(T)
+        So=self._so(T)
         Delta=self.TB_S_exceso(T, P)
         return unidades.SpecificHeat(Delta+So)
 

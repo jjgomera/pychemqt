@@ -540,14 +540,14 @@ class Mezcla(config.Entity):
         Procedure API 7B3.7 Pag.643"""
         P = unidades.Pressure(P, "atm")
         H_adimensional = self.Lee_Kesler_Entalpia_lib(T, P.atm, self.Fase(T, P.atm))
-        H_ideal = self.Entalpia_ideal(T)
+        H_ideal = self._Ho(T)
         return unidades.Enthalpy(H_ideal.Jg-H_adimensional*R*self.Tc/self.M, "Jg")
 
-    def Entalpia_ideal(self, T):
+    def _Ho(self, T):
         """Ideal enthalpy"""
         entalpia = 0
         for xi, cmp in zip(self.fraccion_masica, self.componente):
-            entalpia += xi*cmp.Entalpia_ideal(T)
+            entalpia += xi*cmp._Ho(T)
         return unidades.Enthalpy(entalpia)
 
     def Hv_DIPPR(self, T):
@@ -564,7 +564,7 @@ class Mezcla(config.Entity):
 
     def Entalpia(self, T, P):
         """Método de cálculo de la entalpía, API procedure 7B4.1, pag 645"""
-        Ho = self.Entalpia_ideal(T)
+        Ho = self._Ho(T)
         # TODO:
 
     def Calor_vaporizacion(self):

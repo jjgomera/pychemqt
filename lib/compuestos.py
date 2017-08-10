@@ -1041,8 +1041,6 @@ class Componente(object):
         self.smile = componente[151]
         if self.smile != "" and os.environ["oasa"] == "True":
             import oasa
-            # Install bkchem and create symbolic link for oasa
-            # ln -s /usr/lib/bkchem/bkchem/oasa/oasa /usr/local/lib/python2.7/dist-packages
             mol = oasa.smiles.text_to_mol(self.smile, calc_coords=40)
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
@@ -1121,7 +1119,7 @@ class Componente(object):
             Par=0
         else:
             DH=self.Hv_DIPPR(298.15).calg
-            densidad=self.RhoL_DIPPR(298.15).gcc
+            densidad = DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
             Par=sqrt(DH-R_cal*298.15/self.M*densidad)
         return unidades.SolubilityParameter(Par, "calcc")
 
@@ -1131,99 +1129,123 @@ class Componente(object):
         pv=exp(f0*0.6+self.f_acent*f1*0.6)
         return log10(self.pr(P)/pv)
 
+    # Ideal properties
+    def _Cpo(self, T):
+        """Ideal gas specific heat calculation procedure from polinomial
+        coefficient in database in the form [A,B,C,D,E,F]
+        Explained in procedure 7A1.1, pag 543
 
+        .. math::
+            Cp = A + BT + CT^2 + DT^3 + ET^4 + FT^5
 
-#Propiedades ideales
-    def Cp_ideal(self,T):
-        """capacidad calorifica del gas ideal
-        Temperatura dada en K
-        cp obtenida en (cal/gmol-k)
-        Los parámetros de la ecuación se encuentran en la base de datos
-        en forma de lista en la posición octava [A,B,C,D,E,F]
-        Cp = A + BT + CT^2 + DT^3 + ET^4 + FT^5"""
-        cp=self.cp[0]+self.cp[1]*T+self.cp[2]*T**2+self.cp[3]*T**3+self.cp[4]*T**4+self.cp[5]*T**5
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Notes
+        -----
+        The units in the calculate cp is in cal/mol·K
+
+        References
+        ----------
+        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        """
+        A, B, C, D, E, F = self.cp
+        cp = A + B*T + C*T**2 + D*T**3 + E*T**4 + F*T**5
         return unidades.SpecificHeat(cp/self.M, "calgK")
 
-    def Cv_ideal(self, T):
-        """Capacidad calorífica isocórica (a volumen constante) ideal"""
-        return unidades.SpecificHeat(self.Cp_ideal(T).JgK-R/self.M, "JgK")
+    def _Ho(self, T):
+        """Ideal gas enthalpy calculation from polinomial coefficient of
+        specific heat saved in database
+        Coefficient in database are in the form [A,B,C,D,E,F]
+        Explained in procedure 7A1.1, pag 543
 
-    def Entalpia_ideal(self, T):
-        """Entalpia del gas ideal usando los coeficientes de cp (su relación con la entalpia por integración) y suponiento H=0 a 0K
-        API procedure 7A1.1 pag. 543"""
-        H=self.cp[0]*T+self.cp[1]/2*T**2+self.cp[2]/3*T**3+self.cp[3]/4*T**4+self.cp[4]/5*T**5+self.cp[5]/6*T**6
-        Ho=self.cp[0]*298.15+self.cp[1]/2*298.15**2+self.cp[2]/3*298.15**3+self.cp[3]/4*298.15**4+self.cp[4]/5*298.15**5+self.cp[5]/6*298.15**6
-        return unidades.Enthalpy((H-Ho)/self. M, "calg")
+        .. math::
+            Ho = BT + C/2T^2 + D/3T^3 + E/4T^4 + F/5T^5
 
-    def Entropia_ideal(self, T):
-        """Entropia del gas ideal usando los coeficientes de cp (su relación con la entropia por derivación) y suponiento S=0 a 1K
-        API procedure 7A1.1 pag. 543"""
-        s=self.cp[0]*log(T)+self.cp[1]*T+self.cp[2]/2*T**2+self.cp[3]/3*T**3+self.cp[4]/4*T**4+self.cp[5]/5*T**5
-        return unidades.SpecificHeat(s/self.M, "calgK")
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
 
+        Notes
+        -----
+        The units in the calculate ideal enthalpy are in cal/mol·K, the
+        reference state is set to T=298.15K
 
-    def Entalpia_formacion(self, T):
-        """Cálculo del calor de formación a una temperatura no estandart, API procedure 7A1.8, pag 581"""
-        atomos=[64, 1, 47, 46, 992, 208, 105, 99, 213] #C,H,O,N,S,F,Cl,Br,I
-        simbolos=["C", "H", "O", "N", "S", "F", "Cl", "Br", "I"]
-        elementos=[]
-        contribucion=[]
-        for i in range(len(simbolos)):
-            if simbolos[i] in self.composicion_molecular[0]:
-                elementos.append(atomos[i])
-                if i==0 or i==4:
-                    contribucion.append(self.composicion_molecular[1][self.composicion_molecular[0].index(simbolos[i])])
-                else:
-                    contribucion.append(self.composicion_molecular[1][self.composicion_molecular[0].index(simbolos[i])]/2)
+        References
+        ----------
+        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        """
+        To = 298.15
+        A, B, C, D, E, F = self.cp
+        H = B*T + C/2*T**2 + D/3*T**3 + E/4*T**4 + F/5*T**5
+        Ho = B*To + C/2*To**2 + D/3*To**3 + E/4*To**4 + F/5*To**5
+        return unidades.Enthalpy((H-Ho)/self.M, "calg")
 
-        Cpf=(self.cp[0]*T+self.cp[1]/2*T**2+self.cp[2]/3*T**3+self.cp[3]/4*T**4+self.cp[4]/5*T**5-(self.cp[0]*298.15+self.cp[1]/2*298.15**2+self.cp[2]/3*298.15**3+self.cp[3]/4*298.15**4+self.cp[4]/5*298.15**5))/self.M
+    def _so(self, T):
+        """Ideal gas entropy calculation from polinomial coefficient of
+        specific heat saved in database
+        Coefficient in database are in the form [A,B,C,D,E,F]
+        Explained in procedure 7A1.1, pag 543
 
-        Cpi=0
-        for i in range(len(elementos)):
-            Cpi+=(databank.config.base_datos[elementos[i]][7][0]*contribucion[i]*T+databank.config.base_datos[elementos[i]][7][1]/2*contribucion[i]*T**2+databank.config.base_datos[elementos[i]][7][2]/3*contribucion[i]*T**3+databank.config.base_datos[elementos[i]][7][3]/4*contribucion[i]*T**4+databank.config.base_datos[elementos[i]][7][4]/5*contribucion[i]*T**5-(databank.config.base_datos[elementos[i]][7][0]*contribucion[i]*298.15+databank.config.base_datos[elementos[i]][7][1]/2*contribucion[i]*298.15**2+databank.config.base_datos[elementos[i]][7][2]/3*contribucion[i]*298.15**3+databank.config.base_datos[elementos[i]][7][3]/4*contribucion[i]*298.15**4+databank.config.base_datos[elementos[i]][7][4]/5*contribucion[i]*298.15**5))/databank.config.base_datos[elementos[i]][2]
+        .. math::
+            So = A\lnT + BT + C/2T^2 + D/3T^3 + E/4T^4 + F/5T^5
 
-        return unidades.Enthalpy(self.calor_formacion/self.M)+unidades.Enthalpy((Cpf-Cpi), "calg")
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
 
+        Notes
+        -----
+        The units in the calculate ideal enthalpy are in cal/mol·K, the
+        reference state is set to T=298.15K
 
-    # Propieadades fisicas
-    def RhoS(self,T):
-        """Cálculo de la densidad del sólido usando las ecuaciones DIPPR"""
+        References
+        ----------
+        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        """
+        A, B, C, D, E, F = self.cp
+        so = A*log(T) + B*T + C/2*T**2 + D/3*T**3 + E/4*T**4 + F/5*T**5
+        return unidades.SpecificHeat(so/self.M, "calgK")
+
+    # Physical properties
+    def RhoS(self, T):
+        """Calculate the density of solid phase using the DIPPR equations"""
         return DIPPR("rhoS", T, self._dipprRhoS, M=self.M)
 
-
     def RhoL(self, T, P):
-        """Procedimiento que define el método más apropiado para el calculo de la densidad del líquido"""
-        rhoL=self.Config.getint("Transport","RhoL")
-        corr=self.Config.getint("Transport","Corr_RhoL")
-        if P<1013250:
-            if rhoL==0 and self._dipprRhoL and self._dipprRhoL[6]<=T<=self._dipprRhoL[7]:
-                return self.RhoL_DIPPR(T)
-            elif rhoL==1 and self.rackett!=0 and T<self.Tc:
+        """Calculate the density of liquid phase using any of available
+        correlation"""
+        rhoL = self.Config.getint("Transport", "RhoL")
+        corr = self.Config.getint("Transport", "Corr_RhoL")
+        if P < 1013250:
+            if rhoL == 0 and self._dipprRhoL and \
+                    self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
+                return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
+            elif rhoL == 1 and self.rackett != 0 and T < self.Tc:
                 return self.RhoL_Rackett(T)
-            elif rhoL==2 and self.Vliq!=0:
+            elif rhoL == 2 and self.Vliq != 0:
                 return self.RhoL_Cavett(T)
-            elif rhoL==3:
+            elif rhoL == 3:
                 return self.RhoL_Costald(T)
             else:
-                if self._dipprRhoL and self._dipprRhoL[6]<=T<=self._dipprRhoL[7]:
-                    return self.RhoL_DIPPR(T)
-                elif self.rackett!=0 and T<self.Tc:
+                if self._dipprRhoL and \
+                        self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
+                    return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
+                elif self.rackett != 0 and T < self.Tc:
                     return self.RhoL_Rackett(T)
-                elif self.Vliq!=0:
+                elif self.Vliq != 0:
                     return self.RhoL_Cavett(T)
                 else:
                     return self.RhoL_Costald(T)
         else:
-            if corr==0:
+            if corr == 0:
                 return self.RhoL_Thomson_Brobst_Hankinson(T, P)
             else:
                 return self.RhoL_API(T, P)
-
-    def RhoL_DIPPR(self,T):
-        """Cálculo de la densidad del líquido usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimocuarta posición
-        densidad obtenida en kg/m3"""
-        return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
 
     def RhoL_Cavett(self, T):
         """Método alternativo para calcular la densidad de liquidos haciendo uso
@@ -1294,13 +1316,12 @@ class Componente(object):
 
         return unidades.Density(d2, "gl")
 
-
     def Pv(self, T):
         """Vapor pressure calculation procedure using the method defined in
         preferences"""
         method = self.Config.getint("Transport", "Pv")
         if method == 0 and self._dipprPv and \
-                self._dipprPv[6]<=T<=self._dipprPv[7]:
+                self._dipprPv[6] <= T <= self._dipprPv[7]:
             return DIPPR("Pv", T, self._dipprPv)
         elif method == 1 and self.wagner:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
@@ -1317,7 +1338,7 @@ class Componente(object):
         elif method == 7 and self.Kw and self.Tb:
             return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
-            if self._dipprPv and self._dipprPv[6]<=T<=self._dipprPv[7]:
+            if self._dipprPv and self._dipprPv[6] <= T <= self._dipprPv[7]:
                 return DIPPR("Pv", T, self._dipprPv)
             elif self.wagner:
                 return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
@@ -1331,30 +1352,25 @@ class Componente(object):
                 return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
 
     def ThCond_Liquido(self, T, P):
-        """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1135"""
-        ThCondL=self.Config.getint("Transport","ThCondL")
-        corr=self.Config.getint("Transport","Corr_ThCondL")
-        p=unidades.Pressure(P, "atm")
-        if p.psi<500:
-            if ThCondL==0 and self._dipprKL and self._dipprKL[6]<=T<=self._dipprKL[7]:
-                return self.ThCond_Liquido_DIPPR(T)
-            elif ThCondL==1 and T<self.Tc:
+        """Liquid thermal conductivity procedure using the method defined in
+        preferences, use the decision diagram in [5]_ Figure 12-0.2 pag 1135"""
+        ThCondL = self.Config.getint("Transport", "ThCondL")
+        corr = self.Config.getint("Transport", "Corr_ThCondL")
+        p = unidades.Pressure(P, "atm")
+        if p.psi < 500:
+            if ThCondL == 0 and self._dipprKL and \
+                    self._dipprKL[6] <= T <= self._dipprKL[7]:
+                return DIPPR("kL", T, self._dipprKL)
+            elif ThCondL == 1 and T < self.Tc:
                 return self.ThCond_Liquido_Pachaiyappan(T)
             else:
-#                print "Warning: Thermal conductivity of %s out of range" % self.nombre
-                return self.ThCond_Liquido_DIPPR(self.i_dipprKL[7])
-
+                # print "Warning: Thermal conductivity of %s out of range" % self.nombre
+                return DIPPR("kL", self.i_dipprKL[7], self._dipprKL)
         else:
-            if corr==0:
+            if corr == 0:
                 return self.ThCond_Liquido_Lenoir(T, P)
             else:
                 return self.ThCond_Liquido_Kanitkar_Thodos(T, P)
-
-    def ThCond_Liquido_DIPPR(self,T):
-        """Cálculo de la conductividad terminca del líquido usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en vigesimosegunda posición
-        Conductividad termica obtenida en W/(m·K), API procedure 12A1.1, pag 1137"""
-        return DIPPR("kL", T, self._dipprKL)
 
     def ThCond_Liquido_Pachaiyappan(self, T):
         """Método alternativo para el cálculo de la conductividad de líquidos a baja presión, API procedure 12A1.2, pag 1141"""
@@ -1415,7 +1431,7 @@ class Componente(object):
         p=unidades.Pressure(P)
         if p.psi<50:
             if ThCondG==0 and self._dipprKG and self._dipprKG[6]<=T<=self._dipprKG[7]:
-                return self.ThCond_Gas_DIPPR(T)
+                return self.DIPPR("kG", T, self._dipprKG)
             else:
                 return self.ThCond_Gas_Misic_Thodos(T)
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
@@ -1424,12 +1440,6 @@ class Componente(object):
             # TODO: fix crooks methods with lost lee_kesler library
             return self.ThCond_Gas(T, 101325.)
 #            return self.ThCond_Gas_Crooks(T, P)
-
-    def ThCond_Gas_DIPPR(self,T):
-        """Cálculo de la conductividad terminca del gas usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en vigesimotercera posición
-        Conductividad termica obtenida en W/(m·K), API procedure 12B1.1 pag 1158"""
-        return self.DIPPR("kG", T, self._dipprKG)
 
     def ThCond_Gas_Misic_Thodos(self, T):
         """Método alternativo para el cálculo de la conductividad térmica de gases a baja presión <4 atm, API Procedure 12B1.2 pag.1162"""
@@ -1488,7 +1498,7 @@ class Componente(object):
         MuG=self.Config.getint("Transport","MuG")
         if P/self.Pc<0.6:
            if MuG==0 and self._dipprMuG and self._dipprMuG[6]<=T<=self._dipprMuG[7]:
-                return self.Mu_Gas_DIPPR(T)
+                return DIPPR("muG", T, self._dipprMuG)
            elif MuG==1:
                return self.Mu_Gas_Chapman_Enskog(T)
            else :
@@ -1498,13 +1508,6 @@ class Componente(object):
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
                 return self.Mu_Gas_Carr(T, P)
-
-    def Mu_Gas_DIPPR(self,T):
-        """Cálculo de la viscosidad del gas usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en vigesimoprimera posición
-        Viscosidad obtenida en Pa·s
-        API procedure 11B1.1, pag 1091"""
-        return DIPPR("muG", T, self._dipprMuG)
 
     def Mu_Gas_Chapman_Enskog(self,T):
         """Método alternativo para calcular la viscosidad de gases (a baja presión):
@@ -1811,7 +1814,7 @@ class Componente(object):
         """Método alternativo para el cálculo de la tensión superficial de líquidos haciendo uso de las contribuciones de grupos
         API procedure 10A1.4, pag 987"""
         #TODO: Mientras no sepa como automatizar el cálculo de las contribuciones de grupo, habra que indicarlo como parámetro
-        rhoL=self.RhoL_DIPPR(T)/1000
+        rhoL = DIPPR("rhoL", T, self._dipprRhoL, M=self.M)/1000
         rhoG=self.RhoG_Lee_Kesler(T, 1)*self.M/1000
         sigma=(parachor/self.M*(rhoL-rhoG))**4
         return unidades.Tension(sigma, "dyncm")
@@ -1883,7 +1886,7 @@ class Componente(object):
         Cph=1+Tr*dpdt_h**2/dpdv_h+Cvh
 
         Cp_adimensional=Cp0+self.f_acent/factor_acentrico_octano*(Cph-Cp0)
-        return unidades.SpecificHeat(self.Cp_ideal(T).JgK-R/self.M*Cp_adimensional, "JgK")
+        return unidades.SpecificHeat(self._Cpo(T).JgK-R/self.M*Cp_adimensional, "JgK")
 
     def Cv_Lee_Kesler(self, T, P, fase=None):
         """Método de cálculo de la capacidad calorífica a volumen constante
@@ -1893,7 +1896,7 @@ class Componente(object):
         Tr=T/self.Tc
         if fase==None:
             fase=self.Fase(T, P)
-        Cpo=self.Cp_ideal(T)
+        Cpo=self._Cpo(T)
         Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(Tr, Pr, fase)
         Cv_adimensional=Cv0+self.f_acent/factor_acentrico_octano*(Cvh-Cv0)
         return unidades.SpecificHeat(100*(Cpo.JgK-R/self.M*(1+Cv_adimensional)), "JgK")
@@ -1921,7 +1924,7 @@ class Componente(object):
         Procedure API 7F1.7 Pag.739"""
         Tr=T/self.Tc
         Pr=P/self.Pc
-        S0=self.Entropia_ideal(T)
+        S0=self._so(T)
         H_adimensional=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
         f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
         S=H_adimensional+f+log(P/101325)
