@@ -111,9 +111,15 @@ __doi__ = {
                   "Liquids",
          "ref": "The Chemical Engineering Journal 48 (1992) 211-14",
          "doi": "10.1016/0300-9467(92)80037-B"},
-
-
     14:
+        {"autor": "Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.",
+         "title": "Correlations of Thermal Conductivity for Liquid "
+                  "Refrigerants at Atmospheric Pressure or near Saturation",
+         "ref": "International Journal of Refrigeration, 2014",
+         "doi": "10.1016/j.ijrefrig.2014.06.003"},
+
+
+    15:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1038,9 +1044,8 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
 
 
 def ThL_LakshmiPrasad(T, M):
-    """Estimates thermal conductivity of pure liquids as a function of
-    temperature using a reference fluid approach. Low accuracy but quick.
-    Developed using several organic fluids.
+    """Calculates the thermal conductivity of liquid using the Lakshmi-Prasad
+    correlation.
 
     .. math::
         \lambda = 0.0655-0.0005T + \frac{1.3855-0.00197T}{M^{0.5}}
@@ -1065,6 +1070,55 @@ def ThL_LakshmiPrasad(T, M):
     """
     k = 0.0655 - 0.0005*T + (1.3855 - 0.00197*T)/M**0.5
     return unidades.ThermalConductivity(k)
+
+
+def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
+    """Calculates the thermal conductivity of liquid using the Nicola
+    correlation.
+
+    .. math::
+        \frac{\lambda}{\lambda_o} = aT_r + bPc + c\omega +
+        \left(\frac{e}{M}\right)^{d}
+
+        \frac{\lambda}{\lambda_o} = aT_r + bPc + c\omega +
+        \left(\frac{e}{M}\right)^{d} + f\mu
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    mu : float
+        Dipole moment, [Debye]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity [W/m·k]
+
+    References
+    ----------
+    .. [14] Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.
+        Correlations of Thermal Conductivity for Liquid Refrigerants at
+        Atmospheric Pressure or near Saturation. International Journal of
+        Refrigeration, 2014
+    """
+    Pc_bar = unidades.Pressure(Pc).bar
+    if mu:
+        # Eq 4 using dipole moment of compound
+        k = 0.6542*(-0.2034*T/Tc+0.0013*Pc_bar+0.1714*w+(1/M)**0.3539-0.007*mu)
+    else:
+        # Eq 3
+        k = 0.5147*(-0.2537*T/Tc+0.0017*Pc_bar+0.1501*w+(1/M)**-0.2999)
+    return unidades.ThermalConductivity(k)
+
 
 
 def ThG_RiaziFaghri(T, Tb, SG):
