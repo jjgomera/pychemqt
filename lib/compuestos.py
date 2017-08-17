@@ -117,9 +117,21 @@ __doi__ = {
                   "Refrigerants at Atmospheric Pressure or near Saturation",
          "ref": "International Journal of Refrigeration, 2014",
          "doi": "10.1016/j.ijrefrig.2014.06.003"},
-
-
     15:
+        {"autor": "Pachaiyappan, V., Ibrahim, S.H., Kuloor, N.R.",
+         "title": "Thermal Conductivities of Organic Liquids: A New "
+                  "Correlation",
+         "ref": "J. Chem. Eng. Data, 11 (1966) 73-76",
+         "doi": "10.1021/je60028a021"},
+
+    16:
+        {"autor": "Kanitkar",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+
+    17:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1120,6 +1132,64 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
     return unidades.ThermalConductivity(k)
 
 
+def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
+    """Calculates the thermal conductivity of liquid using the Pachaiyappan
+    correlation as explain in [5]_, procedure 12A1.2, pag 1141
+
+    .. math::
+        \kappa=\frac{CM^{n}}{Vm}\frac{3+20\left(1-Tr\right){}^{2/3}}
+        {3+20\left(1-\frac{527.67}{Tc}\right)^{2/3}}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density of commpound at 68ºF, []
+    branched : boolean, optional
+        Linear or branched compound, default True
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity [W/m·k]
+
+    Examples
+    --------
+    Example in [5]_, n-butylbenzene at 140ºF
+    >>> T = unidades.Temperature(140, "F")
+    >>> Tc = unidades.Temperature(729.32, "F")
+    >>> rho = unidades.Density(53.76, "lbft3")
+    >>> k = ThL_Pachaiyappan(T, Tc, 134.22, rho)
+    >>> "%0.4f" % k.BtuhftF
+    '0.0673'
+
+    References
+    ----------
+    .. [15] Pachaiyappan, V., Ibrahim, S.H., Kuloor, N.R. Thermal
+        Conductivities of Organic Liquids: A New Correlation. J. Chem. Eng.
+        Data, 11 (1966) 73-76
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+
+    if branched:
+        n = 0.7717
+        C = 4.079e-3
+    else:
+        n = 1.001
+        C = 1.676e-3
+
+    Tr = T/Tc
+    Tc_R = unidades.K2R(Tc)
+    rhom = unidades.Density(rho/M).lbft3
+    Vm = 1/rhom
+    k = C*M**n/Vm*(3+20*(1-Tr)**(2./3))/(3+20*(1-527.67/Tc_R)**(2./3))
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
 
 def ThG_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of gas hydrocarbon at low pressure
@@ -1297,6 +1367,16 @@ class Componente(object):
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
+        # TODO: Add branched property in database for each compound
+        # For the moment define the branched property manually
+        lineal = [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                  21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844,
+                  1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31,
+                  35, 56, 57, 58]
+        if self.id in lineal:
+            self.branched = False
+        else:
+            self.branched = True
 
         # TODO: Añadir las contribuciones de grupos de parachor a la base de datos
         self.parachor = []
@@ -1623,33 +1703,6 @@ class Componente(object):
                 return self.ThCond_Liquido_Lenoir(T, P)
             else:
                 return self.ThCond_Liquido_Kanitkar_Thodos(T, P)
-
-    def ThCond_Liquido_Pachaiyappan(self, T):
-        """Método alternativo para el cálculo de la conductividad de líquidos a baja presión, API procedure 12A1.2, pag 1141"""
-        #TODO: Alguna forma mejor de definir los compuestos lineales hay que encontrar, quizá añadiendo un parámetro a la base de datos , branched True o False
-        if self.id in [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844, 1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31, 35, 56, 57, 58]:
-            n=1.001
-            C=1.676e-3
-        else:
-            n=0.7717
-            C=4.079e-3
-
-        rho=unidades.Density(self.RhoL(293.15, 1)/self.M).lbft3
-        Vm=1/rho
-        k=C*self.M**n/Vm*(3+20*(1-self.tr(T))**(2./3))/(3+20*(1-293.15/self.Tc)**(2./3))
-        return unidades.ThermalConductivity(k, "BtuhftF")
-
-    def ThCond_Liquido_Kanitkar_Thodos(self, T, P):
-        """Método alternativo para el cálculo de la conductividad de líquidos por encima del punto de ebullición, API procedure 12A1.3, pag 1143"""
-        Pr=self.pr(P)
-        rho=self.RhoL(T, P)/self.M
-        rhor=rho*self.Vc
-
-        l=self.Tc.R**(1./6)*self.M**0.5/self.Pc.atm**(2./3)
-        b=0.4+0.986/exp(0.58*l)
-        a=7.137e-3/b**3.322
-        k=(-1.884e-6*Pr**2+1.442e-3*Pr+a*exp(b*rhor))/l
-        return unidades.ThermalConductivity(k, "BtuhftF")
 
     def ThCond_Liquido_Lenoir(self, T, P, ko=[]):
         """Método alternativo para el cálculo de la conductividad de líquidos a alta presión, API procedure 12A4.1, pag 1156
