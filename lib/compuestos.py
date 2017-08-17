@@ -123,12 +123,11 @@ __doi__ = {
                   "Correlation",
          "ref": "J. Chem. Eng. Data, 11 (1966) 73-76",
          "doi": "10.1021/je60028a021"},
-
     16:
-        {"autor": "Kanitkar",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Kanitkar, D., Thodos, G.",
+         "title": "The Thermal Conductivity of Liquid Hydrocarbons",
+         "ref": "Can. J. Chem. Eng. 47 (1969) 427-430",
+         "doi": "10.1002/cjce.5450470502"},
 
 
     17:
@@ -1188,6 +1187,79 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     rhom = unidades.Density(rho/M).lbft3
     Vm = 1/rhom
     k = C*M**n/Vm*(3+20*(1-Tr)**(2./3))/(3+20*(1-527.67/Tc_R)**(2./3))
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
+
+def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
+    """Calculates the thermal conductivity of liquid using the Kanitkar-Thodos
+    correlation as explain in [5]_, procedure 12A1.3, pag 1143
+
+    .. math::
+        \kappa\lambda = -1.884e-6P_r^2 + 1.442e-3P_r +
+        \alfa\exp\left(\beta\rho_r\right)
+
+        \alfa = \frac{7.137e-3}{\beta^{3.322}}
+
+        \beta = 0.4 + \frac{0.986}{\exp{0.58\lambda}}
+
+        \lambda = \frac{Tc^{1/6}M^{1/2}}{Pc}^{2/3}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Vc : float
+        Critical density, [m³/kg]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density of commpound at P and T, [kg/m³]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity [W/m·k]
+
+    Notes
+    -----
+    This method let calculate the thermal conductivity of liquid hydrocarbons
+    at any pressure
+
+    Examples
+    --------
+    Example in [5]_, n-heptane at 320ºF and 197.4 atm
+    >>> T = unidades.Temperature(320, "F")
+    >>> P = unidades.Pressure(197.4, "atm")
+    >>> Tc = unidades.Temperature(512.69, "F")
+    >>> Pc = unidades.Pressure(397.41, "psi")
+    >>> Vc = unidades.SpecificVolume(0.0684, "ft3lb")
+    >>> rho = unidades.Density(37.93, "lbft3")
+    >>> k = ThL_KanitkarThodos(T, P, Tc, Pc, Vc, 100.2, rho)
+    >>> "%0.5f" % k.BtuhftF
+    '0.06957'
+
+    References
+    ----------
+    .. [16] Kanitkar, D., Thodos, G. The Thermal Conductivity of Liquid
+        Hydrocarbons. Can. J. Chem. Eng. 47 (1969) 427-430
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+
+    Pc_atm = Pc/101325
+    Tc_R = unidades.K2R(Tc)
+    Pr = P/Pc
+    rhor = rho*Vc
+
+    l = Tc_R**(1/6)*M**0.5/Pc_atm**(2/3)
+    b = 0.4 + 0.986/exp(0.58*l)                                         # Eq 8
+    alfa = 7.137e-3/b**3.322                                            # Eq 7
+    k = (-1.884e-6*Pr**2+1.442e-3*Pr+alfa*exp(b*rhor))/l                # Eq 6
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
