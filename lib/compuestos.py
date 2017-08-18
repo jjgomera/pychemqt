@@ -128,18 +128,33 @@ __doi__ = {
          "title": "The Thermal Conductivity of Liquid Hydrocarbons",
          "ref": "Can. J. Chem. Eng. 47 (1969) 427-430",
          "doi": "10.1002/cjce.5450470502"},
-
-
     17:
-        {"autor": "",
+        {"autor": "Riedel, L., Chem. Ingr. Tech., 26 (1954): 679.",
          "title": "",
          "ref": "",
          "doi": ""},
+    18:
+        {"autor": "Riedel, L.",
+         "title": "Die Zustandsfunktion des realen Gases: Untersuchungen über eine Erweiterung des Theorems der übereinstimmenden Zustände",
+         "ref": "Chem. Ings-Tech. 28 (1956) 557-562",
+         "doi": "10.1002/cite.330280809"},
     19:
         {"autor": "Edmister, W.C.",
          "title": "Applied Hydrocarbon Thermodynamics, Part 4, Compressibility"
                   "Factors and Equations of State",
          "ref": "Petroleum Refiner. 37 (April, 1958), 173–179",
+         "doi": ""},
+    20:
+        {"autor": "Hankinson, R.W., Thomson, G.H.",
+         "title": "A New Correlation for Saturated Densities of Liquids and "
+                  "Their Mixtures",
+         "ref": "AIChE Journal 25(4) (1979) 653-663",
+         "doi": "10.1002/aic.690250412"},
+
+    21:
+        {"autor": "",
+         "title": "",
+         "ref": "",
          "doi": ""},
 }
 
@@ -285,6 +300,72 @@ def DIPPR(prop, T, args, Tc=None, M=None):
             C*D*Tr**4/2 - D**2*Tr**5/5
 
     return unit(value*mul)
+
+
+# Liquid density correlations
+def RhoL_Costald(T, Tc, w, Vc):
+    """Calculates saturated liquid densities of pure components using the
+    Corresponding STAtes Liquid Density (COSTALD) method, developed by
+    Hankingon and Thomson, referenced too in API procedure 6A2.15 pag. 462
+
+    .. math::
+        \frac{V}{V^{o}}=V_{R}^{(0)}\left(1-\omega_{SRK}V_{R}^{(1)}\right)
+
+        V_{R}^{(0)}=1+a\left(1-T_{R}\right)^{1/3}+b\left(1-T_{R}\right)^{2/3}
+        +c\left(1-T_{R}\right)+d\left(1-T_{R}\right)^{4/3}
+
+        V_{R}^{(1)}=\frac{e+fT_{R}+gT_{R}^{2}+hT_{R}^{3}}{Tr-1.00001}
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    w : float
+        Acentric factor optimized to SRK, [-]
+    Vc : float
+        Characteristic volume, [m³/kg]
+
+    Returns
+    -------
+    rho : float
+        Saturated liquid density at T, [m³/kg]
+
+    Examples
+    --------
+    Example 1 from [5]_; propane at 30ºF
+
+    >>> T = unidades.Temperature(30, "F")
+    >>> Tc = unidades.Temperature(206.01, "F")
+    >>> Vc = unidades.SpecificVolume(3.205/44.097, "ft3lb")
+    >>> "%0.3f" % RhoL_Costald(T, Tc, 0.1532, Vc).kgl
+    '0.530'
+
+    References
+    ----------
+    .. [20] Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
+        Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
+        653-663
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    a = -1.52816
+    b = 1.43907
+    c = -0.81446
+    d = 0.190454
+    e = -0.296123
+    f = 0.386914
+    g = -0.0427258
+    h = -0.0480645
+    Tr = T/Tc
+
+    # Eq 17
+    Vr0 = 1 + a*(1-Tr)**(1/3) + b*(1-Tr)**(2/3) + c*(1-Tr) + d*(1-Tr)**(4/3)
+    Vr1 = (e + f*Tr + g*Tr**2 + h*Tr**3)/(Tr-1.00001)                  # Eq 18
+
+    # TODO: Add V* to the database
+    V = Vc*Vr0*(1-w*Vr1)                                               # Eq 16
+    return unidades.Density(1/V)
 
 
 # Vapor pressure correlation
@@ -951,9 +1032,15 @@ def Vc_Riedel(Tc, Pc, w, M):
 
     References
     ----------
+    .. [17]
+    .. [18] Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
+        über eine Erweiterung des Theorems der übereinstimmenden Zustände.
+        Chem. Ings-Tech. 28 (1956) 557-562
     .. [5] API. Technical Data book: Petroleum Refining 6th Edition
     """
+    # Eq 1 in [18]
     alfa = 5.811 + 4.919*w
+
     Vc = R*1000*Tc/Pc/(3.72+0.26*(alfa-7))/M
     return unidades.SpecificVolume(Vc, "lg")
 
@@ -1634,6 +1721,12 @@ class Componente(object):
             elif rhoL == 2 and self.Vliq != 0:
                 return self.RhoL_Cavett(T)
             elif rhoL == 3:
+                if self.f_acent_mod!=0:
+                    w=self.f_acent_mod
+                else: w=self.f_acent
+                if self.V_char:
+                    V_=self.V_char
+                else: V_=self.Vc
                 return self.RhoL_Costald(T)
             else:
                 if self._dipprRhoL and \
