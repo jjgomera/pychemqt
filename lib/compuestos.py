@@ -135,7 +135,9 @@ __doi__ = {
          "doi": ""},
     18:
         {"autor": "Riedel, L.",
-         "title": "Die Zustandsfunktion des realen Gases: Untersuchungen über eine Erweiterung des Theorems der übereinstimmenden Zustände",
+         "title": "Die Zustandsfunktion des realen Gases: Untersuchungen über "
+                  "eine Erweiterung des Theorems der übereinstimmenden "
+                  "Zustände",
          "ref": "Chem. Ings-Tech. 28 (1956) 557-562",
          "doi": "10.1002/cite.330280809"},
     19:
@@ -150,8 +152,15 @@ __doi__ = {
                   "Their Mixtures",
          "ref": "AIChE Journal 25(4) (1979) 653-663",
          "doi": "10.1002/aic.690250412"},
-
     21:
+        {"autor": "Rackett, H.G.",
+         "title": "Equation of State for Saturated Liquids",
+         "ref": "J. Chem. Eng. Data 15(4) (1970) 514-517",
+         "doi": "10.1021/je60047a012"},
+
+
+
+    22:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -303,6 +312,53 @@ def DIPPR(prop, T, args, Tc=None, M=None):
 
 
 # Liquid density correlations
+def RhoL_Rackett(T, Tc, Pc, Zra, M):
+    """Calculates saturated liquid densities of pure components using the
+    modified Rackett equation, referenced too in API procedure 6A2.13 pag. 454
+
+    .. math::
+        \frac{1}{\rho_s} = \frac{RT_c}{P_c}Z_{RA}^{1+(1-{T/T_c})^{2/7}}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Zra : float
+        Racket constant, [-]
+    M : float
+        Molecular weight, [kg/m³]
+
+    Returns
+    -------
+    rho : float
+        Saturated liquid density at T, [kg/m³]
+
+    Examples
+    --------
+    Example from [5]_; propane at 30ºF
+
+    >>> T = unidades.Temperature(30, "F")
+    >>> Tc = unidades.Temperature(206.06, "F")
+    >>> Pc = unidades.Pressure(616, "psi")
+    >>> "%0.3f" % RhoL_Rackett(T, Tc, Pc, 0.2763, 44.1).kgl
+    '0.531'
+
+    References
+    ----------
+    .. [21] Rackett, H.G. Equation of State for Saturated Liquids. J. Chem.
+        Eng. Data 15(4) (1970) 514-517
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Pc_atm = Pc/101325
+    Tr = T/Tc
+    V = R_atml*Tc/Pc_atm*Zra**(1+(1-Tr)**(2/7))
+    return unidades.Density(M/V)
+
+
 def RhoL_Costald(T, Tc, w, Vc):
     """Calculates saturated liquid densities of pure components using the
     Corresponding STAtes Liquid Density (COSTALD) method, developed by
@@ -330,7 +386,7 @@ def RhoL_Costald(T, Tc, w, Vc):
     Returns
     -------
     rho : float
-        Saturated liquid density at T, [m³/kg]
+        Saturated liquid density at T, [kg/m³]
 
     Examples
     --------
@@ -1721,12 +1777,14 @@ class Componente(object):
             elif rhoL == 2 and self.Vliq != 0:
                 return self.RhoL_Cavett(T)
             elif rhoL == 3:
-                if self.f_acent_mod!=0:
-                    w=self.f_acent_mod
-                else: w=self.f_acent
+                if self.f_acent_mod != 0:
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
                 if self.V_char:
-                    V_=self.V_char
-                else: V_=self.Vc
+                    V_ = self.V_char
+                else:
+                    V_=self.Vc
                 return self.RhoL_Costald(T)
             else:
                 if self._dipprRhoL and \
@@ -1752,30 +1810,6 @@ class Componente(object):
                 Tr es la temperatura reducida
                 Densidad obtenida en g/l"""
         return unidades.Density(1/(self.Vliq*(5.7+3*self.tr(T)))*1000*self.M)
-
-    def RhoL_Rackett(self, T):
-        """Método alternativo para calcular la densidad de líquidos saturados haciendo uso
-        de la ecuación modificada de Rackett:    V=R*Tc/Pc*(Zra)[1 + (1 − Tr)^2/7]
-        API procedure 6A2.13 pag.454
-        Spencer, F. F., and R. P. Danner. “Prediction of Bubble-Point Density of Mixtures,” Journal of Chemi-
-        cal Engineering Data 18, no. 2 (1973): 230–234"""
-        V=R_atml*self.Tc/self.Pc.atm*self.rackett**(1.+(1.-self.tr(T))**(2./7))
-        return unidades.Density(1/V*self.M)
-
-    def RhoL_Costald(self, T):
-        """Método alternativo para el cálculo de la densidad de líquidos saturados
-        API procedure 6A2.15 pag. 462"""
-        if self.f_acent_mod!=0:
-            w=self.f_acent_mod
-        else: w=self.f_acent
-        if self.V_char:
-            V_=self.V_char
-        else: V_=self.Vc
-
-        Vr0=1-1.52816*(1-self.tr(T))**(1./3)+1.43907*(1-self.tr(T))**(2./3)-0.81446*(1-self.tr(T))+0.190454*(1-self.tr(T))**(4./3)
-        Vr1=(-0.296123+0.386914*self.tr(T)-0.0417258*self.tr(T)**2-0.0480645*self.tr(T)**3)/(self.tr(T)-1.00001)
-        #TODO: Añadiendo V* a la base de datos mejoraría la precisión de este método, en vez de usar el volumen critico, porque la constante de volumen de líquido no parece corresponder a esta constante
-        return unidades.Density(1/(V_*Vr0*(1-w*Vr1))*self.M)
 
     def RhoL_Thomson_Brobst_Hankinson(self, T, P):
         """Método alternativo para el cálculo de la densidad de líquidos comprimidos
