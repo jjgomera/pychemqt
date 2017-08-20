@@ -163,8 +163,14 @@ __doi__ = {
                   " and Liquid Mixtures",
          "ref": "AIChE Journal 28(4) (1982): 671-76",
          "doi": "10.1002/aic.690280420"},
-
     23:
+        {"autor": "Yamada, T., Gunn. R.",
+         "title": "Saturated Liquid Molar Volumes: The Rackett Equation",
+         "ref": "Journal of Chemical Engineering Data 18(2) (1973): 234–236",
+         "doi": "10.1021/je60057a006"},
+
+
+    24:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1529,12 +1535,36 @@ def ThG_RiaziFaghri(T, Tb, SG):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+def Rackett(w):
+    """Calculate the rackett constant using the Yamada-Gunn generalized
+    correlation
+
+    Parameters
+    ----------
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    Zra : float
+        Rackett compressibility factor, [-]
+
+    References
+    ----------
+    .. [23] Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
+        Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
+    """
+    Zra = 0.29056 - 0.08775*w                                           # Eq 1
+    return Zra
+
 
 
 class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
+    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD"]
+    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -1606,7 +1636,7 @@ class Componente(object):
         if componente[123] != 0.0:
             self.rackett = componente[123]
         else:
-            self.rackett = self.Rackett()
+            self.rackett = Rackett(self.f_acent)
         if componente[122] != 0.0:
             self.Vliq = componente[122]
 #        elif self.Pc!=0 and self.Tc>298.15 :
@@ -1721,11 +1751,6 @@ class Componente(object):
         elif method == 2:
             Pvr = self.Pv(0.7*self.Tc)/self.Pc
             return facent_AmbroseWalton(Pvr)
-
-    def Rackett(self):
-        """Método alternativa para el calculo de la constante de Rackett en aquellos componentes que no dispongan de ella a partir del factor acéntrico.
-        Yamada, T., and R. Gunn. “Saturated Liquid Molar Volumes: The Rackett Equation,” Journal of Chemical Engineering Data 18, no. 2 (1973): 234–236."""
-        return 0.29056-0.08775*self.f_acent
 
     def Volumen_Liquido_Constante(self):
         V=1/self.RhoL_Rackett(self.Tc)
@@ -1845,7 +1870,7 @@ class Componente(object):
                     self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
                 return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
             elif rhoL == 1 and self.rackett != 0 and T < self.Tc:
-                return self.RhoL_Rackett(T)
+                return RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
             elif rhoL == 2 and self.Vliq != 0:
                 return self.RhoL_Cavett(T)
             elif rhoL == 3:
@@ -1853,29 +1878,32 @@ class Componente(object):
                     w = self.f_acent_mod
                 else:
                     w = self.f_acent
-                if self.V_char:
-                    V_ = self.V_char
-                else:
-                    V_ = self.Vc
-                return self.RhoL_Costald(T)
+                return RhoL_Costald(T, self.Tc, w, self.Vc)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
                     return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
                 elif self.rackett != 0 and T < self.Tc:
-                    return self.RhoL_Rackett(T)
+                    return RhoL_Rackett(
+                        T, self.Tc, self.Pc, self.rackett, self.M)
                 elif self.Vliq != 0:
                     return self.RhoL_Cavett(T)
                 else:
-                    return self.RhoL_Costald(T)
+                    if self.f_acent_mod != 0:
+                        w = self.f_acent_mod
+                    else:
+                        w = self.f_acent
+                    return RhoL_Costald(T, self.Tc, w, self.Vc)
         else:
             if corr == 0:
                 if self.f_acent_mod:
-                    w=self.f_acent_mod
-                else: w=self.f_acent
-                rho_sat=self.RhoL(T, 101325)
-                pv_sat=self.Pv_DIPPR(T)
-                return self.RhoL_Thomson_Brobst_Hankinson(T, P)
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
+                rhos = self.RhoL(T, 101325)
+                Ps = self.Pv(T)
+                return RhoL_ThomsonBrobstHankinson(
+                    T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
                 return self.RhoL_API(T, P)
 

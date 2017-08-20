@@ -37,10 +37,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Density:")), 1, 0)
         self.RhoL = QtWidgets.QComboBox()
-        self.RhoL.addItem("DIPPR")
-        self.RhoL.addItem("Rackett")
-        self.RhoL.addItem("Cavett")
-        self.RhoL.addItem("Costald")
+        for method in Componente.METHODS_RhoL:
+            self.RhoL.addItem(method)
         layout.addWidget(self.RhoL, 1, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Viscosity:")), 2, 0)
@@ -97,8 +95,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(label_7, 0, 3)
         self.Corr_RhoL = QtWidgets.QComboBox()
-        self.Corr_RhoL.addItem("Thomson, Brobst & Hankinson")
-        self.Corr_RhoL.addItem("API")
+        for method in Componente.METHODS_RhoLP:
+            self.Corr_RhoL.addItem(method)
         layout.addWidget(self.Corr_RhoL, 1, 3)
         self.Corr_MuL = QtWidgets.QComboBox()
         self.Corr_MuL.addItem("Graboski & Braun")
