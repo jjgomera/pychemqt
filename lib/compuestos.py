@@ -157,10 +157,14 @@ __doi__ = {
          "title": "Equation of State for Saturated Liquids",
          "ref": "J. Chem. Eng. Data 15(4) (1970) 514-517",
          "doi": "10.1021/je60047a012"},
-
-
-
     22:
+        {"autor": "Thomson, G.H., Brobst, K.R., Hankinson, R.W.",
+         "title": "An Improved Correlation for Densities of Compressed Liquids"
+                  " and Liquid Mixtures",
+         "ref": "AIChE Journal 28(4) (1982): 671-76",
+         "doi": "10.1002/aic.690280420"},
+
+    23:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -422,6 +426,74 @@ def RhoL_Costald(T, Tc, w, Vc):
     # TODO: Add V* to the database
     V = Vc*Vr0*(1-w*Vr1)                                               # Eq 16
     return unidades.Density(1/V)
+
+
+def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
+    """Calculates compressed-liquid density, using the Thomson-Brobst-
+    Hankinson correlation, also referenced in API procedure 6A2.23 pag. 477
+
+    .. math::
+        V = V_s\left(1-C\ln\frac{B + P}{B + P_s}\right)
+
+        \frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}
+
+        e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)
+
+        C = j + k \omega_{SRK}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Ps : float
+        Saturation pressure, [Pa]
+    omega : float
+        Acentric factor (SRK optimized), [-]
+    rhos : float
+        Saturation liquid volume, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    Examples
+    --------
+    Example from [5]_; n-octane at 212ºF and 4410 psi
+
+    >>> T = unidades.Temperature(212, "F")
+    >>> P = unidades.Pressure(4410, "psi")
+    >>> Tc = unidades.Temperature(564.22, "F")
+    >>> Pc = unidades.Pressure(360.6, "psi")
+    >>> Ps = unidades.Pressure(6.74, "psi")
+    >>> rs = RhoL_Rackett(T, Tc, Pc, 0.2569, 114.232)
+    >>> "%0.3f" % (1/rs.lbft3*114.232)
+    '2.874'
+    >>> "%0.3f" % RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, 0.3962, Ps, rs).kgl
+    '0.676'
+
+    References
+    ----------
+    .. [22] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+        Correlation for Densities of Compressed Liquids and Liquid Mixtures.
+        AIChE Journal 28(4) (1982): 671-76
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Tr = T/Tc
+    C = 0.0861488 + 0.0344483*w                                         # Eq 8
+    e = exp(4.79594 + 0.250047*w + 1.14188*w**2)                        # Eq 7
+    B = Pc*(-1 - 9.070217*(1-Tr)**(1/3) + 62.45326*(1-Tr)**(2/3) -
+            135.1102*(1-Tr) + e*(1-Tr)**(4/3))
+
+    # Eq 5
+    rho = rhos/(1-C*log((B+P)/(B+Ps)))
+    return unidades.Density(rho, "gl")
 
 
 # Vapor pressure correlation
@@ -1784,7 +1856,7 @@ class Componente(object):
                 if self.V_char:
                     V_ = self.V_char
                 else:
-                    V_=self.Vc
+                    V_ = self.Vc
                 return self.RhoL_Costald(T)
             else:
                 if self._dipprRhoL and \
@@ -1798,6 +1870,11 @@ class Componente(object):
                     return self.RhoL_Costald(T)
         else:
             if corr == 0:
+                if self.f_acent_mod:
+                    w=self.f_acent_mod
+                else: w=self.f_acent
+                rho_sat=self.RhoL(T, 101325)
+                pv_sat=self.Pv_DIPPR(T)
                 return self.RhoL_Thomson_Brobst_Hankinson(T, P)
             else:
                 return self.RhoL_API(T, P)
@@ -1810,19 +1887,6 @@ class Componente(object):
                 Tr es la temperatura reducida
                 Densidad obtenida en g/l"""
         return unidades.Density(1/(self.Vliq*(5.7+3*self.tr(T)))*1000*self.M)
-
-    def RhoL_Thomson_Brobst_Hankinson(self, T, P):
-        """Método alternativo para el cálculo de la densidad de líquidos comprimidos
-        API procedure 6A2.23 pag. 477"""
-        if self.f_acent_mod:
-            w=self.f_acent_mod
-        else: w=self.f_acent
-        rho_sat=self.RhoL(T, 101325)
-        pv_sat=self.Pv_DIPPR(T)
-        C=0.0861488+0.0344483*w
-        e=exp(4.79594+0.250047*w+1.14188*w**2)
-        B=self.Pc*(-1-9.070217*(1-self.tr(T))**(1./3)+62.45326*(1-self.tr(T))**(2./3)-135.1102*(1-self.tr(T))+e*(1-self.tr(T))**(4./3))
-        return unidades.Density(rho_sat/(1-C*log((B+P)/(B+pv_sat))), "gl")
 
     def RhoL_API(self, T, P):
         """Método alternativo para calcular la densidad de líquidos haciendo uso del método API
