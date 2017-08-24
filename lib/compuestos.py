@@ -168,9 +168,16 @@ __doi__ = {
          "title": "Saturated Liquid Molar Volumes: The Rackett Equation",
          "ref": "Journal of Chemical Engineering Data 18(2) (1973): 234–236",
          "doi": "10.1021/je60057a006"},
-
-
     24:
+        {"autor": "Stiel, L. I., Thodos, G.",
+         "title": "The Viscosity of Nonpolar Gases at Normal Pressures",
+         "ref": "AIChE J. 7(4) (1961) 611-615",
+         "doi": "10.1002/aic.690070416"},
+
+
+
+
+    25:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -993,11 +1000,83 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
         Elevated Pressures. AIChE Journal 19(2) (1973) 409-411
     """
     Pc_atm = unidades.Pressure(Pc).atm
+    Tr = T/Tc
 
     x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
     x0 = 0.015178 - 0.021351*Tr + 0.007503*Tr**2
     x1 = 0.042559 - 0.07675*Tr + 0.034007*Tr**2
     mu = (x0+w*x1)/x
+    return unidades.Viscosity(mu, "cP")
+
+
+def MuG_StielThodos(T, Tc, Pc, M):
+    r"""Calculate the viscosity of a gas using the Stiel-Thodos correlation,
+    also referenced in API procedure 11B1.3, pag 1099
+
+    .. math::
+        \mu=N/\xi
+
+        \xi=\frac{T_{c}^{1/6}}{M^{1/2}P_{c}^{2/3}}
+
+        N=3.4e^{-4}T_{r}^{0.94}   for Tr ≤ 1.5
+
+        N=1.778e^{-4}\left(4.58T_{r}-1.67\right)^{0.625} for T_r > 1.5
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example A in [5]_, Propane at 176ºF
+    >>> T = unidades.Temperature(176, "F")
+    >>> Tc = unidades.Temperature(206, "F")
+    >>> Pc = unidades.Pressure(616, "psi")
+    >>> "%0.4f" % MuG_StielThodos(T, Tc, Pc, 44.1).cP
+    '0.0100'
+
+    Example B in [5]_, Methane at 543ºF
+    >>> T = unidades.Temperature(543, "F")
+    >>> Tc = unidades.Temperature(-116.67, "F")
+    >>> Pc = unidades.Pressure(667, "psi")
+    >>> "%0.4f" % MuG_StielThodos(T, Tc, Pc, 16.04).cP
+    '0.0176'
+
+    References
+    ----------
+    .. [24] Stiel, L. I., Thodos, G. The Viscosity of Nonpolar Gases at Normal
+        Pressures. AIChE J. 7(4) (1961) 611-615
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Pc_atm = Pc/101325
+    Tr = T/Tc
+    T_R = unidades.K2R(T)
+
+    if M < 2:
+        # Special case for hydrogen
+        if Tr <= 1.5:
+            mu = 3.7e-5*T_R**0.94
+        else:
+            mu = 9.071e-4*(7.639e-2*T_R-1.67)**0.625
+    else:
+        if Tr <= 1.5:
+            N = 3.5e-4*Tr**0.94
+        else:
+            N = 1.778e-4*(4.58*Tr-1.67)**0.625
+        x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
+        mu = N/x
     return unidades.Viscosity(mu, "cP")
 
 
@@ -2080,14 +2159,15 @@ class Componente(object):
 
     def Mu_Gas(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
-        MuG=self.Config.getint("Transport","MuG")
-        if P/self.Pc<0.6:
-           if MuG==0 and self._dipprMuG and self._dipprMuG[6]<=T<=self._dipprMuG[7]:
+        MuG = self.Config.getint("Transport", "MuG")
+        if P/self.Pc < 0.6:
+            if MuG == 0 and self._dipprMuG and \
+                    self._dipprMuG[6] <= T <= self._dipprMuG[7]:
                 return DIPPR("muG", T, self._dipprMuG)
-           elif MuG==1:
-               return self.Mu_Gas_Chapman_Enskog(T)
-           else :
-               return self.Mu_Gas_Thodos(T)
+            elif MuG == 1:
+                return self.Mu_Gas_Chapman_Enskog(T)
+            else:
+                return MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self.hidrocarburo:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
@@ -2121,24 +2201,6 @@ class Componente(object):
         else: #No polar, colisión integral de Neufeld
             omega=1.16145/T_**0.14874+0.52487/exp(0.7732*T_)+2.16178/exp(2.43787*T_)
         return unidades.Viscosity(26.69*(self.M*T)**0.5/diametro_molecular**2/omega, "microP")
-
-    def Mu_Gas_Thodos(self, T):
-        """Método alternativo para el cálculo de la viscosidad de gases a baja presión, solo necesita las propiedades críticas, API procedure 11B1.3, pag 1099"""
-        t=unidades.Temperature(T)
-        Tr=self.tr(T)
-        if self.id==1:
-            if Tr<=1.5:
-                mu=3.7e-5*t.R**0.94
-            else:
-                mu=9.071e-4*(7.639e-2*t.R-1.67)**0.625
-        else:
-            if Tr<=1.5:
-                N=3.5e-4*Tr**0.94
-            else:
-                N=1.778e-4*(4.58*Tr-1.67)**0.625
-            x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
-            mu=N/x
-        return unidades.Viscosity(mu, "cP")
 
     def Mu_Gas_Jossi(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de hidrocarburos gaseosos pesados a alta presión,
