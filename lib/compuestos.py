@@ -53,7 +53,7 @@ __doi__ = {
         {"autor": "Lee, B. I. and Kesler, M. G.",
          "title": "A Generalized Thermodynamic Correlation Based on"
                   "Three-Parameter Corresponding States",
-         "ref": "American Institute of Chemical Engineers Journal, 21, 1975",
+         "ref": "AIChE Journal 21(3) (1975) 510-527",
          "doi": "10.1002/aic.690210313"},
     5:
         {"autor": "API",
@@ -173,11 +173,16 @@ __doi__ = {
          "title": "The Viscosity of Nonpolar Gases at Normal Pressures",
          "ref": "AIChE J. 7(4) (1961) 611-615",
          "doi": "10.1002/aic.690070416"},
-
-
-
-
     25:
+        {"autor": "Misic, D., Thodos, G.",
+         "title": "The Thermal Conductivity of Hydrocarbon Gases at Normal "
+                  "Pressures",
+         "ref": "AIChE Journal 7(2) (1961) 264-267",
+         "doi": "10.1002/aic.690070219"},
+
+
+
+    26:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1563,6 +1568,70 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+def ThG_MisicThodos(T, Tc, Pc, M, Cp):
+    """Calculates thermal conductivity of gas hydrocarbon at low pressure
+    using the Misic-Thodos correlation, also referenced in API Procedure
+    12B1.2 pag.1162
+
+    .. math::
+        \kappa = 1.188e^{-3}\frac{T_rC_p}{\lambda}   for Tr ≤ 1
+
+        \kappa = 2.67e^{-4}\left(14.52T_r-5.14\right)^{2/3}
+        \frac{C_p}{\lambda}   for Tr ≤ 1
+
+        \lambda=\frac{T_{c}^{1/6}}{M^{1/2}P_{c}^{2/3}}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+    Cp : float
+        Isobaric heat capacity, [cal/gK]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [cal/scmK]
+
+    Notes
+    -----
+    Range of validity:
+        P ≤ 50 psi
+
+    Examples
+    --------
+    Example in [5]_, 2-methylbutane at 212ºF and 1 atm
+    >>> T = unidades.Temperature(212, "F")
+    >>> Tc = unidades.Temperature(369.1, "F")
+    >>> Pc = unidades.Pressure(498.38, "psi")
+    >>> cp = unidades.SpecificHeat(34.49/72.15, "BtulbF")
+    >>> "%0.3f" % ThG_MisicThodos(T, Tc, Pc, 72.15, cp).BtuhftF
+    '0.013'
+
+    References
+    ----------
+    .. [25] Misic, D., Thodos, G. The Thermal Conductivity of Hydrocarbon
+        Gases at Normal Pressures. AIChE Journal 7(2) (1961) 264-267
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Pc_atm = Pc/101325
+    Tr = T/Tc
+    cp = unidades.MolarSpecificHeat(Cp*M).calmolK
+
+    l = Tc**(1/6)*M**0.5/Pc_atm**(2/3)
+    if Tr < 1:
+        k = 0.445e-5*Tr*cp/l                                            # Eq 6
+    else:
+        k = 1e-6*(14.52*Tr-5.14)**(2/3)*cp/l                            # Eq 7
+    return unidades.ThermalConductivity(k, "calscmK")
+
+
 def ThG_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -2091,30 +2160,21 @@ class Componente(object):
 
     def ThCond_Gas(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1136"""
-        ThCondG=self.Config.getint("Transport","ThCondG")
+        ThCondG = self.Config.getint("Transport", "ThCondG")
         p=unidades.Pressure(P)
-        if p.psi<50:
-            if ThCondG==0 and self._dipprKG and self._dipprKG[6]<=T<=self._dipprKG[7]:
+        if p.psi < 50:
+            if ThCondG == 0 and self._dipprKG and \
+                    self._dipprKG[6] <= T <= self._dipprKG[7]:
                 return self.DIPPR("kG", T, self._dipprKG)
             else:
-                return self.ThCond_Gas_Misic_Thodos(T)
+                cp = self.Cp_Gas(T)
+                return ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
             return self.ThCond_Gas_Nonhidrocarbon(T, P)
         else:
             # TODO: fix crooks methods with lost lee_kesler library
             return self.ThCond_Gas(T, 101325.)
 #            return self.ThCond_Gas_Crooks(T, P)
-
-    def ThCond_Gas_Misic_Thodos(self, T):
-        """Método alternativo para el cálculo de la conductividad térmica de gases a baja presión <4 atm, API Procedure 12B1.2 pag.1162"""
-        l=(self.Tc.R)**(1./6)*self.M**0.5*(1/self.Pc.atm)**(2./3)
-        cp=self.Cp_Gas_DIPPR(T)
-        #TODO: Cuando se añada alguna propiedad en la base de datos que defina la naturaleza cíclica de los componentes se podrá generalizar este metodo a una temperatura reducida menor de 1 para compuestos cíclicos e hidrógeno, de momento todos se calculan por el metodo de tr mayor de 1.
-#        if self.tr(T)<1:
-#            k=1.188e-3*self.tr(T)*cp.BtulbF/l
-#        else:
-        k=2.67e-4*(14.52*self.tr(T)-5.14)**(2.0/3)*cp.BtulbF*self.M/l
-        return unidades.ThermalConductivity(k, "BtuhftF")
 
     def ThCond_Gas_Crooks(self, T, P):
         """Método alternativo para el cálculo de la conductividad térmica de gases a alta presión >4 atm, API Procedure 12B4.1 pag.1170"""
