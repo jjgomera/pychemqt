@@ -179,10 +179,15 @@ __doi__ = {
                   "Pressures",
          "ref": "AIChE Journal 7(2) (1961) 264-267",
          "doi": "10.1002/aic.690070219"},
-
-
-
     26:
+        {"autor": "Yen, L.C., Woods, S.S.",
+         "title": "A Generalized Equation for Computer Calculation of Liquid "
+                  "Densities",
+         "ref": "AIChE Journal 12(1) (1966) 95-99",
+         "doi": "10.1002/aic.690120119"},
+
+
+    27:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -444,6 +449,56 @@ def RhoL_Costald(T, Tc, w, Vc):
     # TODO: Add V* to the database
     V = Vc*Vr0*(1-w*Vr1)                                               # Eq 16
     return unidades.Density(1/V)
+
+
+def RhoL_YenWoods(T, Tc, Vc, Zc):
+    """Calculates saturation liquid density using the Yen-Woods correlation
+
+    .. math::
+        \rho_s/\rho_c = 1 + A(1-T_r)^{1/3} + B(1-T_r)^{2/3} + D(1-T_r)^{4/3}
+
+        A = 17.4425 - 214.578Z_c + 989.625Z_c^2 - 1522.06Z_c^3
+
+        B = -3.28257 + 13.6377Z_c + 107.4844Z_c^2-384.211Z_c^3
+        \text{ if } Zc \le 0.26
+
+        B = 60.2091 - 402.063Z_c + 501Z_c^2 + 641Z_c^3
+        \text{ if } Zc \ge 0.26
+
+        D = 0.93-B
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume, [m^3/mol]
+    Zc : float
+        Critical compressibility factor, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [26] Yen, L.C., Woods, S.S. A Generalized Equation for Computer
+        Calculation of Liquid Densities. AIChE Journal 12(1) (1966) 95-99
+    """
+    Tr = T/Tc
+    A = 17.4425 - 214.578*Zc + 989.625*Zc**2 - 1522.06*Zc**3           # Eq 4
+    if Zc <= 0.26:
+        B = -3.28257 + 13.6377*Zc + 107.4844*Zc**2 - 384.211*Zc**3     # Eq 5A
+    else:
+        B = 60.2091 - 402.063*Zc + 501.0*Zc**2 + 641.0*Zc**3           # Eq 5B
+    D = 0.93 - B                                                       # Eq 6
+
+    # Eq 2
+    rhos = Vc*(1 + A*(1-Tr)**(1/3) + B*(1-Tr)**(2/3) + D*(1-Tr)**(4/3))
+    return unidades.Density(rhos)
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
@@ -1711,7 +1766,7 @@ class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
-    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD"]
+    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -2027,6 +2082,8 @@ class Componente(object):
                 else:
                     w = self.f_acent
                 return RhoL_Costald(T, self.Tc, w, self.Vc)
+            elif rhoL == 4:
+                return RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
