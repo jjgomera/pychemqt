@@ -26,6 +26,7 @@ import tempfile
 from scipy import exp, cosh, sinh, log, log10, roots, absolute, sqrt
 from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro
+from scipy.interpolate import interp1d
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
 from lib import unidades, config, eos, sql
@@ -191,9 +192,14 @@ __doi__ = {
                   "Volumes",
          "ref": "AIChE Journal 17(6) (1971) 1341-1345",
          "doi": "10.1002/aic.690170613"},
-
-
     28:
+        {"autor": "Bhirud, V.L.",
+         "title": "Saturated Liquid Densities of Normal Fluids",
+         "ref": "AIChE Journal 24(6) (1978) 1127-1131",
+         "doi": "10.1002/aic.690240630"},
+
+
+    29:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -559,6 +565,69 @@ def RhoL_YamadaGunn(T, Tc, Pc, w):
 
     V = Vsc*Vr*(1-w*d)                                                  # Eq 1
     return unidades.Density(1/V)
+
+
+def RhoL_Bhirud(T, Tc, Pc, w):
+    """Calculates saturation liquid density using the Bhirud correlation
+
+    .. math::
+        \ln \frac{P_c V_s}{RT} = \ln U^{(0)} + \omega\ln U^{(1)}
+
+        \ln U^{(0)} = 1.39644 - 24.076T_r + 102.615T_r^2 - 255.719T_r^3
+        + 355.805T_r^4 - 256.671T_r^5 + 75.1088T_r^6
+
+        \ln U^{(1)} = 13.4412 - 135.7437T_r + 533.380T_r^2 - 1091.453T_r^3
+        + 1231.43T_r^4 - 728.227T_r^5 + 176.737T_r^6
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    Raises
+    ------
+    NotImplementedError : If Tr is > 1
+
+    References
+    ----------
+    .. [28] Bhirud, V.L. Saturated Liquid Densities of Normal Fluids. AIChE
+        Journal 24(6) (1978) 1127-1131
+    """
+    Tr = T/Tc
+    if Tr <= 0.98:
+        lnU0 = 1.39644 - 24.076*Tr + 102.615*Tr**2 - 255.719*Tr**3 \
+            + 355.805*Tr**4 - 256.671*Tr**5 + 75.1088*Tr**6            # Eq 9
+        lnU1 = 13.4412 - 135.7437*Tr + 533.380*Tr**2 - 1091.453*Tr**3 \
+            + 1231.43*Tr**4 - 728.227*Tr**5 + 176.737*Tr**6            # Eq 10
+    elif Tr < 1:
+        # Interpolation data from Table 1
+        Trs_ = [0.98, 0.982, 0.984, 0.986, 0.988, 0.99, 0.992, 0.994, 0.996,
+                0.998, 0.999, 1]
+        lnU0_ = [-1.6198, -1.604, -1.59, -1.578, -1.564, -1.548, -1.533,
+                 -1.515, -1.489, -1.454, -1.425, -1.243]
+        lnU1_ = [-0.4626, -0.459, -0.451, -0.441, -0.428, -0.412, -0.392,
+                 -0.367, -0.337, -0.302, -0.283, -0.2629]
+
+        lnU0 = interp1d(Trs_, lnU0_, kind='cubic')(Tr)
+        lnU1 = interp1d(Trs_, lnU1_, kind='cubic')(Tr)
+    else:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 8
+    U = exp(lnU0 + w*lnU1)
+    Vs = U*R*T/Pc
+    return unidades.Density(1/Vs)
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
@@ -1827,7 +1896,7 @@ class Componente(object):
     _bool = False
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
-                    "Yamada-Gun"]
+                    "Yamada-Gun", "Bhirud"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -2147,6 +2216,8 @@ class Componente(object):
                 return RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
             elif rhoL == 5:
                 return RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
+            elif rhoL == 6:
+                return RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
