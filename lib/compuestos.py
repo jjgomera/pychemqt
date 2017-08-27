@@ -197,9 +197,15 @@ __doi__ = {
          "title": "Saturated Liquid Densities of Normal Fluids",
          "ref": "AIChE Journal 24(6) (1978) 1127-1131",
          "doi": "10.1002/aic.690240630"},
-
-
     29:
+        {"autor": "Mchaweh, A., Alsaygh, A., Nasrifar, Kh., Moshfeghian, M.",
+         "title": "A Simplified Method for Calculating Saturated Liquid "
+                  "Densities",
+         "ref": "Fluid Phase Equilibria 224 (2004) 157-167",
+         "doi": "10.1016/j.fluid.2004.06.054"},
+
+
+    30:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -628,6 +634,135 @@ def RhoL_Bhirud(T, Tc, Pc, w):
     U = exp(lnU0 + w*lnU1)
     Vs = U*R*T/Pc
     return unidades.Density(1/Vs)
+
+
+def RhoL_Mchaweh(T, Tc, Vc, w, delta):
+    """Calculates saturated liquid density using the Mchaweh et Al. correlation
+
+    .. math::
+        \rho_s = \rho_c\rho_o\left[1+\delta_{SRK}\left(\alpha_{SRK}-1
+        \right)^{1/3}\right]
+
+        \rho_o = 1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3}
+
+        \tau = 1-\frac{(T_r)}{\alpha_{SRK}}
+
+        \alpha_{SRK} = \left[1 + m\left(1-\sqrt{T_r}\right)\right]^2
+
+        m = 0.480 + 1.574\omega - 0.176\omega^2
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume, [m^3/kg]
+    w : float
+        Acentric factor, [-]
+    delta : float
+        Correlation parameter, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [29] Mchaweh, A., Alsaygh, A., Nasrifar, Kh., Moshfeghian, M. A
+        Simplified Method for Calculating Saturated Liquid Densities. Fluid
+        Phase Equilibria 224 (2004) 157-167
+    """
+    Tr = T/Tc
+
+    m = 0.480 + 1.574*w - 0.176*w**2                                   # Eq 14
+    alpha = (1+m*(1-Tr**0.5))**2                                       # Eq 15
+    tau = 1 - Tr/alpha                                                 # Eq 17
+
+    rho0 = 1 + 1.169*tau**(1/3) + 1.818*tau**(2/3) - 2.658*tau + \
+        2.161*tau**(4/3)                                               # Eq 16
+
+    rhos = rho0/Vc*(1+delta*(alpha-1)**(1/3))           # Eq 15
+    return unidades.Density(rhos)
+
+Mchaweh_d = {28: 0.57510,
+             24: 2.09626,
+             35: 2.42033,
+             83: 1.37209,
+             146: -0.13014,
+             130: -1.03473,
+             140: 1.75281,
+             65: 0.07747,
+             63: 6.79976,
+             98: -3.25962,
+             40: 1.44502,
+             343: 2.68664,
+             # biphenyl : 4.33458,
+             6: 0.13196,
+             49: 1.54186,
+             48: 0.80200,
+             105: 1.30100,
+             172: 4.46227,
+             # chloroethane, R-160 : 6.09099,
+             25: 1.12156,
+             30: 5.68825,
+             # cumene : 3.93381,
+             38: -0.45300,
+             325: 2.70939,
+             36: -0.28797,
+             69: 1.79061,
+             14: 5.12504,
+             3: -1.46429,
+             22: -0.46558,
+             45: 2.94376,
+             59: 0.94253,
+             162: 0.10621,
+             208: -3.03979,
+             50: 0.59860,
+             1: -19.75170,
+             5: 3.10327,
+             27: 0.98728,
+             7: 0.09888,
+             61: 4.21712,
+             145: -1.10422,
+             # Krypton : 4.50251,
+             2: -3.20525,
+             117: 0.71947,
+             39: -0.57591,
+             37: 0.59017,
+             160: 0.23343,
+             107: -5.63803,
+             11: 1.87922,
+             10: 1.19300,
+             46: -0.79463,
+             91: -3.71806,
+             13: 3.60629,
+             # Deuterium : -5.33454,
+             8: 0.62738,
+             90: 9.08709,
+             12: 3.64147,
+             47: -2.70491,
+             19: 6.93421,
+             229: -2.62285,
+             400: -1.76731,
+             57: 10.90360,
+             4: -0.25595,
+             23: 1.47939,
+             # R-134 : -8.66475,
+             # R-245 : 1.16965,
+             # R-32 : 6.66817,
+             # R-40 : 7.86026,
+             # R-500 : -2.47818,
+             # R-502 : 0.54781,
+             # R-C318 : 1.04585,
+             51: 3.29577,
+             100: -1.31517,
+             41: 1.39931,
+             26: 0.19733,
+             # xenon : -1.27292,
+             }
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
@@ -1896,7 +2031,7 @@ class Componente(object):
     _bool = False
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
-                    "Yamada-Gun", "Bhirud"]
+                    "Yamada-Gun", "Bhirud", "Mchaweh"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -2218,6 +2353,9 @@ class Componente(object):
                 return RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
             elif rhoL == 6:
                 return RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent)
+            elif rhoL == 7:
+                d = Mchaweh_d.get(self.id, 0)/100
+                return RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
