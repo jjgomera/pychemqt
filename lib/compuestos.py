@@ -185,9 +185,15 @@ __doi__ = {
                   "Densities",
          "ref": "AIChE Journal 12(1) (1966) 95-99",
          "doi": "10.1002/aic.690120119"},
-
-
     27:
+        {"autor": "Gunn, R.D., Yamada, T.",
+         "title": "A Corresponding States Correlation of Saturated Liquid "
+                  "Volumes",
+         "ref": "AIChE Journal 17(6) (1971) 1341-1345",
+         "doi": "10.1002/aic.690170613"},
+
+
+    28:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -499,6 +505,60 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     # Eq 2
     rhos = Vc*(1 + A*(1-Tr)**(1/3) + B*(1-Tr)**(2/3) + D*(1-Tr)**(4/3))
     return unidades.Density(rhos)
+
+
+def RhoL_YamadaGunn(T, Tc, Pc, w):
+    """Calculates saturation liquid volume, using Gunn-Yamada correlation
+
+    .. math::
+        V/V_sc = V_R^{(0)}\right(1-\omega\delta\left)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    Notes
+    -----
+    The equation is defined in [27]_ in volumen terms.
+
+    References
+    ----------
+    .. [23] Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
+        Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
+    .. [27] Gunn, R.D., Yamada, T. A Corresponding States Correlation of
+        Saturated Liquid Volumes. AIChE Journal 17(6) (1971) 1341-1345
+    """
+    Tr = T/Tc
+
+    if Tr < 0.8:
+        # Eq 3
+        Vr = 0.33593-0.33953*Tr+1.51941*Tr**2-2.02512*Tr**3+1.11422*Tr**4
+    elif Tr < 1:
+        # Eq 4
+        Vr = 1+1.3*(1-Tr)**0.5*log10(1-Tr)-0.50879*(1-Tr)-0.91534*(1-Tr)**2
+    elif Tr == 1:
+        Vr = 1
+
+    # Eq 5
+    d = 0.29607-0.09045*Tr-0.04842*Tr**2
+
+    Zsc = 0.292-0.0967*w                                                # Eq 7
+    Vsc = Zsc*R*Tc/Pc
+
+    V = Vsc*Vr*(1-w*d)                                                  # Eq 1
+    return unidades.Density(1/V)
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
@@ -1766,7 +1826,8 @@ class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
-    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods"]
+    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
+                    "Yamada-Gun"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -2084,6 +2145,8 @@ class Componente(object):
                 return RhoL_Costald(T, self.Tc, w, self.Vc)
             elif rhoL == 4:
                 return RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
+            elif rhoL == 5:
+                return RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
