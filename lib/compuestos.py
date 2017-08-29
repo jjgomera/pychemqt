@@ -203,9 +203,15 @@ __doi__ = {
                   "Densities",
          "ref": "Fluid Phase Equilibria 224 (2004) 157-167",
          "doi": "10.1016/j.fluid.2004.06.054"},
-
-
     30:
+        {"autor": "Chang, C.H., Zhao, X.M.",
+         "title": "A New Generalized Equation for Predicting Volume of "
+                  "Compressed Liquids",
+         "ref": "Fluid Phase Equilibria, 58 (1990) 231-238",
+         "doi": "10.1016/0378-3812(90)85134-v"},
+
+
+    31:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -407,7 +413,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
 def RhoL_Costald(T, Tc, w, Vc):
     """Calculates saturated liquid densities of pure components using the
     Corresponding STAtes Liquid Density (COSTALD) method, developed by
-    Hankingon and Thomson, referenced too in API procedure 6A2.15 pag. 462
+    Hankinson and Thomson, referenced too in API procedure 6A2.15 pag. 462
 
     .. math::
         \frac{V}{V^{o}}=V_{R}^{(0)}\left(1-\omega_{SRK}V_{R}^{(1)}\right)
@@ -767,7 +773,8 @@ Mchaweh_d = {28: 0.57510,
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
     """Calculates compressed-liquid density, using the Thomson-Brobst-
-    Hankinson correlation, also referenced in API procedure 6A2.23 pag. 477
+    Hankinson generalization of Tait equation, also referenced in API procedure
+    6A2.23 pag. 477
 
     .. math::
         V = V_s\left(1-C\ln\frac{B + P}{B + P_s}\right)
@@ -790,7 +797,7 @@ def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
         Critical pressure, [Pa]
     Ps : float
         Saturation pressure, [Pa]
-    omega : float
+    w : float
         Acentric factor (SRK optimized), [-]
     rhos : float
         Saturation liquid volume, [kg/m^3]
@@ -831,6 +838,116 @@ def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
     # Eq 5
     rho = rhos/(1-C*log((B+P)/(B+Ps)))
     return unidades.Density(rho, "gl")
+
+
+def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
+    """Calculates compressed-liquid density, using the Chang-Zhao correlation
+
+    .. math::
+        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}}
+        {AP_c + C\left(P-P_{vp}}
+
+        A=\sum_{i=0}^{5}a_{i}T_{r}^{i}
+
+        B=\sum_{j=0}^{2}b_{j}\omega^{j}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Ps : float
+        Saturation pressure, [Pa]
+    w : float
+        Acentric factor (SRK optimized), [-]
+    rhos : float
+        Saturation liquid volume, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    References
+    ----------
+    .. [30] Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
+        Volume of Compressed Liquids. Fluid Phase Equilibria, 58 (1990) 231-238
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+    Psr = Ps/Pc
+
+    # Constants, Table 2
+    a = (99.42, -78.68, -75.18, 41.49, 7.257)
+    b = (0.38144, -0.30144)
+
+    A = sum(ai*Tr**i for i, ai in enumerate(a))                         # Eq 8
+    B = sum(bi*w**i for i, bi in enumerate(b))                          # Eq 7
+
+    # Eq 5
+    rho = rhos*(A+2.81*(Pr-Psr))/(A+2.81**(1.1-Tr)**B*(Pr-Psr))         # Eq 9
+    return unidades.Density(rho)
+
+
+def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
+    """Calculates compressed-liquid density, using the Aalto-Keskinen
+    modification of Chang-Zhao correlation
+
+    .. math::
+        V = V_s\left(1-C\ln\frac{B + P}{B + P_s}\right)
+
+        \frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}
+
+        e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)
+
+        C = j + k \omega_{SRK}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Ps : float
+        Saturation pressure, [Pa]
+    w : float
+        Acentric factor (SRK optimized), [-]
+    rhos : float
+        Saturation liquid volume, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    References
+    ----------
+    .. [30] Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
+        Volume of Compressed Liquids. Fluid Phase Equilibria, 58 (1990) 231-238
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+    Psr = Ps/Pc
+
+    # Constants, Table 2
+    a = (99.42, -78.68, -75.18, 41.49, 7.257)
+    b = (0.38144, -0.30144)
+
+    A = sum(ai*Tr**i for i, ai in enumerate(a))                         # Eq 8
+    B = sum(bi*w**i for i, bi in enumerate(b))                          # Eq 7
+
+    # Eq 5
+    rho = rhos*(A+2.81*(Pr-Psr))/(A+2.81**(1.1-Tr)**B*(Pr-Psr))         # Eq 9
+    return unidades.Density(rho)
 
 
 # Vapor pressure correlation
@@ -2032,7 +2149,7 @@ class Componente(object):
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
                     "Yamada-Gun", "Bhirud", "Mchaweh"]
-    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
+    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -2381,6 +2498,14 @@ class Componente(object):
                 Ps = self.Pv(T)
                 return RhoL_ThomsonBrobstHankinson(
                     T, P, self.Tc, self.Pc, w, Ps, rhos)
+            elif corr == 1:
+                if self.f_acent_mod:
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
+                rhos = self.RhoL(T, 101325)
+                Ps = self.Pv(T)
+                return RhoL_ChangZhao(T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
                 return self.RhoL_API(T, P)
 
