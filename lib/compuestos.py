@@ -215,9 +215,14 @@ __doi__ = {
                   "Hydrocarbons. Part 1. Pure Compounds",
          "ref": "Fluid Phase Equilibria 114 (1996) 1-19",
          "doi": "10.1016/0378-3812(95)02822-6"},
-
-
     32:
+        {"autor": "L. Riedel, Chem. Eng. Tech. 26 (1954) 259.",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+
+    33:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -527,7 +532,7 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     D = 0.93 - B                                                       # Eq 6
 
     # Eq 2
-    rhos = Vc*(1 + A*(1-Tr)**(1/3) + B*(1-Tr)**(2/3) + D*(1-Tr)**(4/3))
+    rhos = (1 + A*(1-Tr)**(1/3) + B*(1-Tr)**(2/3) + D*(1-Tr)**(4/3))/Vc
     return unidades.Density(rhos)
 
 
@@ -777,6 +782,39 @@ Mchaweh_d = {28: 0.57510,
              }
 
 
+def RhoL_Riedel(T, Tc, Vc, w):
+    """Calculates saturation liquid density using the Riedel correlation
+
+    .. math::
+        \rho_s/\rho_c = 1 + 0.85\left(1-T_r\right) +
+        \left(1.6916+0.984\omega\right)\left(1-T_r\right)^{1/3}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume, [m^3/mol]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [32] 
+    """
+    Tr = T/Tc
+
+    rhos = (1+0.85*(1-Tr)+(1.6916+0.984*w)*(1-Tr)**(1/3))/Vc
+    return unidades.Density(rhos)
+
+
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
     """Calculates compressed-liquid density, using the Thomson-Brobst-
     Hankinson generalization of Tait equation, also referenced in API procedure
@@ -908,9 +946,9 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
         V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}}
         {AP_c + C\left(P-P_{vp}}
 
-        A=\sum_{i=0}^{5}a_{i}T_{r}^{i}
+        A = a_0 + a_1T_r + a_2T_r^3 + a_3T_r^6 + a_4/T_r
 
-        B=\sum_{j=0}^{2}b_{j}\omega^{j}
+        B = b_0 + \omega_SRKb_1
 
     Parameters
     ----------
@@ -2186,7 +2224,7 @@ class Componente(object):
     _bool = False
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
-                    "Yamada-Gun", "Bhirud", "Mchaweh"]
+                    "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
                      "Aalto-Keskinen", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
@@ -2512,6 +2550,8 @@ class Componente(object):
             elif rhoL == 7:
                 d = Mchaweh_d.get(self.id, 0)/100
                 return RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
+            elif rhoL == 8:
+                return RhoL_Riedel(T, self.Tc, self.Vc, self.f_acent)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
