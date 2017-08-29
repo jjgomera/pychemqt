@@ -209,9 +209,15 @@ __doi__ = {
                   "Compressed Liquids",
          "ref": "Fluid Phase Equilibria, 58 (1990) 231-238",
          "doi": "10.1016/0378-3812(90)85134-v"},
-
-
     31:
+        {"autor": "Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S.",
+         "title": "An Improved Correlation for Compressed Liquid Densities of "
+                  "Hydrocarbons. Part 1. Pure Compounds",
+         "ref": "Fluid Phase Equilibria 114 (1996) 1-19",
+         "doi": "10.1016/0378-3812(95)02822-6"},
+
+
+    32:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -899,13 +905,12 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     modification of Chang-Zhao correlation
 
     .. math::
-        V = V_s\left(1-C\ln\frac{B + P}{B + P_s}\right)
+        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}}
+        {AP_c + C\left(P-P_{vp}}
 
-        \frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}
+        A=\sum_{i=0}^{5}a_{i}T_{r}^{i}
 
-        e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)
-
-        C = j + k \omega_{SRK}
+        B=\sum_{j=0}^{2}b_{j}\omega^{j}
 
     Parameters
     ----------
@@ -917,10 +922,10 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
         Critical temperature, [K]
     Pc : float
         Critical pressure, [Pa]
-    Ps : float
-        Saturation pressure, [Pa]
     w : float
         Acentric factor (SRK optimized), [-]
+    Ps : float
+        Saturation pressure, [Pa]
     rhos : float
         Saturation liquid volume, [kg/m^3]
 
@@ -929,25 +934,58 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     rho : float
         High-pressure liquid density, [kg/m^3]
 
+    Notes
+    -----
+    This correlation improve the Hankinson-Boost-Thomson and Chung-Huang method
+    in the region near to Tc.
+
+    Examples
+    --------
+    Example 4-8 from [1]_; ammonia at 400bar at 300K and 400K
+    >>> P = unidades.Pressure(400, "bar")
+    >>> Pc = unidades.Pressure(113.53, "bar")
+    >>> Ps1 = unidades.Pressure(10.61, "bar")
+    >>> rs1 = unidades.Density(1/28.38*17.031, "gcc")
+    >>> r1 = RhoL_AaltoKeskinen(300, P, 405.4, Pc, 0.256, Ps1, rs1)
+    >>> Ps2 = unidades.Pressure(102.97, "bar")
+    >>> rs2 = unidades.Density(1/49.15*17.031, "gcc")
+    >>> r2 = RhoL_AaltoKeskinen(400, P, 405.4, Pc, 0.256, Ps2, rs2)
+    >>> "%0.2f %0.2f" % (1/r1.gcc*17.031, 1/r2.gcc*17.031)
+    '27.19 35.60'
+
+    Example 4-9 from [1]_; m-cresol at 3000bar and 503.15K
+    >>> P = unidades.Pressure(3000, "bar")
+    >>> Pc = unidades.Pressure(45.6, "bar")
+    >>> Ps = unidades.Pressure(1, "bar")
+    >>> rs = unidades.Density(1/127.31*108.14, "gcc")
+    >>> r = RhoL_AaltoKeskinen(503.15, P, 705.7, Pc, 0.452, Ps, rs)
+    >>> "%0.2f" % (1/r.gcc*108.14)
+    '112.97'
+
     References
     ----------
-    .. [30] Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
-        Volume of Compressed Liquids. Fluid Phase Equilibria, 58 (1990) 231-238
+    .. [31] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+        Correlation for Compressed Liquid Densities of Hydrocarbons. Part 1.
+        Pure Compounds. Fluid Phase Equilibria 114 (1996) 1-19
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Pr = P/Pc
     Psr = Ps/Pc
 
-    # Constants, Table 2
-    a = (99.42, -78.68, -75.18, 41.49, 7.257)
-    b = (0.38144, -0.30144)
+    # Constants, Table 4
+    a = (-170.335, -28.5784, 124.809, -55.5393, 130.010)
+    b = (0.164813, -0.0914427)
+    C = math.e
 
-    A = sum(ai*Tr**i for i, ai in enumerate(a))                         # Eq 8
-    B = sum(bi*w**i for i, bi in enumerate(b))                          # Eq 7
+    A = a[0] + a[1]*Tr + a[2]*Tr**3 + a[3]*Tr**6 + a[4]/Tr             # Eq 17
+    B = b[0] + b[1]*w                                                  # Eq 18
 
     # Eq 5
-    rho = rhos*(A+2.81*(Pr-Psr))/(A+2.81**(1.1-Tr)**B*(Pr-Psr))         # Eq 9
+    rho = rhos*(A+C*(Pr-Psr))/(A+C**(1.00588-Tr)**B*(Pr-Psr))          # Eq 14
     return unidades.Density(rho)
+
 
 
 # Vapor pressure correlation
@@ -2149,7 +2187,8 @@ class Componente(object):
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
                     "Yamada-Gun", "Bhirud", "Mchaweh"]
-    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao", "API"]
+    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
+                     "Aalto-Keskinen", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -2506,6 +2545,14 @@ class Componente(object):
                 rhos = self.RhoL(T, 101325)
                 Ps = self.Pv(T)
                 return RhoL_ChangZhao(T, P, self.Tc, self.Pc, w, Ps, rhos)
+            elif corr == 2:
+                if self.f_acent_mod:
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
+                rhos = self.RhoL(T, 101325)
+                Ps = self.Pv(T)
+                return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
                 return self.RhoL_API(T, P)
 
