@@ -220,9 +220,14 @@ __doi__ = {
          "title": "",
          "ref": "",
          "doi": ""},
-
-
     33:
+        {"autor": "Rea, H.E., Spencer, C.F., Danner, R.P.",
+         "title": "Effect of Pressure and Temperature on the Liquid Densities "
+                  "of Pure Hydrocarbons",
+         "ref": "J. Chem. Eng. Data 18(2) (1973) 227-230",
+         "doi": "10.1021/je60057a003"},
+
+    34:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1055,6 +1060,64 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     rho = rhos*(A+C*(Pr-Psr))/(A+C**(1.00588-Tr)**B*(Pr-Psr))          # Eq 14
     return unidades.Density(rho)
 
+
+def RhoL_API(T, P, Tc, Pc, SG, rhos):
+    """Calculates compressed-liquid density, using the analytical expression of
+    Lu Chart referenced in API procedure 6A2.22
+
+    .. math::
+        \rho_2 = \rho_1\frac{C_2}{SG}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    SG : float
+        Specific gravity at 60ºF, [-]
+    rhos : float
+        Liquid density at 60ºF, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    Examples
+    --------
+    Example from [5]_; n-nonane at 220ºF and 1000psi, the API databook use the
+    original Lu Chart so the result don't have to be exact
+    >>> T = unidades.Temperature(220, "F")
+    >>> P = unidades.Pressure(1000, "psi")
+    >>> Tc = unidades.Temperature(610.7, "F")
+    >>> Pc = unidades.Pressure(332, "psi")
+    >>> rs = unidades.Density(44.94, "lbft3")
+    >>> "%0.1f" % RhoL_API(T, P, Tc, Pc, 1.077, rs).lbft3
+    '41.7'
+
+    References
+    ----------
+    .. [33] Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
+        Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
+        Data 18(2) (1973) 227-230
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Pr = P/Pc
+    Tr = T/Tc
+    A0 = 1.6368-0.04615*Pr+2.1138e-3*Pr**2-0.7845e-5*Pr**3-0.6923e-6*Pr**4
+    A1 = -1.9693+0.21874*Pr-8.0028e-3*Pr**2-8.2328e-5*Pr**3+5.2604e-6*Pr**4
+    A2 = 2.4638-0.36461*Pr+12.8763e-3*Pr**2+14.8059e-5*Pr**3-8.6895e-6*Pr**4
+    A3 = -1.5841+0.25136*Pr-11.3805e-3*Pr**2+9.5672e-5*Pr**3+2.1812e-6*Pr**4
+    C2 = A0 + A1*Tr + A2*Tr**2 + A3*Tr**3
+
+    # Eq 1
+    d2 = rhos*C2/SG
+    return unidades.Density(d2)
 
 
 # Vapor pressure correlation
@@ -2631,30 +2694,8 @@ class Componente(object):
                 Ps = self.Pv(T)
                 return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
-                return self.RhoL_API(T, P)
-
-    def RhoL_API(self, T, P):
-        """Método alternativo para calcular la densidad de líquidos haciendo uso del método API
-        Dens2=dens1*C2/C1
-        donde:  C2,C1: valor empirico que se calcula a partir de una tabla de valores, C2 a T y P dadas, C1 a 60F y 1 atm
-                dens1: densidad a 60ºF y 1 atm, situada en la base de datos en el puesto veintisiete
-                densidad obtenida en mol/l"""
-        pr=P/self.Pc
-        A02=1.6368-0.04615*pr+2.1138e-3*pr**2-0.7845e-5*pr**3-0.6923e-6*pr**4
-        A12=-1.9693-0.21874*pr-8.0028e-3*pr**2-8.2328e-5*pr**3+5.2604e-6*pr**4
-        A22=2.4638-0.36461*pr-12.8763e-3*pr**2+14.8059e-5*pr**3-8.6895e-6*pr**4
-        A32=-1.5841-0.25136*pr-11.3805e-3*pr**2+9.5672e-5*pr**3+2.1812e-6*pr**4
-        C2=A02+A12*self.tr(T)+A22*self.tr(T)**2+A32*self.tr(T)**3
-        A01=1.6368-0.04615*self.pr(1)+2.1138e-3*self.pr(1)**2-0.7845e-5*self.pr(1)**3-0.6923e-6*self.pr(1)**4
-        A11=-1.9693-0.21874*self.pr(1)-8.0028e-3*self.pr(1)**2-8.2328e-5*self.pr(1)**3+5.2604e-6*self.pr(1)**4
-        A21=2.4638-0.36461*self.pr(1)-12.8763e-3*self.pr(1)**2+14.8059e-5*self.pr(1)**3-8.6895e-6*self.pr(1)**4
-        A31=-1.5841-0.25136*self.pr(1)-11.3805e-3*self.pr(1)**2+9.5672e-5*self.pr(1)**3+2.1812e-6*self.pr(1)**4
-        t1=unidades.Temperature(60, "F")
-        C1=A01+A11*self.tr(t1)+A21*self.tr(t1)**2+A31*self.tr(t1)**3
-        d2=self.SG*1000*C2/C1
-        #FIXME: C2 no sale bien, sale muchas veces negativo, repaso, repaso, pero no se porqué
-
-        return unidades.Density(d2, "gl")
+                rhos = self.RhoL(T, 101325)
+                return RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos):
 
     def Pv(self, T):
         """Vapor pressure calculation procedure using the method defined in
@@ -3576,5 +3617,3 @@ if __name__ == '__main__':
 #    print [agua.Tension_Parametrica(t) for t in range(300, 350, 10)]
 #    print agua.RhoL_Tait_Costald(300, 1)
 #    print agua.Tc, agua.Pc.bar, agua.f_acent
-
-
