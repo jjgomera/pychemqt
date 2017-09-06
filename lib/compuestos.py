@@ -130,10 +130,12 @@ __doi__ = {
          "ref": "Can. J. Chem. Eng. 47 (1969) 427-430",
          "doi": "10.1002/cjce.5450470502"},
     17:
-        {"autor": "Riedel, L., Chem. Ingr. Tech., 26 (1954): 679.",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Riedel, L.",
+         "title": "Kritischer Koeffizient, Dichte des gesättigten Dampfes und "
+                  "Verdampfungswärme: Untersuchungen über eine Erweiterung des"
+                  " Theorems der übereinstimmenden Zustände. Teil III",
+         "ref": "Chem. Ingr. Tech., 26(12) (1954) 679-683",
+         "doi": "10.1002/cite.330261208"},
     18:
         {"autor": "Riedel, L.",
          "title": "Die Zustandsfunktion des realen Gases: Untersuchungen über "
@@ -216,18 +218,25 @@ __doi__ = {
          "ref": "Fluid Phase Equilibria 114 (1996) 1-19",
          "doi": "10.1016/0378-3812(95)02822-6"},
     32:
-        {"autor": "L. Riedel, Chem. Eng. Tech. 26 (1954) 259.",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Riedel, L.",
+         "title": "Die Flüssigkeitsdichte im Sättigungszustand. Untersuchungen"
+                  " über eine Erweiterung des Theorems der übereinstimmenden "
+                  "Zustände. Teil II.",
+         "ref": "Chem. Eng. Tech. 26(5) (1954) 259-264",
+         "doi": "10.1002/cite.330260504"},
     33:
         {"autor": "Rea, H.E., Spencer, C.F., Danner, R.P.",
          "title": "Effect of Pressure and Temperature on the Liquid Densities "
                   "of Pure Hydrocarbons",
          "ref": "J. Chem. Eng. Data 18(2) (1973) 227-230",
          "doi": "10.1021/je60057a003"},
-
     34:
+        {"autor": "Chueh, P.L., Prausnitz, J.M.",
+         "title": "Vapor-Liquid Equilibria at High Pressures: Calculation of "
+                  "Partial Molar Volumes in Nonpolar Liquid Mixtures",
+         "ref": "AIChE Journal 13(6) (1967) 1099-1107",
+         "doi": "10.1002/aic.690130612"},
+    35:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -498,7 +507,7 @@ def RhoL_Cavett(T, Tc, M, Vliq):
     .. math::
         \frac{1}{\rho} = V_{liq}\left(5.7+3*T_r\right)
 
-    Vliq is the liquid mole volume constant saved in database for many compounds
+    Vliq is the liquid volume constant saved in database for many compounds
 
     Parameters
     ----------
@@ -843,12 +852,66 @@ def RhoL_Riedel(T, Tc, Vc, w):
 
     References
     ----------
-    .. [32]
+    .. [32] Riedel, L. Die Flüssigkeitsdichte im Sättigungszustand.
+        Untersuchungen über eine Erweiterung des Theorems der übereinstimmenden
+        Zustände. Teil II. Chem. Eng. Tech. 26(5) (1954) 259-264
     """
     Tr = T/Tc
 
     rhos = (1+0.85*(1-Tr)+(1.6916+0.984*w)*(1-Tr)**(1/3))/Vc
     return unidades.Density(rhos)
+
+
+def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
+    """Calculates saturation liquid density using the Chueh-Prausnitz
+    correlation
+
+    .. math::
+        V_s/V_c = V_R^{(0)} + \omegaV_R^{(1)} + \omega^2V_R^{(2)}
+
+        V_R^{(i)} = a^{(i)} + b^{(i)}T_R + c^{(i)}T_R^2 + d^{(i)}T_R^3 +
+        e^{(i)}/T_R + f^{(i)}\ln{1-T_R}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume, [m^3/mol]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    rhos : float
+        Liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [33] Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
+        Pressures: Calculation of Partial Molar Volumes in Nonpolar Liquid
+        Mixtures. AIChE Journal 13(6) (1967) 1099-1107
+    """
+    # Table 1
+    a = (0.11917, 0.98465, -0.55314)
+    b = (0.009513, -1.60378, -0.15793)
+    c = (0.21091, 1.82484, -1.01601)
+    d = (-0.06922, -0.61432, 0.34095)
+    e = (0.07480, -0.34546, 0.46795)
+    f = (-0.084476, 0.087037, -0.239938)
+
+    Tr = T/Tc
+
+    # Eq 6
+    v0 = a[0] + b[0]*Tr + c[0]*Tr**2 + d[0]*Tr**3 + e[0]/Tr + f[0]*log(1-Tr)
+    v1 = a[1] + b[1]*Tr + c[1]*Tr**2 + d[1]*Tr**3 + e[1]/Tr + f[1]*log(1-Tr)
+    v2 = a[2] + b[2]*Tr + c[2]*Tr**2 + d[2]*Tr**3 + e[2]/Tr + f[2]*log(1-Tr)
+
+    # Eq 5
+    Vr = v0 + w*v1 + w**2*v2
+    return unidades.Density(1/Vr/Vc)
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
@@ -1856,7 +1919,10 @@ def Vc_Riedel(Tc, Pc, w, M):
 
     References
     ----------
-    .. [17]
+    .. [17] Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
+        und Verdampfungswärme: Untersuchungen über eine Erweiterung des
+        Theorems der übereinstimmenden Zustände. Teil III. Chem. Ingr. Tech.,
+        26(12) (1954) 679-683
     .. [18] Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
         über eine Erweiterung des Theorems der übereinstimmenden Zustände.
         Chem. Ings-Tech. 28 (1956) 557-562
@@ -2318,7 +2384,8 @@ class Componente(object):
     _bool = False
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
-                    "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel"]
+                    "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel",
+                    "Chueh-Prausnitz"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
                      "Aalto-Keskinen", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
@@ -2652,6 +2719,8 @@ class Componente(object):
                 return RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
             elif rhoL == 8:
                 return RhoL_Riedel(T, self.Tc, self.Vc, self.f_acent)
+            elif rhoL == 9:
+                return RhoL_ChuehPrausnitz(T, self.Tc, self.Vc, self.f_acent)
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
@@ -2695,7 +2764,7 @@ class Componente(object):
                 return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
                 rhos = self.RhoL(T, 101325)
-                return RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos):
+                return RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos)
 
     def Pv(self, T):
         """Vapor pressure calculation procedure using the method defined in
