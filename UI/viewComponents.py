@@ -1355,7 +1355,7 @@ class View_Component(QtWidgets.QDialog):
         self.index = index
         self.cmp = Componente(index)
         self.name.setText("%i - %s" % (self.cmp.id, self.cmp.nombre))
-        self.alternateName.setText(self.cmp.nombre_alternativo)
+        self.alternateName.setText(self.cmp.Synonyms)
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
         if self.cmp.smile != "" and os.environ["oasa"] == "True":
@@ -1389,10 +1389,10 @@ class View_Component(QtWidgets.QDialog):
             self.w.setValue(self.cmp.f_acent)
         if self.cmp.SG:
             self.SG.setValue(self.cmp.SG)
-        if self.cmp.calor_formacion:
-            self.calorFormacionGas.setValue(self.cmp.calor_formacion)
-        if self.cmp.energia_formacion:
-            self.energiaGibbsGas.setValue(self.cmp.energia_formacion)
+        if self.cmp.Hf:
+            self.calorFormacionGas.setValue(self.cmp.Hf)
+        if self.cmp.Gf:
+            self.energiaGibbsGas.setValue(self.cmp.Gf)
         self.cpa.setValue(self.cmp.cp[0])
         self.cpb.setValue(self.cmp.cp[1])
         self.cpc.setValue(self.cmp.cp[2])
@@ -1422,16 +1422,16 @@ class View_Component(QtWidgets.QDialog):
         if self.cmp.MSRK[0] != 0 and self.cmp.MSRK[1] != 0:
             self.MSRKa.setValue(self.cmp.MSRK[0])
             self.MSRKb.setValue(self.cmp.MSRK[1])
-        if self.cmp.parametro_solubilidad:
-            self.SolubilityPar.setValue(self.cmp.parametro_solubilidad)
-        if self.cmp.momento_dipolar:
-            self.Dipole.setValue(self.cmp.momento_dipolar)
-        if self.cmp.diametro_molecular:
-            self.MolecularDiameter.setValue(self.cmp.diametro_molecular)
-        if self.cmp.calor_combustion_neto:
-            self.NetHeat.setValue(self.cmp.calor_combustion_neto)
-        if self.cmp.calor_combustion_bruto:
-            self.GrossHeat.setValue(self.cmp.calor_combustion_bruto)
+        if self.cmp.SolubilityParameter:
+            self.SolubilityPar.setValue(self.cmp.SolubilityParameter)
+        if self.cmp.dipole:
+            self.Dipole.setValue(self.cmp.dipole)
+        if self.cmp.Dm:
+            self.MolecularDiameter.setValue(self.cmp.Dm)
+        if self.cmp.NetHeating:
+            self.NetHeat.setValue(self.cmp.NetHeating)
+        if self.cmp.GrossHeating:
+            self.GrossHeat.setValue(self.cmp.GrossHeating)
         if self.cmp.Vliq:
             self.VolLiqConstant.setValue(self.cmp.Vliq)
         if self.cmp.API:

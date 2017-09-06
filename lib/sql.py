@@ -188,7 +188,7 @@ def inserElementsFromArray(name, lista):
 def updateElement(elemento, indice):
     """Update element with indice in custom Database"""
     variables = [
-        "formula", "nombre", "peso_molecular", "tc", "pc", "vc", "API",
+        "formula", "name", "M", "tc", "pc", "vc", "API",
         "Cp_ideal_A", "Cp_ideal_B", "Cp_ideal_C", "Cp_ideal_D", "Cp_ideal_E",
         "Cp_ideal_F", "antoine_A", "antoine_B", "antoine_C", "henry_A",
         "henry_B", "henry_C", "henry_D", "visco_A", "visco_B", "tension_A",
@@ -218,18 +218,18 @@ def updateElement(elemento, indice):
         "ThcondG_DIPPR_tmin", "ThcondG_DIPPR_tmax", "tension_DIPPR_EQ",
         "tension_DIPPR_A", "tension_DIPPR_B", "tension_DIPPR_C",
         "tension_DIPPR_D", "tension_DIPPR_E", "tension_DIPPR_tmin",
-        "tension_DIPPR_tmax", "momento_dipolar", "constante_volumen_liquido",
-        "constante_rackett", "densidad_especifica", "factor_acentrico",
-        "parametro_solubilidad", "watson", "MSRK_A", "MSRK_B", "Stiehl",
-        "t_ebullicion", "t_fusion", "CAS_id", "formula_alternativa", "UNIFAC",
-        "diametro_molecular", "Eps_k", "UNIQUAC_area", "UNIQUAC_volumen",
-        "factor_acentrico_modificado", "calor_formacion_gas",
-        "energia_libre_gas", "volumen_wilson", "calor_combustion_neto",
-        "calor_combustion_bruto", "nombre_alternativo",
+        "tension_DIPPR_tmax", "dipole", "V_liq",
+        "Rackett", "SG", "f_acent",
+        "SolubilityParameter", "watson", "MSRK_A", "MSRK_B", "Stiehl",
+        "Tb", "Tf", "CAS", "alternateFormula", "UNIFAC",
+        "Dm", "Eps_k", "UNIQUAC_area", "UNIQUAC_volumen",
+        "f_acent_MSRK", "Hf",
+        "Gf", "volumen_wilson", "NetHeating",
+        "GrossHeating", "Synonyms",
         "volumen_caracteristico", "calor_formacion_solido",
         "energia_libre_solido", "parametro_polar", "smile", "antoine_to",
         "antoine_n", "antoine_E", "antoine_F", "wagner_a", "wagner_b",
-        "wargner_c", "wagner_d"]
+        "wagner_c", "wagner_d"]
     vals = transformElement(elemento)
 
     conn = sqlite3.connect(databank_Custom_name)

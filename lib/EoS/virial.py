@@ -483,7 +483,7 @@ class Virial(EoS):
                 # Use general correlation
                 Bi, Bit, Bitt = B_Tsonopoulos(
                         self.T, comp.Tc, comp.Pc, comp.f_acent,
-                        comp.momento_dipolar)
+                        comp.dipole)
         B.append(Bi)
         Bt.append(Bit)
         Btt.append(Bitt)

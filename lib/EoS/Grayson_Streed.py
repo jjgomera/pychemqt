@@ -59,13 +59,13 @@ class Grayson_Streed(EoS):
         Vi=[]
         for i in range(len(self.componente)):
             Vi.append(self.componente[i].Vc*self.componente[i].M)
-            suma1+=xi[i]*Vi[i]*self.componente[i].parametro_solubilidad
+            suma1+=xi[i]*Vi[i]*self.componente[i].SolubilityParameter
             suma2+=xi[i]*Vi[i]
         dim=suma1/suma2
 
         gi=[]
         for i in range(len(self.componente)):
-            gi.append(exp(Vi[i]/1e6*(self.componente[i].parametro_solubilidad-dim)**2/R/self.T))
+            gi.append(exp(Vi[i]/1e6*(self.componente[i].SolubilityParameter-dim)**2/R/self.T))
         nio=[]
         for i in self.componente:
             tr=i.tr(self.T)

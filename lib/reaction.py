@@ -147,8 +147,8 @@ class Reaction(object):
         self.keq = self.kwargs["keq"]
 
         databank = sqlite3.connect(databank_name).cursor()
-        databank.execute("select nombre, peso_molecular, formula, \
-                         calor_formacion_gas from compuestos where id  IN \
+        databank.execute("select nombre, peso_molecular, formula, Hf from \
+                         compuestos where id  IN \
                          %s" % str(tuple(self.componentes)))
         nombre = []
         peso_molecular = []

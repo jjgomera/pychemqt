@@ -369,15 +369,15 @@ class Mezcla(config.Entity):
                             if i == 1 or j == 1:
                                 kijk.append(1/(344.23*exp(-0.48586*T/databank.base_datos[1][3])+1))
                             elif i == 2 or j == 2:
-                                kijk.append(0.014*(abs(self.componente[self.ids.index(i)].parametro_solubilidad-self.componente[self.ids.index(j)].parametro_solubilidad)))
+                                kijk.append(0.014*(abs(self.componente[self.ids.index(i)].SolubilityParameter-self.componente[self.ids.index(j)].SolubilityParameter)))
                             elif i == 46 or j == 46:
-                                kijk.append(0.0403*(abs(self.componente[self.ids.index(i)].parametro_solubilidad-self.componente[self.ids.index(j)].parametro_solubilidad)))
+                                kijk.append(0.0403*(abs(self.componente[self.ids.index(i)].SolubilityParameter-self.componente[self.ids.index(j)].SolubilityParameter)))
                             elif i == 48 or j == 48:
                                 kijk.append(0)
                             elif i == 49 or j == 49:
                                 kijk.append(0.1)
                             elif i == 50 or j == 50:
-                                kijk.append(0.0316*(abs(self.componente[self.ids.index(i)].parametro_solubilidad-self.componente[self.ids.index(j)].parametro_solubilidad)))
+                                kijk.append(0.0316*(abs(self.componente[self.ids.index(i)].SolubilityParameter-self.componente[self.ids.index(j)].SolubilityParameter)))
                             else:
                                 kijk.append(0)
                 kij.append(kijk)

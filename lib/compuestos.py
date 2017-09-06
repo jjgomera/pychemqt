@@ -486,6 +486,36 @@ def RhoL_Costald(T, Tc, w, Vc):
     return unidades.Density(1/V)
 
 
+def RhoL_Cavett(T, Tc, M, Vliq):
+    """Calculates saturated liquid densities of pure components using the
+    Cavett equation. Referenced in Chemcad Physical properties user guide
+
+    .. math::
+        \frac{1}{\rho} = V_{liq}\left(5.7+3*T_r\right)
+
+    Vliq is the liquid mole volume constant saved in database for many compounds
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    M : float
+        Molecular weight, [g/mol]
+    Vliq : float
+        Liquid mole volume constant, [cm³/g]
+
+    Returns
+    -------
+    rho : float
+        Saturated liquid density at T, [kg/m³]
+    """
+    Tr = T/Tc
+    V = Vliq*(5.7+3*Tr)/M
+    return unidades.Density(1/V, "gcc")
+
+
 def RhoL_YenWoods(T, Tc, Vc, Zc):
     """Calculates saturation liquid density using the Yen-Woods correlation
 
@@ -704,6 +734,7 @@ def RhoL_Mchaweh(T, Tc, Vc, w, delta):
     rhos = rho0/Vc*(1+delta*(alpha-1)**(1/3))           # Eq 15
     return unidades.Density(rhos)
 
+
 Mchaweh_d = {28: 0.57510,
              24: 2.09626,
              35: 2.42033,
@@ -807,7 +838,7 @@ def RhoL_Riedel(T, Tc, Vc, w):
 
     References
     ----------
-    .. [32] 
+    .. [32]
     """
     Tr = T/Tc
 
@@ -2294,7 +2325,7 @@ class Componente(object):
         self._dipprKG = componente[105:113]
         self._dipprSigma = componente[113:121]
 
-        self.momento_dipolar = unidades.DipoleMoment(componente[121])
+        self.dipole = unidades.DipoleMoment(componente[121])
         if componente[123] != 0.0:
             self.rackett = componente[123]
         else:
@@ -2307,9 +2338,9 @@ class Componente(object):
             self.Vliq = 0
 
         if componente[126] != 0.0:
-            self.parametro_solubilidad = unidades.SolubilityParameter(componente[126])
+            self.SolubilityParameter = unidades.SolubilityParameter(componente[126])
         else:
-            self.parametro_solubilidad = self.Parametro_Solubilidad()
+            self.SolubilityParameter = self._SolubilityParameter()
         self.Kw = componente[127]
         self.MSRK = componente[128:130]
         if componente[130] != 0.0:
@@ -2319,22 +2350,28 @@ class Componente(object):
         # FIXME: No esta bien
 #            self.stiehl=self.Stiehl_Polar_factor()
         self.CASNumber = componente[133]
-        self.formula_alternativa = componente[134]
+        self.alternateFormula = componente[134]
         self.UNIFAC = eval(componente[135])
-        self.diametro_molecular = componente[136]
+        self.Dm = componente[136]
         self.ek = componente[137]
         self.UNIQUAC_area = componente[138]
         self.UNIQUAC_volumen = componente[139]
         if componente[140] == 0.0:
+            # See reference, really only use for MSRK:
+            # Compilation of Parameters for a Polar Fluid Soave-Redlich-Kwong
+            # Equation of State
+            # Jamal A. Sandarusi, Arthur J. Kidney, and Victor F. Yesavage
+            # Ind. Eng. Chem. Proc. Des. Dev.; 1988, 25, 957-963
             self.f_acent_mod = componente[125]
+
         else:
             self.f_acent_mod = componente[140]
-        self.calor_formacion = unidades.Enthalpy(componente[141]/self.M)
-        self.energia_formacion = unidades.Enthalpy(componente[142]/self.M)
+        self.Hf = unidades.Enthalpy(componente[141]/self.M)
+        self.Gf = unidades.Enthalpy(componente[142]/self.M)
         self.wilson = componente[143]
-        self.calor_combustion_neto = unidades.Enthalpy(componente[144]/self.M)
-        self.calor_combustion_bruto = unidades.Enthalpy(componente[145]/self.M)
-        self.nombre_alternativo = componente[146]
+        self.NetHeating = unidades.Enthalpy(componente[144]/self.M)
+        self.GrossHeating = unidades.Enthalpy(componente[145]/self.M)
+        self.Synonyms = componente[146]
         self.V_char = componente[147]
         self.calor_formacion_solido = componente[148]
         self.energia_formacion_solido = componente[149]
@@ -2534,7 +2571,7 @@ class Componente(object):
             elif rhoL == 1 and self.rackett != 0 and T < self.Tc:
                 return RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
             elif rhoL == 2 and self.Vliq != 0:
-                return self.RhoL_Cavett(T)
+                return RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
             elif rhoL == 3:
                 if self.f_acent_mod != 0:
                     w = self.f_acent_mod
@@ -2560,7 +2597,7 @@ class Componente(object):
                     return RhoL_Rackett(
                         T, self.Tc, self.Pc, self.rackett, self.M)
                 elif self.Vliq != 0:
-                    return self.RhoL_Cavett(T)
+                    return RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
                 else:
                     if self.f_acent_mod != 0:
                         w = self.f_acent_mod
@@ -2595,15 +2632,6 @@ class Componente(object):
                 return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
             else:
                 return self.RhoL_API(T, P)
-
-    def RhoL_Cavett(self, T):
-        """Método alternativo para calcular la densidad de liquidos haciendo uso
-        de la ecuación de Cavett:       V = Vol_Con * (5.7 + 3Tr)
-        donde   V: volumen de liquido en cc/mol
-                Vol_Con es una constante para cada compuesto, situada en la base de datos en el puesto veinticinco
-                Tr es la temperatura reducida
-                Densidad obtenida en g/l"""
-        return unidades.Density(1/(self.Vliq*(5.7+3*self.tr(T)))*1000*self.M)
 
     def RhoL_API(self, T, P):
         """Método alternativo para calcular la densidad de líquidos haciendo uso del método API
@@ -2789,9 +2817,9 @@ class Componente(object):
         ref Properties gases and liquids pag. 470
         """
         #Metodo de Chung (pouling pag 473)
-        if not self.diametro_molecular:
-            diametro_molecular=0.809*self.Vc*self.M**(1./3)
-        else: diametro_molecular=self.diametro_molecular
+        if not self.Dm:
+            dm=0.809*self.Vc*self.M**(1./3)
+        else: dm=self.Dm
         if not self.ek:
             ek=self.Tc/1.2593
         else: ek=self.ek
@@ -2801,7 +2829,7 @@ class Componente(object):
             omega=1.03036/T_**0.15610+0.193/exp(0.47635*T_)+1.03587/exp(1.52996*T_)+1.76474/exp(3.89411*T_)+0.19*self.parametro_polar**2/T_
         else: #No polar, colisión integral de Neufeld
             omega=1.16145/T_**0.14874+0.52487/exp(0.7732*T_)+2.16178/exp(2.43787*T_)
-        return unidades.Viscosity(26.69*(self.M*T)**0.5/diametro_molecular**2/omega, "microP")
+        return unidades.Viscosity(26.69*(self.M*T)**0.5/dm**2/omega, "microP")
 
     def Mu_Gas_Jossi(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de hidrocarburos gaseosos pesados a alta presión,
