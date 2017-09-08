@@ -247,8 +247,20 @@ __doi__ = {
          "title": "A Compressed Liquid Density Correlation",
          "ref": "Fluid Phase Equilibria 168 (2000) 149-163",
          "doi": "10.1016/s0378-3812(99)00336-2"},
-
     37:
+        {"autor": "Aalto, M., Keskinen, K.I.",
+         "title": "Liquid Densities at High Pressures",
+         "ref": "Fluid Phase Equilibria 166 (1999) 183-205",
+         "doi": "10.1016/s0378-3812(99)00300-3"},
+    38:
+        {"autor": "Pal, A., Pope, G., Arai, Y., Carnahan, N., Kobayashi, R.",
+         "title": "Experimental Pressure-Volume-Temperature Relations for "
+                  "Saturated and Compressed Fluid Ethane",
+         "ref": "J. Chem. Eng. Data 21(4) (1976) 394-397",
+         "doi": "10.1021@je60071a008"},
+
+
+    39:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1135,6 +1147,96 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
 
     # Eq 5
     rho = rhos*(A+C*(Pr-Psr))/(A+C**(1.00588-Tr)**B*(Pr-Psr))          # Eq 14
+    return unidades.Density(rho)
+
+
+def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
+    """Calculates compressed-liquid density, using the Aalto-Keskinen
+    modification of Chang-Zhao correlation extended to a more high pressure
+    range
+
+    .. math::
+        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)^E}
+        {AP_c + C\left(P-P_{vp}\right)^E}
+
+        A = a_0 + a_1T_r + a_2T_r^3 + a_3T_r^6 + a_4/T_r
+
+        B = b_0 + \frac{b_1}{b_2+\omega_SRK}
+
+        C = c_1\left(1-T_r\right)^{c_2}+\left(1-\left(1-T_r\right)^{c_2}\right)
+        \exp\left(c_3+c_4\left(P-P_s\right)\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor (SRK optimized), [-]
+    Ps : float
+        Saturation pressure, [Pa]
+    rhos : float
+        Saturation liquid density, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    Notes
+    -----
+    This correlation increase the high pressure range of previous Aalto
+    Correlation
+
+    Examples
+    --------
+    Selected values from experimental data for ethane used in correlation
+    development, [38]_
+    >>> from lib.mEoS.C2 import C2
+    >>> et = C2()
+    >>> Ps = et._Vapor_Pressure(293.608)
+    >>> rhos = et._Liquid_Density(293.608)
+    >>> rho = RhoL_AaltoKeskinen2(293.608, 71.4671e6, C2.Tc, C2.Pc, \
+            C2.f_acent, Ps, rhos)
+    >>> "%0.2f" % rho.gcc
+    '0.50'
+
+    >>> Ps = et._Vapor_Pressure(281.789)
+    >>> rhos = et._Liquid_Density(281.789)
+    >>> rho = RhoL_AaltoKeskinen2(281.789, 8.4e6, C2.Tc, C2.Pc, \
+            C2.f_acent, Ps, rhos)
+    >>> "%0.2f" % rho.gcc
+    '0.41'
+
+    References
+    ----------
+    .. [37] Aalto, M., Keskinen, K.I. Liquid Densities at High Pressures. Fluid
+        Phase Equilibria 166 (1999) 183-205
+    .. [38] Pal, A.K., Pope, G.A., Arai, Y., Carnahan, N.F., Kobayashi, R.
+        Experimental Pressure-Volume-Temperature Relations for Saturated and
+        Compressed Fluid Ethane. J. Chem. Eng. Data 21(4) (1976) 394-397
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+    Psr = Ps/Pc
+
+    # Constants, Table 2
+    a = (482.85416, -1154.2977, 790.09727, -212.14413, 93.4904)
+    b = (0.0264002, 0.42711522, 0.5)
+    c = (9.2892236, 2.5103968, 0.59397220, 0.0010895002)
+    E = 0.80329503
+
+    A = a[0] + a[1]*Tr + a[2]*Tr**3 + a[3]*Tr**6 + a[4]/Tr             # Eq 5
+    B = b[0] + b[1]/(b[2]+w)                                           # Eq 6
+    C = c[0]*(1-Tr)**c[1] + (1-(1-Tr)**c[1])*exp(c[2]+c[3]*(Pr-Psr))   # Eq 7
+
+    # Eq 4
+    rho = rhos*(A+C*(Pr-Psr)**E)/(A+C**(1.00001-Tr)**B*(Pr-Psr)**E)    # Eq 14
     return unidades.Density(rho)
 
 
@@ -2477,7 +2579,8 @@ class Componente(object):
                     "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel",
                     "Chueh-Prausnitz"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
-                     "Aalto-Keskinen", "Nasrifar", "API"]
+                     "Aalto-Keskinen (1996)", "Aalto-Keskinen (1999)",
+                     "Nasrifar", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -2853,6 +2956,14 @@ class Componente(object):
                 Ps = self.Pv(T)
                 return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
             elif corr == 3:
+                if self.f_acent_mod:
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
+                rhos = self.RhoL(T, 101325)
+                Ps = self.Pv(T)
+                return RhoL_AaltoKeskinen2(T, P, self.Tc, self.Pc, w, Ps, rhos)
+            elif corr == 4:
                 if self.f_acent_mod:
                     w = self.f_acent_mod
                 else:
