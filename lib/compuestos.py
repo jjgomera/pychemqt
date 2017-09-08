@@ -237,6 +237,18 @@ __doi__ = {
          "ref": "AIChE Journal 13(6) (1967) 1099-1107",
          "doi": "10.1002/aic.690130612"},
     35:
+        {"autor": "Spencer, C.F., Danner, R.P.",
+         "title": "Improved Equation for Prediction of Saturated Liquid "
+                  "Density",
+         "ref": "J. Chem. Eng. Data 17(2) (1972) 236-241",
+         "doi": "10.1021/je60053a012"},
+    36:
+        {"autor": "Nasrifar, K., Ayatollahi, S., Moshfeghian, M.",
+         "title": "A Compressed Liquid Density Correlation",
+         "ref": "Fluid Phase Equilibria 168 (2000) 149-163",
+         "doi": "10.1016/s0378-3812(99)00336-2"},
+
+    37:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -390,7 +402,7 @@ def DIPPR(prop, T, args, Tc=None, M=None):
 # Liquid density correlations
 def RhoL_Rackett(T, Tc, Pc, Zra, M):
     """Calculates saturated liquid densities of pure components using the
-    modified Rackett equation, referenced too in API procedure 6A2.13 pag. 454
+    modified Rackett equation by Spencer-Danner
 
     .. math::
         \frac{1}{\rho_s} = \frac{RT_c}{P_c}Z_{RA}^{1+(1-{T/T_c})^{2/7}}
@@ -415,7 +427,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
 
     Examples
     --------
-    Example from [5]_; propane at 30ºF
+    Example from [5]_; propane at 30ºF, API procedure 6A2.13 pag.454
 
     >>> T = unidades.Temperature(30, "F")
     >>> Tc = unidades.Temperature(206.06, "F")
@@ -427,6 +439,8 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
     ----------
     .. [21] Rackett, H.G. Equation of State for Saturated Liquids. J. Chem.
         Eng. Data 15(4) (1970) 514-517
+    .. [35] Spencer, C.F., Danner, R.P. Improved Equation for Prediction of
+        Saturated Liquid Density. J. Chem. Eng. Data 17(2) (1972) 236-241
     .. [5] API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
@@ -1064,7 +1078,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     Ps : float
         Saturation pressure, [Pa]
     rhos : float
-        Saturation liquid volume, [kg/m^3]
+        Saturation liquid density, [kg/m^3]
 
     Returns
     -------
@@ -1122,6 +1136,82 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     # Eq 5
     rho = rhos*(A+C*(Pr-Psr))/(A+C**(1.00588-Tr)**B*(Pr-Psr))          # Eq 14
     return unidades.Density(rho)
+
+
+def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
+    """Calculates compressed liquid density using the Nasrifar correlation
+
+    .. math::
+        \frac{v-v_{s}}{v_{\infty}-v_{s}}=C\Psi
+
+        \Psi=\frac{J+L\left(P_{r}-P_{rs}\right)+M\left(P_{r}-P_{rs}\right)^{3}}
+        {F+G\left(P_{r}-P_{rs}\right)+I\left(P_{r}-P_{rs}\right)^{3}}
+
+        J=j_{0}+j_{1}\left(1-T_{r}\right)^{1/3}+j_{2}\left(1-T_{r}\right)^{2/3}
+
+        F=f_{0}\left(1-T_{r}\right)
+
+        C=c_{0}+c_{1}\omega_{SRK}
+
+        v_{\infty}=\varOmega\frac{RT_{c}}{P_{c}}
+
+        \varOmega=\varOmega_{0}+\varOmega_{1}\omega_{SRK}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
+    Ps : float
+        Saturation pressure, [Pa]
+    rhos : float
+        Saturation liquid density, [kg/m^3]
+
+    Returns
+    -------
+    rho : float
+        Liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [36] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
+        Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
+    """
+    # Table 1
+    j = (1.3168e-3, 3.4448e-2, 5.4131e-2)
+    L = 9.6840e-2
+    M = 8.6761e-6
+    f = 48.8756
+    G = 0.7185
+    I = 3.4031e-5
+    c = (5.5526, -2.7659)
+    om = (7.9019e-2, -2.8431e-2)
+
+    Tr = T/Tc
+    Pr = P/Pc
+    Prs = Ps/Pc
+    vs = 1/rhos
+
+    J = j[0] + j[1]*(1-Tr)**(1/3) + j[2]*(1-Tr)**(2/3)                 # Eq 17
+    F = f*(1-Tr)                                                       # Eq 18
+    C = c[0] + c[1]*w                                                  # Eq 19
+    OM = om[0] + om[1]*w                                               # Eq 21
+
+    # R value change to mass base in unit m³Pa/kgK
+    v_inf = OM*R*1000/M*Tc/Pc                                          # Eq 18
+
+    phi = (J+L*(Pr-Prs)+M*(Pr-Prs)**3)/(F+G*(Pr-Prs)+I*(Pr-Prs)**3)    # Eq 16
+
+    # Eq 9
+    v = C*phi*(v_inf-vs)-vs
+    return unidades.Density(1/v)
 
 
 def RhoL_API(T, P, Tc, Pc, SG, rhos):
@@ -2387,7 +2477,7 @@ class Componente(object):
                     "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel",
                     "Chueh-Prausnitz"]
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
-                     "Aalto-Keskinen", "API"]
+                     "Aalto-Keskinen", "Nasrifar", "API"]
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -2762,6 +2852,14 @@ class Componente(object):
                 rhos = self.RhoL(T, 101325)
                 Ps = self.Pv(T)
                 return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
+            elif corr == 3:
+                if self.f_acent_mod:
+                    w = self.f_acent_mod
+                else:
+                    w = self.f_acent
+                rs = self.RhoL(T, 101325)
+                Ps = self.Pv(T)
+                return RhoL_Nasrifar(T, P, self.Tc, self.Pc, w, self.M, Ps, rs)
             else:
                 rhos = self.RhoL(T, 101325)
                 return RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos)
