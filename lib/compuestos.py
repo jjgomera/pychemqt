@@ -258,9 +258,20 @@ __doi__ = {
                   "Saturated and Compressed Fluid Ethane",
          "ref": "J. Chem. Eng. Data 21(4) (1976) 394-397",
          "doi": "10.1021@je60071a008"},
-
-
     39:
+        {"autor": "Brock, J.R., Bird, R.B.",
+         "title": "Surface Tension and the Principle of Corresponding States",
+         "ref": "AIChE Journal 1(2) (1955) 174-177",
+         "doi": "10.1002/aic.690010208"},
+    40:
+        {"autor": "Miller, D.G., Thodos, G.",
+         "title": "Reduced Frost-Kalkwarf Vapor Pressure Equation",
+         "ref": "I&EC Fundamentals 2(1) (1963) 78-80",
+         "doi": "10.1021/i160005a015"},
+
+
+
+    41:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2546,6 +2557,62 @@ def ThG_RiaziFaghri(T, Tb, SG):
     k = A*Tb_R**B*SG**C                                                # Eq 7
     return unidades.ThermalConductivity(k, "BtuhftF")
 
+def Sigma_BlockBird(T, Tc, Pc, Tb):
+    """Calculates surface tension of liquid using the Block-Bird correlation
+    using the Miller expression for α.
+
+    .. math::
+        \frac{\sigma}{P_c^{2/3}T_c^{1/3}} = \left(0.132\alfa_c-0.279\right)
+        \left(1-T_r\right)^{11/9}
+
+        \alfa_c = 0.9076\left(1+\frac{T_br\ln{P_c}{1-T_{br}}\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Tb : float
+        Normal boiling temperature, [K]
+
+    Returns
+    -------
+    sigma : float
+        Surface tension, [N/m]
+
+    Examples
+    --------
+    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    >>> "%0.1f" % Sigma_BlockBird(303, 499, 54.9e5, 308.15).dyncm
+    '22.4'
+
+    References
+    ----------
+    .. [39] Brock, J.R., Bird, R.B. Surface Tension and the Principle of
+        Corresponding States. AIChE Journal 1(2) (1955) 174-177
+    .. [40] Miller, D.G., Thodos, G. Correspondence. Reduced Frost-Kalkwarf
+        Vapor Pressure Equation. I&EC Fundamentals 2(1) (1963) 78-80
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Trb = Tb/Tc
+    Pc_atm = Pc/101325
+    Pc_bar = Pc*1e-5
+
+    # Eq 9 in [40]_
+    alfa = 0.9076*(1+Trb*log(Pc_atm)/(1-Trb))
+
+    # Eq 11 in [39]_, Coefficient from [5]_
+    sr = (0.132*alfa-0.279)*(1-Tr)**(11/9)
+
+    # Eq 5 in [39]_
+    sigma = sr*Pc_bar**(2/3)*Tc**(1/3)
+    return unidades.Tension(sigma, "dyncm")
+
 
 def Rackett(w):
     """Calculate the rackett constant using the Yamada-Gunn generalized
@@ -2717,8 +2784,6 @@ class Componente(object):
         else:
             self.branched = True
 
-        # TODO: Añadir las contribuciones de grupos de parachor a la base de datos
-        self.parachor = []
         # TODO: Añadir los tipos de cada elemento
         self.hidrocarburo = True
         self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
@@ -3351,10 +3416,9 @@ class Componente(object):
             return DIPPR("sigma", T, self._dipprSigma)
         elif tension == 1 and self._parametricSigma:
             return Tension_Parametric(T, self._parametricSigma, self.Tc)
-        elif tension==2 and self.parachor:
-            return self.Tension_Parachor(T)
-        elif tension==3:
-            return self.Tension_MIller(T)
+        elif tension == 2:
+            return Sigma_BlockBird(T, self.Tc, self.Pc, self.Tb)
+
         elif tension==4 and self.stiehl:
             return self.Tension_Hakim(T)
         elif tension==5 and self.Kw:
@@ -3365,14 +3429,13 @@ class Componente(object):
                 return DIPPR("sigma", T, self._dipprSigma)
             elif self._parametricSigma:
                 return Tension_Parametric(T, self._parametricSigma, self.Tc)
-            elif self.parachor:
-                return self.Tension_Parachor(T)
             elif self.stiehl:
                 return self.Tension_Hakim(T)
             elif self.Kw:
                 return self.Tension_Hydrocarbon(T)
             else:
-                return self.Tension_MIller(T)
+                return Sigma_BlockBird(T, self.Tc, self.Pc, self.Tb)
+
 
     def Tension_Hakim(self, T):
         """Método alternativo para el cálculo de la tensión superficial de líquidos.
@@ -3381,13 +3444,6 @@ class Componente(object):
         Qp=0.1574+0.385*self.f_acent-1.769*self.stiehl-13.69*self.stiehl**2-0.510*self.f_acent**2+1.298*self.f_acent*self.stiehl
         m=1.21+0.5385*self.f_acent-14.61*self.stiehl-32.07*self.stiehl**2-1.656*self.f_acent**2+22.03*self.f_acent*self.stiehl
         return unidades.Tension(self.Pc.atm**0.67*self.Tc**0.33*Qp*((1-self.tr(T))/0.4)**m, "dyncm")
-
-    def Tension_Block_Bird(self, T):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos.
-        ref Eq.8.88 Riazi-Characterization of petroleum fractions pag 373"""
-        Tbr=self.Tb/self.Tc
-        Q=0.1196*(1+Tbr*log(self.Pc.atm)/(1-Tbr))-0.279
-        return unidades.Tension(self.Pc.atm**0.67*self.Tc**0.33*Q*(1-self.tr(T))**(11./9), "dyncm")
 
     def Tension_Miqueu(self, T):
         """Método alternativo para el cálculo de la tensión superficial de líquidos.
@@ -3399,21 +3455,6 @@ class Componente(object):
         """Método alternativo para el cálculo de la tensión superficial de líquidos"""
         t=unidades.Temperature(T)
         return unidades.Tension(673.7/self.Kw*((self.Tc.R-t.R)/self.Tc.R)**1.232, "dyncm")
-
-    def Tension_MIller(self, T):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos"""
-        Q=0.1207*(1+self.tr(self.Tb)*log(self.Pc.atm)/(1-self.tr(self.Tb)))-0.281
-        return unidades.Tension(self.Pc.atm**0.67*self.Tc**0.33*Q*(1-self.tr(T))**(11.0/9), "dyncm")
-
-    def Tension_Parachor(self, T, parachor):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos haciendo uso de las contribuciones de grupos
-        API procedure 10A1.4, pag 987"""
-        #TODO: Mientras no sepa como automatizar el cálculo de las contribuciones de grupo, habra que indicarlo como parámetro
-        rhoL = DIPPR("rhoL", T, self._dipprRhoL, M=self.M)/1000
-        rhoG=self.RhoG_Lee_Kesler(T, 1)*self.M/1000
-        sigma=(parachor/self.M*(rhoL-rhoG))**4
-        return unidades.Tension(sigma, "dyncm")
-
 
 
 
