@@ -276,10 +276,17 @@ __doi__ = {
                   "Calculation of Interfacial Tensions",
          "ref": "Can. J. Chem. Eng. 75(6) (1997) 1130-1137",
          "doi": "10.1002/cjce.5450750617"},
-
-
-
     42:
+        {"autor": "Sastri, S.R.S., Rao, K.K.",
+         "title": "A Simple Method to Predict Surface Tension of Organic "
+                  "Liquids",
+         "ref": "Chem. Eng. Journal 59(2) (1995) 181-186",
+         "doi": "10.1016/0923-0467(94)02946-6."},
+
+
+
+
+    43:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1216,7 +1223,7 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     --------
     Selected values from experimental data for ethane used in correlation
     development, [38]_
-    >>> from lib.mEoS.C2 import C2
+    >>> from lib.mEoS import C2
     >>> et = C2()
     >>> Ps = et._Vapor_Pressure(293.608)
     >>> rhos = et._Liquid_Density(293.608)
@@ -2693,6 +2700,64 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
     return unidades.Tension(sigma, "dyncm")
 
 
+def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
+    """Calculates surface tension of a liquid using the Sastri-Rao correlation
+
+    .. math::
+        \sigma = KT_b^xP_c^yT_{br}^z\left(\frac{T_c-T}{T_c-T_b}\right)^m
+
+    Parameters
+    ----------
+    T : float
+        Temperature of fluid [K]
+    Tb : float
+        Boiling temperature of the fluid [K]
+    Tc : float
+        Critical temperature of fluid [K]
+    Pc : float
+        Critical pressure of fluid [Pa]
+
+    Returns
+    -------
+    sigma : float
+        Liquid surface tension, N/m
+
+    Examples
+    --------
+    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    >>> "%0.2f" % Tension_SastriRao(303, 499, 54.9e5, 308.15).dyncm
+    '21.92'
+
+    Selected point in Table 3 of [42]_
+    >>> from lib.mEoS import Acetone as Ac
+    >>> "%0.2f" % Tension_SastriRao(298.16, Ac.Tc, Ac.Pc, Ac.Tb).dyncm
+    '22.36'
+
+    >>> from lib.mEoS import Methanol as Met
+    >>> "%0.2f" % Tension_SastriRao(333.16, Met.Tc, Met.Pc, Met.Tb, True).dyncm
+    '19.34'
+
+    References
+    ----------
+    .. [42] Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
+        Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
+    """
+    if alcohol:
+        K, x, y, z, m = 2.28, 0.175, 0.25, 0, 0.8
+    elif acid:
+        K, x, y, z, m = 0.125, 0.35, 0.5, -1.85, 11/9
+    else:
+        K, x, y, z, m = 0.158, 0.35, 0.5, -1.85, 11/9
+
+    Tbr = Tb/Tc
+    Pc_bar = Pc*1e-5
+
+    # Eq 3
+    sigma = K * Tb**x * Pc_bar**y * Tbr**z * ((Tc-T)/(Tc-Tb))**m
+    return unidades.Tension(sigma, "dyncm")
+
+
+
 def Rackett(w):
     """Calculate the rackett constant using the Yamada-Gunn generalized
     correlation
@@ -3499,6 +3564,11 @@ class Componente(object):
             return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
         elif tension == 3 and self.f_acent:
             return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
+        elif tension == 4:
+            return Tension_ZuoStenby(T, self.Tc, self.Pc, self.f_acent)
+        elif tension == 5:
+            return Tension_SastriRao(T, self.Tc, self.Pc, self.Tb,
+                    alcohol=self.isAlcohol, acid=self.isAcid)
 
         elif tension==4 and self.stiehl:
             return self.Tension_Hakim(T)
