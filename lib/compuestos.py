@@ -30,6 +30,8 @@ from scipy.interpolate import interp1d
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
 from lib import unidades, config, eos, sql
+from lib.mEoS.CH4 import CH4
+from lib.mEoS.nC8 import nC8
 
 
 __doi__ = {
@@ -268,10 +270,16 @@ __doi__ = {
          "title": "Reduced Frost-Kalkwarf Vapor Pressure Equation",
          "ref": "I&EC Fundamentals 2(1) (1963) 78-80",
          "doi": "10.1021/i160005a015"},
-
-
-
     41:
+        {"autor": "Zuo, Y., Stenby, E.H.",
+         "title": "Corresponding-States and Parachor Models for the "
+                  "Calculation of Interfacial Tensions",
+         "ref": "Can. J. Chem. Eng. 75(6) (1997) 1130-1137",
+         "doi": "10.1002/cjce.5450750617"},
+
+
+
+    42:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1787,39 +1795,6 @@ def Pv_Sanjari(T, Tc, Pc, w):
     Pv = Pc*exp(f0 + w*f1 + w**2*f2)
     return unidades.Pressure(Pv)
 
-
-def Tension_Parametric(T, args, Tc):
-    """Calculates surface tension of fluid using a paremtric equation
-
-    .. math::
-        $\sigma=A\left(1-T_{r}\right)^{B}$
-
-        Tr = \frac{T}{T_c}
-
-    Parameters
-    ----------
-    T : float
-        Temperature, [K]
-    args : list
-        Coefficients for equation
-    Tc : float
-        Critical temperature, [K]
-
-    Returns
-    -------
-    sigma : float
-        Surface tension, [N/m]
-
-    Notes
-    -----
-    The parameters for several compound are in database
-    """
-    A, B = args
-    Tr = T/Tc
-    sigma = A*(1-Tr)**B
-    return unidades.Tension(sigma)
-
-
 def MuL_Parametric(T, args):
     """Calculates liquid viscosity using a paremtric equation
 
@@ -2658,6 +2633,66 @@ def Tension_Pitzer(T, Tc, Pc, w):
     return unidades.Tension(sigma, "dyncm")
 
 
+def Tension_ZuoStenby(T, Tc, Pc, w):
+    """Calculates surface tension of liquid using the Zuo-Stenby correlation
+
+    .. math::
+        \sigma_r = \sigma_r^{(1)}+ \frac{\omega - \omega^{(1)}}
+        {\omega^{(2)}-\omega^{(1)}} \left(\sigma_r^{(2)}-\sigma_r^{(1)}\right)
+
+        \sigma_r = \ln{\left(\frac{\sigma}{T_c^{1/3}P_c^{2/3}} + 1\right)}
+
+        \sigma^{(1)} = 40.520(1-T_r)^{1.287}
+        \sigma^{(2)} = 52.095(1-T_r)^{1.21548}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    sigma : float
+        Liquid surface tension, N/m
+
+    Examples
+    --------
+    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    The procedure use the critical properties from meos library, something
+    diferent than Poling values, so the last decimal isn't exact
+    >>> "%0.0f" % Tension_ZuoStenby(303, 499, 54.9e5, 0.192).dyncm
+    '23'
+
+    References
+    ----------
+    .. [41] Zuo, Y., Stenby, E.H. Corresponding-States and Parachor Models for
+        the Calculation of Interfacial Tensions. Can. J. Chem. Eng. 75(6)
+        (1997) 1130-1137
+    """
+    Tr = T/Tc
+    Pc_bar = Pc*1e-5
+
+    s1 = 40.520*(1 - Tr)**1.287                               # Eq 7, methane
+    s2 = 52.095*(1 - Tr)**1.21548                             # Eq 8, n-octane
+
+    # Eq 2 for reference fluid
+    sr1 = log(s1/(CH4.Tc**(1/3)*CH4.Pc.bar**(2/3)) + 1)
+    sr2 = log(s2/(nC8.Tc**(1/3)*nC8.Pc.bar**(2/3)) + 1)
+
+    # Eq 1
+    sr = sr1 + (w-CH4.f_acent)/(nC8.f_acent-CH4.f_acent)*(sr2-sr1)
+
+    # Eq 2 for desired fluid
+    sigma = Tc**(1/3)*Pc_bar**(2/3)*(exp(sr)-1)
+    return unidades.Tension(sigma, "dyncm")
+
+
 def Rackett(w):
     """Calculate the rackett constant using the Yamada-Gunn generalized
     correlation
@@ -3460,8 +3495,10 @@ class Componente(object):
             return DIPPR("sigma", T, self._dipprSigma)
         elif tension == 1 and self._parametricSigma:
             return Tension_Parametric(T, self._parametricSigma, self.Tc)
-        elif tension == 2:
-            return Sigma_BlockBird(T, self.Tc, self.Pc, self.Tb)
+        elif tension == 2 and self.Tb:
+            return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
+        elif tension == 3 and self.f_acent:
+            return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
         elif tension==4 and self.stiehl:
             return self.Tension_Hakim(T)
@@ -3473,12 +3510,17 @@ class Componente(object):
                 return DIPPR("sigma", T, self._dipprSigma)
             elif self._parametricSigma:
                 return Tension_Parametric(T, self._parametricSigma, self.Tc)
+            elif self.Tb:
+                return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
+            elif self.f_acent:
+                return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
+
             elif self.stiehl:
                 return self.Tension_Hakim(T)
             elif self.Kw:
                 return self.Tension_Hydrocarbon(T)
             else:
-                return Sigma_BlockBird(T, self.Tc, self.Pc, self.Tb)
+                return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
 
 
     def Tension_Hakim(self, T):
