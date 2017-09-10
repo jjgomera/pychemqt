@@ -2586,7 +2586,7 @@ def Sigma_BlockBird(T, Tc, Pc, Tb):
     Examples
     --------
     Example 12.2 from [1]_; ethyl mercaptan at 303K
-    >>> "%0.1f" % Sigma_BlockBird(303, 499, 54.9e5, 308.15).dyncm
+    >>> "%0.1f" % Tension_BlockBird(303, 499, 54.9e5, 308.15).dyncm
     '22.4'
 
     References
@@ -2611,6 +2611,50 @@ def Sigma_BlockBird(T, Tc, Pc, Tb):
 
     # Eq 5 in [39]_
     sigma = sr*Pc_bar**(2/3)*Tc**(1/3)
+    return unidades.Tension(sigma, "dyncm")
+
+
+def Tension_Pitzer(T, Tc, Pc, w):
+    """Calculates surface tension of liquid using the Pitzer correlation as
+    explain in [1]_
+
+    .. math::
+        \sigma = P_c^{2/3}T_c^{1/3}\frac{1.86 + 1.18\omega}{19.05}
+        \left(\frac{3.75 + 0.91\omega}{0.291 - 0.08\omega}\right)^{2/3}
+        (1 - T_r)^{11/9}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    sigma : float
+        Surface tension, N/m
+
+    Examples
+    --------
+    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    >>> "%0.1f" % Tension_Pitzer(303, 499, 54.9e5, 0.192).dyncm
+    '23.5'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Pc_bar = Pc*1e-5
+
+    sigma = Pc_bar**(2/3)*Tc**(1/3)*(1.86+1.18*w)/19.05 * \
+        ((3.75+0.91*w)/(0.291-0.08*w))**(2/3)*(1-Tr)**(11/9)
     return unidades.Tension(sigma, "dyncm")
 
 
