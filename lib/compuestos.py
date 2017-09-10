@@ -281,12 +281,17 @@ __doi__ = {
          "title": "A Simple Method to Predict Surface Tension of Organic "
                   "Liquids",
          "ref": "Chem. Eng. Journal 59(2) (1995) 181-186",
-         "doi": "10.1016/0923-0467(94)02946-6."},
-
-
-
-
+         "doi": "10.1016/0923-0467(94)02946-6"},
     43:
+        {"autor": "Hakim, D.I., Steinberg, D., Stiel, L.I.",
+         "title": "Generalized Relationship for the Surface Tension of Polar "
+                  "Fluids",
+         "ref": "I&EC Fundamentals 10(1) (1971) 174-75.",
+         "doi": "10.1021/i160037a032"},
+
+
+
+    44:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2757,6 +2762,65 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     return unidades.Tension(sigma, "dyncm")
 
 
+def Tension_Hakim(T, Tc, Pc, w, X):
+    """Calculates surface tension of a liquid using the Hakim-Steinberg-Stiel
+    correlation
+
+    .. math::
+        \sigma = P_c^{2/3}T_c^{1/3} \sigma_{r|T_r=0.6}
+        \left(\frac{1-T_r}{0.4}\right)^m
+
+        \sigma_{r|T_r=0.6} = 0.1574 + 0.359\omega - 1.769X - 13.69X^2 -
+        0.51\omega^2 + 1.298\omegaX
+
+        m = 1.21+0.5385\omega-14.61X-32.07X^2-1.65\omega^2+22.03X\omega
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    X : float
+        Stiel Polar Factor, [-]
+
+    Returns
+    -------
+    sigma : float
+        Liquid surface tension, N/m
+
+    Examples
+    --------
+    Selected point in Table 5 of [42]_
+    >>> from lib.mEoS import Methanol as Me
+    >>> "%0.1f" % Tension_Hakim(313.16, Me.Tc, Me.Pc, Me.f_acent, 0.037).dyncm
+    '20.4'
+
+    References
+    ----------
+    .. [43] Hakim, D.I., Steinberg, D., Stiel, L.I. Generalized Relationship
+        for the Surface Tension of Polar Fluids I&EC Fundamentals 10(1) (1971)
+        174-75.
+    .. [42] Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
+        Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
+    """
+    Tr = T/Tc
+    Pc_atm = Pc/101325
+
+    # Eq 6
+    sr06 = 0.1574 + 0.359*w - 1.769*X - 13.69*X**2 - 0.510*w**2 + 1.298*X*w
+    # Eq 9
+    m = 1.210 + 0.5385*w - 14.61*X - 32.07*X**2 - 1.656*w**2 + 22.03*X*w
+
+    # Eq 8
+    sigma = Pc_atm**(2/3)*Tc**(1/3)*sr06*((1-Tr)/0.4)**m
+
+    return unidades.Tension(sigma, "dyncm")
+
 
 def Rackett(w):
     """Calculate the rackett constant using the Yamada-Gunn generalized
@@ -2806,7 +2870,7 @@ class Componente(object):
         self.Config = config.getMainWindowConfig()
         componente = sql.getElement(id)
         self.formula = componente[1]
-        self.nombre = componente[2]
+        self.name = componente[2]
         self.M = componente[3]
         self.SG = componente[124]
         self.Tc = unidades.Temperature(componente[4])
@@ -2872,17 +2936,18 @@ class Componente(object):
             self.Vliq = 0
 
         if componente[126] != 0.0:
-            self.SolubilityParameter = unidades.SolubilityParameter(componente[126])
+            self.SolubilityParameter = unidades.SolubilityParameter(
+                componente[126])
         else:
             self.SolubilityParameter = self._SolubilityParameter()
         self.Kw = componente[127]
         self.MSRK = componente[128:130]
         if componente[130] != 0.0:
-            self.stiehl = componente[130]
+            self.stiel = componente[130]
         else:
-            self.stiehl = 0
+            self.stiel = 0
         # FIXME: No esta bien
-#            self.stiehl=self.Stiehl_Polar_factor()
+#            self.stiel=self.Stiehl_Polar_factor()
         self.CASNumber = componente[133]
         self.alternateFormula = componente[134]
         self.UNIFAC = eval(componente[135])
@@ -2917,26 +2982,6 @@ class Componente(object):
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
-        # TODO: Add branched property in database for each compound
-        # For the moment define the branched property manually
-        lineal = [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                  21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844,
-                  1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31,
-                  35, 56, 57, 58]
-        if self.id in lineal:
-            self.branched = False
-        else:
-            self.branched = True
-
-        # TODO: Añadir los tipos de cada elemento
-        self.hidrocarburo = True
-        self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
-        # TODO: Añadir caraceristicas químicas del componente
-        self.isCiclico = False
-        self.isHidrocarburo = True
-        self.isLineal = True
-        self.isAlcohol = False
-
         # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
         self.SRKGraboski = [0, 0]
 
@@ -2953,6 +2998,7 @@ class Componente(object):
 
         # Desglosar formula en elementos y átomos de cada elemento
         decmp = atomic_decomposition(self.formula)
+        atoms = sum([val for val in decmp.values()])
         self.C = decmp.get("C", 0)
         self.H = decmp.get("H", 0)
         self.O = decmp.get("O", 0)
@@ -2961,6 +3007,45 @@ class Componente(object):
 
         if self.C and self.H:
             self.HC = self.H/self.C
+
+        # Chemical class definition
+        # Some procedures need the chemical type of compound. This could be
+        # hardcoded in database but it try to autodetect below
+
+        # Hydrocarbon definition: Compound only formed by carbon or hydrogen
+        if self.C+self.H == atoms:
+            self.isHydrocarbon = True
+        else:
+            self.isHydrocarbon = False
+
+        # Organic compound from name termination 
+        if self.O >= 1 and self.name[:-2] == "ol":
+            self.isAlcohol = True 
+        else:
+            self.isAlcohol = False
+
+        if self.O >= 2 and self.name[:-4].lower() == "acid":
+            self.isAcid = True 
+        else:
+            self.isAcid = False
+
+        # TODO: Add branched property in database for each compound
+        # For the moment define the branched property manually
+        lineal = [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                  21, 90, 91, 92, 1763, 1765, 1767, 1738, 1769, 1770, 1844,
+                  1741, 1842, 1771, 1742, 22, 23, 24, 25, 26, 28, 29, 30, 31,
+                  35, 56, 57, 58]
+        if self.id in lineal:
+            self.branched = False
+        else:
+            self.branched = True
+
+        # TODO: Añadir los tipos de cada elemento
+        self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
+        # TODO: Añadir caraceristicas químicas del componente
+        self.isCiclico = False
+        self.isLineal = True
+
 
     def tr(self, T):
         return T/self.Tc
@@ -3326,7 +3411,7 @@ class Componente(object):
             else:
                 return MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
-            if self.hidrocarburo:
+            if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
                 return self.Mu_Gas_Carr(T, P)
@@ -3569,9 +3654,8 @@ class Componente(object):
         elif tension == 5:
             return Tension_SastriRao(T, self.Tc, self.Pc, self.Tb,
                     alcohol=self.isAlcohol, acid=self.isAcid)
-
-        elif tension==4 and self.stiehl:
-            return self.Tension_Hakim(T)
+        elif tension == 6 and self.stiel:
+            return Tension_Hakim(T, self.Tc, self.Pc, self.f_acent, self.stiel)
         elif tension==5 and self.Kw:
             return self.Tension_Hydrocarbon(T)
         else:
@@ -3580,26 +3664,19 @@ class Componente(object):
                 return DIPPR("sigma", T, self._dipprSigma)
             elif self._parametricSigma:
                 return Tension_Parametric(T, self._parametricSigma, self.Tc)
+            elif self.stiel:
+                return Tension_Hakim(
+                    T, self.Tc, self.Pc, self.f_acent, self.stiel)
             elif self.Tb:
                 return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
             elif self.f_acent:
                 return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
-            elif self.stiehl:
-                return self.Tension_Hakim(T)
             elif self.Kw:
                 return self.Tension_Hydrocarbon(T)
             else:
                 return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
 
-
-    def Tension_Hakim(self, T):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos.
-        ref Chemcad pag 85
-        ref Properties of gases and liquids pag 693 y sig."""
-        Qp=0.1574+0.385*self.f_acent-1.769*self.stiehl-13.69*self.stiehl**2-0.510*self.f_acent**2+1.298*self.f_acent*self.stiehl
-        m=1.21+0.5385*self.f_acent-14.61*self.stiehl-32.07*self.stiehl**2-1.656*self.f_acent**2+22.03*self.f_acent*self.stiehl
-        return unidades.Tension(self.Pc.atm**0.67*self.Tc**0.33*Qp*((1-self.tr(T))/0.4)**m, "dyncm")
 
     def Tension_Miqueu(self, T):
         """Método alternativo para el cálculo de la tensión superficial de líquidos.

@@ -37,7 +37,7 @@ except:
 from scipy.constants import pi, Avogadro, R
 from scipy.optimize import fsolve
 
-from lib import unidades, compuestos
+from lib import unidades
 from lib.physics import R_atml
 from lib.thermo import ThermoAdvanced
 
@@ -347,9 +347,6 @@ class MEoS(ThermoAdvanced):
         refvalues = self.kwargs["refvalues"]
 
         self._ref(ref, refvalues)
-
-        if self.id:
-            self.componente = compuestos.Componente(self.id)
 
         # Opcion de aceptar el nombre interno de la ecuacion
         if isinstance(eq, str) and eq in self.__class__.__dict__:
@@ -1958,7 +1955,7 @@ class MEoS(ThermoAdvanced):
                 Pr = exp(self.Tc/T*suma)
             Pv = unidades.Pressure(Pr*self.Pc)
         else:
-            Pv = self.componente.Pv(T)
+            Pv = unidades.Pressure(0)
         return Pv
 
     def _Liquid_Density(self, T):
@@ -1977,7 +1974,7 @@ class MEoS(ThermoAdvanced):
                 Pr = exp(self.Tc/T*suma)
             rho = unidades.Density(Pr*self.rhoc)
         else:
-            rho = self.componente.RhoL_DIPPR(T)
+            rho = unidades.Density(0)
         return rho
 
     def _Vapor_Density(self, T):
@@ -2061,7 +2058,7 @@ class MEoS(ThermoAdvanced):
                     tension += sigma*tau**n
                 sigma = unidades.Tension(tension)
             else:
-                sigma = self.componente.Tension(self.T)
+                sigma = unidades.Tension(0)
         else:
             sigma = None
         return sigma

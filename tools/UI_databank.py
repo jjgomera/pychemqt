@@ -126,7 +126,7 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.indice = 0
         texto = "%"+self.Busqueda.text()+"%"
         query = "select * from compuestos where "
-        query += "nombre LIKE '%s' or formula LIKE '%s'" % (texto, texto)
+        query += "name LIKE '%s' or formula LIKE '%s'" % (texto, texto)
         sql.databank.execute(query)
         self.correctos = []
         for i in sql.databank:

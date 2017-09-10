@@ -1206,9 +1206,9 @@ class View_Component(QtWidgets.QDialog):
         lytOthers.addWidget(self.wilson, 3, 5)
         lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Stiehl polar factor")), 4, 4)
-        self.stiehl = Entrada_con_unidades(float)
-        self.stiehl.valueChanged.connect(self.setDirty)
-        lytOthers.addWidget(self.stiehl, 4, 5)
+        self.stiel = Entrada_con_unidades(float)
+        self.stiel.valueChanged.connect(self.setDirty)
+        lytOthers.addWidget(self.stiel, 4, 5)
         lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Rackett constant")), 5, 4)
         self.rackett = Entrada_con_unidades(float)
@@ -1346,7 +1346,7 @@ class View_Component(QtWidgets.QDialog):
         self.UNIQUACArea.clear()
         self.UNIQUACVolume.clear()
         self.wilson.clear()
-        self.stiehl.clear()
+        self.stiel.clear()
         self.rackett.clear()
         self.EpsK.clear()
         self.watson.clear()
@@ -1354,7 +1354,7 @@ class View_Component(QtWidgets.QDialog):
     def fill(self, index):
         self.index = index
         self.cmp = Componente(index)
-        self.name.setText("%i - %s" % (self.cmp.id, self.cmp.nombre))
+        self.name.setText("%i - %s" % (self.cmp.id, self.cmp.name))
         self.alternateName.setText(self.cmp.Synonyms)
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
@@ -1444,8 +1444,8 @@ class View_Component(QtWidgets.QDialog):
             self.UNIQUACVolume.setValue(self.cmp.UNIQUAC_volumen)
         if self.cmp.wilson:
             self.wilson.setValue(self.cmp.wilson)
-        if self.cmp.stiehl:
-            self.stiehl.setValue(self.cmp.stiehl)
+        if self.cmp.stiel:
+            self.stiel.setValue(self.cmp.stiel)
         if self.cmp.rackett:
             self.rackett.setValue(self.cmp.rackett)
     #        if self.cmp.[53]:
@@ -1509,7 +1509,7 @@ class View_Component(QtWidgets.QDialog):
         msrk.append(self.MSRKb.value)
         new.append(msrk)
 
-        new.append(self.stiehl.value)
+        new.append(self.stiel.value)
         new.append(self.Tb.value)
         new.append(self.Tm.value)
         new.append(str(self.CAS.text()))
@@ -1603,7 +1603,7 @@ class View_Component(QtWidgets.QDialog):
         self.UNIQUACArea.setReadOnly(bool)
         self.UNIQUACVolume.setReadOnly(bool)
         self.wilson.setReadOnly(bool)
-        self.stiehl.setReadOnly(bool)
+        self.stiel.setReadOnly(bool)
         self.rackett.setReadOnly(bool)
         self.PolarParameter.setReadOnly(bool)
         self.EpsK.setReadOnly(bool)
