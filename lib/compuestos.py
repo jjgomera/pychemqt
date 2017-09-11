@@ -2908,6 +2908,8 @@ class Componente(object):
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
+    METHODS_Tension = ["DIPPR", "Parametric", "Block-Bird", "Pitzer",
+                       "Zuo-Stenby", "Sastri-Rao", "Hakim", "Miqueu"]
 
     def __init__(self, id=None):
         """id: index of compound in database"""
@@ -3687,31 +3689,27 @@ class Componente(object):
         return unidades.Viscosity(7.7e-4/x, "cP")
 
     def Tension(self, T):
-        """Procedimiento que define el método más apropiado para el cálculo de la tensión superficial"""
-        tension = self.Config.getint("Transport", "Tension")
-        if tension == 0 and self._dipprSigma and \
+        """Liquid surface tension procedure using the method defined in
+        preferences"""
+        method = self.Config.getint("Transport", "Tension")
+        if method == 0 and self._dipprSigma and \
                 self._dipprSigma[6] <= T <= self._dipprSigma[7]:
             return DIPPR("sigma", T, self._dipprSigma)
-        elif tension == 1 and self._parametricSigma:
+        elif method == 1 and self._parametricSigma:
             return Tension_Parametric(T, self._parametricSigma, self.Tc)
-        elif tension == 2 and self.Tb:
+        elif method == 2 and self.Tb:
             return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
-        elif tension == 3 and self.f_acent:
+        elif method == 3 and self.f_acent:
             return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
-        elif tension == 4:
+        elif method == 4:
             return Tension_ZuoStenby(T, self.Tc, self.Pc, self.f_acent)
-        elif tension == 5:
+        elif method == 5:
             return Tension_SastriRao(T, self.Tc, self.Pc, self.Tb,
                                      alcohol=self.isAlcohol, acid=self.isAcid)
-        elif tension == 6 and self.stiel:
+        elif method == 6 and self.stiel:
             return Tension_Hakim(T, self.Tc, self.Pc, self.f_acent, self.stiel)
-        elif tension == 7 and self.Vc:
+        elif method == 7 and self.Vc:
             return Tension_Miqueu(T, self.Tc, self.Vc, self.M, self.f_acent)
-
-
-        elif tension==5 and self.Kw:
-            return self.Tension_Hydrocarbon(T)
-
 
 
         else:
@@ -3728,17 +3726,8 @@ class Componente(object):
                     T, self.Tc, self.Vc, self.M, self.f_acent)
             elif self.Tb:
                 return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
-
-            elif self.Kw:
-                return self.Tension_Hydrocarbon(T)
             else:
                 return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
-
-
-    def Tension_Hydrocarbon(self, T):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos"""
-        t=unidades.Temperature(T)
-        return unidades.Tension(673.7/self.Kw*((self.Tc.R-t.R)/self.Tc.R)**1.232, "dyncm")
 
 
 

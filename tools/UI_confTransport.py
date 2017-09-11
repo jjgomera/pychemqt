@@ -57,12 +57,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Surface Tension:")), 4, 0)
         self.Tension = QtWidgets.QComboBox()
-        self.Tension.addItem("DIPPR")
-        self.Tension.addItem("Parametric")
-        self.Tension.addItem("Parachor")
-        self.Tension.addItem("Miller")
-        self.Tension.addItem("Hakim")
-        self.Tension.addItem("Hydrocarbon")
+        for method in Componente.METHODS_Tension:
+            self.Tension.addItem(method)
         layout.addWidget(self.Tension, 4, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Thermal Conductivity:")), 5, 0)
@@ -107,18 +103,22 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         self.Corr_ThCondL.addItem("Lenoir")
         self.Corr_ThCondL.addItem("Kanitkar & Thodos")
         layout.addWidget(self.Corr_ThCondL, 5, 3)
-        layout.addItem(QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 10)
+        layout.addItem(QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 10)
 
         if config and config.has_section("Transport"):
             self.RhoL.setCurrentIndex(config.getint("Transport", "RhoL"))
-            self.Corr_RhoL.setCurrentIndex(config.getint("Transport", "Corr_RhoL"))
+            self.Corr_RhoL.setCurrentIndex(
+                config.getint("Transport", "Corr_RhoL"))
             self.MuL.setCurrentIndex(config.getint("Transport", "MuL"))
-            self.Corr_MuL.setCurrentIndex(config.getint("Transport", "Corr_MuL"))
+            self.Corr_MuL.setCurrentIndex(
+                config.getint("Transport", "Corr_MuL"))
             self.MuG.setCurrentIndex(config.getint("Transport", "MuG"))
             self.Tension.setCurrentIndex(config.getint("Transport", "Tension"))
             self.ThCondL.setCurrentIndex(config.getint("Transport", "ThCondL"))
-            self.Corr_ThCondL.setCurrentIndex(config.getint("Transport", "Corr_ThCondL"))
+            self.Corr_ThCondL.setCurrentIndex(
+                config.getint("Transport", "Corr_ThCondL"))
             self.ThCondG.setCurrentIndex(config.getint("Transport", "ThCondG"))
             self.Pv.setCurrentIndex(config.getint("Transport", "Pv"))
             self.w.setCurrentIndex(config.getint("Transport", "f_acent"))
@@ -128,13 +128,15 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         if not config.has_section("Transport"):
             config.add_section("Transport")
         config.set("Transport", "RhoL", str(self.RhoL.currentIndex()))
-        config.set("Transport", "Corr_RhoL", str(self.Corr_RhoL.currentIndex()))
+        config.set("Transport", "Corr_RhoL",
+                   str(self.Corr_RhoL.currentIndex()))
         config.set("Transport", "MuL", str(self.MuL.currentIndex()))
         config.set("Transport", "Corr_MuL", str(self.Corr_MuL.currentIndex()))
         config.set("Transport", "MuG", str(self.MuG.currentIndex()))
         config.set("Transport", "Tension", str(self.Tension.currentIndex()))
         config.set("Transport", "ThCondL", str(self.ThCondL.currentIndex()))
-        config.set("Transport", "Corr_ThCondL", str(self.Corr_ThCondL.currentIndex()))
+        config.set("Transport", "Corr_ThCondL",
+                   str(self.Corr_ThCondL.currentIndex()))
         config.set("Transport", "ThCondG", str(self.ThCondG.currentIndex()))
         config.set("Transport", "Pv", str(self.Pv.currentIndex()))
         config.set("Transport", "f_acent", str(self.w.currentIndex()))
@@ -159,7 +161,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
 
 class Dialog(QtWidgets.QDialog):
     """Transport properties dialog"""
-    def __init__(self, config, parent=None):
+    def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Transport Properties Methods"))
@@ -176,6 +178,7 @@ class Dialog(QtWidgets.QDialog):
         """Function to wizard result"""
         config = self.datos.value(config)
         return config
+
 
 if __name__ == "__main__":
     import sys
