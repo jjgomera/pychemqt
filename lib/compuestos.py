@@ -23,9 +23,9 @@ import os
 import re
 import tempfile
 
-from scipy import exp, cosh, sinh, log, log10, roots, absolute, sqrt
+from scipy import exp, cosh, sinh, log, log10, roots, absolute
 from scipy.optimize import fsolve
-from scipy.constants import R, Avogadro
+from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
@@ -288,10 +288,17 @@ __doi__ = {
                   "Fluids",
          "ref": "I&EC Fundamentals 10(1) (1971) 174-75.",
          "doi": "10.1021/i160037a032"},
-
-
-
     44:
+        {"autor": "Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., "
+                  "Lachaise, J., Graciaa, A.",
+         "title": "An Extended Scaled Equation for the Temperature Dependence "
+                  "of the Surface Tension of Pure Compounds Inferred from an "
+                  "Analysis of Experimental Data",
+         "ref": "Fluid Phase Equilibria 172(2) (2000) 169-182",
+         "doi": "10.1016/S0378-3812(00)00384-8"},
+
+
+    45:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2624,7 +2631,7 @@ def Tension_Pitzer(T, Tc, Pc, w):
     Returns
     -------
     sigma : float
-        Surface tension, N/m
+        Liquid surface tension, [N/m]
 
     Examples
     --------
@@ -2671,7 +2678,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
     Returns
     -------
     sigma : float
-        Liquid surface tension, N/m
+        Liquid surface tension, [N/m]
 
     Examples
     --------
@@ -2725,7 +2732,7 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     Returns
     -------
     sigma : float
-        Liquid surface tension, N/m
+        Liquid surface tension, [N/m]
 
     Examples
     --------
@@ -2791,7 +2798,7 @@ def Tension_Hakim(T, Tc, Pc, w, X):
     Returns
     -------
     sigma : float
-        Liquid surface tension, N/m
+        Liquid surface tension, [N/m]
 
     Examples
     --------
@@ -2820,6 +2827,48 @@ def Tension_Hakim(T, Tc, Pc, w, X):
     sigma = Pc_atm**(2/3)*Tc**(1/3)*sr06*((1-Tr)/0.4)**m
 
     return unidades.Tension(sigma, "dyncm")
+
+
+def Tension_Miqueu(T, Tc, Vc, M, w):
+    """Calculates surface tension of a liquid using the Miqueu et al.
+    correlation
+
+    .. math::
+        \sigma = kT_c\left(\frac{N_A}{V_c}\right)^{2/3}
+        (4.35+4.14\omega)t^{1.26}(1+0.19t^{0.5}-0.487t)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume, [m^3/kg]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    sigma : float
+        Liquid surface tension, [N/m]
+
+    References
+    ----------
+    .. [44] Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., Lachaise,
+        J., Graciaa, A. An Extended Scaled Equation for the Temperature
+        Dependence of the Surface Tension of Pure Compounds Inferred from an
+        Analysis of Experimental Data. Fluid Phase Equilibria 172(2) (2000)
+        169-182
+    """
+    t = 1 - T/Tc
+
+    # Eq 13
+    sigma = Boltzmann * Tc * (Avogadro/Vc/1000/M)**(2/3) * (4.35+4.14*w) * \
+        t**1.26 * (1+0.19*t**0.5-0.25*t)
+    return unidades.Tension(sigma, "mNm")
 
 
 def Rackett(w):
@@ -3018,14 +3067,14 @@ class Componente(object):
         else:
             self.isHydrocarbon = False
 
-        # Organic compound from name termination 
+        # Organic compound from name termination
         if self.O >= 1 and self.name[:-2] == "ol":
-            self.isAlcohol = True 
+            self.isAlcohol = True
         else:
             self.isAlcohol = False
 
         if self.O >= 2 and self.name[:-4].lower() == "acid":
-            self.isAcid = True 
+            self.isAcid = True
         else:
             self.isAcid = False
 
@@ -3317,7 +3366,7 @@ class Componente(object):
             elif ThCondL == 1 and T < self.Tc:
                 return self.ThCond_Liquido_Pachaiyappan(T)
             else:
-                # print "Warning: Thermal conductivity of %s out of range" % self.nombre
+                # print "Warning: Thermal conductivity of %s out of range" % self.name
                 return DIPPR("kL", self.i_dipprKL[7], self._dipprKL)
         else:
             if corr == 0:
@@ -3653,11 +3702,18 @@ class Componente(object):
             return Tension_ZuoStenby(T, self.Tc, self.Pc, self.f_acent)
         elif tension == 5:
             return Tension_SastriRao(T, self.Tc, self.Pc, self.Tb,
-                    alcohol=self.isAlcohol, acid=self.isAcid)
+                                     alcohol=self.isAlcohol, acid=self.isAcid)
         elif tension == 6 and self.stiel:
             return Tension_Hakim(T, self.Tc, self.Pc, self.f_acent, self.stiel)
+        elif tension == 7 and self.Vc:
+            return Tension_Miqueu(T, self.Tc, self.Vc, self.M, self.f_acent)
+
+
         elif tension==5 and self.Kw:
             return self.Tension_Hydrocarbon(T)
+
+
+
         else:
             if self._dipprSigma and \
                     self._dipprSigma[6] <= T <= self._dipprSigma[7]:
@@ -3667,22 +3723,17 @@ class Componente(object):
             elif self.stiel:
                 return Tension_Hakim(
                     T, self.Tc, self.Pc, self.f_acent, self.stiel)
+            elif self.Vc:
+                return Tension_Miqueu(
+                    T, self.Tc, self.Vc, self.M, self.f_acent)
             elif self.Tb:
                 return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
-            elif self.f_acent:
-                return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
             elif self.Kw:
                 return self.Tension_Hydrocarbon(T)
             else:
-                return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
+                return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
-
-    def Tension_Miqueu(self, T):
-        """Método alternativo para el cálculo de la tensión superficial de líquidos.
-        Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., Lachiase, J., and Graciaa, A., "An Extended Scaled Equation for the Temperature Dependence of the Surface Tension of Pure Compounds Inferred From an Analysis of Experimental Data," Fluid Phase Equilibria, Vol. 172, 2000, pp. 169-182."""
-        t=1-self.tr(T)
-        return unidades.Tension(Bolzmann*1e7*self.Tc*(Avogadro/self.Vc.ccg)**(2./3)*(4.35+4.14*self.f_acent)*(1+0.19*t**0.5-0.25*t)*t**1.26, "dyncm")
 
     def Tension_Hydrocarbon(self, T):
         """Método alternativo para el cálculo de la tensión superficial de líquidos"""
