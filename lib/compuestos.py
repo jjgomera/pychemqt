@@ -1951,187 +1951,6 @@ def MuG_StielThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mu, "cP")
 
 
-def facent_LeeKesler(Tb, Tc, Pc):
-    """Calculates acentric factor of a fluid using the Lee-Kesler correlation
-
-    Parameters
-    ----------
-    Tb : float
-        Boiling temperature [K]
-    Tc : float
-        Critical temperature [K]
-    Pc : float
-        Critical pressure [Pa]
-
-    Returns
-    -------
-    w : float
-        Acentric factor [-]
-
-    References
-    ----------
-    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-       Correlation Based on Three-Parameter Corresponding States. American
-       Institute of Chemical Engineers Journal, Vot. 21, 1975
-    """
-    Tr = Tb/Tc
-    Pr = 101325/Pc
-    w = (log(Pr) - 5.92714 + 6.09648/Tr + 1.28862*log(Tr) - 0.169347*Tr**6)/(
-        15.2518 - 15.6875/Tr - 13.4721*log(Tr) + 0.43577*Tr**6)
-
-    return unidades.Dimensionless(w)
-
-
-def prop_Edmister(**kwargs):
-    """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
-    from the Edmister (1958) correlations
-
-    Parameters
-    ------------
-    Tc : float
-        Critic temperature, [ºR]
-    Pc : float
-        Critic pressure, [psi]
-    Tb : float
-        Boiling temperature, [ºR]
-    w : float
-        Acentric factor, [-]
-
-    Returns
-    -------
-    prop : Dict with the input parameter and the missing parameter in input
-
-    References
-    ----------
-    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
-        Compressibility Factors and Equations of State. Petroleum Refiner 37
-        (April 1958): 173–179.
-    """
-    count_available = 0
-    if "Tc" in kwargs and kwargs["Tc"]:
-        count_available += 1
-        Tc = unidades.Temperature(kwargs["Tc"])
-    else:
-        unknown = "Tc"
-
-    if "Pc" in kwargs and kwargs["Pc"]:
-        count_available += 1
-        Pc = unidades.Pressure(kwargs["Pc"])
-    else:
-        unknown = "Pc"
-
-    if "Tb" in kwargs and kwargs["Tb"]:
-        count_available += 1
-        Tb = unidades.Temperature(kwargs["Tb"])
-    else:
-        unknown = "Tb"
-    if "w" in kwargs:
-        count_available += 1
-        w = unidades.Dimensionless(kwargs["w"])
-    else:
-        unknown = "w"
-
-    if count_available != 3:
-        raise ValueError("Bad incoming variables input")
-
-    if unknown == "Tc":
-        Tc = unidades.Temperature(Tb.R*(3*log10(Pc.psi)/7/(w+1)+1), "R")
-    elif unknown == "Pc":
-        Pc = unidades.Pressure(10**(7/3.*(w+1)*(Tc.R/Tb.R-1)), "atm")
-    elif unknown == "Tb":
-        Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
-    elif unknown == "w":
-        w = unidades.Dimensionless(3/7*log10(Pc.atm)/(Tc.R/Tb.R-1)-1)
-
-    prop = {}
-    prop["Tc"] = Tc
-    prop["Pc"] = Pc
-    prop["Tb"] = Tb
-    prop["w"] = w
-    return prop
-
-
-def facent_AmbroseWalton(Pvr):
-    """Calculates acentric factor of a fluid using the Ambrose-Walton
-    corresponding-states correlation
-
-    Parameters
-    ----------
-    Pvr : float
-        Reduced vapor pressure of compound at 0.7Tc, [-]
-
-    Returns
-    -------
-    w : float
-        Acentric factor [-]
-
-    References
-    ----------
-    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
-        Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
-        1395-1403 (1989)
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    """
-    Tr = 0.7
-    t = 1-Tr
-    f0 = (-5.97616*t + 1.29874*t**1.5 - 0.60394*t**2.5 - 1.06841*t**5)/Tr
-    f1 = (-5.03365*t + 1.11505*t**1.5 - 5.41217*t**2.5 - 7.46628*t**5)/Tr
-    f2 = (-0.64771*t + 2.41539*t**1.5 - 4.26979*t**2.5 + 3.25259*t**5)/Tr
-    coef = roots([f2, f1, f0-log(Pvr)])
-
-    if absolute(coef[0]) < absolute(coef[1]):
-        return coef[0]
-    else:
-        return coef[1]
-
-
-def Vc_Riedel(Tc, Pc, w, M):
-    """Calculates critical volume of a fluid using the Riedel correlation
-    as explain in [5]_, procedure 4A3.1, Pag. 302
-
-    Parameters
-    ----------
-    Tc : float
-        Critical temperature, [K]
-    Pc : float
-        Critical pressure, [Pa]
-    w : float
-        Acentric factor, [-]
-    M : float
-        Molecular weight, [g/mol]
-
-    Returns
-    -------
-    Vc : float
-        Critical volume, [Pa]
-
-    Examples
-    --------
-    Example in [5]_, n-nonane
-    >>> Tc = unidades.Temperature(610.68, "F")
-    >>> Pc = unidades.Pressure(331.8, "psi")
-    >>> "%0.3f" % Vc_Riedel(Tc, Pc, 0.4368, 128.2551).ft3lb
-    '0.068'
-
-    References
-    ----------
-    .. [17] Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
-        und Verdampfungswärme: Untersuchungen über eine Erweiterung des
-        Theorems der übereinstimmenden Zustände. Teil III. Chem. Ingr. Tech.,
-        26(12) (1954) 679-683
-    .. [18] Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
-        über eine Erweiterung des Theorems der übereinstimmenden Zustände.
-        Chem. Ings-Tech. 28 (1956) 557-562
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
-    """
-    # Eq 1 in [18]
-    alfa = 5.811 + 4.919*w
-
-    Vc = R*1000*Tc/Pc/(3.72+0.26*(alfa-7))/M
-    return unidades.SpecificVolume(Vc, "lg")
-
-
 def ThL_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of liquid hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -2437,6 +2256,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+# Gas Thermal conductivity
 def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     """Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Misic-Thodos correlation, also referenced in API Procedure
@@ -2551,7 +2371,150 @@ def ThG_RiaziFaghri(T, Tb, SG):
     k = A*Tb_R**B*SG**C                                                # Eq 7
     return unidades.ThermalConductivity(k, "BtuhftF")
 
-def Sigma_BlockBird(T, Tc, Pc, Tb):
+
+def ThG_NonHydrocarbon(T, P, id):
+    """Calculates thermal conductivity of selected nonhydrocarbon, referenced
+    in API procedure 12C1.1, pag 1174
+
+    .. math::
+        \kappa = A + BT + CT^2 + DP + E\frac{P}{T^{1.2}} + \frac{F}{
+        \left(0.4P-0.001T\right^{0.015}a} + G\ln{P}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    id : integer
+        Index of compound in database
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [Btu/hftºF]
+
+    Notes
+    -----
+    This method calculate the thermal conductivity of selected nonhydrocarbon
+    gases, the available compounds are:
+        1   -   Hydrogen
+        46  -   Nitrogen
+        47  -   Oxygen
+        48  -   Carbon Monoxide
+        50  -   Hydrogen Sulfide
+        51  -   Sulfur dioxide
+        111 -   Sulfur trioxide
+
+    Raises
+    ------
+    The range of validity of relation depends of compounds, it's checked in
+    procedure and raise a NotImplementeError when inputs are out of bound or
+    the id of compound isn't supported
+        N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
+        H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
+        SO2        - 960ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        H2S, SO3   - 460ºR ≤ T ≤ 2460ºR, P atmospheric
+
+    Examples
+    --------
+    Example from [5]_; oxygen at 984.67ºR and 6075psi
+    >>> T = unidades.Temperature(984.67, "R")
+    >>> P = unidades.Pressure(6075, "psi")
+    >>> "%0.5f" % ThG_NonHydrocarbon(T, P, 47).BtuhftF
+    '0.03265'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Table 12C1.2
+    dat = {
+        1: (4.681e-3, 2.e-4, -3.6e-8, 0.0, 0.0, 0.0, 1.7e-3),
+        46: (4.561e-3, 1.61e-5, 0.0, 2.56e-9, 5.299e-3, 2.47e-3, 0.0),
+        47: (5.95e-4, 1.71e-5, 0.0, -2.10e-8, 5.869e-3, 6.995e-3, 0.0),
+        48: (1.757e-3, 1.55e-5, 0.0, 2.08e-8, 5.751e-3, 5.6e-3, 0.0),
+        50: (-1.51e-3, 2.25e-5, 3.32e-10, 0.0, 0.0, 0.0, 0.0),
+        51: (2.5826e-2, 1.35e-5, 0.0, -4.4e-7, 1.026e-2, -2.631e-2, 0.0),
+        111: (-1.02e-3, 1.35e-5, 4.17e-9, 0.0, 0.0, 0.0, 0.0)}
+
+    # Check supported compounds
+    if id not in dat:
+        raise NotImplementedError("Compound don't supported")
+
+    # Convert input T in Kelvin to Rankine to use in the correlation
+    t = unidades.K2R(T)
+    p = unidades.Pressure(P).psi
+
+    # Check input parameter
+    if id == 1:
+        tmin = 260
+        tmax = 2260
+        pmin = 15
+        pmax = 10000
+    elif id in (46, 47):
+        tmin = 460
+        tmax = 2460
+        pmin = 15
+        pmax = 10000
+    elif id == 48:
+        tmin = 460
+        tmax = 2460
+        pmin = 15
+        pmax = 15000
+    elif id == 50:
+        tmin = 960
+        tmax = 2460
+        pmin = 15
+        pmax = 10000
+    elif id in (51, 111):
+        tmin = 460
+        tmax = 2460
+        pmin = 1
+        pmax = 100
+    if t < tmin or t > tmax or p < pmin or p > pmax:
+        raise NotImplementedError("Input out of bound")
+
+    A, B, C, D, E, F, G = dat[id]
+    k = A + B*t + C*t**2 + D*p + E*p/t**1.2 + F/(.4*p-.001*t)**.015 + G*log(p)
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
+
+# Liquid surface tension
+def Tension_Parametric(T, args, Tc):
+    """Calculates surface tension of fluid using a paremtric equation
+
+    .. math::
+        $\sigma=A\left(1-T_{r}\right)^{B}$
+
+        Tr = \frac{T}{T_c}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    args : list
+        Coefficients for equation
+    Tc : float
+        Critical temperature, [K]
+
+    Returns
+    -------
+    sigma : float
+        Surface tension, [N/m]
+
+    Notes
+    -----
+    The parameters for several compound are in database
+    """
+    A, B = args
+    Tr = T/Tc
+    sigma = A*(1-Tr)**B
+    return unidades.Tension(sigma)
+
+
+def Tension_BlockBird(T, Tc, Pc, Tb):
     """Calculates surface tension of liquid using the Block-Bird correlation
     using the Miller expression for α.
 
@@ -2869,6 +2832,189 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
     sigma = Boltzmann * Tc * (Avogadro/Vc/1000/M)**(2/3) * (4.35+4.14*w) * \
         t**1.26 * (1+0.19*t**0.5-0.25*t)
     return unidades.Tension(sigma, "mNm")
+
+
+# Acentric factor
+def facent_LeeKesler(Tb, Tc, Pc):
+    """Calculates acentric factor of a fluid using the Lee-Kesler correlation
+
+    Parameters
+    ----------
+    Tb : float
+        Boiling temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure [Pa]
+
+    Returns
+    -------
+    w : float
+        Acentric factor [-]
+
+    References
+    ----------
+    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+       Correlation Based on Three-Parameter Corresponding States. American
+       Institute of Chemical Engineers Journal, Vot. 21, 1975
+    """
+    Tr = Tb/Tc
+    Pr = 101325/Pc
+    w = (log(Pr) - 5.92714 + 6.09648/Tr + 1.28862*log(Tr) - 0.169347*Tr**6)/(
+        15.2518 - 15.6875/Tr - 13.4721*log(Tr) + 0.43577*Tr**6)
+
+    return unidades.Dimensionless(w)
+
+
+def prop_Edmister(**kwargs):
+    """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
+    from the Edmister (1958) correlations
+
+    Parameters
+    ------------
+    Tc : float
+        Critic temperature, [ºR]
+    Pc : float
+        Critic pressure, [psi]
+    Tb : float
+        Boiling temperature, [ºR]
+    w : float
+        Acentric factor, [-]
+
+    Returns
+    -------
+    prop : Dict with the input parameter and the missing parameter in input
+
+    References
+    ----------
+    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
+        Compressibility Factors and Equations of State. Petroleum Refiner 37
+        (April 1958): 173–179.
+    """
+    count_available = 0
+    if "Tc" in kwargs and kwargs["Tc"]:
+        count_available += 1
+        Tc = unidades.Temperature(kwargs["Tc"])
+    else:
+        unknown = "Tc"
+
+    if "Pc" in kwargs and kwargs["Pc"]:
+        count_available += 1
+        Pc = unidades.Pressure(kwargs["Pc"])
+    else:
+        unknown = "Pc"
+
+    if "Tb" in kwargs and kwargs["Tb"]:
+        count_available += 1
+        Tb = unidades.Temperature(kwargs["Tb"])
+    else:
+        unknown = "Tb"
+    if "w" in kwargs:
+        count_available += 1
+        w = unidades.Dimensionless(kwargs["w"])
+    else:
+        unknown = "w"
+
+    if count_available != 3:
+        raise ValueError("Bad incoming variables input")
+
+    if unknown == "Tc":
+        Tc = unidades.Temperature(Tb.R*(3*log10(Pc.psi)/7/(w+1)+1), "R")
+    elif unknown == "Pc":
+        Pc = unidades.Pressure(10**(7/3.*(w+1)*(Tc.R/Tb.R-1)), "atm")
+    elif unknown == "Tb":
+        Tb = unidades.Temperature(Tb.R/(3*log10(Pc.atm)/7/(w+1)+1), "R")
+    elif unknown == "w":
+        w = unidades.Dimensionless(3/7*log10(Pc.atm)/(Tc.R/Tb.R-1)-1)
+
+    prop = {}
+    prop["Tc"] = Tc
+    prop["Pc"] = Pc
+    prop["Tb"] = Tb
+    prop["w"] = w
+    return prop
+
+
+def facent_AmbroseWalton(Pvr):
+    """Calculates acentric factor of a fluid using the Ambrose-Walton
+    corresponding-states correlation
+
+    Parameters
+    ----------
+    Pvr : float
+        Reduced vapor pressure of compound at 0.7Tc, [-]
+
+    Returns
+    -------
+    w : float
+        Acentric factor [-]
+
+    References
+    ----------
+    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+        Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
+        1395-1403 (1989)
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = 0.7
+    t = 1-Tr
+    f0 = (-5.97616*t + 1.29874*t**1.5 - 0.60394*t**2.5 - 1.06841*t**5)/Tr
+    f1 = (-5.03365*t + 1.11505*t**1.5 - 5.41217*t**2.5 - 7.46628*t**5)/Tr
+    f2 = (-0.64771*t + 2.41539*t**1.5 - 4.26979*t**2.5 + 3.25259*t**5)/Tr
+    coef = roots([f2, f1, f0-log(Pvr)])
+
+    if absolute(coef[0]) < absolute(coef[1]):
+        return coef[0]
+    else:
+        return coef[1]
+
+
+# Other properties 
+def Vc_Riedel(Tc, Pc, w, M):
+    """Calculates critical volume of a fluid using the Riedel correlation
+    as explain in [5]_, procedure 4A3.1, Pag. 302
+
+    Parameters
+    ----------
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    Vc : float
+        Critical volume, [Pa]
+
+    Examples
+    --------
+    Example in [5]_, n-nonane
+    >>> Tc = unidades.Temperature(610.68, "F")
+    >>> Pc = unidades.Pressure(331.8, "psi")
+    >>> "%0.3f" % Vc_Riedel(Tc, Pc, 0.4368, 128.2551).ft3lb
+    '0.068'
+
+    References
+    ----------
+    .. [17] Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
+        und Verdampfungswärme: Untersuchungen über eine Erweiterung des
+        Theorems der übereinstimmenden Zustände. Teil III. Chem. Ingr. Tech.,
+        26(12) (1954) 679-683
+    .. [18] Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
+        über eine Erweiterung des Theorems der übereinstimmenden Zustände.
+        Chem. Ings-Tech. 28 (1956) 557-562
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Eq 1 in [18]
+    alfa = 5.811 + 4.919*w
+
+    Vc = R*1000*Tc/Pc/(3.72+0.26*(alfa-7))/M
+    return unidades.SpecificVolume(Vc, "lg")
 
 
 def Rackett(w):
