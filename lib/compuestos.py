@@ -30,8 +30,7 @@ from scipy.interpolate import interp1d
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
 from lib import unidades, config, eos, sql
-from lib.mEoS.CH4 import CH4
-from lib.mEoS.nC8 import nC8
+from lib.mEoS import CH4, nC8
 
 
 __doi__ = {
@@ -296,9 +295,19 @@ __doi__ = {
                   "Analysis of Experimental Data",
          "ref": "Fluid Phase Equilibria 172(2) (2000) 169-182",
          "doi": "10.1016/S0378-3812(00)00384-8"},
-
-
     45:
+        {"autor": "Przedziecki, J.W., Sridhar, T.",
+         "title": "Prediction of Liquid Viscosities",
+         "ref": "AIChE Journal 31(2) (1985) 333-335",
+         "doi": "10.1002/aic.690310225"},
+    46:
+        {"autor": "Lucas, K.",
+         "title": "Die Druckabhängigheit der Viskosität von Flüssigkeiten, "
+                  "eine Einfache Abschätzung",
+         "ref": "Chem. Ing. Tech. 46(4) (1981) 959-960",
+         "doi": "10.1002/cite.330531209"},
+
+    47:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1413,7 +1422,7 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
     return unidades.Density(d2)
 
 
-# Vapor pressure correlation
+# Vapor pressure correlations
 def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     """Vapor Pressure calculation procedure using the Antoine equation
 
@@ -1814,6 +1823,8 @@ def Pv_Sanjari(T, Tc, Pc, w):
     Pv = Pc*exp(f0 + w*f1 + w**2*f2)
     return unidades.Pressure(Pv)
 
+
+# Liquid viscosity correlations
 def MuL_Parametric(T, args):
     """Calculates liquid viscosity using a paremtric equation
 
@@ -1878,6 +1889,198 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
     x1 = 0.042559 - 0.07675*Tr + 0.034007*Tr**2
     mu = (x0+w*x1)/x
     return unidades.Viscosity(mu, "cP")
+
+
+def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
+    """Calculates the viscosity of a liquid using the Przezdziecki-Sridhar
+    correlation
+
+    .. math::
+        \frac{1}{\mu} = B \left(\frac{V-V_o}{V_o}\right)
+
+        B = \frac{0.33V_c}{f_1}-1.12
+
+        f_1 = 4.27+0.032M_w-0.077P_c+0.014T_f-3.82\frac{T_f}{T_c}
+
+        V_o = 0.0085T_c\omega-2.02+\frac{V_{m}}{0.342(T_f/T_c)+0.894}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Vc : float
+        Critical volume, [m³/kg]
+    w : float
+        Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
+    Tf : float
+        Melting point, [K]
+    Vr : float, optional
+        Liquid volume at Tr, [m³/kg]
+    Tv : float, optional
+        Temperature of known volume, [K]
+
+    Returns
+    -------
+    mu : float
+        Viscosity, [Pa·s]
+
+    Notes
+    -----
+    The refernce volume is a optional volume, it use the critical point as
+    default values
+
+    Examples
+    --------
+    Example 9.196 from [1]_; toluene at 383K
+    >>> Vc = 316/92.14/1000
+    >>> "%0.3f" % MuL_PrzedzieckiSridhar(383, 591.75, 41.08e5, 316/92.14/1000,\
+            0.264, 92.14, 178, 106.87/92.14/1000, 298.15).cP
+    '0.223'
+
+    References
+    ----------
+    .. [45] Przedziecki, J.W., Sridhar, T. Prediction of Liquid Viscosities.
+        AIChE Journal 31(2) (1985) 333-335
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Pa in atm
+    Pc = Pc/101325
+    # Volume to mol base
+    Vc = Vc*M*1000
+    Vr = Vr*M*1000
+
+    # Define default value por reference state:
+    if Vr is None:
+        Vr = Vc
+        Tv = Tc
+
+    def f(Tr):
+        G = 0.29607 - 0.09045*Tr - 0.04842*Tr**2                       # Eq 11
+
+        # Eq 12
+        Vr = .33593 - .33953*Tr + 1.51941*Tr**2 - 2.02512*Tr**3 + 1.11422*Tr**4
+        f2 = Vr*(1-w*G)                                                # Eq 9
+        return f2
+
+    f2 = f(T/Tc)
+    f2R = f(Tv/Tc)
+    f2m = f(Tf/Tc)
+    V = f2/f2R*Vr
+    Vm = f2m/f2R*Vr
+
+    # Eq 12
+    Vo = 0.0085*Tc*w - 2.02 + Vm/(0.342*Tf/Tc + 0.894)
+
+    f1 = 4.27 + 0.032*M - 0.077*Pc + 0.014*Tf - 3.82*Tf/Tc             # Eq 6
+    B = 0.33*Vc/f1-1.12                                                # Eq 5
+
+    # Eq 4
+    mu = Vo/B/(V-Vo)
+    return unidades.Viscosity(mu, "cP")
+
+
+def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
+    """Calculate the viscosity of liquid at high pressure using the Lucas
+    correlation
+
+    .. math::
+        \eta\left(T,P\right)=\eta_{S}\left(T\right)F_{p}\left(T_{r},P_{r},
+                \omega\right)
+
+        F_{p}\left(T_{r},P_{r},\omega\right)=\frac{F_{p}^{ref}\left(T_{r},P_{r}
+          \right)}{1+F_{s}\left(T_{r},\omega\right)\left(P_{r}-P_{sr}\right)}
+
+        F_{p}^{ref}\left(T_{r},P_{r}\right)=1+f_{2}\left(T_{r}\right)\left[
+          \left(P_{r}-P_{sr}\right)/2.11824066\right]^{f_{1}\left(T_{r}\right)}
+
+        f_{1}\left(T_{r}\right)=0.9990614-\frac{0.00046739}{1.052278T_{r}^
+          {-0.03876963}-1.05134195}
+
+        f_{2}\left(T_{r}\right)=-0.20863153+\frac{0.32569953}{\left(
+          1.00383978-T_{r}^{2.57327058}\right)^{0.29063299}}
+
+        f_{s}\left(T_{r},\omega\right)=\omega\left(-0.079206+2.161577T_{r}-
+          13.403985T_{r}^{2}+44.170595T_{r}^{3}-84.829114T_{r}^{4}+
+          96.120856T_{r}^{5}-59.812675T_{r}^{6}+15.671878T_{r}^{7}\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    Ps : float
+        Saturation pressure, [Pa]
+    mus: float
+        Viscosity of saturated liquid, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity at high pressure, [Pa·s]
+
+    Examples
+    --------
+    Example 9.15 from [1]_, methylcyclohexane at 300K 500 bar
+    >>> "%0.2f" % MuL_Lucas(300, 500e5, 572.19, 34.7e5, 0.236, 0, 0.00068).cP
+    '1.07'
+
+    Selected value from Table 1 in [46]_, hydrogen
+    >>> from lib.mEoS import H2
+    >>> T = 0.904*H2.Tc
+    >>> P = 7.71*H2.Pc
+    >>> Ps = H2()._Vapor_Pressure(T)
+    >>> "%0.2f" % MuL_Lucas(T, P, H2.Tc, H2.Pc, H2.f_acent, Ps, 1)
+    '1.92'
+
+    Selected value from Table 3 in [46]_, ethanol
+    >>> from lib.mEoS import Ethanol as Et
+    >>> T = 0.988*Et.Tc
+    >>> P = 9.4*Et.Pc
+    >>> Ps = Et()._Vapor_Pressure(T)
+    >>> "%0.2f" % MuL_Lucas(T, P, H2.Tc, H2.Pc, H2.f_acent, Ps, 1)
+    '2.74'
+
+    References
+    ----------
+    .. [46] Lucas, K. Die Druckabhängigheit der Viskosität von Flüssigkeiten,
+        eine Einfache Abschätzung. Chem. Ing. Tech. 46(4) (1981) 959-960
+    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+        New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    # Discard point in gas phase
+    if P < Ps:
+        dPr = 0
+    else:
+        dPr = P/Pc-Ps/Pc
+
+    f1 = 0.9990614 - 4.6739e-4/(1.052278*Tr**-0.03876963 - 1.05134195)  # Eq 4
+    # Eq 5
+    f2 = -0.20863153 + 0.32569953/(1.00383978 - Tr**2.57327058)**0.29063299
+    Fs = w * (-0.079206 + 2.161577*Tr - 13.403985*Tr**2 + 44.170595*Tr**3 -
+              84.829114*Tr**4 + 96.120856*Tr**5 - 59.812675*Tr**6 +
+              15.671878*Tr**7)                                          # Eq 6
+    Fpr = 1 + f2*(dPr/2.11824066)**f1                                   # Eq 3
+    Fp = Fpr/(1+Fs*dPr)                                                 # Eq 2
+
+    mu = mus*Fp                                                         # Eq 1
+    return unidades.Viscosity(mu)
+
+
 
 
 def MuG_StielThodos(T, Tc, Pc, M):
@@ -2970,7 +3173,7 @@ def facent_AmbroseWalton(Pvr):
         return coef[1]
 
 
-# Other properties 
+# Other properties
 def Vc_Riedel(Tc, Pc, w, M):
     """Calculates critical volume of a fluid using the Riedel correlation
     as explain in [5]_, procedure 4A3.1, Pag. 302
@@ -3038,7 +3241,6 @@ def Rackett(w):
     """
     Zra = 0.29056 - 0.08775*w                                           # Eq 1
     return Zra
-
 
 
 class Componente(object):
@@ -3706,6 +3908,13 @@ class Componente(object):
             elif MuL == 2 and self.Tc and self.Pc and self.f_acent:
                 return MuL_LetsouStiel(
                         T, self.M, self.Tc, self.Pc, self.f_acent)
+            elif MuL == 3 and self.Tc and self.Pc and self.Vc and \
+                    self.f_acent and self.Tf:
+                # Use the critical point as reference volume
+                return MuL_PrzedzieckiSridhar(T, self.Tc, self.Pc, self.Vc,
+                                              self.f_acent, self.M, self.Tf)
+
+
             elif MuL==3 and self.Van_Veltzen:
                 return self.Mu_Liquido_Van_Veltzen(T)
             else:
@@ -3717,16 +3926,20 @@ class Componente(object):
                 elif self.Tc and self.Pc and self.f_acent and self.M:
                     return MuL_LetsouStiel(
                             T, self.M, self.Tc, self.Pc, self.f_acent)
+
+
                 elif self.Van_Veltzen:
                     return self.Mu_Liquido_Van_Veltzen(T)
         else:
-            if corr==0 and self.Tb<650:
-            #En realidad el criterio de corte es los hidrocarburos de menos de 20 átomos de carbono (hidrocarburos de bajo peso molecular), pero aprovechando que la temperatura de ebullición es proporcional al peso molecular podemos usar esta
-                return self.Mu_Liquido_Graboski_Braun(T, P)
+            if corr==0:
+                muo = self.Mu_Liquido(T, 101325)
+                Ps = self.Pv(T)
+                return MuL_Lucas(T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
             elif corr==1:
                 return self.Mu_Liquido_Kouzel(T, P)
             elif corr==2 and self.Pc and self.f_acent:
-                return self.Mu_Liquido_Lucas(T, P)
+                #En realidad el criterio de corte es los hidrocarburos de menos de 20 átomos de carbono (hidrocarburos de bajo peso molecular), pero aprovechando que la temperatura de ebullición es proporcional al peso molecular podemos usar esta
+                return self.Mu_Liquido_Graboski_Braun(T, P)
             else:
                 if self.Tb<650:
                     return self.Mu_Liquido_Graboski_Braun(T, P)
@@ -3738,24 +3951,6 @@ class Componente(object):
     def Mu_Liquido_Van_Veltzen(self, T):
         """Método alternativo para calcular la viscosidad de líquidos haciendo uso de la contribución de los grupos moleculares, API procedure 11A2.3, pag 1048"""
         #TODO: Método dificil de implementar debido a que se tiene que calcular la contribución de grupos
-
-    def Mu_Liquido_Lucas(self, T, P, muo=0):
-        """Método de cálculo de la viscosidad de líquidos a alta presión
-        ref Viswanath, Viscosidad de líquidos, pag 145
-        ref Poling, The Properties of Gases and Liquids, pag 521"""
-        P=unidades.Pressure(P, "atm")
-        Tr=self.tr(T)
-        if muo==0:
-            muo=self.Mu_Liquido(T, 1)
-        else:
-            muo=unidades.Viscosity(muo)
-        Pvp=self.Pv(T)
-        DPr=(P.atm-Pvp.atm)/self.Pc.atm
-        A=0.9991-(4.674e-4/(1.0523*Tr**-0.03877-1.0513))
-        C=-0.07921+2.1616*Tr-13.4040*Tr**2+44.1706*Tr**3-84.8291*Tr**4+96.1209*Tr**5-59.8127*Tr**6+15.6719*Tr**7
-        D=0.3257/(1.0039-Tr**2.573)**0.2906-0.2086
-        mu=muo*(1+D*(DPr/2.118)**A)/(1+C*self.f_acent*DPr)
-        return unidades.Viscosity(mu)
 
     def Mu_Liquido_Graboski_Braun(self, T, P):
         """Método alternativo para el cálculo de la viscosidad en líquidos de bajo peso molécular a altas presiones, API procedure 11A5.1 (pag. 1074)"""
