@@ -306,8 +306,13 @@ __doi__ = {
                   "eine Einfache Abschätzung",
          "ref": "Chem. Ing. Tech. 46(4) (1981) 959-960",
          "doi": "10.1002/cite.330531209"},
-
     47:
+        {"autor": "Riazi, M. R.",
+         "title": "Characterization and Properties of Petroleum Fractions.",
+         "ref": "ASTM manual series MNL50, 2005",
+         "doi": ""},
+
+    48:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1876,6 +1881,13 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
     mu : float
         Viscosity, [Pa·s]
 
+    Examples
+    --------
+    Example 9.19 from [1]_ 4Ed; propanol at 433.2K
+    >>> Vc = 316/92.14/1000
+    >>> "%0.3f" % MuL_LetsouStiel(433.2, 60.10, 536.8, 51.7e5, 0.623).cP
+    '0.171'
+
     References
     ----------
     .. [10] Letsou, A., Stiel, L.I. Viscosity of Saturated Nonpolar Liquids at
@@ -2046,14 +2058,6 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     >>> "%0.2f" % MuL_Lucas(T, P, H2.Tc, H2.Pc, H2.f_acent, Ps, 1)
     '1.92'
 
-    Selected value from Table 3 in [46]_, ethanol
-    >>> from lib.mEoS import Ethanol as Et
-    >>> T = 0.988*Et.Tc
-    >>> P = 9.4*Et.Pc
-    >>> Ps = Et()._Vapor_Pressure(T)
-    >>> "%0.2f" % MuL_Lucas(T, P, H2.Tc, H2.Pc, H2.f_acent, Ps, 1)
-    '2.74'
-
     References
     ----------
     .. [46] Lucas, K. Die Druckabhängigheit der Viskosität von Flüssigkeiten,
@@ -2080,6 +2084,131 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     mu = mus*Fp                                                         # Eq 1
     return unidades.Viscosity(mu)
 
+
+def MuL_API(T, P, Tc, Pc, w, muc):
+    """Calculate the viscosity of liquid at high pressure using the API
+    correlation, API procedure 11A5.1, pag 1074.
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    w : float
+        Acentric factor, [-]
+    muc: float
+        Viscosity of critical point, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity at high pressure, [Pa·s]
+
+    Notes
+    -----
+    Procedure valid for low-molecular weight hydrocarbons at high pressure. A
+    compound with lower than 20 carbon atoms are valid for this method.
+
+    Examples
+    --------
+    Example from [5]_; pentane at 200ºF and 3000 psi
+    The reference has a typo in mur0 calculation, the correct value is 6.20
+    (not 5.20) and so the calculated viscosity is 0.171 cP, near to the
+    experimental value of 0.166 cP.
+
+    >>> T = unidades.Temperature(200, "F")
+    >>> Tc = unidades.Temperature(385.7, "F")
+    >>> P = unidades.Pressure(3000, "psi")
+    >>> Pc = unidades.Pressure(488.8, "psi")
+    >>> "%0.3f" % MuL_API(T, P, Tc, Pc, 0.2515, 2.55e-5).cP
+    '0.171'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+
+    # Eqs 11A5.1-3
+    A1 = 3.0294*Tr**9.0740 + 0.0032*Tr**10.9399 - 0.3689
+    A2 = -0.038*Tr**-7.2309 + 0.0229*Tr**11.7631 + 0.5781
+    A3 = -0.1415*Tr**27.2842 + 0.0778*Tr**-4.3406 + 0.0014
+    A4 = 0.0028*Tr**69.4404 - 0.0042*Tr**3.3586 + 0.0062
+    A5 = 0.0107*Tr**-7.4626 - 85.8276*Tr**0.1392 + 87.3164
+
+    # Eq 11A5.1-2
+    mur0 = A1*log10(Pr) + A2*log10(Pr)**2 + A3*Pr + A4*Pr**2 + A5
+
+    # Eqs 11A5.1-5
+    if Pr <= 0.75:
+        B1 = -0.2462*Tr**0.0484 - 0.7275*log(Tr) - 0.0588*Tr + 0.0079
+        B2 = -0.3199*Tr**17.0626 - 0.0695*log(Tr) + 0.1267*Tr - 0.0101
+        B3 = 4.7217*Tr**-1.9831 + 19.2008*Tr**-1.7595 + 65.5728*log(Tr) + \
+            0.6110*Tr-19.1590
+    else:
+        B1 = -0.0214*Tr**0.0484 - 0.1827*log(Tr)-0.0183*Tr + 0.0090
+        B2 = -0.3588*Tr**5.0537 - 0.1321*log(Tr)+0.0204*Tr - 0.0075
+        B3 = 3.7266*Tr**-2.5689 + 52.1358*Tr**0.3514 - 13.0750*log(Tr) + \
+            0.6358*Tr-56.6687
+
+    # Eqs 11A5.1-4
+    mur1 = B1*Pr + B2*log(Pr) + B3
+
+    # Eqs 11A5.1-1
+    mur = mur0 + w*mur1
+    return unidades.Viscosity(mur*muc)
+
+
+def MuL_Kouzel(T, P, muo):
+    """Calculate the viscosity of liquid at high pressure using the API
+    correlation, API procedure 11A5.5, pag 1081.
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    muo: float
+        Viscosity of atmospheric pressure, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity at high pressure, [Pa·s]
+
+    Notes
+    -----
+    Procedure valid for high-molecular weight hydrocarbons at high pressure. A
+    compound with more than 20 carbon atoms are valid for this method.
+
+    Examples
+    --------
+    Example from [5]_; lubricating oil at 120.2ºF and 9940 psi
+
+    >>> T = unidades.Temperature(120.2, "F")
+    >>> P = unidades.Pressure(9940, "psi")
+    >>> "%0.1f" % MuL_Kouzel(T, P, 0.0527).cP
+    '277.2'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Unit conversion
+    psig = unidades.Pressure(P).psig
+    muocp = unidades.Viscosity(muo).cP
+
+    # Eq 11A5.5-1
+    mu = muocp*10**(psig/1000*(-0.0102+0.04042*muocp**0.181))
+
+    return unidades.Viscosity(mu, "cP")
 
 
 
@@ -3407,6 +3536,21 @@ class Componente(object):
         if self.C and self.H:
             self.HC = self.H/self.C
 
+        # Define the critical viscosity, use the Table 11A5.4 in [5]_
+        if 1 < self.id <= 21 and id != 7:
+            muc = [0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350,
+                   0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315,
+                   0.0328, 0.0337, 0.0348, 0.0355, 0.0362][id]
+        elif id == 90:
+            muc = 0.0370
+        elif id == 91:
+            muc = 0.0375
+        elif id == 92:
+            muc = 0.0388
+        else:
+            muc = self._MuCritical().cP
+        self.muc = unidades.Viscosity(muc, "cP")
+
         # Chemical class definition
         # Some procedures need the chemical type of compound. This could be
         # hardcoded in database but it try to autodetect below
@@ -3487,6 +3631,17 @@ class Componente(object):
         f1=15.2518-15.6875/0.6-13.4721*log(0.6)+0.43577*0.6**6
         pv=exp(f0*0.6+self.f_acent*f1*0.6)
         return log10(self.pr(P)/pv)
+
+    def _MuCritical(self):
+        """Critical viscosity calculation procedure
+
+        References
+        ----------
+        .. [47] Riazi, M. R. Characterization and Properties of Petroleum
+            Fractions. ASTM manual series MNL50, 2005. Pag 348, Eq. 8.10
+        """
+        xi = self.Tc**(1/6)/self.M**0.5/self.Pc.atm**(2/3)
+        return unidades.Viscosity(7.7e-4/xi, "cP")
 
     # Ideal properties
     def _Cpo(self, T):
@@ -3913,10 +4068,6 @@ class Componente(object):
                 # Use the critical point as reference volume
                 return MuL_PrzedzieckiSridhar(T, self.Tc, self.Pc, self.Vc,
                                               self.f_acent, self.M, self.Tf)
-
-
-            elif MuL==3 and self.Van_Veltzen:
-                return self.Mu_Liquido_Van_Veltzen(T)
             else:
                 if self._dipprMuL and \
                         self._dipprMuL[6] <= T <= self._dipprMuL[7]:
@@ -3926,108 +4077,28 @@ class Componente(object):
                 elif self.Tc and self.Pc and self.f_acent and self.M:
                     return MuL_LetsouStiel(
                             T, self.M, self.Tc, self.Pc, self.f_acent)
-
-
-                elif self.Van_Veltzen:
-                    return self.Mu_Liquido_Van_Veltzen(T)
         else:
-            if corr==0:
+            if corr == 0:
                 muo = self.Mu_Liquido(T, 101325)
                 Ps = self.Pv(T)
                 return MuL_Lucas(T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
-            elif corr==1:
-                return self.Mu_Liquido_Kouzel(T, P)
-            elif corr==2 and self.Pc and self.f_acent:
-                #En realidad el criterio de corte es los hidrocarburos de menos de 20 átomos de carbono (hidrocarburos de bajo peso molecular), pero aprovechando que la temperatura de ebullición es proporcional al peso molecular podemos usar esta
-                return self.Mu_Liquido_Graboski_Braun(T, P)
+            elif corr == 1 and self.Pc and self.f_acent:
+                return MuL_API(T, P, self.Tc, self.Pc, self.f_acent, self.muc)
+            elif corr == 2:
+                muo = self.Mu_Liquido(T, 101325)
+                return MuL_Kouzel(T, P, muo)
             else:
-                if self.Tb<650:
-                    return self.Mu_Liquido_Graboski_Braun(T, P)
-                elif self.Pc and self.f_acent:
-                    return self.Mu_Liquido_Lucas(T, P)
+                if self.Pc and self.f_acent:
+                    muo = self.Mu_Liquido(T, 101325)
+                    Ps = self.Pv(T)
+                    return MuL_Lucas(
+                        T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
+                elif self.Tb < 650:
+                    return MuL_API(
+                        T, P, self.Tc, self.Pc, self.f_acent, self.muc)
                 else:
-                    return self.Mu_Liquido_Kouzel(T, P)
-
-    def Mu_Liquido_Van_Veltzen(self, T):
-        """Método alternativo para calcular la viscosidad de líquidos haciendo uso de la contribución de los grupos moleculares, API procedure 11A2.3, pag 1048"""
-        #TODO: Método dificil de implementar debido a que se tiene que calcular la contribución de grupos
-
-    def Mu_Liquido_Graboski_Braun(self, T, P):
-        """Método alternativo para el cálculo de la viscosidad en líquidos de bajo peso molécular a altas presiones, API procedure 11A5.1 (pag. 1074)"""
-        Pr=self.pr(P)
-        Tr=self.tr(T)
-
-        A1=3.0294*Tr**9.0740+0.0032*Tr**10.9399-0.3689
-        A2=-0.038*Tr**-7.2309+0.0229*Tr**11.7631+0.5781
-        A3=-0.1415*Tr**27.2842+0.0778*Tr**-4.3406+0.0014
-        A4=0.0028*Tr**69.4404-0.0042*Tr**3.3586+0.0062
-        A5=0.0107*Tr**-7.4626-85.8276*Tr**0.1392+87.3164
-        mur0=A1*log10(Pr)+A2*log10(Pr)**2+A3*Pr+A4*Pr**2+A5
-
-        if Pr <= 0.75:
-            B1=-0.2462*Tr**0.0484-0.7275*log(Tr)-0.0588*Tr+0.0079
-            B2=-0.3199*Tr**17.0626-0.0695*log(Tr)+0.1267*Tr-0.0101
-            B3=4.7217*Tr**-1.9831+19.2008*Tr**-1.7595+65.5728*log(Tr)+0.6110*Tr-19.1590
-        else:
-            B1=-0.0214*Tr**0.0484-0.1827*log(Tr)-0.0183*Tr+0.0090
-            B2=-0.3588*Tr**5.0537-0.1321*log(Tr)+0.0204*Tr-0.0075
-            B3=3.7266*Tr**-2.5689+52.1358*Tr**0.3514-13.0750*log(Tr)+0.6358*Tr-56.6687
-        mur1=B1*Pr+B2*log(Pr)+B3
-
-        mur=mur0+self.f_acent*mur1
-        #TODO: Para implementar correctamente este método hay que añadir a la base de datos los datos de la viscosidad en el punto crítico. De momento usaremos el procedimiento DIPPR como alternativa para obtener un valor de viscosidad en las condiciones estandart y una minitabla para los elementos que aparecen en la tabla 11A5.4 del API Databook
-        if 1<self.id<=21 and self.id!=7:
-            muc=[0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350, 0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315, 0.0328, 0.0337, 0.0348, 0.0355, 0.0362][self.id]
-        elif self.id==90:
-            muc=0.0370
-        elif self.id==91:
-            muc=0.0375
-        elif self.id==92:
-            muc=0.0388
-        else:
-#            muc=self.Mu_critica().cP
-            To=298.15
-            Po=101325
-            muo=self.Mu_Liquido(To, 101325)
-
-            Pr=self.pr(Po)
-            Tr=self.tr(To)
-
-            A1=3.0294*Tr**9.0740+0.0032*Tr**10.9399-0.3689
-            A2=-0.038*Tr**-7.2309+0.0229*Tr**11.7631+0.5781
-            A3=-0.1415*Tr**27.2842+0.0778*Tr**-4.3406+0.0014
-            A4=0.0028*Tr**69.4404-0.0042*Tr**3.3586+0.0062
-            A5=0.0107*Tr**-7.4626-85.8276*Tr**0.1392+87.3164
-            muor0=A1*log10(Pr)+A2*log10(Pr)**2+A3*Pr+A4*Pr**2+A5
-
-            if Pr <= 0.75:
-                B1=-0.2462*Tr**0.0484-0.7275*log(Tr)-0.0588*Tr+0.0079
-                B2=-0.3199*Tr**17.0626-0.0695*log(Tr)+0.1267*Tr-0.0101
-                B3=4.7217*Tr**-1.9831+19.2008*Tr**-1.7595+65.5728*log(Tr)+0.6110*Tr-19.1590
-            else:
-                B1=-0.0214*Tr**0.0484-0.1827*log(Tr)-0.0183*Tr+0.0090
-                B2=-0.3588*Tr**5.0537-0.1321*log(Tr)+0.0204*Tr-0.0075
-                B3=3.7266*Tr**-2.5689+52.1358*Tr**0.3514-13.0750*log(Tr)+0.6358*Tr-56.6687
-            muor1=B1*Pr+B2*log(Pr)+B3
-            muor=muor0+self.f_acent*muor1
-            muc=muo.cP/muor
-
-        return unidades.Viscosity(mur*muc, "cP")
-
-    def Mu_Liquido_Kouzel(self, T, P, mua=0):
-        """Método alternativo para el cálculo de la viscosidad en líquidos de alto peso molécular a altas presiones, API procedure 11A5.5 (pag. 1081)
-        como parámetro opcional se puede indicar la viscosidad a presión atmosferica a tempratura T"""
-        p=unidades.Pressure(P, "atm")
-        if mua==0:
-            mua=self.Mu_Liquido(T, 1)
-        mup=mua*10**(p.psig/1000*(-0.0102+0.04042*mua.cP**0.181))
-        return unidades.Viscosity(mup)
-
-    def Mu_critica(self):
-        """Procedimiento que define la viscosidad crítica si no viene en la base de datos
-        Eq 8.9 Riazi - Characterization and Properties of Petroleum fractions, pag 348"""
-        x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
-        return unidades.Viscosity(7.7e-4/x, "cP")
+                    muo = self.Mu_Liquido(T, 101325)
+                    return MuL_Kouzel(T, P, muo)
 
     def Tension(self, T):
         """Liquid surface tension procedure using the method defined in
