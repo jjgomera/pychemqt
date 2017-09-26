@@ -29,6 +29,7 @@ from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d
 
 from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
+from lib.physics import Collision_Neufeld
 from lib import unidades, config, eos, sql
 from lib.mEoS import CH4, nC8
 
@@ -311,8 +312,14 @@ __doi__ = {
          "title": "Characterization and Properties of Petroleum Fractions.",
          "ref": "ASTM manual series MNL50, 2005",
          "doi": ""},
-
     48:
+        {"autor": "Brokaw, R.S.",
+         "title": "Predicting Transport Properties of Dilute Gases",
+         "ref": "I&EC Process Design and Development 8(22) (1969) 240-253",
+         "doi": "10.1021/i260030a015"},
+
+
+    49:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2211,6 +2218,37 @@ def MuL_Kouzel(T, P, muo):
     return unidades.Viscosity(mu, "cP")
 
 
+# Liquid viscosity correlations
+def MuG_ChapmanEnskog(T, M, sigma, omega):
+    """Calculate the viscosity of a gas using the Chapman-Enskog correlation
+
+    .. math::
+        \mu=\frac{26.69\left(MT\right)^{1/2}}{\sigma^2\Omega_v}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    sigma : float
+        hard sphere diameter, [Å]
+    omega : float
+        Collision integral, [-]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    mu = 26.69*M**0.5*T**0.5/sigma**2/omega
+    return unidades.Viscosity(mu, "microP")
+
 
 def MuG_StielThodos(T, Tc, Pc, M):
     r"""Calculate the viscosity of a gas using the Stiel-Thodos correlation,
@@ -3382,6 +3420,10 @@ class Componente(object):
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
                      "Aalto-Keskinen (1996)", "Aalto-Keskinen (1999)",
                      "Nasrifar", "API"]
+    METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
+                   "Przedziecki-Sridhar"]
+    METHODS_MuLP = ["Lucas", "API", "Kouzel"]
+
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -3479,8 +3521,10 @@ class Componente(object):
         self.CASNumber = componente[133]
         self.alternateFormula = componente[134]
         self.UNIFAC = eval(componente[135])
+
         self.Dm = componente[136]
         self.ek = componente[137]
+
         self.UNIQUAC_area = componente[138]
         self.UNIQUAC_volumen = componente[139]
         if componente[140] == 0.0:
@@ -3502,7 +3546,7 @@ class Componente(object):
         self.V_char = componente[147]
         self.calor_formacion_solido = componente[148]
         self.energia_formacion_solido = componente[149]
-        self.parametro_polar = componente[150]
+        self.PolarParameter = componente[150]
         self.smile = componente[151]
         if self.smile != "" and os.environ["oasa"] == "True":
             import oasa
@@ -3960,8 +4004,18 @@ class Componente(object):
             if MuG == 0 and self._dipprMuG and \
                     self._dipprMuG[6] <= T <= self._dipprMuG[7]:
                 return DIPPR("muG", T, self._dipprMuG)
-            elif MuG == 1:
-                return self.Mu_Gas_Chapman_Enskog(T)
+            elif MuG == 1 and self.Dm and self.ek:
+                T_ = T/self.ek
+                omega = Collision_Neufeld(T_)
+
+                # Use the Brokaw Collision integral for polar compounds
+                # Brokaw, R.S. Predicting Transport Properties of Dilute Gases
+                # I&EC Process Design and Development 8(22) (1969) 240-253
+                if self.PolarParameter:
+                    omega += 0.2*self.PolarParaemter**2/T_
+
+                return MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
+
             else:
                 return MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
@@ -3969,34 +4023,6 @@ class Componente(object):
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
                 return self.Mu_Gas_Carr(T, P)
-
-    def Mu_Gas_Chapman_Enskog(self,T):
-        """Método alternativo para calcular la viscosidad de gases (a baja presión):
-        μg = 5/16(πMRT)^0.5/πO²Ω = 22.69*(MT)^0.5/O²Ω = Mp*P
-        where:        M  = peso molecular
-                      R  = constante del gas ideal
-                      T  = temperatura
-                      P  = presión
-                      O  = diametro molécular
-                      Ωv = colision integral
-                      Mp = momento dipolar
-        ref chemcad pag 81
-        ref Properties gases and liquids pag. 470
-        """
-        #Metodo de Chung (pouling pag 473)
-        if not self.Dm:
-            dm=0.809*self.Vc*self.M**(1./3)
-        else: dm=self.Dm
-        if not self.ek:
-            ek=self.Tc/1.2593
-        else: ek=self.ek
-
-        T_=T/ek
-        if self.parametro_polar: #Polar, colisión integral de Brokaw (pouling pag 640)
-            omega=1.03036/T_**0.15610+0.193/exp(0.47635*T_)+1.03587/exp(1.52996*T_)+1.76474/exp(3.89411*T_)+0.19*self.parametro_polar**2/T_
-        else: #No polar, colisión integral de Neufeld
-            omega=1.16145/T_**0.14874+0.52487/exp(0.7732*T_)+2.16178/exp(2.43787*T_)
-        return unidades.Viscosity(26.69*(self.M*T)**0.5/dm**2/omega, "microP")
 
     def Mu_Gas_Jossi(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de hidrocarburos gaseosos pesados a alta presión,
@@ -4300,152 +4326,6 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
-#    etilbenceno=Componente(45)
-#    t=unidades.Temperature(180, "F")
-#    print "DIPPR: ", etilbenceno.Tension_DIPPR(t).dyncm
-#    print "Paramétrica: ", etilbenceno.Tension_Parametrica(t).dyncm
-#    print "Hakim: ", etilbenceno.Tension_Hakim(t).dyncm
-#    print "Miller: ", etilbenceno.Tension_MIller(t).dyncm
-#    print "Hydrocarbon: ", etilbenceno.Tension_Hydrocarbon(t).dyncm
-#    print "Parachor: ", etilbenceno.Tension_Parachor(t, 285.1).dyncm
-#    print "Miqueu: ", etilbenceno.Tension_Miqueu(t).dyncm
-#    print "Block Bird: ", etilbenceno.Tension_Block_Bird(t).dyncm
-
-#    ipentano=Componente(7)
-#    t=unidades.Temperature(212, "F")
-#    print "DIPPR: ", ipentano.ThCond_Gas_DIPPR(t).BtuhftF
-#    print "Misic-Thodos: ", ipentano.ThCond_Gas_Misic_Thodos(t).BtuhftF
-
-
-#    heptano=Componente(11)
-#    t=unidades.Temperature(572, "F")
-#    p=unidades.Pressure(1450, "psi")
-#    print "Crooks: ", heptano.ThCond_Gas_Crooks(t, p.atm).BtuhftF
-
-#    oxigeno=Componente(47)
-#    t=unidades.Temperature(984.6, "R")
-#    p=unidades.Pressure(6075, "psi")
-#    print "Nonhidrocarbon: ", oxigeno.ThCond_Gas_Nonhidrocarbon(t, p.atm).BtuhftF
-
-#    butilbenceno=Componente(78)
-#    t=unidades.Temperature(140, "F")
-#    print "DIPPR: ", butilbenceno.ThCond_Liquido_DIPPR(t).BtuhftF
-#    print "Pachaiyappan: ", butilbenceno.ThCond_Liquido_Pachaiyappan(t).BtuhftF
-
-#    heptano=Componente(11)
-#    t=unidades.Temperature(320, "F")
-#    print "Kanitkar Thodos: ", heptano.ThCond_Liquido_Kanitkar_Thodos(t, 197.4).BtuhftF
-#    print "Lenoir: ", heptano.ThCond_Liquido_Lenoir(t, 197.4).BtuhftF
-
-#    decano=Componente(14)
-#    t=unidades.Temperature(104, "F")
-#    print "DIPPR: ", decano.Mu_Liquido_DIPPR(t).cP
-#    print "Paramétrico: ", decano.Mu_Liquido_Parametrica(t).cP
-#    print "Letsou Steil: ", decano.Mu_Liquido_Letsou_Steil(t).cP
-#
-#    pentano=Componente(50)
-#    t=unidades.Temperature(200, "F")
-#    p=unidades.Pressure(3000, "psi")
-#    print "Graboski Broun: ", pentano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", pentano.Mu_Liquido_Lucas(t, p.atm).cP
-
-#    tetralin=Componente(376)
-#    t=unidades.Temperature(302, "F")
-#    print "DIPPR:  %0.5f" % tetralin.Pv_DIPPR(t).psi
-#    print "Antoine:   %0.5f" % tetralin.Pv_Antoine(t).psi
-#    print "Lee-Kesler:  %0.5f" % tetralin.Pv_Lee_Kesler(t).psi
-#    print "Maxwell-Bonnel: %0.5f" % tetralin.Pv_Maxwell_Bonnel(t).psi
-#    print "Wagner: %0.5f" % tetralin.Pv_Wagner(t).psi
-
-#    propano=Componente(4)
-#    t=unidades.Temperature(30, "F")
-#    print "DIPPR: ", propano.RhoL_DIPPR(t).gml
-#    print "Rackett: ", propano.RhoL_Rackett(t).gml
-#    print "Cavett: ", propano.RhoL_Cavett(t).gml
-#    print "Costald: ", propano.RhoL_Costald(t).gml
-
-#    octano=Componente(12)
-#    t=unidades.Temperature(212, "F")
-#    p=unidades.Pressure(4410, "psi")
-#    print "Thomson Brobst Hankinson: ", octano.RhoL_Thomson_Brobst_Hankinson(t, p.atm).kgl
-#    print "API: ", octano.RhoL_API(t, p.atm).kgl
-
-
-#    ciclohexano=Componente(38)      #ej pag 637
-#    t=unidades.Temperature(300, "F")
-#    p=unidades.Pressure(1000, "psi")
-#    print ciclohexano.Z_SRK(t, p.atm)
-#    print ciclohexano.Lee_Kesler_Entalpia(t, p.atm).Btulb
-#    print ciclohexano.Entropia(t, p.atm).BtulbF*1.8
-
-#    print ciclohexano.Hv_Lee_Kesler(422.04), ciclohexano.Calor_vaporizacion(422.04)
-#    print ciclohexano.Cp_Lee_Kesler(422.04, 68.046), ciclohexano.Cv_Lee_kesler(422.04, 68.046)
-
-
-#    isobutano=Componente(5)
-#    t=unidades.Temperature(370, "F")
-#    p=unidades.Pressure(4000, "psi")
-#    print isobutano.Lee_Kesler_Fugacidad(t, p.atm).psi #Ej pag 745
-#    t=unidades.Temperature(475, "F")
-#    print isobutano.Lee_Kesler_Entropia(t, p.atm).BtulbF #Ej pag 733
-
-#    print "     SRK    Lee_Kesler    BWRS"
-#    print "Z  %5.4f   %7.4f   %5.4f" % (isobutano.Z_SRK(t, p.atm), isobutano.Z_Lee_Kesler(t, p.atm), isobutano.Z_BWRS(t, p.atm))
-#    print isobutano.RhoG_Lee_Kesler(t, p.atm)
-#    print isobutano.RhoG_SRK(t, p.atm)
-#    print isobutano.RhoG_BWRS(t, p.atm)
-#    print isobutano.Entalpia_SRK(t, p.atm)
-
-#    buteno=Componente(24)
-#    print buteno.f_acent
-#    print buteno.factor_acentrico()
-
-
-#    butano=Componente(6)
-#    T=unidades.Temperature(200, "F")
-#    print unidades.Enthalpy(butano.Entalpia_formacion(T)).Btulb
-
-
-
-#    decano=Componente(14)
-#    t=unidades.Temperature(104, "F")
-#    print "DIPPR: ", decano.Mu_Liquido_DIPPR(t).cP
-#    print "Paramétrico: ", decano.Mu_Liquido_Parametrica(t).cP
-#    print "Letsou Steil: ", decano.Mu_Liquido_Letsou_Steil(t).cP
-
-#    pentano=Componente(8)
-#    t=unidades.Temperature(200, "F")
-#    p=unidades.Pressure(3000, "psi")
-#    print "Graboski Broun: ", pentano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", pentano.Mu_Liquido_Lucas(t, p.atm).cP
-
-#    metilciclohexano=Componente(39)
-#    t=unidades.Temperature(300, "K")
-#    p=unidades.Pressure(500, "bar")
-#    muo=unidades.Viscosity(0.68, "cP")
-#    print "Graboski Broun: ", metilciclohexano.Mu_Liquido_Graboski_Braun(t, p.atm).cP
-#    print "Lucas: ", metilciclohexano.Mu_Liquido_Lucas(t, p.atm).cP
-
-
-#    decano=Componente(14)
-#    print decano.MuL_Kouzel(unidades.Temperature(120, "F"), unidades.Pressure(9940, "psi").atm, unidades.Viscosity(52.7, "cP")).cP
-
-#    propano=Componente(4)
-#    t=unidades.Temperature(176, "F")
-#    print propano.MuG_Thodos(t).cP
-
-#    metano=Componente(2)
-#    t=unidades.Temperature(543, "F")
-#    print metano.Mu_Gas(t, 1).cP
-#    print metano.Mu_Gas_Thodos(t).cP
-#    print metano.Mu_Gas_Eakin_Ellingtong(t, 50).cP
-
-#    nitrogeno=Componente(46)
-#    t=unidades.Temperature(-58, "F")
-#    p=unidades.Pressure(1677, "psi")
-#    print nitrogeno.Mu_Gas(t, p).cP
-#    print nitrogeno.Mu_Gas_Carr(t, p.atm).cP
-
 
 #    from pylab import arange, plot, show
 #    nonano=Componente(13)
@@ -4471,107 +4351,6 @@ if __name__ == '__main__':
 #    plot(t, C1, t, C2)
 #    show()
 
-
-#    agua=Componente(62)
-#    print agua.composicion_molecular
-#    oxigeno=Componente(47)
-#    print oxigeno.composicion_molecular
-#    benceno=Componente(40)
-#    print benceno.composicion_molecular
-#    cfc=Componente(241)
-#    print cfc.composicion_molecular
-
-#    i_pentano=Componente(7)
-#    t=unidades.Temperature(68, "F")
-#    print i_pentano.Solubilidad_agua(t)
-#    benceno=Componente(40)
-#    t=unidades.Temperature(104, "F")
-#    print benceno.Solubilidad_agua(t)
-
-#    hexano=Componente(10)
-#    t=unidades.Temperature(212, "F")
-#    print hexano.Solubilidad_en_agua(t)
-
-#    fluorene=Componente(197)
-#    t=unidades.Temperature(122, "F")
-#    print fluorene.Solubilidad_en_agua(t)
-
-#    sulfuro=Componente(50)
-#    t=unidades.Temperature(77, "F")
-#    print sulfuro.Solubilidad_Henry(t, 1)
-
-#    agua=Componente(62)
-#    T=unidades.Temperature(100, "C")
-#
-#    print "Liquid Thermal Conductivity: ", agua.ThCond_Liquido(T, 1), "W/mK"
-#    print "Liquid viscosity: ", agua.Mu_Liquido(T, 1), "Pa·s"
-#    print "Liquid surface tension: ", agua.Tension(T), "N/m"
-#    print "Gas Thermal Conductivity: ", agua.ThCond_Gas(T, 1), "W/mK"
-#    print "Gas viscosity: ", agua.Mu_Gas(T, 1), "Pa·s"
-#
-#    print "Vapor pressure: ", agua.Pv(T).atm, "atm"
-
-#    propeno=Componente(23)
-#    t=unidades.Temperature(302, "F")
-#    p=unidades.Pressure(2290, "psi")
-#    print propeno.Cp_Lee_Kesler(t, p.atm).BtulbF
-#    print propeno.Cp_Cv_ratio(t, p.atm)
-
-#    SO2=Componente(51)
-#    t=unidades.Temperature(300, "C")
-#    print SO2.Mu_Gas_Chapman_Enskog(t, 1).microP
-
-#    from pylab import arange, plot, show
-#    nonano=Componente(13)
-#    p=arange(0.2*nonano.Pc,5*nonano.Pc,1)
-#    C1=[]
-#    C2=[]
-#    C3=[]
-#    C5=[]
-#    C10=[]
-#    C30=[]#    for i in p:
-#        C1.append(nonano.pr(i)*nonano.Lee_Kesler(nonano.Tc*1, i)[0]/1)
-#        C11.append(nonano.Lee_Kesler(nonano.Tc*1.1, i))
-#        C12.append(nonano.Lee_Kesler(nonano.Tc*1.2, i))
-#        C13.append(nonano.Lee_Kesler(nonano.Tc*1.3, i))
-#        C15.append(nonano.Lee_Kesler(nonano.Tc*1.5, i))
-#        C17.append(nonano.Lee_Kesler(nonano.Tc*1.7, i))
-#        C2.append(nonano.pr(i)*nonano.Lee_Kesler(nonano.Tc*2, i)[0]/2)
-#        C25.append(nonano.Lee_Kesler(nonano.Tc*2.5, i))
-#        C3.append(nonano.Lee_Kesler(nonano.Tc*3, i))
-#        C4.append(nonano.Lee_Kesler(nonano.Tc*4, i))
-#    plot(p/nonano.Pc, C1)
-#    show()
-
-#    Hidrogeno=Componente(1)
-#    print unidades.Temperature(Hidrogeno.Tc).R
-#    print unidades.Pressure(Hidrogeno.Pc, "atm").psi
-#    print Hidrogeno.f_acent
-
-#    agua=Componente(62)
-#    print agua.SRK_Z(298.15, 1)
-#    print agua.SRK_RhoG(298.15, 1).kgm3
-#    print agua.SRK_Entalpia(298.15, 1).MJkg
-
-#    agua=Componente(62)
-#    t=400
-#    print agua.BWRS_Z(298.15, 1)
-#    print agua.van_Waals_Z(t, 1), agua.PR_Z(t, 1), agua.RK_Z(t, 1), agua.HPW_Z(t, 1, -0.5)
-#    print agua.RK_Z(t, 1), agua.Wilson_Z(t, 1), agua.SRK_Z(t, 1)
-#    print agua.BWRS_RhoG(298.15, 1).kgm3
-#    print agua.BWRS_Entalpia(298.15, 1).MJkg
-
-#    print agua.PR_V(298.15, 1)
-#    print agua.PR_RhoG(298.15, 1)
-#    print agua.PR_Entalpia(t, 1).MJkg, agua.Lee_Kesler_Entalpia(t, 1).MJkg, agua.iapws_Entalpia(t, 1).MJkg
-#    print agua.Lee_Kesler_Z(t, 1), agua.SRK_Z(t, 1)
-
-#    print agua.Cp_Gas_DIPPR(400), iapws_Cp(400, 1), agua.Cp_ideal(400)
-#    print agua.Hv_Lee_Kesler(t).MJkg, agua.Hv_DIPPR(t).MJkg
-#    print agua.Lee_Kesler_Entalpia(t, 1).MJkg, agua.iapws_Entalpia(t, 1).MJkg, agua.Entalpia_ideal(t).MJkg
-#    print agua.Cp_Lee_Kesler(t, 1).JkgK*agua.M, agua.iapws_Cp(t, 1).JkgK*agua.M
-#    print agua.Lee_Kesler_Entropia(t, 1).JkgK, agua.iapws_Entropia(t, 1).JkgK
-
 #    agua=Componente(62)
 #    from scipy import arange
 #    from pylab import plot, grid, show
@@ -4589,35 +4368,3 @@ if __name__ == '__main__':
 #    grid(True)
 #    show()
 #
-
-
-#    sulfuro=Componente(50)
-#    t=300
-#    p=1
-#    print sulfuro.H2S_V(t, p).ccg*sulfuro.M
-#    print sulfuro.H2S_RhoG(t, p).gcc
-#    print sulfuro.H2S_Z(t, p), sulfuro.TB_Z(t, p)
-#    print sulfuro.H2S_Fugacidad(t, p)
-#    print sulfuro.H2S_Entalpia(t, p).Jg*sulfuro.M
-
-#    agua=Componente(62)
-#    t=273
-#    p=1
-#    print agua.TB_Fugacidad(t, p), agua.Lee_Kesler_Fugacidad(t, p)
-#    print agua.TB_U_exceso(t, p), agua.TB_H_exceso(t, p), agua.TB_S_exceso(t, p), agua.TB_Cv_exceso(t, p)
-#    print agua.TB_Entalpia(t, p).MJkg, agua.Lee_Kesler_Entalpia(t, p).MJkg, agua.iapws_Entalpia(t, p).MJkg
-#    print agua.TB_Joule_Thomson(t, p)
-
-#    solido=Componente(533)
-#    print solido.PT_lib(300)
-#
-#    Hexano=Componente(10)
-#    print Hexano.Mu_Liquido(340, 1)
-
-
-
-
-#    agua=Componente(62)
-#    print [agua.Tension_Parametrica(t) for t in range(300, 350, 10)]
-#    print agua.RhoL_Tait_Costald(300, 1)
-#    print agua.Tc, agua.Pc.bar, agua.f_acent
