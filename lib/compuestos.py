@@ -317,9 +317,22 @@ __doi__ = {
          "title": "Predicting Transport Properties of Dilute Gases",
          "ref": "I&EC Process Design and Development 8(22) (1969) 240-253",
          "doi": "10.1021/i260030a015"},
-
-
     49:
+        {"autor": "Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.",
+         "title": "Generalized Multiparameter Correlation for Nonpolar and "
+                  "Polar Fluid Trnasport Properties",
+         "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
+         "doi": "10.1021/ie00076a024"},
+    50:
+        {"autor": "Chung, T.H., Lee, L.L., Starling, K.E.",
+         "title": "Applications of Kinetic Gas Theories and Multiparameter "
+                  "Correlation for Prediction of Dilute Gas Viscosity and "
+                  "Thermal Conductivity",
+         "ref": "Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13",
+         "doi": "10.1021/i100013a002"},
+
+
+    51:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2321,6 +2334,66 @@ def MuG_StielThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mu, "cP")
 
 
+def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
+    """Calculate the viscosity of a gas using the Chung et al. correlation
+
+    .. math::
+        \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+    D : float
+        Dipole moment, [Debye]
+    k : float, optional
+        Corection factor for polar substances, [-]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-1 in [1]_, SO2 at 300ºC
+    >>> T = unidades.Temperature(300, "C")
+    >>> Pc = unidades.Pressure(616, "psi")
+    >>> "%0.1f" % MuG_Chung(T, 430.8, 122/64.065*1e3, 64.065, 0.257, 1.6).muPas
+    '245.5'
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [50] Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
+        Theories and Multiparameter Correlation for Prediction of Dilute Gas
+        Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
+        (1984) 8-13
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Vc in molar base
+    Vc = Vc*M/1000
+
+    T_ = 1.2593*T/Tc
+    omega = Collision_Neufeld(T_)
+    mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
+    Fc = 1 - 0.2756*w + 0.059035*mur**4 + k                             # Eq 7
+    mu = 40.785*Fc*M**0.5*T**0.5/Vc**(2/3)/omega                        # Eq 6
+    return unidades.Viscosity(mu, "muPas")
+
+
+# Liquid thermal conductivity correlations
 def ThL_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of liquid hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -4013,8 +4086,36 @@ class Componente(object):
                 # I&EC Process Design and Development 8(22) (1969) 240-253
                 if self.PolarParameter:
                     omega += 0.2*self.PolarParaemter**2/T_
-
                 return MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
+
+            elif MuG == 2 and self.dipole:
+                # Definition of polar correction factors
+                # Chung, T.H., Lee, L.L., Starling, K.E.
+                # Applications of Kinetic Gas Theories and Multiparameter
+                # Correlation for Prediction of Dilute Gas Viscosity and
+                # Thermal Conductivity
+                # Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13
+
+                # Table I
+                ki = {117: 0.215175,
+                      134: 0.174823,
+                      146: 0.143453,
+                      145: 0.143453,
+                      160: 0.131671,
+                      159: 0.131671,
+                      313: 0.121555,
+                      335: 0.114230,
+                      357: 0.108674,
+                      130: 0.091549,
+                      62: 0.075908}
+                k = ki.get(self.id, 0)
+
+                # Rough alcohol definition using the oxygen atoms count:
+                if not k and self.isAlcohol:
+                    k = 0.0682+0.276659*17*self.O/self.M               # Eq 10
+
+                return MuG_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
+                                 self.dipole, k)
 
             else:
                 return MuG_StielThodos(T, self.Tc, self.Pc, self.M)

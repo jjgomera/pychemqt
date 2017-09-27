@@ -1448,8 +1448,8 @@ class View_Component(QtWidgets.QDialog):
             self.stiel.setValue(self.cmp.stiel)
         if self.cmp.rackett:
             self.rackett.setValue(self.cmp.rackett)
-    #        if self.cmp.[53]:
-    #            self.parametroPolar.setValueself.cmp.[53])
+        if self.cmp.PolarParameter:
+            self.PolarParameter.setValue(self.cmp.PolarParameter)
         if self.cmp.ek:
             self.EpsK.setValue(self.cmp.ek)
         if self.cmp.Kw:
