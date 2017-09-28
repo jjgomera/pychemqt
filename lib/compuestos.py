@@ -330,9 +330,15 @@ __doi__ = {
                   "Thermal Conductivity",
          "ref": "Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13",
          "doi": "10.1021/i100013a002"},
-
-
     51:
+        {"autor": "Jossi, J.A., Stiel, L.I., Thodos, G.",
+         "title": "The Viscosity of Pure Substances in the Dense Gaseous and "
+                  "Liquid Phases",
+         "ref": "AIChE Journal 8(1) (1962) 59-63",
+         "doi": "10.1002/aic.690080116"},
+
+
+    52:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2483,7 +2489,8 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
 
 
 def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
-    """Calculate the viscosity of a compressed gas using the Reichenberg correlation
+    """Calculate the viscosity of a compressed gas using the Reichenberg
+    correlation as explain in [1]_
 
     .. math::
         \frac{\mu}{\mu^o}=1+Q\frac{AP_r^{3/2}}{BP_r+\left(1+CP_r^D\right)^{-1}
@@ -2541,6 +2548,151 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     mur = 1+Q*A*Pr**1.5/(B*Pr+1/(1+C*Pr**D))
     return unidades.Viscosity(mur*muo)
 
+
+def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
+    """Calculate the viscosity of a compressed gas using the Lucas correlation
+    as explain in [1]_
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Zc : float
+        Critical compressibility factor, [-]
+    M : float
+        Molecular weight, [g/mol]
+    D : float
+        Dipole moment, [Debye]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-10 in [1]_, ammonia at 420K and 300bar
+    >>> mu = MuG_Lucas(420, 3e7, 405.5, 113.53e5, 0.244, 17.031, 1.47)
+    >>> "%0.0f" % mu.microP
+    '603'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+
+    Pc_bar = Pc*1e-5
+    xi = 0.176*Tc**(1/6)/M**0.5/Pc_bar**(2/3)
+
+    # Polarity and quantum effects correction factors
+    mur = 52.46*D**2*Pc_bar/Tc**2
+    if mur < 0.022:
+        Fpo = 0
+    elif mur < 0.075:
+        Fpo = 1 + 30.55*(0.292-Zc)**1.72
+    else:
+        Fpo = 1 + 30.55*(0.292-Zc)**1.72*abs(0.96+0.1*(Tr-0.7))
+
+    if Tr < 12:
+        sign = -1
+    else:
+        sign = 1
+
+    if M == 2.0158:
+        Q = 0.76  # Hydrogen
+        Fqo = 1.22*Q**0.15*(1+0.00385*((Tr-12)**2)**(1/M)*sign)
+    elif M == 4.0026:
+        Q = 1.38  # Helium
+        Fqo = 1.22*Q**0.15*(1+0.00385*((Tr-12)**2)**(1/M)*sign)
+    else:
+        Fqo = 1
+
+    Z1 = Fpo*Fqo*(0.807*Tr**0.618 - 0.357*exp(-0.449*Tr) + 0.34*exp(-4.058*Tr)
+                  + 0.018)
+
+    if Tr <= 1:
+        alfa = 3.262 + 14.98*Pr**5.508
+        beta = 1.39 + 14.98*Pr
+        Z2 = 0.6 + 0.76*Pr**alfa + (6.99*Pr**beta-0.6)*(1-Tr)
+    else:
+        a = 1.245e-3/Tr*exp(5.1726*Tr**-0.3286)
+        b = a*(1.6553*Tr-1.2723)
+        c = 0.4489/Tr*exp(3.0578*Tr**-37.7332)
+        d = 1.7368/Tr*exp(2.231*Tr**-7.6351)
+        e = 1.3088
+        f = 0.9425*exp(-0.1853*Tr**0.4489)
+        Z2 = Z1*(1+a*Pr**e/(b*Pr**f+1/(1+c*Pr**d)))
+
+    Y = Z2/Z1
+    Fp = (1+(Fpo-1)/Y**3)/Fpo
+    Fq = (1+(Fqo-1)*(1/Y-0.007*log(Y)**4))/Fqo
+    mu = Z2*Fp*Fq/xi
+    return unidades.Viscosity(mu, "microP")
+
+
+def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
+    """Calculate the viscosity of a compressed gas using the Lucas correlation
+    as explain in [1]_
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    rhoc : float
+        Critical density, [kg/m3]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density, [kg/m3]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Notes
+    -----
+    This method is valid only for non polar substances, the paper give
+    alternate equations for hydrogen, water and ammonia but there isn't a
+    general correlation for polar compounds.
+
+    Examples
+    --------
+    Example 9-11 in [1]_, isobutane at 500K and 100bar
+    >>> rhoc = 1/262.7*58.123*1000
+    >>> rho = 1/243.8*58.123*1000
+    >>> "%0.0f" % MuG_Jossi(407.85, 36.4e5, rhoc, 58.123, rho, 120e-4).microP
+    '275'
+
+    References
+    ----------
+    .. [51] Jossi, J.A., Stiel, L.I., Thodos, G. The Viscosity of Pure
+        Substances in the Dense Gaseous and Liquid Phases. AIChE Journal 8(1)
+        (1962) 59-63
+    """
+    Pc_atm = Pc/101325
+
+    x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
+    rhor = rho/rhoc
+
+    # Eq 8
+    mur = 0.1023 + 0.023364*rhor + 0.058533*rhor**2 - 0.040758*rhor**3 + \
+        0.0093324*rhor**4
+    mu = (mur**4-1e-4)/x+muo
+    return unidades.Viscosity(mu, "cP")
 
 
 
@@ -4274,6 +4426,8 @@ class Componente(object):
 
             # return MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
             # return MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
+            # return MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
+            # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
