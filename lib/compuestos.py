@@ -2366,8 +2366,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     --------
     Example 9-1 in [1]_, SO2 at 300ºC
     >>> T = unidades.Temperature(300, "C")
-    >>> Pc = unidades.Pressure(616, "psi")
-    >>> "%0.1f" % MuG_Chung(T, 430.8, 122/64.065*1e3, 64.065, 0.257, 1.6).muPas
+    >>> "%0.1f" % MuG_Chung(T, 430.8, 122e3/64.065, 64.065, 0.257, 1.6).microP
     '245.5'
 
     References
@@ -2390,7 +2389,98 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
     Fc = 1 - 0.2756*w + 0.059035*mur**4 + k                             # Eq 7
     mu = 40.785*Fc*M**0.5*T**0.5/Vc**(2/3)/omega                        # Eq 6
-    return unidades.Viscosity(mu, "muPas")
+    return unidades.Viscosity(mu, "microP")
+
+
+def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
+    """Calculate the viscosity of a compressed gas using the Chung correlation
+
+    .. math::
+        \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+    D : float
+        Dipole moment, [Debye]
+    k : float, optional
+        Corection factor for polar substances, [-]
+    rho : float
+        Density, [Debye]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-12 in [1]_, ammonia at 520K and 600bar
+    >>> Vc = 72.4/17.031*1e3
+    >>> rho = 1/48.2*17.031/1e3
+    >>> mu = MuG_P_Chung(520, 405.5, Vc, 17.031, 0.256, 1.47, 0, rho, 182e-6)
+    >>> "%0.0f" % mu.microP
+    '455'
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [50] Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
+        Theories and Multiparameter Correlation for Prediction of Dilute Gas
+        Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
+        (1984) 8-13
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # units in molar base
+    Vc = Vc*M/1000
+    rho = rho/M*1000
+
+    T_ = 1.2593*T/Tc
+    mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
+
+    # Table II
+    dat = {
+        1: (6.32402, 50.4119, -51.6801, 1189.02),
+        2: (0.12102e-2, -0.11536e-2, -0.62571e-2, 0.37283e-1),
+        3: (5.28346, 254.209, -168.481, 3898.27),
+        4: (6.62263, 38.09570, -8.46414, 31.4178),
+        5: (19.74540, 7.63034, -14.35440, 31.5267),
+        6: (-1.89992, -12.53670, 4.98529, -18.1507),
+        7: (24.27450, 3.44945, -11.29130, 69.3466),
+        8: (0.79716, 1.11764, 0.12348e-1, -4.11661),
+        9: (-0.23816, 0.67695e-1, -0.81630, 4.02528),
+        10: (0.68629e-1, 0.34793, 0.59256, -0.72663)}
+
+    # Eq 11
+    A = []
+    for i in range(1, 11):
+        ao, a1, a2, a3 = dat[i]
+        A.append(ao + a1*w + a2*mur**4 + a3*k)
+    A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 = A
+
+    Y = rho*Vc/6
+    G1 = (1-0.5*Y)/(1-Y)**3
+    G2 = (A1*((1-exp(-A4*Y))/Y)+A2*G1*exp(A5*Y)+A3*G1)/(A1*A4+A2+A3)
+
+    muk = muo*(1/G2 + A6*Y)
+    mup = (36.344e-6*(M*Tc)**0.5/Vc**(2/3))*A7*Y**2*G2*exp(A8+A9/T_+A10/T_**2)
+
+    return unidades.Viscosity(muk+mup, "P")
+
 
 
 # Liquid thermal conductivity correlations
@@ -4120,6 +4210,8 @@ class Componente(object):
             else:
                 return MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
+
+            # return MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
