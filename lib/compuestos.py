@@ -2482,6 +2482,67 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     return unidades.Viscosity(muk+mup, "P")
 
 
+def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
+    """Calculate the viscosity of a compressed gas using the Reichenberg correlation
+
+    .. math::
+        \frac{\mu}{\mu^o}=1+Q\frac{AP_r^{3/2}}{BP_r+\left(1+CP_r^D\right)^{-1}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Vc : float
+        Critical volume, [m³/kg]
+    M : float
+        Molecular weight, [g/mol]
+    D : float
+        Dipole moment, [Debye]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-9 in [1]_, n-pentane at 500K and 101bar
+    >>> mu = MuG_Reichenberg(500, 101e5, 469.7, 33.7e5, 0, 0, 0, 114e-7)
+    >>> "%0.0f" % mu.microP
+    '520'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # units in molar base
+    if D:
+        Vc = Vc*M/1000
+        mu_r = 131.3*D/(Vc*Tc)**0.5
+        Q = 1-5.655*mu_r
+    else:
+        Q = 1
+
+    Tr = T/Tc
+    Pr = P/Pc
+
+    A = 1.9824e-3/Tr*exp(5.2683*Tr**-0.5767)
+    B = A*(1.6552*Tr-1.276)
+    C = 1.319/Tr*exp(3.7035*Tr**-79.8678)
+    D = 2.9496/Tr*exp(2.9190*Tr**-16.6169)
+
+    mur = 1+Q*A*Pr**1.5/(B*Pr+1/(1+C*Pr**D))
+    return unidades.Viscosity(mur*muo)
+
+
+
 
 # Liquid thermal conductivity correlations
 def ThL_RiaziFaghri(T, Tb, SG):
@@ -4212,6 +4273,7 @@ class Componente(object):
         else:
 
             # return MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
+            # return MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
