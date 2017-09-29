@@ -336,9 +336,14 @@ __doi__ = {
                   "Liquid Phases",
          "ref": "AIChE Journal 8(1) (1962) 59-63",
          "doi": "10.1002/aic.690080116"},
-
-
     52:
+        {"autor": "Stiel, L.I., Thodos, G.",
+         "title": "The Viscosity of Polar Substances in the Dense Gaseous and "
+                  "Liquid Regions",
+         "ref": "AIChE Journal 10(2) (1964) 275-277",
+         "doi": "10.1002/aic.690100229"},
+
+    53:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2640,8 +2645,11 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
 
 
 def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
-    """Calculate the viscosity of a compressed gas using the Lucas correlation
-    as explain in [1]_
+    r"""Calculate the viscosity of a compressed gas using the Lucas correlation
+
+    .. math::
+        \left[\left(\mu-\mu^o\right)\xi_T+1\right]^{1/4}=1.023+0.23364\rho_r+
+        0.58533\rho_r^2-0.40758\rho_r^3+0.093324\rho_r^4
 
     Parameters
     ----------
@@ -2657,6 +2665,8 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
         Molecular weight, [g/mol]
     rho : float
         Density, [kg/m3]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
 
     Returns
     -------
@@ -2693,6 +2703,64 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
         0.0093324*rhor**4
     mu = (mur**4-1e-4)/x+muo
     return unidades.Viscosity(mu, "cP")
+
+
+def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
+    r"""Calculate the viscosity of a compressed gas using the Stiel-Thodos
+    correlation. This method is valid for polar substances.
+
+    .. math::
+        \left(\mu-\mu^o\right)\xi=1.656\rho_r^{1.111}, \rho_r ≤ 0.1
+
+        \left(\mu-\mu^o\right)\xi=0.0607\left(9.045\rho_r+0.63\left)1.739},
+        0.1 ≤ \rho_r ≤ 0.9
+
+        log\left[4-log\left(\left(\mu-\mu^o\right)\xi\right)\right]=
+        0.6439-0.1005\rho_r-\Delta, 0.9 ≤ \rho_r ≤2.6
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    rhoc : float
+        Critical density, [kg/m3]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density, [kg/m3]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    References
+    ----------
+    .. [52] Stiel, L.I., Thodos, G. The Viscosity of Polar Substances in the
+        Dense Gaseous and Liquid Regions. AIChE Journal 10(2) (1964) 275-277
+    """
+    Pc_atm = Pc/101325
+    x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
+    rhor = rho/rhoc
+
+    if rhor <= 0.1:
+        mur = 1.656e-5*rhor**1.111                                       # Eq 4
+    elif 0.1 < rhor <= 0.9:
+        mur = 0.607e-5*(9.045*rhor+0.63)**1.739                          # Eq 5
+    else:
+        if rhor < 2.2:
+            D = 0
+        else:
+            D = 4.75e-4*(rhor**3-10.65)**2
+        mur = 10**(4-10**(0.6439-0.1005*rhor-D))                         # Eq 6
+    return unidades.Viscosity(mur/x+muo, "cP")
+
 
 
 
@@ -4428,20 +4496,11 @@ class Componente(object):
             # return MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
             # return MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
             # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
+            # return MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
                 return self.Mu_Gas_Carr(T, P)
-
-    def Mu_Gas_Jossi(self, T, P, muo=0):
-        """Método de cálculo de la viscosidad de hidrocarburos gaseosos pesados a alta presión,
-        Jossi, J. A., Stiel, L. I., and Thodos, G., "The Viscosity of Pure Substances in the Dense Gaseous and Liquid Phases," American Institute of Chemical Engineers Journal, Vol. 8, 1962, pp. 59-63."""
-        if muo==0:
-            muo=self.Mu_Gas(T, 1)
-        x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
-        rhor=self.RhoG_Lee_Kesler(T, P)*self.Vc*self.M
-        mu=((0.1023+0.023367*rhor+0.058533*rhor**2-0.040758*rhor**3+0.0093324*rho**4)**4-1e-4)*x+muo
-        return unidades.Viscosity(mu, "cP")
 
     def Mu_Gas_Eakin_Ellingtong(self, T, P, muo=0):
         """Método de cálculo de la viscosidad de hidrocarburos gaseosos a alta presión, API procedure 11B4.1, pag 1107"""
@@ -4465,22 +4524,6 @@ class Componente(object):
         A2=1.514*Tr**-11.3036+0.3018*Tr**-0.6856+2.0636*Tr**-2.7611
         k=A1*1.5071*Pr**-0.4487+A2*(11.4789*Pr**0.2606-12.6843*Pr**0.1773+1.6953*Pr**-0.1052)
         return unidades.Viscosity(muo*k)
-
-    def Mu_Gas_Stiel_Thodos(self, T, P, muo):
-        """Método de cálculo de la viscosidad de gases polares a alta presión,
-        Stiel, L. I. and Thodos, G., "The Viscosity of Polar Substances in the Dense Gaseous and Liquid Regions," American Institute of Chemical Engineers Journal, Vol. 10, No. 2, 1964, pp. 275-277."""
-        if muo==0:
-            muo=self.Mu_Gas(T, 1)
-        rhor=self.RhoG_Lee_Kesler(T, P)*self.Vc*self.M
-        x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
-
-        if rhor<=0.1:
-            mu=1.626e-4*rhor**1.111/x+muo
-        elif 0.1<rhor<=0.9:
-            mu=6.07e-6*(9.045*rhor+0.63)**1.739/x+muo
-        else:
-            mu=10**(4-10**(0.6239-0.1005*rhor))/x/1e4+muo
-        return unidades.Viscosity(mu, "cP")
 
 
     def Mu_Liquido(self, T, P):
