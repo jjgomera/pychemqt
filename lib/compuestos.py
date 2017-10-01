@@ -349,13 +349,16 @@ __doi__ = {
          "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
          "doi": "10.1063/1.555785"},
     54:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Brulé, M.R., Starling, K.E.",
+         "title": "Thermophysical Properties of Complex Systems: Applications "
+                  "of Multiproperty Analysis",
+         "ref": "Ind. Eng. Chem. Process Dev. 23 (1984) 833-845",
+         "doi": "10.1021/i200027a035"},
 
 
-    53:
+
+
+    55:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2851,7 +2854,74 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     return unidades.Viscosity(Fn*muR*1e-6 + muo)
 
 
+def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
+    """Calculate the viscosity of a compressed gas using the Chung correlation
 
+    .. math::
+        \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+    rho : float
+        Density, [Debye]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    References
+    ----------
+    .. [54] Brulé, M.R., Starling, K.E. Thermophysical Properties of Complex
+        Systems: Applications of Multiproperty Analysis. Ind. Eng. Chem.
+        Process Dev. 23 (1984) 833-845
+    """
+    # units in molar base
+    Vc = Vc*M/1000
+    rho = rho/M*1000
+
+    T_ = 1.2593*T/Tc
+
+    # Table I
+    dat = {
+        0: (1., -0.2756),
+        1: (17.4499, 34.0631),
+        2: (-0.961125e-3, 0.723459e-2),
+        3: (51.0431, 169.460),
+        4: (-0.605917, 71.1743),
+        5: (21.3818, -2.11014),
+        6: (4.66798, -39.9408),
+        7: (3.76241, 56.6234),
+        8: (1.00377, 3.13962),
+        9: (-0.7774233e-1, -3.58446),
+        10: (0.317523, 1.15995)}
+
+    E = []
+    for i in range(1, 11):
+        ai, bi = dat[i]
+        E.append(ai + bi*w)
+    E1, E2, E3, E4, E5, E6, E7, E8, E9, E10 = E
+
+    Y = rho*Vc/6
+    G1 = (1-0.5*Y)/(1-Y)**3
+    G2 = (E1*((1-exp(-E4*Y))/Y)+E2*G1*exp(E5*Y)+E3*G1)/(E1*E4+E2+E3)
+
+    muk = muo*(1/G2 + E6*Y)
+    mup = (36.344e-6*(M*Tc)**0.5/Vc**(2/3))*E7*Y**2*G2*exp(E8+E9/T_+E10/T_**2)
+
+    return unidades.Viscosity(muk+mup, "P")
 
 
 # Liquid thermal conductivity correlations
@@ -4583,6 +4653,7 @@ class Componente(object):
         else:
 
             # return MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
+            # return MuG_Brule(T, Tc, Vc, M, w, rho, muo):
             # return MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
             # return MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
             # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
