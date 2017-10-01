@@ -342,6 +342,18 @@ __doi__ = {
                   "Liquid Regions",
          "ref": "AIChE Journal 10(2) (1964) 275-277",
          "doi": "10.1002/aic.690100229"},
+    53:
+        {"autor": "Younglove, B.A., Ely, J.F.",
+         "title": "Thermophysical Properties of Fluids II: Methane, Ethane, "
+                  "Propne, Isobutane and Normal Butane",
+         "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+         "doi": "10.1063/1.555785"},
+    54:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
 
     53:
         {"autor": "",
@@ -2684,7 +2696,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     Example 9-11 in [1]_, isobutane at 500K and 100bar
     >>> rhoc = 1/262.7*58.123*1000
     >>> rho = 1/243.8*58.123*1000
-    >>> "%0.0f" % MuG_Jossi(407.85, 36.4e5, rhoc, 58.123, rho, 120e-4).microP
+    >>> "%0.0f" % MuG_Jossi(407.85, 36.4e5, rhoc, 58.123, rho, 120e-7).microP
     '275'
 
     References
@@ -2701,7 +2713,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     # Eq 8
     mur = 0.1023 + 0.023364*rhor + 0.058533*rhor**2 - 0.040758*rhor**3 + \
         0.0093324*rhor**4
-    mu = (mur**4-1e-4)/x+muo
+    mu = (mur**4-1e-4)/x+muo*1e3
     return unidades.Viscosity(mu, "cP")
 
 
@@ -2760,6 +2772,84 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
             D = 4.75e-4*(rhor**3-10.65)**2
         mur = 10**(4-10**(0.6439-0.1005*rhor-D))                         # Eq 6
     return unidades.Viscosity(mur/x+muo, "cP")
+
+
+def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
+    """Calculate the viscosity of a compressed gas using the TRAPP (TRAnsport
+    Property Prediction) method.
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Zc : float
+        Critical pressure, [Pa]
+    rhoc : float
+        Critical density, [kg/m3]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density, [kg/m3]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-13 in [1]_, isobutane at 500K and 100bar
+    >>> Vc = 259*58.124*1000
+    >>> rho = 1/243.8*58.123*1000
+    >>> mu = MuG_TRAPP(500, 407.85, Vc, 0.278, 58.124, 0.186, rho, 120e-7)
+    >>> "%0.0f" % mu.microP
+    '268'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [53] Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
+        Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
+        Ref. Data 16(4) (1987) 577-798
+    """
+    # Reference fluid properties, propane
+    TcR = 369.83
+    rhocR = 1/200  # mol/cm³
+    ZcR = 0.276
+    wR = 0.152
+
+    # Convert volume to molar base
+    Vc = Vc/M/1000
+    rho = rho/M/1000
+    rhoc = 1/Vc
+
+    Tr = T/Tc
+
+    f = Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(Tr)))
+    h = rhocR/rhoc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(Tr)))
+
+    To = T/f
+    rho0 = rho*h
+    Fn = (M/44.094*f)**0.5/h**(2/3)
+
+    # Coefficients in [53]_, pag 796
+    # Density are in mol/dm³
+    rho0 *= 1000
+    rhocR *= 1000
+
+    G = -14.113294896 + 968.22940153/To
+    H = rho0**0.5*(rho0-rhocR)/rhocR
+    G2 = 13.686545032 - 12511.628378/To**1.5
+    G3 = 0.0168910864 + 43.527109444/To + 7659.4543472/To**2
+    F = G + G2*rho0**0.1+G3*H
+    muR = exp(F)-exp(G)
+    return unidades.Viscosity(Fn*muR*1e-6 + muo)
+
 
 
 
@@ -4497,6 +4587,7 @@ class Componente(object):
             # return MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
             # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
             # return MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
+            # return MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
