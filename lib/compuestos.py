@@ -2577,8 +2577,8 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
 
 
 def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
-    """Calculate the viscosity of a compressed gas using the Lucas correlation
-    as explain in [1]_
+    """Calculate the viscosity of a gas using the Lucas correlation
+    as explain in [1]_. This method can calculate the viscosity at any pressure
 
     Parameters
     ----------
@@ -2604,6 +2604,11 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
 
     Examples
     --------
+    Example 9-2 in [1]_, methanol at 550K and 1bar
+    >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
+    >>> "%0.0f" % mu.microP
+    '178'
+
     Example 9-10 in [1]_, ammonia at 420K and 300bar
     >>> mu = MuG_Lucas(420, 3e7, 405.5, 113.53e5, 0.244, 17.031, 1.47)
     >>> "%0.0f" % mu.microP
@@ -2643,26 +2648,34 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     else:
         Fqo = 1
 
-    Z1 = Fpo*Fqo*(0.807*Tr**0.618 - 0.357*exp(-0.449*Tr) + 0.34*exp(-4.058*Tr)
-                  + 0.018)
+    Z1 = Fpo*Fqo*(0.807*Tr**0.618 - 0.357*exp(-0.449*Tr) +
+                  0.34*exp(-4.058*Tr) + 0.018)
 
-    if Tr <= 1:
-        alfa = 3.262 + 14.98*Pr**5.508
-        beta = 1.39 + 14.98*Pr
-        Z2 = 0.6 + 0.76*Pr**alfa + (6.99*Pr**beta-0.6)*(1-Tr)
+    if Pr < 0.6:
+        # Low pressure correlation
+        mu = Z1/xi
+
     else:
-        a = 1.245e-3/Tr*exp(5.1726*Tr**-0.3286)
-        b = a*(1.6553*Tr-1.2723)
-        c = 0.4489/Tr*exp(3.0578*Tr**-37.7332)
-        d = 1.7368/Tr*exp(2.231*Tr**-7.6351)
-        e = 1.3088
-        f = 0.9425*exp(-0.1853*Tr**0.4489)
-        Z2 = Z1*(1+a*Pr**e/(b*Pr**f+1/(1+c*Pr**d)))
+        # High pressure correlation
 
-    Y = Z2/Z1
-    Fp = (1+(Fpo-1)/Y**3)/Fpo
-    Fq = (1+(Fqo-1)*(1/Y-0.007*log(Y)**4))/Fqo
-    mu = Z2*Fp*Fq/xi
+        if Tr <= 1:
+            alfa = 3.262 + 14.98*Pr**5.508
+            beta = 1.39 + 14.98*Pr
+            Z2 = 0.6 + 0.76*Pr**alfa + (6.99*Pr**beta-0.6)*(1-Tr)
+        else:
+            a = 1.245e-3/Tr*exp(5.1726*Tr**-0.3286)
+            b = a*(1.6553*Tr-1.2723)
+            c = 0.4489/Tr*exp(3.0578*Tr**-37.7332)
+            d = 1.7368/Tr*exp(2.231*Tr**-7.6351)
+            e = 1.3088
+            f = 0.9425*exp(-0.1853*Tr**0.4489)
+            Z2 = Z1*(1+a*Pr**e/(b*Pr**f+1/(1+c*Pr**d)))
+
+        Y = Z2/Z1
+        Fp = (1+(Fpo-1)/Y**3)/Fpo
+        Fq = (1+(Fqo-1)*(1/Y-0.007*log(Y)**4))/Fqo
+        mu = Z2*Fp*Fq/xi
+
     return unidades.Viscosity(mu, "microP")
 
 
@@ -4141,9 +4154,9 @@ class Componente(object):
     METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
                    "Przedziecki-Sridhar"]
     METHODS_MuLP = ["Lucas", "API", "Kouzel"]
-    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Stiel-Thodos"]
+    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Lucas", "Stiel-Thodos"]
     METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
-                    "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API" ]
+                    "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -4713,6 +4726,9 @@ class Componente(object):
             muo = MuG_Chung(
                 T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
         elif method == 3:
+            mu = MuG_Lucas(
+                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
+        elif method == 4:
             muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
