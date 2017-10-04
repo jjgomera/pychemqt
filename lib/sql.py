@@ -227,7 +227,7 @@ def updateElement(elemento, indice):
         "Gf", "volumen_wilson", "NetHeating",
         "GrossHeating", "Synonyms",
         "volumen_caracteristico", "calor_formacion_solido",
-        "energia_libre_solido", "parametro_polar", "smile", "antoine_to",
+        "energia_libre_solido", "PolarParameter", "smile", "antoine_to",
         "antoine_n", "antoine_E", "antoine_F", "wagner_a", "wagner_b",
         "wagner_c", "wagner_d"]
     vals = transformElement(elemento)

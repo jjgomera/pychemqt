@@ -598,6 +598,7 @@
             "rhol": "0",
             "corr_rhol": "0",
             "corr_mul": "0",
+            "corr_mug": "0",
             "mul": "0",
             "mug": "0"
         },

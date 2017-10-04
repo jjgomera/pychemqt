@@ -66,6 +66,7 @@
             "rhol": "0",
             "corr_rhol": "0",
             "corr_mul": "0",
+            "corr_mug": "0",
             "thcondg": "0",
             "thcondl": "0"
         },

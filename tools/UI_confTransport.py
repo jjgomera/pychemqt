@@ -50,9 +50,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Viscosity:")), 3, 0)
         self.MuG = QtWidgets.QComboBox()
-        self.MuG.addItem("DIPPR")
-        self.MuG.addItem("Chapman & Enskog")
-        self.MuG.addItem("Thodos")
+        for method in Componente.METHODS_MuG:
+            self.MuG.addItem(method)
         layout.addWidget(self.MuG, 3, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Surface Tension:")), 4, 0)
@@ -99,6 +98,10 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         self.Corr_MuL.addItem("Kouzel")
         self.Corr_MuL.addItem("Lucas")
         layout.addWidget(self.Corr_MuL, 2, 3)
+        self.Corr_MuG = QtWidgets.QComboBox()
+        for method in Componente.METHODS_MuGP:
+            self.Corr_MuG.addItem(method)
+        layout.addWidget(self.Corr_MuG, 3, 3)
         self.Corr_ThCondL = QtWidgets.QComboBox()
         self.Corr_ThCondL.addItem("Lenoir")
         self.Corr_ThCondL.addItem("Kanitkar & Thodos")
@@ -114,6 +117,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.MuL.setCurrentIndex(config.getint("Transport", "MuL"))
             self.Corr_MuL.setCurrentIndex(
                 config.getint("Transport", "Corr_MuL"))
+            self.Corr_MuG.setCurrentIndex(
+                config.getint("Transport", "Corr_MuG"))
             self.MuG.setCurrentIndex(config.getint("Transport", "MuG"))
             self.Tension.setCurrentIndex(config.getint("Transport", "Tension"))
             self.ThCondL.setCurrentIndex(config.getint("Transport", "ThCondL"))
@@ -133,6 +138,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "MuL", str(self.MuL.currentIndex()))
         config.set("Transport", "Corr_MuL", str(self.Corr_MuL.currentIndex()))
         config.set("Transport", "MuG", str(self.MuG.currentIndex()))
+        config.set("Transport", "Corr_MuG", str(self.Corr_MuG.currentIndex()))
         config.set("Transport", "Tension", str(self.Tension.currentIndex()))
         config.set("Transport", "ThCondL", str(self.ThCondL.currentIndex()))
         config.set("Transport", "Corr_ThCondL",

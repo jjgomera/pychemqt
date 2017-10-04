@@ -3038,7 +3038,6 @@ def MuG_API(T, P, Tc, Pc, muo):
     return unidades.Viscosity(muo*mur)
 
 
-
 # Liquid thermal conductivity correlations
 def ThL_RiaziFaghri(T, Tb, SG):
     """Calculates thermal conductivity of liquid hydrocarbon at low pressure
@@ -4142,6 +4141,9 @@ class Componente(object):
     METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
                    "Przedziecki-Sridhar"]
     METHODS_MuLP = ["Lucas", "API", "Kouzel"]
+    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Stiel-Thodos"]
+    METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
+                    "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API" ]
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -4692,73 +4694,83 @@ class Componente(object):
         Cv_prima2=Cv.BtulbF-Cv_prima
         return unidades.ThermalConductivity(k*(Cv_prima/Cv.BtulbF*k_prima+Cv_prima2/Cv.BtulbF*k_prima2))
 
-    def ThCond_Gas_Nonhidrocarbon(self, T, P):
-        """Método de cálculo de la conductividad térmica de gases no hidrocarburos a alta presión, API procedure 12C1.1, pag 1174
-        """
-        t=unidades.Temperature(T)
-        p=unidades.Pressure(P, "atm")
-        if self.id==1:
-            par=[4.681e-3, 2.e-4, -3.6e-8, 0.0, 0.0, 0.0, 1.7e-3]
-        elif self.id==46:
-            par=[4.561e-3, 1.61e-5, 0.0, 2.56e-9, 5.299e-3, 2.47e-3, 0.0]
-        elif self.id==47:
-            par=[5.95e-4, 1.71e-5, 0.0, -2.10e-8, 5.869e-3, 6.995e-3, 0.0]
-        elif self.id==48:
-            par=[1.757e-3, 1.55e-5, 0.0, 2.08e-8, 5.751e-3, 5.6e-3, 0.0]
-        elif self.id==50:
-            par=[-1.51e-3, 2.25e-5, 3.32e-10, 0.0, 0.0, 0.0, 0.0]
-        elif self.id==51:
-            par=[2.5826e-2, 1.35e-5, 0.0, -4.4e-7, 1.026e-2, -2.631e-2, 0.0]
-        elif self.id==111:
-            par=[-1.02e-3, 1.35e-5, 4.17e-9, 0.0, 0.0, 0.0, 0.0]
-
-        k=par[0]+par[1]*t.R+par[2]*t.R**2+par[3]*p.psi+par[4]*p.psi/t.R**1.2+par[5]/(0.4*p.psi-0.001*t.R)**0.015+par[6]*log(p.psi)
-        return unidades.ThermalConductivity(k, "BtuhftF")
-
 
     def Mu_Gas(self, T, P):
-        """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
-        MuG = self.Config.getint("Transport", "MuG")
-        if P/self.Pc < 0.6:
-            if MuG == 0 and self._dipprMuG and \
-                    self._dipprMuG[6] <= T <= self._dipprMuG[7]:
-                return DIPPR("muG", T, self._dipprMuG)
-            elif MuG == 1 and self.Dm and self.ek:
-                T_ = T/self.ek
-                omega = Collision_Neufeld(T_)
+        """Vapor viscosity calculation procedure using the method defined in
+        preferences, decision diagram in API Databook, pag. 1026"""
+        method = self.Config.getint("Transport", "MuG")
+        Pcorr = self.Config.getint("Transport", "MuGP")
 
-                # Use the Brokaw Collision integral for polar compounds
-                # Brokaw, R.S. Predicting Transport Properties of Dilute Gases
-                # I&EC Process Design and Development 8(22) (1969) 240-253
-                if self.PolarParameter:
-                    omega += 0.2*self.PolarParaemter**2/T_
-                return MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
-
-            elif MuG == 2 and self.dipole:
-                k = self._K_Chung()
-                return MuG_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
-                                 self.dipole, k)
-
-            else:
-                return MuG_StielThodos(T, self.Tc, self.Pc, self.M)
+        # Calculate of low pressure viscosity
+        if method == 0 and self._dipprMuG and \
+                self._dipprMuG[6] <= T <= self._dipprMuG[7]:
+            muo = DIPPR("muG", T, self._dipprMuG)
+        elif method == 1 and self.Dm and self.ek:
+            omega = self._Collision(T)
+            muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
+        elif method == 2 and self.dipole:
+            k = self._K_Chung()
+            muo = MuG_Chung(
+                T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
+        elif method == 3:
+            muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         else:
-
-            # return MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
-            # return MuG_Brule(T, Tc, Vc, M, w, rho, muo):
-            # return MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
-            # return MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
-            # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
-            # return MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
-            # return MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
-            # return MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
-            # return MuG_API(T, P, Tc, Pc, muo):
-            if self.isHydrocarbon:
-                return self.Mu_Gas_Eakin_Ellingtong(T, P)
+            if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
+                muo = DIPPR("muG", T, self._dipprMuG)
+            elif self.Dm and self.ek:
+                omega = self._Collision(T)
+                muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
+            elif self.dipole:
+                k = self._K_Chung()
+                muo = MuG_Chung(
+                    T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
             else:
-                return self.Mu_Gas_Carr(T, P)
+                muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
+
+        # TODO: Add gas density correlation
+        rho = 0
+
+        # Add correction factor for high pressure
+        if P < 0.6*self.Pc:
+            mu = muo
+        elif Pcorr == 0 and self.dipole:
+            mu = MuG_Lucas(
+                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
+        elif Pcorr == 1 and self.dipole:
+            k = self._K_Chung()
+            mu = MuG_P_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
+                             self.dipole, k, rho, muo)
+        elif Pcorr == 2:
+            mu = MuG_Brule(T, self.Tc, self.Vc, self.M, self.f_acent, rho, muo)
+        elif Pcorr == 3:
+            mu = MuG_Jossi(self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
+        elif Pcorr == 4:
+            mu = MuG_TRAPP(
+                T, self.Tc, self.Vc, self.Zc, self.M, self.f_acent, rho, muo)
+        elif Pcorr == 5:
+            mu = MuG_P_StielThodos(
+                self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
+        elif Pcorr == 6 and self.dipole:
+            mu = MuG_Reichenberg(
+                T, P, self.Tc, self.Pc, self.Vc, self.M, self.dipole, muo)
+        elif Pcorr == 7:
+            mu = MuG_DeanStiel(self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
+        elif Pcorr == 8:
+            mu = MuG_API(T, P, self.Tc, self.Pc, muo)
+        else:
+            if self.dipole:
+                mu = MuG_Lucas(
+                    T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
+            elif self.isHydrocarbon:
+                mu = MuG_DeanStiel(
+                    self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
+            else:
+                mu = MuG_API(T, P, self.Tc, self.Pc, muo)
+
+        return mu
 
     def _K_Chung(self):
-        """Internal procedure to calculate the polcar correction factor for 
+        """Internal procedure to calculate the polcar correction factor for
         Chung viscosity correlation
 
         Chung, T.H., Lee, L.L., Starling, K.E.
@@ -4784,6 +4796,19 @@ class Componente(object):
         if not k and self.isAlcohol:
             k = 0.0682+0.276659*17*self.O/self.M                       # Eq 10
         return k
+
+    def _Collision(self, T):
+        """Internal procudere to calculate the transport collision integral
+        necessary for Chapman-Enskog viscosity correlation"""
+        T_ = T/self.ek
+        omega = Collision_Neufeld(T_)
+
+        # Use the Brokaw Collision integral for polar compounds
+        # Brokaw, R.S. Predicting Transport Properties of Dilute Gases. I&EC
+        # Process Design and Development 8(22) (1969) 240-253
+        if self.PolarParameter:
+            omega += 0.2*self.PolarParaemter**2/T_
+        return Omega
 
     def Mu_Liquido(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""

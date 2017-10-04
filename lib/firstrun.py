@@ -385,6 +385,7 @@ def config():
     config.set("Transport", "Corr_RhoL", "0")
     config.set("Transport", "MuL", "0")
     config.set("Transport", "Corr_MuL", "0")
+    config.set("Transport", "Corr_MuG", "0")
     config.set("Transport", "MuG", "0")
     config.set("Transport", "Tension", "0")
     config.set("Transport", "ThCondL", "0")
