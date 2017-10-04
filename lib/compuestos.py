@@ -360,12 +360,17 @@ __doi__ = {
                   " Pressures",
          "ref": "AIChE Journal 11(3) (1965) 526-532 ",
          "doi": "10.1002/aic.690110330"},
-
-
-
-
-
     56:
+        {"autor": "Yoon, P., Thodos, G.",
+         "title": "Viscosity of Nonpolar Gaseous Mixtures at Normal Pressures",
+         "ref": "AIChE Journal 16(2) (1970) 300-304",
+         "doi": "10.1002/aic.690160225."},
+
+
+
+
+
+    57:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2367,6 +2372,55 @@ def MuG_StielThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mu, "cP")
 
 
+def MuG_YoonThodos(T, Tc, Pc, M):
+    r"""Calculates the viscosity of a gas using an Yoon-Thodos correlation
+
+    .. math::
+        \eta^o\xi = 46.1T_r^{0.618}-20.4\exp(-0.449T_r)+19.4\exp(-4.058T_r)+1
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Notes
+    -----
+    This method is valid only for nonpolar gases
+
+    References
+    ----------
+    .. [56] Yoon, P., Thodos, G. Viscosity of Nonpolar Gaseous Mixtures at
+        Normal Pressures. AIChE Journal 16(2) (1970) 300-304
+    """
+    Pc_atm = Pc/101325
+
+    Tr = T/Tc
+    x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
+
+    if M == 2.0158:
+        # Eq 3, Hydrogen case
+        mur = 47.65*Tr**0.657 - 20*exp(-0.858*Tr) + 19*exp(-3.995*Tr) + 1
+    elif M == 4.0026:
+        # Eq 4, Helium case
+        mur = 52.57*Tr**0.656 - 18.9*exp(-1.144*Tr) + 17.9*exp(-5.182*Tr) + 1
+    else:
+        # Eq 2, General case for nonpolar gases
+        mur = 46.1*Tr**0.618 - 20.4*exp(-0.449*Tr) + 19.4*exp(-4.058*Tr) + 1
+
+    return unidades.Viscosity(mur*1e-5/x, "cP")
+
+
 def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     """Calculate the viscosity of a gas using the Chung et al. correlation
 
@@ -4154,7 +4208,8 @@ class Componente(object):
     METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
                    "Przedziecki-Sridhar"]
     METHODS_MuLP = ["Lucas", "API", "Kouzel"]
-    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Lucas", "Stiel-Thodos"]
+    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Lucas", "Stiel-Thodos",
+                   "Yoon-Thodos"]
     METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
                     "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
@@ -4730,6 +4785,8 @@ class Componente(object):
                 T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
         elif method == 4:
             muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
+        elif method == 5:
+            muo = MuG_YoonThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
                 muo = DIPPR("muG", T, self._dipprMuG)
