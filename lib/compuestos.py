@@ -365,12 +365,16 @@ __doi__ = {
          "title": "Viscosity of Nonpolar Gaseous Mixtures at Normal Pressures",
          "ref": "AIChE Journal 16(2) (1970) 300-304",
          "doi": "10.1002/aic.690160225."},
-
-
-
-
-
     57:
+        {"autor": "Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, "
+                  "A.H., Richon, D.",
+         "title": "Corresponding States Method for Determination of the "
+                  "Viscosity of Gases at Atmospheric Pressure",
+         "ref": "I&EC Research 51(7) (2012) 3179-3185",
+         "doi": "10.1021/ie202591f"},
+
+
+    58:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2372,6 +2376,56 @@ def MuG_StielThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mu, "cP")
 
 
+def MuG_Gharagheizi(T, Tc, Pc, M):
+    """Calculates the viscosity of a gas using the Gharagheizi et al.
+    correlation
+
+    .. math::
+        \mu = 10^{-5} P_cT_r + \left(0.091-\frac{0.477}{M}\right)T +
+        M \left(10^{-5}P_c-\frac{8M^2}{T^2}\right)
+        \left(\frac{10.7639}{T_c}-\frac{4.1929}{T}\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    M : float
+        Molecular weight, [g/mol]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Methane at 120K
+    >>> "%0.6e" % MuG_Gharagheizi(120, 190.564, 45.99e5, 16.04246)
+    '5.215762e-06'
+
+    1-Octanol at 120K
+    >>> "%0.6e" % MuG_Gharagheizi(468.35, 652.5, 27.77e5, 130.22792)
+    '8.751141e-06'
+
+    References
+    ----------
+    .. [57] Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, A.H.,
+        Richon, D. Corresponding States Method for Determination of the
+        Viscosity of Gases at Atmospheric Pressure. I&EC Research 51(7) (2012)
+        3179-3185
+    """
+    Tr = T/Tc
+
+    # Eq 4
+    mu = 1e-5*Pc*Tr + (0.091-0.477/M)*T + \
+        M*(1e-5*Pc-8*M**2/T**2)*(10.7639/Tc - 4.1929/T)
+    return unidades.Viscosity(mu*1e-7)
+
+
 def MuG_YoonThodos(T, Tc, Pc, M):
     r"""Calculates the viscosity of a gas using an Yoon-Thodos correlation
 
@@ -4209,7 +4263,7 @@ class Componente(object):
                    "Przedziecki-Sridhar"]
     METHODS_MuLP = ["Lucas", "API", "Kouzel"]
     METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Lucas", "Stiel-Thodos",
-                   "Yoon-Thodos"]
+                   "Gharagheizi", "Yoon-Thodos"]
     METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
                     "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
@@ -4786,6 +4840,8 @@ class Componente(object):
         elif method == 4:
             muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         elif method == 5:
+            muo = MuG_Gharagheizi(T, self.Tc, self.Pc, self.M)
+        elif method == 6:
             muo = MuG_YoonThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
