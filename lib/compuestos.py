@@ -354,11 +354,18 @@ __doi__ = {
                   "of Multiproperty Analysis",
          "ref": "Ind. Eng. Chem. Process Dev. 23 (1984) 833-845",
          "doi": "10.1021/i200027a035"},
-
-
-
-
     55:
+        {"autor": "Dean, D.E., Stiel, L.I.",
+         "title": "The Viscosity of Nonpolar Gas Mixtures at Moderate and High"
+                  " Pressures",
+         "ref": "AIChE Journal 11(3) (1965) 526-532 ",
+         "doi": "10.1002/aic.690110330"},
+
+
+
+
+
+    56:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2866,14 +2873,14 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
         Temperature, [K]
     Tc : float
         Critical temperature, [K]
-    Pc : float
-        Critical pressure, [Pa]
+    Vc : float
+        Critical volume, [m³/kg]
     M : float
         Molecular weight, [g/mol]
     w : float
         Acentric factor, [-]
     rho : float
-        Density, [Debye]
+        Density, [kg/m³]
     muo : float
         Viscosity of low-pressure gas, [Pa·s]
 
@@ -2922,6 +2929,114 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
     mup = (36.344e-6*(M*Tc)**0.5/Vc**(2/3))*E7*Y**2*G2*exp(E8+E9/T_+E10/T_**2)
 
     return unidades.Viscosity(muk+mup, "P")
+
+
+def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
+    r"""Calculate the viscosity of a compressed gas using the Dean-Stiel
+    correlation, also referenced in API databook Procedure 11B4.1, pag 1107
+
+    .. math::
+        \left(\mu-\mu_o\right)\xi=10.8x10^{-5}\left[exp\left(1.439\rho_r\right)
+        -exp\left(-1.11\rho_r^{1.858}\right)\right]
+
+    Parameters
+    ----------
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density, [kg/m³]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example in [5]_, mixture at 1500psi and 257ºF
+    >>> Tc = unidades.Temperature(472.09, "R")
+    >>> Pc = unidades.Pressure(646.68, "psi")
+    >>> "%0.4f" % MuG_DeanStiel(Tc, Pc, 1, 27.264, 0.5283, 123e-7).cP
+    '0.0163'
+
+    References
+    ----------
+    .. [55] Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
+        Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Pc_atm = Pc/101325
+
+    x = Tc**(1/6)/M**0.5/Pc_atm**(2.0/3)
+    rhor = rho/rhoc
+
+    # Eq 13
+    mur = 10.8e-5*(exp(1.439*rhor)-exp(-1.11*rhor**1.858))
+    return unidades.Viscosity(muo*1e3 + mur/x, "cP")
+
+
+def MuG_API(T, P, Tc, Pc, muo):
+    """Calculate the viscosity of nonhydrocarbon gases at high pressure using
+    the linearization of Carr figure as give in API Databook procedure 11C1.2,
+    pag 1113
+
+    .. math::
+        \frac{\mu}{\mu_o}=A_1hP_r^f + A_2\left(kP_r^l+mP_r^n+pP_r^q\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Notes
+    -----
+    This method is recomended for gaseous nonhydrocarbons at high pressure,
+    although this method is also applicable for hydrocarbons.
+
+    Examples
+    --------
+    Example in [5]_, nitrogen at -58ºF and 1677psi
+    >>> T = unidades.Temperature(-58, "F")
+    >>> Tc = unidades.Temperature(-232.5, "F")
+    >>> P = unidades.Pressure(1677, "psi")
+    >>> Pc = unidades.Pressure(493.1, "psi")
+    >>> "%0.4f" % MuG_API(T, P, Tc, Pc, 1.44e-5).cP
+    '0.0203'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+
+    A1 = 83.8970*Tr**0.0105 + 0.603*Tr**-0.0822 + 0.9017*Tr**-0.12 - 85.308
+    A2 = 1.514*Tr**-11.3036 + 0.3018*Tr**-0.6856 + 2.0636*Tr**-2.7611
+    mur = A1*1.5071*Pr**-0.4487 + A2*(
+        11.4789*Pr**0.2606 - 12.6843*Pr**0.1773 + 1.6953*Pr**-0.1052)
+    return unidades.Viscosity(muo*mur)
+
 
 
 # Liquid thermal conductivity correlations
@@ -4620,31 +4735,7 @@ class Componente(object):
                 return MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
 
             elif MuG == 2 and self.dipole:
-                # Definition of polar correction factors
-                # Chung, T.H., Lee, L.L., Starling, K.E.
-                # Applications of Kinetic Gas Theories and Multiparameter
-                # Correlation for Prediction of Dilute Gas Viscosity and
-                # Thermal Conductivity
-                # Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13
-
-                # Table I
-                ki = {117: 0.215175,
-                      134: 0.174823,
-                      146: 0.143453,
-                      145: 0.143453,
-                      160: 0.131671,
-                      159: 0.131671,
-                      313: 0.121555,
-                      335: 0.114230,
-                      357: 0.108674,
-                      130: 0.091549,
-                      62: 0.075908}
-                k = ki.get(self.id, 0)
-
-                # Rough alcohol definition using the oxygen atoms count:
-                if not k and self.isAlcohol:
-                    k = 0.0682+0.276659*17*self.O/self.M               # Eq 10
-
+                k = self._K_Chung()
                 return MuG_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
                                  self.dipole, k)
 
@@ -4659,34 +4750,40 @@ class Componente(object):
             # return MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
             # return MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
             # return MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
+            # return MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
+            # return MuG_API(T, P, Tc, Pc, muo):
             if self.isHydrocarbon:
                 return self.Mu_Gas_Eakin_Ellingtong(T, P)
             else:
                 return self.Mu_Gas_Carr(T, P)
 
-    def Mu_Gas_Eakin_Ellingtong(self, T, P, muo=0):
-        """Método de cálculo de la viscosidad de hidrocarburos gaseosos a alta presión, API procedure 11B4.1, pag 1107"""
-        if muo==0:
-            muo=self.Mu_Gas(T, 101325)
-        else:
-            muo=unidades.Viscosity(muo)
-        x=self.Tc**(1.0/6)/self.M**0.5/self.Pc.atm**(2.0/3)
-        rhor=self.RhoG_Lee_Kesler(T, P)*self.Vc*self.M
-        mu=muo.cP+10.8e-5*(exp(1.439*rhor)-exp(-1.11*rhor**1.858))/x
-        return unidades.Viscosity(mu, "cP")
+    def _K_Chung(self):
+        """Internal procedure to calculate the polcar correction factor for 
+        Chung viscosity correlation
 
-    def Mu_Gas_Carr(self, T, P, muo=0):
-        """Método de cálculo de la viscosidad de no hidrocarburos gaseosos a alta presión, API procedure 11C1.2, pag 1113"""
-        Tr=self.tr(T)
-        Pr=self.pr(P)
-        if muo==0:
-            muo=self.Mu_Gas(T, 101325)
+        Chung, T.H., Lee, L.L., Starling, K.E.
+        Applications of Kinetic Gas Theories and Multiparameter Correlation for
+        Prediction of Dilute Gas Viscosity and Thermal Conductivity
+        Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13
+        """
+        # Table I
+        ki = {117: 0.215175,
+              134: 0.174823,
+              146: 0.143453,
+              145: 0.143453,
+              160: 0.131671,
+              159: 0.131671,
+              313: 0.121555,
+              335: 0.114230,
+              357: 0.108674,
+              130: 0.091549,
+              62: 0.075908}
+        k = ki.get(self.id, 0)
 
-        A1=83.8970*Tr**0.0105+0.6030*Tr**-0.0822+0.9017*Tr**-0.12-85.3080
-        A2=1.514*Tr**-11.3036+0.3018*Tr**-0.6856+2.0636*Tr**-2.7611
-        k=A1*1.5071*Pr**-0.4487+A2*(11.4789*Pr**0.2606-12.6843*Pr**0.1773+1.6953*Pr**-0.1052)
-        return unidades.Viscosity(muo*k)
-
+        # Rough alcohol definition using the oxygen atoms count:
+        if not k and self.isAlcohol:
+            k = 0.0682+0.276659*17*self.O/self.M                       # Eq 10
+        return k
 
     def Mu_Liquido(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
