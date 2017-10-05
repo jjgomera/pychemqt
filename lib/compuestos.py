@@ -4940,56 +4940,55 @@ class Componente(object):
         return Omega
 
     def Mu_Liquido(self, T, P):
-        """Procedimiento que define el método más apropiado para el cálculo de la viscosidad del líquido, pag 1026"""
-        #Comparacion de métodos: pag 405 Vismanath
-        MuL = self.Config.getint("Transport", "MuL")
-        corr = self.Config.getint("Transport", "Corr_MuL")
+        """Liquid viscosity calculation procedure using the method defined in
+        preferences, decision diagram in API Databook, pag. 1026"""
+        method = self.Config.getint("Transport", "MuL")
+        Pcorr = self.Config.getint("Transport", "Corr_MuL")
 
-        if P < 1013250:
-            if MuL == 0 and self._dipprMuL and \
+        # Calculate of low pressure viscosity
+        if method == 0 and self._dipprMuL and \
+                self._dipprMuL[6] <= T <= self._dipprMuL[7]:
+            muo = DIPPR("muL", T, self._dipprMuL)
+        elif method == 1 and self._parametricMu:
+            muo = MuL_Parametric(T, self._parametricMu)
+        elif method == 2:
+            muo = MuL_LetsouStiel(T, self.M, self.Tc, self.Pc, self.f_acent)
+        elif method == 3 and self.Tf:
+            # Use the critical point as reference volume
+            muo = MuL_PrzedzieckiSridhar(
+                T, self.Tc, self.Pc, self.Vc, self.f_acent, self.M, self.Tf)
+        else:
+            if self._dipprMuL and \
                     self._dipprMuL[6] <= T <= self._dipprMuL[7]:
                 return DIPPR("muL", T, self._dipprMuL)
-            elif MuL == 1 and self._parametricMu:
+            elif self._parametricMu:
                 return MuL_Parametric(T, self._parametricMu)
-            elif MuL == 2 and self.Tc and self.Pc and self.f_acent:
+            elif self.Tc and self.Pc and self.f_acent and self.M:
                 return MuL_LetsouStiel(
                         T, self.M, self.Tc, self.Pc, self.f_acent)
-            elif MuL == 3 and self.Tc and self.Pc and self.Vc and \
-                    self.f_acent and self.Tf:
-                # Use the critical point as reference volume
-                return MuL_PrzedzieckiSridhar(T, self.Tc, self.Pc, self.Vc,
-                                              self.f_acent, self.M, self.Tf)
-            else:
-                if self._dipprMuL and \
-                        self._dipprMuL[6] <= T <= self._dipprMuL[7]:
-                    return DIPPR("muL", T, self._dipprMuL)
-                elif self._parametricMu:
-                    return MuL_Parametric(T, self._parametricMu)
-                elif self.Tc and self.Pc and self.f_acent and self.M:
-                    return MuL_LetsouStiel(
-                            T, self.M, self.Tc, self.Pc, self.f_acent)
+
+        # Add correction factor for high pressure
+        if P < 0.6*self.Pc:
+            mu = muo
+        elif Pcorr == 0:
+            Ps = self.Pv(T)
+            mu = MuL_Lucas(T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
+        elif Pcorr == 1 and self.Pc and self.f_acent:
+            mu = MuL_API(T, P, self.Tc, self.Pc, self.f_acent, self.muc)
+        elif Pcorr == 2:
+            mu = MuL_Kouzel(T, P, muo)
         else:
-            if corr == 0:
-                muo = self.Mu_Liquido(T, 101325)
+            if self.Pc and self.f_acent:
                 Ps = self.Pv(T)
-                return MuL_Lucas(T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
-            elif corr == 1 and self.Pc and self.f_acent:
-                return MuL_API(T, P, self.Tc, self.Pc, self.f_acent, self.muc)
-            elif corr == 2:
-                muo = self.Mu_Liquido(T, 101325)
-                return MuL_Kouzel(T, P, muo)
+                mu = MuL_Lucas(
+                    T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
+            elif self.Tb < 650:
+                mu = MuL_API(
+                    T, P, self.Tc, self.Pc, self.f_acent, self.muc)
             else:
-                if self.Pc and self.f_acent:
-                    muo = self.Mu_Liquido(T, 101325)
-                    Ps = self.Pv(T)
-                    return MuL_Lucas(
-                        T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
-                elif self.Tb < 650:
-                    return MuL_API(
-                        T, P, self.Tc, self.Pc, self.f_acent, self.muc)
-                else:
-                    muo = self.Mu_Liquido(T, 101325)
-                    return MuL_Kouzel(T, P, muo)
+                mu = MuL_Kouzel(T, P, muo)
+
+        return mu
 
     def Tension(self, T):
         """Liquid surface tension procedure using the method defined in
