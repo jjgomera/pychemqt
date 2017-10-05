@@ -40,6 +40,32 @@ from lib import unidades, config
 from lib.elemental import Elemental
 
 
+
+__doi__ = {
+    1:
+        {"autor": "Wilke, C.R.",
+         "title": "A Viscosity Equation for Gas Mixtures",
+         "ref": "J. Chem. Phys. 18(4) (1950) 517-519",
+         "doi": "10.1063/1.1747673"},
+    2:
+        {"autor": "API",
+         "title": "Technical Data book: Petroleum Refining 6th Edition",
+         "ref": "",
+         "doi": ""},
+    3:
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""},
+
+    4:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+}
+
+
 def _mix_from_unitmassflow(unitMassFlow, cmps):
     """Calculate mixture composition properties with known unitMassFlow"""
     massFlow = sum(unitMassFlow)
@@ -150,6 +176,96 @@ def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
     kw["molarFraction"] = molarFraction
     kw["massFraction"] = massFraction
     return kw
+
+
+def MuG_Wilke(xi, Mi, mui):
+    """Calculate viscosity of gas mixtures using the Wilke mixing rules, also
+    referenced in API procedure 11B2.1, pag 1102
+
+    .. math::
+        \mu_{m} = \sum_{i=1}^n \frac{\mu_i}{1+\frac{1}{x_i}\sum_{j=1}^n x_j
+        \phi_{ij}}
+
+        \phi_{ij} = \frac{\left[1+\left(\mu_i/\mu_j\right)^{0.5}(M_j/M_i)
+        ^{0.25}\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\right)\right]^{0.5}}
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    mui : list
+        Viscosities of components, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of mixture, [Pa·s]
+
+    Examples
+    --------
+    Selected point in Table II from [1]_
+    CO2 3.5%, O2 0.3%, CO 27.3%, H2 14.4%, CH4 3.7%, N2 50%, C2 0.8%
+    >>> from lib.mEoS import CO2, O2, CO, H2, CH4, N2, C2
+    >>> Mi = [CO2.M, O2.M, CO.M, H2.M, CH4.M, N2.M, C2.M]
+    >>> xi = [0.035, 0.003, 0.273, 0.144, 0.037, 0.5, 0.008]
+    >>> mui = [147.2e-9, 201.9e-9, 174.9e-9, 87.55e-9, 108.7e-9, 178.1e-9, \
+        90.9e-9]
+    >>> "%0.7f" % MuG_Wilke(xi, Mi, mui).dynscm2
+    '0.0001711'
+
+    Example A from [5]_; 58.18% H2, 41.82% propane at 77ºF and 14.7 psi
+    >>> mu = MuG_Wilke([0.5818, 0.4182], [2.02, 44.1], [8.91e-6, 8.22e-6])
+    >>> "%0.4f" % mu.cP
+    '0.0092'
+
+    Example B from [5]_ 95.6% CH4, 3.6% C2, 0.5% C3, 0.3% N2
+    >>> x = [0.956, 0.036, 0.005, 0.003]
+    >>> Mi = [16.04, 30.07, 44.1, 28.01]
+    >>> mui = [1.125e-5, 9.5e-6, 8.4e-6, 1.79e-5]
+    >>> "%0.5f" % MuG_Wilke(x, Mi, mui).cP
+    '0.01117'
+
+    Example 9-5 from [3]_, methane 69.7%, n-butane 30.3%
+    >>> mui = [109.4e-7, 72.74e-7]
+    >>> "%0.2f" % MuG_Wilke([0.697, 0.303], [16.043, 58.123], mui).microP
+    '92.25'
+
+    References
+    ----------
+    .. [1] Wilke, C.R. A Viscosity Equation for Gas Mixtures. J. Chem. Phys.
+        18(4) (1950) 517-519
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Eq 4
+    kij = []
+    for i, mi in enumerate(Mi):
+        kiji = []
+        for j, mj in enumerate(Mi):
+            if i == j:
+                kiji.append(0)
+            else:
+                kiji.append((1+(mui[i]/mui[j])**0.5*(mj/mi)**0.25)**2 /
+                            8**0.5/(1+mi/mj)**0.5)
+        kij.append(kiji)
+
+    # Eq 13
+    # Precalculate of internal sum
+    suma = []
+    for i, Xi in enumerate(xi):
+        sumai = 0
+        if Xi != 0:
+            for j, Xj in enumerate(xi):
+                sumai += kij[i][j]*Xj/Xi
+        suma.append(sumai)
+
+    mu = 0
+    for mu_i, sumai in zip(mui, suma):
+        mu += mu_i/(1+sumai)
+    return unidades.Viscosity(mu)
 
 
 class Mezcla(config.Entity):
@@ -960,32 +1076,6 @@ class Mezcla(config.Entity):
             suma += xi*cmp.Mu_Liquido(T, P)**(1./3)
         return unidades.Viscosity(suma**3)
 
-    def Mu_Gas_Wilke(self, T):
-        """Calculate gases viscosity, API procedure 11B2.1, pag 1102"""
-        mui=[cmp.Mu_Gas(T, 1) for cmp in self.componente]
-
-        kij = []
-        for i in range(len(self.componente)):
-            kiji = []
-            for j in range(len(self.componente)):
-                if i == j:
-                    kiji.append(0)
-                else:
-                    kiji.append((1+(mui[i]/mui[j])**0.5*(self.componente[j].M/self.componente[i].M)**0.25)**2/8**0.5/(1+self.componente[i].M/self.componente[j].M)**0.5)
-            kij.append(kiji)
-
-        suma = []
-        for i in range(len(self.componente)):
-            sumai = 0
-            if self.fraccion[i]!=0:
-                for j in range(len(self.componente)):
-                    sumai += kij[i][j]*self.fraccion[j]/self.fraccion[i]
-            suma.append(sumai)
-        mu = 0
-        for i in range(len(self.componente)):
-            mu += mui[i]/(1.+suma[i])
-        return unidades.Viscosity(mu)
-
     def Mu_Gas_Stiel(self, T, P, rhoG=0, muo=0):
         """Calculate gas viscosity at high pressure, API procedure 11B4.1, pag 1107"""
         if muo == 0:
@@ -1014,7 +1104,9 @@ class Mezcla(config.Entity):
     def Mu_Gas(self, T, P):
         """General method for calculate viscosity of gas"""
         if P < 2:
-            return self.Mu_Gas_Wilke(T)
+            Mi = [cmp.M for cmp in self.componente]
+            mui = [cmp.Mu_Gas(T, 1) for cmp in self.componente]
+            return MuG_Wilke(self.fraccion, Mi, mui)
         else:
             return self.Mu_Gas_Stiel(T, P)
         # TODO: Add Carr method when it's availabe in database component type
