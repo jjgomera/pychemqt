@@ -3728,6 +3728,45 @@ def ThG_Eucken(M, Cv, mu):
     k = (1 + 9/4/(Cvm/R))*mu*Cvm/M
     return unidades.ThermalConductivity(k)
 
+
+def ThG_EuckenMod(M, Cv, mu):
+    """Calculates thermal conductivity of gas al low pressure using the
+    modified Eucken correlation as explain in [1]_
+
+    .. math::
+        \frac{\lambda M}{\eta C_v} = 1.32 + \frac{1.77}{C_v/R}
+
+    Parameters
+    ----------
+    M : float
+        Molecular weight, [g/mol]
+    Cv : float
+        Ideal gas heat capacity at constant volume, [J/kg·K]
+    mu : float
+        Gas viscosity [Pa·s]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/k]
+
+    Examples
+    --------
+    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    >>> "%0.4f" % ThG_EuckenMod(72.151, 135.8/72.151*1000, 8.72e-6)
+    '0.0234'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Cvm = Cv*M/1000
+    M = M/1000.
+    k = (1.32 + 1.77/(Cvm/R))*mu*Cvm/M
+    return unidades.ThermalConductivity(k)
+
+
 def ThG_Chung(T, Tc, M, w, Cv, mu):
     """Calculate thermal conductivity of gas at low pressure using the Chung
     correlation
