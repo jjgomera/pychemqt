@@ -3690,12 +3690,50 @@ def ThG_NonHydrocarbon(T, P, id):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+def ThG_Eucken(M, Cv, mu):
+    """Calculates thermal conductivity of gas al low pressure using the Eucken
+    correlation as explain in [1]_
+
+    .. math::
+        \frac{\lambda M}{\eta C_v} = 1 + \frac{9/4}{C_v/R}
+
+    Parameters
+    ----------
+    M : float
+        Molecular weight, [g/mol]
+    Cv : float
+        Ideal gas heat capacity at constant volume, [J/kg·K]
+    mu : float
+        Gas viscosity [Pa·s]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/k]
+
+    Examples
+    --------
+    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    >>> cv_mass = 135.8/72.151*1000
+    >>> "%0.4f" % ThG_Eucken(72.151, cv_mass, 8.72e-6)
+    '0.0187'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Cvm = Cv*M/1000
+    M = M/1000.
+    k = (1 + 9/4/(Cvm/R))*mu*Cvm/M
+    return unidades.ThermalConductivity(k)
+
 def ThG_Chung(T, Tc, M, w, Cv, mu):
     """Calculate thermal conductivity of gas at low pressure using the Chung
     correlation
 
     .. math::
-        \frac{\lambda M}{\eta C_v} = \frac{3.75 \Psi}{C_v/R}
+        \lambda_o = \frac{7.452\mu_o\Psi}{M}
 
         \Psi = 1 + \alpha \left\{[0.215+0.28288\alpha-1.061\beta+0.26665Z]/
         [0.6366+\beta Z + 1.061 \alpha \beta]\right\}
