@@ -3690,6 +3690,71 @@ def ThG_NonHydrocarbon(T, P, id):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+def ThG_Chung(T, Tc, M, w, Cv, mu):
+    """Calculate thermal conductivity of gas at low pressure using the Chung
+    correlation
+
+    .. math::
+        \frac{\lambda M}{\eta C_v} = \frac{3.75 \Psi}{C_v/R}
+
+        \Psi = 1 + \alpha \left\{[0.215+0.28288\alpha-1.061\beta+0.26665Z]/
+        [0.6366+\beta Z + 1.061 \alpha \beta]\right\}
+
+        \alpha = \frac{C_v}{R}-1.5
+
+        \beta = 0.7862-0.7109\omega + 1.3168\omega^2
+
+        Z=2+10.5T_r^2
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    Tc : float
+        Critical temperature, [K]
+    w : float
+        Acentric factor, [-]
+    Cv : float
+        Ideal gas heat capacity at constant volume, [J/kg·K]
+    mu : float
+        Gas viscosity [Pa·s]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/k]
+
+    Examples
+    --------
+    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    >>> cv_mass = 135.8/72.151*1000
+    >>> "%0.4f" % ThG_Chung(373.15, 460.39, 72.151, 0.272, cv_mass, 8.72e-6)
+    '0.0229'
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Cvm = Cv*M/1000
+
+    alpha = Cvm/R - 1.5
+    beta = 0.7862 - 0.7109*w + 1.3168*w**2
+    Z = 2 + 10.5*Tr**2
+    phi = 1 + alpha*((0.215 + 0.28288*alpha - 1.061*beta + 0.26665*Z)/(
+        0.6366 + beta*Z + 1.061*alpha*beta))
+
+    # Eq 9
+    k = 7.452*mu*10/M*phi   # Viscosity in P
+    return unidades.ThermalConductivity(k, "calscmK")
+
+
 # Liquid surface tension
 def Tension_Parametric(T, args, Tc):
     """Calculates surface tension of fluid using a paremtric equation
@@ -4259,6 +4324,7 @@ class Componente(object):
     METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
                      "Aalto-Keskinen (1996)", "Aalto-Keskinen (1999)",
                      "Nasrifar", "API"]
+
     METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
                    "Przedziecki-Sridhar"]
     METHODS_MuLP = ["Lucas", "API", "Kouzel"]
@@ -4503,15 +4569,27 @@ class Componente(object):
         V=R_atml*1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-self.tr(298.15))**(2.0/7)) #cm3/mol
         return V/(5.7+1611/self.Tc) #cm3/mol
 
-    def Parametro_Solubilidad(self):
-        """Método de cálculo del parametro de solubilidad, API databook pag 812"""
-        if self._dipprHv==(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0):
-            Par=0
+    def _SolubilityParameter(self):
+        """Calculation procedure for solubility parameter when the compound has
+        no defined value for that using the definition equation:
+
+        .. math::
+            \delta=\sqrt{\Delta H_{v}-\frac{RT}{M}}\rho
+
+        Referenced in API databook Table 8B1.7 comment pag 812
+        """
+        if self._dipprHv:
+            if self.Tb < 298.15:
+                T = self.Tb
+            else:
+                T = 298.15
+
+            rhoL = self.RhoL(T, 101325)
+            DHv = DIPPR("Hv", T, self._dipprHv, self.M).calg
+            delta = (DHv-R_cal*T/self.M*rhoL)**0.5
         else:
-            DH=self.Hv_DIPPR(298.15).calg
-            densidad = DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
-            Par=sqrt(DH-R_cal*298.15/self.M*densidad)
-        return unidades.SolubilityParameter(Par, "calcc")
+            delta = 0
+        return unidades.SolubilityParameter(delta, "calcc")
 
     def Stiehl_Polar_factor(self):
         f0=5.92714-6.09648/0.6-1.28862*log(0.6)+0.169347*0.6**6
@@ -4789,11 +4867,13 @@ class Componente(object):
             if ThCondG == 0 and self._dipprKG and \
                     self._dipprKG[6] <= T <= self._dipprKG[7]:
                 return self.DIPPR("kG", T, self._dipprKG)
+            elif ThCondG == 1 and self.SG and self.Tb:
+                return ThG_RiaziFaghri(T, self.Tb, self.SG)
             else:
                 cp = self.Cp_Gas(T)
                 return ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
-            return self.ThCond_Gas_Nonhidrocarbon(T, P)
+            return ThG_NonHydrocarbon(T, P, self.id)
         else:
             # TODO: fix crooks methods with lost lee_kesler library
             return self.ThCond_Gas(T, 101325.)
@@ -5013,7 +5093,6 @@ class Componente(object):
         elif method == 7 and self.Vc:
             return Tension_Miqueu(T, self.Tc, self.Vc, self.M, self.f_acent)
 
-
         else:
             if self._dipprSigma and \
                     self._dipprSigma[6] <= T <= self._dipprSigma[7]:
@@ -5031,48 +5110,64 @@ class Componente(object):
             else:
                 return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
-
-
-
-    def Hv_DIPPR(self,T):
+    def Hv_DIPPR(self, T):
         """Cálculo del calor de vaporización usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimosexta posición
         Calor de vaporización obtenido en (J/kmol)"""
         return DIPPR("Hv", T, self._dipprHv, self.M)
 
-    def Hv_Lee_Kesler(self, T):
-        """Método alternativo para el cálculo del calor de vaporización haciendo uso de las propiedades críticas
-        Procedure API 7C1.16 Pag.680
-        Valor en J/mol"""
-        Pv=self.Pv_DIPPR(T)
-        Tr=T/self.Tc
-        Pr=Pv/self.Pc
-        H_adimensional_vapor=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
-        H_adimensional_liquido=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
-        return unidades.Enthalpy(R*self.Tc/self.M*(H_adimensional_vapor-H_adimensional_liquido), "Jg")
-
-    def Cp_Solido_DIPPR(self,T):
+    def Cp_Solido_DIPPR(self, T):
         """Cálculo de la capacidad calorifica del solido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoseptima posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
         return DIPPR("cpS", T, self._dipprCpS, self.M)
 
-    def Cp_Liquido_DIPPR(self,T):
+    def Cp_Liquido_DIPPR(self, T):
         """Cálculo de la capacidad calorifica del liquido usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimoctava posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
         return DIPPR("cpL", T, self._dipprCpL, self.M)
 
-    def Cp_Hadden(self, T):
-        """Método alternativo para el cálculo de la capacidad calorífica en líquidos por debajo de su punto de ebullición
-        Procedure API 7D1.9 Pag.696"""
-        #TODO: No fácil de implementar al depender del elemento
-
-    def Cp_Gas_DIPPR(self,T):
+    def Cp_Gas_DIPPR(self, T):
         """Cálculo de la capacidad calorifica del gas ideal usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimonovena posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
         return DIPPR("cpG", T, self._dipprCpG, self.M)
+
+    def constante_Henry(self, T, parameters=None):
+        """constante H obtenida en psia por unidad de fracción molar del gas
+        lnH = A/T + B∗lnT + C∗T + D
+        Solo disponible para algunos compuestos:
+        Hydrogen, Helium, Argon, Neon, Krypton, Xenon, Oxygen, Nitrogen,
+        Hydrogen sulfide, Carbon monoxide, Carbon dioxide, Sulfur dioxide,
+        Nitrous oxide, Chlorine,Bromine, Iodine, Methane, Ethane, Propane,
+        Ethylene, Ammonia.
+        API procedure 9A7.1, pag 927
+        Los parametros de la ecuación se encuentran en la base de datos
+        en forma de lista en la posición décima
+        """
+        if parameters == None:
+            parameters = self.henry
+        t = unidades.Temperature(T)
+        return exp(parameters[0]/t.R+parameters[1]*log(t.R)+parameters[2]*t.R+parameters[3])
+
+    def Fase(self, T, P):
+        """Método que calcula el estado en el que se encuentra la sustancia"""
+        Pv=self.Pv(T).atm
+        if Pv>P:
+            return 1
+        else:
+            return 0
+
+
+
+
+
+
+    def Cp_Hadden(self, T):
+        """Método alternativo para el cálculo de la capacidad calorífica en líquidos por debajo de su punto de ebullición
+        Procedure API 7D1.9 Pag.696"""
+        #TODO: No fácil de implementar al depender del elemento
 
     def Cp_Lee_Kesler(self, T, P, fase=None):
         """Método alternativo para el cálculo de la capacidad calorífica
@@ -5142,36 +5237,16 @@ class Componente(object):
 
         return unidades.SpecificHeat(S0.JgK-R*S/self.M, "JgK")
 
-    def constante_Henry(self,T,parameters=None):
-        """constante H obtenida en psia por unidad de fracción molar del gas
-        lnH = A/T + B∗lnT + C∗T + D
-        Solo disponible para algunos compuestos:
-        Hydrogen, Helium, Argon, Neon, Krypton, Xenon, Oxygen, Nitrogen,
-        Hydrogen sulfide, Carbon monoxide, Carbon dioxide, Sulfur dioxide,
-        Nitrous oxide, Chlorine,Bromine, Iodine, Methane, Ethane, Propane,
-        Ethylene, Ammonia.
-        API procedure 9A7.1, pag 927
-        Los parametros de la ecuación se encuentran en la base de datos
-        en forma de lista en la posición décima
-        """
-        if parameters==None:
-            parameters=self.henry
-        t=unidades.Temperature(T)
-        return exp(parameters[0]/t.R+parameters[1]*log(t.R)+parameters[2]*t.R+parameters[3])
-
-
-    def Fase(self, T, P):
-        """Método que calcula el estado en el que se encuentra la sustancia"""
-        Pv=self.Pv(T).atm
-        if Pv>P:
-            return 1
-        else:
-            return 0
-
-
-
-
-
+    def Hv_Lee_Kesler(self, T):
+        """Método alternativo para el cálculo del calor de vaporización haciendo uso de las propiedades críticas
+        Procedure API 7C1.16 Pag.680
+        Valor en J/mol"""
+        Pv=self.Pv_DIPPR(T)
+        Tr=T/self.Tc
+        Pr=Pv/self.Pc
+        H_adimensional_vapor=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
+        H_adimensional_liquido=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
+        return unidades.Enthalpy(R*self.Tc/self.M*(H_adimensional_vapor-H_adimensional_liquido), "Jg")
 
 
     def RhoG_Lee_Kesler(self, T, P):
