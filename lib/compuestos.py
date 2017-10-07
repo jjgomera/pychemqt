@@ -372,9 +372,15 @@ __doi__ = {
                   "Viscosity of Gases at Atmospheric Pressure",
          "ref": "I&EC Research 51(7) (2012) 3179-3185",
          "doi": "10.1021/ie202591f"},
-
-
     58:
+        {"autor": "Stiel, L.I., Thodos, G.",
+         "title": "The Thermal Conductivity of Nonpolar Substances in the "
+                  "Dense Gaseous and Liquid Regions",
+         "ref": "AIChE Journal 10(1) (1964) 26-30",
+         "doi": "10.1002/aic.690100114"},
+
+
+    59:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -3417,7 +3423,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     Pc : float
         Critical pressure, [Pa]
     Vc : float
-        Critical density, [m³/kg]
+        Critical specific volume, [m³/kg]
     M : float
         Molecular weight, [g/mol]
     rho : float
@@ -3581,115 +3587,6 @@ def ThG_RiaziFaghri(T, Tb, SG):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
-def ThG_NonHydrocarbon(T, P, id):
-    """Calculates thermal conductivity of selected nonhydrocarbon, referenced
-    in API procedure 12C1.1, pag 1174
-
-    .. math::
-        \kappa = A + BT + CT^2 + DP + E\frac{P}{T^{1.2}} + \frac{F}{
-        \left(0.4P-0.001T\right^{0.015}a} + G\ln{P}
-
-    Parameters
-    ----------
-    T : float
-        Temperature, [K]
-    P : float
-        Pressure, [Pa]
-    id : integer
-        Index of compound in database
-
-    Returns
-    -------
-    k : float
-        Thermal conductivity, [Btu/hftºF]
-
-    Notes
-    -----
-    This method calculate the thermal conductivity of selected nonhydrocarbon
-    gases, the available compounds are:
-        1   -   Hydrogen
-        46  -   Nitrogen
-        47  -   Oxygen
-        48  -   Carbon Monoxide
-        50  -   Hydrogen Sulfide
-        51  -   Sulfur dioxide
-        111 -   Sulfur trioxide
-
-    Raises
-    ------
-    The range of validity of relation depends of compounds, it's checked in
-    procedure and raise a NotImplementeError when inputs are out of bound or
-    the id of compound isn't supported
-        N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
-        O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
-        H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
-        SO2        - 960ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
-        H2S, SO3   - 460ºR ≤ T ≤ 2460ºR, P atmospheric
-
-    Examples
-    --------
-    Example from [5]_; oxygen at 984.67ºR and 6075psi
-    >>> T = unidades.Temperature(984.67, "R")
-    >>> P = unidades.Pressure(6075, "psi")
-    >>> "%0.5f" % ThG_NonHydrocarbon(T, P, 47).BtuhftF
-    '0.03265'
-
-    References
-    ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
-    """
-    # Table 12C1.2
-    dat = {
-        1: (4.681e-3, 2.e-4, -3.6e-8, 0.0, 0.0, 0.0, 1.7e-3),
-        46: (4.561e-3, 1.61e-5, 0.0, 2.56e-9, 5.299e-3, 2.47e-3, 0.0),
-        47: (5.95e-4, 1.71e-5, 0.0, -2.10e-8, 5.869e-3, 6.995e-3, 0.0),
-        48: (1.757e-3, 1.55e-5, 0.0, 2.08e-8, 5.751e-3, 5.6e-3, 0.0),
-        50: (-1.51e-3, 2.25e-5, 3.32e-10, 0.0, 0.0, 0.0, 0.0),
-        51: (2.5826e-2, 1.35e-5, 0.0, -4.4e-7, 1.026e-2, -2.631e-2, 0.0),
-        111: (-1.02e-3, 1.35e-5, 4.17e-9, 0.0, 0.0, 0.0, 0.0)}
-
-    # Check supported compounds
-    if id not in dat:
-        raise NotImplementedError("Compound don't supported")
-
-    # Convert input T in Kelvin to Rankine to use in the correlation
-    t = unidades.K2R(T)
-    p = unidades.Pressure(P).psi
-
-    # Check input parameter
-    if id == 1:
-        tmin = 260
-        tmax = 2260
-        pmin = 15
-        pmax = 10000
-    elif id in (46, 47):
-        tmin = 460
-        tmax = 2460
-        pmin = 15
-        pmax = 10000
-    elif id == 48:
-        tmin = 460
-        tmax = 2460
-        pmin = 15
-        pmax = 15000
-    elif id == 50:
-        tmin = 960
-        tmax = 2460
-        pmin = 15
-        pmax = 10000
-    elif id in (51, 111):
-        tmin = 460
-        tmax = 2460
-        pmin = 1
-        pmax = 100
-    if t < tmin or t > tmax or p < pmin or p > pmax:
-        raise NotImplementedError("Input out of bound")
-
-    A, B, C, D, E, F, G = dat[id]
-    k = A + B*t + C*t**2 + D*p + E*p/t**1.2 + F/(.4*p-.001*t)**.015 + G*log(p)
-    return unidades.ThermalConductivity(k, "BtuhftF")
-
-
 def ThG_Eucken(M, Cv, mu):
     """Calculates thermal conductivity of gas al low pressure using the Eucken
     correlation as explain in [1]_
@@ -3829,6 +3726,178 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
 
     # Eq 9
     k = 7.452*mu*10/M*phi   # Viscosity in P
+    return unidades.ThermalConductivity(k, "calscmK")
+
+
+def ThG_NonHydrocarbon(T, P, id):
+    """Calculates thermal conductivity of selected nonhydrocarbon, referenced
+    in API procedure 12C1.1, pag 1174
+
+    .. math::
+        \kappa = A + BT + CT^2 + DP + E\frac{P}{T^{1.2}} + \frac{F}{
+        \left(0.4P-0.001T\right^{0.015}a} + G\ln{P}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    id : integer
+        Index of compound in database
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [Btu/hftºF]
+
+    Notes
+    -----
+    This method calculate the thermal conductivity of selected nonhydrocarbon
+    gases, the available compounds are:
+        1   -   Hydrogen
+        46  -   Nitrogen
+        47  -   Oxygen
+        48  -   Carbon Monoxide
+        50  -   Hydrogen Sulfide
+        51  -   Sulfur dioxide
+        111 -   Sulfur trioxide
+
+    Raises
+    ------
+    The range of validity of relation depends of compounds, it's checked in
+    procedure and raise a NotImplementeError when inputs are out of bound or
+    the id of compound isn't supported
+        N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
+        H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
+        SO2        - 960ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        H2S, SO3   - 460ºR ≤ T ≤ 2460ºR, P atmospheric
+
+    Examples
+    --------
+    Example from [5]_; oxygen at 984.67ºR and 6075psi
+    >>> T = unidades.Temperature(984.67, "R")
+    >>> P = unidades.Pressure(6075, "psi")
+    >>> "%0.5f" % ThG_NonHydrocarbon(T, P, 47).BtuhftF
+    '0.03265'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Table 12C1.2
+    dat = {
+        1: (4.681e-3, 2.e-4, -3.6e-8, 0.0, 0.0, 0.0, 1.7e-3),
+        46: (4.561e-3, 1.61e-5, 0.0, 2.56e-9, 5.299e-3, 2.47e-3, 0.0),
+        47: (5.95e-4, 1.71e-5, 0.0, -2.10e-8, 5.869e-3, 6.995e-3, 0.0),
+        48: (1.757e-3, 1.55e-5, 0.0, 2.08e-8, 5.751e-3, 5.6e-3, 0.0),
+        50: (-1.51e-3, 2.25e-5, 3.32e-10, 0.0, 0.0, 0.0, 0.0),
+        51: (2.5826e-2, 1.35e-5, 0.0, -4.4e-7, 1.026e-2, -2.631e-2, 0.0),
+        111: (-1.02e-3, 1.35e-5, 4.17e-9, 0.0, 0.0, 0.0, 0.0)}
+
+    # Check supported compounds
+    if id not in dat:
+        raise NotImplementedError("Compound don't supported")
+
+    # Convert input T in Kelvin to Rankine to use in the correlation
+    t = unidades.K2R(T)
+    p = unidades.Pressure(P).psi
+
+    # Check input parameter
+    if id == 1:
+        tmin = 260
+        tmax = 2260
+        pmin = 15
+        pmax = 10000
+    elif id in (46, 47):
+        tmin = 460
+        tmax = 2460
+        pmin = 15
+        pmax = 10000
+    elif id == 48:
+        tmin = 460
+        tmax = 2460
+        pmin = 15
+        pmax = 15000
+    elif id == 50:
+        tmin = 960
+        tmax = 2460
+        pmin = 15
+        pmax = 10000
+    elif id in (51, 111):
+        tmin = 460
+        tmax = 2460
+        pmin = 1
+        pmax = 100
+    if t < tmin or t > tmax or p < pmin or p > pmax:
+        raise NotImplementedError("Input out of bound")
+
+    A, B, C, D, E, F, G = dat[id]
+    k = A + B*t + C*t**2 + D*p + E*p/t**1.2 + F/(.4*p-.001*t)**.015 + G*log(p)
+    return unidades.ThermalConductivity(k, "BtuhftF")
+
+
+def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
+    """Calculate thermal conductivity of compressed gases using the
+    Stiel-Thodos correlation.
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Vc : float
+        Critical specific volume, [m³/kg]
+    M : float
+        Molecular weight, [g/mol]
+    Vm : float
+        Volume at T and P [m³/kg]
+    kg : float
+        Low-pressure gas thermal conductivity [W/m/k]
+
+    Returns
+    -------
+    ko : float
+        Estimated dense gas thermal conductivity [W/m/k]
+
+    Examples
+    --------
+    Example 10-3 from [1]_; nitrous oxide at 105ºC and 138bar
+    >>> T = unidades.Temperature(105, "C")
+    >>> Vc = 97/44.013/1000
+    >>> V = 144/44.013/1000
+    >>> "%0.4f" % ThG_StielThodos(T, 309.6, 72.55e5, Vc, 44.013, V, 0.0234)
+    '0.0415'
+
+    References
+    ----------
+    .. [58] Stiel, L.I., Thodos, G. The Thermal Conductivity of Nonpolar
+        Substances in the Dense Gaseous and Liquid Regions. AIChE Journal 10(1)
+        (1964) 26-30
+    .. [2] Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
+       Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
+    """
+    # Calcualte the Zc internally
+    Zc = Pc*1e-3*Vc*M/Tc/R
+
+    # The thermal conductivity in the paper define in cal/s·cm·K
+    ko = unidades.ThermalConductivity(ko).calscmK
+
+    rhor = Vc/V
+    gamma = (Tc*M**3/(Pc/101325)**4)**(1/6)
+
+    if rhor < 0.5:
+        lr = 14*(exp(0.535*rhor) - 1)                                   # Eq 3
+    elif rhor < 2:
+        lr = 13.1*(exp(0.67*rhor) - 1.069)                              # Eq 4
+    else:
+        lr = 2.976*(exp(1.155*rhor) + 2.016)                            # Eq 5
+
+    k = ko + lr*1e-8/Zc**5/gamma
     return unidades.ThermalConductivity(k, "calscmK")
 
 
@@ -4410,6 +4479,9 @@ class Componente(object):
     METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
                     "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
+    METHODS_ThCondL = ["DIPPR", "Misic-Thodos", "Chung", "Eucken",
+                       "Modified Eucken", "Riazi-Faghri"]
+
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
     METHODS_facent = ["Lee-Kesler", "Edmister", "Ambrose-Walton"]
@@ -4938,6 +5010,34 @@ class Componente(object):
 
     def ThCond_Gas(self, T, P):
         """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1136"""
+        method = self.Config.getint("Transport", "ThCondG")
+        # Pcorr = self.Config.getint("Transport", "MuGP")
+
+        # Calculate of low pressure viscosity
+        if method == 0 and self._dipprKG and \
+                self._dipprKG[6] <= T <= self._dipprKG[7]:
+            ko = self.DIPPR("kG", T, self._dipprKG)
+        elif method == 1:
+            cp = self.Cp_Gas_DIPPR(T)
+            ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
+        elif method == 2:
+            cp = self.Cp_Gas_DIPPR(T)
+            cv = cp-R*self.M
+            muo = self.Mu_Gas(T, 101325)
+            ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, cv, muo)
+        elif method == 3:
+            muo = self.Mu_Gas(T, 101325)
+            ko = ThG_Eucken(self.M, cv, muo)
+        elif method == 4:
+            muo = self.Mu_Gas(T, 101325)
+            ko = ThG_EuckenMod(self.M, cv, muo)
+        elif method == 5 and self.SG and self.Tb:
+            ko = ThG_RiaziFaghri(T, self.Tb, self.SG)
+
+
+# def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
+# def ThG_NonHydrocarbon(T, P, id):
+
         ThCondG = self.Config.getint("Transport", "ThCondG")
         p=unidades.Pressure(P)
         if p.psi < 50:
@@ -4955,6 +5055,8 @@ class Componente(object):
             # TODO: fix crooks methods with lost lee_kesler library
             return self.ThCond_Gas(T, 101325.)
 #            return self.ThCond_Gas_Crooks(T, P)
+
+# def ThG_NonHydrocarbon(T, P, id):
 
     def ThCond_Gas_Crooks(self, T, P):
         """Método alternativo para el cálculo de la conductividad térmica de gases a alta presión >4 atm, API Procedure 12B4.1 pag.1170"""
@@ -5206,10 +5308,13 @@ class Componente(object):
         return DIPPR("cpL", T, self._dipprCpL, self.M)
 
     def Cp_Gas_DIPPR(self, T):
-        """Cálculo de la capacidad calorifica del gas ideal usando las ecuaciones DIPPR
+        """Cálculo de la capacidad calorifica del gas usando las ecuaciones DIPPR
         Los parámetros se encuentran en la base de datos en decimonovena posición
         Capacidad calorifica obtenida en (J/kmol·K)"""
-        return DIPPR("cpG", T, self._dipprCpG, self.M)
+        if self._dipprCpG:
+            return DIPPR("cpG", T, self._dipprCpG, self.M)
+        else:
+            return self._Cpo(T)
 
     def constante_Henry(self, T, parameters=None):
         """constante H obtenida en psia por unidad de fracción molar del gas
