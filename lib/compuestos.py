@@ -28,7 +28,7 @@ from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d
 
-from lib.physics import R_atml, R_Btu, R_cal, factor_acentrico_octano
+from lib.physics import R_atml, R_cal, factor_acentrico_octano
 from lib.physics import Collision_Neufeld
 from lib import unidades, config, eos, sql
 from lib.mEoS import CH4, nC8
@@ -378,9 +378,14 @@ __doi__ = {
                   "Dense Gaseous and Liquid Regions",
          "ref": "AIChE Journal 10(1) (1964) 26-30",
          "doi": "10.1002/aic.690100114"},
-
-
     59:
+        {"autor": "Lenoir, J.M.",
+         "title": "Effect of Pressure on Thermal Conductivity of Liquids",
+         "ref": "Petroelum Refiner 36(8) 1508",
+         "doi": ""},
+
+
+    60:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2610,7 +2615,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
         (24.27450, 3.44945, -11.29130, 69.3466),
         (0.79716, 1.11764, 0.12348e-1, -4.11661),
         (-0.23816, 0.67695e-1, -0.81630, 4.02528),
-         (0.68629e-1, 0.34793, 0.59256, -0.72663)]
+        (0.68629e-1, 0.34793, 0.59256, -0.72663)]
 
     # Eq 11
     A = []
@@ -3469,6 +3474,92 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     k = (-1.884e-6*Pr**2+1.442e-3*Pr+alfa*exp(b*rhor))/l                # Eq 6
     return unidades.ThermalConductivity(k, "BtuhftF")
 
+
+def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
+    """Calculates the thermal conductivity of liquid using the Lenoir
+    correlation as explain in [5]_, procedure 12A4.1, pag 1156
+
+    .. math::
+        k_2 = k_1\frac{C_2}{C_1}
+
+        C = 17.77+0.065*P_r-7.764*T_r-\frac{2.065T_r^2}{exp(0.2P_r}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    ko : float
+        Reference thermal conductivity [W/m·k]
+    To : float, optional
+        Temperature with known thermal conductivity, default T, [K]
+    Po : float, optional
+        Pressure with known thermal conductivity, default 101325, [Pa]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity [W/m·k]
+
+    Raises
+    ------
+    Range of validity:
+        0.4 ≤ Tr ≤ 0.8
+        P ≥ 500 psi
+    The procedure raisea a NotImplementedError if that conditions not meet
+
+    Examples
+    --------
+    Example in [5]_, toluene at 87.5ºF and 22.044psi
+    >>> T = unidades.Temperature(87.5, "F")
+    >>> P = unidades.Pressure(22044, "psi")
+    >>> Tc = unidades.Temperature(1065.22, "R")
+    >>> Pc = unidades.Pressure(595.9, "psi")
+    >>> Pref = unidades.Pressure(14.696, "psi")
+    >>> ko = unidades.ThermalConductivity(0.07425, "BtuhftF")
+    >>> k = ThL_Lenoir(T, P, Tc, Pc, ko, T, Pref)
+    >>> "%0.5f" % k.BtuhftF
+    '0.09074'
+
+    Example 10-12 in [1]_, NO2 at 311K and 276bar
+    >>> "%0.2f" % ThL_Lenoir(311, 276e5, 431.35, 101.33e5, 0.124, 311, 2.1e5)
+    '0.13'
+
+    References
+    ----------
+    .. [59] Lenoir, J.M. Effect of Pressure on Thermal Conductivity of Liquids.
+        Petroelum Refiner 36(8) 1508
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Definiton of optional values
+    if To is None:
+        To = T
+    if Po is None:
+        Po = 101325
+
+    Tr2 = T/Tc
+    Pr2 = P/Pc
+    Tr1 = To/Tc
+    Pr1 = Po/Pc
+
+    Pmin = unidades.Pressure(500, "psi")
+    if Tr2 < 0.4 or Tr2 > 0.8 or P < Pmin:
+        raise NotImplementedError("Input out of bound")
+
+    C1 = 17.77 + 0.065*Pr1 - 7.764*Tr1 - 2.054*Tr1**2/exp(0.2*Pr1)
+    C2 = 17.77 + 0.065*Pr2 - 7.764*Tr2 - 2.054*Tr2**2/exp(0.2*Pr2)
+    return unidades.ThermalConductivity(ko*C2/C1)
+
+
+# def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
+# def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
 
 # Gas Thermal conductivity
 def ThG_MisicThodos(T, Tc, Pc, M, Cp):
@@ -5136,8 +5227,35 @@ class Componente(object):
     def ThCond_Liquido(self, T, P):
         """Liquid thermal conductivity procedure using the method defined in
         preferences, use the decision diagram in [5]_ Figure 12-0.2 pag 1135"""
-        ThCondL = self.Config.getint("Transport", "ThCondL")
-        corr = self.Config.getint("Transport", "Corr_ThCondL")
+        method = self.Config.getint("Transport", "ThCondL")
+        Pcorr = self.Config.getint("Transport", "Corr_ThCondL")
+
+        # Calculate of low pressure viscosity
+        if method == 0 and self._dipprKL and \
+                self._dipprKL[6] <= T <= self._dipprKL[7]:
+            ko = DIPPR("kL", T, self._dipprKL)
+        elif method == 1 and T < self.Tc:
+            ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, branched=True)
+        elif method == 2:
+            ko = ThL_KanitkarThodos(T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
+        elif method == 3 and self.Tb and self.SG:
+            ko = ThL_RiaziFaghri(T, self.Tb, self.SG)
+        elif method == 4 and self.Tb:
+            ko = ThL_Gharagheizi(T, self.Pc, self.Tb, self.M, self.f_acent)
+        elif method == 5:
+            ko = ThL_LakshmiPrasad(T, self.M)
+        elif method == 6:
+            ko = ThL_Nicola(
+                T, self.M, self.Tc, self.Pc, self.f_acent, self.dipole)
+        else:
+            if self._dipprKL and self._dipprKL[6] <= T <= self._dipprKL[7]:
+                ko = DIPPR("kL", T, self._dipprKL)
+            elif T < self.Tc:
+                ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, branched=True)
+            else:
+                ko = ThL_KanitkarThodos(
+                    T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
+
         p = unidades.Pressure(P, "atm")
         if p.psi < 500:
             if ThCondL == 0 and self._dipprKL and \
@@ -5153,20 +5271,6 @@ class Componente(object):
                 return self.ThCond_Liquido_Lenoir(T, P)
             else:
                 return self.ThCond_Liquido_Kanitkar_Thodos(T, P)
-
-    def ThCond_Liquido_Lenoir(self, T, P, ko=[]):
-        """Método alternativo para el cálculo de la conductividad de líquidos a alta presión, API procedure 12A4.1, pag 1156
-        Opcionalmente puede aceptar otro parametros ko que indica un valor experimental de la conductividad térmica (WmK, así como la temperatura y presión a la que se da, en un array [k,T,P]"""
-        Tr=self.tr(T)
-        if ko==[]:
-            k1=self.ThCond_Liquido(T, 1)
-            C1=17.77+0.065*self.pr(1)-7.764*Tr-2.065*Tr**2/exp(0.2*self.pr(1))
-        else:
-            k1=ko[0]
-            C1=17.77+0.065*self.pr(ko[2])-7.764*self.tr(ko[1])-2.065*self.tr(ko[1])**2/exp(0.2*self.pr(ko[2]))
-        C2=17.77+0.065*self.pr(P)-7.764*Tr-2.065*Tr**2/exp(0.2*self.pr(P))
-        k=k1*C2/C1
-        return unidades.ThermalConductivity(k)
 
     def ThCond_Gas(self, T, P, rho):
         """Vapor thermal conductivity calculation procedure using the method
@@ -5211,7 +5315,6 @@ class Componente(object):
             mu = ThG_TRAPP(
                 T, self.Tc, self.Vc, self.Zc, self.M, self.f_acent, rho, ko)
         return mu
-
 
     def Mu_Gas(self, T, P):
         """Vapor viscosity calculation procedure using the method defined in
