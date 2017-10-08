@@ -3987,6 +3987,79 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     return unidades.ThermalConductivity(kk+kp, "calscmK")
 
 
+def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
+    """Calculate the thermal conductivity of a compressed gas using the TRAPP
+    (TRAnsport Property Prediction) method.
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Zc : float
+        Critical pressure, [Pa]
+    rhoc : float
+        Critical density, [kg/m3]
+    M : float
+        Molecular weight, [g/mol]
+    rho : float
+        Density, [kg/m3]
+    ko : float
+        Low-pressure gas thermal conductivity, [Pa*S]
+
+    Returns
+    -------
+    k : float
+        High-pressure gas thermal conductivity [W/m/k]
+
+    Examples
+    --------
+    Example 9-13 in [1]_, isobutane at 500K and 100bar
+    >>> Vc = 184.6*42.081*1000
+    >>> rho = 1/172.1*42.081*1000
+    >>> "%0.3f" % ThG_TRAPP(473, 364.9, Vc, 0.2798, 42.081, 0.142, rho, 0.0389)
+    '0.061'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Reference fluid properties, propane
+    TcR = 369.83
+    rhocR = 1/200  # mol/cm³
+    ZcR = 0.276
+    wR = 0.152
+
+    # Convert volume to molar base
+    Vc = Vc/M/1000
+    rho = rho/M/1000
+    rhoc = 1/Vc
+
+    Tr = T/Tc
+
+    f = Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(Tr)))
+    h = rhocR/rhoc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(Tr)))
+
+    To = T/f
+    rho0 = rho*h
+    Fl = (44.094/M*f)**0.5/h**(2/3)
+    Xl = (1+2.1866*(w-wR)/(1-0.505*(w-wR)))**0.5
+
+    # Coefficients in [53]_, pag 796
+    # Density are in mol/dm³
+    rho0 *= 1000
+    rhocR *= 1000
+
+    rhorR = rho0/rhocR
+    TrR = To/TcR
+    lR = 15.2583985944*rhorR + 5.29917319127*rhorR**3 + \
+        (-3.05330414748+0.450477583739/TrR)*rhorR**4 + \
+        (1.03144050679-0.185480417707/TrR)*rhorR**5
+
+    return unidades.ThermalConductivity(Fl*Xl*lR*1e-3 + ko)
+
 
 # Liquid surface tension
 def Tension_Parametric(T, args, Tc):
@@ -5124,6 +5197,7 @@ class Componente(object):
 
 # def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
 # def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
+# def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
 # def ThG_NonHydrocarbon(T, P, id):
 
         ThCondG = self.Config.getint("Transport", "ThCondG")
