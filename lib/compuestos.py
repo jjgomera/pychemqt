@@ -2600,22 +2600,21 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
 
     # Table II
-    dat = {
-        1: (6.32402, 50.4119, -51.6801, 1189.02),
-        2: (0.12102e-2, -0.11536e-2, -0.62571e-2, 0.37283e-1),
-        3: (5.28346, 254.209, -168.481, 3898.27),
-        4: (6.62263, 38.09570, -8.46414, 31.4178),
-        5: (19.74540, 7.63034, -14.35440, 31.5267),
-        6: (-1.89992, -12.53670, 4.98529, -18.1507),
-        7: (24.27450, 3.44945, -11.29130, 69.3466),
-        8: (0.79716, 1.11764, 0.12348e-1, -4.11661),
-        9: (-0.23816, 0.67695e-1, -0.81630, 4.02528),
-        10: (0.68629e-1, 0.34793, 0.59256, -0.72663)}
+    dat = [
+        (6.32402, 50.4119, -51.6801, 1189.02),
+        (0.12102e-2, -0.11536e-2, -0.62571e-2, 0.37283e-1),
+        (5.28346, 254.209, -168.481, 3898.27),
+        (6.62263, 38.09570, -8.46414, 31.4178),
+        (19.74540, 7.63034, -14.35440, 31.5267),
+        (-1.89992, -12.53670, 4.98529, -18.1507),
+        (24.27450, 3.44945, -11.29130, 69.3466),
+        (0.79716, 1.11764, 0.12348e-1, -4.11661),
+        (-0.23816, 0.67695e-1, -0.81630, 4.02528),
+         (0.68629e-1, 0.34793, 0.59256, -0.72663)]
 
     # Eq 11
     A = []
-    for i in range(1, 11):
-        ao, a1, a2, a3 = dat[i]
+    for ao, a1, a2, a3 in dat:
         A.append(ao + a1*w + a2*mur**4 + a3*k)
     A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 = A
 
@@ -3862,7 +3861,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     Returns
     -------
     ko : float
-        Estimated dense gas thermal conductivity [W/m/k]
+        High-pressure gas thermal conductivity [W/m/k]
 
     Examples
     --------
@@ -3871,7 +3870,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     >>> Vc = 97/44.013/1000
     >>> V = 144/44.013/1000
     >>> "%0.4f" % ThG_StielThodos(T, 309.6, 72.55e5, Vc, 44.013, V, 0.0234)
-    '0.0415'
+    '0.0414'
 
     References
     ----------
@@ -3899,6 +3898,94 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
 
     k = ko + lr*1e-8/Zc**5/gamma
     return unidades.ThermalConductivity(k, "calscmK")
+
+
+def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
+    """Calculate the thermal conductivity of a compressed gas using the Chung
+    correlation
+
+    .. math::
+        \lambda = \frac{31.2 \eta^o\Psi}{M}(1/G_2+B_6y)+qB_7y^2T_r^{1/2}G_2
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    Vc : float
+        Critical volume of the gas [m^3/mol]
+    M : float
+        Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
+    D : float
+        Dipole moment, [Debye]
+    k : float, optional
+        Corection factor for polar substances, [-]
+    rho : float
+        Density, [Debye]
+    ko : float
+        Low-pressure gas thermal conductivity[Pa*S]
+
+    Returns
+    -------
+    k : float
+        High-pressure gas thermal conductivity [W/m/k]
+
+    Examples
+    --------
+    Example 10-4 in [1]_, propylene at 473K and 150bar
+    >>> Vc = 184.6/42.081*1e3
+    >>> rho = 1/172.1*42.081/1e3
+    >>> th = ThG_P_Chung(473, 364.9, Vc, 42.081, 0.142, 0.4, 0, rho, 0.0389)
+    >>> "%0.3f" % th
+    '0.062'
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # units in molar base
+    Vc = Vc*M/1000
+    rho = rho/M*1000
+
+    # Thermal conductivity in procedure in cal/s·cm·K
+    ko = unidades.ThermalConductivity(ko).calscmK
+
+    Tr = T/Tc
+    mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
+
+    # Table IV
+    dat = [
+        (2.41657, 0.74824, -0.91858, 121.72100),
+        (-0.50924, -1.50936, -49.99120, 69.98340),
+        (6.61069, 5.62073, 64.75990, 27.03890),
+        (14.54250, -8.91387, -5.63794, 74.34350),
+        (0.79274, 0.82019, -0.69369, 6.31734),
+        (-5.86340, 12.80050, 9.58926, -65.52920),
+        (81.17100, 114.15800, -60.84100, 466.77500)]
+
+    # Eq 13
+    B = []
+    for bo, b1, b2, b3 in dat:
+        B.append(bo + b1*w + b2*mur**4 + b3*k)
+    B1, B2, B3, B4, B5, B6, B7 = B
+
+    Y = rho*Vc/6
+    G1 = (1-0.5*Y)/(1-Y)**3
+    H2 = (B1*((1-exp(-B4*Y))/Y)+B2*G1*exp(B5*Y)+B3*G1)/(B1*B4+B2+B3)
+
+    # Eq 12
+    kk = ko*(1/H2 + B6*Y)
+    kp = (3.039e-4*(Tc/M)**0.5/Vc**(2/3))*B7*Y**2*H2*Tr**0.5
+
+    return unidades.ThermalConductivity(kk+kp, "calscmK")
+
 
 
 # Liquid surface tension
@@ -5036,6 +5123,7 @@ class Componente(object):
 
 
 # def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
+# def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
 # def ThG_NonHydrocarbon(T, P, id):
 
         ThCondG = self.Config.getint("Transport", "ThCondG")
@@ -5056,7 +5144,6 @@ class Componente(object):
             return self.ThCond_Gas(T, 101325.)
 #            return self.ThCond_Gas_Crooks(T, P)
 
-# def ThG_NonHydrocarbon(T, P, id):
 
     def ThCond_Gas_Crooks(self, T, P):
         """Método alternativo para el cálculo de la conductividad térmica de gases a alta presión >4 atm, API Procedure 12B4.1 pag.1170"""
