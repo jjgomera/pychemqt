@@ -554,6 +554,7 @@
             "corr_mug": "0",
             "mug": "0",
             "corr_thcondl": "0",
+            "corr_thcondg": "0",
             "thcondl": "0",
             "rhol": "0"
         }

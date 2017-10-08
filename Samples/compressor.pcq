@@ -902,6 +902,7 @@
             "mug": "0",
             "thcondl": "0",
             "corr_thcondl": "0",
+            "corr_thcondg": "0",
             "tension": "0"
         },
         "Thermo": {

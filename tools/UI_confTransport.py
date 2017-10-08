@@ -43,9 +43,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Viscosity:")), 2, 0)
         self.MuL = QtWidgets.QComboBox()
-        self.MuL.addItem("DIPPR")
-        self.MuL.addItem("Parametric")
-        self.MuL.addItem("Letsou & Steil")
+        for method in Componente.METHODS_MuL:
+            self.MuL.addItem(method)
         layout.addWidget(self.MuL, 2, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Viscosity:")), 3, 0)
@@ -68,8 +67,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Thermal Conductivity:")), 6, 0)
         self.ThCondG = QtWidgets.QComboBox()
-        self.ThCondG.addItem("DIPPR")
-        self.ThCondG.addItem("Misic & Thodos")
+        for method in Componente.METHODS_ThG:
+            self.ThCondG.addItem(method)
         layout.addWidget(self.ThCondG, 6, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Vapor Pressure:")), 7, 0)
@@ -94,9 +93,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.Corr_RhoL.addItem(method)
         layout.addWidget(self.Corr_RhoL, 1, 3)
         self.Corr_MuL = QtWidgets.QComboBox()
-        self.Corr_MuL.addItem("Graboski & Braun")
-        self.Corr_MuL.addItem("Kouzel")
-        self.Corr_MuL.addItem("Lucas")
+        for method in Componente.METHODS_MuLP:
+            self.Corr_MuL.addItem(method)
         layout.addWidget(self.Corr_MuL, 2, 3)
         self.Corr_MuG = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuGP:
@@ -106,6 +104,11 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         self.Corr_ThCondL.addItem("Lenoir")
         self.Corr_ThCondL.addItem("Kanitkar & Thodos")
         layout.addWidget(self.Corr_ThCondL, 5, 3)
+
+        self.Corr_ThCondG = QtWidgets.QComboBox()
+        for method in Componente.METHODS_ThGP:
+            self.Corr_ThCondG.addItem(method)
+        layout.addWidget(self.Corr_ThCondG, 6, 3)
         layout.addItem(QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 10)
@@ -124,6 +127,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.ThCondL.setCurrentIndex(config.getint("Transport", "ThCondL"))
             self.Corr_ThCondL.setCurrentIndex(
                 config.getint("Transport", "Corr_ThCondL"))
+            self.Corr_ThCondG.setCurrentIndex(
+                config.getint("Transport", "Corr_ThCondG"))
             self.ThCondG.setCurrentIndex(config.getint("Transport", "ThCondG"))
             self.Pv.setCurrentIndex(config.getint("Transport", "Pv"))
             self.w.setCurrentIndex(config.getint("Transport", "f_acent"))
@@ -144,6 +149,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "Corr_ThCondL",
                    str(self.Corr_ThCondL.currentIndex()))
         config.set("Transport", "ThCondG", str(self.ThCondG.currentIndex()))
+        config.set("Transport", "Corr_ThCondG",
+                   str(self.Corr_ThCondG.currentIndex()))
         config.set("Transport", "Pv", str(self.Pv.currentIndex()))
         config.set("Transport", "f_acent", str(self.w.currentIndex()))
         return config

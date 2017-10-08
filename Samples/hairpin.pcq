@@ -331,6 +331,7 @@
             "thcondl": "0",
             "tension": "0",
             "corr_thcondl": "0",
+            "corr_thcondg": "0",
             "mul": "0",
             "pv": "0",
             "f_acent": "0",

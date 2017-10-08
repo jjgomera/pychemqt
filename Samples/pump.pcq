@@ -452,6 +452,7 @@
         },
         "Transport": {
             "corr_thcondl": "0",
+            "corr_thcondg": "0",
             "tension": "0",
             "thcondg": "0",
             "corr_mul": "0",

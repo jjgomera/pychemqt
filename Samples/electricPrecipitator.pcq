@@ -192,6 +192,7 @@
             "thcondl": "0",
             "corr_rhol": "0",
             "corr_thcondl": "0",
+            "corr_thcondg": "0",
             "mul": "0",
             "mug": "0",
             "tension": "0"

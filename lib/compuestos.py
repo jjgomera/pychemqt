@@ -4639,8 +4639,9 @@ class Componente(object):
     METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
                     "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
-    METHODS_ThCondL = ["DIPPR", "Misic-Thodos", "Chung", "Eucken",
-                       "Modified Eucken", "Riazi-Faghri"]
+    METHODS_ThG = ["DIPPR", "Misic-Thodos", "Chung", "Eucken",
+                   "Modified Eucken", "Riazi-Faghri"]
+    METHODS_ThGP = ["Stiel-Thodos", "Chung", "TRAPP"]
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -5167,11 +5168,11 @@ class Componente(object):
         k=k1*C2/C1
         return unidades.ThermalConductivity(k)
 
-
-    def ThCond_Gas(self, T, P):
-        """Procedimiento que define el método más apropiado para el cálculo de la conductividad térmica del líquido, pag 1136"""
+    def ThCond_Gas(self, T, P, rho):
+        """Vapor thermal conductivity calculation procedure using the method
+        defined in preferences, decision diagram in API Databook, pag. 1136"""
         method = self.Config.getint("Transport", "ThCondG")
-        # Pcorr = self.Config.getint("Transport", "MuGP")
+        Pcorr = self.Config.getint("Transport", "ThCondGP")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprKG and \
@@ -5194,47 +5195,22 @@ class Componente(object):
         elif method == 5 and self.SG and self.Tb:
             ko = ThG_RiaziFaghri(T, self.Tb, self.SG)
 
-
-# def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
-# def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
-# def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
-# def ThG_NonHydrocarbon(T, P, id):
-
-        ThCondG = self.Config.getint("Transport", "ThCondG")
-        p=unidades.Pressure(P)
-        if p.psi < 50:
-            if ThCondG == 0 and self._dipprKG and \
-                    self._dipprKG[6] <= T <= self._dipprKG[7]:
-                return self.DIPPR("kG", T, self._dipprKG)
-            elif ThCondG == 1 and self.SG and self.Tb:
-                return ThG_RiaziFaghri(T, self.Tb, self.SG)
-            else:
-                cp = self.Cp_Gas(T)
-                return ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
+        # Add correction factor for high pressure
+        if P < 1e6:
+            mu = muo
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
-            return ThG_NonHydrocarbon(T, P, self.id)
-        else:
-            # TODO: fix crooks methods with lost lee_kesler library
-            return self.ThCond_Gas(T, 101325.)
-#            return self.ThCond_Gas_Crooks(T, P)
-
-
-    def ThCond_Gas_Crooks(self, T, P):
-        """Método alternativo para el cálculo de la conductividad térmica de gases a alta presión >4 atm, API Procedure 12B4.1 pag.1170"""
-        Tr=self.tr(T)
-        Pr=self.pr(P)
-        k=self.ThCond_Gas(T, 1)
-
-        A=-0.0617*exp(1.91/Tr**9)
-        B=2.29*exp(1.34/Tr**16)
-        k_prima=1+(4.18/Tr**4+0.537*Pr/Tr**2)*(1-exp(A*Pr**B))+0.510*Pr/Tr**3*exp(A*Pr**B)
-        # TODO: particularizar a compuestos cíclicos y no cíclicos
-        k_prima2=1+1./Tr**5*Pr**4/(2.44*Tr**20+Pr**4)+0.012*Pr/Tr
-        Cv=self.Cv_Lee_Kesler(T, P, 1)
-        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(Tr, Pr)
-        Cv_prima=4.965-R_Btu*(1+Cv0)
-        Cv_prima2=Cv.BtulbF-Cv_prima
-        return unidades.ThermalConductivity(k*(Cv_prima/Cv.BtulbF*k_prima+Cv_prima2/Cv.BtulbF*k_prima2))
+            mu = ThG_NonHydrocarbon(T, P, self.id)
+        elif Pcorr == 0:
+            mu = ThG_StielThodos(
+                T, self.Tc, self.Pc, self.Vc, self.M, 1/rho, ko)
+        elif Pcorr == 1:
+            k = self._K_Chung()
+            mu = ThG_P_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
+                             self.dipole, k, rho, ko)
+        elif Pcorr == 2:
+            mu = ThG_TRAPP(
+                T, self.Tc, self.Vc, self.Zc, self.M, self.f_acent, rho, ko)
+        return mu
 
 
     def Mu_Gas(self, T, P):
