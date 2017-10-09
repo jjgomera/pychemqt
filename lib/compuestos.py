@@ -3343,6 +3343,47 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
     return unidades.ThermalConductivity(k)
 
 
+def ThL_SatoRiedel(T, Tc, M, Tb):
+    """Calculate the thermal conductivity of a liquid using the Sato-Riedel
+    correlation, as explain in [1]_
+
+    .. math::
+        k = \frac{1.1053152}{\sqrt{MW}}\frac{3+20(1-T_r)^{2/3}}
+        {3+20(1-T_{br})^{2/3}}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    M : float
+        Molecular weight, [g/mol]
+    Tb : float
+        Boiling temperature, [K]
+
+    Returns
+    -------
+    k : float
+        Liquid thermal conductivity, [W/m·k]
+
+    Examples
+    --------
+    Example 10-10 from [1]_ (4th Edition); CCl4 at 293K
+    >>> "%0.3f" % ThL_SatoRiedel(293, 556.4, 153.823, 349.9)
+    '0.101'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Tbr = Tb/Tc
+    k = 1.1053152/M**0.5*(3+20*(1-Tr)**(2/3))/(3+20*(1-Tbr)**(2/3))
+    return unidades.ThermalConductivity(k)
+
+
 def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     """Calculates the thermal conductivity of liquid using the Pachaiyappan
     correlation as explain in [5]_, procedure 12A1.2, pag 1141
