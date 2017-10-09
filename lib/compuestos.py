@@ -23,10 +23,10 @@ import os
 import re
 import tempfile
 
-from scipy import exp, cosh, sinh, log, log10, roots, absolute
+from scipy import exp, cosh, sinh, log, log10, roots, absolute, array
 from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, interp2d
 
 from lib.physics import R_atml, R_cal, factor_acentrico_octano
 from lib.physics import Collision_Neufeld
@@ -3558,8 +3558,70 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     return unidades.ThermalConductivity(ko*C2/C1)
 
 
-# def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
-# def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
+def ThL_Missenard(T, P, Tc, Pc, ko):
+    """Calculates the thermal conductivity of liquid using the Missenard
+    correlation, as explain in [1]_
+
+    .. math::
+        \frac{\lambda}{\lambda_o} = 1+QP_r^{0.7}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    Tc : float
+        Critical temperature, [K]
+    Pc : float
+        Critical pressure, [Pa]
+    ko : float
+        Thermal conductivity at low pressure, [W/m·k]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/K]
+
+    Raises
+    ------
+    Range of validity:
+        0.5 ≤ Tr ≤ 0.8
+        1 ≤ Pr ≤ 200
+    The procedure raisea a NotImplementedError if that conditions not meet
+
+    Examples
+    --------
+    Example 10-13 from [1]_; toluene at 6330bar and 304K
+
+    >>> "%0.3f" % ThL_Missenard(304, 6330e5, 591.75, 41.08e5, 0.129)
+    '0.220'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    Tr = T/Tc
+    Pr = P/Pc
+
+    # Check range of validity
+    if Tr < 0.5 or Tr > 0.8 or Pr < 1 or Pr > 200:
+        raise NotImplementedError("Input out of bound")
+
+    # Interpolate over table to get the Q parameter
+    Tri = [0.8, 0.7, 0.6, 0.5]
+    Pri = [1, 5, 10, 50, 100, 200]
+    Qi = array([[0.036, 0.038, 0.038, 0.038, 0.038, 0.038],
+                [0.018, 0.025, 0.027, 0.031, 0.032, 0.032],
+                [0.015, 0.020, 0.022, 0.024, 0.025, 0.025],
+                [0.012, 0.0165, 0.017, 0.019, 0.020, 0.020]])
+    f_Q = interp2d(Pri, Tri, Qi)
+    Q = f_Q(Pr, Tr)
+
+    k = ko*(1 + Q*Pr**0.7)
+    return unidades.ThermalConductivity(k)
+
 
 # Gas Thermal conductivity
 def ThG_MisicThodos(T, Tc, Pc, M, Cp):
