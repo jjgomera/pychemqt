@@ -4836,6 +4836,9 @@ class Componente(object):
     METHODS_ThG = ["DIPPR", "Misic-Thodos", "Chung", "Eucken",
                    "Modified Eucken", "Riazi-Faghri"]
     METHODS_ThGP = ["Stiel-Thodos", "Chung", "TRAPP"]
+    METHODS_ThL = ["DIPPR", "Pachaiyappan", "Sato-Riedel", "Kanitkar-Thodos",
+                   "Riazi-Faghri", "Gharagheizi", "Lakshmi-Prasad", "Nicola"]
+    METHODS_ThLP = ["Kanitkar-Thodos", "Lenoir", "Missenard"]
 
     METHODS_Pv = ["DIPPR", "Wagner", "Antoine", "Ambrose-Walton", "Lee-Kesler",
                   "Riedel", "Sanjari", "Maxwell-Bonnel"]
@@ -5338,42 +5341,44 @@ class Componente(object):
                 self._dipprKL[6] <= T <= self._dipprKL[7]:
             ko = DIPPR("kL", T, self._dipprKL)
         elif method == 1 and T < self.Tc:
-            ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, branched=True)
-        elif method == 2:
-            ko = ThL_KanitkarThodos(T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
-        elif method == 3 and self.Tb and self.SG:
+            ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
+        elif method == 2 and self.Tb:
+            ko = ThL_SatoRiedel(T, self.Tc, self.M, self.Tb)
+        elif method == 3:
+            ko = ThL_KanitkarThodos(
+                T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
+        elif method == 4 and self.Tb and self.SG:
             ko = ThL_RiaziFaghri(T, self.Tb, self.SG)
-        elif method == 4 and self.Tb:
+        elif method == 5 and self.Tb:
             ko = ThL_Gharagheizi(T, self.Pc, self.Tb, self.M, self.f_acent)
-        elif method == 5:
-            ko = ThL_LakshmiPrasad(T, self.M)
         elif method == 6:
+            ko = ThL_LakshmiPrasad(T, self.M)
+        elif method == 7:
             ko = ThL_Nicola(
                 T, self.M, self.Tc, self.Pc, self.f_acent, self.dipole)
         else:
             if self._dipprKL and self._dipprKL[6] <= T <= self._dipprKL[7]:
                 ko = DIPPR("kL", T, self._dipprKL)
             elif T < self.Tc:
-                ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, branched=True)
+                ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
+            elif self.Tb:
+                ko = ThL_SatoRiedel(T, self.Tc, self.M, self.Tb)
             else:
                 ko = ThL_KanitkarThodos(
                     T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
 
-        p = unidades.Pressure(P, "atm")
-        if p.psi < 500:
-            if ThCondL == 0 and self._dipprKL and \
-                    self._dipprKL[6] <= T <= self._dipprKL[7]:
-                return DIPPR("kL", T, self._dipprKL)
-            elif ThCondL == 1 and T < self.Tc:
-                return self.ThCond_Liquido_Pachaiyappan(T)
-            else:
-                # print "Warning: Thermal conductivity of %s out of range" % self.name
-                return DIPPR("kL", self.i_dipprKL[7], self._dipprKL)
-        else:
-            if corr == 0:
-                return self.ThCond_Liquido_Lenoir(T, P)
-            else:
-                return self.ThCond_Liquido_Kanitkar_Thodos(T, P)
+        # Add correction factor for high pressure
+        if P < 1e6:
+            k = ko
+        elif Pcorr == 0:
+            k = ThL_KanitkarThodos(
+                T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
+        elif Pcorr == 0:
+            k = ThL_Lenoir(T, P, self.Tc, self.Pc, ko)
+        elif Pcorr == 0:
+            k = ThL_Missenard(T, P, self.Tc, self.Pc, ko)
+
+        return k
 
     def ThCond_Gas(self, T, P, rho):
         """Vapor thermal conductivity calculation procedure using the method

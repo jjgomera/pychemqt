@@ -61,8 +61,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Thermal Conductivity:")), 5, 0)
         self.ThCondL = QtWidgets.QComboBox()
-        self.ThCondL.addItem("DIPPR")
-        self.ThCondL.addItem("Pachaiyappan")
+        for method in Componente.METHODS_ThL:
+            self.ThCondL.addItem(method)
         layout.addWidget(self.ThCondL, 5, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Thermal Conductivity:")), 6, 0)
@@ -101,10 +101,9 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.Corr_MuG.addItem(method)
         layout.addWidget(self.Corr_MuG, 3, 3)
         self.Corr_ThCondL = QtWidgets.QComboBox()
-        self.Corr_ThCondL.addItem("Lenoir")
-        self.Corr_ThCondL.addItem("Kanitkar & Thodos")
+        for method in Componente.METHODS_ThLP:
+            self.Corr_ThCondL.addItem(method)
         layout.addWidget(self.Corr_ThCondL, 5, 3)
-
         self.Corr_ThCondG = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThGP:
             self.Corr_ThCondG.addItem(method)
