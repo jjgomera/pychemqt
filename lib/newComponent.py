@@ -26,8 +26,8 @@ from scipy.constants import R
 from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
-from lib.compuestos import atomic_decomposition, facent_LeeKesler
-from lib.physics import R_atml
+from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett
+from lib.physics import R_atml, R_cal
 from lib.elemental import databank
 
 
@@ -366,8 +366,8 @@ class GroupContribution(newComponente):
 
         self.rackett = self._Rackett()
         if "Vliq" not in self.__dict__:
-            self.Vliq = self._Volumen_Liquido_Constante()
-        self.Parametro_solubilidad = self._Parametro_solubilidad()
+            self.Vliq = self._VLiq()
+        self.Parametro_solubilidad = self._SolubilityParameter()
 
         if self.kwargs["SG"]:
             self.SG = self.kwargs["SG"]
@@ -485,15 +485,32 @@ class GroupContribution(newComponente):
         """ref 64"""
         return 0.29056-0.08775*self.f_acent
 
-    def _Volumen_Liquido_Constante(self):
-        V = R_atml*1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-298.15/self.Tc)**(2.0/7)) #cm3/mol
+    def _VLiq(self):
+        Tr = 298.15/self.Tc
+        V = R_atml*1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-Tr)**(2/7))
         return V/(5.7+1611/self.Tc)  # cm3/mol
 
-    def _Parametro_solubilidad(self):
-        # FIXME: Don't work
-        # V = R_atml/1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-298.15/self.Tc)**(2.0/7)) #m3/mol
-        # return unidades.SolubilityParameter(((self.Hv-298*R)/V)**0.5)
-        return 1
+    def _SolubilityParameter(self):
+        """Calculation procedure for solubility parameter when the compound has
+        no defined value for that using the definition equation:
+
+        .. math::
+            \delta=\sqrt{\Delta H_{v}-\frac{RT}{M}}\rho
+
+        Referenced in API databook Table 8B1.7 comment pag 812
+        """
+        if self.Tb < 298.15:
+            T = self.Tb
+        else:
+            T = 298.15
+
+        rhoL = RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
+        DHv = self.Hv.calg
+        delta = DHv-R_cal*T/self.M*rhoL
+        if delta < 0:
+            delta = 0
+
+        return unidades.SolubilityParameter(delta**0.5, "calcc")
 
     @staticmethod
     def _atomicComposition(group):

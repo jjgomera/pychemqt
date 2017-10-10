@@ -1101,21 +1101,21 @@ class Mezcla(config.Entity):
             (11.4789*Pr**0.2606-12.6843*Pr**0.1773+1.6953*Pr**-0.1052)
         return unidades.Viscosity(muo*k)
 
-    def Mu_Gas(self, T, P):
+    def Mu_Gas(self, T, P, rho):
         """General method for calculate viscosity of gas"""
         if P < 2:
             Mi = [cmp.M for cmp in self.componente]
-            mui = [cmp.Mu_Gas(T, 1) for cmp in self.componente]
+            mui = [cmp.Mu_Gas(T, 1, rho) for cmp in self.componente]
             return MuG_Wilke(self.fraccion, Mi, mui)
         else:
             return self.Mu_Gas_Stiel(T, P)
         # TODO: Add Carr method when it's availabe in database component type
 
-    def ThCond_Liquido(self, T, P):
+    def ThCond_Liquido(self, T, P, rho):
         """Calculate liquid thermal conductivity, API procedure 12A2.1, pag 1145"""
         ki = []
         for cmp in self.componente:
-            ki.append(cmp.ThCond_Liquido(T, P))
+            ki.append(cmp.ThCond_Liquido(T, P, rho))
         kij = []
         for i in range(len(self.componente)):
             kiji = []
@@ -1141,18 +1141,18 @@ class Mezcla(config.Entity):
                 k += fi[i]*fi[j]*kij[i][j]
         return unidades.ThermalConductivity(k)
 
-    def ThCond_Gas(self, T, P):
+    def ThCond_Gas(self, T, P, rho):
         """Calculate gas thermal conductivity, API procedure 12A2.1, pag 1145"""
         ki = []
         S = []
         mu = []
         for cmp in self.componente:
-            ki.append(cmp.ThCond_Gas(T, P))
+            ki.append(cmp.ThCond_Gas(T, P, rho))
             if cmp.indice == 1:
                 S.append(78.8888889)
             else:
                 S.append(1.5*cmp.Tb)
-            mu.append(cmp.Mu_Gas(T, P))
+            mu.append(cmp.Mu_Gas(T, P, rho))
 
         Sij = []
         for i in range(len(self.componente)):

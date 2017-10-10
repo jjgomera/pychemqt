@@ -446,7 +446,7 @@ class Corriente(config.Entity):
                 self.Liquido.cp = self.Liquido.Cp_Liquido(T)
                 self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
                 self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
-                self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm)
+                self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm, self.Liquido.rho)
                 self.Liquido.sigma = self.Liquido.Tension(T)
                 self.Liquido.Q = unidades.VolFlow(self.Liquido.caudalmasico/self.Liquido.rho)
                 self.Liquido.Prandt = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
@@ -457,8 +457,8 @@ class Corriente(config.Entity):
                 self.Gas.cp = self.Gas.Cp_Gas(T, self.P.atm)
                 self.Gas.rho = unidades.Density(self.P.atm/self.Gas.Z/R_atml/self.T*self.M, "gl")
                 self.Gas.rhoSd = unidades.Density(1./self.Gas.Z/R_atml/298.15*self.M, "gl")
-                self.Gas.mu = self.Gas.Mu_Gas(T, self.P.atm)
-                self.Gas.k = self.Gas.ThCond_Gas(T, self.P.atm)
+                self.Gas.mu = self.Gas.Mu_Gas(T, self.P.atm, self.Gas.rho)
+                self.Gas.k = self.Gas.ThCond_Gas(T, self.P.atm, self.Gas.rho)
                 self.Gas.Q = unidades.VolFlow(self.Gas.caudalmasico/self.Gas.rho)
                 self.Gas.Prandt = self.Gas.cp*self.Gas.mu/self.Gas.k
 

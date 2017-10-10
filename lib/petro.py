@@ -4589,7 +4589,6 @@ class Petroleo(newComponente):
         k=k1*C2/C1
         return unidades.Conductividad_termica(k)
 
-
     def ThCond_Gas(self, T):
         """Método de cálculo de la conductividad térmica de vapores de fracciones petrolíferas a baja presión, API procedure 12B3.1, pag 1168"""
         t=unidades.Temperature(T)

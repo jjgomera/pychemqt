@@ -31,6 +31,20 @@ from lib.eos import EoS
 from lib.physics import R_atml
 
 
+# # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
+# self.SRKGraboski = [0, 0]
+
+# # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles.pdf
+# self.Melhem = [0, 0]          #Alcoholes en archivo de abajo
+# self.Almeida = [0, 0]
+
+# # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
+# self.Mathias = 0
+# self.MathiasCopeman = [0, 0, 0]
+# self.Adachi = [0, 0]
+# self.Andoulakis = [0, 0, 0]
+# self.Yu_Lu = [0, 0, 0]
+
 alfa = (QApplication.translate("pychemqt", "Original"),
         "Boston-Mathias",
         "Twu",

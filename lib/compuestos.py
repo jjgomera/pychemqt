@@ -28,9 +28,9 @@ from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d, interp2d
 
-from lib.physics import R_atml, R_cal, factor_acentrico_octano
+from lib.physics import R_atml, R_cal
 from lib.physics import Collision_Neufeld
-from lib import unidades, config, eos, sql
+from lib import unidades, config, sql
 from lib.mEoS import CH4, nC8
 
 
@@ -388,15 +388,7 @@ __doi__ = {
          "title": "Thermodynamics of Aqueous Solutions Containing Volatile "
                   "Weak Electrolytes",
          "ref": "AIChE Journal 21(2) (1975) 248-259",
-         "doi": "10.1002/aic.690210205"},
-
-
-
-    61:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+         "doi": "10.1002/aic.690210205"}
 }
 
 
@@ -4969,12 +4961,8 @@ class Componente(object):
             self.rackett = componente[123]
         else:
             self.rackett = Rackett(self.f_acent)
-        if componente[122] != 0.0:
-            self.Vliq = componente[122]
-#        elif self.Pc!=0 and self.Tc>298.15 :
-#            self.Vliq=self.Volumen_Liquido_Constante()
-        else:
-            self.Vliq = 0
+
+        self.Vliq = componente[122]
 
         if componente[126] != 0.0:
             self.SolubilityParameter = unidades.SolubilityParameter(
@@ -4983,12 +4971,7 @@ class Componente(object):
             self.SolubilityParameter = self._SolubilityParameter()
         self.Kw = componente[127]
         self.MSRK = componente[128:130]
-        if componente[130] != 0.0:
-            self.stiel = componente[130]
-        else:
-            self.stiel = 0
-        # FIXME: No esta bien
-#            self.stiel=self.Stiehl_Polar_factor()
+        self.stiel = componente[130]
         self.CASNumber = componente[133]
         self.alternateFormula = componente[134]
         self.UNIFAC = eval(componente[135])
@@ -5094,12 +5077,6 @@ class Componente(object):
         else:
             self.branched = True
 
-    def tr(self, T):
-        return T/self.Tc
-
-    def pr(self, P):
-        return P/self.Pc
-
     def __bool__(self):
         return self._bool
 
@@ -5114,11 +5091,6 @@ class Componente(object):
         elif method == 2:
             Pvr = self.Pv(0.7*self.Tc)/self.Pc
             return facent_AmbroseWalton(Pvr)
-
-    def Volumen_Liquido_Constante(self):
-        V=1/self.RhoL_Rackett(self.Tc)
-        V=R_atml*1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-self.tr(298.15))**(2.0/7)) #cm3/mol
-        return V/(5.7+1611/self.Tc) #cm3/mol
 
     def _SolubilityParameter(self):
         """Calculation procedure for solubility parameter when the compound has
@@ -5141,12 +5113,6 @@ class Componente(object):
         else:
             delta = 0
         return unidades.SolubilityParameter(delta, "calcc")
-
-    def Stiehl_Polar_factor(self):
-        f0=5.92714-6.09648/0.6-1.28862*log(0.6)+0.169347*0.6**6
-        f1=15.2518-15.6875/0.6-13.4721*log(0.6)+0.43577*0.6**6
-        pv=exp(f0*0.6+self.f_acent*f1*0.6)
-        return log10(self.pr(P)/pv)
 
     def _MuCritical(self):
         """Critical viscosity calculation procedure
@@ -5374,7 +5340,7 @@ class Componente(object):
             elif self.Kw and self.Tb:
                 return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
 
-    def ThCond_Liquido(self, T, P):
+    def ThCond_Liquido(self, T, P, rho):
         """Liquid thermal conductivity procedure using the method defined in
         preferences, use the decision diagram in [5]_ Figure 12-0.2 pag 1135"""
         method = self.Config.getint("Transport", "ThCondL")
@@ -5468,7 +5434,7 @@ class Componente(object):
                 T, self.Tc, self.Vc, self.Zc, self.M, self.f_acent, rho, ko)
         return mu
 
-    def Mu_Gas(self, T, P):
+    def Mu_Gas(self, T, P, rho):
         """Vapor viscosity calculation procedure using the method defined in
         preferences, decision diagram in API Databook, pag. 1026"""
         method = self.Config.getint("Transport", "MuG")
@@ -5506,9 +5472,6 @@ class Componente(object):
                     T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
             else:
                 muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
-
-        # TODO: Add gas density correlation
-        rho = 0
 
         # Add correction factor for high pressure
         if P < 0.6*self.Pc:
@@ -5588,7 +5551,7 @@ class Componente(object):
         # Process Design and Development 8(22) (1969) 240-253
         if self.PolarParameter:
             omega += 0.2*self.PolarParaemter**2/T_
-        return Omega
+        return omega
 
     def Mu_Liquido(self, T, P):
         """Liquid viscosity calculation procedure using the method defined in
@@ -5702,157 +5665,8 @@ class Componente(object):
 
     def Fase(self, T, P):
         """Método que calcula el estado en el que se encuentra la sustancia"""
-        Pv=self.Pv(T).atm
-        if Pv>P:
+        Pv = self.Pv(T).atm
+        if Pv > P:
             return 1
         else:
             return 0
-
-
-
-
-
-
-    def Cp_Hadden(self, T):
-        """Método alternativo para el cálculo de la capacidad calorífica en líquidos por debajo de su punto de ebullición
-        Procedure API 7D1.9 Pag.696"""
-        #TODO: No fácil de implementar al depender del elemento
-
-    def Cp_Lee_Kesler(self, T, P, fase=None):
-        """Método alternativo para el cálculo de la capacidad calorífica
-        Procedure API 7D3.6 Pag.711"""
-        Tr=self.tr(T)
-        if fase==None:
-            fase=self.Fase(T, P)
-        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(T, P, fase)
-
-        B=0.1181193-0.265728/Tr-0.154790/Tr**2-0.030323/Tr**3
-        C=0.0236744-0.0186984/Tr
-        D=0.155488e-4+0.623689e-4/Tr
-        dpdt_0=1/vr0*(1+(0.1181193+0.154790/Tr**2+2*0.030323/Tr**3)/vr0+0.0236744/vr0**2+0.155488e-4/vr0**5-2*0.042724/Tr**3/vr0**2*((0.65392+0.060167/vr0**2)*exp(-0.060167/vr0**2)))
-        dpdv_0=-Tr/vr0**2*(1+2*B/vr0+3*C/vr0**2+6*D/vr0**5+0.042724/Tr**3/vr0**2*(3*0.65392+(5-2*(0.65392+0.060167/vr0**2))*0.060167/vr0**2)*exp(-0.060167/vr0**2))
-        Cp0=1+Tr*dpdt_0**2/dpdv_0+Cv0
-
-        B=0.2026579-0.331511/Tr-0.027655/Tr**2-0.203488/Tr**3
-        C=0.0313385-0.0503618/Tr+0.016901/Tr**3
-        D=0.48736e-4+0.0740336e-4/Tr
-        dpdt_h=1/vrh*(1+(0.2026579+0.027655/Tr**2+2*0.203488/Tr**3)/vrh+(0.0313385-2*0.016901/Tr**3)/vrh**2+0.48736e-4/vrh**5-2*0.041577/Tr**3/vrh**2*((1.226+0.03754/vrh**2)*exp(-0.03754/vrh**2)))
-        dpdv_h=-Tr/vrh**2*(1+2*B/vrh+3*C/vrh**2+6*D/vrh**5+0.041577/Tr**3/vrh**2*(3*1.226+(5-2*(1.226+0.03754/vrh**2))*0.03754/vrh**2)*exp(-0.03754/vrh**2))
-        Cph=1+Tr*dpdt_h**2/dpdv_h+Cvh
-
-        Cp_adimensional=Cp0+self.f_acent/factor_acentrico_octano*(Cph-Cp0)
-        return unidades.SpecificHeat(self._Cpo(T).JgK-R/self.M*Cp_adimensional, "JgK")
-
-    def Cv_Lee_Kesler(self, T, P, fase=None):
-        """Método de cálculo de la capacidad calorífica a volumen constante
-        Procedure API 7E1.6 Pag.726"""
-        #FIXME: No sale, un factor de 100 tengo que añadir no sé de donde
-        Pr=P/self.Pc
-        Tr=T/self.Tc
-        if fase==None:
-            fase=self.Fase(T, P)
-        Cpo=self._Cpo(T)
-        Cv0, Cvh, vr0, vrh=eos.Lee_Kesler_lib_Cp(Tr, Pr, fase)
-        Cv_adimensional=Cv0+self.f_acent/factor_acentrico_octano*(Cvh-Cv0)
-        return unidades.SpecificHeat(100*(Cpo.JgK-R/self.M*(1+Cv_adimensional)), "JgK")
-
-
-    def Cp_Cv_Lee_Kesler(self, T, P):
-        """Método de cálculo de la capacidad calorífica a volumen constante
-        Procedure API 7E1.6 Pag.726"""
-        Cv=self.Cv_Lee_Kesler(T, P.atm)
-        Cp=self.Cp_Lee_Kesler(T, P.atm)
-#        print Cp.BtulbF, Cv
-        return Cp/Cv
-
-
-    def Fugacidad_Lee_Kesler(self, T, P):
-        """Método de cálculo de la fugacidad
-        Procedure API 7G1.8 Pag.752"""
-        Tr=T/self.Tc
-        Pr=P/self.Pc
-        f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P))
-        return unidades.Pressure(P*exp(f), "atm")
-
-    def Entropia_Lee_Kesler(self, T, P):
-        """Método de cálculo de la entropia
-        Procedure API 7F1.7 Pag.739"""
-        Tr=T/self.Tc
-        Pr=P/self.Pc
-        S0=self._so(T)
-        H_adimensional=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
-        f=eos.Lee_Kesler_Fugacidad_lib(Tr, Pr, self.f_acent, self.Fase(T, P.atm))
-        S=H_adimensional+f+log(P/101325)
-
-        return unidades.SpecificHeat(S0.JgK-R*S/self.M, "JgK")
-
-    def Hv_Lee_Kesler(self, T):
-        """Método alternativo para el cálculo del calor de vaporización haciendo uso de las propiedades críticas
-        Procedure API 7C1.16 Pag.680
-        Valor en J/mol"""
-        Pv=self.Pv_DIPPR(T)
-        Tr=T/self.Tc
-        Pr=Pv/self.Pc
-        H_adimensional_vapor=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 1)
-        H_adimensional_liquido=eos.Lee_Kesler_Entalpia_lib(Tr, Pr, self.f_acent, 0)
-        return unidades.Enthalpy(R*self.Tc/self.M*(H_adimensional_vapor-H_adimensional_liquido), "Jg")
-
-
-    def RhoG_Lee_Kesler(self, T, P):
-        a, b=eos.SRK_lib(self, T)
-        Z_srk=eos.Z_Cubic_EoS(T, P, b, a, b, 0, b)
-        Vvo=Z_srk[0]*R_atml*T/P
-
-        vr0v, vrhv, vr0l, vrhl=eos.Lee_Kesler_lib(T/self.Tc, P/self.Pc.atm, fase=1, Vvo=Vvo)
-        z0v=P/self.Pc.atm*vr0v/T*self.Tc
-        zhv=P/self.Pc.atm*vrhv/T*self.Tc
-        z=z0v+self.f_acent/factor_acentrico_octano*(zhv-z0v)
-        return P/z/R_atml/T
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
-#    from pylab import arange, plot, show
-#    nonano=Componente(13)
-#    t=linspace(0.3,1, 10)
-#    C1=[]
-#    C2=[]
-#    C3=[]
-#    C5=[]
-#    C10=[]
-#    C30=[]
-#    for i in t:
-#        C1.append(nonano.C_API(i, 1))
-#        C2.append(nonano.C_API(i, 2))
-#        C3.append(nonano.C_API(i, 3))
-#        C5.append(nonano.C_API(i, 5))
-#        C10.append(nonano.C_API(i, 10))
-#        C30.append(nonano.C_API(i, 30))
-#        #        C3.append(nonano.RhoL_API(i, nonano.Pc*3))
-##        C5.append(nonano.RhoL_API(i, nonano.Pc*5))
-##        C10.append(nonano.RhoL_API(i, nonano.Pc*10))
-##        C30.append(nonano.RhoL_API(i, nonano.Pc*30))
-#
-#    plot(t, C1, t, C2)
-#    show()
-
-#    agua=Componente(62)
-#    from scipy import arange
-#    from pylab import plot, grid, show
-#    d=arange(270, 500, 10.)
-#    y=[]
-#    y2=[]
-#    y3=[]
-#    delta=[]
-#    for i in d:
-#        y.append(agua.Lee_Kesler_Entalpia(i, 1))
-#        y2.append(agua.TB_Entalpia(i, 1))
-#        y3.append(agua.iapws_Entalpia(i, 1))
-##        delta.append(y3[-1]-y2[-1])
-#    plot(d, y, d, y2, d, y3)
-#    grid(True)
-#    show()
-#
