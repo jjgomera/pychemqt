@@ -383,9 +383,16 @@ __doi__ = {
          "title": "Effect of Pressure on Thermal Conductivity of Liquids",
          "ref": "Petroelum Refiner 36(8) 1508",
          "doi": ""},
-
-
     60:
+        {"autor": "Edwards, T.J., Newman, J., Prausnitz, J.M.",
+         "title": "Thermodynamics of Aqueous Solutions Containing Volatile "
+                  "Weak Electrolytes",
+         "ref": "AIChE Journal 21(2) (1975) 248-259",
+         "doi": "10.1002/aic.690210205"},
+
+
+
+    61:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -4257,7 +4264,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
 
 # Liquid surface tension
 def Tension_Parametric(T, args, Tc):
-    """Calculates surface tension of fluid using a paremtric equation
+    """Calculates surface tension of fluid using a parametric equation
 
     .. math::
         $\sigma=A\left(1-T_{r}\right)^{B}$
@@ -4814,6 +4821,54 @@ def Rackett(w):
     return Zra
 
 
+def Henry(T, args):
+    """Calculates Henry constant for gases in liquid at low pressure, also
+    referenced in API procedure 9A7.1, pag 927
+
+    .. math::
+        lnH = A/T + BlnT + CT + D
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    args : list
+        Coefficients for equation
+
+    Returns
+    -------
+    H : float
+        Henry constant, [psi/xmole]
+
+    Notes
+    -----
+    The parameters for several compound are in database:
+        Hydrogen, Helium, Argon, Neon, Krypton, Xenon, Oxygen, Nitrogen,
+        Hydrogen sulfide, Carbon monoxide, Carbon dioxide, Sulfur dioxide,
+        Nitrous oxide, Chlorine,Bromine, Iodine, Methane, Ethane, Propane,
+        Ethylene, Ammonia.
+    The Henry constant is returned as unidades.Pressure instance
+
+    Examples
+    --------
+    Example from [5]_; Hydrogen sulfide in water at 77ºF
+    >>> T = unidades.Temperature(77, "F")
+    >>> "%0.0f" % Henry(T, [-65864.7, -215.127, 0.185874, 1384.15]).psi
+    '8257'
+
+    References
+    ----------
+    .. [60] Edwards, T.J., Newman, J., Prausnitz, J.M. Thermodynamics of
+        Aqueous Solutions Containing Volatile Weak Electrolytes. AIChE Journal
+        21(2) (1975) 248-259
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    T_R = unidades.K2R(T)
+    B1, B2, B3, B4 = args
+    H = exp(B1/T_R + B2*log(T_R) + B3*T_R + B4)
+    return unidades.Pressure(H, "psi")
+
+
 class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
@@ -4970,20 +5025,6 @@ class Componente(object):
             self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
             oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
 
-        # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
-        self.SRKGraboski = [0, 0]
-
-        # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles.pdf
-        self.Melhem = [0, 0]          #Alcoholes en archivo de abajo
-        self.Almeida = [0, 0]
-
-        # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
-        self.Mathias = 0
-        self.MathiasCopeman = [0, 0, 0]
-        self.Adachi = [0, 0]
-        self.Andoulakis = [0, 0, 0]
-        self.Yu_Lu = [0, 0, 0]
-
         # Desglosar formula en elementos y átomos de cada elemento
         decmp = atomic_decomposition(self.formula)
         atoms = sum([val for val in decmp.values()])
@@ -5032,6 +5073,16 @@ class Componente(object):
         else:
             self.isAcid = False
 
+        # TODO: Add other chemical types, this let use other advenced group
+        # contribution correlation
+        # self.isAldehyde = False
+        # self.isAmine = False
+        # self.isEster = False
+        # self.isEther= False
+        # self.isKetone = False
+        # self.isHalogen = False
+        # self.isCiclico = False
+
         # TODO: Add branched property in database for each compound
         # For the moment define the branched property manually
         lineal = [1, 2, 3, 4, 6, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -5042,13 +5093,6 @@ class Componente(object):
             self.branched = False
         else:
             self.branched = True
-
-        # TODO: Añadir los tipos de cada elemento
-        self.Van_Veltzen = [] #Quizá se pueda derivar de otro grupos, UNIFAC o similar
-        # TODO: Añadir caraceristicas químicas del componente
-        self.isCiclico = False
-        self.isLineal = True
-
 
     def tr(self, T):
         return T/self.Tc
@@ -5638,48 +5682,23 @@ class Componente(object):
                 return Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
 
     def Hv_DIPPR(self, T):
-        """Cálculo del calor de vaporización usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimosexta posición
-        Calor de vaporización obtenido en (J/kmol)"""
+        """Calculate the heat of vaporization using the DIPPR equations"""
         return DIPPR("Hv", T, self._dipprHv, self.M)
 
     def Cp_Solido_DIPPR(self, T):
-        """Cálculo de la capacidad calorifica del solido usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimoseptima posición
-        Capacidad calorifica obtenida en (J/kmol·K)"""
+        """Calculate the specific heat of solid using the DIPPR equations"""
         return DIPPR("cpS", T, self._dipprCpS, self.M)
 
     def Cp_Liquido_DIPPR(self, T):
-        """Cálculo de la capacidad calorifica del liquido usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimoctava posición
-        Capacidad calorifica obtenida en (J/kmol·K)"""
+        """Calculate the specific heat of liquid using the DIPPR equations"""
         return DIPPR("cpL", T, self._dipprCpL, self.M)
 
     def Cp_Gas_DIPPR(self, T):
-        """Cálculo de la capacidad calorifica del gas usando las ecuaciones DIPPR
-        Los parámetros se encuentran en la base de datos en decimonovena posición
-        Capacidad calorifica obtenida en (J/kmol·K)"""
+        """Calculate the specific heat of gas using the DIPPR equations"""
         if self._dipprCpG:
             return DIPPR("cpG", T, self._dipprCpG, self.M)
         else:
             return self._Cpo(T)
-
-    def constante_Henry(self, T, parameters=None):
-        """constante H obtenida en psia por unidad de fracción molar del gas
-        lnH = A/T + B∗lnT + C∗T + D
-        Solo disponible para algunos compuestos:
-        Hydrogen, Helium, Argon, Neon, Krypton, Xenon, Oxygen, Nitrogen,
-        Hydrogen sulfide, Carbon monoxide, Carbon dioxide, Sulfur dioxide,
-        Nitrous oxide, Chlorine,Bromine, Iodine, Methane, Ethane, Propane,
-        Ethylene, Ammonia.
-        API procedure 9A7.1, pag 927
-        Los parametros de la ecuación se encuentran en la base de datos
-        en forma de lista en la posición décima
-        """
-        if parameters == None:
-            parameters = self.henry
-        t = unidades.Temperature(T)
-        return exp(parameters[0]/t.R+parameters[1]*log(t.R)+parameters[2]*t.R+parameters[3])
 
     def Fase(self, T, P):
         """Método que calcula el estado en el que se encuentra la sustancia"""
