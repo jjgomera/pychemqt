@@ -322,6 +322,8 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.retornar = retornar
 
     def setValue(self, value):
+        if value is None:
+            value = 0
         self.value = self.unidad(value)
         if value or self.showNull:
             if self.magnitud:

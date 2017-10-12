@@ -26,7 +26,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from scipy import array, optimize, linspace
 
 from lib.plot import Plot
-from lib.compuestos import Componente, Pv_Antoine, Pv_Wagner
+from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
+                            Tension_Parametric, Henry, DIPPR)
 from lib import unidades, sql
 from lib.config import IMAGE_PATH
 from UI.inputTable import InputTableDialog, eqDIPPR
@@ -65,6 +66,22 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         """
         super(DIPPR_widget, self).__init__(title, parent)
         self.prop = prop
+
+        proptex = {
+            "rhoS": "rho_s",
+            "rhoL": "rho_l",
+            "Hv": "H_v",
+            "Pv": "P_v",
+            "cpS": "Cp_s",
+            "cpL": "Cp_l",
+            "cpG": "Cp_g",
+            "muL": "\mu_l",
+            "muG": "\mu_g",
+            "kL": "\lambda_l",
+            "kG": "\lambda_v",
+            "sigma": "\sigma"}
+        self.proptex = proptex[prop]
+
         self.unit = unit
         self.parent = parent
         self.t = []
@@ -200,117 +217,124 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             Coefficient of DIPPR equation
         """
         if eq == 1:
-            string = "$%s = " % self.prop
+            string = "$%s = " % self.proptex
             if args[0]:
-                string += "%0.3f" % args[0]
+                string += "%0.3g" % args[0]
             if args[1]:
-                string += "%+0.3fT" % args[1]
+                string += "%+0.3gT" % args[1]
             if args[2]:
-                string += "%+0.3fT^2" % args[2]
+                string += "%+0.3gT^2" % args[2]
             if args[3]:
-                string += "%+0.3fT^3" % args[3]
+                string += "%+0.3gT^3" % args[3]
             if args[4]:
-                string += "%+0.3fT^4" % args[4]
+                string += "%+0.3gT^4" % args[4]
             string += "$"
 
         elif eq == 2:
-            string = "$%s = e^{" % self.prop
+            string = "$%s = e^{" % self.proptex
             if args[0]:
-                string += "%0.3f" % args[0]
+                string += "%0.3g" % args[0]
             if args[1]:
-                string += "%+0.3f/T" % args[1]
+                string += "%+0.3fgT" % args[1]
             if args[2]:
-                string += "%+0.3f \ln(T)" % args[2]
+                string += "%+0.3g \ln(T)" % args[2]
             if args[3]:
-                string += "%+0.3fT^{%0.3f}" % (args[3], args[4])
+                string += "%+0.3gT^{%0.3g}" % (args[3], args[4])
             string += "}$"
 
         elif eq == 3:
-            string = "$%s = %0.3f T^{\\frac{%0.3f}{1%+0.3f T" % (
-                    self.prop, args[0], args[1], args[2])
+            string = "$%s = %0.3g T^{\\frac{%0.3g}{1%+0.3g T" % (
+                    self.proptex, args[0], args[1], args[2])
             if args[3]:
-                string += "%+0.3f^2" % args[3]
+                string += "%+0.3g^2" % args[3]
             string += "}}$"
 
         elif eq == 4:
-            string = "$%s = %0.3f%+0.3f*exp(" % (self.prop, args[0], args[1])
+            string = "$%s = %0.3g%+0.3g*exp(" % (
+                self.proptex, args[0], args[1])
             if args[2] < 0:
                 string += "-"
-            string += "%0.3f/T^{%0.3f})$" % (args[2], args[3])
+            string += "%0.3g/T^{%0.3g})$" % (args[2], args[3])
 
         elif eq == 5:
-            string = "$%s = " % self.prop
+            string = "$%s = " % self.proptex
             if args[0]:
-                string += "%0.3f" % args[0]
+                string += "%0.3g" % args[0]
             if args[1]:
-                string += "+\\frac{%0.3f}{T}" % args[1]
+                string += "+\\frac{%0.3g}{T}" % args[1]
             if args[2]:
-                string += "+\\frac{%0.3f}{T^3}" % args[2]
+                string += "+\\frac{%0.3g}{T^3}" % args[2]
             if args[3]:
-                string += "+\\frac{%0.3f}{T^8}" % args[3]
+                string += "+\\frac{%0.3g}{T^8}" % args[3]
             if args[4]:
-                string += "+\\frac{%0.3f}{T^9}" % args[4]
+                string += "+\\frac{%0.3g}{T^9}" % args[4]
             string += "$"
 
         elif eq == 6:
-            string = "$%s = \\frac{%0.3f}{%0.3f^{1+\\left(1-T/%0.3f" % (
-                    self.prop, args[0], args[1], args[2])
-            string += "\\right)^{%0.3f}}}$" % args[3]
+            string = "$%s = \\frac{%0.3g}{%0.3g^{1+\\left(1-T/%0.3g" % (
+                    self.proptex, args[0], args[1], args[2])
+            string += "\\right)^{%0.3g}}}$" % args[3]
 
         elif eq == 7:
-            string = "$%s = %0.3f (1-T_r)^{" % (self.prop, args[0])
+            string = "$%s = %0.3g (1-T_r)^{" % (self.proptex, args[0])
             if args[1]:
-                string += "%0.3f" % args[1]
+                string += "%0.3g" % args[1]
             if args[2]:
-                string += "%+0.3fT_r" % args[2]
+                string += "%+0.3gT_r" % args[2]
             if args[3]:
-                string += "%+0.3fT_r^2" % args[3]
+                string += "%+0.3gT_r^2" % args[3]
             if args[4]:
-                string += "%+0.3fT_r^3" % args[4]
+                string += "%+0.3gT_r^3" % args[4]
             string += "}$"
 
         elif eq == 8:
-            string = "$%s = " % self.prop
+            string = "$%s = " % self.proptex
             if args[0]:
-                string += "%0.3f" % args[0]
+                string += "%0.3g" % args[0]
             if args[1]:
-                string += "%+0.3f\\left(\\frac{%0.3f/T}{sinh(%0.3f/T)}" % (
+                string += "%+0.3g\\left(\\frac{%0.3g/T}{sinh(%0.3g/T)}" % (
                     args[1], args[2], args[2])
                 string += "\\right)^2"
             if args[3]:
-                string += "%+0.3f\\left(\\frac{%0.3f/T}{cosh(%0.3f/T)}" % (
+                string += "%+0.3g\\left(\\frac{%0.3g/T}{cosh(%0.3g/T)}" % (
                         args[3], args[4], args[4])
                 string += "\\right)^2"
             string += "$"
 
         elif eq == 9:
-            string = "$%s = " % self.prop
+            string = "$%s = " % self.proptex
             if args[0]:
-                string += "\\frac{%0.3f}{T_r}" % args[0]
+                string += "\\frac{%0.3g}{T_r}" % args[0]
             if args[1]:
-                string += "%+0.3f" % args[1]
+                string += "%+0.3g" % args[1]
             if args[0] and args[2]:
-                string += "%+0.3fT_r" % -2*args[0]*args[2]
+                string += "%+0.3gT_r" % -2*args[0]*args[2]
             if args[0] and args[3]:
-                string += "%+0.3fT_r^2" % -args[0]*args[3]
+                string += "%+0.3gT_r^2" % -args[0]*args[3]
             if args[2]:
-                string += "%+0.3fT_r^3" % -args[2]**2/3
+                string += "%+0.3gT_r^3" % -args[2]**2/3
             if args[2] and args[3]:
-                string += "%+0.3fT_r^4" % -args[2]*args[3]/2
+                string += "%+0.3gT_r^4" % -args[2]*args[3]/2
             if args[3]:
-                string += "%+0.3fT_r^5" % -args[3]**2/5
+                string += "%+0.3gT_r^5" % -args[3]**2/5
             string += "$"
 
         return string
 
-    def plot(self):
-        """Plot the current DIPPR correlation equation"""
+    def plot(self, r=None):
+        """Plot the current DIPPR correlation equation
+        r correlation coefficient, optional parameter for reuse the code in the
+        fit data procedure
+        """
         array = self.value
-        t = linspace(array[-2], array[-1], 100)
-        var = self.parent.cmp.DIPPR(t, array[:-2])
+        t = list(linspace(array[-2], array[-1], 100))
+        kw = {}
+        kw["Tc"] = self.parent.Tc.value
+        kw["M"] = self.parent.M.value
+        var = [DIPPR(self.prop, ti, array[:-2], **kw) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
-        if self.t and self.data:
+        if self.data:
             dialog.addData(self.t, self.data, "ro")
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(self.title(), size="14")
@@ -320,15 +344,21 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
+        # Add correlation coefficient
+        if r:
+            dialog.plot.ax.annotate(
+                "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                size="10", va="center")
+
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-        ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
+        ylabel = "$"+self.proptex+",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
-        unitT = unidades.Temperature.text()
-        hHeader = ["T, %s" % unitT, "%s, %s" % (self.prop, self.unit.text())]
+        uniT = unidades.Temperature.text()
+        hHeader = ["T, %s" % uniT, "%s, %s" % (self.title(), self.unit.text())]
         dlg = InputTableDialog(
                 title=self.title(), DIPPR=True, horizontalHeader=hHeader,
                 hasTc=True, Tc=self.parent.Tc.value, t=self.t,
@@ -337,46 +367,26 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         if dlg.exec_():
             t = array(dlg.widget.column(0, unidades.Temperature))
             p = array(dlg.widget.column(1, self.unit))
-            ecuacion = dlg.widget.eqDIPPR.value()
+            eq = dlg.widget.eqDIPPR.value()
 
-            def errf(parametros, ecuacion, t, f):
-                var = array([ecuacion]+list(parametros))
-                return f-array([self.parent.cmp.DIPPR(ti, var) for ti in t])
+            def errf(parametros, eq, t, f):
+                var = array([eq]+list(parametros))
+                return f-array([DIPPR(self.prop, ti, var) for ti in t])
 
             # Do the least square fitting
             p0 = [1, 1, 1, 1, 1]
             coeff, cov, info, mesg, ier = optimize.leastsq(
-                    errf, p0, args=(t, p), full_output=True)
+                    errf, p0, args=(eq, t, p), full_output=True)
 
             ss_err = (info['fvec']**2).sum()
             ss_tot = ((p-p.mean())**2).sum()
             r = 1-(ss_err/ss_tot)
 
             if ier in range(1, 5):
-                self.fill([ecuacion]+list(coeff)+[min(t), max(t)])
-                self.t = t
-                self.data = p
-                var = [self.parent.cmp.DIPPR(
-                    ti, [ecuacion]+list(coeff)) for ti in t]
-                dialog = Plot()
-                dialog.addData(t, p, "ro")
-                dialog.addData(t, var)
-                dialog.plot.ax.grid(True)
-                dialog.plot.ax.set_title(self.title(), size="14")
-                valores = self.value
-
-                # Annotate the fitted equation and the correlation coefficient
-                formula = self.formula_DIPPR(valores[0], valores[1:-2])
-                dialog.plot.ax.annotate(
-                    formula, (0.05, 0.9), xycoords='axes fraction',
-                    size="10", va="center")
-                dialog.plot.ax.annotate(
-                    "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
-                    size="10", va="center")
-
-                dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-                ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
-                dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
+                self.fill([eq]+list(coeff)+[min(t), max(t)])
+                self.t = list(t)
+                self.data = list(p)
+                self.plot(r)
                 self.valueChanged.emit()
             else:
                 title = QtWidgets.QApplication.translate("pychemqt", "Warning")
@@ -415,7 +425,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.data = []
 
         dict_prop = {"henry": "K_H", "tension": "\sigma", "antoine": "P_v",
-                     "wagner": "P_v", "viscosity": "\\mu_g"}
+                     "wagner": "P_v", "viscosity": "\mu_g"}
         self.prop_latex = dict_prop[prop]
 
         dict_count = {"henry": 4, "tension": 2, "antoine": 3, "wagner": 4,
@@ -507,13 +517,18 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
     def fill(self, array):
         """Populate the widgets with the parametric coefficient in array"""
+        # Use local variable enabled to enable the btnPlot button if the
+        # parameters are available
+        enabled = False
+
         self.array = array
         for input, value in zip(self.coeff, array):
             if value:
+                enabled = True
                 input.setValue(value)
-        self.btnPlot.setEnabled(True)
+        self.btnPlot.setEnabled(enabled)
 
-        if self.prop == "antoine" and array[3]:
+        if self.prop == "antoine" and len(array) > 3:
             for entrada, value in zip(self.advancedCoeff, array[3:]):
                 entrada.setVisible(True)
                 entrada.setValue(value)
@@ -585,43 +600,53 @@ class Parametric_widget(QtWidgets.QGroupBox):
             if not args:
                 args = self.parent.cmp.viscosidad_parametrica
             string = "$\\log\\mu="
-            string += "%0.2f\\left(\\frac{1}{T}-\\frac{1}{%0.2f}" % args
+            string += "%0.2g\\left(\\frac{1}{T}-\\frac{1}{%0.2g}" % args
             string += "\\right)$"
 
         elif eq == "antoine":
             if not args:
                 args = self.parent.cmp.antoine
-            string = "$P_{v}=e^{%0.2f-\\frac{%0.2f}{T%+0.2f}" % args[:3]
-            if args[4]:
-                string += "+0.43429\\left(T%+0.2f\\right)^{%0.2f}" % args[3:5]
-            if args[5]:
-                string += "%+0.2f\\left(T%+0.2f\\right)^{8}" % (
+            string = "$P_{v}=e^{%0.2g-\\frac{%0.2g}{T%+0.2g}" % args[:3]
+            if len(args) > 3:
+                string += "+0.43429\\left(T%+0.2g\\right)^{%0.2g}" % args[3:5]
+                string += "%+0.2g\\left(T%+0.2g\\right)^{8}" % (
                     args[5], args[3])
-            if args[6]:
-                string += "%+0.2f\\left(T%+0.2f\\right)^{12}" % (
+                string += "%+0.2g\\left(T%+0.2g\\right)^{12}" % (
                     args[6], args[3])
             string += "}$"
 
         elif eq == "tension":
             if not args:
                 args = self.parent.cmp.tension_superficial_parametrica
-            string = "$\\sigma=%0.2f\\left(1-T_{r}\\right)^{%0.2f}$" % args
+            string = "$\\sigma=%0.2g\\left(1-T_{r}\\right)^{%0.2g}$" % args
 
         elif eq == "henry":
             if not args:
                 args = self.parent.cmp.henry
             string = "$\\lnH=\\frac"
-            string += "{%0.2f}{T}%+0.2f\\cdot\\lnT%+0.2f\\cdot T%+0.2f$" % args
+            string += "{%0.2g}{T}%+0.2g\\cdot\\lnT%+0.2g\\cdot T%+0.2g$" % args
 
         elif eq == "wagner":
             string = "$Tr\\lnPr="
-            string += "%0.2f\\tau%+0.2f\\tau^{1.5}%+0.2f\\tau^3%+0.2f" % args
+            string += "%0.2g\\tau%+0.2g\\tau^{1.5}%+0.2g\\tau^3%+0.2g" % args
             string += "\\tau^6$"
 
         return string
 
-    def plot(self):
-        """Plot the current DIPPR correlation equation"""
+    def function(self, prop):
+        function = {
+            "viscosity": MuL_Parametric,
+            "antoine": Pv_Antoine,
+            "wagner": Pv_Wagner,
+            "tension": Tension_Parametric,
+            "henry": Henry}
+        return function[prop]
+
+    def plot(self, r=None):
+        """Plot the current parametric correlation equation
+        r correlation coefficient, optional parameter for reuse the code in the
+        fit data procedure
+        """
         if self.parent.cmp and self.parent.cmp.Tf:
             tmin = self.parent.cmp.Tf
         elif self.parent.cmp and self.parent.cmp.presion_vapor != [0]*8:
@@ -637,23 +662,20 @@ class Parametric_widget(QtWidgets.QGroupBox):
             tmax = 500
         t = linspace(tmin, tmax, 100)
 
-        funcion = {
-            "viscosity": self.parent.cmp.Mu_Liquido_Parametrica,
-            "antoine": Pv_Antoine,
-            "wagner": Pv_Wagner,
-            "tension": self.parent.cmp.Tension_Parametrica,
-            "henry": self.parent.cmp.constante_Henry}
-
         coeff = self.value
-        args = [coeff]
         kw = {}
         if self.prop == "antoine":
             coeff += self.advancedValue
-            kw["Tc"] = self.parent.cmp.Tc
+            kw["Tc"] = self.parent.Tc.value
         elif self.prop == "wagner":
-            args.append(self.parent.cmp.Tc)
-            args.append(self.parent.cmp.Pc)
-        var = [funcion[self.prop](ti, *args, **kw) for ti in t]
+            kw["Tc"] = self.parent.Tc.value
+            kw["Pc"] = self.parent.Pc.value
+        elif self.prop == "tension":
+            kw["Tc"] = self.parent.Tc.value
+
+        args = [coeff]
+        eq = self.function(self.prop)
+        var = [eq(ti, *args, **kw) for ti in t]
         dialog = Plot()
         dialog.addData(t, var)
         if self.t and self.data:
@@ -666,36 +688,57 @@ class Parametric_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
+        # Add correlation coefficient
+        if r:
+            dialog.plot.ax.annotate(
+                "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                size="10", va="center")
+
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
         ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
     def fit(self):
-        """Fit experimental data to a DIPPR equation"""
-        hHeader = ["T", "%s" % self.prop]
+        """Fit experimental data to a parametric equation"""
+        hHeader = ["T", "%s" % self.title()]
         dlg = InputTableDialog(
             title=self.title(), horizontalHeader=hHeader,
-            hasTc=self.prop == "tension", Tc=self.parent.Tc.value,
+            hasTc=self.prop == "sigma", Tc=self.parent.Tc.value,
             unit=[unidades.Temperature, self.unit])
         if dlg.exec_():
             t = array(dlg.widget.column(0))
             p = array(dlg.widget.column(1))
 
-            funcion = {
-                "viscosity": self.parent.cmp.Mu_Liquido_Parametrica,
-                "antoine": Pv_Antoine,
-                "wagner": Pv_Wagner,
-                "tension": self.parent.cmp.Tension_Parametrica,
-                "henry": self.parent.cmp.constante_Henry}
-            eq = funcion[self.prop]
+            eq = self.function(self.prop)
             args = []
             kw = {}
             if self.prop == "antoine":
                 kw["Tc"] = self.parent.Tc.value
             elif self.prop == "wagner":
-                args.append(self.parent.Tc.value)
-                args.append(self.parent.Pc.value)
+                # Check necessary critical properties
+                if self.parent.Tc.value and self.parent.Pc.value:
+                    kw["Tc"] = self.parent.Tc.value
+                    kw["Pc"] = self.parent.Pc.value
+                else:
+                    title = QtWidgets.QApplication.translate(
+                            "pychemqt", "Warning")
+                    msg = QtWidgets.QApplication.translate(
+                            "pychemqt",
+                            "Tc and Pc necessary for wagner correlation")
+                    QtWidgets.QMessageBox.warning(self, title, msg)
+                    return
+            elif self.prop == "tension":
+                if self.parent.Tc.value and self.parent.Pc.value:
+                    kw["Tc"] = self.parent.Tc.value
+                else:
+                    title = QtWidgets.QApplication.translate(
+                            "pychemqt", "Warning")
+                    msg = QtWidgets.QApplication.translate(
+                            "pychemqt",
+                            "Tc necessary for tension correlation")
+                    QtWidgets.QMessageBox.warning(self, title, msg)
+                    return
 
             def errf(coeff, t, f):
                 return f-array([eq(ti, coeff, *args, **kw) for ti in t])
@@ -713,26 +756,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 self.fill(list(coeff))
                 self.t = list(t)
                 self.data = list(p)
-                dialog = Plot()
-                dialog.addData(t, p, "ro")
-                var = [eq(ti, coeff, *args, **kw) for ti in t]
-                dialog.addData(t, var)
-                dialog.plot.ax.grid(True)
-                dialog.plot.ax.set_title(self.title(), size="14")
-
-                # Annotate the fitted equation and the correlation coefficient
-                formula = self.formula_Parametric(self.prop, tuple(coeff))
-                dialog.plot.ax.annotate(
-                    formula, (0.05, 0.9), xycoords='axes fraction',
-                    size="10", va="center")
-                dialog.plot.ax.annotate(
-                    "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
-                    size="10", va="center")
-
-                dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-                ylabel = "$"+self.prop_latex+",\;"+self.unit.text()+"$"
-                dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
-                dialog.exec_()
+                self.plot(r)
                 self.valueChanged.emit()
             else:
                 title = QtWidgets.QApplication.translate("pychemqt", "Warning")
@@ -985,17 +1009,17 @@ class View_Component(QtWidgets.QDialog):
 
         self.cpGasDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Cp ideal gas DIPPR"), unidades.MolarSpecificHeat,
-            index, "Cp_g", parent=self)
+            index, "cpG", parent=self)
         self.cpGasDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpGasDIPPR, 1, 2)
         self.cpLiquidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Cp liquid DIPPR"), unidades.MolarSpecificHeat, index,
-            "Cp_l", parent=self)
+            "cpL", parent=self)
         self.cpLiquidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpLiquidDIPPR, 2, 1)
         self.cpSolidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Cp solid DIPPR"), unidades.MolarSpecificHeat, index,
-            "Cp_s", parent=self)
+            "cpS", parent=self)
         self.cpSolidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpSolidDIPPR, 2, 2)
         lytCp.addItem(QtWidgets.QSpacerItem(
@@ -1010,12 +1034,12 @@ class View_Component(QtWidgets.QDialog):
 
         self.RhoSolid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Solid Density DIPPR"), unidades.MolarDensity, index,
-            "\\rho_s", parent=self)
+            "rhoS", parent=self)
         self.RhoSolid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoSolid, 1, 1)
         self.RhoLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Density DIPPR"), unidades.MolarDensity, index,
-            "\\rho_l", parent=self)
+            "rhoL", parent=self)
         self.RhoLiquid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoLiquid, 1, 2)
         lytRho.addItem(QtWidgets.QSpacerItem(
@@ -1029,12 +1053,12 @@ class View_Component(QtWidgets.QDialog):
         lytMu = QtWidgets.QGridLayout(tab4)
         self.muLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Viscosity DIPPR"), unidades.Viscosity, index,
-            "\\mu_l", parent=self)
+            "muL", parent=self)
         self.muLiquid.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muLiquid, 1, 1)
         self.muGas = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Viscosity DIPPR"), unidades.Viscosity, index,
-            "\\mu_g", parent=self)
+            "muG", parent=self)
         self.muGas.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muGas, 1, 2)
         self.muParametric = Parametric_widget(
@@ -1054,12 +1078,12 @@ class View_Component(QtWidgets.QDialog):
 
         self.Hv = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Heat of vaporization DIPPR"), unidades.MolarEnthalpy,
-            index, "H_v", parent=self)
+            index, "Hv", parent=self)
         self.Hv.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.Hv, 1, 1)
         self.PvDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Vapor Pressure DIPPR"), unidades.Pressure, index,
-            "P_v", parent=self)
+            "Pv", parent=self)
         self.PvDIPPR.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvDIPPR, 1, 2)
         self.PvAntoine = Parametric_widget(QtWidgets.QApplication.translate(
@@ -1084,17 +1108,17 @@ class View_Component(QtWidgets.QDialog):
 
         self.ThermalLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Thermal Conductivity DIPPR"),
-            unidades.ThermalConductivity, index, "\\lambda_l", parent=self)
+            unidades.ThermalConductivity, index, "kL", parent=self)
         self.ThermalLiquid.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalLiquid, 1, 1)
         self.ThermalGas = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Gas Thermal Conductivity DIPPR"),
-            unidades.ThermalConductivity, index, "\lambda_v", parent=self)
+            unidades.ThermalConductivity, index, "kG", parent=self)
         self.ThermalGas.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalGas, 1, 2)
         self.SigmaDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Surface Tension DIPPR"), unidades.Tension, index,
-            "\sigma", parent=self)
+            "sigma", parent=self)
         self.SigmaDIPPR.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaDIPPR, 2, 1)
         self.SigmaParametric = Parametric_widget(
@@ -1115,7 +1139,7 @@ class View_Component(QtWidgets.QDialog):
 
         self.Henry = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Henry Costant"),
-            unidades.Dimensionless, index, "henry", parent=self)
+            unidades.Pressure, index, "henry", parent=self)
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
 

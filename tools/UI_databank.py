@@ -158,7 +158,7 @@ class UI_databank_widget(QtWidgets.QWidget):
     @property
     def currentIndice(self):
         value = self.BaseDatos.item(self.BaseDatos.currentRow(), 0).text()
-        return float(value)
+        return int(value)
 
     def currentRow(self):
         return self.BaseDatos.currentRow()

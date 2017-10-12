@@ -439,11 +439,11 @@ def DIPPR(prop, T, args, Tc=None, M=None):
     ----------
     prop : string
         Property to calculate, any of:
-        rhoS, rhoL, rhoG, Hv, cpS, cpL, cpG, muL, muG, kL, kG, sigma
+        rhoS, rhoL, Hv, Pv, cpS, cpL, cpG, muL, muG, kL, kG, sigma
     T : float
         Temperature, [K]
     args : list
-        Coefficients for DIPPR equation, [eq, A, B, C, D, E, Tmin, Tmax]
+        Coefficients for DIPPR equation, [eq, A, B, C, D, E]
     Tc : float, optional
         Critical temperature, [K]
     M : float, optional
@@ -456,7 +456,6 @@ def DIPPR(prop, T, args, Tc=None, M=None):
 
         -rhoS: Solid density, [kmol/m³]
         -rhoL: Liquid density, [kmol/m³]
-        -rhoG: Vapor density, [kmol/m³]
         -Pv: Vapor pressure, [Pa]
         -Hv: Heat of vaporization, [J/kmol]
         -cpS: Solid heat capacity, [J/kmol·K]
@@ -509,7 +508,7 @@ def DIPPR(prop, T, args, Tc=None, M=None):
     elif prop == "sigma":
         unit = unidades.Tension
 
-    eq, A, B, C, D, E, Tmin, Tmax = args
+    eq, A, B, C, D, E = args
     if eq == 1:
         value = A + B*T + C*T**2 + D*T**3 + E*T**4
     elif eq == 2:
@@ -5108,7 +5107,7 @@ class Componente(object):
                 T = 298.15
 
             rhoL = self.RhoL(T, 101325)
-            DHv = DIPPR("Hv", T, self._dipprHv, self.M).calg
+            DHv = DIPPR("Hv", T, self._dipprHv[:-2], self.M).calg
             delta = (DHv-R_cal*T/self.M*rhoL)**0.5
         else:
             delta = 0
@@ -5210,7 +5209,7 @@ class Componente(object):
     # Physical properties
     def RhoS(self, T):
         """Calculate the density of solid phase using the DIPPR equations"""
-        return DIPPR("rhoS", T, self._dipprRhoS, M=self.M)
+        return DIPPR("rhoS", T, self._dipprRhoS[:-2], M=self.M)
 
     def RhoL(self, T, P):
         """Calculate the density of liquid phase using any of available
@@ -5220,7 +5219,7 @@ class Componente(object):
         if P < 1013250:
             if rhoL == 0 and self._dipprRhoL and \
                     self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-                return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
+                return DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
             elif rhoL == 1 and self.rackett != 0 and T < self.Tc:
                 return RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
             elif rhoL == 2 and self.Vliq != 0:
@@ -5247,7 +5246,7 @@ class Componente(object):
             else:
                 if self._dipprRhoL and \
                         self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-                    return DIPPR("rhoL", T, self._dipprRhoL, M=self.M)
+                    return DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
                 elif self.rackett != 0 and T < self.Tc:
                     return RhoL_Rackett(
                         T, self.Tc, self.Pc, self.rackett, self.M)
@@ -5311,7 +5310,7 @@ class Componente(object):
         method = self.Config.getint("Transport", "Pv")
         if method == 0 and self._dipprPv and \
                 self._dipprPv[6] <= T <= self._dipprPv[7]:
-            return DIPPR("Pv", T, self._dipprPv)
+            return DIPPR("Pv", T, self._dipprPv[:-2])
         elif method == 1 and self.wagner:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
         elif method == 2 and self.antoine:
@@ -5328,7 +5327,7 @@ class Componente(object):
             return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
             if self._dipprPv and self._dipprPv[6] <= T <= self._dipprPv[7]:
-                return DIPPR("Pv", T, self._dipprPv)
+                return DIPPR("Pv", T, self._dipprPv[:-2])
             elif self.wagner:
                 return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
             elif self.antoine:
@@ -5349,7 +5348,7 @@ class Componente(object):
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprKL and \
                 self._dipprKL[6] <= T <= self._dipprKL[7]:
-            ko = DIPPR("kL", T, self._dipprKL)
+            ko = DIPPR("kL", T, self._dipprKL[:-2])
         elif method == 1 and T < self.Tc:
             ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
         elif method == 2 and self.Tb:
@@ -5368,7 +5367,7 @@ class Componente(object):
                 T, self.M, self.Tc, self.Pc, self.f_acent, self.dipole)
         else:
             if self._dipprKL and self._dipprKL[6] <= T <= self._dipprKL[7]:
-                ko = DIPPR("kL", T, self._dipprKL)
+                ko = DIPPR("kL", T, self._dipprKL[:-2])
             elif T < self.Tc:
                 ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
             elif self.Tb:
@@ -5399,7 +5398,7 @@ class Componente(object):
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprKG and \
                 self._dipprKG[6] <= T <= self._dipprKG[7]:
-            ko = self.DIPPR("kG", T, self._dipprKG)
+            ko = DIPPR("kG", T, self._dipprKG[:-2])
         elif method == 1:
             cp = self.Cp_Gas_DIPPR(T)
             ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
@@ -5416,6 +5415,12 @@ class Componente(object):
             ko = ThG_EuckenMod(self.M, cv, muo)
         elif method == 5 and self.SG and self.Tb:
             ko = ThG_RiaziFaghri(T, self.Tb, self.SG)
+        else:
+            if self._dipprKG and self._dipprKG[6] <= T <= self._dipprKG[7]:
+                ko = DIPPR("kG", T, self._dipprKG[:-2])
+            else:
+                cp = self.Cp_Gas_DIPPR(T)
+                ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
 
         # Add correction factor for high pressure
         if P < 1e6:
@@ -5443,7 +5448,7 @@ class Componente(object):
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprMuG and \
                 self._dipprMuG[6] <= T <= self._dipprMuG[7]:
-            muo = DIPPR("muG", T, self._dipprMuG)
+            muo = DIPPR("muG", T, self._dipprMuG[:-2])
         elif method == 1 and self.Dm and self.ek:
             omega = self._Collision(T)
             muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
@@ -5462,7 +5467,7 @@ class Componente(object):
             muo = MuG_YoonThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
-                muo = DIPPR("muG", T, self._dipprMuG)
+                muo = DIPPR("muG", T, self._dipprMuG[:-2])
             elif self.Dm and self.ek:
                 omega = self._Collision(T)
                 muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
@@ -5562,7 +5567,7 @@ class Componente(object):
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprMuL and \
                 self._dipprMuL[6] <= T <= self._dipprMuL[7]:
-            muo = DIPPR("muL", T, self._dipprMuL)
+            muo = DIPPR("muL", T, self._dipprMuL[:-2])
         elif method == 1 and self._parametricMu:
             muo = MuL_Parametric(T, self._parametricMu)
         elif method == 2:
@@ -5574,7 +5579,7 @@ class Componente(object):
         else:
             if self._dipprMuL and \
                     self._dipprMuL[6] <= T <= self._dipprMuL[7]:
-                return DIPPR("muL", T, self._dipprMuL)
+                return DIPPR("muL", T, self._dipprMuL[:-2])
             elif self._parametricMu:
                 return MuL_Parametric(T, self._parametricMu)
             elif self.Tc and self.Pc and self.f_acent and self.M:
@@ -5610,7 +5615,7 @@ class Componente(object):
         method = self.Config.getint("Transport", "Tension")
         if method == 0 and self._dipprSigma and \
                 self._dipprSigma[6] <= T <= self._dipprSigma[7]:
-            return DIPPR("sigma", T, self._dipprSigma)
+            return DIPPR("sigma", T, self._dipprSigma[:-2])
         elif method == 1 and self._parametricSigma:
             return Tension_Parametric(T, self._parametricSigma, self.Tc)
         elif method == 2 and self.Tb:
@@ -5630,7 +5635,7 @@ class Componente(object):
         else:
             if self._dipprSigma and \
                     self._dipprSigma[6] <= T <= self._dipprSigma[7]:
-                return DIPPR("sigma", T, self._dipprSigma)
+                return DIPPR("sigma", T, self._dipprSigma[:-2])
             elif self._parametricSigma:
                 return Tension_Parametric(T, self._parametricSigma, self.Tc)
             elif self.stiel:
@@ -5646,20 +5651,20 @@ class Componente(object):
 
     def Hv_DIPPR(self, T):
         """Calculate the heat of vaporization using the DIPPR equations"""
-        return DIPPR("Hv", T, self._dipprHv, self.M)
+        return DIPPR("Hv", T, self._dipprHv[:-2], self.M)
 
     def Cp_Solido_DIPPR(self, T):
         """Calculate the specific heat of solid using the DIPPR equations"""
-        return DIPPR("cpS", T, self._dipprCpS, self.M)
+        return DIPPR("cpS", T, self._dipprCpS[:-2], self.M)
 
     def Cp_Liquido_DIPPR(self, T):
         """Calculate the specific heat of liquid using the DIPPR equations"""
-        return DIPPR("cpL", T, self._dipprCpL, self.M)
+        return DIPPR("cpL", T, self._dipprCpL[:-2], self.M)
 
     def Cp_Gas_DIPPR(self, T):
         """Calculate the specific heat of gas using the DIPPR equations"""
         if self._dipprCpG:
-            return DIPPR("cpG", T, self._dipprCpG, self.M)
+            return DIPPR("cpG", T, self._dipprCpG[:-2], self.M)
         else:
             return self._Cpo(T)
 
