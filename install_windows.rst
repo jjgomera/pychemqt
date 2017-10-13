@@ -51,6 +51,7 @@ The spreedsheet support is easy to get, running the command:
     * py -m pip install ezodf lxml
     * py -m pip install openpyxl
     * py -m pip install xlwt
+    * py -m pip install openbabel
 
 
 Get pychemqt code

@@ -28,7 +28,7 @@ from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d, interp2d
 
-from lib.physics import R_atml, R_cal
+from lib.physics import R_atml
 from lib.physics import Collision_Neufeld
 from lib import unidades, config, sql
 from lib.mEoS import CH4, nC8
@@ -4900,23 +4900,23 @@ class Componente(object):
         self._bool = True
         self.id = id
         self.Config = config.getMainWindowConfig()
-        componente = sql.getElement(id)
-        self.formula = componente[1]
-        self.name = componente[2]
-        self.M = componente[3]
-        self.SG = componente[124]
-        self.Tc = unidades.Temperature(componente[4])
-        self.Pc = unidades.Pressure(componente[5], "atm")
-        self.Tb = unidades.Temperature(componente[131])
-        self.Tf = unidades.Temperature(componente[132])
-        if componente[125] != 0:
-            self.f_acent = componente[125]
+        cmp = sql.getElement(id)
+        self.formula = cmp[1]
+        self.name = cmp[2]
+        self.M = cmp[3]
+        self.SG = cmp[124]
+        self.Tc = unidades.Temperature(cmp[4])
+        self.Pc = unidades.Pressure(cmp[5], "atm")
+        self.Tb = unidades.Temperature(cmp[131])
+        self.Tf = unidades.Temperature(cmp[132])
+        if cmp[125] != 0:
+            self.f_acent = cmp[125]
         elif self.Pc and self.Tc and self.Tb:
             self.f_acent = self._f_acent()
         else:
             self.f_acent = 0
-        if componente[6] != 0:
-            self.Vc = unidades.SpecificVolume(componente[6])
+        if cmp[6] != 0:
+            self.Vc = unidades.SpecificVolume(cmp[6])
         elif self.f_acent != 0 and self.Tc != 0 and self.Pc != 0:
             self.Vc = Vc_Riedel(self.Tc, self.Pc, self.f_acent, self.M)
         else:
@@ -4925,87 +4925,84 @@ class Componente(object):
             self.Zc = self.Pc*self.Vc/R/self.Tc
         else:
             self.Zc = 0
-        if componente[7] != 0:
-            self.API = componente[7]
-        elif componente[124] != 0:
-            self.API = 141.5/componente[124]-131.5
+        if cmp[7] != 0:
+            self.API = cmp[7]
+        elif cmp[124] != 0:
+            self.API = 141.5/cmp[124]-131.5
         else:
             self.API = 0
-        self.cp = componente[8:14]
+        self.cp = cmp[8:14]
 
         # Parametric parameters
-        self.antoine = componente[14:17]
-        self.antoine += componente[152:156]
-        self.wagner = componente[156:160]
-        self._parametricMu = componente[21:23]
-        self._parametricSigma = componente[23:25]
-        self.henry = componente[17:21]
+        self.antoine = cmp[14:17]
+        self.antoine += cmp[152:156]
+        self.wagner = cmp[156:160]
+        self._parametricMu = cmp[21:23]
+        self._parametricSigma = cmp[23:25]
+        self.henry = cmp[17:21]
 
         # DIPPR parameters
-        self._dipprRhoS = componente[25:33]
-        self._dipprRhoL = componente[33:41]
-        self._dipprPv = componente[41:49]
-        self._dipprHv = componente[49:57]
-        self._dipprCpS = componente[57:65]
-        self._dipprCpL = componente[65:73]
-        self._dipprCpG = componente[73:81]
-        self._dipprMuL = componente[81:89]
-        self._dipprMuG = componente[89:97]
-        self._dipprKL = componente[97:105]
-        self._dipprKG = componente[105:113]
-        self._dipprSigma = componente[113:121]
+        self._dipprRhoS = cmp[25:33]
+        self._dipprRhoL = cmp[33:41]
+        self._dipprPv = cmp[41:49]
+        self._dipprHv = cmp[49:57]
+        self._dipprCpS = cmp[57:65]
+        self._dipprCpL = cmp[65:73]
+        self._dipprCpG = cmp[73:81]
+        self._dipprMuL = cmp[81:89]
+        self._dipprMuG = cmp[89:97]
+        self._dipprKL = cmp[97:105]
+        self._dipprKG = cmp[105:113]
+        self._dipprSigma = cmp[113:121]
 
-        self.dipole = unidades.DipoleMoment(componente[121])
-        if componente[123] != 0.0:
-            self.rackett = componente[123]
+        self.dipole = unidades.DipoleMoment(cmp[121])
+        if cmp[123] != 0.0:
+            self.rackett = cmp[123]
         else:
             self.rackett = Rackett(self.f_acent)
 
-        self.Vliq = componente[122]
+        self.Vliq = cmp[122]
 
-        if componente[126] != 0.0:
-            self.SolubilityParameter = unidades.SolubilityParameter(
-                componente[126])
-        else:
-            self.SolubilityParameter = self._SolubilityParameter()
-        self.Kw = componente[127]
-        self.MSRK = componente[128:130]
-        self.stiel = componente[130]
-        self.CASNumber = componente[133]
-        self.alternateFormula = componente[134]
-        self.UNIFAC = eval(componente[135])
+        self.SolubilityParameter = unidades.SolubilityParameter(cmp[126])
+        self.Kw = cmp[127]
+        self.MSRK = cmp[128:130]
+        self.stiel = cmp[130]
+        self.CASNumber = cmp[133]
+        self.alternateFormula = cmp[134]
+        self.UNIFAC = eval(cmp[135])
 
-        self.Dm = componente[136]
-        self.ek = componente[137]
+        self.Dm = cmp[136]
+        self.ek = cmp[137]
 
-        self.UNIQUAC_area = componente[138]
-        self.UNIQUAC_volumen = componente[139]
-        if componente[140] == 0.0:
+        self.UNIQUAC_area = cmp[138]
+        self.UNIQUAC_volumen = cmp[139]
+        if cmp[140] == 0.0:
             # See reference, really only use for MSRK:
             # Compilation of Parameters for a Polar Fluid Soave-Redlich-Kwong
             # Equation of State
             # Jamal A. Sandarusi, Arthur J. Kidney, and Victor F. Yesavage
             # Ind. Eng. Chem. Proc. Des. Dev.; 1988, 25, 957-963
-            self.f_acent_mod = componente[125]
+            self.f_acent_mod = cmp[125]
 
         else:
-            self.f_acent_mod = componente[140]
-        self.Hf = unidades.Enthalpy(componente[141]/self.M)
-        self.Gf = unidades.Enthalpy(componente[142]/self.M)
-        self.wilson = componente[143]
-        self.NetHeating = unidades.Enthalpy(componente[144]/self.M)
-        self.GrossHeating = unidades.Enthalpy(componente[145]/self.M)
-        self.Synonyms = componente[146]
-        self.V_char = componente[147]
-        self.calor_formacion_solido = componente[148]
-        self.energia_formacion_solido = componente[149]
-        self.PolarParameter = componente[150]
-        self.smile = componente[151]
-        if self.smile != "" and os.environ["oasa"] == "True":
-            import oasa
-            mol = oasa.smiles.text_to_mol(self.smile, calc_coords=40)
-            self.imageFile = tempfile.NamedTemporaryFile("w+r", suffix=".svg")
-            oasa.svg_out.mol_to_svg(mol, self.imageFile.name)
+            self.f_acent_mod = cmp[140]
+        self.Hf = unidades.Enthalpy(cmp[141]/self.M)
+        self.Gf = unidades.Enthalpy(cmp[142]/self.M)
+        self.wilson = cmp[143]
+        self.NetHeating = unidades.Enthalpy(cmp[144]/self.M)
+        self.GrossHeating = unidades.Enthalpy(cmp[145]/self.M)
+        self.Synonyms = cmp[146]
+        self.V_char = cmp[147]
+        self.calor_formacion_solido = cmp[148]
+        self.energia_formacion_solido = cmp[149]
+        self.PolarParameter = cmp[150]
+        self.smile = cmp[151]
+        if self.smile and os.environ["pybel"] == "True":
+            from pybel import readstring
+            mol = readstring("smi", self.smile)
+            self.imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
+            mol.write("svg", filename=self.imageFile.name, overwrite=True,
+                      opt={"b": "none", "t": None, "gen2D": None})
 
         # Desglosar formula en elementos y átomos de cada elemento
         decmp = atomic_decomposition(self.formula)
@@ -5018,21 +5015,6 @@ class Componente(object):
 
         if self.C and self.H:
             self.HC = self.H/self.C
-
-        # Define the critical viscosity, use the Table 11A5.4 in [5]_
-        if 1 < self.id <= 21 and id != 7:
-            muc = [0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350,
-                   0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315,
-                   0.0328, 0.0337, 0.0348, 0.0355, 0.0362][id]
-        elif id == 90:
-            muc = 0.0370
-        elif id == 91:
-            muc = 0.0375
-        elif id == 92:
-            muc = 0.0388
-        else:
-            muc = self._MuCritical().cP
-        self.muc = unidades.Viscosity(muc, "cP")
 
         # Chemical class definition
         # Some procedures need the chemical type of compound. This could be
@@ -5091,28 +5073,6 @@ class Componente(object):
             Pvr = self.Pv(0.7*self.Tc)/self.Pc
             return facent_AmbroseWalton(Pvr)
 
-    def _SolubilityParameter(self):
-        """Calculation procedure for solubility parameter when the compound has
-        no defined value for that using the definition equation:
-
-        .. math::
-            \delta=\sqrt{\Delta H_{v}-\frac{RT}{M}}\rho
-
-        Referenced in API databook Table 8B1.7 comment pag 812
-        """
-        if self._dipprHv:
-            if self.Tb < 298.15:
-                T = self.Tb
-            else:
-                T = 298.15
-
-            rhoL = self.RhoL(T, 101325)
-            DHv = DIPPR("Hv", T, self._dipprHv[:-2], self.M).calg
-            delta = (DHv-R_cal*T/self.M*rhoL)**0.5
-        else:
-            delta = 0
-        return unidades.SolubilityParameter(delta, "calcc")
-
     def _MuCritical(self):
         """Critical viscosity calculation procedure
 
@@ -5121,8 +5081,22 @@ class Componente(object):
         .. [47] Riazi, M. R. Characterization and Properties of Petroleum
             Fractions. ASTM manual series MNL50, 2005. Pag 348, Eq. 8.10
         """
-        xi = self.Tc**(1/6)/self.M**0.5/self.Pc.atm**(2/3)
-        return unidades.Viscosity(7.7e-4/xi, "cP")
+        # Define the critical viscosity, use the Table 11A5.4 in [5]_
+        if 1 < self.id <= 21 and self.id != 7:
+            muc = [0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350,
+                   0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315,
+                   0.0328, 0.0337, 0.0348, 0.0355, 0.0362][self.id]
+        elif id == 90:
+            muc = 0.0370
+        elif id == 91:
+            muc = 0.0375
+        elif id == 92:
+            muc = 0.0388
+        else:
+            xi = self.Tc**(1/6)/self.M**0.5/self.Pc.atm**(2/3)
+            muc = 7.7e-4/xi
+
+        return unidades.Viscosity(muc, "cP")
 
     # Ideal properties
     def _Cpo(self, T):
@@ -5593,7 +5567,8 @@ class Componente(object):
             Ps = self.Pv(T)
             mu = MuL_Lucas(T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
         elif Pcorr == 1 and self.Pc and self.f_acent:
-            mu = MuL_API(T, P, self.Tc, self.Pc, self.f_acent, self.muc)
+            muc = self._MuCritical()
+            mu = MuL_API(T, P, self.Tc, self.Pc, self.f_acent, muc)
         elif Pcorr == 2:
             mu = MuL_Kouzel(T, P, muo)
         else:
@@ -5602,8 +5577,9 @@ class Componente(object):
                 mu = MuL_Lucas(
                     T, P, self.Tc, self.Pc, self.f_acent, Ps, muo)
             elif self.Tb < 650:
+                muc = self._MuCritical()
                 mu = MuL_API(
-                    T, P, self.Tc, self.Pc, self.f_acent, self.muc)
+                    T, P, self.Tc, self.Pc, self.f_acent, muc)
             else:
                 mu = MuL_Kouzel(T, P, muo)
 

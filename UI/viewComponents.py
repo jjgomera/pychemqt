@@ -875,6 +875,7 @@ class View_Component(QtWidgets.QDialog):
         self.smile = QtWidgets.QLineEdit()
         self.smile.editingFinished.connect(self.setDirty)
         lytGeneral.addWidget(self.smile, 4, 2)
+
         labelFormula2 = QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Expanded Formula"))
         lytGeneral.addWidget(labelFormula2, 5, 1)
@@ -882,27 +883,10 @@ class View_Component(QtWidgets.QDialog):
         self.formula2.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.formula2.setFrameShadow(QtWidgets.QFrame.Plain)
         self.formula2.setAlignment(QtCore.Qt.AlignCenter)
-        self.formula2.setScaledContents(False)
-        lytGeneral.addWidget(self.formula2, 5, 2, 4, 1)
-        label_UNIFAC = QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "UNIFAC Groups"))
-        label_UNIFAC.setAlignment(QtCore.Qt.AlignTop)
-        lytGeneral.addWidget(label_UNIFAC, 9, 1)
-
-        HHeader = [
-            QtWidgets.QApplication.translate("pychemqt", "Group"),
-            QtWidgets.QApplication.translate("pychemqt", "Contribution")]
-        self.UNIFAC = Tabla(2, filas=1, horizontalHeader=HHeader,
-                            verticalHeader=False, readOnly=index)
-        self.UNIFAC.setItemDelegateForColumn(0, SpinEditor(self))
-        self.UNIFAC.setItemDelegateForColumn(1, SpinEditor(self))
-        self.UNIFAC.setColumnWidth(0, 80)
-        self.UNIFAC.setFixedWidth(160)
-        lytGeneral.addWidget(self.UNIFAC, 9, 2, 3, 1)
-
-        lytGeneral.addItem(QtWidgets.QSpacerItem(
-            30, 30, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 9, 3, 3, 1)
+        lytGeneral.addWidget(self.formula2, 5, 2, 6, 1)
+        if os.environ["pybel"] != "True":
+            labelFormula2.setVisible(False)
+            self.formula2.setVisible(False)
 
         lytGeneral.addWidget(QtWidgets.QLabel("M"), 1, 4)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
@@ -945,7 +929,6 @@ class View_Component(QtWidgets.QDialog):
         self.Tb = Entrada_con_unidades(unidades.Temperature)
         self.Tb.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.Tb, 8, 5)
-
         lytGeneral.addWidget(QtWidgets.QLabel("ΔH<sub>f</sub>"), 9, 4)
         self.calorFormacionGas = Entrada_con_unidades(unidades.Enthalpy)
         self.calorFormacionGas.valueChanged.connect(self.setDirty)
@@ -956,16 +939,17 @@ class View_Component(QtWidgets.QDialog):
         lytGeneral.addWidget(self.energiaGibbsGas, 10, 5)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 4, 1, 2)
+            QtWidgets.QSizePolicy.Expanding), 11, 3)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 13, 1, 1, 6)
+            QtWidgets.QSizePolicy.Expanding), 11, 6)
 
         # Cp tab
         tab2 = QtWidgets.QWidget()
         tabWidget.addTab(tab2, QtWidgets.QApplication.translate(
             "pychemqt", "&Cp"))
         lytCp = QtWidgets.QGridLayout(tab2)
+        lytCp.setSpacing(25)
 
         grpCpIdeal = QtWidgets.QGroupBox(
                 QtWidgets.QApplication.translate("pychemqt", "Cp ideal gas") +
@@ -1031,6 +1015,7 @@ class View_Component(QtWidgets.QDialog):
         tabWidget.addTab(tab3, QtWidgets.QApplication.translate(
             "pychemqt", "&Density"))
         lytRho = QtWidgets.QGridLayout(tab3)
+        lytRho.setSpacing(25)
 
         self.RhoSolid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Solid Density DIPPR"), unidades.MolarDensity, index,
@@ -1051,6 +1036,8 @@ class View_Component(QtWidgets.QDialog):
         tabWidget.addTab(tab4, QtWidgets.QApplication.translate(
             "pychemqt", "&Viscosity"))
         lytMu = QtWidgets.QGridLayout(tab4)
+        lytMu.setSpacing(25)
+
         self.muLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Viscosity DIPPR"), unidades.Viscosity, index,
             "muL", parent=self)
@@ -1075,6 +1062,7 @@ class View_Component(QtWidgets.QDialog):
         tabWidget.addTab(tab5, QtWidgets.QApplication.translate(
             "pychemqt", "P&v && Hv"))
         lytVapor = QtWidgets.QGridLayout(tab5)
+        lytVapor.setSpacing(25)
 
         self.Hv = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Heat of vaporization DIPPR"), unidades.MolarEnthalpy,
@@ -1105,6 +1093,7 @@ class View_Component(QtWidgets.QDialog):
         tabWidget.addTab(tab6, QtWidgets.QApplication.translate(
             "pychemqt", "&Tension && Conductivity"))
         lytThermal = QtWidgets.QGridLayout(tab6)
+        lytThermal.setSpacing(25)
 
         self.ThermalLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Thermal Conductivity DIPPR"),
@@ -1136,6 +1125,7 @@ class View_Component(QtWidgets.QDialog):
         tabWidget.addTab(tab7, QtWidgets.QApplication.translate(
             "pychemqt", "&EoS"))
         lytEOS = QtWidgets.QGridLayout(tab7)
+        lytEOS.setSpacing(25)
 
         self.Henry = Parametric_widget(
             QtWidgets.QApplication.translate("pychemqt", "Henry Costant"),
@@ -1252,9 +1242,30 @@ class View_Component(QtWidgets.QDialog):
         self.watson = Entrada_con_unidades(float)
         self.watson.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.watson, 8, 5)
+
+        lytOthers.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 9, 1)
+
+        label_UNIFAC = QtWidgets.QLabel(
+                QtWidgets.QApplication.translate("pychemqt", "UNIFAC Groups"))
+        label_UNIFAC.setAlignment(QtCore.Qt.AlignTop)
+        lytOthers.addWidget(label_UNIFAC, 10, 1)
+        HHeader = [
+            QtWidgets.QApplication.translate("pychemqt", "Group"),
+            QtWidgets.QApplication.translate("pychemqt", "Contribution")]
+        self.UNIFAC = Tabla(2, filas=1, horizontalHeader=HHeader,
+                            verticalHeader=False, readOnly=index)
+        self.UNIFAC.setItemDelegateForColumn(0, SpinEditor(self))
+        self.UNIFAC.setItemDelegateForColumn(1, SpinEditor(self))
+        self.UNIFAC.resizeColumnsToContents()
+        self.UNIFAC.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        lytOthers.addWidget(self.UNIFAC, 10, 2)
+
         lytOthers.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 1)
+            QtWidgets.QSizePolicy.Expanding), 11, 3)
 
         self.change(index)
         self.dirty = False
@@ -1322,6 +1333,7 @@ class View_Component(QtWidgets.QDialog):
         self.alternateName.clear()
         self.CAS.clear()
         self.formula1.clear()
+        self.smile.clear()
         self.formula2.clear()
         self.UNIFAC.clear()
         self.M.clear()
@@ -1382,7 +1394,7 @@ class View_Component(QtWidgets.QDialog):
         self.alternateName.setText(self.cmp.Synonyms)
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
-        if self.cmp.smile != "" and os.environ["oasa"] == "True":
+        if self.cmp.smile and os.environ["pybel"] == "True":
             self.formula2.setPixmap(
                 QtGui.QPixmap(self.cmp.imageFile.name))
             self.smile.setText(self.cmp.smile)
@@ -1537,7 +1549,7 @@ class View_Component(QtWidgets.QDialog):
         new.append(self.Tb.value)
         new.append(self.Tm.value)
         new.append(str(self.CAS.text()))
-        new.append(str(self.formula2.text()))
+        new.append("")
 
         UNIFAC = self.UNIFAC.getData()
         new.append(UNIFAC)

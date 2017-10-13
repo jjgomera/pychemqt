@@ -114,8 +114,4 @@ cp python3.2/rptest.py /usr/local/lib/python3.5/dist-packages
 pip3 install ezodf lxml
 pip3 install openpyxl
 pip3 install xlwt
-
-#OASA  used to show compound extended formula in database
-# Install bkchem and create symbolic link for oasa
-sudo python /usr/lib/bkchem/bkchem/oasa/setup.py install
-#ln -s /usr/lib/bkchem/bkchem/oasa/oasa /usr/local/lib/python2.7/dist-packages
+pip3 install openbabel

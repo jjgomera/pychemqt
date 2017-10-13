@@ -41,14 +41,14 @@ from PyQt5 import QtWidgets
 # TODO: Delete when it isn´t necessary debug
 # os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
 # os.environ["freesteam"] = "True"
-# os.environ["oasa"] = "False"
+# os.environ["pybel"] = "True"
 # os.environ["CoolProp"] = "True"
 # os.environ["refprop"] = "True"
 # os.environ["ezodf"] = "True"
 # os.environ["openpyxl"] = "True"
-# os.environ["xlwt"] = "True"
+# os.environ["xlwt"] = "False"
 # os.environ["icu"] = "False"
-# os.environ["reportlab"] = "True"
+# os.environ["reportlab"] = "False"
 # os.environ["PyQt5.Qsci"] = "True"
 
 
