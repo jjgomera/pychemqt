@@ -81,6 +81,7 @@ def which(program):
                 return exe_file
     return ""
 
+
 calculator = ""
 if sys.platform == "win32":
     calculator = "calc.exe"
@@ -90,6 +91,7 @@ else:
         if ejecutable:
             calculator = ejecutable
             break
+
 
 editor = ""
 if sys.platform == "win32":
@@ -352,6 +354,16 @@ def Preferences():
     config.set("Standing_Katz", "crux"+"markeredgewidth", "1")
     config.set("Standing_Katz", "crux"+"markeredgecolor", "#000000")
 
+    # Openbabel
+    config.add_section("Openbabel")
+    config.set("Openbabel", "BondColor", "#000000")
+    config.set("Openbabel", "BackColor", "#ffffff")
+    config.set("Openbabel", "BackColorAlpha", "0")
+    config.set("Openbabel", "AtomsColor", "True")
+    config.set("Openbabel", "AtomsAll", "False")
+    config.set("Openbabel", "AtomsEnd", "True")
+    config.set("Openbabel", "AtomsNone", "False")
+    config.set("Openbabel", "TighBond", "True")
 
     return config
 
