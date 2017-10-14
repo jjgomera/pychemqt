@@ -732,14 +732,14 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             self.showInput(True)
         else:
             if self.dialogoId != None:
-                self.tabla = Table_Graphics(self.equipment, self.id, self.scene().parent().Preferences)
+                self.tabla = Table_Graphics(self.equipment, self.id, Preferences)
             else:
                 if self.output:
                     self.tabla = Table_Graphics(self.down[0].corriente, self.down[0].id,
-                                                self.scene().parent().Preferences)
+                                                Preferences)
                 else:
                     self.tabla = Table_Graphics(self.up[0].corriente, self.up[0].id,
-                                                self.scene().parent().Preferences)
+                                                Preferences)
             self.tabla.move(event.screenPos())
             self.tabla.show()
 

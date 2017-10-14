@@ -32,7 +32,8 @@ from UI import newComponent, flujo, wizard, plots, viewComponents
 from UI.petro import Definicion_Petro
 import plots as charts
 from UI.widgets import createAction, ClickableLabel
-from lib.config import (conf_dir, setMainWindowConfig, IMAGE_PATH)
+from lib import config
+from lib.config import (conf_dir, setMainWindowConfig, IMAGE_PATH, Preferences)
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *  # noqa
@@ -241,8 +242,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(UI_pychemqt, self).__init__(parent)
         self.setWindowTitle("pychemqt")
-        self.Preferences = ConfigParser()
-        self.Preferences.read(conf_dir+"pychemqtrc")
         self.centralwidget = TabWidget()
         self.centralwidget.currentChanged.connect(self.currentTabChanged)
         self.centralwidget.setTabsClosable(True)
@@ -1275,8 +1274,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.filename.append("")
         config = ConfigParser()
         config.add_section("PFD")
-        config.set("PFD", "x", self.Preferences.get("PFD", "x"))
-        config.set("PFD", "y", self.Preferences.get("PFD", "y"))
+        config.set("PFD", "x", Preferences.get("PFD", "x"))
+        config.set("PFD", "y", Preferences.get("PFD", "y"))
         self.config.append(config)
         mdiArea = QtWidgets.QMdiArea()
 #        style=StyleCustom()
@@ -1578,12 +1577,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dialog.exec_()
 
     def Preferencias(self):
-        dialog = UI_Preferences.Preferences(self.Preferences)
+        dialog = UI_Preferences.Preferences(Preferences)
         if dialog.exec_():
             preferences = dialog.value()
             preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            self.Preferences = ConfigParser()
-            self.Preferences.read(conf_dir+"pychemqtrc")
+            global Preferences
+            Preferences = ConfigParser()
+            Preferences.read(conf_dir+"pychemqtrc")
             self.updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "pychemqt configuration change"), True)
             self.changePreferenceLive()
@@ -1592,10 +1592,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 "pychemqt", "pychemqt configuration change"), False)
 
     def changePreferenceLive(self):
-        if self.Preferences.getboolean("General", 'Tray'):
+        if Preferences.getboolean("General", 'Tray'):
             self.systemtray.show()
         else:
             self.systemtray.hide()
+        config.Preferences = Preferences
 
     def activeControl(self, boolean):
         self.fileSaveAsAction.setEnabled(boolean)
@@ -1677,12 +1678,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     # Tools
     def calculator(self):
-        command = str(self.Preferences.get("Applications", 'Calculator'))
+        command = str(Preferences.get("Applications", 'Calculator'))
         os.system(command)
 
     def terminal(self):
         from tools import terminal
-        terminal.XTerm(self.Preferences)
+        terminal.XTerm(Preferences)
 
     def tablaPeriodica(self):
         from tools import qtelemental

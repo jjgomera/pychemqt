@@ -244,13 +244,15 @@ splash.showMessage(QtWidgets.QApplication.translate(
 
 # Checking config file
 default_Preferences = firstrun.Preferences()
+change = False
 if not os.path.isfile(conf_dir + "pychemqtrc"):
     default_Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+    Preferences = default_Preferences
+    change = True
 else:
     # Check Preferences options to find set new options
     Preferences = ConfigParser()
     Preferences.read(conf_dir + "pychemqtrc")
-    change = False
     for section in default_Preferences.sections():
         if not Preferences.has_section(section):
             Preferences.add_section(section)
@@ -264,7 +266,7 @@ else:
                                 "%s:%s" % (section, option) +
                                 ", run preferences dialog for configure")
     if change:
-        default_Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+        Preferences.write(open(conf_dir + "pychemqtrc", "w"))
 
 # FIXME: This file might not to be useful but for now I use it to save project
 # configuration data
@@ -322,8 +324,11 @@ msg = QtWidgets.QApplication.translate("pychemqt", "Loading project files")
 splash.showMessage(msg + "...")
 logging.info(msg)
 
+if change:
+    config.Preferences = Preferences
+
 filename = []
-if pychemqt.Preferences.getboolean("General", "Load_Last_Project"):
+if config.Preferences.getboolean("General", "Load_Last_Project"):
     filename = pychemqt.lastFile
     if filename is None:
         filename = []
