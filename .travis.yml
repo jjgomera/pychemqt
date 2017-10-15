@@ -6,6 +6,8 @@ python:
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=scipy scipy
+  - pip install matplotlib
+  - pip install PyQt5
   - pip install coveralls
   - pip install codecov
 
@@ -14,7 +16,7 @@ before_script:
 
 # command to run tests
 script:
-  - coverage3 run --source=../ tests/
+  - coverage3 run tests/
 
 # Add coverall support
 after_success:
