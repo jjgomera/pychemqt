@@ -183,11 +183,12 @@ def MuG_Wilke(xi, Mi, mui):
     referenced in API procedure 11B2.1, pag 1102
 
     .. math::
-        \mu_{m} = \sum_{i=1}^n \frac{\mu_i}{1+\frac{1}{x_i}\sum_{j=1}^n x_j
-        \phi_{ij}}
+        \mu_{m} = \sum_{i=1}^n \\frac{\mu_i}{1+\\frac{1}{x_i}\sum_{j=1}
+        ^n x_j \phi_{ij}}
 
-        \phi_{ij} = \frac{\left[1+\left(\mu_i/\mu_j\right)^{0.5}(M_j/M_i)
-        ^{0.25}\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\right)\right]^{0.5}}
+        \phi_{ij} = \\frac{\left[1+\left(\mu_i/\mu_j\\right)^{0.5}(M_j/M_i)
+        ^{0.25}\\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\\right)\\right]
+        ^{0.5}}
 
     Parameters
     ----------
@@ -207,20 +208,23 @@ def MuG_Wilke(xi, Mi, mui):
     --------
     Selected point in Table II from [1]_
     CO2 3.5%, O2 0.3%, CO 27.3%, H2 14.4%, CH4 3.7%, N2 50%, C2 0.8%
+
+    >>> from scipy import r_
     >>> from lib.mEoS import CO2, O2, CO, H2, CH4, N2, C2
     >>> Mi = [CO2.M, O2.M, CO.M, H2.M, CH4.M, N2.M, C2.M]
     >>> xi = [0.035, 0.003, 0.273, 0.144, 0.037, 0.5, 0.008]
-    >>> mui = [147.2e-9, 201.9e-9, 174.9e-9, 87.55e-9, 108.7e-9, 178.1e-9, \
-        90.9e-9]
-    >>> "%0.7f" % MuG_Wilke(xi, Mi, mui).dynscm2
+    >>> mui = r_[147.2, 201.9, 174.9, 87.55, 108.7, 178.1, 90.9]
+    >>> "%0.7f" % MuG_Wilke(xi, Mi, mui*1e-9).dynscm2
     '0.0001711'
 
     Example A from [5]_; 58.18% H2, 41.82% propane at 77ºF and 14.7 psi
+
     >>> mu = MuG_Wilke([0.5818, 0.4182], [2.02, 44.1], [8.91e-6, 8.22e-6])
     >>> "%0.4f" % mu.cP
     '0.0092'
 
     Example B from [5]_ 95.6% CH4, 3.6% C2, 0.5% C3, 0.3% N2
+
     >>> x = [0.956, 0.036, 0.005, 0.003]
     >>> Mi = [16.04, 30.07, 44.1, 28.01]
     >>> mui = [1.125e-5, 9.5e-6, 8.4e-6, 1.79e-5]
@@ -228,6 +232,7 @@ def MuG_Wilke(xi, Mi, mui):
     '0.01117'
 
     Example 9-5 from [3]_, methane 69.7%, n-butane 30.3%
+
     >>> mui = [109.4e-7, 72.74e-7]
     >>> "%0.2f" % MuG_Wilke([0.697, 0.303], [16.043, 58.123], mui).microP
     '92.25'

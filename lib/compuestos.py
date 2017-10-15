@@ -432,8 +432,8 @@ def atomic_decomposition(cmp):
 
 
 def DIPPR(prop, T, args, Tc=None, M=None):
-    """Procedure to implement the DIPPR equations valid to calculate several
-    physical properties of compounds. The parameters of the
+    r"""Procedure to implement the DIPPR equations valid to calculate several
+    physical properties of compounds.
 
     Parameters
     ----------
@@ -453,35 +453,34 @@ def DIPPR(prop, T, args, Tc=None, M=None):
     -----
     The properties this method can calculate, and the units for the calculated
     properties are:
-
-        -rhoS: Solid density, [kmol/m³]
-        -rhoL: Liquid density, [kmol/m³]
-        -Pv: Vapor pressure, [Pa]
-        -Hv: Heat of vaporization, [J/kmol]
-        -cpS: Solid heat capacity, [J/kmol·K]
-        -cpL: Liquid heat capacity, [J/kmol·K]
-        -cpG: Ideal gas heat capacity, [J/kmol·K]
-        -muL: Liquid viscosity, [Pa·s]
-        -muG: Vapor viscosity, [Pa·s]
-        -kL: Liquid thermal conductivity, [W/m·K]
-        -kG: Vapor thermal conductivity, [W/m·K]
-        -sigma: Surface Tension, [N/m]
+        * rhoS: Solid density, [kmol/m³]
+        * rhoL: Liquid density, [kmol/m³]
+        * Pv: Vapor pressure, [Pa]
+        * Hv: Heat of vaporization, [J/kmol]
+        * cpS: Solid heat capacity, [J/kmol·K]
+        * cpL: Liquid heat capacity, [J/kmol·K]
+        * cpG: Ideal gas heat capacity, [J/kmol·K]
+        * muL: Liquid viscosity, [Pa·s]
+        * muG: Vapor viscosity, [Pa·s]
+        * kL: Liquid thermal conductivity, [W/m·K]
+        * kG: Vapor thermal conductivity, [W/m·K]
+        * sigma: Surface Tension, [N/m]
 
     The first element in args define the equation to use:
+        * Eq 1: :math:`Y = A+BT+CT^2+DT^3+ET^4`
+        * Eq 2: :math:`Y = exp(A+BT+Cln(T)+DT^E)`
+        * Eq 3: :math:`Y = A*T^B/(1+CT+DT^2)`
+        * Eq 4: :math:`Y = A+Bexp(-C/T^D)`
+        * Eq 5: :math:`Y = A + BT + CT^3 + DT^8 + ET^9`
+        * Eq 6: :math:`Y = A/(B^(1+(1-T/C)^D)`
+        * Eq 7: :math:`Y = A*(1-Tr)^(B+CTr+DTr^2+ETr^3)`
+        * Eq 8: :math:`Y = A+ B*((C/T)/sinh(C/T))^2 + D*((E/T)/cosh(E/T))^2`
+        * Eq 9: :math:`Y = A^2/Tr+B-2ACTr-ADTr^2-C^2Tr^3/3-CDTr^4/2-D^2Tr^5/5`
 
-        Eq 1:   Y = A+B*T+C*T^2+D*T^3+E*T^4
-        Eq 2:   Y = exp(A+B*T+C*ln(T)+D*T^E)
-        Eq 3:   Y = A*T^B/(1+C*T+D*T^2)
-        Eq 4:   Y = A+B*exp(-C/T^D)
-        Eq 5:   Y = A + B*T + C*T^3 + D*T^8 + E*T^9
-        Eq 6:   Y = A/(B^(1+(1-T/C)^D)
-        Eq 7:   Y = A*(1-Tr)^(B+C*Tr+D*Tr^2+E*Tr^3)
-        Eq 8:   Y = A+ B*((C/T)/sinh(C/T))^2 + D*((E/T)/cosh(E/T))^2
-        Eq 9:   Y = A²/Tr + B - 2ACTr - ADTr² - C²Tr³/3 - CDTr⁴/2 - D²Tr⁵/5
-
-        where: T: Temperature, [K]
-            Tr: Reduced temperature T/Tc
-            A,B,C,D,E: Parameters of equation
+    where:
+        * T: Temperature, [K]
+        * Tr: Reduced temperature T/Tc
+        * A,B,C,D,E: Parameters of equation
 
     This parameters are available in the pychemqt database for many compounds
     Some equation as 7 and 9 need aditional parameter Tc of compound
@@ -536,7 +535,7 @@ def DIPPR(prop, T, args, Tc=None, M=None):
 
 # Liquid density correlations
 def RhoL_Rackett(T, Tc, Pc, Zra, M):
-    """Calculates saturated liquid densities of pure components using the
+    r"""Calculates saturated liquid densities of pure components using the
     modified Rackett equation by Spencer-Danner
 
     .. math::
@@ -585,7 +584,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
 
 
 def RhoL_Costald(T, Tc, w, Vc):
-    """Calculates saturated liquid densities of pure components using the
+    r"""Calculates saturated liquid densities of pure components using the
     Corresponding STAtes Liquid Density (COSTALD) method, developed by
     Hankinson and Thomson, referenced too in API procedure 6A2.15 pag. 462
 
@@ -650,7 +649,7 @@ def RhoL_Costald(T, Tc, w, Vc):
 
 
 def RhoL_Cavett(T, Tc, M, Vliq):
-    """Calculates saturated liquid densities of pure components using the
+    r"""Calculates saturated liquid densities of pure components using the
     Cavett equation. Referenced in Chemcad Physical properties user guide
 
     .. math::
@@ -680,7 +679,7 @@ def RhoL_Cavett(T, Tc, M, Vliq):
 
 
 def RhoL_YenWoods(T, Tc, Vc, Zc):
-    """Calculates saturation liquid density using the Yen-Woods correlation
+    r"""Calculates saturation liquid density using the Yen-Woods correlation
 
     .. math::
         \rho_s/\rho_c = 1 + A(1-T_r)^{1/3} + B(1-T_r)^{2/3} + D(1-T_r)^{4/3}
@@ -730,10 +729,10 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
 
 
 def RhoL_YamadaGunn(T, Tc, Pc, w):
-    """Calculates saturation liquid volume, using Gunn-Yamada correlation
+    r"""Calculates saturation liquid volume, using Gunn-Yamada correlation
 
     .. math::
-        V/V_sc = V_R^{(0)}\right(1-\omega\delta\left)
+        V/V_sc = V_R^{(0)}\left(1-\omega\delta\right)
 
     Parameters
     ----------
@@ -784,7 +783,7 @@ def RhoL_YamadaGunn(T, Tc, Pc, w):
 
 
 def RhoL_Bhirud(T, Tc, Pc, w):
-    """Calculates saturation liquid density using the Bhirud correlation
+    r"""Calculates saturation liquid density using the Bhirud correlation
 
     .. math::
         \ln \frac{P_c V_s}{RT} = \ln U^{(0)} + \omega\ln U^{(1)}
@@ -847,7 +846,7 @@ def RhoL_Bhirud(T, Tc, Pc, w):
 
 
 def RhoL_Mchaweh(T, Tc, Vc, w, delta):
-    """Calculates saturated liquid density using the Mchaweh et Al. correlation
+    r"""Calculates saturated liquid density using the Mchaweh correlation
 
     .. math::
         \rho_s = \rho_c\rho_o\left[1+\delta_{SRK}\left(\alpha_{SRK}-1
@@ -977,7 +976,7 @@ Mchaweh_d = {28: 0.57510,
 
 
 def RhoL_Riedel(T, Tc, Vc, w):
-    """Calculates saturation liquid density using the Riedel correlation
+    r"""Calculates saturation liquid density using the Riedel correlation
 
     .. math::
         \rho_s/\rho_c = 1 + 0.85\left(1-T_r\right) +
@@ -1012,11 +1011,11 @@ def RhoL_Riedel(T, Tc, Vc, w):
 
 
 def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
-    """Calculates saturation liquid density using the Chueh-Prausnitz
+    r"""Calculates saturation liquid density using the Chueh-Prausnitz
     correlation
 
     .. math::
-        V_s/V_c = V_R^{(0)} + \omegaV_R^{(1)} + \omega^2V_R^{(2)}
+        V_s/V_c = V_R^{(0)} + \omega V_R^{(1)} + \omega^2V_R^{(2)}
 
         V_R^{(i)} = a^{(i)} + b^{(i)}T_R + c^{(i)}T_R^2 + d^{(i)}T_R^3 +
         e^{(i)}/T_R + f^{(i)}\ln{1-T_R}
@@ -1064,7 +1063,7 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
 
 
 def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
-    """Calculates compressed-liquid density, using the Thomson-Brobst-
+    r"""Calculates compressed-liquid density, using the Thomson-Brobst-
     Hankinson generalization of Tait equation, also referenced in API procedure
     6A2.23 pag. 477
 
@@ -1133,11 +1132,11 @@ def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
 
 
 def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
-    """Calculates compressed-liquid density, using the Chang-Zhao correlation
+    r"""Calculates compressed-liquid density, using the Chang-Zhao correlation
 
     .. math::
-        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}}
-        {AP_c + C\left(P-P_{vp}}
+        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)}
+        {AP_c + C\left(P-P_{vp}\right)}
 
         A=\sum_{i=0}^{5}a_{i}T_{r}^{i}
 
@@ -1187,12 +1186,12 @@ def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
 
 
 def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
-    """Calculates compressed-liquid density, using the Aalto-Keskinen
+    r"""Calculates compressed-liquid density, using the Aalto-Keskinen
     modification of Chang-Zhao correlation
 
     .. math::
-        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}}
-        {AP_c + C\left(P-P_{vp}}
+        V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)}
+        {AP_c + C\left(P-P_{vp}\right)}
 
         A = a_0 + a_1T_r + a_2T_r^3 + a_3T_r^6 + a_4/T_r
 
@@ -1228,6 +1227,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     Examples
     --------
     Example 4-8 from [1]_; ammonia at 400bar at 300K and 400K
+
     >>> P = unidades.Pressure(400, "bar")
     >>> Pc = unidades.Pressure(113.53, "bar")
     >>> Ps1 = unidades.Pressure(10.61, "bar")
@@ -1240,6 +1240,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     '27.19 35.60'
 
     Example 4-9 from [1]_; m-cresol at 3000bar and 503.15K
+
     >>> P = unidades.Pressure(3000, "bar")
     >>> Pc = unidades.Pressure(45.6, "bar")
     >>> Ps = unidades.Pressure(1, "bar")
@@ -1274,7 +1275,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
 
 
 def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
-    """Calculates compressed-liquid density, using the Aalto-Keskinen
+    r"""Calculates compressed-liquid density, using the Aalto-Keskinen
     modification of Chang-Zhao correlation extended to a more high pressure
     range
 
@@ -1320,6 +1321,7 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     --------
     Selected values from experimental data for ethane used in correlation
     development, [38]_
+
     >>> from lib.mEoS import C2
     >>> et = C2()
     >>> Ps = et._Vapor_Pressure(293.608)
@@ -1364,7 +1366,7 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
 
 
 def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
-    """Calculates compressed liquid density using the Nasrifar correlation
+    r"""Calculates compressed liquid density using the Nasrifar correlation
 
     .. math::
         \frac{v-v_{s}}{v_{\infty}-v_{s}}=C\Psi
@@ -1440,8 +1442,8 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
 
 
 def RhoL_API(T, P, Tc, Pc, SG, rhos):
-    """Calculates compressed-liquid density, using the analytical expression of
-    Lu Chart referenced in API procedure 6A2.22
+    r"""Calculates compressed-liquid density, using the analytical expression
+    of Lu Chart referenced in API procedure 6A2.22
 
     .. math::
         \rho_2 = \rho_1\frac{C_2}{SG}
@@ -1470,6 +1472,7 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
     --------
     Example from [5]_; n-nonane at 220ºF and 1000psi, the API databook use the
     original Lu Chart so the result don't have to be exact
+
     >>> T = unidades.Temperature(220, "F")
     >>> P = unidades.Pressure(1000, "psi")
     >>> Tc = unidades.Temperature(610.7, "F")
@@ -1500,7 +1503,7 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
 
 # Vapor pressure correlations
 def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
-    """Vapor Pressure calculation procedure using the Antoine equation
+    r"""Vapor Pressure calculation procedure using the Antoine equation
 
     .. math::
         \log_{\text{base}} P^{\text{sat}} = A - \frac{B}{T+C}
@@ -1543,6 +1546,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     Examples
     --------
     Example 7-1 in [1]_, furan at 309.429 K
+
     >>> P = Pv_Antoine(309.429, (4.1199, 1070.2, -44.32), base=10, Punit="bar")
     >>> "%0.4f" % P.bar
     '1.2108'
@@ -1568,7 +1572,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
 
 
 def Pv_Lee_Kesler(T, Tc, Pc, w):
-    """Calculates vapor pressure of a fluid using the Lee-Kesler correlation
+    r"""Calculates vapor pressure of a fluid using the Lee-Kesler correlation
 
     The vapor pressure is given by:
 
@@ -1622,7 +1626,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
 
 def Pv_Wagner(T, args, Tc, Pc):
-    """Calculates vapor pressure of a fluid using the Wagner correlation
+    r"""Calculates vapor pressure of a fluid using the Wagner correlation
 
     .. math::
         \ln P^{v}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{3}
@@ -1672,11 +1676,11 @@ def Pv_Wagner(T, args, Tc, Pc):
 
 
 def Pv_AmbroseWalton(T, Tc, Pc, w):
-    """Calculates vapor pressure of a fluid using the Ambrose-Walton
+    r"""Calculates vapor pressure of a fluid using the Ambrose-Walton
     corresponding-states correlation
 
     .. math::
-        \ln P_r=f^{(0)}+\omegaf^{(1)}+\omega^2f^{(2)}
+        \ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}
 
         f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}
         -1.06841\tau^5}{T_r}
@@ -1734,8 +1738,8 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
 
 
 def Pv_Riedel(T, Tc, Pc, Tb):
-    """Calculate vapor pressure of a fluid using the Rieel corresponding-states
-    correlation
+    r"""Calculate vapor pressure of a fluid using the Rieel
+    corresponding-states correlation
 
     .. math::
         \ln P_{\text{vp}} = A - \frac{B}{T} + C\ln T + DT^{6}
@@ -1784,8 +1788,8 @@ def Pv_Riedel(T, Tc, Pc, Tb):
 
 
 def Pv_MaxwellBonnel(T, Tb, Kw):
-    """Calculates vapor pressure of a fluid using the Maxell-Bonnel correlation
-    as explain in [5]_, procedure 5A1.18, Pag. 394
+    r"""Calculates vapor pressure of a fluid using the Maxell-Bonnel
+    correlation as explain in [5]_, procedure 5A1.18, Pag. 394
 
     Parameters
     ----------
@@ -1809,6 +1813,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
     Examples
     --------
     Example in [5]_, tetralin at 302ºF
+
     >>> T = unidades.Temperature(302, "F")
     >>> Tb = unidades.Temperature(405.7, "F")
     >>> Pv = Pv_MaxwellBonnel(T, Tb, 9.78)
@@ -1847,13 +1852,13 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
 
 
 def Pv_Sanjari(T, Tc, Pc, w):
-    """Calculates vapor pressure of a fluid using the Sanjari correlation
+    r"""Calculates vapor pressure of a fluid using the Sanjari correlation
     pressure, and acentric factor.
 
     The vapor pressure of a chemical at `T` is given by:
 
     .. math::
-        P_{v} = P_c\exp(f^{(0)} + \omegaf^{(1)} + \omega^2f^{(2)})
+        P_{v} = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2f^{(2)})
 
         f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}
 
@@ -1902,7 +1907,7 @@ def Pv_Sanjari(T, Tc, Pc, w):
 
 # Liquid viscosity correlations
 def MuL_Parametric(T, args):
-    """Calculates liquid viscosity using a paremtric equation
+    r"""Calculates liquid viscosity using a paremtric equation
 
     .. math::
         \log\mu = A\left(\frac{1}{T}-\frac{1}{B}\right)
@@ -1955,6 +1960,7 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
     Examples
     --------
     Example 9.19 from [1]_ 4Ed; propanol at 433.2K
+
     >>> Vc = 316/92.14/1000
     >>> "%0.3f" % MuL_LetsouStiel(433.2, 60.10, 536.8, 51.7e5, 0.623).cP
     '0.171'
@@ -1975,7 +1981,7 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
 
 
 def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
-    """Calculates the viscosity of a liquid using the Przezdziecki-Sridhar
+    r"""Calculates the viscosity of a liquid using the Przezdziecki-Sridhar
     correlation
 
     .. math::
@@ -2021,6 +2027,7 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     Examples
     --------
     Example 9.196 from [1]_; toluene at 383K
+
     >>> Vc = 316/92.14/1000
     >>> "%0.3f" % MuL_PrzedzieckiSridhar(383, 591.75, 41.08e5, 316/92.14/1000,\
             0.264, 92.14, 178, 106.87/92.14/1000, 298.15).cP
@@ -2070,7 +2077,7 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
 
 
 def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
-    """Calculate the viscosity of liquid at high pressure using the Lucas
+    r"""Calculate the viscosity of liquid at high pressure using the Lucas
     correlation
 
     .. math::
@@ -2118,10 +2125,12 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     Examples
     --------
     Example 9.15 from [1]_, methylcyclohexane at 300K 500 bar
+
     >>> "%0.2f" % MuL_Lucas(300, 500e5, 572.19, 34.7e5, 0.236, 0, 0.00068).cP
     '1.07'
 
     Selected value from Table 1 in [46]_, hydrogen
+
     >>> from lib.mEoS import H2
     >>> T = 0.904*H2.Tc
     >>> P = 7.71*H2.Pc
@@ -2284,7 +2293,7 @@ def MuL_Kouzel(T, P, muo):
 
 # Liquid viscosity correlations
 def MuG_ChapmanEnskog(T, M, sigma, omega):
-    """Calculate the viscosity of a gas using the Chapman-Enskog correlation
+    r"""Calculate the viscosity of a gas using the Chapman-Enskog correlation
 
     .. math::
         \mu=\frac{26.69\left(MT\right)^{1/2}}{\sigma^2\Omega_v}
@@ -2346,6 +2355,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
     Examples
     --------
     Example A in [5]_, Propane at 176ºF
+
     >>> T = unidades.Temperature(176, "F")
     >>> Tc = unidades.Temperature(206, "F")
     >>> Pc = unidades.Pressure(616, "psi")
@@ -2353,6 +2363,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
     '0.0100'
 
     Example B in [5]_, Methane at 543ºF
+
     >>> T = unidades.Temperature(543, "F")
     >>> Tc = unidades.Temperature(-116.67, "F")
     >>> Pc = unidades.Pressure(667, "psi")
@@ -2386,7 +2397,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
 
 
 def MuG_Gharagheizi(T, Tc, Pc, M):
-    """Calculates the viscosity of a gas using the Gharagheizi et al.
+    r"""Calculates the viscosity of a gas using the Gharagheizi et al.
     correlation
 
     .. math::
@@ -2413,10 +2424,12 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
     Examples
     --------
     Methane at 120K
+
     >>> "%0.6e" % MuG_Gharagheizi(120, 190.564, 45.99e5, 16.04246)
     '5.215762e-06'
 
     1-Octanol at 120K
+
     >>> "%0.6e" % MuG_Gharagheizi(468.35, 652.5, 27.77e5, 130.22792)
     '8.751141e-06'
 
@@ -2485,7 +2498,7 @@ def MuG_YoonThodos(T, Tc, Pc, M):
 
 
 def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
-    """Calculate the viscosity of a gas using the Chung et al. correlation
+    r"""Calculate the viscosity of a gas using the Chung et al. correlation
 
     .. math::
         \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
@@ -2515,6 +2528,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     Examples
     --------
     Example 9-1 in [1]_, SO2 at 300ºC
+
     >>> T = unidades.Temperature(300, "C")
     >>> "%0.1f" % MuG_Chung(T, 430.8, 122e3/64.065, 64.065, 0.257, 1.6).microP
     '245.5'
@@ -2543,7 +2557,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
 
 
 def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
-    """Calculate the viscosity of a compressed gas using the Chung correlation
+    r"""Calculate the viscosity of a compressed gas using the Chung correlation
 
     .. math::
         \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
@@ -2577,6 +2591,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     Examples
     --------
     Example 9-12 in [1]_, ammonia at 520K and 600bar
+
     >>> Vc = 72.4/17.031*1e3
     >>> rho = 1/48.2*17.031/1e3
     >>> mu = MuG_P_Chung(520, 405.5, Vc, 17.031, 0.256, 1.47, 0, rho, 182e-6)
@@ -2632,11 +2647,11 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
 
 
 def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
-    """Calculate the viscosity of a compressed gas using the Reichenberg
+    r"""Calculate the viscosity of a compressed gas using the Reichenberg
     correlation as explain in [1]_
 
     .. math::
-        \frac{\mu}{\mu^o}=1+Q\frac{AP_r^{3/2}}{BP_r+\left(1+CP_r^D\right)^{-1}
+        \frac{\mu}{\mu^o}=1+Q\frac{AP_r^{3/2}}{BP_r+\left(1+CP_r^D\right)^{-1}}
 
     Parameters
     ----------
@@ -2663,6 +2678,7 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     Examples
     --------
     Example 9-9 in [1]_, n-pentane at 500K and 101bar
+
     >>> mu = MuG_Reichenberg(500, 101e5, 469.7, 33.7e5, 0, 0, 0, 114e-7)
     >>> "%0.0f" % mu.microP
     '520'
@@ -2721,11 +2737,13 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     Examples
     --------
     Example 9-2 in [1]_, methanol at 550K and 1bar
+
     >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
     >>> "%0.0f" % mu.microP
     '178'
 
     Example 9-10 in [1]_, ammonia at 420K and 300bar
+
     >>> mu = MuG_Lucas(420, 3e7, 405.5, 113.53e5, 0.244, 17.031, 1.47)
     >>> "%0.0f" % mu.microP
     '603'
@@ -2833,6 +2851,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     Examples
     --------
     Example 9-11 in [1]_, isobutane at 500K and 100bar
+
     >>> rhoc = 1/262.7*58.123*1000
     >>> rho = 1/243.8*58.123*1000
     >>> "%0.0f" % MuG_Jossi(407.85, 36.4e5, rhoc, 58.123, rho, 120e-7).microP
@@ -2863,7 +2882,7 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
     .. math::
         \left(\mu-\mu^o\right)\xi=1.656\rho_r^{1.111}, \rho_r ≤ 0.1
 
-        \left(\mu-\mu^o\right)\xi=0.0607\left(9.045\rho_r+0.63\left)1.739},
+        \left(\mu-\mu^o\right)\xi=0.0607\left(9.045\rho_r+0.63\right)^{1.739},
         0.1 ≤ \rho_r ≤ 0.9
 
         log\left[4-log\left(\left(\mu-\mu^o\right)\xi\right)\right]=
@@ -2942,6 +2961,7 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     Examples
     --------
     Example 9-13 in [1]_, isobutane at 500K and 100bar
+
     >>> Vc = 259*58.124*1000
     >>> rho = 1/243.8*58.123*1000
     >>> mu = MuG_TRAPP(500, 407.85, Vc, 0.278, 58.124, 0.186, rho, 120e-7)
@@ -2991,7 +3011,7 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
 
 
 def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
-    """Calculate the viscosity of a compressed gas using the Chung correlation
+    r"""Calculate the viscosity of a compressed gas using the Chung correlation
 
     .. math::
         \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
@@ -3091,6 +3111,7 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
     Examples
     --------
     Example in [5]_, mixture at 1500psi and 257ºF
+
     >>> Tc = unidades.Temperature(472.09, "R")
     >>> Pc = unidades.Pressure(646.68, "psi")
     >>> "%0.4f" % MuG_DeanStiel(Tc, Pc, 1, 27.264, 0.5283, 123e-7).cP
@@ -3113,7 +3134,7 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
 
 
 def MuG_API(T, P, Tc, Pc, muo):
-    """Calculate the viscosity of nonhydrocarbon gases at high pressure using
+    r"""Calculate the viscosity of nonhydrocarbon gases at high pressure using
     the linearization of Carr figure as give in API Databook procedure 11C1.2,
     pag 1113
 
@@ -3146,6 +3167,7 @@ def MuG_API(T, P, Tc, Pc, muo):
     Examples
     --------
     Example in [5]_, nitrogen at -58ºF and 1677psi
+
     >>> T = unidades.Temperature(-58, "F")
     >>> Tc = unidades.Temperature(-232.5, "F")
     >>> P = unidades.Pressure(1677, "psi")
@@ -3169,7 +3191,7 @@ def MuG_API(T, P, Tc, Pc, muo):
 
 # Liquid thermal conductivity correlations
 def ThL_RiaziFaghri(T, Tb, SG):
-    """Calculates thermal conductivity of liquid hydrocarbon at low pressure
+    r"""Calculates thermal conductivity of liquid hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
 
     .. math::
@@ -3219,7 +3241,7 @@ def ThL_RiaziFaghri(T, Tb, SG):
 
 
 def ThL_Gharagheizi(T, Pc, Tb, M, w):
-    """Calculates the thermal conductivity of liquid using the Gharagheizi
+    r"""Calculates the thermal conductivity of liquid using the Gharagheizi
     correlation.
 
     .. math::
@@ -3265,7 +3287,7 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
 
 
 def ThL_LakshmiPrasad(T, M):
-    """Calculates the thermal conductivity of liquid using the Lakshmi-Prasad
+    r"""Calculates the thermal conductivity of liquid using the Lakshmi-Prasad
     correlation.
 
     .. math::
@@ -3294,7 +3316,7 @@ def ThL_LakshmiPrasad(T, M):
 
 
 def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
-    """Calculates the thermal conductivity of liquid using the Nicola
+    r"""Calculates the thermal conductivity of liquid using the Nicola
     correlation.
 
     .. math::
@@ -3342,7 +3364,7 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
 
 
 def ThL_SatoRiedel(T, Tc, M, Tb):
-    """Calculate the thermal conductivity of a liquid using the Sato-Riedel
+    r"""Calculate the thermal conductivity of a liquid using the Sato-Riedel
     correlation, as explain in [1]_
 
     .. math::
@@ -3368,6 +3390,7 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
     Examples
     --------
     Example 10-10 from [1]_ (4th Edition); CCl4 at 293K
+
     >>> "%0.3f" % ThL_SatoRiedel(293, 556.4, 153.823, 349.9)
     '0.101'
 
@@ -3383,7 +3406,7 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
 
 
 def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
-    """Calculates the thermal conductivity of liquid using the Pachaiyappan
+    r"""Calculates the thermal conductivity of liquid using the Pachaiyappan
     correlation as explain in [5]_, procedure 12A1.2, pag 1141
 
     .. math::
@@ -3411,6 +3434,7 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     Examples
     --------
     Example in [5]_, n-butylbenzene at 140ºF
+
     >>> T = unidades.Temperature(140, "F")
     >>> Tc = unidades.Temperature(729.32, "F")
     >>> rho = unidades.Density(53.76, "lbft3")
@@ -3442,14 +3466,14 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
 
 
 def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
-    """Calculates the thermal conductivity of liquid using the Kanitkar-Thodos
+    r"""Calculates the thermal conductivity of liquid using the Kanitkar-Thodos
     correlation as explain in [5]_, procedure 12A1.3, pag 1143
 
     .. math::
         \kappa\lambda = -1.884e-6P_r^2 + 1.442e-3P_r +
-        \alfa\exp\left(\beta\rho_r\right)
+        \alpha\exp\left(\beta\rho_r\right)
 
-        \alfa = \frac{7.137e-3}{\beta^{3.322}}
+        \alpha = \frac{7.137e-3}{\beta^{3.322}}
 
         \beta = 0.4 + \frac{0.986}{\exp{0.58\lambda}}
 
@@ -3485,6 +3509,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     Examples
     --------
     Example in [5]_, n-heptane at 320ºF and 197.4 atm
+
     >>> T = unidades.Temperature(320, "F")
     >>> P = unidades.Pressure(197.4, "atm")
     >>> Tc = unidades.Temperature(512.69, "F")
@@ -3515,7 +3540,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
 
 
 def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
-    """Calculates the thermal conductivity of liquid using the Lenoir
+    r"""Calculates the thermal conductivity of liquid using the Lenoir
     correlation as explain in [5]_, procedure 12A4.1, pag 1156
 
     .. math::
@@ -3555,6 +3580,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     Examples
     --------
     Example in [5]_, toluene at 87.5ºF and 22.044psi
+
     >>> T = unidades.Temperature(87.5, "F")
     >>> P = unidades.Pressure(22044, "psi")
     >>> Tc = unidades.Temperature(1065.22, "R")
@@ -3566,6 +3592,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     '0.09074'
 
     Example 10-12 in [1]_, NO2 at 311K and 276bar
+
     >>> "%0.2f" % ThL_Lenoir(311, 276e5, 431.35, 101.33e5, 0.124, 311, 2.1e5)
     '0.13'
 
@@ -3598,7 +3625,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
 
 
 def ThL_Missenard(T, P, Tc, Pc, ko):
-    """Calculates the thermal conductivity of liquid using the Missenard
+    r"""Calculates the thermal conductivity of liquid using the Missenard
     correlation, as explain in [1]_
 
     .. math::
@@ -3664,7 +3691,7 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
 
 # Gas Thermal conductivity
 def ThG_MisicThodos(T, Tc, Pc, M, Cp):
-    """Calculates thermal conductivity of gas hydrocarbon at low pressure
+    r"""Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Misic-Thodos correlation, also referenced in API Procedure
     12B1.2 pag.1162
 
@@ -3702,6 +3729,7 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     Examples
     --------
     Example in [5]_, 2-methylbutane at 212ºF and 1 atm
+
     >>> T = unidades.Temperature(212, "F")
     >>> Tc = unidades.Temperature(369.1, "F")
     >>> Pc = unidades.Pressure(498.38, "psi")
@@ -3728,7 +3756,7 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
 
 
 def ThG_RiaziFaghri(T, Tb, SG):
-    """Calculates thermal conductivity of gas hydrocarbon at low pressure
+    r"""Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
 
     .. math::
@@ -3779,7 +3807,7 @@ def ThG_RiaziFaghri(T, Tb, SG):
 
 
 def ThG_Eucken(M, Cv, mu):
-    """Calculates thermal conductivity of gas al low pressure using the Eucken
+    r"""Calculates thermal conductivity of gas al low pressure using the Eucken
     correlation as explain in [1]_
 
     .. math::
@@ -3802,6 +3830,7 @@ def ThG_Eucken(M, Cv, mu):
     Examples
     --------
     Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Eucken(72.151, cv_mass, 8.72e-6)
     '0.0187'
@@ -3818,7 +3847,7 @@ def ThG_Eucken(M, Cv, mu):
 
 
 def ThG_EuckenMod(M, Cv, mu):
-    """Calculates thermal conductivity of gas al low pressure using the
+    r"""Calculates thermal conductivity of gas al low pressure using the
     modified Eucken correlation as explain in [1]_
 
     .. math::
@@ -3841,6 +3870,7 @@ def ThG_EuckenMod(M, Cv, mu):
     Examples
     --------
     Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+
     >>> "%0.4f" % ThG_EuckenMod(72.151, 135.8/72.151*1000, 8.72e-6)
     '0.0234'
 
@@ -3856,7 +3886,7 @@ def ThG_EuckenMod(M, Cv, mu):
 
 
 def ThG_Chung(T, Tc, M, w, Cv, mu):
-    """Calculate thermal conductivity of gas at low pressure using the Chung
+    r"""Calculate thermal conductivity of gas at low pressure using the Chung
     correlation
 
     .. math::
@@ -3894,6 +3924,7 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
     Examples
     --------
     Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Chung(373.15, 460.39, 72.151, 0.272, cv_mass, 8.72e-6)
     '0.0229'
@@ -3921,12 +3952,12 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
 
 
 def ThG_NonHydrocarbon(T, P, id):
-    """Calculates thermal conductivity of selected nonhydrocarbon, referenced
+    r"""Calculates thermal conductivity of selected nonhydrocarbon, referenced
     in API procedure 12C1.1, pag 1174
 
     .. math::
         \kappa = A + BT + CT^2 + DP + E\frac{P}{T^{1.2}} + \frac{F}{
-        \left(0.4P-0.001T\right^{0.015}a} + G\ln{P}
+        \left(0.4P-0.001T\right)^{0.015}} + G\ln{P}
 
     Parameters
     ----------
@@ -3946,28 +3977,29 @@ def ThG_NonHydrocarbon(T, P, id):
     -----
     This method calculate the thermal conductivity of selected nonhydrocarbon
     gases, the available compounds are:
-        1   -   Hydrogen
-        46  -   Nitrogen
-        47  -   Oxygen
-        48  -   Carbon Monoxide
-        50  -   Hydrogen Sulfide
-        51  -   Sulfur dioxide
-        111 -   Sulfur trioxide
+        * 1   -   Hydrogen
+        * 46  -   Nitrogen
+        * 47  -   Oxygen
+        * 48  -   Carbon Monoxide
+        * 50  -   Hydrogen Sulfide
+        * 51  -   Sulfur dioxide
+        * 111 -   Sulfur trioxide
 
     Raises
     ------
     The range of validity of relation depends of compounds, it's checked in
     procedure and raise a NotImplementeError when inputs are out of bound or
     the id of compound isn't supported
-        N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
-        O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
-        H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
-        SO2        - 960ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
-        H2S, SO3   - 460ºR ≤ T ≤ 2460ºR, P atmospheric
+        * N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        * O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
+        * H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
+        * SO2        - 960ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
+        * H2S, SO3   - 460ºR ≤ T ≤ 2460ºR, P atmospheric
 
     Examples
     --------
     Example from [5]_; oxygen at 984.67ºR and 6075psi
+
     >>> T = unidades.Temperature(984.67, "R")
     >>> P = unidades.Pressure(6075, "psi")
     >>> "%0.5f" % ThG_NonHydrocarbon(T, P, 47).BtuhftF
@@ -4058,6 +4090,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     Examples
     --------
     Example 10-3 from [1]_; nitrous oxide at 105ºC and 138bar
+
     >>> T = unidades.Temperature(105, "C")
     >>> Vc = 97/44.013/1000
     >>> V = 144/44.013/1000
@@ -4093,7 +4126,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
 
 
 def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
-    """Calculate the thermal conductivity of a compressed gas using the Chung
+    r"""Calculate the thermal conductivity of a compressed gas using the Chung
     correlation
 
     .. math::
@@ -4128,6 +4161,7 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     Examples
     --------
     Example 10-4 in [1]_, propylene at 473K and 150bar
+
     >>> Vc = 184.6/42.081*1e3
     >>> rho = 1/172.1*42.081/1e3
     >>> th = ThG_P_Chung(473, 364.9, Vc, 42.081, 0.142, 0.4, 0, rho, 0.0389)
@@ -4208,6 +4242,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     Examples
     --------
     Example 9-13 in [1]_, isobutane at 500K and 100bar
+
     >>> Vc = 184.6*42.081*1000
     >>> rho = 1/172.1*42.081*1000
     >>> "%0.3f" % ThG_TRAPP(473, 364.9, Vc, 0.2798, 42.081, 0.142, rho, 0.0389)
@@ -4255,7 +4290,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
 
 # Liquid surface tension
 def Tension_Parametric(T, args, Tc):
-    """Calculates surface tension of fluid using a parametric equation
+    r"""Calculates surface tension of fluid using a parametric equation
 
     .. math::
         $\sigma=A\left(1-T_{r}\right)^{B}$
@@ -4287,14 +4322,14 @@ def Tension_Parametric(T, args, Tc):
 
 
 def Tension_BlockBird(T, Tc, Pc, Tb):
-    """Calculates surface tension of liquid using the Block-Bird correlation
+    r"""Calculates surface tension of liquid using the Block-Bird correlation
     using the Miller expression for α.
 
     .. math::
-        \frac{\sigma}{P_c^{2/3}T_c^{1/3}} = \left(0.132\alfa_c-0.279\right)
+        \frac{\sigma}{P_c^{2/3}T_c^{1/3}} = \left(0.132\alpha_c-0.279\right)
         \left(1-T_r\right)^{11/9}
 
-        \alfa_c = 0.9076\left(1+\frac{T_br\ln{P_c}{1-T_{br}}\right)
+        \alpha_c = 0.9076\left(1+\frac{T_br\ln{P_c}}{1-T_{br}}\right)
 
     Parameters
     ----------
@@ -4315,6 +4350,7 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
     Examples
     --------
     Example 12.2 from [1]_; ethyl mercaptan at 303K
+
     >>> "%0.1f" % Tension_BlockBird(303, 499, 54.9e5, 308.15).dyncm
     '22.4'
 
@@ -4344,7 +4380,7 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
 
 
 def Tension_Pitzer(T, Tc, Pc, w):
-    """Calculates surface tension of liquid using the Pitzer correlation as
+    r"""Calculates surface tension of liquid using the Pitzer correlation as
     explain in [1]_
 
     .. math::
@@ -4371,6 +4407,7 @@ def Tension_Pitzer(T, Tc, Pc, w):
     Examples
     --------
     Example 12.2 from [1]_; ethyl mercaptan at 303K
+
     >>> "%0.1f" % Tension_Pitzer(303, 499, 54.9e5, 0.192).dyncm
     '23.5'
 
@@ -4388,7 +4425,7 @@ def Tension_Pitzer(T, Tc, Pc, w):
 
 
 def Tension_ZuoStenby(T, Tc, Pc, w):
-    """Calculates surface tension of liquid using the Zuo-Stenby correlation
+    r"""Calculates surface tension of liquid using the Zuo-Stenby correlation
 
     .. math::
         \sigma_r = \sigma_r^{(1)}+ \frac{\omega - \omega^{(1)}}
@@ -4420,6 +4457,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
     Example 12.2 from [1]_; ethyl mercaptan at 303K
     The procedure use the critical properties from meos library, something
     diferent than Poling values, so the last decimal isn't exact
+
     >>> "%0.0f" % Tension_ZuoStenby(303, 499, 54.9e5, 0.192).dyncm
     '23'
 
@@ -4448,7 +4486,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
 
 
 def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
-    """Calculates surface tension of a liquid using the Sastri-Rao correlation
+    r"""Calculates surface tension of a liquid using the Sastri-Rao correlation
 
     .. math::
         \sigma = KT_b^xP_c^yT_{br}^z\left(\frac{T_c-T}{T_c-T_b}\right)^m
@@ -4472,10 +4510,12 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     Examples
     --------
     Example 12.2 from [1]_; ethyl mercaptan at 303K
+
     >>> "%0.2f" % Tension_SastriRao(303, 499, 54.9e5, 308.15).dyncm
     '21.92'
 
     Selected point in Table 3 of [42]_
+
     >>> from lib.mEoS import Acetone as Ac
     >>> "%0.2f" % Tension_SastriRao(298.16, Ac.Tc, Ac.Pc, Ac.Tb).dyncm
     '22.36'
@@ -4505,7 +4545,7 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
 
 
 def Tension_Hakim(T, Tc, Pc, w, X):
-    """Calculates surface tension of a liquid using the Hakim-Steinberg-Stiel
+    r"""Calculates surface tension of a liquid using the Hakim-Steinberg-Stiel
     correlation
 
     .. math::
@@ -4513,7 +4553,7 @@ def Tension_Hakim(T, Tc, Pc, w, X):
         \left(\frac{1-T_r}{0.4}\right)^m
 
         \sigma_{r|T_r=0.6} = 0.1574 + 0.359\omega - 1.769X - 13.69X^2 -
-        0.51\omega^2 + 1.298\omegaX
+        0.51\omega^2 + 1.298\omega X
 
         m = 1.21+0.5385\omega-14.61X-32.07X^2-1.65\omega^2+22.03X\omega
 
@@ -4538,6 +4578,7 @@ def Tension_Hakim(T, Tc, Pc, w, X):
     Examples
     --------
     Selected point in Table 5 of [42]_
+
     >>> from lib.mEoS import Methanol as Me
     >>> "%0.1f" % Tension_Hakim(313.16, Me.Tc, Me.Pc, Me.f_acent, 0.037).dyncm
     '20.4'
@@ -4565,7 +4606,7 @@ def Tension_Hakim(T, Tc, Pc, w, X):
 
 
 def Tension_Miqueu(T, Tc, Vc, M, w):
-    """Calculates surface tension of a liquid using the Miqueu et al.
+    r"""Calculates surface tension of a liquid using the Miqueu et al.
     correlation
 
     .. math::
@@ -4608,7 +4649,7 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
 
 # Acentric factor
 def facent_LeeKesler(Tb, Tc, Pc):
-    """Calculates acentric factor of a fluid using the Lee-Kesler correlation
+    r"""Calculates acentric factor of a fluid using the Lee-Kesler correlation
 
     Parameters
     ----------
@@ -4766,6 +4807,7 @@ def Vc_Riedel(Tc, Pc, w, M):
     Examples
     --------
     Example in [5]_, n-nonane
+
     >>> Tc = unidades.Temperature(610.68, "F")
     >>> Pc = unidades.Pressure(331.8, "psi")
     >>> "%0.3f" % Vc_Riedel(Tc, Pc, 0.4368, 128.2551).ft3lb
@@ -4813,7 +4855,7 @@ def Rackett(w):
 
 
 def Henry(T, args):
-    """Calculates Henry constant for gases in liquid at low pressure, also
+    r"""Calculates Henry constant for gases in liquid at low pressure, also
     referenced in API procedure 9A7.1, pag 927
 
     .. math::
@@ -4843,6 +4885,7 @@ def Henry(T, args):
     Examples
     --------
     Example from [5]_; Hydrogen sulfide in water at 77ºF
+
     >>> T = unidades.Temperature(77, "F")
     >>> "%0.0f" % Henry(T, [-65864.7, -215.127, 0.185874, 1384.15]).psi
     '8257'

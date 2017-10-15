@@ -231,9 +231,9 @@ def Z_Hall_Yarborough(Tr, Pr):
 
     References
     ----------
-    [31] .. Hall, K. R., and L. Yarborough. A New Equation of State for
+    .. [31] Hall, K. R., and L. Yarborough. A New Equation of State for
         Z-factor Calculations. Oil and Gas Journal (June 18, 1973): 82–92.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -283,7 +283,7 @@ def Z_Dranchuk_Abu_Kassem(Tr, Pr):
 
     References
     ----------
-    [32] .. Dranchuk, P. M., and J. H. Abu-Kassem. Calculate of Z-factors for
+    .. [32] Dranchuk, P. M., and J. H. Abu-Kassem. Calculate of Z-factors for
         Natural Gases Using Equations-of-State. Journal of Canadian Petroleum
         Technology (July–September 1975): 34–36
     """

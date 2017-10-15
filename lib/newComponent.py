@@ -427,7 +427,7 @@ class GroupContribution(newComponente):
             if i < self.FirstOrder:
                 # Clean additional comment of group, ring flag and other,
                 # separated of main group by spaces
-                cmp = self.coeff["txt"][i][0]
+                cmp = self._coeff["txt"][i][0]
                 if " " in cmp:
                     cmp = cmp.split(" ")[0]
 
@@ -582,6 +582,7 @@ class Joback(GroupContribution):
     Examples
     --------
     p-dichlorobenzene example in [2]_, Table V
+
     >>> cmp = Joback(group=[16, 13, 14], contribution=[2, 4, 2])
     >>> "%0.1f %0.0f %0.0f %0.1f" % (cmp.Tb, cmp.Tf, cmp.Tc, cmp.Pc.bar)
     '443.4 256 675 41.5'
@@ -601,6 +602,7 @@ class Joback(GroupContribution):
     '3.91e-04 3.4e-04'
 
     Example 2-1 in [1]_, 2-ethylphenol critical properties
+
     >>> cmp = Joback(group=[0, 1, 13, 14, 20], contribution=[1, 1, 4, 2, 1])
     >>> "%0.2f %0.1f %0.2f" % (cmp.Tb, cmp.Tc, cmp.Pc.bar)
     '489.94 716.0 44.09'
@@ -610,17 +612,20 @@ class Joback(GroupContribution):
     'C8H10O'
 
     Example 3-1 in [1]_, 2,4 dimethylphenol ΔH and ΔG
+
     >>> "%0.2f %0.2f" % (cmp.Hf.kJg*cmp.M, cmp.Gf.kJg*cmp.M)
     '-149.23 -25.73'
     >>> "%0.1f" % (cmp._Cp0(700).JgK*cmp.M)
     '281.2'
 
     Example 2-10 in [1]_, 2,4 dimethylphenol Tb and Tf
+
     >>> cmp = Joback(group=[0, 13, 14, 20], contribution=[2, 3, 3, 1])
     >>> "%0.2f %0.2f" % (cmp.Tf, cmp.Tb)
     '330.58 494.92'
 
     Example in http://en.wikipedia.org/wiki/Joback_method, acetone
+
     >>> cmp = Joback(group=[0, 23], contribution=[2, 1])
     >>> "%0.3f %0.3f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Tb, cmp.Tf)
     '500.559 48.025 322.11 173.5'
@@ -636,27 +641,29 @@ class Joback(GroupContribution):
     '0.0002942'
 
     Example in [11]_ pag. 2-470, o-xylene
+
     >>> cmp = Joback(group=[13, 14, 0], contribution=[4, 2, 2], Tb=417.58)
     >>> "%0.2f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '630.37 35.86 375.5'
 
     Example in [11]_ pag. 2-470, sec-butanol
+
     >>> cmp = Joback(group=[0, 1, 2, 19], contribution=[2, 1, 1, 1], Tb=372.7)
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '534.1 44.33 272.5'
 
     References
     ----------
-    [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    .. [1]Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    [2] .. Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
+    .. [2] Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
         from Group-Contributions. Chemical Engineering Communications, 57:1-6
         (1987), 233-243
-    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Joback-Reid (1987)"
-    coeff = {
+    _coeff = {
         # Table III
         "tc": [0.0141, 0.0189, 0.0164, 0.0067, 0.0113, 0.0129, 0.0117, 0.0026,
                0.0027, 0.002, 0.01, 0.0122, 0.0042, 0.0082, 0.0143, 0.0111,
@@ -794,7 +801,7 @@ class Joback(GroupContribution):
             Tb = self.kwargs["Tb"]
         else:
             # Eq 2
-            Tb = 198.2+sum([c*self.coeff["tb"][i] for i, c in zip(
+            Tb = 198.2+sum([c*self._coeff["tb"][i] for i, c in zip(
                 self.kwargs["group"], self.kwargs["contribution"])])
         self.Tb = unidades.Temperature(Tb)
 
@@ -812,20 +819,20 @@ class Joback(GroupContribution):
         cpd = 2.06e-7
         mua, mub = 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            Tf += c*self.coeff["tf"][i]                                 # Eq 3
-            tcsuma += c*self.coeff["tc"][i]                             # Eq 4
-            pcsuma += c*self.coeff["Pc"][i]                             # Eq 5
-            vcsuma += c*self.coeff["vc"][i]                             # Eq 6
-            Hf += c*self.coeff["hf"][i]                                 # Eq 7
-            Gf += c*self.coeff["gf"][i]                                 # Eq 8
-            Hv += c*self.coeff["hv"][i]*0.004184                        # Eq 10
-            Hm += c*self.coeff["hm"][i]*0.004184                        # Eq 11
-            cpa += c*self.coeff["cpa"][i]
-            cpb += c*self.coeff["cpb"][i]
-            cpc += c*self.coeff["cpc"][i]
-            cpd += c*self.coeff["cpd"][i]
-            mua += c*self.coeff["mua"][i]
-            mub += c*self.coeff["mub"][i]
+            Tf += c*self._coeff["tf"][i]                                # Eq 3
+            tcsuma += c*self._coeff["tc"][i]                            # Eq 4
+            pcsuma += c*self._coeff["Pc"][i]                            # Eq 5
+            vcsuma += c*self._coeff["vc"][i]                            # Eq 6
+            Hf += c*self._coeff["hf"][i]                                # Eq 7
+            Gf += c*self._coeff["gf"][i]                                # Eq 8
+            Hv += c*self._coeff["hv"][i]*0.004184                       # Eq 10
+            Hm += c*self._coeff["hm"][i]*0.004184                       # Eq 11
+            cpa += c*self._coeff["cpa"][i]
+            cpb += c*self._coeff["cpb"][i]
+            cpc += c*self._coeff["cpc"][i]
+            cpd += c*self._coeff["cpd"][i]
+            mua += c*self._coeff["mua"][i]
+            mub += c*self._coeff["mub"][i]
         self.Tf = unidades.Temperature(Tf)
         self.Tc = unidades.Temperature(self.Tb/(0.584+0.965*tcsuma-tcsuma**2))
         self.Pc = unidades.Pressure((0.113+0.0032*self.Na-pcsuma)**-2, "bar")
@@ -906,11 +913,13 @@ class Constantinou(GroupContribution):
     --------
     Example from [3]_ to distinguish between isomers, dimethylhexanes
     1st order only
+
     >>> cmp = Constantinou(group=[0, 1, 2], contribution=[4, 2, 2])
     >>> "%0.2f %0.2f" % (cmp.Tc, cmp.Tb)
     '557.91 385.92'
 
     Adding 2nd order contributions
+
     >>> c23 = Constantinou(group=[0, 1, 2, 80], contribution=[4, 2, 2, 1])
     >>> c24 = Constantinou(group=[0, 1, 2, 78], contribution=[4, 2, 2, 1])
     >>> c25 = Constantinou(group=[0, 1, 2, 78], contribution=[4, 2, 2, 2])
@@ -920,6 +929,7 @@ class Constantinou(GroupContribution):
     '391.41 382.32 378.64'
 
     Examples from Table 15a and 15b and 16 in [3]_
+
     >>> cmp1 = Constantinou(
     ... group=[0, 1, 2, 3, 15], contribution=[3, 1, 1, 1, 2])
     >>> cmp2 = Constantinou(group=[0, 1, 2, 38], contribution=[2, 1, 1, 1])
@@ -938,6 +948,7 @@ class Constantinou(GroupContribution):
     '150.47 131.007 144.965'
 
     Examples from Table A1, A2 and A3 in [4]_
+
     >>> cmp1 = Constantinou(group=[0, 2], contribution=[5, 3])
     >>> cmp2 = Constantinou(group=[0, 17, 1, 2], contribution=[2, 1, 1, 1])
     >>> cmp3 = Constantinou(group=[0, 2, 80], contribution=[5, 3, 2])
@@ -951,6 +962,7 @@ class Constantinou(GroupContribution):
     '0.3195 0.4430 0.3167 0.3863'
 
     Example 2-2 in [1]_, 2-ethylphenol critical properties
+
     >>> cmp = Constantinou(group=[0, 10, 13, 16], contribution=[1, 4, 1, 1])
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '718.6 42.97 371.9'
@@ -958,9 +970,11 @@ class Constantinou(GroupContribution):
     'C8H10O'
 
     Example 2-3 in [1]_, butanols critical properties
+    
     >>> b1 = Constantinou(group=[0, 1, 15], contribution=[1, 3, 1])
 
-    # 2-met-1-propanol CHOH Second order contribution is zero
+    2-met-1-propanol CHOH Second order contribution is zero
+
     >>> b2m1 = Constantinou(
     ... group=[0, 1, 2, 15, 78], contribution=[2, 1, 1, 1, 1])
     >>> b2m2 = Constantinou(
@@ -977,17 +991,20 @@ class Constantinou(GroupContribution):
     '276.9 276.0 280.2 264.2'
 
     Example 2-9 in [1]_, 2,3,3-trimethylpentane
+
     >>> c1 = Constantinou(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1])
     >>> c2 = Constantinou(group=[0, 1, 2, 3, 81], contribution=[5, 1, 1, 1, 1])
     >>> "%0.3f %0.3f" % (c1.f_acent, c2.f_acent)
     '0.301 0.292'
 
     Example 2-11 in [1]_, 2,4-dimethylphenol
+
     >>> cmp = Constantinou(group=[10, 12, 16], contribution=[3, 2, 1])
     >>> "%0.2f %0.2f" % (cmp.Tf, cmp.Tb)
     '315.96 492.33'
 
     Example 2-12 in [1]_, cycloalkanes
+
     >>> c7 = Constantinou(group=[1, 87], contribution=[7, 1])
     >>> mc6 = Constantinou(
     ... group=[0, 1, 2, 86, 92], contribution=[1, 5, 1, 1, 1])
@@ -1002,7 +1019,8 @@ class Constantinou(GroupContribution):
     >>> "%0.2f %0.2f %0.2f %0.2f %0.2f" % (c7.Tb, mc6.Tb, ec5.Tb, c5.Tb, t5.Tb)
     '391.93 377.81 377.69 364.27 364.27'
 
-    # Example 3-2 in [1]_, 2-ethylphenol ΔH and ΔG
+    Example 3-2 in [1]_, 2-ethylphenol ΔH and ΔG
+
     >>> cmp = Constantinou(group=[0, 10, 13, 16], contribution=[1, 4, 1, 1])
     >>> "%0.3f %0.3f" % (cmp.Hf.kJg*cmp.M, cmp.Gf.kJg*cmp.M)
     '-145.561 -23.595'
@@ -1011,6 +1029,7 @@ class Constantinou(GroupContribution):
 
     Example 3-3 in [1]_, butanols formations properties
     Component definition above in example 2-3
+
     >>> "%0.2f %0.2f %0.2f %0.2f" % (
     ... b1.Hf.kJg*b1.M, b2m1.Hf.kJg*b2m1.M, b2m2.Hf.kJg*b2m2.M, b2.Hf.kJg*b2.M)
     '-278.82 -287.87 -316.77 -290.90'
@@ -1023,24 +1042,25 @@ class Constantinou(GroupContribution):
     '110.5 109.8 111.9 111.7'
 
     Example in [11]_ pag. 2-471, 2,6-dimethylpyridine
+
     >>> cmp = Constantinou(group=[0, 36, 86], contribution=[2, 1, 1])
     >>> "%0.0f" % cmp.Tf
     '278'
 
     References
     ----------
-    [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    [3] .. Constantinou, L., Gani, R. New Group Controbution Method for
+    .. [3] Constantinou, L., Gani, R. New Group Controbution Method for
         Estimating Properties of Pure Compounds. AIChE J., 40: 1697 (1994)
-    [4] .. Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
+    .. [4] Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
         acentric factor and the liquid molar volume at 298K using a new group
         contribution method. Fluid Phase Equil., 103: 11 (1995).
-    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Constantinou-Gani (1995)"
-    coeff = {
+    _coeff = {
         # The Second order term are append to the first order in each table
 
         # Table 1 in [3]_
@@ -1393,19 +1413,19 @@ class Constantinou(GroupContribution):
 
         tc = Pc = tf = tb = vc = w = gf = hf = hv = vliq = cpa = cpb = cpc = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            Pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
-            tf += c*self.coeff["tf"][i]
-            tb += c*self.coeff["tb"][i]
-            hf += c*self.coeff["hf"][i]
-            gf += c*self.coeff["gf"][i]
-            hv += c*self.coeff["hv"][i]
-            w += c*self.coeff["w"][i]
-            vliq += c*self.coeff["vliq"][i]
-            cpa += c*self.coeff["cpa"][i]
-            cpb += c*self.coeff["cpb"][i]
-            cpc += c*self.coeff["cpc"][i]
+            tc += c*self._coeff["tc"][i]
+            Pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
+            tf += c*self._coeff["tf"][i]
+            tb += c*self._coeff["tb"][i]
+            hf += c*self._coeff["hf"][i]
+            gf += c*self._coeff["gf"][i]
+            hv += c*self._coeff["hv"][i]
+            w += c*self._coeff["w"][i]
+            vliq += c*self._coeff["vliq"][i]
+            cpa += c*self._coeff["cpa"][i]
+            cpb += c*self._coeff["cpb"][i]
+            cpc += c*self._coeff["cpc"][i]
 
         # Table 5 with functions
         self.Tc = unidades.Temperature(181.128*log(tc))
@@ -1480,6 +1500,7 @@ class Wilson(GroupContribution):
     Examples
     --------
     Example 2-4 in [1]_, 2-ethylphenol critical properties
+
     >>> c1 = Wilson(Tb=477.67, ring=1)
     >>> c2 = Wilson(Tb=477.67, ring=1)
     >>> c1(group=[3, 0, 5], contribution=[8, 10, 1])
@@ -1491,9 +1512,9 @@ class Wilson(GroupContribution):
 
     References
     ----------
-    [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    [5] .. Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
+    .. [5] Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
         estimation based on zero, first and second order methods. Paper given
         at AIChE Spring National Meeting, New Orleans, LA, USA, February 25-29,
         1996.
@@ -1502,7 +1523,7 @@ class Wilson(GroupContribution):
     kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0
 
-    coeff = {
+    _coeff = {
         "tc": [0.002793, 0.320000, 0.019000, 0.008532, 0.019181, 0.020341,
                0.008810, 0.036400, 0.088000, 0.020000, 0.012000, 0.007271,
                0.011151, 0.016800, 0.014000, 0.018600, 0.059000, 0.031000,
@@ -1598,8 +1619,8 @@ class Wilson(GroupContribution):
 
         tc = Pc = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            Pc += c*self.coeff["Pc"][i]
+            tc += c*self._coeff["tc"][i]
+            Pc += c*self._coeff["Pc"][i]
 
         Nr = self.kwargs["ring"]
         self.Tc = unidades.Temperature(self.Tb/(0.048271-0.019846*Nr+tc)**0.2)
@@ -1639,6 +1660,7 @@ class Marrero(GroupContribution):
     Examples
     --------
     Example 2-6 in [1]_, 2-ethylphenol critical properties
+
     >>> cmp = Marrero(Tb=477.67, group=[1, 36, 129, 130, 132, 140, 148],
     ... contribution=[1, 1, 1, 2, 2, 1, 1])
     >>> "%0.1f %0.1f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
@@ -1647,6 +1669,7 @@ class Marrero(GroupContribution):
     'C8H10O'
 
     Example 2-7 in [1]_, butanols
+
     >>> b1 = Marrero(group=[1, 28, 41], contribution=[1, 2, 1])
     >>> b2m1 = Marrero(group=[2, 29, 41], contribution=[2, 1, 1])
     >>> b2m2 = Marrero(group=[3, 79], contribution=[3, 1])
@@ -1662,12 +1685,14 @@ class Marrero(GroupContribution):
     '272.1 267.3 275.1 277.9'
 
     Example 2-13 in [1]_, 2,4-dimethylphenol
+
     >>> cmp = Marrero(group=[9, 130, 132, 133, 140, 148],
     ... contribution=[2, 3, 1, 1, 1, 1], M=122.167)
     >>> "%0.2f" % cmp.Tb
     '489.39'
 
     Example 2-14 in [1]_, cycloalkanes
+
     >>> c7 = Marrero(group=[111], contribution=[7])
     >>> mc6 = Marrero(group=[7, 111, 112], contribution=[1, 4, 2])
     >>> ec5 = Marrero(group=[1, 34, 111, 112], contribution=[1, 1, 3, 2])
@@ -1677,24 +1702,28 @@ class Marrero(GroupContribution):
     '377.53 375.85 384.47 374.17 374.17'
 
     Table 8a in [6]_ for 1,3,5-Trichlorotrifluorobenzene
+
     >>> cmp = Marrero(group=[138, 140, 144, 145], contribution=[3, 3, 3, 3])
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '471.9 685.0 32.4 452.3'
 
     Table 8b in [6]_ for ethyl acrylate
+
     >>> cmp = Marrero(group=[84, 1, 46, 100], contribution=[1, 1, 1, 1])
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '373.9 553.6 36.6 325.1'
 
     Table 8c in [6]_ for isoquinoline
+
     >>> cmp = Marrero(group=[129, 138, 131, 136, 132, 133],
     ... contribution=[3, 1, 1, 1, 1, 4])
     >>> "%0.1f %0.1f %0.1f" % (cmp.Tb, cmp.Tc, cmp.Vc.ccg*cmp.M)
     '519.5 787.3 405.1'
 
     Table 8d in [6]_ for m-Terphenyl
+
     >>> cmp = Marrero(group=[129, 130, 141, 132, 133],
     ... contribution=[5, 4, 2, 5, 4], Tb=638)
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
@@ -1702,6 +1731,7 @@ class Marrero(GroupContribution):
     '638.0 907.3 33.9 764.3'
 
     Table 3 in [7]_ for o-phthalate
+
     >>> cmp = Marrero(group=[129, 132, 133, 138, 153, 46, 28, 1],
     ... contribution=[2, 1, 2, 1, 2, 2, 4, 2])
     >>> "%0.2f" % cmp.mu.muPas
@@ -1709,19 +1739,19 @@ class Marrero(GroupContribution):
 
     References
     ----------
-    [1] .. Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    [6] .. Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
+    .. [6] Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
         Compound Properties Using Group-Interaction Contributions. AIChE J.,
         45: 615 (1999).
-    [7] .. Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
+    .. [7] Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
         Viscosity at Ambient Temperature of Pure Organic Compounds by Using
         Group-Interaction Contributions. Chemical Engineering Journal 79
         (2000) 69-72
     """
     __title__ = "Marrero-Pardillo (1999)"
 
-    coeff = {
+    _coeff = {
         # Table 5 from [6]_
         "tc": [-0.0213, -0.0227, -0.0223, -0.0189, 0.8526, 0.1792, 0.3818,
                -0.0214, 0.1117, 0.0987, -0.0370, -0.9141, -0.9166, -0.9146,
@@ -2026,7 +2056,7 @@ class Marrero(GroupContribution):
         group = []
         rest = {}
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            A, B = self.coeff["txt"][i][0].split(" & ")
+            A, B = self._coeff["txt"][i][0].split(" & ")
             for x in range(c):
                 for grp in (A, B):
                     # Remove the optional corchetes in multiple link definition
@@ -2083,11 +2113,11 @@ class Marrero(GroupContribution):
 
         tc = Pc = vc = tb = mu = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self.coeff["tb"][i]
-            tc += c*self.coeff["tc"][i]
-            Pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
-            mu += c*self.coeff["mu"][i]
+            tb += c*self._coeff["tb"][i]
+            tc += c*self._coeff["tc"][i]
+            Pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
+            mu += c*self._coeff["mu"][i]
 
         # Table 1 equations in [6]_
         if self.kwargs["Tb"]:
@@ -2119,7 +2149,7 @@ class Elliott(GroupContribution):
     """
     __title__ = "UNIFAC (1999)"
 
-    coeff = {
+    _coeff = {
         "tc": [0.135, 0.131, 0.077, 0.073, 0.070, -0.015, 0.070, 0.169, 0.169,
                0.169, 0.169, 0.169, 0.338, 0.069, 0.099, 0.221, 0.207, 0.136,
                0.554, 0.0, 0.0, 0.278, 0.387, 0.383, 0.299, 0.457, 0.453,
@@ -2332,13 +2362,13 @@ class Elliott(GroupContribution):
         self.M = self.kwargs["M"]
         tc = Pc = vc = tb = hv = gf = hf = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self.coeff["tb"][i]
-            tc += c*self.coeff["tc"][i]
-            Pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
-            hv += c*self.coeff["hv"][i]
-            gf += c*self.coeff["gf"][i]
-            hf += c*self.coeff["hf"][i]
+            tb += c*self._coeff["tb"][i]
+            tc += c*self._coeff["tc"][i]
+            Pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
+            hv += c*self._coeff["hv"][i]
+            gf += c*self._coeff["gf"][i]
+            hf += c*self._coeff["hf"][i]
 
         if self.kwargs["Tb"]:
             Tb = self.kwargs["Tb"]
@@ -2392,6 +2422,7 @@ class Ambrose(GroupContribution):
     Examples
     --------
     Example 1 in [10]_, 2,2,3-Trimethylpentane
+
     >>> Tb = unidades.Temperature(229.72, "F")
     >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
     ... Tb=Tb, platt=3)
@@ -2401,6 +2432,7 @@ class Ambrose(GroupContribution):
     'C8H18'
 
     Example 2 in [10]_, 2-Methyl-1-butene
+
     >>> Tb = unidades.Temperature(88.09, "F")
     >>> cmp = Ambrose(group=[0, 1, 4, 6], contribution=[2, 1, 1, 1],
     ... Tb=Tb, platt=0)
@@ -2408,12 +2440,14 @@ class Ambrose(GroupContribution):
     '385.95 520.3 0.0657'
 
     Example 3 in [10]_, cis-Decalin
+
     >>> Tb = unidades.Temperature(384.47, "F")
     >>> cmp = Ambrose(group=[10, 12], contribution=[8, 2], Tb=Tb, platt=0)
     >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '801.95 430.06 0.0562'
 
     Example 4 in [10]_, tert-Butyl benzene
+
     >>> Tb = unidades.Temperature(336.41, "F")
     >>> cmp = Ambrose(group=[0, 3, 17], contribution=[3, 1, 1],
     ... Tb=Tb, platt=-1)
@@ -2421,6 +2455,7 @@ class Ambrose(GroupContribution):
     '705.82 415.97 0.0555'
 
     Example 5 in [10]_, Anthracene
+
     >>> Tb = unidades.Temperature(646.16, "F")
     >>> cmp = Ambrose(group=[18, 28], contribution=[1, 2], M=178.23, Tb=Tb,
     ... platt=0)
@@ -2428,6 +2463,7 @@ class Ambrose(GroupContribution):
     '1165.3 504.64 0.0502'
 
     Example from [11]_, 2,2,4-trimethylpentane
+
     >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
     ... Tb=372.39, platt=0)
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
@@ -2435,22 +2471,22 @@ class Ambrose(GroupContribution):
 
     References
     ----------
-    [8] .. Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+    .. [8] Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
         Properties: I. Critical Temperatures of Organic Compounds. National
         Physical Laboratory, Teddington, NPL Rep. Chern.  92, 1978,
         corrected 1980.
-    [9] .. Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+    .. [9] Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
         Properties: II. Critical Pressures and Volumes of Organic Compounds.
         National Physical Laboratory, Teddington, NPL Rep. 98, 1979
-    [10] .. API. Technical Data book: Petroleum Refining 6th Edition 1997
-    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    .. [10] API. Technical Data book: Petroleum Refining 6th Edition 1997
+    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Ambrose (1980)"
     kwargs = GroupContribution.kwargs.copy()
     kwargs["platt"] = 0
 
-    coeff = {
+    _coeff = {
         "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610,
                0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495,
                0.1170, 0.9240, 0.8940, 0.9440, 0.9440, 0.8640, 0.9140, 0.8340,
@@ -2558,7 +2594,7 @@ class Ambrose(GroupContribution):
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             # Only the first order term count for this
             if i < self.FirstOrder:
-                grp = self.coeff["txt"][i][1]
+                grp = self._coeff["txt"][i][1]
                 for x in range(c):
                     group.append(grp)
         return group
@@ -2585,9 +2621,9 @@ class Ambrose(GroupContribution):
                 Pc += 0.1-0.013*n
                 vc += 0
             else:
-                tc += c*self.coeff["tc"][i]
-                Pc += c*self.coeff["Pc"][i]
-                vc += c*self.coeff["vc"][i]
+                tc += c*self._coeff["tc"][i]
+                Pc += c*self._coeff["Pc"][i]
+                vc += c*self._coeff["vc"][i]
 
         Pt = self.kwargs["platt"]
         self.Tc = unidades.Temperature(self.Tb*(1+1/(1.242+tc-0.023*Pt)))
@@ -2633,18 +2669,20 @@ class Klincewicz(GroupContribution):
     Examples
     --------
     Example in https://en.wikipedia.org/wiki/Klincewicz_method, acetone
+
     >>> cmp = Klincewicz(Tb=329.25, group=[0, 18], contribution=[2, 1])
     >>> "%0.2f %0.2f %0.2f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '510.48 45.69 213.52'
 
     Same example without group contribution
+
     >>> cmp = Klincewicz(Tb=329.25, M=58.08, atoms=10, nogroup=True)
     >>> "%0.2f %0.4f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '505.15 52.9098 205.2'
 
     References
     ----------
-    [12] .. Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
+    .. [12] Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
         with Group Contribution Methods. AIChE J., 30(1), 137 (1984)
     """
     __title__ = "Klincewicz (1984)"
@@ -2652,7 +2690,7 @@ class Klincewicz(GroupContribution):
     kwargs["nogroup"] = False
     kwargs["atoms"] = 0
 
-    coeff = {
+    _coeff = {
         # Table 6
         "tc": [-2.433, 0.353, 4.253, 6.266, -0.335, 16.416, 12.435, -0.991,
                3.786, 3.373, 7.169, 7.169, 5.623, -4.561, 7.341, -28.930,
@@ -2759,9 +2797,9 @@ class Klincewicz(GroupContribution):
         else:
             Pc = tc = vc = 0
             for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-                tc += c*self.coeff["tc"][i]
-                Pc += c*self.coeff["Pc"][i]
-                vc += c*self.coeff["vc"][i]
+                tc += c*self._coeff["tc"][i]
+                Pc += c*self._coeff["Pc"][i]
+                vc += c*self._coeff["vc"][i]
 
             # Eq 10-12
             self.Tc = unidades.Temperature(45.4-0.77*self.M+1.55*self.Tb+tc)
@@ -2803,6 +2841,7 @@ class Lydersen(GroupContribution):
     Examples
     --------
     Example 2 in [11]_ pag 2-343, 2-butanol critical properties
+
     >>> cmp = Lydersen(Tb=372.7, group=[0, 1, 2, 18],
     ... contribution=[2, 1, 1, 1])
     >>> "%0.1f %0.3f" % (cmp.Tc, cmp.Pc.MPa)
@@ -2811,20 +2850,21 @@ class Lydersen(GroupContribution):
     'C4H10O'
 
     Example in http://en.wikipedia.org/wiki/Lydersen_method, acetone
+
     >>> cmp = Lydersen(Tb=329.25, group=[0, 22], contribution=[2, 1])
     >>> "%0.0f" % (cmp.Vc.ccg*cmp.M)
     '210'
 
     References
     ----------
-    [11] .. Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
-    [13] .. Lydersen, A. L. Estimation of Critical Properties of Organic
+    .. [13] Lydersen, A. L. Estimation of Critical Properties of Organic
         Compounds. Coll. Eng. Univ. Wisconsin, Engineering Experimental
         Station Rept. 3, Madison, WI (1955).
     """
     __title__ = "Lydersen (1955)"
-    coeff = {
+    _coeff = {
         # Table III
         "tc": [0.020, 0.020, 0.012, 0.00, 0.018, 0.018, 0.00, 0.00, 0.005,
                0.005, 0.013, 0.012, -0.007, 0.011, 0.011, 0.011, 0.066, 0.066,
@@ -2919,9 +2959,9 @@ class Lydersen(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
+            tc += c*self._coeff["tc"][i]
+            pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
 
         self.Tc = unidades.Temperature(self.Tb/(0.567+tc-tc**2))
         self.Pc = unidades.Pressure(self.M/(0.34+pc)**2, "atm")
@@ -2960,11 +3000,13 @@ class Valderrama(GroupContribution):
     Examples
     --------
     Example from in [14]_ Table 8, phenantrene
+
     >>> cmp = Valderrama(Tb=372.7, group=[30, 32], contribution=[10, 4])
     >>> "%0.0f %0.1f %0.2f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '871 31.6 550.55'
 
-    # 2-methyl-1-pentanol
+    2-methyl-1-pentanol
+
     >>> cmp = Valderrama(Tb=401.85,
     ... group=[0, 1, 2, 10], contribution=[2, 3, 1, 1])
     >>> "%0.0f %0.1f %0.2f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
@@ -2972,13 +3014,13 @@ class Valderrama(GroupContribution):
 
     References
     ----------
-    [14] .. Valderrama, J.O., Álvarez, V.H. A New Group Contribution Method
+    .. [14] Valderrama, J.O., Álvarez, V.H. A New Group Contribution Method
         Based on Equation of State Parameters to Evaluate the Critical
         Properties of Simple and Complex Molecules. Canadian J. Chem. Eng.
         84, 431-446 (2006)
     """
     __title__ = "Valderrama (2006)"
-    coeff = {
+    _coeff = {
         # Table III
         "tc": [8.26, 20.07, 27.11, 35.81, 3.27, 18.81, 26.64, 15.40, 6.46,
                6.46, 11.21, 9.93, 34.18, 21.98, 50.52, 40.07, 28.83, -7.64,
@@ -3055,9 +3097,9 @@ class Valderrama(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
+            tc += c*self._coeff["tc"][i]
+            pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
 
         g1 = 38.91+tc**0.88
         g2 = 5.84+pc**1.27
@@ -3098,6 +3140,7 @@ class Nannoolal(GroupContribution):
     Examples
     --------
     Table 17a in [15]_, 3,3,4,4-tetramethylhexane
+
     >>> cmp = Nannoolal(group=[0, 3, 5, 131], contribution=[6, 2, 2, 1])
     >>> "%0.1f" % cmp.Tb
     '429.5'
@@ -3105,51 +3148,60 @@ class Nannoolal(GroupContribution):
     'C10H22'
 
     Table 17b in [15]_, di-isopropanolamine, find too in [10]_
+
     >>> cmp = Nannoolal(group=[0, 6, 33, 41], contribution=[2, 4, 2, 1])
     >>> "%0.1f" % cmp.Tb
     '509.3'
 
     Table 17c in [15]_, perfluoro-2-propanone
+
     >>> cmp = Nannoolal(group=[6, 20, 50, 118, 119, 121],
     ... contribution=[2, 6, 1, 1, 2, 1])
     >>> "%0.1f" % cmp.Tb
     '246.3'
 
     Table 17d in [15]_, methyl m-toluate
+
     >>> cmp = Nannoolal(group=[1, 2, 14, 15, 44, 126, 132],
     ... contribution=[1, 1, 4, 2, 1, 1, 1])
     >>> "%0.1f" % cmp.Tb
     '490.7'
 
     Table 42a in [16]_, 2,2,3,3-tetramethylbutane
+
     >>> cmp = Nannoolal(Tb=379.6, group=[0, 5, 131], contribution=[6, 2, 1])
     >>> "%0.1f" % cmp.Tc
     '566.8'
 
     Table 42b in [16]_, diethylene glycol monomethyl ether
+
     >>> cmp = Nannoolal(M=120.15, group=[1, 6, 34, 37],
     ... contribution=[1, 4, 1, 2])
     >>> "%0.1f" % cmp.Pc.kPa
     '3689.9'
 
     Table 42c in [16]_, trichloro silane
+
     >>> cmp = Nannoolal(group=[26, 111, 122, 133], contribution=[3, 1, 1, 1])
     >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
     '262.8'
 
     Table 42d in [16]_, perfluoro-2-propanone
+
     >>> cmp = Nannoolal(Tb=245.9, group=[6, 20, 50, 118, 119, 121],
     ... contribution=[2, 6, 1, 1, 2, 1])
     >>> "%0.1f" % cmp.Tc
     '358.0'
 
     Table 15c in [17]_
+
     >>> "%0.7f" % cmp.db
     '0.1179392'
     >>> "%0.2f" % cmp._Pv(210.16).kPa
     '14.63'
 
     Table 15a in [17]_, α-pinene
+
     >>> cmp = Nannoolal(Tb=429, group=[0, 8, 9, 10, 61, 123, 130],
     ... contribution=[3, 2, 2, 1, 1, 1, 2])
     >>> "%0.7f" % cmp.db
@@ -3158,6 +3210,7 @@ class Nannoolal(GroupContribution):
     '31.03'
 
     Table 15b in [17]_, 1,2-ethanediol
+
     >>> cmp = Nannoolal(Tb=470.5, group=[6, 35], contribution=[2, 2])
     >>> "%0.7f" % cmp.db
     '1.1310491'
@@ -3165,6 +3218,7 @@ class Nannoolal(GroupContribution):
     '13.05'
 
     Table 15d in [17]_, acrylic acid
+
     >>> cmp = Nannoolal(Tb=413.6, group=[43, 60, 132], contribution=[1, 1, 1])
     >>> "%0.7f" % cmp.db
     '0.9163297'
@@ -3172,6 +3226,7 @@ class Nannoolal(GroupContribution):
     '6.52'
 
     Table 15e in [17]_, glycol monoacetate
+
     >>> cmp = Nannoolal(Tb=458.65, group=[0, 6, 35, 44],
     ... contribution=[1, 2, 1, 1])
     >>> "%0.7f" % cmp.db
@@ -3180,6 +3235,7 @@ class Nannoolal(GroupContribution):
     '2.24'
 
     Table 15f in [17]_, dipropyl succinate
+
     >>> cmp = Nannoolal(group=[0, 3, 6, 44], contribution=[2, 4, 2, 2])
     >>> "%0.7f" % cmp.db
     '0.9878298'
@@ -3187,11 +3243,13 @@ class Nannoolal(GroupContribution):
     Table 15g in [17]_, diethanolamine
     The example in paper has a error, the group interaction contribution has
     the sign changed, fixing this the value get is near to experimental value
+
     >>> cmp = Nannoolal(Tb=541.15, group=[6, 35, 41], contribution=[4, 2, 1])
     >>> "%0.5f" % cmp._Pv(401.13).kPa
     '0.40405'
 
     Table 15h in [17]_, R122
+
     >>> cmp = Nannoolal(Tb=344.25, group=[6, 20, 25, 26, 119, 122],
     ... contribution=[2, 2, 2, 1, 1, 1])
     >>> "%0.7f" % cmp.db
@@ -3200,6 +3258,7 @@ class Nannoolal(GroupContribution):
     '17.5093'
 
     Table 28a in [18]_, N,N-diethylamine
+
     >>> cmp = Nannoolal(Tb=329, group=[0, 6, 41], contribution=[2, 2, 1])
     >>> "%0.7f %0.2f" % (cmp.dBv, cmp.Tv)
     '4.7713112 210.38'
@@ -3207,6 +3266,7 @@ class Nannoolal(GroupContribution):
     '0.2674'
 
     Table 28b in [18]_, ethylene glycol monopropyl
+
     >>> cmp = Nannoolal(Tb=424.5, group=[0, 3, 6, 34, 37],
     ... contribution=[1, 1, 3, 1, 1])
     >>> "%0.7f %0.3f" % (cmp.dBv, cmp.Tv)
@@ -3215,6 +3275,7 @@ class Nannoolal(GroupContribution):
     '0.921814'
 
     Table 28c in [18]_, monoethanolamine
+
     >>> cmp = Nannoolal(Tb=443.45, group=[6, 35, 39], contribution=[2, 1, 1])
     >>> "%0.7f %0.3f" % (cmp.dBv, cmp.Tv)
     '12.3872997 382.275'
@@ -3223,24 +3284,24 @@ class Nannoolal(GroupContribution):
 
     References
     ----------
-    [15] .. Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
+    .. [15] Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
         of Pure Component Properties 1. Estimation of the Normal Boiling Point
         of Non-electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 226 (2004) 45-63
-    [16] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    .. [16] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 2. Estimation of Critical Property Data by Group
         Contribution. Fluid Phase Equilib., 252 (2007) 1-27
-    [17] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    .. [17] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 3. Estimation of the Vapor Pressure of
         Non-Electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 269 (2008) 117-133
-    [18] .. Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    .. [18] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 4. Estimation of the Saturted Liquid Viscosity of
         Non-Electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 281 (2009) 97-119
     """
     __title__ = "Nannoolal (2007)"
-    coeff = {
+    _coeff = {
         # Be careful, there are several changes in group between Tb paper and
         # the other paper and several index ajust
         #   - 78 : Two different group with equal parameter but different M,
@@ -3661,13 +3722,13 @@ class Nannoolal(GroupContribution):
 
         tb, tc, pc, vc, pv, dbv, tv = 0, 0, 0, 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self.coeff["tb"][i]
-            tc += c*self.coeff["tc"][i]*1e-3
-            pc += c*self.coeff["Pc"][i]*1e-4
-            vc += c*self.coeff["vc"][i]
-            pv += c*self.coeff["Pv"][i]*1e-3
-            dbv += c*self.coeff["dBv"][i]*1e-3
-            tv += c*self.coeff["Tv"][i]
+            tb += c*self._coeff["tb"][i]
+            tc += c*self._coeff["tc"][i]*1e-3
+            pc += c*self._coeff["Pc"][i]*1e-4
+            vc += c*self._coeff["vc"][i]
+            pv += c*self._coeff["Pv"][i]*1e-3
+            dbv += c*self._coeff["dBv"][i]*1e-3
+            tv += c*self._coeff["Tv"][i]
 
         # Group interaction calculation
         GI = []
@@ -3774,6 +3835,7 @@ class Wen(GroupContribution):
     Example 1 in [19]_, Tc of n-Butylaniline
     The last group containing a carbon-adjacent atom pair has a typo, must be
     =C<[r]/>N-
+
     >>> cmp = Wen(Tb=513.9, group=[1, 11, 18, 87, 96, 99, 135],
     ... contribution=[1, 5, 1, 10, 2, 1, 1])
     >>> "%0.3f" % cmp.Tc
@@ -3782,11 +3844,13 @@ class Wen(GroupContribution):
     'C10H15N'
 
     Example 2 in [19]_, Pc of Benzoic acid
+
     >>> cmp = Wen(group=[87, 93, 96, 114], contribution=[10, 1, 1, 1])
     >>> "%0.3f" % cmp.Pc.MPa
     '4.547'
 
     Example 3 in [19]_, Vc of chloropentafluorobenzene
+
     >>> cmp = Wen(group=[96, 101, 102], contribution=[12, 5, 1])
     >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
     '374.6'
@@ -3795,13 +3859,12 @@ class Wen(GroupContribution):
 
     References
     ----------
-    [19] .. Wen, X., Quiang, Y. A New Group Contribution Method for Estimating
+    .. [19] Wen, X., Quiang, Y. A New Group Contribution Method for Estimating
         Critical Properties of Orgnic Compounds. Ind. Eng. Chem. Res. 40
         (2001) 6245–6250.
-
     """
     __title__ = "Wen-Qiang (2001)"
-    coeff = {
+    _coeff = {
         # Table III
         "tc": [-2.885, 2.424, 0.048, 22.766, -3.404, 2.495, 2.275, 2.602,
                -1.601, 0.000, 35.848, 2.124, -0.708, 22.576, -3.085, 1.578,
@@ -4034,10 +4097,10 @@ class Wen(GroupContribution):
 
         tc, pc, vc, tc_ = 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            tc_ += c*self.coeff["tc_"][i]
-            pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
+            tc += c*self._coeff["tc"][i]
+            tc_ += c*self._coeff["tc_"][i]
+            pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
 
         if self.kwargs["Tb"]:
             self.Tb = unidades.Temperature(self.kwargs["Tb"])
@@ -4057,9 +4120,9 @@ class Wen(GroupContribution):
         group = []
         rest = {}
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if "&" in self.coeff["txt"][i][0]:
-                grp = self.coeff["txt"][i][0].split(" & ")[0]
-                second = self.coeff["txt"][i][0].split(" & ")[1]
+            if "&" in self._coeff["txt"][i][0]:
+                grp = self._coeff["txt"][i][0].split(" & ")[0]
+                second = self._coeff["txt"][i][0].split(" & ")[1]
 
                 # Discard second term with carbons and add the heteroatoms term
                 grp2 = atomic_decomposition(second)
@@ -4068,7 +4131,7 @@ class Wen(GroupContribution):
                     for x in range(c):
                         group.append(grp2)
             else:
-                grp = self.coeff["txt"][i][0]
+                grp = self._coeff["txt"][i][0]
 
             for x in range(c):
                 cmp = grp
@@ -4135,6 +4198,7 @@ class Li(GroupContribution):
     Examples
     --------
     Example A.1 in [21]_, critical temperature of hexanal
+
     >>> cmp = Li(Tb=401.45, group=[0, 1, 2, 10, 14, 17],
     ... contribution=[6, 12, 1, 5, 1, 12])
     >>> "%0.2f" % cmp.Tc
@@ -4143,12 +4207,14 @@ class Li(GroupContribution):
     'C6H12O'
 
     Example A.2 in [21]_, critical temperature of chlorotrimethylsilane
+
     >>> cmp = Li(Tb=330.75, group=[0, 1, 6, 9, 24, 25, 17],
     ... contribution=[3, 9, 1, 1, 3, 1, 9])
     >>> "%0.2f" % cmp.Tc
     '497.69'
 
     Example A.3 in [21]_, critical pressure of n-propyl formate
+
     >>> cmp = Li(Tb=353.97, group=[0, 1, 2, 10, 14, 17, 13],
     ... contribution=[4, 8, 2, 2, 1, 8, 2])
     >>> "%0.3f" % cmp.Pc.MPa
@@ -4156,6 +4222,7 @@ class Li(GroupContribution):
 
     Example A.4 in [21]_, critical volume of acetic acid
     The paper has a bug, the calculated value is erroneous
+
     >>> cmp = Li(Tb=351.44, group=[0, 1, 2, 10, 14, 17, 16],
     ... contribution=[2, 4, 2, 1, 1, 3, 1])
     >>> "%0.2f" % (cmp.Vc.ccg*cmp.M)
@@ -4163,7 +4230,7 @@ class Li(GroupContribution):
 
     References
     ----------
-    [21] .. Li, J., Xia, L., Xiang, S. A New Method Based on Elements and
+    .. [21] Li, J., Xia, L., Xiang, S. A New Method Based on Elements and
         Chemical Bonds for Organic Compounds Critical Properties Estimation.
         Fluid Phase Equil., (2016)
     """
@@ -4171,7 +4238,7 @@ class Li(GroupContribution):
 
     __title__ = "Li-Xia-Xiang (2016)"
 
-    coeff = {
+    _coeff = {
         "tc": [-0.0003, -0.0016, -0.0472, -0.0533, 0.0179, -0.0478, -0.0380,
                0.0071, 0.0091, 0.0224, -0.0168, -0.0080, -0.0079, 0.0059,
                0.0200, 0, -0.0114, -0.0001, 0.0285, 0.0358, 0.0071, 0.0091,
@@ -4258,9 +4325,9 @@ class Li(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self.coeff["tc"][i]
-            pc += c*self.coeff["Pc"][i]
-            vc += c*self.coeff["vc"][i]
+            tc += c*self._coeff["tc"][i]
+            pc += c*self._coeff["Pc"][i]
+            vc += c*self._coeff["vc"][i]
 
         self.Tc = unidades.Temperature(self.Tb*(1.5530+tc)+18.9999)
         self.Pc = unidades.Pressure(self.M/(1.2220+pc)**2, "MPa")
@@ -4300,6 +4367,7 @@ class MarreroGani(GroupContribution):
     Examples
     --------
     Example 1 from [22]_, Tb of N-phenyl-1,4-benzenodiamine
+
     >>> c1 = MarreroGani(group=[61, 62, 17, 14], contribution=[1, 1, 1, 9])
     >>> c2 = MarreroGani(group=[61, 62, 17, 14, 287],
     ... contribution=[1, 1, 1, 9, 1])
@@ -4309,18 +4377,21 @@ class MarreroGani(GroupContribution):
     '614.62 616.03 623.94'
 
     Example 2 from [22]_, Tb of pyrene
+
     >>> c1 = MarreroGani(group=[15, 14], contribution=[6, 10])
     >>> c3 = MarreroGani(group=[15, 14, 361, 365], contribution=[6, 10, 2, 2])
     >>> "%0.2f %0.2f" % (c1.Tb, c3.Tb)
     '652.43 673.96'
 
     Example 3 from [22]_, Tb of 4-aminobutanol
+
     >>> c1 = MarreroGani(group=[28, 53, 1], contribution=[1, 1, 3])
     >>> c3 = MarreroGani(group=[28, 53, 1, 306], contribution=[1, 1, 3, 1])
     >>> "%0.2f %0.2f" % (c1.Tb, c3.Tb)
     '448.64 478.42'
 
     Example 4 from [22]_, Tm of 3,3'-methylenebis-4-hydroxycoumarin
+
     >>> c1 = MarreroGani(group=[28, 16, 14, 172, 179, 178, 1],
     ... contribution=[2, 4, 8, 2, 2, 2, 1])
     >>> c3 = MarreroGani(contribution=[2, 4, 8, 2, 2, 2, 1, 2, 2, 2, 1],
@@ -4331,6 +4402,7 @@ class MarreroGani(GroupContribution):
     Example 5 from [22]_, Tm of flutemazepan
     The third order example has a undocumented contribution, using value from
     AROMFUSED[2]s2 contribution
+
     >>> c1 = MarreroGani(
     ... group=[28, 122, 123, 0, 17, 16, 14, 168, 179, 175, 177],
     ... contribution=[1, 1, 1, 1, 1, 2, 7, 1, 1, 1, 1])
@@ -4345,6 +4417,7 @@ class MarreroGani(GroupContribution):
     '469.19 473.37 419.63'
 
     Example 6 from [22]_, Tm of 1,9-nonadiol
+
     >>> c1 = MarreroGani(group=[28, 1], contribution=[2, 9])
     >>> c3 = MarreroGani(group=[28, 1, 307], contribution=[2, 9, 1])
     >>> "%0.2f %0.2f" % (c1.Tf, c3.Tf)
@@ -4352,13 +4425,13 @@ class MarreroGani(GroupContribution):
 
     References
     ----------
-    [22] .. Marrero, J.; Gani, R. Group-contribution based estimation of pure
+    .. [22] Marrero, J.; Gani, R. Group-contribution based estimation of pure
         component properties. Fluid Phase Equilib. 183-184 (2001), 183–208.
     """
     __title__ = "Marrero-Gani (2001)"
 
     # Table 6-8
-    coeff = {
+    _coeff = {
         "tf": [0.6953, 0.2515, -0.3730, 0.0256, 1.1728, 0.9460, 0.7662, 0.1732,
                0.3928, 1.7036, 1.5453, 1.2850, 2.2276, 2.0516, 0.5860, 1.8955,
                1.2065, 0.9176, 2.0438, 1.0068, 0.1065, -0.5197, -0.1041,
@@ -5108,15 +5181,15 @@ class MarreroGani(GroupContribution):
         hv = 11.733
         hm = -2.806
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tf += c*self.coeff["tf"][i]
-            tb += c*self.coeff["tb"][i]
-            tc += c*self.coeff["tc"][i]
-            pc += c*self.coeff["pc"][i]
-            vc += c*self.coeff["vc"][i]
-            gf += c*self.coeff["gf"][i]
-            hf += c*self.coeff["hf"][i]
-            hv += c*self.coeff["hv"][i]
-            hm += c*self.coeff["hm"][i]
+            tf += c*self._coeff["tf"][i]
+            tb += c*self._coeff["tb"][i]
+            tc += c*self._coeff["tc"][i]
+            pc += c*self._coeff["pc"][i]
+            vc += c*self._coeff["vc"][i]
+            gf += c*self._coeff["gf"][i]
+            hf += c*self._coeff["hf"][i]
+            hv += c*self._coeff["hv"][i]
+            hm += c*self._coeff["hm"][i]
 
         # Equations of Table 1
         self.Tf = unidades.Temperature(147.45*log(tf))
@@ -5151,12 +5224,13 @@ def cpLS_Hurst(group):
     Examples
     --------
     Example in [20]_, GdF3
+
     >>> "%0.1f" % cpLS_Hurst(group=[{"Gd": 1, "F": 3}])[0]
     '105.1'
 
     References
     ----------
-    [20] .. Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
+    .. [20] Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
         Capacities Using a Modified Kopp's Rule. Chem. Eng. Comm., 112 (1992):
         21
     """

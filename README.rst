@@ -1,8 +1,10 @@
+Introduction
+============
 pychemqt is intended to be a free software tool for calculation and design of unit operations in chemical engineering. The goal is to develop free software equivalent to CHEMCAD or hysys. It is written in python using qt as a graphics library, so that it is cross-platform.
 
 
 Dependencies
---------------------
+============
 
 * `python3 <http://www.python.org/>`__, version 3.x required
 * `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
@@ -24,7 +26,7 @@ Optional applications that are required for pychemqt to work with full functiona
 
 
 Features
---------------------
+========
 
 The development is slow, so the software in in pre-alpha status, with many bugs and with only a few features implemented:
 
@@ -75,9 +77,8 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 * Internationalization support: english, spanish.
 
 
-
 TODO
---------------------
+====
 
 * Make more equations of state available
 * Improve the gui

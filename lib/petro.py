@@ -401,10 +401,10 @@ def prop_Ahmed(Nc):
 
     References
     ----------
-    [1] .. Katz, D. L., and Firoozabadi, A. Predicting Phase Behavior of
+    .. [1] Katz, D. L., and Firoozabadi, A. Predicting Phase Behavior of
         Condensate/Crude-oil Systems Using Methane Interaction Coefficients
         Journal of Petroleum Technology, Nov. 1978, pp. 1649–1655
-    [2] .. Ahmed, T., G. Cady, and A. Story. A Generalized Correlation for
+    .. [2] Ahmed, T., G. Cady, and A. Story. A Generalized Correlation for
         Characterizing the Hydrocarbon Heavy Fractions. Paper SPE 14266,
         presented at the 60th Annual Technical Conference of the Society of
         Petroleum Engineers, Las Vegas, September 22–25, 1985.
@@ -459,9 +459,9 @@ def prop_Riazi_Daubert_1980(Tb, SG):
 
     References
     ----------
-    [4] .. Riazi, M. R., and T. E. Daubert. Simplify Property Predictions.
+    .. [4] Riazi, M. R., and T. E. Daubert. Simplify Property Predictions.
         Hydrocarbon Processing (March 1980): 115–116.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -547,10 +547,10 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
 
     References
     ----------
-    [3] .. Riazi, M. R., and T. E. Daubert. “Characterization Parameters for
+    .. [3] Riazi, M. R., and T. E. Daubert. “Characterization Parameters for
         Petroleum Fractions.” Industrial Engineering and Chemical Research 26,
         no. 24 (1987): 755–759.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -715,10 +715,10 @@ def prop_Cavett(Tb, API):
 
     References
     ----------
-    [7] .. Cavett, R.H., 1962. Physical data for distillation calculations,
+    .. [7] Cavett, R.H., 1962. Physical data for distillation calculations,
         vapor-liquid equilibrium. Proceedings of the 27th Meeting, API, San
         Francisco, 1962, Issue 3, pp. 351–366.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -773,10 +773,10 @@ def prop_Lee_Kesler(Tb, SG):
 
     References
     ----------
-    [8] .. Kesler, M. G., and B. I. Lee. Improve Prediction of Enthalpy of
+    .. [8] Kesler, M. G., and B. I. Lee. Improve Prediction of Enthalpy of
         Fractions.” Hydrocarbon Processing Volume 55, Issue 3, March 1976,
         Pages 153-158
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -838,10 +838,10 @@ def prop_Sim_Daubert(Tb, SG):
 
     References
     ----------
-    [6] .. Sim, W.J. and Daubert, T.E., 1980, Prediction of vapor-liquid
+    .. [6] Sim, W.J. and Daubert, T.E., 1980, Prediction of vapor-liquid
         equilibria of undefined mixtures, Industrial and Engineering
         Chemistry–Process Design and Development, 19: 386 –393.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -893,11 +893,11 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
 
     References
     ----------
-    [10] .. Watansiri, S., Owens, V.H., Starling, K.E., 1985. Correlations for
+    .. [10] Watansiri, S., Owens, V.H., Starling, K.E., 1985. Correlations for
         estimating critical constants, acentric factor, and dipole moment for
         undefined coal-fluid fractions. Ind. Eng. Chem. Process. Des. Dev. 24,
         294–296.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -956,11 +956,11 @@ def prop_Rowe(M):
 
     References
     ----------
-    [11] .. Rowe, A.M. Internally consistent correlations for predicting phase
+    .. [11] Rowe, A.M. Internally consistent correlations for predicting phase
         compositions for use in reservoir compositional simulators. Paper SPE
         7475, In: Presented at the 53rd Annual Society of Petroleum Engineers
         Fall Technical Conference and Exhibition, 1978.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
 
@@ -1012,9 +1012,9 @@ def prop_Standing(M, SG):
 
     References
     ----------
-    [12] .. Standing, M.B., Volumetric and Phase Behavior of Oil Field
+    .. [12] Standing, M.B., Volumetric and Phase Behavior of Oil Field
         Hydrocarbon Systems. Society of Petroleum Engineers, Dallas, TX. 1977
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -1056,10 +1056,10 @@ def prop_Willman_Teja(Tb):
 
     References
     ----------
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
-    [13] .. Bert Willman, Amyn S. Teja, Prediction of dew points of
+    .. [13] Bert Willman, Amyn S. Teja, Prediction of dew points of
         semicontinuous natural gas and petroleum mixtures. 1. Characterization
         by use of an effective carbon number and ideal solution predictions.
         Ind. Eng. Chem. Res., 1987, 26 (5), pp 948–952
@@ -1113,10 +1113,10 @@ def prop_Magoulas_Tassios(M, SG):
 
     References
     ----------
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
-    [14] .. Magoulas, S., Tassios, D., Predictions of phase behavior of HT-HP
+    .. [14] Magoulas, S., Tassios, D., Predictions of phase behavior of HT-HP
         reservoir fluids. Paper SPE 37294, Society of Petroleum Engineers,
         Richardson, TX, 1990.
     """
@@ -1153,7 +1153,7 @@ def prop_Tsonopoulos(SG, Tb):
 
     References
     ----------
-    [65] .. Tsonopoulos, C., Heidman, J. L., and Hwang, S. C. Thermodynamic and
+    .. [65] Tsonopoulos, C., Heidman, J. L., and Hwang, S. C. Thermodynamic and
         Transport Properties of Coal Liquids. An Exxon Monograph, Wiley, New
         York, 1986
     """
@@ -1199,7 +1199,7 @@ def prop_Twu(Tb, SG):
 
     References
     ----------
-    [5] .. Twu, C.H., 1984, An internally consistent correlation for predicting
+    .. [5] Twu, C.H., 1984, An internally consistent correlation for predicting
         the critical properties and molecular weights of petroleum and coal-tar
         liquids, Fluid Phase Equilbria, 16: 137–150.
     """
@@ -1279,10 +1279,10 @@ def prop_Sancet(M):
 
     References
     ----------
-    [5] .. Sancet, J., Heavy Faction .. math::`C_{7+}` Characterization for
+    .. [5] Sancet, J., Heavy Faction .. math:: `C_{7+}` Characterization for
         PR-EOS. In: SPE 113026, 2007 SPE Annual Conference, November 11–14,
         Anaheim, CA 2007.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -1323,10 +1323,10 @@ def prop_Silva_Rodriguez(M):
 
     References
     ----------
-    [16] .. Silva, M.B., Rodriguez, F., Automatic fitting of equations of state
+    .. [16] Silva, M.B., Rodriguez, F., Automatic fitting of equations of state
         for phase behavior matching. Paper SPE 23703, Society of Petroleum
         Engineers, Richardson, TX, 1992.
-    [9] .. Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
         Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
         2016, ISBN 9780128015704
     """
@@ -1358,7 +1358,7 @@ def Tb_Soreide(M, SG):
 
     References
     ----------
-    [17] .. Soreide, I. Improved Phase Behavior Predictions of Petroleum
+    .. [17] Soreide, I. Improved Phase Behavior Predictions of Petroleum
         Reservoir Fluids From a Cubic Equation of State. Doctor of engineering
         dissertation. Norwegian Institute of Technology, Trondheim, 1989.
     """
@@ -1385,7 +1385,7 @@ def vc_Hall_Yarborough(M, SG):
 
     References
     ----------
-    [18] .. Hall, K. R., and L. Yarborough. New Simple Correlation for
+    .. [18] Hall, K. R., and L. Yarborough. New Simple Correlation for
         Predicting Critical Volume. Chemical Engineering (November 1971): 76.
     """
     Vc = 0.025*M**1.15/SG**0.7985
@@ -1571,7 +1571,7 @@ def prop_Riazi_Alsahhaf(Tb, M, d20):
 
     References
     ----------
-    [26] .. Riazi, M. R., Al-Sahhaf, T. A. and Sl-Shammari M. A. A Generalized
+    .. [26] Riazi, M. R., Al-Sahhaf, T. A. and Sl-Shammari M. A. A Generalized
         Method for Estimation of Critical Constants. Fluid Phase Equilibria,
         Vol. 147, 1998, pp. 1-6
     """
@@ -1627,10 +1627,10 @@ def prop_Riazi_Alsahhaf_PNA(M, cmp):
 
     References
     ----------
-    [27] .. Riazi, M. R. and A1-Sahhaf, T. A. Physical Properties of Heavy
+    .. [27] Riazi, M. R. and A1-Sahhaf, T. A. Physical Properties of Heavy
         Petroleum Fractions and Crude Oils. Fluid Phase Equilibria, Vol. 117,
         1996, pp. 217-224.
-    [28] .. Riazi, M. R. and A1-Sahhaf, T. Physical Properties of n-Alkanes and
+    .. [28] Riazi, M. R. and A1-Sahhaf, T. Physical Properties of n-Alkanes and
         n-Alkyl Hydrocarbons: Application to Petroleum Mixtures. Industrial and
         Engineering Chemistry Research, Vol. 34, 1995, pp. 4145-4148.
     """
@@ -1703,7 +1703,7 @@ def Zc_Hougen(w):
 
     References
     ----------
-    [22] .. Hougen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process
+    .. [22] Hougen, O. A., K. M. Watson, and R. A. Ragatz. Chemical Process
         Principles, 2nd ed. New York: Wiley, 1959, p. 577.
     """
     Zc = 1/(1.28*w+3.41)
@@ -1727,7 +1727,7 @@ def Zc_Reid(w):
 
     References
     ----------
-    [23] .. Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases
+    .. [23] Reid, R., J. M. Prausnitz, and T. Sherwood. The Properties of Gases
         and Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21.
     """
     Zc = 0.2918 - 0.0928*w
@@ -1751,7 +1751,7 @@ def Zc_Salerno(w):
 
     References
     ----------
-    [21] .. Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
+    .. [21] Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
         Prediction of Vapor Pressures and Saturated Volumes with a Simple Cubic
         Equation of State: Part I. A Reliable Data Base, Fluid Phase
         Equilibria, Volume 27, 1986, Pages 15-34
@@ -1777,7 +1777,7 @@ def Zc_Nath(w):
 
     References
     ----------
-    [24] .. Nath, J. Acentric Factor and the Critical Volumes for Normal
+    .. [24] Nath, J. Acentric Factor and the Critical Volumes for Normal
         Fluids. Industrial Engineering and Chemical. Fundamentals 21, no. 3
         (1985): 325–326.
     """
@@ -1802,7 +1802,7 @@ def Zc_Lee_Kesler(w):
 
     References
     ----------
-    [25] .. Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+    .. [25] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
         Correlation Based on Three-Parameter Corresponding States. American
         Institute of Chemical Engineers Journal, Vot. 21, 1975
     """
@@ -2525,7 +2525,7 @@ def PourPoint(SG, Tb, v100=None):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2579,7 +2579,7 @@ def AnilinePoint(SG, Tb):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2628,7 +2628,7 @@ def SmokePoint(SG, Tb):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2677,7 +2677,7 @@ def FreezingPoint(SG, Tb):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2726,7 +2726,7 @@ def CloudPoint(SG, Tb):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2774,7 +2774,7 @@ def CetaneIndex(API, Tb):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2836,7 +2836,7 @@ def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
 
     References
     ----------
-    [20] .. API. Technical Data book: Petroleum Refining 6th Edition
+    .. [20] API. Technical Data book: Petroleum Refining 6th Edition
     """
     if d20 is None:
         d20 = SG-4.5e-3*(2.34-1.9*SG)
@@ -3043,7 +3043,7 @@ def PNA_van_Nes(M, n, d20, S):
 
     References
     ----------
-    [55] .. Van Nes, K. and Van Western, H. A. Aspects of the Constitution of
+    .. [55] Van Nes, K. and Van Western, H. A. Aspects of the Constitution of
         Mineral Oils. Elsevier, New York, 1951
     .. [29] Riazi, M. R. Characterization and Properties of Petroleum
         Fractions. ASTM manual series MNL50, 2005
