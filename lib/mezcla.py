@@ -57,8 +57,13 @@ __doi__ = {
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
-
     4:
+        {"autor": "Li, C.C.",
+         "title": "Thermal Conductivity of Liquid Mixtures",
+         "ref": "AIChE Journal 22(5) (1976) 927-930",
+         "doi": "10.1002/aic.690220520 "},
+
+    6:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -179,15 +184,15 @@ def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
 
 
 def MuG_Wilke(xi, Mi, mui):
-    """Calculate viscosity of gas mixtures using the Wilke mixing rules, also
+    r"""Calculate viscosity of gas mixtures using the Wilke mixing rules, also
     referenced in API procedure 11B2.1, pag 1102
 
     .. math::
-        \mu_{m} = \sum_{i=1}^n \\frac{\mu_i}{1+\\frac{1}{x_i}\sum_{j=1}
+        \mu_{m} = \sum_{i=1}^n \frac{\mu_i}{1+\frac{1}{x_i}\sum_{j=1}
         ^n x_j \phi_{ij}}
 
-        \phi_{ij} = \\frac{\left[1+\left(\mu_i/\mu_j\\right)^{0.5}(M_j/M_i)
-        ^{0.25}\\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\\right)\\right]
+        \phi_{ij} = \frac{\left[1+\left(\mu_i/\mu_j\right)^{0.5}(M_j/M_i)
+        ^{0.25}\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\right)\right]
         ^{0.5}}
 
     Parameters
@@ -271,6 +276,73 @@ def MuG_Wilke(xi, Mi, mui):
     for mu_i, sumai in zip(mui, suma):
         mu += mu_i/(1+sumai)
     return unidades.Viscosity(mu)
+
+
+def ThL_Li(xi, Vi, ki):
+    r"""Calculate thermal conductiviy of liquid nmixtures using the Li method,
+    also referenced in API procedure 12A2.1, pag 1145
+
+    .. math::
+        \lambda_{m} = \sum_{i} \sum_{j} \phi_i \phi_j k_{ij}
+
+        k_{ij} = 2\left(\lambda_i^{-1}+\lambda_j^{-1}\right)^{-1}
+
+        \phi_{i} = \frac{x_iV_i}{\sum_j x_jV_j}
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Vi : list
+        Molar volumes of components, [m³/kmol]
+    ki : list
+        Thermal conductivities of components, [W/m·K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivities of mixture, [W/m·K]
+
+    Examples
+    --------
+    Example from [2]_ 68% nC7, 32% CycloC5 at 32F and 1atm
+
+    >>> V1 = unidades.MolarVolume(2.285, "ft3lbmol")
+    >>> V2 = unidades.MolarVolume(1.473, "ft3lbmol")
+    >>> k1 = unidades.ThermalConductivity(0.07639, "BtuhftF")
+    >>> k2 = unidades.ThermalConductivity(0.08130, "BtuhftF")
+    >>> "%0.5f" % ThL_Li([0.68, 0.32], [V1, V2], [k1, k2]).BtuhftF
+    '0.07751'
+
+    References
+    ----------
+    .. [4] Li, C.C. Thermal Conductivity of Liquid Mixtures. AIChE Journal
+        22(5) (1976) 927-930
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Calculation of binary thermal conductivity pair, Eq 2
+    kij = []
+    for k_i in ki:
+        kiji = []
+        for k_j in ki:
+            kiji.append(2/(1/k_i+1/k_j))
+        kij.append(kiji)
+
+    # Calculation of volume fraction, Eq 3
+    suma = 0
+    for x, V in zip(xi, Vi):
+        suma += x*V
+    phi = []
+    for x, V in zip(xi, Vi):
+        phi.append(x*V/suma)
+
+    # Calculation of misture thermal conductivity, Eq 1
+    k = 0
+    for phi_i, ki in zip(phi, kij):
+        for phi_j, k_ij in zip(phi, ki):
+            k += phi_i*phi_j*k_ij
+
+    return unidades.ThermalConductivity(k)
 
 
 class Mezcla(config.Entity):
