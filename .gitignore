@@ -62,6 +62,7 @@ docs/_build/
 
 # documentation   
 doc/
+docs/Makefile
 
 # Script propios
 .script/
