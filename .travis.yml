@@ -11,7 +11,7 @@ install:
 
 # command to run tests
 script:
-  - coverage3 run tests/
+  - coverage3 run --source=../
 
 # Add coverall support
 after_success:
