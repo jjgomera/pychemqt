@@ -62,6 +62,13 @@ __doi__ = {
          "title": "Thermal Conductivity of Liquid Mixtures",
          "ref": "AIChE Journal 22(5) (1976) 927-930",
          "doi": "10.1002/aic.690220520 "},
+    5:
+        {"autor": "Lindsay, A.L., Bromley, L.A.",
+         "title": "Thermal Conductivity of Gas Mixtures",
+         "ref": "Ind. & Eng. Chem. 42(8) (1950) 1508-1511",
+         "doi": "10.1021/ie50488a017"},
+
+
 
     6:
         {"autor": "",
@@ -342,6 +349,101 @@ def ThL_Li(xi, Vi, ki):
         for phi_j, k_ij in zip(phi, ki):
             k += phi_i*phi_j*k_ij
 
+    return unidades.ThermalConductivity(k)
+
+
+def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
+    r"""Calculate thermal conductiviy of gas mixtures using the Lindsay-Bromley
+    method, also referenced in API procedure 12B2.1, pag 1164
+
+    .. math::
+        k = \sum_{i} \frac{k_i}{\frac{1}{x_i}\sum x_i A_{ij}}
+
+        A_{ij} = \frac{1}{4} \left\{ 1 + \left[\frac{\mu_i}{\mu_j}
+        \left(\frac{M_j}{M_i}\right)^{0.75} \left(\frac{1+S_i/T}{1+S_j/T}
+        \right)\right]^{0.5}\right\}^2\left(\frac{1+S_{ij}/T}{1+S_i/T}\right)
+
+        S_{ij} = (S_i S_j)^{0.5}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Mi : float
+        Molecular weights of components, [g/mol]
+    Tbi : float
+        Boiling points of components, [K]
+    mui : float
+        Gas viscosities of components, [Pa·s]
+    ki : list
+        Thermal conductivities of components, [W/m·K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivities of mixture, [W/m·K]
+
+    Examples
+    --------
+    Example from [2]_ 29.96% nC5, 70.04% nC6 at 212F and 1atm
+
+    >>> T = unidades.Temperature(212, "F")
+    >>> x = [0.2996, 0.7004]
+    >>> M = [72.15, 86.18]
+    >>> Tb1 = unidades.Temperature(96.93, "F")
+    >>> Tb2 = unidades.Temperature(155.71, "F")
+    >>> mu1 = unidades.Viscosity(0.008631, "cP")
+    >>> mu2 = unidades.Viscosity(0.008129, "cP")
+    >>> k1 = unidades.ThermalConductivity(0.01280, "BtuhftF")
+    >>> k2 = unidades.ThermalConductivity(0.01165, "BtuhftF")
+    >>> k = ThG_LindsayBromley(T, x, M, [Tb1, Tb2], [mu1, mu2], [k1, k2])
+    >>> "%0.5f" % k.BtuhftF
+    '0.01197'
+
+    References
+    ----------
+    .. [5] Lindsay, A.L., Bromley, L.A. Thermal Conductivity of Gas Mixtures.
+        Ind. & Eng. Chem. 42(8) (1950) 1508-1511
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Calculation of Sutherland constants, Eq 14
+    S = []
+    for Tb, M in zip(Tbi, Mi):
+        if M == 2.0158 or M == 4.0026:
+            # Hydrogen or helium case
+            S.append(79)
+        else:
+            S.append(1.5*Tb)
+
+    # Geometric mean of collision Sutherland constants, Eq 15
+    Sij = []
+    for Si in S:
+        Siji = []
+        for Sj in S:
+            Siji.append((Si*Sj)**0.5)
+        Sij.append(Siji)
+
+    # Eq 12
+    Aij = []
+    for mu_i, M_i, Si, Siji in zip(mui, Mi, S, Sij):
+        Aiji = []
+        for mu_j, M_j, Sj, S_ij in zip(mui, Mi, S, Siji):
+            Aiji.append(0.25*(1+(mu_i/mu_j*(M_j/M_i)**0.75*(1+Si/T)/(
+                1+Sj/T))**0.5)**2 * (1+S_ij/T)/(1+Si/T))
+        Aij.append(Aiji)
+
+    # Calculate thermal conductivity, Eq 11
+    sumaj = []
+    for Aiji in Aij:
+        suma = 0
+        for xj, A_ij in zip(xi, Aiji):
+            suma += A_ij*xj
+        sumaj.append(suma)
+    k = 0
+    for x_i, k_i, si in zip(xi, ki, sumaj):
+        k += k_i*x_i/si
     return unidades.ThermalConductivity(k)
 
 
