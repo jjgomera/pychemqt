@@ -4,7 +4,15 @@
    contain the root `toctree` directive.
 
 
-.. include:: ../README.rst
+Welcome to pychemqt's documentation!
+====================================
+
+.. toctree::
+   :maxdepth: 10
+
+   README
+
+.. include:: README.rst
 
 
 Indices and tables
@@ -14,3 +22,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. include:: modules.rst

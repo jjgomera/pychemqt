@@ -1,12 +1,5 @@
-lib.adimensional package
-======================
-
-
-Module contents
----------------
-
-.. toctree::
-   :maxdepth: 4
+lib.adimensional module
+=======================
 
 .. automodule:: lib.adimensional
     :members:

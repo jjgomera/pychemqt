@@ -1,7 +1,7 @@
-lib.unidades module
+lib.coolProp module
 ===================
 
-.. automodule:: lib.unidades
+.. automodule:: lib.coolProp
     :members:
     :undoc-members:
     :show-inheritance:

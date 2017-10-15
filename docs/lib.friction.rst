@@ -1,7 +1,7 @@
-lib.unidades module
+lib.friction module
 ===================
 
-.. automodule:: lib.unidades
+.. automodule:: lib.friction
     :members:
     :undoc-members:
     :show-inheritance:

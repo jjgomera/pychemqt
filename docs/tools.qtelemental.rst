@@ -1,52 +1,51 @@
 tools.qtelemental package
-======================
-This tool show a Mendeleev periodic table with several properties shown for the element with the mouse hover.
+=========================
+This tool show a Mendeleev periodic table with several properties shown for the element with the mouse over.
 
 .. image:: images/qtelemental.png 
     :alt: qtelemental 
 
-Other properties can be shown clicking in the desired element. The properties availables are::
-
-    id: atomic number
-    name
-    altname
-    symbol
-    serie
-    group
-    period
-    block
-    density_Solid
-    density_Liq
-    density_Gas
-    appearance
-    date
-    country
-    discover
-    etymology
-    atomic_mass
-    atomic_volume
-    atomic_radius
-    covalent_radius
-    vanderWaals_radius
-    ionic_radii
-    lattice_type
-    space_group
-    lattice_edges
-    lattice_angles
-    electron_configuration
-    oxidation
-    electronegativity
-    electron_affinity
-    first_ionization
-    Tf
-    Tb
-    Heat_f
-    Heat_b
-    Cp
-    k
-    T_debye
-    color
-    notes
+Other properties can be shown clicking in the desired element. The properties availables are:
+    * Atomic number
+    * Name
+    * Alternate name
+    * Symbol
+    * Serie
+    * Group
+    * Period
+    * Block
+    * Solid density
+    * Liquid density
+    * Gas density
+    * Appearance
+    * Date of discovery
+    * Country of discovery
+    * Discovery author
+    * Etymology
+    * Atomic mass
+    * Atomic volume
+    * Atomic radius
+    * Covalent radius
+    * van der Waals radius
+    * Ionic radii
+    * Lattice type
+    * Space group
+    * Lattice edges
+    * Lattice angles
+    * Electron configuration
+    * Oxidation states
+    * Electronegativity
+    * Electron affinity
+    * First ionization
+    * Melting temperature
+    * Boiling temperature
+    * Melting heat
+    * Vaporization heat
+    * Specific Heat
+    * Thermal conductivity
+    * Debye temperature
+    * Color
+    * Notes
 
 Furthermore the element name is available in several languages: English, Spanish, German, French, Portuguese, Italian, Chinese
 
@@ -59,5 +58,4 @@ Module contents
 
 .. automodule:: tools.qtelemental
     :members:
-    :undoc-members:
     :show-inheritance:
