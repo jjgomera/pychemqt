@@ -11,7 +11,7 @@ install:
 
 # command to run tests
 script:
-  - coverage3 run --source=pychemqt test/
+  - coverage3 run test/
 
 # Add coverall support
 after_success:
