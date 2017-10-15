@@ -9,6 +9,9 @@ install:
   - pip install coveralls
   - pip install codecov
 
+before_script:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 # command to run tests
 script:
   - coverage3 run --source=../ tests/
