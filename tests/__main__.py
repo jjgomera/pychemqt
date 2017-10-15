@@ -5,7 +5,7 @@
 
 from unittest import TextTestRunner, TestSuite
 
-from tests.test_lib import TestLib
+from test_lib import TestLib
 
 suite = TestSuite()
 suite.addTest(TestLib)
