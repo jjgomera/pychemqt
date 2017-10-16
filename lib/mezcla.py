@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
-from lib.compuestos import Componente
+from lib.compuestos import Componente, ThG_StielThodos
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
@@ -71,10 +71,16 @@ __doi__ = {
                   "Mixtures",
          "ref": "Fhys. Fluids 1(5) (1958) 361-369",
          "doi": "10.1063/1.1724352"},
-
-
-
     7:
+        {"autor": "Yorizane, M., Yoshiumra, S., Masuoka, H., Yoshida, H.",
+         "title": "Thermal Conductivities of Binary Gas Mixtures at High "
+                  "Pressures: N2-O2, N2-Ar, CO2-Ar, CO2-CH4",
+         "ref": "Ind. Eng. Chem. Fundam. 22(4) (1983) 458-462",
+         "doi": "10.1021/i100012a018"},
+
+
+
+    8:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -519,6 +525,106 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
     for x_i, k_i, si in zip(xi, ki, sumaj):
         k += k_i*x_i/si
     return unidades.ThermalConductivity(k)
+
+
+def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
+    r"""Calculate thermal conductiviy of gas mixtures at high pressure using
+    the Stiel-Thodos correlation for pure compound using the mixing rules
+    defined by Yorizane et al.
+
+    .. math::
+        T_{cm} = \frac{\sum_i \sum_j x_ix_jV_{cij}T_{cij}}{V_{cm}}
+
+        V_{cm} = \sum_i \sum_j x_ix_jV_{cij}
+
+        \omega_m = \sum_i x_i\omega_i
+
+        Z_{cm} = 0.291-0.08\omega_m
+
+        P_{cm} = \frac{Z_{cm}RT_{cm}}{V_{cm}}
+
+        M_m = \sum_i x_iM_i
+
+        T_{cij} = \left(T_{ci}T_{cj}\right)^{1/2}
+
+        V_{cij} = \frac{\left(V_{ci}^{1/3}+V_{cj}^{1/3}\right)^3}{8}
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Mi : float
+        Molecular weights of components, [g/mol]
+    mui : float
+        Gas viscosities of components, [Pa·s]
+    ki : list
+        Thermal conductivities of components, [W/m·K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivities of mixture, [W/m·K]
+
+    Examples
+    --------
+    Example 10-6 from [3]_; 75.5% methane, 24.5% CO2 at 370.8K and 174.8bar
+
+    >>> Tc = [190.56, 304.12]
+    >>> Pc = [45.99e5, 73.74e5]
+    >>> Vc = [98.6/16.043/1000, 94.07/44.01/1000]
+    >>> M = [16.043, 44.01]
+    >>> w = [0.011, 0.225]
+    >>> x = [0.755, 0.245]
+    >>> args = (370.8, x, Tc, Pc, Vc, w, M, 159/22.9/1000, 0.0377)
+    >>> "%0.4f" % ThG_StielThodosYorizane(*args)
+    '0.0527'
+
+    References
+    ----------
+    .. [7] Yorizane, M., Yoshiumra, S., Masuoka, H., Yoshida, H. Thermal
+        Conductivities of Binary Gas Mixtures at High Pressures: N2-O2, N2-Ar,
+        CO2-Ar, CO2-CH4. Ind. Eng. Chem. Fundam. 22(4) (1983) 458-462
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Use critical volume in molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+
+    # Eq 8; missing rules for critical properties
+    wm = sum([x*w for x, w in zip(xi, wi)])
+    Mm = sum([x*M for x, M in zip(xi, Mi)])
+    Zcm = 0.291-0.08*wm
+
+    Vcij = []
+    for Vc_i in Vci:
+        Vciji = []
+        for Vc_j in Vci:
+            Vciji.append((Vc_i**(1/3)+Vc_j**(1/3))**3/8)
+        Vcij.append(Vciji)
+
+    Vcm = 0
+    for x_i, Vciji in zip(xi, Vcij):
+        for x_j, Vc in zip(xi, Vciji):
+            Vcm += x_i*x_j*Vc
+
+    Tcij = []
+    for Tc_i in Tci:
+        Tciji = []
+        for Tc_j in Tci:
+            Tciji.append((Tc_i*Tc_j)**0.5)
+        Tcij.append(Tciji)
+
+    Tcm = 0
+    for x_i, Vciji, Tciji in zip(xi, Vcij, Tcij):
+        for x_j, Vc, Tc in zip(xi, Vciji, Tciji):
+            Tcm += x_i*x_j*Vc*Tc/Vcm
+
+    Pcm = Zcm*R*Tcm/Vcm*1e6
+    Vcm = Vcm/Mm/1000
+
+    km = ThG_StielThodos(T, Tcm, Pcm, Vcm, Mm, V, ko)
+    return unidades.ThermalConductivity(km)
+
 
 
 class Mezcla(config.Entity):
