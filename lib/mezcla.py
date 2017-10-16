@@ -39,8 +39,6 @@ from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
 
-
-
 __doi__ = {
     1:
         {"autor": "Wilke, C.R.",
@@ -67,10 +65,16 @@ __doi__ = {
          "title": "Thermal Conductivity of Gas Mixtures",
          "ref": "Ind. & Eng. Chem. 42(8) (1950) 1508-1511",
          "doi": "10.1021/ie50488a017"},
-
-
-
     6:
+        {"autor": "Mason, E.A., Saxena, S.C.",
+         "title": "Approximate Formula for the Thermal Conductivity of Gas "
+                  "Mixtures",
+         "ref": "Fhys. Fluids 1(5) (1958) 361-369",
+         "doi": "10.1063/1.1724352"},
+
+
+
+    7:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -435,6 +439,76 @@ def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
         Aij.append(Aiji)
 
     # Calculate thermal conductivity, Eq 11
+    sumaj = []
+    for Aiji in Aij:
+        suma = 0
+        for xj, A_ij in zip(xi, Aiji):
+            suma += A_ij*xj
+        sumaj.append(suma)
+    k = 0
+    for x_i, k_i, si in zip(xi, ki, sumaj):
+        k += k_i*x_i/si
+    return unidades.ThermalConductivity(k)
+
+
+def ThG_MasonSaxena(xi, Mi, mui, ki):
+    r"""Calculate thermal conductiviy of gas mixtures using the Mason-Saxena
+    method
+
+    .. math::
+        k = \sum_{i} \frac{k_i}{\frac{1}{x_i}\sum x_i A_{ij}}
+
+        A_{ij} = \frac{\epsilon \left[1+\left(\lambda_{tri}/\lambda_{trj}
+        \right)^{1/2} \left(M_i/M_j\right)^{1/4}\right]^2}
+        {\left[8\left(1+M_i/M_j\right)\right]^{1/2}}
+
+        \frac{\lambda_{tri}}{\lambda_{trj}}=\frac{\mu_i}{\mu_j}\frac{M_i}{M_j}
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Mi : float
+        Molecular weights of components, [g/mol]
+    mui : float
+        Gas viscosities of components, [Pa·s]
+    ki : list
+        Thermal conductivities of components, [W/m·K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivities of mixture, [W/m·K]
+
+    Examples
+    --------
+    Example 10-5 from [3]_; 25% benzene, 75% Argon at 100.6ºC and 1bar
+
+    >>> xi = [0.25, 0.75]
+    >>> Mi = [78.114, 39.948]
+    >>> mui = [92.5e-7, 271e-7]
+    >>> ki = [0.0166, 0.0214]
+    >>> "%0.4f" % ThG_MasonSaxena(xi, Mi, mui, ki)
+    '0.0184'
+
+    References
+    ----------
+    .. [6] Mason, E.A., Saxena, S.C. Approximate Formula for the Thermal
+        Conductivity of Gas Mixtures. Fhys. Fluids 1(5) (1958) 361-369
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Aij coefficient with ε=1 as explain in [3]_, Eq 21
+    Aij = []
+    for mu_i, M_i in zip(mui, Mi):
+        Aiji = []
+        for mu_j, M_j in zip(mui, Mi):
+            # Monatomic value of thermal conductivity ratio, Eq 22
+            lt_ij = mu_i*M_j/mu_j/M_i
+            Aiji.append((1+lt_ij**0.5*(M_i/M_j)**0.25)**2/(8*(1+M_i/M_j))**0.5)
+        Aij.append(Aiji)
+
+    # Calculate thermal conductivity, Eq 20
     sumaj = []
     for Aiji in Aij:
         suma = 0
