@@ -684,14 +684,18 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     .. math::
         \rho_s/\rho_c = 1 + A(1-T_r)^{1/3} + B(1-T_r)^{2/3} + D(1-T_r)^{4/3}
 
+    .. math::
         A = 17.4425 - 214.578Z_c + 989.625Z_c^2 - 1522.06Z_c^3
 
+    .. math::
         B = -3.28257 + 13.6377Z_c + 107.4844Z_c^2-384.211Z_c^3
         \text{ if } Zc \le 0.26
 
+    .. math::
         B = 60.2091 - 402.063Z_c + 501Z_c^2 + 641Z_c^3
         \text{ if } Zc \ge 0.26
 
+    .. math::
         D = 0.93-B
 
     Parameters
@@ -788,9 +792,11 @@ def RhoL_Bhirud(T, Tc, Pc, w):
     .. math::
         \ln \frac{P_c V_s}{RT} = \ln U^{(0)} + \omega\ln U^{(1)}
 
+    .. math::
         \ln U^{(0)} = 1.39644 - 24.076T_r + 102.615T_r^2 - 255.719T_r^3
         + 355.805T_r^4 - 256.671T_r^5 + 75.1088T_r^6
 
+    .. math::
         \ln U^{(1)} = 13.4412 - 135.7437T_r + 533.380T_r^2 - 1091.453T_r^3
         + 1231.43T_r^4 - 728.227T_r^5 + 176.737T_r^6
 
@@ -852,12 +858,16 @@ def RhoL_Mchaweh(T, Tc, Vc, w, delta):
         \rho_s = \rho_c\rho_o\left[1+\delta_{SRK}\left(\alpha_{SRK}-1
         \right)^{1/3}\right]
 
+    .. math::
         \rho_o = 1+1.169\tau^{1/3}+1.818\tau^{2/3}-2.658\tau+2.161\tau^{4/3}
 
+    .. math::
         \tau = 1-\frac{(T_r)}{\alpha_{SRK}}
 
+    .. math::
         \alpha_{SRK} = \left[1 + m\left(1-\sqrt{T_r}\right)\right]^2
 
+    .. math::
         m = 0.480 + 1.574\omega - 0.176\omega^2
 
     Parameters
@@ -1017,6 +1027,7 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
     .. math::
         V_s/V_c = V_R^{(0)} + \omega V_R^{(1)} + \omega^2V_R^{(2)}
 
+    .. math::
         V_R^{(i)} = a^{(i)} + b^{(i)}T_R + c^{(i)}T_R^2 + d^{(i)}T_R^3 +
         e^{(i)}/T_R + f^{(i)}\ln{1-T_R}
 
@@ -1070,10 +1081,13 @@ def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
     .. math::
         V = V_s\left(1-C\ln\frac{B + P}{B + P_s}\right)
 
+    .. math::
         \frac{B}{P_c} = -1 + a\tau^{1/3} + b\tau^{2/3} + d\tau + e\tau^{4/3}
 
+    .. math::
         e = \exp(f + g\omega_{SRK} + h \omega_{SRK}^2)
 
+    .. math::
         C = j + k \omega_{SRK}
 
     Parameters
@@ -1138,8 +1152,10 @@ def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
         V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)}
         {AP_c + C\left(P-P_{vp}\right)}
 
+    .. math::
         A=\sum_{i=0}^{5}a_{i}T_{r}^{i}
 
+    .. math::
         B=\sum_{j=0}^{2}b_{j}\omega^{j}
 
     Parameters
@@ -1193,8 +1209,10 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
         V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)}
         {AP_c + C\left(P-P_{vp}\right)}
 
+    .. math::
         A = a_0 + a_1T_r + a_2T_r^3 + a_3T_r^6 + a_4/T_r
 
+    .. math::
         B = b_0 + \omega_SRKb_1
 
     Parameters
@@ -1283,10 +1301,13 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
         V = V_s\frac{AP_c + C^{\left(D-T_r\right)^B}\left(P-P_{vp}\right)^E}
         {AP_c + C\left(P-P_{vp}\right)^E}
 
+    .. math::
         A = a_0 + a_1T_r + a_2T_r^3 + a_3T_r^6 + a_4/T_r
 
+    .. math::
         B = b_0 + \frac{b_1}{b_2+\omega_SRK}
 
+    .. math::
         C = c_1\left(1-T_r\right)^{c_2}+\left(1-\left(1-T_r\right)^{c_2}\right)
         \exp\left(c_3+c_4\left(P-P_s\right)\right)
 
@@ -1326,16 +1347,14 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     >>> et = C2()
     >>> Ps = et._Vapor_Pressure(293.608)
     >>> rhos = et._Liquid_Density(293.608)
-    >>> rho = RhoL_AaltoKeskinen2(293.608, 71.4671e6, C2.Tc, C2.Pc, \
-            C2.f_acent, Ps, rhos)
-    >>> "%0.2f" % rho.gcc
+    >>> args = (293.608, 71.4671e6, C2.Tc, C2.Pc, C2.f_acent, Ps, rhos)
+    >>> "%0.2f" % RhoL_AaltoKeskinen2(*args).gcc
     '0.50'
 
     >>> Ps = et._Vapor_Pressure(281.789)
     >>> rhos = et._Liquid_Density(281.789)
-    >>> rho = RhoL_AaltoKeskinen2(281.789, 8.4e6, C2.Tc, C2.Pc, \
-            C2.f_acent, Ps, rhos)
-    >>> "%0.2f" % rho.gcc
+    >>> args = (281.789, 8.4e6, C2.Tc, C2.Pc, C2.f_acent, Ps, rhos)
+    >>> "%0.2f" % RhoL_AaltoKeskinen2(*args).gcc
     '0.41'
 
     References
@@ -1371,17 +1390,23 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     .. math::
         \frac{v-v_{s}}{v_{\infty}-v_{s}}=C\Psi
 
+    .. math::
         \Psi=\frac{J+L\left(P_{r}-P_{rs}\right)+M\left(P_{r}-P_{rs}\right)^{3}}
         {F+G\left(P_{r}-P_{rs}\right)+I\left(P_{r}-P_{rs}\right)^{3}}
 
+    .. math::
         J=j_{0}+j_{1}\left(1-T_{r}\right)^{1/3}+j_{2}\left(1-T_{r}\right)^{2/3}
 
+    .. math::
         F=f_{0}\left(1-T_{r}\right)
 
+    .. math::
         C=c_{0}+c_{1}\omega_{SRK}
 
+    .. math::
         v_{\infty}=\varOmega\frac{RT_{c}}{P_{c}}
 
+    .. math::
         \varOmega=\varOmega_{0}+\varOmega_{1}\omega_{SRK}
 
     Parameters
@@ -1513,6 +1538,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     .. math::
         \log_{10} P^{sat} = A - \frac{B}{T + C} + 0.43429x^n + Ex^8 + Fx^{12}
 
+    .. math::
         x = \max \left(\frac{T-t_o-273.15}{T_c}, 0 \right)
 
     Parameters
@@ -1579,8 +1605,10 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     .. math::
         \ln P_r = f^{(0)} + \omega f^{(1)}
 
+    .. math::
         f^{(0)} = 5.92714-\frac{6.09648}{T_r}-1.28862\ln T_r + 0.169347T_r^6
 
+    .. math::
         f^{(1)} = 15.2518-\frac{15.6875}{T_r} - 13.4721 \ln T_r + 0.43577T_r^6
 
     Parameters
@@ -1632,6 +1660,7 @@ def Pv_Wagner(T, args, Tc, Pc):
         \ln P^{v}= \ln P_c + \frac{a\tau + b \tau^{1.5} + c\tau^{3}
         + d\tau^6} {T_r}
 
+    .. math::
         \tau = 1 - \frac{T}{T_c}
 
     Parameters
@@ -1682,15 +1711,19 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
     .. math::
         \ln P_r=f^{(0)}+\omega f^{(1)}+\omega^2f^{(2)}
 
+    .. math::
         f^{(0)}=\frac{-5.97616\tau + 1.29874\tau^{1.5}- 0.60394\tau^{2.5}
         -1.06841\tau^5}{T_r}
 
+    .. math::
         f^{(1)}=\frac{-5.03365\tau + 1.11505\tau^{1.5}- 5.41217\tau^{2.5}
         -7.46628\tau^5}{T_r}
 
+    .. math::
         f^{(2)}=\frac{-0.64771\tau + 2.41539\tau^{1.5}- 4.26979\tau^{2.5}
         +3.25259\tau^5}{T_r}
 
+    .. math::
         \tau = 1-T_{r}
 
     Parameters
@@ -1860,10 +1893,13 @@ def Pv_Sanjari(T, Tc, Pc, w):
     .. math::
         P_{v} = P_c\exp(f^{(0)} + \omega f^{(1)} + \omega^2f^{(2)})
 
+    .. math::
         f^{(0)} = a_1 + \frac{a_2}{T_r} + a_3\ln T_r + a_4 T_r^{1.9}
 
+    .. math::
         f^{(1)} = a_5 + \frac{a_6}{T_r} + a_7\ln T_r + a_8 T_r^{1.9}
 
+    .. math::
         f^{(2)} = a_9 + \frac{a_{10}}{T_r} + a_{11}\ln T_r + a_{12} T_r^{1.9}
 
     Parameters
@@ -1987,10 +2023,13 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     .. math::
         \frac{1}{\mu} = B \left(\frac{V-V_o}{V_o}\right)
 
+    .. math::
         B = \frac{0.33V_c}{f_1}-1.12
 
+    .. math::
         f_1 = 4.27+0.032M_w-0.077P_c+0.014T_f-3.82\frac{T_f}{T_c}
 
+    .. math::
         V_o = 0.0085T_c\omega-2.02+\frac{V_{m}}{0.342(T_f/T_c)+0.894}
 
     Parameters
@@ -2029,8 +2068,9 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     Example 9.196 from [1]_; toluene at 383K
 
     >>> Vc = 316/92.14/1000
-    >>> "%0.3f" % MuL_PrzedzieckiSridhar(383, 591.75, 41.08e5, 316/92.14/1000,\
-            0.264, 92.14, 178, 106.87/92.14/1000, 298.15).cP
+    >>> V = 106.87/92.14/1000
+    >>> args = (383, 591.75, 41.08e5, Vc, 0.264, 92.14, 178, V, 298.15)
+    >>> "%0.3f" % MuL_PrzedzieckiSridhar(*args).cP
     '0.223'
 
     References
@@ -2084,18 +2124,23 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
         \eta\left(T,P\right)=\eta_{S}\left(T\right)F_{p}\left(T_{r},P_{r},
                 \omega\right)
 
+    .. math::
         F_{p}\left(T_{r},P_{r},\omega\right)=\frac{F_{p}^{ref}\left(T_{r},P_{r}
           \right)}{1+F_{s}\left(T_{r},\omega\right)\left(P_{r}-P_{sr}\right)}
 
+    .. math::
         F_{p}^{ref}\left(T_{r},P_{r}\right)=1+f_{2}\left(T_{r}\right)\left[
           \left(P_{r}-P_{sr}\right)/2.11824066\right]^{f_{1}\left(T_{r}\right)}
 
+    .. math::
         f_{1}\left(T_{r}\right)=0.9990614-\frac{0.00046739}{1.052278T_{r}^
           {-0.03876963}-1.05134195}
 
+    .. math::
         f_{2}\left(T_{r}\right)=-0.20863153+\frac{0.32569953}{\left(
           1.00383978-T_{r}^{2.57327058}\right)^{0.29063299}}
 
+    .. math::
         f_{s}\left(T_{r},\omega\right)=\omega\left(-0.079206+2.161577T_{r}-
           13.403985T_{r}^{2}+44.170595T_{r}^{3}-84.829114T_{r}^{4}+
           96.120856T_{r}^{5}-59.812675T_{r}^{6}+15.671878T_{r}^{7}\right)
@@ -2330,10 +2375,13 @@ def MuG_StielThodos(T, Tc, Pc, M):
     .. math::
         \mu=N/\xi
 
+    .. math::
         \xi=\frac{T_{c}^{1/6}}{M^{1/2}P_{c}^{2/3}}
 
+    .. math::
         N=3.4e^{-4}T_{r}^{0.94}   for Tr ≤ 1.5
 
+    .. math::
         N=1.778e^{-4}\left(4.58T_{r}-1.67\right)^{0.625} for T_r > 1.5
 
     Parameters
@@ -2451,8 +2499,7 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
 def MuG_YoonThodos(T, Tc, Pc, M):
     r"""Calculates the viscosity of a gas using an Yoon-Thodos correlation
 
-    .. math::
-        \eta^o\xi = 46.1T_r^{0.618}-20.4\exp(-0.449T_r)+19.4\exp(-4.058T_r)+1
+    .. math:: \eta^o\xi = 46.1T_r^{0.618}-20.4\exp(-0.449T_r)+19.4\exp(-4.058T_r)+1
 
     Parameters
     ----------
@@ -2882,9 +2929,11 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
     .. math::
         \left(\mu-\mu^o\right)\xi=1.656\rho_r^{1.111}, \rho_r ≤ 0.1
 
+    .. math::
         \left(\mu-\mu^o\right)\xi=0.0607\left(9.045\rho_r+0.63\right)^{1.739},
         0.1 ≤ \rho_r ≤ 0.9
 
+    .. math::
         log\left[4-log\left(\left(\mu-\mu^o\right)\xi\right)\right]=
         0.6439-0.1005\rho_r-\Delta, 0.9 ≤ \rho_r ≤2.6
 
@@ -3197,10 +3246,13 @@ def ThL_RiaziFaghri(T, Tb, SG):
     .. math::
         \kappa = aT_{b}^{b}SG^{c}
 
+    .. math::
         a = \exp\left(-4.5093-0.6844t-0.1305t^{2}\right)
 
+    .. math::
         b = 0.3003+0.0918t+0.0195t^{2}
 
+    .. math::
         c = 0.0129+0.0894t+0.0292t^{2}
 
     where t = T(F)/100
@@ -3248,8 +3300,10 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
         \kappa = 10^{-4}\left(10\omega+2P_c-2T+4+1.908\left(T_b+\frac{1.009B^2}
         {M^2}\right)+\frac{3.9287M^4}{B^4}+\frac{A}{B^8}\right)
 
+    .. math::
         A = 3.8588M^8\left(1.0045B+6.5152M-8.9756\right)
 
+    .. math::
         B = 16.0407M+2T_b-27.9074
 
     Parameters
@@ -3323,6 +3377,7 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
         \frac{\lambda}{\lambda_o} = aT_r + bPc + c\omega +
         \left(\frac{e}{M}\right)^{d}
 
+    .. math::
         \frac{\lambda}{\lambda_o} = aT_r + bPc + c\omega +
         \left(\frac{e}{M}\right)^{d} + f\mu
 
@@ -3473,10 +3528,13 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
         \kappa\lambda = -1.884e-6P_r^2 + 1.442e-3P_r +
         \alpha\exp\left(\beta\rho_r\right)
 
+    .. math::
         \alpha = \frac{7.137e-3}{\beta^{3.322}}
 
+    .. math::
         \beta = 0.4 + \frac{0.986}{\exp{0.58\lambda}}
 
+    .. math::
         \lambda = \frac{Tc^{1/6}M^{1/2}}{Pc}^{2/3}
 
     Parameters
@@ -3546,6 +3604,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     .. math::
         k_2 = k_1\frac{C_2}{C_1}
 
+    .. math::
         C = 17.77+0.065*P_r-7.764*T_r-\frac{2.065T_r^2}{exp(0.2P_r}
 
     Parameters
@@ -3698,9 +3757,11 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     .. math::
         \kappa = 1.188e^{-3}\frac{T_rC_p}{\lambda}   for Tr ≤ 1
 
+    .. math::
         \kappa = 2.67e^{-4}\left(14.52T_r-5.14\right)^{2/3}
         \frac{C_p}{\lambda}   for Tr ≤ 1
 
+    .. math::
         \lambda=\frac{T_{c}^{1/6}}{M^{1/2}P_{c}^{2/3}}
 
     Parameters
@@ -3762,10 +3823,13 @@ def ThG_RiaziFaghri(T, Tb, SG):
     .. math::
         \kappa = aT_{b}^{b}SG^{c}
 
+    .. math::
         a = \exp\left(-4.5093-0.6844t-0.1305t^{2}\right)
 
+    .. math::
         b = 0.3003+0.0918t+0.0195t^{2}
 
+    .. math::
         c = 0.0129+0.0894t+0.0292t^{2}
 
     where t = T(F)/100
@@ -3892,13 +3956,17 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
     .. math::
         \lambda_o = \frac{7.452\mu_o\Psi}{M}
 
+    .. math::
         \Psi = 1 + \alpha \left\{[0.215+0.28288\alpha-1.061\beta+0.26665Z]/
         [0.6366+\beta Z + 1.061 \alpha \beta]\right\}
 
+    .. math::
         \alpha = \frac{C_v}{R}-1.5
 
+    .. math::
         \beta = 0.7862-0.7109\omega + 1.3168\omega^2
 
+    .. math::
         Z=2+10.5T_r^2
 
     Parameters
@@ -4223,12 +4291,14 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
         Temperature, [K]
     Tc : float
         Critical temperature, [K]
+    Vc : float
+        Critical volume, [m³/kg]
     Zc : float
         Critical pressure, [Pa]
-    rhoc : float
-        Critical density, [kg/m3]
     M : float
         Molecular weight, [g/mol]
+    w : float
+        Acentric factor, [-]
     rho : float
         Density, [kg/m3]
     ko : float
@@ -4295,6 +4365,7 @@ def Tension_Parametric(T, args, Tc):
     .. math::
         $\sigma=A\left(1-T_{r}\right)^{B}$
 
+    .. math::
         Tr = \frac{T}{T_c}
 
     Parameters
@@ -4329,6 +4400,7 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
         \frac{\sigma}{P_c^{2/3}T_c^{1/3}} = \left(0.132\alpha_c-0.279\right)
         \left(1-T_r\right)^{11/9}
 
+    .. math::
         \alpha_c = 0.9076\left(1+\frac{T_br\ln{P_c}}{1-T_{br}}\right)
 
     Parameters
@@ -4431,8 +4503,10 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
         \sigma_r = \sigma_r^{(1)}+ \frac{\omega - \omega^{(1)}}
         {\omega^{(2)}-\omega^{(1)}} \left(\sigma_r^{(2)}-\sigma_r^{(1)}\right)
 
+    .. math::
         \sigma_r = \ln{\left(\frac{\sigma}{T_c^{1/3}P_c^{2/3}} + 1\right)}
 
+    .. math::
         \sigma^{(1)} = 40.520(1-T_r)^{1.287}
         \sigma^{(2)} = 52.095(1-T_r)^{1.21548}
 
@@ -4552,9 +4626,11 @@ def Tension_Hakim(T, Tc, Pc, w, X):
         \sigma = P_c^{2/3}T_c^{1/3} \sigma_{r|T_r=0.6}
         \left(\frac{1-T_r}{0.4}\right)^m
 
+    .. math::
         \sigma_{r|T_r=0.6} = 0.1574 + 0.359\omega - 1.769X - 13.69X^2 -
         0.51\omega^2 + 1.298\omega X
 
+    .. math::
         m = 1.21+0.5385\omega-14.61X-32.07X^2-1.65\omega^2+22.03X\omega
 
     Parameters

@@ -208,6 +208,7 @@ def MuG_Wilke(xi, Mi, mui):
         \mu_{m} = \sum_{i=1}^n \frac{\mu_i}{1+\frac{1}{x_i}\sum_{j=1}
         ^n x_j \phi_{ij}}
 
+    .. math::
         \phi_{ij} = \frac{\left[1+\left(\mu_i/\mu_j\right)^{0.5}(M_j/M_i)
         ^{0.25}\right]^2}{4/\sqrt{2}\left[1+\left(M_i/M_j\right)\right]
         ^{0.5}}
@@ -302,8 +303,10 @@ def ThL_Li(xi, Vi, ki):
     .. math::
         \lambda_{m} = \sum_{i} \sum_{j} \phi_i \phi_j k_{ij}
 
+    .. math::
         k_{ij} = 2\left(\lambda_i^{-1}+\lambda_j^{-1}\right)^{-1}
 
+    .. math::
         \phi_{i} = \frac{x_iV_i}{\sum_j x_jV_j}
 
     Parameters
@@ -369,10 +372,12 @@ def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
     .. math::
         k = \sum_{i} \frac{k_i}{\frac{1}{x_i}\sum x_i A_{ij}}
 
+    .. math::
         A_{ij} = \frac{1}{4} \left\{ 1 + \left[\frac{\mu_i}{\mu_j}
         \left(\frac{M_j}{M_i}\right)^{0.75} \left(\frac{1+S_i/T}{1+S_j/T}
         \right)\right]^{0.5}\right\}^2\left(\frac{1+S_{ij}/T}{1+S_i/T}\right)
 
+    .. math::
         S_{ij} = (S_i S_j)^{0.5}
 
     Parameters
@@ -464,10 +469,12 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
     .. math::
         k = \sum_{i} \frac{k_i}{\frac{1}{x_i}\sum x_i A_{ij}}
 
+    .. math::
         A_{ij} = \frac{\epsilon \left[1+\left(\lambda_{tri}/\lambda_{trj}
         \right)^{1/2} \left(M_i/M_j\right)^{1/4}\right]^2}
         {\left[8\left(1+M_i/M_j\right)\right]^{1/2}}
 
+    .. math::
         \frac{\lambda_{tri}}{\lambda_{trj}}=\frac{\mu_i}{\mu_j}\frac{M_i}{M_j}
 
     Parameters
@@ -535,30 +542,47 @@ def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
     .. math::
         T_{cm} = \frac{\sum_i \sum_j x_ix_jV_{cij}T_{cij}}{V_{cm}}
 
+    .. math::
         V_{cm} = \sum_i \sum_j x_ix_jV_{cij}
 
+    .. math::
         \omega_m = \sum_i x_i\omega_i
 
+    .. math::
         Z_{cm} = 0.291-0.08\omega_m
 
+    .. math::
         P_{cm} = \frac{Z_{cm}RT_{cm}}{V_{cm}}
 
+    .. math::
         M_m = \sum_i x_iM_i
 
+    .. math::
         T_{cij} = \left(T_{ci}T_{cj}\right)^{1/2}
 
+    .. math::
         V_{cij} = \frac{\left(V_{ci}^{1/3}+V_{cj}^{1/3}\right)^3}{8}
 
     Parameters
     ----------
+    T : float
+        Temperature, [K]
     xi : list
         Mole fractions of components, [-]
-    Mi : float
-        Molecular weights of components, [g/mol]
-    mui : float
-        Gas viscosities of components, [Pa·s]
-    ki : list
-        Thermal conductivities of components, [W/m·K]
+    Tci : list
+        Critical temperature of compounds, [K]
+    Vci : list
+        Critical volume of compounds, [m³/kg]
+    Zci : list
+        Critical pressure of compounds, [-]
+    wi :  list
+        Acentric factor of compounds, [-]
+    Mi : list
+        Molecular weight of compounds, [g/mol]
+    V : float
+        Specific volume, [m³/kg]
+    ko : list
+        Thermal conductivities of mixture at low pressure, [W/m·K]
 
     Returns
     -------
@@ -624,6 +648,167 @@ def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
 
     km = ThG_StielThodos(T, Tcm, Pcm, Vcm, Mm, V, ko)
     return unidades.ThermalConductivity(km)
+
+
+def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
+    r"""Calculate the thermal conductivity of gas mixtures at high pressure
+    using the TRAPP (TRAnsport Property Prediction) method.
+
+    .. math::
+        \lambda_m = \lambda_m^o+F_{\lambda m}X_{\lambda m}
+        \left(\lambda^R-\lambda^{Ro}\right)
+
+    .. math::
+        h_m = \sum_i \sum_j x_ix_jh_{ij}
+
+    .. math::
+        f_m = \frac{\sum_i \sum_j x_ix_jf_{ij}h_{ij}}{h_m}
+
+    .. math::
+        h_{ij}=\frac{\left(h_i^{1/3}+h_j^{1/3}\right)^3}{8}
+
+    .. math::
+        f_{ij} = \left(f_if_j\right)^{1/2}
+
+    .. math::
+        T_o = T/f_m
+
+    .. math::
+        \rho_o = \rho h_m
+
+    .. math::
+        F_{\lambda m} = \frac{44.094^{1/2}}{h_m^2} \sum_i \sum_j x_ix_j
+        \left(\frac{f_{ij}}{M_{ij}}\right)^{1/2}h_{ij}^{4/3}
+
+    .. math::
+        M_{ij} = \left(\frac{1}{2M_i}+\frac{1}{2M_j}\right)^{-1}
+
+    .. math::
+        X_{\lambda m} = \left[1+\frac{2.1866\left(\omega_m-\omega^R\right)}
+        {1-0.505\left(\omega_m-\omega^R\right)}\right]^{1/2}
+
+    .. math::
+        \omega_m = \sum_i x_i\omega_i
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of compounds, [K]
+    Vci : list
+        Critical volume of compounds, [m³/kg]
+    Zci : list
+        Critical pressure of compounds, [Pa]
+    wi :  list
+        Acentric factor of compounds, [-]
+    Mi : list
+        Molecular weight of compounds, [g/mol]
+    rho : float
+        Density, [kg/m3]
+    ko : float
+        Low-pressure gas thermal conductivity, [Pa*S]
+
+    Returns
+    -------
+    k : float
+        High-pressure gas thermal conductivity [W/m/k]
+
+    Examples
+    --------
+    Example 10-8 from [3]_; 75.5% methane, 24.5% CO2 at 370.8K and 174.8bar
+
+    >>> Tc = [190.56, 304.12]
+    >>> Vc = [98.6/16.043/1000, 94.07/44.01/1000]
+    >>> Zc = [0.286, 0.274]
+    >>> M = [16.043, 44.01]
+    >>> w = [0.011, 0.225]
+    >>> x = [0.755, 0.245]
+    >>> args = (370.8, x, Tc, Vc, Zc, w, M, 1/159*22.9*1000, 0.0377)
+    >>> "%0.4f" % ThG_TRAPP(*args)
+    '0.0550'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Reference fluid properties, propane
+    TcR = 369.83
+    rhocR = 1/200  # mol/cm³
+    ZcR = 0.276
+    wR = 0.152
+
+    # Convert volume to molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+    Mm = sum([x*M for x, M in zip(xi, Mi)])
+    rho = rho/Mm/1000
+
+    # Calculate shape factor for mixture
+    fi = []
+    hi = []
+    for Tc, Vc, Zc, w in zip(Tci, Vci, Zci, wi):
+        fi.append(Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(T/Tc))))
+        hi.append(rhocR*Vc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(T/Tc))))
+
+    fij = []
+    for f_i in fi:
+        fiji = []
+        for f_j in fi:
+            fiji.append((f_i*f_j)**0.5)
+        fij.append(fiji)
+
+    hij = []
+    for h_i in hi:
+        hiji = []
+        for h_j in hi:
+            hiji.append((h_i**(1/3)+h_j**(1/3))**3/8)
+        hij.append(hiji)
+
+    hm = 0
+    for x_i, hiji in zip(xi, hij):
+        for x_j, h in zip(xi, hiji):
+            hm += x_i*x_j*h
+
+    fm = 0
+    for x_i, hiji, fiji in zip(xi, hij, fij):
+        for x_j, h, f in zip(xi, hiji, fiji):
+            fm += x_i*x_j*f*h/hm
+
+    To = T/fm
+    rho0 = rho*hm
+
+    Mij = []
+    for M_i in Mi:
+        Miji = []
+        for M_j in Mi:
+            Miji.append(1/(1/2/M_i+1/2/M_j))
+        Mij.append(Miji)
+
+    suma = 0
+    for x_i, fiji, Miji, hiji in zip(xi, fij, Mij, hij):
+        for x_j, f, M, h in zip(xi, fiji, Miji, hiji):
+            suma += x_i*x_j*(f/M)**0.5*h**(4/3)
+    Flm = 44.094**0.5/hm**2*suma
+
+    wm = sum([x*w for x, w in zip(xi, wi)])
+    Xlm = (1+2.1866*(wm-wR)/(1-0.505*(wm-wR)))**0.5
+
+    # Coefficients in [53]_, pag 796
+    # Density are in mol/dm³
+    rho0 *= 1000
+    rhocR *= 1000
+
+    rhorR = rho0/rhocR
+    TrR = To/TcR
+    lR = 15.2583985944*rhorR + 5.29917319127*rhorR**3 + \
+        (-3.05330414748+0.450477583739/TrR)*rhorR**4 + \
+        (1.03144050679-0.185480417707/TrR)*rhorR**5
+
+    return unidades.ThermalConductivity(Flm*Xlm*lR*1e-3 + ko)
+
 
 
 
