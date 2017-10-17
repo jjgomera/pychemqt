@@ -296,6 +296,7 @@ def MuG_Wilke(xi, Mi, mui):
     return unidades.Viscosity(mu)
 
 
+# Liquid thermal conductivity correlations
 def ThL_Li(xi, Vi, ki):
     r"""Calculate thermal conductiviy of liquid nmixtures using the Li method,
     also referenced in API procedure 12A2.1, pag 1145
@@ -365,6 +366,44 @@ def ThL_Li(xi, Vi, ki):
     return unidades.ThermalConductivity(k)
 
 
+def ThL_Power(wi, ki):
+    r"""Calculate thermal conductiviy of liquid nmixtures using the power law
+    method, as referenced in [3]_
+
+    .. math::
+        \lambda_{m} = \frac{1}{\sqrt{\sum_{i} w_i/\lambda_i^2}}
+
+    Parameters
+    ----------
+    wi : list
+        Weight fractions of components, [-]
+    ki : list
+        Thermal conductivities of components, [W/m·K]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivities of mixture, [W/m·K]
+
+    Notes
+    -----
+    This method shold not be used if water is in the mixture or if pure
+    component thermal conductivities are very different, ki/kj < 2
+
+    References
+    ----------
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    km = 0
+    for w, k in zip(wi, ki):
+        km += w/k**2
+
+    km = km**-0.5
+    return unidades.ThermalConductivity(km)
+
+
+# Gas thermal conductivity correlations
 def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
     r"""Calculate thermal conductiviy of gas mixtures using the Lindsay-Bromley
     method, also referenced in API procedure 12B2.1, pag 1164
