@@ -32,6 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+# TODO:
+# ThG_Chung
+# ThL_Rowley
+
+
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
 from lib.compuestos import Componente, ThG_StielThodos
@@ -77,10 +82,13 @@ __doi__ = {
                   "Pressures: N2-O2, N2-Ar, CO2-Ar, CO2-CH4",
          "ref": "Ind. Eng. Chem. Fundam. 22(4) (1983) 458-462",
          "doi": "10.1021/i100012a018"},
-
-
-
     8:
+        {"autor": "Livingston, J.k Morgan, R., Griggs, M.A.",
+         "title": "The Properties of Mixed Liquids III. The Law of Mixtures I",
+         "ref": "J. Am. Chem. Soc. 39 (1917) 2261-2275",
+         "doi": "10.1021/ja02256a002"},
+
+    9:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -401,6 +409,8 @@ def ThL_Power(wi, ki):
 
     km = km**-0.5
     return unidades.ThermalConductivity(km)
+
+
 
 
 # Gas thermal conductivity correlations
@@ -847,6 +857,47 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
         (1.03144050679-0.185480417707/TrR)*rhorR**5
 
     return unidades.ThermalConductivity(Flm*Xlm*lR*1e-3 + ko)
+
+
+def Tension(xi, sigmai):
+    r"""Calculate surface tension of liquid nmixtures using the Morgan-Griggs
+    law of mixtures method, also referenced in API procedure 10A2.1, pag 991
+
+    .. math::
+        \sigma_{m} = \sum_{i} x_i \sigma_i
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    sigmai : list
+        Surface tension of components, [N/m]
+
+    Returns
+    -------
+    sigma : float
+        Surface tension of mixture, [N/m]
+
+    Examples
+    --------
+    Example from [2]_ 37.9% benzene, 62.1% CycloC6 at 77F and 1atm
+
+    >>> s1 = unidades.Tension(28.2, "dyncm")
+    >>> s2 = unidades.Tension(24.3, "dyncm")
+    >>> "%0.1f" % Tension([0.379, 0.621], [s1, s2]).dyncm
+    '25.8'
+
+    References
+    ----------
+    .. [8] Livingston, J.k Morgan, R., Griggs, M.A. The Properties of Mixed
+        Liquids III. The Law of Mixtures I. J. Am. Chem. Soc. 39 (1917)
+        2261-2275
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    sigma = 0
+    for x, s in zip(xi, sigmai):
+        sigma += x*s
+    return unidades.Tension(sigma)
 
 
 
