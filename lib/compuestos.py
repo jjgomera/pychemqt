@@ -552,7 +552,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
     Zra : float
         Racket constant, [-]
     M : float
-        Molecular weight, [kg/m³]
+        Molecular weight, [g/mol]
 
     Returns
     -------

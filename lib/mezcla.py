@@ -87,8 +87,15 @@ __doi__ = {
          "title": "The Properties of Mixed Liquids III. The Law of Mixtures I",
          "ref": "J. Am. Chem. Soc. 39 (1917) 2261-2275",
          "doi": "10.1021/ja02256a002"},
-
     9:
+        {"autor": "Spencer, C.F., Danner, R.P.",
+         "title": "Prediction of Bubble-Point Density of Mixtures",
+         "ref": "J. Chem. Eng. Data 18(2) (1973) 230-234",
+         "doi": "10.1021/je60057a007"},
+
+
+
+    10:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -206,6 +213,144 @@ def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
     kw["molarFraction"] = molarFraction
     kw["massFraction"] = massFraction
     return kw
+
+
+# Liquid density correlations
+def RhoL_Rackett(T, xi, Tci, Pci, Vci, Zrai, Mi):
+    r"""Calculates saturated liquid densities of muxteres using the
+    modified Rackett equation by Spencer-Danner, also referenced in API
+    procedure 6A3.1 pag 479
+
+    .. math::
+        \frac{1}{\rho_{bp}} = R\left(\sum_i x_i \frac{T_{ci}}{P_{ci}}\right)
+        Z_{RAm}^{1+\left(1+T_r\right)^{2/7}}
+
+    .. math::
+        Z_{RAm} = \sum_i x_iZ_{RAi}
+
+    .. math::
+        T_{cm} = \sum_i \phi_iT_{ci}
+
+    .. math::
+        \phi_i = \frac{x_iV_{ci}}{\sum_i x_iV_{ci}}
+
+    .. math::
+        1-k_{ij} = \frac{8\left(V_{ci}V{cj}\right)^{1/2}}
+        {\left(V_{ci}^{1/3}+V_{cj}^{1/3}\right)^3}
+
+    .. math::
+        T_{cij} = \left(1+k{ij}\right)\left(T_{ci}T_{cj}\right)^{1/2}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Pci : list
+        Critical pressure of components, [Pa]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Zrai : list
+        Racket constant of components, [-]
+    Mi : list
+        Molecular weight of components, [g/mol]
+
+    Returns
+    -------
+    rho : float
+        Bubble point liquid density at T, [kg/m³]
+
+    Examples
+    --------
+    Example from [2]_; 58.71% ethane, 41.29% heptane at 91ºF
+
+    >>> T = unidades.Temperature(91, "F")
+    >>> xi = [0.5871, 0.4129]
+    >>> Tc1 = unidades.Temperature(89.92, "F")
+    >>> Tc2 = unidades.Temperature(512.7, "F")
+    >>> Pc1 = unidades.Pressure(706.5, "psi")
+    >>> Pc2 = unidades.Pressure(396.8, "psi")
+    >>> Vc1 = unidades.SpecificVolume(0.0788, "ft3lb")
+    >>> Vc2 = unidades.SpecificVolume(0.0691, "ft3lb")
+    >>> Zrai = [0.2819, 0.261]
+    >>> Mi = [30.07, 100.205]
+    >>> args = (T, xi, [Tc1, Tc2], [Pc1, Pc2], [Vc1, Vc2], Zrai, Mi)
+    >>> "%0.2f" % RhoL_Rackett(*args).kgl
+    '0.56'
+
+    Example 5-3 from [3]_; 70% ethane, 30% nC10 at 344.26K
+
+    >>> xi = [0.7, 0.3]
+    >>> Tci = [305.32, 617.7]
+    >>> Pci = [48.72e5, 21.1e5]
+    >>> Vci = [145.5/1000, 624/1000]
+    >>> Zrai = [0.282, 0.247]
+    >>> Mi = [1, 1]
+    >>> args = (344.26, [0.7, 0.3], Tci, Pci, Vci, Zrai, Mi)
+    >>> "%0.1f" % (1/RhoL_Rackett(*args).gcc)
+    '120.0'
+
+    References
+    ----------
+    .. [9] Spencer, C.F., Danner, R.P. Prediction of Bubble-Point Density of
+        Mixtures. J. Chem. Eng. Data 18(2) (1973) 230-234
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    # Eq 11
+    Zram = 0
+    for x, Zra in zip(xi, Zrai):
+        Zram += x*Zra
+
+    # Eq 13
+    suma = 0
+    for x, Vc in zip(xi, Vci):
+        suma += x*Vc
+    phi = []
+    for x, Vc in zip(xi, Vci):
+        phi.append(x*Vc/suma)
+
+    # Eq 16
+    kij = []
+    for Vc_i in Vci:
+        kiji = []
+        for Vc_j in Vci:
+            kiji.append(1-8*((Vc_i**(1/3)*Vc_j**(1/3))**0.5/(
+                Vc_i**(1/3)+Vc_j**(1/3)))**3)
+        kij.append(kiji)
+
+    # Eq 15
+    Tcij = []
+    for Tc_i, kiji in zip(Tci, kij):
+        Tciji = []
+        for Tc_j, k in zip(Tci, kiji):
+            Tciji.append((Tc_i*Tc_j)**0.5*(1-k))
+        Tcij.append(Tciji)
+
+    # Eq 14
+    Tcm = 0
+    for phi_i, Tciji in zip(phi, Tcij):
+        for phi_j, Tc in zip(phi, Tciji):
+            Tcm += phi_i*phi_j*Tc
+
+    # Eq 10
+    suma = 0
+    for x, Tc, Pc in zip(xi, Tci, Pci):
+        suma += x*Tc/Pc*101325
+    Tr = T/Tcm
+    V = R_atml*suma*Zram**(1+(1-Tr)**(2/7))
+
+    Mm = 0
+    for x, M in zip(xi, Mi):
+        Mm += x*M
+    return unidades.Density(Mm/V)
 
 
 def MuG_Wilke(xi, Mi, mui):
