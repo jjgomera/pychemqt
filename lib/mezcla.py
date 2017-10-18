@@ -39,7 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
-from lib.compuestos import Componente, RhoL_Costald, ThG_StielThodos
+from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
+                            ThG_StielThodos)
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
@@ -98,9 +99,15 @@ __doi__ = {
                   "Their Mixtures",
          "ref": "AIChE Journal 25(4) (1979) 653-663",
          "doi": "10.1002/aic.690250412"},
-
-
     11:
+        {"autor": "Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S.",
+         "title": "An Improved Correlation for Compressed Liquid Densities of "
+                  "Hydrocarbons. Part 2. Mixtures",
+         "ref": "Fluid Phase Equilibria 114 (1996) 21-35",
+         "doi": "10.1016/0378-3812(95)02824-2"},
+
+
+    12:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -463,6 +470,113 @@ def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
     rho = RhoL_Costald(T, Tcm, wm, Vcm)
     return unidades.Density(rho*Mm)
 
+
+def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
+    r"""Calculates compressed-liquid density of a mixture, using the
+    Aalto-Keskinen modification of Chang-Zhao correlation
+
+    .. math::
+        T_{cm} = \frac{\sum_i\sum_jx_ix_j\left(V_i^oT_{ci}V_j^oT_{cj}\right)
+        ^{1/2}}{V_m^o}
+
+    .. math::
+        V_m^o = \frac{\sum_i xiV_i^o + 3 \sum_i x_iV_i^{o^{2/3}}
+        \sum_i x_iV_i^{o^{1/3}}}{4}
+
+    .. math::
+        P_{cm} = \frac{\left(0.291-0.08\omega_{SRKm}\right)RT_{cm}}{V_{cm}}
+
+    .. math::
+        \omega_{SRKm} = \left(\sum_i x_i\omega_{SRKi}\right)^2
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Pci : list
+        Critical pressure of components, [Pa]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    wi : list
+        Acentric factor (SRK optimized) of components, [-]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    Ps : float
+        Saturation pressure, [Pa]
+    rhos : float
+        Boiling point liquid density, [kg/m³]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m³]
+
+    Examples
+    --------
+    Example 5-4 from [3]_; 70% ethane, 30% nC10 at 344.26K and 10000psi
+
+    >>> P = unidades.Pressure(10000, "psi")
+    >>> xi = [0.7, 0.3]
+    >>> Tci = [305.32, 617.7]
+    >>> Pci = [48.72e5, 21.1e5]
+    >>> Vci = [145.5/1000, 624/1000]
+    >>> wi = [0.099, 0.491]
+    >>> Mi = [1, 1]
+    >>> args = (344.26, P, xi, Tci, Pci, Vci, wi, Mi, 9.2e5, 1/116.43*1000)
+    >>> "%0.2f" % (1/RhoL_AaltoKeskinenMix(*args).gcc)
+    '99.05'
+
+    References
+    ----------
+    .. [11] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+        Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
+        Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    # Apply mixing rules
+    # Eq A5
+    wm = 0
+    for x, w in zip(xi, wi):
+        wm += x*w**0.5
+    wm *= wm
+
+    # Eq 2
+    sum1 = 0
+    sum2 = 0
+    sum3 = 0
+    for x, Vc, Tc in zip(xi, Vci, Tci):
+        sum1 += x*Vc
+        sum2 += x*Vc**(2/3)
+        sum3 += x*Vc**(1/3)
+    Vcm = (sum1+3*sum2*sum3)/4
+
+    # Eq 1
+    Tcm = 0
+    for x_i, Vc_i, Tc_i in zip(xi, Vci, Tci):
+        for x_j, Vc_j, Tc_j in zip(xi, Vci, Tci):
+            Tcm += x_i*x_j*(Vc_i*Tc_i*Vc_j*Tc_j)**0.5
+    Tcm /= Vcm
+
+    Mm = 0
+    for x, M in zip(xi, Mi):
+        Mm += x*M
+
+    # Eq 4
+    Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
+
+    # Apply the pure component procedure with the mixing parameters
+    rho = RhoL_AaltoKeskinen(T, P, Tcm, Pcm, wm, Ps, rhos)
+    return unidades.Density(rho/Mm)
 
 
 def MuG_Wilke(xi, Mi, mui):
