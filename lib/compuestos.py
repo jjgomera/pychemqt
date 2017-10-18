@@ -591,9 +591,11 @@ def RhoL_Costald(T, Tc, w, Vc):
     .. math::
         \frac{V}{V^{o}}=V_{R}^{(0)}\left(1-\omega_{SRK}V_{R}^{(1)}\right)
 
+    .. math::
         V_{R}^{(0)}=1+a\left(1-T_{R}\right)^{1/3}+b\left(1-T_{R}\right)^{2/3}
         +c\left(1-T_{R}\right)+d\left(1-T_{R}\right)^{4/3}
 
+    .. math::
         V_{R}^{(1)}=\frac{e+fT_{R}+gT_{R}^{2}+hT_{R}^{3}}{Tr-1.00001}
 
     Parameters

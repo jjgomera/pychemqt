@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
-from lib.compuestos import Componente, ThG_StielThodos
+from lib.compuestos import Componente, RhoL_Costald, ThG_StielThodos
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
@@ -92,10 +92,15 @@ __doi__ = {
          "title": "Prediction of Bubble-Point Density of Mixtures",
          "ref": "J. Chem. Eng. Data 18(2) (1973) 230-234",
          "doi": "10.1021/je60057a007"},
-
-
-
     10:
+        {"autor": "Hankinson, R.W., Thomson, G.H.",
+         "title": "A New Correlation for Saturated Densities of Liquids and "
+                  "Their Mixtures",
+         "ref": "AIChE Journal 25(4) (1979) 653-663",
+         "doi": "10.1002/aic.690250412"},
+
+
+    11:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -216,7 +221,7 @@ def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
 
 
 # Liquid density correlations
-def RhoL_Rackett(T, xi, Tci, Pci, Vci, Zrai, Mi):
+def RhoL_RackettMix(T, xi, Tci, Pci, Vci, Zrai, Mi):
     r"""Calculates saturated liquid densities of muxteres using the
     modified Rackett equation by Spencer-Danner, also referenced in API
     procedure 6A3.1 pag 479
@@ -278,7 +283,7 @@ def RhoL_Rackett(T, xi, Tci, Pci, Vci, Zrai, Mi):
     >>> Zrai = [0.2819, 0.261]
     >>> Mi = [30.07, 100.205]
     >>> args = (T, xi, [Tc1, Tc2], [Pc1, Pc2], [Vc1, Vc2], Zrai, Mi)
-    >>> "%0.2f" % RhoL_Rackett(*args).kgl
+    >>> "%0.2f" % RhoL_RackettMix(*args).kgl
     '0.56'
 
     Example 5-3 from [3]_; 70% ethane, 30% nC10 at 344.26K
@@ -290,7 +295,7 @@ def RhoL_Rackett(T, xi, Tci, Pci, Vci, Zrai, Mi):
     >>> Zrai = [0.282, 0.247]
     >>> Mi = [1, 1]
     >>> args = (344.26, [0.7, 0.3], Tci, Pci, Vci, Zrai, Mi)
-    >>> "%0.1f" % (1/RhoL_Rackett(*args).gcc)
+    >>> "%0.1f" % (1/RhoL_RackettMix(*args).gcc)
     '120.0'
 
     References
@@ -351,6 +356,113 @@ def RhoL_Rackett(T, xi, Tci, Pci, Vci, Zrai, Mi):
     for x, M in zip(xi, Mi):
         Mm += x*M
     return unidades.Density(Mm/V)
+
+
+def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
+    r"""Calculates saturated liquid densities of pure components using the
+    Corresponding STAtes Liquid Density (COSTALD) method, developed by
+    Hankinson and Thomson, referenced too in API procedure 6A3.2 pag. 482
+
+    .. math::
+        T_{cm} = \frac{\sum_i\sum_jx_ix_j\left(V_i^oT_{ci}V_j^oT_{cj}\right)
+        ^{1/2}}{V_m^o}
+
+    .. math::
+        V_m^o = \frac{\sum_i xiV_i^o + 3 \sum_i x_iV_i^{o^{2/3}}
+        \sum_i x_iV_i^{o^{1/3}}}{4}
+
+    .. math::
+        \omega_m = \sum_i x_i\omega_{SRKi}
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    wi : list
+        Acentric factor optimized to SRK of components, [-]
+    Vci : list
+        Characteristic volume of components, [m³/kg]
+    Mi : list
+        Molecular weight of components, [g/mol]
+
+    Returns
+    -------
+    rho : float
+        Bubble point liquid density at T, [kg/m³]
+
+    Examples
+    --------
+    Example from [2]_; 20% methane, 80% nC10 at 160ºF
+
+    >>> T = unidades.Temperature(160, "F")
+    >>> Tc1 = unidades.Temperature(-116.67, "F")
+    >>> Tc2 = unidades.Temperature(652, "F")
+    >>> Vc1 = unidades.SpecificVolume(1.592/16.04, "ft3lb")
+    >>> Vc2 = unidades.SpecificVolume(9.919/142.28, "ft3lb")
+    >>> Mi = [16.04, 142.28]
+    >>> args = (T, [0.2, 0.8], [Tc1, Tc2], [0.0074, 0.4916], [Vc1, Vc2], Mi)
+    >>> "%0.3f" % RhoL_CostaldMix(*args).kgl
+    '0.667'
+
+    Example 5-3 from [3]_; 70% ethane, 30% nC10 at 344.26K
+
+    >>> xi = [0.7, 0.3]
+    >>> Tci = [305.32, 617.7]
+    >>> Vci = [145.5/1000, 624/1000]
+    >>> wi = [0.099, 0.491]
+    >>> Mi = [1, 1]
+    >>> args = (344.26, [0.7, 0.3], Tci, wi, Vci, Mi)
+    >>> "%0.1f" % (1/RhoL_CostaldMix(*args).gcc)
+    '119.5'
+
+
+    References
+    ----------
+    .. [10] Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
+        Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
+        653-663
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    # Apply mixing rules
+    # Eq 24
+    wm = 0
+    for x, w in zip(xi, wi):
+        wm += x*w
+
+    # Eq 21
+    sum1 = 0
+    sum2 = 0
+    sum3 = 0
+    for x, Vc, Tc in zip(xi, Vci, Tci):
+        sum1 += x*Vc
+        sum2 += x*Vc**(2/3)
+        sum3 += x*Vc**(1/3)
+    Vcm = (sum1+3*sum2*sum3)/4
+
+    # Eq 19 & 21
+    Tcm = 0
+    for x_i, Vc_i, Tc_i in zip(xi, Vci, Tci):
+        for x_j, Vc_j, Tc_j in zip(xi, Vci, Tci):
+            Tcm += x_i*x_j*(Vc_i*Tc_i*Vc_j*Tc_j)**0.5
+    Tcm /= Vcm
+
+    Mm = 0
+    for x, M in zip(xi, Mi):
+        Mm += x*M
+
+    # Apply the pure component procedure with the mixing parameters
+    rho = RhoL_Costald(T, Tcm, wm, Vcm)
+    return unidades.Density(rho*Mm)
+
 
 
 def MuG_Wilke(xi, Mi, mui):
