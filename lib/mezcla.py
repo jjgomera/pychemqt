@@ -709,6 +709,93 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     return unidades.Density(rho)
 
 
+def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
+    r"""Calculates compressed-liquid density of a mixture, using the
+    Nasrifar correlation
+
+    .. math::
+        T_{cm} = \frac{\sum_i\sum_jx_ix_j\left(V_i^oT_{ci}V_j^oT_{cj}\right)
+        ^{1/2}}{V_m^o}
+
+    .. math::
+        V_m^o = \frac{\sum_i xiV_i^o + 3 \sum_i x_iV_i^{o^{2/3}}
+        \sum_i x_iV_i^{o^{1/3}}}{4}
+
+    .. math::
+        P_{cm} = \frac{\left(0.291-0.08\omega_{SRKm}\right)RT_{cm}}{V_{cm}}
+
+    .. math::
+        \omega_{SRKm} = \sum_i x_i\omega_{SRKi}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    wi : list
+        Acentric factor (SRK optimized) of components, [-]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    Ps : float
+        Saturation pressure, [Pa]
+    rhos : float
+        Boiling point liquid density, [kg/m³]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m³]
+
+    References
+    ----------
+    .. [36] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
+        Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
+    """
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    # Apply mixing rules
+    # Eq 25
+    wm = 0
+    for x, w in zip(xi, wi):
+        wm += x*w
+
+    # Eq 24
+    sum1 = 0
+    sum2 = 0
+    sum3 = 0
+    for x, Vc, Tc in zip(xi, Vci, Tci):
+        sum1 += x*Vc
+        sum2 += x*Vc**(2/3)
+        sum3 += x*Vc**(1/3)
+    Vcm = (sum1+3*sum2*sum3)/4
+
+    # Eq 22
+    Tcm = 0
+    for x_i, Vc_i, Tc_i in zip(xi, Vci, Tci):
+        for x_j, Vc_j, Tc_j in zip(xi, Vci, Tci):
+            Tcm += x_i*x_j*(Vc_i*Tc_i*Vc_j*Tc_j)**0.5
+    Tcm /= Vcm
+
+    Mm = 0
+    for x, M in zip(xi, Mi):
+        Mm += x*M
+
+    # Eq 26
+    Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
+
+    # Apply the pure component procedure with the mixing parameters
+    rho = RhoL_Nasrifar(T, P, Tcm, Pcm, wm, Mm, Ps, rhos)
+    return unidades.Density(rho)
+
+
 def MuG_Wilke(xi, Mi, mui):
     r"""Calculate viscosity of gas mixtures using the Wilke mixing rules, also
     referenced in API procedure 11B2.1, pag 1102
