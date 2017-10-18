@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
-                            ThG_StielThodos)
+                            RhoL_TaitCostald, RhoL_Nasrifar, ThG_StielThodos)
 from lib.physics import R_atml, R
 from lib import unidades, config
 from lib.elemental import Elemental
@@ -105,6 +105,12 @@ __doi__ = {
                   "Hydrocarbons. Part 2. Mixtures",
          "ref": "Fluid Phase Equilibria 114 (1996) 21-35",
          "doi": "10.1016/0378-3812(95)02824-2"},
+    12:
+        {"autor": "Thomson, G.H., Brobst, K.R., Hankinson, R.W.",
+         "title": "An Improved Correlation for Densities of Compressed Liquids"
+                  " and Liquid Mixtures",
+         "ref": "AIChE Journal 28(4) (1982): 671-76",
+         "doi": "10.1002/aic.690280420"},
 
 
     12:
@@ -567,16 +573,140 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
             Tcm += x_i*x_j*(Vc_i*Tc_i*Vc_j*Tc_j)**0.5
     Tcm /= Vcm
 
-    Mm = 0
-    for x, M in zip(xi, Mi):
-        Mm += x*M
-
     # Eq 4
     Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
 
     # Apply the pure component procedure with the mixing parameters
     rho = RhoL_AaltoKeskinen(T, P, Tcm, Pcm, wm, Ps, rhos)
-    return unidades.Density(rho/Mm)
+    return unidades.Density(rho)
+
+
+def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
+    r"""Calculates compressed-liquid density of a mixture, using the
+    Thomson-Brobst-Hankinson modification of Chang-Zhao correlation adapted to
+    mixtures
+
+    .. math::
+        T_{cm} = \frac{\sum_i\sum_jx_ix_j\left(V_i^oT_{ci}V_j^oT_{cj}\right)
+        ^{1/2}}{V_m^o}
+
+    .. math::
+        V_m^o = \frac{\sum_i xiV_i^o + 3 \sum_i x_iV_i^{o^{2/3}}
+        \sum_i x_iV_i^{o^{1/3}}}{4}
+
+    .. math::
+        P_{cm} = \frac{\left(0.291-0.08\omega_{SRKm}\right)RT_{cm}}{V_{cm}}
+
+    .. math::
+        \omega_{SRKm} = \left(\sum_i x_i\omega_{SRKi}\right)^2
+
+    .. math::
+        \frac{P_s}{P_{cm}} = P_m^{(0)}+\omega_{SRKm}P_m^{(1)}
+
+    .. math::
+        P_m^{(0)} = 5.8031817 \log T_{rm}+0.07608141\alpha
+
+    .. math::
+        P_m^{(1)} = 4.86601\beta
+
+    .. math::
+        \alpha = 35 - \frac{36}{T_{rm}}-96.736\log T_{rm}+T_{rm}^6
+
+    .. math::
+        \beta = \log T_{rm}+0.03721754\alpha
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    wi : list
+        Acentric factor (SRK optimized) of components, [-]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    rhos : float
+        Boiling point liquid density, [kg/m³]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m³]
+
+    Examples
+    --------
+    Example rom [3]_; 20% ethane, 80% nC10 at 166F and 3000psi
+
+    >>> T = unidades.Temperature(160, "F")
+    >>> P = unidades.Pressure(3000, "psi")
+    >>> xi = [0.2, 0.8]
+    >>> Tc1 = unidades.Temperature(89.92, "F")
+    >>> Tc2 = unidades.Temperature(652, "F")
+    >>> Tci = [Tc1, Tc2]
+    >>> Mi = [30.07, 142.286]
+    >>> Vc1 = unidades.SpecificVolume(2.335/Mi[0], "ft3lb")
+    >>> Vc2 = unidades.SpecificVolume(9.919/Mi[1], "ft3lb")
+    >>> Vci = [Vc1, Vc2]
+    >>> wi = [0.0983, 0.4916]
+    >>>
+    >>> Vs = unidades.SpecificVolume(2.8532/119.8428, "ft3lb")
+    >>> args = (T, P, xi, Tci, Vci, wi, Mi, 1/Vs)
+    >>> "%0.3f" % RhoL_TaitCostaldMix(*args).gcc
+    '0.698'
+
+    References
+    ----------
+    .. [12] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+        Correlation for Densities of Compressed Liquids and Liquid Mixtures.
+        AIChE Journal 28(4) (1982): 671-76
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    # Apply mixing rules
+    # Eq 16
+    wm = 0
+    for x, w in zip(xi, wi):
+        wm += x*w
+
+    # Eq 15
+    sum1 = 0
+    sum2 = 0
+    sum3 = 0
+    for x, Vc, Tc in zip(xi, Vci, Tci):
+        sum1 += x*Vc
+        sum2 += x*Vc**(2/3)
+        sum3 += x*Vc**(1/3)
+    Vcm = (sum1+3*sum2*sum3)/4
+
+    # Eq 13
+    Tcm = 0
+    for x_i, Vc_i, Tc_i in zip(xi, Vci, Tci):
+        for x_j, Vc_j, Tc_j in zip(xi, Vci, Tci):
+            Tcm += x_i*x_j*(Vc_i*Tc_i*Vc_j*Tc_j)**0.5
+    Tcm /= Vcm
+
+    # Eq 17
+    Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
+
+    # Saturation Pressure
+    Trm = T/Tcm
+    alpha = 35 - 36/Trm - 96.736*log10(Trm) + Trm**6
+    beta = log10(Trm) + 0.03721754*alpha
+    Pro = 5.8031817*log10(Trm)+0.07608141*alpha
+    Pr1 = 4.86601*beta
+    Ps = Pcm*10**(Pro+wm*Pr1)
+
+    # Apply the pure component procedure with the mixing parameters
+    rho = RhoL_TaitCostald(T, P, Tcm, Pcm, wm, Ps, rhos)
+    return unidades.Density(rho)
 
 
 def MuG_Wilke(xi, Mi, mui):
@@ -780,8 +910,6 @@ def ThL_Power(wi, ki):
 
     km = km**-0.5
     return unidades.ThermalConductivity(km)
-
-
 
 
 # Gas thermal conductivity correlations
@@ -1299,6 +1427,9 @@ class Mezcla(config.Entity):
               "caudalUnitarioMasico": [],
               "fraccionMolar": [],
               "fraccionMasica": []}
+
+    METHODS_RhoL = ["Rackett", "COSTALD"]
+    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
 
     def __init__(self, tipo=0, **kwargs):
         if tipo == 0:
