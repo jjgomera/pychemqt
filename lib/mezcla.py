@@ -111,9 +111,19 @@ __doi__ = {
                   " and Liquid Mixtures",
          "ref": "AIChE Journal 28(4) (1982): 671-76",
          "doi": "10.1002/aic.690280420"},
+    13:
+        {"autor": "Nasrifar, K., Ayatollahi, S., Moshfeghian, M.",
+         "title": "A Compressed Liquid Density Correlation",
+         "ref": "Fluid Phase Equilibria 168 (2000) 149-163",
+         "doi": "10.1016/s0378-3812(99)00336-2"},
+    14:
+        {"autor": "Rea, H.E., Spencer, C.F., Danner, R.P.",
+         "title": "Effect of Pressure and Temperature on the Liquid Densities "
+                  "of Pure Hydrocarbons",
+         "ref": "J. Chem. Eng. Data 18(2) (1973) 227-230",
+         "doi": "10.1021/je60057a003"},
 
-
-    12:
+    15:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -755,7 +765,7 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
 
     References
     ----------
-    .. [36] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
+    .. [13] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
         Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
     """
     # Convert critical volumes to molar base
@@ -794,6 +804,104 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
     # Apply the pure component procedure with the mixing parameters
     rho = RhoL_Nasrifar(T, P, Tcm, Pcm, wm, Mm, Ps, rhos)
     return unidades.Density(rho)
+
+
+def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
+    r"""Calculates compressed-liquid density, using the analytical expression
+    of Lu Chart referenced in API procedure 6A2.22
+
+    .. math::
+        \rho_2 = \rho_1\frac{C_2}{C_1}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Pci : list
+        Critical pressure of components, [Pa]
+    rhos : float
+        Liquid density at 60ºF, [kg/m^3]
+    To : float, optional
+        Reference temperature with known density, [K]
+    Po : float, optional
+        Reference pressure with known density, [Pa]
+
+    Returns
+    -------
+    rho : float
+        High-pressure liquid density, [kg/m^3]
+
+    Examples
+    --------
+    Example A from [2]; 60.52% Ethylene, 39.48% n-heptane at 162.7ºF and 900psi
+
+    >>> T = unidades.Temperature(162.7, "F")
+    >>> P = unidades.Pressure(900, "psi")
+    >>> x = [0.6052, 0.3948]
+    >>> Tc = unidades.Temperature(48.58, "F")
+    >>> Tc2 = unidades.Temperature(512.7, "F")
+    >>> Pc = unidades.Pressure(729.8, "psi")
+    >>> Pc2 = unidades.Pressure(396.8, "psi")
+    >>> rs = unidades.Density(37.55, "lbft3")
+    >>> To = unidades.Temperature(49, "F")
+    >>> Po = unidades.Pressure(400, "psi")
+    >>> "%0.1f" % RhoL_APIMix(T, P, x, [Tc, Tc2], [Pc, Pc2], rs, To, Po).lbft3
+    '31.5'
+
+    Example C from [2]; 20% methane, 80% n-C10 at 160ºF and 3000psi
+
+    >>> T = unidades.Temperature(162.7, "F")
+    >>> P = unidades.Pressure(900, "psi")
+    >>> x = [0.2, 0.8]
+    >>> Tc1 = unidades.Temperature(-116.63, "F")
+    >>> Tc2 = unidades.Temperature(652.1, "F")
+    >>> Pc1 = unidades.Pressure(667.8, "psi")
+    >>> Pc2 = unidades.Pressure(304, "psi")
+    >>> rs = unidades.Density(41.65, "lbft3")
+    >>> "%0.1f" % RhoL_APIMix(T, P, x, [Tc1, Tc2], [Pc1, Pc2], rs).lbft3
+    '42.6'
+
+    References
+    ----------
+    .. [14] Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
+        Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
+        Data 18(2) (1973) 227-230
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Define reference state
+    if To is None:
+        To = T
+    if Po is None:
+        Po = 101325
+
+    # Calculate pseudocritical properties
+    Tc = 0
+    Pc = 0
+    for x, Tc_i, Pc_i in zip(xi, Tci, Pci):
+        Tc += x*Tc_i
+        Pc += x*Pc_i
+
+    def C(Tr, Pr):
+        """Polinomial ajust of Lu chart, referenced in [14]"""
+        A0 = 1.6368-0.04615*Pr+2.1138e-3*Pr**2-0.7845e-5*Pr**3-0.6923e-6*Pr**4
+        A1 = -1.9693+0.21874*Pr-8.0028e-3*Pr**2-8.2328e-5*Pr**3+5.2604e-6*Pr**4
+        A2 = 2.4638-.36461*Pr+12.8763e-3*Pr**2+14.8059e-5*Pr**3-8.6895e-6*Pr**4
+        A3 = -1.5841+.25136*Pr-11.3805e-3*Pr**2+9.5672e-5*Pr**3+2.1812e-6*Pr**4
+        C = A0 + A1*Tr + A2*Tr**2 + A3*Tr**3
+        return C
+
+    C1 = C(To/Tc, Po/Pc)
+    C2 = C(T/Tc, P/Pc)
+
+    # Eq 1
+    d2 = rhos*C2/C1
+    return unidades.Density(d2)
 
 
 def MuG_Wilke(xi, Mi, mui):
@@ -1516,7 +1624,8 @@ class Mezcla(config.Entity):
               "fraccionMasica": []}
 
     METHODS_RhoL = ["Rackett", "COSTALD"]
-    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "API"]
+    METHODS_RhoLP = ["Aalto-Keskinen (1996)", "Tait-COSTALD (1982",
+                     "Nasrifar (2000)", "API"]
 
     def __init__(self, tipo=0, **kwargs):
         if tipo == 0:
