@@ -1154,6 +1154,68 @@ def MuG_Wilke(xi, Mi, mui):
     return unidades.Viscosity(mu)
 
 
+def MuG_Herning(xi, Mi, mui):
+    r"""Calculate viscosity of gas mixtures using the Herning-Zipperer mixing
+    rules, as explain in [3]_
+
+    .. math::
+        \mu_{m} = \sum_{i=1}^n \frac{\mu_i}{1+\frac{1}{x_i}\sum_{j=1}
+        ^n x_j \phi_{ij}}
+
+    .. math::
+        \phi_{ij} = \left(\frac{M_j}{M_i}\right)^{1/2}
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    mui : list
+        Viscosities of components, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of mixture, [Pa·s]
+
+    Examples
+    --------
+    Example 9-6 from [3]_, methane 69.7%, n-butane 30.3%
+
+    >>> mui = [109.4e-7, 72.74e-7]
+    >>> "%0.1f" % MuG_Herning([0.697, 0.303], [16.043, 58.123], mui).microP
+    '92.8'
+
+    References
+    ----------
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    kij = []
+    for i, mi in enumerate(Mi):
+        kiji = []
+        for j, mj in enumerate(Mi):
+            if i == j:
+                kiji.append(0)
+            else:
+                kiji.append((mj/mi)**0.5)
+        kij.append(kiji)
+
+    suma = []
+    for i, Xi in enumerate(xi):
+        sumai = 0
+        if Xi != 0:
+            for j, Xj in enumerate(xi):
+                sumai += kij[i][j]*Xj/Xi
+        suma.append(sumai)
+
+    mu = 0
+    for mu_i, sumai in zip(mui, suma):
+        mu += mu_i/(1+sumai)
+    return unidades.Viscosity(mu)
+
+
 # Liquid thermal conductivity correlations
 def ThL_Li(xi, Vi, ki):
     r"""Calculate thermal conductiviy of liquid nmixtures using the Li method,
