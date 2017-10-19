@@ -904,6 +904,160 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     return unidades.Density(d2)
 
 
+# Gas viscosity correlations
+def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
+    r"""Calculate viscosity of gas mixtures using the Reichenberg method as
+    explain in [3]_
+
+    .. math::
+        \eta_m = \sum _{i=1}^n K_i\left(1+2\sum_{j=1}^{i-1}H_{ij}K_j +
+        \sum_{j=1≠i}^n \sum_{k=1≠i}^nH_{ij}H_{ik}K_jK_k\right)
+
+    .. math::
+        K_i = \frac{x_i\eta_i}{x_i+\eta_i \sum_{k=1≠i}^n x_kH_{ik}
+        \left[3+\left(2M_k/M_i\right)\right]}
+
+    .. math::
+        H_{ij} = \left[\frac{M_iM_j}{32\left(M_i+M_j\right)^3}\right]^{1/2}
+        \left(C_i+C_j\right)^2 \frac{\left[1+0.36T_{rij}\left(T_{rij}-1
+        \right)\right]^{1/6}F_{Rij}}{T_{rij}^{1/2}}
+
+    .. math::
+        F_{Ri} = \frac{T_{ri}^{3.5}+\left(10\mu_{ri}\right)^7}
+        {T_{ri}^{3.5}\left[1+\left(10\mu_{ri}\right)^7\right]}
+
+    .. math::
+        C_i = \frac{M_i^{1/4}}{\left(\eta_iU_i\right)^{1/2}}
+
+    .. math::
+        U_i = \frac{\left[1+0.36T_{ri}\left(T_{ri}-1\right)\right]^{1/6}F_{Ri}}
+        {T_{ri}^{1/2}}
+
+    .. math::
+        T_{rij} = \frac{T}{\left(T_{ci}T_{cj}\right)^{1/2}}
+
+    .. math::
+        \mu_{rij} = \left(\mu_{ri}\mu_{rj}\right)^{1/2}
+
+    .. math::
+        \mu_r = 52.46\frac{\mu^2P_c}{T_c^2}
+
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Pci : list
+        Critical pressure of components, [Pa]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    mui : list
+        Viscosities of components, [Pa·s]
+    Di : list
+        Dipole moment of components, [Debye]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of mixture, [Pa·s]
+
+    Examples
+    --------
+    Example 9-4 from [3]_; 28.6% N2, 71.4% R22 at 50ºC
+
+    >>> T = unidades.Temperature(50, "C")
+    >>> x = [0.286, 0.714]
+    >>> Tc = [126.2, 369.28]
+    >>> Pc = [33.98e5, 49.86e5]
+    >>> M = [28.014, 86.468]
+    >>> mu = [188e-7, 134e-7]
+    >>> D = [0, 1.4]
+    >>> "%0.1f" % MuG_Reichenberg(T, x, Tc, Pc, M, mu, D).microP
+    '146.2'
+
+    References
+    ----------
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Calculate reduced temperatures
+    Tri = [T/Tc for Tc in Tci]
+    Trij = []
+    for Tc_i in Tci:
+        Triji = []
+        for Tc_j in Tci:
+            Triji.append(T/(Tc_i*Tc_j)**0.5)
+        Trij.append(Triji)
+
+    # Calculate reduced viscosity
+    muri = [52.46*D**2*Pc*1e-5/Tc**2 for D, Pc, Tc in zip(Di, Pci, Tci)]
+    murij = []
+    for mur_i in muri:
+        muriji = []
+        for mur_j in muri:
+            muriji.append((mur_i*mur_j)**0.5)
+        murij.append(muriji)
+
+    # Polar correction, Eq 9-5.5
+    Fri = []
+    for Tr, mur in zip(Tri, muri):
+        Fri.append((Tr**3.5+(10*mur)**7)/Tr**3.5/(1+(10*mur)**7))
+    Frij = []
+    for Triji, muriji in zip(Trij, murij):
+        Friji = []
+        for Tr, mur in zip(Triji, muriji):
+            Friji.append((Tr**3.5+(10*mur)**7)/Tr**3.5/(1+(10*mur)**7))
+        Frij.append(Friji)
+
+    # Eq 9-5.3
+    Ui = []
+    for Tr, Fr in zip(Tri, Fri):
+        Ui.append((1+0.36*Tr*(Tr-1))**(1/6)*Fr/Tr**0.5)
+
+    # Eq 9-5.4
+    Ci = [M**0.25/(mu*1e7*U)**0.5 for M, mu, U in zip(Mi, mui, Ui)]
+
+    # Eq 9-5.6
+    Hij = []
+    for M_i, C_i, Triji, Friji in zip(Mi, Ci, Trij, Frij):
+        Hiji = []
+        for M_j, C_j, Tr, Fr in zip(Mi, Ci, Triji, Friji):
+            Hiji.append((M_i*M_j/32/(M_i+M_j)**3)**0.5*(C_i+C_j)**2*(
+                        1+0.36*Tr*(Tr-1))**(1/6)*Fr/Tr**0.5)
+        Hij.append(Hiji)
+
+    # Eq 9-5.2
+    sumai = []
+    for i, M_i in enumerate(Mi):
+        sumaij = 0
+        for j, M_j in enumerate(Mi):
+            if i != j:
+                sumaij += xi[j]*Hij[i][j]*(3+2*M_j/M_i)
+        sumai.append(sumaij)
+    Ki = [x*mu*1e7/(x+mu*1e7*suma) for x, mu, suma in zip(xi, mui, sumai)]
+
+    # Eq 9-5.1
+    mu = 0
+    for i, K_i in enumerate(Ki):
+        sum1 = 0
+        for H, K_j in zip(Hij[i], Ki[:i]):
+            sum1 += H*K_j
+
+        sum2 = 0
+        for j, K_j in enumerate(Ki):
+            for k, K_k in enumerate(Ki):
+                if j != i and k != i:
+                    sum2 += Hij[i][j]*Hij[i][k]*K_j*K_k
+
+        mu += K_i*(1+2*sum1+sum2)
+
+    return unidades.Viscosity(mu, "microP")
+
+
 def MuG_Wilke(xi, Mi, mui):
     r"""Calculate viscosity of gas mixtures using the Wilke mixing rules, also
     referenced in API procedure 11B2.1, pag 1102
@@ -944,13 +1098,13 @@ def MuG_Wilke(xi, Mi, mui):
     >>> "%0.7f" % MuG_Wilke(xi, Mi, mui*1e-9).dynscm2
     '0.0001711'
 
-    Example A from [5]_; 58.18% H2, 41.82% propane at 77ºF and 14.7 psi
+    Example A from [2]_; 58.18% H2, 41.82% propane at 77ºF and 14.7 psi
 
     >>> mu = MuG_Wilke([0.5818, 0.4182], [2.02, 44.1], [8.91e-6, 8.22e-6])
     >>> "%0.4f" % mu.cP
     '0.0092'
 
-    Example B from [5]_ 95.6% CH4, 3.6% C2, 0.5% C3, 0.3% N2
+    Example B from [2]_ 95.6% CH4, 3.6% C2, 0.5% C3, 0.3% N2
 
     >>> x = [0.956, 0.036, 0.005, 0.003]
     >>> Mi = [16.04, 30.07, 44.1, 28.01]
