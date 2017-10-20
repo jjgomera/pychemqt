@@ -28,8 +28,7 @@ from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d, interp2d
 
-from lib.physics import R_atml
-from lib.physics import Collision_Neufeld
+from lib.physics import R_atml, Collision_Neufeld
 from lib import unidades, config, sql
 from lib.mEoS import CH4, nC8
 

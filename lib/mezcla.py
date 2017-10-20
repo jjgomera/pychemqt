@@ -41,7 +41,7 @@ from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
                             RhoL_TaitCostald, RhoL_Nasrifar, ThG_StielThodos)
-from lib.physics import R_atml, R
+from lib.physics import R_atml, R, Collision_Neufeld
 from lib import unidades, config
 from lib.elemental import Elemental
 
@@ -122,8 +122,14 @@ __doi__ = {
                   "of Pure Hydrocarbons",
          "ref": "J. Chem. Eng. Data 18(2) (1973) 227-230",
          "doi": "10.1021/je60057a003"},
-
     15:
+        {"autor": "Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.",
+         "title": "Generalized Multiparameter Correlation for Nonpolar and "
+                  "Polar Fluid Trnasport Properties",
+         "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
+         "doi": "10.1021/ie00076a024"},
+
+    16:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1280,7 +1286,7 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
@@ -1368,6 +1374,220 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
         mu = Z2*Fp*Fq/X
 
     return unidades.Viscosity(mu, "microP")
+
+
+def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
+    r"""Calculate the viscosity of a gas mixture using the Chung correlation
+
+    .. math::
+        \mu=40.785\frac{F_{cm}\left(M_mT\right)^{1/2}}{V_{cm}^{2/3}\Omega_v}
+
+    .. math::
+        \sigma_i = 0.809V_{ci}^{1/3}
+
+    .. math::
+        \sigma_{ij} = \xi\left(\sigma_i\sigma_j\right)^{1/2}
+
+    .. math::
+        \sigma_m^3 = \sum_i \sum_j x_ix_j\sigma_{ij}^3
+
+    .. math::
+        \frac{\epsilon_i}{k} = \frac{T_{ci}}{1.2593}
+
+    .. math::
+        \frac{\epsilon_{ij}}{k} = \zeta\left(\frac{\epsilon_i}{k}
+        \frac{\epsilon_j}{k}\right)^{1/2}
+
+    .. math::
+        \left(\frac{\epsilon}{k}\right)_m = \frac{\sum_i \sum_j x_ix_j
+        \left(\epsilon_{ij}/k\right)\sigma_{ij}^3}{\sigma_m^3}
+
+    .. math::
+        \omega_{ij} = \frac{\omega_i+\omega_j}{2}
+
+    .. math::
+        \kappa_{ij} = \left(\kappa_i+\kappa_j\right)^{1/2}
+
+    .. math::
+        M_{ij} = \frac{2M_iM_j}{M_i+M_j}
+
+    .. math::
+        M_m = \left[\frac{\sum_i\sum_jx_ix_j\left(\epsilon_{ij}/k\right)\sigma_
+        {ij}^3M_{ij}^{1/2}}{\left(\epsilon/k\right)_m\sigma_m^3}\right]^2
+
+    .. math::
+        \omega_m =\frac{\sum_i\sum_jx_ix_j\omega_{ij}\sigma_{ij}^3}{\sigma_m^3}
+
+    .. math::
+        \mu_m^4 = \sigma_m^3\sum_i\sum_j\frac{x_ix_j\mu_i^2\mu_j^2}
+        {\sigma_{ij}^3}
+
+    .. math::
+        \kappa_m = \sum_i \sum_j x_ix_j\kappa_{ij}
+
+    .. math::
+        F_{cm} = 1-0.2756\omega_m+0.059035\mu_{rm}^4+\kappa_m
+
+    .. math::
+        mu_{rm} = \frac{131.3\mu}{\left(V_{cm}T_{cm}\right)^{1/2}}
+
+    .. math::
+        T_{cm} = 1.2593\left(\frac{\epsilon}{k}\right)_m
+
+    .. math::
+        V_{cm} = \left(\frac{\sigma_m}{0.809}\right)^3
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    wi : list
+        Acentric factor of components, [-]
+    Di : list
+        Dipole moment of components, [Debye]
+    ki : list
+        Correction factor for polar substances, [-]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Notes
+    -----
+    The method use binary interaction parameters for disimilar molecules, polar
+    of hidrogen-bonding substances. That parameters must be calculated from
+    experimental data. In this implementation this paramter set equal to unity
+
+    Examples
+    --------
+    Example 9-8 in [3]_, 20.4% H2S 79.6% ethyl ether at 331K
+
+    >>> x = [0.204, 0.796]
+    >>> Tc = [373.4, 466.7]
+    >>> Vc = [98/34.082/1000, 280/74.123/1000]
+    >>> M = [34.082, 74.123]
+    >>> w = [0.09, 0.281]
+    >>> mu = [0.9, 1.3]
+    >>> k = [0, 0]
+    >>> "%0.1f" % MuG_Chung(331, x, Tc, Vc, M, w, mu, k).microP
+    '87.6'
+
+    References
+    ----------
+    .. [15] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Use critical volume in molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+
+    sigmai = [0.809*Vc**(1/3) for Vc in Vci]                            # Eq 4
+    eki = [Tc/1.2593 for Tc in Tci]                                     # Eq 5
+
+    # Eq 23
+    sigmaij = []
+    for s_i in sigmai:
+        sigmaiji = []
+        for s_j in sigmai:
+            sigmaiji.append((s_i*s_j)**0.5)
+        sigmaij.append(sigmaiji)
+
+    # Eq 24
+    ekij = []
+    for ek_i in eki:
+        ekiji = []
+        for ek_j in eki:
+            ekiji.append((ek_i*ek_j)**0.5)
+        ekij.append(ekiji)
+
+    # Eq 25
+    wij = []
+    for w_i in wi:
+        wiji = []
+        for w_j in wi:
+            wiji.append((w_i+w_j)/2)
+        wij.append(wiji)
+
+    # Eq 26
+    Mij = []
+    for M_i in Mi:
+        Miji = []
+        for M_j in Mi:
+            Miji.append(2*M_i*M_j/(M_i+M_j))
+        Mij.append(Miji)
+
+    # Eq 27
+    kij = []
+    for k_i in ki:
+        kiji = []
+        for k_j in ki:
+            kiji.append((k_i*k_j)**0.5)
+        kij.append(kiji)
+
+    # Eq 14
+    sm = 0
+    for x_i, sigmaiji in zip(xi, sigmaij):
+        for x_j, sij in zip(xi, sigmaiji):
+            sm += x_i*x_j*sij**3
+    sm = sm**(1/3)
+
+    # Eq 15
+    ekm = 0
+    for x_i, sigmaiji, ekiji in zip(xi, sigmaij, ekij):
+        for x_j, sij, ek in zip(xi, sigmaiji, ekiji):
+            ekm += x_i*x_j*ek*sij**3
+    ekm /= sm**3
+
+    # Eq 18
+    wm = 0
+    for x_i, sigmaiji, wiji in zip(xi, sigmaij, wij):
+        for x_j, sij, w in zip(xi, sigmaiji, wiji):
+            wm += x_i*x_j*w*sij**3
+    wm /= sm**3
+
+    # Eq 19
+    Mm = 0
+    for x_i, sigmaiji, ekiji, Miji in zip(xi, sigmaij, ekij, Mij):
+        for x_j, s, ek, M in zip(xi, sigmaiji, ekiji, Miji):
+            Mm += x_i*x_j*ek*s**2*M**0.5
+    Mm = (Mm/(ekm*sm**2))**2
+
+    # Eq 20
+    Dm = 0
+    for x_i, sigmaiji, ekiji, D_i in zip(xi, sigmaij, ekij, Di):
+        for x_j, s, ek, D_j in zip(xi, sigmaiji, ekiji, Di):
+            Dm += x_i*x_j*(D_i*D_j)**2/ek/s**3
+    Dm = (Dm*ekm*sm**3)**0.25
+
+    # Eq 21
+    km = 0
+    for x_i, kiji in zip(xi, kij):
+        for x_j, k in zip(xi, kiji):
+            km += x_i*x_j*k
+
+    Vcm = (sm/0.809)**3                                                # Eq 16
+    Tcm = 1.2593*ekm                                                   # Eq 17
+    murm = 131.3*Dm/(Vcm*Tcm)**0.5                                     # Eq 22
+
+    T_ = T/ekm
+    omega = Collision_Neufeld(T_)
+
+    Fcm = 1 - 0.2756*wm + 0.059035*murm**4 + km                         # Eq 7
+    mu = 40.785*Fcm*Mm**0.5*T**0.5/Vcm**(2/3)/omega                     # Eq 6
+    return unidades.Viscosity(mu, "microP")
+
+
 
 
 # Liquid thermal conductivity correlations
