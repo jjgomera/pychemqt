@@ -364,7 +364,7 @@ __doi__ = {
         {"autor": "Yoon, P., Thodos, G.",
          "title": "Viscosity of Nonpolar Gaseous Mixtures at Normal Pressures",
          "ref": "AIChE Journal 16(2) (1970) 300-304",
-         "doi": "10.1002/aic.690160225."},
+         "doi": "10.1002/aic.690160225"},
     57:
         {"autor": "Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, "
                   "A.H., Richon, D.",
@@ -1075,7 +1075,7 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
     return unidades.Density(1/Vr/Vc)
 
 
-def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
+def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
     r"""Calculates compressed-liquid density, using the Thomson-Brobst-
     Hankinson generalization of Tait equation, also referenced in API procedure
     6A2.23 pag. 477
@@ -1126,7 +1126,7 @@ def RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, w, Ps, rhos):
     >>> rs = RhoL_Rackett(T, Tc, Pc, 0.2569, 114.232)
     >>> "%0.3f" % (1/rs.lbft3*114.232)
     '2.874'
-    >>> "%0.3f" % RhoL_ThomsonBrobstHankinson(T, P, Tc, Pc, 0.3962, Ps, rs).kgl
+    >>> "%0.3f" % RhoL_TaitCostald(T, P, Tc, Pc, 0.3962, Ps, rs).kgl
     '0.676'
 
     References
@@ -1232,12 +1232,12 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     Ps : float
         Saturation pressure, [Pa]
     rhos : float
-        Saturation liquid density, [kg/m^3]
+        Saturation liquid density, [kg/m³]
 
     Returns
     -------
     rho : float
-        High-pressure liquid density, [kg/m^3]
+        High-pressure liquid density, [kg/m³]
 
     Notes
     -----
@@ -1328,12 +1328,12 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     Ps : float
         Saturation pressure, [Pa]
     rhos : float
-        Saturation liquid density, [kg/m^3]
+        Saturation liquid density, [kg/m³]
 
     Returns
     -------
     rho : float
-        High-pressure liquid density, [kg/m^3]
+        High-pressure liquid density, [kg/m³]
 
     Notes
     -----
@@ -2501,7 +2501,8 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
 def MuG_YoonThodos(T, Tc, Pc, M):
     r"""Calculates the viscosity of a gas using an Yoon-Thodos correlation
 
-    .. math:: \eta^o\xi = 46.1T_r^{0.618}-20.4\exp(-0.449T_r)+19.4\exp(-4.058T_r)+1
+    .. math::
+        \eta^o\xi = 46.1T_r^{0.618}-20.4\exp(-0.449T_r)+19.4\exp(-4.058T_r)+1
 
     Parameters
     ----------
@@ -2811,7 +2812,7 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     # Polarity and quantum effects correction factors
     mur = 52.46*D**2*Pc_bar/Tc**2
     if mur < 0.022:
-        Fpo = 0
+        Fpo = 1
     elif mur < 0.075:
         Fpo = 1 + 30.55*(0.292-Zc)**1.72
     else:
@@ -4985,24 +4986,26 @@ class Componente(object):
     """Class to define a chemical compound from the database"""
     _bool = False
 
-    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD", "Yen-Woods",
-                    "Yamada-Gun", "Bhirud", "Mchaweh", "Riedel",
-                    "Chueh-Prausnitz"]
-    METHODS_RhoLP = ["Thomson-Brobst-Hankinson", "Chang-Zhao",
+    METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD",
+                    "Yen-Woods (1966)", "Yamada-Gun (1973)", "Bhirud (1978)",
+                    "Mchaweh (2004)", "Riedel",
+                    "Chueh-Prausnitz (1967)"]
+    METHODS_RhoLP = ["Tait-COSTALD (1982)", "Chang-Zhao (1990)",
                      "Aalto-Keskinen (1996)", "Aalto-Keskinen (1999)",
-                     "Nasrifar", "API"]
+                     "Nasrifar (2000)", "API"]
 
-    METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel",
-                   "Przedziecki-Sridhar"]
-    METHODS_MuLP = ["Lucas", "API", "Kouzel"]
-    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung", "Lucas", "Stiel-Thodos",
-                   "Gharagheizi", "Yoon-Thodos"]
-    METHODS_MuGP = ["Lucas", "Chung", "Brulé", "Jossi", "TRAPP",
+    METHODS_MuL = ["DIPPR", "Parametric", "Letsou-Stiel (1973)",
+                   "Przedziecki-Sridhar (1985)"]
+    METHODS_MuLP = ["Lucas (1981)", "API", "Kouzel"]
+    METHODS_MuG = ["DIPPR", "Chapman-Enskog", "Chung (1988)", "Lucas (1981)",
+                   "Stiel-Thodos (1961)", "Gharagheizi (2012)",
+                   "Yoon-Thodos (1970)"]
+    METHODS_MuGP = ["Lucas", "Chung (1988)", "Brulé", "Jossi", "TRAPP",
                     "Stiel-Thodos", "Reichenberg", "Dean-Stiel", "API"]
 
-    METHODS_ThG = ["DIPPR", "Misic-Thodos", "Chung", "Eucken",
+    METHODS_ThG = ["DIPPR", "Misic-Thodos", "Chung (1988)", "Eucken",
                    "Modified Eucken", "Riazi-Faghri"]
-    METHODS_ThGP = ["Stiel-Thodos", "Chung", "TRAPP"]
+    METHODS_ThGP = ["Stiel-Thodos", "Chung (1988)", "TRAPP"]
     METHODS_ThL = ["DIPPR", "Pachaiyappan", "Sato-Riedel", "Kanitkar-Thodos",
                    "Riazi-Faghri", "Gharagheizi", "Lakshmi-Prasad", "Nicola"]
     METHODS_ThLP = ["Kanitkar-Thodos", "Lenoir", "Missenard"]
@@ -5333,95 +5336,95 @@ class Componente(object):
     def RhoL(self, T, P):
         """Calculate the density of liquid phase using any of available
         correlation"""
-        rhoL = self.Config.getint("Transport", "RhoL")
-        corr = self.Config.getint("Transport", "Corr_RhoL")
-        if P < 1013250:
-            if rhoL == 0 and self._dipprRhoL and \
+        method = self.Config.getint("Transport", "RhoL")
+        Pcorr = self.Config.getint("Transport", "Corr_RhoL")
+
+        # Calculate of low pressure viscosity
+        if method == 0 and self._dipprRhoL and \
+                self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
+            rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
+        elif method == 1 and self.rackett != 0 and T < self.Tc:
+            rhos = RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
+        elif method == 2 and self.Vliq != 0:
+            rhos = RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
+        elif method == 3:
+            if self.f_acent_mod != 0:
+                w = self.f_acent_mod
+            else:
+                w = self.f_acent
+            rhos = RhoL_Costald(T, self.Tc, w, self.Vc)
+        elif method == 4:
+            rhos = RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
+        elif method == 5:
+            rhos = RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 6:
+            rhos = RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent)
+        elif method == 7:
+            d = Mchaweh_d.get(self.id, 0)/100
+            rhos = RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
+        elif method == 8:
+            rhos = RhoL_Riedel(T, self.Tc, self.Vc, self.f_acent)
+        elif method == 9:
+            rhos = RhoL_ChuehPrausnitz(T, self.Tc, self.Vc, self.f_acent)
+        else:
+            if self._dipprRhoL and \
                     self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-                return DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
-            elif rhoL == 1 and self.rackett != 0 and T < self.Tc:
-                return RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
-            elif rhoL == 2 and self.Vliq != 0:
-                return RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
-            elif rhoL == 3:
+                rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
+            elif self.rackett != 0 and T < self.Tc:
+                rhos = RhoL_Rackett(
+                    T, self.Tc, self.Pc, self.rackett, self.M)
+            elif self.Vliq != 0:
+                rhos = RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
+            else:
                 if self.f_acent_mod != 0:
                     w = self.f_acent_mod
                 else:
                     w = self.f_acent
-                return RhoL_Costald(T, self.Tc, w, self.Vc)
-            elif rhoL == 4:
-                return RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
-            elif rhoL == 5:
-                return RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
-            elif rhoL == 6:
-                return RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent)
-            elif rhoL == 7:
-                d = Mchaweh_d.get(self.id, 0)/100
-                return RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
-            elif rhoL == 8:
-                return RhoL_Riedel(T, self.Tc, self.Vc, self.f_acent)
-            elif rhoL == 9:
-                return RhoL_ChuehPrausnitz(T, self.Tc, self.Vc, self.f_acent)
+                rhos = RhoL_Costald(T, self.Tc, w, self.Vc)
+
+        # Add correction factor for high pressure
+        if P < 1e6:
+            rho = rhos
+        elif Pcorr == 0:
+            if self.f_acent_mod:
+                w = self.f_acent_mod
             else:
-                if self._dipprRhoL and \
-                        self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-                    return DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
-                elif self.rackett != 0 and T < self.Tc:
-                    return RhoL_Rackett(
-                        T, self.Tc, self.Pc, self.rackett, self.M)
-                elif self.Vliq != 0:
-                    return RhoL_Cavett(T, self.Tc, self.M, self.Vliq)
-                else:
-                    if self.f_acent_mod != 0:
-                        w = self.f_acent_mod
-                    else:
-                        w = self.f_acent
-                    return RhoL_Costald(T, self.Tc, w, self.Vc)
+                w = self.f_acent
+            Ps = self.Pv(T)
+            rho = RhoL_TaitCostald(
+                T, P, self.Tc, self.Pc, w, Ps, rhos)
+        elif Pcorr == 1:
+            if self.f_acent_mod:
+                w = self.f_acent_mod
+            else:
+                w = self.f_acent
+            Ps = self.Pv(T)
+            rho = RhoL_ChangZhao(T, P, self.Tc, self.Pc, w, Ps, rhos)
+        elif Pcorr == 2:
+            if self.f_acent_mod:
+                w = self.f_acent_mod
+            else:
+                w = self.f_acent
+            Ps = self.Pv(T)
+            rho = RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
+        elif Pcorr == 3:
+            if self.f_acent_mod:
+                w = self.f_acent_mod
+            else:
+                w = self.f_acent
+            Ps = self.Pv(T)
+            rho = RhoL_AaltoKeskinen2(T, P, self.Tc, self.Pc, w, Ps, rhos)
+        elif Pcorr == 4:
+            if self.f_acent_mod:
+                w = self.f_acent_mod
+            else:
+                w = self.f_acent
+            Ps = self.Pv(T)
+            rho = RhoL_Nasrifar(T, P, self.Tc, self.Pc, w, self.M, Ps, rhos)
         else:
-            if corr == 0:
-                if self.f_acent_mod:
-                    w = self.f_acent_mod
-                else:
-                    w = self.f_acent
-                rhos = self.RhoL(T, 101325)
-                Ps = self.Pv(T)
-                return RhoL_ThomsonBrobstHankinson(
-                    T, P, self.Tc, self.Pc, w, Ps, rhos)
-            elif corr == 1:
-                if self.f_acent_mod:
-                    w = self.f_acent_mod
-                else:
-                    w = self.f_acent
-                rhos = self.RhoL(T, 101325)
-                Ps = self.Pv(T)
-                return RhoL_ChangZhao(T, P, self.Tc, self.Pc, w, Ps, rhos)
-            elif corr == 2:
-                if self.f_acent_mod:
-                    w = self.f_acent_mod
-                else:
-                    w = self.f_acent
-                rhos = self.RhoL(T, 101325)
-                Ps = self.Pv(T)
-                return RhoL_AaltoKeskinen(T, P, self.Tc, self.Pc, w, Ps, rhos)
-            elif corr == 3:
-                if self.f_acent_mod:
-                    w = self.f_acent_mod
-                else:
-                    w = self.f_acent
-                rhos = self.RhoL(T, 101325)
-                Ps = self.Pv(T)
-                return RhoL_AaltoKeskinen2(T, P, self.Tc, self.Pc, w, Ps, rhos)
-            elif corr == 4:
-                if self.f_acent_mod:
-                    w = self.f_acent_mod
-                else:
-                    w = self.f_acent
-                rs = self.RhoL(T, 101325)
-                Ps = self.Pv(T)
-                return RhoL_Nasrifar(T, P, self.Tc, self.Pc, w, self.M, Ps, rs)
-            else:
-                rhos = self.RhoL(T, 101325)
-                return RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos)
+            rho = RhoL_API(T, P, self.Tc, self.Pc, self.SG, rhos)
+
+        return rho
 
     def Pv(self, T):
         """Vapor pressure calculation procedure using the method defined in

@@ -1216,6 +1216,160 @@ def MuG_Herning(xi, Mi, mui):
     return unidades.Viscosity(mu)
 
 
+def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
+    r"""Calculate the viscosity of a gas mixture using the Lucas mixing rules
+    as explain in [3]_.
+
+    .. math::
+        T_{cm} = \sum_i x_iT_{ci}
+
+    .. math::
+        P_{cm} = RT_{cm}\frac{\sum_i x_iZ_{ci}}{\sum_i x_iV_{ci}}
+
+    .. math::
+        M_m = \sum_i x_iM_i
+
+    .. math::
+        F_{Pm}^o = \sum_i x_iF_{Pi}^o
+
+    .. math::
+        F_{Qm}^o = \left(\sum_i x_iF_{Qi}^o\right)A
+
+    .. math::
+        A = 1-0.01\left(\frac{M_H}{M_L}\right)^{0.87}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Pci : list
+        Critical pressure of components, [Pa]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Zci : list
+        Critical compressibility factor of components, [-]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    Di : list
+        Dipole moment of components, [Debye]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-7 in [3]_, 67.7% NH3 33.3% H2 at 33ºC
+
+    >>> Tc = [405.5, 33.2]
+    >>> Pc = [113.5e5, 13e5]
+    >>> Vc =[72.5/17.031/1000, 64.3/2.016/1000]
+    >>> Zc = [0.244, 0.306]
+    >>> M = [17.031, 2.0158]
+    >>> D = [1.47, 0]
+    >>> mu = MuG_Lucas(33+273.15, 101325, [0.677, 0.323], Tc, Pc, Vc, Zc, M, D)
+    >>> "%0.1f" % mu.microP
+    '116.3'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Use critical volume in molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+
+    # Calculate critical properties of mixture
+    Tcm = sum([x*Tc for x, Tc in zip(xi, Tci)])
+    Zcm = sum([x*Zc for x, Zc in zip(xi, Zci)])
+    Vcm = sum([x*Vc for x, Vc in zip(xi, Vci)])
+    Mm = sum([x*M for x, M in zip(xi, Mi)])
+
+    Pcm = R*Tcm*Zcm/Vcm*1e6
+
+    Trm = T/Tcm
+    Prm = P/Pcm
+
+    Pcm_bar = Pcm*1e-5
+    X = 0.176*Tcm**(1/6)/Mm**0.5/Pcm_bar**(2/3)
+
+    # Polarity and quantum effects correction factors
+    Fpoi = []
+    Fqoi = []
+    for Tc, Pc, Zc, M, D in zip(Tci, Pci, Zci, Mi, Di):
+        Tr = T/Tc
+        Pc_bar = Pc*1e-5
+        mur = 52.46*D**2*Pc_bar/Tc**2
+        if mur < 0.022:
+            Fpoi.append(1)
+        elif mur < 0.075:
+            Fpoi.append(1 + 30.55*(0.292-Zc)**1.72)
+        else:
+            Fpoi.append(1 + 30.55*(0.292-Zc)**1.72*abs(0.96+0.1*(Tr-0.7)))
+
+        if Tr < 12:
+            sign = -1
+        else:
+            sign = 1
+        if M == 2.0158:
+            Q = 0.76  # Hydrogen
+            Fqoi.append(1.22*Q**0.15*(1+0.00385*((Tr-12)**2)**(1/M)*sign))
+        elif M == 4.0026:
+            Q = 1.38  # Helium
+            Fqoi.append(1.22*Q**0.15*(1+0.00385*((Tr-12)**2)**(1/M)*sign))
+        else:
+            Fqoi.append(1)
+
+    Fpom = sum([x*Fpo for x, Fpo in zip(xi, Fpoi)])
+    Fqom = sum([x*Fqo for x, Fqo in zip(xi, Fqoi)])
+
+    # Calculate A factor
+    Mh = max(Mi)
+    Ml = min(Mi)
+    xh = xi[Mi.index(Mh)]
+    if Mh/Ml > 9 and 0.05 < xh < 0.7:
+        A = 1 - 0.01*(Mh/Ml)**0.87
+    else:
+        A = 1
+    Fqom *= A
+
+    Z1 = Fpom*Fqom*(0.807*Trm**0.618 - 0.357*exp(-0.449*Trm) +
+                    0.34*exp(-4.058*Trm) + 0.018)
+
+    if Prm < 0.6:
+        # Low pressure correlation
+        mu = Z1/X
+
+    else:
+        # High pressure correlation
+        if Tr <= 1:
+            alfa = 3.262 + 14.98*Prm**5.508
+            beta = 1.39 + 14.98*Prm
+            Z2 = 0.6 + 0.76*Prm**alfa + (6.99*Prm**beta-0.6)*(1-Tr)
+        else:
+            a = 1.245e-3/Tr*exp(5.1726*Tr**-0.3286)
+            b = a*(1.6553*Tr-1.2723)
+            c = 0.4489/Tr*exp(3.0578*Tr**-37.7332)
+            d = 1.7368/Tr*exp(2.231*Tr**-7.6351)
+            e = 1.3088
+            f = 0.9425*exp(-0.1853*Tr**0.4489)
+            Z2 = Z1*(1+a*Prm**e/(b*Prm**f+1/(1+c*Prm**d)))
+
+        Y = Z2/Z1
+        Fp = (1+(Fpo-1)/Y**3)/Fpo
+        Fq = (1+(Fqo-1)*(1/Y-0.007*log(Y)**4))/Fqo
+        mu = Z2*Fp*Fq/X
+
+    return unidades.Viscosity(mu, "microP")
+
+
 # Liquid thermal conductivity correlations
 def ThL_Li(xi, Vi, ki):
     r"""Calculate thermal conductiviy of liquid nmixtures using the Li method,
