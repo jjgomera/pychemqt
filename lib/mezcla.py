@@ -43,7 +43,8 @@ from numpy.linalg import solve
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
-                            RhoL_TaitCostald, RhoL_Nasrifar, ThG_StielThodos)
+                            RhoL_TaitCostald, RhoL_Nasrifar, MuG_DeanStiel,
+                            MuG_API, ThG_StielThodos)
 from lib.physics import R_atml, R, Collision_Neufeld
 from lib import unidades, config
 from lib.elemental import Elemental
@@ -150,11 +151,23 @@ __doi__ = {
                   "Mixtures",
          "ref": "AIChE Journal 13(6) (1967) 1107-1113",
          "doi": "10.1002/aic.690130613"},
-
-
-
-
     19:
+        {"autor": "Dean, D.E., Stiel, L.I.",
+         "title": "The Viscosity of Nonpolar Gas Mixtures at Moderate and High"
+                  " Pressures",
+         "ref": "AIChE Journal 11(3) (1965) 526-532 ",
+         "doi": "10.1002/aic.690110330"},
+    20:
+        {"autor": "Kendall, J., Monroe, P.",
+         "title": "The Viscosity of Liquids II. The Viscosity-Composition "
+                  "Curve for Ideal Liquid Mixtures",
+         "ref": "J. Am. Chem. Soc. 39(9) (1917) 1787-1802",
+         "doi": "10.1021/ja02254a001"},
+
+
+
+
+    21:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1033,6 +1046,54 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     return unidades.Density(d2)
 
 
+def MuL_KendallMonroe(xi, mui):
+    r"""Calculate viscosity of liquid mixtures using the Kendall-Monroe method,
+    also referenced in API procedure 11A3.1, pag 1051
+
+    .. math::
+        \mu_m = \left(\sum_{i=1}^nx_i\mu_i^{1/3}\right)^3
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    mui : list
+        Viscosities of components, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of mixture, [Pa·s]
+
+    Examples
+    --------
+    Example A from [2]_; 29.57% nC16, 35.86% benzene, 34.57% nC6 at 77ºF
+
+    >>> x = [0.2957, 0.3586, 0.3457]
+    >>> mu = [3.03e-3, 0.6e-3, 0.3e-3]
+    >>> "%0.2f" % MuL_KendallMonroe(x, mu).cP
+    '0.89'
+
+    Example B from [2]_; 25% nC3, 50% nC5, 25% cycloC6 at 160ºF
+    >>> x = [0.25, 0.5, 0.25]
+    >>> mu = [0.109e-3, 0.218e-3, 0.63e-3]
+    >>> "%0.3f" % MuL_KendallMonroe(x, mu).cP
+    '0.256'
+
+    References
+    ----------
+    .. [20] Kendall, J., Monroe, P. The Viscosity of Liquids II. The
+        Viscosity-Composition Curve for Ideal Liquid Mixtures. J. Am. Chem.
+        Soc. 39(9) (1917) 1787-1802
+    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    mum = 0
+    for x, mu in zip(xi, mui):
+        mum += x*mu**(1/3)
+    return unidades.Viscosity(mum**3)
+
+
 # Gas viscosity correlations
 def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
     r"""Calculate viscosity of gas mixtures using the Reichenberg method as
@@ -1478,17 +1539,17 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
 
     else:
         # High pressure correlation
-        if Tr <= 1:
+        if Trm <= 1:
             alfa = 3.262 + 14.98*Prm**5.508
             beta = 1.39 + 14.98*Prm
-            Z2 = 0.6 + 0.76*Prm**alfa + (6.99*Prm**beta-0.6)*(1-Tr)
+            Z2 = 0.6 + 0.76*Prm**alfa + (6.99*Prm**beta-0.6)*(1-Trm)
         else:
-            a = 1.245e-3/Tr*exp(5.1726*Tr**-0.3286)
-            b = a*(1.6553*Tr-1.2723)
-            c = 0.4489/Tr*exp(3.0578*Tr**-37.7332)
-            d = 1.7368/Tr*exp(2.231*Tr**-7.6351)
+            a = 1.245e-3/Trm*exp(5.1726*Trm**-0.3286)
+            b = a*(1.6553*Trm-1.2723)
+            c = 0.4489/Trm*exp(3.0578*Trm**-37.7332)
+            d = 1.7368/Trm*exp(2.231*Trm**-7.6351)
             e = 1.3088
-            f = 0.9425*exp(-0.1853*Tr**0.4489)
+            f = 0.9425*exp(-0.1853*Trm**0.4489)
             Z2 = Z1*(1+a*Prm**e/(b*Prm**f+1/(1+c*Prm**d)))
 
         Y = Z2/Z1
@@ -1711,6 +1772,609 @@ def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
     return unidades.Viscosity(mu, "microP")
 
 
+def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
+    r"""Calculate the viscosity of a compressed gas using the Chung correlation
+
+    .. math::
+        \mu=40.785\frac{F_c\left(MT\right)^{1/2}}{V_c^{2/3}\Omega_v}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    wi : list
+        Acentric factor of components, [-]
+    Di : list
+        Dipole moment of components, [Debye]
+    ki : list
+        Correction factor for polar substances, [-]
+    rho : float
+        Density, [kg/m³]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas mixture, [Pa·s]
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Use critical volume in molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+    rho = rho/M*1000
+
+    sigmai = [0.809*Vc**(1/3) for Vc in Vci]                            # Eq 4
+    eki = [Tc/1.2593 for Tc in Tci]                                     # Eq 5
+
+    # Eq 23
+    sigmaij = []
+    for s_i in sigmai:
+        sigmaiji = []
+        for s_j in sigmai:
+            sigmaiji.append((s_i*s_j)**0.5)
+        sigmaij.append(sigmaiji)
+
+    # Eq 24
+    ekij = []
+    for ek_i in eki:
+        ekiji = []
+        for ek_j in eki:
+            ekiji.append((ek_i*ek_j)**0.5)
+        ekij.append(ekiji)
+
+    # Eq 25
+    wij = []
+    for w_i in wi:
+        wiji = []
+        for w_j in wi:
+            wiji.append((w_i+w_j)/2)
+        wij.append(wiji)
+
+    # Eq 26
+    Mij = []
+    for M_i in Mi:
+        Miji = []
+        for M_j in Mi:
+            Miji.append(2*M_i*M_j/(M_i+M_j))
+        Mij.append(Miji)
+
+    # Eq 27
+    kij = []
+    for k_i in ki:
+        kiji = []
+        for k_j in ki:
+            kiji.append((k_i*k_j)**0.5)
+        kij.append(kiji)
+
+    # Eq 14
+    sm = 0
+    for x_i, sigmaiji in zip(xi, sigmaij):
+        for x_j, sij in zip(xi, sigmaiji):
+            sm += x_i*x_j*sij**3
+    sm = sm**(1/3)
+
+    # Eq 15
+    ekm = 0
+    for x_i, sigmaiji, ekiji in zip(xi, sigmaij, ekij):
+        for x_j, sij, ek in zip(xi, sigmaiji, ekiji):
+            ekm += x_i*x_j*ek*sij**3
+    ekm /= sm**3
+
+    # Eq 18
+    wm = 0
+    for x_i, sigmaiji, wiji in zip(xi, sigmaij, wij):
+        for x_j, sij, w in zip(xi, sigmaiji, wiji):
+            wm += x_i*x_j*w*sij**3
+    wm /= sm**3
+
+    # Eq 19
+    Mm = 0
+    for x_i, sigmaiji, ekiji, Miji in zip(xi, sigmaij, ekij, Mij):
+        for x_j, s, ek, M in zip(xi, sigmaiji, ekiji, Miji):
+            Mm += x_i*x_j*ek*s**2*M**0.5
+    Mm = (Mm/(ekm*sm**2))**2
+
+    # Eq 20
+    Dm = 0
+    for x_i, sigmaiji, ekiji, D_i in zip(xi, sigmaij, ekij, Di):
+        for x_j, s, ek, D_j in zip(xi, sigmaiji, ekiji, Di):
+            Dm += x_i*x_j*(D_i*D_j)**2/ek/s**3
+    Dm = (Dm*ekm*sm**3)**0.25
+
+    # Eq 21
+    km = 0
+    for x_i, kiji in zip(xi, kij):
+        for x_j, k in zip(xi, kiji):
+            km += x_i*x_j*k
+
+    Vcm = (sm/0.809)**3                                                # Eq 16
+    Tcm = 1.2593*ekm                                                   # Eq 17
+    murm = 131.3*Dm/(Vcm*Tcm)**0.5                                     # Eq 22
+
+    T_ = T/ekm
+
+    # Table II
+    dat = [
+        (6.32402, 50.4119, -51.6801, 1189.02),
+        (0.12102e-2, -0.11536e-2, -0.62571e-2, 0.37283e-1),
+        (5.28346, 254.209, -168.481, 3898.27),
+        (6.62263, 38.09570, -8.46414, 31.4178),
+        (19.74540, 7.63034, -14.35440, 31.5267),
+        (-1.89992, -12.53670, 4.98529, -18.1507),
+        (24.27450, 3.44945, -11.29130, 69.3466),
+        (0.79716, 1.11764, 0.12348e-1, -4.11661),
+        (-0.23816, 0.67695e-1, -0.81630, 4.02528),
+        (0.68629e-1, 0.34793, 0.59256, -0.72663)]
+
+    # Eq 11
+    A = []
+    for ao, a1, a2, a3 in dat:
+        A.append(ao + a1*wm + a2*murm**4 + a3*km)
+    A1, A2, A3, A4, A5, A6, A7, A8, A9, A10 = A
+
+    Y = rho*Vcm/6
+    G1 = (1-0.5*Y)/(1-Y)**3
+    G2 = (A1*((1-exp(-A4*Y))/Y)+A2*G1*exp(A5*Y)+A3*G1)/(A1*A4+A2+A3)
+
+    muk = muo*(1/G2 + A6*Y)
+    mup = (36.344e-6*(Mm*Tcm)**0.5/Vcm**(2/3))*A7*Y**2*G2*exp(
+        A8+A9/T_+A10/T_**2)
+
+    return unidades.Viscosity(muk+mup, "P")
+
+
+def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
+    r"""Calculate the viscosity of a compressed gas using the TRAPP (TRAnsport
+    Property Prediction) method.
+
+    .. math::
+        \eta_m - \eta_m^o = F_{\eta m}\left(\eta^R-\eta^{Ro}\right) +
+        \Delta\eta^{ENSKOG}
+
+    .. math::
+        h_m = \sum_i\sum_jx_ix_jh_{ij}
+
+    .. math::
+        f_mh_m = \sum_i\sum_jx_ix_jf_{ij}h_{ij}
+
+    .. math::
+        h_{ij} = \frac{\left(h_i^{1/3}+h_j^{1/3}\right)^3}{8}
+
+    .. math::
+        f_{ij} = \left(f_if_j\right)^{1/2}
+
+    .. math::
+        T_o = T/f_m
+
+    .. math::
+        \rho_o = \rho h_m
+
+    .. math::
+        F_{\eta m} = \frac{1}{44.094^{1/2}h_m^2} \sum_i\sum_j x_ix_j
+        \left(f_{ij}M_{ij}\right)^{1/2}h_{ij}^{4/3}
+
+    .. math::
+        M_{ij} = \frac{2M_iM_j}{M_i+M_j}
+
+    .. math::
+        \Delta\eta^{ENSKOG} = \eta_m^{ENSKOG} - \eta_x^{ENSKOG}
+
+    .. math::
+        \eta_m^{ENSKOG} = \sum_i \beta_iY_i + \sum_i\sum_jx_ix_j\sigma_{ij}^6
+        \eta_{ij}^og_{ij}
+
+    .. math::
+        \sigma_i = 4.771h_i^{1/3}
+
+    .. math::
+        \sigma_{ij} = \frac{\sigma_i+\sigma_j}{2}
+
+    .. math::
+        g_{ij} = \frac{1}{1-\xi}+\frac{3\xi}{\left(1-\xi\right)^2}\Theta_{ij}+
+        \frac{2\xi^2}{\left(1-\xi\right)^3}\Theta_{ij}^2
+
+    .. math::
+        \Theta_{ij} = \frac{\sigma_i\sigma_j}{2\sigma_{ij}}
+        \frac{\sum_kx_k\sigma_k^2}{\sum_k x_k\sigma_k^3}
+
+    .. math::
+        \xi = 6.023e-4\frac{\pi}{6}\rho\sum_i x_i\sigma_i^3
+
+    .. math::
+        Y_i = x_i\left[1+\frac{8\pi}{15}6.023e-4\rho\sum_jx_j\left(\frac{M_j}
+        {M_i+M_j}\right)\sigma_{ij}^3g_{ij}\right]
+
+    .. math::
+        \sum_i B_{ij}\beta_j = Y_i
+
+    .. math::
+        B_{ij} = 2\sum_kx_ix_k\frac{g_{ik}}{\eta_{ij}^o}\left(\frac{M_k}
+        {M_i+M_k}\right)^2\left[\left(1+\frac{5}{3}\frac{M_i}{M_k}\right)
+        \delta_{ij}-\frac{2}{3}\frac{M_i}{M_k}\delta_{jk}\right]
+
+    .. math::
+        \sigma_x = \left(\sum_i\sum_jx_ix_j\sigma_{ij}^3\right)^{1/3}
+
+    .. math::
+        M_x = \frac{\left(\sum_i\sum_jx_ix_jM_{ij}^{1/2}\sigma_{ij}^4\right)^2}
+        {\sigma_x^8}
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of components, [K]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Zci : list
+        Critical compressibility factor of components, [K]
+    Mi : list
+        Molecular weights of components, [g/mol]
+    wi : list
+        Acentric factor of components, [-]
+    rho : float
+        Density, [kg/m³]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example 9-14 in [3]_, 80% methane, 20% nC10 at 377.6K and 413.7bar
+
+    >>> x = [0.8, 0.2]
+    >>> M = [16.043, 142.285]
+    >>> Tc = [190.56, 617.7]
+    >>> Vc = [98.6/16.043/1000, 624/142.285/1000]
+    >>> Zc = [0.286, 0.256]
+    >>> w = [0.011, 0.49]
+    >>> rho = 1/243.8*58.123*1000
+    >>> mu = MuG_TRAPP(377.6, 413.7e5, x, Tc, Vc, Zc, M, w, 448.4, 10.2e-9)
+    >>> "%0.1f" % mu.muPas
+    '82.6'
+
+    References
+    ----------
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    .. [16] Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
+        Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
+        Ref. Data 16(4) (1987) 577-798
+    .. [17] Ely, J.F. An Enskog Correction for Size and Mass Difference Effects
+        in Mixture Viscosity Prediction. J. Res. Natl. Bur. Stand. 86(6) (1981)
+        597-604
+    """
+    # Reference fluid properties, propane
+    TcR = 369.83
+    rhocR = 1/200  # mol/cm³
+    ZcR = 0.276
+    wR = 0.152
+
+    # Convert volume to molar base
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+    Mm = sum([x*M for x, M in zip(xi, Mi)])
+    rho = rho/Mm
+
+    # Calculate shape factor for mixture
+    fi = []
+    hi = []
+    for Tc, Vc, Zc, w in zip(Tci, Vci, Zci, wi):
+        fi.append(Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(T/Tc))))
+        hi.append(rhocR*Vc*ZcR/Zc*(1-(w-wR)*(0.1436-0.2822*log(T/Tc))))
+
+    # Eq 9-7.5
+    fij = []
+    for f_i in fi:
+        fiji = []
+        for f_j in fi:
+            fiji.append((f_i*f_j)**0.5)
+        fij.append(fiji)
+
+    # Eq 9-7.4
+    hij = []
+    for h_i in hi:
+        hiji = []
+        for h_j in hi:
+            hiji.append((h_i**(1/3)+h_j**(1/3))**3/8)
+        hij.append(hiji)
+
+    # Eq 9-7.2
+    hm = 0
+    for x_i, hiji in zip(xi, hij):
+        for x_j, h in zip(xi, hiji):
+            hm += x_i*x_j*h
+
+    # Eq 9-7.3
+    fm = 0
+    for x_i, hiji, fiji in zip(xi, hij, fij):
+        for x_j, h, f in zip(xi, hiji, fiji):
+            fm += x_i*x_j*f*h/hm
+
+    # Eq 9-7.9
+    Mij = []
+    for M_i in Mi:
+        Miji = []
+        for M_j in Mi:
+            Miji.append(2*M_i*M_j/(M_i+M_j))
+        Mij.append(Miji)
+
+    To = T/fm                                                       # Eq 9-7.6
+    rho0 = rho/1000*hm                                              # Eq 9-7.7
+
+    # Eq 9-7.8
+    suma = 0
+    for x_i, fiji, Miji, hiji in zip(xi, fij, Mij, hij):
+        for x_j, f, M, h in zip(xi, fiji, Miji, hiji):
+            suma += x_i*x_j*(f*M)**0.5*h**(4/3)
+    Fnm = 44.094**-0.5/hm**2*suma
+
+    # Calculation of reference residual viscosity
+    # Coefficients in [16]_, pag 796
+    # Density are in mol/dm³
+    rho0 *= 1000
+    rhocR *= 1000
+    G = -14.113294896 + 968.22940153/To
+    H = rho0**0.5*(rho0-rhocR)/rhocR
+    G2 = 13.686545032 - 12511.628378/To**1.5
+    G3 = 0.0168910864 + 43.527109444/To + 7659.4543472/To**2
+    F = G + G2*rho0**0.1+G3*H
+    muR = exp(F)-exp(G)
+
+    # Calculate of Δη
+    sigmai = [4.771*h**(1/3) for h in hi]
+    sigmaij = []
+    for s_i in sigmai:
+        sigmaiji = []
+        for s_j in sigmai:
+            sigmaiji.append((s_i+s_j)/2)
+        sigmaij.append(sigmaiji)
+
+    # Eq 9-7.16
+    X = 6.023e-4*pi/6*rho*sum([x*s**3 for x, s in zip(xi, sigmai)])
+
+    # Eq 9-7.15
+    sum2 = sum([x*s**2 for x, s in zip(xi, sigmai)])
+    sum3 = sum([x*s**3 for x, s in zip(xi, sigmai)])
+    titaij = []
+    for s_i, siji in zip(sigmai, sigmaij):
+        titaiji = []
+        for s_j, sij in zip(sigmai, siji):
+            titaiji.append(s_i*s_j/2/sij*sum2/sum3)
+        titaij.append(titaiji)
+
+    # Eq 9-7.14
+    gij = []
+    for titaiji in titaij:
+        giji = []
+        for tij in titaiji:
+            giji.append(1/(1-X)+3*X/(1-X)**2*tij+2*X**2/(1-X)**3*tij**2)
+        gij.append(giji)
+
+    # Eq 9-3.8
+    muij = []
+    for miji, siji in zip(Mij, sigmaij):
+        muiji = []
+        for m, s in zip(miji, siji):
+            muiji.append(2.669*(m*T)**0.5/s**2)
+        muij.append(muiji)
+
+    # Eq 9-7.19
+    Bij = []
+    for i, M_i in enumerate(Mi):
+        Biji = []
+        for j, M_j in enumerate(Mi):
+            B = 0
+            for k, M_k in enumerate(Mi):
+                if i == j:
+                    dij = 1
+                else:
+                    dij = 0
+                if j == k:
+                    djk = 1
+                else:
+                    djk = 0
+                B += xi[i]*xi[k]*gij[i][k]/muij[i][k]*(M_k/(M_i+M_k))**2*(
+                    (1+5/3*M_i/M_k)*dij - 2/3*M_i/M_k*djk)
+            B *= 2e-1
+            Biji.append(B)
+        Bij.append(Biji)
+
+    # Eq 9-7.17
+    Yi = []
+    for x_i, M_i, siji, giji in zip(xi, Mi, sigmaij, gij):
+        suma = 0
+        for x_j, M_j, s, g in zip(xi, Mi, siji, giji):
+            suma += x_j*M_j/(M_i+M_j)*s**3*g
+        Yi.append(x_i*(1+8*pi/15*6.023e-4*rho*suma))
+
+    # Eq 9-7.18
+    betai = solve(Bij, Yi)
+
+    # Eq 9-7.11
+    sum1 = sum([b*Y for b, Y in zip(betai, Yi)])
+    sum2 = 0
+    for x_i, siji, muiji, giji in zip(xi, sigmaij, muij, gij):
+        for x_j, s, mu, g in zip(xi, siji, muiji, giji):
+            sum2 += x_i*x_j*s**6*mu*g
+    alfa = 48/25/pi*(2*pi/3*6.023e-4)**2
+    eta_m = sum1 + alfa*10*rho**2*sum2
+
+    # ηx for pure hypothethical fluid
+    # Eq 9-7.20
+    sigmax = 0
+    for x_i, siji in zip(xi, sigmaij):
+        for x_j, s in zip(xi, siji):
+            sigmax += x_i*x_j*s**3
+    sigmax = sigmax**(1/3)
+
+    # Eq 9-7.21
+    Mx = 0
+    for x_i, siji, Miji in zip(xi, sigmaij, Mij):
+        for x_j, s, M in zip(xi, siji, Miji):
+            Mx += x_i*x_j*M**0.5*s**4
+    Mx = Mx**2/sigmax**8
+
+    X = 6.023e-4*pi/6*rho*sigmax**3
+    gxx = 1/(1-X)+3*X/(1-X)**2*0.5+2*X**2/(1-X)**3*0.25
+    Yx = 1+8*pi/15*6.023e-4*rho*sigmax**3*gxx/2
+    mux = 26.69*(Mx*T)**0.5/sigmax**2
+    Bxx = gxx/mux
+    betax = Yx/Bxx
+    eta_x = betax*Yx+alfa*rho**2*sigmax**6*mux*gxx
+
+    # Eq 9-7.10
+    # The 0.1 factor because this values are im μP, to convert to μPa·s
+    Dmu = (eta_m-eta_x)*0.1
+    return unidades.Viscosity(Fnm*muR + Dmu + muo*1e9, "muPas")
+
+
+def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
+    r"""Calculate the viscosity of a compressed gas using the Dean-Stiel
+    correlation, also referenced in API databook Procedure 11B4.1, pag 1107
+
+    .. math::
+        \left(\mu-\mu_o\right)\xi=10.8x10^{-5}\left[exp\left(1.439\rho_r\right)
+        -exp\left(-1.11\rho_r^{1.858}\right)\right]
+
+    .. math::
+        \xi = \frac{T_{pc}^{1/6}}{M_m^{1/2}P_{pc}^{2/3}
+
+    .. math::
+        T_{pc} = \sum_i x_iT_{ci}
+
+    .. math::
+        P_{pc} = \sum_i x_iP_{ci}
+
+    .. math::
+        M_m = \sum_i x_iM_i
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Tci : float
+        Critical temperature of components, [K]
+    Pci : float
+        Critical pressure of components, [Pa]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    rhoc : float
+        Critical Density of mixture, [kg/m³]
+    rho : float
+        Density, [kg/m³]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Examples
+    --------
+    Example in [5]_, 60% Methane 40% pronae at 1500psi and 257ºF
+
+    >>> Tc1 = unidades.Temperature(-116.66, "F")
+    >>> Tc2 = unidades.Temperature(206.02, "F")
+    >>> Pc1 = unidades.Pressure(667.04, "psi")
+    >>> Pc2 = unidades.Pressure(616.13, "psi")
+    >>> x = [0.6, 0.4]
+    >>> args = (x, [Tc1, Tc2], [Pc1, Pc2], [16.04, 44.1], 1, 0.5283, 123e-7)
+    >>> "%0.4f" % MuG_DeanStielMix(*args).cP
+    '0.0163'
+
+    References
+    ----------
+    .. [19] Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
+        Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Calculate pseudo critical properties
+    Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
+    Ppc = sum([x*Pc for x, Pc in zip(xi, Pci)])                         # Eq 6
+    M = sum([x*M_i for x, M_i in zip(xi, Mi)])
+
+    return MuG_DeanStiel(Tpc, Ppc, rhoc, M, rho, muo)
+
+
+def MuG_APIMix(T, P, xi, Tci, Pci, muo):
+    r"""Calculate the viscosity of nonhydrocarbon gases at high pressure using
+    the linearization of Carr figure as give in API Databook procedure 11C1.2,
+    pag 1113
+
+    .. math::
+        \frac{\mu}{\mu_o}=A_1hP_r^f + A_2\left(kP_r^l+mP_r^n+pP_r^q\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    P : float
+        Pressure, [Pa]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : float
+        Critical temperature of components, [K]
+    Pci : float
+        Critical pressure of components, [Pa]
+    muo : float
+        Viscosity of low-pressure gas, [Pa·s]
+
+    Returns
+    -------
+    mu : float
+        Viscosity of gas, [Pa·s]
+
+    Notes
+    -----
+    This method is recomended for gaseous nonhydrocarbons at high pressure,
+    although this method is also applicable for hydrocarbons.
+
+    Examples
+    --------
+    Example B in [2]_, 60% Methane 40% pronae at 1500psi and 257ºF
+
+    >>> T = unidades.Temperature(257, "F")
+    >>> P = unidades.Pressure(1500, "psi")
+    >>> Tc1 = unidades.Temperature(-116.66, "F")
+    >>> Tc2 = unidades.Temperature(206.02, "F")
+    >>> Pc1 = unidades.Pressure(667.04, "psi")
+    >>> Pc2 = unidades.Pressure(616.13, "psi")
+    >>> x = [0.6, 0.4]
+    >>> "%0.4f" % MuG_APIMix(T, P, x, [Tc1, Tc2], [Pc1, Pc2], 123e-7).cP
+    '0.0173'
+
+    References
+    ----------
+    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Calculate pseudo critical properties
+    Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
+    Ppc = sum([x*Pc for x, Pc in zip(xi, Pci)])                         # Eq 6
+
+    return MuG_API(T, P, Tpc, Ppc, muo)
 
 
 # Liquid thermal conductivity correlations
@@ -2184,7 +2848,7 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
     >>> x = [0.755, 0.245]
     >>> args = (370.8, x, Tc, Vc, Zc, w, M, 1/159*22.9*1000, 0.0377)
     >>> "%0.4f" % ThG_TRAPP(*args)
-    '0.0550'
+    '0.0549'
 
     References
     ----------
@@ -2207,7 +2871,7 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
     hi = []
     for Tc, Vc, Zc, w in zip(Tci, Vci, Zci, wi):
         fi.append(Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(T/Tc))))
-        hi.append(rhocR*Vc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(T/Tc))))
+        hi.append(rhocR*Vc*ZcR/Zc*(1-(w-wR)*(0.1436-0.2822*log(T/Tc))))
 
     fij = []
     for f_i in fi:
@@ -2340,6 +3004,10 @@ class Mezcla(config.Entity):
     METHODS_RhoLP = ["Aalto-Keskinen (1996)", "Tait-COSTALD (1982",
                      "Nasrifar (2000)", "API"]
 
+    METHODS_MuG = ["Reichenberg (1975)", "Lucas (1984)", "Chung (1988)",
+                   "Wilke (1950)", "Herning-Zipperer (1936)"]
+    METHODS_MuGP = ["Lucas (1984)", "Chung (1988)", "TRAPP (1996)",
+                    "Dean-Stiel (1965)", "API"]
     def __init__(self, tipo=0, **kwargs):
         if tipo == 0:
             self._bool = False
@@ -2464,32 +3132,220 @@ class Mezcla(config.Entity):
         self.f_acent_mod = sum([xi*cmp.f_acent_mod for xi, cmp in
                                 zip(self.fraccion, self.componente)])
 
-        # Calculate critic volume, API procedure 4B3.1 pag 314
-        sumaxvc23 = sum([xi*cmp.Vc**(2./3) for xi, cmp in
-                         zip(self.fraccion, self.componente)])
-        k = [xi*cmp.Vc**(2./3)/sumaxvc23 for xi, cmp in
-             zip(self.fraccion, self.componente)]
-
-        # TODO: Calculate C value from component type.
-        # For now it suppose all are hidrycarbon (C=0)
-        C = 0
-
-        V = [[-1.4684*abs((cmpi.Vc-cmpj.Vc)/(cmpi.Vc+cmpj.Vc))+C
-              for cmpj in self.componente] for cmpi in self.componente]
-        v = [[V[i][j]*(cmpi.Vc+cmpj.Vc)/2. for j, cmpj in enumerate(
-            self.componente)] for i, cmpi in enumerate(self.componente)]
-        suma1 = sum([ki*cmp.Vc for ki, cmp in zip(k, self.componente)])
-        suma2 = sum([ki*kj*v[i][j] for j, kj in enumerate(k)
-                     for i, ki in enumerate(k)])
-        self.Vc = unidades.SpecificVolume((suma1+suma2)*self.M)
+        # Calculate critic volume
+        Vci = self._arraylize("Vc")
+        Mi = self._arraylize("M")
+        hc = self._arraylize("isHydrocarbon")
+        self.Vc = Vc_ChuehPrausnitz(self.fraccion, Vci, Mi, hydrocarbon=hc)
 
         tb = [xi*cmp.Tb for xi, cmp in zip(self.fraccion, self.componente)]
         self.Tb = unidades.Temperature(sum(tb))
         self.SG = sum([xi*cmp.SG for xi, cmp in
                        zip(self.fraccion, self.componente)])
 
+    def writeStatetoJSON(self, state):
+        mezcla = {}
+        if self._bool:
+            mezcla["ids"] = self.ids
+            mezcla["fraction"] = self.fraccion
+            mezcla["massFraction"] = self.fraccion_masica
+            mezcla["massUnitFlow"] = self.caudalunitariomasico
+            mezcla["molarUnitFlow"] = self.caudalunitariomolar
+            mezcla["massFlow"] = self.caudalmasico
+            mezcla["molarFlow"] = self.caudalmolar
+
+            mezcla["M"] = self.M
+            mezcla["Tc"] = self.Tc
+            mezcla["tpc"] = self.tpc
+            mezcla["ppc"] = self.ppc
+            mezcla["Pc"] = self.Pc
+            mezcla["w"] = self.f_acent
+            mezcla["wm"] = self.f_acent_mod
+            mezcla["Vc"] = self.Vc
+            mezcla["Tb"] = self.Tb
+            mezcla["SG"] = self.SG
+        state["mezcla"] = mezcla
+
+    def readStatefromJSON(self, mezcla):
+        if mezcla:
+            self._bool = True
+            self.ids = mezcla["ids"]
+            self.componente = [Componente(int(i)) for i in self.ids]
+            self.fraccion = [unidades.Dimensionless(x) for x in mezcla["fraction"]]
+            self.fraccion_masica = [unidades.Dimensionless(x) for x in mezcla["massFraction"]]
+            self.caudalunitariomasico = [unidades.MassFlow(x) for x in mezcla["massUnitFlow"]]
+            self.caudalunitariomolar = [unidades.MolarFlow(x) for x in mezcla["molarUnitFlow"]]
+            self.caudalmasico = unidades.MassFlow(mezcla["massFlow"])
+            self.caudalmolar = unidades.MolarFlow(mezcla["molarFlow"])
+
+            self.M = unidades.Dimensionless(mezcla["M"])
+            self.Tc = unidades.Temperature(mezcla["Tc"])
+            self.tpc = unidades.Temperature(mezcla["tpc"])
+            self.ppc = unidades.Pressure(mezcla["ppc"])
+            self.Pc = unidades.Pressure(mezcla["Pc"])
+            self.f_acent = unidades.Dimensionless(mezcla["w"])
+            self.f_acent_mod = unidades.Dimensionless(mezcla["wm"])
+            self.Vc = unidades.SpecificVolume(mezcla["Vc"])
+            self.Tb = unidades.Temperature(mezcla["Tb"])
+            self.SG = unidades.Dimensionless(mezcla["SG"])
+
     def __call__(self):
         pass
+
+    def _arraylize(self, prop):
+        """Get the compound property prop as list
+        prop: a string code with the property to return
+            f_acent, M, Vc, Tc,...
+        """
+        array = []
+        for cmp in self.componente:
+            array.append(cmp.__getattribute__(prop))
+        return array
+
+    def RhoL(self, T, P):
+        """Calculate the density of liquid phase using any of available
+        correlation"""
+        method = self.Config.getint("Transport", "RhoLMix")
+        Pcorr = self.Config.getint("Transport", "Corr_RhoLMix")
+
+        # Calculate of low pressure viscosity
+        if method == 0:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Vci = self._arraylize("Vc")
+            Zrai = self._arraylize("Zra")
+            Mi = self._arraylize("M")
+            rhos = RhoL_RackettMix(T, self.fraccion, Tci, Pci, Vci, Zrai, Mi)
+        elif method == 1:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            wi = self._arraylize("f_acent")
+            Mi = self._arraylize("M")
+            rhos = RhoL_CostaldMix(T, self.fraccion, Tci, wi, Vci, Mi)
+
+        # Add correction factor for high pressure
+        if P < 1e6:
+            rho = rhos
+        elif Pcorr == 0:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Mi = self._arraylize("M")
+            Ps = self.Pv(T)
+            rho = RhoL_AaltoKeskinenMix(
+                T, P, self.fraccion, Tci, Pci, Vci, wi, Mi, Ps, rhos)
+        elif Pcorr == 1:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Mi = self._arraylize("M")
+            rho = RhoL_TaitCostaldMix(
+                T, P, self.fraccion, Tci, Vci, wi, Mi, rhos)
+        elif Pcorr == 2:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Mi = self._arraylize("M")
+            Ps = self.Pv(T)
+            rho = RhoL_NasrifarMix(
+                T, P, self.fraccion, Tci, Vci, wi, Mi, Ps, rhos)
+        elif Pcorr == 3:
+            Tci = self._arraylize("Tc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Mi = self._arraylize("M")
+            Ps = self.Pv(T)
+            rho = RhoL_APIMix(T, P, self.fraccion, Tci, Pci, rhos)
+
+        return rho
+
+    def Mu_Gas(self, T, P, rho):
+        """General method for calculate viscosity of gas"""
+        """Calculate the viscosity of gas mixtures using any of available
+        correlation"""
+        method = self.Config.getint("Transport", "MuGMix")
+        Pcorr = self.Config.getint("Transport", "Corr_MuGMix")
+
+        # Calculate of low pressure viscosity
+        if method == 0:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Mi = self._arraylize("M")
+            Mi = self._arraylize("M")
+            Di = self._arraylize("dipole")
+            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
+            muo = MuG_Reichenberg(T, self.fraccion, Tci, Pci, Mi, mui, Di)
+        elif method == 1:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Vci = self._arraylize("Vc")
+            Zci = self._arraylize("Zc")
+            Mi = self._arraylize("M")
+            Di = self._arraylize("dipole")
+            muo = MuG_Lucas(
+                T, 101325, self.fraccion, Tci, Pci, Vci, Zci, Mi, Di)
+        elif method == 2:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Di = self._arraylize("dipole")
+            ki = [cmp._K_Chung() for cmp in self.componente]
+            muo = MuG_Chung(T, self.fraccion, Tci, Vci, Mi, wi, Di, ki)
+        elif method == 3:
+            Mi = self._arraylize("M")
+            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
+            muo = MuG_Wilke(self.fraccion, Mi, mui)
+        elif method == 4:
+            Mi = self._arraylize("M")
+            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
+            muo = MuG_Herning(self.fraccion, Mi, mui)
+
+        # Add correction factor for high pressure
+        if P < 1e6:
+            mu = muo
+        elif Pcorr == 0:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Vci = self._arraylize("Vc")
+            Zci = self._arraylize("Zc")
+            Mi = self._arraylize("M")
+            Di = self._arraylize("dipole")
+            mu = MuG_Lucas(T, P, self.fraccion, Tci, Pci, Vci, Zci, Mi, Di)
+        elif Pcorr == 1:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            Di = self._arraylize("dipole")
+            ki = [cmp._K_Chung() for cmp in self.componente]
+            mu = MuG_P_Chung(
+                T, self.fraction, Tci, Vci, Mi, wi, Di, ki, rho, muo)
+        elif Pcorr == 2:
+            Tci = self._arraylize("Tc")
+            Vci = self._arraylize("Vc")
+            Zci = self._arraylize("Zc")
+            Mi = self._arraylize("M")
+            wi = self._arraylize("f_acent")
+            mu = MuG_TRAPP(
+                T, P, self.fraction, Tci, Vci, Zci, Mi, wi, rho, muo)
+        elif Pcorr == 3:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            Vci = self._arraylize("Vc")
+            Mi = self._arraylize("M")
+            rhoc = 1/Vc_ChuehPrausnitz(self.fraccion, Vci, Mi)
+            mu = MuG_DeanStielMix(self.fraccion, Tci, Pci, Mi, rhoc, rho, muo)
+        elif Pcorr == 4:
+            Tci = self._arraylize("Tc")
+            Pci = self._arraylize("Pc")
+            mu = MuG_APIMix(T, P, self.fraccion, Tci, Pci, muo)
+
+        return mu
 
     def recallZeros(self, lista, val=0):
         """Method to return any list with null component added"""
@@ -2940,148 +3796,6 @@ class Mezcla(config.Entity):
                 pH = 10**(-0.505*ppm-0.0019*t.R+6.807)
         return pH
 
-    def RhoL_Rackett(self, T):
-        """Calculate saturated liquid density by Rackett method,
-        procedure API 6A3.1 pag.479
-        Value in mol/l"""
-
-        # eq 6A3.1-2
-        Zram = 0
-        for i in range(len(self.componente)):
-            Zram += self.fraccion[i]*self.componente[i].rackett
-
-        # eq 6A3.1-5
-        suma = 0
-        for i in range(len(self.componente)):
-            suma += self.fraccion[i]*self.componente[i].Vc
-        fi = []
-        for i in range(len(self.componente)):
-            fi.append(self.fraccion[i]*self.componente[i].Vc/suma)
-
-        # eq 6A3.1-7
-        k = []
-        for i in self.componente:
-            ki = []
-            for j in self.componente:
-                ki.append(1-(sqrt(i.Vc**(1./3)*j.Vc**(1./3))*2 /
-                             (i.Vc**(1./3)+j.Vc**(1./3)))**3)
-            k.append(ki)
-
-        # eq 6A3.1-6
-        Tc = []
-        for i in range(len(self.componente)):
-            Tci = []
-            for j in range(len(self.componente)):
-                Tci.append(sqrt(self.componente[i].Tc*self.componente[j].Tc) *
-                           (1-k[i][j]))
-            Tc.append(Tci)
-
-        # eq 6A3.1-4
-        Tmc = 0
-        for i in range(len(self.componente)):
-            for j in range(len(self.componente)):
-                Tmc += fi[i]*fi[j]*Tc[i][j]
-
-        # eq 6A3.1-3
-        Tr = T/Tmc
-
-        # eq 6A3.1-1
-        suma = 0
-        for i in range(len(self.componente)):
-            suma += self.fraccion[i]*self.componente[i].Tc/self.componente[i].Pc
-        inv = R_atml*suma*Zram**(1+(1-Tr)**(2./7))
-        return unidades.Density(1/inv*self.M, "gl")
-
-    def _lib_Costald(self):
-        """Library for saturated liquid density by Costald method,
-        Value in mol/l"""
-        # eq 6A3.1-2
-        suma1 = 0
-        suma2 = 0
-        suma3 = 0
-        for i in range(len(self.componente)):
-            suma1 += self.fraccion[i]*self.componente[i].Vc
-            suma2 += self.fraccion[i]*self.componente[i].Vc**(2./3)
-            suma3 += self.fraccion[i]*self.componente[i].Vc**(1./3)
-        Vm = (suma1+3*suma2*suma3)/4
-
-        # eq 6A3.1-5
-        suma = 0
-        for i in range(len(self.componente)):
-            for j in range(len(self.componente)):
-                suma += self.fraccion[i]*self.fraccion[j]*sqrt(self.componente[i].Vc*self.componente[j].Vc*self.componente[i].Tc*self.componente[j].Tc)
-        Tmc = suma/Vm
-        return Vm, Tmc
-
-    def RhoL_Costald(self, T):
-        """Calculate saturated liquid density by Costald method,
-        procedure API 6A3.2 pag.482
-        Valor obtenido en mol/l"""
-
-        Vm, Tmc = self._lib_Costald()
-        Tr = T/Tmc    #eq 6A3.2-4
-        Vr0 = 1-1.52816*(1-Tr)**(1./3)+1.43907*(1-Tr)**(2./3)-0.81446*(1-Tr)+0.190454*(1-Tr)**(4./3)        #eq 6A3.2-7
-        Vrd = (-0.296123+0.386914*Tr-0.0427258*Tr**2-0.0480645*Tr**3)/(Tr-1.00001)    #eq 6A3.2-8
-
-        # eq 6A3.2-1
-        return unidades.Density(1/(Vm*Vr0*(1-self.f_acent_mod*Vrd))*self.M, "gl")
-
-    def RhoL_Tait_Costald(self, T, P):
-        """Calculate saturated liquid density by Tait-Costald method,
-        procedure API 6A3.4 pag.489
-        Presión dada en pascales
-        Densidad obtenida en mol/l"""
-        # FIXME: dont work
-        densidad_bp = self.RhoL_Costald(T)
-        Vm, Tmc = self._lib_Costald()
-        Tr = T/Tmc
-        zmc = 0.291-0.08*self.f_acent_mod
-        pmc = zmc*R_atml*Tmc/Vm
-
-        # eq 6A3.4-12
-        alfa = 35.-36./Tr-96.736*log10(Tr)+Tr**6
-        beta = log10(Tr)+0.03721754*alfa
-        prm0 = 5.8031817*log10(Tr)+0.07608141*alfa
-        prm1 = 4.86601*beta
-        presion_bp = 10**(prm0+self.f_acent_mod*prm1)*pmc
-
-        # eq 6A3.4-2
-        C = 0.0861488+0.0344483*self.f_acent_mod
-        e = exp(4.79594+0.250047*self.f_acent_mod+1.14188*self.f_acent_mod**2)
-        B = pmc*(-1-9.070217*(1-Tr)**(1./3)+62.45326*(1-Tr)**(2./3)-135.1102*(1-Tr)+e*(1-Tr)**(4./3))
-        return unidades.Density(densidad_bp/(1-C*log((B+P)/(B+presion_bp))))
-
-    def RhoL_API(self, T, P):
-        """Calculate liquid density, API procedure 6A3.3, pag 485"""
-        Tcm = Pcm = 0
-        for i in range(len(self.componente)):
-            Tcm += self.fraccion[i]*self.componente[i].Tc
-            Pcm += self.fraccion[i]*self.componente[i].Pc
-
-        Pr = self.pr(P, Pcm)
-        Pr0 = self.pr(1, Pcm)
-        Tr = self.tr(T, Tcm)
-        Tr0 = self.tr(288.71, Tcm)
-
-        # FIXME: Add correction in gass at 1 atm and 60ºF
-        suma1 = suma2 = 0
-        for i in range(len(self.componente)):
-            suma1 += self.fraccion[i]*self.componente[i].M
-            suma2 += self.fraccion[i]*self.componente[i].M/self.componente[i].SG/1000
-        rho1 = suma1/suma2
-
-        A02 = 1.6368-0.04615*Pr+2.1138e-3*Pr**2-0.7845e-5*Pr**3-0.6923e-6*Pr**4
-        A12 = -1.9693-0.21874*Pr-8.0028e-3*Pr**2-8.2328e-5*Pr**3+5.2604e-6*Pr**4
-        A22 = 2.4638-0.36461*Pr-12.8763e-3*Pr**2+14.8059e-5*Pr**3-8.6895e-6*Pr**4
-        A32 = -1.5841-0.25136*Pr-11.3805e-3*Pr**2+9.5672e-5*Pr**3+2.1812e-6*Pr**4
-        C2 = A02+A12*Tr+A22*Tr**2+A32*Tr**3
-        A01 = 1.6368-0.04615*Pr0+2.1138e-3*Pr0**2-0.7845e-5*Pr0**3-0.6923e-6*Pr0**4
-        A11 = -1.9693-0.21874*Pr0-8.0028e-3*Pr0**2-8.2328e-5*Pr0**3+5.2604e-6*Pr0**4
-        A21 = 2.4638-0.36461*Pr0-12.8763e-3*Pr0**2+14.8059e-5*Pr0**3-8.6895e-6*Pr0**4
-        A31 = -1.5841-0.25136*Pr0-11.3805e-3*Pr0**2+9.5672e-5*Pr0**3+2.1812e-6*Pr0**4
-        C1 = A01+A11*Tr0+A21*Tr0**2+A31*Tr0**3
-        return unidades.Density(rho1*C2/C1)
-
     def Tension(self,T):
         """Calculate surface tension at low pressure,
         API procedure 10A2.1, pag 991"""
@@ -3120,41 +3834,6 @@ class Mezcla(config.Entity):
         for xi, cmp in zip(self.fraccion, self.componente):
             suma += xi*cmp.Mu_Liquido(T, P)**(1./3)
         return unidades.Viscosity(suma**3)
-
-    def Mu_Gas_Stiel(self, T, P, rhoG=0, muo=0):
-        """Calculate gas viscosity at high pressure, API procedure 11B4.1, pag 1107"""
-        if muo == 0:
-            muo = self.Mu_Gas_Wilke(T)
-        if rhoG == 0:
-            rhoG = P/self.Z/R_atml/T
-        x = self.tpc**(1.0/6)/self.M**0.5/self.ppc**(2.0/3)
-        rhor = rhoG*self.Vc/self.M
-        mu = muo.cP+10.8e-5*(exp(1.439*rhor)-exp(-1.11*rhor**1.858))/x
-        return unidades.Viscosity(mu, "cP")
-
-    def Mu_Gas_Carr(self, T, P, muo=0):
-        """Calculate gas viscosity ad high pressure, specify for hydrocarbon
-        API procedure 11C1.2, pag 1113"""
-
-        Tr = T/self.tpc
-        Pr = P/self.ppc
-        muo = self.Mu_Gas_Wilke(T)
-
-        A1 = 83.8970*Tr**0.0105+0.6030*Tr**-0.0822+0.9017*Tr**-0.12-85.3080
-        A2 = 1.514*Tr**-11.3036+0.3018*Tr**-0.6856+2.0636*Tr**-2.7611
-        k = A1*1.5071*Pr**-0.4487+A2 * \
-            (11.4789*Pr**0.2606-12.6843*Pr**0.1773+1.6953*Pr**-0.1052)
-        return unidades.Viscosity(muo*k)
-
-    def Mu_Gas(self, T, P, rho):
-        """General method for calculate viscosity of gas"""
-        if P < 2:
-            Mi = [cmp.M for cmp in self.componente]
-            mui = [cmp.Mu_Gas(T, 1, rho) for cmp in self.componente]
-            return MuG_Wilke(self.fraccion, Mi, mui)
-        else:
-            return self.Mu_Gas_Stiel(T, P)
-        # TODO: Add Carr method when it's availabe in database component type
 
     def ThCond_Liquido(self, T, P, rho):
         """Calculate liquid thermal conductivity, API procedure 12A2.1, pag 1145"""
@@ -3314,53 +3993,6 @@ class Mezcla(config.Entity):
         p = unidades.Pressure(P, "atm")
         H = exp(self.henry[0]/T.R+self.henry[1]*log(T.R)+self.henry[2]*T.R+self.henry[3])
         return p.psi/H
-
-    def writeStatetoJSON(self, state):
-        mezcla = {}
-        if self._bool:
-            mezcla["ids"] = self.ids
-            mezcla["fraction"] = self.fraccion
-            mezcla["massFraction"] = self.fraccion_masica
-            mezcla["massUnitFlow"] = self.caudalunitariomasico
-            mezcla["molarUnitFlow"] = self.caudalunitariomolar
-            mezcla["massFlow"] = self.caudalmasico
-            mezcla["molarFlow"] = self.caudalmolar
-
-            mezcla["M"] = self.M
-            mezcla["Tc"] = self.Tc
-            mezcla["tpc"] = self.tpc
-            mezcla["ppc"] = self.ppc
-            mezcla["Pc"] = self.Pc
-            mezcla["w"] = self.f_acent
-            mezcla["wm"] = self.f_acent_mod
-            mezcla["Vc"] = self.Vc
-            mezcla["Tb"] = self.Tb
-            mezcla["SG"] = self.SG
-        state["mezcla"] = mezcla
-
-    def readStatefromJSON(self, mezcla):
-        if mezcla:
-            self._bool = True
-            self.ids = mezcla["ids"]
-            self.componente = [Componente(int(i)) for i in self.ids]
-            self.fraccion = [unidades.Dimensionless(x) for x in mezcla["fraction"]]
-            self.fraccion_masica = [unidades.Dimensionless(x) for x in mezcla["massFraction"]]
-            self.caudalunitariomasico = [unidades.MassFlow(x) for x in mezcla["massUnitFlow"]]
-            self.caudalunitariomolar = [unidades.MolarFlow(x) for x in mezcla["molarUnitFlow"]]
-            self.caudalmasico = unidades.MassFlow(mezcla["massFlow"])
-            self.caudalmolar = unidades.MolarFlow(mezcla["molarFlow"])
-
-            self.M = unidades.Dimensionless(mezcla["M"])
-            self.Tc = unidades.Temperature(mezcla["Tc"])
-            self.tpc = unidades.Temperature(mezcla["tpc"])
-            self.ppc = unidades.Pressure(mezcla["ppc"])
-            self.Pc = unidades.Pressure(mezcla["Pc"])
-            self.f_acent = unidades.Dimensionless(mezcla["w"])
-            self.f_acent_mod = unidades.Dimensionless(mezcla["wm"])
-            self.Vc = unidades.SpecificVolume(mezcla["Vc"])
-            self.Tb = unidades.Temperature(mezcla["Tb"])
-            self.SG = unidades.Dimensionless(mezcla["SG"])
-
 
 if __name__ == '__main__':
 
