@@ -2628,7 +2628,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     k : float, optional
         Corection factor for polar substances, [-]
     rho : float
-        Density, [Debye]
+        Density, [kg/m³]
     muo : float
         Viscosity of low-pressure gas, [Pa·s]
 
@@ -3013,11 +3013,11 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     --------
     Example 9-13 in [1]_, isobutane at 500K and 100bar
 
-    >>> Vc = 259*58.124*1000
+    >>> Vc = 259/58.124/1000
     >>> rho = 1/243.8*58.123*1000
     >>> mu = MuG_TRAPP(500, 407.85, Vc, 0.278, 58.124, 0.186, rho, 120e-7)
     >>> "%0.0f" % mu.microP
-    '268'
+    '267'
 
     References
     ----------
@@ -3034,14 +3034,14 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     wR = 0.152
 
     # Convert volume to molar base
-    Vc = Vc/M/1000
+    Vc = Vc*M*1000
     rho = rho/M/1000
     rhoc = 1/Vc
 
     Tr = T/Tc
 
     f = Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(Tr)))
-    h = rhocR/rhoc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(Tr)))
+    h = rhocR/rhoc*ZcR/Zc*(1-(w-wR)*(0.1436-0.2822*log(Tr)))
 
     To = T/f
     rho0 = rho*h
@@ -4339,7 +4339,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     Tr = T/Tc
 
     f = Tc/TcR*(1+(w-wR)*(0.05203-0.7498*log(Tr)))
-    h = rhocR/rhoc*ZcR/Zc*(1+(w-wR)*(0.1436-0.2882*log(Tr)))
+    h = rhocR/rhoc*ZcR/Zc*(1-(w-wR)*(0.1436-0.2822*log(Tr)))
 
     To = T/f
     rho0 = rho*h

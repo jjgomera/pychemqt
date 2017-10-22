@@ -37,6 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # ThL_Rowley
 
 
+from math import pi
+
+from numpy.linalg import solve
 from scipy import roots, log, sqrt, log10, exp, sin, zeros
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
@@ -128,8 +131,30 @@ __doi__ = {
                   "Polar Fluid Trnasport Properties",
          "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
          "doi": "10.1021/ie00076a024"},
-
     16:
+        {"autor": "Younglove, B.A., Ely, J.F.",
+         "title": "Thermophysical Properties of Fluids II: Methane, Ethane, "
+                  "Propne, Isobutane and Normal Butane",
+         "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+         "doi": "10.1063/1.555785"},
+    17:
+        {"autor": "Ely, J.F.",
+         "title": "An Enskog Correction for Size and Mass Difference Effects "
+                  "in Mixture Viscosity Prediction",
+         "ref": "J. Res. Natl. Bur. Stand. 86(6) (1981) 597-604",
+         "doi": "10.6028/jres.086.028"},
+    18:
+        {"autor": "Chueh, P.L., Prausnitz, J.M.",
+         "title": "Vapor-Liquid Equilibria at High Pressures: Calculation of "
+                  "Critical Temperatures, Volumes and Pressures of Nonpolar "
+                  "Mixtures",
+         "ref": "AIChE Journal 13(6) (1967) 1107-1113",
+         "doi": "10.1002/aic.690130613"},
+
+
+
+
+    19:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -247,6 +272,104 @@ def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
     kw["molarFraction"] = molarFraction
     kw["massFraction"] = massFraction
     return kw
+
+
+def Vc_ChuehPrausnitz(xi, Vci, Mi, hydrocarbon=None):
+    r"""Calculates critic volume of a mixture using the Chueh-Prausnitz
+    correlation, also referenced in API procedure 4B3.1 pag 314
+
+    .. math::
+        V_{cm} = \sum_i^n\phi_iV_{ci}+\sum_i^n\sum_j^n\phi_i\phi_j\upsilon_{ij}
+
+    .. math::
+        \phi_j = \frac{x_jV_{cj}^{2/3}}{\sum_{i=1}^nx_iV_{ci}^{2/3}}
+
+    .. math::
+        \upsilon_{ij} = \frac{V_{ij}\left(V_{ci}+V_{cj}\right)}{2}
+
+    .. math::
+        V_{ij} = -1.4684\eta_{ij}+C
+
+    .. math::
+        \eta_{ij} = \left|\frac{V_{ci}-V_{cj}}{V_{ci}+V_{cj}}\right|
+
+    Parameters
+    ----------
+    xi : list
+        Mole fractions of components, [-]
+    Vci : list
+        Critical volume of components, [m³/kg]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    hydrocarbon : list, optional
+        Hydrocarbon flag of components, default True for all components
+
+    Returns
+    -------
+    Vcm : float
+        Critical volume of mixture, [m³/kg]
+
+    Examples
+    --------
+    Example from [2]_; 63% nC4 37% nC7
+
+    >>> Vc1 = unidades.SpecificVolume(0.0704, "ft3lb")
+    >>> Vc2 = unidades.SpecificVolume(0.0691, "ft3lb")
+    >>> Mi = [58.12, 100.2]
+    >>> Mm = Mi[0]*0.63+Mi[1]*0.37
+    >>> "%0.2f" % (Vc_ChuehPrausnitz([0.63, 0.37], [Vc1, Vc2], Mi).ft3lb*Mm)
+    '4.35'
+
+    References
+    ----------
+    .. [18] Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
+        Pressures: Calculation of Critical Temperatures, Volumes and Pressures
+        of Nonpolar Mixtures. AIChE Journal 13(6) (1967) 1107-1113
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Define default C parameters:
+    if hydrocarbon is None:
+        hydrocarbon = [True]*len(xi)
+
+    # Convert critical volumes to molar base
+    Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
+
+    Mm = sum([M*x for M, x in zip(Mi, xi)])
+
+    Vij = []
+    for Vc_i, C_i in zip(Vci, hydrocarbon):
+        Viji = []
+        for Vc_j, C_j in zip(Vci, hydrocarbon):
+            if C_i and C_j:
+                C = 0
+            else:
+                C = 0.1559
+            mu = abs((Vc_i-Vc_j)/(Vc_i+Vc_j))
+            Viji.append(-1.4684*mu + C)
+        Vij.append(Viji)
+
+    nuij = []
+    for Viji, Vc_i in zip(Vij, Vci):
+        nuiji = []
+        for V, Vc_j in zip(Viji, Vci):
+            nuiji.append(V*(Vc_i+Vc_j)/2)
+        nuij.append(nuiji)
+
+    # Eq 2
+    phii = []
+    for x_j, Vc_j in zip(xi, Vci):
+        suma = sum([x_i*Vc_i**(2/3) for x_i, Vc_i in zip(xi, Vci)])
+        phii.append(x_j*Vc_j**(2/3)/suma)
+
+    # Eq 4 generalized
+    sum1 = sum([phi*Vc for phi, Vc in zip(phii, Vci)])
+    sum2 = 0
+    for phi_i, nuiji in zip(phii, nuij):
+        for phi_j, nu in zip(phii, nuiji):
+            sum2 += phi_i*phi_j*nu
+    Vcm = sum1 + sum2
+
+    return unidades.SpecificVolume(Vcm/Mm)
 
 
 # Liquid density correlations
