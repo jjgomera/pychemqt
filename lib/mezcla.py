@@ -2654,6 +2654,159 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
     return unidades.ThermalConductivity(k)
 
 
+def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
+    r"""Calculate thermal conductivity of gas at low pressure using the Chung
+    correlation
+
+    .. math::
+        \lambda_o = \frac{7.452\mu_o\Psi}{M}
+
+    .. math::
+        \Psi = 1 + \alpha \left\{[0.215+0.28288\alpha-1.061\beta+0.26665Z]/
+        [0.6366+\beta Z + 1.061 \alpha \beta]\right\}
+
+    .. math::
+        \alpha = \frac{C_v}{R}-1.5
+
+    .. math::
+        \beta = 0.7862-0.7109\omega + 1.3168\omega^2
+
+    .. math::
+        Z=2+10.5T_r^2
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    xi : list
+        Mole fractions of components, [-]
+    Tci : list
+        Critical temperature of compounds, [K]
+    Vci : list
+        Critical volume of compounds, [m³/kg]
+    Mi : list
+        Molecular weight of components, [g/mol]
+    wi :  list
+        Acentric factor of compounds, [-]
+    Cvi : list
+        Ideal gas heat capacity at constant volume of components, [J/kg·K]
+    mu : float
+        Gas viscosity [Pa·s]
+
+    Returns
+    -------
+    k : float
+        Thermal conductivity, [W/m/k]
+
+    Examples
+    --------
+    Example 10-5 from [3]_; 25% benzene, 75% Argon at 100.6ºC and 1bar
+
+    >>> T = unidades.Temperature(100.6, "C")
+    >>> xi = [0.25, 0.75]
+    >>> Tci = [562.05, 150.86]
+    >>> Vci = [256/78.114/1000, 74.57/39.948/1000]
+    >>> Mi = [78.114, 39.948]
+    >>> wi = [0.21, -0.002]
+    >>> Cvi = [96.2/78.114, 12.5/39.948]
+    >>> mui = [92.5e-7, 271e-7]
+    >>> ki = [0, 0]
+    >>> mu = MuG_Chung(T, xi, Tci, Vci, Mi, wi, mui, ki)
+    >>> "%0.1f" % mu.microP
+    '183.3'
+    >>> "%0.4f" % ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu)
+    '0.0222'
+
+    References
+    ----------
+    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
+        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+       New York: McGraw-Hill Professional, 2000.
+    """
+    # Molar values
+    Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
+    Cvi = [Cv*M for Cv, M in zip(Cvi, Mi)]
+    Cvm = sum([x*Cv for x, Cv in zip(xi, Cvi)])
+
+    sigmai = [0.809*Vc**(1/3) for Vc in Vci]                            # Eq 4
+    eki = [Tc/1.2593 for Tc in Tci]                                     # Eq 5
+
+    # Eq 23
+    sigmaij = []
+    for s_i in sigmai:
+        sigmaiji = []
+        for s_j in sigmai:
+            sigmaiji.append((s_i*s_j)**0.5)
+        sigmaij.append(sigmaiji)
+
+    # Eq 24
+    ekij = []
+    for ek_i in eki:
+        ekiji = []
+        for ek_j in eki:
+            ekiji.append((ek_i*ek_j)**0.5)
+        ekij.append(ekiji)
+
+    # Eq 25
+    wij = []
+    for w_i in wi:
+        wiji = []
+        for w_j in wi:
+            wiji.append((w_i+w_j)/2)
+        wij.append(wiji)
+
+    # Eq 26
+    Mij = []
+    for M_i in Mi:
+        Miji = []
+        for M_j in Mi:
+            Miji.append(2*M_i*M_j/(M_i+M_j))
+        Mij.append(Miji)
+
+    # Eq 14
+    sm = 0
+    for x_i, sigmaiji in zip(xi, sigmaij):
+        for x_j, sij in zip(xi, sigmaiji):
+            sm += x_i*x_j*sij**3
+    sm = sm**(1/3)
+
+    # Eq 15
+    ekm = 0
+    for x_i, sigmaiji, ekiji in zip(xi, sigmaij, ekij):
+        for x_j, sij, ek in zip(xi, sigmaiji, ekiji):
+            ekm += x_i*x_j*ek*sij**3
+    ekm /= sm**3
+
+    # Eq 18
+    wm = 0
+    for x_i, sigmaiji, wiji in zip(xi, sigmaij, wij):
+        for x_j, sij, w in zip(xi, sigmaiji, wiji):
+            wm += x_i*x_j*w*sij**3
+    wm /= sm**3
+
+    # Eq 19
+    Mm = 0
+    for x_i, sigmaiji, ekiji, Miji in zip(xi, sigmaij, ekij, Mij):
+        for x_j, s, ek, M in zip(xi, sigmaiji, ekiji, Miji):
+            Mm += x_i*x_j*ek*s**2*M**0.5
+    Mm = (Mm/(ekm*sm**2))**2
+
+    Tcm = 1.2593*ekm
+    Trm = T/Tcm
+
+    alpha = Cvm/R - 1.5
+    beta = 0.7862 - 0.7109*wm + 1.3168*wm**2
+    Z = 2 + 10.5*Trm**2
+    phi = 1 + alpha*((0.215 + 0.28288*alpha - 1.061*beta + 0.26665*Z)/(
+        0.6366 + beta*Z + 1.061*alpha*beta))
+
+    # Eq 9
+    k = 7.452*mu*10/Mm*phi   # Viscosity in P
+    return unidades.ThermalConductivity(k, "calscmK")
+
+
 def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
     r"""Calculate thermal conductiviy of gas mixtures at high pressure using
     the Stiel-Thodos correlation for pure compound using the mixing rules
