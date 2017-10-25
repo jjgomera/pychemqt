@@ -52,6 +52,8 @@ class ShowReference(QtWidgets.QDialog):
         layout.addWidget(bttBox)
 
         self.fill()
+        self.tree.sortItems(0, QtCore.Qt.AscendingOrder)
+        self.tree.sortItems(1, QtCore.Qt.AscendingOrder)
         self.tree.itemDoubleClicked.connect(self.open)
 
     def fill(self):
@@ -124,10 +126,11 @@ class ShowReference(QtWidgets.QDialog):
             code = str(text).replace("/", "_")
             file = os.path.join("doc", "doi", code) + ".pdf"
             file2 = os.path.join("doc", "doi", title) + ".pdf"
+            print(file2, os.path.isfile(file2))
             if os.path.isfile(file):
-                subprocess.Popen(['atril', file])
+                subprocess.Popen(['evince', file])
             elif os.path.isfile(file2):
-                os.system(['atril', file2])
+                os.system(['evince', file2])
         elif item.parent():
             url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
             QtGui.QDesktopServices.openUrl(url)

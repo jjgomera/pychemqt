@@ -405,6 +405,14 @@ def config():
     config.set("Transport", "ThCondG", "0")
     config.set("Transport", "Pv", "0")
     config.set("Transport", "f_acent", "0")
+    config.set("Transport", "RhoLMix", "0")
+    config.set("Transport", "Corr_RhoLMix", "0")
+    config.set("Transport", "MuLMix", "0")
+    config.set("Transport", "MuGMix", "0")
+    config.set("Transport", "Corr_MuGMix", "0")
+    config.set("Transport", "ThCondLMix", "0")
+    config.set("Transport", "ThCondGMix", "0")
+    config.set("Transport", "Corr_ThCondGMix", "0")
 
     # Units
     config.add_section("Units")

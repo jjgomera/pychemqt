@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from PyQt5 import QtCore, QtWidgets
 
 from lib.compuestos import Componente
+from lib.mezcla import Mezcla
 
 
 class UI_confTransport_widget(QtWidgets.QWidget):
@@ -34,83 +35,154 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         """Constructor, opcional config parameter with project config"""
         super(UI_confTransport_widget, self).__init__(parent)
         layout = QtWidgets.QGridLayout(self)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line, 1, 1, 1, 7)
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line, 3, 1, 1, 7)
+        lbl_Pure = QtWidgets.QLabel()
+        lbl_Pure.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_Pure.setText(QtWidgets.QApplication.translate(
+            "pychemqt", "Pure Fluid Correlations"))
+        layout.addWidget(lbl_Pure, 0, 1, 1, 3)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Density:")), 1, 0)
+            "pychemqt", "Liquid Density:")), 4, 0)
         self.RhoL = QtWidgets.QComboBox()
         for method in Componente.METHODS_RhoL:
             self.RhoL.addItem(method)
-        layout.addWidget(self.RhoL, 1, 1)
+        layout.addWidget(self.RhoL, 4, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Viscosity:")), 2, 0)
+            "pychemqt", "Liquid Viscosity:")), 5, 0)
         self.MuL = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuL:
             self.MuL.addItem(method)
-        layout.addWidget(self.MuL, 2, 1)
+        layout.addWidget(self.MuL, 5, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Gas Viscosity:")), 3, 0)
+            "pychemqt", "Gas Viscosity:")), 6, 0)
         self.MuG = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuG:
             self.MuG.addItem(method)
-        layout.addWidget(self.MuG, 3, 1)
+        layout.addWidget(self.MuG, 6, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Surface Tension:")), 4, 0)
+            "pychemqt", "Surface Tension:")), 7, 0)
         self.Tension = QtWidgets.QComboBox()
         for method in Componente.METHODS_Tension:
             self.Tension.addItem(method)
-        layout.addWidget(self.Tension, 4, 1)
+        layout.addWidget(self.Tension, 7, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Liquid Thermal Conductivity:")), 5, 0)
+            "pychemqt", "Liquid Thermal Conductivity:")), 8, 0)
         self.ThCondL = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThL:
             self.ThCondL.addItem(method)
-        layout.addWidget(self.ThCondL, 5, 1)
+        layout.addWidget(self.ThCondL, 8, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Gas Thermal Conductivity:")), 6, 0)
+            "pychemqt", "Gas Thermal Conductivity:")), 9, 0)
         self.ThCondG = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThG:
             self.ThCondG.addItem(method)
-        layout.addWidget(self.ThCondG, 6, 1)
+        layout.addWidget(self.ThCondG, 9, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Vapor Pressure:")), 7, 0)
+            "pychemqt", "Vapor Pressure:")), 10, 0)
         self.Pv = QtWidgets.QComboBox()
         for method in Componente.METHODS_Pv:
             self.Pv.addItem(method)
-        layout.addWidget(self.Pv, 7, 1)
+        layout.addWidget(self.Pv, 10, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Acentric factor:")), 8, 0)
+            "pychemqt", "Acentric factor:")), 11, 0)
         self.w = QtWidgets.QComboBox()
         for method in Componente.METHODS_facent:
             self.w.addItem(method)
-        layout.addWidget(self.w, 8, 1)
-        label_7 = QtWidgets.QLabel()
-        label_7 = QtWidgets.QLabel()
-        label_7.setAlignment(QtCore.Qt.AlignCenter)
-        label_7.setText(QtWidgets.QApplication.translate(
+        layout.addWidget(self.w, 11, 1)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line, 1, 2, 11, 1)
+        lbl_hP = QtWidgets.QLabel()
+        lbl_hP.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_hP.setText(QtWidgets.QApplication.translate(
             "pychemqt", "High Pressure Corrections"))
-        layout.addWidget(label_7, 0, 3)
+        layout.addWidget(lbl_hP, 2, 3)
         self.Corr_RhoL = QtWidgets.QComboBox()
         for method in Componente.METHODS_RhoLP:
             self.Corr_RhoL.addItem(method)
-        layout.addWidget(self.Corr_RhoL, 1, 3)
+        layout.addWidget(self.Corr_RhoL, 4, 3)
         self.Corr_MuL = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuLP:
             self.Corr_MuL.addItem(method)
-        layout.addWidget(self.Corr_MuL, 2, 3)
+        layout.addWidget(self.Corr_MuL, 5, 3)
         self.Corr_MuG = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuGP:
             self.Corr_MuG.addItem(method)
-        layout.addWidget(self.Corr_MuG, 3, 3)
+        layout.addWidget(self.Corr_MuG, 6, 3)
         self.Corr_ThCondL = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThLP:
             self.Corr_ThCondL.addItem(method)
-        layout.addWidget(self.Corr_ThCondL, 5, 3)
+        layout.addWidget(self.Corr_ThCondL, 8, 3)
         self.Corr_ThCondG = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThGP:
             self.Corr_ThCondG.addItem(method)
-        layout.addWidget(self.Corr_ThCondG, 6, 3)
+        layout.addWidget(self.Corr_ThCondG, 9, 3)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line, 0, 4, 12, 1)
+        lbl_Mix = QtWidgets.QLabel()
+        lbl_Mix.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_Mix.setText(QtWidgets.QApplication.translate(
+            "pychemqt", "Mixture Fluid Correlations"))
+        layout.addWidget(lbl_Mix, 0, 5, 1, 3)
+        self.RhoLMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_RhoL:
+            self.RhoLMix.addItem(method)
+        layout.addWidget(self.RhoLMix, 4, 5)
+        self.MuLMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_MuL:
+            self.MuLMix.addItem(method)
+        layout.addWidget(self.MuLMix, 5, 5)
+        self.MuGMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_MuG:
+            self.MuGMix.addItem(method)
+        layout.addWidget(self.MuGMix, 6, 5)
+        self.ThLMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_ThL:
+            self.ThLMix.addItem(method)
+        layout.addWidget(self.ThLMix, 8, 5)
+        self.ThGMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_ThG:
+            self.ThGMix.addItem(method)
+        layout.addWidget(self.ThGMix, 9, 5)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        layout.addWidget(line, 1, 6, 11, 1)
+        lbl_hPMix = QtWidgets.QLabel()
+        lbl_hPMix.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_hPMix.setText(QtWidgets.QApplication.translate(
+            "pychemqt", "High Pressure Corrections"))
+        layout.addWidget(lbl_hPMix, 2, 7)
+        self.Corr_RhoLMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_RhoLP:
+            self.Corr_RhoLMix.addItem(method)
+        layout.addWidget(self.Corr_RhoLMix, 4, 7)
+        self.Corr_MuGMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_MuGP:
+            self.Corr_MuGMix.addItem(method)
+        layout.addWidget(self.Corr_MuGMix, 6, 7)
+        self.Corr_ThGMix = QtWidgets.QComboBox()
+        for method in Mezcla.METHODS_ThGP:
+            self.Corr_ThGMix.addItem(method)
+        layout.addWidget(self.Corr_ThGMix, 9, 7)
+
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 10)
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 15, 8)
 
         if config and config.has_section("Transport"):
             self.RhoL.setCurrentIndex(config.getint("Transport", "RhoL"))
@@ -132,6 +204,20 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.Pv.setCurrentIndex(config.getint("Transport", "Pv"))
             self.w.setCurrentIndex(config.getint("Transport", "f_acent"))
 
+            self.RhoLMix.setCurrentIndex(config.getint("Transport", "RhoLMix"))
+            self.Corr_RhoLMix.setCurrentIndex(
+                config.getint("Transport", "Corr_RhoLMix"))
+            self.MuLMix.setCurrentIndex(config.getint("Transport", "MuLMix"))
+            self.MuGMix.setCurrentIndex(config.getint("Transport", "MuGMix"))
+            self.Corr_MuGMix.setCurrentIndex(
+                config.getint("Transport", "Corr_MuGMix"))
+            self.ThLMix.setCurrentIndex(
+                config.getint("Transport", "ThCondLMix"))
+            self.ThGMix.setCurrentIndex(
+                config.getint("Transport", "ThCondGMix"))
+            self.Corr_ThGMix.setCurrentIndex(
+                config.getint("Transport", "Corr_ThCondGMix"))
+
     def value(self, config):
         """Function to wizard result"""
         if not config.has_section("Transport"):
@@ -152,6 +238,18 @@ class UI_confTransport_widget(QtWidgets.QWidget):
                    str(self.Corr_ThCondG.currentIndex()))
         config.set("Transport", "Pv", str(self.Pv.currentIndex()))
         config.set("Transport", "f_acent", str(self.w.currentIndex()))
+
+        config.set("Transport", "RhoLMix", str(self.RhoLMix.currentIndex()))
+        config.set("Transport", "Corr_RhoLMix",
+                   str(self.Corr_RhoLMix.currentIndex()))
+        config.set("Transport", "MuGMix", str(self.MuGMix.currentIndex()))
+        config.set("Transport", "Corr_MuGMix",
+                   str(self.Corr_MuGMix.currentIndex()))
+        config.set("Transport", "MuLMix", str(self.MuLMix.currentIndex()))
+        config.set("Transport", "ThCondLMix", str(self.ThLMix.currentIndex()))
+        config.set("Transport", "ThCondGMix", str(self.ThGMix.currentIndex()))
+        config.set("Transport", "Corr_ThCondGMix",
+                   str(self.Corr_ThGMix.currentIndex()))
         return config
 
     @classmethod
@@ -168,6 +266,14 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "ThCondG", "0")
         config.set("Transport", "Pv", "0")
         config.set("Transport", "f_acent", "0")
+        config.set("Transport", "RhoLMix", "0")
+        config.set("Transport", "Corr_RhoLMix", "0")
+        config.set("Transport", "MuLMix", "0")
+        config.set("Transport", "MuGMix", "0")
+        config.set("Transport", "Corr_MuGMix", "0")
+        config.set("Transport", "ThCondLMix", "0")
+        config.set("Transport", "ThCondGMix", "0")
+        config.set("Transport", "Corr_ThCondGMix", "0")
         return config
 
 
