@@ -444,7 +444,7 @@ class Corriente(config.Entity):
                 Hl = (self.Liquido._Ho(self.T).Jg-self.Liquido.Hv_DIPPR(self.T).Jg)*self.Liquido.caudalmasico.gh
                 self.Liquido.h = unidades.Power(Hl-R*self.T/self.M*self.H_exc[1]*(1-self.x)*self.Liquido.caudalmasico.gh, "Jh")
                 self.Liquido.cp = self.Liquido.Cp_Liquido(T)
-                self.Liquido.rho = self.Liquido.RhoL_Tait_Costald(T, self.P.atm)
+                self.Liquido.rho = self.Liquido.RhoL(T, self.P)
                 self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
                 self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm, self.Liquido.rho)
                 self.Liquido.sigma = self.Liquido.Tension(T)

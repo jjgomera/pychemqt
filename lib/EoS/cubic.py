@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QApplication
 from lib import unidades, config
 from lib.eos import EoS
 from lib.physics import R_atml
+from lib.bip import Kij
 
 
 # # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
@@ -102,7 +103,7 @@ class van_Waals(Cubic):
             a, b=self.__lib(componente)
             ai.append(a)
             bi.append(b)
-        self.kij=mezcla.Kij(None)
+        self.kij=Kij(None)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
 
         self.ai=ai
@@ -139,7 +140,7 @@ class RK(Cubic):
             a, b=self.__lib(componente, T)
             ai.append(a)
             bi.append(b)
-        self.kij=mezcla.Kij(None)
+        self.kij=Kij(None)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
 
@@ -178,7 +179,7 @@ class Wilson(Cubic):
             a, b=self.__lib(componente, T)
             ai.append(a)
             bi.append(b)
-        self.kij=mezcla.Kij(None)
+        self.kij=Kij(None)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
 
@@ -219,7 +220,7 @@ class Fuller(Cubic):
             ai.append(a)
             bi.append(b)
             ci.append(ac)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mix_van_der_Waals([ai, bi, ci], self.kij)
         tdadt=0
 
@@ -271,7 +272,7 @@ class SRK(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -328,7 +329,7 @@ class SRK_API(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -385,7 +386,7 @@ class MSRK(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -432,7 +433,7 @@ class SRK_Graboski(Cubic):
             a, b=self.__lib(componente, T)
             ai.append(a)
             bi.append(b)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
         tdadt=0
 
@@ -490,7 +491,7 @@ class SRK_Mathias(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -547,7 +548,7 @@ class SRK_Adachi(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -596,7 +597,7 @@ class SRK_Androulakis(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(SRK)
+        self.kij=Kij(SRK)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -651,7 +652,7 @@ class PR(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -711,7 +712,7 @@ class PRSV(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(k)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -780,7 +781,7 @@ class PRSV2(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(k)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -852,7 +853,7 @@ class PR_Gasem(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -898,7 +899,7 @@ class PR_Melhem(Cubic):
             ai.append(a)
             bi.append(b)
             aci.append(ac)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -943,7 +944,7 @@ class PR_Almeida(Cubic):
             ai.append(a)
             bi.append(b)
             aci.append(ac)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -990,7 +991,7 @@ class PR_Mathias_Copeman(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):
@@ -1043,7 +1044,7 @@ class PR_Yu_Lu(Cubic):
             bi.append(b)
             aci.append(ac)
             mi.append(m)
-        self.kij=mezcla.Kij(PR)
+        self.kij=Kij(PR)
         a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
         tdadt=0
         for i in range(len(mezcla.componente)):

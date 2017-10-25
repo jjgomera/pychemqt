@@ -387,7 +387,13 @@ __doi__ = {
          "title": "Thermodynamics of Aqueous Solutions Containing Volatile "
                   "Weak Electrolytes",
          "ref": "AIChE Journal 21(2) (1975) 248-259",
-         "doi": "10.1002/aic.690210205"}
+         "doi": "10.1002/aic.690210205"},
+    61:
+        {"autor": "Ely, J.F., Hanley, H.J.M.",
+         "title": "A Computer Program for the Prediction of Viscosity and "
+                  "Thermal Condcutivity in Hydrocarbon Mixtures",
+         "ref": "NBS Technical Note 1039 (1981)",
+         "doi": ""}
 }
 
 
@@ -2337,7 +2343,7 @@ def MuL_Kouzel(T, P, muo):
     return unidades.Viscosity(mu, "cP")
 
 
-# Liquid viscosity correlations
+# Vas viscosity correlations
 def MuG_ChapmanEnskog(T, M, sigma, omega):
     r"""Calculate the viscosity of a gas using the Chapman-Enskog correlation
 
@@ -3023,6 +3029,9 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    .. [61] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+        Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
+        Technical Note 1039 (1981)
     .. [53] Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
         Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
         Ref. Data 16(4) (1987) 577-798
@@ -4202,6 +4211,19 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     .. math::
         \lambda = \frac{31.2 \eta^o\Psi}{M}(1/G_2+B_6y)+qB_7y^2T_r^{1/2}G_2
 
+    .. math::
+        y = \frac{\rho V_c}{6}
+
+    .. math::
+        G_1 = \frac{1-0.5y}{\left(1-y\right)^3
+
+    .. math::
+        G_2 = \frac{E_1\left(\left(1-\exp\left(-E_4y\right)\right)/y\right) +
+        E_2G_1\expE_5y + E_3G_1}{E_1E_4+E_2+E_3}
+
+    .. math::
+        \mu^{**} = E_7y^2G_2\exp(E_8+\frac{E_9}{T^*}+\frac{E_{10}}{T^*^2}
+
     Parameters
     ----------
     T : float
@@ -4219,7 +4241,7 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     k : float, optional
         Corection factor for polar substances, [-]
     rho : float
-        Density, [Debye]
+        Density, [kg/m³]
     ko : float
         Low-pressure gas thermal conductivity[Pa*S]
 
@@ -4324,6 +4346,9 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     ----------
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
+    .. [61] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+        Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
+        Technical Note 1039 (1981)
     """
     # Reference fluid properties, propane
     TcR = 369.83
@@ -5524,14 +5549,15 @@ class Componente(object):
             cp = self.Cp_Gas_DIPPR(T)
             ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
         elif method == 2:
-            cp = self.Cp_Gas_DIPPR(T)
-            cv = cp-R*self.M
+            cv = self.Cv(T)
             muo = self.Mu_Gas(T, 101325)
             ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, cv, muo)
         elif method == 3:
+            cv = self.Cv(T)
             muo = self.Mu_Gas(T, 101325)
             ko = ThG_Eucken(self.M, cv, muo)
         elif method == 4:
+            cv = self.Cv(T)
             muo = self.Mu_Gas(T, 101325)
             ko = ThG_EuckenMod(self.M, cv, muo)
         elif method == 5 and self.SG and self.Tb:
@@ -5639,7 +5665,7 @@ class Componente(object):
         return mu
 
     def _K_Chung(self):
-        """Internal procedure to calculate the polcar correction factor for
+        """Internal procedure to calculate the polar correction factor for
         Chung viscosity correlation
 
         Chung, T.H., Lee, L.L., Starling, K.E.
@@ -5790,6 +5816,12 @@ class Componente(object):
             return DIPPR("cpG", T, self._dipprCpG[:-2], self.M)
         else:
             return self._Cpo(T)
+
+    def Cv(self, T):
+        """Isochoric specific heat"""
+        cp = self.Cp_Gas_DIPPR(T)
+        cv = cp-R*self.M
+        return unidades.SpecificHeat(cv)
 
     def Fase(self, T, P):
         """Método que calcula el estado en el que se encuentra la sustancia"""
