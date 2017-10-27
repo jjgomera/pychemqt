@@ -671,7 +671,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
 
     Examples
     --------
-    Example from [5]_; propane at 30ºF, API procedure 6A2.13 pag.454
+    Example from 5_; propane at 30ºF, API procedure 6A2.13 pag.454
 
     >>> T = unidades.Temperature(30, "F")
     >>> Tc = unidades.Temperature(206.06, "F")
@@ -681,11 +681,11 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
 
     References
     ----------
-    .. [21] Rackett, H.G. Equation of State for Saturated Liquids. J. Chem.
+    [21]_ Rackett, H.G. Equation of State for Saturated Liquids. J. Chem.
         Eng. Data 15(4) (1970) 514-517
-    .. [35] Spencer, C.F., Danner, R.P. Improved Equation for Prediction of
+    [35]_ Spencer, C.F., Danner, R.P. Improved Equation for Prediction of
         Saturated Liquid Density. J. Chem. Eng. Data 17(2) (1972) 236-241
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -726,7 +726,7 @@ def RhoL_Costald(T, Tc, w, Vc):
 
     Examples
     --------
-    Example 1 from [5]_; propane at 30ºF
+    Example 1 from 5_; propane at 30ºF
 
     >>> T = unidades.Temperature(30, "F")
     >>> Tc = unidades.Temperature(206.01, "F")
@@ -736,10 +736,10 @@ def RhoL_Costald(T, Tc, w, Vc):
 
     References
     ----------
-    .. [20] Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
+    [20]_ Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
         Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
         653-663
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     a = -1.52816
     b = 1.43907
@@ -828,7 +828,7 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
 
     References
     ----------
-    .. [26] Yen, L.C., Woods, S.S. A Generalized Equation for Computer
+    [26]_ Yen, L.C., Woods, S.S. A Generalized Equation for Computer
         Calculation of Liquid Densities. AIChE Journal 12(1) (1966) 95-99
     """
     Tr = T/Tc
@@ -874,9 +874,9 @@ def RhoL_YamadaGunn(T, Tc, Pc, w, M):
 
     References
     ----------
-    .. [23] Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
+    [23]_ Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
         Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
-    .. [27] Gunn, R.D., Yamada, T. A Corresponding States Correlation of
+    [27]_ Gunn, R.D., Yamada, T. A Corresponding States Correlation of
         Saturated Liquid Volumes. AIChE Journal 17(6) (1971) 1341-1345
     """
     Tr = T/Tc
@@ -938,7 +938,7 @@ def RhoL_Bhirud(T, Tc, Pc, w, M):
 
     References
     ----------
-    .. [28] Bhirud, V.L. Saturated Liquid Densities of Normal Fluids. AIChE
+    [28]_ Bhirud, V.L. Saturated Liquid Densities of Normal Fluids. AIChE
         Journal 24(6) (1978) 1127-1131
     """
     Tr = T/Tc
@@ -1006,7 +1006,7 @@ def RhoL_Mchaweh(T, Tc, Vc, w, delta):
 
     References
     ----------
-    .. [29] Mchaweh, A., Alsaygh, A., Nasrifar, Kh., Moshfeghian, M. A
+    [29]_ Mchaweh, A., Alsaygh, A., Nasrifar, Kh., Moshfeghian, M. A
         Simplified Method for Calculating Saturated Liquid Densities. Fluid
         Phase Equilibria 224 (2004) 157-167
     """
@@ -1126,7 +1126,7 @@ def RhoL_Riedel(T, Tc, Vc, w):
 
     References
     ----------
-    .. [32] Riedel, L. Die Flüssigkeitsdichte im Sättigungszustand.
+    [32]_ Riedel, L. Die Flüssigkeitsdichte im Sättigungszustand.
         Untersuchungen über eine Erweiterung des Theorems der übereinstimmenden
         Zustände. Teil II. Chem. Eng. Tech. 26(5) (1954) 259-264
     """
@@ -1165,7 +1165,7 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
 
     References
     ----------
-    .. [33] Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
+    [33]_ Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
         Pressures: Calculation of Partial Molar Volumes in Nonpolar Liquid
         Mixtures. AIChE Journal 13(6) (1967) 1099-1107
     """
@@ -1230,7 +1230,7 @@ def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
 
     Examples
     --------
-    Example from [5]_; n-octane at 212ºF and 4410 psi
+    Example from 5_; n-octane at 212ºF and 4410 psi
 
     >>> T = unidades.Temperature(212, "F")
     >>> P = unidades.Pressure(4410, "psi")
@@ -1245,10 +1245,10 @@ def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
 
     References
     ----------
-    .. [22] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+    [22]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
         Correlation for Densities of Compressed Liquids and Liquid Mixtures.
         AIChE Journal 28(4) (1982): 671-76
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     C = 0.0861488 + 0.0344483*w                                         # Eq 8
@@ -1298,7 +1298,7 @@ def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
 
     References
     ----------
-    .. [30] Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
+    [30]_ Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
         Volume of Compressed Liquids. Fluid Phase Equilibria, 58 (1990) 231-238
     """
     Tr = T/Tc
@@ -1360,7 +1360,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
 
     Examples
     --------
-    Example 4-8 from [1]_; ammonia at 400bar at 300K and 400K
+    Example 4-8 from 1_; ammonia at 400bar at 300K and 400K
 
     >>> P = unidades.Pressure(400, "bar")
     >>> Pc = unidades.Pressure(113.53, "bar")
@@ -1373,7 +1373,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     >>> "%0.2f %0.2f" % (1/r1.gcc*17.031, 1/r2.gcc*17.031)
     '27.19 35.60'
 
-    Example 4-9 from [1]_; m-cresol at 3000bar and 503.15K
+    Example 4-9 from 1_; m-cresol at 3000bar and 503.15K
 
     >>> P = unidades.Pressure(3000, "bar")
     >>> Pc = unidades.Pressure(45.6, "bar")
@@ -1385,10 +1385,10 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
 
     References
     ----------
-    .. [31] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+    [31]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
         Correlation for Compressed Liquid Densities of Hydrocarbons. Part 1.
         Pure Compounds. Fluid Phase Equilibria 114 (1996) 1-19
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -1475,9 +1475,9 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
 
     References
     ----------
-    .. [37] Aalto, M., Keskinen, K.I. Liquid Densities at High Pressures. Fluid
+    [37]_ Aalto, M., Keskinen, K.I. Liquid Densities at High Pressures. Fluid
         Phase Equilibria 166 (1999) 183-205
-    .. [38] Pal, A.K., Pope, G.A., Arai, Y., Carnahan, N.F., Kobayashi, R.
+    [38]_ Pal, A.K., Pope, G.A., Arai, Y., Carnahan, N.F., Kobayashi, R.
         Experimental Pressure-Volume-Temperature Relations for Saturated and
         Compressed Fluid Ethane. J. Chem. Eng. Data 21(4) (1976) 394-397
     """
@@ -1549,7 +1549,7 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
 
     References
     ----------
-    .. [36] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
+    [36]_ Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
         Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
     """
     # Table 1
@@ -1611,7 +1611,7 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
 
     Examples
     --------
-    Example from [5]_; n-nonane at 220ºF and 1000psi, the API databook use the
+    Example from 5_; n-nonane at 220ºF and 1000psi, the API databook use the
     original Lu Chart so the result don't have to be exact
 
     >>> T = unidades.Temperature(220, "F")
@@ -1624,10 +1624,10 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
 
     References
     ----------
-    .. [33] Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
+    [33]_ Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
         Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
         Data 18(2) (1973) 227-230
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pr = P/Pc
     Tr = T/Tc
@@ -1687,7 +1687,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
 
     Examples
     --------
-    Example 7-1 in [1]_, furan at 309.429 K
+    Example 7-1 in 1_, furan at 309.429 K
 
     >>> P = Pv_Antoine(309.429, (4.1199, 1070.2, -44.32), base=10, Punit="bar")
     >>> "%0.4f" % P.bar
@@ -1695,9 +1695,9 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [2] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
+    [3]_ Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
        Tensions et les Tempé. Compt.Rend. 107:681-684.
     """
     # Clean args input of null values
@@ -1749,7 +1749,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
     Examples
     --------
-    Example 1.2 from [4]_; propane at 80ºF
+    Example 1.2 from 4_; propane at 80ºF
 
     >>> T = unidades.Temperature(80, "F")
     >>> Tc = unidades.Temperature(666.01, "R")
@@ -1759,10 +1759,10 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
     References
     ----------
-    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+    [4]_ Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
        Correlation Based on Three-Parameter Corresponding States. American
        Institute of Chemical Engineers Journal, Vot. 21, 1975
-    .. [2] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    [2]_ Tarek Ahmed. Equations of State and PVT Analysis: Applications for
        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
        2016, ISBN 9780128015704
     """
@@ -1802,18 +1802,18 @@ def Pv_Wagner(T, args, Tc, Pc):
     Notes
     -----
     Same compound has the parameters of this equations saved in database. This
-    method implement the origintal form of Wagner as in [6]_, with the
+    method implement the origintal form of Wagner as in 6_, with the
     parameters from McGarry. API use other same different form.
 
     References
     ----------
-    .. [6] Wagner, W. New Vapour Pressure Measurements for Argon and Nitrogen
+    [6]_ Wagner, W. New Vapour Pressure Measurements for Argon and Nitrogen
         and a New Method for Establishing Rational Vapour Pressure Equations.
         Cryogenics 13, 8 (1973) 470-82.
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
         New York: McGraw-Hill Professional, 2000.
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
-    .. [7] McGarry, J. Correlation and Perediction of the Vapor Pressures of
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [7]_ McGarry, J. Correlation and Perediction of the Vapor Pressures of
         Pure Liquids over Large Pressure Ranges. Ind. Eng. Chem. Process. Des.
         Dev. 22 (1983) 313-322
     """
@@ -1864,7 +1864,7 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
 
     Examples
     --------
-    Example 7-3 from [2]_; ethylbenzene at 347.25 K.
+    Example 7-3 from 2_; ethylbenzene at 347.25 K.
 
     >>> "%0.4f" % Pv_AmbroseWalton(347.25, 617.15, 36.09E5, 0.304).bar
     '0.1328'
@@ -1873,10 +1873,10 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
 
     References
     ----------
-    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+    [8]_ Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
         Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
         1395-1403 (1989)
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -1915,7 +1915,7 @@ def Pv_Riedel(T, Tc, Pc, Tb):
 
     Examples
     --------
-    Example 7-4 from [2]_; ethylbenzene
+    Example 7-4 from 2_; ethylbenzene
 
     >>> "%0.3f" % Pv_Riedel(347.25, 617.15, 36.09E5, 409.36).bar
     '0.131'
@@ -1924,7 +1924,7 @@ def Pv_Riedel(T, Tc, Pc, Tb):
 
     References
     ----------
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -1942,7 +1942,7 @@ def Pv_Riedel(T, Tc, Pc, Tb):
 
 def Pv_MaxwellBonnel(T, Tb, Kw):
     r"""Calculates vapor pressure of a fluid using the Maxell-Bonnel
-    correlation as explain in [5]_, procedure 5A1.18, Pag. 394
+    correlation as explain in 5_, procedure 5A1.18, Pag. 394
 
     Parameters
     ----------
@@ -1965,7 +1965,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
 
     Examples
     --------
-    Example in [5]_, tetralin at 302ºF
+    Example in 5_, tetralin at 302ºF
 
     >>> T = unidades.Temperature(302, "F")
     >>> Tb = unidades.Temperature(405.7, "F")
@@ -1975,7 +1975,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2045,7 +2045,7 @@ def Pv_Sanjari(T, Tc, Pc, w):
 
     References
     ----------
-    .. [9] Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
+    [9]_ Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
         Generalized Model for Predict Vapor Pressure of Refrigerants
         International Journal of Refrigeration 36 (2013) 1327-1332
     """
@@ -2115,7 +2115,7 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
 
     Examples
     --------
-    Example 9.19 from [1]_ 4Ed; propanol at 433.2K
+    Example 9.19 from 1_ 4Ed; propanol at 433.2K
 
     >>> Vc = 316/92.14/1000
     >>> "%0.3f" % MuL_LetsouStiel(433.2, 60.10, 536.8, 51.7e5, 0.623).cP
@@ -2123,7 +2123,7 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
 
     References
     ----------
-    .. [10] Letsou, A., Stiel, L.I. Viscosity of Saturated Nonpolar Liquids at
+    [10]_ Letsou, A., Stiel, L.I. Viscosity of Saturated Nonpolar Liquids at
         Elevated Pressures. AIChE Journal 19(2) (1973) 409-411
     """
     Pc_atm = unidades.Pressure(Pc).atm
@@ -2185,7 +2185,7 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
 
     Examples
     --------
-    Example 9.196 from [1]_; toluene at 383K
+    Example 9.196 from 1_; toluene at 383K
 
     >>> Vc = 316/92.14/1000
     >>> V = 106.87/92.14/1000
@@ -2195,9 +2195,9 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
 
     References
     ----------
-    .. [45] Przedziecki, J.W., Sridhar, T. Prediction of Liquid Viscosities.
+    [45]_ Przedziecki, J.W., Sridhar, T. Prediction of Liquid Viscosities.
         AIChE Journal 31(2) (1985) 333-335
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Define default value por reference state:
@@ -2289,7 +2289,7 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
 
     Examples
     --------
-    Example 9.15 from [1]_, methylcyclohexane at 300K 500 bar
+    Example 9.15 from 1_, methylcyclohexane at 300K 500 bar
 
     >>> "%0.2f" % MuL_Lucas(300, 500e5, 572.19, 34.7e5, 0.236, 0, 0.00068).cP
     '1.07'
@@ -2305,9 +2305,9 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
 
     References
     ----------
-    .. [46] Lucas, K. Die Druckabhängigheit der Viskosität von Flüssigkeiten,
+    [46]_ Lucas, K. Die Druckabhängigheit der Viskosität von Flüssigkeiten,
         eine Einfache Abschätzung. Chem. Ing. Tech. 46(4) (1981) 959-960
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
         New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -2361,7 +2361,7 @@ def MuL_API(T, P, Tc, Pc, w, muc):
 
     Examples
     --------
-    Example from [5]_; pentane at 200ºF and 3000 psi
+    Example from 5_; pentane at 200ºF and 3000 psi
     The reference has a typo in mur0 calculation, the correct value is 6.20
     (not 5.20) and so the calculated viscosity is 0.171 cP, near to the
     experimental value of 0.166 cP.
@@ -2375,7 +2375,7 @@ def MuL_API(T, P, Tc, Pc, w, muc):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -2435,7 +2435,7 @@ def MuL_Kouzel(T, P, muo):
 
     Examples
     --------
-    Example from [5]_; lubricating oil at 120.2ºF and 9940 psi
+    Example from 5_; lubricating oil at 120.2ºF and 9940 psi
 
     >>> T = unidades.Temperature(120.2, "F")
     >>> P = unidades.Pressure(9940, "psi")
@@ -2444,7 +2444,7 @@ def MuL_Kouzel(T, P, muo):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Unit conversion
     psig = unidades.Pressure(P).psig
@@ -2481,7 +2481,7 @@ def MuG_ChapmanEnskog(T, M, sigma, omega):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     mu = 26.69*M**0.5*T**0.5/sigma**2/omega
@@ -2522,7 +2522,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
 
     Examples
     --------
-    Example A in [5]_, Propane at 176ºF
+    Example A in 5_, Propane at 176ºF
 
     >>> T = unidades.Temperature(176, "F")
     >>> Tc = unidades.Temperature(206, "F")
@@ -2530,7 +2530,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
     >>> "%0.4f" % MuG_StielThodos(T, Tc, Pc, 44.1).cP
     '0.0100'
 
-    Example B in [5]_, Methane at 543ºF
+    Example B in 5_, Methane at 543ºF
 
     >>> T = unidades.Temperature(543, "F")
     >>> Tc = unidades.Temperature(-116.67, "F")
@@ -2540,9 +2540,9 @@ def MuG_StielThodos(T, Tc, Pc, M):
 
     References
     ----------
-    .. [24] Stiel, L. I., Thodos, G. The Viscosity of Nonpolar Gases at Normal
+    [24]_ Stiel, L. I., Thodos, G. The Viscosity of Nonpolar Gases at Normal
         Pressures. AIChE J. 7(4) (1961) 611-615
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -2603,7 +2603,7 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
 
     References
     ----------
-    .. [57] Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, A.H.,
+    [57]_ Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, A.H.,
         Richon, D. Corresponding States Method for Determination of the
         Viscosity of Gases at Atmospheric Pressure. I&EC Research 51(7) (2012)
         3179-3185
@@ -2644,7 +2644,7 @@ def MuG_YoonThodos(T, Tc, Pc, M):
 
     References
     ----------
-    .. [56] Yoon, P., Thodos, G. Viscosity of Nonpolar Gaseous Mixtures at
+    [56]_ Yoon, P., Thodos, G. Viscosity of Nonpolar Gaseous Mixtures at
         Normal Pressures. AIChE Journal 16(2) (1970) 300-304
     """
     Pc_atm = Pc/101325
@@ -2695,7 +2695,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
 
     Examples
     --------
-    Example 9-1 in [1]_, SO2 at 300ºC
+    Example 9-1 in 1_, SO2 at 300ºC
 
     >>> T = unidades.Temperature(300, "C")
     >>> "%0.1f" % MuG_Chung(T, 430.8, 122e-3/64.065, 64.065, 0.257, 1.6).microP
@@ -2703,14 +2703,14 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [50] Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
+    [50]_ Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
         Theories and Multiparameter Correlation for Prediction of Dilute Gas
         Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
         (1984) 8-13
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Vc in molar base
@@ -2758,7 +2758,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
 
     Examples
     --------
-    Example 9-12 in [1]_, ammonia at 520K and 600bar
+    Example 9-12 in 1_, ammonia at 520K and 600bar
 
     >>> Vc = 72.4/17.031/1e3
     >>> rho = 1/48.2*17.031*1e3
@@ -2768,14 +2768,14 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [50] Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
+    [50]_ Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
         Theories and Multiparameter Correlation for Prediction of Dilute Gas
         Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
         (1984) 8-13
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
@@ -2816,7 +2816,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
 
 def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     r"""Calculate the viscosity of a compressed gas using the Reichenberg
-    correlation as explain in [1]_
+    correlation as explain in 1_
 
     .. math::
         \frac{\mu}{\mu^o}=1+Q\frac{AP_r^{3/2}}{BP_r+\left(1+CP_r^D\right)^{-1}}
@@ -2845,7 +2845,7 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
 
     Examples
     --------
-    Example 9-9 in [1]_, n-pentane at 500K and 101bar
+    Example 9-9 in 1_, n-pentane at 500K and 101bar
 
     >>> mu = MuG_Reichenberg(500, 101e5, 469.7, 33.7e5, 0, 0, 0, 114e-7)
     >>> "%0.0f" % mu.microP
@@ -2853,7 +2853,7 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
@@ -2878,7 +2878,7 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
 
 def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     """Calculate the viscosity of a gas using the Lucas correlation
-    as explain in [1]_. This method can calculate the viscosity at any pressure
+    as explain in 1_. This method can calculate the viscosity at any pressure
 
     Parameters
     ----------
@@ -2904,13 +2904,13 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
 
     Examples
     --------
-    Example 9-2 in [1]_, methanol at 550K and 1bar
+    Example 9-2 in 1_, methanol at 550K and 1bar
 
-    # >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
-    # >>> "%0.0f" % mu.microP
-    # '178'
+    >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
+    >>> "%0.0f" % mu.microP
+    '178'
 
-    Example 9-10 in [1]_, ammonia at 420K and 300bar
+    Example 9-10 in 1_, ammonia at 420K and 300bar
 
     >>> muo = MuG_Lucas(420, 1e5, 405.5, 113.53e5, 0.244, 17.031, 1.47)
     >>> "%0.0f" % muo.microP
@@ -2921,7 +2921,7 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -3021,7 +3021,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
 
     Examples
     --------
-    Example 9-11 in [1]_, isobutane at 500K and 100bar
+    Example 9-11 in 1_, isobutane at 500K and 100bar
 
     >>> rhoc = 1/262.7*58.123*1000
     >>> rho = 1/243.8*58.123*1000
@@ -3030,7 +3030,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
 
     References
     ----------
-    .. [51] Jossi, J.A., Stiel, L.I., Thodos, G. The Viscosity of Pure
+    [51]_ Jossi, J.A., Stiel, L.I., Thodos, G. The Viscosity of Pure
         Substances in the Dense Gaseous and Liquid Phases. AIChE Journal 8(1)
         (1962) 59-63
     """
@@ -3085,7 +3085,7 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
 
     References
     ----------
-    .. [52] Stiel, L.I., Thodos, G. The Viscosity of Polar Substances in the
+    [52]_ Stiel, L.I., Thodos, G. The Viscosity of Polar Substances in the
         Dense Gaseous and Liquid Regions. AIChE Journal 10(2) (1964) 275-277
     """
     Pc_atm = Pc/101325
@@ -3133,7 +3133,7 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
 
     Examples
     --------
-    Example 9-13 in [1]_, isobutane at 500K and 100bar
+    Example 9-13 in 1_, isobutane at 500K and 100bar
 
     >>> Vc = 259/58.124/1000
     >>> rho = 1/243.8*58.123*1000
@@ -3143,12 +3143,12 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [61] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+    [61]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
         Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
         Technical Note 1039 (1981)
-    .. [53] Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
+    [53]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
         Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
         Ref. Data 16(4) (1987) 577-798
     """
@@ -3216,7 +3216,7 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
 
     References
     ----------
-    .. [54] Brulé, M.R., Starling, K.E. Thermophysical Properties of Complex
+    [54]_ Brulé, M.R., Starling, K.E. Thermophysical Properties of Complex
         Systems: Applications of Multiproperty Analysis. Ind. Eng. Chem.
         Process Dev. 23 (1984) 833-845
     """
@@ -3286,7 +3286,7 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
 
     Examples
     --------
-    Example in [5]_, mixture at 1500psi and 257ºF
+    Example in 5_, mixture at 1500psi and 257ºF
 
     >>> Tc = unidades.Temperature(472.09, "R")
     >>> Pc = unidades.Pressure(646.68, "psi")
@@ -3295,9 +3295,9 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
 
     References
     ----------
-    .. [55] Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
+    [55]_ Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
         Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
 
@@ -3342,7 +3342,7 @@ def MuG_API(T, P, Tc, Pc, muo):
 
     Examples
     --------
-    Example in [5]_, nitrogen at -58ºF and 1677psi
+    Example in 5_, nitrogen at -58ºF and 1677psi
 
     >>> T = unidades.Temperature(-58, "F")
     >>> Tc = unidades.Temperature(-232.5, "F")
@@ -3353,7 +3353,7 @@ def MuG_API(T, P, Tc, Pc, muo):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -3405,7 +3405,7 @@ def ThL_RiaziFaghri(T, Tb, SG):
 
     References
     ----------
-    .. [11] Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
+    [11]_ Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
         Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
         Chem. Process Des. Dev. 24 (1985) 398-401
     """
@@ -3453,7 +3453,7 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
 
     References
     ----------
-    .. [12] Gharagheizi, F., Ilani-Kashkouli, P., Sattari, M., Mohammadi, A.H.,
+    [12]_ Gharagheizi, F., Ilani-Kashkouli, P., Sattari, M., Mohammadi, A.H.,
         Ramjugernath, D., Richon, D. Development of a General Model for
         Determination of Thermal Conductivity of Liquid Chemical Compounds at
         Atmospheric Pressure. AIChE Journal 59 (2013) 1702-1708
@@ -3488,7 +3488,7 @@ def ThL_LakshmiPrasad(T, M):
 
     References
     ----------
-    .. [13] Lakshmi, D.S., Prasad, D.H.L. A Rapid Estimation Method for Thermal
+    [13]_ Lakshmi, D.S., Prasad, D.H.L. A Rapid Estimation Method for Thermal
         Conductivity of Pure Liquids. The Chemical Engineering Journal 48
         (1992) 211-14
     """
@@ -3531,7 +3531,7 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
 
     References
     ----------
-    .. [14] Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.
+    [14]_ Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.
         Correlations of Thermal Conductivity for Liquid Refrigerants at
         Atmospheric Pressure or near Saturation. International Journal of
         Refrigeration, 2014
@@ -3548,7 +3548,7 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
 
 def ThL_SatoRiedel(T, Tc, M, Tb):
     r"""Calculate the thermal conductivity of a liquid using the Sato-Riedel
-    correlation, as explain in [1]_
+    correlation, as explain in [1]_.
 
     .. math::
         k = \frac{1.1053152}{\sqrt{MW}}\frac{3+20(1-T_r)^{2/3}}
@@ -3572,14 +3572,14 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
 
     Examples
     --------
-    Example 10-10 from [1]_ (4th Edition); CCl4 at 293K
+    Example 10-10 from 1_ (4th Edition); CCl4 at 293K
 
     >>> "%0.3f" % ThL_SatoRiedel(293, 556.4, 153.823, 349.9)
     '0.101'
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -3590,7 +3590,7 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
 
 def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     r"""Calculates the thermal conductivity of liquid using the Pachaiyappan
-    correlation as explain in [5]_, procedure 12A1.2, pag 1141
+    correlation as explain in 5_, procedure 12A1.2, pag 1141
 
     .. math::
         \kappa=\frac{CM^{n}}{Vm}\frac{3+20\left(1-Tr\right){}^{2/3}}
@@ -3616,7 +3616,7 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
 
     Examples
     --------
-    Example in [5]_, n-butylbenzene at 140ºF
+    Example in 5_, n-butylbenzene at 140ºF
 
     >>> T = unidades.Temperature(140, "F")
     >>> Tc = unidades.Temperature(729.32, "F")
@@ -3627,10 +3627,10 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
 
     References
     ----------
-    .. [15] Pachaiyappan, V., Ibrahim, S.H., Kuloor, N.R. Thermal
+    [15]_ Pachaiyappan, V., Ibrahim, S.H., Kuloor, N.R. Thermal
         Conductivities of Organic Liquids: A New Correlation. J. Chem. Eng.
         Data, 11 (1966) 73-76
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
 
     if branched:
@@ -3650,7 +3650,7 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
 
 def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     r"""Calculates the thermal conductivity of liquid using the Kanitkar-Thodos
-    correlation as explain in [5]_, procedure 12A1.3, pag 1143
+    correlation as explain in 5_, procedure 12A1.3, pag 1143
 
     .. math::
         \kappa\lambda = -1.884e-6P_r^2 + 1.442e-3P_r +
@@ -3694,7 +3694,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
 
     Examples
     --------
-    Example in [5]_, n-heptane at 320ºF and 197.4 atm
+    Example in 5_, n-heptane at 320ºF and 197.4 atm
 
     >>> T = unidades.Temperature(320, "F")
     >>> P = unidades.Pressure(197.4, "atm")
@@ -3708,9 +3708,9 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
 
     References
     ----------
-    .. [16] Kanitkar, D., Thodos, G. The Thermal Conductivity of Liquid
+    [16]_ Kanitkar, D., Thodos, G. The Thermal Conductivity of Liquid
         Hydrocarbons. Can. J. Chem. Eng. 47 (1969) 427-430
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
 
     Pc_atm = Pc/101325
@@ -3727,7 +3727,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
 
 def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     r"""Calculates the thermal conductivity of liquid using the Lenoir
-    correlation as explain in [5]_, procedure 12A4.1, pag 1156
+    correlation as explain in 5_, procedure 12A4.1, pag 1156
 
     .. math::
         k_2 = k_1\frac{C_2}{C_1}
@@ -3766,7 +3766,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
 
     Examples
     --------
-    Example in [5]_, toluene at 87.5ºF and 22.044psi
+    Example in 5_, toluene at 87.5ºF and 22.044psi
 
     >>> T = unidades.Temperature(87.5, "F")
     >>> P = unidades.Pressure(22044, "psi")
@@ -3778,18 +3778,18 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     >>> "%0.5f" % k.BtuhftF
     '0.09074'
 
-    Example 10-12 in [1]_, NO2 at 311K and 276bar
+    Example 10-12 in 1_, NO2 at 311K and 276bar
 
     >>> "%0.2f" % ThL_Lenoir(311, 276e5, 431.35, 101.33e5, 0.124, 311, 2.1e5)
     '0.13'
 
     References
     ----------
-    .. [59] Lenoir, J.M. Effect of Pressure on Thermal Conductivity of Liquids.
+    [59]_ Lenoir, J.M. Effect of Pressure on Thermal Conductivity of Liquids.
         Petroelum Refiner 36(8) 1508
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Definiton of optional values
     if To is None:
@@ -3813,7 +3813,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
 
 def ThL_Missenard(T, P, Tc, Pc, ko):
     r"""Calculates the thermal conductivity of liquid using the Missenard
-    correlation, as explain in [1]_
+    correlation, as explain in 1_
 
     .. math::
         \frac{\lambda}{\lambda_o} = 1+QP_r^{0.7}
@@ -3845,14 +3845,14 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
 
     Examples
     --------
-    Example 10-13 from [1]_; toluene at 6330bar and 304K
+    Example 10-13 from 1_; toluene at 6330bar and 304K
 
     >>> "%0.3f" % ThL_Missenard(304, 6330e5, 591.75, 41.08e5, 0.129)
     '0.220'
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -3917,7 +3917,7 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
 
     Examples
     --------
-    Example in [5]_, 2-methylbutane at 212ºF and 1 atm
+    Example in 5_, 2-methylbutane at 212ºF and 1 atm
 
     >>> T = unidades.Temperature(212, "F")
     >>> Tc = unidades.Temperature(369.1, "F")
@@ -3928,9 +3928,9 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
 
     References
     ----------
-    .. [25] Misic, D., Thodos, G. The Thermal Conductivity of Hydrocarbon
+    [25]_ Misic, D., Thodos, G. The Thermal Conductivity of Hydrocarbon
         Gases at Normal Pressures. AIChE Journal 7(2) (1961) 264-267
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -3984,7 +3984,7 @@ def ThG_RiaziFaghri(T, Tb, SG):
 
     References
     ----------
-    .. [11] Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
+    [11]_ Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
         Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
         Chem. Process Des. Dev. 24 (1985) 398-401
     """
@@ -4000,7 +4000,7 @@ def ThG_RiaziFaghri(T, Tb, SG):
 
 def ThG_Eucken(M, Cv, mu):
     r"""Calculates thermal conductivity of gas al low pressure using the Eucken
-    correlation as explain in [1]_
+    correlation as explain in 1_
 
     .. math::
         \frac{\lambda M}{\eta C_v} = 1 + \frac{9/4}{C_v/R}
@@ -4021,7 +4021,7 @@ def ThG_Eucken(M, Cv, mu):
 
     Examples
     --------
-    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    Example 10-1 from 1_; 2-methylbutane at 100ºC and 1bar
 
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Eucken(72.151, cv_mass, 8.72e-6)
@@ -4029,7 +4029,7 @@ def ThG_Eucken(M, Cv, mu):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Cvm = Cv*M/1000
@@ -4040,7 +4040,7 @@ def ThG_Eucken(M, Cv, mu):
 
 def ThG_EuckenMod(M, Cv, mu):
     r"""Calculates thermal conductivity of gas al low pressure using the
-    modified Eucken correlation as explain in [1]_
+    modified Eucken correlation as explain in 1_
 
     .. math::
         \frac{\lambda M}{\eta C_v} = 1.32 + \frac{1.77}{C_v/R}
@@ -4061,14 +4061,14 @@ def ThG_EuckenMod(M, Cv, mu):
 
     Examples
     --------
-    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    Example 10-1 from 1_; 2-methylbutane at 100ºC and 1bar
 
     >>> "%0.4f" % ThG_EuckenMod(72.151, 135.8/72.151*1000, 8.72e-6)
     '0.0234'
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Cvm = Cv*M/1000
@@ -4119,7 +4119,7 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
 
     Examples
     --------
-    Example 10-1 from [1]_; 2-methylbutane at 100ºC and 1bar
+    Example 10-1 from 1_; 2-methylbutane at 100ºC and 1bar
 
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Chung(373.15, 460.39, 72.151, 0.272, cv_mass, 8.72e-6)
@@ -4127,10 +4127,10 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -4194,7 +4194,7 @@ def ThG_NonHydrocarbon(T, P, id):
 
     Examples
     --------
-    Example from [5]_; oxygen at 984.67ºR and 6075psi
+    Example from 5_; oxygen at 984.67ºR and 6075psi
 
     >>> T = unidades.Temperature(984.67, "R")
     >>> P = unidades.Pressure(6075, "psi")
@@ -4203,7 +4203,7 @@ def ThG_NonHydrocarbon(T, P, id):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Table 12C1.2
     dat = {
@@ -4285,7 +4285,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
 
     Examples
     --------
-    Example 10-3 from [1]_; nitrous oxide at 105ºC and 138bar
+    Example 10-3 from 1_; nitrous oxide at 105ºC and 138bar
 
     >>> T = unidades.Temperature(105, "C")
     >>> Vc = 97/44.013/1000
@@ -4295,10 +4295,10 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
 
     References
     ----------
-    .. [58] Stiel, L.I., Thodos, G. The Thermal Conductivity of Nonpolar
+    [58]_ Stiel, L.I., Thodos, G. The Thermal Conductivity of Nonpolar
         Substances in the Dense Gaseous and Liquid Regions. AIChE Journal 10(1)
         (1964) 26-30
-    .. [2] Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
+    [1]_ Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
        Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
     """
     # Calcualte the Zc internally
@@ -4369,7 +4369,7 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
 
     Examples
     --------
-    Example 10-4 in [1]_, propylene at 473K and 150bar
+    Example 10-4 in 1_, propylene at 473K and 150bar
 
     >>> Vc = 184.6/42.081/1e3
     >>> rho = 1/172.1*42.081*1e3
@@ -4379,10 +4379,10 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
@@ -4452,7 +4452,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
 
     Examples
     --------
-    Example 9-13 in [1]_, isobutane at 500K and 100bar
+    Example 9-13 in 1_, isobutane at 500K and 100bar
 
     >>> Vc = 184.6/42.081/1000
     >>> rho = 1/172.1*42.081*1000
@@ -4461,9 +4461,9 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [61] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+    [61]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
         Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
         Technical Note 1039 (1981)
     """
@@ -4565,18 +4565,18 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
 
     Examples
     --------
-    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    Example 12.2 from 1_; ethyl mercaptan at 303K
 
     >>> "%0.1f" % Tension_BlockBird(303, 499, 54.9e5, 308.15).dyncm
     '22.4'
 
     References
     ----------
-    .. [39] Brock, J.R., Bird, R.B. Surface Tension and the Principle of
+    [39]_ Brock, J.R., Bird, R.B. Surface Tension and the Principle of
         Corresponding States. AIChE Journal 1(2) (1955) 174-177
-    .. [40] Miller, D.G., Thodos, G. Correspondence. Reduced Frost-Kalkwarf
+    [40]_ Miller, D.G., Thodos, G. Correspondence. Reduced Frost-Kalkwarf
         Vapor Pressure Equation. I&EC Fundamentals 2(1) (1963) 78-80
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -4584,20 +4584,20 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
     Pc_atm = Pc/101325
     Pc_bar = Pc*1e-5
 
-    # Eq 9 in [40]_
+    # Eq 9 in 40_
     alfa = 0.9076*(1+Trb*log(Pc_atm)/(1-Trb))
 
-    # Eq 11 in [39]_, Coefficient from [5]_
+    # Eq 11 in 39_, Coefficient from 5_
     sr = (0.132*alfa-0.279)*(1-Tr)**(11/9)
 
-    # Eq 5 in [39]_
+    # Eq 5 in 39_
     sigma = sr*Pc_bar**(2/3)*Tc**(1/3)
     return unidades.Tension(sigma, "dyncm")
 
 
 def Tension_Pitzer(T, Tc, Pc, w):
     r"""Calculates surface tension of liquid using the Pitzer correlation as
-    explain in [1]_
+    explain in 1_
 
     .. math::
         \sigma = P_c^{2/3}T_c^{1/3}\frac{1.86 + 1.18\omega}{19.05}
@@ -4622,14 +4622,14 @@ def Tension_Pitzer(T, Tc, Pc, w):
 
     Examples
     --------
-    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    Example 12.2 from 1_; ethyl mercaptan at 303K
 
     >>> "%0.1f" % Tension_Pitzer(303, 499, 54.9e5, 0.192).dyncm
     '23.5'
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
@@ -4672,7 +4672,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
 
     Examples
     --------
-    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    Example 12.2 from 1_; ethyl mercaptan at 303K
     The procedure use the critical properties from meos library, something
     diferent than Poling values, so the last decimal isn't exact
 
@@ -4681,7 +4681,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
 
     References
     ----------
-    .. [41] Zuo, Y., Stenby, E.H. Corresponding-States and Parachor Models for
+    [41]_ Zuo, Y., Stenby, E.H. Corresponding-States and Parachor Models for
         the Calculation of Interfacial Tensions. Can. J. Chem. Eng. 75(6)
         (1997) 1130-1137
     """
@@ -4727,7 +4727,7 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
 
     Examples
     --------
-    Example 12.2 from [1]_; ethyl mercaptan at 303K
+    Example 12.2 from 1_; ethyl mercaptan at 303K
 
     >>> "%0.2f" % Tension_SastriRao(303, 499, 54.9e5, 308.15).dyncm
     '21.92'
@@ -4744,7 +4744,7 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
 
     References
     ----------
-    .. [42] Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
+    [42]_ Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
         Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
     """
     if alcohol:
@@ -4805,10 +4805,10 @@ def Tension_Hakim(T, Tc, Pc, w, X):
 
     References
     ----------
-    .. [43] Hakim, D.I., Steinberg, D., Stiel, L.I. Generalized Relationship
+    [43]_ Hakim, D.I., Steinberg, D., Stiel, L.I. Generalized Relationship
         for the Surface Tension of Polar Fluids I&EC Fundamentals 10(1) (1971)
         174-75.
-    .. [42] Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
+    [42]_ Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
         Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
     """
     Tr = T/Tc
@@ -4853,7 +4853,7 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
 
     References
     ----------
-    .. [44] Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., Lachaise,
+    [44]_ Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., Lachaise,
         J., Graciaa, A. An Extended Scaled Equation for the Temperature
         Dependence of the Surface Tension of Pure Compounds Inferred from an
         Analysis of Experimental Data. Fluid Phase Equilibria 172(2) (2000)
@@ -4887,7 +4887,7 @@ def facent_LeeKesler(Tb, Tc, Pc):
 
     References
     ----------
-    .. [4] Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
+    [4]_ Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
        Correlation Based on Three-Parameter Corresponding States. American
        Institute of Chemical Engineers Journal, Vot. 21, 1975
     """
@@ -4920,7 +4920,7 @@ def prop_Edmister(**kwargs):
 
     References
     ----------
-    [19] .. Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
+    [19]_  Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
         Compressibility Factors and Equations of State. Petroleum Refiner 37
         (April 1958): 173–179.
     """
@@ -4984,10 +4984,10 @@ def facent_AmbroseWalton(Pvr):
 
     References
     ----------
-    .. [8] Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
+    [8]_ Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
         Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
         1395-1403 (1989)
-    .. [2] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     Tr = 0.7
@@ -5006,7 +5006,7 @@ def facent_AmbroseWalton(Pvr):
 # Other properties
 def Vc_Riedel(Tc, Pc, w, M):
     """Calculates critical volume of a fluid using the Riedel correlation
-    as explain in [5]_, procedure 4A3.1, Pag. 302
+    as explain in 5_, procedure 4A3.1, Pag. 302
 
     Parameters
     ----------
@@ -5026,7 +5026,7 @@ def Vc_Riedel(Tc, Pc, w, M):
 
     Examples
     --------
-    Example in [5]_, n-nonane
+    Example in 5_, n-nonane
 
     >>> Tc = unidades.Temperature(610.68, "F")
     >>> Pc = unidades.Pressure(331.8, "psi")
@@ -5035,14 +5035,14 @@ def Vc_Riedel(Tc, Pc, w, M):
 
     References
     ----------
-    .. [17] Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
+    [17]_ Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
         und Verdampfungswärme: Untersuchungen über eine Erweiterung des
         Theorems der übereinstimmenden Zustände. Teil III. Chem. Ingr. Tech.,
         26(12) (1954) 679-683
-    .. [18] Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
+    [18]_ Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
         über eine Erweiterung des Theorems der übereinstimmenden Zustände.
         Chem. Ings-Tech. 28 (1956) 557-562
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Eq 1 in [18]
     alfa = 5.811 + 4.919*w
@@ -5067,7 +5067,7 @@ def Rackett(w):
 
     References
     ----------
-    .. [23] Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
+    [23]_ Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
         Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
     """
     Zra = 0.29056 - 0.08775*w                                           # Eq 1
@@ -5104,7 +5104,7 @@ def Henry(T, args):
 
     Examples
     --------
-    Example from [5]_; Hydrogen sulfide in water at 77ºF
+    Example from 5_; Hydrogen sulfide in water at 77ºF
 
     >>> T = unidades.Temperature(77, "F")
     >>> "%0.0f" % Henry(T, [-65864.7, -215.127, 0.185874, 1384.15]).psi
@@ -5112,10 +5112,10 @@ def Henry(T, args):
 
     References
     ----------
-    .. [60] Edwards, T.J., Newman, J., Prausnitz, J.M. Thermodynamics of
+    [60]_ Edwards, T.J., Newman, J., Prausnitz, J.M. Thermodynamics of
         Aqueous Solutions Containing Volatile Weak Electrolytes. AIChE Journal
         21(2) (1975) 248-259
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     T_R = unidades.K2R(T)
     B1, B2, B3, B4 = args
@@ -5153,7 +5153,7 @@ class Componente(object):
     This are several ejemples of usage of this class with several configuration
     definition, obviously not all correlation return valid values.
 
-    Surface tension methods: Example 12.2 from [1]_; ethyl mercaptan at 303K
+    Surface tension methods: Example 12.2 from 1_; ethyl mercaptan at 303K
 
     >>> cmp1 = Componente(137, Tension=0)
     >>> cmp2 = Componente(137, Tension=2)
@@ -5168,7 +5168,7 @@ class Componente(object):
     >>> "%0.2f %0.2f" % (cmp5.Tension(303).dyncm, cmp6.Tension(303).dyncm)
     '21.94 22.29'
 
-    Gas viscosity methods: Example 9-1 in [1]_, SO2 at 300ºC
+    Gas viscosity methods: Example 9-1 in 1_, SO2 at 300ºC
 
     >>> c0 = Componente(51, MuG=0)
     >>> c1 = Componente(51, MuG=1)
@@ -5184,7 +5184,7 @@ class Componente(object):
     >>> "%0.2f %0.2f" % (c4.Mu_Gas(*args).microP, c5.Mu_Gas(*args).microP)
     '243.01 241.95'
 
-    Example 9-9 in [1]_, n-pentane at 500K and 101bar
+    Example 9-9 in 1_, n-pentane at 500K and 101bar
 
     >>> c0 = Componente(8, MuGP=0)
     >>> c1 = Componente(8, MuGP=6)
@@ -5192,7 +5192,7 @@ class Componente(object):
     >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).microP, c1.Mu_Gas(*args).microP)
     '534.84 520.54'
 
-    Example 9-12 in [1]_, ammonia at 520K and 600bar
+    Example 9-12 in 1_, ammonia at 520K and 600bar
 
     >>> c0 = Componente(63, MuGP=0)
     >>> c1 = Componente(63, MuGP=1)
@@ -5208,7 +5208,7 @@ class Componente(object):
     >>> "%0.2f %0.2f" % (c5.Mu_Gas(*args).microP, c7.Mu_Gas(*args).microP)
     '454.29 508.31'
 
-    Liquid viscosity correlations: Example 9.196 from [1]_; toluene at 383K
+    Liquid viscosity correlations: Example 9.196 from 1_; toluene at 383K
 
     >>> c0 = Componente(40, MuL=0)
     >>> c1 = Componente(40, MuL=1)
@@ -5220,7 +5220,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c2.Mu_Liquido(*args).cP, c3.Mu_Liquido(*args).cP)
     '0.220 0.291'
 
-    Example 9.15 from [1]_, methylcyclohexane at 300K 500 bar
+    Example 9.15 from 1_, methylcyclohexane at 300K 500 bar
 
     >>> c0 = Componente(39, MuLP=0)
     >>> c2 = Componente(39, MuLP=2)
@@ -5228,7 +5228,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c0.Mu_Liquido(*args).cP, c2.Mu_Liquido(*args).cP)
     '1.045 1.052'
 
-    Vapor pressure correlations: Example 7-2 from [1]_; ethylbenzene at 347.25K
+    Vapor pressure correlations: Example 7-2 from 1_; ethylbenzene at 347.25K
 
     >>> c0 = Componente(45, Pv=0)
     >>> c2 = Componente(45, Pv=2)
@@ -5246,7 +5246,7 @@ class Componente(object):
     >>> "%0.3f" % c7.Pv(347.25).kPa
     '13.550'
 
-    Liquid density correlations: Example from [5]_; propane at 30ºF
+    Liquid density correlations: Example from 5_; propane at 30ºF
 
     >>> c0 = Componente(4, RhoL=0)
     >>> c1 = Componente(4, RhoL=1)
@@ -5270,7 +5270,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c8.RhoL(*args).kgl, c9.RhoL(*args).kgl)
     '0.529 0.525'
 
-    Example from [5]_; n-octane at 212ºF and 4410 psi
+    Example from 5_; n-octane at 212ºF and 4410 psi
 
     >>> T = unidades.Temperature(212, "F")
     >>> P = unidades.Pressure(4410, "psi")
@@ -5287,7 +5287,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c4.RhoL(T, P).kgl, c5.RhoL(T, P).kgl)
     '0.678 0.919'
 
-    Liquid thermal conductivity: Example in [5]_, n-butylbenzene at 140ºF
+    Liquid thermal conductivity: Example in 5_, n-butylbenzene at 140ºF
 
     >>> c0 = Componente(78, ThCondL=0)
     >>> c1 = Componente(78, ThCondL=1)
@@ -5309,7 +5309,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c6.ThCond_Liquido(*args), c7.ThCond_Liquido(*args))
     '0.112 0.115'
 
-    Example 10-13 from [1]_; toluene at 6330bar and 304K
+    Example 10-13 from 1_; toluene at 6330bar and 304K
 
     >>> c0 = Componente(41, ThCondLP=0)
     >>> c1 = Componente(41, ThCondLP=1)
@@ -5321,7 +5321,7 @@ class Componente(object):
     >>> "%0.3f" % c2.ThCond_Liquido(*args)
     '0.223'
 
-    Gas thermal conductivity: Example in [5]_, 2-methylbutane at 212ºF and 1atm
+    Gas thermal conductivity: Example in 5_, 2-methylbutane at 212ºF and 1atm
 
     >>> c0 = Componente(7, ThCondG=0)
     >>> c1 = Componente(7, ThCondG=1)
@@ -5339,7 +5339,7 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c4.ThCond_Gas(*args), c5.ThCond_Gas(*args))
     '0.019 0.029'
 
-    Example 10-3 from [1]_; nitrous oxide at 105ºC and 138bar
+    Example 10-3 from 1_; nitrous oxide at 105ºC and 138bar
 
     >>> c0 = Componente(110, ThCondGP=0)
     >>> c1 = Componente(110, ThCondGP=1)
@@ -5615,10 +5615,10 @@ class Componente(object):
 
         References
         ----------
-        .. [47] Riazi, M. R. Characterization and Properties of Petroleum
+        [47]_ Riazi, M. R. Characterization and Properties of Petroleum
             Fractions. ASTM manual series MNL50, 2005. Pag 348, Eq. 8.10
         """
-        # Define the critical viscosity, use the Table 11A5.4 in [5]_
+        # Define the critical viscosity, use the Table 11A5.4 in 5_
         if 1 < self.id <= 21 and self.id != 7:
             muc = [0, 0, 0.014, 0.02, 0.0237, 0.027, 0.0245, 0, 0.0255, 0.0350,
                    0.0264, 0.0273, 0.0282, 0.0291, 0.0305, 0.0309, 0.0315,
@@ -5655,7 +5655,7 @@ class Componente(object):
 
         References
         ----------
-        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         A, B, C, D, E, F = self.cp
         cp = A + B*T + C*T**2 + D*T**3 + E*T**4 + F*T**5
@@ -5682,7 +5682,7 @@ class Componente(object):
 
         References
         ----------
-        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         To = 298.15
         A, B, C, D, E, F = self.cp
@@ -5711,7 +5711,7 @@ class Componente(object):
 
         References
         ----------
-        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         A, B, C, D, E, F = self.cp
         so = A*log(T) + B*T + C/2*T**2 + D/3*T**3 + E/4*T**4 + F/5*T**5
@@ -5860,7 +5860,7 @@ class Componente(object):
 
     def ThCond_Liquido(self, T, P, rho):
         """Liquid thermal conductivity procedure using the method defined in
-        preferences, use the decision diagram in [5]_ Figure 12-0.2 pag 1135"""
+        preferences, use the decision diagram in 5_ Figure 12-0.2 pag 1135"""
         method = self.kwargs["ThCondL"]
         if method is None or method >= len(Componente.METHODS_ThL):
             method = self.Config.getint("Transport", "ThCondL")
