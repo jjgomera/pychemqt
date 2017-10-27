@@ -68,7 +68,7 @@ class Corriente(config.Entity):
 
     Aditional parameter for define a corriente with different properties than
     the  project config, components for debug, thermodynamic method for add per
-    per stream configuration:
+    stream configuration:
         -ids: Array with index of components
         -solids: Array with index of solids components
 

@@ -15,7 +15,112 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+This module implement pure component properties
+
+:func:`Componente`: The main class with all integrated functionality. Use the
+properties in database and calculate state properties with the methods chossen
+in configuration
+
+Liquid density calculation methods:
+    * :func:`DIPPR`
+    * :func:`RhoL_Rackett`
+    * :func:`RhoL_Cavett`
+    * :func:`RhoL_Costald`
+    * :func:`RhoL_YenWoods`
+    * :func:`RhoL_YamadaGunn`
+    * :func:`RhoL_Bhirud`
+    * :func:`RhoL_Mchaweh`
+    * :func:`RhoL_Riedel`
+    * :func:`RhoL_ChuehPrausnitz`
+    * :func:`RhoL_TaitCostald`
+    * :func:`RhoL_ChangZhao`
+    * :func:`RhoL_AaltoKeskinen`
+    * :func:`RhoL_AaltoKeskinen2`
+    * :func:`RhoL_Nasrifar`
+    * :func:`RhoL_API`
+
+Liquid viscosity calculation methods:
+    * :func:`DIPPR`
+    * :func:`MuL_Parametric`
+    * :func:`MuL_LetsouStiel`
+    * :func:`MuL_PrzedzieckiSridhar`
+    * :func:`MuL_Lucas`
+    * :func:`MuL_API`
+    * :func:`MuL_Kouzel`
+
+Gas viscosity calculation methods:
+    * :func:`DIPPR`
+    * :func:`MuG_ChapmanEnskog`
+    * :func:`MuG_Chung`
+    * :func:`MuG_Lucas`
+    * :func:`MuG_StielThodos`
+    * :func:`MuG_Gharagheizi`
+    * :func:`MuG_YoonThodos`
+    * :func:`MuG_P_Chung`
+    * :func:`MuG_Brule`
+    * :func:`MuG_Jossi`
+    * :func:`MuG_TRAPP`
+    * :func:`MuG_P_StielThodos`
+    * :func:`MuG_Reichenberg`
+    * :func:`MuG_DeanStiel`
+    * :func:`MuG_API`
+
+Gas thermal conductivity calculation methods:
+    * :func:`DIPPR`
+    * :func:`ThG_MisicThodos`
+    * :func:`ThG_Chung`
+    * :func:`ThG_Eucken`
+    * :func:`ThG_EuckenMod`
+    * :func:`ThG_RiaziFaghri`
+    * :func:`ThG_StielThodos`
+    * :func:`ThG_P_Chung`
+    * :func:`ThG_TRAPP`
+
+Liquid thermal conductivity calculation methods:
+    * :func:`DIPPR`
+    * :func:`ThL_Pachaiyappan`
+    * :func:`ThL_SatoRiedel`
+    * :func:`ThL_KanitkarThodos`
+    * :func:`ThL_RiaziFaghri`
+    * :func:`ThL_Gharagheizi`
+    * :func:`ThL_LakshmiPrasad`
+    * :func:`ThL_Nicola`
+    * :func:`ThL_Lenoir`
+    * :func:`ThL_Missenard`
+
+Vapor pressure calculation methods:
+    * :func:`DIPPR`
+    * :func:`Pv_Wagner`
+    * :func:`Pv_Antoine`
+    * :func:`Pv_AmbroseWalton`
+    * :func:`Pv_Lee_Kesler`
+    * :func:`Pv_Riedel`
+    * :func:`Pv_Sanjari`
+    * :func:`Pv_MaxwellBonnel`
+
+Surface tension calculation methods:
+    * :func:`DIPPR`
+    * :func:`Tension_Parametric`
+    * :func:`Tension_BlockBird`
+    * :func:`Tension_Pitzer`
+    * :func:`Tension_ZuoStenby`
+    * :func:`Tension_SastriRao`
+    * :func:`Tension_Hakim`
+    * :func:`Tension_Miqueu`
+
+Acentric factor calculation methods:
+    * :func:`facent_LeeKesler`
+    * :func:`prop_Edmister`
+    * :func:`facent_AmbroseWalton`
+
+Others method:
+    * :func:`Vc_Riedel`
+    * :func:`Henry`
+    * :func:`atomic_decomposition`
+'''
 
 
 import math
@@ -23,7 +128,7 @@ import os
 import re
 import tempfile
 
-from scipy import exp, cosh, sinh, log, log10, roots, absolute, array
+from scipy import exp, cosh, sinh, tanh, log, log10, roots, absolute, array
 from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d, interp2d
@@ -112,7 +217,7 @@ __doi__ = {
          "title": "A Rapid Estimation Method for Thermal Conductivity of Pure "
                   "Liquids",
          "ref": "The Chemical Engineering Journal 48 (1992) 211-14",
-         "doi": "10.1016/0300-9467(92)80037-B"},
+         "doi": "10.1016/0300-9467(92)80037-b"},
     14:
         {"autor": "Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.",
          "title": "Correlations of Thermal Conductivity for Liquid "
@@ -501,10 +606,10 @@ def DIPPR(prop, T, args, Tc=None, M=None):
         unit = unidades.Pressure
     elif prop == "Hv":
         unit = unidades.MolarEnthalpy
-        mul = M
+        mul = 1/M
     elif "cp" in prop:
         unit = unidades.SpecificHeat
-        mul = M
+        mul = 1/M
     elif "mu" in prop:
         unit = unidades.Viscosity
     elif "k" in prop:
@@ -739,7 +844,7 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     return unidades.Density(rhos)
 
 
-def RhoL_YamadaGunn(T, Tc, Pc, w):
+def RhoL_YamadaGunn(T, Tc, Pc, w, M):
     r"""Calculates saturation liquid volume, using Gunn-Yamada correlation
 
     .. math::
@@ -755,6 +860,8 @@ def RhoL_YamadaGunn(T, Tc, Pc, w):
         Critical pressure, [Pa]
     w : float
         Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
 
     Returns
     -------
@@ -790,10 +897,10 @@ def RhoL_YamadaGunn(T, Tc, Pc, w):
     Vsc = Zsc*R*Tc/Pc
 
     V = Vsc*Vr*(1-w*d)                                                  # Eq 1
-    return unidades.Density(1/V)
+    return unidades.Density(M/V, "gm3")
 
 
-def RhoL_Bhirud(T, Tc, Pc, w):
+def RhoL_Bhirud(T, Tc, Pc, w, M):
     r"""Calculates saturation liquid density using the Bhirud correlation
 
     .. math::
@@ -817,6 +924,8 @@ def RhoL_Bhirud(T, Tc, Pc, w):
         Critical pressure, [Pa]
     w : float
         Acentric factor, [-]
+    M : float
+        Molecular weight, [g/mol]
 
     Returns
     -------
@@ -855,7 +964,7 @@ def RhoL_Bhirud(T, Tc, Pc, w):
     # Eq 8
     U = exp(lnU0 + w*lnU1)
     Vs = U*R*T/Pc
-    return unidades.Density(1/Vs)
+    return unidades.Density(M/Vs, "gm3")
 
 
 def RhoL_Mchaweh(T, Tc, Vc, w, delta):
@@ -1446,7 +1555,7 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     # Table 1
     j = (1.3168e-3, 3.4448e-2, 5.4131e-2)
     L = 9.6840e-2
-    M = 8.6761e-6
+    m = 8.6761e-6
     f = 48.8756
     G = 0.7185
     I = 3.4031e-5
@@ -1466,10 +1575,10 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     # R value change to mass base in unit m³Pa/kgK
     v_inf = OM*R*1000/M*Tc/Pc                                          # Eq 18
 
-    phi = (J+L*(Pr-Prs)+M*(Pr-Prs)**3)/(F+G*(Pr-Prs)+I*(Pr-Prs)**3)    # Eq 16
+    phi = (J+L*(Pr-Prs)+m*(Pr-Prs)**3)/(F+G*(Pr-Prs)+I*(Pr-Prs)**3)    # Eq 16
 
     # Eq 9
-    v = C*phi*(v_inf-vs)-vs
+    v = C*tanh(phi)*(v_inf-vs)+vs
     return unidades.Density(1/v)
 
 
@@ -1591,10 +1700,14 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     .. [2] Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
        Tensions et les Tempé. Compt.Rend. 107:681-684.
     """
+    # Clean args input of null values
+    if len(args) > 3 and args[3] is None:
+        args = args[:3]
+
     if len(args) == 3:
         A, B, C = args
         Pv = base**(A-B/(T+C))
-    elif len(args) == 7 and Tc is not None:
+    elif len(args) == 7 and args[3] is not None and Tc is not None:
         A, B, C, n, E, F, to = args
         x = (T-to)/Tc
         if x <= 0:
@@ -2087,16 +2200,16 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
+    # Define default value por reference state:
+    if Vr is None:
+        Vr = Vc
+        Tv = Tc
+
     # Pa in atm
     Pc = Pc/101325
     # Volume to mol base
     Vc = Vc*M*1000
     Vr = Vr*M*1000
-
-    # Define default value por reference state:
-    if Vr is None:
-        Vr = Vc
-        Tv = Tc
 
     def f(Tr):
         G = 0.29607 - 0.09045*Tr - 0.04842*Tr**2                       # Eq 11
@@ -2585,7 +2698,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     Example 9-1 in [1]_, SO2 at 300ºC
 
     >>> T = unidades.Temperature(300, "C")
-    >>> "%0.1f" % MuG_Chung(T, 430.8, 122e3/64.065, 64.065, 0.257, 1.6).microP
+    >>> "%0.1f" % MuG_Chung(T, 430.8, 122e-3/64.065, 64.065, 0.257, 1.6).microP
     '245.5'
 
     References
@@ -2601,7 +2714,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
        New York: McGraw-Hill Professional, 2000.
     """
     # Vc in molar base
-    Vc = Vc*M/1000
+    Vc = Vc*M*1000
 
     T_ = 1.2593*T/Tc
     omega = Collision_Neufeld(T_)
@@ -2647,9 +2760,9 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     --------
     Example 9-12 in [1]_, ammonia at 520K and 600bar
 
-    >>> Vc = 72.4/17.031*1e3
-    >>> rho = 1/48.2*17.031/1e3
-    >>> mu = MuG_P_Chung(520, 405.5, Vc, 17.031, 0.256, 1.47, 0, rho, 182e-6)
+    >>> Vc = 72.4/17.031/1e3
+    >>> rho = 1/48.2*17.031*1e3
+    >>> mu = MuG_P_Chung(520, 405.5, Vc, 17.031, 0.256, 1.47, 0, rho, 182e-7)
     >>> "%0.0f" % mu.microP
     '455'
 
@@ -2666,8 +2779,8 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
        New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
-    Vc = Vc*M/1000
-    rho = rho/M*1000
+    Vc = Vc*M*1000
+    rho = rho/M/1000
 
     T_ = 1.2593*T/Tc
     mur = 131.3*D/(Vc*Tc)**0.5                                          # Eq 8
@@ -2695,7 +2808,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     G1 = (1-0.5*Y)/(1-Y)**3
     G2 = (A1*((1-exp(-A4*Y))/Y)+A2*G1*exp(A5*Y)+A3*G1)/(A1*A4+A2+A3)
 
-    muk = muo*(1/G2 + A6*Y)
+    muk = 10*muo*(1/G2 + A6*Y)
     mup = (36.344e-6*(M*Tc)**0.5/Vc**(2/3))*A7*Y**2*G2*exp(A8+A9/T_+A10/T_**2)
 
     return unidades.Viscosity(muk+mup, "P")
@@ -2793,12 +2906,15 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     --------
     Example 9-2 in [1]_, methanol at 550K and 1bar
 
-    >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
-    >>> "%0.0f" % mu.microP
-    '178'
+    # >>> mu = MuG_Lucas(550, 1e5, 512.64, 80.97e5, 0.224, 32.042, 1.7)
+    # >>> "%0.0f" % mu.microP
+    # '178'
 
     Example 9-10 in [1]_, ammonia at 420K and 300bar
 
+    >>> muo = MuG_Lucas(420, 1e5, 405.5, 113.53e5, 0.244, 17.031, 1.47)
+    >>> "%0.0f" % muo.microP
+    '147'
     >>> mu = MuG_Lucas(420, 3e7, 405.5, 113.53e5, 0.244, 17.031, 1.47)
     >>> "%0.0f" % mu.microP
     '603'
@@ -2986,7 +3102,7 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
         else:
             D = 4.75e-4*(rhor**3-10.65)**2
         mur = 10**(4-10**(0.6439-0.1005*rhor-D))                         # Eq 6
-    return unidades.Viscosity(mur/x+muo, "cP")
+    return unidades.Viscosity(mur/x+muo*1e7, "microP")
 
 
 def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
@@ -3105,8 +3221,8 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
         Process Dev. 23 (1984) 833-845
     """
     # units in molar base
-    Vc = Vc*M/1000
-    rho = rho/M*1000
+    Vc = Vc*M*1000
+    rho = rho/M/1000
 
     T_ = 1.2593*T/Tc
 
@@ -3296,10 +3412,10 @@ def ThL_RiaziFaghri(T, Tb, SG):
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_R = unidades.K2R(Tb)
     t = unidades.K2F(T)/100
-    A = exp(-4.5093-0.6844*t-0.1305*t**2)                               # Eq 9
+    A = exp(-4.5093-0.6844*t-0.1305*t**2)                              # Eq 9
     B = 0.3003+0.0918*t+0.0195*t**2                                    # Eq 10
     C = 0.1029+0.0894*t+0.0292*t**2                                    # Eq 11
-    k = 1.7307*A*Tb_R**B*SG**C                                          # Eq 7
+    k = A*Tb_R**B*SG**C                                                # Eq 7
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
@@ -3376,7 +3492,8 @@ def ThL_LakshmiPrasad(T, M):
         Conductivity of Pure Liquids. The Chemical Engineering Journal 48
         (1992) 211-14
     """
-    k = 0.0655 - 0.0005*T + (1.3855 - 0.00197*T)/M**0.5
+    # Eq 5
+    k = 0.0655 + (1.3855 - 0.00197*T)/M**0.5 - 0.00005*T
     return unidades.ThermalConductivity(k)
 
 
@@ -4254,8 +4371,8 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     --------
     Example 10-4 in [1]_, propylene at 473K and 150bar
 
-    >>> Vc = 184.6/42.081*1e3
-    >>> rho = 1/172.1*42.081/1e3
+    >>> Vc = 184.6/42.081/1e3
+    >>> rho = 1/172.1*42.081*1e3
     >>> th = ThG_P_Chung(473, 364.9, Vc, 42.081, 0.142, 0.4, 0, rho, 0.0389)
     >>> "%0.3f" % th
     '0.062'
@@ -4269,8 +4386,8 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
        New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
-    Vc = Vc*M/1000
-    rho = rho/M*1000
+    Vc = Vc*M*1000
+    rho = rho/M/1000
 
     # Thermal conductivity in procedure in cal/s·cm·K
     ko = unidades.ThermalConductivity(ko).calscmK
@@ -4337,7 +4454,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     --------
     Example 9-13 in [1]_, isobutane at 500K and 100bar
 
-    >>> Vc = 184.6*42.081*1000
+    >>> Vc = 184.6/42.081/1000
     >>> rho = 1/172.1*42.081*1000
     >>> "%0.3f" % ThG_TRAPP(473, 364.9, Vc, 0.2798, 42.081, 0.142, rho, 0.0389)
     '0.061'
@@ -4357,7 +4474,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     wR = 0.152
 
     # Convert volume to molar base
-    Vc = Vc/M/1000
+    Vc = Vc*M*1000
     rho = rho/M/1000
     rhoc = 1/Vc
 
@@ -4905,7 +5022,7 @@ def Vc_Riedel(Tc, Pc, w, M):
     Returns
     -------
     Vc : float
-        Critical volume, [Pa]
+        Critical volume, [m³/kg]
 
     Examples
     --------
@@ -5007,8 +5124,250 @@ def Henry(T, args):
 
 
 class Componente(object):
-    """Class to define a chemical compound from the database"""
+    """Class to define a chemical compound from the database
+
+    Parameters
+    ----------
+    id : integer
+        index of compound in database
+
+    Notes
+    -----
+    Additionally can define custom calculation method with the parameters::
+
+        rhoLMix: Liquid density correlation index
+        RhoLPMix: Compressed liquid density correlation index
+        MuLMix: Liquid viscosity correlation index
+        MuGMix: Gas viscosity correlation index
+        MuGPMix: Compressed gas viscosity correlation index
+        ThCondLMix: Liquid thermal conductivity correlation index
+        ThCondGMix: Gas thermal conductivity correlation index
+        ThCondPGMix: Compressed gas thermal conductivity correlation
+
+    This option overwrite the project configuration and the user configuration,
+    for now only in API usage. Not custom stream property definition in main
+    program
+
+    Examples
+    --------
+    This are several ejemples of usage of this class with several configuration
+    definition, obviously not all correlation return valid values.
+
+    Surface tension methods: Example 12.2 from [1]_; ethyl mercaptan at 303K
+
+    >>> cmp1 = Componente(137, Tension=0)
+    >>> cmp2 = Componente(137, Tension=2)
+    >>> cmp3 = Componente(137, Tension=3)
+    >>> cmp4 = Componente(137, Tension=4)
+    >>> cmp5 = Componente(137, Tension=5)
+    >>> cmp6 = Componente(137, Tension=6)
+    >>> "%0.2f %0.2f" % (cmp1.Tension(303).dyncm, cmp2.Tension(303).dyncm)
+    '22.23 22.41'
+    >>> "%0.2f %0.2f" % (cmp3.Tension(303).dyncm, cmp4.Tension(303).dyncm)
+    '23.45 22.60'
+    >>> "%0.2f %0.2f" % (cmp5.Tension(303).dyncm, cmp6.Tension(303).dyncm)
+    '21.94 22.29'
+
+    Gas viscosity methods: Example 9-1 in [1]_, SO2 at 300ºC
+
+    >>> c0 = Componente(51, MuG=0)
+    >>> c1 = Componente(51, MuG=1)
+    >>> c2 = Componente(51, MuG=2)
+    >>> c3 = Componente(51, MuG=3)
+    >>> c4 = Componente(51, MuG=4)
+    >>> c5 = Componente(51, MuG=5)
+    >>> args = (unidades.Temperature(300, "C"), 101325, 0)
+    >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).microP, c1.Mu_Gas(*args).microP)
+    '241.51 243.88'
+    >>> "%0.2f %0.2f" % (c2.Mu_Gas(*args).microP, c3.Mu_Gas(*args).microP)
+    '246.25 250.60'
+    >>> "%0.2f %0.2f" % (c4.Mu_Gas(*args).microP, c5.Mu_Gas(*args).microP)
+    '243.01 241.95'
+
+    Example 9-9 in [1]_, n-pentane at 500K and 101bar
+
+    >>> c0 = Componente(8, MuGP=0)
+    >>> c1 = Componente(8, MuGP=6)
+    >>> args = (500, 101e5, 0)
+    >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).microP, c1.Mu_Gas(*args).microP)
+    '534.84 520.54'
+
+    Example 9-12 in [1]_, ammonia at 520K and 600bar
+
+    >>> c0 = Componente(63, MuGP=0)
+    >>> c1 = Componente(63, MuGP=1)
+    >>> c2 = Componente(63, MuGP=2)
+    >>> c3 = Componente(63, MuGP=3)
+    >>> c5 = Componente(63, MuGP=5)
+    >>> c7 = Componente(63, MuGP=7)
+    >>> args = (520, 600e5, 1/48.2*17.031*1000)
+    >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).microP, c1.Mu_Gas(*args).microP)
+    '496.31 457.79'
+    >>> "%0.2f %0.2f" % (c2.Mu_Gas(*args).microP, c3.Mu_Gas(*args).microP)
+    '454.02 506.49'
+    >>> "%0.2f %0.2f" % (c5.Mu_Gas(*args).microP, c7.Mu_Gas(*args).microP)
+    '454.29 508.31'
+
+    Liquid viscosity correlations: Example 9.196 from [1]_; toluene at 383K
+
+    >>> c0 = Componente(40, MuL=0)
+    >>> c1 = Componente(40, MuL=1)
+    >>> c2 = Componente(40, MuL=2)
+    >>> c3 = Componente(40, MuL=3)
+    >>> args = (383, 101325)
+    >>> "%0.3f %0.3f" % (c0.Mu_Liquido(*args).cP, c1.Mu_Liquido(*args).cP)
+    '0.239 0.233'
+    >>> "%0.3f %0.3f" % (c2.Mu_Liquido(*args).cP, c3.Mu_Liquido(*args).cP)
+    '0.220 0.291'
+
+    Example 9.15 from [1]_, methylcyclohexane at 300K 500 bar
+
+    >>> c0 = Componente(39, MuLP=0)
+    >>> c2 = Componente(39, MuLP=2)
+    >>> args = (300, 500e5)
+    >>> "%0.3f %0.3f" % (c0.Mu_Liquido(*args).cP, c2.Mu_Liquido(*args).cP)
+    '1.045 1.052'
+
+    Vapor pressure correlations: Example 7-2 from [1]_; ethylbenzene at 347.25K
+
+    >>> c0 = Componente(45, Pv=0)
+    >>> c2 = Componente(45, Pv=2)
+    >>> c3 = Componente(45, Pv=3)
+    >>> c4 = Componente(45, Pv=4)
+    >>> c5 = Componente(45, Pv=5)
+    >>> c6 = Componente(45, Pv=6)
+    >>> c7 = Componente(45, Pv=7)
+    >>> "%0.3f %0.3f" % (c0.Pv(347.25).kPa, c2.Pv(347.25).kPa)
+    '13.342 13.340'
+    >>> "%0.3f %0.3f" % (c3.Pv(347.25).kPa, c4.Pv(347.25).kPa)
+    '13.311 12.839'
+    >>> "%0.3f %0.3f" % (c5.Pv(347.25).kPa, c6.Pv(347.25).kPa)
+    '13.104 13.393'
+    >>> "%0.3f" % c7.Pv(347.25).kPa
+    '13.550'
+
+    Liquid density correlations: Example from [5]_; propane at 30ºF
+
+    >>> c0 = Componente(4, RhoL=0)
+    >>> c1 = Componente(4, RhoL=1)
+    >>> c2 = Componente(4, RhoL=2)
+    >>> c3 = Componente(4, RhoL=3)
+    >>> c4 = Componente(4, RhoL=4)
+    >>> c5 = Componente(4, RhoL=5)
+    >>> c6 = Componente(4, RhoL=6)
+    >>> c7 = Componente(4, RhoL=7)
+    >>> c8 = Componente(4, RhoL=8)
+    >>> c9 = Componente(4, RhoL=9)
+    >>> args = (unidades.Temperature(30, "F"), 1e5)
+    >>> "%0.3f %0.3f" % (c0.RhoL(*args).kgl, c1.RhoL(*args).kgl)
+    '0.532 0.532'
+    >>> "%0.3f %0.3f" % (c2.RhoL(*args).kgl, c3.RhoL(*args).kgl)
+    '0.539 0.528'
+    >>> "%0.3f %0.3f" % (c4.RhoL(*args).kgl, c5.RhoL(*args).kgl)
+    '0.525 0.530'
+    >>> "%0.3f %0.3f" % (c6.RhoL(*args).kgl, c7.RhoL(*args).kgl)
+    '0.531 0.529'
+    >>> "%0.3f %0.3f" % (c8.RhoL(*args).kgl, c9.RhoL(*args).kgl)
+    '0.529 0.525'
+
+    Example from [5]_; n-octane at 212ºF and 4410 psi
+
+    >>> T = unidades.Temperature(212, "F")
+    >>> P = unidades.Pressure(4410, "psi")
+    >>> c0 = Componente(12, RhoLP=0)
+    >>> c1 = Componente(12, RhoLP=1)
+    >>> c2 = Componente(12, RhoLP=2)
+    >>> c3 = Componente(12, RhoLP=3)
+    >>> c4 = Componente(12, RhoLP=4)
+    >>> c5 = Componente(12, RhoLP=5)
+    >>> "%0.3f %0.3f" % (c0.RhoL(T, P).kgl, c1.RhoL(T, P).kgl)
+    '0.676 0.705'
+    >>> "%0.3f %0.3f" % (c2.RhoL(T, P).kgl, c3.RhoL(T, P).kgl)
+    '0.672 0.675'
+    >>> "%0.3f %0.3f" % (c4.RhoL(T, P).kgl, c5.RhoL(T, P).kgl)
+    '0.678 0.919'
+
+    Liquid thermal conductivity: Example in [5]_, n-butylbenzene at 140ºF
+
+    >>> c0 = Componente(78, ThCondL=0)
+    >>> c1 = Componente(78, ThCondL=1)
+    >>> c2 = Componente(78, ThCondL=2)
+    >>> c3 = Componente(78, ThCondL=3)
+    >>> c4 = Componente(78, ThCondL=4)
+    >>> c5 = Componente(78, ThCondL=5)
+    >>> c6 = Componente(78, ThCondL=6)
+    >>> c7 = Componente(78, ThCondL=7)
+    >>> T = unidades.Temperature(140, "F")
+    >>> rho = c0.RhoL(T, 101325)
+    >>> args = (unidades.Temperature(140, "F"), 101325, rho)
+    >>> "%0.3f %0.3f" % (c0.ThCond_Liquido(*args), c1.ThCond_Liquido(*args))
+    '0.120 0.112'
+    >>> "%0.3f %0.3f" % (c2.ThCond_Liquido(*args), c3.ThCond_Liquido(*args))
+    '0.122 0.145'
+    >>> "%0.3f %0.3f" % (c4.ThCond_Liquido(*args), c5.ThCond_Liquido(*args))
+    '0.125 0.126'
+    >>> "%0.3f %0.3f" % (c6.ThCond_Liquido(*args), c7.ThCond_Liquido(*args))
+    '0.112 0.115'
+
+    Example 10-13 from [1]_; toluene at 6330bar and 304K
+
+    >>> c0 = Componente(41, ThCondLP=0)
+    >>> c1 = Componente(41, ThCondLP=1)
+    >>> c2 = Componente(41, ThCondLP=2)
+    >>> rho = c0.RhoL(304, 6330e5)
+    >>> args = (304, 6330e5, rho)
+    >>> "%0.3f %0.3f" % (c0.ThCond_Liquido(*args), c1.ThCond_Liquido(*args))
+    '0.356 0.235'
+    >>> "%0.3f" % c2.ThCond_Liquido(*args)
+    '0.223'
+
+    Gas thermal conductivity: Example in [5]_, 2-methylbutane at 212ºF and 1atm
+
+    >>> c0 = Componente(7, ThCondG=0)
+    >>> c1 = Componente(7, ThCondG=1)
+    >>> c2 = Componente(7, ThCondG=2)
+    >>> c3 = Componente(7, ThCondG=3)
+    >>> c4 = Componente(7, ThCondG=4)
+    >>> c5 = Componente(7, ThCondG=5)
+    >>> T = unidades.Temperature(212, "F")
+    >>> rho = c0.RhoL(T, 101325)
+    >>> args = (T, 101325, rho)
+    >>> "%0.3f %0.3f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
+    '0.022 0.023'
+    >>> "%0.3f %0.3f" % (c2.ThCond_Gas(*args), c3.ThCond_Gas(*args))
+    '0.018 0.015'
+    >>> "%0.3f %0.3f" % (c4.ThCond_Gas(*args), c5.ThCond_Gas(*args))
+    '0.019 0.029'
+
+    Example 10-3 from [1]_; nitrous oxide at 105ºC and 138bar
+
+    >>> c0 = Componente(110, ThCondGP=0)
+    >>> c1 = Componente(110, ThCondGP=1)
+    >>> c2 = Componente(110, ThCondGP=2)
+    >>> T = unidades.Temperature(105, "C")
+    >>> rho = 1/144*c0.M*1000
+    >>> args = (T, 138e5, rho)
+    >>> "%0.4f %0.4f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
+    '0.0415 0.0396'
+    >>> "%0.4f" % c2.ThCond_Gas(*args)
+    '0.0406'
+    """
+
     _bool = False
+    kwargs = {
+              "RhoL": None,
+              "RhoLP": None,
+              "MuL": None,
+              "MuLP": None,
+              "MuG": None,
+              "MuGP": None,
+              "ThCondL": None,
+              "ThCondLP": None,
+              "ThCondG": None,
+              "ThCondGP": None,
+              "Pv": None,
+              "facent": None,
+              "Tension": None}
 
     METHODS_RhoL = ["DIPPR", "Rackett", "Cavett", "COSTALD",
                     "Yen-Woods (1966)", "Yamada-Gun (1973)", "Bhirud (1978)",
@@ -5040,13 +5399,15 @@ class Componente(object):
     METHODS_Tension = ["DIPPR", "Parametric", "Block-Bird", "Pitzer",
                        "Zuo-Stenby", "Sastri-Rao", "Hakim", "Miqueu"]
 
-    def __init__(self, id=None):
-        """id: index of compound in database"""
+    def __init__(self, id=None, **kwargs):
+
         if not id:
             return
 
         self._bool = True
         self.id = id
+        self.kwargs = Componente.kwargs.copy()
+        self.kwargs.update(kwargs)
         self.Config = config.getMainWindowConfig()
         cmp = sql.getElement(id)
         self.formula = cmp[1]
@@ -5064,15 +5425,16 @@ class Componente(object):
         else:
             self.f_acent = 0
         if cmp[6] != 0:
-            self.Vc = unidades.SpecificVolume(cmp[6])
+            # In database the value is in molar base m³/kmol, convert to m³/kg
+            self.Vc = unidades.SpecificVolume(cmp[6]/self.M)
         elif self.f_acent != 0 and self.Tc != 0 and self.Pc != 0:
             self.Vc = Vc_Riedel(self.Tc, self.Pc, self.f_acent, self.M)
         else:
             self.Vc = 0
-        if self.Tc:
-            self.Zc = self.Pc*self.Vc/R/self.Tc
-        else:
-            self.Zc = 0
+
+        self.rhoc = 1/self.Vc
+        self.Zc = self.Pc*self.Vc*self.M/1000/R/self.Tc
+
         if cmp[7] != 0:
             self.API = cmp[7]
         elif cmp[124] != 0:
@@ -5236,7 +5598,10 @@ class Componente(object):
     # Calculation of undefined properties of compound
     def _f_acent(self):
         """Acentric factor calculation in compounds with undefined property"""
-        method = self.Config.getint("Transport", "f_acent")
+        method = self.kwargs["facent"]
+        if method is None or method >= len(Componente.METHODS_facent):
+            method = self.Config.getint("Transport", "f_acent")
+
         if method == 0:
             return facent_LeeKesler(self.Tb, self.Tc, self.Pc)
         elif method == 1:
@@ -5355,18 +5720,22 @@ class Componente(object):
     # Physical properties
     def RhoS(self, T):
         """Calculate the density of solid phase using the DIPPR equations"""
-        return DIPPR("rhoS", T, self._dipprRhoS[:-2], M=self.M)
+        return DIPPR("rhoS", T, self._dipprRhoS[:-2], M=self.M, Tc=self.Tc)
 
     def RhoL(self, T, P):
         """Calculate the density of liquid phase using any of available
         correlation"""
-        method = self.Config.getint("Transport", "RhoL")
-        Pcorr = self.Config.getint("Transport", "Corr_RhoL")
+        method = self.kwargs["RhoL"]
+        if method is None or method >= len(Componente.METHODS_RhoL):
+            method = self.Config.getint("Transport", "RhoL")
+        Pcorr = self.kwargs["RhoLP"]
+        if Pcorr is None or method >= len(Componente.METHODS_RhoLP):
+            Pcorr = self.Config.getint("Transport", "Corr_RhoL")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprRhoL and \
                 self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-            rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
+            rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and self.rackett != 0 and T < self.Tc:
             rhos = RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
         elif method == 2 and self.Vliq != 0:
@@ -5380,9 +5749,9 @@ class Componente(object):
         elif method == 4:
             rhos = RhoL_YenWoods(T, self.Tc, self.Vc, self.Zc)
         elif method == 5:
-            rhos = RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent)
+            rhos = RhoL_YamadaGunn(T, self.Tc, self.Pc, self.f_acent, self.M)
         elif method == 6:
-            rhos = RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent)
+            rhos = RhoL_Bhirud(T, self.Tc, self.Pc, self.f_acent, self.M)
         elif method == 7:
             d = Mchaweh_d.get(self.id, 0)/100
             rhos = RhoL_Mchaweh(T, self.Tc, self.Vc, self.f_acent, d)
@@ -5393,7 +5762,8 @@ class Componente(object):
         else:
             if self._dipprRhoL and \
                     self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
-                rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M)
+                rhos = DIPPR(
+                    "rhoL", T, self._dipprRhoL[:-2], M=self.M, Tc=self.Tc)
             elif self.rackett != 0 and T < self.Tc:
                 rhos = RhoL_Rackett(
                     T, self.Tc, self.Pc, self.rackett, self.M)
@@ -5453,14 +5823,17 @@ class Componente(object):
     def Pv(self, T):
         """Vapor pressure calculation procedure using the method defined in
         preferences"""
-        method = self.Config.getint("Transport", "Pv")
+        method = self.kwargs["Pv"]
+        if method is None or method >= len(Componente.METHODS_Pv):
+            method = self.Config.getint("Transport", "Pv")
+
         if method == 0 and self._dipprPv and \
                 self._dipprPv[6] <= T <= self._dipprPv[7]:
-            return DIPPR("Pv", T, self._dipprPv[:-2])
-        elif method == 1 and self.wagner:
+            return DIPPR("Pv", T, self._dipprPv[:-2], M=self.M, Tc=self.Tc)
+        elif method == 1 and self.wagner[0]:
             return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
-        elif method == 2 and self.antoine:
-            return Pv_Antoine(T, self.antoine)
+        elif method == 2 and self.antoine[0]:
+            return Pv_Antoine(T, self.antoine, Tc=self.Tc)
         elif method == 3 and self.Pc and self.Tc and self.f_acent:
             return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
         elif method == 4 and self.Pc and self.Tc and self.f_acent:
@@ -5473,11 +5846,11 @@ class Componente(object):
             return Pv_MaxwellBonnel(T, self.Tb, self.Kw)
         else:
             if self._dipprPv and self._dipprPv[6] <= T <= self._dipprPv[7]:
-                return DIPPR("Pv", T, self._dipprPv[:-2])
-            elif self.wagner:
+                return DIPPR("Pv", T, self._dipprPv[:-2], M=self.M, Tc=self.Tc)
+            elif self.wagner[0]:
                 return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
-            elif self.antoine:
-                return Pv_Antoine(T, self.antoine)
+            elif self.antoine[0]:
+                return Pv_Antoine(T, self.antoine, Tc=self.Tc)
             elif self.Pc and self.Tc and self.f_acent:
                 return Pv_AmbroseWalton(T, self.Tc, self.Pc, self.f_acent)
             elif self.Pc and self.Tc and self.Tb:
@@ -5488,13 +5861,17 @@ class Componente(object):
     def ThCond_Liquido(self, T, P, rho):
         """Liquid thermal conductivity procedure using the method defined in
         preferences, use the decision diagram in [5]_ Figure 12-0.2 pag 1135"""
-        method = self.Config.getint("Transport", "ThCondL")
-        Pcorr = self.Config.getint("Transport", "Corr_ThCondL")
+        method = self.kwargs["ThCondL"]
+        if method is None or method >= len(Componente.METHODS_ThL):
+            method = self.Config.getint("Transport", "ThCondL")
+        Pcorr = self.kwargs["ThCondLP"]
+        if Pcorr is None or method >= len(Componente.METHODS_ThLP):
+            Pcorr = self.Config.getint("Transport", "Corr_ThCondL")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprKL and \
                 self._dipprKL[6] <= T <= self._dipprKL[7]:
-            ko = DIPPR("kL", T, self._dipprKL[:-2])
+            ko = DIPPR("kL", T, self._dipprKL[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and T < self.Tc:
             ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
         elif method == 2 and self.Tb:
@@ -5510,10 +5887,10 @@ class Componente(object):
             ko = ThL_LakshmiPrasad(T, self.M)
         elif method == 7:
             ko = ThL_Nicola(
-                T, self.M, self.Tc, self.Pc, self.f_acent, self.dipole)
+                T, self.M, self.Tc, self.Pc, self.f_acent, self.dipole.Debye)
         else:
             if self._dipprKL and self._dipprKL[6] <= T <= self._dipprKL[7]:
-                ko = DIPPR("kL", T, self._dipprKL[:-2])
+                ko = DIPPR("kL", T, self._dipprKL[:-2], M=self.M, Tc=self.Tc)
             elif T < self.Tc:
                 ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
             elif self.Tb:
@@ -5528,9 +5905,9 @@ class Componente(object):
         elif Pcorr == 0:
             k = ThL_KanitkarThodos(
                 T, P, self.Tc, self.Pc, self.Vc, self.M, rho)
-        elif Pcorr == 0:
+        elif Pcorr == 1:
             k = ThL_Lenoir(T, P, self.Tc, self.Pc, ko)
-        elif Pcorr == 0:
+        elif Pcorr == 2:
             k = ThL_Missenard(T, P, self.Tc, self.Pc, ko)
 
         return k
@@ -5538,74 +5915,82 @@ class Componente(object):
     def ThCond_Gas(self, T, P, rho):
         """Vapor thermal conductivity calculation procedure using the method
         defined in preferences, decision diagram in API Databook, pag. 1136"""
-        method = self.Config.getint("Transport", "ThCondG")
-        Pcorr = self.Config.getint("Transport", "ThCondGP")
+        method = self.kwargs["ThCondG"]
+        if method is None or method >= len(Componente.METHODS_ThG):
+            method = self.Config.getint("Transport", "ThCondG")
+        Pcorr = self.kwargs["ThCondGP"]
+        if Pcorr is None or method >= len(Componente.METHODS_ThGP):
+            Pcorr = self.Config.getint("Transport", "Corr_ThCondG")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprKG and \
                 self._dipprKG[6] <= T <= self._dipprKG[7]:
-            ko = DIPPR("kG", T, self._dipprKG[:-2])
+            ko = DIPPR("kG", T, self._dipprKG[:-2], M=self.M, Tc=self.Tc)
         elif method == 1:
             cp = self.Cp_Gas_DIPPR(T)
             ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
         elif method == 2:
             cv = self.Cv(T)
-            muo = self.Mu_Gas(T, 101325)
+            muo = self.Mu_Gas(T, 101325, rho)
             ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, cv, muo)
         elif method == 3:
             cv = self.Cv(T)
-            muo = self.Mu_Gas(T, 101325)
+            muo = self.Mu_Gas(T, 101325, rho)
             ko = ThG_Eucken(self.M, cv, muo)
         elif method == 4:
             cv = self.Cv(T)
-            muo = self.Mu_Gas(T, 101325)
+            muo = self.Mu_Gas(T, 101325, rho)
             ko = ThG_EuckenMod(self.M, cv, muo)
         elif method == 5 and self.SG and self.Tb:
             ko = ThG_RiaziFaghri(T, self.Tb, self.SG)
         else:
             if self._dipprKG and self._dipprKG[6] <= T <= self._dipprKG[7]:
-                ko = DIPPR("kG", T, self._dipprKG[:-2])
+                ko = DIPPR("kG", T, self._dipprKG[:-2], M=self.M, Tc=self.Tc)
             else:
                 cp = self.Cp_Gas_DIPPR(T)
                 ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
 
         # Add correction factor for high pressure
         if P < 1e6:
-            mu = muo
+            k = ko
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
-            mu = ThG_NonHydrocarbon(T, P, self.id)
+            k = ThG_NonHydrocarbon(T, P, self.id)
         elif Pcorr == 0:
-            mu = ThG_StielThodos(
+            k = ThG_StielThodos(
                 T, self.Tc, self.Pc, self.Vc, self.M, 1/rho, ko)
         elif Pcorr == 1:
-            k = self._K_Chung()
-            mu = ThG_P_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
-                             self.dipole, k, rho, ko)
+            K = self._K_Chung()
+            k = ThG_P_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
+                            self.dipole.Debye, K, rho, ko)
         elif Pcorr == 2:
-            mu = ThG_TRAPP(
+            k = ThG_TRAPP(
                 T, self.Tc, self.Vc, self.Zc, self.M, self.f_acent, rho, ko)
-        return mu
+        return k
 
     def Mu_Gas(self, T, P, rho):
         """Vapor viscosity calculation procedure using the method defined in
         preferences, decision diagram in API Databook, pag. 1026"""
-        method = self.Config.getint("Transport", "MuG")
-        Pcorr = self.Config.getint("Transport", "MuGP")
+        method = self.kwargs["MuG"]
+        if method is None or method >= len(Componente.METHODS_MuG):
+            method = self.Config.getint("Transport", "MuG")
+        Pcorr = self.kwargs["MuGP"]
+        if Pcorr is None or method >= len(Componente.METHODS_MuGP):
+            Pcorr = self.Config.getint("Transport", "Corr_MuG")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprMuG and \
                 self._dipprMuG[6] <= T <= self._dipprMuG[7]:
-            muo = DIPPR("muG", T, self._dipprMuG[:-2])
+            muo = DIPPR("muG", T, self._dipprMuG[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and self.Dm and self.ek:
             omega = self._Collision(T)
             muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
-        elif method == 2 and self.dipole:
+        elif method == 2:
             k = self._K_Chung()
-            muo = MuG_Chung(
-                T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
+            muo = MuG_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
+                            self.dipole.Debye, k)
         elif method == 3:
-            mu = MuG_Lucas(
-                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
+            muo = MuG_Lucas(
+                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole.Debye)
         elif method == 4:
             muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
         elif method == 5:
@@ -5614,27 +5999,24 @@ class Componente(object):
             muo = MuG_YoonThodos(T, self.Tc, self.Pc, self.M)
         else:
             if self._dipprMuG and self._dipprMuG[6] <= T <= self._dipprMuG[7]:
-                muo = DIPPR("muG", T, self._dipprMuG[:-2])
+                muo = DIPPR(
+                    "muG", T, self._dipprMuG[:-2], M=self.M, Tc=self.Tc)
             elif self.Dm and self.ek:
                 omega = self._Collision(T)
                 muo = MuG_ChapmanEnskog(T, self.M, self.Dm, omega)
-            elif self.dipole:
-                k = self._K_Chung()
-                muo = MuG_Chung(
-                    T, self.Tc, self.Vc, self.M, self.f_acent, self.dipole, k)
             else:
                 muo = MuG_StielThodos(T, self.Tc, self.Pc, self.M)
 
         # Add correction factor for high pressure
         if P < 0.6*self.Pc:
             mu = muo
-        elif Pcorr == 0 and self.dipole:
+        elif Pcorr == 0:
             mu = MuG_Lucas(
-                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
-        elif Pcorr == 1 and self.dipole:
+                T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole.Debye)
+        elif Pcorr == 1:
             k = self._K_Chung()
             mu = MuG_P_Chung(T, self.Tc, self.Vc, self.M, self.f_acent,
-                             self.dipole, k, rho, muo)
+                             self.dipole.Debye, k, rho, muo)
         elif Pcorr == 2:
             mu = MuG_Brule(T, self.Tc, self.Vc, self.M, self.f_acent, rho, muo)
         elif Pcorr == 3:
@@ -5645,9 +6027,9 @@ class Componente(object):
         elif Pcorr == 5:
             mu = MuG_P_StielThodos(
                 self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
-        elif Pcorr == 6 and self.dipole:
-            mu = MuG_Reichenberg(
-                T, P, self.Tc, self.Pc, self.Vc, self.M, self.dipole, muo)
+        elif Pcorr == 6:
+            mu = MuG_Reichenberg(T, P, self.Tc, self.Pc, self.Vc, self.M,
+                                 self.dipole.Debye, muo)
         elif Pcorr == 7:
             mu = MuG_DeanStiel(self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
         elif Pcorr == 8:
@@ -5655,12 +6037,12 @@ class Componente(object):
         else:
             if self.dipole:
                 mu = MuG_Lucas(
-                    T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole)
+                    T, P, self.Tc, self.Pc, self.Zc, self.M, self.dipole.Debye)
             elif self.isHydrocarbon:
                 mu = MuG_DeanStiel(
                     self.Tc, self.Pc, self.rhoc, self.M, rho, muo)
             else:
-                mu = MuG_API(T, P, self.Tc, self.Pc, muo)
+                mu = MuG_TRAPP(T, P, self.Tc, self.Pc, muo)
 
         return mu
 
@@ -5702,20 +6084,24 @@ class Componente(object):
         # Brokaw, R.S. Predicting Transport Properties of Dilute Gases. I&EC
         # Process Design and Development 8(22) (1969) 240-253
         if self.PolarParameter:
-            omega += 0.2*self.PolarParaemter**2/T_
+            omega += 0.2*self.PolarParameter**2/T_
         return omega
 
     def Mu_Liquido(self, T, P):
         """Liquid viscosity calculation procedure using the method defined in
         preferences, decision diagram in API Databook, pag. 1026"""
-        method = self.Config.getint("Transport", "MuL")
-        Pcorr = self.Config.getint("Transport", "Corr_MuL")
+        method = self.kwargs["MuL"]
+        if method is None or method >= len(Componente.METHODS_MuL):
+            method = self.Config.getint("Transport", "MuL")
+        Pcorr = self.kwargs["MuLP"]
+        if Pcorr is None or method >= len(Componente.METHODS_MuLP):
+            Pcorr = self.Config.getint("Transport", "Corr_MuL")
 
         # Calculate of low pressure viscosity
         if method == 0 and self._dipprMuL and \
                 self._dipprMuL[6] <= T <= self._dipprMuL[7]:
-            muo = DIPPR("muL", T, self._dipprMuL[:-2])
-        elif method == 1 and self._parametricMu:
+            muo = DIPPR("muL", T, self._dipprMuL[:-2], M=self.M, Tc=self.Tc)
+        elif method == 1 and self._parametricMu[0]:
             muo = MuL_Parametric(T, self._parametricMu)
         elif method == 2:
             muo = MuL_LetsouStiel(T, self.M, self.Tc, self.Pc, self.f_acent)
@@ -5726,8 +6112,9 @@ class Componente(object):
         else:
             if self._dipprMuL and \
                     self._dipprMuL[6] <= T <= self._dipprMuL[7]:
-                return DIPPR("muL", T, self._dipprMuL[:-2])
-            elif self._parametricMu:
+                return DIPPR(
+                    "muL", T, self._dipprMuL[:-2], M=self.M, Tc=self.Tc)
+            elif self._parametricMu[0]:
                 return MuL_Parametric(T, self._parametricMu)
             elif self.Tc and self.Pc and self.f_acent and self.M:
                 return MuL_LetsouStiel(
@@ -5761,11 +6148,15 @@ class Componente(object):
     def Tension(self, T):
         """Liquid surface tension procedure using the method defined in
         preferences"""
-        method = self.Config.getint("Transport", "Tension")
+        method = self.kwargs["Tension"]
+        if method is None or method >= len(Componente.METHODS_Tension):
+            method = self.Config.getint("Transport", "Tension")
+
         if method == 0 and self._dipprSigma and \
                 self._dipprSigma[6] <= T <= self._dipprSigma[7]:
-            return DIPPR("sigma", T, self._dipprSigma[:-2])
-        elif method == 1 and self._parametricSigma:
+            return DIPPR("sigma", T, self._dipprSigma[:-2], M=self.M,
+                         Tc=self.Tc)
+        elif method == 1 and self._parametricSigma[0]:
             return Tension_Parametric(T, self._parametricSigma, self.Tc)
         elif method == 2 and self.Tb:
             return Tension_BlockBird(T, self.Tc, self.Pc, self.Tb)
@@ -5784,8 +6175,9 @@ class Componente(object):
         else:
             if self._dipprSigma and \
                     self._dipprSigma[6] <= T <= self._dipprSigma[7]:
-                return DIPPR("sigma", T, self._dipprSigma[:-2])
-            elif self._parametricSigma:
+                return DIPPR("sigma", T, self._dipprSigma[:-2], M=self.M,
+                             Tc=self.Tc)
+            elif self._parametricSigma[0]:
                 return Tension_Parametric(T, self._parametricSigma, self.Tc)
             elif self.stiel:
                 return Tension_Hakim(
@@ -5800,20 +6192,20 @@ class Componente(object):
 
     def Hv_DIPPR(self, T):
         """Calculate the heat of vaporization using the DIPPR equations"""
-        return DIPPR("Hv", T, self._dipprHv[:-2], self.M)
+        return DIPPR("Hv", T, self._dipprHv[:-2], M=self.M, Tc=self.Tc)
 
     def Cp_Solido_DIPPR(self, T):
         """Calculate the specific heat of solid using the DIPPR equations"""
-        return DIPPR("cpS", T, self._dipprCpS[:-2], self.M)
+        return DIPPR("cpS", T, self._dipprCpS[:-2], M=self.M, Tc=self.Tc)
 
     def Cp_Liquido_DIPPR(self, T):
         """Calculate the specific heat of liquid using the DIPPR equations"""
-        return DIPPR("cpL", T, self._dipprCpL[:-2], self.M)
+        return DIPPR("cpL", T, self._dipprCpL[:-2], M=self.M, Tc=self.Tc)
 
     def Cp_Gas_DIPPR(self, T):
         """Calculate the specific heat of gas using the DIPPR equations"""
         if self._dipprCpG:
-            return DIPPR("cpG", T, self._dipprCpG[:-2], self.M)
+            return DIPPR("cpG", T, self._dipprCpG[:-2], M=self.M, Tc=self.Tc)
         else:
             return self._Cpo(T)
 
