@@ -15,7 +15,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Module to implement new component by group contribution methods
+    * :func:`newComponente`: Base class for new component definition
+    * :func:`GroupContribution`: Common group contribution functionality
+    * :func:`Joback`: Group contribution method of Joback
+    * :func:`Constantinou`: Group contribution method of Constaninou and Gani
+    * :func:`Wilson`: Group contribution method of Wilson and Jasperson
+    * :func:`Marrero`: Group contribution method of Marrero and Pardillo
+    * :func:`Elliott`: Group contribution method of Elliott
+    * :func:`Ambrose`: Group contribution method of Ambrose
+    * :func:`Klincewicz`: Group contribution method of Klincewicz
+    * :func:`Lydersen`: Group contribution method of Lydersen
+    * :func:`Valderrama`: Group contribution method of Valderrama
+    * :func:`Nannoolal`: Group contribution method of Nannoolal
+    * :func:`Wen`: Group contribution method of Wen-Qiang
+    * :func:`Li`: Group contribution method of Li-Xia-Xiang
+
+Other methods:
+    * :func:`cpLS_Hurst`: Liquid-Solid heat capacities using the Hurst-Harrison
+    method
+'''
 
 
 from itertools import permutations
@@ -29,28 +51,6 @@ from lib import unidades
 from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett
 from lib.physics import R_atml, R_cal
 from lib.elemental import databank
-
-
-###############################################################################
-# Module to implement new component by group contribution methods
-#   -newComponente: Base class for new component definition
-#   -GroupContriution: Group contribution base class with common functionality
-#   -Joback: Group contribution method of Joback
-#   -Constantinou: Group contribution method of Constaninou and Gani
-#   -Wilson: Group contribution method of Wilson and Jasperson
-#   -Marrero: Group contribution method of Marrero and Pardillo
-#   -Elliott: Group contribution method of Elliott
-#   -Ambrose: Group contribution method of Ambrose
-#   -Klincewicz: Group contribution method of Klincewicz
-#   -Lydersen: Group contribution method of Lydersen
-#   -Valderrama: Group contribution method of Valderrama
-#   -Nannoolal: Group contribution method of Nannoolal
-#   -Wen: Group contribution method of Wen-Qiang
-#   -Li: Group contribution method of Li-Xia-Xiang
-#
-# Other methods:
-#   -cpLS_Hurst: Liquid-Solid heat capacities using the Hurst-Harrison method
-###############################################################################
 
 
 __doi__ = {
@@ -581,7 +581,7 @@ class Joback(GroupContribution):
 
     Examples
     --------
-    p-dichlorobenzene example in [2]_, Table V
+    p-dichlorobenzene example in 2_, Table V
 
     >>> cmp = Joback(group=[16, 13, 14], contribution=[2, 4, 2])
     >>> "%0.1f %0.0f %0.0f %0.1f" % (cmp.Tb, cmp.Tf, cmp.Tc, cmp.Pc.bar)
@@ -654,12 +654,12 @@ class Joback(GroupContribution):
 
     References
     ----------
-    .. [1]Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    .. [2] Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
+    [2]_ Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
         from Group-Contributions. Chemical Engineering Communications, 57:1-6
         (1987), 233-243
-    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Joback-Reid (1987)"
@@ -911,7 +911,7 @@ class Constantinou(GroupContribution):
 
     Examples
     --------
-    Example from [3]_ to distinguish between isomers, dimethylhexanes
+    Example from 3_ to distinguish between isomers, dimethylhexanes
     1st order only
 
     >>> cmp = Constantinou(group=[0, 1, 2], contribution=[4, 2, 2])
@@ -928,7 +928,7 @@ class Constantinou(GroupContribution):
     >>> "%0.2f %0.2f %0.2f" % (c23.Tb, c24.Tb, c25.Tb)
     '391.41 382.32 378.64'
 
-    Examples from Table 15a and 15b and 16 in [3]_
+    Examples from Table 15a and 15b and 16 in 3_
 
     >>> cmp1 = Constantinou(
     ... group=[0, 1, 2, 3, 15], contribution=[3, 1, 1, 1, 2])
@@ -970,7 +970,7 @@ class Constantinou(GroupContribution):
     'C8H10O'
 
     Example 2-3 in [1]_, butanols critical properties
-    
+
     >>> b1 = Constantinou(group=[0, 1, 15], contribution=[1, 3, 1])
 
     2-met-1-propanol CHOH Second order contribution is zero
@@ -1049,14 +1049,14 @@ class Constantinou(GroupContribution):
 
     References
     ----------
-    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    .. [3] Constantinou, L., Gani, R. New Group Controbution Method for
+    [3]_ Constantinou, L., Gani, R. New Group Controbution Method for
         Estimating Properties of Pure Compounds. AIChE J., 40: 1697 (1994)
-    .. [4] Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
+    [4]_ Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
         acentric factor and the liquid molar volume at 298K using a new group
         contribution method. Fluid Phase Equil., 103: 11 (1995).
-    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Constantinou-Gani (1995)"
@@ -1512,9 +1512,9 @@ class Wilson(GroupContribution):
 
     References
     ----------
-    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    .. [5] Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
+    [5]_ Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
         estimation based on zero, first and second order methods. Paper given
         at AIChE Spring National Meeting, New Orleans, LA, USA, February 25-29,
         1996.
@@ -1739,12 +1739,12 @@ class Marrero(GroupContribution):
 
     References
     ----------
-    .. [1] Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
+    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
         Gases and Liquids 5th Edition. McGraw-Hill
-    .. [6] Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
+    [6]_ Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
         Compound Properties Using Group-Interaction Contributions. AIChE J.,
         45: 615 (1999).
-    .. [7] Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
+    [7]_ Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
         Viscosity at Ambient Temperature of Pure Organic Compounds by Using
         Group-Interaction Contributions. Chemical Engineering Journal 79
         (2000) 69-72
@@ -2471,15 +2471,15 @@ class Ambrose(GroupContribution):
 
     References
     ----------
-    .. [8] Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+    [8]_ Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
         Properties: I. Critical Temperatures of Organic Compounds. National
         Physical Laboratory, Teddington, NPL Rep. Chern.  92, 1978,
         corrected 1980.
-    .. [9] Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
+    [9]_ Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
         Properties: II. Critical Pressures and Volumes of Organic Compounds.
         National Physical Laboratory, Teddington, NPL Rep. 98, 1979
-    .. [10] API. Technical Data book: Petroleum Refining 6th Edition 1997
-    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    [10]_ API. Technical Data book: Petroleum Refining 6th Edition 1997
+    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
     """
     __title__ = "Ambrose (1980)"
@@ -2682,7 +2682,7 @@ class Klincewicz(GroupContribution):
 
     References
     ----------
-    .. [12] Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
+    [12]_ Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
         with Group Contribution Methods. AIChE J., 30(1), 137 (1984)
     """
     __title__ = "Klincewicz (1984)"
@@ -2857,9 +2857,9 @@ class Lydersen(GroupContribution):
 
     References
     ----------
-    .. [11] Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
         McGraw Hill (2008)
-    .. [13] Lydersen, A. L. Estimation of Critical Properties of Organic
+    [13]_ Lydersen, A. L. Estimation of Critical Properties of Organic
         Compounds. Coll. Eng. Univ. Wisconsin, Engineering Experimental
         Station Rept. 3, Madison, WI (1955).
     """
@@ -3014,7 +3014,7 @@ class Valderrama(GroupContribution):
 
     References
     ----------
-    .. [14] Valderrama, J.O., Álvarez, V.H. A New Group Contribution Method
+    [14]_ Valderrama, J.O., Álvarez, V.H. A New Group Contribution Method
         Based on Equation of State Parameters to Evaluate the Critical
         Properties of Simple and Complex Molecules. Canadian J. Chem. Eng.
         84, 431-446 (2006)
@@ -3284,18 +3284,18 @@ class Nannoolal(GroupContribution):
 
     References
     ----------
-    .. [15] Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
+    [15]_ Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
         of Pure Component Properties 1. Estimation of the Normal Boiling Point
         of Non-electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 226 (2004) 45-63
-    .. [16] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    [16]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 2. Estimation of Critical Property Data by Group
         Contribution. Fluid Phase Equilib., 252 (2007) 1-27
-    .. [17] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    [17]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 3. Estimation of the Vapor Pressure of
         Non-Electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 269 (2008) 117-133
-    .. [18] Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
+    [18]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
         Component Properties 4. Estimation of the Saturted Liquid Viscosity of
         Non-Electrolyte Organic Compounds Via Group Contributions and Group
         Interactions. Fluid Phase Equilib., 281 (2009) 97-119
@@ -3859,7 +3859,7 @@ class Wen(GroupContribution):
 
     References
     ----------
-    .. [19] Wen, X., Quiang, Y. A New Group Contribution Method for Estimating
+    [19]_ Wen, X., Quiang, Y. A New Group Contribution Method for Estimating
         Critical Properties of Orgnic Compounds. Ind. Eng. Chem. Res. 40
         (2001) 6245–6250.
     """
@@ -4230,7 +4230,7 @@ class Li(GroupContribution):
 
     References
     ----------
-    .. [21] Li, J., Xia, L., Xiang, S. A New Method Based on Elements and
+    [21]_ Li, J., Xia, L., Xiang, S. A New Method Based on Elements and
         Chemical Bonds for Organic Compounds Critical Properties Estimation.
         Fluid Phase Equil., (2016)
     """
@@ -4425,7 +4425,7 @@ class MarreroGani(GroupContribution):
 
     References
     ----------
-    .. [22] Marrero, J.; Gani, R. Group-contribution based estimation of pure
+    [22]_ Marrero, J.; Gani, R. Group-contribution based estimation of pure
         component properties. Fluid Phase Equilib. 183-184 (2001), 183–208.
     """
     __title__ = "Marrero-Gani (2001)"
@@ -5230,7 +5230,7 @@ def cpLS_Hurst(group):
 
     References
     ----------
-    .. [20] Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
+    [20]_ Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
         Capacities Using a Modified Kopp's Rule. Chem. Eng. Comm., 112 (1992):
         21
     """

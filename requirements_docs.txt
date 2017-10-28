@@ -1,3 +1,4 @@
 scipy
 numpy
 numpydoc
+pyqt5
