@@ -63,6 +63,7 @@ docs/_build/
 # documentation   
 doc/
 docs/Makefile
+docs/generateReferences.py
 
 # Script propios
 .script/

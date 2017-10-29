@@ -5,3 +5,5 @@ lib.mezcla module
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. include:: lib.mezcla-ref.rst

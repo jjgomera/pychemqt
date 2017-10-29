@@ -5135,14 +5135,17 @@ class Componente(object):
     -----
     Additionally can define custom calculation method with the parameters::
 
-        rhoLMix: Liquid density correlation index
-        RhoLPMix: Compressed liquid density correlation index
-        MuLMix: Liquid viscosity correlation index
-        MuGMix: Gas viscosity correlation index
-        MuGPMix: Compressed gas viscosity correlation index
-        ThCondLMix: Liquid thermal conductivity correlation index
-        ThCondGMix: Gas thermal conductivity correlation index
-        ThCondPGMix: Compressed gas thermal conductivity correlation
+        rhoL: Liquid density correlation index
+        RhoLP: Compressed liquid density correlation index
+        MuL: Liquid viscosity correlation index
+        MuG: Gas viscosity correlation index
+        MuGP: Compressed gas viscosity correlation index
+        ThCondL: Liquid thermal conductivity correlation index
+        ThCondG: Gas thermal conductivity correlation index
+        ThCondPG: Compressed gas thermal conductivity correlation index
+        Tension: Surface tension correlation index
+        facent: Acentric factor correlation index for missing cases
+        Pv: Vapor pressure correlation index
 
     This option overwrite the project configuration and the user configuration,
     for now only in API usage. Not custom stream property definition in main
@@ -5335,9 +5338,9 @@ class Componente(object):
     >>> "%0.3f %0.3f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
     '0.022 0.023'
     >>> "%0.3f %0.3f" % (c2.ThCond_Gas(*args), c3.ThCond_Gas(*args))
-    '0.018 0.015'
+    '0.024 0.019'
     >>> "%0.3f %0.3f" % (c4.ThCond_Gas(*args), c5.ThCond_Gas(*args))
-    '0.019 0.029'
+    '0.024 0.029'
 
     Example 10-3 from 1_; nitrous oxide at 105ºC and 138bar
 
@@ -6212,8 +6215,8 @@ class Componente(object):
     def Cv(self, T):
         """Isochoric specific heat"""
         cp = self.Cp_Gas_DIPPR(T)
-        cv = cp-R*self.M
-        return unidades.SpecificHeat(cv)
+        cv = cp/1000-R/self.M
+        return unidades.SpecificHeat(cv, "kJkgK")
 
     def Fase(self, T, P):
         """Método que calcula el estado en el que se encuentra la sustancia"""

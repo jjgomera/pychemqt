@@ -15,21 +15,61 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with mixture definition
-#   -Mixture definition procedures:
-#      _mix_from_unitmassflow
-#      _mix_from_unitmolarflow
-#      _mix_from_massflow_and_molarfraction
-#      _mix_from_massflow_and_massfraction
-#      _mix_from_molarflow_and_molarfraction
-#      _mix_from_molarflow_and_massfraction
+This module implement mixture component properties
 
-#   -Mezcla: Mixture related calculation
-###############################################################################
+:func:`Mezcla`: The main class with all integrated functionality. Use the
+properties in database and calculate state properties with the methods chosen
+in configuration
+
+Liquid density calculation methods:
+    * :func:`RhoL_RackettMix`
+    * :func:`RhoL_CostaldMix`
+    * :func:`RhoL_AaltoKeskinenMix`
+    * :func:`RhoL_TaitCostaldMix`
+    * :func:`RhoL_NasrifarMix`
+    * :func:`RhoL_APIMix`
+
+Liquid viscosity calculation methods:
+    * :func:`MuL_KendallMonroe`
+    * :func:`MuL_Chemcad`
+
+Gas viscosity calculation methods:
+    * :func:`MuG_Reichenberg`
+    * :func:`MuG_Lucas`
+    * :func:`MuG_Chung`
+    * :func:`MuG_Wilke`
+    * :func:`MuG_Herning`
+    * :func:`MuG_P_Chung`
+    * :func:`MuG_TRAPP`
+    * :func:`MuG_DeanStielMix`
+    * :func:`MuG_APIMix`
+
+Liquid thermal conductivity calculation methods:
+    * :func:`ThL_Li`
+    * :func:`ThL_Power`
+
+Gas thermal conductivity calculation methods:
+    * :func:`ThG_MasonSaxena`
+    * :func:`ThG_LindsayBromley`
+    * :func:`ThG_Chung`
+    * :func:`ThG_StielThodos`
+    * :func:`ThG_TRAPP`
+    * :func:`ThG_P_Chung`
+
+Surface tension calculation methods:
+    * :func:`Tension`
+
+Mixture mass definition:
+    * :func:`_mix_from_unitmassflow`
+    * :func:`_mix_from_unitmolarflow`
+    * :func:`_mix_from_massflow_and_massfraction`
+    * :func:`_mix_from_massflow_and_molarfraction`
+    * :func:`_mix_from_molarflow_and_massfraction`
+    * :func:`_mix_from_molarflow_and_molarfraction`
+"""
 
 
 from math import pi
@@ -163,14 +203,6 @@ __doi__ = {
          "title": "A Computer Program for the Prediction of Viscosity and "
                   "Thermal Condcutivity in Hydrocarbon Mixtures",
          "ref": "NBS Technical Note 1039 (1981)",
-         "doi": ""},
-
-
-
-    22:
-        {"autor": "",
-         "title": "",
-         "ref": "",
          "doi": ""},
 }
 
@@ -625,7 +657,7 @@ def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
     return unidades.Density(rho*Mm)
 
 
-def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
+def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Aalto-Keskinen modification of Chang-Zhao correlation
 
@@ -661,8 +693,6 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
         Acentric factor (SRK optimized) of components, [-]
     Mi : list
         Molecular weight of components, [g/mol]
-    Ps : float
-        Saturation pressure, [Pa]
     rhos : float
         Boiling point liquid density, [kg/m³]
 
@@ -682,7 +712,7 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
     >>> Vci = [145.5/1000, 624/1000]
     >>> wi = [0.099, 0.491]
     >>> Mi = [1, 1]
-    >>> args = (344.26, P, xi, Tci, Pci, Vci, wi, Mi, 9.2e5, 1/116.43*1000)
+    >>> args = (344.26, P, xi, Tci, Pci, Vci, wi, Mi, 1/116.43*1000)
     >>> "%0.2f" % (1/RhoL_AaltoKeskinenMix(*args).gcc)
     '99.05'
 
@@ -724,6 +754,8 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
     # Eq 4
     Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
 
+    Ps = _Pv(T, Tcm, Pcm, wm)
+
     # Apply the pure component procedure with the mixing parameters
     rho = RhoL_AaltoKeskinen(T, P, Tcm, Pcm, wm, Ps, rhos)
     return unidades.Density(rho)
@@ -732,7 +764,7 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, Ps, rhos):
 def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Thomson-Brobst-Hankinson modification of Chang-Zhao correlation adapted to
-    mixtures
+    mixtures, also referenced in API procedure 6A3.4, pag 489
 
     .. math::
         T_{cm} = \frac{\sum_i\sum_jx_ix_j\left(V_i^oT_{ci}V_j^oT_{cj}\right)
@@ -789,7 +821,7 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
 
     Examples
     --------
-    Example rom [3]_; 20% ethane, 80% nC10 at 166F and 3000psi
+    Example from [2]_; 20% ethane, 80% nC10 at 166F and 3000psi
 
     >>> T = unidades.Temperature(160, "F")
     >>> P = unidades.Pressure(3000, "psi")
@@ -845,19 +877,14 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
 
     # Saturation Pressure
-    Trm = T/Tcm
-    alpha = 35 - 36/Trm - 96.736*log10(Trm) + Trm**6
-    beta = log10(Trm) + 0.03721754*alpha
-    Pro = 5.8031817*log10(Trm)+0.07608141*alpha
-    Pr1 = 4.86601*beta
-    Ps = Pcm*10**(Pro+wm*Pr1)
+    Ps = _Pv(T, Tcm, Pcm, wm)
 
     # Apply the pure component procedure with the mixing parameters
     rho = RhoL_TaitCostald(T, P, Tcm, Pcm, wm, Ps, rhos)
     return unidades.Density(rho)
 
 
-def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
+def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Nasrifar correlation
 
@@ -891,8 +918,6 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
         Acentric factor (SRK optimized) of components, [-]
     Mi : list
         Molecular weight of components, [g/mol]
-    Ps : float
-        Saturation pressure, [Pa]
     rhos : float
         Boiling point liquid density, [kg/m³]
 
@@ -938,6 +963,9 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, Ps, rhos):
 
     # Eq 26
     Pcm = (0.291-0.08*wm)*R*Tcm/Vcm*1000
+
+    # Saturation Pressure
+    Ps = _Pv(T, Tcm, Pcm, wm)
 
     # Apply the pure component procedure with the mixing parameters
     rho = RhoL_Nasrifar(T, P, Tcm, Pcm, wm, Mm, Ps, rhos)
@@ -1042,6 +1070,47 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     return unidades.Density(d2)
 
 
+def _Pv(T, Tcm, Pcm, wm):
+    """Pseudo vapor presure from pseudocritical properties to use in
+    compressed liquid density correlations
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tcm : float
+        Pseudo critical temperature of mixture, [K]
+    Pcm : float
+        Pseudo critical pressure of mixture, [Pa]
+    wm : float
+        Acentric factor of mixture, [-]
+
+    Returns
+    -------
+    Pbp : float
+        Boiling point pressure, [Pa]
+
+    References
+    ----------
+    .. [11] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+        Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
+        Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
+    .. [12] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+        Correlation for Densities of Compressed Liquids and Liquid Mixtures.
+        AIChE Journal 28(4) (1982): 671-76
+    """
+    Trm = T/Tcm
+    alpha = 35 - 36/Trm - 96.736*log10(Trm) + Trm**6                   # Eq 22
+    beta = log10(Trm) + 0.03721754*alpha                               # Eq 23
+    Pro = 5.8031817*log10(Trm)+0.07608141*alpha                        # Eq 20
+
+    # Using Aalto modificated equation Eq 8
+    Pr1 = 4.86601*beta+0.03721754*alpha                                # Eq 21
+
+    Pbp = Pcm*10**(Pro+wm*Pr1)
+    return unidades.Pressure(Pbp)
+
+
 # Liquid viscosity correlations
 def MuL_KendallMonroe(xi, mui):
     r"""Calculate viscosity of liquid mixtures using the Kendall-Monroe method,
@@ -1082,6 +1151,7 @@ def MuL_KendallMonroe(xi, mui):
     .. [20] Kendall, J., Monroe, P. The Viscosity of Liquids II. The
         Viscosity-Composition Curve for Ideal Liquid Mixtures. J. Am. Chem.
         Soc. 39(9) (1917) 1787-1802
+    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
     .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
@@ -1252,7 +1322,7 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
         Ui.append((1+0.36*Tr*(Tr-1))**(1/6)*Fr/Tr**0.5)
 
     # Eq 9-5.4
-    Ci = [M**0.25/(mu*1e7*U)**0.5 for M, mu, U in zip(Mi, mui, Ui)]
+    Ci = [M**0.25/(mu*U)**0.5 for M, mu, U in zip(Mi, mui, Ui)]
 
     # Eq 9-5.6
     Hij = []
@@ -1271,7 +1341,7 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
             if i != j:
                 sumaij += xi[j]*Hij[i][j]*(3+2*M_j/M_i)
         sumai.append(sumaij)
-    Ki = [x*mu*1e7/(x+mu*1e7*suma) for x, mu, suma in zip(xi, mui, sumai)]
+    Ki = [x*mu/(x+mu*suma) for x, mu, suma in zip(xi, mui, sumai)]
 
     # Eq 9-5.1
     mu = 0
@@ -1288,7 +1358,7 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
 
         mu += K_i*(1+2*sum1+sum2)
 
-    return unidades.Viscosity(mu, "microP")
+    return unidades.Viscosity(mu)
 
 
 def MuG_Wilke(xi, Mi, mui):
@@ -1596,8 +1666,8 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
             Z2 = Z1*(1+a*Prm**e/(b*Prm**f+1/(1+c*Prm**d)))
 
         Y = Z2/Z1
-        Fp = (1+(Fpo-1)/Y**3)/Fpo
-        Fq = (1+(Fqo-1)*(1/Y-0.007*log(Y)**4))/Fqo
+        Fp = (1+(Fpom-1)/Y**3)/Fpom
+        Fq = (1+(Fqom-1)*(1/Y-0.007*log(Y)**4))/Fqom
         mu = Z2*Fp*Fq/X
 
     return unidades.Viscosity(mu, "microP")
@@ -1859,7 +1929,6 @@ def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
     """
     # Use critical volume in molar base
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
-    rho = rho/M*1000
 
     sigmai = [0.809*Vc**(1/3) for Vc in Vci]                            # Eq 4
     eki = [Tc/1.2593 for Tc in Tci]                                     # Eq 5
@@ -1945,6 +2014,7 @@ def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
         for x_j, k in zip(xi, kiji):
             km += x_i*x_j*k
 
+    rho = rho/Mm/1000
     Vcm = (sm/0.809)**3                                                # Eq 16
     Tcm = 1.2593*ekm                                                   # Eq 17
     murm = 131.3*Dm/(Vcm*Tcm)**0.5                                     # Eq 22
@@ -2094,7 +2164,7 @@ def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
     >>> Zc = [0.286, 0.256]
     >>> w = [0.011, 0.49]
     >>> rho = 1/243.8*58.123*1000
-    >>> mu = MuG_TRAPP(377.6, 413.7e5, x, Tc, Vc, Zc, M, w, 448.4, 10.2e-9)
+    >>> mu = MuG_TRAPP(377.6, 413.7e5, x, Tc, Vc, Zc, M, w, 448.4, 10.2e-6)
     >>> "%0.1f" % mu.muPas
     '82.6'
 
@@ -2293,7 +2363,7 @@ def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
     # Eq 9-7.10
     # The 0.1 factor because this values are im μP, to convert to μPa·s
     Dmu = (eta_m-eta_x)*0.1
-    return unidades.Viscosity(Fnm*muR + Dmu + muo*1e9, "muPas")
+    return unidades.Viscosity(Fnm*muR + Dmu + muo*1e6, "muPas")
 
 
 def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
@@ -2340,7 +2410,7 @@ def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
 
     Examples
     --------
-    Example in [5]_, 60% Methane 40% pronae at 1500psi and 257ºF
+    Example in [5]_, 60% Methane 40% propane at 1500psi and 257ºF
 
     >>> Tc1 = unidades.Temperature(-116.66, "F")
     >>> Tc2 = unidades.Temperature(206.02, "F")
@@ -2400,7 +2470,7 @@ def MuG_APIMix(T, P, xi, Tci, Pci, muo):
 
     Examples
     --------
-    Example B in [2]_, 60% Methane 40% pronae at 1500psi and 257ºF
+    Example B in [2]_, 60% Methane 40% propane at 1500psi and 257ºF
 
     >>> T = unidades.Temperature(257, "F")
     >>> P = unidades.Pressure(1500, "psi")
@@ -2759,7 +2829,7 @@ def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
     >>> Vci = [256/78.114/1000, 74.57/39.948/1000]
     >>> Mi = [78.114, 39.948]
     >>> wi = [0.21, -0.002]
-    >>> Cvi = [96.2/78.114, 12.5/39.948]
+    >>> Cvi = [96.2/78.114*1000, 12.5/39.948*1000]
     >>> mui = [92.5e-7, 271e-7]
     >>> ki = [0, 0]
     >>> mu = MuG_Chung(T, xi, Tci, Vci, Mi, wi, mui, ki)
@@ -2778,7 +2848,7 @@ def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
     """
     # Molar values
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
-    Cvi = [Cv*M for Cv, M in zip(Cvi, Mi)]
+    Cvi = [Cv*M/1000 for Cv, M in zip(Cvi, Mi)]
     Cvm = sum([x*Cv for x, Cv in zip(xi, Cvi)])
 
     sigmai = [0.809*Vc**(1/3) for Vc in Vci]                            # Eq 4
@@ -2893,6 +2963,21 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
     k : float
         High-pressure gas thermal conductivity [W/m/k]
 
+    Examples
+    --------
+    Example 10-7 from [3]_; 75.5% methane, 24.5% CO2 at 370.8K and 174.8bar
+
+    >>> Tc = [190.56, 304.12]
+    >>> Vc = [98.6/16.043/1000, 94.07/44.01/1000]
+    >>> M = [16.043, 44.01]
+    >>> w = [0.011, 0.225]
+    >>> x = [0.755, 0.245]
+    >>> D = [0, 0]
+    >>> k = [0, 0]
+    >>> args = (370.8, x, Tc, Vc, M, w, D, k, 1/159*22.9*1000, 0.0377)
+    >>> "%0.3f" % ThG_P_Chung(*args)
+    '0.058'
+
     References
     ----------
     .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
@@ -2991,7 +3076,7 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
         for x_j, k in zip(xi, kiji):
             km += x_i*x_j*k
 
-    rho = rho/Mm
+    rho = rho/Mm/1000
     Vcm = (sm/0.809)**3                                                # Eq 16
     Tcm = 1.2593*ekm                                                   # Eq 17
     murm = 131.3*Dm/(Vcm*Tcm)**0.5                                     # Eq 22
@@ -3022,7 +3107,6 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
     kk = ko*(1/H2 + B6*Y)
     kp = (3.039e-4*(Tcm/Mm)**0.5/Vcm**(2/3))*B7*Y**2*H2*T_**0.5
 
-    print(B1*((1-exp(-B4*Y))/Y)+B2*G1*exp(B5*Y)+B3*G1)
     return unidades.ThermalConductivity(kk+kp, "calscmK")
 
 
@@ -3348,30 +3432,161 @@ def Tension(xi, sigmai):
 
 class Mezcla(config.Entity):
     """
-    Class to model mixure calculation, component, physics properties, mix rules
-    Parameter:
-        tipo: kind of mix definition
-            0 - Undefined
-            1 - Unitary Massflow
-            2 - Unitary Molarflow
-            3 - Mass flow and molar fractions
-            4 - Mass flow and mass fractions
-            5 - Molar flow and molar fractions
-            6 - Molar flow and mass fractions
-        kwargs: any of this variable for define mixture
-            fraccionMolar
-            fraccionMasica
-            caudalMasico
-            caudalMolar
-            caudalUnitarioMasico
-            caudalUnitarioMolar
+    Class to model mixture calculation, components, physics properties, mixing
+    rules, entity save/load layer.
+
+    Parameters
+    ----------
+    tipo: kind of mix definition
+        0 - Undefined
+        1 - Unitary Massflow
+        2 - Unitary Molarflow
+        3 - Mass flow and molar fractions
+        4 - Mass flow and mass fractions
+        5 - Molar flow and molar fractions
+        6 - Molar flow and mass fractions
+    kwargs: any of this variable for define mixture
+        fraccionMolar
+        fraccionMasica
+        caudalMasico
+        caudalMolar
+        caudalUnitarioMasico
+        caudalUnitarioMolar
+
+    Additionally can define custom calculation method with the parameters:
+        ids: List with component index of mixture
+        rhoLMix: Liquid density correlation index
+        Corr_RhoLMix: Compressed liquid density correlation index
+        MuLMix: Liquid viscosity correlation index
+        MuGMix: Gas viscosity correlation index
+        corr_MuGMix: Compressed gas viscosity correlation index
+        ThCondLMix: Liquid thermal conductivity correlation index
+        ThCondGMix: Gas thermal conductivity correlation index
+        corr_ThCondGMix: Compressed gas thermal conductivity correlation
+
+    This option overwrite the project configuration and the user configuration,
+    for now only in API usage. Not custom stream property definition in main
+    program
+
+    Examples
+    --------
+    This are several ejemples of usage of this class with several configuration
+    definition, obviously not all correlation return valid values.
+
+    Liquid density methods: Example from [2]_;
+    58.71% ethane, 41.29% heptane at 91ºF
+
+    >>> xi = [0.5871, 0.4129]
+    >>> c0 = Mezcla(2, ids=[3, 11], caudalUnitarioMolar=xi, RhoLMix=0)
+    >>> c1 = Mezcla(2, ids=[3, 11], caudalUnitarioMolar=xi, RhoLMix=1)
+    >>> args = (unidades.Temperature(91, "F"), 101325)
+    >>> "%0.2f %0.2f" % (c0.RhoL(*args).kgl, c1.RhoL(*args).kgl)
+    '0.57 0.57'
+
+    Example from [3]_; 20% ethane, 80% nC10 at 166F and 3000psi
+
+    >>> c0 = Mezcla(2, ids=[3, 14], caudalUnitarioMolar=[2, 8], RhoLPMix=0)
+    >>> c1 = Mezcla(2, ids=[3, 14], caudalUnitarioMolar=[2, 8], RhoLPMix=1)
+    >>> c2 = Mezcla(2, ids=[3, 14], caudalUnitarioMolar=[2, 8], RhoLPMix=2)
+    >>> args = (unidades.Temperature(160, "F"), unidades.Pressure(3000, "psi"))
+    >>> "%0.3f %0.3f" % (c0.RhoL(*args).kgl, c1.RhoL(*args).kgl)
+    '0.678 0.681'
+    >>> "%0.3f" % c2.RhoL(*args).kgl
+    '0.687'
+
+    Gas viscosity methods: Example 9-4 from [3]_; 28.6% N2, 71.4% R22 at 50ºC
+
+    >>> c0 = Mezcla(2, ids=[46, 220], caudalUnitarioMolar=[286, 714], MuGMix=0)
+    >>> c1 = Mezcla(2, ids=[46, 220], caudalUnitarioMolar=[286, 714], MuGMix=1)
+    >>> c2 = Mezcla(2, ids=[46, 220], caudalUnitarioMolar=[286, 714], MuGMix=2)
+    >>> c3 = Mezcla(2, ids=[46, 220], caudalUnitarioMolar=[286, 714], MuGMix=3)
+    >>> c4 = Mezcla(2, ids=[46, 220], caudalUnitarioMolar=[286, 714], MuGMix=4)
+    >>> args = (unidades.Temperature(50, "C"), 101325, 0)
+    >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).microP, c1.Mu_Gas(*args).microP)
+    '151.22 160.94'
+    >>> "%0.2f %0.2f" % (c2.Mu_Gas(*args).microP, c3.Mu_Gas(*args).microP)
+    '156.18 148.89'
+    >>> "%0.2f" % c4.Mu_Gas(*args).microP
+    '148.66'
+
+    Example 9-14 in [3]_, 80% methane, 20% nC10 at 377.6K and 413.7bar
+
+    >>> c0 = Mezcla(2, ids=[2, 14], caudalUnitarioMolar=[8, 2], MuGPMix=0)
+    >>> c1 = Mezcla(2, ids=[2, 14], caudalUnitarioMolar=[8, 2], MuGPMix=1)
+    >>> c2 = Mezcla(2, ids=[2, 14], caudalUnitarioMolar=[8, 2], MuGPMix=2)
+    >>> c3 = Mezcla(2, ids=[2, 14], caudalUnitarioMolar=[8, 2], MuGPMix=3)
+    >>> c4 = Mezcla(2, ids=[2, 14], caudalUnitarioMolar=[8, 2], MuGPMix=4)
+    >>> args = (377.6, 413.7e5, 448.4)
+
+    >>> "%0.2f %0.2f" % (c0.Mu_Gas(*args).muPas, c1.Mu_Gas(*args).muPas)
+    '55.66 112.22'
+    >>> "%0.2f %0.2f" % (c2.Mu_Gas(*args).muPas, c3.Mu_Gas(*args).muPas)
+    '83.37 40.78'
+    >>> "%0.2f" % c4.Mu_Gas(*args).muPas
+    '39.91'
+
+    Liquid viscosity methods: Example A from [2]_;
+    29.57% nC16, 35.86% benzene, 34.57% nC6 at 77ºF
+
+    >>> x = [0.2957, 0.3586, 0.3457]
+    >>> c0 = Mezcla(2, ids=[20, 40, 10], caudalUnitarioMolar=x, MuLMix=0)
+    >>> c1 = Mezcla(2, ids=[20, 40, 10], caudalUnitarioMolar=x, MuLMix=1)
+    >>> args = (unidades.Temperature(77, "F"), 101325)
+    >>> "%0.2f %0.2f" % (c0.Mu_Liquido(*args).cP, c1.Mu_Liquido(*args).cP)
+    '0.88 0.76'
+
+    Liquid thermal conductivity methods:
+    Example from [2]_ 68% nC7, 32% CycloC5 at 32F and 1atm
+    >>> x = [0.68, 0.32]
+    >>> c0 = Mezcla(2, ids=[11, 36], caudalUnitarioMolar=x, ThCondLMix=0)
+    >>> c1 = Mezcla(2, ids=[11, 36], caudalUnitarioMolar=x, ThCondLMix=1)
+    >>> args = (unidades.Temperature(32, "F"), 101325, 0)
+    >>> "%0.3f %0.3f" % (c0.ThCond_Liquido(*args), c1.ThCond_Liquido(*args))
+    '0.132 0.132'
+
+    Gas thermal conductivity methods:
+    Example 10-5 from [3]_; 25% benzene, 75% Argon at 100.6ºC and 1bar
+
+    >>> x = [0.25, 0.75]
+    >>> c0 = Mezcla(2, ids=[40, 98], caudalUnitarioMolar=x, ThCondGMix=0)
+    >>> c1 = Mezcla(2, ids=[40, 98], caudalUnitarioMolar=x, ThCondGMix=1)
+    >>> c2 = Mezcla(2, ids=[40, 98], caudalUnitarioMolar=x, ThCondGMix=2)
+    >>> args = (unidades.Temperature(100.6, "C"), 1e5, 0)
+    >>> "%0.4f %0.4f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
+    '0.0187 0.0197'
+    >>> "%0.4f" % c2.ThCond_Gas(*args)
+    '0.0223'
+
+    Example 10-6 from [3]_; 75.5% methane, 24.5% CO2 at 370.8K and 174.8bar
+    Here the Chung method is the best option to get the low pressure thermal
+    conductivity of mixture
+
+    >>> x = [0.755, 0.245]
+    >>> c0 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=0)  # noqa
+    >>> c1 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=1)
+    >>> c2 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=2)
+    >>> args = (370.8, 174.8e5, 1/159*22.9*1000)
+    >>> "%0.4f %0.4f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
+    '0.0526 0.0548'
+    >>> "%0.4f" % c2.ThCond_Gas(*args)
+    '0.0580'
     """
     kwargs = {"caudalMasico": 0.0,
               "caudalMolar": 0.0,
               "caudalUnitarioMolar": [],
               "caudalUnitarioMasico": [],
               "fraccionMolar": [],
-              "fraccionMasica": []}
+              "fraccionMasica": [],
+
+              "RhoLMix": None,
+              "RhoLPMix": None,
+              "MuLMix": None,
+              "MuGMix": None,
+              "MuGPMix": None,
+              "ThCondLMix": None,
+              "ThCondGMix": None,
+              "ThCondGPMix": None
+              }
 
     METHODS_RhoL = ["Rackett", "COSTALD"]
     METHODS_RhoLP = ["Aalto-Keskinen (1996)", "Tait-COSTALD (1982",
@@ -3406,7 +3621,7 @@ class Mezcla(config.Entity):
                 self.ids = eval(txt)
             else:
                 self.ids = txt
-        self.componente = [Componente(int(i)) for i in self.ids]
+        self.componente = [Componente(int(i), **kwargs) for i in self.ids]
         fraccionMolar = self.kwargs.get("fraccionMolar", None)
         fraccionMasica = self.kwargs.get("fraccionMasica", None)
         caudalMasico = self.kwargs.get("caudalMasico", None)
@@ -3521,14 +3736,17 @@ class Mezcla(config.Entity):
     def __call__(self):
         pass
 
-    def _arraylize(self, prop):
+    def _arraylize(self, prop, unit=None):
         """Get the compounds property prop as list
         prop: a string code with the property to return
             f_acent, M, Vc, Tc,...
         """
         array = []
         for cmp in self.componente:
-            array.append(cmp.__getattribute__(prop))
+            value = cmp.__getattribute__(prop)
+            if unit:
+                value = value.__getattribute__(unit)
+            array.append(value)
         return array
 
     def _Ho(self, T):
@@ -3569,15 +3787,19 @@ class Mezcla(config.Entity):
     def RhoL(self, T, P):
         """Calculate the density of liquid phase using any of available
         correlation"""
-        method = self.Config.getint("Transport", "RhoLMix")
-        Pcorr = self.Config.getint("Transport", "Corr_RhoLMix")
+        method = self.kwargs["RhoLMix"]
+        if method is None or method >= len(Mezcla.METHODS_RhoL):
+            method = self.Config.getint("Transport", "RhoLMix")
+        Pcorr = self.kwargs["RhoLPMix"]
+        if Pcorr is None or method >= len(Mezcla.METHODS_RhoLP):
+            Pcorr = self.Config.getint("Transport", "Corr_RhoLMix")
 
         # Calculate of low pressure viscosity
         if method == 0:
             Tci = self._arraylize("Tc")
             Pci = self._arraylize("Pc")
             Vci = self._arraylize("Vc")
-            Zrai = self._arraylize("Zra")
+            Zrai = self._arraylize("rackett")
             Mi = self._arraylize("M")
             rhos = RhoL_RackettMix(T, self.fraccion, Tci, Pci, Vci, Zrai, Mi)
         elif method == 1:
@@ -3597,9 +3819,8 @@ class Mezcla(config.Entity):
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
             Mi = self._arraylize("M")
-            Ps = self.Pv(T)
             rho = RhoL_AaltoKeskinenMix(
-                T, P, self.fraccion, Tci, Pci, Vci, wi, Mi, Ps, rhos)
+                T, P, self.fraccion, Tci, Pci, Vci, wi, Mi, rhos)
         elif Pcorr == 1:
             Tci = self._arraylize("Tc")
             Vci = self._arraylize("Vc")
@@ -3614,23 +3835,24 @@ class Mezcla(config.Entity):
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
             Mi = self._arraylize("M")
-            Ps = self.Pv(T)
-            rho = RhoL_NasrifarMix(
-                T, P, self.fraccion, Tci, Vci, wi, Mi, Ps, rhos)
+            rho = RhoL_NasrifarMix(T, P, self.fraccion, Tci, Vci, wi, Mi, rhos)
         elif Pcorr == 3:
             Tci = self._arraylize("Tc")
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
             Mi = self._arraylize("M")
-            Ps = self.Pv(T)
             rho = RhoL_APIMix(T, P, self.fraccion, Tci, Pci, rhos)
 
         return rho
 
     def Mu_Gas(self, T, P, rho):
         """General method for calculate viscosity of gas"""
-        method = self.Config.getint("Transport", "MuGMix")
-        Pcorr = self.Config.getint("Transport", "Corr_MuGMix")
+        method = self.kwargs["MuGMix"]
+        if method is None or method >= len(Mezcla.METHODS_MuG):
+            method = self.Config.getint("Transport", "MuGMix")
+        Pcorr = self.kwargs["MuGPMix"]
+        if Pcorr is None or method >= len(Mezcla.METHODS_MuGP):
+            Pcorr = self.Config.getint("Transport", "Corr_MuGMix")
 
         # Calculate of low pressure viscosity
         if method == 0:
@@ -3638,8 +3860,8 @@ class Mezcla(config.Entity):
             Pci = self._arraylize("Pc")
             Mi = self._arraylize("M")
             Mi = self._arraylize("M")
-            Di = self._arraylize("dipole")
-            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
+            Di = self._arraylize("dipole", "Debye")
+            mui = [cmp.Mu_Gas(T, 101325, rho) for cmp in self.componente]
             muo = MuG_Reichenberg(T, self.fraccion, Tci, Pci, Mi, mui, Di)
         elif method == 1:
             Tci = self._arraylize("Tc")
@@ -3647,7 +3869,7 @@ class Mezcla(config.Entity):
             Vci = self._arraylize("Vc")
             Zci = self._arraylize("Zc")
             Mi = self._arraylize("M")
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             muo = MuG_Lucas(
                 T, 101325, self.fraccion, Tci, Pci, Vci, Zci, Mi, Di)
         elif method == 2:
@@ -3655,7 +3877,7 @@ class Mezcla(config.Entity):
             Vci = self._arraylize("Vc")
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             ki = [cmp._K_Chung() for cmp in self.componente]
             muo = MuG_Chung(T, self.fraccion, Tci, Vci, Mi, wi, Di, ki)
         elif method == 3:
@@ -3676,17 +3898,17 @@ class Mezcla(config.Entity):
             Vci = self._arraylize("Vc")
             Zci = self._arraylize("Zc")
             Mi = self._arraylize("M")
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             mu = MuG_Lucas(T, P, self.fraccion, Tci, Pci, Vci, Zci, Mi, Di)
         elif Pcorr == 1:
             Tci = self._arraylize("Tc")
             Vci = self._arraylize("Vc")
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             ki = [cmp._K_Chung() for cmp in self.componente]
             mu = MuG_P_Chung(
-                T, self.fraction, Tci, Vci, Mi, wi, Di, ki, rho, muo)
+                T, self.fraccion, Tci, Vci, Mi, wi, Di, ki, rho, muo)
         elif Pcorr == 2:
             Tci = self._arraylize("Tc")
             Vci = self._arraylize("Vc")
@@ -3694,7 +3916,7 @@ class Mezcla(config.Entity):
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
             mu = MuG_TRAPP(
-                T, P, self.fraction, Tci, Vci, Zci, Mi, wi, rho, muo)
+                T, P, self.fraccion, Tci, Vci, Zci, Mi, wi, rho, muo)
         elif Pcorr == 3:
             Tci = self._arraylize("Tc")
             Pci = self._arraylize("Pc")
@@ -3711,7 +3933,9 @@ class Mezcla(config.Entity):
 
     def Mu_Liquido(self, T, P):
         """General method for calculate viscosity of Liquid"""
-        method = self.Config.getint("Transport", "MuLMix")
+        method = self.kwargs["MuLMix"]
+        if method is None or method >= len(Mezcla.METHODS_MuL):
+            method = self.Config.getint("Transport", "MuLMix")
 
         if method == 0:
             mui = [cmp.Mu_Liquido(T, P) for cmp in self.componente]
@@ -3731,7 +3955,9 @@ class Mezcla(config.Entity):
 
     def ThCond_Liquido(self, T, P, rho):
         """General method for calculate surface tension"""
-        method = self.Config.getint("Transport", "ThCondLMix")
+        method = self.kwargs["ThCondLMix"]
+        if method is None or method >= len(Mezcla.METHODS_ThL):
+            method = self.Config.getint("Transport", "ThCondLMix")
 
         if method == 0:
             Vi = [1/cmp.RhoL(T, P) for cmp in self.componente]
@@ -3746,20 +3972,24 @@ class Mezcla(config.Entity):
 
     def ThCond_Gas(self, T, P, rho):
         """General method for calculate thermal conductivity of gas"""
-        method = self.Config.getint("Transport", "MuGMix")
-        Pcorr = self.Config.getint("Transport", "Corr_MuGMix")
+        method = self.kwargs["ThCondGMix"]
+        if method is None or method >= len(Mezcla.METHODS_ThG):
+            method = self.Config.getint("Transport", "ThCondGMix")
+        Pcorr = self.kwargs["ThCondGPMix"]
+        if Pcorr is None or method >= len(Mezcla.METHODS_ThGP):
+            Pcorr = self.Config.getint("Transport", "Corr_ThCondGMix")
 
         # Calculate of low pressure viscosity
         if method == 0:
             Mi = self._arraylize("M")
-            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
-            ki = [cmp.ThCond_Liquido(T, P, rho) for cmp in self.componente]
+            mui = [cmp.Mu_Gas(T, 101325, rho) for cmp in self.componente]
+            ki = [cmp.ThCond_Gas(T, P, rho) for cmp in self.componente]
             ko = ThG_MasonSaxena(self.fraccion, Mi, mui, ki)
         elif method == 1:
             Mi = self._arraylize("M")
             Tbi = self._arraylize("Tb")
-            mui = [cmp.Mu_Gas(T, 101325, None) for cmp in self.componente]
-            ki = [cmp.ThCond_Liquido(T, P, rho) for cmp in self.componente]
+            mui = [cmp.Mu_Gas(T, 101325, rho) for cmp in self.componente]
+            ki = [cmp.ThCond_Gas(T, P, rho) for cmp in self.componente]
             ko = ThG_LindsayBromley(T, self.fraccion, Mi, Tbi, mui, ki)
         elif method == 2:
             Tci = self._arraylize("Tc")
@@ -3767,7 +3997,7 @@ class Mezcla(config.Entity):
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
             Cvi = [cmp.Cv(T) for cmp in self.componente]
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             ki = [cmp._K_Chung() for cmp in self.componente]
             mu = MuG_Chung(T, self.fraccion, Tci, Vci, Mi, wi, Di, ki)
             ko = ThG_Chung(T, self.fraccion, Tci, Vci, Mi, wi, Cvi, mu)
@@ -3795,7 +4025,7 @@ class Mezcla(config.Entity):
             Vci = self._arraylize("Vc")
             Mi = self._arraylize("M")
             wi = self._arraylize("f_acent")
-            Di = self._arraylize("dipole")
+            Di = self._arraylize("dipole", "Debye")
             ki = [cmp._K_Chung() for cmp in self.componente]
             k = ThG_P_Chung(
                 T, self.fraccion, Tci, Vci, Mi, wi, Di, ki, rho, ko)
@@ -3858,7 +4088,7 @@ class Mezcla(config.Entity):
         l = lista[:]
         for i in self.zeros:
             l.insert(i, val)
-        # return l
+        return l
 
 # TODO:
 # ThL_Rowley
