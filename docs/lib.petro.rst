@@ -5,3 +5,5 @@ lib.petro module
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. include:: lib.petro_ref.rst

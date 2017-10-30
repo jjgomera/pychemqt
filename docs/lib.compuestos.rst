@@ -6,4 +6,4 @@ lib.compuestos module
     :undoc-members:
     :show-inheritance:
 
-.. include:: lib.compuestos-ref.rst
+.. include:: lib.compuestos_ref.rst
