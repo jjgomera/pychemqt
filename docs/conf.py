@@ -20,6 +20,16 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('..'))
 os.environ["pychemqt"] = os.path.abspath('..')
+os.environ["freesteam"] = "False"
+os.environ["pybel"] = "False"
+os.environ["CoolProp"] = "False"
+os.environ["refprop"] = "False"
+os.environ["ezodf"] = "False"
+os.environ["openpyxl"] = "False"
+os.environ["xlwt"] = "False"
+os.environ["icu"] = "False"
+os.environ["reportlab"] = "False"
+os.environ["PyQt5.Qsci"] = "False"
 
 # -- General configuration ------------------------------------------------
 
