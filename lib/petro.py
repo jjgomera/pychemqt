@@ -15,12 +15,79 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Petroleum fractions hypotethical pseudocomponent definition
-###############################################################################
+Petroleum fractions hypotethical pseudocomponent definition
+
+:func:`Petroleo`: The main class with all integrated functionality
+
+Correlation for calculation of properties:
+
+    * :func:`prop_Ahmed`
+    * :func:`prop_Riazi_Daubert_1980`
+    * :func:`prop_Riazi_Daubert`
+    * :func:`prop_Cavett`
+    * :func:`prop_Lee_Kesler`
+    * :func:`prop_Sim_Daubert`
+    * :func:`prop_Watansiri_Owens_Starling`
+    * :func:`prop_Rowe`
+    * :func:`prop_Standing`
+    * :func:`prop_Willman_Teja`
+    * :func:`prop_Magoulas_Tassios`
+    * :func:`prop_Tsonopoulos`
+    * :func:`prop_Twu`
+    * :func:`prop_Sancet`
+    * :func:`prop_Silva_Rodriguez`
+    * :func:`Tb_Soreide`
+    * :func:`vc_Hall_Yarborough`
+    * :func:`M_Goossens`
+    * :func:`w_Korsten`
+    * :func:`prop_Riazi`
+    * :func:`prop_Riazi_Alsahhaf`
+    * :func:`prop_Riazi_Alsahhaf_PNA`
+
+Correlations for Zc calculations:
+    * :func:`Zc_Hougen`
+    * :func:`Zc_Reid`
+    * :func:`Zc_Salerno`
+    * :func:`Zc_Nath`
+    * :func:`Zc_Lee_Kesler`
+
+Distillation curves interconversiono methods:
+    * :func:`D86_TBP_Riazi`
+    * :func:`D86_TBP_Daubert`
+    * :func:`SD_D86_Riazi`
+    * :func:`SD_D86_Daubert`
+    * :func:`D86_EFV`
+    * :func:`SD_TBP`
+    * :func:`D1160_TBP_10mmHg`
+    * :func:`Tb_Pressure`
+    * :func:`curve_Predicted`
+    * :func:`_Tb_Predicted`
+
+Advanced petroleum fraction properties:
+    * :func:`PourPoint`
+    * :func:`AnilinePoint`
+    * :func:`SmokePoint`
+    * :func:`FreezingPoint`
+    * :func:`CloudPoint`
+    * :func:`CetaneIndex`
+    * :func:`H_Riazi`
+    * :func:`H_Goossens`
+    * :func:`H_ASTM`
+    * :func:`H_Jenkins_Walsh`
+    * :func:`viscoAPI`
+    * :func:`SUS`
+    * :func:`SFS`
+    * :func:`S_Riazi`
+
+PNA decomposition procedures:
+    * :func:`PNA_Riazi`
+    * :func:`PNA_Peng_Robinson`
+    * :func:`PNA_Bergman`
+    * :func:`PNA_van_Nes`
+'''
 
 
 from configparser import ConfigParser
@@ -215,12 +282,19 @@ __doi__ = {
          "ref": "ASTM manual series MNL50, 2005",
          "doi": ""},
     30:
+        {"autor": "ASTM D2161-05",
+         "title": "Standard Practice for Conversion of Kinematic Viscosity to "
+                  "Saybolt Universal Viscosity or to Saybolt Furol Viscosity",
+         "ref": "ASTM International, West Conshohocken, PA 2005, www.astm.org",
+         "doi": "10.1520/D2161-05"},
+
+
+
+    31:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
-
-
     51:
         {"autor": "Riazi, M. R. and Daubert, T. E.",
          "title": "Analytical Correlations Interconvert Distillation Curve "
@@ -311,21 +385,6 @@ __doi__ = {
 
 
     66:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-    67:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-    68:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-    69:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -3191,6 +3250,97 @@ def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
     return vs
 
 
+def SUS(T, v):
+    """Calculate the Saybolt Universal Viscosity in Saybolt Universal Seconds
+    (SUS) from kinematic viscosity, also referenced in API Procedure 11A1.1,
+    pag 1027
+
+    Parameters
+    ------------
+    T : float
+        Temperature, [K]
+    v : float
+        Kinematic viscosity, [cSt]
+
+    Returns
+    -------
+    SUS : float
+        Saybolt Universal Seconds, [s]
+
+    Examples
+    --------
+    Example A from [20]_, SUS at 200ºF for ν=53cSt
+
+    >>> T = unidades.Temperature(617, "F")
+    >>> "%0.0f" % SUS(T, 53)
+    '254'
+
+    Example B from [20]_, SUS at 0ºF for ν=90cSt
+
+    >>> T = unidades.Temperature(0, "F")
+    >>> "%0.0f" % SUS(T, 90)
+    '415'
+
+    References
+    ----------
+    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [30]_ ASTM D2161-05. Standard Practice for Conversion of Kinematic
+        Viscosity to Saybolt Universal Viscosity or to Saybolt Furol Viscosity.
+        ASTM International, West Conshohocken, PA, 2005, www.astm.org
+    """
+    # Convert input temperature to Fahrenheit
+    t_F = unidades.K2F(T)
+
+    # Eq 5
+    U100 = 4.6324*v + (1+0.03264*v)/(3930.2+262.7*v+23.97*v**2+1.646*v**3)*1e5
+
+    # Eq 6
+    Ut = (1+0.000061*(t_F-100))*U100
+    return unidades.Time(Ut)
+
+
+def SFS(T, v):
+    """Calculate the Saybolt Furol Viscosity in Saybolt Furol Seconds
+    (SFS) from kinematic viscosity, also referenced in API Procedure 11A1.4,
+    pag 1031
+
+    Parameters
+    ------------
+    T : float
+        Temperature, [K]
+    v : float
+        Kinematic viscosity, [cSt]
+
+    Returns
+    -------
+    SFS : float
+        Saybolt Furol Seconds, [s]
+
+    Examples
+    --------
+    Example A from [20]_, SFS at 122ºF and 210ºF for ν122=300cSt, v210=100cSt
+
+    >>> T = unidades.Temperature(122, "F")
+    >>> "%0.1f" % SFS(T, 300)
+    '141.7'
+    >>> T = unidades.Temperature(210, "F")
+    >>> "%0.1f" % SFS(T, 100)
+    '48.4'
+
+    References
+    ----------
+    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [30]_ ASTM D2161-05. Standard Practice for Conversion of Kinematic
+        Viscosity to Saybolt Universal Viscosity or to Saybolt Furol Viscosity.
+        ASTM International, West Conshohocken, PA, 2005, www.astm.org
+    """
+    if T == 323.15:
+        S = 0.4717*v+13924/(v**2-72.59*v+6816)                         # Eq 7
+    else:
+        S = 0.4792*v+5610/(v**2+2130)                                   # Eq 8
+    return unidades.Time(S)
+
+
 # Component predition
 def H_Riazi(S, CH):
     """Calculate hydrogen content of petroleum fractions
@@ -3824,13 +3974,15 @@ class Petroleo(newComponente):
             visco = viscoAPI(self.Tb, self.Kw)
             self.v100 = visco["v100"]
 
-       # #Calculo de Viscosity gravity constant (VGC), preferiblemente usando la viscosidad a 100ºF
-        # if self.kwargs["v210"] and not self.kwargs["v100"]:
-            # v99SUS = SUS(99+273.15, self.v210.cSt)
-            # self.VGC = (self.SG-0.24-0.022*log10(v99SUS-35.5))
-        # else:
-            # v38SUS = SUS(38+273.15, self.v100.cSt)
-            # self.VGC = (10*self.SG-1.0752*log10(v38SUS-38))/(10-log10(v38SUS-38))
+        # Calculate Viscosity gravity constant (VGC)
+        if self.kwargs["v210"] and not self.kwargs["v100"]:
+            T = unidades.Temperature(210, "F")
+            vSUS = SUS(T, self.v210.cSt)
+            self.VGC = (self.SG-0.24-0.022*log10(vSUS-35.5))
+        else:
+            T = unidades.Temperature(100, "F")
+            vSUS = SUS(T, self.v100.cSt)
+            self.VGC = (10*self.SG-1.0752*log10(vSUS-38))/(10-log10(vSUS-38))
 
         if not self.hasSG:
             self.d20 = self.SG-4.5e-3*(2.34-1.9*self.SG)
@@ -4133,13 +4285,14 @@ class Petroleo(newComponente):
     def _PNA(self):
         """Calculate the Paraffin-Naphthenes-Aromatics group composition"""
         if self.Preferences.getint("petro", "PNA") == 0:
-            xp, xn, xa = PNA_Riazi(self.M, self.SG, self.n, d20=None, VGC=None, CH=None)
+            xp, xn, xa = PNA_Riazi(
+                self.M, self.SG, self.n, d20=None, VGC=self.VGC, CH=None)
         elif self.Preferences.getint("petro", "PNA") == 1:
-            xp, xn, xa = PNA_Bergman(Tb, SG, Kw)
+            xp, xn, xa = PNA_Bergman(self.Tb, self.SG, self.Kw)
         elif self.Preferences.getint("petro", "PNA") == 2:
-            xp, xn, xa = PNA_Peng_Robinson(Nc, M, WABP)
+            xp, xn, xa = PNA_Peng_Robinson(self.Nc, self.M, self.WABP)
         else:
-            xp, xn, xa = PNA_van_Nes(M, n, d20, S)
+            xp, xn, xa = PNA_van_Nes(self.M, self.n, self.d20, self.S)
         return xp, xn, xa
 
     def peso_molecular_API(self):
@@ -4618,145 +4771,6 @@ class Petroleo(newComponente):
         h=16.796+54.5*self.API-0.217*self.API**2-0.0019*self.API**3
         lhv=h-0.01*h*(self.water+self.S+self.ash)+40.5*self.S-10.53*self.water
         return unidades.Enthalpy(lhv, "Btulb")
-
-
-def Desglose_aromaticos(Ri, m):
-    """Devuelve fracciones para los aromaticos monocíclicos y policíclicos"""
-    xma = -62.8245+59.90816*Ri-0.0248335*m
-    xpa = 11.88175-11.2213*Ri+0.023745*m
-    return xma, xpa
-
-
-def Hydrates_Sloan(prop, T=None, P=None, y=[]):
-    """Sloan, E. “Phase Equilibria of Natural Gas Hydrates.” Paper presented at the Gas Producers Association Annual Conference, New Orleans, March 19–21, 1984.
-    prop: propiedad a calcular, T, P
-    T: temperatura
-    P: presión
-    y: composición, array con las fracciones molares de los componentes subceptibles de formar hidratos, [CH4, C2H6, C3H8, i-C4H10, n-C4H10, N2, CO2, H2S]
-    """
-    T = unidades.Temperature(T)
-    P = unidades.Pressure(P, "atm")
-    A0 = [1.63636, 6.41934, -7.8499, -2.17137, -37.211, 1.78857, 9.0242, -4.7071]
-    A1 = [0.0,  0.0,  0.0,  0.0,  0.86564,  0.0,  0.0,  0.06192]
-    A2 = [0.0,  0.0,  0.0,  0.0,  0.0,  -0.001356,  0.0,  0.0]
-    A3 = [31.6621,  -290.283,  47.056,  0.0,  732.20,  -6.187,  -207.033,  82.627]
-    A4 = [-49.3534,  2629.10,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
-    A5 = [5.31e-6, 0.0, -1.17e-6, 0.0, 0.0, 0.0, 4.66e-5, -7.39e-6]
-    A6 = [0.0, 0.0, 7.145e-4, 1.251e-3, 0.0, 0.0, -6.992e-3, 0.0]
-    A7 = [0.0, -9.0e-8, 0.0, 1.0e-8, 9.37e-6, 2.5e-7, -2.89e-6, 0.0]
-    A8 = [0.128525,  0.129759,  0.0,  0.166097,  -1.07657,  0.0,  -6.233e-3,  0.240869]
-    A9 = [-0.78338, -1.19703,  0.12348, -2.75945, 0.0, 0.0, 0.0, -0.64405]
-    A10 = [0.0, -8.46e4, 1.669e4, 0.0, 0.0, 0.0, 0.0, 0.0]
-    A11 = [0.0, -71.0352, 0.0, 0.0, -66.221, 0.0, 0.0, 0.0]
-    A12 = [0.0, 0.596404, 0.23319, 0.0, 0.0, 0.0, 0.27098, 0.0]
-    A13 = [-5.3569, -4.7437, 0.0, 0.0, 0.0, 0.0, 0.0, -12.704]
-    A14 = [0.0, 7.82e4, -4.48e4, -8.84e2, 9.17e5, 5.87e5, 0.0, 0.0]
-    A15 = [-2.3e-7, 0.0, 5.5e-6, 0.0, 0.0, 0.0, 8.82e-5, -1.3e-6]
-    A16 = [-2.0e-8, 0.0, 0.0, -5.4e-7, 4.98e-6, 1.0e-8, 2.55e-6, 0.0]
-    A17 = [0.0, 0.0, 0.0, -1.0e-8, -1.26e-6, 1.1e-7, 0.0, 0.0]
-
-    def ft(T):
-        suma = 1
-        k = []
-        for i in range(len(y)):
-            k.append(exp(A0[i]+A1[i]*T+A2[i]*P.psi+A3[i]/T+A4[i]/P.psi+A5[i]*P.psi*T+A6[i]*T**2+A7[i]*P.psi**2+A8[i]*P.psi/T+A9[i]*log(P.psi/T)+A10[i]/P.psi**2+A11[i]*T/P.psi+A12[i]*T**2/P.psi+A13[i]*P.psi/T**2+A14[i]*T/P.psi**3+A15[i]*T**3+A16[i]*P.psi**3/T**2+A17[i]*T**4))
-            suma -= y[i]/k[i]
-        return suma
-
-    def fp(P):
-        suma = 1
-        k = []
-        for i in range(len(y)):
-            k.append(exp(A0[i]+A1[i]*T.F+A2[i]*P+A3[i]/T.F+A4[i]/P+A5[i]*P*T.F+A6[i]*T.F**2+A7[i]*P**2+A8[i]*P/T.F+A9[i]*log(P/T.F)+A10[i]/P**2+A11[i]*T.F/P+A12[i]*T.F**2/P+A13[i]*P/T.F**2+A14[i]*T.F/P**3+A15[i]*T.F**3+A16[i]*P**3/T.F**2+A17[i]*T.F**4))
-            suma -= y[i]/k[i]
-        return suma
-
-    if prop == "T":
-        t = fsolve(ft, T.F)
-        hidrate = t>T
-        lim = unidades.Temperature(t, "F")
-    else:
-        p = fsolve(fp, P.psi)
-        hidrate = p>P
-        lim = unidades.Pressure(p, "psi")
-
-    return lim, hidrate
-
-
-def hidrates():
-    """Método de cálculo de las condiciones de formación de hidratos en
-    sistemas gaseosos con presencia de agua, API procedure 9B2.1, pag 947.
-    En chemcad aparece como /Tools/Hidrates"""
-    pass
-
-
-def SUS(T, v):
-    """Cálculo de la viscosidad universal de saybolt a partir de la viscosidad cinemática, API procedure 11A1.1, pag 1027
-    T: temperatura a la que correspone el valor de viscosidad en kelvin
-    v: viscosidad cinemática en cSt"""
-    t = unidades.Temperature(T)
-    Seq = 4.6324*v+(1.+0.03264*v)/(3930.2+262.7*v+23.97*v**2+1.646*v**3)*1e5
-    St = (1.+0.000061*(t.F-100))*Seq
-    return unidades.Time(St)
-
-
-def SUF(T, v):
-    """Cálculo de la viscosidad saybolt furol a partir de la viscosidad cinemática a 122ºF, API procedure 11A1.4, pag 1031
-    T: temperatura a la que correspone el valor de viscosidad, puede ser 122 o 210
-    v: viscosidad cinemática en cSt"""
-    if T == 122:
-        S = 0.4717*v+13.924/(v**2-72.59*v+6816)
-    else:
-        S = 0.4792*v+5612/(v**2+2130)
-    return unidades.Time(S)
-
-
-def Viscosidad_to_kinematic(tipo, mu, T=100):
-    """Conversión de cualquier otro valor de visocidad a viscosidad cinemática, API procedure 11A1.6, pag 1035
-    tipo: indice que indica el tipo de de viscosidad desde la que se convierte
-        1:Redwood No.1
-        2:Redwood No.2
-        3:Grados Engler
-        4:Saybolt Furol a 122ºF
-        5:Saybolt Furol a 210ºF
-        6:Saybolt universal
-    mu: valor de esa viscosidad
-    T: temperatura en fahrenheit, únicamente util cuando se parte de un valor de la viscosidad de saybolt universal a una temperatura diferente de 100F
-    valor obtenido en centistokes"""
-    if tipo == 1:
-        parametros = [0.244, 8.0, 12.5]
-    elif tipo == 2:
-        parametros = [2.44, 3.410, 9.55]
-    elif tipo == 3:
-        parametros = [7.6, 18, 1.7273]
-    elif tipo == 4:
-        parametros = [2.12, 1.0, 8.001]
-    elif tipo == 5:
-        parametros = [2.09, 2.088, 5.187]
-    elif tipo == 6:
-        parametros = [0.22, 7.336, 12.816]
-        mu = mu/(1.0+0.000061*(T-100))
-
-    return parametros[0]*mu-parametros[1]*mu/(mu**3+parametros[2])
-
-
-def Viscosidad_from_kinematic(tipo, mu):
-    """Conversión de viscosidad cinemática a cualquier otro valor de viscosidad, API procedure 11A1.6, pag 1036
-    tipo: indice que indica el tipo de de viscosidad desde la que se convierte
-        1:Redwood No.1
-        2:Redwood No.2
-        3:Grados Engler
-    mu: valor de esa viscosidad
-    valor obtenido en segundos o grados engler"""
-    if tipo == 1:
-        parametros = [4.0984, 0.038014, 0.001919, 0.0000278, 0.00000521]
-    elif tipo == 2:
-        parametros = [0.40984, 0.38014, 0.01919, 0.000278, 0.0000521]
-    elif tipo == 3:
-        parametros = [0.13158, 1.1326, 0.0104, 0.00656, 0.0]
-
-    return parametros[0]*mu+1/(parametros[1]+parametros[2]*mu+parametros[3]*mu**2+parametros[4]*mu**3)
-
 
 if __name__ == '__main__':
 #    petroleo=Petroleo()
