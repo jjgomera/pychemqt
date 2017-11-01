@@ -94,6 +94,7 @@ from configparser import ConfigParser
 
 from PyQt5.QtWidgets import QApplication
 from scipy import exp, sqrt, log10, log
+from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 from numpy.linalg import solve
 from numpy import array
@@ -3502,6 +3503,61 @@ def S_Riazi(M, SG, Ri, m):
     return S
 
 
+def CombustionHeat(API, water=0, ash=0, S=0):
+    """Calculate gross and net heat of combustion at 60ºF for petroleum
+    fractions, referenced in API procedure 14A1.3, pag 1236
+
+    Parameters
+    ------------
+    API : float
+        API Specific gravity, [-]
+    water : float
+        Weight fraction of water, [%]
+    ash : float
+        Weight fraction of inerts, [%]
+    S : float
+        Weight fraction of inerts, [%]
+
+    Returns
+    -------
+    Hgross : float
+        Gross heat of combustion, [Btu/lb]
+    Hnet : float
+        Net heat of combustion, [Btu/lb]
+
+    Examples
+    --------
+    Fuel oil with 11.3ºAPI, 1.49%S, 1.67%ash, 0.3%water
+
+    >>> hg, hn = CombustionHeat(11.3, 0.3, 1.67, 1.49)
+    >>> "%0.0f %0.0f" % (hg.Btulb, hn.Btulb)
+    '18218 17222'
+
+    References
+    ----------
+    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
+    """
+    # Interpolation data from Table 14-0.1 for normal sulfur and inert content
+    if API < 35:
+        _api = [0, 5, 10, 15, 20, 15, 30, 35]
+        _S = [2.95, 2.35, 1.8, 1.35, 1., 0.7, 0.4, 0.3]
+        _ash = [1.15, 1., 0.95, 0.85, 0.75, 0.7, 0.65, 0.6]
+
+        S -= interp1d(_api, _S)(API)
+        ash -= interp1d(_api, _ash)(API)
+
+    # Gross heating value
+    hg = 17672 + 66.6*API - 0.316*API**2 - 0.0014*API**3
+    hgc = unidades.Enthalpy(hg - 0.01*hg*(water+S+ash) + 40.5*S, "Btulb")
+
+    # Net heating value
+    hn = 16796 + 54.5*API - 0.217*API**2 - 0.0019*API**3
+    hnc = hn - 0.01*hn*(water+S+ash) + 40.5*S - 10.53*water
+    hnc = unidades.Enthalpy(hnc, "Btulb")
+
+    return hgc, hnc
+
+
 class Petroleo(newComponente):
     """Class to define a heavy oil fraction with a unknown composition
 
@@ -4043,6 +4099,8 @@ class Petroleo(newComponente):
         elif CCR > 100:
             CCR = 100
         self.CCR = unidades.Dimensionless(CCR)
+
+        self.NetHeating, self.GrossHeating = CombustionHeat(self.API, S=self.S)
 
         newComponente.calculo(self)
 
@@ -4695,19 +4753,6 @@ class Petroleo(newComponente):
         k=1.7307*A*self.Tb.R**B*self.SG**C
         return unidades.Conductividad_termica(k)
 
-
-    def Calor_combustion_bruto(self):
-        """Método de cálculo del calor de combustión bruto de una fracción petrolífera, API procedure 14A1.3, pag 1236"""
-        h=17.672+66.6*self.API-0.316*self.API**2-0.0014*self.API**3
-        hhv=h-0.01*h*(self.water+self.S+self.ash)+40.5*self.S
-        return unidades.Enthalpy(hhv, "Btulb")
-
-
-    def Calor_combustion_neto(self):
-        """Método de cálculo del calor de combustión neto de una fracción petrolífera, API procedure 14A1.3, pag 1236"""
-        h=16.796+54.5*self.API-0.217*self.API**2-0.0019*self.API**3
-        lhv=h-0.01*h*(self.water+self.S+self.ash)+40.5*self.S-10.53*self.water
-        return unidades.Enthalpy(lhv, "Btulb")
 
 if __name__ == '__main__':
 #    petroleo=Petroleo()
