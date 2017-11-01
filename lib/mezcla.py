@@ -55,7 +55,7 @@ Gas thermal conductivity calculation methods:
     * :func:`ThG_MasonSaxena`
     * :func:`ThG_LindsayBromley`
     * :func:`ThG_Chung`
-    * :func:`ThG_StielThodos`
+    * :func:`ThG_StielThodosYorizane`
     * :func:`ThG_TRAPP`
     * :func:`ThG_P_Chung`
 
@@ -63,12 +63,12 @@ Surface tension calculation methods:
     * :func:`Tension`
 
 Mixture mass definition:
-    * :func:`_mix_from_unitmassflow`
-    * :func:`_mix_from_unitmolarflow`
-    * :func:`_mix_from_massflow_and_massfraction`
-    * :func:`_mix_from_massflow_and_molarfraction`
-    * :func:`_mix_from_molarflow_and_massfraction`
-    * :func:`_mix_from_molarflow_and_molarfraction`
+    * :func:`mix_unitmassflow`
+    * :func:`mix_unitmolarflow`
+    * :func:`mix_massflow_massfraction`
+    * :func:`mix_massflow_molarfraction`
+    * :func:`mix_molarflow_massfraction`
+    * :func:`mix_molarflow_molarfraction`
 """
 
 
@@ -207,7 +207,7 @@ __doi__ = {
 }
 
 
-def _mix_from_unitmassflow(unitMassFlow, cmps):
+def mix_unitmassflow(unitMassFlow, cmps):
     """Calculate mixture composition properties with known unitMassFlow"""
     massFlow = sum(unitMassFlow)
     unitMolarFlow = [mass/cmp.M for mass, cmp in zip(unitMassFlow, cmps)]
@@ -225,7 +225,7 @@ def _mix_from_unitmassflow(unitMassFlow, cmps):
     return kw
 
 
-def _mix_from_unitmolarflow(unitMolarFlow, cmps):
+def mix_unitmolarflow(unitMolarFlow, cmps):
     """Calculate mixture composition properties with known unitMolarFlow"""
     molarFlow = sum(unitMolarFlow)
     unitMassFlow = [mol*cmp.M for mol, cmp in zip(unitMolarFlow, cmps)]
@@ -243,7 +243,7 @@ def _mix_from_unitmolarflow(unitMolarFlow, cmps):
     return kw
 
 
-def _mix_from_massflow_and_molarfraction(massFlow, molarFraction, cmps):
+def mix_massflow_molarfraction(massFlow, molarFraction, cmps):
     """Calculate mixture composition properties with known massFlow and
     molarFraction"""
     pesos = [x*cmp.M for x, cmp in zip(molarFraction, cmps)]
@@ -263,7 +263,7 @@ def _mix_from_massflow_and_molarfraction(massFlow, molarFraction, cmps):
     return kw
 
 
-def _mix_from_massflow_and_massfraction(massFlow, massFraction, cmps):
+def mix_massflow_massfraction(massFlow, massFraction, cmps):
     """Calculate mixture composition properties with known massFlow and
     massFraction"""
     unitMassFlow = [x*massFlow for x in massFraction]
@@ -281,7 +281,7 @@ def _mix_from_massflow_and_massfraction(massFlow, massFraction, cmps):
     return kw
 
 
-def _mix_from_molarflow_and_molarfraction(molarFlow, molarFraction, cmps):
+def mix_molarflow_molarfraction(molarFlow, molarFraction, cmps):
     """Calculate mixture composition properties with known molarFlow and
     molarFraction"""
     unitMolarFlow = [x*molarFlow for x in molarFraction]
@@ -299,7 +299,7 @@ def _mix_from_molarflow_and_molarfraction(molarFlow, molarFraction, cmps):
     return kw
 
 
-def _mix_from_molarflow_and_massfraction(molarFlow, massFraction, cmps):
+def mix_molarflow_massfraction(molarFlow, massFraction, cmps):
     """Calculate mixture composition properties with known molarFlow and
     massFraction"""
     moles = [x/cmp.M for x, cmp in zip(massFraction, cmps)]
@@ -367,10 +367,10 @@ def Vc_ChuehPrausnitz(xi, Vci, Mi, hydrocarbon=None):
 
     References
     ----------
-    .. [18] Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
+    [18]_ Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
         Pressures: Calculation of Critical Temperatures, Volumes and Pressures
         of Nonpolar Mixtures. AIChE Journal 13(6) (1967) 1107-1113
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Define default C parameters:
     if hydrocarbon is None:
@@ -497,10 +497,10 @@ def RhoL_RackettMix(T, xi, Tci, Pci, Vci, Zrai, Mi):
 
     References
     ----------
-    .. [9] Spencer, C.F., Danner, R.P. Prediction of Bubble-Point Density of
+    [9]_ Spencer, C.F., Danner, R.P. Prediction of Bubble-Point Density of
         Mixtures. J. Chem. Eng. Data 18(2) (1973) 230-234
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
@@ -617,11 +617,11 @@ def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
 
     References
     ----------
-    .. [10] Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
+    [10]_ Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
         Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
         653-663
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
@@ -718,10 +718,10 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
 
     References
     ----------
-    .. [11] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+    [11]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
         Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
         Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
@@ -842,10 +842,10 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
 
     References
     ----------
-    .. [12] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+    [12]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
         Correlation for Densities of Compressed Liquids and Liquid Mixtures.
         AIChE Journal 28(4) (1982): 671-76
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -928,7 +928,7 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
 
     References
     ----------
-    .. [13] Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
+    [13]_ Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
         Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
     """
     # Convert critical volumes to molar base
@@ -1035,10 +1035,10 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
 
     References
     ----------
-    .. [14] Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
+    [14]_ Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
         Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
         Data 18(2) (1973) 227-230
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Define reference state
     if To is None:
@@ -1092,10 +1092,10 @@ def _Pv(T, Tcm, Pcm, wm):
 
     References
     ----------
-    .. [11] Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
+    [11]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
         Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
         Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
-    .. [12] Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
+    [12]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
         Correlation for Densities of Compressed Liquids and Liquid Mixtures.
         AIChE Journal 28(4) (1982): 671-76
     """
@@ -1148,11 +1148,11 @@ def MuL_KendallMonroe(xi, mui):
 
     References
     ----------
-    .. [20] Kendall, J., Monroe, P. The Viscosity of Liquids II. The
+    [20]_ Kendall, J., Monroe, P. The Viscosity of Liquids II. The
         Viscosity-Composition Curve for Ideal Liquid Mixtures. J. Am. Chem.
         Soc. 39(9) (1917) 1787-1802
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     mum = 0
@@ -1284,7 +1284,7 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
 
     References
     ----------
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Calculate reduced temperatures
@@ -1423,10 +1423,10 @@ def MuG_Wilke(xi, Mi, mui):
 
     References
     ----------
-    .. [1] Wilke, C.R. A Viscosity Equation for Gas Mixtures. J. Chem. Phys.
+    [1]_ Wilke, C.R. A Viscosity Equation for Gas Mixtures. J. Chem. Phys.
         18(4) (1950) 517-519
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Eq 4
@@ -1492,7 +1492,7 @@ def MuG_Herning(xi, Mi, mui):
 
     References
     ----------
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     kij = []
@@ -1583,7 +1583,7 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
 
     References
     ----------
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
@@ -1780,10 +1780,10 @@ def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
 
     References
     ----------
-    .. [15] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [15]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
@@ -1921,10 +1921,10 @@ def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
@@ -2170,15 +2170,15 @@ def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [21] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+    [21]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
         Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
         Technical Note 1039 (1981)
-    .. [16] Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
+    [16]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
         Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
         Ref. Data 16(4) (1987) 577-798
-    .. [17] Ely, J.F. An Enskog Correction for Size and Mass Difference Effects
+    [17]_ Ely, J.F. An Enskog Correction for Size and Mass Difference Effects
         in Mixture Viscosity Prediction. J. Res. Natl. Bur. Stand. 86(6) (1981)
         597-604
     """
@@ -2423,9 +2423,9 @@ def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
 
     References
     ----------
-    .. [19] Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
+    [19]_ Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
         Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculate pseudo critical properties
     Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
@@ -2484,7 +2484,7 @@ def MuG_APIMix(T, P, xi, Tci, Pci, muo):
 
     References
     ----------
-    .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculate pseudo critical properties
     Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
@@ -2536,9 +2536,9 @@ def ThL_Li(xi, Vi, Mi, ki):
 
     References
     ----------
-    .. [4] Li, C.C. Thermal Conductivity of Liquid Mixtures. AIChE Journal
+    [4]_ Li, C.C. Thermal Conductivity of Liquid Mixtures. AIChE Journal
         22(5) (1976) 927-930
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Use critical volume in molar base
     Vi = [V*M*1000 for V, M in zip(Vi, Mi)]
@@ -2594,7 +2594,7 @@ def ThL_Power(wi, ki):
 
     References
     ----------
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     km = 0
@@ -2660,9 +2660,9 @@ def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
 
     References
     ----------
-    .. [5] Lindsay, A.L., Bromley, L.A. Thermal Conductivity of Gas Mixtures.
+    [5]_ Lindsay, A.L., Bromley, L.A. Thermal Conductivity of Gas Mixtures.
         Ind. & Eng. Chem. 42(8) (1950) 1508-1511
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculation of Sutherland constants, Eq 14
     S = []
@@ -2747,9 +2747,9 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
 
     References
     ----------
-    .. [6] Mason, E.A., Saxena, S.C. Approximate Formula for the Thermal
+    [6]_ Mason, E.A., Saxena, S.C. Approximate Formula for the Thermal
         Conductivity of Gas Mixtures. Fhys. Fluids 1(5) (1958) 361-369
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Aij coefficient with ε=1 as explain in [3]_, Eq 21
@@ -2840,10 +2840,10 @@ def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Molar values
@@ -2980,10 +2980,10 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
 
     References
     ----------
-    .. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
+    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
         Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
         Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Thermal conductivity in procedure in cal/s·cm·K
@@ -3181,10 +3181,10 @@ def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
 
     References
     ----------
-    .. [7] Yorizane, M., Yoshiumra, S., Masuoka, H., Yoshida, H. Thermal
+    [7]_ Yorizane, M., Yoshiumra, S., Masuoka, H., Yoshida, H. Thermal
         Conductivities of Binary Gas Mixtures at High Pressures: N2-O2, N2-Ar,
         CO2-Ar, CO2-CH4. Ind. Eng. Chem. Fundam. 22(4) (1983) 458-462
-    .. [3] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
@@ -3308,9 +3308,9 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
 
     References
     ----------
-    .. [1] Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
+    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
        New York: McGraw-Hill Professional, 2000.
-    .. [21] Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
+    [21]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
         Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
         Technical Note 1039 (1981)
     """
@@ -3419,10 +3419,10 @@ def Tension(xi, sigmai):
 
     References
     ----------
-    .. [8] Livingston, J.k Morgan, R., Griggs, M.A. The Properties of Mixed
+    [8]_ Livingston, J.k Morgan, R., Griggs, M.A. The Properties of Mixed
         Liquids III. The Law of Mixtures I. J. Am. Chem. Soc. 39 (1917)
         2261-2275
-    .. [2] API. Technical Data book: Petroleum Refining 6th Edition
+    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     sigma = 0
     for x, s in zip(xi, sigmai):
@@ -3639,20 +3639,20 @@ class Mezcla(config.Entity):
 
         # calculate all concentration units
         if tipo == 1:
-            kw = _mix_from_unitmassflow(caudalUnitarioMasico, self.componente)
+            kw = mix_unitmassflow(caudalUnitarioMasico, self.componente)
         elif tipo == 2:
-            kw = _mix_from_unitmolarflow(caudalUnitarioMolar, self.componente)
+            kw = mix_unitmolarflow(caudalUnitarioMolar, self.componente)
         elif tipo == 3:
-            kw = _mix_from_massflow_and_molarfraction(
+            kw = mix_massflow_molarfraction(
                 caudalMasico, fraccionMolar, self.componente)
         elif tipo == 4:
-            kw = _mix_from_massflow_and_massfraction(
+            kw = mix_massflow_massfraction(
                 caudalMasico, fraccionMasica, self.componente)
         elif tipo == 5:
-            kw = _mix_from_molarflow_and_molarfraction(
+            kw = mix_molarflow_molarfraction(
                 caudalMolar, fraccionMolar, self.componente)
         elif tipo == 6:
-            kw = _mix_from_molarflow_and_massfraction(
+            kw = mix_molarflow_massfraction(
                 caudalMolar, fraccionMasica, self.componente)
 
         caudalMolar = kw["molarFlow"]
@@ -3769,7 +3769,7 @@ class Mezcla(config.Entity):
 
         References
         ----------
-        .. [5] API. Technical Data book: Petroleum Refining 6th Edition
+        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         s = 0
         for x, xw, cmp in zip(

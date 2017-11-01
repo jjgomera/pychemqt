@@ -33,7 +33,7 @@ except:
 
 from lib import unidades
 # from lib.config import Preferences
-from lib.mezcla import _mix_from_unitmassflow, _mix_from_unitmolarflow
+from lib.mezcla import mix_unitmassflow, mix_unitmolarflow
 from lib.thermo import ThermoRefProp
 
 
@@ -366,10 +366,10 @@ class RefProp(ThermoRefProp):
         elif self._mix == 2:
             x = refprop.xmole(self.kwargs["fraccionMasica"])["x"]
         elif self._mix == 3:
-            kw = _mix_from_unitmolarflow(self.kwargs["caudalUnitarioMolar"])
+            kw = mix_unitmolarflow(self.kwargs["caudalUnitarioMolar"])
             x = kw["fraccionMolar"]
         elif self._mix == 3:
-            kw = _mix_from_unitmassflow(self.kwargs["caudalUnitarioMasico"])
+            kw = mix_unitmassflow(self.kwargs["caudalUnitarioMasico"])
             x = kw["fraccionMolar"]
         else:
             x = [1]

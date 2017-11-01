@@ -34,7 +34,7 @@ from lib.physics import R_atml, R
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws97, freeSteam, refProp, coolProp
 from lib.solids import Solid
-from lib.mezcla import Mezcla, _mix_from_molarflow_and_molarfraction
+from lib.mezcla import Mezcla, mix_molarflow_molarfraction
 from lib.psycrometry import PsychroState
 from lib.thermo import ThermoWater, ThermoAdvanced, ThermoRefProp
 
@@ -518,7 +518,7 @@ class Corriente(config.Entity):
                 self.Gas.Q = unidades.VolFlow(self.Q*(1-self.x))
                 self.Gas.caudalmasico = unidades.MassFlow(self.caudalmasico*self.x)
                 self.Gas.caudalmolar = unidades.MolarFlow(self.caudalmolar*self.x)
-                kw = _mix_from_molarflow_and_molarfraction(
+                kw = mix_molarflow_molarfraction(
                     self.Gas.caudalmolar, self.Gas.fraccion, self.componente)
                 self.Gas.caudalunitariomasico = [
                     unidades.MassFlow(f) for f in kw["unitMassFlow"]]
@@ -530,7 +530,7 @@ class Corriente(config.Entity):
                 self.Liquido.Q = unidades.VolFlow(self.Q*(1-self.x))
                 self.Liquido.caudalmasico = unidades.MassFlow(self.caudalmasico*(1-self.x))
                 self.Liquido.caudalmolar = unidades.MolarFlow(self.caudalmolar*(1-self.x))
-                kw = _mix_from_molarflow_and_molarfraction(
+                kw = mix_molarflow_molarfraction(
                     self.Liquido.caudalmolar, self.Liquido.fraccion, self.componente)
                 self.Liquido.caudalunitariomasico = [
                     unidades.MassFlow(f) for f in kw["unitMassFlow"]]

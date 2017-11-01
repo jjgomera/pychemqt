@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Pychemqt, Chemical Engineering Process simulator
+'''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2017, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,40 +15,51 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module for implement physics adimensional groups
-#   -Ar: Archimedes number
-#   -Bi: Biot number
-#   -Bo: Bond number
-#   -Eu: Euler number
-#   -Fo: Fourier number
-#   -Fr: Froude number
-#   -Ga: Galilei number
-#   -Gr: Grashof number
-#   -Gz: Graetz number
-#   -Hg: Hagen number @
-#   -Ka: Kapitza number @
-#   -Kn: Knudsen number
-#   -Le: Lewis number
-#   -Ma: Match number
-#   -Nu: Nusselt number
-#   -Pe: Péclet number
-#   -Pr: Prandtl number
-#   -Ra: Rayleigh number
-#   -Re: Reynolds number
-#   -Sh: Sherwood number
-#   -Sc: Schmidt number
-#   -St: Stanton number
-#   -We: Weber number
-###############################################################################
+This module implements physics adimensional groups
+
+    * :func:`Ar`: Archimedes number
+    * :func:`Bi`: Biot number
+    * :func:`Bo`: Bond number
+    * :func:`Eu`: Euler number
+    * :func:`Fo`: Fourier number
+    * :func:`Fr`: Froude number
+    * :func:`Ga`: Galilei number
+    * :func:`Gr`: Grashof number
+    * :func:`Gz`: Graetz number
+    * :func:`Kn`: Knudsen number
+    * :func:`Le`: Lewis number
+    * :func:`Ma`: Mach number
+    * :func:`Nu`: Nusselt number
+    * :func:`Pe`: Péclet number
+    * :func:`Pr`: Prandtl number
+    * :func:`Ra`: Rayleigh number
+    * :func:`Re`: Reynolds number
+    * :func:`Sh`: Sherwood number
+    * :func:`Sc`: Schmidt number
+    * :func:`St`: Stanton number
+    * :func:`We`: Weber number
+'''
 
 
 from scipy.constants import g
 
 from .unidades import Dimensionless
+
+
+__doi__ = {
+    1:
+        {"autor": "VDI-Gesellschaft",
+         "title": "VDI Heat Atlas 2nd Edition",
+         "ref": "Berlin, New York. Springer 2010.",
+         "doi": ""},
+    2:
+        {"autor": "Maloney, J.O.",
+         "title": "Perry's Chemical Engineers' Handbook 8th Edition ",
+         "ref": "McGraw-Hill Professional, 2008.",
+         "doi": ""}}
 
 
 def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
@@ -96,8 +107,8 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -146,8 +157,8 @@ def Bi(h, L, k):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(h*L/k)
 
@@ -176,13 +187,13 @@ def Bo(rhol, rhog, sigma, L):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     return (g*(rhol-rhog)*L**2/sigma)
 
 
-def Euler(dP, rho, V):
+def Eu(dP, rho, V):
     r"""Calculates Euler number or `Eu` for a fluid of velocity `V` and
     density `rho` experiencing a pressure drop `dP`.
 
@@ -212,8 +223,8 @@ def Euler(dP, rho, V):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     Eu = dP/(rho*V**2)
     return Eu
@@ -251,8 +262,8 @@ def Fo(k, L, t):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(k*t/L**2)
 
@@ -296,8 +307,8 @@ def Fr(V, L, g=g):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(V**2/(L*g))
 
@@ -338,8 +349,8 @@ def Ga(L, rho=None, mu=None, nu=None, g=g):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -403,8 +414,8 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -452,22 +463,14 @@ def Gz(k, D, t=None, L=None, V=None):
 
     References
     ----------
-    .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if V and L:
         t = L/V
     elif not t:
         raise Exception("undefined")
     return Dimensionless(D**2/k/t)
-
-
-def Hg():
-    raise Exception("Not implemented")
-
-
-def Ka():
-    raise Exception("Not implemented")
 
 
 def Kn(path, L):
@@ -497,8 +500,8 @@ def Kn(path, L):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     Kn = path/L
     return Kn
@@ -543,8 +546,8 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     if k and Cp and rho:
         alpha = k/(rho*Cp)
@@ -556,7 +559,7 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
     return Le
 
 
-def Mach(V, c):
+def Ma(V, c):
     r"""Calculates Mach number or `Ma` for a fluid.
 
     .. math::
@@ -583,8 +586,8 @@ def Mach(V, c):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     return V/c
 
@@ -622,8 +625,8 @@ def Nu(alfa, L, k):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(alfa*L/k)
 
@@ -668,8 +671,8 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     if rho and Cp and k:
         alpha = k/(rho*Cp)
@@ -727,8 +730,8 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
 
     References
     ----------
-    .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if k and cp and mu:
         Pr = cp*mu/k
@@ -768,8 +771,8 @@ def Ra(Pr, Gr):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(Pr*Gr)
 
@@ -817,8 +820,8 @@ def Re(D, V, rho=None, mu=None, nu=None):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -856,8 +859,8 @@ def Sh(K, L, D):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     Sh = K*L/D
     return Sh
@@ -900,8 +903,8 @@ def Sc(D, mu=None, nu=None, rho=None):
 
     References
     ----------
-    [1] .. Green, Don, and Robert Perry. Perry's Chemical Engineers' Handbook,
-       Eighth Edition. McGraw-Hill Professional, 2007.
+    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
+        McGraw-Hill Professional, 2008.
     """
     if rho and mu:
         Sc = mu/(rho*D)
@@ -986,8 +989,8 @@ def We(V, L, rho, sigma):
 
     References
     ----------
-    [1] .. Gesellschaft, V. D. I., ed. VDI Heat Atlas. 2nd edition.
-       Berlin; New York:: Springer, 2010.
+    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
+        Springer 2010.
     """
     return Dimensionless(V**2*L*rho/sigma)
 
