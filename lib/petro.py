@@ -288,10 +288,15 @@ __doi__ = {
                   "Saybolt Universal Viscosity or to Saybolt Furol Viscosity",
          "ref": "ASTM International, West Conshohocken, PA 2005, www.astm.org",
          "doi": "10.1520/D2161-05"},
-
-
-
     31:
+        {"autor": "Singh, B., Mutyala, S.R., Puttagunta, V.",
+         "title": "Viscosity range from one test",
+         "ref": "Hydrocarbon Processing 69 (1990) 39-41 ",
+         "doi": ""},
+
+
+
+    32:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -3340,6 +3345,45 @@ def SFS(T, v):
     else:
         S = 0.4792*v+5610/(v**2+2130)                                   # Eq 8
     return unidades.Time(S)
+
+
+def MuL_Singh(T, v100):
+    """Calculate kinematic viscosity of liquid petroleum fractions at low
+    pressure by Singh correlation, also referenced in API Procedure 11A4.1,
+    pag 1031
+
+    Parameters
+    ------------
+    T : float
+        Temperature, [K]
+    v100 : float
+        Kinematic viscosity at 100ºF, [cSt]
+
+    Returns
+    -------
+    v : float
+        Kinematic viscosity at T, [cSt]
+
+    Examples
+    --------
+    Example from [20]_, Sumatran crude at 210ºF
+
+    >>> T = unidades.Temperature(210, "F")
+    >>> "%0.3f" % MuL_Singh(T, 1.38).cSt
+    '0.705'
+
+    References
+    ----------
+    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
+    [31]_ Singh, B., Mutyala, S.R., Puttagunta, V. Viscosity range from one
+        test. Hydrocarbon Processing 69 (1990) 39-41
+    """
+    # Convert input temperature to Rankine
+    t_R = unidades.K2R(T)
+    S = 0.28008*log10(v100) + 1.8616
+    B = log10(v100) + 0.86960
+    mu = 10**(B*(559.67/t_R)**S - 0.86960)
+    return unidades.Diffusivity(mu, "cSt")
 
 
 # Component predition
