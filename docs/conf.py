@@ -12,13 +12,22 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
+# Added initialization code for pychemqt config files initialization
+from configparser import ConfigParser
+import json
 import os
+import shutil
+import sys
+import urllib.error
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+
 sys.path.insert(0, os.path.abspath('..'))
+
+# Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('..')
 os.environ["freesteam"] = "False"
 os.environ["pybel"] = "False"
@@ -30,6 +39,91 @@ os.environ["xlwt"] = "False"
 os.environ["icu"] = "False"
 os.environ["reportlab"] = "False"
 os.environ["PyQt5.Qsci"] = "False"
+
+conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
+
+# Checking config folder
+if not os.path.isdir(conf_dir):
+    os.mkdir(conf_dir)
+
+try:
+    open(conf_dir + "pychemqt.log", 'x')
+except FileExistsError:  # noqa
+    pass
+
+
+# Checking config files
+from lib import firstrun  # noqa
+
+# Checking config file
+default_Preferences = firstrun.Preferences()
+change = False
+if not os.path.isfile(conf_dir + "pychemqtrc"):
+    default_Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+    Preferences = default_Preferences
+    change = True
+else:
+    # Check Preferences options to find set new options
+    Preferences = ConfigParser()
+    Preferences.read(conf_dir + "pychemqtrc")
+    for section in default_Preferences.sections():
+        if not Preferences.has_section(section):
+            Preferences.add_section(section)
+            change = True
+        for option in default_Preferences.options(section):
+            if not Preferences.has_option(section, option):
+                value = default_Preferences.get(section, option)
+                Preferences.set(section, option, value)
+                change = True
+    if change:
+        Preferences.write(open(conf_dir + "pychemqtrc", "w"))
+
+# FIXME: This file might not to be useful but for now I use it to save project
+# configuration data
+if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
+    Config = firstrun.config()
+    Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
+
+# Checking costindex
+if not os.path.isfile(conf_dir + "CostIndex.dat"):
+        orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
+        with open(orig) as cost_index:
+            lista = cost_index.readlines()[-1].split(" ")
+            with open(conf_dir + "CostIndex.dat", "w") as archivo:
+                for data in lista:
+                    archivo.write(data.replace(os.linesep, "") + os.linesep)
+
+# Checking currency rates
+currency = False
+if not os.path.isfile(conf_dir + "moneda.dat"):
+    # Exchange rates file don't available
+    currency = True
+else:
+    filename = conf_dir+"moneda.dat"
+    try:
+        archivo = open(filename, "r")
+        rates = json.load(archivo)
+    except urllib.error.URLError:
+        # Failed to load json file
+        currency = True
+
+    if not isinstance(rates["date"], int):
+        # Old version exchange rates format, force upgrade
+        currency = True
+
+if currency:
+    # Try to retrieve exchange rates from yahoo
+    try:
+        firstrun.getrates(conf_dir + "moneda.dat")
+    except urllib.error.URLError:
+        # Internet error, get hardcoded exchanges from pychemqt distribution
+        # Possible outdated file, try to update each some commits
+        origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
+        shutil.copy(origen, conf_dir + "moneda.dat")
+
+# Checking database with custom components
+if not os.path.isfile(conf_dir + "databank.db"):
+    firstrun.createDatabase(conf_dir + "databank.db")
 
 # -- General configuration ------------------------------------------------
 
@@ -134,7 +228,7 @@ html_theme = 'classic'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-        "stickysidebar": True, 
+        "stickysidebar": True,
         # "sidebarbgcolor": "#683d32",
         # "footerbgcolor": "#683d32",
         # "relbarbgcolor": "#683d32"
