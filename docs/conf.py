@@ -94,32 +94,8 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
                     archivo.write(data.replace(os.linesep, "") + os.linesep)
 
 # Checking currency rates
-currency = False
-if not os.path.isfile(conf_dir + "moneda.dat"):
-    # Exchange rates file don't available
-    currency = True
-else:
-    filename = conf_dir+"moneda.dat"
-    try:
-        archivo = open(filename, "r")
-        rates = json.load(archivo)
-    except urllib.error.URLError:
-        # Failed to load json file
-        currency = True
-
-    if not isinstance(rates["date"], int):
-        # Old version exchange rates format, force upgrade
-        currency = True
-
-if currency:
-    # Try to retrieve exchange rates from yahoo
-    try:
-        firstrun.getrates(conf_dir + "moneda.dat")
-    except urllib.error.URLError:
-        # Internet error, get hardcoded exchanges from pychemqt distribution
-        # Possible outdated file, try to update each some commits
-        origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
-        shutil.copy(origen, conf_dir + "moneda.dat")
+origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
+shutil.copy(origen, conf_dir + "moneda.dat")
 
 # Checking database with custom components
 if not os.path.isfile(conf_dir + "databank.db"):
