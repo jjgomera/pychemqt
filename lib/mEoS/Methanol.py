@@ -21,10 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from scipy import exp
 from scipy import __version__
 from scipy.constants import pi, Avogadro
-if int(__version__.split(".")[1]) < 10:
-    from scipy.constants import Bolzmann as Boltzmann
-else:
-    from scipy.constants import Boltzmann
+from scipy.constants import Boltzmann
 
 from lib.meos import MEoS
 from lib import unidades
