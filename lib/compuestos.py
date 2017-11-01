@@ -5403,7 +5403,6 @@ class Componente(object):
                        "Zuo-Stenby", "Sastri-Rao", "Hakim", "Miqueu"]
 
     def __init__(self, id=None, **kwargs):
-
         if not id:
             return
 

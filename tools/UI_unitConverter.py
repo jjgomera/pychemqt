@@ -115,9 +115,31 @@ class moneda(UI_conversorUnidades):
         self.layout().addWidget(self.botonActualizar, 1, 1)
 
         for i in range(len(Currency.__units__)):
-            self.tabla.verticalHeaderItem(i).setIcon(QtGui.QIcon(QtGui.QPixmap(
+            header = self.tabla.verticalHeaderItem(i)
+            header.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.environ["pychemqt"] +
-                "/images/flag/%s.gif" % Currency.__units__[i])))
+                "/images/flag/%s.png" % Currency.__units__[i])))
+            # Set backgroundcolor to better look or rare currencies
+            # Use olimpic continent color code
+            main = len(Currency._uMain)
+            Europe = main + len(Currency._uEurope)
+            America = Europe + len(Currency._uAmerica)
+            Africa = America + len(Currency._uAfrica)
+            Asia = Africa + len(Currency._uAsia)
+
+            if i < main:
+                color = "#FFFFFF"
+            elif i < Europe:
+                color = "#FF5555"
+            elif i < America:
+                color = "#55FF55"
+            elif i < Africa:
+                color = "#888888"
+            elif i < Asia:
+                color = "#FFFF00"
+            else:
+                color = "#5555FF"
+            header.setBackground(QtGui.QBrush(QtGui.QColor(color)))
 
     def getrates(self):
         filename = conf_dir + "moneda.dat"
@@ -167,6 +189,7 @@ class UI_unitConverter(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    conversion_unidades = UI_unitConverter()
+    # conversion_unidades = UI_unitConverter()
+    conversion_unidades = moneda()
     conversion_unidades.show()
     sys.exit(app.exec_())

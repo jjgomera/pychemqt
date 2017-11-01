@@ -431,21 +431,26 @@ def config():
 def getrates(archivo):
     """Procedure to update change rates"""
     rates = {}
-    url = "http://www.bankofcanada.ca/en/markets/csv/exchange_eng.csv"
-    fh = urllib.request.urlopen(url)
-    data = csv.reader(codecs.iterdecode(fh, "utf-8"))
-    for row in data:
-        if row[0].startswith("Date "):
-            date = row[-1]
-        elif not row[0].startswith("#"):
-            value = float(row[-1])
-            rates[row[1][1:].replace("_NOON", "").lower()] = value
+    date = 0
 
-    del rates["iexe0124"]
-    del rates["iexe0125"]
-    rates["cad"] = 1.
-    for rate in rates:
-        rates[rate] = rates[rate] / rates["usd"]
+    url = "https://finance.yahoo.com/webservice/v1/symbols/allcurrencies/" \
+        "quote?format=json"
+    fh = urllib.request.urlopen(url)
+    data = json.loads(fh.read().decode("utf-8"))
+
+    for change in data["list"]["resources"]:
+        tas = change["resource"]["fields"]
+        if "USD" not in tas["name"]:
+            continue
+        name = tas["name"]
+        if name != "USD":
+            name = name.split("/")[1]
+        rates[name.lower()] = float(tas["price"])
+
+        # Set the last date number
+        if int(tas["ts"]) > date:
+            date = int(tas["ts"])
+
     rates["date"] = date
     json.dump(rates, open(archivo, "w"), indent=4)
 
