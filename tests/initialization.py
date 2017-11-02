@@ -27,11 +27,21 @@ import urllib.error
 
 
 # Add pychemqt folder to python path
-path = os.path.dirname(os.path.realpath(sys.argv[0]))
-sys.path.append(path)
+sys.path.insert(0, os.path.abspath('..'))
 
 # Define pychemqt environment
-os.environ["pychemqt"] = path + os.sep
+os.environ["pychemqt"] = os.path.abspath('..')
+os.environ["freesteam"] = "False"
+os.environ["pybel"] = "False"
+os.environ["CoolProp"] = "False"
+os.environ["refprop"] = "False"
+os.environ["ezodf"] = "False"
+os.environ["openpyxl"] = "False"
+os.environ["xlwt"] = "False"
+os.environ["icu"] = "False"
+os.environ["reportlab"] = "False"
+os.environ["PyQt5.Qsci"] = "False"
+
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 # Checking config folder
