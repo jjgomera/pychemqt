@@ -5,10 +5,6 @@
 
 
 import os
-from unittest import TextTestRunner, TestSuite
-
-from test_lib import TestLib
-
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
@@ -23,6 +19,9 @@ os.environ["icu"] = "False"
 os.environ["reportlab"] = "False"
 os.environ["PyQt5.Qsci"] = "False"
 
+
+from unittest import TextTestRunner, TestSuite
+from test_lib import TestLib
 
 suite = TestSuite()
 suite.addTest(TestLib)

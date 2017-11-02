@@ -29,16 +29,6 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
-os.environ["freesteam"] = "False"
-os.environ["pybel"] = "False"
-os.environ["CoolProp"] = "False"
-os.environ["refprop"] = "False"
-os.environ["ezodf"] = "False"
-os.environ["openpyxl"] = "False"
-os.environ["xlwt"] = "False"
-os.environ["icu"] = "False"
-os.environ["reportlab"] = "False"
-os.environ["PyQt5.Qsci"] = "False"
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
