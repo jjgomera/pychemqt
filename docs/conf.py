@@ -53,7 +53,7 @@ except FileExistsError:  # noqa
 
 
 # Checking config files
-from lib import firstrun  # noqa
+from tools import firstrun  # noqa
 
 # Checking config file
 default_Preferences = firstrun.Preferences()

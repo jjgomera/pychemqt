@@ -1,3 +1,7 @@
+
+.. include:: header.rst
+
+
 Introduction
 ============
 pychemqt is intended to be a free software tool for calculation and design of unit operations in chemical engineering. The goal is to develop free software equivalent to CHEMCAD or hysys. It is written in python using qt as a graphics library, so that it is cross-platform.
