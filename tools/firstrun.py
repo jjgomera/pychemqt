@@ -26,9 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-import codecs
 from configparser import ConfigParser
-import csv
 import json
 import sqlite3
 import sys

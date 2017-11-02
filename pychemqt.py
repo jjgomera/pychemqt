@@ -239,7 +239,7 @@ if not args.nosplash:
 
 
 # Checking config files
-from lib import firstrun  # noqa
+from tools import firstrun  # noqa
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking config files..."))
 

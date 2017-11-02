@@ -28,7 +28,7 @@ import atexit
 
 from PyQt5 import QtCore, QtWidgets
 
-from lib.firstrun import which
+from tools.firstrun import which
 
 
 class XTerm(QtCore.QProcess):

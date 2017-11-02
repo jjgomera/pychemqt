@@ -39,9 +39,9 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from lib import unidades, corriente
-from lib.firstrun import which
 from lib.utilities import representacion
 from equipment import equipments
+from tools.firstrun import which
 from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric, prefPetro
 from UI import prefMoody, prefStandingKatz
 from UI.delegate import CheckEditor
