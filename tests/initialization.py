@@ -19,11 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 from configparser import ConfigParser
-import json
 import os
 import shutil
 import sys
-import urllib.error
 
 
 # Add pychemqt folder to python path
@@ -45,6 +43,7 @@ os.environ["PyQt5.Qsci"] = "False"
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 print(os.environ["pychemqt"])
+print(os.environ["freesteam"])
 # Checking config folder
 if not os.path.isdir(conf_dir):
     os.mkdir(conf_dir)

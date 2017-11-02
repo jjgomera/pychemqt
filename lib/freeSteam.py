@@ -80,7 +80,6 @@ class Freesteam(ThermoWater):
          "doi": ""}]
 
     M = unidades.Dimensionless(iapws._iapws.M)
-    print(os.environ["freesteam"])
     if os.environ["freesteam"] == "True":
         Pc = unidades.Pressure(freesteam.PCRIT)
         Tc = unidades.Temperature(freesteam.TCRIT)
