@@ -42,8 +42,6 @@ os.environ["PyQt5.Qsci"] = "False"
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
-print(os.environ["pychemqt"])
-print(os.environ["freesteam"])
 # Checking config folder
 if not os.path.isdir(conf_dir):
     os.mkdir(conf_dir)
