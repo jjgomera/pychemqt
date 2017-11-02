@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import QApplication
  # 7 - Peso, kg/m
 
 
-path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
+path = os.path.join(os.environ["pychemqt"], 'dat', 'pipeDatabase.db')
 databank = sqlite3.connect(path).cursor()
 databank.execute("select * from Materials")
 CATALOG = databank.fetchall()
@@ -72,7 +72,6 @@ CATALOG_TRANSLATE = {
 #  5 - K
 
 path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
-databank = sqlite3.connect(path).cursor()
 databank.execute("select * from Fitting")
 FITTING = databank.fetchall()
 FITTING_DESC = {
