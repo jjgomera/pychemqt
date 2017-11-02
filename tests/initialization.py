@@ -27,10 +27,10 @@ import urllib.error
 
 
 # Add pychemqt folder to python path
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('.'))
 
 # Define pychemqt environment
-os.environ["pychemqt"] = os.path.abspath('..')
+os.environ["pychemqt"] = os.path.abspath('.')
 os.environ["freesteam"] = "False"
 os.environ["pybel"] = "False"
 os.environ["CoolProp"] = "False"
@@ -44,6 +44,7 @@ os.environ["PyQt5.Qsci"] = "False"
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
+print(os.environ["pychemqt"])
 # Checking config folder
 if not os.path.isdir(conf_dir):
     os.mkdir(conf_dir)
