@@ -8,15 +8,16 @@ install:
   - pip install --only-binary=scipy scipy
   - pip install matplotlib
   - pip install PyQt5
+  - pip install iapws
   - pip install coveralls
   - pip install codecov
 
 before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
+  - python3 tests/initialization.py
 
 # command to run tests
 script:
-  - python3 tests/initialization.py
   - coverage3 run tests/
 
 # Add coverall support
