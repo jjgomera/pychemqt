@@ -31,7 +31,7 @@ from lib import unidades
 from lib.eos import EoS
 from lib.EoS import cubic
 from lib.physics import R_atml
-from lib.bip import Kij, bwrs
+from lib.bip import Kij
 
 
 class BWRS(EoS):
@@ -44,7 +44,7 @@ class BWRS(EoS):
         self.P = unidades.Pressure(P, "atm")
         self.componente = mezcla.componente
         self.zi = mezcla.fraccion
-        self.kij = Kij(bwrs)
+        self.kij = Kij("BWRS")
 
         Aoi = []
         Boi = []
