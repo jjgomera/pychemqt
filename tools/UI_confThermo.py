@@ -27,9 +27,11 @@ import os
 
 from PyQt5 import QtWidgets
 
-from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name
+from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name, K_status
+from lib.bip import EoSBIP
 from lib.config import getMainWindowConfig
 from lib.corriente import Corriente
+from UI import BIP
 
 
 class UI_confThermo_widget(QtWidgets.QWidget):
@@ -43,20 +45,25 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.K = QtWidgets.QComboBox()
         for eq in K:
             self.K.addItem(eq.__title__)
+        self.K.currentIndexChanged.connect(self.updateBIP)
         layout.addWidget(self.K, 0, 2)
+        self.bipButton = QtWidgets.QPushButton(
+            QtWidgets.QApplication.translate("pychemqt", "BIP"))
+        self.bipButton.clicked.connect(self.showBIP)
+        layout.addWidget(self.bipButton, 0, 3)
 
         text = QtWidgets.QApplication.translate("pychemqt", "Alfa function:")
         layout.addWidget(QtWidgets.QLabel(text), 1, 0, 1, 2)
         self.alfa = QtWidgets.QComboBox()
         for a in alfa:
             self.alfa.addItem(a)
-        layout.addWidget(self.alfa, 1, 2)
+        layout.addWidget(self.alfa, 1, 2, 1, 2)
         text = QtWidgets.QApplication.translate("pychemqt", "Mix rules:")
         layout.addWidget(QtWidgets.QLabel(text), 2, 0, 1, 2)
         self.mixing_rule = QtWidgets.QComboBox()
         for m in mix:
             self.mixing_rule.addItem(m)
-        layout.addWidget(self.mixing_rule, 2, 2)
+        layout.addWidget(self.mixing_rule, 2, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             3, 0, 1, 4)
@@ -65,41 +72,41 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
-        layout.addWidget(self.H, 4, 2)
+        layout.addWidget(self.H, 4, 2, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Ideal heat capacity:")), 5, 0, 1, 2)
         self.Cp_ideal = QtWidgets.QComboBox()
         for cp in cp_ideal:
             self.Cp_ideal.addItem(cp)
-        layout.addWidget(self.Cp_ideal, 5, 2)
+        layout.addWidget(self.Cp_ideal, 5, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
             6, 0, 1, 4)
         self.MEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use MEoS for single compounds if it's available"))
-        layout.addWidget(self.MEoS, 7, 0, 1, 3)
+        layout.addWidget(self.MEoS, 7, 0, 1, 4)
         self.coolProp = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
-        layout.addWidget(self.coolProp, 8, 1, 1, 2)
+        layout.addWidget(self.coolProp, 8, 1, 1, 3)
         self.refprop = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
-        layout.addWidget(self.refprop, 9, 1, 1, 2)
+        layout.addWidget(self.refprop, 9, 1, 1, 3)
 
         self.iapws = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use IAPWS97 for water"))
-        layout.addWidget(self.iapws, 10, 0, 1, 3)
+        layout.addWidget(self.iapws, 10, 0, 1, 4)
         self.freesteam = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
-        layout.addWidget(self.freesteam, 11, 1, 1, 2)
+        layout.addWidget(self.freesteam, 11, 1, 1, 3)
         self.GERG = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use GERG EoS for mix if it's posible"))
-        layout.addWidget(self.GERG, 12, 0, 1, 3)
+        layout.addWidget(self.GERG, 12, 0, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 13, 0, 1, 4)
+            QtWidgets.QSizePolicy.Expanding), 13, 0, 1, 5)
 
         if os.environ["freesteam"] == "True":
             self.iapws.toggled.connect(self.freesteam.setEnabled)
@@ -110,6 +117,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
 
         if config:
             self.setConfig(config)
+        self.updateBIP(0)
 
     def setConfig(self, config):
         if config.has_section("Thermo"):
@@ -199,6 +207,20 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         config.set("Thermo", "coolProp", "False")
         config.set("Thermo", "refprop", "False")
         return config
+
+    def updateBIP(self, index):
+        """Update bipButton enabled status only for EoS with bip available"""
+        if K_status[index] in EoSBIP:
+            self.bipButton.setEnabled(True)
+        else:
+            self.bipButton.setEnabled(False)
+
+    def showBIP(self):
+        config = getMainWindowConfig()
+        ids = eval(config.get("Components", "components"))
+        index = EoSBIP.index(K_status[self.K.currentIndex()])
+        dlg = BIP.Ui_BIP(ids, index)
+        dlg.exec_()
 
 
 class Dialog(QtWidgets.QDialog):
