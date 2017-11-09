@@ -26,27 +26,34 @@ import os
 
 from PyQt5 import QtGui, QtWidgets
 
-optional_modules = (
-    ("freesteam", QtWidgets.QApplication.translate(
+external_modules = (("scipy",(0,14,0),QtWidgets.QApplication.translate(
+        "pychemqt", "scipy could not be found, you must install it.")),
+                  ("numpy",(1,8,0),QtWidgets.QApplication.translate(
+        "pychemqt", "numpy could not be found, you must install it.")),
+                  ("matplotlib",(1,4,0),QtWidgets.QApplication.translate(
+        "pychemqt", "matplotlib could not be found, you must install it.")),
+                  ("iapws",(1,2),QtWidgets.QApplication.translate(
+        "pychemqt", "iapws could not be found, you must install it.")),
+                  ("freesteam","optional", QtWidgets.QApplication.translate(
         "pychemqt", "freesteam thermal option disabled")),
-    ("CoolProp", QtWidgets.QApplication.translate(
+                  ("CoolProp","optional", QtWidgets.QApplication.translate(
         "pychemqt", "coolprop thermal option disabled")),
-    ("refprop", QtWidgets.QApplication.translate(
+                  ("refprop","optional", QtWidgets.QApplication.translate(
         "pychemqt", "refprop thermal option disabled")),
-    ("pybel", QtWidgets.QApplication.translate(
+                  ("pybel","optional", QtWidgets.QApplication.translate(
         "pychemqt", "graphic formula disabled")),
-    ("ezodf", QtWidgets.QApplication.translate(
+                  ("ezodf","optional", QtWidgets.QApplication.translate(
         "pychemqt", "openoffice/libreoffice interaction disabled")),
-    ("openpyxl", QtWidgets.QApplication.translate(
+                  ("openpyxl","optional", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 2007/2010 interaction disabled")),
-    ("xlwt", QtWidgets.QApplication.translate(
+                  ("xlwt","optional", QtWidgets.QApplication.translate(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
-    ("icu", QtWidgets.QApplication.translate(
+                  ("icu","optional", QtWidgets.QApplication.translate(
         "pychemqt",
         "Unicode collation algorithm for improved string sorting disabled")),
-    ("reportlab", QtWidgets.QApplication.translate(
+                  ("reportlab","optional", QtWidgets.QApplication.translate(
         "pychemqt", "Pdf report exporting disabled")),
-    ("PyQt5.Qsci", QtWidgets.QApplication.translate(
+                  ("PyQt5.Qsci","optional", QtWidgets.QApplication.translate(
         "pychemqt", "Qscintilla custom module editor disabled")),
     )
 
@@ -66,7 +73,7 @@ class ShowDependences(QtWidgets.QDialog):
              QtWidgets.QApplication.translate("pychemqt", "Status")])
         self.tree.setHeaderItem(header)
 
-        for module, txt in optional_modules:
+        for module, v_spec,txt in external_modules:
             if os.environ[module] == "True":
                 mod = __import__(module)
                 st = mod.__file__

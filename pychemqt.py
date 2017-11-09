@@ -89,104 +89,134 @@ path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)
 if qtTranslator.load("qt_" + locale, path):
     app.installTranslator(qtTranslator)
 
-
-# scipy
-try:
-    import scipy
-except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
-        "pychemqt", "scipy could not be found, you must install it.")
-    print(msg)
-    raise err
-else:
-    mayor, minor, corr = map(int, scipy.version.version.split("."))
-    if minor < 14:
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Your version of scipy is too old, you must update it.")
-        raise ImportError(msg)
-
-# numpy
-try:
-    import numpy
-except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
-        "pychemqt", "numpy could not be found, you must install it.")
-    print(msg)
-    raise err
-else:
-    mayor, minor, corr = map(int, numpy.version.version.split("."))
-    if mayor < 1 or minor < 8:
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Your version of numpy is too old, you must update it.")
-        raise ImportError(msg)
-
-# matplotlib
-try:
-    import matplotlib
-except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
-        "pychemqt", "matplotlib could not be found, you must install it.")
-    print(msg)
-    raise err
-else:
-    mayor, minor, corr = map(int, matplotlib.__version__.split("."))
-    if mayor < 1 or (mayor == 1 and minor < 4):
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Your version of matplotlib is too old, you must update it.")
-        raise ImportError(msg)
-
-# iapws
-# Externalized version of iapws, to avoid duple maintenance
-try:
-    import iapws  # noqa
-except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
-        "pychemqt", "iapws could not be found, you must install it.")
-    print(msg)
-    raise err
-else:
-    if iapws.__version__ != "1.2":
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Your version of iapws is too old, you must update it.")
-        raise ImportError(msg)
-
-
-# TODO: Disable python-graph external dependence, functional mock up in
-# project yet useless
-# python-graph
-# try:
-    # from pygraph.classes.graph import graph  # noqa
-    # from pygraph.algorithms.cycles import find_cycle  # noqa
-# except ImportError as err:
-    # msg = QtWidgets.QApplication.translate(
-    #     "pychemqt", "Python-graph don't found, you need install it")
-    # print(msg)
-    # raise err
-
-
-# Check external optional modules
-from tools.dependences import optional_modules  # noqa
-for module, use in optional_modules:
+#Check for external modules both required and optional
+from tools.dependences import external_modules  # noqa
+for module, v_spec, msg in external_modules:
     try:
         __import__(module)
-        os.environ[module] = "True"
-    except ImportError:
-        print("%s could not be found, %s" % (module, use))
+        
+    except ImportError as err:
+        print(msg)
         os.environ[module] = ""
+        if v_spec!="optional":
+            raise err
+    
     else:
-        # Check required version
-        if module == "CoolProp":
-            import CoolProp.CoolProp as CP
-            version = CP.get_global_param_string("version")
-            mayor, minor, rev = map(int, version.split("."))
-            if mayor < 6:
-                print("Find CoolProp %s but CoolProp 6 required" % version)
-                os.environ[module] = ""
 
+        if v_spec!="optional":
+            installed_version= tuple(map(int, __import__(module).__version__.split(".")))
+            if installed_version<v_spec:
+                msg="your "+module+ " is too old, you must update it."
+                raise ImportError(msg)
+        else:
+            os.environ[module] = "True"
+            if module == "CoolProp":
+                import CoolProp.CoolProp as CP
+                version = CP.get_global_param_string("version")
+                mayor, minor, rev = map(int, version.split("."))
+                if mayor < 6:
+                    print("Find CoolProp %s but CoolProp 6 required" % version)
+                    os.environ[module] = ""
+
+#Not any more required
+################################################################
+# scipy
+# try:
+#     import scipy
+# except ImportError as err:
+#     msg = QtWidgets.QApplication.translate(
+#         "pychemqt", "scipy could not be found, you must install it.")
+#     print(msg)
+#     raise err
+# else:
+#     mayor, minor, corr = map(int, scipy.version.version.split("."))
+#     if minor < 14:
+#         msg = QtWidgets.QApplication.translate(
+#             "pychemqt",
+#             "Your version of scipy is too old, you must update it.")
+#         raise ImportError(msg)
+
+# # numpy
+# try:
+#     import numpy
+# except ImportError as err:
+#     msg = QtWidgets.QApplication.translate(
+#         "pychemqt", "numpy could not be found, you must install it.")
+#     print(msg)
+#     raise err
+# else:
+#     mayor, minor, corr = map(int, numpy.version.version.split("."))
+#     if mayor < 1 or minor < 8:
+#         msg = QtWidgets.QApplication.translate(
+#             "pychemqt",
+#             "Your version of numpy is too old, you must update it.")
+#         raise ImportError(msg)
+
+# # matplotlib
+# try:
+#     import matplotlib
+# except ImportError as err:
+#     msg = QtWidgets.QApplication.translate(
+#         "pychemqt", "matplotlib could not be found, you must install it.")
+#     print(msg)
+#     raise err
+# else:
+#     mayor, minor, corr = map(int, matplotlib.__version__.split("."))
+#     if mayor < 1 or (mayor == 1 and minor < 4):
+#         msg = QtWidgets.QApplication.translate(
+#             "pychemqt",
+#             "Your version of matplotlib is too old, you must update it.")
+#         raise ImportError(msg)
+
+# # iapws
+# # Externalized version of iapws, to avoid duple maintenance
+# try:
+#     import iapws  # noqa
+# except ImportError as err:
+#     msg = QtWidgets.QApplication.translate(
+#         "pychemqt", "iapws could not be found, you must install it.")
+#     print(msg)
+#     raise err
+# else:
+#     if iapws.__version__ != "1.2":
+#         msg = QtWidgets.QApplication.translate(
+#             "pychemqt",
+#             "Your version of iapws is too old, you must update it.")
+#         raise ImportError(msg)
+
+
+# # TODO: Disable python-graph external dependence, functional mock up in
+# # project yet useless
+# # python-graph
+# # try:
+#     # from pygraph.classes.graph import graph  # noqa
+#     # from pygraph.algorithms.cycles import find_cycle  # noqa
+# # except ImportError as err:
+#     # msg = QtWidgets.QApplication.translate(
+#     #     "pychemqt", "Python-graph don't found, you need install it")
+#     # print(msg)
+#     # raise err
+
+
+# # Check external optional modules
+# from tools.dependences import optional_modules  # noqa
+# for module, use in optional_modules:
+#     try:
+#         __import__(module)
+#         os.environ[module] = "True"
+#     except ImportError:
+#         print("%s could not be found, %s" % (module, use))
+#         os.environ[module] = ""
+#     else:
+#         # Check required version
+#         if module == "CoolProp":
+#             import CoolProp.CoolProp as CP
+#             version = CP.get_global_param_string("version")
+#             mayor, minor, rev = map(int, version.split("."))
+#             if mayor < 6:
+#                 print("Find CoolProp %s but CoolProp 6 required" % version)
+#                 os.environ[module] = ""
+#################################################################
 
 # Logging configuration
 if args.debug:

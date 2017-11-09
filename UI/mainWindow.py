@@ -1581,7 +1581,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if dialog.exec_():
             preferences = dialog.value()
             preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            global Preferences
+            #global Preferences
             Preferences = ConfigParser()
             Preferences.read(conf_dir+"pychemqtrc")
             self.updateStatus(QtWidgets.QApplication.translate(
