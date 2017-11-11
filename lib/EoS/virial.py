@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from scipy import zeros, log, exp
 from scipy.constants import R
+from scipy.misc import derivative
 
 from lib.eos import EoS
 
@@ -37,25 +38,47 @@ __doi__ = {
          "ref": "Springer-Verlag",
          "doi": "10.1007/10693952_16"},
     2:
+        {"autor": "Dymond, J.H., Marsh, K.N., Wilhoit, R.C., Wong, K.C., "
+                  "Frenkel, M.",
+         "title": "Virial Coefficients of Mixtures "
+                  "(Landolt-Börnstein - Group IV Physical Chemistry 21B)",
+         "ref": "Springer-Verlag",
+         "doi": "10.1007/10754889"},
+    3:
         {"autor": "Tsonopoulos, C.",
          "title": "An empirical correlation of second virial coefficients",
          "ref": "AICHE Journal 20, pp 263 (1974)",
          "doi": "10.1002/aic.690200209"},
-    3:
+    4:
         {"autor": "Orbey, H., Vera, J.H.",
          "title": "Correlation for the third virial coefficient using Tc, Pc "
                   "and ω as parameters",
          "ref": "AIChE Journal 29, 107 (1983)",
          "doi": "10.1002/aic.690290115"},
-    4:
+    5:
         {"autor": "Liu, D.X., Xiang, H.W.",
          "title": "Corresponding-States Correlation and Prediction of Third "
                   "Virial Coefficients for a Wide Range of Substances",
          "ref": "Int. J. Thermophysics 24(6), 1667-1680 (2003)",
-         "doi": "10.1023/b:ijot.0000004098.98614.38"},
+         "doi": "10.1023/b_ijot.0000004098.98614.38"},
+    6:
+        {"autor": "Iglesias-Silva, G.A., Hall K.R.",
+         "title": "An Equation for Prediction and/or Correlation of Second "
+                  "Virial Coefficients",
+         "ref": "Ind. Eng. Chem. Res. 40(8) (2001) 1968-1974",
+         "doi": "10.1021/ie0006817"},
+
+
+
+    7:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
 }
 
 
+# Parameters for second virial coefficient for pure compounds, ref [1]_
 B_Database = {
     98: [3.4162e1, -1.2087e4, -7.6702e5, -1.96e7],
     630: [9.1039e1, -5.9081e4, 1.0478e7, 3.0463e9],
@@ -416,9 +439,18 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     correlations are general and possibly not applicable to the compounds
     not availables in the B_database
 
+    Examples
+    --------
+    Selected date from Table 2, pag 74 for neon
+
+    >>> from lib.mEoS import Ne
+    >>> D = Ne.momentoDipolar
+    >>> "%0.4f" % B_Tsonopoulos(262, Ne.Tc, Ne.Pc, Ne.f_acent, D)[0]
+    '0.0113'
+
     References
     ----------
-    .. [2] Tsonopoulos, C. An empirical correlation of second virial
+    [3]_ Tsonopoulos, C. An empirical correlation of second virial
         coefficients. AICHE Journal 20, pp 263 (1974)
     """
     Tr = T/Tc
@@ -434,21 +466,104 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     f2 = 1/Tr**6
     f3 = -1/Tr**8
     f = f0 + w*f1 + a*f2 + b*f3
-    B = f*R*Tc/Pc
+    B = f*R*Tc/Pc*1e3
     f0t = 0.33*Tc/T**2 + 2*0.1385*Tc**2/T**3 + 3*0.0121*Tc**3/Tr**4 + \
         8*0.000607*Tc**8/T**9
     f1t = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
     f2t = -6*Tc**6/T**7
     f3t = 8*Tc**8/T**9
     ft = f0t + w*f1t + a*f2t + b*f3t
-    B1 = ft*R*Tc/Pc
+    B1 = ft*R*Tc/Pc*1e3
     f0tt = -2*0.33*Tc/T**3 - 2*3*0.1385*Tc**2/T**4 - 3*4*0.0121*Tc**3/Tr**5 - \
         8*9*0.000607*Tc**8/T**10
     f1tt = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
     f2tt = 6*7*Tc**6/T**8
     f3tt = -8*9*Tc**8/T**10
     ftt = f0tt + w*f1tt + a*f2tt + b*f3tt
-    B2 = ftt*R*Tc/Pc
+    B2 = ftt*R*Tc/Pc*1e3
+
+    return B, B1, B2
+
+
+def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
+    """Calculate the 2nd virial coefficient using the Iglesias-Silva Hall
+    correlation
+
+    .. math::
+        \frac{B}{b_o} = \left(\frac{T_B}{T}\right)^{0.2}
+        \left[1-\left(\frac{T_B}{T}\right)^{0.8}\right] \left[\frac{B_c}
+        {b_o\left(\left(T_B/T_C\right)^{0.2}-\left(T_B/T_C\right)\right)\right]
+        ^{\left(T_c/T\right)^n}
+
+    .. math::
+        \frac{B_C}{V_C} = -1.1747 - 0.3668\omega - 0.00061\mu_R
+
+    .. math::
+        n = 1.4187 + 1.2058\omega
+
+    .. math::
+        \frac{b_o}{V_C} = 0.1368 - 0.4791\omega + 13.81\left(T_B/T_C\right)^2
+        \exp\left(-1.95T_B/T_C\right)
+
+    .. math::
+        \frac{T_B{{T_C} = 2.0525 + 0.6428\exp\left(-3.6167\omega\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure, [Pa]
+    Vc : float
+        Critical specific volume, [m³/mol]
+    w : float
+        Acentric factor [-]
+    D : float
+        dipole moment [debye]
+
+    Returns
+    -------
+    B : float
+        Second virial coefficient [m³/mol]
+    B1 : float
+        T(dB/dT) [m³/mol]
+    B2 : float
+        T²(d²B/dT²) [m³/mol]
+
+    Examples
+    --------
+    Selected date from Table 2, pag 74 for neon
+
+    >>> from lib.mEoS import Ne
+    >>> Vc = Ne.M/Ne.rhoc
+    >>> D = Ne.momentoDipolar.Debye
+    >>> "%0.4f" % B_IglesiasSilva(262, Ne.Tc, Ne.Pc, Vc, Ne.f_acent, D)[0]
+    '0.0102'
+
+    References
+    ----------
+    [6]_ Iglesias-Silva, G.A., Hall K.R. An Equation for Prediction and/or
+        Correlation of Second Virial Coefficients. Ind. Eng. Chem. Res. 40(8)
+        (2001) 1968-1974
+    """
+    # Reduced dipole moment
+    muR = 1e5*D**2*Pc/101325/Tc**2
+
+    TB = Tc*(2.0525 + 0.6428*exp(-3.6167*w))                           # Eq 19
+    n = 1.4187 + 1.2058*w                                              # Eq 14
+    bo = Vc*(0.1368-0.4791*w+13.81*(TB/Tc)**2*exp(-1.95*TB/Tc))        # Eq 15
+    Bc = Vc*(-1.1747-0.3668*w-0.00061*muR)
+
+    def f(T):
+        # Eq 12
+        return bo*(TB/T)**.2 * (1-(TB/T)**.8) * \
+            (Bc/bo/((TB/Tc)**.2-TB/Tc))**((Tc/T)**n)
+
+    B = f(T)
+    B1 = derivative(f, T, n=1)
+    B2 = derivative(f, T, n=2)
 
     return B, B1, B2
 
@@ -487,7 +602,7 @@ def C_Orbey_Vera(T, Tc, Pc, w):
 
     References
     ----------
-    [3] .. Orbey, H., Vera, J.H.: Correlation for the third virial coefficient
+    [4]_ Orbey, H., Vera, J.H.: Correlation for the third virial coefficient
         using Tc, Pc and ω as parameters, AIChE Journal 29, 107 (1983)
     """
     Tr = T/Tc
@@ -536,7 +651,7 @@ def C_Liu_Xiang(T, Tc, Pc, w, Zc):
 
     References
     ----------
-    [4] .. Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and
+    [5]_ Liu, D.X., Xiang, H.W.: Corresponding-States Correlation and
         Prediction of Third Virial Coefficients for a Wide Range of Substances.
         International Journal of Thermophysics, November 2003, Volume 24,
         Issue 6, pp 1667-1680
@@ -585,9 +700,6 @@ class Virial(EoS):
         Btt = []
         for comp in self.componente:
             if comp.indice in B_Database:
-                Bi = 0
-                Bit = 0
-                Bitt = 0
                 if comp.indice == 1:  # Hydrogen special case
                     if self.T < 60:
                         coef = [2.0375e1, -2-2113e3, -2.0892e4, -6.5299e4]
@@ -601,10 +713,7 @@ class Virial(EoS):
                         coef = [9.2479, 1.0876e3, -1.088e5, 2.3869e6]
                 else:
                     coef = B_Database[comp.indice]
-                for i, a in enumerate(coef):
-                    Bi += a/self.T**i
-                    Bit += -a*i*self.T**(i-1)
-                    Bitt += a*i*(i-1)*self.T**(i-2)
+                Bi, Bit, Bitt = self._B_Database(coef)
             else:
                 # Use general correlation
                 Bi, Bit, Bitt = B_Tsonopoulos(
@@ -616,7 +725,7 @@ class Virial(EoS):
         return B, Bt, Btt
 
     def _Ci(self):
-        """Third virial coefficient muxture contributions"""
+        """Third virial coefficient mixture contributions"""
         C = []
         Ct = []
         Ctt = []
@@ -642,6 +751,14 @@ class Virial(EoS):
                     Bij = Bi[i]
                     Bijt = Bit[i]
                     Bijtt = Bitt[i]
+                elif "%i-%i" % (i, j) in Bij_Database:
+                    id = "%i-%i" % (i, j)
+                    coef = Bij_Database[id]
+                    Bij, Bijt, Bijtt = self._B_Database(coef)
+                elif "%i-%i" % (j, i) in Bij_Database:
+                    id = "%i-%i" % (j, i)
+                    coef = Bij_Database[id]
+                    Bij, Bijt, Bijtt = self._B_Database(coef)
                 else:
                     ci = self.componente[i]
                     cj = self.componente[j]
@@ -652,6 +769,18 @@ class Virial(EoS):
                 B += xi*xj*Bij
                 Bt += xi*xj*Bijt
                 Btt += xi*xj*Bijtt
+        return B, Bt, Btt
+
+    def _B_Database(self, args):
+        """Calculate second virial coefficient, its 1st and 2nd temperature
+        derivarives from coefficient in database"""
+        B = 0
+        Bt = 0
+        Btt = 0
+        for i, a in enumerate(args):
+            B += a/self.T**i
+            Bt += -a*i*self.T**(i-1)
+            Btt += a*i*(i-1)*self.T**(i-2)
         return B, Bt, Btt
 
     def C(self):
