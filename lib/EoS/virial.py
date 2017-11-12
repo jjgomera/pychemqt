@@ -67,10 +67,16 @@ __doi__ = {
                   "Virial Coefficients",
          "ref": "Ind. Eng. Chem. Res. 40(8) (2001) 1968-1974",
          "doi": "10.1021/ie0006817"},
-
-
-
     7:
+        {"autor": "Meng, L., Duan, Y.Y. Li, L.",
+         "title": "Correations for Second and Third Virial Coefficients of "
+                  "Pure Fluids",
+         "ref": "Fluid Phase Equilibria 226 (2004) 109-120",
+         "doi": "10.1016/j.fluid.2004.09.023"},
+
+
+
+    8:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -323,7 +329,7 @@ Bij_Database = {
         # F6S-CF4, pag 118
         # F6S-CH4, pag 121
         # F6S-C4H12Si, pag 122
-        "1-12": [1.8618e1, -7.5727e2, 6.8549e2, -3.1665e3],
+        "1-212": [1.8618e1, -7.5727e2, 6.8549e2, -3.1665e3],
         # H2-Kr, pag 125
         "1-46": [2.2959e1, -2.6461e3, 4.9944e4, -4.5678e5],
         "1-107": [3.5658e1, -7.4422e3, 1.4167e5, -7.5396e6],
@@ -409,7 +415,30 @@ Bij_Database = {
 
 
 def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
-    """Calculate the 2nd virial coefficient using the Tsonopoulos correlation
+    r"""Calculate the 2nd virial coefficient using the Tsonopoulos correlation
+
+    .. math::
+        \frac{BP_c}{RT_c} = f^{(0)}+\omega f^{(1)}+f^{(2)}+f^{(3)}
+
+    .. math::
+        f^{(0)} = 0.1445 - \frac{0.33}{T_r} - \frac{0.1385}{T_r^2} -
+        \frac{0.0121}{T_r^3} - \frac{0.000607}{T_r^8}
+
+    .. math::
+        f^{(1)} = 0.0637 - \frac{0.331}{T_r^2} - \frac{0.423}{T_r^3} -
+        \frac{0.008}{T_r^8}
+
+    .. math::
+        f^{(2)} = \frac{a}{T_r^6}
+
+    .. math::
+        f^{(3)} = \frac{b}{T_r^8}
+
+    .. math::
+        a = -2.14e-4\mu_r-4.308e-21*\mu_r^8
+
+    .. math::
+        b = 0.00908+0.0006957*\mu_r
 
     Parameters
     ----------
@@ -417,7 +446,7 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
         Temperature [K]
     Tc : float
         Critical temperature [K]
-    Pc : float
+    Pc : float:w
         Critical pressure
     w : float
         Acentric factor [-]
@@ -429,9 +458,9 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     B : float
         Second virial coefficient [m³/mol]
     B1 : float
-        T(dB/dT) [m³/mol]
+        T(∂B/∂T) [m³/mol]
     B2 : float
-        T²(d²B/dT²) [m³/mol]
+        T²(∂²B/∂T²) [m³/mol]
 
     Notes
     -----
@@ -461,39 +490,29 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
     else:
         a, b = 0, 0
 
-    f0 = 0.1445-0.33/Tr-0.1385/Tr**2-0.0121/Tr**3-0.000607/Tr**8
-    f1 = 0.0637+0.331/Tr**2-0.423/Tr**3-0.008/Tr**8
-    f2 = 1/Tr**6
-    f3 = -1/Tr**8
-    f = f0 + w*f1 + a*f2 + b*f3
-    B = f*R*Tc/Pc*1e3
-    f0t = 0.33*Tc/T**2 + 2*0.1385*Tc**2/T**3 + 3*0.0121*Tc**3/Tr**4 + \
-        8*0.000607*Tc**8/T**9
-    f1t = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
-    f2t = -6*Tc**6/T**7
-    f3t = 8*Tc**8/T**9
-    ft = f0t + w*f1t + a*f2t + b*f3t
-    B1 = ft*R*Tc/Pc*1e3
-    f0tt = -2*0.33*Tc/T**3 - 2*3*0.1385*Tc**2/T**4 - 3*4*0.0121*Tc**3/Tr**5 - \
-        8*9*0.000607*Tc**8/T**10
-    f1tt = -2*0.331*Tc**2/T**3+3*0.423*Tc**3/T**4+8*0.008+Tc**8/T**9
-    f2tt = 6*7*Tc**6/T**8
-    f3tt = -8*9*Tc**8/T**10
-    ftt = f0tt + w*f1tt + a*f2tt + b*f3tt
-    B2 = ftt*R*Tc/Pc*1e3
+    def f(T):
+        f0 = 0.1445-0.33/Tr-0.1385/Tr**2-0.0121/Tr**3-0.000607/Tr**8
+        f1 = 0.0637+0.331/Tr**2-0.423/Tr**3-0.008/Tr**8
+        f2 = 1/Tr**6
+        f3 = -1/Tr**8
+        f = f0 + w*f1 + a*f2 + b*f3
+        return f*R*Tc/Pc*1e3
 
+    B = f(T)
+    B1 = derivative(f, T, n=1)
+    B2 = derivative(f, T, n=2)
     return B, B1, B2
 
 
 def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
-    """Calculate the 2nd virial coefficient using the Iglesias-Silva Hall
+    r"""Calculate the 2nd virial coefficient using the Iglesias-Silva Hall
     correlation
 
     .. math::
         \frac{B}{b_o} = \left(\frac{T_B}{T}\right)^{0.2}
         \left[1-\left(\frac{T_B}{T}\right)^{0.8}\right] \left[\frac{B_c}
-        {b_o\left(\left(T_B/T_C\right)^{0.2}-\left(T_B/T_C\right)\right)\right]
-        ^{\left(T_c/T\right)^n}
+        {b_o\left(\left(T_B/T_C\right)^{0.2}-\left(T_B/T_C\right)\right)}
+        \right]^{\left(T_c/T\right)^n}
 
     .. math::
         \frac{B_C}{V_C} = -1.1747 - 0.3668\omega - 0.00061\mu_R
@@ -506,7 +525,7 @@ def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
         \exp\left(-1.95T_B/T_C\right)
 
     .. math::
-        \frac{T_B{{T_C} = 2.0525 + 0.6428\exp\left(-3.6167\omega\right)
+        \frac{T_B}{T_C} = 2.0525 + 0.6428\exp\left(-3.6167\omega\right)
 
     Parameters
     ----------
@@ -528,9 +547,9 @@ def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
     B : float
         Second virial coefficient [m³/mol]
     B1 : float
-        T(dB/dT) [m³/mol]
+        T(∂B/∂T) [m³/mol]
     B2 : float
-        T²(d²B/dT²) [m³/mol]
+        T²(∂²B/∂T²) [m³/mol]
 
     Examples
     --------
@@ -568,6 +587,81 @@ def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
     return B, B1, B2
 
 
+def B_Meng(T, Tc, Pc, w, D):
+    r"""Calculate the 2nd virial coefficient using the Meng-Duan-Li correlation
+
+    .. math::
+        \frac{BP_c}{RT_c} = f^{(0)}+\omega f^{(1)} + f^{(2)}
+
+    .. math::
+        f^{(0)} = 0.13356 - \frac{0.30252}{T_r} - \frac{0.15668}{T_r^2} -
+        \frac{0.00724}{T_r^3} - \frac{0.00022}{T_r^8}
+
+    .. math::
+        f^{(1)} = 0.17404 - \frac{0.15581}{T_r^2} + \frac{0.38183}{T_r^3} -
+        \frac{0.44044}{T_r^3} - \frac{0.00541}{T_r^8}
+
+    .. math::
+        f^{(2)} = \frac{a}{T_r^6}
+
+    .. math::
+        a = -3.0309e-6\mu_r^2+9.503e-11\mu_r^4-1.2469e-15\mu_r^6
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure
+    w : float
+        Acentric factor [-]
+    D : float
+        dipole moment [debye]
+
+    Returns
+    -------
+    B : float
+        Second virial coefficient [m³/mol]
+    B1 : float
+        T(∂B/∂T) [m³/mol]
+    B2 : float
+        T²(∂²B/∂T²) [m³/mol]
+
+    Examples
+    --------
+    Selected date from Table 2, pag 74 for neon
+
+    >>> from lib.mEoS import Ne
+    >>> D = Ne.momentoDipolar.Debye
+    >>> "%0.4f" % B_Meng(262, Ne.Tc, Ne.Pc, Ne.f_acent, D)[0]
+    '0.0099'
+
+    References
+    ----------
+    [7]_ Meng, L., Duan, Y.Y. Li, L. Correations for Second and Third Virial
+        Coefficients of Pure Fluids. Fluid Phase Equilibria 226 (2004) 109-120
+    """
+
+    mur = D**2*Pc/1.01325/Tc**2
+    a = -3.0309e-6*mur**2 + 9.503e-11*mur**4 - 1.2469e-15*mur**6
+
+    def f(T):
+        Tr = T/Tc
+        f0 = .13356 - .30252/Tr - .15668/Tr**2 - .00724/Tr**3 - .00022/Tr**8
+        f1 = .17404 - .15581/Tr + .38183/Tr**2 - .44044/Tr**3 - .00541/Tr**8
+        f2 = 1/Tr**6
+        f = f0 + w*f1 + a*f2
+        return f*R*Tc/Pc*1e3
+
+    B = f(T)
+    B1 = derivative(f, T, n=1)
+    B2 = derivative(f, T, n=2)
+
+    return B, B1, B2
+
+
 def C_Orbey_Vera(T, Tc, Pc, w):
     """Calculate the third virial coefficient using the Orbey-Vera correlation
 
@@ -587,13 +681,14 @@ def C_Orbey_Vera(T, Tc, Pc, w):
     C : float
         Third virial coefficient [m⁶/mol²]
     C1 : float
-        T(dC/dT) [m⁶/mol²]
+        T(∂C/∂T) [m⁶/mol²]
     C2 : float
-        T²(d²C/dT²) [m⁶/mol²]
+        T²(∂²C/∂T²) [m⁶/mol²]
 
     Examples
     --------
     Selected points from Table 2 of paper
+
     >>> from lib.mEoS.Benzene import Benzene as Bz
     >>> "%.1f" % (C_Orbey_Vera(0.877*Bz.Tc, Bz.Tc, Bz.Pc, Bz.f_acent)[0]*1e9)
     '41.5'
@@ -605,21 +700,16 @@ def C_Orbey_Vera(T, Tc, Pc, w):
     [4]_ Orbey, H., Vera, J.H.: Correlation for the third virial coefficient
         using Tc, Pc and ω as parameters, AIChE Journal 29, 107 (1983)
     """
-    Tr = T/Tc
-    g0 = 0.01407+0.02432/Tr**2.8-0.00313/Tr**10.5
-    g1 = -0.02676+0.0177/Tr**2.8+0.04/Tr**3-0.003/Tr**6-0.00228/Tr**10.5
-    g = g0+w*g1
-    C = g*R**2*Tc**2/Pc**2
-    g0t = -2.8*0.02432*Tc**2.8/T**3.8 + 10.5*0.00313*Tc**10.5/T**11.5
-    g1t = -2.8*0.0177*Tc**2.8/T**3.8 - 3*0.04*Tc**3/Tr**4 - \
-        0.003*Tc**6/T**7 + 10.5*0.00228*Tc**10.5/T**11.5
-    gt = g0t+w*g1t
-    C1 = gt*R**2*Tc**2/Pc**2*T
-    g0tt = 2.8*3.8*0.02432*Tc**2.8/T**4.8 - 10.5*11.5*0.00313*Tc**10.5/T**12.5
-    g1tt = 2.8*3.8*0.0177*Tc**2.8/T**4.8 + 3*4*0.04*Tc**3/Tr**5 - \
-        0.003*Tc**6/T**8 - 10.5*11.5*0.00228*Tc**10.5/T**12.5
-    gtt = g0tt+w*g1tt
-    C2 = gtt*R**2*Tc**2/Pc**2*T**2
+    def f(T):
+        Tr = T/Tc
+        g0 = 0.01407+0.02432/Tr**2.8-0.00313/Tr**10.5
+        g1 = -0.02676+0.0177/Tr**2.8+0.04/Tr**3-0.003/Tr**6-0.00228/Tr**10.5
+        g = g0+w*g1
+        return g*R**2*Tc**2/Pc**2
+
+    C = f(T)
+    C1 = derivative(f, T, n=1)
+    C2 = derivative(f, T, n=2)
 
     return C, C1, C2
 
@@ -645,9 +735,9 @@ def C_Liu_Xiang(T, Tc, Pc, w, Zc):
     C : float
         Third virial coefficient [m⁶/mol²]
     C1 : float
-        T(dC/dT) [m⁶/mol²]
+        T(∂C/∂T) [m⁶/mol²]
     C2 : float
-        T²(d²C/dT²) [m⁶/mol²]
+        T²(∂²C/∂T²) [m⁶/mol²]
 
     References
     ----------
@@ -656,32 +746,76 @@ def C_Liu_Xiang(T, Tc, Pc, w, Zc):
         International Journal of Thermophysics, November 2003, Volume 24,
         Issue 6, pp 1667-1680
     """
-    Tr = T/Tc
     X = (Zc-0.29)**2
 
-    g0 = 0.1623538 + 0.3087440/Tr**3 - 0.01790184/Tr**6 - 0.02789157/Tr**11
-    g1 = -0.5390344 + 1.783526/Tr**3 - 1.055391/Tr**6 + 0.09955867/Tr**11
-    g2 = 34.22804 - 74.76559/Tr**3 + 279.9220/Tr**6 - 62.85431/Tr**11
-    g = g0+w*g1+X*g2
-    C = g*R**2*Tc**2/Pc**2
+    def f(T):
+        Tr = T/Tc
+        g0 = 0.1623538 + 0.3087440/Tr**3 - 0.01790184/Tr**6 - 0.02789157/Tr**11
+        g1 = -0.5390344 + 1.783526/Tr**3 - 1.055391/Tr**6 + 0.09955867/Tr**11
+        g2 = 34.22804 - 74.76559/Tr**3 + 279.9220/Tr**6 - 62.85431/Tr**11
+        g = g0+w*g1+X*g2
+        return g*R**2*Tc**2/Pc**2
 
-    g0t = -3*0.3087440*Tc**3/T**4 + 6*0.01790184*Tc**6/T**7 + \
-        11*0.02789157*Tc**11/T**12
-    g1t = -3*1.783526*Tc**3/T**4 + 6*1.055391*Tc**6/T**7 - \
-        11*0.09955867*Tc**11/T**12
-    g2t = 3*74.76559*Tc**3/Tr**4 - 6*279.9220*Tc**6/T**7 + \
-        11*62.85431*Tc**11/T**12
-    gt = g0t+w*g1t+X*g2t
-    C1 = gt*R**2*Tc**2/Pc**2*T
+    C = f(T)
+    C1 = derivative(f, T, n=1)
+    C2 = derivative(f, T, n=2)
 
-    g0tt = 3*4*0.3087440*Tc**3/T**5 - 6*7*0.01790184*Tc**6/T**8 - \
-        11*12*0.02789157*Tc**11/T**13
-    g1tt = 3*4*1.783526*Tc**3/T**5 - 6*7*1.055391*Tc**6/T**8 + \
-        11*12*0.09955867*Tc**11/T**13
-    g2tt = -3*4*74.76559*Tc**3/Tr**5 + 6*7*279.9220*Tc**6/T**8 - \
-        11*12*62.85431*Tc**11/T**13
-    gtt = g0tt+w*g1tt+X*g2tt
-    C2 = gtt*R**2*Tc**2/Pc**2*T**2
+    return C, C1, C2
+
+
+def C_Meng(T, Tc, Pc, D, B):
+    r"""Calculate the 3rd virial coefficient using the Meng-Duan-Li correlation
+
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    Tc : float
+        Critical temperature [K]
+    Pc : float
+        Critical pressure
+    D : float
+        dipole moment [debye]
+    B : list
+        Second virial coefficient tuple with B, ∂B/∂T, ∂²B/∂T²
+
+    Returns
+    -------
+    C : float
+        Third virial coefficient [m⁶/mol²]
+    C1 : float
+        T(∂C/∂T) [m⁶/mol²]
+    C2 : float
+        T²(∂²C/∂T²) [m⁶/mol²]
+
+    Examples
+    --------
+    Selected date from Table 2, pag 74 for neon
+
+    >>> from lib.mEoS import Ne
+    >>> D = Ne.momentoDipolar.Debye
+    >>> B = B_Meng(273.15, Ne.Tc, Ne.Pc, Ne.f_acent, D)
+    >>> "%.2f" % (C_Meng(273.15, Ne.Tc, Ne.Pc, D, B)[0]*1e-5)
+    '0.24'
+
+    References
+    ----------
+    [7]_ Meng, L., Duan, Y.Y. Li, L. Correations for Second and Third Virial
+        Coefficients of Pure Fluids. Fluid Phase Equilibria 226 (2004) 109-120
+    """
+    mur = D**2*Pc/1.01325/Tc**2
+
+    def f(T, *args):
+        B = args[-1]
+        Br = B*Pc/R/Tc
+        Tr = T/Tc
+        f0 = 1094.051 - 3334.145/Tr**0.1 + 3389.848/Tr**0.2 - 1149.58/Tr**0.3
+        f1 = (2.0243-0.85902/Tr)*1e-10
+        return 5.476e-3 + (Br-0.0936)**2*(f0+mur**4*f1)
+
+    C = f(T, B[0])
+    C1 = derivative(f, T, n=1, args=(T, B[1]))
+    C2 = derivative(f, T, n=2, args=(T, B[2]))
 
     return C, C1, C2
 
