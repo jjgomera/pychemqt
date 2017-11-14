@@ -23,4 +23,4 @@ Submodules
    lib.refProp
    lib.thermo
    lib.unidades
-
+   lib.EoS.virial

@@ -29,7 +29,8 @@ References
 .. [28] Riazi, M. R. and A1-Sahhaf, T.; Physical Properties of n-Alkanes and n-Alkyl Hydrocarbons: Application to Petroleum Mixtures. Industrial and Engineering Chemistry Research, Vol. 34, 1995, pp. 4145-4148.
 .. [29] Riazi, M. R.; Characterization and Properties of Petroleum Fractions.. ASTM manual series MNL50, 2005
 .. [30] ASTM D2161-05; Standard Practice for Conversion of Kinematic Viscosity to Saybolt Universal Viscosity or to Saybolt Furol Viscosity. ASTM International, West Conshohocken, PA 2005, www.astm.org
-.. [31] ; . 
+.. [31] Singh, B., Mutyala, S.R., Puttagunta, V.; Viscosity range from one test. Hydrocarbon Processing 69 (1990) 39-41 
+.. [32] ; . 
 .. [51] Riazi, M. R. and Daubert, T. E.; Analytical Correlations Interconvert Distillation Curve Types. Oil & Gas Journal, Vol. 84, 1986, August 25, pp. 50-57
 .. [52] Daubert, T. E.; Petroleum Fraction Distillation Interconversion. Hydrocarbon Processing, Vol. 73, No. 9, 1994, pp. 75-78.
 .. [53] Edmister, W. C. and Okamoto, K. K.; Applied Hydrocarbon Thermodynamics, Part 13: Equilibrium Flash Vaporization Correlations for Heavy Oils Under Subatmospheric Pressures. Petroleum Refiner, Vol. 38, No. 9, 1959, pp. 271-288.
