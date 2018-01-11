@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -53,16 +55,13 @@ class nC9(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for nonane of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for nonane of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=nC9(T=596, rho=128.2551)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            596 1 2200.687 81692.218 156.217 379.897 715.553 85.318
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -173,10 +172,10 @@ class nC9(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
-              "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                        "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                        "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                        "doi": "10.1016/j.fluid.2004.10.031"},
+               "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
+                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
+                           "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                           "doi": "10.1016/j.fluid.2004.10.031"},
                "__test__": """
                    >>> st=nC9(T=300, rhom=5.6194)
                    >>> print "%0.2f" % st.k
@@ -199,3 +198,15 @@ class nC9(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.043054e-9, "Tcref": 891.825}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = nC9(T=596, rhom=1)
+        self.assertEqual(round(st.P.kPa, 3), 2200.687)
+        self.assertEqual(round(st.hM.kJkmol, 3), 81692.218)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 156.217)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 379.897)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 715.553)
+        self.assertEqual(round(st.w, 3), 85.318)

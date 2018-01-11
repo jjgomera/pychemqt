@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -53,16 +55,13 @@ class nC10(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for decane of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for decane of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=nC10(T=619, rho=142.28168)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            619 1 2071.025 89742.553 164.787 437.033 1043.328 74.576
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -99,7 +98,7 @@ class nC10(MEoS):
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.84178, 0.55424e-1, -0.73555, -0.18507, -0.20775e-1, 0.12335e-1],
+        "nr2": [.84178, .55424e-1, -.73555, -.18507, -.20775e-1, .12335e-1],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
@@ -123,21 +122,21 @@ class nC10(MEoS):
         "exp": [0.535, 0.74, 1.0, 1.28, 1.57]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.50378e1, -0.34694e1, -0.15906e2, -0.82894e2, 0.29336e2, -0.10985e3],
+        "ao": [-5.0378, -3.4694, -.15906e2, -0.82894e2, 0.29336e2, -0.10985e3],
         "exp": [0.4985, 1.33, 2.43, 5.44, 5.8, 11.0]}
 
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.343267, -0.460514],
               "__name__": "Huber (2004)",
               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
-                        "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                        "ref": "Fluid Phase Equilibria 224(2004)263-270.",
-                        "doi": "10.1016/j.fluid.2004.07.012"},
+                          "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
+                          "ref": "Fluid Phase Equilibria 224(2004)263-270.",
+                          "doi": "10.1016/j.fluid.2004.07.012"},
               "__test__": """
                   >>> st=nC10(T=300, rhom=5.1504)
                   >>> print "%0.2f" % st.mu.muPas
                   926.44
-                  """, # Section 3.3 pag 269
+                  """,  # Section 3.3 pag 269
 
               "ek": 490.51, "sigma": 0.686,
               "Tref": 1., "rhoref": 1.,
@@ -152,7 +151,7 @@ class nC10(MEoS):
               "Tref_res": 617.7, "rhoref_res": 1.64*M, "etaref_res": 1000,
               "n_packed": [2.55105, 1.71465, 0],
               "t_packed": [0, 0.5, 1],
-              "n_poly": [-0.402094e-1, 0.0, 0.404435e-1, -0.142063e-1, -0.453387],
+              "n_poly": [-.402094e-1, 0., .404435e-1, -0.142063e-1, -0.453387],
               "t_poly": [-1, -1, -2, -2, 0],
               "d_poly": [2, 3, 2, 3, 1],
               "g_poly": [0, 0, 0, 0, -1],
@@ -173,28 +172,40 @@ class nC10(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "Huber (2005)",
                "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                        "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                        "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                        "doi": "10.1016/j.fluid.2004.10.031"},
+                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
+                           "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                           "doi": "10.1016/j.fluid.2004.10.031"},
                "__test__": """
                    >>> st=nC10(T=300, rhom=5.1504)
                    >>> print "%0.2f" % st.k
                    132.80
-                   """, # Section 3.3 pag 54
+                   """,  # Section 3.3 pag 54
 
                "Tref": 617.7, "kref": 1,
                "no": [0.105543e-1, -0.514530e-1, 0.118979, -0.372442e-1],
                "co": [0, 1, 2, 3],
 
                "Trefb": 617.7, "rhorefb": 1.64, "krefb": 1,
-               "nb": [-0.294394e-1, 0.150509e-1, 0.499245e-1, 0.0, -0.142700e-1,
+               "nb": [-.294394e-1, .150509e-1, .499245e-1, 0., -.142700e-1,
                       -0.138857e-1, 0.150828e-2, 0.433326e-2, 0.0, 0.0],
                "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
                "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
                "cb": [0]*10,
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 7.086368e-10, "Tcref": 926.55}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 7.086368e-10, "Tcref": 926.55}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = nC10(T=619, rhom=1)
+        self.assertEqual(round(st.P.kPa, 3), 2071.025)
+        self.assertEqual(round(st.hM.kJkmol, 3), 89742.553)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 164.787)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 437.033)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 1043.328)
+        self.assertEqual(round(st.w, 3), 74.576)

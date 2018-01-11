@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class SO2(MEoS):
     CASNumber = "7446-09-5"
     formula = "SO2"
     synonym = "R-764"
-    rhoc = unidades.Density(525.)
+    rhoc = unidades.Density(525.002841)
     Tc = unidades.Temperature(430.64)
     Pc = unidades.Pressure(7884.0, "kPa")
     M = 64.0638  # g/mol
@@ -53,16 +55,13 @@ class SO2(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for sulfur dioxide of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for sulfur dioxide of "
+                    "Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=SO2(T=432, rho=8*64.0638)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            432 8 8052.256 20821.200 56.819 61.478 4877.456 171.538
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -125,5 +124,17 @@ class SO2(MEoS):
         "exp": [0.57, 0.8, 1.0, 1.3, 1.6]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.33832e1, -0.76873e1, -0.23614e2, -0.13720e3, 0.18664e4, -0.24469e4],
+        "ao": [-3.3832, -7.6873, -23.614, -137.20, 1866.4, -2446.9],
         "exp": [0.424, 1.4, 3.6, 8.5, 13.0, 14.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = SO2(T=432, rhom=8)
+        self.assertEqual(round(st.P.kPa, 3), 8052.256)
+        self.assertEqual(round(st.hM.kJkmol, 3), 20821.200)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 56.819)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 61.478)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 4877.456)
+        self.assertEqual(round(st.w, 3), 171.538)

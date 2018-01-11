@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -59,16 +61,13 @@ class R116(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-116 of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for R-116 of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R116(T=295, rho=4*138.01182)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            295 4 3180.336 34509.528 161.389 120.218 2189.730 73.317
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -129,7 +128,7 @@ class R116(MEoS):
         "exp": [0.64, 0.79, 0.95, 1.14, 1.33]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.34135e1, -0.14529e3, 0.23651e3, -0.22276e3, 0.23103e3, -0.17433e3],
+        "ao": [-3.4135, -.14529e3, .23651e3, -.22276e3, .23103e3, -.17433e3],
         "exp": [0.428, 2.0, 2.24, 3.0, 4.0, 5.0]}
 
     visco0 = {"eq": 1, "omega": 1,
@@ -198,3 +197,14 @@ class R116(MEoS):
 
     _thermal = thermo0,
 
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = R116(T=295, rhom=4)
+        self.assertEqual(round(st.P.kPa, 3), 3180.336)
+        self.assertEqual(round(st.hM.kJkmol, 3), 34509.528)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 161.389)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 120.218)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2189.730)
+        self.assertEqual(round(st.w, 3), 73.317)

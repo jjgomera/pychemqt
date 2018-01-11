@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,16 +48,13 @@ class iC6(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for isohexane of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for isohexane of "
+                    "Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=iC6(T=499, rho=2*86.17536)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            499 2 3058.917 48733.740 113.316 233.627 1129.816 90.210
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -93,7 +92,7 @@ class iC6(MEoS):
     visco0 = {"eq": 2, "omega": 3,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08",
+                          "title": "Coefficients are taken from NIST14 V9.08",
                           "ref": "",
                           "doi": ""},
 
@@ -109,7 +108,7 @@ class iC6(MEoS):
     thermo0 = {"eq": 1, "critical": 0,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
+                           "title": "Coefficients are taken from NIST14 V9.08",
                            "ref": "",
                            "doi": ""},
 
@@ -125,3 +124,15 @@ class iC6(MEoS):
                "cb": [0]*6}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = iC6(T=499, rho=2*iC6.M)
+        self.assertEqual(round(st.P.kPa, 3), 3058.917)
+        self.assertEqual(round(st.hM.kJkmol, 3), 48733.740)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 113.316)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 233.627)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 1129.816)
+        self.assertEqual(round(st.w, 3), 90.210)

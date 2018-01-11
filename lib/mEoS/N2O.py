@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class N2O(MEoS):
     CASNumber = "10024-97-2"
     formula = "N2O"
     synonym = "R-744A"
-    rhoc = unidades.Density(452.011)
+    rhoc = unidades.Density(452.011456)
     Tc = unidades.Temperature(309.52)
     Pc = unidades.Pressure(7245.0, "kPa")
     M = 44.0128  # g/mol
@@ -46,16 +48,13 @@ class N2O(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for nitrous oxide of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for nitrous oxide of "
+                    "Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=N2O(T=311, rho=10*44.0128)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            311 10 7474.778 13676.531 52.070 50.336 2997.404 185.945
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -88,5 +87,17 @@ class N2O(MEoS):
         "exp": [0.47, 0.72, 1.0, 1.3, 1.6]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31287e1, -0.77651e2, 0.21442e3, -0.47809e3, 0.75185e3, -0.46279e3],
+        "ao": [-3.1287e1, -77.651e2, .21442e3, -.47809e3, .75185e3, -.46279e3],
         "exp": [0.409, 1.91, 2.33, 3.0, 3.6, 4.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = N2O(T=311, rhom=10)
+        self.assertEqual(round(st.P.kPa, 3), 7474.778)
+        self.assertEqual(round(st.hM.kJkmol, 3), 13676.531)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 52.070)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 50.336)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2997.404)
+        self.assertEqual(round(st.w, 3), 185.945)

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class R245fa(MEoS):
     CASNumber = "460-73-1"
     formula = "CF3CH2CHF2"
     synonym = "R245fa"
-    rhoc = unidades.Density(519.43577)
+    rhoc = unidades.Density(519.4357675)
     Tc = unidades.Temperature(427.01)
     Pc = unidades.Pressure(3651.0, "kPa")
     M = 134.04794  # g/mol
@@ -49,51 +51,19 @@ class R245fa(MEoS):
            "pow": [0, 1],
            "ao_pow": [-13.4283638514, 9.87236538],
            "ao_exp": [5.5728, 10.385, 12.554],
-           "titao": [222/Tc, 1010/Tc, 2450/Tc]}
+           "titao": [222/427.16, 1010/427.16, 2450/427.16]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-245fa of Akasaka (2015).",
+        "__name__": "Helmholtz equation of state for R-245fa of Akasaka "
+                    "(2015)",
         "__doi__": {"autor": "Akasaka, Ryo; Zhou, Yong; Lemmon, Eric W.",
-                    "title": "Fundamental Equation of State for 1,1,1,3,3-Pentafluoropropane (R-245fa)",
-                    "ref": "Journal of Physical and Chemical Reference Data 44, 013104 (2015)",
-                    "doi":  "10.1063/1.4913493"},
-        "__test__": """
-            >>> st=R245fa(T=250, x=0.5)
-            >>> print("%0.6g %0.7g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJmol, st.Gas.hM.kJmol, \
-                st.Liquido.sM.kJmolK, st.Gas.sM.kJmolK, st.Liquido.cvM.kJmolK, st.Gas.cvM.kJmolK, \
-                st.Liquido.cpM.kJmolK, st.Gas.cpM.kJmolK, st.Liquido.w, st.Gas.w))
-            250 0.01646009 10.90057 0.008011195 22.9621 51.9442 0.119346 0.235275 0.114156 0.0950838 0.163322 0.103970 873.234 128.702
-            >>> st=R245fa(T=400, x=0.5)
-            >>> print("%0.6g %0.7g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.hM.kJmol, st.Gas.hM.kJmol, \
-                st.Liquido.sM.kJmolK, st.Gas.sM.kJmolK, st.Liquido.cvM.kJmolK, st.Gas.cvM.kJmolK, \
-                st.Liquido.cpM.kJmolK, st.Gas.cpM.kJmolK, st.Liquido.w, st.Gas.w))
-            400 2.210563 7.151900 1.068455 51.5591 65.2749 0.206989 0.241278 0.147755 0.148819 0.255135 0.234947 235.471 106.449
-            >>> st=R245fa(T=250, rhom=11)
-            >>> print("%0.6g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.rhoM, st.P.MPa, st.hM.kJmol, st.sM.kJmolK, \
-                st.cvM.kJmolK, st.cpM.kJmolK, st.w))
-            250 11 7.454017 23.3683 0.118254 0.114536 0.162060 908.590
-            >>> st=R245fa(T=250, rhom=0.005)
-            >>> print("%0.6g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.rhoM, st.P.MPa, st.hM.kJmol, st.sM.kJmolK, \
-                st.cvM.kJmolK, st.cpM.kJmolK, st.w))
-            250 0.005 0.01031829 51.9792 0.239262 0.0949026 0.103569 129.147
-            >>> st=R245fa(T=400, rhom=9)
-            >>> print("%0.6g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.rhoM, st.P.MPa, st.hM.kJmol, st.sM.kJmolK, \
-                st.cvM.kJmolK, st.cpM.kJmolK, st.w))
-            400 9 33.14725 50.9308 0.196139 0.144117 0.188486 593.178
-            >>> st=R245fa(T=400, rhom=0.5)
-            >>> print("%0.6g %0.7g %0.7g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.T, st.rhoM, st.P.MPa, st.hM.kJmol, st.sM.kJmolK, \
-                st.cvM.kJmolK, st.cpM.kJmolK, st.w))
-            400 0.5 1.352988 67.9067 0.250859 0.138842 0.162544 135.712
-            """,  # Table 7, Pag 12
+                    "title": "Fundamental Equation of State for 1,1,1,3,3-"
+                             "Pentafluoropropane (R-245fa)",
+                    "ref": "J. Phys. Chem. Ref. Data 44, 013104 (2015)",
+                    "doi": "10.1063/1.4913493"},
 
-        "R": 8.314462,
+        "R": 8.3144621,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 54490.07, "so": 268.2193},
 
@@ -120,22 +90,20 @@ class R245fa(MEoS):
 
     helmholtz2 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-245fa of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for R-245fa of Lemmon "
+                    "and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R245fa(T=429, rho=3*134.04794, eq=1)
-            >>> print("%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            429 3 3737.844 63909.823 235.875 172.283 1891.957 78.673
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "NBP",
+        "Tc": 427.16, "rhoc": 3.85,
 
-        "Tmin": Tt, "Tmax": 440.0, "Pmax": 200000.0, "rhomax": 12.3,
+        "Tmin": 171.05, "Tmax": 440.0, "Pmax": 200000.0, "rhomax": 12.3,
         "Pmin": 0.0125, "rhomin": 12.29,
 
         "nr1": [1.2904, -3.2154, 0.50693, 0.093148, 0.00027638],
@@ -152,13 +120,15 @@ class R245fa(MEoS):
 
     _surface = {"sigma": [0.073586, 0.0103, -0.02663],
                 "exp": [1.0983, 0.60033, 0.72765]}
+
+    # Section 4 in Akasaka
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-7.8353, 1.7746, -3.1305,  -3.4216],
         "exp": [1, 1.5, 2.5, 5]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.463, 2.2375, -0.27579, 0.55136],
+        "ao": [0.46367, 2.2375, -0.27579, 0.55136],
         "exp": [0.17, 0.5, 1.3, 2.5]}
     _vapor_Density = {
         "eq": 3,
@@ -167,7 +137,9 @@ class R245fa(MEoS):
 
     thermo0 = {"eq": 1,
                "__name__": "Marsh (2002)",
-               "__doc__": """Marsh, K., Perkins, R., and Ramires, M.L.V., "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data (2002)47(4):932-940""",
+               "__doc__": """Marsh, K., Perkins, R., and Ramires, M.L.V., "
+               Measurement and Correlation of the Thermal Conductivity of Propane
+               from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data (2002)47(4):932-940""",
 
                "Tref": 427.16, "kref": 1,
                "no": [0.300728e-1, -0.102742, 0.145703, -0.483106e-1],
@@ -185,3 +157,80 @@ class R245fa(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.5e-9, "Tcref": 640.80}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_Akasaka(self):
+        # Table 7, Pag 12
+        st = R245fa(T=250, x=0.5)
+        self.assertEqual(round(st.P.MPa, 8), 0.01646009)
+        self.assertEqual(round(st.Liquido.rhoM, 5), 10.90057)
+        self.assertEqual(round(st.Liquido.hM.kJmol, 3), 22.962)
+        self.assertEqual(round(st.Liquido.sM.kJmolK, 6), 0.119346)
+        self.assertEqual(round(st.Liquido.cvM.kJmolK, 6), 0.114155)
+        self.assertEqual(round(st.Liquido.cpM.kJmolK, 6), 0.163322)
+        self.assertEqual(round(st.Liquido.w, 3), 873.234)
+        self.assertEqual(round(st.Gas.rhoM, 9), 0.008011195)
+        self.assertEqual(round(st.Gas.hM.kJmol, 4), 51.9442)
+        self.assertEqual(round(st.Gas.sM.kJmolK, 6), 0.235275)
+        self.assertEqual(round(st.Gas.cvM.kJmolK, 6), 0.095084)
+        self.assertEqual(round(st.Gas.cpM.kJmolK, 5), 0.10397)
+        self.assertEqual(round(st.Gas.w, 3), 128.702)
+
+        st = R245fa(T=400, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 2.210563)
+        self.assertEqual(round(st.Liquido.rhoM, 5), 7.1518)
+        self.assertEqual(round(st.Liquido.hM.kJmol, 4), 51.5591)
+        self.assertEqual(round(st.Liquido.sM.kJmolK, 6), 0.206989)
+        self.assertEqual(round(st.Liquido.cvM.kJmolK, 6), 0.147755)
+        self.assertEqual(round(st.Liquido.cpM.kJmolK, 6), 0.255135)
+        self.assertEqual(round(st.Liquido.w, 3), 235.471)
+        self.assertEqual(round(st.Gas.rhoM, 6), 1.068455)
+        self.assertEqual(round(st.Gas.hM.kJmol, 4), 65.2749)
+        self.assertEqual(round(st.Gas.sM.kJmolK, 6), 0.241278)
+        self.assertEqual(round(st.Gas.cvM.kJmolK, 6), 0.148819)
+        self.assertEqual(round(st.Gas.cpM.kJmolK, 6), 0.234947)
+        self.assertEqual(round(st.Gas.w, 3), 106.449)
+
+        st = R245fa(T=250, rhom=11)
+        self.assertEqual(round(st.P.MPa, 6), 7.454017)
+        self.assertEqual(round(st.hM.kJmol, 4), 23.3683)
+        self.assertEqual(round(st.sM.kJmolK, 6), 0.118254)
+        self.assertEqual(round(st.cvM.kJmolK, 6), 0.114536)
+        self.assertEqual(round(st.cpM.kJmolK, 6), 0.162059)
+        self.assertEqual(round(st.w, 3), 908.590)
+
+        st = R245fa(T=250, rhom=0.005)
+        self.assertEqual(round(st.P.MPa, 8), 0.01031829)
+        self.assertEqual(round(st.hM.kJmol, 4), 51.9792)
+        self.assertEqual(round(st.sM.kJmolK, 6), 0.239262)
+        self.assertEqual(round(st.cvM.kJmolK, 6), 0.094902)
+        self.assertEqual(round(st.cpM.kJmolK, 6), 0.103569)
+        self.assertEqual(round(st.w, 3), 129.147)
+
+        st = R245fa(T=400, rhom=9)
+        self.assertEqual(round(st.P.MPa, 5), 33.14725)
+        self.assertEqual(round(st.hM.kJmol, 4), 50.9308)
+        self.assertEqual(round(st.sM.kJmolK, 6), 0.196139)
+        self.assertEqual(round(st.cvM.kJmolK, 6), 0.144117)
+        self.assertEqual(round(st.cpM.kJmolK, 6), 0.188485)
+        self.assertEqual(round(st.w, 3), 593.178)
+
+        st = R245fa(T=400, rhom=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 1.352988)
+        self.assertEqual(round(st.hM.kJmol, 4), 67.9067)
+        self.assertEqual(round(st.sM.kJmolK, 6), 0.250859)
+        self.assertEqual(round(st.cvM.kJmolK, 6), 0.138842)
+        self.assertEqual(round(st.cpM.kJmolK, 6), 0.162544)
+        self.assertEqual(round(st.w, 3), 135.712)
+
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = R245fa(T=429, rhom=3, eq=1)
+        self.assertEqual(round(st.P.kPa, 3), 3737.844)
+        self.assertEqual(round(st.hM.kJkmol, 3), 63909.822)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 235.875)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 172.283)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 1891.958)
+        self.assertEqual(round(st.w, 3), 78.673)

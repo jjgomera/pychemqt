@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class R41(MEoS):
     CASNumber = "593-53-3"
     formula = "CH3F"
     synonym = "R41"
-    rhoc = unidades.Density(316.506)
+    rhoc = unidades.Density(316.506156)
     Tc = unidades.Temperature(317.28)
     Pc = unidades.Pressure(5897.0, "kPa")
     M = 34.03292  # g/mol
@@ -52,16 +54,13 @@ class R41(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for R-41 of Lemmon and "
+                    "Span (2006) b.",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R41(T=319, rho=9*34.03292)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            319 9 6129.100 13670.133 55.886 55.438 2796.224 189.549
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -82,16 +81,13 @@ class R41(MEoS):
 
     helmholtz2 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-41 of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for R-41 of Lemmon and "
+                    "Span (2006) a.",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R41(T=319, rho=9*34.03292, eq=1)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            319 9 6130.986 13699.382 55.982 53.388 2724.221 194.624
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -151,5 +147,26 @@ class R41(MEoS):
         "exp": [0.58, 0.8, 1.0, 1.3, 1.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.26966e2, .54303e2, -.36361e2, -.17816e2, -.48535e2, -.86727e2],
+        "ao": [-26.966, 54.303, -.36361e2, -.17816e2, -.48535e2, -.86727e2],
         "exp": [0.59, 0.72, 0.86, 3.2, 7.0, 15.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842, eq b
+        st = R41(T=319, rhom=9)
+        self.assertEqual(round(st.P.kPa, 3), 6129.100)
+        self.assertEqual(round(st.hM.kJkmol, 3), 13670.133)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 55.886)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 55.438)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2796.224)
+        self.assertEqual(round(st.w, 3), 189.549)
+
+        # Table 10, Pag 842, eq a
+        st = R41(T=319, rhom=9, eq=1)
+        self.assertEqual(round(st.P.kPa, 3), 6130.986)
+        # self.assertEqual(round(st.hM.kJkmol, 3), 13699.382)
+        # self.assertEqual(round(st.sM.kJkmolK, 3), 55.982)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 53.388)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2724.221)
+        self.assertEqual(round(st.w, 3), 194.624)

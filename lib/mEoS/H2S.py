@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class H2S(MEoS):
     CASNumber = "7783-06-4"
     formula = "H2S"
     synonym = ""
-    rhoc = unidades.Density(347.28)
+    rhoc = unidades.Density(347.2841672)
     Tc = unidades.Temperature(373.1)
     Pc = unidades.Pressure(9000.0, "kPa")
     M = 34.08088  # g/mol
@@ -45,7 +47,7 @@ class H2S(MEoS):
            "titao": [1823/Tc, 3965/Tc]}
 
     Fi2 = {"ao_log": [1, 3],
-           "pow": [0, 1],"ao_pow": [9.336197742, -16.266508995],
+           "pow": [0, 1], "ao_pow": [9.336197742, -16.266508995],
            "ao_exp": [], "titao": [],
            "ao_hyp": [3.11942, 1.00243, 0, 0],
            "hyp": [4.914580541, 2.27065398, 0, 0]}
@@ -70,16 +72,13 @@ class H2S(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for hydrogen sulfide of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for hydrogen sulfide of"
+                    " Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=H2S(T=375, rho=10*34.08088)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            375 10 9289.914 15571.227 49.880 42.574 2645.392 248.512
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -263,7 +262,7 @@ class H2S(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
+                           "title": "Coefficients are taken from NIST14 V9.08",
                            "ref": "",
                            "doi": ""},
 
@@ -279,7 +278,19 @@ class H2S(MEoS):
                "cb": [0]*6,
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.3211e-9, "Tcref": 559.65}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 0.3211e-9, "Tcref": 559.65}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = H2S(T=375, rhom=10)
+        self.assertEqual(round(st.P.kPa, 3), 9289.914)
+        self.assertEqual(round(st.hM.kJkmol, 3), 15571.227)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 49.880)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 42.574)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2645.392)
+        self.assertEqual(round(st.w, 3), 248.512)

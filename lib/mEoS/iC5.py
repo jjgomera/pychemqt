@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class iC5(MEoS):
     CASNumber = "78-78-4"
     formula = "(CH3)2-CH-CH2-CH3"
     synonym = "R-601a"
-    rhoc = unidades.Density(236.)
+    rhoc = unidades.Density(235.99865938)
     Tc = unidades.Temperature(460.35)
     Pc = unidades.Pressure(3378.0, "kPa")
     M = 72.14878  # g/mol
@@ -66,17 +68,13 @@ class iC5(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for isopentane of Lemmon and Span (2006).",
+        "__name__": "short Helmholtz equation of state for isopentane of "
+                    "Lemmon and Span (2006).",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=iC5(T=462, rho=3*72.14878)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            462 3 3458.617 37318.534 94.634 190.631 4660.943 96.324
-            """, # Table 10, Pag 842
-
         "R": 8.314472,
         "cp": Fi1,
         "ref": "NBP",
@@ -241,3 +239,15 @@ class iC5(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.9316e-9, "Tcref": 690.525}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = iC5(T=462, rhom=3)
+        self.assertEqual(round(st.P.kPa, 3), 3458.617)
+        self.assertEqual(round(st.hM.kJkmol, 3), 37318.534)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 94.634)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 190.631)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 4660.943)
+        self.assertEqual(round(st.w, 3), 96.324)

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -60,16 +62,13 @@ class Toluene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for toluene of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for toluene of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=Toluene(T=593, rho=3*92.13842)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            593 3 4186.620 52937.550 105.422 214.488 7705.724 89.464
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -200,3 +199,15 @@ class Toluene(MEoS):
                "Tcref": 1183.5}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = Toluene(T=593, rhom=3)
+        self.assertEqual(round(st.P.kPa, 3), 4186.620)
+        self.assertEqual(round(st.hM.kJkmol, 3), 52937.550)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 105.422)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 214.488)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 7705.724)
+        self.assertEqual(round(st.w, 3), 89.464)

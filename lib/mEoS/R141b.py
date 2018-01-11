@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class R141b(MEoS):
     CASNumber = "1717-00-6"
     formula = "CCl2FCH3"
     synonym = "R141b"
-    rhoc = unidades.Density(458.56)
+    rhoc = unidades.Density(458.55946)
     Tc = unidades.Temperature(477.5)
     Pc = unidades.Pressure(4212.0, "kPa")
     M = 116.94962  # g/mol
@@ -47,16 +49,13 @@ class R141b(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-141b of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for R-141b of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R141b(T=479, rho=3*116.94962)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            479 3 4267.596 61757.274 214.894 126.963 1485.482 93.674
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -92,3 +91,15 @@ class R141b(MEoS):
         "ao": [-0.31177e1, -0.68872e1, -0.18566e2, -0.40311e2, -0.95472e1,
                -0.12482e3],
         "exp": [0.398, 1.33, 3.3, 6.7, 7.0, 14.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = R141b(T=479, rhom=3)
+        self.assertEqual(round(st.P.kPa, 3), 4267.596)
+        self.assertEqual(round(st.hM.kJkmol, 3), 61757.274)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 214.894)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 126.963)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 1485.482)
+        self.assertEqual(round(st.w, 3), 93.674)

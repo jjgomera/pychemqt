@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -40,7 +42,7 @@ class CO(MEoS):
 
     Fi1 = {"ao_log": [1, 2.5],
            "pow": [0, 1, -1.5],
-           "ao_pow": [-3.3728318564, 3.3683460039, 9.111274701235156e-5],
+           "ao_pow": [-3.3728318564, 3.3683460039, -9.111274701235156e-5],
            "ao_exp": [1.0128],
            "titao": [3089/Tc]}
 
@@ -60,16 +62,13 @@ class CO(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for carbon monoxide of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for carbon monoxide of "
+                    "Lemmon and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=CO(T=134, rho=10*28.0101)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            134 10 3668.867 4838.507 41.601 38.702 1642.142 168.632
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -84,7 +83,7 @@ class CO(MEoS):
 
         "nr2": [0.19405, -0.043268, -0.12778, -0.027896, -0.034154, 0.016329],
         "d2": [2, 5, 1, 4, 3, 4],
-        "t2": [0.625, 1.75, 3.625, 3.625, 15.5, 12.],
+        "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
@@ -158,20 +157,22 @@ class CO(MEoS):
         "exp": [0.398, 0.735, 1.08, 1.5, 1.9]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.25439e1, -0.55601e1, -0.85276e1, -0.51163e1, -0.17701e2, -0.29858e2],
+        "ao": [-0.25439e1, -0.55601e1, -0.85276e1, -0.51163e1, -0.17701e2,
+               -0.29858e2],
         "exp": [0.395, 1.21, 3.0, 3.5, 6.0, 8.0]}
 
     visco0 = {"eq": 2, "omega": 2,
               "__name__": "NIST",
               "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08",
+                          "title": "Coefficients are taken from NIST14 v9.08",
                           "ref": "",
                           "doi": ""},
               "ek": 91.7, "sigma": 0.369,
               "n_chapman": 0.141374566/M**0.5,
               "F": [0, 0, 0, 100.],
               "E": [-8.89560281339404, -507.15174441, 9.03858480666,
-                    5287.58110665, 0.322741446715, -49.2143622937, -23.7275041203],
+                    5287.58110665, 0.322741446715, -49.2143622937,
+                    -23.7275041203],
               "rhoc": 10.85}
 
     _viscosity = visco0,
@@ -179,7 +180,7 @@ class CO(MEoS):
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
                "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
+                           "title": "Coefficients are taken from NIST14 v9.08",
                            "ref": "",
                            "doi": ""},
 
@@ -195,7 +196,19 @@ class CO(MEoS):
                "cb": [0]*6,
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.4449e-9, "Tcref": 199.29}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 1.4449e-9, "Tcref": 199.29}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = CO(T=134, rhom=10)
+        self.assertEqual(round(st.P.kPa, 3), 3668.867)
+        self.assertEqual(round(st.hM.kJkmol, 3), 4838.507)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 41.601)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 38.702)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 1642.142)
+        self.assertEqual(round(st.w, 3), 168.632)

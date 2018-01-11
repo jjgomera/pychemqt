@@ -18,12 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
 
 class Acetone(MEoS):
-    """Multiparameter equation  of state for Acetone"""
+    """Multiparameter equation of state for Acetone"""
     name = "acetone"
     CASNumber = "67-64-1"
     formula = "CH3COCH3"
@@ -46,16 +48,13 @@ class Acetone(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for acetone of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for acetone of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi": "10.1021/je050186n"},
-        "__test__": """
-            >>> st=Acetone(T=510, rho=4*58.07914)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            510 4 4807.955 51782.004 157.331 138.449 3766.619 125.351
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -88,5 +87,17 @@ class Acetone(MEoS):
         "exp": [0.456, 0.626, 0.8, 1.0, 2.47]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.25200e1, -0.66065e1, -0.25751e2, 0.78120e1, -0.53778e2, -0.11684e3],
+        "ao": [-.25200e1, -.66065e1, -.25751e2, .78120e1, -.53778e2, -116.84],
         "exp": [0.36, 1.05, 3.2, 4.0, 6.5, 14.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = Acetone(T=510, rhom=4)
+        self.assertEqual(round(st.P.kPa, 3), 4807.955)
+        self.assertEqual(round(st.hM.kJkmol, 3), 51782.004)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 157.331)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 138.449)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 3766.619)
+        self.assertEqual(round(st.w, 3), 125.351)

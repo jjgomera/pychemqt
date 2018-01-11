@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,16 +48,13 @@ class R142b(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-142b of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for R-142b of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R142b(T=412, rho=4*100.49503)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            412 4 4165.653 44982.401 170.029 117.705 3187.213 96.468
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -90,3 +89,15 @@ class R142b(MEoS):
         "eq": 3,
         "ao": [-.3146e1, -.65221e1, -.18006e2, -.46694e2, -.26087e1, -.1102e3],
         "exp": [0.408, 1.28, 3.2, 6.6, 7.0, 14.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = R142b(T=412, rhom=4)
+        self.assertEqual(round(st.P.kPa, 3), 4165.653)
+        self.assertEqual(round(st.hM.kJkmol, 3), 44982.401)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 170.029)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 117.705)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 3187.213)
+        self.assertEqual(round(st.w, 3), 96.468)

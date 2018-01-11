@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -28,7 +30,7 @@ class R218(MEoS):
     CASNumber = "76-19-7"
     formula = "CF3CF2CF3"
     synonym = "R218"
-    rhoc = unidades.Density(627.985)
+    rhoc = unidades.Density(627.9845622)
     Tc = unidades.Temperature(345.02)
     Pc = unidades.Pressure(2640.0, "kPa")
     M = 188.01933  # g/mol
@@ -51,16 +53,13 @@ class R218(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-218 of Lemmon and Span (2006)",
+        "__name__": "short Helmholtz equation of state for R-218 of Lemmon "
+                    "and Span (2006)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
-                    "title": "Short Fundamental Equations of State for 20 Industrial Fluids",
+                    "title": "Short Fundamental Equations of State for 20 "
+                             "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
                     "doi":  "10.1021/je050186n"},
-        "__test__": """
-            >>> st=R218(T=347, rho=3*188.01933)
-            >>> print "%0.0f %0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f" % (st.T, st.rhoM, st.P.kPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            347 3 2742.100 58080.724 251.735 181.131 2375.958 57.554
-            """, # Table 10, Pag 842
 
         "R": 8.314472,
         "cp": Fi1,
@@ -92,5 +91,17 @@ class R218(MEoS):
         "exp": [0.223, 0.39, 0.56, 0.75, 5.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.42658e1, -.69496e1, -.18099e2, -.4921e2, -.55945e2, -.74492e2],
+        "ao": [-4.2658, -6.9496, -.18099e2, -.4921e2, -.55945e2, -.74492e2],
         "exp": [0.481, 1.53, 3.2, 6.3, 12.0, 15.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 10, Pag 842
+        st = R218(T=347, rhom=3)
+        self.assertEqual(round(st.P.kPa, 3), 2742.100)
+        self.assertEqual(round(st.hM.kJkmol, 3), 58080.724)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 251.735)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 181.131)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 2375.958)
+        self.assertEqual(round(st.w, 3), 57.554)

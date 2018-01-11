@@ -20,7 +20,7 @@ loader = TestLoader()
 path = os.path.dirname(os.path.realpath(sys.argv[0]))
 tests = loader.discover(os.path.join(path, "lib", "mEoS"), pattern="*.py")
 TestMEOS = TestSuite(tests)
-# TestLib.addTest(TestMEOS)
+TestLib.addTest(TestMEOS)
 
 # Add lib.EoS submodule test
 for module in EoS.__all__:
