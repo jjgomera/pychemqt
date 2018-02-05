@@ -20,6 +20,10 @@ os.environ["reportlab"] = "False"
 os.environ["PyQt5.Qsci"] = "False"
 
 
+# Don't print the numpy RuntimeWarning
+from numpy import seterr
+seterr("ignore")
+
 from unittest import TextTestRunner, TestSuite
 from test_lib import TestLib
 

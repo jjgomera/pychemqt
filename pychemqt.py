@@ -211,6 +211,19 @@ logging.info(
     QtWidgets.QApplication.translate("pychemqt", "Starting pychemqt"))
 
 
+# Derive numpy error log to pychemqt log
+class NumpyErrorLog(object):
+    """Numpy error message catch and send to pychemqt log
+    Use debug level for this messages"""
+    @staticmethod
+    def write(msg):
+        logging.debug(msg)
+
+from numpy import seterr, seterrcall  # noqa
+seterrcall(NumpyErrorLog)
+seterr(all='log')
+
+
 class SplashScreen(QtWidgets.QSplashScreen):
     """Class to define a splash screen to show loading progress"""
     def __init__(self):
