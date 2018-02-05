@@ -23,6 +23,7 @@ from functools import partial
 import json
 import os
 import platform
+import subprocess
 import sys
 import time
 
@@ -33,7 +34,7 @@ from UI.petro import Definicion_Petro
 import plots as charts
 from UI.widgets import createAction, ClickableLabel
 from lib import config
-from lib.config import (conf_dir, setMainWindowConfig, IMAGE_PATH, Preferences)
+from lib.config import conf_dir, setMainWindowConfig, IMAGE_PATH, Preferences
 from lib.project import Project
 from lib.EoS import K, H
 from equipment import *  # noqa
@@ -467,6 +468,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "Help"),
             slot=self.help,
             icon="button/help",
+            parent=self)
+        actionLog = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "View Log"),
+            slot=self.log,
             parent=self)
         actionAcerca_de = createAction(
             QtWidgets.QApplication.translate("pychemqt", "About pychemqt"),
@@ -982,6 +987,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuAyuda = QtWidgets.QMenu(
             QtWidgets.QApplication.translate("pychemqt", "&Help"))
         self.menuAyuda.addAction(actionAyuda)
+        self.menuAyuda.addAction(actionLog)
         self.menuAyuda.addSeparator()
         self.menuAyuda.addAction(actionAcerca_de)
         self.menuAyuda.addAction(actionAcerca_deQt)
@@ -1655,6 +1661,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def help(self):
         dialog = doi.ShowReference()
         dialog.exec_()
+
+    def log(self):
+        command = Preferences.get("Applications", 'TextViewer')
+        path = os.path.join(conf_dir, "pychemqt.log")
+        subprocess.Popen([command, path])
 
     def acerca(self):
         txt = QtWidgets.QApplication.translate(
