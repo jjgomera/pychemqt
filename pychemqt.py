@@ -41,6 +41,7 @@ parser.add_argument("--debug", action="store_true",
                     help="Enable loglevel to debug, the more verbose option")
 parser.add_argument("-n", "--nosplash", action="store_true",
                     help="Don't show the splash screen at start")
+parser.add_argument("--style", help="Set qt style")
 parser.add_argument("projectFile", nargs="*",
                     help="Optional pychemqt project files to load at startup")
 args = parser.parse_args()
@@ -67,6 +68,16 @@ app = QtWidgets.QApplication(sys.argv)
 app.setOrganizationName("pychemqt")
 app.setOrganizationDomain("pychemqt")
 app.setApplicationName("pychemqt")
+
+
+# Qt style definition
+if args.style is not None:
+    style = QtWidgets.QStyleFactory.create(args.style)
+    if style:
+        app.setStyle(style)
+    else:
+        print("Undefined style option, the available options are: %s" %
+              QtWidgets.QStyleFactory.keys())
 
 
 # Check qt configuration file
