@@ -560,7 +560,7 @@ class Preferences(QtWidgets.QDialog):
         ("button/moody.png", prefMoody.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
         ("button/moody.png", prefStandingKatz.Widget,
-         QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
+         QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart")),
         ("chemistry/grupo18.png", ConfBabel,
          QtWidgets.QApplication.translate("pychemqt", "Openbabel"))]
 
