@@ -46,7 +46,7 @@ This module implements physics adimensional groups
 
 from scipy.constants import g
 
-from .unidades import Dimensionless
+from lib.unidades import Dimensionless
 
 
 __doi__ = {
