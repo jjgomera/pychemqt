@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,10 +48,12 @@ class Trans_2_butene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for trans-butene of Lemmon and Ihmels (2005)",
+        "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
+                    "and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
-                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "title": "Thermodynamic properties of the butenes: Part "
+                             "II. Short fundamental equations of state",
+                    "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
                     "doi":  "10.1016/j.fluid.2004.09.004"},
         "__test__": """
             >>> st=Trans_2_butene(T=350, rho=0)
@@ -97,3 +101,38 @@ class Trans_2_butene(MEoS):
         "eq": 3,
         "ao": [-0.31276e1, -0.60548e1, -0.18243e2, -0.60842e2, 0.13595e3, -0.18270e3],
         "exp": [0.412, 1.24, 3.2, 7.0, 10.0, 11.0]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 9, Pag 186
+        st = Trans_2_butene(T=350, rho=0)
+        self.assertEqual(round(st.P.MPa, 4), 0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29959)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 89.965)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 98.279)
+        self.assertEqual(round(st.w, 2), 238.03)
+
+        st = Trans_2_butene(T=350, rho=0.3*Trans_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 5), 0.74692)
+        self.assertEqual(round(st.hM.kJkmol, 0), 28521)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 86.364)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 95.429)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 112.42)
+        self.assertEqual(round(st.w, 2), 208.86)
+
+        st = Trans_2_butene(T=350, rho=10*Trans_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 3), 12.844)
+        self.assertEqual(round(st.hM.kJkmol, 0), 10494)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 29.866)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 99.512)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 139.07)
+        self.assertEqual(round(st.w, 2), 821.74)
+
+        st = Trans_2_butene(T=440, rho=4*Trans_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 4), 4.7490)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29180)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 78.589)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 128.04)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 692.14)
+        self.assertEqual(round(st.w, 2), 139.25)

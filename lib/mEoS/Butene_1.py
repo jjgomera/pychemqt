@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 from lib.mEoS.C3 import C3
@@ -42,30 +44,18 @@ class Butene_1(MEoS):
     Fi1 = {"ao_log": [1, 2.9197],
            "pow": [0, 1],
            "ao_pow": [-0.00101126, 2.3869174],
-           "ao_exp": [2.9406, 6.5395, 14.5395, 5.8971],
+           "ao_exp": [2.9406, 6.5395, 14.535, 5.8971],
            "titao": [274/Tc, 951/Tc, 2127/Tc, 5752/Tc]}
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for 1-butene of Lemmon and Ihmels (2005)",
+        "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
+                    "and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
-                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "title": "Thermodynamic properties of the butenes: Part "
+                             "II. Short fundamental equations of state",
+                    "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
                     "doi":  "10.1016/j.fluid.2004.09.004"},
-        "__test__": """
-            >>> st=Butene_1(T=350, rho=0)
-            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.0 0.0 29617 88.208 96.522 238.24
-            >>> st=Butene_1(T=350, rho=0.3*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.3 0.75679 28321 87.626 92.719 108.45 211.38
-            >>> st=Butene_1(T=350, rho=10*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 10.0 17.864 11377 31.563 97.760 135.36 843.31
-            >>> st=Butene_1(T=440, rho=4*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            440 4.0 5.3245 29454 80.191 124.13 416.03 151.49
-            """, # Table 9, Pag 186
 
         "R": 8.314472,
         "cp": Fi1,
@@ -117,10 +107,45 @@ class Butene_1(MEoS):
               "psi": [1.0], "psi_t": [0], "psi_d": [0],
               "phi": [1.0], "phi_t": [0], "phi_d": [0]}
 
-    _viscosity=trnECS,
-    _thermal=trnECS,
+    _viscosity = trnECS,
+    _thermal = trnECS,
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 9, Pag 186
+        st = Butene_1(T=350, rho=0)
+        self.assertEqual(round(st.P.MPa, 3), 0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29617)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 88.208)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 96.522)
+        self.assertEqual(round(st.w, 2), 238.24)
+
+        st = Butene_1(T=350, rho=0.3*Butene_1.M)
+        self.assertEqual(round(st.P.MPa, 5), 0.75679)
+        self.assertEqual(round(st.hM.kJkmol, 0), 28321)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 87.626)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 92.719)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 108.45)
+        self.assertEqual(round(st.w, 2), 211.38)
+
+        st = Butene_1(T=350, rho=10*Butene_1.M)
+        self.assertEqual(round(st.P.MPa, 3), 17.864)
+        self.assertEqual(round(st.hM.kJkmol, 0), 11377)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 31.563)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 97.760)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 135.36)
+        self.assertEqual(round(st.w, 2), 843.31)
+
+        st = Butene_1(T=440, rho=4*Butene_1.M)
+        self.assertEqual(round(st.P.MPa, 4), 5.3245)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29454)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 80.191)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 124.13)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 416.03)
+        self.assertEqual(round(st.w, 2), 151.49)
 
 
 if __name__ == "__main__":
-    st=Butene_1(T=300, P=1e5, )
+    st = Butene_1(T=300, P=1e5, )
     print("%0.6g %0.6g" % (st.mu.muPas, st.k.mWmK))

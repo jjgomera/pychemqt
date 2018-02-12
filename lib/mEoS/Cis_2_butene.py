@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,25 +48,13 @@ class Cis_2_butene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for cis-butene of Lemmon and Ihmels (2005)",
+        "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
+                    "and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
-                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "title": "Thermodynamic properties of the butenes: Part "
+                             "II. Short fundamental equations of state",
+                    "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
                     "doi":  "10.1016/j.fluid.2004.09.004"},
-        "__test__": """
-            >>> st=Cis_2_butene(T=350, rho=0)
-            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.0 0.0 29735 83.593 91.907 238.8
-            >>> st=Cis_2_butene(T=350, rho=0.3*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.3 0.74661 28294 84.888 89.258 106.34 209.87
-            >>> st=Cis_2_butene(T=350, rho=10*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 10.0 5.8051 9632.7 29.1 93.935 138.23 770.1
-            >>> st=Cis_2_butene(T=440, rho=4*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            440 4.0 4.5067 28321 75.755 126 1686.3 130.71
-            """, # Table 9, Pag 186
 
         "R": 8.314472,
         "cp": Fi1,
@@ -98,3 +88,38 @@ class Cis_2_butene(MEoS):
         "ao": [-0.28918e1, -0.58582e1, -0.17443e2, -0.24566e2, -0.29413e2,
                -0.11392e3],
         "exp": [0.4098, 1.174, 3.11, 6.1, 7.6, 14.8]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 9, Pag 186
+        st = Cis_2_butene(T=350, rho=0)
+        self.assertEqual(round(st.P.MPa, 4), 0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29735)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 83.593)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 91.907)
+        self.assertEqual(round(st.w, 2), 238.80)
+
+        st = Cis_2_butene(T=350, rho=0.3*Cis_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 5), 0.74661)
+        self.assertEqual(round(st.hM.kJkmol, 0), 28294)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 84.888)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 89.258)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 106.34)
+        self.assertEqual(round(st.w, 2), 209.87)
+
+        st = Cis_2_butene(T=350, rho=10*Cis_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 4), 5.8051)
+        self.assertEqual(round(st.hM.kJkmol, 1), 9632.7)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 29.100)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 93.935)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 138.23)
+        self.assertEqual(round(st.w, 2), 770.10)
+
+        st = Cis_2_butene(T=440, rho=4*Cis_2_butene.M)
+        self.assertEqual(round(st.P.MPa, 4), 4.5067)
+        self.assertEqual(round(st.hM.kJkmol, 0), 28321)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 75.755)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 126.00)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 1686.3)
+        self.assertEqual(round(st.w, 2), 130.71)

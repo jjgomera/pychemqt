@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,25 +48,13 @@ class iButene(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for isobutene of Lemmon and Ihmels (2005)",
+        "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
+                    "and Ihmels (2005)",
         "__doi__": {"autor": "Lemmon, E.W., Ihmels, E.C.",
-                    "title": "Thermodynamic properties of the butenes: Part II. Short fundamental equations of state",
-                    "ref": "Fluid Phase Equilibria 228 – 229 (2004), 173 – 187.",
+                    "title": "Thermodynamic properties of the butenes: Part "
+                             "II. Short fundamental equations of state",
+                    "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
                     "doi":  "10.1016/j.fluid.2004.09.004"},
-        "__test__": """
-            >>> st=iButene(T=350, rho=0)
-            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.0 0.0 29966 92.121 100.44 237.8
-            >>> st=iButene(T=350, rho=0.3*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.3 0.75754 28666 88.966 96.794 112.57 211.02
-            >>> st=iButene(T=350, rho=10*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 10.0 17.776 11782 32.951 101.72 139.45 838.25
-            >>> st=iButene(T=440, rho=4*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            440 4.0 5.4086 30169 82.345 127.28 407 151.13
-            """, # Table 9, Pag 186
 
         "R": 8.314472,
         "cp": Fi1,
@@ -96,5 +86,40 @@ class iButene(MEoS):
         "exp": [0.65, 0.8, 0.98, 1.16, 1.3]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31841e1, -0.64014e1, -0.93817e1, -0.11160e2, -0.52298e2, -0.12195e3],
+        "ao": [-3.1841, -6.4014, -9.3817, -0.11160e2, -0.52298e2, -0.12195e3],
         "exp": [0.431, 1.29, 3.3, 3.54, 7.3, 15.8]}
+
+
+class Test(TestCase):
+    def test_shortLemmon(self):
+        # Table 9, Pag 186
+        st = iButene(T=350, rho=0)
+        self.assertEqual(round(st.P.MPa, 4), 0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 29966)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 92.121)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 100.44)
+        self.assertEqual(round(st.w, 2), 237.80)
+
+        st = iButene(T=350, rho=0.3*iButene.M)
+        self.assertEqual(round(st.P.MPa, 5), 0.75754)
+        self.assertEqual(round(st.hM.kJkmol, 0), 28666)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 88.966)
+        self.assertEqual(round(st.cvM.kJkmolK, 3), 96.794)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 112.57)
+        self.assertEqual(round(st.w, 2), 211.02)
+
+        st = iButene(T=350, rho=10*iButene.M)
+        self.assertEqual(round(st.P.MPa, 3), 17.776)
+        self.assertEqual(round(st.hM.kJkmol, 0), 11782)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 32.951)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 101.72)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 139.45)
+        self.assertEqual(round(st.w, 2), 838.25)
+
+        st = iButene(T=440, rho=4*iButene.M)
+        self.assertEqual(round(st.P.MPa, 4), 5.4086)
+        self.assertEqual(round(st.hM.kJkmol, 0), 30169)
+        self.assertEqual(round(st.sM.kJkmolK, 3), 82.345)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 127.28)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 407.00)
+        self.assertEqual(round(st.w, 2), 151.13)
