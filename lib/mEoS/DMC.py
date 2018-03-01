@@ -45,7 +45,7 @@ class DMC(MEoS):
            "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2011).",
         "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
@@ -79,7 +79,7 @@ class DMC(MEoS):
         "epsilon3": [0.6734, 0.9239, 0.8636, 1.0507, 0.8482, 0.7522],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure={
         "eq": 5,

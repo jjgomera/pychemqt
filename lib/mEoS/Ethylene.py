@@ -65,7 +65,7 @@ class Ethylene(MEoS):
            "exp": [3000],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    smukala = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Smukala et al. (2000)",
         "__doi__": {"autor": "Smukala, J., Span, R., Wagner, W.",
@@ -263,7 +263,7 @@ class Ethylene(MEoS):
         "gamma3": [1.16, 1.19, 1.19, 1.19, 1.19],
         "epsilon3": [1.]*5}
 
-    helmholtz2 = {
+    jahangiri = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Jahangiri et al. (1986)",
         "__doi__": {"autor": "Jahangiri, M., Jacobsen, R.T, Stewart, R.B., and McCarty, R.D.",
@@ -359,7 +359,7 @@ class Ethylene(MEoS):
                4, 4, 2, 2, 2],
         "gamma2": [1]*26}
 
-    helmholtz3 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ethylene of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -452,7 +452,7 @@ class Ethylene(MEoS):
               -0.2054114462372e-3, 0.6727558766661e-1, -0.1557168403328e-5,
               -0.1229814736077e-3, 0.4234325938573e-3]}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -478,7 +478,7 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
+    eq = smukala, MBWR, jahangiri, span, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

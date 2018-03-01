@@ -45,7 +45,7 @@ class C1Linoleate(MEoS):
            "exp": [3052.11, 746.631, 1624.33],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    huber = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
@@ -79,7 +79,7 @@ class C1Linoleate(MEoS):
         "epsilon3": [0.79, 0.9, 0.76],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = huber,
 
     _vapor_Pressure = {
         "eq": 5,

@@ -48,7 +48,7 @@ class CF3I(MEoS):
            "ao_exp": [6.2641], "exp": [694.1467],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    mclinden = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for CF3I of McLinden and Lemmon (2013)",
         "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
@@ -75,7 +75,7 @@ class CF3I(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = mclinden,
 
     _surface = {"sigma": [0.05767], "exp": [1.298]}
     _vapor_Pressure = {

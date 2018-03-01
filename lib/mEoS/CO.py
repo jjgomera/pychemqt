@@ -60,7 +60,7 @@ class CO(MEoS):
            "ao_exp": [0.90426143], "exp": [30000],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon monoxide of "
                     "Lemmon and Span (2006)",
@@ -139,7 +139,7 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, MBWR, GERG
+    eq = lemmon, MBWR, GERG
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}

@@ -43,7 +43,7 @@ class D4(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octamethylcyclotetrasiloxane of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
@@ -75,7 +75,7 @@ class D4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,

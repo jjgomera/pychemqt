@@ -46,7 +46,7 @@ class Trans_2_butene(MEoS):
            "ao_exp": [5.3276, 13.29, 9.6745, 0.40087],
            "titao": [362/Tc, 1603/Tc, 3729/Tc, 4527/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
                     "and Ihmels (2005)",
@@ -55,20 +55,6 @@ class Trans_2_butene(MEoS):
                              "II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
                     "doi":  "10.1016/j.fluid.2004.09.004"},
-        "__test__": """
-            >>> st=Trans_2_butene(T=350, rho=0)
-            >>> print "%0.0f %0.1f %0.1f %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.0 0.0 29959 89.965 98.279 238.03
-            >>> st=Trans_2_butene(T=350, rho=0.3*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 0.3 0.74692 28521 86.364 95.429 112.42 208.86
-            >>> st=Trans_2_butene(T=350, rho=10*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            350 10.0 12.844 10494 29.866 99.512 139.07 821.74
-            >>> st=Trans_2_butene(T=440, rho=4*56.10632)
-            >>> print "%0.0f %0.1f %.5g %.5g %0.5g %0.5g %0.5g %0.5g" % (st.T, st.rhoM, st.P.MPa, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            440 4.0 4.749 29180 78.589 128.04 692.14 139.25
-            """, # Table 9, Pag 186
 
         "R": 8.314472,
         "cp": Fi1,
@@ -87,19 +73,19 @@ class Trans_2_butene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _vapor_Pressure = {
         "eq": 5,
-        "ao": [-0.76226e1, 0.79421e1, -0.69631e1, -0.65517e1, 0.39584e1],
+        "ao": [-7.6226, 7.9421, -6.9631, -6.5517, 3.9584],
         "exp": [1.0, 1.5, 1.65, 4.8, 5.3]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.12452e2, -0.34419e2, 0.52257e2, -0.42889e2, 0.15463e2],
+        "ao": [12.452, -34.419, 52.257, -42.889, 15.463],
         "exp": [0.52, 0.73, 0.97, 1.24, 1.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31276e1, -0.60548e1, -0.18243e2, -0.60842e2, 0.13595e3, -0.18270e3],
+        "ao": [-3.1276, -6.0548, -18.243, -60.842, 135.95, -182.70],
         "exp": [0.412, 1.24, 3.2, 7.0, 10.0, 11.0]}
 
 

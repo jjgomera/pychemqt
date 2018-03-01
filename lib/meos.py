@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 #############################################################################
 # Implemented multiparameter equation of state
 #   o   Ecuación de estado Setzmann-Wagner, basada en la energía de Helmholtz
@@ -251,6 +250,7 @@ class MEoS(ThermoAdvanced):
         self.cleanOldValues(**kwargs)
 
         self._constants = self.eq[self.kwargs["eq"]]
+
         # Configure custom parameter from eq
         if "M" in self._constants:
             self.M = self._constants["M"]
@@ -262,6 +262,7 @@ class MEoS(ThermoAdvanced):
             self.rhoc = unidades.Density(self._constants["rhoc"]*self.M)
         if "Tt" in self._constants:
             self.Tt = unidades.Temperature(self._constants["Tt"])
+
         self.R = unidades.SpecificHeat(self._constants["R"]/self.M, "kJkgK")
         self.Zc = self.Pc/self.rhoc/self.R/self.Tc
 
@@ -279,7 +280,15 @@ class MEoS(ThermoAdvanced):
                     print(("dont converge for %s by %g" %(input, self.kwargs[input]-self.__getattribute__(input)._data)))
 
     def cleanOldValues(self, **kwargs):
-        """Convert alternative rho input to correct rho value"""
+        """Convert alternative input parameters"""
+
+        # Let user eq input with internal name of equation 
+        eq = kwargs.get("eq", 0)
+        if isinstance(eq, str) and eq in self.__class__.__dict__:
+            eq = self.eq.index(self.__class__.__dict__[eq])
+            kwargs["eq"] = eq
+
+        # Alternative rho input
         if "rhom" in kwargs:
             kwargs["rho"] = kwargs["rhom"]*self.M
             del kwargs["rhom"]
@@ -347,10 +356,6 @@ class MEoS(ThermoAdvanced):
         refvalues = self.kwargs["refvalues"]
 
         self._ref(ref, refvalues)
-
-        # Opcion de aceptar el nombre interno de la ecuacion
-        if isinstance(eq, str) and eq in self.__class__.__dict__:
-            eq = self.eq.index(self.__class__.__dict__[eq])
 
         if eq == "PR":
             self._eq = self._PengRobinson

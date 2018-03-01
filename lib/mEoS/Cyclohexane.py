@@ -55,7 +55,7 @@ class Cyclohexane(MEoS):
            "exp": [2000],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Zhou et al. (2014)",
         "__doi__": {"autor": "Zhou, Y., Jun Liu, J., Penoncello, S.G., Lemmon, E.W.",
@@ -119,7 +119,7 @@ class Cyclohexane(MEoS):
         "gamma3": [0.65, 0.63, 1.14, 0.09, 0.56, 0.4, 1.01, 0.45, 0.85, 0.86],
         "epsilon3": [0.73, 0.75, 0.48, 2.32, 0.2, 1.33, 0.68, 1.11, 1.47, 0.99]}
 
-    helmholtz2 = {
+    penoncello = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Penoncello et al. (1995)",
         "__doi__": {"autor": "Penoncello, S.G., Goodwin, A.R.H., and Jacobsen, R.T.",
@@ -151,7 +151,7 @@ class Cyclohexane(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 3, 3, 2, 6, 2, 4, 2],
         "gamma2": [1]*17}
 
-    helmholtz3 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for cyclohexane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -187,7 +187,7 @@ class Cyclohexane(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -213,7 +213,7 @@ class Cyclohexane(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
+    eq = zhou, penoncello, span, sun
 
     _surface = {"sigma": [0.06485], "exp": [1.263]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 700,

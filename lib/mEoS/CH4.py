@@ -69,7 +69,7 @@ class CH4(MEoS):
            "ao_exp": [-0.67490056171e1], "exp": [3000],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    setzmann = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Setzmann and Wagner (1991)",
         "__doi__": {"autor": "Setzmann, U., Wagner, W.",
@@ -374,7 +374,7 @@ class CH4(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 6, 6, 6, 6],
         "gamma2": [1]*18}
 
-    helmholtz3 = {
+    friend = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Friend et al. (1989)",
         "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
@@ -555,7 +555,7 @@ class CH4(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],
         "gamma2": [1]*19}
 
-    helmholtz4 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for methane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -590,7 +590,7 @@ class CH4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -616,7 +616,7 @@ class CH4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
+    eq = setzmann, MBWR, GERG, friend, span, sun
 
     _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
                 "exp": [1.191, 5.422, 0.6161]}

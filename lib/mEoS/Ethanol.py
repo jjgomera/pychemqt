@@ -50,7 +50,7 @@ class Ethanol(MEoS):
            "exp": [694, 1549, 2911, 4659],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    schroeder = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Schroeder (2011).",
         "__doi__": {"autor": "Schroeder, J. A.; Penoncello, S. G.; Schroeder, J. S.",
@@ -110,7 +110,7 @@ class Ethanol(MEoS):
         "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313],
         "nr4": []}
 
-    helmholtz2 = {
+    dillon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Dillon and Penoncello (2004)",
         "__doi__": {"autor": "Dillon, H.E. and Penoncello, S.G.",
@@ -162,7 +162,7 @@ class Ethanol(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 4, 4],
         "gamma2": [1]*8}
 
-    helmholtz3 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely (2004).",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -190,7 +190,7 @@ class Ethanol(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = schroeder, dillon, sun
     _PR = 0.0043733
 
     _surface = {"sigma": [0.05], "exp": [0.952]}

@@ -60,7 +60,7 @@ class Toluene(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for toluene of Lemmon "
                     "and Span (2006)",
@@ -87,7 +87,7 @@ class Toluene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -116,7 +116,7 @@ class Toluene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.841]*6}
 
-    helmholtz3 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -142,7 +142,7 @@ class Toluene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = lemmon, polt, sun
 
     _surface = {"sigma": [0.06897], "exp": [1.291]}
     _vapor_Pressure = {

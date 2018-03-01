@@ -44,11 +44,13 @@ class EthylBenzene(MEoS):
            "ao_exp": [9.7329909, 11.201832, 25.440749],
            "titao": [585/Tc, 4420/Tc, 1673/Tc]}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethylbenzene of Zhou et al. (2012).",
+        "__name__": "Helmholtz equation of state for ethylbenzene of Zhou et "
+                    "al. (2012).",
         "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., and Wu, J.",
-                    "title": "Thermodynamic Properties of o-Xylene, m-Xylene, p-Xylene, and Ethylbenzene",
+                    "title": "Thermodynamic Properties of o-Xylene, m-Xylene, "
+                             "p-Xylene, and Ethylbenzene",
                     "ref": "J. Phys. Chem. Ref. Data 41, 023103 (2012).",
                     "doi": "10.1063/1.3703506"},
 
@@ -78,7 +80,7 @@ class EthylBenzene(MEoS):
         "gamma3": [1.2667, 0.4237, 0.8573, 1.15],
         "epsilon3": [0.5494, 0.7235, 0.493, 0.8566]}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure = {
         "eq": 5,

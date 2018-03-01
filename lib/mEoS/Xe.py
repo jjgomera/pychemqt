@@ -50,7 +50,7 @@ class Xe(MEoS):
            "an": [], "pow": [],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for xenon of Lemmon "
                     "and Span (2006).",
@@ -102,7 +102,7 @@ class Xe(MEoS):
               -0.1048773067133e-3, 0.9082979494829e-2, 0.6458784488434e-6,
               -0.1667673822070e-4, 0.1556036272902e-2]}
 
-    eq = helmholtz1, MBWR
+    eq = lemmon, MBWR
 
     _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

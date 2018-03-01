@@ -44,7 +44,7 @@ class D6(MEoS):
            "ao_hyp": [425104546.6, 0, 3151243909.0, 0],
            "hyp": [786.8, 0, 1792.1, 0]}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
@@ -71,7 +71,7 @@ class D6(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,

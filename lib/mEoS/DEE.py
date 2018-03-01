@@ -43,7 +43,7 @@ class DEE(MEoS):
            "ao_pow": [17.099494, -6.160844, -8.943822, 5.4621e-1, -1.6604e-2],
            "ao_exp": [], "titao": []}
 
-    helmholtz1 = {
+    thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for diethyl ether  of Thol et al. (2013).",
         "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
@@ -89,7 +89,7 @@ class DEE(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
         "gamma2": [1]*9}
 
-    eq = helmholtz1,
+    eq = thol,
 
     _vapor_Pressure = {
         "eq": 5,

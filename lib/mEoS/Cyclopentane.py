@@ -51,7 +51,7 @@ class Cyclopentane(MEoS):
            "exp": [179.0, 1336.0, 2911.0, 6420.0],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    gedanitz = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopentane of Gedanitz et al. (2015).",
         "__doi__": {"autor": "Gedanitz, H., Davila, M.J., Lemmon, E.W.",
@@ -106,7 +106,7 @@ class Cyclopentane(MEoS):
         "gamma3": [1.22, 0.32, 0.22, 1.94, 1.21],
         "epsilon3": [0.684, 0.7, 0.77, 0.625, 0.42]}
 
-    helmholtz2 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopentane of Lemmon et al. (2008).",
         "__doi__": {"autor": "Lemmon, E.W.",
@@ -138,7 +138,7 @@ class Cyclopentane(MEoS):
         "gamma3": [1.1, 0.64, 0.5, 1.26],
         "epsilon3": [0.713, 0.917, 0.688, 0.748]}
 
-    eq = helmholtz1, helmholtz2
+    eq = gedanitz, lemmon
 
     _vapor_Pressure = {
         "eq": 5,

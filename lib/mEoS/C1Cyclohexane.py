@@ -45,7 +45,7 @@ class C1Cyclohexane(MEoS):
            "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for methylcyclohexane of Lemmon (2007).",
         "__doi__": {"autor": "Lemmon, E.W.",
@@ -70,7 +70,7 @@ class C1Cyclohexane(MEoS):
         "c2": [1, 1, 1, 2, 2],
         "gamma2": [1]*17}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _vapor_Pressure = {
         "eq": 5,

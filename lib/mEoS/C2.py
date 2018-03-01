@@ -68,7 +68,7 @@ class C2(MEoS):
            "ao_exp": [-1.4243593411e1], "exp": [3000],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    buecker = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
@@ -286,7 +286,7 @@ class C2(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 6, 6, 6, 6],
         "gamma2": [1]*18}
 
-    helmholtz3 = {
+    friend = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Friend et al. (1991)",
         "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
@@ -450,7 +450,7 @@ class C2(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],
         "gamma2": [1]*19}
 
-    helmholtz4 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ethane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -485,7 +485,7 @@ class C2(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -511,7 +511,7 @@ class C2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
+    eq = buecker, MBWR, GERG, friend, span, sun
 
     _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

@@ -46,7 +46,7 @@ class COS(MEoS):
            "ao_exp": [2.1651, 0.93456, 1.0623, 0.34269],
            "titao": [768/Tc, 1363/Tc, 3175/Tc, 12829/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbonyl sulfide "
                     "of Lemmon and Span (2006)",
@@ -73,7 +73,7 @@ class COS(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.07246], "exp": [1.407]}
     _vapor_Pressure = {

@@ -45,7 +45,7 @@ class DME(MEoS):
            "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    wu = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Wu et al. (2011).",
         "__doi__": {"autor": "Wu, J., Zhou, Y., and Lemmon, E.W.",
@@ -80,7 +80,7 @@ class DME(MEoS):
         "epsilon3": [0.672698, 0.924246, 0.750815, 0.800022],
         "nr4": []}
 
-    helmholtz2 = {
+    ihmels = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Ihmels and Lemmon (2007)",
         "__doi__": {"autor": "Ihmels, E.C. and Lemmon, E.W.",
@@ -104,7 +104,7 @@ class DME(MEoS):
         "c2": [1, 1, 1, 2, 2, 2],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = wu, ihmels
 
     _surface = {"sigma": [0.063157], "exp": [1.2595]}
     _vapor_Pressure = {

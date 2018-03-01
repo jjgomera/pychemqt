@@ -64,7 +64,7 @@ class D2O(MEoS):
            "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    herrig = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heavy water of Herrig"
         " (2017).",
@@ -106,7 +106,7 @@ class D2O(MEoS):
         "gamma3": [2.263, 2.343, 0.929, 1.0, 1.383, 0.968, 1.695, 2.23, 1.07,
                    1.297, 2.41]}
 
-    helmholtz2 = {
+    hill = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for heavy water of Hill "
         "et al. (1982).",
@@ -177,7 +177,7 @@ class D2O(MEoS):
         "t2": [0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6],
         "gamma2": [1.5394]*14}
 
-    eq = helmholtz1, helmholtz2
+    eq = herrig, hill
 
     _surface = {"sigma": [0.238, -0.152082], "exp": [1.25, 2.25]}
     _vapor_Pressure = {

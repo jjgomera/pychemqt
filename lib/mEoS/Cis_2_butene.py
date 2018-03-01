@@ -46,7 +46,7 @@ class Cis_2_butene(MEoS):
            "ao_exp": [3.2375, 7.0437, 11.414, 7.3722],
            "titao": [248/Tc, 1183/Tc, 2092/Tc, 4397/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
                     "and Ihmels (2005)",
@@ -73,7 +73,7 @@ class Cis_2_butene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _vapor_Pressure = {
         "eq": 5,

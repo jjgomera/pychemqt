@@ -51,7 +51,7 @@ class F2(MEoS):
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    reuck = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of de Reuck (1990).",
         "__doi__": {"autor": "de Reuck, K.M.",
@@ -84,7 +84,7 @@ class F2(MEoS):
         "c2": [2]*18,
         "gamma2": [1.07810258]*15+[2.15620515, 3.23430773, 3.23430773]}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -114,7 +114,7 @@ class F2(MEoS):
         "c2": [2]*6,
         "gamma2": [0.9225328]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = reuck, polt
 
     _surface = {"sigma": [0.03978], "exp": [1.218]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,

@@ -149,13 +149,16 @@ class Air(MEoSBlend):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3, 3],
         "gamma2": [1]*9}
 
-    helmholtz2 = {
+    jacobsen = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for air of Jacobsen et al. (1992)",
-        "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., Clarke, W.P., and Lemmon, E.W.",
-                    "title": "A Thermodynamic Property Formulation for Air",
-                    "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
-                    "doi":  "10.1016/0378-3812(92)85124-Q"},
+        "__name__": "Helmholtz equation of state for air of Jacobsen et al. "
+                    "(1992)",
+        "__doi__": {
+            "autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., "
+                     "Clarke, W.P., and Lemmon, E.W.",
+            "title": "A Thermodynamic Property Formulation for Air",
+            "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
+            "doi": "10.1016/0378-3812(92)85124-Q"},
 
         "R": 8.31451,
         "cp": Fi1,
@@ -187,13 +190,15 @@ class Air(MEoSBlend):
                 -0.100337820004e-1, 0.701111041628e-2, -0.472754336912e-2,
                 0.399257638569e-2, 0.968453675994e-2, -0.106826283630e-1,
                 -0.489679885832e-2],
-        "d2": [1, 2, 3, 5, 6, 1, 1, 2, 2, 3, 11, 11, 1, 1, 2, 3, 7, 8, 2, 4, 5, 2],
-        "t2": [1.5, 1, 1, 1, 2, 3, 8, 0.5, 5.5, 9, 3, 6, 3, 9, 2, 13, 11, 11, 8,
-               22, 23, 11],
-        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5],
+        "d2": [1, 2, 3, 5, 6, 1, 1, 2, 2, 3, 11, 11, 1, 1, 2, 3, 7, 8, 2, 4, 5,
+               2],
+        "t2": [1.5, 1, 1, 1, 2, 3, 8, 0.5, 5.5, 9, 3, 6, 3, 9, 2, 13, 11, 11,
+               8, 22, 23, 11],
+        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4,
+               5],
         "gamma2": [1]*22}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon, jacobsen
 
     _surface = {"sigma": [0.03046], "exp": [1.28]}
     _melting = {"eq": 1, "Tref": Tb, "Pref": 5.265,

@@ -58,7 +58,7 @@ class Ar(MEoS):
            "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    tegeler = {
         "__type__": "Helmholtz",
         "__name__": "FEQ Helmholtz equation of state for argon of Tegeler et "
                     "al. (1999).",
@@ -139,7 +139,7 @@ class Ar(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz3 = {
+    stewart = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Stewart and "
                     "Jacobsen (1989).",
@@ -176,7 +176,7 @@ class Ar(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz4 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for argon of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -239,7 +239,7 @@ class Ar(MEoS):
               -0.1154324539e-6, 0.1555990117e-4, -0.1492178536e-9,
               -0.1001356071e-7, 0.2933963216e-6]}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4
+    eq = tegeler, MBWR, GERG, stewart, span
     _PR = -0.0034
 
     _dielectric = {

@@ -70,7 +70,7 @@ class H2S(MEoS):
                       1.3861204e7/8.3159524*4.184, -3.5044957e6/8.3159524*4.184],
            "hyp": [4.33801e2, 8.43792e2, 1.48143e3, 1.10223e3]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for hydrogen sulfide of"
                     " Lemmon and Span (2006).",
@@ -97,7 +97,7 @@ class H2S(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz2 = {
+    sakoda = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Sakoda and Uematsu (2004)",
         "__doi__": {"autor": "Sakoda, N., Uematsu, M.",
@@ -126,7 +126,7 @@ class H2S(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4],
         "gamma2": [1]*12}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -156,7 +156,7 @@ class H2S(MEoS):
         "c2": [2]*6,
         "gamma2": [0.9873538]*6}
 
-    helmholtz4 = {
+    starling = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
@@ -207,7 +207,7 @@ class H2S(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4, GERG
+    eq = lemmon, sakoda, polt, starling, GERG
 
     _surface = {"sigma": [0.078557], "exp": [1.2074]}
     _vapor_Pressure = {

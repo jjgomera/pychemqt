@@ -54,7 +54,7 @@ class D2(MEoS):
            "exp": [319, 361, 518],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    richardson = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for deuterium of Richardson et al. (2014).",
         "__doi__": {"autor": "Richardson, I.A., Leachman, J.W., and Lemmon, E.W.",
@@ -158,7 +158,7 @@ class D2(MEoS):
               -0.8834384656760e-8, -0.1081622159862e-8, -0.1478159334303e-10,
               0.7926922356112e-11, 0.5721547329378e-11]}
 
-    eq = helmholtz1, MBWR
+    eq = richardson, MBWR
 
     _surface = {"sigma": [0.009376], "exp": [1.258]}
     _vapor_Pressure = {

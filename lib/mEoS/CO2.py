@@ -57,7 +57,7 @@ class CO2(MEoS):
            "ao_exp": [2, 1, 1], "exp": [960.11, 1932, 3380.2],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Span and Wagner (1996)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -300,7 +300,7 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 5, 5, 5, 6, 6],
         "gamma2": [1]*18}
 
-    helmholtz3 = {
+    ely = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Ely et al. (1987)",
         "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
@@ -335,7 +335,7 @@ class CO2(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],
         "gamma2": [1]*19}
 
-    helmholtz4 = {
+    shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for carbon dioxide of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -370,7 +370,7 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -396,7 +396,7 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
+    eq = span, MBWR, GERG, ely, shortSpan, sun
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

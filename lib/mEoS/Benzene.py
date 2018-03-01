@@ -51,7 +51,7 @@ class Benzene(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Thol (2013).",
         "__doi__": {"autor": "Thol, M., Lemmon, E.W., Span, R.",
@@ -87,7 +87,7 @@ class Benzene(MEoS):
 
         "nr4": []}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -117,7 +117,7 @@ class Benzene(MEoS):
         "c2": [2]*6,
         "gamma2": [0.95481]*6}
 
-    helmholtz3 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -143,7 +143,7 @@ class Benzene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = thol, polt, sun
 
     _surface = {"sigma": [0.07298, -0.0007802, -0.0001756],
                 "exp": [1.232, 0.8635, 0.3065]}

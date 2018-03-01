@@ -45,7 +45,7 @@ class Cyclopropane(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopropane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -75,7 +75,7 @@ class Cyclopropane(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = polt,
 
     _vapor_Pressure = {
         "eq": 5,

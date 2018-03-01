@@ -76,7 +76,7 @@ class C3(MEoS):
            "ao_exp": [3.1907016349], "exp": [1500],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Lemmon et al. (2009)",
         "__doi__": {"autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
@@ -205,7 +205,7 @@ class C3(MEoS):
         "gamma3": [0.684, 0.829, 1.419, 0.817, 1.500, 1.426, 1.093],
         "epsilon3": [1.283, 0.6936, 0.788, 0.473, 0.8577, 0.271, 0.948]}
 
-    helmholtz2 = {
+    buecker = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Bücker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
@@ -297,7 +297,7 @@ class C3(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz4 = {
+    miyamoto = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
@@ -324,7 +324,7 @@ class C3(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*11}
 
-    helmholtz5 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for propane of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -359,7 +359,7 @@ class C3(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz6 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Sun and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
@@ -385,7 +385,7 @@ class C3(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, helmholtz2, GERG, helmholtz4, helmholtz5, helmholtz6
+    eq = lemmon, MBWR, buecker, GERG, miyamoto, span, sun
 
     _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
     _dielectric = {"eq": 4, "Tref": 273.16, "rhoref": 1000.,

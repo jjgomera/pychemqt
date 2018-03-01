@@ -46,7 +46,7 @@ class Acetone(MEoS):
            "ao_exp": [3.7072, 7.0675, 11.012],
            "titao": [310/Tc, 3480/Tc, 1576/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for acetone of Lemmon "
                     "and Span (2006)",
@@ -74,7 +74,7 @@ class Acetone(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.0633], "exp": [1.16]}
     _vapor_Pressure = {

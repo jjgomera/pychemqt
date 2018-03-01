@@ -64,7 +64,7 @@ class H2(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    leachman = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for normal hydrogen of Leachman et al. (2009).",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
@@ -163,7 +163,7 @@ class H2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz3 = {
+    bender = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Bender (1982).",
         "__doi__": {"autor": "Bender, E.",
@@ -197,7 +197,7 @@ class H2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3
+    eq = leachman, MBWR, GERG, bender
     _PR = -0.004803
 
     _surface = {"sigma": [-1.4165, 0.746383, 0.675625],
