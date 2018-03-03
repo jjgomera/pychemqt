@@ -883,7 +883,6 @@ class MEoS(ThermoAdvanced):
         fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
         fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
-        fase.gamma = fase.cp_cv
 #        fase.cps = estado["cps"]
         fase.w = unidades.Speed(estado["w"])
 
@@ -898,6 +897,13 @@ class MEoS(ThermoAdvanced):
 
         fase.alfap = unidades.InvTemperature(estado["alfap"])
         fase.betap = unidades.Density(estado["betap"])
+
+        if fase.rho:
+            fase.gamma = unidades.Dimensionless(
+                -fase.v/self.P*self.derivative("P", "v", "s", fase))
+        else:
+            fase.gamma = self.gamma0
+
         fase.joule = unidades.TemperaturePressure(
             self.derivative("T", "P", "h", fase))
         fase.Gruneisen = unidades.Dimensionless(
