@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 from math import log, exp, pi, atan
+from unittest import TestCase
 
 from lib.meos import MEoSBlend
 from lib import unidades
@@ -51,74 +52,20 @@ class Air(MEoSBlend):
            "sum2": [2./3]
            }
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for air of Lemmon et al. (2000)",
-        "__doi__": {"autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and Friend, D.G.",
-                    "title": "Thermodynamic Properties of Air and Mixtures of Nitrogen, Argon, and Oxygen From 60 to 2000 K at Pressures to 2000 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
-                    "doi":  "10.1063/1.1285884"},
-        "__test__":
-            # Table A1, Pag 363
-            """
-            >>> print("%0.6f %0.5f" % (Air._bubbleP(59.75).MPa, Air._dewP(59.75).MPa))
-            0.005265 0.00243
-            >>> print("%0.5f %0.5f" % (Air._bubbleP(70).MPa, Air._dewP(70).MPa))
-            0.03191 0.01943
-            >>> print("%0.5f %0.5f" % (Air._bubbleP(80).MPa, Air._dewP(80).MPa))
-            0.11462 0.08232
-            >>> print("%0.5f %0.5f" % (Air._bubbleP(100).MPa, Air._dewP(100).MPa))
-            0.66313 0.56742
-            >>> print("%0.5f %0.5f" % (Air._bubbleP(120).MPa, Air._dewP(120).MPa))
-            2.15573 2.00674
-            >>> print("%0.5f %0.5f" % (Air._bubbleP(130).MPa, Air._dewP(130).MPa))
-            3.42947 3.30835
-            """
-            # Table A2, Pag 366
-            """
-            >>> st=Air(T=100, P=101325)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            100 0.12449 2028.2 2784.1 166.61 21.09 30.13 198.2
-            >>> st=Air(T=2000, P=101325)
-            >>> print("%0.0f %0.4g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            2000 0.006092 48610 65242 259.62 27.90 36.21 863.5
-            >>> st=Air(T=500, P=2e5)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            500 0.048077 10418 14578 208.2 21.51 29.84 446.6
-            >>> st=Air(T=300, P=5e5)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            300 0.20075 6179.8 8670.5 185.5 20.82 29.33 347.8
-            >>> st=Air(T=130, P=1e6)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            130 1.0295 2461.1 3432.5 153.79 22.058 34.69 216.8
-            >>> st=Air(T=70, P=5e6)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            70 31.895 -4198 -4041.2 78.907 32.17 54.57 974.6
-            >>> st=Air(T=2000, P=1e7)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            2000 0.59094 48600 65522 221.44 27.93 36.25 878.6
-            >>> st=Air(T=130, P=5e7)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            130 27.946 -1831.3 -42.096 104.84 27.68 48.19 878.8
-            >>> st=Air(T=100, P=1e8)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            100 33.161 -3403.9 -388.34 87.644 31.98 48.22 1192.4
-            >>> st=Air(T=1000, P=1e9)
-            >>> print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-                st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-            1000 30.791 21944 54421 156.83 29.07 36.77 1966.3
-            """,
+        "__name__": "Helmholtz equation of state for air of Lemmon et al. "
+                    "(2000)",
+        "__doi__": {
+            "autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and "
+                     "Friend, D.G.",
+            "title": "Thermodynamic Properties of Air and Mixtures of "
+                     "Nitrogen, Argon, and Oxygen From 60 to 2000 K at "
+                     "Pressures to 2000 MPa",
+            "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
+            "doi":  "10.1063/1.1285884"},
 
-        "R": 8.314472,
+        "R": 8.31451, "M": 28.9586,
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.},
 
@@ -487,17 +434,104 @@ class Air(MEoSBlend):
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.11e-9, "gam0": 0.55e-1, "qd": 0.31e-9, "Tcref": 265.262}
+               "Xio": 0.11e-9, "gam0": 0.55e-1, "qd": 0.31,
+               "Tcref": 265.262}
 
     _thermal = thermo0, thermo1
 
 
-if __name__ == "__main__":
-    st=Air(T=300, P=5e5)
-    print("%0.0f %0.5g %0.5g %0.5g %0.5g %0.2f %0.2f %0.1f" % (\
-         st.T, st.rhoM, st.uM.kJkmol, st.hM.kJkmol, st.sM.kJkmolK, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w))
-    # 300 0.20075 6179.8 8670.5 185.5 20.82 29.33 347.8
+class Test(TestCase):
+    def test_lemmon(self):
+        # Selected point from Table A1, Pag 363
+        self.assertEqual(round(Air._bubbleP(59.75).MPa, 6), 0.005265)
+        self.assertEqual(round(Air._dewP(59.75).MPa, 5), 0.00243)
+        self.assertEqual(round(Air._bubbleP(70).MPa, 5), 0.03191)
+        self.assertEqual(round(Air._dewP(70).MPa, 5), 0.01943)
+        self.assertEqual(round(Air._bubbleP(80).MPa, 5), 0.11462)
+        self.assertEqual(round(Air._dewP(80).MPa, 5), 0.08232)
+        self.assertEqual(round(Air._bubbleP(100).MPa, 5), 0.66313)
+        self.assertEqual(round(Air._dewP(100).MPa, 5), 0.56742)
+        self.assertEqual(round(Air._bubbleP(120).MPa, 5), 2.15573)
+        self.assertEqual(round(Air._dewP(120).MPa, 5), 2.00674)
+        self.assertEqual(round(Air._bubbleP(130).MPa, 5), 3.42947)
+        self.assertEqual(round(Air._dewP(130).MPa, 5), 3.30835)
 
-    st=Air(T=300, rhom=5)
-    print("%0.4f" % st.mu.muPas)
-    # 21.3241
+        # Selected point from Table A2, Pag 366
+        st = Air(T=100, P=101325)
+        self.assertEqual(round(st.rhoM, 5), 0.12449)
+        self.assertEqual(round(st.uM.kJkmol, 1), 2028.2)
+        self.assertEqual(round(st.hM.kJkmol, 1), 2842.1)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 166.61)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 21.09)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 30.13)
+        self.assertEqual(round(st.w, 1), 198.2)
+
+        st = Air(T=500, P=2e5)
+        self.assertEqual(round(st.rhoM, 6), 0.048077)
+        self.assertEqual(round(st.uM.kJkmol, 0), 10418.0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 14578.0)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 208.20)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 21.51)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 29.84)
+        self.assertEqual(round(st.w, 1), 446.6)
+
+        st = Air(T=130, P=1e6)
+        self.assertEqual(round(st.rhoM, 4), 1.0295)
+        self.assertEqual(round(st.uM.kJkmol, 1), 2461.1)
+        self.assertEqual(round(st.hM.kJkmol, 1), 3432.5)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 153.79)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 22.05)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 34.69)
+        self.assertEqual(round(st.w, 1), 216.8)
+
+        st = Air(T=2000, P=10e6)
+        self.assertEqual(round(st.rhoM, 5), 0.59094)
+        self.assertEqual(round(st.uM.kJkmol, 0), 48600)
+        self.assertEqual(round(st.hM.kJkmol, 0), 65522)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 221.44)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 27.93)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 36.25)
+        self.assertEqual(round(st.w, 1), 878.6)
+
+        st = Air(T=2000, P=500e6)
+        self.assertEqual(round(st.rhoM, 2), 16.48)
+        self.assertEqual(round(st.uM.kJkmol, 0), 48857)
+        self.assertEqual(round(st.hM.kJkmol, 0), 79198)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 188.66)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 29.07)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 37.27)
+        self.assertEqual(round(st.w, 1), 1497.6)
+
+        # Custom cycle
+        P = 50   # MPa
+        T = 470  # K
+        f_pt = Air(P=P, T=T)
+        f_prho = Air(P=f_pt.P, rho=f_pt.rho)
+        self.assertEqual(round(f_prho.P-P, 6), 0)
+        self.assertEqual(round(f_prho.T-T, 6), 0)
+
+    def test_Transport(self):
+        """Table V, pag 28"""
+        st = Air()
+        self.assertEqual(round(st._visco0(0, 100), 11), 7.09559e-6)
+        self.assertEqual(round(st._visco0(0, 300), 10), 18.523e-6)
+        self.assertEqual(round(Air._visco0(28*28.9586, 100), 9), 107.923e-6)
+        self.assertEqual(round(Air._visco0(10*28.9586, 200), 10), 21.1392e-6)
+        self.assertEqual(round(Air._visco0(5*28.9586, 300), 10), 21.3241e-6)
+        self.assertEqual(round(
+            Air._visco0(10.4*28.9586, 132.64), 10), 17.7623e-6)
+
+        st = Air()
+        self.assertEqual(round(st._thermo0(0, 100), 8), 9.35902e-3)
+        self.assertEqual(round(st._thermo0(0, 300), 7), 26.3529e-3)
+        # self.assertEqual(round(Air(rho=28*28.9586, T=100).k.mWmK, 3), 119.222)
+        # self.assertEqual(round(Air(rho=10*28.9586, T=200).k.mWmK, 4), 35.3186)
+        self.assertEqual(round(Air(rho=5*28.9586, T=300).k.mWmK, 4), 32.6062)
+        # self.assertEqual(round(Air(rho=10.4*28.9586, T=132.64).k.mWmK, 4), 75.6231)
+
+
+if __name__ == "__main__":
+    st = Air(T=132.4, rho=10.4*28.9586, thermal=0)
+    print(st.k.mWmK)
+    st2 = Air(T=132.4, rho=10.4*28.9586, visco=1, thermal=1)
+    print(st2.k.mWmK)
