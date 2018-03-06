@@ -47,29 +47,13 @@ class DEE(MEoS):
 
     thol = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for diethyl ether  of Thol et al. (2013).",
+        "__name__": "Helmholtz equation of state for diethyl ether of Thol "
+                    "et al. (2013)",
         "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
-                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids",
+                    "title": "A New Functional Form for Equations of State "
+                             "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
                     "doi": "10.1007/s10765-014-1633-1"},
-        "__test__": """
-            >>> st=DEE(T=280, rho=0.1)
-            >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            280 0.1 0.003134775 -29.231529953 0.288943745 1.455670027 1.569255417 183.651907457
-            >>> st=DEE(T=280, rho=750)
-            >>> print "%0.0f %0.0f %0.9f %0.9f %0.9f %0.9f %0.9f %0.8f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            280 750 20.774279163 -396.071208713 -1.386035322 1.732367580 2.226381171 1190.89216523
-            >>> st=DEE(T=400, rho=0.1)
-            >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 0.1 0.004483768 182.466204569 0.873988712 1.841364392 1.953941717 218.048963727
-            >>> st=DEE(T=400, rho=650)
-            >>> print "%0.0f %0.0f %0.9f %0.9f %0.9f %0.9f %0.9f %0.8f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 650 33.847217264 -101.418571257 -0.568533506 1.949560509 2.520106238 919.575708532
-            """, # Table 9, Pag 26
 
         "R": 8.314472,
         "cp": Fi1,
@@ -105,3 +89,39 @@ class DEE(MEoS):
         "eq": 3,
         "ao": [-0.35858, -16.843, 32.476, -33.444, -48.036],
         "exp": [0.06, 0.87, 1.3, 1.7, 5.3]}
+
+
+# class Test(TestCase):
+    # def test_thol(self):
+        # # Table 9, Pag 26
+        # st = DEE(T=280, rho=0.1)
+        # self.assertEqual(round(st.P.MPa, 9), 0.003134775)
+        # self.assertEqual(round(st.h.kJkg, 9), -29.231529953)
+        # self.assertEqual(round(st.s.kJkgK, 9), 0.288943745)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 1.455670027)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 1.569255417)
+        # self.assertEqual(round(st.w, 9), 183.651907457)
+
+        # st = DEE(T=280, rho=750)
+        # self.assertEqual(round(st.P.MPa, 9), 20.774279163)
+        # self.assertEqual(round(st.h.kJkg, 9), -396.071208713)
+        # self.assertEqual(round(st.s.kJkgK, 9), -1.386035322)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 1.732367580)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 2.226381171)
+        # self.assertEqual(round(st.w, 9), 1190.89216523)
+
+        # st = DEE(T=400, rho=0.1)
+        # self.assertEqual(round(st.P.MPa, 9), 0.004483768)
+        # self.assertEqual(round(st.h.kJkg, 9), 182.466204569)
+        # self.assertEqual(round(st.s.kJkgK, 9), 0.873988712)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 1.841364392)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 1.953941717)
+        # self.assertEqual(round(st.w, 9), 218.048963727)
+
+        # st = DEE(T=400, rho=650)
+        # self.assertEqual(round(st.P.MPa, 9), 33.847217264)
+        # self.assertEqual(round(st.h.kJkg, 9), -101.418571257)
+        # self.assertEqual(round(st.s.kJkgK, 9), -0.568533506)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 1.949560509)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 2.520106238)
+        # self.assertEqual(round(st.w, 9), 919.575708532)

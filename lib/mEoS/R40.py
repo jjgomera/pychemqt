@@ -46,31 +46,14 @@ class R40(MEoS):
            "ao_exp": [3.764997],
            "titao": [3.7101]}
 
-    helmholtz1 = {
+    thol = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R40 of Thol et al. (2013).",
+        "__name__": "Helmholtz equation of state for R40 of Thol et al (2013)",
         "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
-                    "title": "A New Functional Form for Equations of State for Some Weakly Associating Fluids",
+                    "title": "A New Functional Form for Equations of State "
+                             "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
                     "doi": "10.1007/s10765-014-1633-1"},
-        "__test__": """
-            >>> st=R40(T=240, rho=0.1)
-            >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            240 0.1 0.003946471 -44.893076233 0.367418153 0.570253307 0.736404894 225.580390587
-            >>> st=R40(T=240, rho=1050)
-            >>> print "%0.0f %0.0f %0.9f %0.9f %0.9f %0.9f %0.9f %0.8f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            240 1050 27.686694086 -469.385073839 -1.974262988 1.057989833 1.538497999 1218.61504241
-            >>> st=R40(T=400, rho=0.1)
-            >>> print "%0.0f %0.1f %0.9f %0.9f %0.9f %0.9f %0.9f %0.9f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 0.1 0.006584665 89.522556776 0.70750466 0.790284451 0.955280932 282.066952997
-            >>> st=R40(T=400, rho=900)
-            >>> print "%0.0f %0.0f %0.9f %0.9f %0.9f %0.9f %0.9f %0.8f" % ( \
-                st.T, st.rho, st.P.MPa, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 900 85.792012509 -200.464775222 -1.303719709 0.923813791 1.463531785 1077.73764207
-            """, # Table 9, Pag 26
 
         "R": 8.314472,
         "cp": Fi1,
@@ -92,7 +75,7 @@ class R40(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
         "gamma2": [1]*9}
 
-    eq = helmholtz1,
+    eq = thol,
 
     _vapor_Pressure = {
         "eq": 5,
@@ -106,3 +89,39 @@ class R40(MEoS):
         "eq": 3,
         "ao": [-0.9433, -6.8001, -82.752, 202.14, -264.16, 99.135],
         "exp": [0.18, 0.9, 3.7, 4.6, 5.6, 6.7]}
+
+
+# class Test(TestCase):
+    # def test_thol(self):
+        # # Table 9, Pag 26
+        # st = R40(T=240, rho=0.1)
+        # self.assertEqual(round(st.P.MPa, 9), 0.003946471)
+        # self.assertEqual(round(st.h.kJkg, 9), -44.893076233)
+        # self.assertEqual(round(st.s.kJkgK, 9), 0.367418153)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 0.570253307)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 0.736404894)
+        # self.assertEqual(round(st.w, 9), 225.580390587)
+
+        # st = R40(T=240, rho=1050)
+        # self.assertEqual(round(st.P.MPa, 9), 27.686694086)
+        # self.assertEqual(round(st.h.kJkg, 9), -469.385073839)
+        # self.assertEqual(round(st.s.kJkgK, 9), -1.974262988)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 1.057989833)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 1.538497999)
+        # self.assertEqual(round(st.w, 9), 1218.61504241)
+
+        # st = R40(T=400, rho=0.1)
+        # self.assertEqual(round(st.P.MPa, 9), 0.006584665)
+        # self.assertEqual(round(st.h.kJkg, 9), 89.522556776)
+        # self.assertEqual(round(st.s.kJkgK, 9), 0.70750466)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 0.790284451)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 0.955280932)
+        # self.assertEqual(round(st.w, 9), 282.066952997)
+
+        # st = R40(T=400, rho=900)
+        # self.assertEqual(round(st.P.MPa, 9), 85.792012509)
+        # self.assertEqual(round(st.h.kJkg, 9), -200.464775222)
+        # self.assertEqual(round(st.s.kJkgK, 9), -1.303719709)
+        # self.assertEqual(round(st.cv.kJkgK, 9), 0.923813791)
+        # self.assertEqual(round(st.cp.kJkgK, 9), 1.463531785)
+        # self.assertEqual(round(st.w, 9), 1077.73764207)
