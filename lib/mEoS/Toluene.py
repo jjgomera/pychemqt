@@ -89,9 +89,10 @@ class Toluene(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for toluene of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for toluene of Polt (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
         "R": 8.3143,
@@ -104,7 +105,7 @@ class Toluene(MEoS):
         "nr1": [-0.343905499875, 0.737562743137, -0.158601557810,
                 0.113243121503e1, -0.253681929563e1, 0.104584338973e1,
                 -0.115732119380e1, 0.176205273278, -0.242942016719,
-                0.398925293195, 0.193881828889, 0.199426230143, -0.306598708746,
+                0.398925293195, 0.193881828889, 0.199426230143, -.306598708746,
                 -0.114697533947e-1, 0.230068676459e-1, 0.658341220591e-2],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
@@ -118,10 +119,13 @@ class Toluene(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for toluene of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for toluene of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,

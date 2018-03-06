@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -62,7 +64,7 @@ class SF6(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    guder = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of Guder and Wagner (2009)",
         "__doi__": {"autor": "Guder, C. and Wagner, W.",
@@ -253,7 +255,7 @@ class SF6(MEoS):
                    1.22, 1.22, 1.22, 1.22],
         "epsilon3": [0.85, 0.85, 0.85, 0.85, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]}
 
-    helmholtz2 = {
+    reuck = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of de Reuck et al. (1991)",
         "__doi__": {"autor": "de Reuck, K.M., Craven, R.J.B., and Cole, W.A.",
@@ -284,21 +286,15 @@ class SF6(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 6],
         "gamma2": [1]*12}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for sulfur hexafluoride of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for sulfur "
+                    "hexafluoride of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=SF6(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.9671 8.094 0.9958
-            >>> st2=SF6(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            52.80 0.10913
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
@@ -319,7 +315,7 @@ class SF6(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*7}
 
-    helmholtz4 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -349,7 +345,7 @@ class SF6(MEoS):
         "c2": [2]*6,
         "gamma2": [1.32678063]*6}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
+    eq = guder, reuck, shortSpan, polt
 
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
@@ -374,3 +370,17 @@ class SF6(MEoS):
         "ao": [23.68063442, 0.513062232, -24.4706238, -4.6715244, -1.7536843,
                -6.65585369],
         "exp": [1.044, 0.5, 1.0, 2.0, 8.0, 17.]}
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = SF6(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.9671)
+        self.assertEqual(round(st.P.MPa, 3), 8.094)
+        self.assertEqual(round(st.cp.kJkgK, 4), 0.9958)
+
+        st2 = SF6(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 52.80)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.10913)

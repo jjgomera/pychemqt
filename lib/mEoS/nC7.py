@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -51,8 +53,8 @@ class nC7(MEoS):
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [0.3957146e6, 0.2130579e8, 0.1349899e9, 0],
-           "hyp": [0.1697890e3, 0.8361950e3, 0.1760460e4, 0]}
+           "ao_hyp": [13.7266, 30.4707, 43.55610, 0],
+           "hyp": [169.789, 836.195, 1760.46, 0]}
 
     CP3 = {"ao": 1.157528,
            "an": [0.70489617e-1, -0.23419686e-4, -0.14768221e-8, -0.20117611e-11],
@@ -66,27 +68,22 @@ class nC7(MEoS):
            "ao_hyp": [2.5273083e8/8.3159524*4.184, 3.9046536e7/8.3159524*4.184, 0, 0],
            "hyp": [1.6693200e3, 7.86001e2, 0, 0]}
 
-    helmholtz1 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for heptane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for heptane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=nC7(T=700, rho=200)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.1651 7.957 3.7079
-            >>> st2=nC7(T=750, rho=100)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            211.90 0.31964
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
         "ref": "OTO",
+        "M": 100.204, "Tc": 540.13, "rhoc": 232/100.204,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 7.75,
         "Pmin": 0.17549e-3, "rhomin": 7.7457,
 
         "nr1": [0.10543747645262e1, -0.26500681506144e1, 0.81730047827543,
@@ -103,16 +100,21 @@ class nC7(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for n-heptane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 7.75,
-#        "Pmin": 0.61166, "rhomin": 55.497,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.10543747645262e1, -0.26500681506144e1, 0.81730047827543,
                 -0.30451391253428, 0.122538687108, 0.27266472743928e-3],
@@ -126,7 +128,7 @@ class nC7(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heptane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -155,7 +157,7 @@ class nC7(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    helmholtz4 = {
+    starling = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heptane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
@@ -202,13 +204,13 @@ class nC7(MEoS):
               2.08733258744, - 1.37572781583e3, 6.95627225584e4,
               1.90615930406e-4, -5.61551412281e-1, 2.73983005070e2,
               6.28902715950e-2, -1.11012478028e1, 6.22600247144e2,
-              1.57273923084, -6.63204129629e-2, -1.79732347053e1, 1.24881866033,
+              1.57273923084, -6.63204129629e-2, -17.9732347053, 1.24881866033,
               3.81777590060e5, - 3.56280298214e7, 1.7565835641e4,
               4.54695406896e9, 2.05985406654e3, 8.72406003683e5,
-              5.62265877351e1, -3.20150071052e7, 3.57524917645, 3.27649699126e3,
+              56.2265877351, -3.20150071052e7, 3.57524917645, 3.27649699126e3,
               -1.15729200586e-1, 3.93007045330e1, 3.88225605345e3]}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4, MBWR
+    eq = shortSpan, GERG, polt, starling, MBWR
 
     _surface = {"sigma": [0.07765, -0.02599], "exp": [1.319, 1.6]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -330,3 +332,17 @@ class nC7(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.1246e-9, "Tcref": 810.195}
 
     _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = nC7(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.1651)
+        self.assertEqual(round(st.P.MPa, 3), 7.957)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.7079)
+
+        st2 = nC7(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 211.90)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31964)

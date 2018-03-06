@@ -51,7 +51,7 @@ class NH3(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Baehr and Tillner-Roth (1993)",
         "__doi__": {"autor": "Baehr, H.D. and Tillner-Roth, R.",
@@ -173,7 +173,7 @@ class NH3(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3],
         "gamma2": [1]*16}
 
-    helmholtz2 = {
+    ahrendts = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts and Baehr (1979)",
         "__doi__": {"autor": "Ahrendts, J. and Baehr, H.D.",
@@ -208,7 +208,7 @@ class NH3(MEoS):
         "c2": [2]*18,
         "gamma2": [0.86065403]*13+[506.2670781840292]*2+[50626.70781840292]*3}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ammonia of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -242,13 +242,17 @@ class NH3(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ammonia of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for ammonia of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.3143,
         "cp": Fi1,
         "ref": "IIR",
@@ -262,13 +266,13 @@ class NH3(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [1.23624654e-1, -3.02129187e-1, 3.31747586e-1, -2.97121254e-3,
-                -1.30202073e-1, -7.45181207e-2, -4.73506171e-2, -9.70095484e-3],
+                -0.130202073, -7.45181207e-2, -4.73506171e-2, -9.70095484e-3],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
+    eq = tillner, ahrendts, shortSpan, sun
 
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
                 "Tmin": Tt, "Tmax": 700.0,

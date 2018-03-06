@@ -36,7 +36,6 @@ class C1Linoleate(MEoS):
     Tb = unidades.Temperature(628.84)
     f_acent = 0.805
     momentoDipolar = unidades.DipoleMoment(1.79, "Debye")
-    id = 39
 
     CP1 = {"ao": 0.0,
            "an": [190.986],
@@ -47,10 +46,13 @@ class C1Linoleate(MEoS):
 
     huber = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
-        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
-                    "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
+        "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
+                    " et al. (2009).",
+        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
+                             "L.S., and Bruno, T.J.",
+                    "title": "Model for the Thermodynamic Properties of a "
+                             "Biodiesel Fuel",
+                    "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
                     "doi": "10.1021/ef900159g"},
 
         "R": 8.314472,
@@ -64,7 +66,7 @@ class C1Linoleate(MEoS):
         "d1": [4, 1, 1, 3],
         "t1": [1, 0.2, 1.2, 1.0],
 
-        "nr2": [-0.9766643, -0.4323178, 0.2000470e1, -0.1752030e1, -0.1726895e-1],
+        "nr2": [-0.9766643, -0.4323178, 2.00047, -1.75203, -0.01726895],
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.2, 2.5, 1.8, 1.92, 1.47],
         "c2": [2, 2, 1, 2, 1],
@@ -91,7 +93,7 @@ class C1Linoleate(MEoS):
         "exp": [0.83, 0.98, 1.17, 1.5, 1.7]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.85880e1, 0.14766e2, -0.24195e2, -0.37474e3, 0.32689e3, -0.19125e3],
+        "ao": [-8.588, 14.766, -24.195, -374.74, 326.89, -191.25],
         "exp": [0.568, 1.08, 1.4, 4.8, 5.0, 9.0]}
 
     thermo0 = {"eq": 1,

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -151,29 +153,23 @@ class Cyclohexane(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 3, 3, 2, 6, 2, 4, 2],
         "gamma2": [1]*17}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for cyclohexane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for cyclohexane of "
+                    "Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=Cyclohexane(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.0278 9.007 3.5927
-            >>> st2=Cyclohexane(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            206.82 0.31448
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
         "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612},
-        "Tt": 279.47, "Tc": 553.64, "rhoc": 3.244, "M": 84.1608,
+        "Tc": 553.60, "rhoc": 273.02/84.161, "M": 84.161,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.77,
-        "Pmin": 5.2428, "rhomin":9.3999,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 9.77,
+        "Pmin": 5.2428, "rhomin": 9.3999,
 
         "nr1": [0.10232354e1, -0.29204964e1, 0.10736630e1, -0.19573985,
                 0.12228111, 0.28943321e-3],
@@ -189,11 +185,15 @@ class Cyclohexane(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for cyclohexane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for cyclohexane of Sun and "
+                    "Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31434,
         "cp": CP1,
         "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612},
@@ -207,13 +207,13 @@ class Cyclohexane(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [7.10849914e-2, 4.46376742e-1, 7.64476190e-1, -4.23520282e-2,
-                -3.96468623e-1, -1.41250071e-2, -1.08371284e-1, -2.50082884e-2],
+                -0.396468623, -1.41250071e-2, -1.08371284e-1, -2.50082884e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = zhou, penoncello, span, sun
+    eq = zhou, penoncello, shortSpan, sun
 
     _surface = {"sigma": [0.06485], "exp": [1.263]}
     _melting = {"eq": 1, "Tref": 1, "Pref": 700,
@@ -232,3 +232,17 @@ class Cyclohexane(MEoS):
         "eq": 3,
         "ao": [-3.69006, -41.4239, 220.914, -443.72, 491.49, -296.373],
         "exp": [0.446, 1.98, 2.75, 3.3, 4.1, 4.8]}
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = Cyclohexane(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.0278)
+        self.assertEqual(round(st.P.MPa, 3), 9.007)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.5927)
+
+        st2 = Cyclohexane(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 206.82)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31449)

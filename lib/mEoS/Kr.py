@@ -45,7 +45,7 @@ class Kr(MEoS):
            "ao_pow": [-3.7506412806, 3.7798018435],
            "ao_exp": [], "titao": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for krypton of "
                     "Lemmon and Span (2006).",
@@ -75,7 +75,7 @@ class Kr(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for krypton of Polt et al. (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -108,7 +108,7 @@ class Kr(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon, polt
 
     _surface = {"sigma": [0.0447], "exp": [1.245]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

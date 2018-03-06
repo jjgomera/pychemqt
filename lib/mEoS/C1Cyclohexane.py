@@ -47,11 +47,20 @@ class C1Cyclohexane(MEoS):
 
     lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for methylcyclohexane of Lemmon (2007).",
+        "__name__": "short Helmholtz equation of state for methylcyclohexane "
+                    "of Lemmon (2007).",
         "__doi__": {"autor": "Lemmon, E.W.",
                     "title": "",
                     "ref": "unpublished equation, 2007",
                     "doi": ""},
+
+        # Yoneda, Y., Sato, S., Matsumoto, T.
+        # Density of Methylcyclohexane at Temperatures up to 600K and Pressures
+        # up to 200 MPa
+        # Int. J. Thermophys. 38 (2017) 106
+        # doi: 10.1007/s10765-017-2241-7
+        # As report Yoneda et al., its new (p, ρ, T) data disabling this eq as
+        # reference equation
 
         "R": 8.314472,
         "cp": CP1,

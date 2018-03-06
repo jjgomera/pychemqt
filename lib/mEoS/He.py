@@ -134,13 +134,13 @@ class He(MEoS):
                      0.5680, 1.6412],
         "nr4": []}
 
-    helmholtz3 = {
+    mccarty = {
         "__type__": "Helmholtz",
-        "__name__": "Fundamental equation of state for helium of McCarty and Arp (1990).",
+        "__name__": "FEQ of state for helium of McCarty and Arp (1990).",
         "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
-                    "doi":  ""},
+                    "doi": "10.1007/978-1-4613-0639-9_174"},
 
         "R": 8.31431,
         "cp": CP1,
@@ -157,8 +157,10 @@ class He(MEoS):
                 0.823154284944e-3, 0.149309620852e-1, -0.150469153718e-1,
                 -0.213800009686e-2, 0.198095303505e-3, 0.195115121471e-2,
                 -0.320152846941e-3],
-        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7, 8],
-        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2, 3, 3],
+        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7,
+               8],
+        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2,
+               3, 3],
 
         "nr2": [0.208984171567e1, -0.381792817549, 0.441393943069e-1,
                 0.119594006419e1, -0.152740402594, 0.441393941765e-1,
@@ -173,11 +175,12 @@ class He(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for helium of McCarty and Arp (1990).",
+        "__name__": "MBWR equation of state for helium of McCarty and Arp "
+                    "(1990).",
         "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
-                    "doi":  ""},
+                    "doi": "10.1007/978-1-4613-0639-9_174"},
 
         "R": 8.31431,
         "cp": CP1,
@@ -186,7 +189,7 @@ class He(MEoS):
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
         "Pmin": 4.8565, "rhomin": 36.537,
 
-        "b": [None, 0.4558980227431e-3, 0.1260692007853e-1, -0.7139657549318e-1,
+        "b": [None, 0.4558980227431e-3, 0.1260692007853e-1, -.7139657549318e-1,
               0.9728903861441e-1, -0.1589302471562, 0.1454229259623e-4,
               -0.4708238429298e-3, 0.1132915223587e-1, 0.2410763742104e-1,
               -0.5093547838381e-7, 0.2699726927900e-4, -0.3954146691114e-3,
@@ -228,7 +231,7 @@ class He(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, MBWR, GERG
+    eq = helmholtz1, helmholtz2, mccarty, MBWR, GERG
     _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],

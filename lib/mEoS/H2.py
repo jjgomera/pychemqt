@@ -135,17 +135,21 @@ class H2(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hydrogen of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for hydrogen of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
-#        "Pmin": 0.61166, "rhomin": 55.497,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.53579928451252e1, -0.62050252530595e1,  0.13830241327086,
                 -0.71397954896129e-1,  0.15474053959733e-1],
@@ -154,7 +158,7 @@ class H2(MEoS):
 
         "nr2": [-0.14976806405771, -0.26368723988451e-1,  0.56681303156066e-1,
                 -0.60063958030436e-1, -0.45043942027132,  0.42478840244500,
-                -0.21997640827139e-1, -0.1049952137453e-1, -0.28955902866816e-2],
+                -0.021997640827139, -0.01049952137453, -0.28955902866816e-2],
         "d2": [1, 5, 5, 5, 1, 1, 2, 5, 1],
         "t2": [2.625, 0, 0.25, 1.375, 4, 4.25, 5, 8, 8],
         "c2": [1, 1, 1, 1, 2, 2, 3, 3, 5],

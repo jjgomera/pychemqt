@@ -45,16 +45,13 @@ class D4(MEoS):
 
     colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for octamethylcyclotetrasiloxane of Colonna et al. (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes",
+        "__name__": "Helmholtz equation of state for D4 of Colonna (2006).",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
+                             "Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected "
+                             "Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
                     "doi":  "10.1016/j.fluid.2006.04.015"},
-        "__test__": """
-            >>> st=D4(T=586.49127187, P=1332000)
-            >>> print "%0.6f" % st.v
-            0.003257
-            """, # Table 20, Pag 204
 
         "R": 8.314472,
         "cp": CP1,
@@ -87,7 +84,8 @@ class D4(MEoS):
         "exp": [0.24, 0.5, 0.75, 1.0, 2.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.16204e1, -0.57888e1, -0.24291e2, 0.53567e2, -0.12135e3, -0.10976e4],
+        "ao": [-0.16204e1, -0.57888e1, -0.24291e2, 0.53567e2, -0.12135e3,
+               -0.10976e4],
         "exp": [0.31, 0.78, 2.5, 4.4, 5.0, 15.0]}
 
     visco0 = {"eq": 5, "omega": 3,

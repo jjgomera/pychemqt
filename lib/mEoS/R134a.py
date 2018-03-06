@@ -56,7 +56,7 @@ class R134a(MEoS):
            "ao_hyp": [], "hyp": []}
 
     # TDOO: Add Huber-Ely meos, file in todo folder
-    helmholtz1 = {
+    tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Tillner-Roth & Baehr (1994).",
         "__doi__": {"autor": "Tillner-Roth, R. and Baehr, H.D.",
@@ -355,7 +355,7 @@ class R134a(MEoS):
               -0.397282752308e-1, 0.143016844796e2, 0.803085294260e-4,
               -0.171959073552, 0.226238385661e1]}
 
-    helmholtz2 = {
+    shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-134a of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -390,7 +390,7 @@ class R134a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz3 = {
+    astina = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
@@ -419,13 +419,17 @@ class R134a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-134a of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for R-134a of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314471,
         "cp": Fi1,
         "ref": "IIR",
@@ -439,13 +443,13 @@ class R134a(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-1.61424796e-2, -2.15499979e-1, 3.11819936e-1, 1.12867938e-3,
-                -2.83454532e-1, -4.21157950e-2, -8.08314045e-2, -1.59762784e-2],
+                -0.283454532, -4.21157950e-2, -8.08314045e-2, -1.59762784e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
+    eq = tillner, MBWR, shortSpan, astina, sun
     _PR = 0.001032
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}

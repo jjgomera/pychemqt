@@ -199,7 +199,7 @@ class H2O(MEoS):
            "titao": [1.287202151, 3.537101709, 7.740210774, 9.243749421,
                      27.5056402]}
 
-    helmholtz1 = {
+    iapws = {
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for water of Wagner and"
                     u"Pruß (2002).",
@@ -369,11 +369,12 @@ class H2O(MEoS):
         "__name__": "Helmholtz equation of state for water of Kunz and Wagner"
                     "(2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for"
-                             "Natural Gases and Other Mixtures: An Expansion"
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -389,13 +390,13 @@ class H2O(MEoS):
 
         "nr2": [0.10957690214499e1, 0.53213037828563e-1, 0.13050533930825e-1,
                 -0.41079520434476, 0.14637443344120, -0.55726838623719e-1,
-                -0.11201774143800e-1, -.66062758068099e-2, .46918522004538e-2],
+                -0.0112017741438, -0.66062758068099e-2, .46918522004538e-2],
         "c2": [1, 1, 1, 2, 2, 2, 3, 5, 5],
         "d2": [1, 5, 5, 1, 2, 4, 4, 1, 1],
         "t2": [1.5, 0.625, 2.625, 5, 4, 4.5, 3, 4, 6],
         "gamma2": [1]*9}
 
-    helmholtz2 = {
+    saul = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and"
                     "Wagner-58 coeff (1989).",
@@ -447,7 +448,7 @@ class H2O(MEoS):
         "t5": [50, 40, 32, 26]
         }
 
-    helmholtz3 = {
+    saul2 = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and"
                     "Wagner-38 coeff (1989).",
@@ -486,7 +487,7 @@ class H2O(MEoS):
                7, 13, 14, 15, 24, 15],
         "gamma2": [1]*26}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Sun and Ely"
                     "(2004)",
@@ -494,8 +495,9 @@ class H2O(MEoS):
                     "title": "Universal equation of state for engineering"
                              "application: Algorithm and  application to"
                              "non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314371357587,
         "cp": Fi1,
         "ref": {"name": "CUSTOM",
@@ -516,7 +518,7 @@ class H2O(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, GERG, helmholtz2, helmholtz3, helmholtz4
+    eq = iapws, GERG, saul, saul2, sun
     _PR = 0.0043451
 
     _surface = {"sigma": [-0.1306, 0.2151], "exp": [2.471, 1.233]}

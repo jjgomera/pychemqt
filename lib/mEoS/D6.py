@@ -46,9 +46,12 @@ class D6(MEoS):
 
     colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
+        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
+                    "Colonna (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
-                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6",
+                    "title": "Multiparameter equations of state for siloxanes:"
+                             " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
+                             "[O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
                     "doi":  "10.1016/j.fluid.2007.10.001"},
 

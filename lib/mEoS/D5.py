@@ -30,7 +30,7 @@ class D5(MEoS):
     synonym = "D5"
     rhoc = unidades.Density(292.570762680819)
     Tc = unidades.Temperature(619.23462341)
-    Pc = unidades.Pressure(1160, "kPa")
+    Pc = unidades.Pressure(1161.46, "kPa")
     M = 370.7697  # g/mol
     Tt = unidades.Temperature(226.0)
     Tb = unidades.Temperature(484.05)
@@ -46,16 +46,14 @@ class D5(MEoS):
 
     colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes",
+        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
+                    "Colonna (2006).",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
+                             "Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected "
+                             "Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
                     "doi":  "10.1016/j.fluid.2006.04.015"},
-        "__test__": """
-            >>> st=D5(T=619.23462341, P=1161460)
-            >>> print "%0.6f" % st.v
-            0.003418
-            """, # Table 22, Pag 206
 
         "R": 8.314472,
         "cp": CP1,

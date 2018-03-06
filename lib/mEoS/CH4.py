@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -320,10 +322,13 @@ class CH4(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for ethane of Younglove and Ely (1987)",
+        "__name__": "MBWR equation of state for ethane of Younglove and Ely "
+                    "(1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "title": "Thermophysical Properties of Fluids. II. "
+                             "Methane, Ethane, Propane, Isobutane, and Normal "
+                             "Butane",
+                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                     "doi": "10.1063/1.555785"},
 
         "Tmin": 90.68, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 36.2029,
@@ -335,27 +340,30 @@ class CH4(MEoS):
 
         "b": [None, 0.9898937956e-4, 0.2199608275, -0.5322788000e1,
               0.2021657962e3, -0.2234398926e5, 0.106794028e-3, 0.1457922469e-2,
-              -0.9265816666e1, 0.2915364732e4, 0.2313546209e-5, 0.1387214274e-2,
+              -9.265816666, 0.2915364732e4, 0.2313546209e-5, 0.1387214274e-2,
               0.4780467451e-1, 0.1176103833e-3, -0.198209673e-2, -0.2512887756,
-              0.9748899826e-4, -0.1202192137e-5, 0.4128353939e-3, -0.7215842918e-5,
-              0.5081738255e4, -0.9198903192e6, -0.2732264677e2, 0.7499024351e6,
-              0.1114060908e-1, 0.1083955159e2, -0.4490960312e-3, -0.1380337847e2,
-              -0.2371902232e-6, 0.3761652197e-3, -0.2375166954e-8,
-              -0.1237640790e-6, 0.6766926453e-5]}
+              0.9748899826e-4, -0.1202192137e-5, 0.4128353939e-3,
+              -0.7215842918e-5, 0.5081738255e4, -0.9198903192e6, -27.32264677,
+              0.7499024351e6, 0.01114060908, 0.1083955159e2, -0.4490960312e-3,
+              -0.1380337847e2, -0.2371902232e-6, 0.3761652197e-3,
+              -0.2375166954e-8, -0.1237640790e-6, 0.6766926453e-5]}
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for methane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072,
-#        "Pmin": 73.476, "rhomin": 29.249,
+        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1":  [0.57335704239162, -0.16760687523730e1, 0.23405291834916,
                  -0.21947376343441, 0.16369201404128e-1, 0.15004406389280e-1],
@@ -366,8 +374,8 @@ class CH4(MEoS):
                 0.30033302857974, 0.20985543806568, -0.18590151133061e-1,
                 -0.15782558339049, 0.12716735220791, -0.32019743894346e-1,
                 -0.68049729364536e-1, 0.24291412853736e-1, 0.51440451639444e-2,
-                -0.19084949733532e-1, 0.55229677241291e-2, -0.44197392976085e-2,
-                0.40061416708429e-1, -0.33752085907575e-1, -0.25127658213357e-2],
+                -0.019084949733532, 0.55229677241291e-2, -0.44197392976085e-2,
+                0.040061416708429, -0.33752085907575e-1, -0.25127658213357e-2],
         "d2": [1, 1, 1, 2, 3, 6, 2, 3, 3, 4, 4, 2, 3, 4, 5, 6, 6, 7],
         "t2": [0.625, 2.625, 2.75, 2.125, 2, 1.75, 4.5, 4.75, 5, 4, 4.5, 7.5,
                14, 11.5, 26, 28, 30, 16],
@@ -555,25 +563,20 @@ class CH4(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],
         "gamma2": [1]*19}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for methane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for methane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=CH4(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.6278 108.108 3.9282
-            >>> st2=CH4(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            142.73 0.78167
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
+        "M": 16.043,
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 40.072,
         "Pmin": 11.661, "rhomin": 28.167,
@@ -592,10 +595,13 @@ class CH4(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for methane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.31451,
         "cp": Fi1,
@@ -610,13 +616,13 @@ class CH4(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-6.83210861e-2, -3.47523515e-2, 1.04637008e-1, -1.09884198e-2,
-                -1.25124331e-1, -5.53450960e-3, -1.51182884e-2, -2.04800000e-2],
+                -0.125124331, -5.53450960e-3, -1.51182884e-2, -2.04800000e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = setzmann, MBWR, GERG, friend, span, sun
+    eq = setzmann, MBWR, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
                 "exp": [1.191, 5.422, 0.6161]}
@@ -787,3 +793,17 @@ class CH4(MEoS):
                "Z": 6.512707e-10}
 
     _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = CH4(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.6278)
+        self.assertEqual(round(st.P.MPa, 3), 108.108)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.9282)
+
+        st2 = CH4(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 142.73)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.78166)

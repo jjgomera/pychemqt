@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -72,8 +74,8 @@ class iC4(MEoS):
     CP5 = {"ao": 4.06714,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [0.1724067e7, 0.2059196e6, 0.9124395e8, 0.1289193e8],
-           "hyp": [0.4382700e3, 0.1980180e3, 0.1905020e4, 0.8937650e3]}
+           "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
+           "hyp": [438.27, 198.018, 1905.02, 893.765]}
 
     CP6 = {"ao": 0.397893/8.3143*58.124,
            "an": [0.412501e-2/8.3143*58.124, -0.196195e-6/8.3143*58.124,
@@ -82,7 +84,7 @@ class iC4(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    buecker = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
@@ -229,10 +231,13 @@ class iC4(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for isobutane of Younglove and Ely (1987)",
+        "__name__": "MBWR equation of state for isobutane of Younglove and "
+                    "Ely (1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "title": "Thermophysical Properties of Fluids. II. "
+                             "Methane, Ethane, Propane, Isobutane, and Normal "
+                             "Butane",
+                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                     "doi": "10.1063/1.555785"},
 
         "R": 8.31434,
@@ -243,8 +248,8 @@ class iC4(MEoS):
         "Pmin": 1.948e-5, "rhomin": 12.755,
 
         "b": [None, 0.1307325972e-1, 0.3927802742, -0.3185427394e2,
-              0.7608825192e4, -0.1753919859e7, -0.2090019755e-2, 0.8959557971e1,
-              -0.6816710130e4, -0.1111271045e7, 0.3248737572e-3, -0.1046526456e1,
+              0.7608825192e4, -0.1753919859e7, -0.2090019755e-2, 8.959557971,
+              -0.6816710130e4, -0.1111271045e7, 0.3248737572e-3, -1.046526456,
               0.6536598969e3, 0.3726503734e-1, 0.8553649395e1, 0.2109987236e4,
               -0.1401267363e1, 0.5213089327e-1, -0.1925026382e2, 0.7640067895,
               0.3425854273e7, -0.3373475924e9, 0.1180683444e6, 0.1529683738e10,
@@ -254,31 +259,35 @@ class iC4(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isobutane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for isobutane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
-#        "Pmin": 7.36, "rhomin": 38.2,
+        "Pmin": 7.36, "rhomin": 38.2,
 
         "nr1":  [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
                  -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.30330004856950, -0.41598156135099e-1, -0.29991937470058,
-                -0.80369342764109e-1, -0.29761373251151e-1, 0.13059630303140e-1],
+        "nr2": [0.30330004856950, -0.041598156135099, -0.29991937470058,
+                -0.080369342764109, -0.029761373251151, 0.013059630303140],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    miyamoto = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
@@ -305,26 +314,22 @@ class iC4(MEoS):
         "c2": [21, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*11}
 
-    helmholtz4 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for isobutane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for isobutane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=iC4(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2392 19.108 3.5575
-            >>> st2=iC4(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            210.32 0.37469
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP5,
+        "ref": "OTO",
+        "M": 58.123, "Tc": 407.817, "rhoc": 224.36/58.123,
 
-        "Tmin": 113.55, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 12.89,
+        "Tmin": 113.55, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 12.89,
         "Pmin": 0.000020860, "rhomin": 12.784,
 
         "nr1":  [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
@@ -339,7 +344,7 @@ class iC4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz5 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -369,13 +374,17 @@ class iC4(MEoS):
         "c2": [2]*6,
         "gamma2": [1.0071072]*6}
 
-    helmholtz6 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isobutane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for isobutane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": Fi1,
 
@@ -388,13 +397,13 @@ class iC4(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-2.01202825e-1, -3.32570120e-2, 2.42967225e-1, -4.20931100e-3,
-                -2.24528572e-1, -1.41307663e-2, -5.93401702e-2, -2.27862942e-2],
+                -0.224528572, -1.41307663e-2, -5.93401702e-2, -2.27862942e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5, helmholtz6
+    eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
 
     _surface = {"sigma": [-0.01639, 0.06121], "exp": [2.102, 1.304]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -519,3 +528,17 @@ class iC4(MEoS):
                "Z": 9.10218e-10}
 
     _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = iC4(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.2393)
+        self.assertEqual(round(st.P.MPa, 3), 19.108)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.5575)
+
+        st2 = iC4(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 210.32)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37469)

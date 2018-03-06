@@ -89,9 +89,10 @@ class Benzene(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for benzene of Polt et al. (1992).",
+        "__name__": "Helmholtz equation of state for benzene of Polt (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
         "R": 8.3143,
@@ -119,10 +120,13 @@ class Benzene(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for benzene of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for benzene of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
         "R": 8.314472,
         "cp": Fi1,

@@ -36,8 +36,7 @@ class C1Oleate(MEoS):
     Tb = unidades.Temperature(627.18)
     f_acent = 0.91
     momentoDipolar = unidades.DipoleMoment(1.63, "Debye")
-#    id = 919
-    id = 39
+    # id = 919
 
     CP1 = {"ao": 0.0,
            "an": [90.2385], "pow": [0.146118],
@@ -47,10 +46,13 @@ class C1Oleate(MEoS):
 
     huber = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methyl oleate of Huber et al. (2009).",
-        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
-                    "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
+        "__name__": "Helmholtz equation of state for methyl oleate of Huber "
+                    "et al. (2009).",
+        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
+                             "L.S., and Bruno, T.J.",
+                    "title": "Model for the Thermodynamic Properties of a "
+                             "Biodiesel Fuel",
+                    "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
                     "doi": "10.1021/ef900159g"},
 
         "R": 8.314472,
@@ -60,11 +62,11 @@ class C1Oleate(MEoS):
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.05,
         "Pmin": 0.0000000004, "rhomin": 3.05,
 
-        "nr1": [0.4596121e-1, 0.22954e1, -0.3554366e1, -0.2291674, 0.6854534e-1],
+        "nr1": [0.4596121e-1, 2.2954, -3.554366, -0.2291674, 0.6854534e-1],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.34, 1.14, 1.4, 0.6],
 
-        "nr2": [-0.1535778e1, -0.7334697, 0.1712700e1, -0.1471394e1, -0.1724678e-1],
+        "nr2": [-1.535778, -0.7334697, 1.712700, -1.471394, -0.1724678e-1],
         "d2": [1, 3, 2, 2, 7],
         "t2": [3.3, 4.1, 1.9, 3.8, 1.3],
         "c2": [2, 2, 1, 2, 1],
@@ -91,7 +93,7 @@ class C1Oleate(MEoS):
         "exp": [0.461, 0.6, 0.75, 0.91, 1.05]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.13426e2, 0.18069e3, -0.11108e4, 0.13265e4, -0.46421e3, -0.21070e3],
+        "ao": [-13.426, 1.8069e2, -1.1108e3, 1.3265e3, -4.6421e2, -2.1070e2],
         "exp": [0.667, 1.71, 2.2, 2.46, 3.0, 9.7]}
 
     thermo0 = {"eq": 1,

@@ -47,7 +47,8 @@ class C3Cyclohexane(MEoS):
 
     lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for propylcyclohexane of Lemmon (2007).",
+        "__name__": "short Helmholtz equation of state for propylcyclohexane "
+                    "of Lemmon (2007).",
         "__doi__": {"autor": "Lemmon, E.W.",
                     "title": "",
                     "ref": "unpublished equation, 2007",

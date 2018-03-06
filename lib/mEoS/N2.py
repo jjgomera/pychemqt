@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -74,7 +76,7 @@ class N2(MEoS):
            "hyp": [5.251822620*Tc, -5.393067706*Tc, 13.788988208*Tc, 0],
            "R": 8.31451}
 
-    helmholtz1 = {
+    span = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Span et al. (2000).",
         "__doi__": {"autor": "Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, W., Yokozeki, A.",
@@ -231,9 +233,12 @@ class N2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for nitrogen of Younglove (1982).",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, "
+                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                             "Trifluoride, and Oxygen",
+                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                     "doi": ""},
+
         "R": 8.31434,
         "cp": CP1,
 
@@ -254,18 +259,21 @@ class N2(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for nitrogen of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for nitrogen of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for \
-                    Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 2200000.0, "rhomax": 53.15,
-#        "Pmin": 73.476, "rhomin": 29.249,
+        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.59889711801201, -0.16941557480731e1, 0.24579736191718,
                 -0.23722456755175, 0.17954918715141e-1, 0.14592875720215e-1],
@@ -276,8 +284,8 @@ class N2(MEoS):
                 0.31887660246708, 0.20766491728799, -0.19379315454158e-1,
                 -0.16936641554983, 0.13546846041701, -0.33066712095307e-1,
                 -0.60690817018557e-1, 0.12797548292871e-1, 0.58743664107299e-2,
-                -0.18451951971969e-1, 0.47226622042472e-2, -0.52024079680599e-2,
-                0.43563505956635e-1, -0.36251690750939e-1, -0.28974026866543e-2],
+                -0.018451951971969, 0.47226622042472e-2, -0.52024079680599e-2,
+                0.043563505956635, -0.36251690750939e-1, -0.28974026866543e-2],
         "d2": [1, 1, 1, 2, 3, 6, 2, 3, 3, 4, 4, 2, 3, 4, 5, 6, 6, 7],
         "t2": [0.625, 2.625, 2.75, 2.125, 2, 1.75, 4.5, 4.75, 5, 4, 4.5, 7.5,
                14, 11.5, 26, 28, 30, 16],
@@ -287,7 +295,7 @@ class N2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz3 = {
+    jacobsen = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Jacobsen et al. (1986).",
         "__doi__": {"autor": "Jacobsen, R.T, Stewart, R.B., and Jahangiri, M.",
@@ -438,27 +446,22 @@ class N2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz4 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for nitrogen of Span and Wagner (2003).",
+        "__name__": "short Helmholtz equation of state for nitrogen of Span "
+                    "and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=N2(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.0979 51.268 1.1719
-            >>> st2=N2(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            41.82 0.31052
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5},
+        "M": 28.013, "Tc": 126.192, "rhoc": 313.3/28.013,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 53.15,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 53.15,
         "Pmin": 12.566, "rhomin": 30.935,
 
         "nr1": [0.92296567, -0.25575012e1, 0.64482463, 0.1083102e-1,
@@ -476,13 +479,17 @@ class N2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for nitrogen of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for nitrogen of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31451,
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 101325., "ho": 8670, "so": 191.5},
@@ -502,7 +509,7 @@ class N2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5
+    eq = span, MBWR, GERG, jacobsen, shortSpan, sun
     _PR = -0.004032
 
     _surface = {"sigma": [0.02898], "exp": [1.246]}
@@ -751,3 +758,39 @@ class N2(MEoS):
                "cb": [0, 0, 0, 0]}
 
     _thermal = thermo0, thermo1, thermo2
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = N2(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.0979)
+        self.assertEqual(round(st.P.MPa, 3), 51.268)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1719)
+
+        st2 = N2(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 41.82)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31053)
+
+    def test_Transport(self):
+        """Table V, pag 28"""
+        self.assertEqual(round(N2(rho=0, T=100).mu.muPas, 5), 6.90349)
+        self.assertEqual(round(N2(rho=0, T=300).mu.muPas, 4), 17.8771)
+        self.assertEqual(round(N2(rho=25*N2.M, T=100).mu.muPas, 4), 79.7418)
+        self.assertEqual(round(N2(rho=10*N2.M, T=200).mu.muPas, 4), 21.0810)
+        self.assertEqual(round(N2(rho=5*N2.M, T=300).mu.muPas, 4), 20.7430)
+        self.assertEqual(round(
+            N2(rho=11.18*N2.M, T=126.195).mu.muPas, 4), 18.2978)
+
+        # self.assertEqual(round(N2(rho=0, T=100).k.mWmK, 3), 9.27749)
+        # self.assertEqual(round(N2(rho=10*N2.M, T=200).k.mWmK, 3), 103.834)
+        # self.assertEqual(round(st._thermo0(0, 100), 8), 9.35902e-3)
+        # self.assertEqual(round(st._thermo0(0, 300), 7), 26.3529e-3)
+        # self.assertEqual(round(Air(rho=28*28.9586, T=100).k.mWmK, 3), 119.222)
+        # # self.assertEqual(round(Air(rho=10*28.9586, T=200).k.mWmK, 4), 35.3186)
+        # self.assertEqual(round(Air(rho=5*28.9586, T=300).k.mWmK, 4), 32.6062)
+        # # self.assertEqual(round(Air(rho=10.4*28.9586, T=132.64).k.mWmK, 4), 75.6231)
+
+
+

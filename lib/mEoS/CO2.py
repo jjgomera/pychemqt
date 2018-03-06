@@ -271,17 +271,21 @@ class CO2(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for carbon dioxide of Kunz and Wagner (2004)",
+        "__name__": "Helmholtz equation of state for carbon dioxide of Kunz "
+                    "and Wagner (2004)",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24,
-#        "Pmin": 0.61166, "rhomin": 55.497,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.52646564804653, -0.14995725042592e1, 0.27329786733782,
                 0.12949500022786],
@@ -289,9 +293,9 @@ class CO2(MEoS):
         "t1": [0, 1.25, 1.625, 0.375],
 
         "nr2": [0.15404088341841, -0.58186950946814, -0.18022494838296,
-                -0.95389904072812e-1, -0.80486819317679e-2, -0.3554775127309e-1,
+                -0.095389904072812, -0.80486819317679e-2, -0.03554775127309,
                 -0.28079014882405, -0.82435890081677e-1, 0.10832427979006e-1,
-                -0.67073993161097e-2, -0.46827907600524e-2, -0.28359911832177e-1,
+                -0.67073993161097e-2, -0.46827907600524e-2, -0.028359911832177,
                 0.19500174744098e-1, -0.21609137507166, 0.43772794926972,
                 -0.22130790113593, 0.15190189957331e-1, -0.15380948953300e-1],
         "d2": [3, 3, 4, 5, 6, 6, 1, 4, 1, 1, 3, 3, 4, 5, 5, 5, 5, 5],
@@ -372,11 +376,15 @@ class CO2(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for carbon dioxide of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for carbon dioxide of Sun "
+                    "and Ely (2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
@@ -390,7 +398,7 @@ class CO2(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-4.91366518e-3, 7.32487713e-1, 8.70918629e-1, -5.35917679e-3,
-                -4.03818537e-1, -2.40820897e-2, -1.04239403e-1, -2.16335828e-2],
+                -0.403818537, -2.40820897e-2, -1.04239403e-1, -2.16335828e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],

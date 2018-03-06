@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -48,6 +50,12 @@ class nC5(MEoS):
            "ao_hyp": [8.95043, 21.836, 33.4032, 0],
            "hyp": [0.380391739, 1.789520971, 3.777411113, 0]}
 
+    CP0 = {"ao": 4,
+           "an": [], "pow": [],
+           "ao_exp": [], "exp": [],
+           "ao_hyp": [8.95043, 21.836, 33.4032, 0],
+           "hyp": [178.67, 840.538, 1774.25, 0]}
+
     CP1 = {"ao": 10.288132,
            "an": [-0.2695377e-1, 0.20951065e-3, -0.27910773e-6, 0.12266269e-9],
            "pow": [1, 2, 3, 4],
@@ -60,27 +68,22 @@ class nC5(MEoS):
            "ao_hyp": [2.057417e8/8.3159524*4.184, 2.972927e7/8.3159524*4.184, 0, 0],
            "hyp": [1.71958e3, 8.02069e2, 0, 0]}
 
-    helmholtz1 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for pentane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for pentane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=nC5(T=700, rho=200)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2053 13.454 3.6052
-            >>> st2=nC5(T=750, rho=100)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            213.42 0.34915
-            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": Fi1,
+        "cp": CP0,
         "ref": "OTO",
+        "M": 72.15, "Tc": 469.7, "rhoc": 232/72.15,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.2,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 11.2,
         "Pmin": 0.76322e-4, "rhomin": 10.566,
 
         "nr1": [0.10968643e1, -0.29988888e1, 0.99516887, -0.16170709,
@@ -97,17 +100,21 @@ class nC5(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for pentane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for pentane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57,
-#        "Pmin": 73.476, "rhomin": 29.249,
+        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10968643098001e1, -0.29988888298061e1, 0.99516886799212,
                 -0.16170708558539, 0.11334460072775, 0.26760595150748e-3],
@@ -121,7 +128,7 @@ class nC5(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -150,7 +157,7 @@ class nC5(MEoS):
         "c2": [2]*6,
         "gamma2": [0.968832]*6}
 
-    helmholtz4 = {
+    starling = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
@@ -177,13 +184,17 @@ class nC5(MEoS):
         "c2": [2]*2,
         "gamma2": [0.46812392]*2}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for pentane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for pentane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
@@ -196,8 +207,8 @@ class nC5(MEoS):
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
-        "nr2": [-7.28441220e-2, -4.60943732e-1, 8.39360011e-2 , -1.50650444e-2,
-                -2.03771872e-1, -7.90244277e-3, -5.68993564e-2, -2.99387974e-2],
+        "nr2": [-7.28441220e-2, -4.60943732e-1, 8.39360011e-2, -1.50650444e-2,
+                -0.203771872, -7.90244277e-3, -5.68993564e-2, -2.99387974e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
@@ -230,7 +241,7 @@ class nC5(MEoS):
               2.65416349789e3, 4.76643876980e-3, -8.37595968663,
               -1.35160880503e3]}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5, MBWR
+    eq = shortSpan, GERG, polt, starling, sun, MBWR
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}
@@ -315,3 +326,17 @@ class nC5(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.9345e-9, "Tcref": 704.55}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = nC5(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.2053)
+        self.assertEqual(round(st.P.MPa, 3), 13.454)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.6052)
+
+        st2 = nC5(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.42)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.34915)

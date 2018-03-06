@@ -115,11 +115,15 @@ class CO(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for carbon monoxide of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for carbon monoxide of Kunz "
+                    "and Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -128,12 +132,12 @@ class CO(MEoS):
         "Pmin": 15.45, "rhomin": 30.33,
 
         "nr1":  [0.92310041400851, -0.248858452058e1, 0.58095213783396,
-                 0.28859164394654e-1, 0.70256257276544e-1, 0.21687043269488e-3],
+                 0.028859164394654, 0.070256257276544, 0.21687043269488e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 0.125, 1.5, 1.375, 0.25, 0.875],
 
         "nr2": [0.13758331015182, -0.51501116343466e-1, -0.14865357483379,
-                -0.38857100886810e-1, -0.29100433948943e-1, 0.14155684466279e-1],
+                -0.03885710088681, -0.029100433948943, 0.14155684466279e-1],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12],
         "c2": [1, 1, 2, 2, 3, 3],

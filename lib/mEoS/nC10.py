@@ -53,7 +53,7 @@ class nC10(MEoS):
            "ao_hyp": [21.0069, 43.4931, 58.3657, 0],
            "hyp": [0.267034159, 1.353835195, 2.833479035, 0]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for decane of Lemmon "
                     "and Span (2006)",
@@ -82,11 +82,15 @@ class nC10(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
+        "__name__": "Helmholtz equation of state for propane of Kunz and "
+                    "Wagner (2008).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -104,7 +108,7 @@ class nC10(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, GERG
+    eq = lemmon, GERG
 
     _surface = {"sigma": [0.05473], "exp": [1.29]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

@@ -113,13 +113,17 @@ class Methanol(MEoS):
         "exp1": [2, 3, 2, 4, 2, 3, 2, 4],
         "exp2": [1]*8}
 
-    helmholtz2 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for methanol of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.3143,
         "cp": CP1,
         "ref": "NBP",
@@ -139,7 +143,7 @@ class Methanol(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -168,7 +172,7 @@ class Methanol(MEoS):
         "c2": [2]*6,
         "gamma2": [0.591872]*6}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = reuck, sun, polt
 
     _surface = {"sigma": [0.22421, -0.21408, 0.083233],
                 "exp": [1.3355, 1.677, 4.4402]}

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -48,12 +50,13 @@ class C2(MEoS):
            "ao_exp": [1.117433359, 3.467773215, 6.941944640, 5.970850948],
            "titao": [1.4091052332, 4.0099170712, 6.5967098342, 13.9798102659]}
 
-    Fi2 = {"ao_log": [1, 3.00263],
+    Fi2 = {"R": 8.31451,
+           "ao_log": [1, 3.00263],
            "pow": [0, 1],
            "ao_pow": [24.675437527, -77.42531376],
            "ao_exp": [], "titao": [],
            "ao_hyp": [4.33939, 1.23722, 13.1974, -6.01989],
-           "hyp": [1.831882406, 0.731306621, 3.378007481, 3.508721939]}
+           "hyp": [559.314/Tc, 223.284/Tc, 1031.38/Tc, 1071.29/Tc]}
 
     Fi3 = {"ao_log": [1, 3.8159476],
            "pow": [0, -1./3, -2./3, -1],
@@ -247,27 +250,31 @@ class C2(MEoS):
 
         "b": [None, -0.3204748852e-2, 0.6529792241, -0.1669704591e2,
               0.1147983381e4, -0.1854721998e6, 0.4994149431e-3, -0.4858871291,
-              0.1225345776e3, 0.8622615988e5, -0.1081290283e-4, 0.6279096996e-1,
-              -0.1716912675e2, -0.1640779401e-3, -0.4356516111e-1, -0.1966649699e2,
-              0.4026724698e-2, -0.6498241861e-4, 0.5111594139e-1, -0.1113010349e-2,
-              -0.7157747547e4, -0.1848571024e8, -0.2137365569e4, 0.6275079986e8,
-              -0.9974911056e1, 0.1129115014e4, -0.1026469558, -0.5660525915e4,
-              -0.4209846430e-3, 0.2374523553, -0.1289637823e-5,
-              -0.5423801068e-3, 0.2239717230e-1]}
+              0.1225345776e3, 0.8622615988e5, -0.1081290283e-4, 0.06279096996,
+              -17.16912675, -0.1640779401e-3, -0.4356516111e-1, -19.66649699,
+              0.4026724698e-2, -0.6498241861e-4, 0.05111594139,
+              -0.1113010349e-2, -0.7157747547e4, -0.1848571024e8,
+              -0.2137365569e4, 0.6275079986e8, -0.9974911056e1, 0.1129115014e4,
+              -0.1026469558, -0.5660525915e4, -0.4209846430e-3, 0.2374523553,
+              -0.1289637823e-5, -0.5423801068e-3, 0.2239717230e-1]}
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for ethane of Kunz and Wagner"
+                    " (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419,
-#        "Pmin": 0.61166, "rhomin": 55.497,
+        # "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.63596780450714, -0.17377981785459e1, 0.28914060926272,
                 -0.33714276845694, 0.22405964699561e-1, 0.15715424886913e-1],
@@ -278,8 +285,8 @@ class C2(MEoS):
                 0.39414630777652, 0.31390924682041, -0.21592277117247e-1,
                 -0.21723666564905, -0.28999574439489, 0.42321173025732,
                 0.46434100259260e-1, -0.13138398329741, 0.11492850364368e-1,
-                -0.33387688429909e-1, 0.15183171583644e-1, -0.47610805647657e-2,
-                0.46917166277885e-1, -0.39401755804649e-1, -0.32569956247611e-2],
+                -0.33387688429909e-1, 0.015183171583644, -0.47610805647657e-2,
+                0.46917166277885e-1, -0.039401755804649, -0.32569956247611e-2],
         "d2": [1, 1, 1, 2, 3, 6, 2, 3, 3, 4, 4, 2, 3, 4, 5, 6, 6, 7],
         "t2": [0.625, 2.625, 2.75, 2.125, 2, 1.75, 4.5, 4.75, 5, 4, 4.5, 7.5,
                14, 11.5, 26, 28, 30, 16],
@@ -288,7 +295,7 @@ class C2(MEoS):
 
     friend = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethane of Friend et al. (1991)",
+        "__name__": "Helmholtz equation of state for ethane of Friend (1991)",
         "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
                     "title": "Thermophysical Properties of Ethane",
                     "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
@@ -431,14 +438,14 @@ class C2(MEoS):
         "Tmin": 90.352, "Tmax": 625.0, "Pmax": 70000.0, "rhomax": 22.419,
         "Pmin": 1.130e-3, "rhomin": 21.665,
 
-        "nr1": [0.46215430560, -0.19236936387e1, 0.39878604003, 0.16054532372e-1,
+        "nr1": [0.4621543056, -1.9236936387, 0.39878604003, 0.16054532372e-1,
                 0.12895242219, 0.35458320491e-1, 0.34927844540e-1,
                 -0.11306183380e-1, -0.39809032779e-1, 0.83031936834e-3,
                 0.45921575183e-3, 0.17530287917e-6, -0.70919516126e-4],
         "d1": [1, 1, 1, 2, 2, 2, 3, 3, 3, 6, 7, 7, 8],
         "t1": [0, 1.5, 2.5, -0.5, 1.5, 2, 0, 1, 2.5, 0, 2, 5, 2],
 
-        "nr2": [-0.23436162249, 0.84574697645e-1, 0.14861052010, -0.10016857867,
+        "nr2": [-0.23436162249, 0.84574697645e-1, 0.1486105201, -0.10016857867,
                 -0.59264824388e-1, -0.41263514217e-1, 0.21855161869e-1,
                 -0.74552720958e-4, -0.98859085572e-2, 0.10208416499e-2,
                 -0.52189655847e-3, 0.98592162030e-4, 0.46865140856e-1,
@@ -450,25 +457,20 @@ class C2(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4],
         "gamma2": [1]*19}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for ethane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for ethane of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=C2(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2991 44.781 3.6276
-            >>> st2=C2(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            209.07 0.50715
-            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": "OTO",
+        "M": 30.07, "Tc": 305.322, "Pc": 4872.0, "rhoc": 206.6/30.07,
 
         "Tmin": 90.352, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 22.419,
         "Pmin": 0.0010902, "rhomin": 21.721,
@@ -487,11 +489,15 @@ class C2(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for ethane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "OTO",
@@ -505,13 +511,13 @@ class C2(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-5.17685674e-2, 3.65838926e-2, 2.57753669e-1, -1.34856586e-2,
-                -2.21551776e-1, -6.89219870e-4, -4.47904791e-2, -2.15665728e-2],
+                -0.221551776, -6.89219870e-4, -4.47904791e-2, -2.15665728e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = buecker, MBWR, GERG, friend, span, sun
+    eq = buecker, MBWR, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

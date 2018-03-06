@@ -112,11 +112,15 @@ class Ar(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for argon of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for argon of Kunz and Wagner "
+                    "(2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -176,21 +180,15 @@ class Ar(MEoS):
         "nr3": [],
         "nr4": []}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for argon of Span and Wagner (2003).",
+        "__name__": "short Helmholtz equation of state for argon of Span and "
+                    "Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=Ar(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.5203 31.922 0.5630
-            >>> st2=Ar(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            25.97 0.18479
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": Fi1,
@@ -216,10 +214,12 @@ class Ar(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "BWR  MBWR equation of state for argon of Younglove (1982).",
+        "__name__": "MBWR equation of state for argon of Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, "
+                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                             "Trifluoride, and Oxygen",
+                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                     "doi": ""},
 
         "R": 8.31434,
@@ -230,16 +230,16 @@ class Ar(MEoS):
         "Pmin": 68.906, "rhomin": 35.4,
 
         "b": [None, -0.6569731294e-3, 0.1822957801, -0.3649470141e1,
-              0.1232012107e3, -0.8613578274e4, 0.7978579691e-4, -0.2911489110e-1,
+              0.1232012107e3, -0.8613578274e4, 0.7978579691e-4, -0.02911489110,
               0.7581821758e1, 0.8780488169e4, 0.1423145989e-6, 0.1674146131e-2,
               -0.3200447909, 0.2561766372e-4, -0.5475934941e-3, -0.4505032058,
-              0.2013254653e-4, -0.1678941273e-6, 0.4207329271e-3, -0.5444212996e-5,
-              -0.8004855011e4, -0.1319304201e6, -0.4954923930e2, 0.8092132177e5,
-              -0.9870104061e-1, 0.2020441562e1, -0.1637417205e-3, -0.7038944136,
-              -0.1154324539e-6, 0.1555990117e-4, -0.1492178536e-9,
-              -0.1001356071e-7, 0.2933963216e-6]}
+              0.2013254653e-4, -0.1678941273e-6, 0.4207329271e-3,
+              -0.5444212996e-5, -0.8004855011e4, -0.1319304201e6, -49.54923930,
+              0.8092132177e5, -0.9870104061e-1, 2.020441562, -0.1637417205e-3,
+              -0.7038944136, -0.1154324539e-6, 0.1555990117e-4,
+              -0.1492178536e-9, -0.1001356071e-7, 0.2933963216e-6]}
 
-    eq = tegeler, MBWR, GERG, stewart, span
+    eq = tegeler, MBWR, GERG, stewart, shortSpan
     _PR = -0.0034
 
     _dielectric = {
@@ -609,40 +609,39 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 5), 0.75591)
         self.assertEqual(round(st.w, 1), 1851.9)
 
-    def test_Jacobsen(self):
-
+    def test_Stewart(self):
         # Saturation pressures from Table 12, pag. 675
-        st = Ar(T=84, x=0.5, eq=3)
+        st = Ar(T=84, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 0.0705)
-        st = Ar(T=90, x=0.5, eq=3)
+        st = Ar(T=90, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 0.1336)
-        st = Ar(T=95, x=0.5, eq=3)
+        st = Ar(T=95, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 0.2132)
-        st = Ar(T=100, x=0.5, eq=3)
+        st = Ar(T=100, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 0.3240)
-        st = Ar(T=105, x=0.5, eq=3)
+        st = Ar(T=105, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 0.47258)
-        st = Ar(T=110, x=0.5, eq=3)
+        st = Ar(T=110, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 0.66574)
-        st = Ar(T=115, x=0.5, eq=3)
+        st = Ar(T=115, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 0.91046)
-        st = Ar(T=120, x=0.5, eq=3)
+        st = Ar(T=120, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 1.21391)
-        st = Ar(T=125, x=0.5, eq=3)
+        st = Ar(T=125, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 1.5835)
-        st = Ar(T=130, x=0.5, eq=3)
+        st = Ar(T=130, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 2.02700)
-        st = Ar(T=135, x=0.5, eq=3)
+        st = Ar(T=135, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 2.55295)
-        st = Ar(T=140, x=0.5, eq=3)
+        st = Ar(T=140, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 3.17100)
-        st = Ar(T=145, x=0.5, eq=3)
+        st = Ar(T=145, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 3.89294)
-        st = Ar(T=150, x=0.5, eq=3)
+        st = Ar(T=150, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 4.73599)
 
         # Selected point from Table 14, Pag 679, saturation states
-        st = Ar(T=83.804, x=0.5, eq=3)
+        st = Ar(T=83.804, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 0.06896)
         self.assertEqual(round(st.Liquido.rhoM, 3), 35.475)
         self.assertEqual(round(st.Liquido.hM.kJkmol, 1), -4835.9)
@@ -655,7 +654,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.sM.kJkmolK, 1), 131.3)
         self.assertEqual(round(st.Gas.w, 0), 209)
 
-        st = Ar(T=90, x=0.5, eq=3)
+        st = Ar(T=90, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 5), 0.13361)
         self.assertEqual(round(st.Liquido.rhoM, 3), 34.538)
         self.assertEqual(round(st.Liquido.hM.kJkmol, 1), -4568.1)
@@ -668,7 +667,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.sM.kJkmolK, 2), 126.86)
         self.assertEqual(round(st.Gas.w, 0), 186)
 
-        st = Ar(T=120, x=0.5, eq=3)
+        st = Ar(T=120, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 1.2139)
         self.assertEqual(round(st.Liquido.rhoM, 3), 29.123)
         self.assertEqual(round(st.Liquido.hM.kJkmol, 1), -3138.4)
@@ -683,7 +682,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.cpM.kJkmolK, 2), 36.15)
         self.assertEqual(round(st.Gas.w, 0), 182)
 
-        st = Ar(T=149, x=0.5, eq=3)
+        st = Ar(T=149, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 4.5560)
         self.assertEqual(round(st.Liquido.rhoM, 3), 18.235)
         self.assertEqual(round(st.Liquido.hM.kJkmol, 1), -911.4)
@@ -699,7 +698,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 0), 173)
 
         # Table 15, Pag 684, Single phase points
-        st = Ar(T=84, P=8e4, eq=3)
+        st = Ar(T=84, P=8e4, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 35.447)
         self.assertEqual(round(st.uM.kJkmol, 1), -4829.6)
         self.assertEqual(round(st.hM.kJkmol, 1), -4827.3)
@@ -708,7 +707,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 42.64)
         self.assertEqual(round(st.w, 0), 852)
 
-        st = Ar(T=1200, P=8e4, eq=3)
+        st = Ar(T=1200, P=8e4, eq="stewart")
         self.assertEqual(round(st.rhoM, 5), 0.00802)
         self.assertEqual(round(st.uM.kJkmol, 0), 14965)
         self.assertEqual(round(st.hM.kJkmol, 0), 24944)
@@ -717,7 +716,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 20.79)
         self.assertEqual(round(st.w, 0), 645)
 
-        st = Ar(T=84, P=1e5, eq=3)
+        st = Ar(T=84, P=1e5, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 35.448)
         self.assertEqual(round(st.uM.kJkmol, 1), -4829.8)
         self.assertEqual(round(st.hM.kJkmol, 1), -4827.0)
@@ -726,7 +725,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 42.63)
         self.assertEqual(round(st.w, 0), 852)
 
-        st = Ar(T=150, P=1.5e5, eq=3)
+        st = Ar(T=150, P=1.5e5, eq="stewart")
         self.assertEqual(round(st.rhoM, 5), 0.12154)
         self.assertEqual(round(st.uM.kJkmol, 1), 1845.3)
         self.assertEqual(round(st.hM.kJkmol, 1), 3079.4)
@@ -735,7 +734,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 21.23)
         self.assertEqual(round(st.w, 0), 227)
 
-        st = Ar(T=1200, P=2e5, eq=3)
+        st = Ar(T=1200, P=2e5, eq="stewart")
         self.assertEqual(round(st.rhoM, 5), 0.02004)
         self.assertEqual(round(st.uM.kJkmol, 0), 14964)
         self.assertEqual(round(st.hM.kJkmol, 0), 24945)
@@ -744,7 +743,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 20.79)
         self.assertEqual(round(st.w, 0), 645)
 
-        st = Ar(T=100, P=5e5, eq=3)
+        st = Ar(T=100, P=5e5, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 32.937)
         self.assertEqual(round(st.uM.kJkmol, 1), -4133.5)
         self.assertEqual(round(st.hM.kJkmol, 1), -4118.3)
@@ -753,7 +752,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 45.42)
         self.assertEqual(round(st.w, 0), 744)
 
-        st = Ar(T=116, P=1e6, eq=3)
+        st = Ar(T=116, P=1e6, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 29.967)
         self.assertEqual(round(st.uM.kJkmol, 1), -3380.9)
         self.assertEqual(round(st.hM.kJkmol, 1), -3347.5)
@@ -762,7 +761,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 50.98)
         self.assertEqual(round(st.w, 0), 621)
 
-        st = Ar(T=130, P=2e6, eq=3)
+        st = Ar(T=130, P=2e6, eq="stewart")
         self.assertEqual(round(st.rhoM, 4), 2.5433)
         self.assertEqual(round(st.uM.kJkmol, 1), 1030.3)
         self.assertEqual(round(st.hM.kJkmol, 1), 1816.7)
@@ -771,7 +770,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 47.16)
         self.assertEqual(round(st.w, 0), 183)
 
-        st = Ar(T=150, P=5e6, eq=3)
+        st = Ar(T=150, P=5e6, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 18.975)
         self.assertEqual(round(st.uM.kJkmol, 1), -1229.6)
         self.assertEqual(round(st.hM.kJkmol, 2), -966.09)
@@ -780,7 +779,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 1), 209.4)
         self.assertEqual(round(st.w, 0), 245)
 
-        st = Ar(T=100, P=1e7, eq=3)
+        st = Ar(T=100, P=1e7, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 33.825)
         self.assertEqual(round(st.uM.kJkmol, 1), -4265.2)
         self.assertEqual(round(st.hM.kJkmol, 1), -3969.5)
@@ -789,7 +788,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 42.91)
         self.assertEqual(round(st.w, 0), 802)
 
-        st = Ar(T=310, P=5e7, eq=3)
+        st = Ar(T=310, P=5e7, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 16.752)
         self.assertEqual(round(st.uM.kJkmol, 1), 1583.6)
         self.assertEqual(round(st.hM.kJkmol, 1), 4568.4)
@@ -798,7 +797,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 32.29)
         self.assertEqual(round(st.w, 0), 519)
 
-        st = Ar(T=106.75, P=1e8, eq=3)
+        st = Ar(T=106.75, P=1e8, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 37.796)
         self.assertEqual(round(st.uM.kJkmol, 1), -4623.9)
         self.assertEqual(round(st.hM.kJkmol, 1), -1978.1)
@@ -807,7 +806,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 36.10)
         self.assertEqual(round(st.w, 0), 1064)
 
-        st = Ar(T=850, P=5e8, eq=3)
+        st = Ar(T=850, P=5e8, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 27.468)
         self.assertEqual(round(st.uM.kJkmol, 1), 8752.3)
         self.assertEqual(round(st.hM.kJkmol, 0), 26956)
@@ -816,7 +815,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 24.23)
         self.assertEqual(round(st.w, 0), 1304)
 
-        st = Ar(T=253.52, P=1e9, eq=3)
+        st = Ar(T=253.52, P=1e9, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 45.826)
         self.assertEqual(round(st.uM.kJkmol, 1), -1222.0)
         self.assertEqual(round(st.hM.kJkmol, 0), 20600)
@@ -825,7 +824,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 33.75)
         self.assertEqual(round(st.w, 0), 1937)
 
-        st = Ar(T=1200, P=1e9, eq=3)
+        st = Ar(T=1200, P=1e9, eq="stewart")
         self.assertEqual(round(st.rhoM, 3), 32.059)
         self.assertEqual(round(st.uM.kJkmol, 0), 14382)
         self.assertEqual(round(st.hM.kJkmol, 0), 45575)
@@ -833,3 +832,14 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 2), 15.44)
         self.assertEqual(round(st.cpM.kJkmolK, 2), 23.57)
         self.assertEqual(round(st.w, 0), 1715)
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = Ar(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.5203)
+        self.assertEqual(round(st.P.MPa, 3), 31.922)
+        self.assertEqual(round(st.cp.kJkgK, 4), 0.5630)
+
+        st2 = Ar(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 25.97)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.18479)

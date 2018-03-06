@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -30,7 +32,7 @@ class DEE(MEoS):
     synonym = ""
     rhoc = unidades.Density(264)
     Tc = unidades.Temperature(466.7)
-    Pc = unidades.Pressure(3644., "kPa")
+    Pc = unidades.Pressure(3720.238, "kPa")
     M = 74.1216  # g/mol
     Tt = unidades.Temperature(156.92)
     Tb = unidades.Temperature(307.604)
@@ -85,7 +87,7 @@ class DEE(MEoS):
                 -.403598704, 0.213055571e-2, -.154741976, 0.120950552e-1,
                 -.143106371e-1],
         "d2": [1, 1, 2, 5, 1, 3, 4, 5, 2],
-        "t2": [2.375, 3.0, 2.625, 1.875, 4.5, 5.78, 5.375, 2.75, 14.5],
+        "t2": [2.375, 3.0, 2.625, 1.875, 4.5, 5.75, 5.375, 2.75, 14.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
         "gamma2": [1]*9}
 

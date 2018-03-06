@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -63,7 +65,7 @@ class O2(MEoS):
            "ao_exp": [1.031468515726], "exp": [2239.18105],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    schmidt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for oxygen of Schmidt and Wagner (1985).",
         "__doi__": {"autor": "Schmidt, R., Wagner, W.",
@@ -98,25 +100,29 @@ class O2(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for oxygen of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for oxygen of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 82000.0, "rhomax": 43.348,
-#        "Pmin": 73.5, "rhomin": 29.2,
+        "Pmin": 73.5, "rhomin": 29.2,
 
         "nr1": [0.88878286369701, -0.24879433312148e1, 0.59750190775886,
                 0.96501817061881e-2, 0.71970428712770e-1, 0.22337443000195e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.18558686391474, -0.38129368035760e-1, -0.15352245383006,
-                -0.26726814910919e-1, -0.25675298677127e-1, 0.95714302123668e-2],
+        "nr2": [0.18558686391474, -0.038129368035760, -0.15352245383006,
+                -0.026726814910919, -0.025675298677127, 0.95714302123668e-2],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.623, 3.625, 14.5, 12],
         "c2": [1, 1, 2, 2, 3, 3],
@@ -127,10 +133,12 @@ class O2(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for oxygen of Younglove (1982).",
+        "__name__": "MBWR equation of state for oxygen of Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, "
+                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                             "Trifluoride, and Oxygen",
+                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                     "doi": ""},
 
         "R": 8.31411,
@@ -140,36 +148,31 @@ class O2(MEoS):
         "Pmin": 0.148, "rhomin": 40.820,
 
         "b": [None, -0.4365859650e-3, 0.2005820677, -0.4197909916e1,
-              0.1878215317e3, -0.1287473398e5, 0.1556745888e-4, 0.1343639359e-2,
-              -0.2228415518e1, 0.4767792275e4, 0.4790846641e-6, 0.2462611107e-2,
-              -0.1921891680, -0.6978320847e-5, -0.6214145909e-3, -0.1860852567,
-              0.2609791417e-4, -0.2447611408e-6, 0.1457743352e-3, -0.1726492873e-5,
-              -0.238489252e4, -0.2301807796e6, -0.2790303526e2, 0.9400577575e5,
-              -0.4169449637e-1, 0.2008497853e1, -0.125607652e-3, -0.6406362964,
-              -0.2475580168e-7, 0.1346309703e-4, -0.116150247e-9,
-              -0.1034699798e-7, 0.2365936964e-6]}
+              0.1878215317e3, -0.1287473398e5, 0.1556745888e-4, 0.001343639359,
+              -2.228415518, 0.4767792275e4, 0.4790846641e-6, 0.002462611107,
+              -0.192189168, -0.6978320847e-5, -0.6214145909e-3, -0.1860852567,
+              0.2609791417e-4, -0.2447611408e-6, 0.1457743352e-3,
+              -0.1726492873e-5, -0.238489252e4, -0.2301807796e6, -27.90303526,
+              0.9400577575e5, -0.04169449637, 2.008497853, -0.125607652e-3,
+              -0.6406362964, -0.2475580168e-7, 0.1346309703e-4,
+              -0.116150247e-9, -0.1034699798e-7, 0.2365936964e-6]}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for oxygen of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for oxygen of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=O2(T=700, rho=200, eq=3)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.0308 41.051 1.0969
-            >>> st2=O2(T=750, rho=100, eq=3)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            50.89 0.26457
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
         "ref": "OTO",
+        "M": 31.999, "Tc": 154.595, "rhoc": 436.14/31.999,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 43.348,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 43.348,
         "Pmin": 0.14603, "rhomin": 40.885,
 
         "nr1": [0.88878286, -0.24879433e1, 0.59750191, 0.96501817e-2,
@@ -184,7 +187,7 @@ class O2(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3
+    eq = schmidt, MBWR, GERG, shortSpan
     _PR = -0.003157
 
     _surface = {"sigma": [0.03843], "exp": [1.225]}
@@ -535,3 +538,17 @@ class O2(MEoS):
                "Xio": 1.6e-10, "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
 
     _thermal = thermo0, thermo1, thermo2
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = O2(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.0308)
+        self.assertEqual(round(st.P.MPa, 3), 41.051)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.09696)
+
+        st2 = O2(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 50.89)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.26457)

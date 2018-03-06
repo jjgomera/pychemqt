@@ -49,10 +49,13 @@ class NF3(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for nitrogen trifluoride of Younglove (1982)",
+        "__name__": "MBWR equation of state for nitrogen trifluoride of "
+                    "Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, "
+                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                             "Trifluoride, and Oxygen",
+                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                     "doi": ""},
 
         "R": 8.314471,
@@ -63,7 +66,7 @@ class NF3(MEoS):
 
         "b": [None, 0.1774353868e-1, -0.5409379418, 0.3976634466e1,
               -0.5209476694e3, -0.3286322888e5, -0.5990517411e-3, 0.9217525601,
-              -0.4848977075e3, -0.4235892691e7, -0.9824248063e-5, 0.5432235989e-1,
+              -0.4848977075e3, -0.4235892691e7, -0.9824248063e-5, .05432235989,
               -0.1462388500e2, -0.3366180440e-2, 0.2801374599, 0.8435288597e1,
               -0.1324421452e-1, 0.1875604377e-3, 0.2959643991, -0.700997687e-2,
               0.4365820912e7, -0.1111397536e8, 0.2411866612e5, 0.3179136276e7,
@@ -83,5 +86,5 @@ class NF3(MEoS):
         "exp": [0.35, 2.4, 2.7, 3.0, 4.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.3061e1, -0.80541e1, -0.19619e2, -0.13432e2, -0.3276e2, -0.67907e2],
+        "ao": [-3.061, -8.0541, -19.619, -13.432, -32.76, -67.907],
         "exp": [0.421, 1.48, 3.9, 7.0, 8.0, 15.0]}

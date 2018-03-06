@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from scipy import exp
 
 from lib.meos import MEoS
@@ -359,27 +361,21 @@ class Ethylene(MEoS):
                4, 4, 2, 2, 2],
         "gamma2": [1]*26}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for ethylene of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for ethylene of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=Ethylene(T=700, rho=200, eq=3)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            2.7683 48.416 3.0651
-            >>> st2=Ethylene(T=750, rho=100, eq=3)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            174.1 0.47682
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.03,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 27.03,
         "Pmin": 0.12123, "rhomin": 23.34,
 
         "nr1": [0.9096223, -0.24641015e1, 0.56175311, -0.19688013e-1,
@@ -454,11 +450,15 @@ class Ethylene(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethylene of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for ethylene of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31451,
         "cp": CP1,
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
@@ -478,7 +478,7 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = smukala, MBWR, jahangiri, span, sun
+    eq = smukala, MBWR, jahangiri, shortSpan, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -657,3 +657,19 @@ class Ethylene(MEoS):
                "cb": [0]*6}
 
     _thermal = thermo0, thermo1
+
+# TODO: Add MBWR equation of Younglove
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = Ethylene(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 2.7682)
+        self.assertEqual(round(st.P.MPa, 3), 48.416)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.0651)
+
+        st2 = Ethylene(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 174.10)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.47681)

@@ -45,11 +45,13 @@ class MD2M(MEoS):
            "ao_hyp": [329620742.8, 0, 2556558319.0, 0],
            "hyp": [795.1, 0, 1813.8, 0]}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for MD2M of Colonna et al. (2006).",
+        "__name__": "Helmholtz equation of state for MD2M of Colonna (2006)",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
-                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6",
+                    "title": "Multiparameter equations of state for siloxanes:"
+                             " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
+                             "[O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
                     "doi":  "10.1016/j.fluid.2007.10.001"},
 
@@ -72,7 +74,7 @@ class MD2M(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,

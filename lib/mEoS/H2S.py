@@ -185,11 +185,15 @@ class H2S(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2008).",
+        "__name__": "Helmholtz equation of state for propane of Kunz and "
+                    "Wagner (2008).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -197,11 +201,11 @@ class H2S(MEoS):
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12,
         "Pmin": 23.3, "rhomin": 29.12,
 
-        "nr1":  [0.87641, -0.20367e1, 0.21634, -0.50199e-1, 0.66994e-1, 0.19076e-3],
+        "nr1":  [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.19076e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.20227, -0.45348e-2, -0.22230, -0.34714e-1, -0.14885e-1, 0.74154e-2],
+        "nr2": [0.20227, -0.45348e-2, -0.2223, -0.034714, -.014885, .74154e-2],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -53,7 +55,13 @@ class C3(MEoS):
            "ao_pow": [31.602908195, -84.463284382],
            "ao_exp": [], "titao": [],
            "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
-           "hyp": [1.297521801, 0.543210978, 2.583146083, 2.777773271]}
+           "hyp": [479.856/Tc, 200.893/Tc, 955.312/Tc, 1027.29/Tc]}
+
+    CP1 = {"ao": 4.02939,
+           "an": [], "pow": [],
+           "ao_exp": [], "exp": [],
+           "ao_hyp": [6.60569, 3.197, 19.1921, -8.37267],
+           "hyp": [479.856, 200.893, 955.312, 1027.29]}
 
     Fi3 = {"ao_log": [1, 3.02256195],
            "pow": [0, 1],
@@ -248,10 +256,13 @@ class C3(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for propane of Younglove and Ely (1987)",
+        "__name__": "MBWR equation of state for propane of Younglove and Ely "
+                    "(1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane",
-                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "title": "Thermophysical Properties of Fluids. II. "
+                             "Methane, Ethane, Propane, Isobutane, and Normal "
+                             "Butane",
+                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                     "doi": "10.1063/1.555785"},
 
         "R": 8.31434,
@@ -262,10 +273,10 @@ class C3(MEoS):
         "Pmin": 1.685e-7, "rhomin": 16.617,
 
         "b": [None, -0.2804337729e-2, 0.1180666107e1, -0.3756325860e2,
-              0.5624374521e4, -0.9354759605e6, -0.4557405505e-3, 0.1530044332e1,
-              -0.1078107476e4, 0.2218072099e6, 0.6629473971e-4, -0.6199354447e-1,
+              0.5624374521e4, -0.9354759605e6, -0.4557405505e-3, 1.530044332,
+              -0.1078107476e4, 0.2218072099e6, 0.6629473971e-4, -0.06199354447,
               0.6754207966e2, 0.6472837570e-2, -0.6804325262, -0.9726162355e2,
-              0.5097956459e-1, -0.1004655900e-2, 0.4363693352, -0.1249351947e-1,
+              0.05097956459, -0.1004655900e-2, 0.4363693352, -0.01249351947,
               0.2644755879e6, -0.7944237270e8, -0.7299920845e4, 0.5381095003e9,
               0.3450217377e2, 0.9936666689e4, -0.2166699036e1, -0.1612103424e6,
               -0.3633126990e-2, 0.1108612343e2, -0.1330932838e-3,
@@ -273,25 +284,29 @@ class C3(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for propane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032–3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi":  "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": 85.48, "Tmax": 500.0, "Pmax": 100000.0, "rhomax": 17.41,
-#        "Pmin": 73.476, "rhomin": 29.249,
+        "Pmin": 73.476, "rhomin": 29.249,
 
-        "nr1": [0.10403973107358e1, -0.28318404081403e1, 0.84393809606294,
-                -0.76559591850023e-1, 0.94697373057280e-1, 0.24796475497006e-3],
+        "nr1": [1.0403973107358, -2.8318404081403, 0.84393809606294,
+                -0.076559591850023, 0.094697373057280, 0.24796475497006e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.27743760422870, -0.43846000648377e-1, -0.26991064784350,
-                -0.69313413089860e-1, -0.29632145981653e-1, 0.14040126751380e-1],
+        "nr2": [0.2774376042287, -0.043846000648377, -0.2699106478435,
+                -0.069313413089860, -0.029632145981653, 0.014040126751380],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
@@ -324,27 +339,22 @@ class C3(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*11}
 
-    span = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for propane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for propane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=C3(T=700, rho=200, eq=5)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2350 21.175 3.5658
-            >>> st2=C3(T=750, rho=100, eq=5)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            212.66 0.41879
-            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
+        "cp": CP1,
+        "ref": "OTO",
+        "M": 44.097, "Tc": 369.825, "rhoc": 220.48/44.097,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 17.36,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 17.36,
         "Pmin": 0.00000015304, "rhomin": 16.706,
 
         "nr1":  [0.10403973e1, -0.28318404e1, 0.8439381, -0.76559592e-1,
@@ -361,11 +371,15 @@ class C3(MEoS):
 
     sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for propane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
@@ -379,13 +393,13 @@ class C3(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-8.56371936e-2, 1.77467443e-1, 3.91636018e-1, -8.03312946e-3,
-                -2.60385851e-1, -1.91104746e-2, -6.31331470e-2, -2.27769095e-2],
+                -0.260385851, -1.91104746e-2, -6.31331470e-2, -2.27769095e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = lemmon, MBWR, buecker, GERG, miyamoto, span, sun
+    eq = lemmon, MBWR, buecker, GERG, miyamoto, shortSpan, sun
 
     _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
     _dielectric = {"eq": 4, "Tref": 273.16, "rhoref": 1000.,
@@ -536,3 +550,17 @@ class C3(MEoS):
                "Z": 8.117e-10}
 
     _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = C3(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 3), 3.235)
+        self.assertEqual(round(st.P.MPa, 3), 27.175)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.5658)
+
+        st2 = C3(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 212.66)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41879)

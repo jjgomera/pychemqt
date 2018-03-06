@@ -74,7 +74,7 @@ class R125(MEoS):
            "ao_hyp": [], "hyp": []}
 
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Lemmon and Jacobsen (2005).",
         "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T",
@@ -162,7 +162,7 @@ class R125(MEoS):
               0.109652021582, -0.329350271819e2, -0.338796950505e-3,
               0.384533651902, -0.491511706857e2]}
 
-    helmholtz2 = {
+    sunaga = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Sunaga et al. (1998)",
         "__doi__": {"autor": "Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K.",
@@ -189,7 +189,7 @@ class R125(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3],
         "gamma2": [1]*13}
 
-    helmholtz3 = {
+    piao = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Piao and Noguchi (1998)",
         "__doi__": {"autor": "Piao, C.-C. and Noguchi, M.",
@@ -218,7 +218,7 @@ class R125(MEoS):
         "c2": [2, 2, 2, 2],
         "gamma2": [1]*4}
 
-    helmholtz4 = {
+    shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-125 of Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -252,7 +252,7 @@ class R125(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz5 = {
+    astina = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
@@ -280,13 +280,17 @@ class R125(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    helmholtz6 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-125 of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for R-125 of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195},
@@ -300,15 +304,14 @@ class R125(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [9.63969526e-3, 4.30480259e-1, 7.65668079e-1, -1.13913859e-2,
-                -4.41468178e-1, -2.00943884e-2, -1.26041587e-1, -2.32331768e-2],
+                -0.441468178, -2.00943884e-2, -1.26041587e-1, -2.32331768e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-
-    #TODO: Add Vasserman meos, file in meos todo database
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4, helmholtz5, helmholtz6
+    # TODO: Add Vasserman meos, file in meos todo database
+    eq = lemmon, MBWR, sunaga, piao, shortSpan, astina, sun
     _PR = -0.00247
 
     _surface = {"sigma": [0.05252], "exp": [1.237]}

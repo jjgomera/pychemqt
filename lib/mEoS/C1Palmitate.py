@@ -36,7 +36,6 @@ class C1Palmitate(MEoS):
     Tb = unidades.Temperature(602.3)
     f_acent = 0.91
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
-    id = 39
 
     CP1 = {"ao": 0.0,
            "an": [120.529],
@@ -47,10 +46,13 @@ class C1Palmitate(MEoS):
 
     huber = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
-        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
-                    "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
+        "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
+                    "et al. (2009).",
+        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
+                             "L.S., and Bruno, T.J.",
+                    "title": "Model for the Thermodynamic Properties of a "
+                             "Biodiesel Fuel",
+                    "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
                     "doi": "10.1021/ef900159g"},
 
         "R": 8.314472,
@@ -60,11 +62,11 @@ class C1Palmitate(MEoS):
         "Tmin": 302.71, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.36,
         "Pmin": 0.0000000008, "rhomin": 3.36,
 
-        "nr1": [0.4282821e-1, 0.2443162e1, -0.3757540e1, -0.1588526, 0.4055990e-1],
+        "nr1": [0.4282821e-1, 2.443162, -3.75754, -0.1588526, 0.4055990e-1],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.36, 1.22, 1.45, 0.7],
 
-        "nr2": [-0.1524090e1, -0.7686167, 0.1799950e1, -0.1590967e1, -0.1267681e-1],
+        "nr2": [-1.52409, -0.7686167, 1.79995, -1.590967, -0.1267681e-1],
         "d2": [1, 3, 2, 2, 7],
         "t2": [3.0, 3.9, 2.2, 2.9, 1.25],
         "c2": [2, 2, 1, 2, 1],
@@ -91,29 +93,29 @@ class C1Palmitate(MEoS):
         "exp": [0.18, 0.5, 0.7, 0.9, 1.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.11612e2, 0.16300e3, -0.47913e3, 0.72986e3, -0.48202e3, -0.18198e3],
+        "ao": [-11.612, 1.63e2, -4.7913e2, 7.2986e2, -4.8202e2, -1.8198e2],
         "exp": [0.65, 1.78, 2.15, 2.7, 3.1, 9.8]}
 
     thermo0 = {"eq": 1,
-             "__name__": "Perkins (2010)",
+               "__name__": "Perkins (2010)",
                "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
                            "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate",
                            "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
                            "doi": "10.1021/ef200417x"},
 
-             "Tref": 755.0, "kref": 1,
-             "no": [-0.27125e-3, 0.259365e-2, 0.350241e-1, -0.902273e-2],
-             "co": [0, 1, 2, 3],
+               "Tref": 755.0, "kref": 1,
+               "no": [-0.27125e-3, 0.259365e-2, 0.350241e-1, -0.902273e-2],
+               "co": [0, 1, 2, 3],
 
-             "Trefb": 755.0, "rhorefb": 0.897*M, "krefb": 1.,
-             "nb": [-0.410106e-1, 0.328443e-1, -0.418506e-2, 0.0, 0.0,
-                    0.606657e-1, -0.498407e-1, 0.121752e-1, 0.0, 0.0],
-             "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-             "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-             "cb": [0]*10,
+               "Trefb": 755.0, "rhorefb": 0.897*M, "krefb": 1.,
+               "nb": [-0.410106e-1, 0.328443e-1, -0.418506e-2, 0.0, 0.0,
+                      0.606657e-1, -0.498407e-1, 0.121752e-1, 0.0, 0.0],
+               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+               "cb": [0]*10,
 
-             "critical": 3,
-             "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-             "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1132.5}
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1132.5}
 
     _thermal = thermo0,

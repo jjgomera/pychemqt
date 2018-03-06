@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -53,7 +55,7 @@ class nC4(MEoS):
            "ao_pow": [20.884143364, -91.638478026],
            "ao_exp": [], "titao": [],
            "ao_hyp": [9.44893, 6.89406, 24.4618, 14.7824],
-           "hyp": [1.101487798, 0.43195766, 4.502440459, 2.124516319]}
+           "hyp": [468.27/Tc, 183.636/Tc, 1914.1/Tc, 903.185/Tc]}
 
     Fi3 = {"ao_log": [1, 3.240207],
            "pow": [0, 1],
@@ -76,7 +78,7 @@ class nC4(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    buecker = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Buecker and Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
@@ -229,10 +231,13 @@ class nC4(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for butane of Younglove and Ely (1987)",
+        "__name__": "MBWR equation of state for butane of Younglove and Ely "
+                    "(1987)",
         "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                    "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
+                    "title": "Thermophysical Properties of Fluids. II. "
+                             "Methane, Ethane, Propane, Isobutane, and Normal "
+                             "Butane",
+                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                     "doi": "10.1063/1.555785"},
 
         "R": 8.31434,
@@ -256,11 +261,15 @@ class nC4(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for butane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for butane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -273,14 +282,14 @@ class nC4(MEoS):
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.32325200233982, -0.37950761057432e-1, -0.32534802014452,
-                -0.79050969051011e-1, -0.20636720547775e-1, 0.57053809334750e-2],
+        "nr2": [0.32325200233982, -0.037950761057432, -0.32534802014452,
+                -0.079050969051011, -0.020636720547775, 0.57053809334750e-2],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    miyamoto= {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Miyamoto and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
@@ -307,25 +316,20 @@ class nC4(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*11}
 
-    helmholtz4 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for butane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for butane of Span "
+                    "and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=nC4(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.2176 18.416 3.5758
-            >>> st2=nC4(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            213.77 0.37465
-            """, # Table III, Pag 46
 
         "R": 8.31451,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": "OTO",
+        "M": 58.123, "rhoc": 227.84/58.123,
 
         "Tmin": 134.86, "Tmax": 750., "Pmax": 100000.0, "rhomax": 13.20,
         "Pmin": 0.00064578, "rhomin": 12.671,
@@ -342,7 +346,7 @@ class nC4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz5 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -372,13 +376,17 @@ class nC4(MEoS):
         "c2": [2]*6,
         "gamma2": [1.08974964]*6}
 
-    helmholtz6 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for butane of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for butane of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "OTO",
@@ -392,13 +400,13 @@ class nC4(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [-9.38097492e-2, 1.46213532e-1, 4.01168502e-1, -1.28716120e-2,
-                -2.75191070e-1, -1.62708971e-2, -7.04082962e-2, -2.32871995e-2],
+                -0.275191070, -1.62708971e-2, -7.04082962e-2, -2.32871995e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, GERG, helmholtz3, helmholtz4, helmholtz5, helmholtz6
+    eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
 
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.0557549],  "expt0": [-1.], "expd0": [1.],
@@ -539,3 +547,17 @@ class nC4(MEoS):
                "Z": 9.10218e-10}
 
     _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = nC4(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.2176)
+        self.assertEqual(round(st.P.MPa, 3), 18.416)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.5758)
+
+        st2 = nC4(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.78)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37465)

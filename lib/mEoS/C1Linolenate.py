@@ -36,7 +36,6 @@ class C1Linolenate(MEoS):
     Tb = unidades.Temperature(629.13)
     f_acent = 1.14
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
-    id = 39
 
     CP1 = {"ao": 0.0,
            "an": [79.5913], "pow": [0.214648],
@@ -46,10 +45,13 @@ class C1Linolenate(MEoS):
 
     huber = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methyl linoleate of Huber et al. (2009).",
-        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, L.S., and Bruno, T.J.",
-                    "title": "Model for the Thermodynamic Properties of a Biodiesel Fuel",
-                    "ref": "Energy Fuels, 2009, 23 (7), pp 3790–3797",
+        "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
+                    "et al. (2009).",
+        "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
+                             "L.S., and Bruno, T.J.",
+                    "title": "Model for the Thermodynamic Properties of a "
+                             "Biodiesel Fuel",
+                    "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
                     "doi": "10.1021/ef900159g"},
 
         "R": 8.314472,
@@ -59,17 +61,17 @@ class C1Linolenate(MEoS):
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.29,
         "Pmin": 1.e-17, "rhomin": 3.28,
 
-        "nr1": [0.4070829e-1, 0.2412375e1, -0.3756194e1, -0.1526466, 0.4682918e-1],
+        "nr1": [0.4070829e-1, 2.412375, -3.756194, -0.1526466, 0.4682918e-1],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1.0, 0.15, 1.24, 1.6, 1.28],
 
-        "nr2": [-0.1470958e1, -0.76455, 0.1908964e1, -0.1629366e1, -0.1242073e-1],
+        "nr2": [-1.470958, -0.76455, 1.908964, -1.629366, -0.1242073e-1],
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.9, 3.15, 2.16, 2.8, 1.4],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [0.2180707e1, -0.7537264, -0.4347781],
+        "nr3": [2.180707e1, -0.7537264, -0.4347781],
         "d3": [1, 1, 3],
         "t3": [2.5, 3.0, 3.1],
         "alfa3": [1.1, 1.6, 1.1],
@@ -90,7 +92,7 @@ class C1Linolenate(MEoS):
         "exp": [0.681, 1.26, 1.58, 1.7, 1.8]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.11463e2, 0.45192e2, -0.65779e2, -0.18386e4, 0.40689e4, -0.25124e4],
+        "ao": [-11.463, 45.192, -65.779, -0.18386e4, 0.40689e4, -0.25124e4],
         "exp": [0.65, 1.55, 1.8, 6.6, 7.2, 7.8]}
 
     thermo0 = {"eq": 1,

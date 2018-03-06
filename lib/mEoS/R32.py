@@ -57,7 +57,7 @@ class R32(MEoS):
            "ao_hyp": [], "hyp": []}
 
 
-    helmholtz1 = {
+    tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Tillner-Roth & Yokozeki (1997)",
         "__doi__": {"autor": "Tillner-Roth, R., Yokozeki, A.",
@@ -252,7 +252,7 @@ class R32(MEoS):
         "c2": [4, 3, 1, 4, 1, 2, 2, 1, 1, 1, 1],
         "gamma2": [1]*11}
 
-    helmholtz2 = {
+    shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-32 of Span and Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
@@ -286,7 +286,7 @@ class R32(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz3 = {
+    astina = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Astina and Sato (2003)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
@@ -341,13 +341,17 @@ class R32(MEoS):
               -0.169690612464e-3, 0.639250820631e-1, -0.204925767440e-6,
               -0.165629700870e-3, -0.932607493424e-2]}
 
-    helmholtz4 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-32 of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for R-32 of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.314471,
         "cp": Fi1,
         "ref": "IIR",
@@ -367,7 +371,7 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3, helmholtz4
+    eq = tillner, MBWR, shortSpan, astina, sun
     _PR = 0.00585
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}

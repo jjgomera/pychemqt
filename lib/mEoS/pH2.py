@@ -57,7 +57,7 @@ class pH2(MEoS):
            "exp": [598, 778, 1101, 6207],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    leachman = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for parahydrogen of Leachman et al. (2007)",
         "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
@@ -101,10 +101,13 @@ class pH2(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for parahydrogen of Younglove (1982).",
+        "__name__": "MBWR equation of state for parahydrogen of Younglove "
+                    "(1982)",
         "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
+                    "title": "Thermophysical Properties of Fluids. I. Argon, "
+                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                             "Trifluoride, and Oxygen",
+                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                     "doi": ""},
 
         "R": 8.31434,
@@ -126,7 +129,7 @@ class pH2(MEoS):
               -0.1250868123513e-9, 0.1976107321888e-8, -0.2411883474011e-12,
               -0.4127551498251e-12, 0.8917972883610e-11]}
 
-    eq = helmholtz1, MBWR
+    eq = leachman, MBWR
 
     _surface = {"sigma": [0.005314], "exp": [1.06]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

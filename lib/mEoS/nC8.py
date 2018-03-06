@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -44,15 +46,15 @@ class nC8(MEoS):
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [0.3961814e6, 0.2245626e8, 0.1380875e9, 0],
-           "hyp": [0.1589220e3, 0.8150640e3, 0.1693070e4, 0]}
+           "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
+           "hyp": [158.9220, 815.064, 1693.07, 0]}
 
     Fi1 = {"ao_log": [1, 3.0],
            "pow": [0, 1],
            "ao_pow": [15.864687161, -97.370667555],
            "ao_exp": [], "titao": [],
            "ao_hyp": [15.6865, 33.8029, 48.1731, 0],
-           "hyp": [0.27914354, 1.431644769, 2.973845992, 0]}
+           "hyp": [158.922/Tc, 815.064/Tc, 1693.07/Tc, 0]}
 
     CP3 = {"ao": 3.018753,
            "an": [0.7297005e-1, -0.14171168e-4, -0.1225317e-7,  0.12912645e-11],
@@ -66,27 +68,22 @@ class nC8(MEoS):
            "ao_hyp": [2.603664e8/8.3159524*4.184, 4.1241363e7/8.3159524*4.184, 0, 0],
            "hyp": [1.6115500e3, 7.6884700e2, 0, 0]}
 
-    helmholtz1 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for octane of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for octane of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of state for technical applications. II. Results for nonpolar fluids.",
-                    "ref": "Int. J. Thermophys. 24 (2003), 41 – 109.",
+                    "title": "Equations of state for technical applications. "
+                             "II. Results for nonpolar fluids.",
+                    "ref": "Int. J. Thermophys. 24 (1) (2003) 41-109",
                     "doi": "10.1023/A:1022310214958"},
-        "__test__": """
-            >>> st=nC8(T=700, rho=200)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            3.1537 6.363 3.8007
-            >>> st2=nC8(T=750, rho=100)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            211.79 0.31183
-            """, # Table III, Pag 46
 
         "R": 8.31451,
         "cp": CP1,
         "ref": "OTO",
+        "M": 114.231, "Tc": 569.32, "rhoc": 234.9/114.231,
 
-        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 6.69,
         "Pmin": 0.001989, "rhomin": 6.6864,
 
         "nr1": [0.10722545e1, -0.24632951e1, 0.65386674, -0.36324974,
@@ -103,17 +100,21 @@ class nC8(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for octane of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for n-octane of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
                     "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 6.69,
-#        "Pmin": 73.476, "rhomin": 29.249,
+        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10722544875633e1, -0.24632951172003e1, 0.65386674054928,
                 -0.36324974085628, 0.12713269626764, 0.30713572777930e-3],
@@ -127,7 +128,7 @@ class nC8(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Polt et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
@@ -157,7 +158,7 @@ class nC8(MEoS):
         "c2": [2]*6,
         "gamma2": [0.9995725]*6}
 
-    helmholtz4 = {
+    starling = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for octane of Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
@@ -184,13 +185,17 @@ class nC8(MEoS):
         "c2": [2]*2,
         "gamma2": [0.35285564]*2}
 
-    helmholtz5 = {
+    sun = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methanol of Sun and Ely (2004)",
+        "__name__": "Helmholtz equation of state for methanol of Sun and Ely "
+                    "(2004)",
         "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering application: Algorithm and  application to non-polar and polar fluids",
-                    "ref": "Fluid Phase Equilib., 222-223:107-118, 2004.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
+
         "R": 8.31451,
         "cp": CP1,
         "ref": "OTO",
@@ -204,13 +209,13 @@ class nC8(MEoS):
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [2.55299486e-2, -1.26632996e-1, 4.48343319e-1, -9.46702997e-3,
-                -4.43927529e-1, -1.68224827e-2, -1.15864640e-1, -1.32417591e-2],
+                -0.443927529, -1.68224827e-2, -1.15864640e-1, -1.32417591e-2],
         "d2": [1, 1, 2, 5, 1, 1, 4, 2],
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4, helmholtz5
+    eq = shortSpan, GERG, polt, starling, sun
 
     _surface = {"sigma": [0.34338, -0.50634, 0.2238],
                 "exp": [1.6607, 1.9632, 2.3547]}
@@ -229,7 +234,7 @@ class nC8(MEoS):
         "exp": [0.1, 0.75, 0.9, 1.1, 1.25]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.16556, -0.59337e1, -0.18915e2, -0.36484e3, 0.72686e3, -0.50392e3],
+        "ao": [-0.16556, -5.9337, -18.915, -0.36484e3, 0.72686e3, -0.50392e3],
         "exp": [0.09, 0.59, 2.4, 7.0, 8.0, 9.0]}
 
     visco0 = {"eq": 1, "omega": 1,
@@ -325,3 +330,17 @@ class nC8(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.68628e-9, "Tcref": 853.98}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 46
+        st = nC8(T=700, rho=200, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 3.1537)
+        self.assertEqual(round(st.P.MPa, 3), 6.363)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.8007)
+
+        st2 = nC8(T=750, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 211.79)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31183)
