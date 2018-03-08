@@ -86,105 +86,16 @@ class C3(MEoS):
 
     lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Lemmon et al. (2009)",
+        "__name__": "Helmholtz equation of state for propane of Lemmon et al. "
+                    "(2009)",
         "__doi__": {"autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
-                    "title": "Thermodynamic Properties of Propane.  III.  A Reference Equation of State for Temperatures from the Melting Line to 650 K and Pressures up to 1000 MPa",
-                    "ref": "J. Chem. Eng. Data, 2009, 54 (12), pp 3141–3180",
+                    "title": "Thermodynamic Properties of Propane.  III.  A "
+                             "Reference Equation of State for Temperatures "
+                             "from the Melting Line to 650 K and Pressures up "
+                             "to 1000 MPa",
+                    "ref": "J. Chem. Eng. Datai, 54(12) (2009) 3141-3180",
                     "doi": "10.1021/je900217v"},
-        "__test__":
-            # Table 5, Pag AH
-            """
-            >>> st=C3(T=200, rhom=14)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            200.0 14.0 2.3795138 61.078424 93.475362 1381.9552
-            >>> st=C3(T=300, rhom=12)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            300.0 12.0 19.053797 73.972542 108.61529 958.4052
-            >>> st=C3(T=300, rhom=0.4)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            300.0 0.4 0.84694991 69.021875 85.753997 221.88959
-            >>> st=C3(T=400, rhom=5)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            400.0 5.0 6.646284 97.017439 271.07044 194.65847
-            >>> st=C3(T=369.9, rhom=5)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            369.9 5.0 4.2519399 117.71621 753625 130.898
-            """
-            # Table A1, Pag A1
-            """
-            >>> st=C3(T=C3.Tt, x=0.5)
-            >>> print "%0.6g %0.4e %0.2f %0.2e %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -187.625 1.7203e-10 733.13 1.07e-08 -196.64 366.26 -1.396 5.186 1.355 0.6907 1.916 0.8792 2136.4 143.3
-            >>> st=C3(T=-110+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5f %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -110 0.0011644 654.05 0.03790 -43.988 445.38 -0.1298 2.87 1.343 0.9614 2.032 1.151 1611.8 191.7
-            >>> st=C3(T=-50+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.1f %0.4g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -50 0.070569 589.9 1.727 82.753 516.48 0.5298 2.473 1.428 1.182 2.212 1.397 1212.5 216.5
-            >>> st=C3(T=273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            0 0.47446 528.59 10.351 200 574.87 1 2.372 1.572 1.427 2.493 1.739 885.5 221.3
-            >>> st=C3(T=20+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            20 0.83646 500.06 18.082 251.64 595.95 1.18 2.354 1.647 1.544 2.666 1.949 752.9 217.2
-            >>> st=C3(T=40+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            40 1.3694 467.46 30.165 307.15 614.21 1.359 2.34 1.732 1.678 2.913 2.263 617.0 208.6
-            >>> st=C3(T=60+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            60 2.1168 427.97 49.493 368.14 627.36 1.543 2.321 1.832 1.836 3.337 2.841 474.2 194.1
-            >>> st=C3(T=80+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            80 3.1319 373.29 84.406 438.93 628.73 1.742 2.279 1.969 2.057 4.545 4.707 314.9 171.6
-            >>> st=C3(T=85+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            85 3.4361 353.96 98.818 459.81 624.75 1.798 2.259 2.023 2.144 5.433 6.182 269.1 164.1
-            >>> st=C3(T=90+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            90 3.7641 328.83 119 483.71 616.47 1.862 2.227 2.107 2.26 7.623 9.888 218.3 155.5
-            >>> st=C3(T=95+273.15, x=0.5)
-            >>> print "%0.6g %0.5g %0.2f %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            95 4.1195 286.51 156.31 516.33 595.81 1.948 2.164 2.302 2.467 23.59 36.07 158.1 144.1
-            """
-            ,
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1, "ho": 26148.48, "so": 157.9105},
@@ -553,6 +464,69 @@ class C3(MEoS):
 
 
 class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table 5, pag 3174
+        st = C3(T=200, rhom=14)
+        self.assertEqual(round(st.P.MPa, 7), 2.3795138)
+        self.assertEqual(round(st.cvM.JmolK, 6), 61.078424)
+        self.assertEqual(round(st.cpM.JmolK, 6), 93.475362)
+        self.assertEqual(round(st.w, 4), 1381.9552)
+
+        st = C3(T=300, rhom=12)
+        self.assertEqual(round(st.P.MPa, 6), 19.053797)
+        self.assertEqual(round(st.cvM.JmolK, 6), 73.972542)
+        self.assertEqual(round(st.cpM.JmolK, 5), 108.61529)
+        self.assertEqual(round(st.w, 5), 958.40520)
+
+        st = C3(T=300, rhom=0.4)
+        self.assertEqual(round(st.P.MPa, 8), 0.84694991)
+        self.assertEqual(round(st.cvM.JmolK, 6), 69.021875)
+        self.assertEqual(round(st.cpM.JmolK, 6), 85.753997)
+        self.assertEqual(round(st.w, 5), 221.88959)
+
+        st = C3(T=400, rhom=5)
+        self.assertEqual(round(st.P.MPa, 7), 6.6462840)
+        self.assertEqual(round(st.cvM.JmolK, 6), 97.017439)
+        self.assertEqual(round(st.cpM.JmolK, 5), 271.07044)
+        self.assertEqual(round(st.w, 5), 194.65847)
+
+        st = C3(T=369.9, rhom=5)
+        self.assertEqual(round(st.P.MPa, 7), 4.2519399)
+        self.assertEqual(round(st.cvM.JmolK, 5), 117.71621)
+        self.assertEqual(round(st.cpM.JmolK, 2), 753625.00)
+        self.assertEqual(round(st.w, 5), 130.89800)
+
+        # Selected point from Table A1, Pag 3175, saturation state
+        st = C3(T=-50+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.070569)
+        self.assertEqual(round(st.Liquido.rho, 2), 589.90)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 82.753)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.5298)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.428)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 2.212)
+        self.assertEqual(round(st.Liquido.w, 1), 1212.5)
+        self.assertEqual(round(st.Gas.rho, 4), 1.7270)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 516.48)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 2.473)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 1.182)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.397)
+        self.assertEqual(round(st.Gas.w, 1), 216.5)
+
+        st = C3(T=50+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.7133)
+        self.assertEqual(round(st.Liquido.rho, 2), 448.87)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 336.80)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 1.450)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.780)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 3.089)
+        self.assertEqual(round(st.Liquido.w, 1), 546.8)
+        self.assertEqual(round(st.Gas.rho, 3), 38.630)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 621.66)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 2.332)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 1.753)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 2.499)
+        self.assertEqual(round(st.Gas.w, 1), 202.2)
 
     def test_shortSpan(self):
         # Table III, Pag 46
