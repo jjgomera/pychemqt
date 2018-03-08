@@ -58,7 +58,7 @@ class Methanol(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    reuck = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methanol of de Reuck and Craven (1993)",
         "__doi__": {"autor": "de Reuck, K.M. and Craven, R.J.B.",

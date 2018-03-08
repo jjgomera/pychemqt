@@ -36,29 +36,27 @@ class MM(MEoS):
     Tb = unidades.Temperature(373.401)
     f_acent = 0.418
     momentoDipolar = unidades.DipoleMoment(0.801, "Debye")
-    id=1376
+    id = 1376
 
-    Fi1 = {"ao_log": [1, 50.894],
-           "pow": [0, 1, -1, -2, -3],
-           "ao_pow": [229.69732080664645, -86.53450336886623, -192.26652900000002,
-                      18.654111840000002, -0.8140770995175003],
-           "ao_exp": [], "titao": []}
+    CP1 = {"ao": -51.894,
+           "an": [741.34e-3, -416e-6, 70e-9],
+           "pow": [1, 2, 3],
+           "ao_exp": [], "exp": [],
+           "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of Colonna et al. (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes",
+        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
+                    "Colonna (2006).",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
+                             "Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected "
+                             "Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
                     "doi":  "10.1016/j.fluid.2006.04.015"},
-        "__test__": """
-            >>> st=MM(T=518.69997204, P=1939390)
-            >>> print "%0.6f" % st.v
-            0.003285
-            """, # Table 16, Pag 202
 
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": CP1,
         "ref": "NBP",
 
         "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21,
@@ -76,7 +74,7 @@ class MM(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,
@@ -88,5 +86,6 @@ class MM(MEoS):
         "exp": [0.584, 0.8, 1.02, 1.26, 1.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.35719e1, -0.14740e3, 0.40699e3, -0.69676e3, 0.12541e4, -0.91199e3],
+        "ao": [-0.35719e1, -0.14740e3, 0.40699e3, -0.69676e3, 0.12541e4,
+               -0.91199e3],
         "exp": [0.373, 2.15, 2.6, 3.3, 4.2, 4.6]}

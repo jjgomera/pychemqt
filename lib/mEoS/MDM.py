@@ -44,11 +44,13 @@ class MDM(MEoS):
            "ao_hyp": [266040871.9, 0, 2051643622.0, 0],
            "hyp": [802.6, 0, 1829.6, 0]}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for MDM of Colonna et al. (2006).",
+        "__name__": "Helmholtz equation of state for MDM of Colonna (2006).",
         "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
-                    "title": "Multiparameter equations of state for siloxanes: [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and [O-Si-(CH3)2]6",
+                    "title": "Multiparameter equations of state for siloxanes:"
+                             " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
+                             "[O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
                     "doi":  "10.1016/j.fluid.2007.10.001"},
 
@@ -71,7 +73,7 @@ class MDM(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,
@@ -83,7 +85,8 @@ class MDM(MEoS):
         "exp": [0.12, 0.36, 0.6, 0.8, 2.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.16483e1, -0.71410e1, -0.23088e2, -0.70554e2, 0.19938e1, -0.20193e3],
+        "ao": [-0.16483e1, -0.71410e1, -0.23088e2, -0.70554e2, 0.19938e1,
+               -0.20193e3],
         "exp": [0.296, 0.905, 2.8, 5.9, 12.0, 13.0]}
 
     visco0 = {"eq": 5, "omega": 3,

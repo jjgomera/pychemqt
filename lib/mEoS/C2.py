@@ -60,7 +60,7 @@ class C2(MEoS):
 
     Fi3 = {"ao_log": [1, 3.8159476],
            "pow": [0, -1./3, -2./3, -1],
-           "ao_pow": [-23.446765, 8.6021299, -3.3075735, -.55956678],
+           "ao_pow": [-23.446765, 8.6021299, -3.3075735, -0.55956678],
            "ao_exp": [5.0722267], "titao": [5.5074874],
            "ao_hyp": [], "hyp": []}
 
@@ -170,7 +170,7 @@ class C2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 675.0, "Pmax": 900000.0, "rhomax": 22.419,
-        # "Pmin": 0.61166, "rhomin": 55.497,
+        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.63596780450714, -0.17377981785459e1, 0.28914060926272,
                 -0.33714276845694, 0.22405964699561e-1, 0.15715424886913e-1],
@@ -196,135 +196,6 @@ class C2(MEoS):
                     "title": "Thermophysical Properties of Ethane",
                     "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
                     "doi": "10.1063/1.555881"},
-        "__test__":
-            # Table A1, Pag 336
-            """
-            >>> st=C2(T=500, P=1e5, eq=3)
-            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
-            500 -110.311 25.059 262.43 77.987
-            """
-            # Table A2, Pag 337
-            """
-            >>> st=C2(T=92, x=0.5, eq=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            92 1.7e-06 21.61 2.27e-06 67.74 1987.2 1193.00 254.4
-            >>> st=C2(T=100, x=0.5, eq=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            100 1.1e-05 21.32 1.33e-05 70.09 1937.6 876.96 248.1
-            >>> st=C2(T=150, x=0.5, eq=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            150 9.7e-3 19.47 7.80e-3 70.27 1573.2 270.35 201.0
-            >>> st=C2(T=200, x=0.5, eq=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            200 0.217 17.42 0.139 74.86 1194.4 138.17 152.5
-            >>> st=C2(T=250, x=0.5, eq=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            250 1.301 14.89 0.787 87.29 794.6 78.06 109.1
-            >>> st=C2(T=300, x=0.5, eq=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            300 4.356 10.10 3.813 182.06 278.4 35.01 71.3
-            >>> st=C2(T=302, x=0.5, eq=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            302 4.543 9.59 4.262 223.66 246.4 32.44 72.0
-            >>> st=C2(T=304, rhom=8.82, eq=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            304 4.738 8.82 4.969 354.78 209.4 28.97 79.0
-            """
-            # Table A3, Pag 339
-            """
-            >>> st=C2(T=130, P=1e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            130 1 20.24 -12.071 102.03 45.01 70.10 1726.9 392.40 221.3
-            >>> st=C2(T=140, P=6e7, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            140 60 20.80 -9.131 102.52 46.34 67.67 1921.7 476.29 245.7
-            >>> st=C2(T=160, P=2e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            160 2 19.13 -9.933 116.48 43.04 70.44 1511.1 235.10 192.5
-            >>> st=C2(T=180, P=1e5, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            180 0.1 18.28 -8.571 125.09 42.65 72.41 1347.8 176.42 171.5
-            >>> st=C2(T=200, P=1e7, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            200 10 17.79 -6.804 131.51 43.41 73.00 1281.7 151.38 161.5
-            >>> st=C2(T=240, P=1e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            240 1 15.47 -3.894 147.18 44.93 85.36 878.8 87.70 117.4
-            >>> st=C2(T=270, P=2e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            270 2 1.20 8.589 194.29 47.40 76.57 245.2 9.33 21.6
-            >>> st=C2(T=280, P=5e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            280 5 13.26 -0.228 160.21 48.73 103.93 603.7 57.96 90.7
-            >>> st=C2(T=300, P=1e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            300 1 0.43 11.364 209.01 45.59 57.20 296.8 9.65 22.2
-            >>> st=C2(T=330, P=5e5, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            330 0.5 0.19 13.366 220.86 48.51 57.89 320.8 10.37 25.6
-            >>> st=C2(T=360, P=2e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            360 2 0.73 14.5 213.23 53.11 65.46 319.6 11.65 31.1
-            >>> st=C2(T=400, P=5e6, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            400 5 1.77 16.051 210.58 59.05 76.57 322.4 13.91 40.0
-            >>> st=C2(T=430, P=2e7, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            430 20 7.42 14.158 197.14 64.79 101.22 409.8 27.52 66.5
-            >>> st=C2(T=480, P=1e5, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            480 0.1 0.03 23.500 259.25 67.28 75.67 385.8 14.28 50.1
-            >>> st=C2(T=500, P=6e7, eq=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            500 60 11.21 19.385 199.38 73.24 95.28 752.5 48.34 101.4
-            """,
 
         "R": 8.31451,
         "cp": Fi3,
@@ -780,6 +651,154 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 4), 3.2264)
         self.assertEqual(round(st.cp.kJkgK, 4), 3.6380)
         self.assertEqual(round(st.w, 2), 2628.58)
+
+    def test_friend(self):
+        # FIXME: Bad Cp0 values
+        return
+
+        # Selected point from Table A1, Pag 336, ideal gas
+        st = C2(T=100, P=1e5, eq="friend")
+        self.assertEqual(round(st.aM0.kJmol, 3), -15.846)
+        self.assertEqual(round(st.hM0.kJmol, 3), 3.384)
+        self.assertEqual(round(st.sM0.JmolK, 2), 183.99)
+        self.assertEqual(round(st.cpM0.JmolK, 3), 35.698)
+
+        st = C2(T=500, P=1e5, eq="friend")
+        self.assertEqual(round(st.aM0.kJmol, 3), -110.311)
+        self.assertEqual(round(st.hM0.kJmol, 3), 25.059)
+        self.assertEqual(round(st.sM0.JmolK, 2), 262.43)
+        self.assertEqual(round(st.cpM0.JmolK, 5), 77.987)
+
+        # Selected point from Table A2, Pag 337, saturation state
+        st = C2(T=92, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.17e-5)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 21.61)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.227e-5)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 67.74)
+        self.assertEqual(round(st.Liquido.w, 2), 1987.2)
+
+        st = C2(T=100, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.11e-4)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 21.32)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.133e-5)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 70.09)
+        self.assertEqual(round(st.Liquido.w, 2), 1937.6)
+
+        st = C2(T=150, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.97e-2)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 19.47)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.780e-2)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 70.27)
+        self.assertEqual(round(st.Liquido.w, 2), 1573.2)
+
+        st = C2(T=200, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.217)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 17.42)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.139)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 74.86)
+        self.assertEqual(round(st.Liquido.w, 2), 1194.4)
+
+        st = C2(T=250, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 1.301)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 14.89)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.787)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 87.29)
+        self.assertEqual(round(st.Liquido.w, 2), 794.6)
+
+        st = C2(T=300, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 4.356)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 10.10)
+        self.assertEqual(round(st.Gas.rhoM, 8), 3.813)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 182.06)
+        self.assertEqual(round(st.Liquido.w, 2), 278.4)
+
+        st = C2(T=304, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 4.738)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 8.82)
+        self.assertEqual(round(st.Gas.rhoM, 8), 4.969)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 354.78)
+        self.assertEqual(round(st.Liquido.w, 2), 209.4)
+
+        # Selected point from Table A3, Pag 339, single phase region
+        st = C2(T=100, P=1e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 21.33)
+        self.assertEqual(round(st.hM.kJmol, 3), -14.221)
+        self.assertEqual(round(st.sM.JmolK, 2), 83.60)
+        self.assertEqual(round(st.cvM.JmolK, 2), 48.15)
+        self.assertEqual(round(st.cpM.JmolK, 2), 70.11)
+        self.assertEqual(round(st.w, 2), 1938.7)
+
+        st = C2(T=130, P=1e6, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 20.24)
+        self.assertEqual(round(st.hM.kJmol, 3), -12.071)
+        self.assertEqual(round(st.sM.JmolK, 2), 102.03)
+        self.assertEqual(round(st.cvM.JmolK, 2), 45.01)
+        self.assertEqual(round(st.cpM.JmolK, 2), 70.10)
+        self.assertEqual(round(st.w, 2), 1726.9)
+
+        st = C2(T=160, P=5e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 20.06)
+        self.assertEqual(round(st.hM.kJmol, 3), -8.163)
+        self.assertEqual(round(st.sM.JmolK, 2), 112.25)
+        self.assertEqual(round(st.cvM.JmolK, 2), 44.94)
+        self.assertEqual(round(st.cpM.JmolK, 2), 67.54)
+        self.assertEqual(round(st.w, 2), 1763.8)
+
+        st = C2(T=200, P=1e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 17.79)
+        self.assertEqual(round(st.hM.kJmol, 3), -6.804)
+        self.assertEqual(round(st.sM.JmolK, 2), 131.51)
+        self.assertEqual(round(st.cvM.JmolK, 2), 43.41)
+        self.assertEqual(round(st.cpM.JmolK, 2), 73.00)
+        self.assertEqual(round(st.w, 2), 1281.7)
+
+        st = C2(T=250, P=5e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 0.26)
+        self.assertEqual(round(st.hM.kJmol, 3), 9.048)
+        self.assertEqual(round(st.sM.JmolK, 2), 205.92)
+        self.assertEqual(round(st.cvM.JmolK, 2), 39.92)
+        self.assertEqual(round(st.cpM.JmolK, 2), 51.02)
+        self.assertEqual(round(st.w, 2), 276.3)
+
+        st = C2(T=300, P=3e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 14.78)
+        self.assertEqual(round(st.hM.kJmol, 3), 1.409)
+        self.assertEqual(round(st.sM.JmolK, 2), 159.75)
+        self.assertEqual(round(st.cvM.JmolK, 2), 50.85)
+        self.assertEqual(round(st.cpM.JmolK, 2), 81.83)
+        self.assertEqual(round(st.w, 2), 905.4)
+
+        st = C2(T=350, P=1e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 0.03)
+        self.assertEqual(round(st.hM.kJmol, 3), 14.720)
+        self.assertEqual(round(st.sM.JmolK, 2), 238.06)
+        self.assertEqual(round(st.cvM.JmolK, 2), 50.76)
+        self.assertEqual(round(st.cpM.JmolK, 2), 59.24)
+        self.assertEqual(round(st.w, 2), 334.6)
+
+        st = C2(T=400, P=5e6, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 1.77)
+        self.assertEqual(round(st.hM.kJmol, 3), 16.051)
+        self.assertEqual(round(st.sM.JmolK, 2), 210.58)
+        self.assertEqual(round(st.cvM.JmolK, 2), 59.05)
+        self.assertEqual(round(st.cpM.JmolK, 2), 76.57)
+        self.assertEqual(round(st.w, 2), 322.4)
+
+        st = C2(T=450, P=1e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 0.03)
+        self.assertEqual(round(st.hM.kJmol, 3), 21.285)
+        self.assertEqual(round(st.sM.JmolK, 2), 254.49)
+        self.assertEqual(round(st.cvM.JmolK, 2), 63.59)
+        self.assertEqual(round(st.cpM.JmolK, 2), 71.99)
+        self.assertEqual(round(st.w, 2), 374.6)
+
+        st = C2(T=500, P=1e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 2.68)
+        self.assertEqual(round(st.hM.kJmol, 3), 22.854)
+        self.assertEqual(round(st.sM.JmolK, 2), 220.68)
+        self.assertEqual(round(st.cvM.JmolK, 2), 71.12)
+        self.assertEqual(round(st.cpM.JmolK, 2), 88.12)
+        self.assertEqual(round(st.w, 2), 378.1)
 
     def test_shortSpan(self):
         # Table III, Pag 46

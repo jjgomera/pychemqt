@@ -43,18 +43,15 @@ class MD4M(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    colonna = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for MD4M of Colonna et al. (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected Siloxanes",
+        "__name__": "Helmholtz equation of state for MD4M of Colonna  (2006).",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
+                             "Lemmon, E.W.",
+                    "title": "Multiparameter Equations of State for Selected "
+                             "Siloxanes",
                     "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
                     "doi":  "10.1016/j.fluid.2006.04.015"},
-        "__test__": """
-            >>> st=MD4M(T=653.2, P=877470)
-            >>> print "%0.6f" % st.v
-            0.003501
-            """, # Table 18, Pag 204
 
         "R": 8.314472,
         "cp": CP1,
@@ -75,7 +72,7 @@ class MD4M(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = colonna,
 
     _vapor_Pressure = {
         "eq": 5,
@@ -87,5 +84,6 @@ class MD4M(MEoS):
         "exp": [0.235, 0.6, 0.95, 1.35, 1.7]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.10890e1, -0.84374e1, -0.35615e2, -0.73478e3, 0.19915e4, -0.16317e4],
+        "ao": [-0.10890e1, -0.84374e1, -0.35615e2, -0.73478e3, 0.19915e4,
+               -0.16317e4],
         "exp": [0.231, 0.8, 2.9, 7.7, 9.0, 10.0]}
