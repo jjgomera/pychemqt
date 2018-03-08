@@ -80,122 +80,14 @@ class nC4(MEoS):
 
     buecker = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for butane of Buecker and Wagner (2006)",
+        "__name__": "Helmholtz equation of state for butane of Buecker and "
+                    "Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane",
-                    "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
+                    "title": "Reference Equations of State for the "
+                             "Thermodynamic Properties of Fluid Phase "
+                             "n-Butane and Isobutane",
+                    "ref": "J. Phys. Chem. Ref. Data 35(2) (2006) 929-1019",
                     "doi": "10.1063/1.1901687"},
-        "__test__":
-            # Table 44, Pag 974
-            """
-            >>> st=nC4(T=134.895, x=0.5)
-            >>> print "%0.6g %0.8f %0.4f %0.6f %0.5g %0.5g %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            134.895 0.00000067 734.9588 0.000034 -721.64 -225.72 -3.036 0.640 1.441 0.963 1.973 1.106 1826.82 148.87
-            >>> st=nC4(T=156, x=0.5)
-            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            156 0.000020 715.291 0.00091 -679.81 -201.60 -2.748 0.317 1.443 1.034 1.992 1.178 1693.20 159.37
-            >>> st=nC4(T=170, x=0.5)
-            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            170 0.000116 702.237 0.00478 -651.81 -184.83 -2.576 0.171 1.447 1.078 2.009 1.221 1610.11 165.94
-            >>> st=nC4(T=180, x=0.5)
-            >>> print "%0.6g %0.6f %0.3f %0.5f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            180 0.000335 692.876 0.01301 -631.64 -172.50 -2.461 0.090 1.453 1.109 2.024 1.253 1552.13 170.43
-            >>> st=nC4(T=300, x=0.5)
-            >>> print "%0.6g %0.5f %0.2f %0.4f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            300 0.25760 570.68 6.5164 -367.83 -8.24 -1.349 -0.150 1.729 1.602 2.451 1.811 890.88 202.15
-            >>> st=nC4(T=400, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            400 2.4954 408.48 73.077 -80.60 113.39 -0.542 -0.057 2.173 2.210 3.838 3.623 318.35 154.77
-            >>> st=nC4(T=410, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.3f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            410 2.9578 377.13 95.371 -42.76 116.18 -0.452 -0.064 2.247 2.306 4.677 4.840 246.50 141.36
-            >>> st=nC4(T=420, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            420 3.4897 327.77 135.00 3.37 108.06 -0.344 -0.095 2.357 2.444 8.852 10.719 165.59 124.46
-            >>> st=nC4(T=424, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            424 3.7262 284.03 173.21 32.66 91.15 -0.277 -0.139 2.454 2.549 34.430 44.895 127.24 115.73
-            >>> st=nC4(T=425, x=0.5)
-            >>> print "%0.6g %0.4f %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f %0.2f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            425 3.7881 250.17 205.54 50.78 73.93 -0.235 -0.180 2.534 2.589 375.35 460.13 114.85 112.63
-            """
-            # Table 45, Pag 980
-            """
-            >>> st=nC4(T=200, P=1e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            200 674.06 -590.85 -590.7 -2.2462 1.4733 2.062 1438.79
-            >>> st=nC4(T=425, P=5e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 8.619 183.13 241.14 0.45027 2.1279 2.3062 244.71
-            >>> st=nC4(T=425, P=1e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 18.184 175.73 230.73 0.3333 2.1469 2.3739 233.55
-            >>> st=nC4(T=370, P=1.5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            370 473.15 -181.62 -178.45 -0.79043 2.0102 3.05 508.67
-            >>> st=nC4(T=425, P=2e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 41.696 157.9 205.86 0.18997 2.195 2.6031 206.82
-            >>> st=nC4(T=400, P=3e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 416.28 -90.374 -83.167 -0.55176 2.1613 3.623 348.01
-            >>> st=nC4(T=425, P=4e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 323.28 6.3288 18.702 -0.31172 2.364 7.3685 173.79
-            >>> st=nC4(T=575, P=4e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            575 55.37 518.95 591.19 0.87953 2.7242 3.0176 265.11
-            >>> st=nC4(T=425, P=5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 368.63 -12.88 0.68419 -0.36083 2.2866 4.1643 268.65
-            >>> st=nC4(T=425, P=1e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            425 427.92 -41.303 -17.934 -0.43378 2.2319 3.1867 454.17
-            >>> st=nC4(T=500, P=6.9e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            500 515.49 90.412 224.26 -0.17641 2.533 2.986 923.31
-            """,
 
         "R": 8.314472,
         "cp": Fi1,
@@ -210,7 +102,7 @@ class nC4(MEoS):
         "d1": [1, 1, 1, 2, 3, 4, 4],
         "t1": [0.50, 1.00, 1.50, 0.00, 0.50, 0.50, 0.75],
         "nr2": [0.95571232982005, -0.10003385753419e1, 0.85581548803855e-1,
-                -0.25147918369616e-1, -0.15202958578918e-2, 0.47060682326420e-2,
+                -0.025147918369616, -0.15202958578918e-2, 0.47060682326420e-2,
                 -0.97845414174006e-1, -0.48317904158760e-1, 0.17841271865468,
                 0.18173836739334e-1, -0.11399068074953, 0.19329896666669e-1,
                 0.11575877401010e-2, 0.15253808698116e-3, -0.43688558458471e-1,
@@ -348,9 +240,10 @@ class nC4(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for butane of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for butane of Polt (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
         "R": 8.3143,
@@ -550,6 +443,147 @@ class nC4(MEoS):
 
 
 class Test(TestCase):
+
+    def test_buecker(self):
+        # Selected point from Table 44, Pag 974, saturation state
+        st = nC4(T=136, x=0.5)
+        self.assertEqual(round(st.P.MPa, 8), 0.00000082)
+        self.assertEqual(round(st.Liquido.rho, 4), 733.9269)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -719.46)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -3.020)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.442)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.974)
+        self.assertEqual(round(st.Liquido.w, 2), 1819.41)
+        self.assertEqual(round(st.Gas.rho, 6), 0.000042)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), -224.49)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 0.619)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.967)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.110)
+        self.assertEqual(round(st.Gas.w, 2), 149.44)
+
+        st = nC4(T=220, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.007805)
+        self.assertEqual(round(st.Liquido.rho, 3), 654.775)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -549.07)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -2.047)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.505)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 2.113)
+        self.assertEqual(round(st.Liquido.w, 2), 1326.20)
+        self.assertEqual(round(st.Gas.rho, 5), 0.24959)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), -120.52)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), -0.099)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 1.244)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.392)
+        self.assertEqual(round(st.Gas.w, 2), 186.44)
+
+        st = nC4(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.25760)
+        self.assertEqual(round(st.Liquido.rho, 2), 570.68)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -367.83)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -1.349)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.729)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 2.451)
+        self.assertEqual(round(st.Liquido.w, 2), 890.88)
+        self.assertEqual(round(st.Gas.rho, 4), 6.5164)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), -8.24)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), -0.150)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 1.602)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.811)
+        self.assertEqual(round(st.Gas.w, 2), 202.15)
+
+        st = nC4(T=400, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 2.4954)
+        self.assertEqual(round(st.Liquido.rho, 2), 408.48)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -80.60)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -0.542)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 2.173)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 3.838)
+        self.assertEqual(round(st.Liquido.w, 2), 318.35)
+        self.assertEqual(round(st.Gas.rho, 3), 73.077)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 113.39)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), -0.057)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 2.210)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 3.623)
+        self.assertEqual(round(st.Gas.w, 2), 154.77)
+
+        st = nC4(T=425, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 3.7881)
+        self.assertEqual(round(st.Liquido.rho, 2), 250.17)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 50.78)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -0.235)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 2.534)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 375.35)
+        self.assertEqual(round(st.Liquido.w, 2), 114.85)
+        self.assertEqual(round(st.Gas.rho, 2), 205.54)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 73.93)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), -0.180)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 2.589)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 460.13)
+        self.assertEqual(round(st.Gas.w, 2), 112.63)
+
+        # Selected point from Table 45, Pag 980
+        st = nC4(T=135, P=1e5)
+        self.assertEqual(round(st.rho, 2), 734.90)
+        self.assertEqual(round(st.u.kJkg, 2), -721.46)
+        self.assertEqual(round(st.h.kJkg, 2), -721.32)
+        self.assertEqual(round(st.s.kJkgK, 4), -3.0349)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.4416)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.9729)
+        self.assertEqual(round(st.w, 2), 1826.47)
+
+        st = nC4(T=320, P=5e5)
+        self.assertEqual(round(st.rho, 2), 546.46)
+        self.assertEqual(round(st.u.kJkg, 2), -318.37)
+        self.assertEqual(round(st.h.kJkg, 2), -317.45)
+        self.assertEqual(round(st.s.kJkgK, 4), -1.1876)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.8027)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.5760)
+        self.assertEqual(round(st.w, 2), 784.25)
+
+        st = nC4(T=360, P=1e6)
+        self.assertEqual(round(st.rho, 3), 23.804)
+        self.assertEqual(round(st.u.kJkg, 3), 39.201)
+        self.assertEqual(round(st.h.kJkg, 3), 81.210)
+        self.assertEqual(round(st.s.kJkgK, 6), -0.048237)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.9129)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.2666)
+        self.assertEqual(round(st.w, 2), 197.12)
+
+        st = nC4(T=575, P=2e6)
+        self.assertEqual(round(st.rho, 3), 25.876)
+        self.assertEqual(round(st.u.kJkg, 2), 535.89)
+        self.assertEqual(round(st.h.kJkg, 2), 613.18)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.0083)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.7050)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.9097)
+        self.assertEqual(round(st.w, 2), 279.37)
+
+        st = nC4(T=330, P=5e6)
+        self.assertEqual(round(st.rho, 2), 544.15)
+        self.assertEqual(round(st.u.kJkg, 2), -298.77)
+        self.assertEqual(round(st.h.kJkg, 2), -289.58)
+        self.assertEqual(round(st.s.kJkgK, 4), -1.1272)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.8433)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.5833)
+        self.assertEqual(round(st.w, 2), 793.83)
+
+        st = nC4(T=140, P=1e7)
+        self.assertEqual(round(st.rho, 2), 734.35)
+        self.assertEqual(round(st.u.kJkg, 2), -713.92)
+        self.assertEqual(round(st.h.kJkg, 2), -700.30)
+        self.assertEqual(round(st.s.kJkgK, 4), -2.9800)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.4519)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.9720)
+        self.assertEqual(round(st.w, 2), 1829.40)
+
+        st = nC4(T=475, P=5e7)
+        self.assertEqual(round(st.rho, 2), 501.63)
+        self.assertEqual(round(st.u.kJkg, 3), 35.722)
+        self.assertEqual(round(st.h.kJkg, 2), 135.40)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.28209)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.4314)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.9384)
+        self.assertEqual(round(st.w, 2), 826.87)
 
     def test_shortSpan(self):
         # Table III, Pag 46

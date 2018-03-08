@@ -126,10 +126,13 @@ class C3(MEoS):
 
     buecker = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Bücker and Wagner (2006)",
+        "__name__": "Helmholtz equation of state for propane of Bücker and "
+                    "Wagner (2006)",
         "__doi__": {"autor": "Bücker, D., Wagner, W.",
-                    "title": "Reference Equations of State for the Thermodynamic Properties of Fluid Phase n-Butane and Isobutane",
-                    "ref": "J. Phys. Chem. Ref. Data 35, 929 (2006)",
+                    "title": "Reference Equations of State for the "
+                             "Thermodynamic Properties of Fluid Phase "
+                             "n-Butane and Isobutane",
+                    "ref": "J. Phys. Chem. Ref. Data 35(2) (2006) 929-1019",
                     "doi": "10.1063/1.1901687"},
 
         "R": 8.314472,
