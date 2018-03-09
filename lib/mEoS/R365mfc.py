@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -36,30 +38,31 @@ class R365mfc(MEoS):
     Tb = unidades.Temperature(313.3)
     f_acent = 0.377
     momentoDipolar = unidades.DipoleMoment(3.807, "Debye")
-    id = 671
-    # id = None
 
-    CP1 = {"ao": 4.,
-           "an": [], "pow": [],
-           "ao_exp": [17.47, 16.29], "exp": [569., 2232.],
-           "ao_hyp": [], "hyp": []}
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-16.3423704513, 10.2889710846],
+           "ao_exp": [17.47, 16.29],
+           "titao": [569/Tc, 2232/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-365mfc of McLinden and Lemmon. (2013)",
-        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1",
-                    "ref": "to be submitted to J. Chem. Eng. Data, 2013",
-                    "doi":  ""},
+        "__name__": "Helmholtz equation of state for R-365mfc of Lemmon and "
+                    "Span (2013)",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, "
+                             "R-115, and R-13I1",
+                    "ref": "J. Chem. Eng. Data, 60(12) (2015) 3745-3758",
+                    "doi": "10.1021/acs.jced.5b00684"},
 
-        "R": 8.314472,
-        "cp": CP1,
-        "ref": "NBP",
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 35000.0, "rhomax": 9.3,
         "Pmin": 2.478, "rhomin": 9.3,
 
-        "nr1": [2.20027, -2.86240, 0.384559, -0.621227, 0.066596],
+        "nr1": [2.20027, -2.86240, 0.384559, -0.621227, 0.0665967],
         "d1": [1, 1, 2, 2, 4],
         "t1": [0.24, 0.67, 0.5, 1.25, 1],
 
@@ -77,7 +80,7 @@ class R365mfc(MEoS):
         "gamma3": [1.48, 1.49, 1.01, 1.16],
         "epsilon3": [1.02, 0.62, 0.53, 0.48]}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.0534], "exp": [1.21]}
     _vapor_Pressure = {
@@ -92,3 +95,26 @@ class R365mfc(MEoS):
         "eq": 3,
         "ao": [-.1612e1, -.67679e1, -.24499e2, .33398e1, -.2111e3, .25807e3],
         "exp": [0.281, 0.91, 3.0, 5.0, 8.0, 10.0]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table 7, Pag 3754
+        st = R365mfc(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0.0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 137.9013)
+        self.assertEqual(round(st.cpM.JmolK, 4), 146.2158)
+        self.assertEqual(round(st.w, 4), 133.6443)
+
+        st = R365mfc(T=300, rhom=8.5)
+        self.assertEqual(round(st.P.MPa, 6), 2.293261)
+        self.assertEqual(round(st.cvM.JmolK, 4), 153.5866)
+        self.assertEqual(round(st.cpM.JmolK, 4), 203.6507)
+        self.assertEqual(round(st.w, 4), 735.3004)
+
+        st = R365mfc(T=461, rhom=3.2)
+        self.assertEqual(round(st.P.MPa, 6), 3.324581)
+        self.assertEqual(round(st.cvM.JmolK, 4), 224.7732)
+        self.assertEqual(round(st.cpM.JmolK, 2), 10987.87)
+        self.assertEqual(round(st.w, 5), 68.71050)

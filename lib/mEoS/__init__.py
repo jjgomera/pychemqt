@@ -101,7 +101,7 @@ from lib.mEoS.SF6 import SF6
 from lib.mEoS.HCl import HCl
 
 # CFCs
-from lib.mEoS.CF3I import CF3I
+from lib.mEoS.R13I1 import R13I1
 from lib.mEoS.C4F10 import C4F10
 from lib.mEoS.C5F12 import C5F12
 from lib.mEoS.R11 import R11
@@ -175,7 +175,7 @@ Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
            Trans_2_butene, Propyne, C1Oleate, C1Linolenate, C1Linoleate,
            C1Palmitate, C1Stearate]
 Heteroatom = [Methanol, Ethanol, Acetone, DME, DEE, DMC, NF3, SF6, HCl]
-CFCs = [CF3I, C4F10, C5F12, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41,
+CFCs = [R13I1, C4F10, C5F12, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41,
         R113, R114, R115, R116, R123, R124, R125, R134a, R141b, R142b, R143a,
         R152a, R161, R218, R227ea, R236ea, R236fa, R245ca, R245fa, R365mfc,
         RC318, R1234yf, R1234ze, R1216, R1233zd, RE143a, RE245cb2, RE245fa2,

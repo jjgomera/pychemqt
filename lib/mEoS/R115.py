@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -50,15 +52,17 @@ class R115(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-115 of McLinden and Lemmon (2013)",
-        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1",
-                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""},
+        "__name__": "short Helmholtz equation of state for R-115 of Lemmon "
+                    "and Span (2013)",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, "
+                             "R-115, and R-13I1",
+                    "ref": "J. Chem. Eng. Data, 60(12) (2015) 3745-3758",
+                    "doi": "10.1021/acs.jced.5b00684"},
 
-        "R": 8.314472,
+        "R": 8.3144621,
         "cp": CP1,
         "ref": "IIR",
 
@@ -76,9 +80,9 @@ class R115(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz2 = {
+    platzer = {
         "__type__": "Helmholtz",
-        "__name__": "Bender equation of state for R-115 of Platzer et al. (1990).",
+        "__name__": "Bender equation of state for R-115 of Platzer (1990)",
         "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
                     "title": "Thermophysical properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
@@ -88,14 +92,15 @@ class R115(MEoS):
         "cp": CP2,
         "ref": "NBP",
 
-        "Tmin": 200.0 , "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7,
+        "Tmin": 200.0, "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7,
         "Pmin": 6.213, "rhomin": 10.743,
 
         "nr1": [-0.377294477051, -0.695891789165e-1, 0.206972205161,
                 0.266609543946, -0.117158857583e1, 0.817521154071,
                 -0.978729789251, -0.174482448760, 0.143598704796e1,
                 -0.265460417723e1, 0.165212655822e1, -0.588257570097,
-                0.738774518022, 0.296779702685, -0.534330750773, 0.659766160237e-1],
+                0.738774518022, 0.296779702685, -0.534330750773,
+                0.659766160237e-1],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
 
@@ -106,7 +111,7 @@ class R115(MEoS):
         "c2": [0, 0, 0, 2, 2, 2],
         "gamma2": [1.50553819]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon, platzer
 
     _surface = {"sigma": [0.04771], "exp": [1.246]}
     _vapor_Pressure = {
@@ -119,5 +124,28 @@ class R115(MEoS):
         "exp": [0.556, 0.75, 0.95, 1.2, 1.5]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.35696e1, -0.83593e1, -0.34007e3, 0.40114e3, 0.84442e2, -0.22137e3],
+        "ao": [-3.5696, -8.3593, -340.07, 401.14, 84.442, -221.37],
         "exp": [0.421, 1.5, 4.7, 5.0, 5.4, 6.0]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table 7, Pag 3754
+        st = R115(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0.0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 102.2181)
+        self.assertEqual(round(st.cpM.JmolK, 4), 110.5326)
+        self.assertEqual(round(st.w, 4), 132.1423)
+
+        st = R115(T=300, rhom=10)
+        self.assertEqual(round(st.P.MPa, 5), 57.40521)
+        self.assertEqual(round(st.cvM.JmolK, 4), 111.0519)
+        self.assertEqual(round(st.cpM.JmolK, 4), 146.0220)
+        self.assertEqual(round(st.w, 4), 728.9583)
+
+        st = R115(T=354, rhom=4)
+        self.assertEqual(round(st.P.MPa, 6), 3.190363)
+        self.assertEqual(round(st.cvM.JmolK, 4), 137.4032)
+        self.assertEqual(round(st.cpM.JmolK, 3), 5990.358)
+        self.assertEqual(round(st.w, 5), 70.43849)

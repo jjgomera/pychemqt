@@ -18,64 +18,61 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
 
-class CF3I(MEoS):
-    """Multiparameter equation of state for trifluoroiodomethane
-
-    >>> trifluoroiodometano=CF3I(T=300, P=0.1)
-    >>> print "%0.1f %0.5f %0.2f %0.3f %0.5f %0.4f %0.4f %0.2f" % (trifluoroiodometano.T, trifluoroiodometano.rho, trifluoroiodometano.u.kJkg, trifluoroiodometano.h.kJkg, trifluoroiodometano.s.kJkgK, trifluoroiodometano.cv.kJkgK, trifluoroiodometano.cp.kJkgK, trifluoroiodometano.w)
-    300.0 8.02849 7.17 19.624 0.09457 0.3043 0.3514 118.60
-    """
+class R13I1(MEoS):
+    """Multiparameter equation of state for trifluoroiodomethane"""
     name = "trifluoroiodomethane"
     CASNumber = "2314-97-8"
     formula = "CF3I"
-    synonym = ""
-    rhoc = unidades.Density(868.)
+    synonym = "R13I1"
+    rhoc = unidades.Density(868.00061824)
     Tc = unidades.Temperature(396.44)
     Pc = unidades.Pressure(3953., "kPa")
-    M = 195.9103796  # g/mol
+    M = 195.9104  # g/mol
     Tt = unidades.Temperature(120.)
     Tb = unidades.Temperature(251.3)
     f_acent = 0.18
     momentoDipolar = unidades.DipoleMoment(0.92, "Debye")
-    id = 645
 
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
-           "ao_exp": [6.2641], "exp": [694.1467],
+           "ao_exp": [6.2641], "exp": [694],
            "ao_hyp": [], "hyp": []}
 
-    mclinden = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for CF3I of McLinden and Lemmon (2013)",
-        "__doi__": {"autor": "McLinden, M.O. and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, R-115, and R-13I1",
-                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for R13I1 of Lemmon and "
+                    "Span (2013)",
+        "__doi__": {"autor": "Lemmon, E.W., Span, R.",
+                    "title": "Thermodynamic Properties of R-227ea, R-365mfc, "
+                             "R-115, and R-13I1",
+                    "ref": "J. Chem. Eng. Data, 60(12) (2015) 3745-3758",
+                    "doi": "10.1021/acs.jced.5b00684"},
 
-        "R": 8.314472,
+        "R": 8.3144621,
         "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420., "Pmax": 20000.0, "rhomax": 14.1,
         "Pmin": 0.0004623, "rhomin": 14.05,
 
-        "nr1": [0.112191e1, -0.308087e1, 0.111307e1, -0.184885, 0.110971,
-                0.325005e-3],
+        "nr1": [1.12191, -3.08087, 1.11307, -0.184885, 0.110971, 0.000325],
         "d1": [1, 1, 1, 2, 3, 7],
-        "t1": [0.23, 1.125, 1.5, 1.375, 0.25, 0.875],
+        "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.333357, -0.288288e-1, -0.371554, -0.997985e-1, -0.333205e-1,
-                0.207882e-1],
+        "nr2": [0.333357, -0.0288288, -0.371554, -0.0997985, -0.0333205,
+                0.0207882],
         "d2": [2, 5, 1, 4, 3, 4],
-        "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
+        "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = mclinden,
+    eq = lemmon,
 
     _surface = {"sigma": [0.05767], "exp": [1.298]}
     _vapor_Pressure = {
@@ -90,3 +87,26 @@ class CF3I(MEoS):
         "eq": 3,
         "ao": [-3.0987, -6.8771, -19.701, -46.86, -100.02],
         "exp": [0.41, 1.33, 3.5, 7.4, 16.0]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table 7, Pag 3754
+        st = R13I1(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0.0)
+        self.assertEqual(round(st.cvM.JmolK, 5), 58.90476)
+        self.assertEqual(round(st.cpM.JmolK, 5), 67.21922)
+        self.assertEqual(round(st.w, 4), 120.5370)
+
+        st = R13I1(T=300, rhom=10.9)
+        self.assertEqual(round(st.P.MPa, 5), 16.52331)
+        self.assertEqual(round(st.cvM.JmolK, 5), 66.39803)
+        self.assertEqual(round(st.cpM.JmolK, 4), 101.9090)
+        self.assertEqual(round(st.w, 4), 529.4695)
+
+        st = R13I1(T=397, rhom=4.4)
+        self.assertEqual(round(st.P.MPa, 6), 3.991241)
+        self.assertEqual(round(st.cvM.JmolK, 5), 90.32758)
+        self.assertEqual(round(st.cpM.JmolK, 2), 11675.81)
+        self.assertEqual(round(st.w, 5), 74.67026)
