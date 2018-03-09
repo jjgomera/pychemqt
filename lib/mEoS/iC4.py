@@ -187,11 +187,14 @@ class iC4(MEoS):
 
     miyamoto = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isobutane of Miyamoto and Watanabe (2001)",
+        "__name__": "Helmholtz equation of state for isobutane of Miyamoto "
+                    "and Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase Isobutane",
-                    "ref": "Int. J. Thermophys., 23(2):477-499, 2002.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase "
+                             "Isobutane",
+                    "ref": "Int. J. Thermophys., 23(2) (2002) 477-499",
                     "doi": "10.1023/A:1015161519954"},
+
         "R": 8.314472,
         "cp": Fi3,
         "ref": "IIR",
@@ -244,11 +247,13 @@ class iC4(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isobutane of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for isobutane of Polt (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP6,
         "ref": "NBP",
@@ -596,3 +601,10 @@ class Test(TestCase):
         st2 = iC4(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 210.32)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37469)
+
+    # def test_custom(self):
+        # """Test for other model not tested"""
+        # # Reference state for Miyamoto correlation
+        # st = iC4(T=273.15, x=0.0, eq="miyamoto")
+        # self.assertEqual(round(st.h.kJkg, 0), 200)
+        # self.assertEqual(round(st.s.kJkgK, 2), 1)

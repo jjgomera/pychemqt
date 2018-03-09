@@ -228,11 +228,14 @@ class C3(MEoS):
 
     miyamoto = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propane of Miyamoto and Watanabe (2001)",
+        "__name__": "Helmholtz equation of state for propane of Miyamoto and "
+                    "Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase Propane",
-                    "ref": "Int. J. Thermophys., 21(5):1045-1072, 2000.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase "
+                             "Propane",
+                    "ref": "Int. J. Thermophys., 21(5) (2000) 1045-1072",
                     "doi":  "10.1023/A:1026441903474"},
+
         "R": 8.314472,
         "cp": Fi4,
         "ref": "IIR",
@@ -541,3 +544,10 @@ class Test(TestCase):
         st2 = C3(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 212.66)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41879)
+
+    def test_custom(self):
+        """Test for other model not tested"""
+        # Reference state for Miyamoto correlation
+        st = C3(T=273.15, x=0.0, eq="miyamoto")
+        self.assertEqual(round(st.h.kJkg, 0), 200)
+        self.assertEqual(round(st.s.kJkgK, 2), 1)

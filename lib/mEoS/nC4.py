@@ -61,7 +61,8 @@ class nC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [-5.404217, 4.91136],
            "ao_exp": [5.513671, 7.388450, 10.250630, 11.061010],
-           "titao": [327.55988/Tc, 1319.06935/Tc, 4138.63184/Tc, 1864.36783/Tc],
+           "titao": [327.55988/Tc, 1319.06935/Tc,
+                     4138.63184/Tc, 1864.36783/Tc],
            "ao_hyp": [], "hyp": []}
 
     CP4 = {"ao": -1.3491511376e1,
@@ -181,12 +182,14 @@ class nC4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    miyamoto= {
+    miyamoto = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for butane of Miyamoto and Watanabe (2001)",
+        "__name__": "Helmholtz equation of state for butane of Miyamoto and "
+                    "Watanabe (2001)",
         "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
-                    "title": "A Thermodynamic Property Model for Fluid-Phase n-Butane",
-                    "ref": "Int. J. Thermophys., 22(2):459-475, 2001.",
+                    "title": "A Thermodynamic Property Model for Fluid-Phase "
+                             "n-Butane",
+                    "ref": "Int. J. Thermophys., 22(2) (2001) 459-475",
                     "doi": "10.1023/A:1010722814682"},
         "R": 8.314472,
         "cp": Fi3,
@@ -595,3 +598,10 @@ class Test(TestCase):
         st2 = nC4(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.78)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37465)
+
+    def test_custom(self):
+        """Test for other model not tested"""
+        # Reference state for Miyamoto correlation
+        st = nC4(T=273.15, x=0.0, eq="miyamoto")
+        self.assertEqual(round(st.h.kJkg, 0), 200)
+        self.assertEqual(round(st.s.kJkgK, 2), 1)
