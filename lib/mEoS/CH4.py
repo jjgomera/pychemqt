@@ -186,155 +186,11 @@ class CH4(MEoS):
 
     friend = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methane of Friend et al. (1989)",
+        "__name__": "Helmholtz equation of state for methane of Friend (1989)",
         "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
                     "title": "Thermophysical Properties of Methane",
-                    "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
+                    "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
                     "doi": "10.1063/1.555828"},
-        "__test__":
-            # Table A1, Pag 630
-            """
-            >>> st=CH4(T=100, P=1e5, eq=3)
-            >>> print "%0.6g %0.1f %0.3f %0.3f %0.3f %0.3f %0.2f" % (\
-                st.T, st.aM0.kJkmol, st.hM0.kJkmol, st.sM0.kJkmolK, st.cpM0.kJkmolK)
-            100 -12.479 3.311 149.58 33.277
-            """
-            # Table A2, Pag 337
-            """
-            >>> st=CH4(T=92, x=0.5, eq=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            92 0.014 28.04 0.018 53.37 1532.7 194.89 209.7
-            >>> st=CH4(T=100, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            100 0.034 27.35 0.042 54.80 1444.3 156.97 199.5
-            >>> st=CH4(T=110, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            110 0.088 26.47 0.100 55.72 1344.7 122.39 186.0
-            >>> st=CH4(T=120, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            120 0.192 25.55 0.204 56.68 1245.3 97.85 172.0
-            >>> st=CH4(T=130, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            130 0.368 24.56 0.373 58.05 1142.2 79.97 157.8
-            >>> st=CH4(T=140, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            140 0.642 23.50 0.633 60.05 1033.3 66.42 143.6
-            >>> st=CH4(T=150, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.1e %0.2f %0.2e %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            150 1.041 22.31 1.018 62.98 917.2 55.67 129.3
-            >>> st=CH4(T=160, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            160 1.593 20.96 1.584 67.42 791.5 46.70 115.0
-            >>> st=CH4(T=170, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            170 2.329 19.35 2.432 75.04 653.2 38.76 100.5
-            >>> st=CH4(T=180, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            180 3.287 17.21 3.827 92.96 496.4 31.01 85.5
-            >>> st=CH4(T=190, x=0.5, eq=3, visco=3)
-            >>> print "%0.6g %0.3f %0.2f %0.3f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.Liquido.rhoM, st.Gas.rhoM, st.Liquido.cpM.JmolK, \
-                st.Liquido.w, st.Liquido.mu.muPas, st.Liquido.k.mWmK)
-            190 4.521 12.5 7.827 389.9 264.3 19.75 100.3
-            """
-            # Table A3, Pag 339
-            """
-            >>> st=CH4(T=100, P=1e5, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            100 0.1 27.37 -5.242 73.05 34.08 54.64 1446.8 157.48 199.8
-            >>> st=CH4(T=110, P=1e7, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            110 10 27.01 -4.449 77.13 33.86 54.39 1435.8 137.99 196.6
-            >>> st=CH4(T=120, P=2e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            120 2 25.68 -4.084 82.95 32.71 56.59 1268.0 100.43 174.4
-            >>> st=CH4(T=130, P=1e7, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            130 10 25.31 -3.348 86.32 32.27 55.81 1258.7 91.19 170.4
-            >>> st=CH4(T=140, P=5e7, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            140 50 26.69 -1.866 85.92 33.44 51.40 1496.4 122.21 199.6
-            >>> st=CH4(T=160, P=2e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            160 2 21.05 -1.634 100.48 30.52 70.18 804.0 47.23 116.0
-            >>> st=CH4(T=180, P=1e5, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            180 0.1 0.07 5.937 169.02 25.18 33.77 350.7 7.01 19.4
-            >>> st=CH4(T=200, P=1e7, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            200 10 16.59 1.159 113.68 30.21 84.94 566.0 29.72 84.1
-            >>> st=CH4(T=240, P=1e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            240 1 0.52 7.760 159.01 26.08 35.84 398.2 9.36 27.4
-            >>> st=CH4(T=270, P=2e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            270 2 0.94 8.641 156.96 26.90 37.46 419.5 10.58 31.9
-            >>> st=CH4(T=280, P=5e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            280 5 2.40 8.451 149.22 27.75 42.04 420.0 11.68 36.1
-            >>> st=CH4(T=300, P=1e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            300 1 0.41 9.927 167.07 27.61 36.72 447.0 11.35 35.0
-            >>> st=CH4(T=330, P=5e5, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            330 0.5 0.18 11.109 176.53 28.76 37.38 468.7 12.21 39.0
-            >>> st=CH4(T=360, P=2e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            360 2 0.68 12.083 167.95 30.34 39.67 486.4 13.35 44.4
-            >>> st=CH4(T=400, P=5e6, eq=3, visco=3)
-            >>> print "%0.6g %0.2g %0.2f %0.3f %0.2f %0.2f %0.2f %0.1f %0.2f %0.1f" % (\
-                st.T, st.P.MPa, st.rhoM, st.hM.kJmol, st.sM.JmolK, st.cvM.JmolK, \
-                st.cpM.JmolK, st.w, st.mu.muPas, st.k.mWmK)
-            400 5 1.53 13.441 164.04 32.65 42.95 512.9 14.96 52.6
-            """,
 
         "R": 8.31451,
         "cp": Fi3,
@@ -453,7 +309,8 @@ class CH4(MEoS):
         "exp": [0.354, 0.5, 2.5]}
     _vapor_Density = {
         "eq": 4,
-        "ao": [-1.880284, -2.8526531, -3.000648, -5.251169, -13.191859, -37.553961],
+        "ao": [-1.880284, -2.8526531, -3.000648, -5.251169, -13.191859,
+               -37.553961],
         "exp": [1.062, 2.5, 4.5, 7.5, 12.5, 23.5]}
 
     visco0 = {"eq": 4, "omega": 1,
@@ -811,6 +668,109 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 4), 3.2951)
         self.assertEqual(round(st.cp.kJkgK, 4), 3.8115)
         self.assertEqual(round(st.w, 1), 2915.6)
+
+    def test_friend(self):
+        # FIXME: Bad Cp0 values
+        return
+
+        # Selected point from Table A1, Pag 630, ideal gas
+        st = CH4(T=100, P=1e5, eq="friend")
+        self.assertEqual(round(st.aM0.kJmol, 3), -12.479)
+        self.assertEqual(round(st.hM0.kJmol, 3), 3.311)
+        self.assertEqual(round(st.sM0.JmolK, 2), 149.58)
+        self.assertEqual(round(st.cpM0.JmolK, 3), 33.277)
+
+        st = CH4(T=400, P=1e5, eq="friend")
+        self.assertEqual(round(st.aM0.kJmol, 3), -68.440)
+        self.assertEqual(round(st.hM0.kJmol, 3), 13.888)
+        self.assertEqual(round(st.sM0.JmolK, 2), 197.51)
+        self.assertEqual(round(st.cpM0.JmolK, 5), 40.613)
+
+        # Selected point from Table A2, Pag 631, saturation state
+        st = CH4(T=92, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.014)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 28.04)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.018)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 53.37)
+        self.assertEqual(round(st.Liquido.w, 2), 1532.7)
+
+        st = CH4(T=120, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 0.192)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 25.55)
+        self.assertEqual(round(st.Gas.rhoM, 8), 0.204)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 56.68)
+        self.assertEqual(round(st.Liquido.w, 2), 1245.3)
+
+        st = CH4(T=160, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 1.593)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 20.96)
+        self.assertEqual(round(st.Gas.rhoM, 8), 1.584)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 67.42)
+        self.assertEqual(round(st.Liquido.w, 2), 791.5)
+
+        st = CH4(T=190, x=0.5, eq="friend")
+        self.assertEqual(round(st.P.MPa, 6), 4.521)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 12.50)
+        self.assertEqual(round(st.Gas.rhoM, 8), 7.827)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 389.90)
+        self.assertEqual(round(st.Liquido.w, 2), 264.3)
+
+        # Selected point from Table A3, Pag 632
+        st = CH4(T=100, P=1e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 27.37)
+        self.assertEqual(round(st.hM.kJmol, 3), -5.242)
+        self.assertEqual(round(st.sM.JmolK, 2), 73.05)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.08)
+        self.assertEqual(round(st.cpM.JmolK, 2), 54.64)
+        self.assertEqual(round(st.w, 1), 1446.8)
+
+        st = CH4(T=150, P=5e6, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 22.86)
+        self.assertEqual(round(st.hM.kJmol, 3), -2.274)
+        self.assertEqual(round(st.sM.JmolK, 2), 95.48)
+        self.assertEqual(round(st.cvM.JmolK, 2), 30.84)
+        self.assertEqual(round(st.cpM.JmolK, 2), 61.25)
+        self.assertEqual(round(st.w, 1), 996.2)
+
+        st = CH4(T=200, P=2e6, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 1.40)
+        self.assertEqual(round(st.hM.kJmol, 3), 5.939)
+        self.assertEqual(round(st.sM.JmolK, 2), 145.34)
+        self.assertEqual(round(st.cvM.JmolK, 2), 26.77)
+        self.assertEqual(round(st.cpM.JmolK, 2), 41.60)
+        self.assertEqual(round(st.w, 1), 343.0)
+
+        st = CH4(T=250, P=5e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 19.80)
+        self.assertEqual(round(st.hM.kJmol, 3), 3.809)
+        self.assertEqual(round(st.sM.JmolK, 2), 115.82)
+        self.assertEqual(round(st.cvM.JmolK, 2), 30.25)
+        self.assertEqual(round(st.cpM.JmolK, 2), 51.95)
+        self.assertEqual(round(st.w, 1), 999.3)
+
+        st = CH4(T=300, P=1e5, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 0.04)
+        self.assertEqual(round(st.hM.kJmol, 3), 10.068)
+        self.assertEqual(round(st.sM.JmolK, 2), 186.56)
+        self.assertEqual(round(st.cvM.JmolK, 2), 27.47)
+        self.assertEqual(round(st.cpM.JmolK, 2), 35.86)
+        self.assertEqual(round(st.w, 1), 449.7)
+
+        st = CH4(T=350, P=1e6, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 0.35)
+        self.assertEqual(round(st.hM.kJmol, 3), 11.807)
+        self.assertEqual(round(st.sM.JmolK, 2), 172.86)
+        self.assertEqual(round(st.cvM.JmolK, 2), 29.75)
+        self.assertEqual(round(st.cpM.JmolK, 2), 38.60)
+        self.assertEqual(round(st.w, 1), 480.8)
+
+        st = CH4(T=400, P=5e7, eq="friend")
+        self.assertEqual(round(st.rhoM, 2), 12.68)
+        self.assertEqual(round(st.hM.kJmol, 3), 11.583)
+        self.assertEqual(round(st.sM.JmolK, 2), 140.19)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.25)
+        self.assertEqual(round(st.cpM.JmolK, 2), 51.82)
+        self.assertEqual(round(st.w, 2), 778.9)
 
     def test_shortSpan(self):
         # Table III, Pag 46

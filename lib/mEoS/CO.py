@@ -89,10 +89,12 @@ class CO(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for carbon monoxide of McCarty (1989)",
+        "__name__": "MBWR equation of state for carbon monoxide of McCarty "
+                    "(1989)",
         "__doi__": {"autor": "McCarty, R.D.",
-                    "title": "Correlations for the Thermophysical Properties of Carbon Monoxide",
-                    "ref": "National Institute of Standards and Technology, Boulder, CO, 1989.",
+                    "title": "Correlations for the Thermophysical Properties "
+                             "of Carbon Monoxide",
+                    "ref": "NIST, Boulder, CO, 1989",
                     "doi":  ""},
 
         "R": 8.31434,
