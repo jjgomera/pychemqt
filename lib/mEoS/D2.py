@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -30,7 +32,7 @@ class D2(MEoS):
     synonym = ""
     rhoc = unidades.Density(69.405886)
     Tc = unidades.Temperature(38.34)
-    Pc = unidades.Pressure(1679.6, "kPa")
+    Pc = unidades.Pressure(1665, "kPa")
     M = 4.0282  # g/mol
     Tt = unidades.Temperature(18.724)
     Tb = unidades.Temperature(23.661)
@@ -56,51 +58,12 @@ class D2(MEoS):
 
     richardson = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for deuterium of Richardson et al. (2014).",
-        "__doi__": {"autor": "Richardson, I.A., Leachman, J.W., and Lemmon, E.W.",
-                    "title": "Fundamental Equation of State for Deuterium ",
-                    "ref": "J. Phys. Chem. Ref. Data 43, 013103 (2014)",
+        "__name__": "Helmholtz equation of state for deuterium of Richardson "
+                    "et al. (2014).",
+        "__doi__": {"autor": "Richardson, I.A., Leachman, J.W., Lemmon, E.W.",
+                    "title": "Fundamental Equation of State for Deuterium",
+                    "ref": "J. Phys. Chem. Ref. Data 43(1) (2014) 013103",
                     "doi": "10.1063/1.4864752"},
-        "__test__":
-            # Table 7, Pag 12
-            """
-            >>> st=D2(T=18.724, x=0.5)
-            >>> print "%0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            18.724 17.189 174.630 0.455 -30.450 286.160 -1.415 15.494 3.355 3.143 5.627 5.364 1085.50 250.95
-            >>> st=D2(T=20, x=0.5)
-            >>> print "%0.0f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            20 29.425 171.660 0.737 -23.077 291.490 -1.038 14.690 3.371 3.167 5.852 5.464 1058.60 257.98
-            >>> st=D2(T=25, x=0.5)
-            >>> print "%0.0f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            25 146.40 158.870 3.144 9.282 307.750 0.370 12.309 3.442 3.318 6.996 6.197 937.27 278.61
-            >>> st=D2(T=30, x=0.5)
-            >>> print "%0.0f %0.2f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            30 445.75 143.160 9.055 49.449 313.220 1.757 10.550 3.576 3.568 9.069 8.013 777.76 288.11
-            >>> st=D2(T=35, x=0.5)
-            >>> print "%0.0f %0.1f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            35 1036.7 120.480 23.053 105.180 297.410 3.329 8.821 3.846 3.954 16.103 15.430 561.44 286.83
-            >>> st=D2(T=38, x=0.5)
-            >>> print "%0.0f %0.1f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %0.2f %0.2f" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, \
-                st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, \
-                st.Gas.cv.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            38 1600.6 88.550 50.659 172.270 244.900 5.009 6.920 4.187 4.300 132.060 137.920 374.12 297.24
-            """,
 
         "R": 8.3144621,
         "cp": Fi1,
@@ -135,8 +98,9 @@ class D2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for deuterium of McCarty (1989)",
         "__doi__": {"autor": "McCarty, R.D.",
-                    "title": "Correlations for the Thermophysical Properties of Deuterium",
-                    "ref": "National Institute of Standards and Technology, Boulder, CO, 1989",
+                    "title": "Correlations for the Thermophysical Properties "
+                             "of Deuterium",
+                    "ref": "NIST, Boulder, CO, 1989",
                     "doi": ""},
 
         "R": 8.31434,
@@ -173,3 +137,121 @@ class D2(MEoS):
         "eq": 3,
         "ao": [-3.8111, -7.3624, 2.2294, -21.443, 12.796, -31.334],
         "exp": [0.528, 2.03, 3.6, 5.0, 6.5, 9.0]}
+
+
+class pD2(D2):
+    """Multiparameter equation of state for paradeuterium"""
+    name = "paradeuterium"
+    formula = "pD2"
+
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-2.0683998716, 2.4241000701],
+           "ao_exp": [1.28527, 1.11376, -2.49100, 6.38763, 6.17406, -3.13698,
+                      -3.14254, -2.29511, -3.37000, 1.13634, 0.72512],
+           "titao": [5068/D2.Tc, 1000.8/D2.Tc, 261.5/D2.Tc, 437.2/D2.Tc,
+                     312.3/D2.Tc, 382.8/D2.Tc, 356.8/D2.Tc, 294.7/D2.Tc,
+                     682.4/D2.Tc, 246/D2.Tc, 277.1/D2.Tc]}
+
+    richardson = D2.richardson.copy()
+    richardson["cp"] = Fi1
+    eq = richardson,
+
+
+class oD2(D2):
+    """Multiparameter equation of state for orthodeuterium"""
+    name = "orthodeuterium"
+    formula = "oD2"
+
+    Fi1 = {"ao_log": [1, 1.5],
+           "pow": [0, 1],
+           "ao_pow": [-2.0672670563, 2.4234599781],
+           "ao_exp": [4.04482, -4.65391, -4.65342, 3.46313, -4.58637, -4.65030,
+                      -4.65124, 2.67024, 15.20455, 0.87164, -4.76080, 4.32447],
+           "titao": [1591/D2.Tc, 481.6/D2.Tc, 472.4/D2.Tc, 362.2/D2.Tc,
+                     2038/D2.Tc, 463.2/D2.Tc, 491.3/D2.Tc, 2713.4/D2.Tc,
+                     618.6/D2.Tc, 8642/D2.Tc, 961.7/D2.Tc, 253.2/D2.Tc]}
+
+    richardson = D2.richardson.copy()
+    richardson["cp"] = Fi1
+    eq = richardson,
+
+
+class Test(TestCase):
+
+    def test_richardson(self):
+        # Selected point from Table 7 pag 12, saturation state
+        st = D2(T=18.724, x=0.5)
+        self.assertEqual(round(st.P.kPa, 3), 17.189)
+        self.assertEqual(round(st.Liquido.rho, 2), 174.63)
+        self.assertEqual(round(st.Gas.rho, 3), 0.455)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -30.450)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 286.160)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), -1.415)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 15.494)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 3.355)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 3.143)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 5.626)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 5.364)
+        self.assertEqual(round(st.Liquido.w, 1), 1085.50)
+        self.assertEqual(round(st.Gas.w, 2), 250.95)
+
+        st = D2(T=25, x=0.5)
+        self.assertEqual(round(st.P.kPa, 2), 146.40)
+        self.assertEqual(round(st.Liquido.rho, 3), 158.870)
+        self.assertEqual(round(st.Gas.rho, 3), 3.144)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 9.282)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), 307.750)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 0.370)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 12.309)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 3.442)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 3.318)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 6.996)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 6.197)
+        self.assertEqual(round(st.Liquido.w, 2), 937.27)
+        self.assertEqual(round(st.Gas.w, 2), 278.61)
+
+        st = D2(T=30, x=0.5)
+        self.assertEqual(round(st.P.kPa, 2), 445.75)
+        self.assertEqual(round(st.Liquido.rho, 2), 143.160)
+        self.assertEqual(round(st.Gas.rho, 3), 9.055)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 49.449)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 313.220)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 1.757)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 10.550)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 3.576)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 3.568)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 9.036)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 8.013)
+        self.assertEqual(round(st.Liquido.w, 2), 777.76)
+        self.assertEqual(round(st.Gas.w, 2), 288.11)
+
+        st = D2(T=35, x=0.5)
+        self.assertEqual(round(st.P.kPa, 1), 1036.7)
+        self.assertEqual(round(st.Liquido.rho, 2), 120.480)
+        self.assertEqual(round(st.Gas.rho, 3), 23.053)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 105.180)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 297.410)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 3.329)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 8.821)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 3.846)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 3.954)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 16.103)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 15.430)
+        self.assertEqual(round(st.Liquido.w, 2), 561.44)
+        self.assertEqual(round(st.Gas.w, 2), 286.83)
+
+        st = D2(T=38, x=0.5)
+        self.assertEqual(round(st.P.kPa, 1), 1600.6)
+        self.assertEqual(round(st.Liquido.rho, 3), 88.550)
+        self.assertEqual(round(st.Gas.rho, 3), 50.659)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 172.270)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 244.900)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 5.009)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 6.920)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 4.187)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 4.300)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 132.060)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 137.920)
+        self.assertEqual(round(st.Liquido.w, 2), 374.12)
+        self.assertEqual(round(st.Gas.w, 2), 297.24)

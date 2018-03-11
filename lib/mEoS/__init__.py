@@ -27,7 +27,7 @@ from lib.mEoS.Xe import Xe
 
 # Gases
 from lib.mEoS.H2 import H2
-from lib.mEoS.D2 import D2
+from lib.mEoS.D2 import D2, pD2, oD2
 from lib.mEoS.pH2 import pH2
 from lib.mEoS.oH2 import oH2
 from lib.mEoS.N2 import N2
@@ -164,8 +164,8 @@ from lib.mEoS.R507a import R507a
 # TODO: Add Novec 649 from REFPROP
 
 Nobles = [He, Ne, Ar, Kr, Xe]
-Gases = [H2, D2, pH2, oH2, N2, O2, F2, H2O, D2O, CO2, CO, N2O, SO2, COS, NH3,
-         H2S]
+Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, H2O, D2O, CO2, CO, N2O, SO2,
+         COS, NH3, H2S]
 Alkanes = [CH4, C2, C3, nC4, iC4, nC5, neoC5, iC5, nC6, iC6, nC7, nC8, iC8,
            nC9, nC10, nC11, nC12]
 Naphthenes = [Cyclopropane, Cyclopentane, Cyclohexane, C1Cyclohexane,
