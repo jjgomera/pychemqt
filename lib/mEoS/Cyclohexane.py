@@ -50,54 +50,26 @@ class Cyclohexane(MEoS):
            "titao": [773/Tc, 941/Tc, 2185/Tc, 4495/Tc],
            "ao_hyp": [], "hyp": []}
 
-    CP1 = {"ao": 9.3683272,
-           "an": [-0.56214088e8, 0.15261554e-1, -0.36352468e-5],
+    CP1 = {"ao": 9.368327211,
+           "an": [-56214088, 0.01526155409, -3.6352468e-6],
            "pow": [-3, 1, 2],
-           "ao_exp": [.23766589e2],
-           "exp": [2000],
+           "ao_exp": [23.766589], "exp": [2000],
            "ao_hyp": [], "hyp": []}
 
     zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for cyclohexane of Zhou et al. (2014)",
-        "__doi__": {"autor": "Zhou, Y., Jun Liu, J., Penoncello, S.G., Lemmon, E.W.",
-                    "title": "An Equation of State for the Thermodynamic Properties of Cyclohexane",
-                    "ref": "J. Phys. Chem. Ref. Data 43, 043105 (2014)",
+        "__name__": "Helmholtz equation of state for cyclohexane of Zhou et "
+                    "al. (2014)",
+        "__doi__": {"autor": "Zhou, Y., Liu, J., Penoncello, S.G., Lemmon, "
+                             "E.W.",
+                    "title": "An Equation of State for the Thermodynamic "
+                             "Properties of Cyclohexane",
+                    "ref": "J. Phys. Chem. Ref. Data 43 (2014) 043105",
                     "doi": "10.1063/1.4900538"},
-        "__test__": """
-            >>> st=Cyclohexane(T=300, rhom=9.4)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            300.0 9.4 24.173705 115.286 154.76956 1383.3878 -8400.0834 -28.889069
-            >>> st=Cyclohexane(T=500, rhom=6.5)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            500.0 6.5 3.9246630 192.52056 255.57087 434.13064 31070.127 70.891447
-            >>> st=Cyclohexane(T=500, rhom=0.7)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            500.0 0.7 1.9981172 191.96446 235.52281 155.348 52757.706 122.92657
-            >>> st=Cyclohexane(T=600, rhom=3.5)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            600.0 3.5 6.8225506 232.79222 388.55185 150.53318 70150.132 143.42323
-            >>> st=Cyclohexane(T=553.6, rhom=3.3)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            553.6 3.3 4.0805433 224.19555 199224.62 87.913911 58532.604 123.59810
-            >>> st=Cyclohexane(P=101325, x=0)
-            >>> print "%0.9g %0.8g %0.8g %0.8g %0.8g %0.8g %0.5f %0.5f" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            353.864939 8.5487851 0.101325 134.6163 179.07223 994.05862 0.00000 -0.00000
-            >>> st=Cyclohexane(P=101325, x=1)
-            >>> print "%0.9g %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.JmolK, st.cpM.JmolK, st.w.ms, st.hM.Jmol, st.sM.JmolK)
-            353.864939 0.035779032 0.101325 123.4305 133.35895 186.91349 29991.286 84.753484
-            """, # Table 5, Pag 17
 
         "R": 8.3144621,
         "cp": Fi1,
-        "ref": {"Tref": 300, "Pref": 1., "ho": 23949.01, "so": 104.2926004},
+        "ref": "NBP",
 
         "Tmin": 279.86, "Tmax": 700.0, "Pmax": 250000.0, "rhomax": 10.3,
         "Pmin": 5.2402, "rhomin": 9.403,
@@ -119,14 +91,17 @@ class Cyclohexane(MEoS):
         "alfa3": [0.99, 1.43, 0.97, 1.93, 0.92, 1.27, 0.87, 0.82, 1.4, 3],
         "beta3": [0.38, 4.2, 1.2, 0.9, 1.2, 2.6, 5.3, 4.4, 4.2, 25],
         "gamma3": [0.65, 0.63, 1.14, 0.09, 0.56, 0.4, 1.01, 0.45, 0.85, 0.86],
-        "epsilon3": [0.73, 0.75, 0.48, 2.32, 0.2, 1.33, 0.68, 1.11, 1.47, 0.99]}
+        "epsilon3": [0.73, 0.75, 0.48, 2.32, 0.2, 1.33, 0.68, 1.11, 1.47, .99]}
 
     penoncello = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for cyclohexane of Penoncello et al. (1995)",
-        "__doi__": {"autor": "Penoncello, S.G., Goodwin, A.R.H., and Jacobsen, R.T.",
-                    "title": "A Thermodynamic Property Formulation for Cyclohexane",
-                    "ref": "Int. J. Thermophys., 16(2):519-531, 1995.",
+        "__name__": "Helmholtz equation of state for cyclohexane of "
+                    "Penoncello et al. (1995)",
+        "__doi__": {"autor": "Penoncello, S.G., Jacobsen, R.T., Goodwin, "
+                             "A.R.H.",
+                    "title": "A Thermodynamic Property Formulation for "
+                             "Cyclohexane",
+                    "ref": "Int. J. Thermophys., 16(2) (1995) 519-531",
                     "doi": "10.1007/BF01441918"},
 
         "R": 8.31434,
@@ -149,7 +124,7 @@ class Cyclohexane(MEoS):
                 0.2132589969e1, -0.3620300991e-2, 0.2534453992,
                 0.1669144715e-1, 0.3985052291e-2],
         "d2": [1, 1, 2, 3, 3, 5, 8, 10, 3, 4, 1, 1, 2, 2, 4, 4, 8],
-        "t2": [5, 6, 5.5, 3, 7, 6, 6.5, 5.5, 11, 11, 0.5, 1, 4, 4, 1.5, 2, 0.5],
+        "t2": [5, 6, 5.5, 3, 7, 6, 6.5, 5.5, 11, 11, 0.5, 1, 4, 4, 1.5, 2, .5],
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 3, 3, 2, 6, 2, 4, 2],
         "gamma2": [1]*17}
 
@@ -235,6 +210,74 @@ class Cyclohexane(MEoS):
 
 
 class Test(TestCase):
+
+    def test_zhou(self):
+        # Table 5, Pag 17
+
+        # Possible Erratum reference Table 5, in enthalpy and entropy values,
+        # only work the two phases region, and the reference state, but not
+        # the other point.
+        # My values are coherent with the values returned by CoolProp
+
+        st = Cyclohexane(T=300, rhom=9.4)
+        self.assertEqual(round(st.P.MPa, 6), 24.173705)
+        self.assertEqual(round(st.cvM.JmolK, 5), 115.28600)
+        self.assertEqual(round(st.cpM.JmolK, 5), 154.76956)
+        self.assertEqual(round(st.w, 4), 1383.3878)
+        # self.assertEqual(round(st.hM.Jmol, 4), -8400.0834)
+        # self.assertEqual(round(st.sM.JmolK, 6), -28.889069)
+
+        st = Cyclohexane(T=500, rhom=6.5)
+        self.assertEqual(round(st.P.MPa, 7), 3.9246630)
+        self.assertEqual(round(st.cvM.JmolK, 5), 192.52056)
+        self.assertEqual(round(st.cpM.JmolK, 5), 255.57087)
+        self.assertEqual(round(st.w, 5), 434.13064)
+        # self.assertEqual(round(st.hM.Jmol, 3), 31070.127)
+        # self.assertEqual(round(st.sM.JmolK, 6), 70.891447)
+
+        st = Cyclohexane(T=500, rhom=0.7)
+        self.assertEqual(round(st.P.MPa, 7), 1.9981172)
+        self.assertEqual(round(st.cvM.JmolK, 5), 191.96446)
+        self.assertEqual(round(st.cpM.JmolK, 5), 235.52281)
+        self.assertEqual(round(st.w, 5), 155.34800)
+        # self.assertEqual(round(st.hM.Jmol, 3), 52757.706)
+        # self.assertEqual(round(st.sM.JmolK, 5), 122.92657)
+
+        st = Cyclohexane(T=600, rhom=3.5)
+        self.assertEqual(round(st.P.MPa, 7), 6.8225506)
+        self.assertEqual(round(st.cvM.JmolK, 5), 232.79222)
+        self.assertEqual(round(st.cpM.JmolK, 5), 388.55185)
+        self.assertEqual(round(st.w, 5), 150.53318)
+        # self.assertEqual(round(st.hM.Jmol, 3), 70150.132)
+        # self.assertEqual(round(st.sM.JmolK, 5), 143.42323)
+
+        st = Cyclohexane(T=553.6, rhom=3.3)
+        self.assertEqual(round(st.P.MPa, 7), 4.0805433)
+        self.assertEqual(round(st.cvM.JmolK, 5), 224.19555)
+        self.assertEqual(round(st.cpM.JmolK, 2), 199224.62)
+        self.assertEqual(round(st.w, 6), 87.913911)
+        # self.assertEqual(round(st.hM.Jmol, 3), 58532.604)
+        # self.assertEqual(round(st.sM.JmolK, 5), 123.59810)
+
+        st = Cyclohexane(P=101325, x=0.5)
+        self.assertEqual(round(st.T, 6), 353.864939)
+        self.assertEqual(round(st.Liquido.rhoM, 7), 8.5487851)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 5), 134.61630)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 5), 179.07223)
+        self.assertEqual(round(st.Liquido.w, 5), 994.05862)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 3), 0)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 6), 0)
+        self.assertEqual(round(st.Gas.rhoM, 9), 0.035779032)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 5), 123.43050)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 5), 133.35895)
+        self.assertEqual(round(st.Gas.w, 5), 186.91349)
+        self.assertEqual(round(st.Gas.hM.Jmol, 3), 29991.286)
+        self.assertEqual(round(st.Gas.sM.JmolK, 6), 84.753484)
+
+        # Reference state
+        st = Cyclohexane(T=300, P=1000)
+        self.assertEqual(round(st.sM.JmolK, 4), 104.2926)
+        self.assertEqual(round(st.hM.Jmol, 2), 23949.02)
 
     def test_shortSpan(self):
         # Table III, Pag 46

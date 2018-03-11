@@ -93,14 +93,14 @@ class Cis_2_butene(MEoS):
 class Test(TestCase):
     def test_shortLemmon(self):
         # Table 9, Pag 186
-        st = Cis_2_butene(T=350, rho=0)
+        st = Cis_2_butene(T=350, rhom=0)
         self.assertEqual(round(st.P.MPa, 4), 0)
         self.assertEqual(round(st.hM.kJkmol, 0), 29735)
         self.assertEqual(round(st.cvM.kJkmolK, 3), 83.593)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 91.907)
         self.assertEqual(round(st.w, 2), 238.80)
 
-        st = Cis_2_butene(T=350, rho=0.3*Cis_2_butene.M)
+        st = Cis_2_butene(T=350, rhom=0.3)
         self.assertEqual(round(st.P.MPa, 5), 0.74661)
         self.assertEqual(round(st.hM.kJkmol, 0), 28294)
         self.assertEqual(round(st.sM.kJkmolK, 3), 84.888)
@@ -108,7 +108,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 106.34)
         self.assertEqual(round(st.w, 2), 209.87)
 
-        st = Cis_2_butene(T=350, rho=10*Cis_2_butene.M)
+        st = Cis_2_butene(T=350, rhom=10)
         self.assertEqual(round(st.P.MPa, 4), 5.8051)
         self.assertEqual(round(st.hM.kJkmol, 1), 9632.7)
         self.assertEqual(round(st.sM.kJkmolK, 3), 29.100)
@@ -116,7 +116,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 2), 138.23)
         self.assertEqual(round(st.w, 2), 770.10)
 
-        st = Cis_2_butene(T=440, rho=4*Cis_2_butene.M)
+        st = Cis_2_butene(T=440, rhom=4)
         self.assertEqual(round(st.P.MPa, 4), 4.5067)
         self.assertEqual(round(st.hM.kJkmol, 0), 28321)
         self.assertEqual(round(st.sM.kJkmolK, 3), 75.755)
