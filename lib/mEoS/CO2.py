@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -59,140 +61,14 @@ class CO2(MEoS):
 
     span = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for carbon dioxide of Span and Wagner (1996)",
+        "__name__": "Helmholtz equation of state for carbon dioxide of Span "
+                    "and Wagner (1996)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "A New Equation of State for Carbon Dioxide Covering the Fluid Region from the Triple‐Point Temperature to 1100 K at Pressures up to 800 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 25, 1509 (1996)",
+                    "title": "A New Equation of State for Carbon Dioxide "
+                             "Covering the Fluid Region from the Triple‐Point "
+                             "Temperature to 1100K at Pressures up to 800MPa",
+                    "ref": "J. Phys. Chem. Ref. Data, 25(6) (1996) 1509-1596",
                     "doi": "10.1063/1.555991"},
-        "__test__":
-            # Table 34, Pag 1560
-            """
-            >>> st=CO2(T=216.592, x=0.5)
-            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            216.592 0.51796 1178.46 13.761 -426.74 -76.364 -2.2177 -0.59999 0.97466 0.62921 1.9532 0.90872 975.85 222.78
-            >>> st=CO2(T=230, x=0.5)
-            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            230 0.89291 1128.68 23.271 -400.21 -72.178 -2.1003 -0.67406 0.95667 0.67004 1.997 1.0053 879.09 223.57
-            >>> st=CO2(T=240, x=0.5)
-            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            240 1.2825 1088.87 33.295 -379.94 -70.293 -2.0155 -0.72532 0.94535 0.70534 2.051 1.1033 806.38 222.96
-            >>> st=CO2(T=250, x=0.5)
-            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            250 1.785 1045.97 46.644 -359.07 -69.736 -1.9323 -0.77492 0.93643 0.74591 2.132 1.2366 731.78 221.22
-            >>> st=CO2(T=260, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            260 2.4188 998.89 64.417 -337.34 -70.862 -1.8495 -0.82456 0.93227 0.79426 2.2554 1.4295 652.58 218.19
-            >>> st=CO2(T=270, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            270 3.2033 945.83 88.374 -314.37 -74.223 -1.7658 -0.87641 0.93959 0.85168 2.4534 1.7307 565.46 213.75
-            >>> st=CO2(T=280, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            280 4.1607 883.58 121.74 -289.48 -80.84 -1.6792 -0.93401 0.96046 0.92316 2.8141 2.2769 471.54 207.72
-            >>> st=CO2(T=290, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            290 5.3177 804.67 171.96 -261.15 -93.025 -1.5846 -1.0049 0.99373 1.026 3.6756 3.6142 371.95 199.45
-            >>> st=CO2(T=300, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            300 6.7131 679.24 268.58 -223.4 -119.7 -1.4631 -1.1175 1.1199 1.2476 8.6979 11.921 245.67 185.33
-            >>> st=CO2(T=304.1282, x=0.5)
-            >>> print "%0.7g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Gas.rho, st.Gas.h.kJkg, st.Gas.s.kJkgK)
-            304.1282 7.3773 467.6 -174.53 -1.3054
-            """
-            # Table 35, Pag 1562
-            """
-            >>> st=CO2(T=190, P=5e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            190 1.4089 -121.78 -86.286 -0.22345 0.54661 0.7466 218.9
-            >>> st=CO2(T=1100, P=5e4)
-            >>> print "%0.6g %0.5f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            1100 0.24057 675.87 883.71 1.5137 1.0702 1.2592 494.54
-            >>> st=CO2(T=280, P=1e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            280 1.9021 -68.784 -16.209 -0.05256 0.639 0.8333 261.03
-            >>> st=CO2(T=300, P=101325)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 1.7966 -55.76 0.63726 0.00307 0.65935 0.85262 269.38
-            >>> st=CO2(T=1100, P=2e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            1100 0.96197 675.75 883.66 1.2517 1.0702 1.2594 494.75
-            >>> st=CO2(T=500, P=5e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            500 5.3126 93.079 187.19 0.1757 0.82672 1.0207 340.25
-            >>> st=CO2(T=220, P=1e6)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            220 1167.03 -420.8 -419.95 -2.1884 0.97034 1.9589 953.55
-            >>> st=CO2(T=300, P=2e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 39.42 -69.155 -18.42 -0.60581 0.71116 1.0206 254.15
-            >>> st=CO2(T=500, P=5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            500 54.826 81.644 172.84 -0.28196 0.84035 1.084 337.43
-            >>> st=CO2(T=300, P=1e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 801.62 -257.46 -244.98 -1.5496 0.94964 2.9906 414.28
-            >>> st=CO2(T=1000, P=2e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            1000 101.27 553.1 750.6 0.24652 1.0516 1.2727 501.16
-            >>> st=CO2(T=300, P=5e7)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 1028.94 -310.05 -261.46 -1.7458 0.92303 1.7514 827.23
-            >>> st=CO2(T=240, P=1e8)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            240 1257.21 -424.46 -344.92 -2.2162 1.0037 1.6854 1265.1
-            >>> st=CO2(T=600, P=2e8)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            600 876.69 8.1703 236.3 -0.96106 1.0016 1.4019 942
-            >>> st=CO2(T=310, P=6e8)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            310 1444.64 -386.39 28.939 -2.1927 1.1442 1.5427 1903
-            >>> st=CO2(T=1100, P=8e8)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            1100 1092.77 545.32 1277.4 -0.43587 1.202 1.4286 1542.2
-            """,
 
         "R": 8.31451,
         "cp": Fi1,
@@ -211,11 +87,11 @@ class CO2(MEoS):
                 0.58116916431436e-1, -0.55369137205382, 0.48946615909422,
                 -0.24275739843501e-1, 0.62494790501678e-1, -0.12175860225246,
                 -0.37055685270086, -0.16775879700426e-1, -0.11960736637987,
-                -0.45619362508778e-1, 0.35612789270346e-1, -0.74427727132052e-2,
-                -0.17395704902432e-2, -0.21810121289527e-1, 0.24332166559236e-1,
+                -0.045619362508778, 0.35612789270346e-1, -0.74427727132052e-2,
+                -0.17395704902432e-2, -0.021810121289527, 0.24332166559236e-1,
                 -0.37440133423463e-1, 0.14338715756878, -0.13491969083286,
                 -0.23151225053480e-1, 0.12363125492901e-1, 0.21058321972940e-2,
-                -0.33958519026368e-3, 0.55993651771592e-2, -0.30335118055646e-3],
+                -0.33958519026368e-3, 0.0055993651771592, -.30335118055646e-3],
         "d2": [1, 2, 4, 5, 5, 5, 6, 6, 6, 1, 1, 4, 4, 4, 7, 8, 2, 3, 3, 5, 5,
                6, 7, 8, 10, 4, 8],
         "t2": [1.5, 1.5, 2.5, 0, 1.5, 2, 0, 1, 2, 3, 6, 3, 6, 8, 6, 0, 7, 12,
@@ -244,18 +120,20 @@ class CO2(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for carbon dioxide of Ely et al. (1987)",
+        "__name__": "MBWR equation of state for carbon dioxide of Ely (1987)",
         "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
-                    "title": "Thermophysical properties for special high CO2 content mixtures",
-                    "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
+                    "title": "Thermophysical properties for special high CO2 "
+                             "content mixtures",
+                    "ref": "Research Report RR-110, Gas Processors "
+                           "Association, Tulsa, OK, 1987.",
                     "doi": ""},
 
         "R": 8.31434,
         "cp": CP3,
         "ref": "OTO",
 
-        "Tmin": 216.58, "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778,
-        "Pmin": 518.2, "rhomin": 26.778,
+        "Tmin": 216.58, "Pmin": 518.2, "rhomin": 26.778,
+        "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778,
 
         "b": [None, -0.981851065838e-2, 0.995062267309, -0.228380160313e2,
               0.281827634529e4, -0.347001262699e6, 0.394706709102e-3,
@@ -306,11 +184,15 @@ class CO2(MEoS):
 
     ely = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for carbon dioxide of Ely et al. (1987)",
+        "__name__": "Helmholtz equation of state for carbon dioxide of Ely "
+                    "(1987)",
         "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
-                    "title": "Thermophysical properties for special high CO2 content mixtures",
-                    "ref": "Research Report RR-110, Gas Processors Association, Tulsa, OK, 1987.",
+                    "title": "Thermophysical properties for special high CO2 "
+                             "content mixtures",
+                    "ref": "Research Report RR-110, Gas Processors "
+                           "Association, Tulsa, OK, 1987.",
                     "doi": ""},
+
         "R": 8.31434,
         "cp": CP3,
         "ref": "OTO",
@@ -532,3 +414,180 @@ class CO2(MEoS):
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_span(self):
+        # Selected point from Table 34, Pag 1560, saturation state
+        st = CO2(T=216.592, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.51796)
+        self.assertEqual(round(st.Liquido.rho, 2), 1178.46)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -426.74)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -2.2177)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.97466)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.9532)
+        self.assertEqual(round(st.Liquido.w, 2), 975.85)
+        self.assertEqual(round(st.Gas.rho, 3), 13.761)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -76.364)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.59999)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.6292)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 5), 0.90872)
+        self.assertEqual(round(st.Gas.w, 2), 222.78)
+
+        st = CO2(T=240, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.2825)
+        self.assertEqual(round(st.Liquido.rho, 2), 1088.87)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -379.94)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -2.0155)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.94535)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 2.0510)
+        self.assertEqual(round(st.Liquido.w, 2), 806.38)
+        self.assertEqual(round(st.Gas.rho, 3), 33.295)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -70.293)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.72532)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.70534)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.1033)
+        self.assertEqual(round(st.Gas.w, 2), 222.96)
+
+        st = CO2(T=260, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 2.4188)
+        self.assertEqual(round(st.Liquido.rho, 2), 998.89)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -337.34)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -1.8495)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.93227)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 2.2554)
+        self.assertEqual(round(st.Liquido.w, 2), 652.58)
+        self.assertEqual(round(st.Gas.rho, 3), 64.417)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -70.862)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.82456)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.79426)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.4295)
+        self.assertEqual(round(st.Gas.w, 2), 218.19)
+
+        st = CO2(T=280, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 4.1607)
+        self.assertEqual(round(st.Liquido.rho, 2), 883.58)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -289.48)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -1.6792)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.96046)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 2.8141)
+        self.assertEqual(round(st.Liquido.w, 2), 471.54)
+        self.assertEqual(round(st.Gas.rho, 2), 121.74)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -80.840)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.93401)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.92316)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 2.2769)
+        self.assertEqual(round(st.Gas.w, 2), 207.72)
+
+        st = CO2(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 6.7131)
+        self.assertEqual(round(st.Liquido.rho, 2), 679.24)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -223.40)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -1.4631)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 1.1199)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 8.6979)
+        self.assertEqual(round(st.Liquido.w, 2), 245.67)
+        self.assertEqual(round(st.Gas.rho, 2), 268.58)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), -119.70)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), -1.1175)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.2476)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 11.921)
+        self.assertEqual(round(st.Gas.w, 2), 185.33)
+
+        st = CO2(T=304, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 7.3555)
+        self.assertEqual(round(st.Liquido.rho, 2), 530.30)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -188.42)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -1.3509)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 2.0531)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 386.88)
+        self.assertEqual(round(st.Liquido.w, 2), 134.14)
+        self.assertEqual(round(st.Gas.rho, 2), 406.42)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), -158.84)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), -1.2536)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 2.0679)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 555.58)
+        self.assertEqual(round(st.Gas.w, 2), 147.62)
+
+        # Selected point from Table 35, Pag 1562, single phase region
+        st = CO2(T=240, P=5e4)
+        self.assertEqual(round(st.rho, 4), 1.1084)
+        self.assertEqual(round(st.u.kJkg, 3), -93.125)
+        self.assertEqual(round(st.h.kJkg, 3), -48.014)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.04483)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.59473)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.78815)
+        self.assertEqual(round(st.w, 2), 243.88)
+
+        st = CO2(T=1100, P=1e5)
+        self.assertEqual(round(st.rho, 5), 0.48109)
+        self.assertEqual(round(st.u.kJkg, 2), 675.83)
+        self.assertEqual(round(st.h.kJkg, 2), 883.69)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.3827)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.0702)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.2593)
+        self.assertEqual(round(st.w, 2), 494.61)
+
+        st = CO2(T=280, P=5e5)
+        self.assertEqual(round(st.rho, 4), 9.7568)
+        self.assertEqual(round(st.u.kJkg, 3), -71.840)
+        self.assertEqual(round(st.h.kJkg, 3), -20.594)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.36761)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.65255)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.87063)
+        self.assertEqual(round(st.w, 2), 257.27)
+
+        st = CO2(T=230, P=1e6)
+        self.assertEqual(round(st.rho, 2), 1128.97)
+        self.assertEqual(round(st.u.kJkg, 2), -401.07)
+        self.assertEqual(round(st.h.kJkg, 2), -400.19)
+        self.assertEqual(round(st.s.kJkgK, 4), -2.1006)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.95680)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.9959)
+        self.assertEqual(round(st.w, 2), 879.82)
+
+        st = CO2(T=290, P=5e6)
+        self.assertEqual(round(st.rho, 2), 148.41)
+        self.assertEqual(round(st.u.kJkg, 2), -115.58)
+        self.assertEqual(round(st.h.kJkg, 3), -81.892)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.95959)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.94334)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.5783)
+        self.assertEqual(round(st.w, 2), 207.56)
+
+        st = CO2(T=480, P=1e7)
+        self.assertEqual(round(st.rho, 2), 119.65)
+        self.assertEqual(round(st.u.kJkg, 3), 50.083)
+        self.assertEqual(round(st.h.kJkg, 2), 133.66)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.48595)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.84672)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1732)
+        self.assertEqual(round(st.w, 2), 328.74)
+
+        st = CO2(T=226.679, P=5e7)
+        self.assertEqual(round(st.rho, 2), 1229.78)
+        self.assertEqual(round(st.u.kJkg, 2), -430.79)
+        self.assertEqual(round(st.h.kJkg, 2), -390.13)
+        self.assertEqual(round(st.s.kJkgK, 4), -2.2377)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.99951)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.7735)
+        self.assertEqual(round(st.w, 1), 1146.9)
+
+        st = CO2(T=1100, P=1e8)
+        self.assertEqual(round(st.rho, 2), 371.36)
+        self.assertEqual(round(st.u.kJkg, 2), 617.86)
+        self.assertEqual(round(st.h.kJkg, 2), 887.14)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.03152)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.0931)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.3544)
+        self.assertEqual(round(st.w, 2), 675.48)
+
+        st = CO2(T=327.673, P=8e8)
+        self.assertEqual(round(st.rho, 2), 1495.70)
+        self.assertEqual(round(st.u.kJkg, 2), -369.91)
+        self.assertEqual(round(st.h.kJkg, 2), 164.96)
+        self.assertEqual(round(st.s.kJkgK, 4), -2.1926)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.1961)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.5477)
+        self.assertEqual(round(st.w, 1), 2052.8)
