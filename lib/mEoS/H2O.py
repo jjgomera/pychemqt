@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from scipy import exp
-from iapws import _Viscosity, _ThCond, _Dielectric
+from iapws import _Viscosity, _ThCond, _Dielectric, _Tension
 
 from lib import unidades
 from lib.meos import MEoS
@@ -600,7 +600,19 @@ Conductivity of Ordinary Water Substance"""
         return _ThCond(rho, T, fase, drho)
 
     def _Dielectric(self, rho, T):
-        return unidades.Dimensionless(_Dielectric(rho, T))
+        try:
+            nu = _Dielectric(rho, T)
+        except NotImplementedError:
+            nu = None
+        return unidades.Dimensionless(nu)
+
+    def _Surface(self, T):
+        """Equation for the surface tension"""
+        try:
+            s = _Tension(T)
+        except NotImplementedError:
+            s = None
+        return unidades.Tension(s)
 
     @classmethod
     def _Melting_Pressure(cls, T):
@@ -637,3 +649,11 @@ Conductivity of Ordinary Water Substance"""
         for ai, expi in zip(a, expo):
             suma += ai*Tita**expi
         return unidades.Pressure(exp(suma/Tita)*Pref)
+
+
+if __name__ == "__main__":
+
+    water=H2O(T=300, rho=996.5560)
+    print("%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
+    print(water.mu)
+    # 0.0992418350 4.13018112 1501.51914 0.393062643
