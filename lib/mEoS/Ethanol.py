@@ -93,37 +93,20 @@ class Ethanol(MEoS):
         "t3": [2.5, 3.72, 1.19, 3.25, 3, 2, 2, 1, 1],
         "alfa3": [1.075, .463, .876, 1.108, .741, 4.032, 2.453, 2.3, 3.143],
         "beta3": [1.207, .0895, .581, .947, 2.356, 27.01, 4.542, 1.287, 3.09],
-        "gamma3": [1.194, 1.986, 1.583, .756, .495, 1.002, 1.077, 1.493, 1.542],
+        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.002, 1.077, 1.493,
+                   1.542],
         "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313],
         "nr4": []}
 
     dillon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethanol of Dillon and Penoncello (2004)",
-        "__doi__": {"autor": "Dillon, H.E. and Penoncello, S.G.",
-                    "title": "A Fundamental Equation for Calculation of the Thermodynamic Properties of Ethanol",
-                    "ref": "Int. J. Thermophys., 25(2):321-335, 2004.",
+        "__name__": "Helmholtz equation of state for ethanol of Dillon and "
+                    "Penoncello (2004)",
+        "__doi__": {"autor": "Dillon, H.E., Penoncello, S.G.",
+                    "title": "A Fundamental Equation for Calculation of the "
+                             "Thermodynamic Properties of Ethanol",
+                    "ref": "Int. J. Thermophys., 25(2) (2004) 321-335",
                     "doi": "10.1023/B:IJOT.0000028470.49774.14"},
-        "__test__": """
-            >>> st=Ethanol(T=350, P=1e5, eq=1)
-            >>> print "%0.1f %0.0f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            0.1 350 737.85 259.95 1.0363 2.6542 3.1707 964.32
-            >>> st=Ethanol(T=650, P=1e5, eq=1)
-            >>> print "%0.1f %0.0f %0.4g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            0.1 650 0.8534 1771.7 4.8011 2.3679 2.5512 355.1
-            >>> st=Ethanol(T=450, P=1e6, eq=1)
-            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            1 450 13.736 1270.3 3.4711 2.0217 2.3954 276.5
-            >>> st=Ethanol(T=250, P=1e7, eq=1)
-            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            10 250 831.84 9.4714 0.1625 1.6724 2.0325 1372.8
-            >>> st=Ethanol(T=600, P=1e7, eq=1)
-            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            10 600 129 1474.5 3.5258 2.7347 4.0688 273.66
-            >>> st=Ethanol(T=400, P=1e8, eq=1)
-            >>> print "%i %i %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (st.P.MPa, st.T, st.rho, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            100 400 784.52 500.06 1.3279 2.8005 3.2736 1348.2
-            """, # Table IV, Pag 329
 
         "R": 8.314472,
         "cp": CP1,
@@ -312,12 +295,6 @@ class Test(TestCase):
 
     def test_schroeder(self):
         # Table 30, Pag 38
-
-        st = Ethanol(T=273.15, x=0)
-        self.assertEqual(round(st.h.kJkg, 2), 200)
-        self.assertEqual(round(st.s.kJkgK, 4), 1)
-            # IIR:  h=200,s=1 saturated liquid 0ºC
-
         st = Ethanol(T=300, rhom=18)
         self.assertEqual(round(st.P.MPa, 6), 65.640781)
         self.assertEqual(round(st.cvM.JmolK, 6), 94.211739)
@@ -347,3 +324,72 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 5), 163.95041)
         self.assertEqual(round(st.cpM.JmolK, 2), 115623.88)
         self.assertEqual(round(st.w, 5), 159.34583)
+
+        # Enthalpy reference state
+        st = Ethanol(T=273.15, x=0)
+        self.assertEqual(round(st.h.kJkg, 2), 200)
+        self.assertEqual(round(st.s.kJkgK, 4), 1)
+
+    def test_dillon(self):
+        # Table IV, Pag 329
+        st = Ethanol(T=350, P=1e5, eq="dillon")
+        self.assertEqual(round(st.rho, 2), 737.85)
+        self.assertEqual(round(st.h.kJkg, 2), 259.95)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.0363)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.6542)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.1707)
+        self.assertEqual(round(st.w, 2), 964.32)
+
+        st = Ethanol(P=1e5, x=0.5, eq="dillon")
+        self.assertEqual(round(st.T, 2), 351.05)
+        self.assertEqual(round(st.Liquido.rho, 2), 736.78)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 263.30)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0459)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 2.6614)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 3.1818)
+        self.assertEqual(round(st.Liquido.w, 2), 960.72)
+        self.assertEqual(round(st.Gas.rho, 4), 1.6269)
+        self.assertEqual(round(st.Gas.h.kJkg, 1), 1113.8)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.4687)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.5894)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.8044)
+        self.assertEqual(round(st.Gas.w, 2), 260.21)
+
+        st = Ethanol(P=1e6, x=0.5, eq="dillon")
+        self.assertEqual(round(st.T, 2), 423.85)
+        self.assertEqual(round(st.Liquido.rho, 2), 647.20)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 521.56)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.7090)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 2.9808)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 3.9104)
+        self.assertEqual(round(st.Liquido.w, 2), 694.41)
+        self.assertEqual(round(st.Gas.rho, 3), 15.246)
+        self.assertEqual(round(st.Gas.h.kJkg, 1), 1207.2)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.3267)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.9648)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 2.4276)
+        self.assertEqual(round(st.Gas.w, 2), 260.65)
+
+        st = Ethanol(T=550, P=1e6, eq="dillon")
+        self.assertEqual(round(st.rho, 3), 10.439)
+        self.assertEqual(round(st.h.kJkg, 1), 1510.2)
+        self.assertEqual(round(st.s.kJkgK, 4), 3.9523)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.1985)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.4426)
+        self.assertEqual(round(st.w, 2), 320.26)
+
+        st = Ethanol(T=250, P=1e7, eq="dillon")
+        self.assertEqual(round(st.rho, 2), 831.84)
+        self.assertEqual(round(st.h.kJkg, 4), 9.4718)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.1625)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.6724)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.0325)
+        self.assertEqual(round(st.w, 1), 1372.8)
+
+        st = Ethanol(T=600, P=1e8, eq="dillon")
+        self.assertEqual(round(st.rho, 2), 626.59)
+        self.assertEqual(round(st.h.kJkg, 1), 1204.7)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.7521)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.7296)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.5932)
+        self.assertEqual(round(st.w, 1), 1015.1)
