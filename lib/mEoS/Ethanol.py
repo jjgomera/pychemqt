@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -40,49 +42,34 @@ class Ethanol(MEoS):
 
     Fi1 = {"ao_log": [1, 3.43069],
            "pow": [0, 1],
-           "ao_pow": [-12.7531, 9.39094],
+           # Use custom to get the IIR referenve value
+           # "ao_pow": [-12.757491395, 9.3938494264],
+           "ao_pow": [-12.7531, 9.3909425],
            "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
            "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
     CP1 = {"ao": 6.4112,
            "an": [], "pow": [],
-           "ao_exp": [1.95988750679, 7.60084166080, 3.89583440622, 4.23238091363],
+           "ao_exp": [1.95988750679, 7.60084166080, 3.89583440622,
+                      4.23238091363],
            "exp": [694, 1549, 2911, 4659],
            "ao_hyp": [], "hyp": []}
 
     schroeder = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethanol of Schroeder (2011).",
-        "__doi__": {"autor": "Schroeder, J. A.; Penoncello, S. G.; Schroeder, J. S.",
-                    "title": "A Fundamental Equation of State for Ethanol",
-                    "ref": "J. Phys. Chem. Ref. Data 43, 043102 (2014)",
-                    "doi": "10.1063/1.4895394"},
-        "__test__": """
-            >>> st=Ethanol(T=300, rhom=18)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300.0 18.0 65.640781 94.211739 110.34295 1454.836
-            >>> st=Ethanol(T=450, rhom=13.2)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            450.0 13.2 2.921546 137.3679 191.28901 588.67833
-            >>> st=Ethanol(T=450, rhom=0.5)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            450.0 0.5 1.5540771 97.346133 125.53109 263.57231
-            >>> st=Ethanol(T=550, rhom=6)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            550.0 6.0 10.315533 151.00169 440.13187 207.74032
-            >>> st=Ethanol(T=514.8, rhom=6)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % ( \
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            514.8 6.0 6.2784176 163.95041 115623.88 159.34583
-            """, # Table 30, Pag 38
+        "__name__": "Helmholtz equation of state for ethanol of Schroeder "
+                    "(2011).",
+        "__doi__": {
+            "autor": "Schroeder, J.A.; Penoncello, S.G.; Schroeder, J.S.",
+            "title": "A Fundamental Equation of State for Ethanol",
+            "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043102",
+            "doi": "10.1063/1.4895394"},
 
+        # The paper report a diferent value for R, but the program verification
+        # table work with this ancient value
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 52811.79, "so": 209.583},
+        "ref": "IIR",
 
         "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74,
         "Pmin": 0.00000088, "rhomin": 19.731,
@@ -318,4 +305,45 @@ class Ethanol(MEoS):
                # TODO: Add critical crossover model from paper
                "critical": 0}
 
-    _thermal = thermo0, thermo1
+    # _thermal = thermo0, thermo
+
+
+class Test(TestCase):
+
+    def test_schroeder(self):
+        # Table 30, Pag 38
+
+        st = Ethanol(T=273.15, x=0)
+        self.assertEqual(round(st.h.kJkg, 2), 200)
+        self.assertEqual(round(st.s.kJkgK, 4), 1)
+            # IIR:  h=200,s=1 saturated liquid 0ºC
+
+        st = Ethanol(T=300, rhom=18)
+        self.assertEqual(round(st.P.MPa, 6), 65.640781)
+        self.assertEqual(round(st.cvM.JmolK, 6), 94.211739)
+        self.assertEqual(round(st.cpM.JmolK, 5), 110.34295)
+        self.assertEqual(round(st.w, 4), 1454.8360)
+
+        st = Ethanol(T=450, rhom=13.2)
+        self.assertEqual(round(st.P.MPa, 7), 2.9215460)
+        self.assertEqual(round(st.cvM.JmolK, 5), 137.36790)
+        self.assertEqual(round(st.cpM.JmolK, 5), 191.28901)
+        self.assertEqual(round(st.w, 5), 588.67833)
+
+        st = Ethanol(T=450, rhom=0.5)
+        self.assertEqual(round(st.P.MPa, 7), 1.5540771)
+        self.assertEqual(round(st.cvM.JmolK, 6), 97.346133)
+        self.assertEqual(round(st.cpM.JmolK, 5), 125.53109)
+        self.assertEqual(round(st.w, 5), 263.57231)
+
+        st = Ethanol(T=550, rhom=6)
+        self.assertEqual(round(st.P.MPa, 6), 10.315532)
+        self.assertEqual(round(st.cvM.JmolK, 5), 151.00169)
+        self.assertEqual(round(st.cpM.JmolK, 5), 440.13187)
+        self.assertEqual(round(st.w, 5), 207.74032)
+
+        st = Ethanol(T=514.8, rhom=6)
+        self.assertEqual(round(st.P.MPa, 7), 6.2784176)
+        self.assertEqual(round(st.cvM.JmolK, 5), 163.95041)
+        self.assertEqual(round(st.cpM.JmolK, 2), 115623.88)
+        self.assertEqual(round(st.w, 5), 159.34583)
