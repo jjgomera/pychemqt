@@ -30,7 +30,7 @@ class HCl(MEoS):
     CASNumber = "7647-01-0 "
     formula = "HCl"
     synonym = ""
-    rhoc = unidades.Density(410.97)
+    rhoc = unidades.Density(410.96998439164605)
     Tc = unidades.Temperature(324.55)
     Pc = unidades.Pressure(8263.00, "kPa")
     M = 36.460939  # g/mol
@@ -63,12 +63,12 @@ class HCl(MEoS):
         "Tmin": 155.0, "Tmax": 330.0, "Pmax": 20000.0, "rhomax": 33.8145,
         "Pmin": 0.7, "rhomin": 33.8145,
 
-        "nr1": [-.40937325, 0.943994574, -.178830477e1, 0.128619044,
-                0.439018427e-2, 0.130480908e-1, 0.169387782e-2],
+        "nr1": [-.40937325, 0.943994574, -1.78830477, 0.128619044,
+                4.39018427e-3, 0.0130480908, 1.69387782e-3],
         "d1": [1, 1, 1, 2, 3, 3, 5],
         "t1": [-0.75, -0.25, 1.25, 0.75, -1.0, -0.375, 1.25],
 
-        "nr2": [0.751559060, -.800007427, 0.430935939, 0.454319457e-2,
+        "nr2": [0.751559060, -0.800007427, 0.430935939, 4.54319457e-3,
                 -1.52172259e-1, -4.36174059e-2, -9.70625964e-3, 1.01144098e-2,
                 3.76991644e-3],
         "d2": [1, 1, 2, 5, 1, 3, 4, 5, 2],
@@ -92,37 +92,40 @@ class HCl(MEoS):
         "exp": [1.29, 4.2, 11.1, 24.0]}
 
 
-# class Test(TestCase):
-    # def test_thol(self):
-        # # Table 9, Pag 26
-        # st = HCl(T=170, rho=0.01)
-        # self.assertEqual(round(st.P.MPa, 9), 0.000387586)
-        # self.assertEqual(round(st.h.kJkg, 9), -102.414301628)
-        # self.assertEqual(round(st.s.kJkgK, 9), 0.820319743)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 0.571157223)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 0.799483403)
-        # self.assertEqual(round(st.w, 9), 232.898528911)
+class Test(TestCase):
+    def test_thol(self):
+        # Discard the last 4 number, I'm fairly sure is a problem with the
+        # significative figures in the equation parameters in paper
 
-        # st = HCl(T=170, rho=1230)
-        # self.assertEqual(round(st.P.MPa, 9), 1.229128198)
-        # self.assertEqual(round(st.h.kJkg, 9), -561.339398154)
-        # self.assertEqual(round(st.s.kJkgK, 9), -2.888318217)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 1.149719990)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 1.553944836)
-        # self.assertEqual(round(st.w, 9), 999.438819195)
+        # Table 9, Pag 26
+        st = HCl(T=170, rho=0.01)
+        self.assertEqual(round(st.P.MPa, 9), 0.000387586)
+        self.assertEqual(round(st.h.kJkg, 5), -102.41433)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.82032)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.57116)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.79948)
+        self.assertEqual(round(st.w, 5), 232.89853)
 
-        # st = HCl(T=280, rho=0.1)
-        # self.assertEqual(round(st.P.MPa, 9), 0.006381824)
-        # self.assertEqual(round(st.h.kJkg, 9), -14.914381738)
-        # self.assertEqual(round(st.s.kJkgK, 9), 0.580027609)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 0.571466689)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 0.800079245)
-        # self.assertEqual(round(st.w, 9), 298.836360637)
+        st = HCl(T=170, rho=1230)
+        self.assertEqual(round(st.P.MPa, 4), 1.2292)
+        self.assertEqual(round(st.h.kJkg, 5), -561.33940)
+        self.assertEqual(round(st.s.kJkgK, 5), -2.88832)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.14972)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.55394)
+        self.assertEqual(round(st.w, 3), 999.439)
 
-        # st = HCl(T=280, rho=900)
-        # self.assertEqual(round(st.P.MPa, 9), 3.421902004)
-        # self.assertEqual(round(st.h.kJkg, 9), -371.035989751)
-        # self.assertEqual(round(st.s.kJkgK, 9), -2.044095830)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 0.961502216)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 2.150825813)
-        # self.assertEqual(round(st.w, 9), 577.782761523)
+        st = HCl(T=280, rho=0.1)
+        self.assertEqual(round(st.P.MPa, 5), 0.00638)
+        self.assertEqual(round(st.h.kJkg, 4), -14.6144)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.58003)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.57147)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.80008)
+        self.assertEqual(round(st.w, 5), 298.83636)
+
+        st = HCl(T=280, rho=900)
+        self.assertEqual(round(st.P.MPa, 4), 3.4219)
+        self.assertEqual(round(st.h.kJkg, 5), -371.03600)
+        self.assertEqual(round(st.s.kJkgK, 5), -2.04410)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.96150)
+        self.assertEqual(round(st.cp.kJkgK, 5), 2.15083)
+        self.assertEqual(round(st.w, 4), 577.7828)

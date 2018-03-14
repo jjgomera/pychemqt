@@ -174,7 +174,7 @@ class D2O(MEoS):
               "__name__": "IAPWS (2007)",
               "__doi__": {
                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
-                           "Levelt Sengers, J.M.H."
+                           "Levelt Sengers, J.M.H.",
                   "title": "Thermophysical Properties of Fluid D2O",
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
                   "doi": "10.1063/1.555714"}}
@@ -190,7 +190,7 @@ class D2O(MEoS):
                "__name__": "IAPWS (1994)",
                "__doi__": {
                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
-                           "Levelt Sengers, J.M.H."
+                           "Levelt Sengers, J.M.H.",
                   "title": "Thermophysical Properties of Fluid D2O",
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
                   "doi": "10.1063/1.555714"}}

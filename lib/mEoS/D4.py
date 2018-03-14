@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -38,10 +40,58 @@ class D4(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.090, "Debye")
     # id=1430
 
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+
+           # The paper parameter are incorrect, using alternate parameter
+           # to meet reference state OTO
+           # "ao_pow": [71.1636049792958, -21.6743650975623],
+           "ao_pow": [44.72889170669655, -4.9687471148991968],
+
+           "ao_exp": [0.292757, 38.2456, 58.975],
+           "titao": [40/Tc, 200/Tc, 1800/Tc]}
+
     CP1 = {"ao": -18.256,
            "an": [1427.2e-3, -990.20e-6, 300.0e-9], "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
+
+    thol = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for D4 of Thol (2006).",
+        "__doi__": {"autor": "Thol, M.",
+                    "title": "Empirical Multiparameter Equations of State "
+                             "Based on Molecular Simulation and Hybrid Data "
+                             "Sets",
+                    "ref": "PhD thesis, Ruhr-Universität Bochum, 2015.",
+                    "doi":  ""},
+
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 1200.0, "Pmax": 520000.0, "rhomax": 5.266,
+        # "Pmin": 0.00269, "rhomin": 5.2,
+        "Tc": 586.5, "rhoc": 1.043, "Pc": 1347,
+
+        "nr1": [5.273743e-2, 4.176401, -4.737070, -1.289588, 5.272749e-1],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.27, 0.51, 0.998, 0.56],
+
+        "nr2": [-2.558391, -0.9726737, 0.7208209, -4.789456e-1, -5.563239e-2],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [1.75, 3.09, 0.79, 2.71, 0.998],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [3.766589, 8.786997e-2, -1.267646e-1, -1.004246, -1.641887],
+        "d3": [1, 1, 3, 2, 2],
+        "t3": [0.93, 3.17, 1.08, 1.41, 0.89],
+        "alfa3": [0.861, 1.114, 1.01, 1.11, 1.032],
+        "beta3": [0.75, 0.55, 1.0, 0.47, 1.36],
+        "gamma3": [1.124, 1.388, 1.148, 1.197, 0.817],
+        "epsilon3": [0.926, 1.3, 1.114, 0.996, 0.483],
+        "nr4": []}
 
     colonna = {
         "__type__": "Helmholtz",
@@ -72,7 +122,7 @@ class D4(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = colonna,
+    eq = thol, colonna
 
     _vapor_Pressure = {
         "eq": 5,
@@ -98,3 +148,41 @@ class D4(MEoS):
 
     _viscosity = visco0,
 #    _thermal=visco0,
+
+
+class Test(TestCase):
+
+    def test_thol(self):
+        # Appendix A, Pag 259
+
+        # The values in table are not good, the entropy and enthalpy reference
+        # state don't is OTO, using the custom integration parameters check
+        # reference state values.
+        st = D4(T=298.15, P=101325, eq="thol")
+        self.assertEqual(round(st.h, 10), 0)
+        self.assertEqual(round(st.s, 10), 0)
+
+        st = D4(T=350, rhom=0.001, eq="thol")
+        self.assertEqual(round(st.P.MPa, 10), 2.8952836e-3)
+        self.assertEqual(round(st.cpM.JmolK, 2), 422.18)
+        self.assertEqual(round(st.w, 4), 99.5573)
+
+        st = D4(T=350, rhom=3.2, eq="thol")
+        self.assertEqual(round(st.P.MPa, 6), 38.313384)
+        self.assertEqual(round(st.cpM.JmolK, 2), 515.36)
+        self.assertEqual(round(st.w, 4), 1003.2309)
+
+        st = D4(T=500, rhom=0.08, eq="thol")
+        self.assertEqual(round(st.P.MPa, 8), 0.28137478)
+        self.assertEqual(round(st.cpM.JmolK, 2), 549.71)
+        self.assertEqual(round(st.w, 4), 100.549)
+
+        st = D4(T=500, rhom=2.5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 7), 8.0209605)
+        self.assertEqual(round(st.cpM.JmolK, 1), 612.9)
+        self.assertEqual(round(st.w, 3), 475.065)
+
+        st = D4(T=600, rhom=3, eq="thol")
+        self.assertEqual(round(st.P.MPa, 5), 126.85572)
+        self.assertEqual(round(st.cpM.JmolK, 2), 650.74)
+        self.assertEqual(round(st.w, 3), 1071.662)

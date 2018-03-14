@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -38,11 +40,56 @@ class MM(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.801, "Debye")
     id = 1376
 
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [72.110754, -10.431499],
+           "ao_exp": [18.59, 29.58, 19.74, 4.87],
+           "titao": [20/Tc, 1400/Tc, 3600/Tc, 6300/Tc]}
+
     CP1 = {"ao": -51.894,
            "an": [741.34e-3, -416e-6, 70e-9],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
+
+    thol = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
+                    "Thol (2006).",
+        "__doi__": {"autor": "Thol, M.",
+                    "title": "Empirical Multiparameter Equations of State "
+                             "Based on Molecular Simulation and Hybrid Data "
+                             "Sets",
+                    "ref": "PhD thesis, Ruhr-Universität Bochum, 2015.",
+                    "doi":  ""},
+
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "OTO",
+
+        "Tmin": 220.0, "Tmax": 1200.0, "Pmax": 600000.0, "rhomax": 5.266,
+        # "Pmin": 0.00269, "rhomin": 5.2,
+        "M": 162.3768, "Tc": 518.7, "rhoc": 1.653, "Pc": 1931.1,
+
+        "nr1": [0.5063651e-1, 0.8604724, -0.9179684, -0.1146325, 0.4878559],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.346, 0.46, 1.01, 0.59],
+
+        "nr2": [-0.2434088, -0.1621326, 0.6239872, -0.2306057, -0.5555096e-1],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.600, 3.330, 0.750, 2.950, 0.930],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [0.9385015, -0.2493508, -0.3308032, -0.1885803, -0.9883865e-1,
+                0.1111090, 0.1061928, -0.1452454e-1],
+        "d3": [1, 1, 3, 3, 1, 2, 3, 1],
+        "t3": [1.33, 1.68, 1.7, 3.08, 5.41, 1.4, 1.1, 5.3],
+        "alfa3": [1.0334, 1.544, 1.113, 1.113, 1.11, 7.2, 1.45, 4.73],
+        "beta3": [0.4707, 0.32, 0.404, 0.517, 0.432, 7.2, 1.2, 35.8],
+        "gamma3": [1.7754, 0.692, 1.242, 0.421, 0.406, 0.163, 0.795, 0.88],
+        "epsilon3": [0.8927, 0.5957, 0.559, 1.056, 1.3, 0.106, 0.181, 0.525],
+        "nr4": []}
 
     colonna = {
         "__type__": "Helmholtz",
@@ -74,7 +121,7 @@ class MM(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = colonna,
+    eq = thol, colonna
 
     _vapor_Pressure = {
         "eq": 5,
@@ -89,3 +136,62 @@ class MM(MEoS):
         "ao": [-0.35719e1, -0.14740e3, 0.40699e3, -0.69676e3, 0.12541e4,
                -0.91199e3],
         "exp": [0.373, 2.15, 2.6, 3.3, 4.2, 4.6]}
+
+
+class Test(TestCase):
+
+    def test_thol(self):
+        # Appendix A, Pag 259
+
+        # The values in table are not good, trying to use the values report by
+        # CoolProp
+
+        # from CoolProp. CoolProp import PropsSI
+        # P = PropsSI("P", "T", 250, "Dmolar", 0.0001, "MM")
+        P = 0.20785
+        # Cp = PropsSI("Cpmolar", "T", 250, "Dmolar", 0.0001, "MM")
+        Cp = 216.5
+
+        st = MM(T=250, rhom=0.0001, eq="thol")
+        self.assertEqual(round(st.P.kPa, 5), P)
+        self.assertEqual(round(st.cpM.JmolK, 1), Cp)
+
+        # st = MM(T=250, rhom=0.0001, eq="thol")
+        # self.assertEqual(round(st.P.MPa, 8), 2.3550378)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 290.08362)
+        # self.assertEqual(round(st.w, 4), 1068.3855)
+        # self.assertEqual(round(st.hM.Jmol, 3), -38660.059)
+        # self.assertEqual(round(st.sM.JmolK, 6), -126.50073)
+        # self.assertEqual(round(st.aM.Jmol, 6), -7505.8829)
+
+        # st = MM(T=250, rhom=5, eq="thol")
+        # self.assertEqual(round(st.P.MPa, 8), 2.0772979e-4)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 2.1658262e-2)
+        # self.assertEqual(round(st.w, 4), 115.31572)
+        # self.assertEqual(round(st.hM.Jmol, 3), 1715.1940)
+        # self.assertEqual(round(st.sM.JmolK, 6), 38.943471)
+        # self.assertEqual(round(st.aM.Jmol, 6), -10097.972)
+
+        # st = MM(T=400, rhom=0.05, eq="thol")
+        # self.assertEqual(round(st.P.MPa, 8), 0.15367468)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 293.72934)
+        # self.assertEqual(round(st.w, 4), 134.70433)
+        # self.assertEqual(round(st.hM.Jmol, 3), 38493.817)
+        # self.assertEqual(round(st.sM.JmolK, 6), 99.143201)
+        # self.assertEqual(round(st.aM.Jmol, 6), -4236.9572)
+
+        # st = MM(T=400, rhom=4.5, eq="thol")
+        # self.assertEqual(round(st.P.MPa, 8), 40.937214)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 339.40134)
+        # self.assertEqual(round(st.w, 4), 930.21218)
+        # self.assertEqual(round(st.hM.Jmol, 3), 1367.2106)
+        # self.assertEqual(round(st.sM.JmolK, 6), 11.063887)
+        # self.assertEqual(round(st.aM.Jmol, 6), 149.39229)
+
+        # st = MM(T=560, rhom=4.5, eq="thol")
+        # self.assertEqual(round(st.P.MPa, 8), 123.02530)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 387.27688)
+        # self.assertEqual(round(st.w, 4), 1132.8991)
+        # self.assertEqual(round(st.hM.Jmol, 3), 83661.459)
+        # self.assertEqual(round(st.sM.JmolK, 6), 119.31485)
+        # self.assertEqual(round(st.aM.Jmol, 6), -10493.815)

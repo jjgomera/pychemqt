@@ -36,13 +36,13 @@ class DEE(MEoS):
     M = 74.1216  # g/mol
     Tt = unidades.Temperature(156.92)
     Tb = unidades.Temperature(307.604)
-    f_acent = 0.281
+    f_acent = 0.282
     momentoDipolar = unidades.DipoleMoment(1.151, "Debye")
     id = 162
 
     Fi1 = {"ao_log": [1, 3.36281],
            "pow": [0, 1, -1, -2, -3],
-           "ao_pow": [17.099494, -6.160844, -8.943822, 5.4621e-1, -1.6604e-2],
+           "ao_pow": [17.099494, -6.160844, -8.943822, 0.54621, -0.016604],
            "ao_exp": [], "titao": []}
 
     thol = {
@@ -62,14 +62,14 @@ class DEE(MEoS):
         "Tmin": 270.0, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 10.6851,
         "Pmin": 0.000001, "rhomin": 10.6851,
 
-        "nr1": [0.376700499, -.116630334, -.73801498, -.2725701, -.4979231e-1,
-                0.172267029, 0.441618910e-2],
+        "nr1": [0.376700499, -0.116630334, -0.73801498, -0.2725701,
+                -0.04979231, 0.172267029, 0.0044161891],
         "d1": [1, 1, 1, 2, 3, 3, 5],
         "t1": [-0.75, -0.25, 1.25, 0.75, -1.0, -0.375, 1.25],
 
-        "nr2": [-.153951612e1, 0.115606052e1, -.184504019e-1, -.101800599,
-                -.403598704, 0.213055571e-2, -.154741976, 0.120950552e-1,
-                -.143106371e-1],
+        "nr2": [-1.53951612, 1.15606052, -0.0184504019, -0.101800599,
+                -0.403598704, 0.00213055571, -0.154741976, 0.0120950552,
+                -0.0143106371],
         "d2": [1, 1, 2, 5, 1, 3, 4, 5, 2],
         "t2": [2.375, 3.0, 2.625, 1.875, 4.5, 5.75, 5.375, 2.75, 14.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
@@ -91,37 +91,40 @@ class DEE(MEoS):
         "exp": [0.06, 0.87, 1.3, 1.7, 5.3]}
 
 
-# class Test(TestCase):
-    # def test_thol(self):
-        # # Table 9, Pag 26
-        # st = DEE(T=280, rho=0.1)
-        # self.assertEqual(round(st.P.MPa, 9), 0.003134775)
-        # self.assertEqual(round(st.h.kJkg, 9), -29.231529953)
-        # self.assertEqual(round(st.s.kJkgK, 9), 0.288943745)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 1.455670027)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 1.569255417)
-        # self.assertEqual(round(st.w, 9), 183.651907457)
+class Test(TestCase):
+    def test_thol(self):
+        # Discard the last 4 number, I'm fairly sure is a problem with the
+        # significative figures in the equation parameters in paper
 
-        # st = DEE(T=280, rho=750)
-        # self.assertEqual(round(st.P.MPa, 9), 20.774279163)
-        # self.assertEqual(round(st.h.kJkg, 9), -396.071208713)
-        # self.assertEqual(round(st.s.kJkgK, 9), -1.386035322)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 1.732367580)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 2.226381171)
-        # self.assertEqual(round(st.w, 9), 1190.89216523)
+        # Table 9, Pag 26
+        st = DEE(T=280, rho=0.1)
+        self.assertEqual(round(st.P.MPa, 9), 0.003134775)
+        self.assertEqual(round(st.h.kJkg, 5), -29.23155)
+        self.assertEqual(round(st.s.kJkgK, 7), 0.2889437)
+        self.assertEqual(round(st.cv.kJkgK, 7), 1.4556700)
+        self.assertEqual(round(st.cp.kJkgK, 7), 1.5692554)
+        self.assertEqual(round(st.w, 5), 183.65191)
 
-        # st = DEE(T=400, rho=0.1)
-        # self.assertEqual(round(st.P.MPa, 9), 0.004483768)
-        # self.assertEqual(round(st.h.kJkg, 9), 182.466204569)
-        # self.assertEqual(round(st.s.kJkgK, 9), 0.873988712)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 1.841364392)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 1.953941717)
-        # self.assertEqual(round(st.w, 9), 218.048963727)
+        st = DEE(T=280, rho=750)
+        self.assertEqual(round(st.P.MPa, 5), 20.77428)
+        self.assertEqual(round(st.h.kJkg, 4), -396.0712)
+        self.assertEqual(round(st.s.kJkgK, 6), -1.386035)
+        self.assertEqual(round(st.cv.kJkgK, 7), 1.7323676)
+        self.assertEqual(round(st.cp.kJkgK, 7), 2.2263812)
+        self.assertEqual(round(st.w, 5), 1190.89218)
 
-        # st = DEE(T=400, rho=650)
-        # self.assertEqual(round(st.P.MPa, 9), 33.847217264)
-        # self.assertEqual(round(st.h.kJkg, 9), -101.418571257)
-        # self.assertEqual(round(st.s.kJkgK, 9), -0.568533506)
-        # self.assertEqual(round(st.cv.kJkgK, 9), 1.949560509)
-        # self.assertEqual(round(st.cp.kJkgK, 9), 2.520106238)
-        # self.assertEqual(round(st.w, 9), 919.575708532)
+        st = DEE(T=400, rho=0.1)
+        self.assertEqual(round(st.P.MPa, 9), 0.004483768)
+        self.assertEqual(round(st.h.kJkg, 4), 182.4662)
+        self.assertEqual(round(st.s.kJkgK, 6), 0.873989)
+        self.assertEqual(round(st.cv.kJkgK, 6), 1.841364)
+        self.assertEqual(round(st.cp.kJkgK, 6), 1.953942)
+        self.assertEqual(round(st.w, 4), 218.0490)
+
+        st = DEE(T=400, rho=650)
+        self.assertEqual(round(st.P.MPa, 5), 33.84722)
+        self.assertEqual(round(st.h.kJkg, 4), -101.4186)
+        self.assertEqual(round(st.s.kJkgK, 6), -0.568534)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.94956)
+        self.assertEqual(round(st.cp.kJkgK, 6), 2.520106)
+        self.assertEqual(round(st.w, 4), 919.5757)

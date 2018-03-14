@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from lib.meos import MEoS
 from lib import unidades
 
+# FIXME: Don't work
 
 class Cyclopropane(MEoS):
     """Multiparameter equation of state for cyclopropane"""
@@ -38,20 +39,23 @@ class Cyclopropane(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 258
 
-    CP1 = {"ao": 1.26016/8.3143*42.081,
-           "an": [-0.90530700e-2/8.3143*42.081, 0.50550400e-4/8.3143*42.081,
-                  -0.77223700e-7/8.3143*42.081, 0.40538000e-10/8.3143*42.081],
+    CP1 = {"ao": 1.26016/42.081,
+           "an": [-0.90530700e-2/42.081, 0.50550400e-4/42.081,
+                  -0.77223700e-7/42.081, 0.40538000e-10/42.081],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for cyclopropane of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for cyclopropane of Polt et "
+                    "al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP1,
         "ref": "NBP",
@@ -87,5 +91,5 @@ class Cyclopropane(MEoS):
         "exp": [0.11, 0.5, 0.8, 1.1]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.33232, -0.29566e2, 0.57762e2, -0.14221e3, 0.32573e3, -0.24439e3],
+        "ao": [-0.33232, -29.566, 57.762, -142.21, 325.73, -244.39],
         "exp": [0.1, 0.87, 1.14, 1.78, 2.32, 2.6]}
