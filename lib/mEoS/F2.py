@@ -53,11 +53,14 @@ class F2(MEoS):
 
     reuck = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for fluorine of de Reuck (1990).",
+        "__name__": "Helmholtz equation of state for fluorine of de Reuck "
+                    "(1990).",
         "__doi__": {"autor": "de Reuck, K.M.",
-                    "title": "International thermodynamic tables of the fluid state: Vol. 11 – fluorine",
+                    "title": "International thermodynamic tables of the fluid "
+                             "state: Vol. 11 - fluorine",
                     "ref": "Pergamon Press, Oxford, 1990.",
                     "doi": ""},
+
         "R": 8.31448,
         "cp": CP1,
         "ref": "NBP",
@@ -86,9 +89,10 @@ class F2(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for fluorine of Polt et al. (1992).",
+        "__name__": "Helmholtz equation of state for fluorine of Polt (1992).",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
         "R": 8.3143,
@@ -119,7 +123,7 @@ class F2(MEoS):
     _surface = {"sigma": [0.03978], "exp": [1.218]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
                 "Tmin": Tt, "Tmax": 300.0,
-                "a1": [0.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],
+                "a1": [.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _vapor_Pressure = {
         "eq": 5,
@@ -131,5 +135,5 @@ class F2(MEoS):
         "exp": [0.228, 0.58, 0.908, 1.24, 1.6]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.36218e1, -0.55363e2, 0.12214e3, -0.23092e3, -0.33861e3, 0.43218e3],
+        "ao": [-3.6218, -55.363, 122.14, -230.92, -338.61, 432.18],
         "exp": [0.454, 2.3, 2.9, 4.0, 6.0, 5.3]}
