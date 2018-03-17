@@ -66,7 +66,7 @@ class iC5(MEoS):
            "ao_hyp": [2.1524504e8/8.3159524*4.184, 2.8330244e7/8.3159524*4.184, 0, 0],
            "hyp": [1.70158e3, 7.75899e2, 0, 0]}
 
-    helmholtz1 = {
+    lemmon= {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isopentane of "
                     "Lemmon and Span (2006).",
@@ -122,13 +122,16 @@ class iC5(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz3 = {
+    polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isopentane of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for isopentane of Polt "
+                    "(1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP3,
         "ref": "NBP",
@@ -152,13 +155,16 @@ class iC5(MEoS):
         "c2": [2]*6,
         "gamma2": [1.002528]*6}
 
-    helmholtz4 = {
+    starling = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isopentane of Starling (1973)",
+        "__name__": "Helmholtz equation of state for isopentane of Starling "
+                    "(1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
+                    "title": "Fluid Thermodynamic Properties for Light "
+                             "Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""},
+
         "R": 8.3159524,
         "cp": CP4,
         "ref": "NBP",
@@ -179,7 +185,7 @@ class iC5(MEoS):
         "c2": [2]*2,
         "gamma2": [0.48056842]*2}
 
-    eq = helmholtz1, GERG, helmholtz3, helmholtz4
+    eq = lemmon, GERG, polt, starling
 
     _surface = {"sigma": [0.051], "exp": [1.209]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -201,7 +207,7 @@ class iC5(MEoS):
         "exp": [1.21, 1.41, 1.65, 0.09, 0.164]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.38825e2, 0.79040e2, -0.48791e2, -0.21603e2, -0.57218e2, -0.15164e3],
+        "ao": [-38.825, 79.040, -48.791, -21.603, -57.218, -151.64],
         "exp": [0.565, 0.66, 0.77, 3.25, 7.3, 16.6]}
 
     visco0 = {"eq": 2, "omega": 3,

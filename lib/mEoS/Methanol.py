@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from scipy import exp
-from scipy import __version__
 from scipy.constants import pi, Avogadro
 from scipy.constants import Boltzmann
 
@@ -60,15 +59,18 @@ class Methanol(MEoS):
 
     reuck = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methanol of de Reuck and Craven (1993)",
-        "__doi__": {"autor": "de Reuck, K.M. and Craven, R.J.B.",
-                    "title": "Methanol, International Thermodynamic Tables of the Fluid State - 12",
-                    "ref": "IUPAC, Blackwell Scientific Publications, London, 1993.",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for methanol of de Reuck and "
+                    "Craven (1993)",
+        "__doi__": {
+            "autor": "de Reuck, K.M., Craven, R.J.B.",
+            "title": "Methanol, International Thermodynamic Tables of the "
+                     "Fluid State - 12",
+            "ref": "IUPAC, Blackwell Scientific Publications, London, 1993.",
+            "doi": ""},
+
         "R": 8.31448,
         "cp": CP1,
         "ref": "NBP",
-
         "Tref": 513.38, "rhoref": 8.78517*M,
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57,
@@ -93,7 +95,8 @@ class Methanol(MEoS):
         "d2": [1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 5, 5, 5, 6, 9, 6, 6, 4],
         "t2": [1, 2, 3, 4, 1, 2, 3, 5, 1, 2, 1, 2, 4, 5, 2, 5, 9, 14, 19],
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 6],
-        "gamma2": [1.01733510223052]*16+[1.03497071023039]*2+[1.05291203329783],
+        "gamma2": [1.01733510223052]*16 + [1.03497071023039]*2 \
+                  + [1.05291203329783],
 
         "nr3": [-0.819291988442e1, 0.478601004557, -0.444161392885,
                 0.179621810410, -0.687602278259, 0.240459848295e1,
@@ -145,11 +148,13 @@ class Methanol(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for methanol of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for methanol of Polt (1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP2,
         "ref": "NBP",
@@ -157,11 +162,11 @@ class Methanol(MEoS):
         "Tmin": 298., "Tmax": 703.0, "Pmax": 63000.0, "rhomax": 26.0625,
         "Pmin": 16.803, "rhomin": 24.576,
 
-        "nr1": [-0.412043979985e1, 0.541210456547e1, -0.974639417666,
-                -0.909437999343, -0.143467597275, 0.557052459597e1,
-                -0.697445416557e1, 0.860535902136, 0.244117735035e1,
-                -0.449073510921e1, 0.223855290012e1, -0.71733653794, 0.876135006507,
-                0.151777405466, -0.233178058896, 0.140022534721e-1],
+        "nr1": [-4.12043979985, 5.41210456547, -0.974639417666,
+                -0.909437999343, -0.143467597275, 5.57052459597,
+                -6.97445416557, 0.860535902136, 2.44117735035, -4.49073510921,
+                2.23855290012, -0.71733653794, 0.876135006507, 0.151777405466,
+                -0.233178058896, 0.0140022534721],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
 
@@ -179,8 +184,10 @@ class Methanol(MEoS):
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.187e-3,
                 "Tmin": Tt, "Tmax": 620.,
                 "a1": [1], "exp1": [0],
-                "a2": [5.320770e9, 4.524780e9, 3.888861e10], "exp2": [1, 1.5, 4],
+                "a2": [5.320770e9, 4.524780e9, 3.888861e10],
+                "exp2": [1, 1.5, 4],
                 "a3": [], "exp3": []}
+
     _vapor_Pressure = {
         "eq": 5,
         "ao": [-0.87414e1, 0.15035e1, -0.28720e1, -0.51345],

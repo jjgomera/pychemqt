@@ -30,7 +30,7 @@ class He(MEoS):
     CASNumber = "7440-59-7"
     formula = "He"
     synonym = "R-704"
-    rhoc = unidades.Density(69.5800323874)
+    rhoc = unidades.Density(69.6000453974)
     Tc = unidades.Temperature(5.1953)
     Pc = unidades.Pressure(227.61, "kPa")
     M = 4.002602  # g/mol
@@ -50,13 +50,15 @@ class He(MEoS):
            "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    ortiz = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2013).",
-        "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
-                    "title": "Interim equation",
-                    "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
-                    "doi":  ""},
+        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega "
+                    "(2013).",
+        "__doi__": {
+            "autor": "Ortiz-Vega, D.O.",
+            "title": "A New Wide Range Equation of State for Helium-4",
+            "ref": "Doctoral Dissertation, Texas A&M University (2013)",
+            "doi":  "1969.1/151301"},
 
         "R": 8.314472,
         "cp": CP1,
@@ -71,7 +73,7 @@ class He(MEoS):
         "t1": [1.0, 0.426, 0.631, 0.596, 1.705, 0.568],
 
         "nr2": [2.10653786, -0.62835030, -0.28200301, 1.04234019, -0.07620555,
-                 -1.35006365],
+                -1.35006365],
         "d2": [1, 1, 3, 2, 2, 1],
         "t2": [0.9524, 1.471, 1.48, 1.393, 3.863, 0.803],
         "c2": [1, 2, 2, 1, 2, 1],
@@ -81,57 +83,15 @@ class He(MEoS):
                 0.226283167, -0.22464733, 0.12413584, 0.00901399],
         "d3": [1, 1, 1, 2, 2, 2, 3, 2, 2],
         "t3": [3.273, 0.66, 2.629, 1.4379, 3.317, 2.3676, 0.7545, 1.353,
-                1.982],
+               1.982],
         "alfa3": [8.674, 4.006, 8.1099, 0.1449, 0.1784, 2.432, 0.0414, 0.421,
-                   5.8575],
+                  5.8575],
         "beta3": [8.005, 1.15, 2.143, 0.147, 0.154, 0.701, 0.21, 0.134,
-                   19.256],
+                  19.256],
         "gamma3": [1.1475, 1.7036, 1.6795, 0.9512, 4.475, 2.7284, 1.7167,
-                    1.5237, 0.7649],
+                   1.5237, 0.7649],
         "epsilon3": [0.912, 0.79, 0.90567, 5.1136, 3.6022, 0.6488, 4.2753,
-                      2.744, 0.8736],
-        "nr4": []}
-
-    helmholtz2 = {
-        "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for helium of Ortiz-Vega et al. (2010).",
-        "__doi__": {"autor": "Ortiz-Vega, D.O., Hall, K.R., Holste, J.C., Arp, V.D., and Lemmon, E.W.",
-                    "title": "Interim equation",
-                    "ref": "final equation of state to be published in J. Phys. Chem. Ref. Data, 2013.",
-                    "doi":  ""},
-
-        "R": 8.314472,
-        "cp": CP1,
-        "ref": "NBP",
-
-        "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22,
-        "Pmin": 5.043, "rhomin": 36.46,
-
-        "nr1":  [0.9288766e-2, 0.9258069, -0.1718156e1, 0.7606137e0,
-                 -0.1024864e1, 0.1052455],
-        "d1": [4, 1, 1, 2, 2, 3],
-        "t1": [1.0, 0.28, 0.735, 0.64, 0.82, 1.16],
-
-        "nr2": [-0.1875722, -0.1287812, -0.2227619e-2, 0.1823465,
-                -0.4450014e-1, -0.8729033e-4],
-        "d2": [1, 1, 3, 2, 2, 8],
-        "t2": [1.28, 2.0, 0.41, 1.33, 4.2, 0.6],
-        "c2": [1, 2, 2, 1, 2, 1],
-        "gamma2": [1]*6,
-
-        "nr3": [0.3854320e-1, -0.9585106, -0.5454010e-1, -0.3687260e-1,
-                -0.1021851e-2, 0.6166348e-1, 0.2493437e-1, -0.8127424e-2,
-                -0.8233032e-2],
-        "d3": [1, 1, 1, 2, 2, 2, 3, 3, 2],
-        "t3": [3, 1, 8.2, 1, 2.71, 1, 1, 2, 1],
-        "alfa3": [1.0833, 18.3824, 5.0573, 0.2832, 6.0582, 0.2444, 0.0539,
-                  0.1850, 0.5941],
-        "beta3": [0.0385, 19.8246, 9.3799, 0.8073, 0.0310, 0.0061, 0.3581,
-                  0.7518, 7.4629],
-        "gamma3": [1.9776, 1.6178, 0.4371, 0.5355, 0.7777, 0.4832, 0.8162,
-                   1.2896, 0.3577],
-        "epsilon3": [0.6914, 0.8590, 0.8787, 2.7182, 2.0301, 0.8900, 1.1790,
-                     0.5680, 1.6412],
+                     2.744, 0.8736],
         "nr4": []}
 
     mccarty = {
@@ -203,11 +163,15 @@ class He(MEoS):
 
     GERG = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for helium of Kunz and Wagner (2004).",
+        "__name__": "Helmholtz equation of state for helium of Kunz and "
+                    "Wagner (2004).",
         "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for Natural Gases and Other Mixtures: An Expansion of GERG-2004",
-                    "ref": "J. Chem. Eng. Data, 2012, 57 (11), pp 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "title": "The GERG-2008 Wide-Range Equation of State for "
+                             "Natural Gases and Other Mixtures: An Expansion "
+                             "of GERG-2004",
+                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
+                    "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
@@ -221,7 +185,7 @@ class He(MEoS):
         "t1": [0, 0.125, 0.75, 1.],
 
         "nr2": [-0.34476212380781, -0.20858459512787e-1, 0.16227414711778e-1,
-                -0.57471818200892e-1, 0.19462416430715e-1, -0.33295680123020e-1 ,
+                -0.057471818200892, 0.19462416430715e-1, -0.33295680123020e-1,
                 -0.10863577372367e-1, -0.22173365245954e-1],
         "d2": [1, 3, 5, 5, 5, 2, 1, 2],
         "t2": [0.75, 2.625, 0.125, 1.25, 2., 1., 4.5, 5.],
@@ -231,7 +195,7 @@ class He(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1, helmholtz2, mccarty, MBWR, GERG
+    eq = ortiz, mccarty, MBWR, GERG
     _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],

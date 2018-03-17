@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -46,19 +48,14 @@ class oH2(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ortohydrogen of Leachman et al. (2007)",
-        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
-                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen",
-                    "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
+        "__name__": "Helmholtz equation of state for ortohydrogen of Leachman "
+                    "et al. (2007)",
+        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G.,"
+                             " Lemmon, E.W.",
+                    "title": "Fundamental equations of state for Parahydrogen,"
+                             " Normal Hydrogen, and Orthohydrogen",
+                    "ref": "J. Phys. Chem. Ref. Data, 38(3) (2009) 721-748",
                     "doi": "10.1063/1.3160306"},
-        "__test__": """
-            >>> st=oH2(T=14.008, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            14.008 7.5600 77.010 0.13273 −53.820 400.77 −3.0625 29.390 5.1746 6.2707 7.1448 10.557 1264.7 307.38
-            """, # Table 15, Pag 746
 
         "R": 8.314472,
         "cp": Fi1,
@@ -67,7 +64,7 @@ class oH2(MEoS):
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 38.2,
         "Pmin": 7.461, "rhomin": 38.2,
 
-        "nr1": [-6.83148, 0.01, 2.11505, 4.38353, 0.211292, -1.00939, 0.142086],
+        "nr1": [-6.83148, .01, 2.11505, 4.38353, 0.211292, -1.00939, 0.142086],
         "d1": [1, 4, 1, 1, 2, 2, 3],
         "t1": [0.7333, 1, 1.1372, 0.5136, 0.5638, 1.6248, 1.829],
 
@@ -98,5 +95,70 @@ class oH2(MEoS):
         "exp": [0.53, 0.93, 1.35, 1.8, 2.4]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31463e1, -0.16183e2, 0.31803e2, -0.21961e3, 0.43123e3, -0.25591e3],
+        "ao": [-3.1463, -16.183, 31.803, -219.61, 431.23, -255.91],
         "exp": [0.491, 2.1, 2.9, 4.4, 5.0, 5.5]}
+
+
+class Test(TestCase):
+
+    def test_leachman(self):
+        # Selected point from Table 14, Pag 746, saturation states
+        st = oH2(T=14.008, x=0.5)
+        self.assertEqual(round(st.P.kPa, 4), 7.5601)
+        self.assertEqual(round(st.Liquido.rho, 3), 77.010)
+        self.assertEqual(round(st.Gas.rho, 5), 0.13273)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -53.820)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 400.77)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -3.0625)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 29.390)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 5.1746)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 6.2707)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 7.1448)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 10.557)
+        self.assertEqual(round(st.Liquido.w, 1), 1264.7)
+        self.assertEqual(round(st.Gas.w, 2), 307.38)
+
+        st = oH2(T=20, x=0.5)
+        self.assertEqual(round(st.P.kPa, 3), 90.417)
+        self.assertEqual(round(st.Liquido.rho, 3), 71.291)
+        self.assertEqual(round(st.Gas.rho, 4), 1.1977)
+        self.assertEqual(round(st.Liquido.h.kJkg, 4), -3.7690)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 448.30)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.17907)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 22.425)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 5.6050)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 6.4172)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 9.5449)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 11.813)
+        self.assertEqual(round(st.Liquido.w, 1), 1137.1)
+        self.assertEqual(round(st.Gas.w, 2), 354.41)
+
+        st = oH2(T=30, x=0.5)
+        self.assertEqual(round(st.P.kPa, 2), 804.89)
+        self.assertEqual(round(st.Liquido.rho, 3), 54.554)
+        self.assertEqual(round(st.Gas.rho, 3), 10.481)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 140.19)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 440.48)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 5.0602)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 15.070)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 6.2748)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 7.6849)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 25.315)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 31.669)
+        self.assertEqual(round(st.Liquido.w, 2), 719.08)
+        self.assertEqual(round(st.Gas.w, 2), 378.99)
+
+        st = oH2(T=33, x=0.5)
+        self.assertEqual(round(st.P.kPa, 2), 1269.00)
+        self.assertEqual(round(st.Liquido.rho, 3), 38.828)
+        self.assertEqual(round(st.Gas.rho, 3), 23.810)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 251.54)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 349.69)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 8.2561)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 11.230)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 7.4490)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 8.6394)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 325.68)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 406.90)
+        self.assertEqual(round(st.Liquido.w, 2), 438.23)
+        self.assertEqual(round(st.Gas.w, 2), 370.01)

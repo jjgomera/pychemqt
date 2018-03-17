@@ -186,7 +186,7 @@ PseudoCompounds = [Air, R404a, R407c, R410a, R507a]
 __all__ = Nobles + Gases + Alkanes + Naphthenes + Alkenes + Heteroatom + \
     CFCs + Siloxanes + PseudoCompounds
 
-id_mEoS = [i.id for i in __all__]
+id_mEoS = [i.id for i in __all__ if i.id]
 
 
 # Add references
@@ -228,5 +228,6 @@ for obj in __all__:
         # doctest.run_docstring_examples(inst, globs={module.__name__: module})
 # #    timeit.timeit("test()", setup="from __main__ import test", number=3)
 
-# # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
-# # TODO: Add 2-propanol from 10.1063/1.3112608
+# TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
+# TODO: Add 2-propanol from 10.1063/1.3112608
+# TODO: Add ethylene oxide and 1,2-dichloroethane from Thol thesis

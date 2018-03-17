@@ -46,7 +46,7 @@ class iButene(MEoS):
            "ao_exp": [4.8924, 7.832, 7.2867, 8.7293],
            "titao": [399/Tc, 1270/Tc, 2005/Tc, 4017/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for 1-butene of Lemmon "
                     "and Ihmels (2005)",
@@ -73,7 +73,7 @@ class iButene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.0545], "exp": [1.23]}
     _vapor_Pressure = {

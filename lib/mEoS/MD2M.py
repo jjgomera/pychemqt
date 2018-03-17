@@ -36,7 +36,6 @@ class MD2M(MEoS):
     Tb = unidades.Temperature(467.51)
     f_acent = 0.668
     momentoDipolar = unidades.DipoleMoment(1.12, "Debye")
-    id = 39
     # id = 1837
 
     CP1 = {"ao": 331.9,

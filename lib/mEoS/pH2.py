@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from scipy import exp, log
 
 from lib.meos import MEoS
@@ -59,19 +61,14 @@ class pH2(MEoS):
 
     leachman = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for parahydrogen of Leachman et al. (2007)",
-        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
-                    "title": "Fundamental equations of state for parahydrogen, normal hydrogen, and orthohydrogen",
-                    "ref": "J. Phys. Chem. Ref. Data, 38 (2009), 721 – 748",
+        "__name__": "Helmholtz equation of state for parahydrogen of Leachman "
+                    "et al. (2007)",
+        "__doi__": {"autor": "Leachman, J.W., Jacobsen, R.T, Penoncello, S.G.,"
+                             " Lemmon, E.W.",
+                    "title": "Fundamental equations of state for Parahydrogen,"
+                             " Normal Hydrogen, and Orthohydrogen",
+                    "ref": "J. Phys. Chem. Ref. Data, 38(3) (2009) 721-748",
                     "doi": "10.1063/1.3160306"},
-        "__test__": """
-            >>> st=pH2(T=13.8033, x=0.5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.kPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            13.8033 7.0410 76.977 0.12555 −53.741 396.31 −3.0840 29.521 5.1313 6.2265 6.9241 10.534 1263.1 305.65
-            """, # Table 13, Pag 745
 
         "R": 8.314472,
         "cp": Fi1,
@@ -80,7 +77,7 @@ class pH2(MEoS):
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 104.0,
         "Pmin": 7.041, "rhomin": 38.185,
 
-        "nr1": [-7.33375, 0.01, 2.60375, 4.66279, 0.682390, -1.47078, 0.135801],
+        "nr1": [-7.33375, .01, 2.60375, 4.66279, 0.682390, -1.47078, 0.135801],
         "d1": [1, 4, 1, 1, 2, 2, 3],
         "t1": [0.6855, 1, 1, 0.489, 0.774, 1.133, 1.386],
 
@@ -113,6 +110,7 @@ class pH2(MEoS):
         "R": 8.31434,
         "cp": CP1,
         "ref": "IIR",
+        "Tc": 32.938, "Pc": 1.28377, "rhoc": 15.556,
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 44.0,
         "Pmin": 7.042, "rhomin": 38.21,
@@ -276,4 +274,69 @@ class pH2(MEoS):
         # TODO:
         return unidades.ThermalConductivity(0)
 
-    _thermal = thermo0, thermo1
+    # _thermal = thermo0, thermo1
+
+
+class Test(TestCase):
+
+    def test_leachman(self):
+        # Selected point from Table 13, Pag 745, saturation states
+        st = pH2(T=13.8033, x=0.5)
+        self.assertEqual(round(st.P.kPa, 3), 7.0410)
+        self.assertEqual(round(st.Liquido.rho, 3), 76.977)
+        self.assertEqual(round(st.Gas.rho, 5), 0.12555)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -53.741)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 396.31)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), -3.0840)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 29.521)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 5.1313)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 6.2265)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 6.9241)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 10.534)
+        self.assertEqual(round(st.Liquido.w, 1), 1263.1)
+        self.assertEqual(round(st.Gas.w, 2), 305.65)
+
+        st = pH2(T=20, x=0.5)
+        self.assertEqual(round(st.P.kPa, 3), 93.414)
+        self.assertEqual(round(st.Liquido.rho, 3), 71.135)
+        self.assertEqual(round(st.Gas.rho, 4), 1.2440)
+        self.assertEqual(round(st.Liquido.h.kJkg, 4), -2.6915)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 444.54)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.12814)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 22.234)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 5.6371)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 6.4499)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 9.5688)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 11.920)
+        self.assertEqual(round(st.Liquido.w, 1), 1118.6)
+        self.assertEqual(round(st.Gas.w, 2), 353.50)
+
+        st = pH2(T=30, x=0.5)
+        self.assertEqual(round(st.P.kPa, 2), 823.19)
+        self.assertEqual(round(st.Liquido.rho, 3), 53.976)
+        self.assertEqual(round(st.Gas.rho, 3), 10.871)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 144.24)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 435.71)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 5.2108)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 14.926)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 6.4715)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 7.6246)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 26.649)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 32.583)
+        self.assertEqual(round(st.Liquido.w, 2), 693.04)
+        self.assertEqual(round(st.Gas.w, 2), 377.20)
+
+        st = pH2(T=32, x=0.5)
+        self.assertEqual(round(st.P.kPa, 1), 1120.3)
+        self.assertEqual(round(st.Liquido.rho, 3), 45.901)
+        self.assertEqual(round(st.Gas.rho, 3), 17.492)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 204.08)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 392.26)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 6.9452)
+        self.assertEqual(round(st.Gas.s.kJkgK, 3), 12.826)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 7.0097)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 8.3364)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 68.189)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 92.392)
+        self.assertEqual(round(st.Liquido.w, 2), 522.59)
+        self.assertEqual(round(st.Gas.w, 2), 372.03)

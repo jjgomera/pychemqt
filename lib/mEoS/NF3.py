@@ -37,7 +37,6 @@ class NF3(MEoS):
     f_acent = 0.126
     momentoDipolar = unidades.DipoleMoment(0.235, "Debye")
     # id = 951
-    id = 60
 
     CP1 = {"ao": -7.140693612211,
            "an": [0.7427518245951e6, -0.4389825372134e5, 0.1012629224351e4,

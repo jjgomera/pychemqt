@@ -44,9 +44,10 @@ class iC8(MEoS):
            "exp": [775, 1900, 5100],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    blackham = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for isooctane of Blackham and Lemmon (2011).",
+        "__name__": "Helmholtz equation of state for isooctane of Blackham "
+                    "and Lemmon (2011).",
         "__doi__": {"autor": "Blackham, T.M. and Lemmon, E.W.",
                     "title": "",
                     "ref": "to be published in Int. J. Thermophys., 2011.",
@@ -78,7 +79,7 @@ class iC8(MEoS):
         "epsilon3": [0.66, 0.9, 0.54, 0.18],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = blackham,
     _PR = -0.0058658
 
     _surface = {"sigma": [0.0476182, 5.992036e-17], "exp": [1.1914, 2.1914]}

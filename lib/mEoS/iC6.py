@@ -46,7 +46,7 @@ class iC6(MEoS):
            "ao_exp": [7.9127, 16.871, 19.257, 14.075],
            "titao": [325/Tc, 1150/Tc, 2397/Tc, 5893/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for isohexane of "
                     "Lemmon and Span (2006)",
@@ -73,7 +73,7 @@ class iC6(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.05024], "exp": [1.194]}
     _vapor_Pressure = {

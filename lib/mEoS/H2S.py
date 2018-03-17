@@ -91,7 +91,7 @@ class H2S(MEoS):
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
-        "nr2": [0.20227, -0.0045348, -0.22230, -0.034714, -0.014885, 0.0074154],
+        "nr2": [0.20227, -0.0045348, -0.22230, -0.034714, -0.014885, .0074154],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
@@ -99,11 +99,14 @@ class H2S(MEoS):
 
     sakoda = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hydrogen sulfide of Sakoda and Uematsu (2004)",
+        "__name__": "Helmholtz equation of state for hydrogen sulfide of "
+                    "Sakoda and Uematsu (2004)",
         "__doi__": {"autor": "Sakoda, N., Uematsu, M.",
-                    "title": "A Thermodynamic Property Model for Fluid Phase Hydrogen Sulfide",
-                    "ref": "Int. J. Thermophys., 25(3):709-737, 2004",
+                    "title": "A Thermodynamic Property Model for Fluid Phase "
+                             "Hydrogen Sulfide",
+                    "ref": "Int. J. Thermophys., 25(3) (2004) 709-737",
                     "doi": "10.1023/B:IJOT.0000034234.06341.8a"},
+
         "R": 8.314472,
         "cp": Fi3,
         "ref": {"Tref": 298.15, "Pref": 100., "ho": 0, "so": 0},
@@ -115,7 +118,7 @@ class H2S(MEoS):
                 -0.1690358e1, 0.9483623, -0.6800772e-1, 0.4372273e-2,
                 0.3788552e-4, -0.3680980e-4, 0.8710726e-5],
         "d1": [1, 1, 1, 2, 2, 2, 3, 4, 8, 9, 10],
-        "t1": [0.241, 0.705, 1, 0.626, 1.15, 1.63, 0.21, 3.08, 0.827, 3.05, 3.05],
+        "t1": [.241, .705, 1, .626, 1.15, 1.63, 0.21, 3.08, 0.827, 3.05, 3.05],
 
         "nr2": [0.6886876, 0.2751922e1, -0.1492558e1, 0.9202832, -0.2103469,
                 0.1084359e-2, 0.3754723e-1, -0.5885793e-1, -0.2329265e-1,
@@ -128,11 +131,14 @@ class H2S(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hydrogen sulfide of Polt et al. (1992)",
+        "__name__": "Helmholtz equation of state for hydrogen sulfide of Polt "
+                    "et al. (1992)",
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP3,
         "ref": "NBP",
@@ -158,11 +164,14 @@ class H2S(MEoS):
 
     starling = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hydrogen sulfide of Starling (1973)",
+        "__name__": "Helmholtz equation of state for hydrogen sulfide of "
+                    "Starling (1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
+                    "title": "Fluid Thermodynamic Properties for Light "
+                             "Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""},
+
         "R": 8.3159524,
         "cp": CP4,
         "ref": "NBP",
