@@ -43,17 +43,19 @@ class nC11(MEoS):
            "ao_pow": [-3.515339, 28.27708, -136.8378, -46.40384, 107.1876,
                       1.419929],
            "tau*logtau": -31.81246,
-           "tau*logdeñta": 0,
            "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    aleksandrov = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for undecane of Aleksandrov et al. (2011)",
-        "__doi__": {"autor": "Aleksandrov, I.S., Gerasimov, A.A., and Grigor’ev, B.A.",
-                    "title": "Using fundamental equations of state for calculating the thermodynamic properties of normal undecane",
-                    "ref": "Thermal Engineering, 58(8):691-698, 2011",
-                    "doi": "10.1134/S0040601511080027"},
+        "__name__": "short Helmholtz equation of state for undecane of "
+                    "Aleksandrov et al. (2011)",
+        "__doi__": {
+            "autor": "Aleksandrov, I.S., Gerasimov, A.A., Grigor’ev, B.A.",
+            "title": "Using Fundamental Equations of State for Calculating "
+                     "the Thermodynamic Properties of Normal Undecane",
+            "ref": "Thermal Engineering, 58(8) (2011) 691-698",
+            "doi": "10.1134/S0040601511080027"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -65,7 +67,8 @@ class nC11(MEoS):
         "nr1": [-0.66172706, 1.3375396, -2.5608399, 0.1067891, 0.28873614e-3,
                 0.49587209e-1],
         "d1": [1, 1, 1, 3, 7, 2],
-        "t1": [0.25, 1.25, 0.25, 0.875, 1.375],
+        # Typo in paper, the three first τ factor are disordered
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
         "nr2": [0.55407101e-7, 0.99754712, 1.5774025, 0.13108354e-2,
                 -0.59326961, -0.93001876e-1, -0.17960228, -0.22560853e-1],
@@ -74,7 +77,7 @@ class nC11(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = helmholtz1,
+    eq = aleksandrov,
 
     _vapor_Pressure = {
         "eq": 5,
