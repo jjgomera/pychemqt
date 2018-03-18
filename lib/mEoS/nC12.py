@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -44,30 +46,14 @@ class nC12(MEoS):
            "exp": [1280, 2399, 5700, 13869],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for dodecane of Lemmon (2004).",
-        "__doi__": {"autor": "Lemmon, E.W. and Huber, M.L.",
+        "__name__": "short Helmholtz equation of state for dodecane of Lemmon "
+                    "(2004).",
+        "__doi__": {"autor": "Lemmon, E.W., Huber, M.L.",
                     "title": "Thermodynamic Properties of n-Dodecane",
-                    "ref": "Energy & Fuels, 18:960-967, 2004.",
+                    "ref": "Energy & Fuels, 18(4) (2004) 960-967",
                     "doi": "10.1021_ef0341062"},
-        "__test__": """
-            >>> st=nC12(T=300, rho=0)
-            >>> print "%0.1f %0.1f %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            300.0 0.0 0.0 271.3952 279.7096 122.8511
-            >>> st=nC12(T=300, rhom=4.4)
-            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            300.0 7.161946 4.4 311.1937 377.1307 1316.614
-            >>> st=nC12(T=600, rhom=0.2)
-            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            600.0 0.7228018 0.2 488.1173 526.2322 123.5851
-            >>> st=nC12(T=600, rhom=4.0)
-            >>> print "%0.1f %0.7g %0.1f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            600.0 120.2532 4.0 499.9857 539.3864 1255.247
-            >>> st=nC12(T=658.2, rhom=1.33)
-            >>> print "%0.1f %0.7g %0.2f %0.7g %0.7g %0.7g" % (st.T, st.P.MPa, st.rhoM, st.cvM.JmolK, st.cpM.JmolK, st.w)
-            658.2 1.820055 1.33 547.6852 128753.9 49.76424
-            """, # Table 5, Pag 967
 
         "R": 8.314472,
         "cp": CP1,
@@ -76,17 +62,17 @@ class nC12(MEoS):
         "Tmin": Tt, "Tmax": 700., "Pmax": 700000.0, "rhomax": 4.53,
         "Pmin": 0.00063, "rhomin": 4.53,
 
-        "nr1": [1.38031, -2.85352, 0.288897, -0.165993, 0.0923993, 0.000282772],
+        "nr1": [1.38031, -2.85352, .288897, -0.165993, .0923993, .000282772],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.32, 1.23, 1.5, 1.4, 0.07, 0.8],
 
-        "nr2": [0.956627, 0.0353076, -0.445008, -0.118911, -0.0366475, 0.0184223],
+        "nr2": [.956627, .0353076, -0.445008, -0.118911, -0.0366475, .0184223],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [2.16, 1.1, 4.1, 5.6, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.0154, 0.0480],
                 "exp": [4.18, 1.17]}
@@ -100,7 +86,7 @@ class nC12(MEoS):
         "exp": [0.21, 0.49, 1.08, 1.49, 1.9]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.17859e1, -0.75436e1, -0.22848e2, -0.81355e2, 0.92283e2, -0.21725e3],
+        "ao": [-1.7859, -7.5436, -22.848, -81.355, 92.283, -217.25],
         "exp": [0.298, 0.91, 2.8, 6., 9., 11.]}
 
     visco0 = {"eq": 1, "omega": 1,
@@ -166,7 +152,7 @@ class nC12(MEoS):
                    >>> st=nC12(T=660, rhom=1.50098)
                    >>> print "%0.3f" % st.k.mWmK
                    90.346
-                   """, # Pag 974
+                   """,  # Pag 974
 
                "Tref": 658.1, "kref": 1.,
                "no": [0.436343e-2, -0.264054e-1, 0.922394e-1, -0.291756e-1],
@@ -184,3 +170,38 @@ class nC12(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.52e-9, "Tcref": 987.15}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table 5, Pag 967
+        st = nC12(T=300, rho=0)
+        self.assertEqual(round(st.P.MPa, 3), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 271.3952)
+        self.assertEqual(round(st.cpM.JmolK, 4), 279.7096)
+        self.assertEqual(round(st.w, 4), 122.8511)
+
+        st = nC12(T=300, rhom=4.4)
+        self.assertEqual(round(st.P.MPa, 6), 7.161946)
+        self.assertEqual(round(st.cvM.JmolK, 4), 311.1937)
+        self.assertEqual(round(st.cpM.JmolK, 4), 377.1307)
+        self.assertEqual(round(st.w, 3), 1316.614)
+
+        st = nC12(T=600, rhom=0.2)
+        self.assertEqual(round(st.P.MPa, 7), 0.7228018)
+        self.assertEqual(round(st.cvM.JmolK, 4), 488.1173)
+        self.assertEqual(round(st.cpM.JmolK, 4), 526.2322)
+        self.assertEqual(round(st.w, 4), 123.5851)
+
+        st = nC12(T=600, rhom=4.0)
+        self.assertEqual(round(st.P.MPa, 4), 120.2532)
+        self.assertEqual(round(st.cvM.JmolK, 4), 499.9857)
+        self.assertEqual(round(st.cpM.JmolK, 4), 539.3864)
+        self.assertEqual(round(st.w, 3), 1255.247)
+
+        st = nC12(T=658.2, rhom=1.33)
+        self.assertEqual(round(st.P.MPa, 6), 1.820055)
+        self.assertEqual(round(st.cvM.JmolK, 4), 547.6852)
+        self.assertEqual(round(st.cpM.JmolK, 1), 128753.9)
+        self.assertEqual(round(st.w, 5), 49.76424)
