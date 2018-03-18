@@ -2297,10 +2297,11 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     Selected value from Table 1 in [46]_, hydrogen
 
     >>> from lib.mEoS import H2
-    >>> T = 0.904*H2.Tc
-    >>> P = 7.71*H2.Pc
-    >>> Ps = H2()._Vapor_Pressure(T)
-    >>> "%0.2f" % MuL_Lucas(T, P, H2.Tc, H2.Pc, H2.f_acent, Ps, 1)
+    >>> young = H2(eq="MBWR")  # Using the ancient critical constant 
+    >>> T = 0.904*young.Tc
+    >>> P = 7.71*young.Pc
+    >>> Ps = young._Vapor_Pressure(T)
+    >>> "%0.2f" % MuL_Lucas(T, P, young.Tc, young.Pc, young.f_acent, Ps, 1)
     '1.92'
 
     References

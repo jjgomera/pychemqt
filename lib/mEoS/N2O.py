@@ -46,7 +46,7 @@ class N2O(MEoS):
            "ao_exp": [2.1769, 1.6145, 0.48393],
            "titao": [879/Tc, 2372/Tc, 5447/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for nitrous oxide of "
                     "Lemmon and Span (2006)",
@@ -74,7 +74,7 @@ class N2O(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.07087], "exp": [1.204]}
     _vapor_Pressure = {
