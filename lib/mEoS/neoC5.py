@@ -52,7 +52,7 @@ class neoC5(MEoS):
            "ao_hyp": [11.7618, -20.1101, 33.1688, 0],
            "hyp": [0.635392636*Tc, 1.977271641*Tc, 4.169371131*Tc, 0]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for neopentane of "
                     "Lemmon and Span (2006).",
@@ -79,13 +79,16 @@ class neoC5(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for neopentane of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for neopentane of Polt "
+                    "(1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP1,
         "ref": "NBP",
@@ -95,7 +98,7 @@ class neoC5(MEoS):
 
         "nr1": [-0.146552261671e1, 0.199230626557e1, -0.500821886276,
                 0.119809758161e1, -0.363135896710e1, 0.312770556886e1,
-                -0.237405105853e1, 0.473735725047, 0.101500881659, 0.184937708516,
+                -2.37405105853, 0.473735725047, 0.101500881659, 0.184937708516,
                 -0.290527628579e-1, -0.258919377284e-1, 0.748831217999e-1,
                 0.216569936506e-1, -0.100375687935, 0.234924630013e-1],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
@@ -108,7 +111,7 @@ class neoC5(MEoS):
         "c2": [2]*6,
         "gamma2": [0.968832]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon, polt
 
     _vapor_Pressure = {
         "eq": 5,

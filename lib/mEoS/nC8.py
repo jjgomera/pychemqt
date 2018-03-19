@@ -57,7 +57,7 @@ class nC8(MEoS):
            "hyp": [158.922/Tc, 815.064/Tc, 1693.07/Tc, 0]}
 
     CP3 = {"ao": 3.018753,
-           "an": [0.7297005e-1, -0.14171168e-4, -0.1225317e-7,  0.12912645e-11],
+           "an": [0.07297005, -0.14171168e-4, -0.1225317e-7,  0.12912645e-11],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
@@ -130,11 +130,13 @@ class nC8(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for octane of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for octane of Polt (1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP3,
         "ref": "NBP",
@@ -160,11 +162,14 @@ class nC8(MEoS):
 
     starling = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for octane of Starling (1973)",
+        "__name__": "Helmholtz equation of state for octane of Starling "
+                    "(1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
+                    "title": "Fluid Thermodynamic Properties for Light "
+                             "Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""},
+
         "R": 8.3159524,
         "cp": CP4,
         "ref": "NBP",

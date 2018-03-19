@@ -45,13 +45,17 @@ class Ne(MEoS):
            "an": [], "pow": [],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    katti= {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for neon of Katti et al. (1986).",
-        "__doi__": {"autor": "Katti, R.S., Jacobsen, R.T, Stewart, R.B., Jahangiri, M.",
-                    "title": "Thermodynamic properties for neon for temperatures from the triple point to 700 K at pressures up to 700 MPa",
-                    "ref": "Adv. Cryo. Eng. 31 (1986), 1189-1197",
+        "__name__": u"Helmholtz equation of state for neon of Katti (1986)",
+        "__doi__": {"autor": "Katti, R.S., Jacobsen, R.T, Stewart, R.B., "
+                             "Jahangiri, M.",
+                    "title": "Thermodynamic Properties of Neon for "
+                             "Temperatures from the Triple Point to 700 K at "
+                             "Pressures up to 700 MPa",
+                    "ref": "Adv. Cryo. Eng. 31 (1986) 1189-1197",
                     "doi": "10.1007/978-1-4613-2213-9_132"},
+
         "R": 8.31434,
         "cp": CP1,
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6179, "so": 146.214},
@@ -60,7 +64,7 @@ class Ne(MEoS):
         "Pmin": 43.464, "rhomin": 62.059,
 
         "nr1": [0.3532653449e1, -0.4513954384e1, -0.1524027959, 0.2188568609e1,
-                -0.744299997e1, 0.7755627402e1, -0.3122553128e1, 0.1014206899e1,
+                -7.44299997, 0.7755627402e1, -0.3122553128e1, 0.1014206899e1,
                 -0.5289214086e-1, 0.1566849239, -0.222852705, -0.1410150942e-1,
                 0.7036229719e-1, -0.5882048367e-1, 0.1571172741e-1,
                 0.1292202769e-2, 0.7902035603e-3, -0.3794403616e-3],
@@ -68,9 +72,10 @@ class Ne(MEoS):
         "t1": [0.5, 0.75, 3.5, 0.5, 0.75, 1, 1.5, 2.5, 0.25, 0.5, 2.5, 1, 3, 4,
                5, 1, 5, 6],
 
-        "nr2": [0.4652799333e-1,  0.4524001818e-1, -0.2383421991, 0.629359013e-2,
+        "nr2": [0.04652799333,  0.04524001818, -0.2383421991, 0.629359013e-2,
                 -0.1272313644e-2, -0.175235256e-6, 0.7188419232e-2,
-                -0.5403006914e-1, 0.7578222187e-1, -0.3808588254e-1, 0.6034022431e-2],
+                -0.5403006914e-1, 0.7578222187e-1, -0.3808588254e-1,
+                0.6034022431e-2],
         "d2": [1, 2, 2, 2, 2, 2, 4, 8, 8, 8, 8],
         "t2": [4, 1, 5, 8, 12, 32, 10, 6, 7, 8, 9],
         "c2": [3, 2, 2, 4, 6, 6, 2, 2, 2, 2, 2],
@@ -79,7 +84,7 @@ class Ne(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = katti,
 
     _surface = {"sigma": [0.012254, 0.02728, -0.025715],
                 "exp": [1.4136, 1.4517, 1.6567]}
@@ -102,7 +107,7 @@ class Ne(MEoS):
         "exp": [1.0, 1.5, 2.3, 2.8, 3.4]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.10601e1, 0.12076e3, -0.38553e3, 0.81655e3, -0.89907e3, 0.35466e3],
+        "ao": [1.0601, 120.76, -385.53, 816.55, -899.07, 354.66],
         "exp": [0.33, 1.4, 1.7, 2.2, 2.6, 3.0]}
     _vapor_Density = {
         "eq": 3,

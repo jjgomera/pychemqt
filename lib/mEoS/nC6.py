@@ -92,7 +92,7 @@ class nC6(MEoS):
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
         "nr2": [0.46347589844105, 0.11433196980297e-1, -0.48256968738131,
-                -0.93750558924659e-1, -0.67273247155994e-2, -0.51141583585428e-2],
+                -0.093750558924659, -0.0067273247155994, -0.0051141583585428],
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
@@ -130,11 +130,13 @@ class nC6(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexane of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for hexane of Polt (1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP3,
         "ref": "NBP",
@@ -160,11 +162,14 @@ class nC6(MEoS):
 
     starling = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for hexane of Starling (1973)",
+        "__name__": "Helmholtz equation of state for hexane of Starling "
+                    "(1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
+                    "title": "Fluid Thermodynamic Properties for Light "
+                             "Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""},
+
         "R": 8.3159524,
         "cp": CP4,
         "ref": "NBP",
@@ -233,7 +238,7 @@ class nC6(MEoS):
         "exp": [0.75, 0.81, 0.88]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.13309, -0.50653e1, -0.11602e2, -0.28530e2, -0.51731e2, -0.13482e3],
+        "ao": [-0.13309, -5.0653, -11.602, -28.530, -51.731, -134.82],
         "exp": [0.107, 0.553, 2.006, 4.46, 8.0, 16.]}
 
     visco0 = {"eq": 2, "omega": 3,

@@ -130,11 +130,13 @@ class nC7(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for heptane of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for heptane of Polt (1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP3,
         "ref": "NBP",
@@ -144,7 +146,7 @@ class nC7(MEoS):
 
         "nr1": [-0.52030538102, 0.338196304523, -0.491117643215e-2,
                 0.200594802481, -0.260824422526e-1, -0.191516844204e1,
-                0.364407895089, -0.142523250539, -0.160069782510, 0.578283584822,
+                0.364407895089, -0.142523250539, -.160069782510, .578283584822,
                 0.476898816887, 0.937511885529e-1, -0.442185898133,
                 0.553661375084e-1, -0.303420126133e-1, 0.138649129298e-1],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
@@ -159,11 +161,14 @@ class nC7(MEoS):
 
     starling = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for heptane of Starling (1973)",
+        "__name__": "Helmholtz equation of state for heptane of Starling "
+                    "(1973)",
         "__doi__": {"autor": "Starling, K.E.",
-                    "title": "Fluid Thermodynamic Properties for Light Petroleum Systems",
+                    "title": "Fluid Thermodynamic Properties for Light "
+                             "Petroleum Systems",
                     "ref": "Gulf Publishing Company, 1973.",
                     "doi": ""},
+
         "R": 8.3159524,
         "cp": CP4,
         "ref": "NBP",
@@ -186,10 +191,12 @@ class nC7(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": " MBWR equation of state for pentane of Ratanapisit (1999).",
+        "__name__": "MBWR equation of state for pentane of Ratanapisit (1999)",
         "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
-                    "title": "Application of New, Modified BWR Equations of State to the Corresponding-States Prediction of Natural Gas Properties",
-                    "ref": "Int. J. Thermophys., 20(6):1721-1735, 1999.",
+                    "title": "Application of New, Modified BWR Equations of "
+                             "State to the Corresponding-States Prediction of "
+                             "Natural Gas Properties",
+                    "ref": "Int. J. Thermophys., 20(6) (1999) 1721-1735",
                     "doi": "10.1023/A:1022610013596"},
 
         "R": 8.31434,
@@ -228,7 +235,7 @@ class nC7(MEoS):
         "exp": [0.322, 0.504, 0.651, 0.816, 6.4]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.24571, -0.63004e1, -0.19144e2, -0.9697e2, 0.21643e3, -0.27953e3],
+        "ao": [-0.24571, -6.3004, -19.144, -96.97, 216.43, -279.53],
         "exp": [0.097, 0.646, 2.56, 6.6, 9.3, 10.7]}
 
     visco0 = {"eq": 2, "omega": 3,
