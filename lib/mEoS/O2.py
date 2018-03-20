@@ -30,7 +30,7 @@ class O2(MEoS):
     CASNumber = "7782-44-7"
     formula = "O2"
     synonym = "R-732"
-    rhoc = unidades.Density(436.14)
+    rhoc = unidades.Density(436.143644)
     Tc = unidades.Temperature(154.581)
     Pc = unidades.Pressure(5043.0, "kPa")
     M = 31.9988  # g/mol
@@ -43,38 +43,40 @@ class O2(MEoS):
     _rhor = unidades.Density(439.519141)
     _w = 0.023479051
 
-    CP1 = {"ao": 3.51808732,
-           "an": [], "pow": [],
-           "ao_exp": [0.102323928e1, 0.784357918, 0.337183363e-2,
-                      -.170864084e-1, 0.463751562e-1],
-           "exp": [2246.32440, 11259.9763, 1201.26209, 69.0089445, 5328.05445],
+    # Use the Cp0 expresion from alternate reference with standard term
+    # Stewart, R.B., Jacobsen, R.T., Wagner, W.
+    # Thermodynamic Properties of Oxygen from the Triple Point to 300 K with
+    # Pressures to 80 MPa
+    # J. Phys. Chem. Ref. Data 20(5) (1991) 917-1021
+    # doi: 10.1063_1.555897
+    CP1 = {"ao": 3.521876773671,
+           "an": [-0.4981998537119e4, 0.2302477799952e3, -0.3455653235107e1,
+                  -0.4354202160244e-4, 0.1346353450132e-7, .1620598259591e-10],
+           "pow": [-3, -2, -1.001, 1, 2, 3],
+           "ao_exp": [1.031468515726], "exp": [2239.18105],
            "ao_hyp": [], "hyp": []}
 
-    Fi2 = {"ao_log": [1, 2.50146],
+    Fi1 = {"ao_log": [1, 2.50146],
            "pow": [0, 1],
            "ao_pow": [10.001843586, -14.996095135],
            "ao_exp": [], "titao": [],
            "ao_hyp": [1.07558, 1.01334, 0, 0],
            "hyp": [14.461722565, 7.223325463, 0, 0]}
 
-    CP2 = {"ao": 3.521876773671,
-           "an": [-0.4981998537119e4, 0.2302477799952e3, -0.3455653235107e1,
-                  0.3521876773671e1, -0.4354202160244e-4, 0.1346353450132e-7,
-                  0.1620598259591e-10],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
-           "ao_exp": [1.031468515726], "exp": [2239.18105],
-           "ao_hyp": [], "hyp": []}
-
     schmidt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for oxygen of Schmidt and Wagner (1985).",
+        "__name__": "Helmholtz equation of state for oxygen of Schmidt and "
+                    "Wagner (1985)",
         "__doi__": {"autor": "Schmidt, R., Wagner, W.",
-                    "title": "A new form of the equation of state for pure substances and its application to oxygen",
-                    "ref": "Fluid Phase Equuilibria. 19 (1985), 175-200.",
+                    "title": "A New Form of the Equation of State for Pure "
+                             "Substances and its Application to Oxygen",
+                    "ref": "Fluid Phase Equuilibria. 19 (1985) 175-200",
                     "doi": "10.1016/0378-3812(85)87016-3"},
+
         "R": 8.31434,
         "cp": CP1,
-        "ref": "OTO",
+        # "ref": "OTO",
+        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8682, "so": 205.037},
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 82000.0, "rhomax": 43.348,
         "Pmin": 0.14628, "rhomin": 40.816,
@@ -110,7 +112,7 @@ class O2(MEoS):
                     "doi":  "10.1021/je300655b"},
 
         "R": 8.314472,
-        "cp": Fi2,
+        "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 82000.0, "rhomax": 43.348,
@@ -142,7 +144,7 @@ class O2(MEoS):
                     "doi": ""},
 
         "R": 8.31411,
-        "cp": CP2,
+        "cp": CP1,
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 40.820,
         "Pmin": 0.148, "rhomin": 40.820,
@@ -541,6 +543,156 @@ class O2(MEoS):
 
 
 class Test(TestCase):
+
+    def test_schmidt(self):
+        # Table 4 pag 191, Saturation densities
+        st = O2(T=150, x=0.5)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 21.1096)
+        self.assertEqual(round(st.Gas.rhoM, 5), 6.71701)
+
+        st = O2(T=154.515, x=0.5)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 15.0637)
+        self.assertEqual(round(st.Gas.rhoM, 4), 11.9252)
+
+        st = O2(T=154.565, x=0.5)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 14.4607)
+        self.assertEqual(round(st.Gas.rhoM, 4), 12.3876)
+
+        # Selected values from tables in Stewart, Jacobsen and Wagner paper
+        # Table 9 pag 948, ideal gas properties
+        # FIXME: Fix 1/τ terms in cpo to phio conversion
+
+        # st = O2()
+        # self.assertEqual(round(st._Cp0(60), 2), 158.32)
+        # st = O2(T=60, P=1e5)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 158.32)
+        # self.assertEqual(round(st.hM0.Jmol, 1), 1738.2)
+        # self.assertEqual(round(st.cv0M.JmolK, 3), 20.809)
+        # self.assertEqual(round(st.cp0M.JmolK, 3), 29.123)
+
+        # st = O2(T=200, P=1e5)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 193.37)
+        # self.assertEqual(round(st.hM0.Jmol, 1), 5814.4)
+        # self.assertEqual(round(st.cv0M.JmolK, 3), 20.812)
+        # self.assertEqual(round(st.cp0M.JmolK, 3), 29.127)
+
+        # st = O2(T=500, P=1e5)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 220.58)
+        # self.assertEqual(round(st.hM0.Jmol, 1), 14766.5)
+        # self.assertEqual(round(st.cv0M.JmolK, 3), 22.778)
+        # self.assertEqual(round(st.cp0M.JmolK, 3), 31.093)
+
+        # st = O2(T=1000, P=1e5)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 243.47)
+        # self.assertEqual(round(st.hM0.Jmol, 1), 31387.4)
+        # self.assertEqual(round(st.cv0M.JmolK, 3), 26.563)
+        # self.assertEqual(round(st.cp0M.JmolK, 3), 34.877)
+
+        # st = O2(T=2000, P=1e5)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 268.66)
+        # self.assertEqual(round(st.hM0.Jmol, 1), 67882.8)
+        # self.assertEqual(round(st.cv0M.JmolK, 3), 29.469)
+        # self.assertEqual(round(st.cp0M.JmolK, 3), 37.783)
+
+        # Table 10 pag 949, saturated states
+        # st = O2(T=54.361, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 6), 0.000146)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 40.816)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), -6193.7)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 66.94)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 38.25)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 53.54)
+        # self.assertEqual(round(st.Liquido.w, 0), 1123)
+        # self.assertEqual(round(st.Gas.rhoM, 7), 0.0003237)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 1573.1)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 209.81)
+        # self.assertEqual(round(st.Gas.w, 0), 140)
+
+        # st = O2(T=80, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 5), 0.03012)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 37.203)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), -4817.7)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 87.66)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 31.03)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 53.81)
+        # self.assertEqual(round(st.Liquido.w, 0), 987)
+        # self.assertEqual(round(st.Gas.rhoM, 6), 0.045891)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 2295.9)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 176.58)
+        # self.assertEqual(round(st.Gas.w, 0), 168)
+
+        # st = O2(T=100, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 4), 0.2540)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 34.092)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), -3724.6)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 99.78)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 28.63)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 55.60)
+        # self.assertEqual(round(st.Liquido.w, 0), 822)
+        # self.assertEqual(round(st.Gas.rhoM, 5), 0.32579)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 2758.9)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 164.61)
+        # self.assertEqual(round(st.Gas.cvM.JmolK, 2), 21.61)
+        # self.assertEqual(round(st.Gas.cpM.JmolK, 2), 32.20)
+        # self.assertEqual(round(st.Gas.w, 0), 184)
+
+        # st = O2(T=120, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 4), 1.0223)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 30.434)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), -2554.8)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 110.21)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 26.98)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 61.67)
+        # self.assertEqual(round(st.Liquido.w, 0), 641)
+        # self.assertEqual(round(st.Gas.rhoM, 4), 1.2284)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 3002.0)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 156.52)
+        # self.assertEqual(round(st.Gas.cvM.JmolK, 2), 23.73)
+        # self.assertEqual(round(st.Gas.cpM.JmolK, 2), 40.84)
+        # self.assertEqual(round(st.Gas.w, 0), 189)
+
+        # st = O2(T=140, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 4), 2.7878)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 25.415)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), -1172.2)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 120.35)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 26.63)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 86.10)
+        # self.assertEqual(round(st.Liquido.w, 0), 423)
+        # self.assertEqual(round(st.Gas.rhoM, 4), 3.6487)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 2833.1)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 148.96)
+        # self.assertEqual(round(st.Gas.cvM.JmolK, 2), 28.27)
+        # self.assertEqual(round(st.Gas.cpM.JmolK, 2), 75.82)
+        # self.assertEqual(round(st.Gas.w, 0), 182)
+
+        # st = O2(T=154, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 4), 4.9307)
+        # self.assertEqual(round(st.Liquido.rhoM, 3), 17.096)
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 500.0)
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), 130.97)
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 36.13)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 1192.05)
+        # self.assertEqual(round(st.Liquido.w, 0), 178)
+        # self.assertEqual(round(st.Gas.rhoM, 3), 10.213)
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), 1658.9)
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), 138.49)
+        # self.assertEqual(round(st.Gas.cvM.JmolK, 2), 40.31)
+        # self.assertEqual(round(st.Gas.cpM.JmolK, 2), 1633.93)
+        # self.assertEqual(round(st.Gas.w, 0), 161)
+
+        # st = O2(T=, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 2), )
+        # self.assertEqual(round(st.Liquido.rhoM, 3), )
+        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), )
+        # self.assertEqual(round(st.Liquido.sM.JmolK, 2), )
+        # self.assertEqual(round(st.Liquido.cvM.JmolK, 2), )
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), )
+        # self.assertEqual(round(st.Liquido.w, 0), )
+        # self.assertEqual(round(st.Gas.rhoM, 7), )
+        # self.assertEqual(round(st.Gas.hM.Jmol, 1), )
+        # self.assertEqual(round(st.Gas.sM.JmolK, 2), )
+        # self.assertEqual(round(st.Gas.w, 0), )
 
     def test_shortSpan(self):
         # Table III, Pag 46
