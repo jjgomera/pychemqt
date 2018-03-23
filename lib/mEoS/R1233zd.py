@@ -28,55 +28,60 @@ class R1233zd(MEoS):
     CASNumber = "102687-65-0"
     formula = "CHCl=CH-CF3"
     synonym = "R1233zd"
-    rhoc = unidades.Density(476.31109204)
-    Tc = unidades.Temperature(438.75)
-    Pc = unidades.Pressure(3570.9, "kPa")
-    M = 130.4961896  # g/mol
+    rhoc = unidades.Density(480.219392)
+    Tc = unidades.Temperature(439.6)
+    Pc = unidades.Pressure(3623.7, "kPa")
+    M = 130.4944  # g/mol
     Tt = unidades.Temperature(195.15)
     Tb = unidades.Temperature(291.47)
     f_acent = 0.305
     momentoDipolar = unidades.DipoleMoment(1.44, "Debye")
-#    id = 671
 
     CP1 = {"ao": 4.0,
            "an": [], "pow": [],
-           "ao_exp": [8.962, 11.94],
-           "exp": [400, 1900],
+           "ao_exp": [11.765, 8.6848],
+           "exp": [630, 2230],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    mondejar = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1233zd(E) of Mondejar et al. (2013).",
+        "__name__": "Helmholtz equation of state for R1233zd(E) of Mondejar "
+                    "(2013).",
         "__doi__": {"autor": "Mondejar, M.E., McLinden, M.O., Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of Trans-1-chloro-3,3,3-trifluoropropene (R1233zd(E)): Vapor Pressure, p-rho-T Data, Speed of Sound Measurements and Equation of State",
-                    "ref": "to be submitted to J. Chem. Eng. Data, 2013.",
-                    "doi": ""},
-        "R": 8.314472,
+                    "title": "Thermodynamic Properties of trans-1-Chloro-3,3,3"
+                             "-trifluoropropene (R1233zd(E)): Vapor Pressure, "
+                             "(p-ρ-T) Behavior, and Spped of Sound "
+                             "Measurements, and Equation of State",
+                    "ref": "J. Chem. Eng. Data 60(8) (2015) 2477-2489",
+                    "doi": "10.1021/acs.jced.5b00348"},
+
+        "R": 8.3144621,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 100000.0, "rhomax": 11.41,
         "Pmin": 0.25, "rhomin": 11.41,
 
-        "nr1": [0.03920261, 1.639052, -1.997147, -0.6603372, 0.1498682],
+        "nr1": [0.0478487, 1.60644, -2.27161, -0.530687, 0.169641],
         "d1": [4, 1, 1, 2, 3],
-        "t1": [1., 0.24, 0.83, 1.17, 0.6],
+        "t1": [1., 0.26, 1.02, 0.7, 0.4],
 
-        "nr2": [-1.408791, -0.7920426, 0.8549678, -0.5301920, -0.01408562],
+        "nr2": [-1.85458, -0.321916, 0.636411, -0.121482, -0.0262755],
         "d2": [1, 3, 2, 2, 7],
-        "t2": [2.2, 2.88, 1.1, 2., 1.07],
+        "t2": [1.46, 2.3, 0.66, 2.7, 1.19],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [1.335117, -0.5441797, -0.05862723, -0.04123614, -0.6619106],
-        "d3": [1, 1, 3, 2, 3],
-        "t3": [1.27, 1.94, 2., 1.5, 1.],
-        "alfa3": [1.215, 1.5, 1.1, 2.52, 4.55],
-        "beta3": [1.27, 0.82, 0.94, 20., 32.],
-        "gamma3": [1.32, 0.82, 0.66, 0.66, 1.39],
-        "epsilon3": [0.77, 0.976, 1.08, 0.62, 0.61],
+        "nr3": [2.37362, -0.901771, -0.455962, -0.602941, -0.0594311],
+        "d3": [1, 1, 3, 2, 2],
+        "t3": [1.62, 1.13, 1.7, 1.35, 1.5],
+        "alfa3": [0.748, 1.473, 1.39, 0.86, 1.8],
+        "beta3": [1.29, 1.61, 0.8, 1.34, 0.49],
+        "gamma3": [0.89, 1.13, 0.7, 0.91, 1.2],
+        "epsilon3": [0.508, 0.366, 0.38, 0.773, 1.17],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = mondejar,
 
     _vapor_Pressure = {
         "eq": 5,
