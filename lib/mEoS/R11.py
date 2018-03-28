@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -50,12 +52,13 @@ class R11(MEoS):
            "exp": [381.63168, 1368.22648, 3435.66931, 689.55053],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    jacobsen = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-11 of Jacobsen et al. (1992)",
-        "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., and Lemmon, E.W.",
-                    "title": "A fundamental equation for trichlorofluoromethane (R-11)",
-                    "ref": "Fluid Phase Equilibria, 80:45-56, 1992.",
+        "__name__": "Helmholtz equation of state for R-11 of Jacobsen (1992)",
+        "__doi__": {"autor": "Jacobsen, R.T, Penoncello, S.G., Lemmon, E.W.",
+                    "title": "A Fundamental Equation for "
+                             "Trichlorofluoromethane (R-11)",
+                    "ref": "Fluid Phase Equilibria, 80 (1992) 45-56",
                     "doi": "10.1016/0378-3812(92)87054-Q"},
 
         "R": 8.31451,
@@ -83,19 +86,23 @@ class R11(MEoS):
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 6, 6, 6, 6],
         "gamma2": [1]*14}
 
-    helmholtz2 = {
+    marx = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-11 of Marx et al. (1992)",
-        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
-                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+        "__name__": "Helmholtz equation of state for R-11 of Marx (1992)",
+        "__doi__": {"autor": "Marx, V., Pruss, A., Wagner, W.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
+                             "und R 113. Beschreibung des thermodynamishchen "
+                             "Zustandsverhaltens bei Temperaturen bis 525 K "
+                             "und Druecken bis 200 MPa",
+                    "ref": "Düsseldorf: VDI Verlag, Series 19 "
+                           "(Waermetechnik/Kaeltetechnik), No. 57, 1992.",
                     "doi": ""},
 
         "R": 8.31451,
         "cp": CP2,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 13.0 ,
+        "Tmin": Tt, "Tmax": 625.0, "Pmax": 30000.0, "rhomax": 13.0,
         "Pmin": 0.0066057, "rhomin": 12.945,
 
         "nr1": [-0.219644325e1, 0.8562148696, 0.185864982e-1, 0.2807246052,
@@ -113,25 +120,20 @@ class R11(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4],
         "gamma2": [1]*15}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-11 of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-11 of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R11(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.6879 6.077 2.3618
-            >>> st2=R11(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            129.72 0.26916
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": CP2,
         "ref": "IIR",
+        "M": 137.368, "Tc": 471.06, "rhoc": 565/137.368,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.0,
         "Pmin": 0.0066915, "rhomin": 12.963,
@@ -148,7 +150,7 @@ class R11(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = jacobsen, marx, shortSpan
 
     _surface = {"sigma": [0.06212], "exp": [1.247]}
     _vapor_Pressure = {
@@ -161,5 +163,19 @@ class R11(MEoS):
         "exp": [0.357, 1.5, 1.7, 2.0, 3.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.30296e1, -0.60723e1, -0.15890e2, -0.63024e2, 0.87167e2, -0.15715e3],
+        "ao": [-3.0296, -6.0723, -15.890, -63.024, 87.167, -157.15],
         "exp": [0.417, 1.25, 3.1, 6.8, 10.0, 12.0]}
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R11(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.6879)
+        self.assertEqual(round(st.P.MPa, 3), 6.077)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.3618)
+
+        st2 = R11(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 129.72)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.26917)

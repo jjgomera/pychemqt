@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -31,33 +33,43 @@ class R123(MEoS):
     rhoc = unidades.Density(550.)
     Tc = unidades.Temperature(456.831)
     Pc = unidades.Pressure(3661.8, "kPa")
-    M = 152.931  # g/mol
+    M = 152.93  # g/mol
     Tt = unidades.Temperature(166.0)
     Tb = unidades.Temperature(300.973)
     f_acent = 0.28192
     momentoDipolar = unidades.DipoleMoment(1.356, "Debye")
-    id = 236
     # id = 1631
 
     CP1 = {"ao": 17.01154/8.31451,
-           "an": [0.4046308/8.31451, -4.644803e-4/8.31451, 2.347418e-7/8.31451],
+           "an": [0.4046308/8.31451, -4.644803e-4/8.31451,
+                  2.347418e-7/8.31451],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
+    Fi1 = {"ao_log": [1, 1.046009],
+           "pow": [0, 1, -1, -2, -3],
+           "ao_pow": [-13.23249393, 10.94800494, -11.1159955, 1.94308183,
+                      -0.22430542],
+           "ao_exp": [], "titao": [],
+           "ao_hyp": [], "hyp": []}
+
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-123 of Younglove and McLinden (1994).",
+        "__name__": "MBWR equation of state for R-123 of Younglove and "
+                    "McLinden (1994)",
         "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
-                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)",
-                    "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
+                    "title": "An International Standard Equation of State for "
+                             "the Thermodynamic Properties of Refrigerant 123 "
+                             "(2,2-Dichloro-1,1,1-trifluoroethane)",
+                    "ref": "J. Phys. Chem. Ref. Data, 23(5) (1994) 731-779",
                     "doi":  "10.1063/1.555950"},
-        #TODO: Add test from file
-        #FIXME: The file include derived heltmholtz expresion for MBWR equations
-        # too in Thermodynamic Properties of Environmentally Acceptable Refrigerants; Equations of State and Tables for Ammonia, R22, R134a, R152a, and R123
+
+        # TODO: The paper include heltmholtz expresion from MBWR equation
+
         "R": 8.31451,
         "cp": CP1,
-        "ref": "NBP",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
         "Pmin": 0.0042, "rhomin": 11.60,
@@ -74,17 +86,21 @@ class R123(MEoS):
               -0.241138441593e1, 0.108508031257e4, -0.106653193965e-1,
               -0.121343571084e2, -0.257510383240e3]}
 
-    helmholtz1 = {
+    tillner = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz transform of MBWR EOS for R-123 of Younglove & McLinden (1994)",
-        "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
-                    "title": "An International Standard Equation of State for the Thermodynamic Properties of Refrigerant 123 (2,2-Dichloro-1,1,1-trifluoroethane)",
-                    "ref": "J. Phys. Chem. Ref. Data, 23:731-779, 1994.",
-                    "doi":  "10.1063/1.555950"},
+        "__name__": "Helmholtz equation of state for R-123 of Baehr and "
+                    "Tillner-Roth (1993)",
+        "__doi__": {"autor": "Baehr, H.D., Tillner-Roth, R.",
+                    "title": "Thermodynamic Properties of Environmentally "
+                             "Acceptable Refrigerants: Equations of State and "
+                             "Tables for Ammonia, R22, R134a, R152a, and R123",
+                    "ref": "Springer-Verlag, Berlin, 1994.",
+                    "doi": "10.1007/978-3-642-79400-1"},
 
+        # This MEoS is a transformation of Youglove-McLinden MBWR equation
         "R": 8.31451,
-        "cp": CP1,
-        "ref": "NBP",
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
         "Pmin": 0.0042, "rhomin": 11.60,
@@ -97,8 +113,10 @@ class R123(MEoS):
                 -0.128125131950, -0.786087387513e-1, -0.816000499305e-1,
                 0.536451054311e-1, -0.680078211929e-2, 0.701264082191e-2,
                 -0.901762397311e-3],
-        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7, 8],
-        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2, 3, 3],
+        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7,
+               8],
+        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2, 3,
+               3],
 
         "nr2": [0.100242647494e2, 0.280607656419, -0.206814471606e-1,
                 0.798923878145e1, -0.547972072476, -0.206814470584e-1,
@@ -111,25 +129,20 @@ class R123(MEoS):
         "c2": [2]*18,
         "gamma2": [1]*18}
 
-    helmholtz2 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-123 of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-123 of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R123(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.8667 6.018 1.9509
-            >>> st2=R123(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            144.33 0.29582
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": CP1,
         "ref": "NBP",
+        "M": 152.931, "Tc": 456.82, "rhoc": 553/152.931,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62,
         "Pmin": 0.0041534, "rhomin": 11.613,
@@ -146,7 +159,7 @@ class R123(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = MBWR, helmholtz1, helmholtz2
+    eq = MBWR, tillner, shortSpan
 
     _surface = {"sigma": [0.056151], "exp": [1.2367]}
     _vapor_Pressure = {
@@ -159,7 +172,7 @@ class R123(MEoS):
         "exp": [0.345, 0.74, 1.2, 2.6, 7.2]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.30205e1, -0.74537e1, -0.21880e2, -0.57430e2, 0.11239e2, -0.16640e3],
+        "ao": [-3.0205, -7.4537, -21.88, -57.43, 11.239, -166.4],
         "exp": [0.3905, 1.29, 3.4, 7.0, 12.0, 15.0]}
 
     visco0 = {"eq": 1, "omega": 1,
@@ -331,3 +344,223 @@ class R123(MEoS):
                "crit_den_c": [0, 0]}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    # def test_younglove(self):
+        # # Selected point from Table C1 pag 759, saturation states
+        # st = R123(T=R123.Tt, x=0.5, eq=1)
+        # self.assertEqual(round(st.P.MPa, 5), 0)
+        # self.assertEqual(round(st.Liquido.rho, 1), 1770.9)
+        # self.assertEqual(round(st.Liquido.h.kJkg, 2), 98.81)
+        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.5311)
+        # self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.630)
+        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 0.929)
+        # self.assertEqual(round(st.Liquido.w, 1), 1243.8)
+        # self.assertEqual(round(st.Gas.rho, 4), 0.0005)
+        # self.assertEqual(round(st.Gas.h.kJkg, 2), 322.50)
+        # self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.8786)
+        # self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.419)
+        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.474)
+        # self.assertEqual(round(st.Gas.w, 1), 101.0)
+
+        # st = R123(T=+273.15, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 6), 0)
+        # self.assertEqual(round(st.Liquido.rho, 1), )
+        # self.assertEqual(round(st.Liquido.h.kJkg, 2), )
+        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), )
+        # self.assertEqual(round(st.Liquido.cv.kJkgK, 3), )
+        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), )
+        # self.assertEqual(round(st.Liquido.w, 1), )
+        # self.assertEqual(round(st.Gas.rho, 1), )
+        # self.assertEqual(round(st.Gas.h.kJkg, 2), )
+        # self.assertEqual(round(st.Gas.s.kJkgK, 4), )
+        # self.assertEqual(round(st.Gas.cv.kJkgK, 3), )
+        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), )
+        # self.assertEqual(round(st.Gas.w, 1), )
+
+    def test_tillner(self):
+        # Selected point from pag 166, saturation state
+        st = R123(T=-55+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.00121)
+        self.assertEqual(round(st.Liquido.rho, 1), 1653.9)
+        self.assertEqual(round(st.Gas.rho, 4), 0.1020)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 147.12)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 202.30)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 349.42)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.7842)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.9273)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7115)
+
+        st = R123(T=273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.03265)
+        self.assertEqual(round(st.Liquido.rho, 1), 1526.1)
+        self.assertEqual(round(st.Gas.rho, 4), 2.2417)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 200.00)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 181.44)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 381.44)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0000)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.6642)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6642)
+
+        st = R123(T=50+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.21246)
+        self.assertEqual(round(st.Liquido.rho, 1), 1397.8)
+        self.assertEqual(round(st.Gas.rho, 3), 13.031)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 251.06)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 160.44)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 411.50)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.1711)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.4965)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6676)
+
+        st = R123(T=100+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.78553)
+        self.assertEqual(round(st.Liquido.rho, 1), 1246.9)
+        self.assertEqual(round(st.Gas.rho, 3), 46.996)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 305.76)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 134.01)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 439.77)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3271)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.3591)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6862)
+
+        st = R123(T=150+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 2.09868)
+        self.assertEqual(round(st.Liquido.rho, 1), 1036.8)
+        self.assertEqual(round(st.Gas.rho, 2), 142.23)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 367.10)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 93.95)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 461.05)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.4782)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.2220)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7003)
+
+        st = R123(T=180+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 3.45057)
+        self.assertEqual(round(st.Liquido.rho, 2), 765.91)
+        self.assertEqual(round(st.Gas.rho, 2), 341.95)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 416.22)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 40.60)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 456.82)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.5867)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.0896)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6763)
+
+        st = R123(T=183+273.15, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 3.62135)
+        self.assertEqual(round(st.Liquido.rho, 2), 665.76)
+        self.assertEqual(round(st.Gas.rho, 2), 433.97)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 426.94)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 21.52)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 448.46)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.6097)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.0472)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6569)
+
+        st = R123(P=1e3, x=0.5, eq="tillner")
+        self.assertEqual(round(st.T.C, 2), -57.38)
+        self.assertEqual(round(st.Liquido.rho, 1), 1659.2)
+        self.assertEqual(round(st.Gas.rho, 4), 0.0854)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 144.90)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 203.20)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 348.10)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.7739)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.9418)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7157)
+
+        st = R123(P=1e4, x=0.5, eq="tillner")
+        self.assertEqual(round(st.T.C, 2), -23.27)
+        self.assertEqual(round(st.Liquido.rho, 1), 1581.4)
+        self.assertEqual(round(st.Gas.rho, 4), 0.7422)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 177.25)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 190.34)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 367.59)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.9130)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.7617)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6747)
+
+        st = R123(P=1e5, x=0.5, eq="tillner")
+        self.assertEqual(round(st.T.C, 2), 27.46)
+        self.assertEqual(round(st.Liquido.rho, 1), 1457.6)
+        self.assertEqual(round(st.Gas.rho, 4), 6.3918)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 227.65)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 170.34)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 398.00)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0963)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.5667)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6629)
+
+        st = R123(P=1e6, x=0.5, eq="tillner")
+        self.assertEqual(round(st.T.C, 2), 111.15)
+        self.assertEqual(round(st.Liquido.rho, 1), 1207.7)
+        self.assertEqual(round(st.Gas.rho, 4), 60.445)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 318.66)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 126.78)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 445.45)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3607)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.3299)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6906)
+
+        # Selected point from Pag 174, single region states
+        st = R123(T=273.15, P=1e4, eq="tillner")
+        self.assertEqual(round(st.rho, 4), 0.6773)
+        self.assertEqual(round(st.h.kJkg, 2), 382.19)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7306)
+
+        st = R123(T=175+273.15, P=2e4, eq="tillner")
+        self.assertEqual(round(st.rho, 4), 0.8225)
+        self.assertEqual(round(st.h.kJkg, 2), 511.64)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.0555)
+
+        st = R123(T=-5+273.15, P=3e4, eq="tillner")
+        self.assertEqual(round(st.rho, 1), 1538.2)
+        self.assertEqual(round(st.h.kJkg, 2), 195.06)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9818)
+
+        st = R123(T=10+273.15, P=5e4, eq="tillner")
+        self.assertEqual(round(st.rho, 4), 3.3352)
+        self.assertEqual(round(st.h.kJkg, 2), 387.47)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.6633)
+
+        st = R123(T=100+273.15, P=1e5, eq="tillner")
+        self.assertEqual(round(st.rho, 4), 5.0265)
+        self.assertEqual(round(st.h.kJkg, 2), 451.10)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.8209)
+
+        st = R123(T=45+273.15, P=2e5, eq="tillner")
+        self.assertEqual(round(st.rho, 1), 1411.4)
+        self.assertEqual(round(st.h.kJkg, 2), 245.81)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.1548)
+
+        st = R123(T=-25+273.15, P=3e5, eq="tillner")
+        self.assertEqual(round(st.rho, 1), 1585.9)
+        self.assertEqual(round(st.h.kJkg, 2), 175.70)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9061)
+
+        st = R123(T=80+273.15, P=5e5, eq="tillner")
+        self.assertEqual(round(st.rho, 1), 1311.3)
+        self.assertEqual(round(st.h.kJkg, 2), 283.35)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.2660)
+
+        st = R123(T=120+273.15, P=1e6, eq="tillner")
+        self.assertEqual(round(st.rho, 3), 57.583)
+        self.assertEqual(round(st.h.kJkg, 2), 453.52)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7114)
+
+        st = R123(T=200+273.15, P=2e6, eq="tillner")
+        self.assertEqual(round(st.rho, 3), 95.885)
+        self.assertEqual(round(st.h.kJkg, 2), 514.78)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.8225)
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R123(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.8667)
+        self.assertEqual(round(st.P.MPa, 3), 6.018)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.9509)
+
+        st2 = R123(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 144.33)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.29582)
