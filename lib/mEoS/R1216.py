@@ -44,13 +44,14 @@ class R1216(MEoS):
            "exp": [561, 1486, 7595],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1216 of Zhou et al. (2010).",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2010.",
+        "__name__": "Helmholtz equation of state for R1216 of Zhou (2010)",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W.",
+                    "title": "Preliminary equation, 2010.",
                     "ref": "",
                     "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
 
@@ -77,7 +78,7 @@ class R1216(MEoS):
         "epsilon3": [0.67, 0.925, 0.75, 0.73],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure = {
         "eq": 5,

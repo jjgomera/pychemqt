@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -59,7 +61,7 @@ class R143a(MEoS):
            "ao_pow": [-5.556942, 8.93748, 1.652398, -0.6827433, -8.113464],
            "ao_exp": [], "titao": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-143a of Lemmon and Jacobsen (2000).",
         "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
@@ -244,7 +246,7 @@ class R143a(MEoS):
               -0.219511369081e-1, 0.642186519493e1, -0.938317030843e-4,
               -0.478594713528e-1, -0.206555883874e1]}
 
-    helmholtz2 = {
+    li = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-143a of Li et al. (1999).",
         "__doi__": {"autor": "Li, J., Tillner-Roth, R., Sato, H., and Watanabe, K.",
@@ -271,29 +273,25 @@ class R143a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4],
         "gamma2": [1]*14}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-143a of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-143a of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R143a(T=700, rho=200, eq=3)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.2785 20.152 1.6702
-            >>> st2=R143a(T=750, rho=100, eq=3)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            201.13 0.47846
-            """, # Table III, Pag 117
 
         "R": 8.31451,
-        "cp": CP2,
+        "cp": Fi2,
+        "ref": "IIR",
+        "M": 80.04, "Tc": 348.86, "rhoc": 434.1/80.04,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.82,
         "Pmin": 1.072, "rhomin": 15.816,
 
-        "nr1": [.10306886e1, -.29497307e1, .6943523, .71552102e-1, .19155982e-3],
+        "nr1": [1.0306886, -2.9497307, .6943523, 0.071552102, 0.19155982e-3],
         "d1": [1, 1, 1, 3, 7],
         "t1": [0.25, 1.25, 1.5, 0.25, 0.875],
 
@@ -304,7 +302,7 @@ class R143a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, MBWR, helmholtz2, helmholtz3
+    eq = lemmon, MBWR, li, shortSpan
 
     _surface = {"sigma": [0.05416], "exp": [1.255]}
     _vapor_Pressure = {
@@ -317,5 +315,19 @@ class R143a(MEoS):
         "exp": [0.348, 1.6, 2.0, 2.4, 2.7]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.28673e1, -.63818e1, -.16314e2, -.45947e2, -.13956e1, -.24671e3],
+        "ao": [-2.8673, -6.3818, -16.314, -45.947, -1.3956, -246.71],
         "exp": [0.384, 1.17, 3.0, 6.2, 7.0, 15.0]}
+
+
+# class Test(TestCase):
+
+    # def test_shortSpan(self):
+        # # Table III, Pag 117
+        # st = R143a(T=500, rho=500, eq="shortSpan")
+        # self.assertEqual(round(st.cp0.kJkgK, 4), 1.2785)
+        # self.assertEqual(round(st.P.MPa, 3), 20.152)
+        # self.assertEqual(round(st.cp.kJkgK, 4), 1.6702)
+
+        # st2 = R143a(T=600, rho=100, eq="shortSpan")
+        # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 201.13)
+        # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.47846)

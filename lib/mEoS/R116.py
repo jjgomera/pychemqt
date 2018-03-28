@@ -59,7 +59,7 @@ class R116(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-116 of Lemmon "
                     "and Span (2006)",
@@ -86,11 +86,14 @@ class R116(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    helmholtz2 = {
+    kozlov = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-116 of Kozlov (1996).",
         "__doi__": {"autor": "Kozlov A.D.",
-                    "title": "private communication with Dr. Alexander  D. Kozlov, Director, VNITs SMV Russian Research Center for Standartization Information and Certification of Materials, Nahimovsky prospect, 31, bld. 2 Moscow 117418, Russia. aldrkozlov@mail.ru",
+                    "title": "Private communication with Dr. Alexander D. "
+                             "Kozlov, Director, VNITs SMV Russian Research "
+                             "Center for Standartization Information and "
+                             "Certification of Materials",
                     "ref": "",
                     "doi":  ""},
 
@@ -115,7 +118,7 @@ class R116(MEoS):
         "c2": [1, 2, 2, 2, 3, 3, 3, 4],
         "gamma2": [1]*8}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon,kozlov 
 
     _surface = {"sigma": [0.047593, -0.0073402], "exp": [1.2666, 1.9892]}
     _vapor_Pressure = {

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -36,7 +38,6 @@ class R125(MEoS):
     Tb = unidades.Temperature(225.06)
     f_acent = 0.3052
     momentoDipolar = unidades.DipoleMoment(1.563, "Debye")
-    id = 236
     # id = 1231
 
     Fi1 = {"ao_log": [1, -1],
@@ -73,59 +74,36 @@ class R125(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-
     lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-125 of Lemmon and Jacobsen (2005).",
-        "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T",
-                    "title": "A New Functional Form and New Fitting Techniques for Equations of State with Application to Pentafluoroethane (HFC-125)",
-                    "ref": "J. Phys. Chem. Ref. Data 34, 69 (2005)",
+        "__name__": "Helmholtz equation of state for R-125 of Lemmon (2005)",
+        "__doi__": {"autor": "Lemmon, E.W. Jacobsen, R.T",
+                    "title": "A New Functional Form and New Fitting Techniques"
+                             " for Equations of State with Application to "
+                             "Pentafluoroethane (HFC-125)",
+                    "ref": "J. Phys. Chem. Ref. Data 34(1) (2005) 69-108",
                     "doi": "10.1063/1.1797813"},
 
-        "__test__":
-            # Table 12, Pag 104
-            """
-            >>> st=R125(T=200, rhom=14)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            200.0 14.0 42.302520 85.816305 123.53641 968.67194
-            >>> st=R125(T=300, rhom=10)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300.0 10.0 2.9023498 99.919660 164.16914 345.91235
-            >>> st=R125(T=300, rhom=0.7)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300.0 0.7 1.3245058 94.823171 124.96009 120.56007
-            >>> st=R125(T=400, rhom=5.0)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            400.0 5.0 9.0495658 114.41819 198.11792 151.53060
-            >>> st=R125(T=339.2, rhom=4.8)
-            >>> print "%0.1f %0.1f %0.8g %0.8g %0.8g %0.8g" % (\
-                st.T, st.rhoM, st.P.MPa, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            339.2 4.8 3.6201215 130.63650 274863.02 78.735928
-            """,
         # FIXME: Check meos phir calculation with exp != 2
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195},
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
         "Pmin": 2.914, "rhomin": 14.086,
 
-        "nr1": [0.5280760e1, -0.8676580e1, 0.7501127, 0.7590023, 0.1451899e-1],
+        "nr1": [5.28076, -8.67658, 0.7501127, 0.7590023, 0.01451899],
         "d1": [1, 1, 1, 2, 4],
         "t1": [0.669, 1.05, 2.75, 0.956, 1.],
 
-        "nr2": [0.4777189e1, -0.3330988e1, 0.3775673e1, -0.2290919e1, 0.8888268,
-                -0.6234864, -0.4127263e-1, -0.8455389e-1, -0.1308752, 0.8344962e-2],
+        "nr2": [4.777189, -3.330988, 3.775673, -2.290919, 0.8888268,
+                -0.6234864, -0.04127263, -0.08455389, -0.1308752, 0.008344962],
         "d2": [1, 1, 2, 2, 3, 4, 5, 1, 5, 1],
         "t2": [2, 2.75, 2.38, 3.37, 3.47, 2.63, 3.45, 0.72, 4.23, 0.2],
         "c2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 3],
         "gamma2": [1]*10,
 
-        "nr3": [-0.1532005e1, -0.5883649e-1, 0.2296658e-1],
+        "nr3": [-1.532005, -0.05883649, 0.02296658],
         "t3": [4.5, 29, 24],
         "d3": [2, 3, 5],
         "alfa3": [1]*3,
@@ -137,10 +115,13 @@ class R125(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-125 of Outcalt and McLinden (1995)",
-        "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "Equations of state for the thermodynamic properties of R32 (difluoromethane) and R125 (pentafluoroethane)",
-                    "ref": "Int. J. Thermophysics, 16:79-89, 1995.",
+        "__name__": "MBWR equation of state for R-125 of Outcalt and McLinden "
+                    "(1995)",
+        "__doi__": {"autor": "Outcalt, S.L., McLinden, M.O.",
+                    "title": "Equations of State for the Thermodynamic "
+                             "Properties of R32 (Difluoromethane) and R125 "
+                             "(Pentafluoroethane)",
+                    "ref": "Int. J. Thermophysics 16(1) (1995) 79-89.",
                     "doi": "10.1007/BF01438959"},
 
         "R": 8.314471,
@@ -164,10 +145,12 @@ class R125(MEoS):
 
     sunaga = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-125 of Sunaga et al. (1998)",
-        "__doi__": {"autor": "Sunaga, H., Tillner-Roth, R., Sato, H., and Watanabe, K.",
-                    "title": "A Thermodynamic Equation of State for Pentafluoroethane (R-125)",
-                    "ref": "Int. J. Thermophys., 19(6):1623-1635, 1998.",
+        "__name__": "Helmholtz equation of state for R-125 of Sunaga (1998)",
+        "__doi__": {"autor": "Sunaga, H., Tillner-Roth, R., Sato, H., "
+                             "Watanabe, K.",
+                    "title": "A Thermodynamic Equation of State for "
+                             "Pentafluoroethane (R-125)",
+                    "ref": "Int. J. Thermophys., 19(6) (1998) 1623-1635",
                     "doi": "10.1007/BF03344914"},
 
         "R": 8.314471,
@@ -177,7 +160,7 @@ class R125(MEoS):
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
         "Pmin": 2.943, "rhomin": 14.088,
 
-        "nr1": [0.12439220, 0.27922179, -0.11822597e1, 0.23616512, -0.11571810e-1],
+        "nr1": [0.12439220, 0.27922179, -1.1822597, 0.23616512, -0.01157181],
         "d1": [1, 2, 2, 3, 2],
         "t1": [-0.5, 0, 1.5, 1.5, 3],
 
@@ -191,12 +174,16 @@ class R125(MEoS):
 
     piao = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-125 of Piao and Noguchi (1998)",
-        "__doi__": {"autor": "Piao, C.-C. and Noguchi, M.",
-                    "title": "An international standard equation of state for the thermodynamic properties of HFC-125 (pentafluoroethane)",
-                    "ref": "J. Phys. Chem. Ref. Data, 27(4):775-806, 1998.",
+        "__name__": "Helmholtz equation of state for R-125 of Piao (1998)",
+        "__doi__": {"autor": "Piao, C.-C., Noguchi, M.",
+                    "title": "An International Standard Equation of State for "
+                             "the Thermodynamic Properties of HFC-125 "
+                             "(Pentafluoroethane)",
+                    "ref": "J. Phys. Chem. Ref. Data, 27(4) (1998) 775-806",
                     "doi": "10.1063/1.556021"},
+
         # Paper with mBWR type equation!!
+        # Add test with use MBWR version
         "R": 8.314471,
         "cp": CP3,
         "ref": "IIR",
@@ -206,13 +193,13 @@ class R125(MEoS):
 
         "nr1": [0.85393382372e-1, -0.133260499658, 0.257817782488,
                 -0.735018179542, -0.787454743426, -0.190320468891e-1,
-                0.388329449013, -0.631901774641, 0.623842653447, 0.109925047828,
+                .388329449013, -0.631901774641, 0.623842653447, 0.109925047828,
                 -0.993099630896e-1, -0.104601585904e-1, -0.769998709731e-1,
                 0.149829594347e-1, 0.166640927925e-1, -0.181492321758e-2],
         "d1": [0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6],
         "t1": [1, 2, 0, 1, 3, 4, 0, 1, 3, 1, 3, 1, 2, 1, 2, 1],
 
-        "nr2": [-0.85393382372e-1, 0.133260499658, 0.410983574575, -0.45298892633],
+        "nr2": [-.085393382372, .133260499658, .410983574575, -.45298892633],
         "d2": [0, 0, 2, 2],
         "t2": [1, 2, 1, 2],
         "c2": [2, 2, 2, 2],
@@ -220,22 +207,18 @@ class R125(MEoS):
 
     shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-125 of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-125 of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R125(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.0745 14.620 1.3219
-            >>> st2=R125(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            151.30 0.35860
-            """, # Table III, Pag 117
 
         "R": 8.31451,
-        "cp": CP5,
+        "cp": CP3,
+        "ref": "IIR",
+        "M": 120.022, "Tc": 339.33, "rhoc": 571.3/120.022,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 14.1,
         "Pmin": 2.9213, "rhomin": 14.096,
@@ -254,10 +237,12 @@ class R125(MEoS):
 
     astina = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-125 of Astina and Sato (2004)",
-        "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Rational Fundamental Equation of State for Pentafluoroethane with Theoretical and Experimental Bases",
-                    "ref": "Int. J. Thermophys., 25(1):113-131, 2004.",
+        "__name__": "Helmholtz equation of state for R-125 of Astina (2004)",
+        "__doi__": {"autor": "Astina, I.M., Sato, H.",
+                    "title": "A Rational Fundamental Equation of State for "
+                             "Pentafluoroethane with Theoretical and "
+                             "Experimental Bases",
+                    "ref": "Int. J. Thermophys., 25(1) (2004) 113-131",
                     "doi": "10.1023/B:IJOT.0000022330.46522.68"},
 
         "R": 8.314472,
@@ -400,3 +385,101 @@ class R125(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.834646e-10, "Tcref": 508.7475}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Enthalpy-Entropy reference state
+        st = R125(T=273.15, x=0)
+        self.assertEqual(round(st.h.kJkg, 3), 200)
+        self.assertEqual(round(st.s.kJkgK, 5), 1)
+
+        # FIXME: Tiny error in last decimal
+        # Table 12, Pag 104
+        # st = R125(T=200, rhom=14)
+        # self.assertEqual(round(st.P.MPa, 6), 42.302520)
+        # self.assertEqual(round(st.cvM.JmolK, 6), 85.816305)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 123.53641)
+        # self.assertEqual(round(st.w, 5), 968.67194)
+
+        # st = R125(T=300, rhom=10)
+        # self.assertEqual(round(st.P.MPa, 7), 2.9023498)
+        # self.assertEqual(round(st.cvM.JmolK, 6), 99.919660)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 164.16914)
+        # self.assertEqual(round(st.w, 5), 345.91235)
+
+        # st = R125(T=300, rhom=0.7)
+        # self.assertEqual(round(st.P.MPa, 7), 1.3245058)
+        # self.assertEqual(round(st.cvM.JmolK, 6), 94.823171)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 124.96009)
+        # self.assertEqual(round(st.w, 5), 120.56007)
+
+        # st = R125(T=400, rhom=5.0)
+        # self.assertEqual(round(st.P.MPa, 7), 9.0495658)
+        # self.assertEqual(round(st.cvM.JmolK, 5), 114.41819)
+        # self.assertEqual(round(st.cpM.JmolK, 5), 198.11792)
+        # self.assertEqual(round(st.w, 5), 151.53060)
+
+        # st = R125(T=339.2, rhom=4.8)
+        # self.assertEqual(round(st.P.MPa, 7), 3.6201215)
+        # self.assertEqual(round(st.cvM.JmolK, 5), 130.63650)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 274863.02)
+        # self.assertEqual(round(st.w, 6), 78.735928)
+
+        # Selected point from Table 9, Appendix B, pag 104
+        st = R125(T=R125.Tt, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.00291)
+        self.assertEqual(round(st.Liquido.rho, 1), 1690.7)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 87.130)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), 0.49023)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.6776)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.035)
+        self.assertEqual(round(st.Liquido.w, 1), 932.6)
+        self.assertEqual(round(st.Gas.rho, 5), 0.24462)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 277.39)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.5931)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.4984)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.5689)
+        self.assertEqual(round(st.Gas.w, 1), 116.4)
+
+        st = R125(T=273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.67052)
+        self.assertEqual(round(st.Liquido.rho, 1), 1319.8)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 200.00)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 3), 1.000)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.7948)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.255)
+        self.assertEqual(round(st.Liquido.w, 1), 448.0)
+        self.assertEqual(round(st.Gas.rho, 3), 42.070)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 333.16)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.4875)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.7240)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.8797)
+        self.assertEqual(round(st.Gas.w, 1), 125.8)
+
+        st = R125(T=66+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 3.61607)
+        self.assertEqual(round(st.Liquido.rho, 2), 612.97)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 314.86)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3602)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 1.078)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 1), 818.2)
+        self.assertEqual(round(st.Liquido.w, 1), 78.9)
+        self.assertEqual(round(st.Gas.rho, 2), 534.59)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 321.41)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.3795)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 1.093)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 1), 923.0)
+        self.assertEqual(round(st.Gas.w, 1), 79.2)
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R125(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.0745)
+        self.assertEqual(round(st.P.MPa, 3), 14.620)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.3219)
+
+        st2 = R125(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 151.30)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.35860)

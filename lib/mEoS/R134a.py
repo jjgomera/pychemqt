@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -357,19 +359,13 @@ class R134a(MEoS):
 
     shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-134a of Span and Wagner (2003).",
+        "__name__": "short Helmholtz equation of state for R-134a of Span and "
+                    "Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R134a(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.1577 14.656 1.6129
-            >>> st2=R134a(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            181.97 0.41386
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": Fi1,
@@ -591,3 +587,17 @@ class R134a(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.285356e-10, "Tcref": 561.411}
 
     _thermal = thermo0,
+
+
+# class Test(TestCase):
+
+    # def test_shortSpan(self):
+        # # Table III, Pag 117
+        # st = R134a(T=500, rho=500, eq="shortSpan")
+        # self.assertEqual(round(st.cp0.kJkgK, 4), 1.1577)
+        # self.assertEqual(round(st.P.MPa, 3), 14.656)
+        # self.assertEqual(round(st.cp.kJkgK, 4), 1.6129)
+
+        # st2 = R134a(T=600, rho=100, eq="shortSpan")
+        # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 181.97)
+        # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41386)

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -38,10 +40,11 @@ class R1234ze(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.27, "Debye")
     id = 671
 
-    CP1 = {"ao": 4.0,
-           "an": [], "pow": [],
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-12.558347537, 8.7912297624],
            "ao_exp": [9.3575, 10.717],
-           "exp": [513, 1972],
+           "titao": [513/Tc, 1972/Tc],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 6.259,
@@ -56,23 +59,25 @@ class R1234ze(MEoS):
            "exp": [620, 1570, 3953],
            "ao_hyp": [], "hyp": []}
 
-    Fi1 = {"ao_log": [1, 3],
+    Fi2 = {"ao_log": [1, 3],
            "pow": [0, 1],
            "ao_pow": [-10.8724711, -30.1326538],
            "ao_exp": [6.07536, 9.95795],
            "titao": [289/Tc, 1303/Tc],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    thol = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234ze of Thol and Lemmon (2013).",
+        "__name__": "Helmholtz equation of state for R1234ze of Thol (2016)",
         "__doi__": {"autor": "Thol, M. and Lemmon, E.W.",
-                    "title": "to be published in Int. J. Thermophys., 2013.",
-                    "ref": "",
-                    "doi": ""},
+                    "title": "Equation of State for the Thermodynamic"
+                             "Properties of trans-1,3,3,3-Tetrafluoroporpene"
+                             "[R-1234ze(E)]",
+                    "ref": "Int. J. Thermophys. 37(3) (2016) 28",
+                    "doi": "10.1007/s10765-016-2040-6"},
 
-        "R": 8.314472,
-        "cp": CP1,
+        "R": 8.3144621,
+        "cp": Fi1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26,
@@ -88,7 +93,8 @@ class R1234ze(MEoS):
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [1.407916, -0.4237082, -0.2270068, -0.805213, 0.00994318, -0.008798793],
+        "nr3": [1.407916, -0.4237082, -0.2270068, -0.805213, 0.00994318,
+                -0.008798793],
         "d3": [1, 1, 3, 3, 2, 1],
         "t3": [1.33, 1.75, 2.11, 1.0, 1.5, 1.0],
         "alfa3": [1.0, 1.61, 1.24, 9.34, 5.78, 3.08],
@@ -97,12 +103,17 @@ class R1234ze(MEoS):
         "epsilon3": [0.728, 0.87, 0.855, 0.79, 1.3, 0.71],
         "nr4": []}
 
-    helmholtz2 = {
+    mclinden = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
-        "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State",
-                    "ref": "International Refrigeration and Air Conditioning Conference at Purdue, July 12-15, 2010.",
+        "__name__": "Helmholtz equation of state for R1234ze of McLinden "
+                    "(2010)",
+        "__doi__": {"autor": "McLinden, M.O., Thol, M., Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of trans-1,3,3,3-"
+                             "Tetrafluoropropene [R1234ze(E)]: Measurements "
+                             "of Density and Vapor Pressure and a "
+                             "Comprehensive Equation of State",
+                    "ref": "International Refrigeration and Air Conditioning "
+                           "Conference at Purdue, July 12-15, 2010.",
                     "doi": "10.0000_docs.lib.purdue.edu_generic-99DA7EA2C877"},
 
         "R": 8.314472,
@@ -131,65 +142,39 @@ class R1234ze(MEoS):
         "epsilon3": [0.711, 0.914, 0.694, 0.731],
         "nr4": []}
 
-    helmholtz3 = {
+    akasaka = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234ze of McLinden et al. (2010).",
-        "__doi__": {"autor": "McLinden, M.O., Thol, M., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of trans-1,3,3,3-Tetrafluoropropene [R1234ze(E)]: Measurements of Density and Vapor Pressure and a Comprehensive Equation of State",
-                    "ref": "unpublished equation, similar to helmholtz2",
-                    "doi": ""},
-        "R": 8.314472,
-        "cp": CP3,
-        "ref": "IIR",
-
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20,
-        "Pmin": 0.23, "rhomin": 13.19,
-
-        "nr1": [0.4434245e-1, 0.1646369e1, -0.2437488e1, -0.517056, 0.1815626],
-        "d1": [4, 1, 1, 2, 3],
-        "t1": [1.0, 0.31, 0.923, 1.06, 0.44],
-
-        "nr2": [-0.1210104e1, -0.5944653, 0.7521992, -0.6747216, -0.2448183e-1],
-        "d2": [1, 3, 2, 2, 7],
-        "t2": [2.08, 2.32, 1.25, 2.0, 1.0],
-        "c2": [2, 2, 1, 2, 1],
-        "gamma2": [1]*5,
-
-        "nr3": [0.1379434e1, -0.4697024, -0.2036158, -0.8407447e-1, 0.5109529e-3],
-        "d3": [1, 1, 3, 3, 2],
-        "t3": [0.93, 1.93, 2.69, 1.0, 2.0],
-        "alfa3": [1.0, 1.4, 1.134, 7.68, 24.],
-        "beta3": [1.64, 1.57, 1.49, 257.0, 45.0],
-        "gamma3": [1.13, 0.61, 0.65, 1.13, 1.34],
-        "epsilon3": [0.711, 0.856, 0.753, 0.772, 1.88],
-        "nr4": []}
-
-    helmholtz4 = {
-        "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
+        "__name__": "Helmholtz equation of state for R1234yf of Akasaka "
+                    "(2011)",
         "__doi__": {"autor": "Akasaka, R.",
-                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))",
-                    "ref": "Int J Thermophys (2011) 32:1125–1147",
+                    "title": "New Fundamental Equations of State with a Common"
+                             " Functional Form for 2,3,3,3-Tetrafluoropropene "
+                             "(R-1234yf) and trans-1,3,3,3-Tetrafluoropropene "
+                             "(R-1234ze(E))",
+                    "ref": "Int. J. Thermophys. 32(6) (2011) 1125-1147",
                     "doi": "10.1007/s10765-011-0992-0"},
+
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": "IIR",
 
         "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20,
         "Pmin": 0.23, "rhomin": 13.19,
 
-        "nr1": [0.85579765e1, -0.94701332e1, -0.25013623, 0.13789870, 0.12177113e-1],
+        "nr1": [8.5579765, -9.4701332, -0.25013623, 0.1378987, 0.012177113],
         "d1": [1, 1, 1, 2, 5],
         "t1": [0.66886, 0.83392, 1.6982, 1.8030, 0.36657],
 
-        "nr2": [-0.14227996, 0.10096648, 0.17504319e-1, -0.17627303e-1, -0.14705120e-1, 0.37202269, -0.30138266, -0.92927274e-1, 0.87051177e-1, 0.18113770e-1, -0.16018424e-1, 0.53809860e-2],
+        "nr2": [-0.14227996, 0.10096648, 0.017504319, -0.017627303,
+                -0.014705120, 0.37202269, -0.30138266, -0.092927274,
+                0.087051177, 0.01811377, -0.016018424, 0.005380986],
         "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
         "t2": [3.8666, 1.0194, 0, 1.1655, 8.3101, 6.1459, 8.3495, 6.0422,
                7.444, 15.433, 21.543, 15.499],
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = helmholtz1, helmholtz2, helmholtz3, helmholtz4
+    eq = thol, mclinden, akasaka
 
     _surface = {"__doi__":
                     {"autor": "Tanaka, K., Higashi, Y.",
@@ -248,3 +233,44 @@ class R1234ze(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 573.78}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_thol(self):
+        # Table 3, pag 15
+        st = R1234ze(T=200, rhom=12.6)
+        self.assertEqual(round(st.P.MPa, 6), 2.161400)
+        self.assertEqual(round(st.cvM.JmolK, 4), 94.9481)
+        self.assertEqual(round(st.cpM.JmolK, 3), 139.161)
+        self.assertEqual(round(st.w, 3), 982.461)
+
+        st = R1234ze(T=350, rhom=11.4)
+        self.assertEqual(round(st.P.MPa, 5), 95.04156)
+        self.assertEqual(round(st.cvM.JmolK, 3), 112.495)
+        self.assertEqual(round(st.cpM.JmolK, 3), 144.400)
+        self.assertEqual(round(st.w, 3), 902.540)
+
+        st = R1234ze(T=383, rhom=4.29)
+        self.assertEqual(round(st.P.MPa, 6), 3.670105)
+        self.assertEqual(round(st.cvM.JmolK, 3), 151.107)
+        self.assertEqual(round(st.cpM.JmolK, 1), 17431.1)
+        self.assertEqual(round(st.w, 4), 79.9438)
+
+        st = R1234ze(T=200, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 71.6045)
+        self.assertEqual(round(st.cpM.JmolK, 4), 79.9190)
+        self.assertEqual(round(st.w, 3), 127.572)
+
+        st = R1234ze(T=360, rhom=1)
+        self.assertEqual(round(st.P.MPa, 6), 2.039103)
+        self.assertEqual(round(st.cvM.JmolK, 3), 113.342)
+        self.assertEqual(round(st.cpM.JmolK, 3), 161.395)
+        self.assertEqual(round(st.w, 3), 122.236)
+
+        st = R1234ze(T=420, rhom=8)
+        self.assertEqual(round(st.P.MPa, 5), 19.95447)
+        self.assertEqual(round(st.cvM.JmolK, 3), 120.029)
+        self.assertEqual(round(st.cpM.JmolK, 3), 169.513)
+        self.assertEqual(round(st.w, 3), 371.320)

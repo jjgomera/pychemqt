@@ -40,26 +40,30 @@ class R124(MEoS):
     # id = 1629
 
     CP1 = {"ao": 3.175638,
-           "an": [14.77947/395.425, -5.2420986/395.425**2, 1.3381596/395.425**3],
+           "an": [14.77947/Tc, -5.2420986/Tc**2, 1.3381596/Tc**3],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 3.20532538,
-           "an": [13.4403357/395.62, -2.32192933/395.62**2, -0.422826803/395.62**3],
+           "an": [13.4403357/395.62, -2.32192933/395.62**2,
+                  -0.422826803/395.62**3],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    vries = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-124 of de Vries et al. (1995).",
-        "__doi__": {"autor": "de Vries, B., Tillner-Roth, R., and Baehr, H.D.",
+        "__name__": "Helmholtz equation of state for R-124 of de Vries (1995)",
+        "__doi__": {"autor": "de Vries, B., Tillner-Roth, R., Baehr, H.D.",
                     "title": "Thermodynamic Properties of HCFC 124,",
-                    "ref": "19th International Congress of Refrigeration, The Hague, The Netherlands, International Institute of Refrigeration, IVa:582-589, 1995",
+                    "ref": "19th International Congress of Refrigeration, The "
+                           "Hague, The Netherlands, IIR, IVa:582-589, 1995",
                     "doi":  ""},
+
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": 120.0, "Tmax": 470.0, "Pmax": 40000.0, "rhomax": 13.5758,
         "Pmin": 0.00000000032, "rhomin": 13.5758,
@@ -80,14 +84,19 @@ class R124(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-124 of Younglove and McLinden (1994)",
-        "__doi__": {"autor": "McLinden, M.O., Younglove, B.A., and Sandarusi, J.",
-                    "title": "Measurement of the PVT properties and formulation of an equation of state for refrigerant 124 (1-chloro-1,2,2,2-tetrafluoroethane), 1994. (unpublished manuscript).",
-                    "ref": "",
+        "__name__": "MBWR equation of state for R-124 of Younglove and "
+                    "McLinden (1994)",
+        "__doi__": {"autor": "McLinden, M.O., Younglove, B.A., Sandarusi, J.",
+                    "title": "Measurement of the PVT properties and "
+                             "formulation of an equation of state for "
+                             "refrigerant 124 (1-chloro-1,2,2,2-"
+                             "tetrafluoroethane)",
+                    "ref": "1994. (unpublished manuscript)",
                     "doi": ""},
 
         "R": 8.314471,
         "cp": CP2,
+        "ref": "IIR",
 
         "Tmin": 120.0, "Tmax": 475.0, "Pmax": 36000.0, "rhomax": 13.98,
         "Pmin": 0.00000000032, "rhomin": 14.54,
@@ -104,7 +113,7 @@ class R124(MEoS):
               -0.564677367857, 0.175581172016e3, -0.762146322899e-3,
               -0.210617958917e1, 0.319236066221e2]}
 
-    eq = helmholtz1, MBWR
+    eq = vries, MBWR
 
     _surface = {"sigma": [0.05175], "exp": [1.197]}
     _vapor_Pressure = {
@@ -117,5 +126,5 @@ class R124(MEoS):
         "exp": [0.345, 0.74, 1.2, 2.6, 7.2]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.28551e1, -0.63850e1, -0.17616e2, -0.37828e2, -0.23785e2, -0.13459e3],
+        "ao": [-2.8551, -6.385, -17.616, -37.828, -23.785, -134.59],
         "exp": [0.388, 1.17, 3.0, 6.0, 8.0, 15.0]}

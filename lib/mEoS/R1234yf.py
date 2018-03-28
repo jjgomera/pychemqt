@@ -36,7 +36,6 @@ class R1234yf(MEoS):
     Tb = unidades.Temperature(243.7)
     f_acent = 0.276
     momentoDipolar = unidades.DipoleMoment(2.48, "Debye")
-#    id = 671
 
     Fi1 = {"ao_log": [1, 4.944],
            "pow": [0, 1],
@@ -52,13 +51,17 @@ class R1234yf(MEoS):
            "titao": [354/Tc, 965/Tc, 1981/Tc],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    richter = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234yf of Richter et al. (2011).",
-        "__doi__": {"autor": "Richter, M., McLinden, M.O., and Lemmon, E.W.",
-                    "title": "Thermodynamic Properties of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf): Vapor Pressure and p-rho-T Measurements and an Equation of State",
-                    "ref": "J. Chem. Eng. Data, 2011, 56 (7), pp 3254–3264",
+        "__name__": "Helmholtz equation of state for R1234yf of Richter "
+                    "(2011)",
+        "__doi__": {"autor": "Richter, M., McLinden, M.O., Lemmon, E.W.",
+                    "title": "Thermodynamic Properties of 2,3,3,3-"
+                             "Tetrafluoroprop-1-ene (R1234yf): Vapor Pressure "
+                             "and p-ρ-T Measurements and an Equation of State",
+                    "ref": "J. Chem. Eng. Data, 56(7) (2011) 3254-3264",
                     "doi": "10.1021/je200369m"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "IIR",
@@ -66,17 +69,17 @@ class R1234yf(MEoS):
         "Tmin": Tt, "Tmax": 410.0, "Pmax": 30000.0, "rhomax": 11.64,
         "Pmin": 31.5, "rhomin": 11.63,
 
-        "nr1": [0.4592563e-1, 0.1546958e1, -0.2355237e1, -0.4827835, 0.1758022],
+        "nr1": [0.04592563, 1.546958, -2.355237, -0.4827835, 0.1758022],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1.0, 0.32, 0.929, 0.94, 0.38],
 
-        "nr2": [-0.1210006e1, -0.6177084, 0.6805262, -0.6968555, -0.2695779e-1],
+        "nr2": [-1.210006, -0.6177084, 0.6805262, -0.6968555, -0.02695779],
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.28, 1.76, 0.97, 2.44, 1.05],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*7,
 
-        "nr3": [0.1389966e1, -0.4777136, -0.1975184, -0.1147646e1, 0.3428541e-3],
+        "nr3": [1.389966, -0.4777136, -0.1975184, -1.147646, 0.0003428541],
         "d3": [1, 1, 3, 3, 2],
         "t3": [1.4, 3.0, 3.5, 1.0, 3.5],
         "alfa3": [1.02, 1.336, 1.055, 5.84, 16.2],
@@ -85,13 +88,18 @@ class R1234yf(MEoS):
         "epsilon3": [0.712, 0.910, 0.677, 0.718, 1.64],
         "nr4": []}
 
-    helmholtz2 = {
+    akasaka = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234yf of Akasaka (2011).",
+        "__name__": "Helmholtz equation of state for R1234yf of Akasaka "
+                    "(2011)",
         "__doi__": {"autor": "Akasaka, R.",
-                    "title": "New Fundamental Equations of State with a Common Functional Form for 2,3,3,3-Tetrafluoropropene (R-1234yf) and trans-1,3,3,3-Tetrafluoropropene (R-1234ze(E))",
-                    "ref": "Int J Thermophys (2011) 32:1125–1147",
+                    "title": "New Fundamental Equations of State with a Common"
+                             " Functional Form for 2,3,3,3-Tetrafluoropropene "
+                             "(R-1234yf) and trans-1,3,3,3-Tetrafluoropropene "
+                             "(R-1234ze(E))",
+                    "ref": "Int. J. Thermophys. 32(6) (2011) 1125-1147",
                     "doi": "10.1007/s10765-011-0992-0"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "IIR",
@@ -113,7 +121,7 @@ class R1234yf(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = helmholtz1, helmholtz2
+    eq = richter, akasaka
 
     _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {

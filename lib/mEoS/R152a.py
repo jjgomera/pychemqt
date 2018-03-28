@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -89,7 +91,7 @@ class R152a(MEoS):
               -0.412362182230e-2, 0.175102808144e1, -0.198636624640e-4,
               -0.421363036104e-2, -0.198696760653e1]}
 
-    helmholtz1 = {
+    outcalt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz transform of MBWR EOS for R-152a of Outcalt and McLinden (1996).",
         "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
@@ -125,7 +127,7 @@ class R152a(MEoS):
         "c2": [2]*18,
         "gamma2": [1]*18}
 
-    helmholtz2 = {
+    tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-152a of Tillner-Roth (1995).",
         "__doi__": {"autor": "Tillner-Roth, R.",
@@ -153,21 +155,15 @@ class R152a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
         "gamma2": [1]*12}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-152a of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-152a of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-#        "__test__": """
-#            >>> st=R152a(T=700, rho=200, eq=3)
-#            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-#            1.4632 21.594 2.1580
-#            >>> st2=R152a(T=750, rho=100, eq=3)
-#            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-#            270.60 0.60934
-#            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": Fi1,
@@ -176,7 +172,7 @@ class R152a(MEoS):
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 18.1,
         "Pmin": 0.064093, "rhomin": 18.031,
 
-        "nr1": [.95702326, -.23707196e1, .18748463, .63800843e-1, .16625977e-3],
+        "nr1": [0.95702326, -2.3707196, 0.18748463, 0.063800843, 1.6625977e-4],
         "d1": [1, 1, 1, 3, 7],
         "t1": [0.25, 1.25, 1.5, 0.25, 0.875],
 
@@ -187,7 +183,7 @@ class R152a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*12}
 
-    helmholtz4 = {
+    astina = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-152a of Astina and Sato (2004)",
         "__doi__": {"autor": "Astina, I.M. and Sato, H.",
@@ -296,7 +292,7 @@ class R152a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    eq = MBWR, helmholtz1, helmholtz2, helmholtz3, helmholtz4
+    eq = MBWR, outcalt, tillner, shortSpan, astina
 
     _surface = {"sigma": [0.05808], "exp": [1.2115]}
     _vapor_Pressure = {
@@ -367,3 +363,17 @@ class R152a(MEoS):
                "Xio": 1.894e-10, "gam0": 0.0487, "qd": 4.37e-10, "Tcref": 579.617}
 
     _thermal = thermo0,
+
+
+# class Test(TestCase):
+
+    # def test_shortSpan(self):
+        # # Table III, Pag 117
+        # st = R152a(T=500, rho=500, eq="shortSpan")
+        # self.assertEqual(round(st.cp0.kJkgK, 4), 1.4632)
+        # self.assertEqual(round(st.P.MPa, 3), 21.594)
+        # self.assertEqual(round(st.cp.kJkgK, 4), 2.1580)
+
+        # st2 = R152a(T=600, rho=100, eq="shortSpan")
+        # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 270.60)
+        # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60934)

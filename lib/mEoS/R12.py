@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -44,21 +46,26 @@ class R12(MEoS):
            "exp": [1.4334342e3, 2.4300498e3, 6.8565952e2, 4.1241579e2],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    marx = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-12 of Marx et al. (1992).",
+        "__name__": "Helmholtz equation of state for R-12 of Marx (1992)",
         "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
-                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
+                             "und R 113. Beschreibung des thermodynamishchen "
+                             "Zustandsverhaltens bei Temperaturen bis 525 K "
+                             "und Druecken bis 200 MPa",
+                    "ref": "Düsseldorf: VDI Verlag, Series 19 "
+                           "(Waermetechnik/Kaeltetechnik), No. 57, 1992.",
                     "doi": ""},
 
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 15.13,
         "Pmin": 0.000243, "rhomin": 15.1253,
 
-        "nr1": [0.2075343402e1, -0.2962525996e1, 0.1001589616e-1, 0.1781347612e-1,
+        "nr1": [2.075343402, -2.962525996, 0.1001589616e-1, 0.1781347612e-1,
                 0.2556929157e-1, 0.2352142637e-2, -0.8495553314e-4],
         "d1": [1, 1, 1, 2, 4, 6, 8],
         "t1": [0.5, 1, 2, 2.5, -0.5, 0, 0],
@@ -73,24 +80,20 @@ class R12(MEoS):
         "c2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4],
         "gamma2": [1]*15}
 
-    helmholtz2 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-12 of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for R-12 of Span and "
+                    "Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R12(T=700, rho=200, eq=1)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.7421 11.552 1.1052
-            >>> st2=R12(T=750, rho=100, eq=1)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            121.54 0.28621
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "IIR",
+        "M": 120.914, "Tc": 385.12, "rhoc": 565/120.914,
 
         "Tmin": 173.0, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.9,
         "Pmin": 1.1633, "rhomin": 13.892,
@@ -107,7 +110,7 @@ class R12(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2
+    eq = marx, shortSpan
 
     _surface = {"sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
     _vapor_Pressure = {
@@ -120,5 +123,19 @@ class R12(MEoS):
         "exp": [0.57, 0.72, 0.89, 1.07, 1.25]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31530e1, -0.64734e1, -0.17346e2, -0.15918e2, -0.32492e2, -0.12072e3],
+        "ao": [-3.153, -6.4734, -17.346, -15.918e2, -32.492, -120.72],
         "exp": [0.418, 1.32, 3.3, 6.6, 7.0, 15.0]}
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R12(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.7421)
+        self.assertEqual(round(st.P.MPa, 3), 11.552)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1052)
+
+        st2 = R12(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 121.54)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.28621)

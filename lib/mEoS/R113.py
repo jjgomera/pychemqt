@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -44,16 +46,21 @@ class R113(MEoS):
            "exp": [5.1143280e2, 1.60676324e3, 4.20292102e3, 1.60618738e3],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    marx = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-113 of Marx et al. (1992).",
+        "__name__": "Helmholtz equation of state for R-113 of Marx (1992)",
         "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
-                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 und R 113. Beschreibung des thermodynamishchen Zustandsverhaltens bei Temperaturen bis 525 K und Druecken bis 200 MPa",
-                    "ref": "Duesseldorf: VDI Verlag, Series 19 (Waermetechnik/Kaeltetechnik), No. 57, 1992.",
+                    "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
+                             "und R 113. Beschreibung des thermodynamishchen "
+                             "Zustandsverhaltens bei Temperaturen bis 525 K "
+                             "und Druecken bis 200 MPa",
+                    "ref": "Düsseldorf: VDI Verlag, Series 19 "
+                           "(Waermetechnik/Kaeltetechnik), No. 57, 1992.",
                     "doi": ""},
 
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 9.10,
         "Pmin": 1.87, "rhomin": 9.099,
@@ -72,24 +79,19 @@ class R113(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4],
         "gamma2": [1]*11}
 
-    helmholtz2 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-113 of Span and Wagner (2003).",
+        "__name__": "short Helmholtz equation of state for R-113 of Span and "
+                    "Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R113(T=700, rho=200, eq=1)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.8055 3.962 4.0344
-            >>> st2=R113(T=750, rho=100, eq=1)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            131.00 0.26004
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.09,
         "Pmin": 1.869, "rhomin": 9.0893,
@@ -106,7 +108,7 @@ class R113(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2
+    eq = marx, shortSpan
 
     _surface = {"sigma": [0.0556], "exp": [1.24]}
     _vapor_Pressure = {
@@ -119,7 +121,7 @@ class R113(MEoS):
         "exp": [0.3, 0.7, 2.0, 4.0, 5.0]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.26225e1, -0.60753e1, -0.15768e2, -0.42361e2, -0.79071e1, -0.31966e3],
+        "ao": [-2.6225, -6.0753, -15.768, -42.361, -7.9071, -319.66],
         "exp": [0.379, 1.13, 2.9, 6.0, 7.0, 15.0]}
 
     visco0 = {"eq": 1, "omega": 1,
@@ -189,3 +191,17 @@ class R113(MEoS):
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.5e-9, "Tcref": 730.8}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R113(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.8055)
+        self.assertEqual(round(st.P.MPa, 3), 3.962)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.0344)
+
+        st2 = R113(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 131.00)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.26005)
