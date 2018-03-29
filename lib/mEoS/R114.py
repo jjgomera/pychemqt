@@ -48,7 +48,7 @@ class R114(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-114 of Platzer (1990)",
         "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants",
+                    "title": "Thermophysical Properties of Refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""},
 

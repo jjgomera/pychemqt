@@ -53,8 +53,11 @@ class R13(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-13 of Magee et al. (2000)",
-        "__doi__": {"autor": "Magee, J.W., Outcalt, S.L., and Ely, J.F.",
-                    "title": "Molar Heat Capacity Cv, Vapor Pressure, and (p, ρ, T) Measurements from 92 to 350 K at Pressures to 35 MPa and a New Equation of State for Chlorotrifluoromethane (R13)",
+        "__doi__": {"autor": "Magee, J.W., Outcalt, S.L., Ely, J.F.",
+                    "title": "Molar Heat Capacity Cv, Vapor Pressure, and "
+                             "(p, ρ, T) Measurements from 92 to 350 K at "
+                             "Pressures to 35 MPa and a New Equation of State "
+                             "for Chlorotrifluoromethane (R13)",
                     "ref": "Int. J. Thermophys., 21(5):1097-1121, 2000.",
                     "doi": "10.1023/A:1026446004383"},
 
@@ -79,9 +82,9 @@ class R13(MEoS):
 
     helmholtz1 = {
         "__type__": "Helmholtz",
-        "__name__": "Bender equation of state for R-13 of Platzer et al. (1990).",
-        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants",
+        "__name__": "Bender equation of state for R-13 of Platzer (1990)",
+        "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
+                    "title": "Thermophysical Properties of refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""},
         "R": 8.31451,
@@ -144,5 +147,4 @@ class R13(MEoS):
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
 
     _viscosity = trnECS,
-    _thermal=trnECS,
-
+    _thermal = trnECS,

@@ -44,13 +44,14 @@ class R14(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    platzer = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-14 of Platzer et al. (1990)",
-        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants",
+        "__name__": "Helmholtz equation of state for R-14 of Platzer (1990)",
+        "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
+                    "title": "Thermophysical Properties of Refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""},
+
         "R": 8.31451,
         "cp": CP1,
         "ref": "NBP",
@@ -60,7 +61,7 @@ class R14(MEoS):
 
         "nr1": [-.334698748966, .586690904687, -.147068929692, .103999039623e1,
                 -.245792025288e1, .799614557889, -.749498954929, .152177772502,
-                -.293408331764, .717794502866, -.426467444199e-1, .226562749365,
+                -.293408331764, .717794502866, -.0426467444199, .226562749365,
                 -0.391091694003, -0.257394804936e-1, 0.554844884782e-1,
                 0.610988261204e-2],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
@@ -73,7 +74,7 @@ class R14(MEoS):
         "c2": [2]*6,
         "gamma2": [0.99832625]*6}
 
-    eq = helmholtz1,
+    eq = platzer,
 
     _surface = {"sigma": [0.0423], "exp": [1.24]}
     _vapor_Pressure = {

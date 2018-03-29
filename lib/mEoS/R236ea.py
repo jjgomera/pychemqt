@@ -50,12 +50,14 @@ class R236ea(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    rui = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R236ea of Rui et al. (2013).",
+        "__name__": "Helmholtz equation of state for R236ea of Rui (2013)",
         "__doi__": {"autor": "Rui, X., Pan, J., Wang, Y.",
-                    "title": "An Equation of State for Thermodynamic Properties of 1,1,1,2,3,3-Hexafluoropropane (R236ea)",
-                    "ref": "Fluid Phase Equilibria, Volume 348, 25 June 2013, Page 83",
+                    "title": "An Equation of State for Thermodynamic "
+                             "Properties of 1,1,1,2,3,3-Hexafluoropropane "
+                             "(R236ea)",
+                    "ref": "Fluid Phase Equilibria 341 (2013) 78-85",
                     "doi": "10.1016/j.fluid.2012.12.026"},
 
         "R": 8.314472,
@@ -103,7 +105,7 @@ class R236ea(MEoS):
            "ht_add": [0.195298641e-1], "ht_add_exp": [1],
            "hd": [], "hd_exp": []}
 
-    eq = helmholtz1, ecs
+    eq = rui, ecs
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}
     _vapor_Pressure = {

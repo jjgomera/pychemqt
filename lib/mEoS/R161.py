@@ -49,13 +49,15 @@ class R161(MEoS):
            "ao_exp": [2.077, 9.265, 6.054], "exp": [420, 1548, 3882],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    wu = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-161 of Wu and Zhou (2012).",
-        "__doi__": {"autor": "Wu, J. and Zhou, Y.",
+        "__name__": "short Helmholtz equation of state for R-161 of Wu and "
+                    "Zhou (2012)",
+        "__doi__": {"autor": "Wu, J., Zhou, Y.",
                     "title": "An Equation of State for Fluoroethane (R161)",
-                    "ref": "Int. J. Thermophys. 33:220-234, 2012.",
+                    "ref": "Int. J. Thermophys. 33(2) (2012) 220-234",
                     "doi": "10.1007/s10765-011-1151-3"},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205},
@@ -63,7 +65,7 @@ class R161(MEoS):
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0,
         "Pmin": 0.005512, "rhomin": 19.91,
 
-        "nr1": [1.511, -2.3 , -0.457, 0.1683, 0.04133],
+        "nr1": [1.511, -2.3, -0.457, 0.1683, 0.04133],
         "d1": [1, 1, 2, 3, 4],
         "t1": [0.37, 0.97, 1.14, 0.744, 1.],
 
@@ -81,13 +83,15 @@ class R161(MEoS):
         "gamma3": [0.9, 0.69, 0.67, 0.67, 1.15],
         "epsilon3": [0.683, 0.892, 0.785, 1.33, 0.86]}
 
-    helmholtz2 = {
+    refprop = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-161 of Lemmon (2005).",
+        "__name__": "short Helmholtz equation of state for R-161 of Lemmon "
+                    "(2005).",
         "__doi__": {"autor": "Lemmon, E.W.",
                     "title": "preliminary equation, 2005.",
                     "ref": "",
                     "doi": ""},
+
         "R": 8.314472,
         "cp": CP1,
 
@@ -104,7 +108,7 @@ class R161(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 2],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2
+    eq = wu, refprop
 
     _surface = {"sigma": [0.05385], "exp": [1.111]}
     _vapor_Pressure = {

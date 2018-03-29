@@ -46,7 +46,7 @@ class R142b(MEoS):
            "ao_exp": [5.0385, 6.8356, 4.0591, 2.8136],
            "titao": [473/Tc, 1256/Tc, 2497/Tc, 6840/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-142b of Lemmon "
                     "and Span (2006)",
@@ -74,7 +74,7 @@ class R142b(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.05685], "exp": [1.237]}
     _vapor_Pressure = {

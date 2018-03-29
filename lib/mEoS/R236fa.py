@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -50,12 +52,14 @@ class R236fa(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    pan = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R236fa of Pan et al. (2012).",
+        "__name__": "Helmholtz equation of state for R236fa of Pan (2012)",
         "__doi__": {"autor": "Pan, J., Rui, X., Zhao, X., Qiu, L.",
-                    "title": "An equation of state for the thermodynamic properties of 1,1,1,3,3,3-hexafluoropropane (HFC-236fa)",
-                    "ref": "Fluid Phase Equilib., 321:10-16, 2012",
+                    "title": "An equation of state for the thermodynamic "
+                             "properties of 1,1,1,3,3,3-hexafluoropropane "
+                             "(HFC-236fa)",
+                    "ref": "Fluid Phase Equilib., 321 (2012) 10-16",
                     "doi": "10.1016/j.fluid.2012.02.012"},
 
         "R": 8.314472,
@@ -85,10 +89,13 @@ class R236fa(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-236fa of Outcalt and McLinden (1995).",
-        "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "An equation of state for the thermodynamic properties of R236fa",
-                    "ref": "NIST report to sponsor (U.S. Navy, David Taylor Model Basin) under contract N61533-94-F-0152, 1995.",
+        "__name__": "MBWR equation of state for R-236fa of Outcalt and "
+                    "McLinden (1995)",
+        "__doi__": {"autor": "Outcalt, S.L. McLinden, M.O.",
+                    "title": "An Equation of State for the Thermodynamic "
+                             "Properties of R236fa",
+                    "ref": "NIST report to sponsor under contract "
+                           "N61533-94-F-0152, 1995.",
                     "doi": ""},
 
         "R": 8.314471,
@@ -109,7 +116,7 @@ class R236fa(MEoS):
               0.110600369167e1, 0.953714711849e2, -0.881815206562e-2,
               0.973194908842e1, -0.935516922205e3]}
 
-    eq = MBWR,
+    eq = pan, MBWR
 
     _surface = {"sigma": [0.05389], "exp": [1.249]}
     _vapor_Pressure = {
@@ -122,5 +129,17 @@ class R236fa(MEoS):
         "exp": [0.579, 0.77, 0.97, 1.17, 1.4]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.44507e1, -.37583e1, -.20279e2, -.26801e3, .50171e3, -.34917e3],
+        "ao": [-4.4507, -3.7583, -20.279, -268.01, 501.71, -349.17],
         "exp": [0.506, 1.16, 2.8, 7.0, 8.0, 9.0]}
+
+
+class Test(TestCase):
+
+    def test_Pan(self):
+        # State point in paragraph 5. Conclusion
+        st = R236fa(T=398.1, rhom=3.63)
+        self.assertEqual(round(st.P.MPa, 5), 3.19277)
+        self.assertEqual(round(st.hM.Jmol, 1), 59895.4)
+        self.assertEqual(round(st.sM.JmolK, 3), 237.269)
+        self.assertEqual(round(st.cvM.JmolK, 3), 188.426)
+        self.assertEqual(round(st.w, 4), 65.0881)

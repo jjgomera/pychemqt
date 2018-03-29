@@ -40,18 +40,19 @@ class R21(MEoS):
 
     CP1 = {"ao": 0.2376576/8.31451*102.92,
            "an": [0.12714330e-2/8.31451*102.92, 0.32413520e-6/8.31451*102.92,
-                  -0.24924280e-8/8.31451*102.92, 0.17172080e-11/8.31451*102.92],
+                  -2.4924280e-9/8.31451*102.92, 1.7172080e-12/8.31451*102.92],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    platzer = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-21 of Platzer et al. (1990)",
-        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants",
+        "__name__": "Helmholtz equation of state for R-21 of Platzer (1990)",
+        "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
+                    "title": "Thermophysical Properties of Refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""},
+
         "R": 8.31451,
         "cp": CP1,
         "ref": "NBP",
@@ -59,7 +60,7 @@ class R21(MEoS):
         "Tmin": 200.0, "Tmax": 473.19, "Pmax": 137900.0, "rhomax": 15.36,
         "Pmin": 0.6828e-4, "rhomin": 16.519,
 
-        "nr1": [-.44386484873e2, .926505600935e1, -.551709104376, .504676623431,
+        "nr1": [-.44386484873e2, 9.26505600935, -.551709104376, .504676623431,
                 -.732431415692, -.868403860387, .146234705555, -.280576335053,
                 0.864743656093, -0.270767233732e1, 0.330476390706e1,
                 -0.210878239171, 0.449531449589, 0.120779813143,
@@ -74,7 +75,7 @@ class R21(MEoS):
         "c2": [2]*6,
         "gamma2": [0.07470252]*6}
 
-    eq = helmholtz1,
+    eq = platzer,
 
     _surface = {"sigma": [0.06924], "exp": [1.259]}
     _vapor_Pressure = {

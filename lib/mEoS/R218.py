@@ -51,7 +51,7 @@ class R218(MEoS):
            "ao_exp": [7.2198, 7.2692, 11.599], "exp": [326, 595, 1489],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-218 of Lemmon "
                     "and Span (2006)",
@@ -78,7 +78,7 @@ class R218(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.04322], "exp": [1.224]}
     _vapor_Pressure = {
