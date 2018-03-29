@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 from lib.mEoS.R134a import R134a
@@ -37,7 +39,12 @@ class R245ca(MEoS):
     Tb = unidades.Temperature(298.412)
     f_acent = 0.355
     momentoDipolar = unidades.DipoleMoment(1.740, "Debye")
-    id = 693
+
+    Fi1 = {"ao_log": [1, 7.888],
+           "pow": [0, 1],
+           "ao_pow": [-18.09410031, 8.996084665],
+           "ao_exp": [0.8843, 5.331, 14.46],
+           "titao": [865/Tc, 2830/Tc, 1122/Tc]}
 
     CP1 = {"ao": 8.888,
            "an": [], "pow": [],
@@ -50,17 +57,19 @@ class R245ca(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-245ca of Zhou and Lemmon (2013).",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "unpublished equation, 2013.",
-                    "ref": "",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for R-245ca of Zhou (2013)",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W.",
+                    "title": "Equation of State for the Thermodynamic "
+                             "Properties of 1,1,2,2,3-Pentafluoropropane "
+                             "(R-245ca)",
+                    "ref": "Int. J. Thermophys., 37(3) (2016) 27",
+                    "doi": "10.1007/s10765-016-2039-z"},
 
-        "R": 8.314472,
-        "cp": CP1,
-        "ref": "OTO",
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 10000.0, "rhomax": 12.21,
         "Pmin": 0.0708, "rhomin": 12.21,
@@ -101,7 +110,7 @@ class R245ca(MEoS):
            "ht_add": [], "ht_add_exp": [],
            "hd": [], "hd_exp": []}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _surface = {"sigma": [0.069297, -0.022419], "exp": [1.2795, 3.1368]}
     _vapor_Pressure = {
@@ -137,9 +146,43 @@ class R245ca(MEoS):
 #    _viscosity=trnECS,
 #    _thermal=trnECS,
 
-#if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
-#
-#    cyc5=R245ca(T=300., P=0.1)
-#    print "%0.1f %0.2f %0.4f %0.6f %0.6f %0.6f %0.3f %0.5f %0.6f %0.9f" % (cyc5.T, cyc5.P.MPa, cyc5.rho, cyc5.cv.kJkgK, cyc5.cp.kJkgK, cyc5.cp0.kJkgK, cyc5.w, cyc5.joule.KMPa, cyc5.virialB, cyc5.virialC)
+
+class Test(TestCase):
+
+    def test_zhou(self):
+        # Table 3, Pag 11
+        st = R245ca(T=250, rhom=11.3)
+        self.assertEqual(round(st.P.MPa, 6), 7.998072)
+        self.assertEqual(round(st.cvM.JmolK, 3), 127.995)
+        self.assertEqual(round(st.cpM.JmolK, 3), 176.671)
+        self.assertEqual(round(st.w, 3), 971.213)
+
+        st = R245ca(T=400, rhom=8)
+        self.assertEqual(round(st.P.MPa, 6), 2.017058)
+        self.assertEqual(round(st.cvM.JmolK, 3), 151.601)
+        self.assertEqual(round(st.cpM.JmolK, 3), 226.229)
+        self.assertEqual(round(st.w, 3), 326.167)
+
+        st = R245ca(T=448, rhom=3.92)
+        self.assertEqual(round(st.P.MPa, 6), 3.970007)
+        self.assertEqual(round(st.cvM.JmolK, 3), 189.859)
+        self.assertEqual(round(st.cpM.JmolK, 1), 23758.6)
+        self.assertEqual(round(st.w, 4), 73.1890)
+
+        st = R245ca(T=250, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 96.4517)
+        self.assertEqual(round(st.cpM.JmolK, 3), 104.766)
+        self.assertEqual(round(st.w, 3), 129.781)
+
+        st = R245ca(T=420, rhom=1)
+        self.assertEqual(round(st.P.MPa, 6), 2.282553)
+        self.assertEqual(round(st.cvM.JmolK, 3), 155.316)
+        self.assertEqual(round(st.cpM.JmolK, 3), 218.413)
+        self.assertEqual(round(st.w, 3), 112.579)
+
+        st = R245ca(T=450, rhom=7)
+        self.assertEqual(round(st.P.MPa, 6), 8.304540)
+        self.assertEqual(round(st.cvM.JmolK, 3), 160.706)
+        self.assertEqual(round(st.cpM.JmolK, 3), 237.245)
+        self.assertEqual(round(st.w, 3), 256.123)
