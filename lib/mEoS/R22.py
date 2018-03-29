@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -45,18 +47,21 @@ class R22(MEoS):
                    1162.53424, 857.51288, 605.72638, 530.90982],
            "ao_hyp": [], "hyp": []}
 
-    Fi2 = {"ao_log": [1, 3.00671581],
+    Fi2 = {"R": 0.09615596*M,
+           "ao_log": [1, 3.00671581],
            "pow": [0, 1],
            "ao_pow": [-11.8829672, 8.09247802],
            "ao_exp": [3.9321463, 1.10074668, 1.87129085, 2.22706659],
            "titao": [4.82421333, 11.392964, 2.82862148, 1.55580861]}
 
-    helmholtz1 = {
+    kamei = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-22 of Kamei et al. (1995)",
-        "__doi__": {"autor": "Kamei, A., Beyerlein, S.W., and Jacobsen, R.T.",
-                    "title": "Application of nonlinear regression in the development of a wide range formulation for HCFC-22",
-                    "ref": "Int. J. Thermophysics, 16:1155-1164, 1995.",
+        "__name__": "Helmholtz equation of state for R-22 of Kamei (1995)",
+        "__doi__": {"autor": "Kamei, A., Beyerlein, S.W., Jacobsen, R.T.",
+                    "title": "Application of Nonlinear Regression in the "
+                             "Development of a Wide Range Formulation for "
+                             "HCFC-22",
+                    "ref": "Int. J. Thermophysics, 16(5) (1995) 1155-1164",
                     "doi": "10.1007/BF02081283"},
 
         "R": 8.31451,
@@ -87,33 +92,22 @@ class R22(MEoS):
         "c2": [2, 2, 2, 2, 3, 2, 2, 2, 4, 2, 2, 4, 2, 2, 4],
         "gamma2": [1]*15}
 
-    helmholtz2 = {
+    wagner = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-22 of Wagner et al. (1993)",
-        "__doi__": {"autor": "Wagner, W., Marx, V., and Pruss, A.",
-                    "title": "A New Equation of State for Chlorodifluoromethane (R22) Covering the Entire Fluid Region from 116 K to 550 K at Pressures up to 200 MPa",
+        "__name__": "Helmholtz equation of state for R-22 of Wagner (1993)",
+        "__doi__": {"autor": "Wagner, W., Marx, V., Pruß, A.",
+                    "title": "A New Equation of State for "
+                             "Chlorodifluoromethane (R22) Covering the Entire "
+                             "Fluid Region from 116 K to 550 K at Pressures "
+                             "up to 200 MPa",
                     "ref": "Int. J. Refrig., 16(6):373-389, 1993.",
                     "doi": "10.1016/0140-7007(93)90055-D"},
 
-        "__test__":
-            """
-            >>> st=R22(T=273.15, P=1e6, eq=1)
-            >>> print "%0.2f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f" % ( \
-                st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, \
-                st.s.kJkgK, st.u.kJkg, st.joule.KMPa)
-            273.15 1283.58841 0.67801 1.17239 665.35405 200.10557 0.99895 199.32650 -0.18190
-            >>> st=R22(T=373.15, P=1e6, eq=1)
-            >>> print "%0.2f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f %0.5f" % ( \
-                st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, \
-                st.s.kJkgK, st.u.kJkg, st.joule.KMPa)
-            323.15 36.58815 0.62447 0.79727 173.92097 434.49209 1.79016 407.16083 18.34747
-            """,
-
-        "R": 8.31451,
+        # "R": 8.31451,
+        "R": 0.09615596*M,
         "cp": Fi2,
         "ref": "IIR",
-
-        "Tref": 369.28, "rhoref": 520,
+        "Tc": 369.28, "rhoc": 520/M,
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 19.91,
         "Pmin": 0.00036783, "rhomin": 19.907,
@@ -132,30 +126,25 @@ class R22(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4],
         "gamma2": [1]*17}
 
-    helmholtz3 = {
+    shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for R-22 of Span and Wagner (2003).",
+        "__name__": "short Helmholtz equation of state for R-22 of Span and "
+                    "Wagner (2003).",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=R22(T=700, rho=200, eq=2)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            0.8498 17.202 1.3137
-            >>> st2=R22(T=750, rho=100, eq=2)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            151.95 0.37335
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": Fi2,
         "ref": "IIR",
+        "Tc": 369.28, "rhoc": 520/M,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 20.0,
         "Pmin": 0.00036704, "rhomin": 19.976,
 
-        "nr1": [.96268924, -.25275103e1, .31308745, .72432837e-1, .21930233e-3],
+        "nr1": [0.96268924, -2.5275103, 0.31308745, 0.072432837, 2.1930233e-4],
         "d1": [1, 1, 1, 3, 7],
         "t1": [0.25, 1.25, 1.5, 0.25, 0.875],
 
@@ -166,7 +155,7 @@ class R22(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = kamei, wagner, shortSpan
 
     _surface = {"sigma": [3.0587, -2.99856], "exp": [1.41809, 1.42291]}
     _vapor_Pressure = {
@@ -179,5 +168,41 @@ class R22(MEoS):
         "exp": [0.345, 0.74, 1.2, 2.6, 7.2]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-.23231e1, -.59231e1, -.16331e2, -.49343e2, -.25662e2, -.89335e2],
+        "ao": [-2.3231, -5.9231, -16.331, -49.343, -25.662, -89.335],
         "exp": [0.353, 1.06, 2.9, 6.4, 12.0, 15.0]}
+
+
+class Test(TestCase):
+
+    def test_wagner(self):
+        # Table 11, Pag 381
+        st = R22(T=273.15, P=1e6, eq="wagner")
+        self.assertEqual(round(st.rho, 5), 1283.58841)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.67801)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.17239)
+        self.assertEqual(round(st.w, 5), 665.35405)
+        self.assertEqual(round(st.h.kJkg, 5), 200.10558)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.99895)
+        self.assertEqual(round(st.u.kJkg, 5), 199.32651)
+        self.assertEqual(round(st.joule.KMPa, 5), -0.18190)
+
+        st = R22(T=323.15, P=1e6, eq="wagner")
+        self.assertEqual(round(st.rho, 5), 36.58815)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.62447)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.79727)
+        self.assertEqual(round(st.w, 5), 173.92097)
+        self.assertEqual(round(st.h.kJkg, 5), 434.49209)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.79016)
+        self.assertEqual(round(st.u.kJkg, 5), 407.16084)
+        self.assertEqual(round(st.joule.KMPa, 5), 18.34747)
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R22(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 0.8498)
+        self.assertEqual(round(st.P.MPa, 3), 17.202)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.3137)
+
+        st2 = R22(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 151.95)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37335)
