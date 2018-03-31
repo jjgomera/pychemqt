@@ -36,7 +36,6 @@ class RE143a(MEoS):
     Tb = unidades.Temperature(249.572)
     f_acent = 0.289
     momentoDipolar = unidades.DipoleMoment(2.32, "Debye")
-    id = 671
     # id = 1817
 
     CP1 = {"ao": 20.37,
@@ -45,17 +44,19 @@ class RE143a(MEoS):
            "exp": [1, 2, 3],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    akasaka = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for RE143a of Akasaka and Kayukawa (2012)",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "A fundamental equation of state for trifluoromethyl methyl ether (HFE-143m) and its application to refrigeration cycle analysis",
-                    "ref": "Int. J. Refrig., 35(4):1003-1013, 2012.",
+        "__name__": "Helmholtz equation of state for RE143a of Akasaka (2012)",
+        "__doi__": {"autor": "Akasaka, R., Kayukawa, Y.",
+                    "title": "A fundamental equation of state for "
+                             "trifluoromethyl methyl ether (HFE-143m) and its "
+                             "application to refrigeration cycle analysis",
+                    "ref": "Int. J. Refrig., 35(4) (2012) 1003-1013",
                     "doi":  "10.1016/j.ijrefrig.2012.01.003"},
 
         "R": 8.314472,
         "cp": CP1,
-        "ref": "NBP",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 7200.0, "rhomax": 12.62,
         "Pmin": 65.35, "rhomin": 12.62,
@@ -74,7 +75,7 @@ class RE143a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = helmholtz1,
+    eq = akasaka,
 
     _vapor_Pressure = {
         "eq": 5,

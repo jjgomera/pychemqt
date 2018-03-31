@@ -38,7 +38,6 @@ class R245fa(MEoS):
     Tb = unidades.Temperature(288.198)
     f_acent = 0.3783
     momentoDipolar = unidades.DipoleMoment(1.549, "Debye")
-    id = 671
     # id = 1817
 
     Fi1 = {"ao_log": [1, 3.],
@@ -53,14 +52,14 @@ class R245fa(MEoS):
            "ao_exp": [5.5728, 10.385, 12.554],
            "titao": [222/427.16, 1010/427.16, 2450/427.16]}
 
-    helmholtz1 = {
+    akasaka = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-245fa of Akasaka "
                     "(2015)",
-        "__doi__": {"autor": "Akasaka, Ryo; Zhou, Yong; Lemmon, Eric W.",
+        "__doi__": {"autor": "Akasaka, R.; Zhou, Y.; Lemmon, E.W.",
                     "title": "Fundamental Equation of State for 1,1,1,3,3-"
                              "Pentafluoropropane (R-245fa)",
-                    "ref": "J. Phys. Chem. Ref. Data 44, 013104 (2015)",
+                    "ref": "J. Phys. Chem. Ref. Data 44(1) (2015) 013104",
                     "doi": "10.1063/1.4913493"},
 
         "R": 8.3144621,
@@ -88,7 +87,7 @@ class R245fa(MEoS):
         "gamma3": [1.081, 0.651, 0.468, 1.293],
         "epsilon3": [0.709, 0.939, 0.703, 0.777]}
 
-    helmholtz2 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-245fa of Lemmon "
                     "and Span (2006).",
@@ -116,7 +115,7 @@ class R245fa(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = helmholtz1, helmholtz2
+    eq = akasaka, lemmon
 
     _surface = {"sigma": [0.073586, 0.0103, -0.02663],
                 "exp": [1.0983, 0.60033, 0.72765]}
@@ -227,7 +226,7 @@ class Test(TestCase):
 
     def test_shortLemmon(self):
         # Table 10, Pag 842
-        st = R245fa(T=429, rhom=3, eq=1)
+        st = R245fa(T=429, rhom=3, eq="lemmon")
         self.assertEqual(round(st.P.kPa, 3), 3737.844)
         self.assertEqual(round(st.hM.kJkmol, 3), 63909.822)
         self.assertEqual(round(st.sM.kJkmolK, 3), 235.875)

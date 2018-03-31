@@ -39,7 +39,7 @@ class SF6(MEoS):
     f_acent = 0.21
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     # id = 953
-    id = 1
+
     _Tr = unidades.Temperature(304.013497)
     _rhor = unidades.Density(747.815849)
     _w = 0.181815238
@@ -66,157 +66,15 @@ class SF6(MEoS):
 
     guder = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for sulfur hexafluoride of Guder and Wagner (2009)",
+        "__name__": "Helmholtz equation of state for sulfur hexafluoride of "
+                    "Guder and Wagner (2009)",
         "__doi__": {"autor": "Guder, C. and Wagner, W.",
-                    "title": "A Reference Equation of State for the Thermodynamic Properties of Sulfur Hexafluoride for Temperatures from the Melting Line to 625 K and Pressures up to 150 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 38, 33 (2009)",
+                    "title": "A Reference Equation of State for the "
+                             "Thermodynamic Properties of Sulfur Hexafluoride "
+                             "(SF6) for Temperatures from the Melting Line to "
+                             "625 K and Pressures up to 150 MPa",
+                    "ref": "J. Phys. Chem. Ref. Data 38(1) (2009) 33-94",
                     "doi": "10.1063/1.3037344"},
-
-        "__test__":
-            # Table 27, Pag 57
-            """
-            >>> wt=SF6()
-            >>> tau=wt.Tc/350
-            >>> delta=436.9770888/wt.rhoc
-            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phi0(wt._constants["cp"], tau, delta)
-            3.30559888 0.91277072 -14.4662979 1.69871606 -2.88563626 0
-            >>> print "%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phir(tau, delta)[:6]
-            -0.496581463 -1.37926327 -1.37917096 -0.723171558 0.405086373 -2.09574715
-            """
-            # Table 28, Pag 71
-            """
-            >>> st=SF6(T=223.555, x=0.5)
-            >>> print "%0.6g %0.6g %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            223.555 0.231425 1845.03 19.56 -158.14 -47.521 -0.72226 -0.22745 0.52753 0.48331 0.83712 0.56309 552.26 112.84
-            >>> st=SF6(T=230, x=0.5)
-            >>> print "%0.6g %0.5g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            230 0.30133 1812.92 25.143 -152.66 -44.796 -0.69829 -0.2293 0.54069 0.49958 0.8573 0.58507 521.49 112.81
-            >>> st=SF6(T=240, x=0.5)
-            >>> print "%0.6g %0.6g %0.2f %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            240 0.440064 1760.80 36.21 -143.91 -40.63 -0.66135 -0.23103 0.56043 0.52495 0.89018 0.62193 474.67 112.27
-            >>> st=SF6(T=250, x=0.5)
-            >>> print "%0.6g %0.6g %0.2f %0.3f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            250 0.621964 1705.31 50.867 -134.81 -36.589 -0.62463 -0.23177 0.57964 0.55056 0.92638 0.66356 428.57 111.04
-            >>> st=SF6(T=260, x=0.5)
-            >>> print "%0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            260 0.854649 1645.54 70.103 -125.33 -32.747 -0.58803 -0.23193 0.5986 0.57618 0.96814 0.71212 382.8 109.02
-            >>> st=SF6(T=270, x=0.5)
-            >>> print "%0.6g %0.7g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            270 1.146251 1580.17 95.322 -115.43 -29.213 -0.55134 -0.23202 0.61759 0.60262 1.0194 0.77387 336.89 106.11
-            >>> st=SF6(T=280, x=0.5)
-            >>> print "%0.6g %0.7g %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            280 1.505551 1507.05 128.67 -105.01 -26.139 -0.51431 -0.23262 0.63716 0.63271 1.0875 0.86231 290.16 102.15
-            >>> st=SF6(T=290, x=0.5)
-            >>> print "%0.6g %0.7g %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            290 1.942334 1422.51 173.85 -93.928 -23.766 -0.47647 -0.23453 0.6589 0.66504 1.1897 0.99972 241.62 96.919
-            >>> st=SF6(T=300, x=0.5)
-            >>> print "%0.6g %0.7g %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            300 2.468172 1319.00 238.43 -81.864 -22.596 -0.43688 -0.23932 0.68633 0.7029 1.3801 1.2722 189.8 90.145
-            >>> st=SF6(T=310, x=0.5)
-            >>> print "%0.6g %0.7g %0.2f %0.2f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            310 3.098401 1174.67 344.14 -67.924 -24.009 -0.39285 -0.25119 0.73084 0.76178 1.9613 2.1947 131.47 81.329
-            >>> st=SF6(T=318, x=0.5)
-            >>> print "%0.6g %0.7g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            318 3.695565 917.87 569.56 -50.87 -33.648 -0.34041 -0.28626 0.8803 0.93693 16.37 26.348 70.232 69.747
-            >>> st=SF6(T=318.7, x=0.5)
-            >>> print "%0.6g %0.7g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.6g %0.6g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            318.7 3.753053 787.75 696.67 -44.789 -40.391 -0.32152 -0.30773 1.0458 1.0721 1027.68 1273.3 60.578 62.816
-            """
-            # Table 29, Pag 73
-            """
-            >>> st=SF6(T=390, P=1e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            390 4.5244 44.587 66.69 0.19538 0.73041 0.78868 154.14
-            >>> st=SF6(T=300, P=5e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 31.041 -18.062 -1.9544 -0.094212 0.61818 0.69206 130.24
-            >>> st=SF6(T=225, P=1e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            225 1841.9 -157.3 -156.76 -0.71798 0.53068 0.83889 550.68
-            >>> st=SF6(T=600, P=1.5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            600 44.273 213.8 247.68 0.41151 0.87699 0.94036 189.91
-            >>> st=SF6(T=400, P=2e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 95.798 46.897 67.774 0.032259 0.74992 0.83896 146.21
-            >>> st=SF6(T=305, P=3e6)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            305 1272.55 -78.218 -75.861 -0.41839 0.6977 1.4717 173.33
-            >>> st=SF6(T=300, P=4e6)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 1382.35 -86.689 -83.795 -0.44709 0.6729 1.1916 234.55
-            >>> st=SF6(T=625, P=5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            625 142.37 231.78 266.9 0.37513 0.89076 0.9678 194.91
-            >>> st=SF6(T=260, P=6e6)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            260 1693.94 -128.63 -125.08 -0.59892 0.59673 0.92285 436.07
-            >>> st=SF6(T=300, P=1e7)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 1505.13 -92.926 -86.282 -0.46916 0.66145 1.0186 328.66
-            >>> st=SF6(T=240, P=2e7)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            240 1862.82 -150.39 -139.65 -0.68852 0.56357 0.83019 603.24
-            >>> st=SF6(T=400, P=5e7)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            400 1479.33 -19.467 14.333 -0.25764 0.77463 0.98607 437.03
-            >>> st=SF6(T=500, P=1e8)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            500 1515.39 60.333 126.32 -0.082538 0.85386 1.0148 553.13
-            >>> st=SF6(T=625, P=1.5e8)
-            >>> print "%0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            625 1505.25 171.72 271.37 0.11704 0.91497 1.0498 633.74
-            """,
 
         "R": 8.314472,
         "cp": Fi1,
@@ -237,7 +95,7 @@ class SF6(MEoS):
                 .41600684707562e01, -.41398128855814e01, -.55842159922714,
                 .56531382776891,  .82612463415545e-2, -.10200995338080e-1],
         "d2": [1, 2, 2, 2, 3, 6, 2, 2, 4, 4, 2, 2],
-        "t2": [6., 0.25, 4.75, 5.375, 5.875, 2., 5.875, 6., 5.625, 5.75, 0., 0.5],
+        "t2": [6, 0.25, 4.75, 5.375, 5.875, 2, 5.875, 6, 5.625, 5.75, 0, 0.5],
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3],
         "gamma2": [1]*12,
 
@@ -257,10 +115,12 @@ class SF6(MEoS):
 
     reuck = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for sulfur hexafluoride of de Reuck et al. (1991)",
-        "__doi__": {"autor": "de Reuck, K.M., Craven, R.J.B., and Cole, W.A.",
-                    "title": "Report on the Development of an Equation of State for Sulphur Hexafluoride",
-                    "ref": "IUPAC Thermodynamic Tables Project Centre, London, 1991.",
+        "__name__": "Helmholtz equation of state for sulfur hexafluoride of "
+                    "de Reuck (1991)",
+        "__doi__": {"autor": "de Reuck, K.M., Craven, R.J.B., Cole, W.A.",
+                    "title": "Report on the Development of an Equation of "
+                             "State for Sulphur Hexafluoride",
+                    "ref": "IUPAC Thermodynamic Tables Project Centre, 1991.",
                     "doi": ""},
 
         "R": 8.31448,
@@ -270,7 +130,7 @@ class SF6(MEoS):
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 55000.0, "rhomax": 12.7,
         "Pmin": 224.36, "rhomin": 12.677,
 
-        "nr1": [0.26945570453, -0.554046585076, -0.929624636454, 0.505661081063,
+        "nr1": [0.26945570453, -0.554046585076, -0.929624636454, .505661081063,
                 -0.683495847809, 0.579161832426, -0.122636218956,
                 -0.260339227668e-1, 0.222201648687e-1, -0.118992341472e-2,
                 0.292000609763e-2, -0.243315775571e-2, 0.689778297550e-3],
@@ -317,11 +177,14 @@ class SF6(MEoS):
 
     polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for sulfur hexafluoride of Polt et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for sulfur hexafluoride of "
+                    "Polt (1992)",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP2,
         "ref": "OTO",
@@ -373,6 +236,187 @@ class SF6(MEoS):
 
 
 class Test(TestCase):
+
+    def test_guder(self):
+        # Table 27, Pag 57
+        st = SF6(T=350, P=5e6)
+        self.assertEqual(round(st.rho, 7), 436.9770888)
+
+        tau = st.Tc/350
+        delta = st.rho/st.rhoc
+        phi0 = st._phi0(st._constants["cp"], tau, delta)
+        self.assertEqual(round(phi0["fio"], 8), 0.330559888e1)
+        self.assertEqual(round(phi0["fiod"], 8), 0.169871606e1)
+        self.assertEqual(round(phi0["fiodd"], 8), -0.288563626e1)
+        self.assertEqual(round(phi0["fiot"], 9), 0.912770720)
+        self.assertEqual(round(phi0["fiott"], 7), -0.144662979e2)
+        self.assertEqual(round(phi0["fiodt"], 7), 0)
+
+        phir = st._phir(tau, delta)
+        self.assertEqual(round(phir["fir"], 9), -0.496581463)
+        self.assertEqual(round(phir["fird"], 9), -0.723171558)
+        self.assertEqual(round(phir["firdd"], 9), 0.405086373)
+        self.assertEqual(round(phir["firt"], 8), -0.137926327e1)
+        self.assertEqual(round(phir["firtt"], 8), -0.137917096e1)
+        self.assertEqual(round(phir["firdt"], 8), -0.209574715e1)
+
+        # Selected point from Table 28, Pag 71, Saturation state
+        st = SF6(T=223.555, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.231424)
+        self.assertEqual(round(st.Liquido.rho, 2), 1845.03)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -158.14)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.72226)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.52753)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 0.83712)
+        self.assertEqual(round(st.Liquido.w, 2), 552.26)
+        self.assertEqual(round(st.Gas.rho, 3), 19.560)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -47.521)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.22745)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.48331)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 5), 0.56309)
+        self.assertEqual(round(st.Gas.w, 2), 112.84)
+
+        st = SF6(T=250, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.621964)
+        self.assertEqual(round(st.Liquido.rho, 2), 1705.31)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), -134.81)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.62463)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.57964)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 0.92638)
+        self.assertEqual(round(st.Liquido.w, 2), 428.57)
+        self.assertEqual(round(st.Gas.rho, 3), 50.867)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -36.589)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.23177)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.55056)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 5), 0.66356)
+        self.assertEqual(round(st.Gas.w, 2), 111.04)
+
+        st = SF6(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 2.468172)
+        self.assertEqual(round(st.Liquido.rho, 2), 1319.00)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -81.864)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.43688)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.68633)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.3801)
+        self.assertEqual(round(st.Liquido.w, 2), 189.80)
+        self.assertEqual(round(st.Gas.rho, 2), 238.43)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -22.596)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.23932)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.70290)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.2722)
+        self.assertEqual(round(st.Gas.w, 3), 90.145)
+
+        st = SF6(T=318, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 3.695565)
+        self.assertEqual(round(st.Liquido.rho, 2), 917.87)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -50.870)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.34041)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 0.88030)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 16.370)
+        self.assertEqual(round(st.Liquido.w, 3), 70.232)
+        self.assertEqual(round(st.Gas.rho, 2), 569.56)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -33.648)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.28626)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 0.93693)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 26.348)
+        self.assertEqual(round(st.Gas.w, 3), 69.747)
+
+        st = SF6(T=318.7, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 3.753053)
+        self.assertEqual(round(st.Liquido.rho, 2), 787.75)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), -44.789)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), -0.32152)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 1.0458)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 1027.68)
+        self.assertEqual(round(st.Liquido.w, 3), 60.578)
+        self.assertEqual(round(st.Gas.rho, 2), 696.67)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), -40.391)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), -0.30773)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.0721)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 1273.31)
+        self.assertEqual(round(st.Gas.w, 3), 62.816)
+
+        # Selected points from Table 29, Pag 73, single phase region
+        st = SF6(T=235, P=1e5)
+        self.assertEqual(round(st.rho, 4), 7.6624)
+        self.assertEqual(round(st.u.kJkg, 3), -52.541)
+        self.assertEqual(round(st.h.kJkg, 3), -39.490)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.14668)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.49557)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.55917)
+        self.assertEqual(round(st.w, 2), 119.82)
+
+        st = SF6(T=245, P=5e5)
+        self.assertEqual(round(st.rho, 3), 40.652)
+        self.assertEqual(round(st.u.kJkg, 3), -50.563)
+        self.assertEqual(round(st.h.kJkg, 3), -38.264)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.22772)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.53594)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.63650)
+        self.assertEqual(round(st.w, 2), 112.47)
+
+        st = SF6(T=625, P=1e6)
+        self.assertEqual(round(st.rho, 3), 28.218)
+        self.assertEqual(round(st.u.kJkg, 2), 236.51)
+        self.assertEqual(round(st.h.kJkg, 2), 271.95)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.47409)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.88631)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.94703)
+        self.assertEqual(round(st.w, 2), 194.24)
+
+        st = SF6(T=290, P=2e6)
+        self.assertEqual(round(st.rho, 2), 1424.28)
+        self.assertEqual(round(st.u.kJkg, 3), -95.379)
+        self.assertEqual(round(st.h.kJkg, 3), -93.975)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.47677)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.65860)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1854)
+        self.assertEqual(round(st.w, 2), 243.05)
+
+        st = SF6(T=230, P=5e6)
+        self.assertEqual(round(st.rho, 2), 1838.34)
+        self.assertEqual(round(st.u.kJkg, 2), -154.40)
+        self.assertEqual(round(st.h.kJkg, 2), -151.68)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.70521)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.54153)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.84036)
+        self.assertEqual(round(st.w, 2), 554.97)
+
+        st = SF6(T=380, P=1e7)
+        self.assertEqual(round(st.rho, 2), 825.25)
+        self.assertEqual(round(st.u.kJkg, 4), -3.5308)
+        self.assertEqual(round(st.h.kJkg, 4), 8.5868)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.19035)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.76919)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.2719)
+        self.assertEqual(round(st.w, 2), 142.33)
+
+        st = SF6(T=400, P=2e7)
+        self.assertEqual(round(st.rho, 2), 1123.76)
+        self.assertEqual(round(st.u.kJkg, 4), -1.5810)
+        self.assertEqual(round(st.h.kJkg, 3), 16.216)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.19659)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.77581)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.0792)
+        self.assertEqual(round(st.w, 2), 239.83)
+
+        st = SF6(T=255, P=5e7)
+        self.assertEqual(round(st.rho, 2), 1912.92)
+        self.assertEqual(round(st.u.kJkg, 2), -144.76)
+        self.assertEqual(round(st.h.kJkg, 2), -118.62)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.66770)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.59557)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.82513)
+        self.assertEqual(round(st.w, 2), 688.44)
+
+        st = SF6(T=300, P=1e8)
+        self.assertEqual(round(st.rho, 2), 1920.29)
+        self.assertEqual(round(st.u.kJkg, 2), -116.67)
+        self.assertEqual(round(st.h.kJkg, 3), -64.594)
+        self.assertEqual(round(st.s.kJkgK, 5), -0.56696)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.66951)
+        self.assertEqual(round(st.cp.kJkgK, 5), 0.86708)
+        self.assertEqual(round(st.w, 2), 755.29)
 
     def test_shortSpan(self):
         # Table III, Pag 46

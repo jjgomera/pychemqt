@@ -45,12 +45,13 @@ class RE245cb2(MEoS):
            "ao_hyp": [10.214789, 10.503071, 0.98682562, 0],
            "hyp": [814, 2031, 3040, 0]}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for RE245cb2 of Zhou et al. (2010)",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2010.",
-                    "ref": "",
+        "__name__": "Helmholtz equation of state for RE245cb2 of Zhou (2010)",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Mahmoud, A.M.",
+                    "title": "Equations of state for RE245cb2, RE347mcc, "
+                             "RE245fa2 and R1216",
+                    "ref": "Preliminary equation",
                     "doi":  ""},
 
         "R": 8.314472,
@@ -60,11 +61,11 @@ class RE245cb2(MEoS):
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 400000.0, "rhomax": 10.02,
         "Pmin": 8.272, "rhomin": 10.,
 
-        "nr1": [0.41453162e-1, 0.15010352e1, -0.23142144e1, -0.471412, 0.17182],
+        "nr1": [0.041453162, 1.5010352, -2.3142144, -0.471412, 0.17182],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.25, 0.786, 1.32, 0.338],
 
-        "nr2": [-0.98793, -0.392049, 0.6848583, -0.32413816, -0.2414796e-1],
+        "nr2": [-0.98793, -0.392049, 0.6848583, -0.32413816, -0.02414796],
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.82, 2., 1., 3., 0.766],
         "c2": [2, 2, 1, 2, 1],
@@ -78,7 +79,7 @@ class RE245cb2(MEoS):
         "gamma3": [1.1, 0.64, 0.5, 1.26],
         "epsilon3": [0.713, 0.917, 0.69, 0.743]}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure = {
         "eq": 5,

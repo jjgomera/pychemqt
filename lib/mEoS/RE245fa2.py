@@ -36,8 +36,7 @@ class RE245fa2(MEoS):
     Tb = unidades.Temperature(302.4)
     f_acent = 0.387
     momentoDipolar = unidades.DipoleMoment(1.631, "Debye")
-    id = 671
-    # id = 1817
+    # id = 1874
 
     CP1 = {"ao": 5.259865,
            "an": [], "pow": [],
@@ -45,12 +44,13 @@ class RE245fa2(MEoS):
            "ao_hyp": [12.12843, 13.25677, 0.521867, 0],
            "hyp": [486, 1762, 7631, 0]}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for RE245fa2 of Zhou et al. (2012)",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2012.",
-                    "ref": "",
+        "__name__": "Helmholtz equation of state for RE245fa2 of Zhou (2012)",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Mahmoud, A.M.",
+                    "title": "Equations of state for RE245cb2, RE347mcc, "
+                             "RE245fa2 and R1216",
+                    "ref": "Preliminary equation",
                     "doi":  ""},
 
         "R": 8.314472,
@@ -80,7 +80,7 @@ class RE245fa2(MEoS):
         "gamma3": [1.084, 0.72, 0.49, 1.152],
         "epsilon3": [0.723, 0.9488, 0.818, 0.891]}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure = {
         "eq": 5,

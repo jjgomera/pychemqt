@@ -43,13 +43,14 @@ class RC318(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    platzer = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-C318 of Platzer et al. (1990)",
-        "__doi__": {"autor": "Platzer, B., Polt, A., and Maurer, G.",
-                    "title": "Thermophysical properties of refrigerants",
+        "__name__": "Helmholtz equation of state for R-C318 of Platzer (1990)",
+        "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
+                    "title": "Thermophysical Properties of Refrigerants",
                     "ref": "Berlin:  Springer-Verlag, 1990.",
                     "doi": ""},
+
         "R": 8.31451,
         "cp": CP1,
         "ref": "NBP",
@@ -73,7 +74,7 @@ class RC318(MEoS):
         "c2": [2]*6,
         "gamma2": [0.99943992]*6}
 
-    eq = helmholtz1,
+    eq = platzer,
 
     _surface = {"sigma": [0.0507], "exp": [1.25]}
     _vapor_Pressure = {

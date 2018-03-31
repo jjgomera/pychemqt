@@ -36,8 +36,6 @@ class RE347mcc(MEoS):
     Tb = unidades.Temperature(307.349)
     f_acent = 0.403
     momentoDipolar = unidades.DipoleMoment(3.13, "Debye")
-    id = 671
-    # id = 1817
 
     CP1 = {"ao": 13.09,
            "an": [], "pow": [],
@@ -45,12 +43,13 @@ class RE347mcc(MEoS):
            "ao_hyp": [13.78, 14.21, 0, 0],
            "hyp": [2045, 850, 0, 0]}
 
-    helmholtz1 = {
+    zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for RE347mcc of Zhou et al. (2012)",
-        "__doi__": {"autor": "Zhou, Y. and Lemmon, E.W.",
-                    "title": "preliminary equation, 2012.",
-                    "ref": "",
+        "__name__": "Helmholtz equation of state for RE347mcc of Zhou (2012)",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Mahmoud, A.M.",
+                    "title": "Equations of state for RE245cb2, RE347mcc, "
+                             "RE245fa2 and R1216",
+                    "ref": "Preliminary equation",
                     "doi":  ""},
 
         "R": 8.314472,
@@ -58,7 +57,7 @@ class RE347mcc(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 20000.0, "rhomax": 7.662,
-        "Pmin": 6.825 , "rhomin": 7.66,
+        "Pmin": 6.825, "rhomin": 7.66,
 
         "nr1": [0.0330627, 2.606165, -4.902937, 2.228012, 1.494115, -2.420459,
                 0.160067],
@@ -80,7 +79,7 @@ class RE347mcc(MEoS):
         "gamma3": [1.06, 1.22, 0.92, 1.08, 1.21, 0.85, 1.12],
         "epsilon3": [1.12, 0.79, 1.055, 0.5, 0.84, 0.85, 0.91]}
 
-    eq = helmholtz1,
+    eq = zhou,
 
     _vapor_Pressure = {
         "eq": 5,
