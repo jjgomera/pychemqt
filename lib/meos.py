@@ -39,6 +39,7 @@ from scipy.optimize import fsolve
 from lib import unidades
 from lib.physics import R_atml
 from lib.thermo import ThermoAdvanced
+from lib.compuestos import RhoL_Costald
 
 
 class MEoS(ThermoAdvanced):
@@ -1985,11 +1986,16 @@ class MEoS(ThermoAdvanced):
                 Pr = exp(self.Tc/T*suma)
             rho = unidades.Density(Pr*self.rhoc)
         else:
-            rho = unidades.Density(0)
+            # Use the Costald method to calculate saturated liquid density
+            rho = RhoL_Costald(T, self.Tc, self.f_acent, 1/self.rhoc)
         return rho
 
     def _Vapor_Density(self, T):
         if self._vapor_Density:
+            if T < self.Tt:
+                T = self.Tt
+            if T > self.Tc:
+                T = self.Tc
             eq = self._vapor_Density["eq"]
             Tita = 1-T/self.Tc
             if eq in [2, 4, 6]:
@@ -2729,6 +2735,15 @@ class MEoSBlend(MEoS):
             suma += n*Tita**(i/2.)
         P = Pj*exp(Tj/T*suma)
         return unidades.Pressure(P, "MPa")
+
+    @classmethod
+    def _Vapor_Pressure(cls, T, eq=0):
+        # Use a mean value between dew and bubble pressure to get a correct
+        # initial phase checking
+        dew = cls._dewP(T, eq)
+        bubble = cls._bubbleP(T, eq)
+        Pv = unidades.Pressure((dew+bubble)/2)
+        return Pv
 
 
 data = MEoS.properties()

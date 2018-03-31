@@ -135,7 +135,6 @@ from scipy.interpolate import interp1d, interp2d
 
 from lib.physics import R_atml, Collision_Neufeld
 from lib import unidades, config, sql
-from lib.mEoS import CH4, nC8
 
 
 __doi__ = {
@@ -2297,7 +2296,7 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     Selected value from Table 1 in [46]_, hydrogen
 
     >>> from lib.mEoS import H2
-    >>> young = H2(eq="MBWR")  # Using the ancient critical constant 
+    >>> young = H2(eq="MBWR")  # Using the ancient critical constant
     >>> T = 0.904*young.Tc
     >>> P = 7.71*young.Pc
     >>> Ps = young._Vapor_Pressure(T)
@@ -4686,6 +4685,8 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
         the Calculation of Interfacial Tensions. Can. J. Chem. Eng. 75(6)
         (1997) 1130-1137
     """
+    from lib.mEoS import CH4, nC8
+
     Tr = T/Tc
     Pc_bar = Pc*1e-5
 

@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoSBlend
 from lib import unidades
 
@@ -36,8 +38,6 @@ class R410a(MEoSBlend):
     Tb = unidades.Temperature(221.71)
     f_acent = 0.296
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 62
-    # id = None
 
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, -0.1],
@@ -45,27 +45,15 @@ class R410a(MEoSBlend):
            "ao_exp": [2.0623, 5.9751, 1.5612],
            "titao": [697/Tc, 1723/Tc, 3875/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-410A of Lemmon (2003)",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C",
-                    "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
+                    "title": "Pseudo-Pure Fluid Equations of State for the "
+                             "Refrigerant Blends R-410A, R-404A, R-507A, and "
+                             "R-407C",
+                    "ref": "Int. J. Thermophys., 24(4) (2003) 991-1006",
                     "doi": "10.1023/A:1025048800563"},
-        "__test__": """
-            >>> st=R410a(T=300, rhom=0)
-            >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 0.0 0.0 50.400 58.714 200.08
-            >>> st=R410a(T=300, P=R410a._bubbleP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.7404 14.45917 67.147 125.50 418.60
-            >>> st=R410a(T=300, P=R410a._dewP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.7351 0.95997 67.335 107.60 160.94
-            >>> st=R410a(T=250, rhom=18)
-            >>> print "%0.3g %0.3f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            250 17.651 18.0 62.521 98.401 800.83
-            """, # Table V, Pag 998
 
         "R": 8.314472,
         "cp": Fi1,
@@ -94,14 +82,37 @@ class R410a(MEoSBlend):
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3],
         "gamma2": [1]*16}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.06443], "exp": [1.245]}
-    _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-7.4411, 1.9883, -2.4924, -3.2633],
-        "exp": [1, 1.6, 2.4, 5]}
-    _liquid_Pressure = {
-        "eq": 5,
-        "ao": [-7.2818, 2.5093, -3.2695, -2.8022],
-        "exp": [1, 1.8, 2.4, 4.9]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table V, Pag 998
+        st = R410a(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 3), 0)
+        self.assertEqual(round(st.cvM.JmolK, 3), 50.400)
+        self.assertEqual(round(st.cpM.JmolK, 3), 58.714)
+        self.assertEqual(round(st.w, 2), 200.08)
+
+        st = R410a(T=300, P=R410a._bubbleP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.7404)
+        self.assertEqual(round(st.rhoM, 5), 14.45917)
+        self.assertEqual(round(st.cvM.JmolK, 3), 67.147)
+        self.assertEqual(round(st.cpM.JmolK, 2), 125.50)
+        self.assertEqual(round(st.w, 2), 418.60)
+
+        st = R410a(T=300, P=R410a._dewP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.7351)
+        self.assertEqual(round(st.rhoM, 5), 0.95997)
+        self.assertEqual(round(st.cvM.JmolK, 3), 67.335)
+        self.assertEqual(round(st.cpM.JmolK, 2), 107.60)
+        self.assertEqual(round(st.w, 2), 160.94)
+
+        st = R410a(T=250, rhom=18)
+        self.assertEqual(round(st.P.MPa, 3), 17.651)
+        self.assertEqual(round(st.cvM.JmolK, 3), 62.521)
+        self.assertEqual(round(st.cpM.JmolK, 3), 98.401)
+        self.assertEqual(round(st.w, 2), 800.83)

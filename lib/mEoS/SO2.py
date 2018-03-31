@@ -53,7 +53,7 @@ class SO2(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for sulfur dioxide of "
                     "Lemmon and Span (2006).",
@@ -81,13 +81,16 @@ class SO2(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    helmholtz2 = {
+    polt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for sulfur dioxide of Polt (1987).",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
-                    "title": "Parameter der thermischen Zustandsgleichung von Bender fuer 14 mehratomige reine Stoffe",
+        "__name__": "Helmholtz equation of state for sulfur dioxide of Polt "
+                    "(1987).",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
+                    "title": "Parameter der thermischen Zustandsgleichung von "
+                             "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
                     "doi": ""},
+
         "R": 8.3143,
         "cp": CP2,
         "ref": "NBP",
@@ -98,7 +101,7 @@ class SO2(MEoS):
         "nr1": [0.789407019882, -0.170449580056e1, 0.115984637964e1,
                 -0.576307837294, 0.249237283833e1, -0.518115678632e1,
                 0.320766081899e1, -0.123636065893e1, 0.144419600938e-1,
-                -0.15380705504, 0.386324300525, 0.292550313202, -0.372445361392,
+                -.15380705504, 0.386324300525, 0.292550313202, -0.372445361392,
                 -0.636924333910e-1, 0.986166451596e-1, -0.216993783055e-2],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
@@ -110,7 +113,7 @@ class SO2(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = helmholtz1, helmholtz2
+    eq = lemmon, polt
 
     _surface = {"sigma": [0.0803, 0.0139, -0.0114],
                 "exp": [0.928, 1.57, 0.364]}

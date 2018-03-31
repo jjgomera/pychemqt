@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoSBlend
 from lib import unidades
 
@@ -38,35 +40,22 @@ class R404a(MEoSBlend):
     Tb = unidades.Temperature(226.93)
     f_acent = 0.293
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 62
 
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, -0.3],
            "ao_pow": [7.00407, 7.98695, -18.8664],
-           "ao_exp": [0.63075, 3.5979, 5.0335],
+           "ao_exp": [0.63078, 3.5979, 5.0335],
            "titao": [413/Tc, 804/Tc, 1727/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-404A of Lemmon (2003)",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C",
-                    "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
+                    "title": "Pseudo-Pure Fluid Equations of State for the "
+                             "Refrigerant Blends R-410A, R-404A, R-507A, and "
+                             "R-407C",
+                    "ref": "Int. J. Thermophys., 24(4) (2003) 991-1006",
                     "doi": "10.1023/A:1025048800563"},
-        "__test__": """
-            >>> st=R404a(T=300, rhom=0)
-            >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 0.0 0.0 76.219 84.533 168.36
-            >>> st=R404a(T=300, P=R404a._bubbleP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.3169 10.60497 90.653 152.11 365.11
-            >>> st=R404a(T=300, P=R404a._dewP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.3034 0.70599 87.917 121.86 132.92
-            >>> st=R404a(T=250, rhom=13)
-            >>> print "%0.3g %0.3f %0.1f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            250 10.435 13.0 83.062 123.27 688.27
-            """, # Table V, Pag 998
 
         "R": 8.314472,
         "cp": Fi1,
@@ -81,28 +70,51 @@ class R404a(MEoSBlend):
         "bubble": {"i": [0.54*2, 0.965*2, 3.7*2, 9.0*2],
                    "n": [0.061067, -6.5646, -3.6162, 3.9771]},
 
-        "nr1": [0.610984e1, -0.779453e1, 0.183377e-1, 0.262270, -0.351688e-2,
-                0.116181e-1, 0.105992e-2],
+        "nr1": [6.10984, -7.79453, 0.0183377, 0.262270, -0.00351688, 0.0116181,
+                0.00105992],
         "d1": [1, 1, 1, 2, 2, 4, 6],
         "t1": [0.67, 0.91, 5.96, 0.7, 6, 0.3, 0.7],
 
-        "nr2": [0.850922, -0.520084, -0.464225e-1, 0.62119, -.195505, .336159,
-                -.376062e-1, -.636579e-2, -.758262e-1, -.221041e-1, .310441e-1,
-                0.132798e-1, 0.689437e-1, -0.507525e-1, 0.161382e-1],
+        "nr2": [0.850922, -0.520084, -0.0464225, 0.62119, -0.195505, 0.336159,
+                -0.0376062, -0.00636579, -0.0758262, -0.0221041, 0.0310441,
+                0.0132798, 0.0689437, -0.0507525, 0.0161382],
         "d2": [1, 1, 1, 2, 2, 3, 4, 7, 2, 3, 4, 4, 2, 3, 5],
         "t2": [1.7, 3.3, 7, 2.05, 4.3, 2.7, 1.8, 1.25, 12, 6, 8.7, 11.6, 13,
                17, 16],
         "c2": [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*15}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.06868, -0.04576], "exp": [1.3142, 2.3084]}
-    _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.00026863, -6.5757, -4.1802, -7.9102],
-        "exp": [0.1, 0.972, 3.8, 9]}
-    _liquid_Pressure = {
-        "eq": 5,
-        "ao": [0.061067, -6.5646, -3.6162, -3.9771],
-        "exp": [0.54, 0.965, 3.7, 9.0]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table V, Pag 998
+        st = R404a(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 3), 0)
+        self.assertEqual(round(st.cvM.JmolK, 3), 76.219)
+        self.assertEqual(round(st.cpM.JmolK, 3), 84.533)
+        self.assertEqual(round(st.w, 2), 168.36)
+
+        st = R404a(T=300, P=R404a._bubbleP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.3169)
+        self.assertEqual(round(st.rhoM, 5), 10.60497)
+        self.assertEqual(round(st.cvM.JmolK, 3), 90.653)
+        self.assertEqual(round(st.cpM.JmolK, 2), 152.11)
+        self.assertEqual(round(st.w, 2), 365.11)
+
+        st = R404a(T=300, P=R404a._dewP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.3034)
+        self.assertEqual(round(st.rhoM, 5), 0.70599)
+        self.assertEqual(round(st.cvM.JmolK, 3), 87.917)
+        self.assertEqual(round(st.cpM.JmolK, 2), 121.86)
+        self.assertEqual(round(st.w, 2), 132.92)
+
+        st = R404a(T=250, rhom=13)
+        self.assertEqual(round(st.P.MPa, 3), 10.435)
+        self.assertEqual(round(st.cvM.JmolK, 3), 83.062)
+        self.assertEqual(round(st.cpM.JmolK, 2), 123.27)
+        self.assertEqual(round(st.w, 2), 688.27)

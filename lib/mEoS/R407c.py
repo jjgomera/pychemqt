@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoSBlend
 from lib import unidades
 
@@ -46,27 +48,15 @@ class R407c(MEoSBlend):
            "ao_exp": [1.4245, 3.9419, 3.1209],
            "titao": [864/Tc, 1887/Tc, 4802/Tc]}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-407C of Lemmon (2003)",
         "__doi__": {"autor": "Lemmon, E.W.",
-                    "title": "Pseudo-Pure Fluid Equations of State for the Refrigerant Blends R-410A, R-404A, R-507A, and R-407C",
-                    "ref": "Int. J. Thermophys., 24(4):991-1006, 2003.",
+                    "title": "Pseudo-Pure Fluid Equations of State for the "
+                             "Refrigerant Blends R-410A, R-404A, R-507A, and "
+                             "R-407C",
+                    "ref": "Int. J. Thermophys., 24(4) (2003) 991-1006",
                     "doi": "10.1023/A:1025048800563"},
-        "__test__": """
-            >>> st=R407c(T=300, rhom=0)
-            >>> print "%0.3g %0.1f %0.1f %0.3f %0.3f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 0.0 0.0 62.631 70.945 181.04
-            >>> st=R407c(T=300, P=R407c._bubbleP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.2507 13.10230 78.624 133.31 458.46
-            >>> st=R407c(T=300, P=R407c._dewP(300))
-            >>> print "%0.3g %0.4f %0.5f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            300 1.0757 0.53670 74.027 99.203 154.41
-            >>> st=R407c(T=250, rhom=16)
-            >>> print "%0.3g %0.3f %0.1f %0.3f %0.2f %0.2f" % (st.T, st.P.MPa, st.rhoM, st.cvM.kJkmolK, st.cpM.kJkmolK, st.w)
-            250 25.372 16.0 74.065 110.74 851.38
-            """, # Table V, Pag 998
 
         "R": 8.314472,
         "cp": Fi1,
@@ -95,14 +85,37 @@ class R407c(MEoSBlend):
         "c2": [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3],
         "gamma2": [1]*16}
 
-    eq = helmholtz1,
+    eq = lemmon,
 
     _surface = {"sigma": [0.064017], "exp": [1.2557]}
-    _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.086077, -6.6364, -2.4648, -3.4776],
-        "exp": [0.4, 0.965, 3.1, 5.]}
-    _liquid_Pressure = {
-        "eq": 5,
-        "ao": [0.48722, -6.6959, -1.4165, -2.5109],
-        "exp": [0.54, 0.925, 2.7, 4.7]}
+
+
+class Test(TestCase):
+
+    def test_lemmon(self):
+        # Table V, Pag 998
+        st = R407c(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 3), 0)
+        self.assertEqual(round(st.cvM.JmolK, 3), 62.631)
+        self.assertEqual(round(st.cpM.JmolK, 3), 70.945)
+        self.assertEqual(round(st.w, 2), 181.04)
+
+        st = R407c(T=300, P=R407c._bubbleP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.2507)
+        self.assertEqual(round(st.rhoM, 5), 13.10230)
+        self.assertEqual(round(st.cvM.JmolK, 3), 78.624)
+        self.assertEqual(round(st.cpM.JmolK, 2), 133.31)
+        self.assertEqual(round(st.w, 2), 458.46)
+
+        st = R407c(T=300, P=R407c._dewP(300))
+        self.assertEqual(round(st.P.MPa, 4), 1.0757)
+        self.assertEqual(round(st.rhoM, 5), 0.53670)
+        self.assertEqual(round(st.cvM.JmolK, 3), 74.027)
+        self.assertEqual(round(st.cpM.JmolK, 3), 99.203)
+        self.assertEqual(round(st.w, 2), 154.41)
+
+        st = R407c(T=250, rhom=16)
+        self.assertEqual(round(st.P.MPa, 3), 25.372)
+        self.assertEqual(round(st.cvM.JmolK, 3), 74.065)
+        self.assertEqual(round(st.cpM.JmolK, 2), 110.74)
+        self.assertEqual(round(st.w, 2), 851.38)
