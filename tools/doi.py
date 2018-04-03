@@ -92,8 +92,12 @@ class ShowReference(QtWidgets.QDialog):
 
                     else:
                         link = module.__doi__[key]
+                        if isinstance(key, int):
+                            header = ""
+                        else:
+                            header = key
                         item = QtWidgets.QTreeWidgetItem([
-                            "", link["autor"], link["title"], link["ref"],
+                            header, link["autor"], link["title"], link["ref"],
                             link["doi"]])
 
                         if findFile(link):

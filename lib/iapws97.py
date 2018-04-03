@@ -29,104 +29,180 @@ from iapws._iapws import M, Tc, Pc, rhoc, Tt, Tb, Dipole, f_acent
 from lib import unidades
 from lib.thermo import ThermoWater
 
+try:
+    from iapws import __doi__
+except ImportError:
+    __doi__ = {}
+
+__doi__["1"] = {
+    "autor": "Wagner, W., Cooper, J.R., Dittmann, A., Kijima, J., "
+             "Kretzschmar, H.-J., Kruse, A., Mareš, R., Oguchi, K., Sato,"
+             " H., Stöcker, I., Šifner, O., Takaishi, Y., Tanishita, I., "
+             "Trübenbach, J., Willkommen, T.",
+    "title": "The IAPWS Industrial Formulation 1997 for the Thermodynamic "
+             "Properties of Water and Steam",
+    "ref": "J. Eng. Gas Turbines & Power 122 (2000) 150-182",
+    "doi": "10.1115/1.483186"}
+
 
 class IAPWS97(ThermoWater):
     """Class to model a state for liquid water or steam with the IAPWS-IF97
 
-    Incoming properties:
-    T   -   Temperature, K
-    P   -   Pressure, Pa
-    h   -   Specific enthalpy, kJ/kg
-    s   -   Specific entropy, kJ/kg·K
-    x   -   Quality
+    Parameters
+    ----------
+    T : float
+        Temperature [K]
+    P : float
+        Pressure [MPa]
+    h : float
+        Specific enthalpy [kJ/kg]
+    s : float
+        Specific entropy [kJ/kgK]
+    x : float
+        Vapor quality [-]
+    l : float, optional
+        Wavelength of light, for refractive index [nm]
 
-    Optional:
-    l   -   Wavelength of light, for refractive index
-
+    Notes
+    -----
     Definitions options:
-    T, P    Not valid for two-phases region
-    P, h
-    P, s
-    h, s
-    T, x    Only for two-phases region
-    P, x    Only for two-phases region
+        * T, P: Not valid for two-phases region
+        * P, h
+        * P, s
+        * h, s
+        * T, x: Only for two-phases region
+        * P, x: Only for two-phases region
 
+    Returns
+    -------
+    The calculated instance has the following properties:
+        * P: Pressure [MPa]
+        * T: Temperature [K]
+        * g: Specific Gibbs free energy [kJ/kg]
+        * a: Specific Helmholtz free energy [kJ/kg]
+        * v: Specific volume [m³/kg]
+        * rho: Density [kg/m³]
+        * h: Specific enthalpy [kJ/kg]
+        * u: Specific internal energy [kJ/kg]
+        * s: Specific entropy [kJ/kg·K]
+        * cp: Specific isobaric heat capacity [kJ/kg·K]
+        * cv: Specific isochoric heat capacity [kJ/kg·K]
+        * Z: Compression factor [-]
+        * fi: Fugacity coefficient [-]
+        * f: Fugacity [MPa]
 
-    Properties:
-    P        -   Pressure, MPa
-    T        -   Temperature, K
-    g        -   Specific Gibbs free energy, kJ/kg
-    a        -   Specific Helmholtz free energy, kJ/kg
-    v        -   Specific volume, m³/kg
-    r        -   Density, kg/m³
-    h        -   Specific enthalpy, kJ/kg
-    u        -   Specific internal energy, kJ/kg
-    s        -   Specific entropy, kJ/kg·K
-    c        -   Specific isobaric heat capacity, kJ/kg·K
-    c        -   Specific isochoric heat capacity, kJ/kg·K
-    Z        -   Compression factor
-    f        -   Fugacity, MPa
-    gamma    -   Isoentropic exponent
-    alfav    -   Isobaric cubic expansion coefficient, 1/K
-    kappa   -   Isothermal compressibility, 1/MPa
-    alfap    -   Relative pressure coefficient, 1/K
-    betap    -   Isothermal stress coefficient, kg/m³
-    joule    -   Joule-Thomson coefficient, K/MPa
-    deltat   -   Isothermal throttling coefficient, kJ/kg·MPa
-    region   -   Region
+        * gamma: Isoentropic exponent [-]
+        * alfav: Isobaric cubic expansion coefficient [1/K]
+        * xkappa: Isothermal compressibility [1/MPa]
+        * kappas: Adiabatic compresibility [1/MPa]
+        * alfap: Relative pressure coefficient [1/K]
+        * betap: Isothermal stress coefficient [kg/m³]
+        * joule: Joule-Thomson coefficient [K/MPa]
+        * deltat: Isothermal throttling coefficient [kJ/kg·MPa]
+        * region: Region
 
-    v0       -   Ideal specific volume, m³/kg
-    u0       -   Ideal specific internal energy, kJ/kg
-    h0       -   Ideal specific enthalpy, kJ/kg
-    s0       -   Ideal specific entropy, kJ/kg·K
-    a0       -   Ideal specific Helmholtz free energy, kJ/kg
-    g0       -   Ideal specific Gibbs free energy, kJ/kg
-    cp0      -   Ideal specific isobaric heat capacity, kJ/kg·K
-    cv0      -   Ideal specific isochoric heat capacity, kJ/kg·K
-    w0       -   Ideal speed of sound, m/s
-    gamma0   -   Ideal isoentropic exponent
+        * v0: Ideal specific volume [m³/kg]
+        * u0: Ideal specific internal energy [kJ/kg]
+        * h0: Ideal specific enthalpy [kJ/kg]
+        * s0: Ideal specific entropy [kJ/kg·K]
+        * a0: Ideal specific Helmholtz free energy [kJ/kg]
+        * g0: Ideal specific Gibbs free energy [kJ/kg]
+        * cp0: Ideal specific isobaric heat capacity [kJ/kg·K]
+        * cv0: Ideal specific isochoric heat capacity [kJ/kg·K]
+        * w0: Ideal speed of sound [m/s]
+        * gamma0: Ideal isoentropic exponent [-]
 
-    w        -   Speed of sound, m/s
-    mu       -   Dynamic viscosity, Pa·s
-    nu       -   Kinematic viscosity, m²/s
-    k        -   Thermal conductivity, W/m·K
-    alfa     -   Thermal diffusivity, m²/s
-    sigma    -   Surface tension, N/m
-    epsilon  -   Dielectric constant
-    n        -   Refractive index
-    Prandt   -   Prandtl number
-    Pr       -   Reduced Pressure
-    Tr       -   Reduced Temperature
+        * w: Speed of sound [m/s]
+        * mu: Dynamic viscosity [Pa·s]
+        * nu: Kinematic viscosity [m²/s]
+        * k: Thermal conductivity [W/m·K]
+        * alfa: Thermal diffusivity [m²/s]
+        * sigma: Surface tension [N/m]
+        * epsilon: Dielectric constant [-]
+        * n: Refractive index [-]
+        * Prandt: Prandtl number [-]
+        * Pr: Reduced Pressure [-]
+        * Tr: Reduced Temperature [-]
 
-    Usage:
-    >>> water=IAPWS97(T=170+273.15,x=0.5)
-    >>> "%0.4f %0.4f %0.1f %0.2f" % (water.Liquido.cp.kJkgK, \
-        water.Gas.cp.kJkgK, water.Liquido.w, water.Gas.w)
-    '4.3695 2.5985 1418.3 498.78'
-    >>> water=IAPWS97(T=325+273.15,x=0.5)
-    >>> "%0.4f %0.8f %0.7f %0.2f %0.2f" % (water.P.MPa, water.Liquido.v, \
-        water.Gas.v, water.Liquido.h.kJkg, water.Gas.h.kJkg)
-    '12.0505 0.00152830 0.0141887 1493.37 2684.48'
-    >>> water=IAPWS97(T=50+273.15,P=611.2127)
-    >>> "%0.4f %0.4f %0.2f %0.3f %0.2f" % (water.cp0.kJkgK, water.cv0.kJkgK, \
-        water.h0.kJkg, water.s0.kJkgK, water.w0)
-    '1.8714 1.4098 2594.66 9.471 444.93'
+    Examples
+    --------
+    Region 1, Table A3
+    >>> st = IAPWS97(T=300, P=3e6)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '0.00100215168 115.331273 112.324818'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '0.392294792 4.17301218 1507.73921'
+    >>> st = IAPWS97(T=300, P=8e7)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '0.000971180894 184.142828 106.448356'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '0.368563852 4.01008987 1634.69054'
+    >>> st = IAPWS97(T=500, P=3e6)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '0.001202418 975.542239 971.934985'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '2.58041912 4.65580682 1240.71337'
+
+    Region 2, Table A6
+    >>> st = IAPWS97(T=300, P=3.5e3)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '39.4913866 2549.91145 2411.6916'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '8.52238967 1.91300162 427.920172'
+    >>> st = IAPWS97(T=700, P=3.5e3)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '92.3015898 3335.68375 3012.62819'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '10.1749996 2.08141274 644.289068'
+    >>> st = IAPWS97(T=700, P=3e7)
+    >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
+    '0.00542946619 2631.49474 2468.61076'
+    >>> "%0.9g %0.9g %0.9g" % (st.s.kJkgK, st.cp.kJkgK, st.w)
+    '5.17540298 10.3505092 480.386523'
+
+    Region 3, Table A10
+    >>> from iapws.iapws97 import _Region3
+    >>> st = _Region3(500, 650)
+    >>> "%0.9g %0.9g %0.9g" % (st["P"], st["h"], st["h"]-st["P"]*1000*st["v"])
+    '25.5837018 1863.43019 1812.26279'
+    >>> "%0.9g %0.9g %0.9g" % (st["s"], st["cp"], st["w"])
+    '4.05427273 13.8935717 502.005554'
+    >>> st = _Region3(200, 650)
+    >>> "%0.9g %0.9g %0.9g" % (st["P"], st["h"], st["h"]-st["P"]*1000*st["v"])
+    '22.2930643 2375.12401 2263.65868'
+    >>> "%0.9g %0.9g %0.9g" % (st["s"], st["cp"], st["w"])
+    '4.85438792 44.6579342 383.444594'
+    >>> st = _Region3(500, 750)
+    >>> "%0.9g %0.9g %0.9g" % (st["P"], st["h"], st["h"]-st["P"]*1000*st["v"])
+    '78.3095639 2258.68845 2102.06932'
+    >>> "%0.9g %0.9g %0.9g" % (st["s"], st["cp"], st["w"])
+    '4.46971906 6.34165359 760.696041'
+
+    Region 4, Table A12
+    >>> st1 = IAPWS97(T=300, x=0.5)
+    >>> st2 = IAPWS97(T=500, x=0.5)
+    >>> st3 = IAPWS97(T=600, x=0.5)
+    >>> "%0.9g %0.9g %0.9g" % (st1.P.MPa, st2.P.MPa, st3.P.MPa)
+    '0.00353658941 2.63889776 12.3443146'
+
+    Region 4, Table A29
+    >>> st1 = IAPWS97(P=1e5, x=0.5)
+    >>> st2 = IAPWS97(P=1e6, x=0.5)
+    >>> st3 = IAPWS97(P=1e7, x=0.5)
+    >>> "%0.9g %0.9g %0.9g" % (st1.T, st2.T, st3.T)
+    '372.755919 453.035632 584.149488'
+
+    Other test in paper have been upgraded by new equation, i.e. for region 5
+    or for ancillary equation, the testing is done in iapws testing layer
+
+    References
+    ----------
+    [1]_ Wagner, W., Cooper, J.R., Dittmann, A., Kijima, J., Kretzschmar,
+        H.-J., Kruse, A., Mareš, R., Oguchi, K., Sato, H., Stöcker, I.,
+        Šifner, O., Takaishi, Y., Tanishita, I., Trübenbach, J., Willkommen, T.
+        The IAPWS Industrial Formulation 1997 for the Thermodynamic Properties
+        of Water and Steam. J. Eng. Gas Turbines & Power 122 (2000) 150-182.
     """
-
-    __doi__ = [
-        {"autor": "IAPWS",
-         "title": "Revised Release on the IAPWS Industrial Formulation 1997"
-                  "for the Thermodynamic Properties of Water and Steam",
-         "ref": "",
-         "doi": ""},
-        {"autor": "Wagner, W., Cooper, J. R., Dittmann, A., Kijima, J., "
-                  "Kretzschmar, H.-J., Kruse, A., Mareš, R., Oguchi, K., Sato,"
-                  " H., Stöcker, I., Šifner, O., Takaishi, Y., Tanishita, I., "
-                  "Trübenbach, J., and Willkommen, Th.",
-         "title": "The IAPWS Industrial Formulation 1997 for the Thermodynamic"
-                  " Properties of Water and Steam",
-         "ref": "J. Eng. Gas Turbines & Power 122, 150-182 (2000)",
-         "doi": "10.1115/1.483186"}]
 
     M = unidades.Dimensionless(M)
     Pc = unidades.Pressure(Pc, "MPa")
