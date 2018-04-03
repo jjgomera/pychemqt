@@ -38,10 +38,10 @@ class R134a(MEoS):
     Tb = unidades.Temperature(247.076)
     f_acent = 0.32684
     momentoDipolar = unidades.DipoleMoment(2.058, "Debye")
-    id = 236
     # id = 1235
 
-    Fi1 = {"ao_log": [1, -1.629789],
+    Fi1 = {"R": 8.314471,
+           "ao_log": [1, -1.629789],
            "pow": [0, 1, -0.5, -0.75],
            "ao_pow": [-1.019535, 9.047135, -9.723916, -3.92717],
            "ao_exp": [], "titao": []}
@@ -60,213 +60,22 @@ class R134a(MEoS):
     # TDOO: Add Huber-Ely meos, file in todo folder
     tillner = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-134a of Tillner-Roth & Baehr (1994).",
-        "__doi__": {"autor": "Tillner-Roth, R. and Baehr, H.D.",
-                    "title": "An international standard formulation of the thermodynamic properties of 1,1,1,2-tetrafluoroethane (HFC-134a) for temperatures from 170 K to 455 K at pressures up to 70 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 23, 657 (1994)",
+        "__name__": "Helmholtz equation of state for R-134a of Tillner-Roth "
+                    "(1994).",
+        "__doi__": {"autor": "Tillner-Roth, R., Baehr, H.D.",
+                    "title": "An International Standard Formulation for the "
+                             "Thermodynamic Properties of 1,1,1,2-"
+                             "Tetrafluoroethane (HFC-134a) for Temperatures "
+                             "from 170 K to 455 K at Pressures up to 70 MPa",
+                    "ref": "J. Phys. Chem. Ref. Data 23(5) (1994) 657-729",
                     "doi": "10.1063/1.555958"},
-        "__test__":
-            #Table 8, Pag 696
-            """
-            >>> st=R134a(T=169.85, x=0.5)
-            >>> print "%0.2f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            169.85 0.00039 1591.1 0.02817 71.454 334.94 0.4126 1.9639 0.7922 0.5029 1.1838 0.5853 1119.9 126.79
-            >>> st=R134a(T=180, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            180 0.00113 1564.2 0.07701 83.482 340.88 0.4813 1.9113 0.7912 0.5267 1.1871 0.6096 1068.3 130.05
-            >>> st=R134a(T=200, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            200 0.00631 1510.4 0.38977 107.39 353.05 0.6073 1.8356 0.8015 0.5732 1.2057 0.5386 967.60 135.98
-            >>> st=R134a(T=220, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            220 0.02443 1455.1 1.3850 131.77 365.65 0.7234 1.7865 0.8193 0.6203 1.2331 0.7109 869.85 141.00
-            >>> st=R134a(T=250, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            250 0.11561 1367.8 5.9545 169.56 384.60 0.8841 1.7442 0.8514 0.6961 1.2864 0.8044 728.38 145.98
-            >>> st=R134a(T=300, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            300 0.70282 1199.6 34.192 237.18 413.26 1.1286 1.7155 0.9144 0.8426 1.4324 1.0438 497.88 143.87
-            >>> st=R134a(T=.350, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            350 2.4610 951.31 140.99 316.49 429.02 1.3674 1.6889 1.0036 1.0300 1.9613 1.8493 254.05 120.33
-            >>> st=R134a(T=360, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            360 3.0404 870.11 193.58 336.05 427.07 1.4207 1.6735 1.0389 1.0853 2.4367 2.6063 196.04 111.24
-            >>> st=R134a(T=370, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            370 3.7278 740.31 293.89 360.64 417.68 1.4856 1.6398 1.1145 1.1690 5.1048 6.8621 127.23 99.370
-            >>> st=R134a(T=374, x=0.5)
-            >>> print "%0.0f %0.5f %0.1f %0.5f %0.3f %0.2f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.1f %0.2f" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            374 4.0416 587.91 434.05 380.85 399.50 1.5387 1.5885 1.2120 1.2409 101.66 137.23 92.401 91.389
-            """
-            #Table 9, Pag 700
-            """
-            >>> st=R134a(T=170, P=1e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            170 1590.7 71.636 0.4136 0.7921 1.1838 1119.2
-            >>> st=R134a(T=210, P=2e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            210 1483.0 119.52 0.6664 0.8098 1.2186 918.36
-            >>> st=R134a(T=305, P=3e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            305 1.2137 431.60 2.0221 0.7662 0.8501 165.14
-            >>> st=R134a(T=440, P=4e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            440 1.1177 561.31 2.3484 0.9864 1.0688 196.72
-            >>> st=R134a(T=260, P=6e4)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            260 2.8904 394.24 1.8338 0.6929 0.7842 151.67
-            >>> st=R134a(T=370, P=1e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            370 3.3472 489.70 2.0970 0.8776 0.9631 180.23
-            >>> st=R134a(T=230, P=1.6e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            230 1427.0 144.24 0.7784 0.8295 1.2490 822.77
-            >>> st=R134a(T=200, P=2e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            200 1510.7 107.47 0.6070 0.8016 1.2055 968.48
-            >>> st=R134a(T=275, P=3e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            275 14.679 400.05 1.7305 0.7625 0.8981 147.40
-            >>> st=R134a(T=300, P=4e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 17.859 420.31 1.7796 0.7926 0.9207 153.82
-            >>> st=R134a(T=235, P=5e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            235 1413.3 150.63 0.8048 0.8348 1.2568 801.11
-            >>> st=R134a(T=175, P=6e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            175 1578.2 77.821 0.4473 0.7911 1.1843 1096.0
-            >>> st=R134a(T=300, P=8e5)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            300 1200.2 237.19 1.1283 0.9143 1.4312 499.04
-            >>> st=R134a(T=220, P=1e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            220 1457.1 132.16 0.7221 0.8195 1.2315 874.95
-            >>> st=R134a(T=310, P=1.2e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            310 1161.9 251.69 1.1748 0.9285 1.4758 454.86
-            >>> st=R134a(T=460, P=1.4e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            460 39.636 574.72 2.0934 1.0324 1.1453 192.05
-            >>> st=R134a(T=265, P=2e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            265 1327.3 189.62 0.9566 0.8689 1.3123 672.83
-            >>> st=R134a(T=275, P=2.5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            275 1297.2 202.99 1.0047 0.8809 1.3342 631.65
-            >>> st=R134a(T=180, P=3e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            180 1568.1 84.816 0.4781 0.7921 1.1846 1079.9
-            >>> st=R134a(T=275, P=3.5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            275 1300.9 203.23 1.0027 0.8808 1.3293 639.71
-            >>> st=R134a(T=370, P=4e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            370 787.42 356.29 1.4729 1.0747 3.1454 157.31
-            >>> st=R134a(T=270, P=5e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            270 1321.8 197.03 0.9758 0.8748 1.3115 672.94
-            >>> st=R134a(T=175, P=6e6)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            175 1584.8 80.250 0.4417 0.7928 1.1803 1115.9
-            >>> st=R134a(T=200, P=1e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            200 1525.7 111.68 0.5958 0.8045 1.1953 1010.3
-            >>> st=R134a(T=265, P=1.2e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            265 1357.1 192.75 0.9403 0.8696 1.2807 740.01
-            >>> st=R134a(T=320, P=1.4e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            320 1202.9 266.29 1.1868 0.9343 1.3799 549.36
-            >>> st=R134a(T=450, P=1.6e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            450 718.77 466.57 1.7036 1.1007 1.6893 243.70
-            >>> st=R134a(T=220, P=2e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            220 1490.4 140.01 0.6992 0.8247 1.2076 962.36
-            >>> st=R134a(T=355, P=3e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            355 1177.0 316.95 1.2971 0.9750 1.3680 570.01
-            >>> st=R134a(T=185, P=4e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            185 1598.4 107.49 0.4744 0.8063 1.1659 1179.8
-            >>> st=R134a(T=270, P=5e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            270 1425.2 213.72 0.9167 0.8842 1.2345 904.12
-            >>> st=R134a(T=460, P=7e7)
-            >>> print "%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, st.cp.kJkgK, st.w)
-            460 1113.9 471.45 1.5916 1.1023 1.4020 617.03
-            """,
 
         "R": 8.314471,
-        "Tref": 374.18, "rhoref": 508,
         "cp": Fi1,
         "ref": "IIR",
+        "Tc": 374.18, "rhoc": 508/M,
 
-        "Tmin": Tt, "Tmax": 455.0, "Pmax": 70000.0, "rhomax": 15.60,
+        "Tmin": Tt, "Tmax": 465.0, "Pmax": 70000.0, "rhomax": 15.60,
         "Pmin": 0.3896, "rhomin": 15.5942,
 
         "nr1": [0.5586817e-1, 0.498223, 0.2458698e-1, 0.8570145e-3,
@@ -285,58 +94,14 @@ class R134a(MEoS):
 
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-134a of Huber and McLinden (1992)",
-        "__doi__": {"autor": "Huber, M.L. and McLinden, M.O.",
-                    "title": "Thermodynamic properties of R134a (1,1,1,2-tetrafluoroethane)",
-                    "ref": "International Refrigeration Conference, West Lafayette, IN, July 14-17, 453-462, 1992.",
-                    "doi": "10.1016/j.fluid.2004.06.028"},
-        "__test__": """
-            >>> st=R134a(T=-103.3+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -103.30 0.00039 1591.2 0.028 71.89 335.08 0.4143 1.9638 1.147 0.585 1135 127
-            >>> st=R134a(T=-80+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -80.00 0.00369 1526.2 0.235 99.65 349.03 0.5674 1.8585 1.211 0.637 999 134
-            >>> st=R134a(T=-50+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -50.00 0.02948 1443.1 1.651 136.21 367.83 0.7432 1.7812 1.229 0.712 858 142
-            >>> st=R134a(T=-25+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            -25.00 0.10637 1371.2 5.505 167.43 383.57 0.8755 1.7465 1.270 0.788 742 146
-            >>> st=R134a(T=0+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            0.00 0.29269 1293.7 14.420 200.00 398.68 1.0000 1.7274 1.335 0.883 626 147
-            >>> st=R134a(T=25+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            25.00 0.66526 1206.3 32.318 234.47 412.44 1.1197 1.7166 1.425 1.012 508 144
-            >>> st=R134a(T=50+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            50.00 1.3177 1102.0 66.164 271.59 423.63 1.2373 1.7078 1.569 1.218 387 137
-            >>> st=R134a(T=75+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.3f %0.3f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w)
-            75.00 2.3639 963.3 133.31 313.14 429.26 1.3580 1.6916 1.915 1.730 262 122
-            >>> st=R134a(T=100+273.15, x=0.5, eq=1)
-            >>> print "%0.2f %0.5f %0.1f %0.3f %0.2f %0.2f %0.4f %0.4f %0.0f %0.0f" % (\
-                st.T.C, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.w, st.Gas.w)
-            100.00 3.9721 646.7 399.3 374.03 407.08 1.5207 1.6093 105 94
-            """, # Table 9, Pag 459
+        "__name__": "MBWR equation of state for R-134a of Huber and McLinden "
+                    "(1992)",
+        "__doi__": {"autor": "Huber, M.L., McLinden, M.O.",
+                    "title": "Thermodynamic Properties of R134a "
+                             "(1,1,1,2-tetrafluoroethane)",
+                    "ref": "International Refrigeration and Air Condictioning "
+                           "Conference, Paper 184, pag. 453-462, 1992.",
+                    "doi": ""},
 
         "R": 8.314471,
         "cp": CP2,
@@ -370,6 +135,7 @@ class R134a(MEoS):
         "R": 8.31451,
         "cp": Fi1,
         "ref": "IIR",
+        "Tc": 374.18, "rhoc": 508/M,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.6,
         "Pmin": 0.38818, "rhomin": 15.588,
@@ -388,10 +154,13 @@ class R134a(MEoS):
 
     astina = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-134a of Astina and Sato (2004)",
-        "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Fundamental Equation of State for 1,1,1,2-Tetrafluoroethane with an Intermolecular Potential Energy Background and Relialbe Ideal-Gas Properties",
-                    "ref": "Fluid Phase Equilib., 221:103-111, 2004.",
+        "__name__": "Helmholtz equation of state for R-134a of Astina (2004)",
+        "__doi__": {"autor": "Astina, I.M. Sato, H.",
+                    "title": "A Fundamental Equation of State for "
+                             "1,1,1,2-tetrafluoroethane with an Intermolecular"
+                             " Potential Energy Background and Relialbe "
+                             "Ideal-Gas Properties",
+                    "ref": "Fluid Phase Equilib., 221 (2004) 103-111",
                     "doi": "10.1016/j.fluid.2004.03.004"},
 
         "R": 8.314472,
@@ -589,15 +358,250 @@ class R134a(MEoS):
     _thermal = thermo0,
 
 
-# class Test(TestCase):
+class Test(TestCase):
 
-    # def test_shortSpan(self):
-        # # Table III, Pag 117
-        # st = R134a(T=500, rho=500, eq="shortSpan")
-        # self.assertEqual(round(st.cp0.kJkgK, 4), 1.1577)
-        # self.assertEqual(round(st.P.MPa, 3), 14.656)
-        # self.assertEqual(round(st.cp.kJkgK, 4), 1.6129)
+    def test_tillner(self):
+        # Selected point from Table 8, Pag 696, saturation state
+        st = R134a(T=169.85, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.00039)
+        self.assertEqual(round(st.Liquido.rho, 1), 1591.1)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 71.455)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.4126)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.7922)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.1838)
+        self.assertEqual(round(st.Liquido.w, 1), 1120.0)
+        self.assertEqual(round(st.Gas.rho, 5), 0.02817)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 334.94)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.9639)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.5030)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.5853)
+        self.assertEqual(round(st.Gas.w, 2), 126.79)
 
-        # st2 = R134a(T=600, rho=100, eq="shortSpan")
-        # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 181.97)
-        # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41386)
+        st = R134a(T=200, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.00631)
+        self.assertEqual(round(st.Liquido.rho, 1), 1510.5)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 107.39)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.6073)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.8016)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.2058)
+        self.assertEqual(round(st.Liquido.w, 2), 967.61)
+        self.assertEqual(round(st.Gas.rho, 5), 0.38977)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 353.06)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.8356)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.5732)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.6586)
+        self.assertEqual(round(st.Gas.w, 2), 135.98)
+
+        st = R134a(T=250, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.11561)
+        self.assertEqual(round(st.Liquido.rho, 1), 1367.9)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 169.57)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.8841)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.8515)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.2865)
+        self.assertEqual(round(st.Liquido.w, 2), 728.39)
+        self.assertEqual(round(st.Gas.rho, 4), 5.9546)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 384.60)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7443)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.6962)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.8044)
+        self.assertEqual(round(st.Gas.w, 2), 145.98)
+
+        st = R134a(P=1e5, x=0.5)
+        self.assertEqual(round(st.T, 2), 246.79)
+        self.assertEqual(round(st.Liquido.rho, 1), 1377.5)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 165.44)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.8676)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.8478)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.2800)
+        self.assertEqual(round(st.Liquido.w, 2), 743.31)
+        self.assertEqual(round(st.Gas.rho, 4), 5.1932)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 382.60)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7475)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.6876)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 0.7932)
+        self.assertEqual(round(st.Gas.w, 2), 145.63)
+
+        st = R134a(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.70282)
+        self.assertEqual(round(st.Liquido.rho, 1), 1199.7)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 237.19)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.1287)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.9144)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.4324)
+        self.assertEqual(round(st.Liquido.w, 2), 497.89)
+        self.assertEqual(round(st.Gas.rho, 3), 34.193)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 413.27)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7156)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 0.8426)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.0438)
+        self.assertEqual(round(st.Gas.w, 2), 143.88)
+
+        st = R134a(T=350, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 2.4611)
+        self.assertEqual(round(st.Liquido.rho, 2), 951.32)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 316.50)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3674)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 1.0037)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 1.9614)
+        self.assertEqual(round(st.Liquido.w, 2), 254.06)
+        self.assertEqual(round(st.Gas.rho, 2), 140.99)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 429.03)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6889)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.0301)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.8494)
+        self.assertEqual(round(st.Gas.w, 2), 120.33)
+
+        st = R134a(T=374, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 4.0416)
+        self.assertEqual(round(st.Liquido.rho, 2), 587.91)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 380.86)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.5387)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 1.2121)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 2), 101.66)
+        self.assertEqual(round(st.Liquido.w, 3), 92.401)
+        self.assertEqual(round(st.Gas.rho, 2), 434.06)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 399.51)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.5886)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.2409)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 2), 137.24)
+        self.assertEqual(round(st.Gas.w, 3), 91.390)
+
+        # Selected point from Table 9, Pag 700, single phase region
+        st = R134a(T=205, P=1e4)
+        self.assertEqual(round(st.rho, 1), 1496.8)
+        self.assertEqual(round(st.h.kJkg, 3), 113.44)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.6372)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.8055)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.2120)
+        self.assertEqual(round(st.w, 2), 942.87)
+
+        st = R134a(T=325, P=2e4)
+        self.assertEqual(round(st.rho, 5), 0.75738)
+        self.assertEqual(round(st.h.kJkg, 2), 449.09)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.1106)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.8000)
+        self.assertEqual(round(st.cp.kJkgK, 4), 0.8828)
+        self.assertEqual(round(st.w, 2), 170.45)
+
+        st = R134a(T=460, P=6e4)
+        self.assertEqual(round(st.rho, 4), 1.6045)
+        self.assertEqual(round(st.h.kJkg, 2), 582.87)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.3634)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.0172)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.0998)
+        self.assertEqual(round(st.w, 2), 200.83)
+
+        st = R134a(T=170, P=1e5)
+        self.assertEqual(round(st.rho, 1), 1590.8)
+        self.assertEqual(round(st.h.kJkg, 3), 71.678)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.4136)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.7922)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1837)
+        self.assertEqual(round(st.w, 1), 1119.6)
+
+        st = R134a(T=265, P=2e5)
+        self.assertEqual(round(st.rho, 4), 9.9171)
+        self.assertEqual(round(st.h.kJkg, 2), 394.26)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7396)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.7324)
+        self.assertEqual(round(st.cp.kJkgK, 4), 0.8523)
+        self.assertEqual(round(st.w, 2), 147.61)
+
+        st = R134a(T=240, P=5e5)
+        self.assertEqual(round(st.rho, 1), 1398.8)
+        self.assertEqual(round(st.h.kJkg, 2), 156.94)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.8314)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.8403)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.2659)
+        self.assertEqual(round(st.w, 2), 777.64)
+
+        st = R134a(T=310, P=1e6)
+        self.assertEqual(round(st.rho, 1), 1160.4)
+        self.assertEqual(round(st.h.kJkg, 2), 251.72)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.1755)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.9288)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.4795)
+        self.assertEqual(round(st.w, 2), 452.15)
+
+        st = R134a(T=345, P=2e6)
+        self.assertEqual(round(st.rho, 2), 102.38)
+        self.assertEqual(round(st.h.kJkg, 2), 434.73)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7164)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.9701)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.4224)
+        self.assertEqual(round(st.w, 2), 131.78)
+
+        st = R134a(T=460, P=5e6)
+        self.assertEqual(round(st.rho, 2), 169.51)
+        self.assertEqual(round(st.h.kJkg, 2), 549.57)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.9474)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.0760)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.3429)
+        self.assertEqual(round(st.w, 2), 169.93)
+
+        st = R134a(T=270, P=1e7)
+        self.assertEqual(round(st.rho, 1), 1337.4)
+        self.assertEqual(round(st.h.kJkg, 2), 198.54)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9675)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.8750)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.2947)
+        self.assertEqual(round(st.w, 2), 707.43)
+
+        st = R134a(T=460, P=2e7)
+        self.assertEqual(round(st.rho, 2), 767.68)
+        self.assertEqual(round(st.h.kJkg, 2), 475.99)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7125)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.1073)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.6079)
+        self.assertEqual(round(st.w, 2), 281.20)
+
+        st = R134a(T=185, P=5e7)
+        self.assertEqual(round(st.rho, 1), 1608.6)
+        self.assertEqual(round(st.h.kJkg, 2), 112.12)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.4657)
+        self.assertEqual(round(st.cv.kJkgK, 4), 0.8100)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.1623)
+        self.assertEqual(round(st.w, 1), 1208.3)
+
+    def test_MBWR(self):
+        # TODO: Add testing when fix MBWR equations
+        pass
+
+        # Selected points from Table 9, Pag 459, saturation state
+        # st = R134a(T=-100+273.15, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 5), 0.00056)
+        # self.assertEqual(round(st.Liquido.rho, 1), 1581.9)
+        # self.assertEqual(round(st.Gas.rho, 3), 0.040)
+        # self.assertEqual(round(st.Liquido.h.kJkg, 2), 75.71)
+        # self.assertEqual(round(st.Gas.h.kJkg, 2), 337.00)
+        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.4366)
+        # self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.9456)
+        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.168)
+        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.592)
+        # self.assertEqual(round(st.Liquido.w, 0), 1111)
+        # self.assertEqual(round(st.Gas.w, 0), 128)
+
+        # st = R134a(T=+273.15, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 5), )
+        # self.assertEqual(round(st.Liquido.rho, 1), )
+        # self.assertEqual(round(st.Gas.rho, 3), )
+        # self.assertEqual(round(st.Liquido.h.kJkg, 2), )
+        # self.assertEqual(round(st.Gas.h.kJkg, 2), )
+        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), )
+        # self.assertEqual(round(st.Gas.s.kJkgK, 4), )
+        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), )
+        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), )
+        # self.assertEqual(round(st.Liquido.w, 0), )
+        # self.assertEqual(round(st.Gas.w, 0), )
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R134a(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.1577)
+        self.assertEqual(round(st.P.MPa, 3), 14.656)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.6129)
+
+        st2 = R134a(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 181.97)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41386)
