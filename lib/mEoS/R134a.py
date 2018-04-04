@@ -214,7 +214,47 @@ class R134a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = tillner, MBWR, shortSpan, astina, sun
+    huber = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-134a of Huber and Eli"
+                    "(1992).",
+        "__doi__": {"autor": "Huber, M.L., Ely, J.F.",
+                    "title": "An Equation of State Formulation of the "
+                             "Thermodynamic Properties of R134a ("
+                             "1,1,1,2-Tetrafluoroethane)",
+                    "ref": "Int. J. Refrig. 15(6) (1992) 393-400",
+                    "doi": "10.1016/0140-7007(92)90024-o"},
+
+        "R": 8.314471,
+        "cp": CP2,
+        "ref": "IIR",
+        "Tc": 374.179, "rhoc": 5.0308, "Pc": 4058.59,
+
+        "Tmin": Tt, "Tmax": 465.0, "Pmax": 70000.0, "rhomax": 15.60,
+        "Pmin": 0.3896, "rhomin": 15.5942,
+
+        "nr1": [6.81716385385e-1, -2.35124614105, 6.70216482859e-1,
+                -3.07204611902e-2, 3.74529023556e-1, -1.57205367415e-1,
+                6.52988383109e-2, -5.10116156742e-2, -5.69183659026e-2,
+                6.45310700471e-4, 1.02593424592e-3, 6.77375367275e-7,
+                -1.92870222869e-4],
+        "d1": [1, 1, 1, 2, 2, 2, 3, 3, 3, 6, 7, 7, 8],
+        "t1": [0, 1.5, 2.5, -0.5, 1.5, 2, 0, 1, 2.5, 0, 2, 5, 2],
+
+        "nr2": [-4.95254825047e-1, 1.28070070661e-1, 2.76305386558e-1,
+                -1.53983381830e-1, -2.11838190838e-1, -2.39896004684e-2,
+                -3.27379569918e-3, -9.27516738026e-4, -2.09645193939e-2,
+                2.14330093737e-3, -5.41732277806e-4, 3.47165872395e-3,
+                4.91210193371e-2, -3.69286578727e-2, -6.94084047023e-2,
+                4.73399474790e-2, 6.55276251860e-1, -6.87628059906e-1,
+                4.30311999742e-2],
+        "d2": [1, 1, 2, 2, 3, 3, 5, 6, 7, 8, 10, 2, 3, 3, 4, 4, 5, 5, 5],
+        "t2": [5, 6, 3.5, 5.5, 3, 7, 6, 8.5, 4, 6.5, 5.5, 22, 11, 18, 11, 23,
+               17, 18, 23],
+        "c2": [2]*11+[4]*8,
+        "gamma2": [1]*19}
+
+    eq = tillner, MBWR, shortSpan, astina, sun, huber
     _PR = 0.001032
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}
@@ -361,6 +401,9 @@ class R134a(MEoS):
 class Test(TestCase):
 
     def test_tillner(self):
+        # The tables have enough values that differ in the last decimal place,
+        # always a value below the one obtained, perhaps a problem of rounding
+
         # Selected point from Table 8, Pag 696, saturation state
         st = R134a(T=169.85, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.00039)
