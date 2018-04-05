@@ -40,13 +40,14 @@ class R152a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.262, "Debye")
     id = 245
 
-    # Cp/R relation in paper
-    # Tr terms in polynomial, so the resulting terms are:
-    # a0 = c0*R
-    # a1 = c1*R/Tc
-    # a2 = c2*R/Tc**2
-    # a3 = c3*R/Tc**3
-    CP1 = {"ao": 3.354951*8.314471,
+    CP1 = {
+           # Cp/R relation in paper
+           # Tr terms in polynomial, so the resulting terms are:
+           # a0 = c0*R
+           # a1 = c1*R/Tc
+           # a2 = c2*R/Tc**2
+           # a3 = c3*R/Tc**3
+           "ao": 3.354951*8.314471,
            "an": [4.245301*8.314471/Tc, 3.735248*8.314471/Tc**2,
                   -1.608254*8.314471/Tc**3],
            "pow": [1, 2, 3],
@@ -63,7 +64,7 @@ class R152a(MEoS):
            "pow": [0, 1, -0.5, 0.25],
            "ao_pow": [-9.508135074, 6.812068779, -7.285916044, 6.741130104],
            "ao_exp": [1.978152028, 5.880826311],
-           "titao": [-1.753741145, -4.360150337]}
+           "titao": [1.753741145, 4.360150337]}
 
     MBWR = {
         "__type__": "MBWR",
@@ -196,102 +197,23 @@ class R152a(MEoS):
 
     astina = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-152a of Astina and Sato (2004)",
-        "__doi__": {"autor": "Astina, I.M. and Sato, H.",
-                    "title": "A Rigorous Thermodynamic Property Model for Fluid - Phase 1,1-Difluoroethane (R-152a)",
-                    "ref": "Int. J. Thermophys., 25(6):1713-1733, 2004.",
+        "__name__": "Helmholtz equation of state for R-152a of Astina (2004)",
+        "__doi__": {"autor": "Astina, I.M., Sato, H.",
+                    "title": "A Rigorous Thermodynamic Property Model for "
+                             "Fluid-Phase 1,1-Difluoroethane (R-152a)",
+                    "ref": "Int. J. Thermophys., 25(6) (2004) 1713-1733",
                     "doi": "10.1007/s10765-004-7731-8"},
-
-        "__test__":
-            # Table III, Pag 1719 Saturation
-            """
-            >>> st=R152a(T=200, x=0.5, eq=4)
-            >>> print "%0.3f %0.5f %0.5g %0.5f %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.P.MPa, st.T, st.Liquido.rho, st.Gas.rho, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w, \
-                st.Liquido.h.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK)
-            0.00608 200 1108.3 0.243503 1.02563 0.688696 1.53227 0.822899 1144.44 172.126 83.0708 452.53 0.504052 2.35135
-            >>> st=R152a(T=300, x=0.5, eq=4)
-            >>> print "%0.5f %i %0.2f %0.4f %0.5f %0.5f %0.5f %0.5f %0.3f %0.3f %0.3f %0.3f %0.5f %0.5f" % (\
-                st.P.MPa, st.T, st.Liquido.rho, st.Gas.rho, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w, \
-                st.Liquido.h.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK)
-            0.62958 300 895.05 19.5363 1.14163 1.05165 1.80605 1.34292 635.933 184.955 246.936 523.189 1.16245 2.08329
-            >>> st=R152a(P=1e4, x=0.5, eq=4)
-            >>> print "%0.2f %0.5f %0.5g %0.5f %0.5g %0.5g %0.5g %0.5g %0.4g %0.4g %0.4g %0.4g %0.1f %0.1f" % (\
-                st.P.MPa, st.T, st.Liquido.rho, st.Gas.rho, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w, \
-                st.Liquido.h.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK)
-            0.01 206.996 1095.05 0.387819 1.02888 0.709506 1.54024 0.846608 1106. 174.478 93.8198 457.773 0.556861 2.31513
-            >>> st=R152a(P=2e6, x=0.5, eq=4)
-            >>> print "%i %0.3f %0.3f %0.4f %0.5f %0.5f %0.5f %0.5f %0.3f %0.2f %0.3f %0.3f %0.4f %0.4f" % (\
-                st.P.MPa, st.T, st.Liquido.rho, st.Gas.rho, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w, \
-                st.Liquido.h.kJkg, st.Gas.h.kJkg, st.Liquido.s.kJkgK, st.Gas.s.kJkgK)
-            2 345.817 755.354 67.2945 1.23824 1.25774 2.22690 1.99694 400.169 166.52 336.806 542.188 1.4355 2.0294
-            """
-            #Table , Pag 544
-            """
-            >>> st=R152a(T=200, P=1e4, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            0.01 200 1108.30 1.02563 1.53226 1144.46 83.0731 0.504046
-            >>> st=R152a(T=250, P=1e5, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            0.1 250 3.32533 0.85146 1.02093 185.395 490.101 2.17402
-            >>> st=R152a(T=300, P=5e5, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            0.5 300 14.9178 1.01270 1.25049 190.307 528.281 2.12554
-            >>> st=R152a(T=250, P=1e6, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            1 250 1011.4 1.06828 1.61778 887.901 162.066 0.852079
-            >>> st=R152a(T=450, P=2e6, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            2 450 39.2134 1.27176 1.47906 230.75 703.818 2.44002
-            >>> st=R152a(T=450, P=3e6, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            3 450 62.4333 1.29309 1.56254 221.167 692.526 2.37021
-            >>> st=R152a(T=300, P=5e6, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            5 300 910.768 1.14104 1.75988 681.439 247.753 1.14904
-            >>> st=R152a(T=350, P=1.5e7, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            15 350 829.854 1.22465 1.86556 577.309 339.639 1.39677
-            >>> st=R152a(T=400, P=2.5e7, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            25 400 764.468 1.30865 1.92116 526.849 433.427 1.61365
-            >>> st=R152a(T=250, P=4e7, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            40 250 1069.55 1.10283 1.5407 1076.73 183.511 0.788821
-            >>> st=R152a(T=300, P=4.5e7, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            45 300 999.404 1.175 1.61174 920.812 265.09 1.06788
-            >>> st=R152a(T=450, P=5e7, eq=4)
-            >>> print "%0.6g %0.5g %0.6g %0.6g %0.6g %0.6g %0.6g %0.6g" % (\
-                st.P.MPa, st.T, st.rho, st.cv.kJkgK, st.cp.kJkgK, st.w, st.h.kJkg, st.s.kJkgK)
-            50 450 782.051 1.40653 1.86403 612.067 528.382 1.76108
-            """,
 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "IIR",
-        "Tc": 386.41, "Pc": 4516,
+        "M": 66.05, "Tc": 386.41, "Pc": 4516, "rhoc": 368/66.05,
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 60000.0, "rhomax": 18.04 ,
-        "Pmin": 0.064, "rhomin": 18.04 ,
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 60000.0, "rhomax": 18.04,
+        "Pmin": 0.064, "rhomin": 18.04,
 
         "nr1": [1.753847317, -4.049760759, -2.277389257e-1, 7.087751950e-1,
-                -5.528619502e-1, -3.025046686e-2, 1.396289974e-1, 1.121238954e-4],
+                -0.5528619502, -3.025046686e-2, 0.1396289974, 1.121238954e-4],
         "d1": [1, 1, 1, 2, 2, 3, 3, 4],
         "t1": [0.5, 1.125, 2.875, 0.875, 1.875, 0.5, 1.875, 4],
 
@@ -319,7 +241,6 @@ class R152a(MEoS):
         "ao": [-.33621e1, -.85985e1, -.2683e1, -.2414e2, -.43159e2, -.28045e2],
         "exp": [0.406, 1.42, 3.6, 3.9, 8.0, 9.0]}
 
-#TODO: Add test for transport properties from file pag 750
     visco0 = {"eq": 1, "omega": 1,
               "collision": [0.4425728, -0.5138403, 0.1547566, -0.2821844e-1,
                             0.1578286e-2],
@@ -328,6 +249,7 @@ class R152a(MEoS):
                           "title": "Transport properties of 1,1-Difluoroethane (R152a)",
                           "ref": "Int. J. Thermophysics 17:731-757, 1996.",
                           "doi": "10.1007/BF01439187"},
+              # TODO: Add test for transport properties from file pag 750
 
               "ek": 354.84, "sigma": 0.46115,
               "Tref": 1., "rhoref": 1.*M,
@@ -392,3 +314,161 @@ class Test(TestCase):
         st2 = R152a(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 270.60)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60934)
+
+    def test_astina(self):
+        # Table III, Pag 1719
+        st = R152a(T=200, P=1e4, eq="astina")
+        self.assertEqual(round(st.rho, 2), 1108.30)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.02563)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.53226)
+        self.assertEqual(round(st.w, 2), 1144.46)
+        self.assertEqual(round(st.h.kJkg, 4), 83.0731)
+        self.assertEqual(round(st.s.kJkgK, 6), 0.504046)
+
+        st = R152a(T=250, P=1e5, eq="astina")
+        self.assertEqual(round(st.rho, 5), 3.32533)
+        self.assertEqual(round(st.cv.kJkgK, 5), 0.85146)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.02093)
+        self.assertEqual(round(st.w, 3), 185.395)
+        self.assertEqual(round(st.h.kJkg, 3), 490.101)
+        self.assertEqual(round(st.s.kJkgK, 5), 2.17402)
+
+        st = R152a(T=300, P=5e5, eq="astina")
+        self.assertEqual(round(st.rho, 4), 14.9178)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.01270)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.25049)
+        self.assertEqual(round(st.w, 3), 190.307)
+        self.assertEqual(round(st.h.kJkg, 3), 528.281)
+        self.assertEqual(round(st.s.kJkgK, 5), 2.12554)
+
+        st = R152a(T=250, P=1e6, eq="astina")
+        self.assertEqual(round(st.rho, 2), 1011.40)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.06828)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.61778)
+        self.assertEqual(round(st.w, 3), 887.901)
+        self.assertEqual(round(st.h.kJkg, 3), 162.066)
+        self.assertEqual(round(st.s.kJkgK, 6), 0.852079)
+
+        st = R152a(T=450, P=2e6, eq="astina")
+        self.assertEqual(round(st.rho, 4), 39.2134)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.27176)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.47906)
+        self.assertEqual(round(st.w, 3), 230.750)
+        self.assertEqual(round(st.h.kJkg, 3), 703.818)
+        self.assertEqual(round(st.s.kJkgK, 5), 2.44002)
+
+        st = R152a(T=450, P=3e6, eq="astina")
+        self.assertEqual(round(st.rho, 4), 62.4333)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.29309)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.56254)
+        self.assertEqual(round(st.w, 3), 221.167)
+        self.assertEqual(round(st.h.kJkg, 3), 692.526)
+        self.assertEqual(round(st.s.kJkgK, 5), 2.37021)
+
+        st = R152a(T=300, P=5e6, eq="astina")
+        self.assertEqual(round(st.rho, 3), 910.768)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.14104)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.75988)
+        self.assertEqual(round(st.w, 3), 681.439)
+        self.assertEqual(round(st.h.kJkg, 3), 247.753)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.14904)
+
+        st = R152a(T=350, P=1.5e7, eq="astina")
+        self.assertEqual(round(st.rho, 3), 829.854)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.22465)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.86556)
+        self.assertEqual(round(st.w, 3), 577.309)
+        self.assertEqual(round(st.h.kJkg, 3), 339.639)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.39677)
+
+        st = R152a(T=400, P=2.5e7, eq="astina")
+        self.assertEqual(round(st.rho, 3), 764.468)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.30865)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.92116)
+        self.assertEqual(round(st.w, 3), 526.848)
+        self.assertEqual(round(st.h.kJkg, 3), 433.427)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.61365)
+
+        st = R152a(T=250, P=4e7, eq="astina")
+        self.assertEqual(round(st.rho, 2), 1069.55)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.10283)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.54070)
+        self.assertEqual(round(st.w, 2), 1076.73)
+        self.assertEqual(round(st.h.kJkg, 3), 183.511)
+        self.assertEqual(round(st.s.kJkgK, 5), 0.78821)
+
+        st = R152a(T=300, P=4.5e7, eq="astina")
+        self.assertEqual(round(st.rho, 3), 999.404)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.17500)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.61174)
+        self.assertEqual(round(st.w, 3), 920.812)
+        self.assertEqual(round(st.h.kJkg, 3), 265.090)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.06788)
+
+        st = R152a(T=450, P=5e7, eq="astina")
+        self.assertEqual(round(st.rho, 3), 782.051)
+        self.assertEqual(round(st.cv.kJkgK, 5), 1.40653)
+        self.assertEqual(round(st.cp.kJkgK, 5), 1.86403)
+        self.assertEqual(round(st.w, 3), 612.067)
+        self.assertEqual(round(st.h.kJkg, 3), 528.381)
+        self.assertEqual(round(st.s.kJkgK, 5), 1.76108)
+
+        st = R152a(T=200, x=0.5, eq="astina")
+        self.assertEqual(round(st.P.MPa, 5), 0.00608)
+        self.assertEqual(round(st.Liquido.rho, 2), 1108.30)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 1.02563)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 1.53227)
+        self.assertEqual(round(st.Liquido.w, 2), 1144.44)
+        self.assertEqual(round(st.Liquido.h.kJkg, 4), 83.0708)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 6), 0.504052)
+        self.assertEqual(round(st.Gas.rho, 6), 0.243503)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 6), 0.688696)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 6), 0.822899)
+        self.assertEqual(round(st.Gas.w, 3), 172.126)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), 452.530)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.35135)
+
+        st = R152a(T=300, x=0.5, eq="astina")
+        self.assertEqual(round(st.P.MPa, 5), 0.62958)
+        self.assertEqual(round(st.Liquido.rho, 3), 895.050)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 1.14163)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 1.80605)
+        self.assertEqual(round(st.Liquido.w, 3), 635.932)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 246.936)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), 1.16245)
+        self.assertEqual(round(st.Gas.rho, 4), 19.5363)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 1.05165)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 5), 1.34292)
+        self.assertEqual(round(st.Gas.w, 3), 184.955)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), 523.189)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.08329)
+
+        st = R152a(P=1e4, x=0.5, eq="astina")
+        self.assertEqual(round(st.T, 3), 206.996)
+        self.assertEqual(round(st.Liquido.rho, 2), 1095.05)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 1.02888)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 1.54024)
+        self.assertEqual(round(st.Liquido.w, 2), 1106.00)
+        self.assertEqual(round(st.Liquido.h.kJkg, 4), 93.8198)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 6), 0.556861)
+        self.assertEqual(round(st.Gas.rho, 6), 0.387819)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 6), 0.709506)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 6), 0.846608)
+        self.assertEqual(round(st.Gas.w, 3), 174.478)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), 457.773)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.31513)
+
+        st = R152a(P=2e6, x=0.5, eq="astina")
+        self.assertEqual(round(st.T, 3), 345.817)
+        self.assertEqual(round(st.Liquido.rho, 3), 755.354)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 5), 1.23824)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 5), 2.22690)
+        self.assertEqual(round(st.Liquido.w, 3), 400.169)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 336.806)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), 1.43550)
+        self.assertEqual(round(st.Gas.rho, 4), 67.2945)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 5), 1.25774)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 5), 1.99694)
+        self.assertEqual(round(st.Gas.w, 3), 166.520)
+        self.assertEqual(round(st.Gas.h.kJkg, 3), 542.188)
+        self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.02940)
