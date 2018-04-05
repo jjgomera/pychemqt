@@ -40,14 +40,22 @@ class R152a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.262, "Debye")
     id = 245
 
-    CP1 = {"ao": 0,
-           "an": [1.4652739, 0.2627677e-4, -0.29988241e-10],
-           "pow": [0.25, 2, 4],
+    # Cp/R relation in paper
+    # Tr terms in polynomial, so the resulting terms are:
+    # a0 = c0*R
+    # a1 = c1*R/Tc
+    # a2 = c2*R/Tc**2
+    # a3 = c3*R/Tc**3
+    CP1 = {"ao": 3.354951*8.314471,
+           "an": [4.245301*8.314471/Tc, 3.735248*8.314471/Tc**2,
+                  -1.608254*8.314471/Tc**3],
+           "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    Fi1 = {"ao_log": [1, -1],
-           "pow": [0, 1, -0.5, -2, -4],
+    Fi1 = {"R": 8.314471,
+           "ao_log": [1, -1],
+           "pow": [0, 1, -0.25, -2, -4],
            "ao_pow": [10.87227, 6.839515, -20.78887, -0.6539092, 0.03342831],
            "ao_exp": [], "titao": []}
 
@@ -57,24 +65,19 @@ class R152a(MEoS):
            "ao_exp": [1.978152028, 5.880826311],
            "titao": [-1.753741145, -4.360150337]}
 
-    CP2 = {"ao": 27.89465,
-           "an": [9.134686e-2, 2.079961e-4, -2.317613e-7], "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
-
-
     MBWR = {
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for R-152a of Outcalt and McLinden (1996)",
-        "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)",
-                    "ref": "J. Phys. Chem. Ref. Data 25, 605 (1996)",
+        "__name__": "MBWR equation of state for R-152a of Outcalt (1996)",
+        "__doi__": {"autor": "Outcalt, S.L., McLinden, M.O.",
+                    "title": "A modified Benedict-Webb-Rubin Equation of "
+                             "State for the Thermodynamic Properties of R152a "
+                             "(1,1-difluoroethane)",
+                    "ref": "J. Phys. Chem. Ref. Data 25(2) (1996) 605-636",
                     "doi": "10.1063/1.555979"},
-
-        #TODO: Add test from file
 
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07,
         "Pmin": 0.0641, "rhomin": 18.061,
@@ -93,14 +96,18 @@ class R152a(MEoS):
 
     outcalt = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz transform of MBWR EOS for R-152a of Outcalt and McLinden (1996).",
-        "__doi__": {"autor": "Outcalt, S.L. and McLinden, M.O.",
-                    "title": "A modified Benedict-Webb-Rubin equation of state for the thermodynamic properties of R152a (1,1-difluoroethane)",
-                    "ref": "J. Phys. Chem. Ref. Data 25, 605 (1996)",
+        "__name__": "Helmholtz transform of MBWR EOS for R-152a of Outcalt "
+                    "and McLinden (1996).",
+        "__doi__": {"autor": "Outcalt, S.L., McLinden, M.O.",
+                    "title": "A modified Benedict-Webb-Rubin Equation of "
+                             "State for the Thermodynamic Properties of R152a "
+                             "(1,1-difluoroethane)",
+                    "ref": "J. Phys. Chem. Ref. Data 25(2) (1996) 605-636",
                     "doi": "10.1063/1.555979"},
 
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 18.07,
         "Pmin": 0.0641, "rhomin": 18.061,
@@ -113,8 +120,10 @@ class R152a(MEoS):
                 -0.985223479324e-1, 0.183419368472e-1, -0.338550204252e-1,
                 0.124921101016e-1, -0.221056706423e-2, 0.216879133161e-2,
                 -0.233597690478e-3],
-        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7, 8],
-        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2, 3, 3],
+        "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7,
+               8],
+        "t1": [3, 4, 5, 0, 0.5, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 1, 2, 3, 2, 2, 3,
+               3],
 
         "nr2": [0.354657949982e1, 0.364631280620, -0.333233335558e-1,
                 0.276133830254e1, -0.691185711880e-1, -0.333233335558e-1,
@@ -129,10 +138,12 @@ class R152a(MEoS):
 
     tillner = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-152a of Tillner-Roth (1995).",
+        "__name__": "Helmholtz equation of state for R-152a of Tillner-Roth "
+                    "(1995).",
         "__doi__": {"autor": "Tillner-Roth, R.",
-                    "title": "A Fundamental Equation of State for 1,1-Difluoroethane (HFC-152a)",
-                    "ref": "Int. J. Thermophys., 16(1):91-100, 1995.",
+                    "title": "A Fundamental Equation of State for "
+                             "1,1-Difluoroethane (HFC-152a)",
+                    "ref": "Int. J. Thermophys., 16(1) (1995) 91-100",
                     "doi": "10.1007/BF01438960"},
 
         "R": 8.314471,
@@ -365,15 +376,19 @@ class R152a(MEoS):
     _thermal = thermo0,
 
 
-# class Test(TestCase):
+class Test(TestCase):
 
-    # def test_shortSpan(self):
-        # # Table III, Pag 117
-        # st = R152a(T=500, rho=500, eq="shortSpan")
-        # self.assertEqual(round(st.cp0.kJkgK, 4), 1.4632)
-        # self.assertEqual(round(st.P.MPa, 3), 21.594)
-        # self.assertEqual(round(st.cp.kJkgK, 4), 2.1580)
+    def test_Outcalt(self):
+        # TODO: Add test from file
+        pass
 
-        # st2 = R152a(T=600, rho=100, eq="shortSpan")
-        # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 270.60)
-        # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60934)
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = R152a(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.4632)
+        self.assertEqual(round(st.P.MPa, 3), 21.594)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.1580)
+
+        st2 = R152a(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 270.60)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60934)
