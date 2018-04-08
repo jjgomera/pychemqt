@@ -18,6 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+from copy import copy
+
 from scipy import exp
 from iapws import _Viscosity, _ThCond, _Dielectric, _Tension
 
@@ -406,6 +409,7 @@ class H2O(MEoS):
                              "Pressures up to 25000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
                     "doi": "10.1063/1.555836"},
+
         "R": 8.31434,
         "cp": Fi3,
         "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
@@ -458,6 +462,7 @@ class H2O(MEoS):
                              "Pressures up to 25000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
                     "doi":  "10.1063/1.555836"},
+
         "R": 8.31434,
         "cp": Fi4,
         "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
@@ -544,6 +549,14 @@ class H2O(MEoS):
     visco0 = {"eq": 0,
               "method": "_visco0",
               "__name__": "IAPWS (1997)",
+              "__doi__": {
+                  "autor": "Huber, M.L., Perkins, R.A., Lasecke, A., Friend, "
+                           "D.G., Sengers, J.V., Assael, M.J., Metaxa, I.N.,"
+                           "Vogel, E., Mareš, R., Miyagawa, K.",
+                  "title": "New International Formulation for the Viscosity"
+                           "of H2O",
+                  "ref": "J. Phys. Chem. Ref. Data 38(2) (2009) 101-125",
+                  "doi": "10.1063/1.3088050"},
               "__code__": (_Viscosity, )}
 
     visco1 = {"eq": 4, "omega": 1,
@@ -574,29 +587,48 @@ class H2O(MEoS):
     _viscosity = visco0, visco1
 
     def _visco0(self, rho, T, fase):
-        """IAPWS, Release on the IAPWS Formulation 2008 for the Viscosity of \
-Ordinary Water Substance (International Association for the Properties of \
-Water and Steam, 2008)"""
         ref = H2O()
         ref._ref("OTO")
-        estado = ref._Helmholtz(rho, 1.5*647.096)
-        drho = 1/estado["dpdrho"]*1e3
-        return _Viscosity(rho, T, fase=fase, drho=drho)
+        estado = ref._Helmholtz(rho, 1.5*self.Tc)
+        drho = 1/estado["dpdrho"]*1e6
+
+        # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
+        if fase:
+            fase = copy(fase)
+            fase.drhodP_T *= 1e6
+
+        mu = _Viscosity(rho, T, fase=fase, drho=drho)
+        return unidades.Viscosity(mu)
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "IAPWS (1997)",
+               "__doi__": {
+                   "autor": "Huber, M.L., Perkins, R.A., Friend, D.G., "
+                            "Sengers, J.V., Assael, M.J., Metaxa, I.N., "
+                            "Miyagawa, K., Hellmann, R., Vogel, E.",
+                   "title": "New International Formulation for the Thermal"
+                            "Conductivity of H20",
+                   "ref": "J. Phys. Chem. Ref. Data 41(3) (2012) 033102",
+                   "doi": "10.1063/1.4738955"},
                "__code__": (_ThCond, )}
 
     _thermal = thermo0,
 
     def _thermo0(self, rho, T, fase):
-        """IAPWS, Release on the IAPWS Formulation 2011 for the Thermal \
-Conductivity of Ordinary Water Substance"""
         ref = H2O()
         ref._ref("OTO")
-        estado = ref._Helmholtz(rho, 1.5*647.096)
-        drho = 1/estado["dpdrho"]*1e3
+        estado = ref._Helmholtz(rho, 1.5*self.Tc)
+        drho = 1/estado["dpdrho"]*1e6
+
+        # convert values to IAPWS units
+        # ∂ρ/∂P]τ, [kg/m³·MPa]
+        # cp, [kJ/kg]
+        if fase:
+            fase = copy(fase)
+            fase.drhodP_T *= 1e6
+            fase.cp /= 1e3
+
         return _ThCond(rho, T, fase, drho)
 
     def _Dielectric(self, rho, T):
