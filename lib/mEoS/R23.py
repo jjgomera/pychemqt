@@ -175,46 +175,50 @@ class R23(MEoS):
     visco0 = {"eq": 0, "omega": 1,
               "method": "_visco0",
               "__name__": "Shan (2000)",
-              "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
-                          "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)",
-                          "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
-                          "doi": ""},
+              "__doi__": {
+                  "autor": "Shan, Z., Penoncello, S.G., Jacobsen, R.T.",
+                  "title": "A Generalized Model for Viscosity and Thermal "
+                           "Conductivity of Trifluoromethane (R-23)",
+                  "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
+                  "doi": ""},
 
               "ek": 243.91, "sigma": 0.4278,
               "n_chapman": 0.2233755/M**0.5,
               "collision": [0.4425728, -0.5138403, 0.1547566, -0.02821844,
                             0.001578286]}
 
-    # _viscosity = visco0,
-
-    def _visco0(self):
+    def _visco0(self, rho, T, fase):
         rhol = 32.174
         C1 = 1.3163
         C2 = 0.1832
         deltaG = 771.23
         nmax = 3.967
+        R = 8.31451/self.M
 
-        Drho = rhol-self.rho/self.M
-        delta = self.rho/self.M-7.5114
-        tau = self.T-299.28
+        Drho = rhol-rho/self.M
+        delta = rho/self.M-7.5114
+        tau = T-299.28
 
-        no = self._Visco0()
-        ng = no*(Drho/rhol)**C1
-        nr = (self.rho/self.M/rhol)**C1*C2*rhol**2/Drho*self.T**0.5*exp(self.rho/self.M/Drho*deltaG/self.R.kJkgK/self.M/self.T)
-        nc = 4*nmax/(exp(delta)+exp(-delta))/(exp(tau)+exp(-tau))
-        return unidades.Viscosity(ng+nr+nc, "muPas")
+        muo = self._Visco0()
+        mug = muo*(Drho/rhol)**C1
+        mur = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
+                rho/self.M/Drho*deltaG/R/self.M/T)
+        muc = 4*nmax/(exp(delta)+exp(-delta))/(exp(tau)+exp(-tau))
+        return unidades.Viscosity(mug+mur+muc, "muPas")
+
+    _viscosity = visco0,
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "Shan (2000)",
-               "__doi__": {"autor": "Shan, Z., Penoncello, S.G., and Jacobsen, R.T.",
-                           "title": "A Generalized Model for Viscosity and Thermal Conductivity of Trifluoromethane (R-23)",
-                           "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
-                           "doi": ""}}
+               "__doi__": {
+                  "autor": "Shan, Z., Penoncello, S.G., Jacobsen, R.T.",
+                  "title": "A Generalized Model for Viscosity and Thermal "
+                           "Conductivity of Trifluoromethane (R-23)",
+                  "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
+                  "doi": ""}}
 
-    # _thermal = thermo0,
-
-    def _thermo0(self):
+    def _thermo0(self, rho, T, fase):
         rhol = 68.345
         B1 = -2.5370
         B2 = 0.05366
@@ -222,15 +226,19 @@ class R23(MEoS):
         C2 = 0.14914
         deltaG = 2508.58
         lmax = 25.
+        R = 8.31451/self.M
 
-        Drho = rhol-self.rho/self.M
-        delta = self.rho/self.M-7.5114
-        tau = self.T-299.28
+        Drho = rhol-rho/self.M
+        delta = rho/self.M-7.5114
+        tau = T-299.28
 
-        lg = (B1+B2*self.T)*(Drho/rhol)**C1
-        lr = (self.rho/self.M/rhol)**C1*C2*rhol**2/Drho*self.T**0.5*exp(self.rho/self.M/Drho*deltaG/self.R.kJkgK/self.M/self.T)
+        lg = (B1+B2*T)*(Drho/rhol)**C1
+        lr = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
+                rho/self.M/Drho*deltaG/self.R.kJkgK/self.M/T)
         lc = 4*lmax/(exp(delta)+exp(-delta))/(exp(tau)+exp(-tau))
         return unidades.ThermalConductivity(lg+lr+lc, "mWmK")
+
+    _thermal = thermo0,
 
 
 class Test(TestCase):
