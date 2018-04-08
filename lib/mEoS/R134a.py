@@ -57,7 +57,6 @@ class R134a(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    # TDOO: Add Huber-Ely meos, file in todo folder
     tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Tillner-Roth "
@@ -401,7 +400,7 @@ class R134a(MEoS):
 class Test(TestCase):
 
     def test_tillner(self):
-        # The tables have enough values that differ in the last decimal place,
+        # The tables have fairly values that differ in the last decimal place,
         # always a value below the one obtained, perhaps a problem of rounding
 
         # Selected point from Table 8, Pag 696, saturation state

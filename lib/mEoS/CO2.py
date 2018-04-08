@@ -43,7 +43,7 @@ class CO2(MEoS):
     Fi1 = {"ao_log": [1, 2.5],
            "pow": [0, 1],
            "ao_pow": [8.37304456, -3.70454304],
-           "ao_exp": [1.99427042, 0.62105248, 0.41195293, 1.04028922, 0.08327678],
+           "ao_exp": [1.99427042, .62105248, .41195293, 1.04028922, .08327678],
            "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792],
            "ao_hyp": [], "hyp": []}
 
@@ -223,19 +223,13 @@ class CO2(MEoS):
 
     shortSpan = {
         "__type__": "Helmholtz",
-        "__name__": "short Helmholtz equation of state for carbon dioxide of Span and Wagner (2003)",
+        "__name__": "short Helmholtz equation of state for carbon dioxide of "
+                    "Span and Wagner (2003)",
         "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1):111-162, 2003.",
+                    "title": "Equations of State for Technical Applications. "
+                             "III. Results for Polar Fluids",
+                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
                     "doi": "10.1023/A:1022362231796"},
-        "__test__": """
-            >>> st=CO2(T=700, rho=200, eq=4)
-            >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-            1.0141 45.164 1.4994
-            >>> st2=CO2(T=750, rho=100, eq=4)
-            >>> print "%0.2f %0.5f" % (st2.h.kJkg-st.h.kJkg, st2.s.kJkgK-st.s.kJkgK)
-            191.33 0.60315
-            """, # Table III, Pag 117
 
         "R": 8.31451,
         "cp": Fi1,
@@ -591,3 +585,14 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 4), 1.1961)
         self.assertEqual(round(st.cp.kJkgK, 4), 1.5477)
         self.assertEqual(round(st.w, 1), 2052.8)
+
+    def test_shortSpan(self):
+        # Table III, Pag 117
+        st = CO2(T=500, rho=500, eq="shortSpan")
+        self.assertEqual(round(st.cp0.kJkgK, 4), 1.0141)
+        self.assertEqual(round(st.P.MPa, 3), 45.164)
+        self.assertEqual(round(st.cp.kJkgK, 4), 1.4994)
+
+        st2 = CO2(T=600, rho=100, eq="shortSpan")
+        self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 191.33)
+        self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60315)
