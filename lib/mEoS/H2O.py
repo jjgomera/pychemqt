@@ -29,136 +29,7 @@ from lib.meos import MEoS
 
 
 class H2O(MEoS):
-    """Multiparameter equation of state for water (including IAPWS95)
-
-#     >>> water=H2O(T=300, rho=996.5560)
-    # >>> print("%0.10f %0.8f %0.5f %0.9f" % ( \
-        # water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
-    # 0.0992418350 4.13018112 1501.51914 0.393062643
-
-    # >>> water=H2O(T=500, rho=0.435)
-    # >>> print("%0.10f %0.8f %0.5f %0.9f" % ( \
-        # water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
-    # 0.0999679423 1.50817541 548.31425 7.944882714
-
-    # >>> water=H2O(T=900., P=700e6)
-    # >>> print("%0.4f %0.8f %0.5f %0.8f" % ( \
-        # water.rho, water.cv.kJkgK, water.w, water.s.kJkgK))
-    # 870.7690 2.66422350 2019.33608 4.17223802
-
-    # >>> water=H2O(T=300., P=0.1e6)
-    # >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.cp.kJkgK, water.w, water.virialB))
-    # 300.00 0.10000 996.56 112.65 0.39306 4.1806 1501.5 -0.066682
-
-    # >>> water=H2O(T=500., P=0.1e6)
-    # >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.cp.kJkgK, water.w, water.virialB))
-    # 500.00 0.10000 0.43514 2928.6 7.9447 1.9813 548.31 -0.0094137
-
-    # >>> water=H2O(T=450., x=0.5)
-    # >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.6f" % (water.T, \
-        # water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, water.virialB))
-    # 450.00 0.93220 9.5723 1761.8 4.3589 -0.013028
-
-    # >>> water=H2O(P=1.5e6, rho=1000.)
-    # >>> print("%0.2f %0.4f %0.1f %0.3f %0.5f %0.4f %0.1f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.cp.kJkgK, water.w, water.virialB))
-    # 286.44 1.5000 1000.0 57.253 0.19931 4.1855 1462.1 -0.085566
-
-    # >>> water=H2O(h=3000e3, s=8e3)
-    # >>> print("%0.2f %0.5f %0.5f %0.1f %0.4f %0.4f %0.2f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.cp.kJkgK, water.w, water.virialB))
-    # 536.24 0.11970 0.48547 3000.0 8.0000 1.9984 567.04 -0.0076606
-
-    # >>> water=H2O(h=150e3, s=0.4e3)
-    # >>> print("%0.2f %0.5f %0.2f %0.2f %0.5f %0.4f %0.1f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.cp.kJkgK, water.w, water.virialB))
-    # 301.27 35.50549 1011.48 150.00 0.40000 4.0932 1564.1 -0.065238
-
-    # >>> water=H2O(T=450., rho=300)
-    # >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.6f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.x, water.virialB))
-    # 450.00 0.93220 300.00 770.82 2.1568 0.010693 -0.013028
-
-    # >>> water=H2O(rho=300., P=0.1e6)
-    # >>> print("%0.2f %0.5f %0.2f %0.2f %0.4f %0.7f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.x, water.virialB))
-    # 372.76 0.10000 300.00 420.56 1.3110 0.0013528 -0.025144
-
-    # >>> water=H2O(h=1500e3, P=0.1e6)
-    # >>> print("%0.2f %0.5f %0.4f %0.1f %0.4f %0.5f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.x, water.virialB))
-    # 372.76 0.10000 1.2303 1500.0 4.2068 0.47952 -0.025144
-
-    # >>> water=H2O(s=5e3, P=3.5e6)
-    # >>> print("%0.2f %0.4f %0.3f %0.1f %0.4f %0.5f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.h.kJkg, water.s.kJkgK, \
-        # water.x, water.virialB))
-    # 515.71 3.5000 25.912 2222.8 5.0000 0.66921 -0.0085877
-
-    # >>> water=H2O(T=500., u=900e3)
-    # >>> print("%0.2f %0.2f %0.2f %0.2f %0.1f %0.4f %0.4f %0.1f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
-    # 500.00 108.21 903.62 900.00 1019.8 2.4271 4.1751 1576.0 -0.0094137
-
-    # >>> water=H2O(P=0.3e6, u=1550.e3)
-    # >>> print("%0.2f %0.5f %0.4f %0.1f %0.1f %0.4f %0.5f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 406.67 0.30000 3.3029 1550.0 1640.8 4.3260 0.49893 -0.018263
-
-    # >>> water=H2O(rho=300, h=1000.e3)
-    # >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.6f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 494.92 2.3991 300.00 992.00 1000.0 2.6315 0.026071 -0.0097064
-
-    # >>> water=H2O(rho=30, s=8.e3)
-    # >>> print("%0.2f %0.3f %0.3f %0.1f %0.1f %0.4f %0.4f %0.2f %0.9f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.cp.kJkgK, water.w, water.virialB))
-    # 1562.42 21.671 30.000 4628.5 5350.9 8.0000 2.7190 943.53 0.000047165
-
-    # >>> water=H2O(rho=30, s=4.e3)
-    # >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 495.00 2.4029 30.000 1597.3 1677.4 4.0000 0.39218 -0.0097015
-
-    # >>> water=H2O(rho=300, u=1000.e3)
-    # >>> print("%0.2f %0.4f %0.3f %0.1f %0.1f %0.4f %0.5f %0.7f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 496.44 2.4691 300.000 1000.0 1008.2 2.6476 0.02680 -0.0096173
-
-    # >>> water=H2O(s=3.e3, h=1000.e3)
-    # >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 345.73 0.034850 0.73526 952.60 1000.0 3.0000 0.29920 -0.034124
-
-    # >>> water=H2O(u=995.e3, h=1000.e3)
-    # >>> print("%0.2f %0.4f %0.2f %0.2f %0.1f %0.4f %0.5f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 501.89 2.7329 546.58 995.00 1000.0 2.6298 0.00866 -0.009308
-
-    # >>> water=H2O(u=1000.e3, s=3.e3)
-    # >>> print("%0.2f %0.6f %0.5f %0.2f %0.1f %0.4f %0.5f %0.6f" % ( \
-        # water.T, water.P.MPa, water.rho, water.u.kJkg, water.h.kJkg, \
-        # water.s.kJkgK, water.x, water.virialB))
-    # 371.24 0.094712 1.99072 1000.00 1047.6 3.0000 0.28144 -0.025543
-    """
+    """Multiparameter equation of state for water (including IAPWS95)"""
 
     name = "water"
     CASNumber = "7732-18-5"
@@ -212,104 +83,6 @@ class H2O(MEoS):
                              "General and Scientific Use",
                     "ref": "J. Phys. Chem. Ref. Data 31, 387 (2002)",
                     "doi": "10.1063/1.1461829"},
-        "__test__":
-            # Table 6.6, Pag 436
-            """
-            # noqa
-            >>> wt=H2O()
-            >>> tau=wt.Tc/500
-            >>> delta=838.025/wt.rhoc
-            >>> print("%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phi0(wt._constants["cp"], tau, delta))
-            2.04797734 9.04611106 -1.93249185 0.384236747 -0.147637878 0
-            >>> print("%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phir(tau, delta)[:6])
-            -3.42693206 -5.81403435 -2.23440737 -0.36436665 0.856063701 -1.12176915
-            >>> tau=wt.Tc/647
-            >>> delta=358/wt.rhoc
-            >>> print("%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phi0(wt._constants["cp"], tau, delta))
-            -1.56319605 9.80343918 -3.43316334 0.899441341 -0.808994726 0
-            >>> print("%0.9g %0.9g %0.9g %0.9g %0.9g %0.9g" % wt._phir(tau, delta)[:6])
-            -1.21202657 -3.21722501 -9.96029507 -0.714012024 0.475730696 -1.3321472
-            """
-
-            # Table 13.1, Pag 486
-            """
-            # noqa
-            >>> st = H2O(T=273.16, x=0.5)
-            >>> print("%0.6g %0.3g %0.6g %0.3g %0.3f %0.6g %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            273.16 0.000612 999.793 0.00485 0.001 2500.92 -0.0000 9.1555 4.2174 1.4184 4.2199 1.8844 1402.3 409
-
-            >>> st = H2O(T=300, x=0.5)
-            >>> print("%0.6g %0.4g %0.6g %0.4g %0.3f %0.6g %0.4f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            300 0.003537 996.513 0.02559 112.565 2549.85 0.3931 8.5174 4.1305 1.4422 4.1809 1.9141 1501.4 427.89
-
-            >>> st = H2O(T=400, x=0.5)
-            >>> print("%0.6g %0.5g %0.6g %0.5g %0.3f %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            400 0.24577 937.486 1.3694 532.953 2715.7 1.6013 7.0581 3.6324 1.6435 4.2555 2.2183 1509.5 484.67
-
-            >>> st = H2O(T=500, x=0.5)
-            >>> print("%0.6g %0.5g %0.6g %0.5g %0.3f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            500 2.6392 831.313 13.199 975.431 2802.48 2.581 6.2351 3.2255 2.2714 4.6635 3.4631 1239.6 504.55
-
-            >>> st = H2O(T=600, x=0.5)
-            >>> print("%0.6g %0.5g %0.6g %0.5g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            600 12.345 649.411 72.842 1505.36 2677.81 3.519 5.4731 3.0475 3.3271 6.9532 9.1809 749.57 457.33
-
-            >>> st = H2O(T=646, x=0.5)
-            >>> print("%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            646 21.775 402.96 243.46 1963.49 2238.06 4.2214 4.6465 4.5943 5.1457 204.58 385.23 297.13 331.61
-
-            >>> st = H2O(T=647, x=0.5)
-            >>> print("%0.6g %0.5g %0.5g %0.5g %0.2f %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.P.MPa, st.Liquido.rho, st.Gas.rho, st.Liquido.h.kJkg, st.Gas.h.kJkg, \
-                st.Liquido.s.kJkgK, st.Gas.s.kJkgK, st.Liquido.cv.kJkgK, st.Gas.cv.kJkgK, \
-                st.Liquido.cp.kJkgK, st.Gas.cp.kJkgK, st.Liquido.w, st.Gas.w))
-            647 22.038 357.34 286.51 2029.44 2148.56 4.3224 4.5065 6.2344 6.274 3905.2 5334.1 251.19 285.32
-            """
-
-            # Table 13.2, Pag 495
-            """
-            >>> st = H2O(T=290, P=50000)
-            >>> print("%0.6g %0.5g %0.5g %0.5g %0.4g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, \
-                st.cp.kJkgK, st.w))
-            290 998.78 70.725 70.775 0.2513 4.1682 4.1868 1472.2
-
-            >>> st = H2O(T=600, P=15000000)
-            >>> print("%0.6g %0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, \
-                st.cp.kJkgK, st.w))
-            600 659.407 1474.91 1497.65 3.4994 3.0282 6.583 787.74
-
-            >>> st = H2O(T=640, P=22500000)
-            >>> print("%0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, \
-                st.cp.kJkgK, st.w))
-            640 531.385 1744.16 1786.5 3.9443 3.1724 12.142 529.59
-
-            >>> st = H2O(T=580, P=40000000)
-            >>> print("%0.6g %0.6g %0.6g %0.6g %0.5g %0.5g %0.5g %0.5g" % (\
-                st.T, st.rho, st.u.kJkg, st.h.kJkg, st.s.kJkgK, st.cv.kJkgK, \
-                st.cp.kJkgK, st.w))
-            580 753.362 1306.43 1359.53 3.2061 2.9966 4.9863 1099.6
-            """,
 
         "R": 8.314371357587,
         "cp": Fi1,
@@ -683,9 +456,313 @@ class H2O(MEoS):
         return unidades.Pressure(exp(suma/Tita)*Pref)
 
 
-if __name__ == "__main__":
+class Test(TestCase):
 
-    water=H2O(T=300, rho=996.5560)
-    print("%0.10f %0.8f %0.5f %0.9f" % (water.P.MPa, water.cv.kJkgK, water.w, water.s.kJkgK))
-    print(water.mu)
-    # 0.0992418350 4.13018112 1501.51914 0.393062643
+    def test_iapws(self):
+        # Table 6.6, pag 436"""
+        fluid = H2O()
+
+        delta = 838.025/fluid.rhoc
+        tau = fluid.Tc/500
+        ideal = fluid._phi0(fluid._constants["cp"], tau, delta)
+        self.assertEqual(round(ideal["fio"], 8), 2.04797733)
+        self.assertEqual(round(ideal["fiod"], 9), 0.384236747)
+        self.assertEqual(round(ideal["fiodd"], 9), -0.147637878)
+        self.assertEqual(round(ideal["fiot"], 8), 9.04611106)
+        self.assertEqual(round(ideal["fiott"], 8), -1.93249185)
+        self.assertEqual(round(ideal["fiodt"], 8), 0.0)
+        res = fluid._phir(tau, delta)
+        self.assertEqual(round(res["fir"], 8), -3.42693206)
+        self.assertEqual(round(res["fird"], 9), -0.364366650)
+        self.assertEqual(round(res["firdd"], 9), 0.856063701)
+        self.assertEqual(round(res["firt"], 8), -5.81403435)
+        self.assertEqual(round(res["firtt"], 8), -2.23440737)
+        self.assertEqual(round(res["firdt"], 8), -1.12176915)
+
+        delta = 358/fluid.rhoc
+        tau = fluid.Tc/647
+        ideal = fluid._phi0(fluid._constants["cp"], tau, delta)
+        self.assertEqual(round(ideal["fio"], 8), -1.56319605)
+        self.assertEqual(round(ideal["fiod"], 9), 0.899441341)
+        self.assertEqual(round(ideal["fiodd"], 9), -0.808994726)
+        self.assertEqual(round(ideal["fiot"], 8), 9.80343918)
+        self.assertEqual(round(ideal["fiott"], 8), -3.43316334)
+        self.assertEqual(round(ideal["fiodt"], 8), 0.0)
+        res = fluid._phir(tau, delta)
+        self.assertEqual(round(res["fir"], 8), -1.21202657)
+        self.assertEqual(round(res["fird"], 9), -0.714012024)
+        self.assertEqual(round(res["firdd"], 9), 0.475730696)
+        self.assertEqual(round(res["firt"], 8), -3.21722501)
+        self.assertEqual(round(res["firtt"], 8), -9.96029507)
+        self.assertEqual(round(res["firdt"], 8), -1.33214720)
+
+        # Table 13.1, Pag 486, Saturation state
+        st = H2O(T=H2O.Tt, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.000612)
+        self.assertEqual(round(st.Liquido.rho, 3), 999.793)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 0.001)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.0000)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 4.2174)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 4.2199)
+        self.assertEqual(round(st.Liquido.w, 1), 1402.3)
+        self.assertEqual(round(st.Gas.rho, 5), 0.00485)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2500.92)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 9.1555)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.4184)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.8844)
+        self.assertEqual(round(st.Gas.w, 2), 409.00)
+
+        st = H2O(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.003537)
+        self.assertEqual(round(st.Liquido.rho, 3), 996.513)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 112.565)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.3931)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 4.1305)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 4.1809)
+        self.assertEqual(round(st.Liquido.w, 1), 1501.4)
+        self.assertEqual(round(st.Gas.rho, 5), 0.02559)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2549.85)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 8.5174)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.4422)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.9141)
+        self.assertEqual(round(st.Gas.w, 2), 427.89)
+
+        st = H2O(T=400, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.24577)
+        self.assertEqual(round(st.Liquido.rho, 3), 937.486)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 532.953)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.6013)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 3.6324)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 4.2555)
+        self.assertEqual(round(st.Liquido.w, 1), 1509.5)
+        self.assertEqual(round(st.Gas.rho, 4), 1.3694)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2715.70)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 7.0581)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.6435)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 2.2183)
+        self.assertEqual(round(st.Gas.w, 2), 484.67)
+
+        st = H2O(T=500, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 2.6392)
+        self.assertEqual(round(st.Liquido.rho, 3), 831.313)
+        self.assertEqual(round(st.Liquido.h.kJkg, 3), 975.431)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 2.5810)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 3.2255)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 4.6635)
+        self.assertEqual(round(st.Liquido.w, 1), 1239.6)
+        self.assertEqual(round(st.Gas.rho, 3), 13.199)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2802.48)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 6.2351)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 2.2714)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 3.4631)
+        self.assertEqual(round(st.Gas.w, 2), 504.55)
+
+        st = H2O(T=600, x=0.5)
+        self.assertEqual(round(st.P.MPa, 3), 12.345)
+        self.assertEqual(round(st.Liquido.rho, 3), 649.411)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 1505.36)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 3.5190)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 3.0475)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 4), 6.9532)
+        self.assertEqual(round(st.Liquido.w, 2), 749.57)
+        self.assertEqual(round(st.Gas.rho, 3), 72.842)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2677.81)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 5.4731)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 3.3271)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 4), 9.1809)
+        self.assertEqual(round(st.Gas.w, 2), 457.33)
+
+        st = H2O(T=647, x=0.5)
+        self.assertEqual(round(st.P.MPa, 3), 22.038)
+        self.assertEqual(round(st.Liquido.rho, 2), 357.34)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 2029.44)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 4.3224)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 6.2344)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 1), 3905.2)
+        self.assertEqual(round(st.Liquido.w, 2), 251.19)
+        self.assertEqual(round(st.Gas.rho, 2), 286.51)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 2148.56)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 4.5065)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 4), 6.2740)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 1), 5334.1)
+        self.assertEqual(round(st.Gas.w, 2), 285.32)
+
+        # Table 13.2, Pag 495, Single phase region
+        st = H2O(T=275, P=5e4)
+        self.assertEqual(round(st.rho, 3), 999.912)
+        self.assertEqual(round(st.u.kJkg, 3), 7.760)
+        self.assertEqual(round(st.h.kJkg, 3), 7.810)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.0283)
+        self.assertEqual(round(st.cv.kJkgK, 4), 4.2130)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.2137)
+        self.assertEqual(round(st.w, 1), 1411.4)
+
+        st = H2O(T=370, P=1e5)
+        self.assertEqual(round(st.rho, 3), 960.591)
+        self.assertEqual(round(st.u.kJkg, 3), 405.787)
+        self.assertEqual(round(st.h.kJkg, 3), 405.891)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.2715)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.7845)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.2121)
+        self.assertEqual(round(st.w, 1), 1545.8)
+
+        st = H2O(T=430, P=5e5)
+        self.assertEqual(round(st.rho, 4), 2.6297)
+        self.assertEqual(round(st.u.kJkg, 2), 2569.90)
+        self.assertEqual(round(st.h.kJkg, 2), 2760.04)
+        self.assertEqual(round(st.s.kJkgK, 4), 6.8486)
+        self.assertEqual(round(st.cv.kJkgK, 4), 1.7170)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.3469)
+        self.assertEqual(round(st.w, 2), 497.85)
+
+        st = H2O(T=275, P=1e6)
+        self.assertEqual(round(st.rho, 2), 1000.39)
+        self.assertEqual(round(st.u.kJkg, 3), 7.769)
+        self.assertEqual(round(st.h.kJkg, 3), 8.768)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.0283)
+        self.assertEqual(round(st.cv.kJkgK, 4), 4.2087)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.2093)
+        self.assertEqual(round(st.w, 1), 1413.0)
+
+        st = H2O(T=1273, P=2e6)
+        self.assertEqual(round(st.rho, 4), 3.4085)
+        self.assertEqual(round(st.u.kJkg, 2), 4049.90)
+        self.assertEqual(round(st.h.kJkg, 2), 4636.67)
+        self.assertEqual(round(st.s.kJkgK, 4), 8.5933)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.0205)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.4901)
+        self.assertEqual(round(st.w, 2), 849.82)
+
+        st = H2O(T=530, P=5e6)
+        self.assertEqual(round(st.rho, 3), 789.208)
+        self.assertEqual(round(st.u.kJkg, 2), 1112.95)
+        self.assertEqual(round(st.h.kJkg, 2), 1119.28)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.8547)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.1377)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.9386)
+        self.assertEqual(round(st.w, 1), 1122.2)
+
+        st = H2O(T=375, P=1e7)
+        self.assertEqual(round(st.rho, 3), 961.618)
+        self.assertEqual(round(st.u.kJkg, 3), 423.977)
+        self.assertEqual(round(st.h.kJkg, 3), 434.376)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.3203)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.7438)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.1955)
+        self.assertEqual(round(st.w, 1), 1562.6)
+
+        st = H2O(T=630, P=2e7)
+        self.assertEqual(round(st.rho, 3), 567.644)
+        self.assertEqual(round(st.u.kJkg, 2), 1671.50)
+        self.assertEqual(round(st.h.kJkg, 2), 1706.73)
+        self.assertEqual(round(st.s.kJkgK, 4), 3.8259)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.1104)
+        self.assertEqual(round(st.cp.kJkgK, 4), 9.8619)
+        self.assertEqual(round(st.w, 2), 587.65)
+
+        st = H2O(T=900, P=3e7)
+        self.assertEqual(round(st.rho, 3), 82.840)
+        self.assertEqual(round(st.u.kJkg, 2), 3167.87)
+        self.assertEqual(round(st.h.kJkg, 2), 3530.02)
+        self.assertEqual(round(st.s.kJkgK, 4), 6.3313)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.0283)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.0408)
+        self.assertEqual(round(st.w, 2), 687.91)
+
+        st = H2O(T=1100, P=5e7)
+        self.assertEqual(round(st.rho, 2), 106.26)
+        self.assertEqual(round(st.u.kJkg, 2), 3534.70)
+        self.assertEqual(round(st.h.kJkg, 2), 4005.26)
+        self.assertEqual(round(st.s.kJkgK, 4), 6.5956)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.0843)
+        self.assertEqual(round(st.cp.kJkgK, 4), 2.9377)
+        self.assertEqual(round(st.w, 2), 789.83)
+
+        st = H2O(T=600, P=1e8)
+        self.assertEqual(round(st.rho, 3), 791.493)
+        self.assertEqual(round(st.u.kJkg, 2), 1322.23)
+        self.assertEqual(round(st.h.kJkg, 2), 1448.58)
+        self.assertEqual(round(st.s.kJkgK, 4), 3.2256)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.9295)
+        self.assertEqual(round(st.cp.kJkgK, 4), 4.5019)
+        self.assertEqual(round(st.w, 1), 1300.4)
+
+        st = H2O(T=400, P=2e8)
+        self.assertEqual(round(st.rho, 2), 1017.12)
+        self.assertEqual(round(st.u.kJkg, 3), 480.471)
+        self.assertEqual(round(st.h.kJkg, 3), 677.105)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.4520)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.4513)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.9363)
+        self.assertEqual(round(st.w, 1), 1882.7)
+
+        st = H2O(T=305, P=1e9)
+        self.assertEqual(round(st.rho, 2), 1234.94)
+        self.assertEqual(round(st.u.kJkg, 3), 93.201)
+        self.assertEqual(round(st.h.kJkg, 3), 902.957)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.0895)
+        self.assertEqual(round(st.cv.kJkgK, 4), 3.4296)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.7845)
+        self.assertEqual(round(st.w, 1), 2723.2)
+
+        st = H2O(T=1273, P=1e9)
+        self.assertEqual(round(st.rho, 2), 809.28)
+        self.assertEqual(round(st.u.kJkg, 2), 3097.36)
+        self.assertEqual(round(st.h.kJkg, 2), 4333.03)
+        self.assertEqual(round(st.s.kJkgK, 4), 5.2048)
+        self.assertEqual(round(st.cv.kJkgK, 4), 2.6446)
+        self.assertEqual(round(st.cp.kJkgK, 4), 3.4245)
+        self.assertEqual(round(st.w, 1), 2095.5)
+
+    def test_Viscosity(self):
+        # Table 6, pag 116
+        self.assertEqual(round(_Viscosity(998, 298.15)*1e6, 6), 889.735100)
+        self.assertEqual(round(_Viscosity(1200, 298.15)*1e6, 6), 1437.649467)
+        self.assertEqual(round(_Viscosity(1000, 373.15)*1e6, 6), 307.883622)
+        self.assertEqual(round(_Viscosity(1, 433.15)*1e6, 6), 14.538324)
+        self.assertEqual(round(_Viscosity(1000, 433.15)*1e6, 6), 217.685358)
+        self.assertEqual(round(_Viscosity(1, 873.15)*1e6, 6), 32.619287)
+        self.assertEqual(round(_Viscosity(100, 873.15)*1e6, 6), 35.802262)
+        self.assertEqual(round(_Viscosity(600, 873.15)*1e6, 6), 77.430195)
+        self.assertEqual(round(_Viscosity(1, 1173.15)*1e6, 6), 44.217245)
+        self.assertEqual(round(_Viscosity(100, 1173.15)*1e6, 6), 47.640433)
+        self.assertEqual(round(_Viscosity(400, 1173.15)*1e6, 6), 64.154608)
+
+        # Table 7, pag 116
+        fluid = H2O(rho=122, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 25.520677)
+        fluid = H2O(rho=222, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 31.337589)
+        fluid = H2O(rho=272, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 36.228143)
+        fluid = H2O(rho=322, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 42.961579)
+        fluid = H2O(rho=372, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 45.688204)
+        fluid = H2O(rho=422, T=647.35)
+        self.assertEqual(round(fluid.mu.muPas, 6), 49.436256)
+
+    def test_ThCond(self):
+        # Table 7, pag 12
+        self.assertEqual(round(_ThCond(0, 298.15)*1000, 7), 18.4341883)
+        self.assertEqual(round(_ThCond(998, 298.15)*1000, 6), 607.712868)
+        self.assertEqual(round(_ThCond(1200, 298.15)*1000, 6), 799.038144)
+        self.assertEqual(round(_ThCond(0, 873.15)*1000, 7), 79.1034659)
+
+        # Table 8, pag 13
+        fluid = H2O(rho=1, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 7), 51.9298924)
+        fluid = H2O(rho=122, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 130.922885)
+        fluid = H2O(rho=222, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 367.787459)
+        fluid = H2O(rho=272, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 757.959776)
+        fluid = H2O(rho=322, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 5), 1443.75556)
+        fluid = H2O(rho=372, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 650.319402)
+        fluid = H2O(rho=422, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 448.883487)
+        fluid = H2O(rho=750, T=647.35)
+        self.assertEqual(round(fluid.k.mWmK, 6), 600.961346)
