@@ -2299,55 +2299,39 @@ class MEoS(ThermoAdvanced):
 
                 mu = (muo+mur)*muref
 
-            elif self._viscosity["eq"] == 4:
+            elif coef["eq"] == 4:
+                # Quiñones-Cisneros correlations
                 muo = self._Visco0()
-                mur = 0
-                Gamma = self.Tc/T
-                psi1 = exp(Gamma)-1.0
-                psi2 = exp(Gamma**2)-1.0
-                a = self._viscosity["a"]
-                b = self._viscosity["b"]
-                c = self._viscosity["c"]
-                A = self._viscosity["A"]
-                B = self._viscosity["B"]
-                C = self._viscosity["C"]
-                D = self._viscosity["D"]
-                ka = (a[0]+a[1]*psi1+a[2]*psi2)*Gamma
-                kaa = (A[0]+A[1]*psi1+A[2]*psi2)*Gamma**3
-                kr = (b[0]+b[1]*psi1+b[2]*psi2)*Gamma
-                krr = (B[0]+B[1]*psi1+B[2]*psi2)*Gamma**3
-                ki = (c[0]+c[1]*psi1+c[2]*psi2)*Gamma
-                kii = (C[0]+C[1]*psi1+C[2]*psi2)*Gamma**3
 
+                Gamma = self.Tc/T                                      # Eq 35
+                psi1 = exp(Gamma)-1.0                                  # Eq 33
+                psi2 = exp(Gamma**2)-1.0                               # Eq 34
+
+                a = coef["a"]
+                b = coef["b"]
+                c = coef["c"]
+                A = coef["A"]
+                B = coef["B"]
+                C = coef["C"]
+
+                ka = (a[0] + a[1]*psi1 + a[2]*psi2) * Gamma            # Eq 27
+                kaa = (A[0] + A[1]*psi1 + A[2]*psi2) * Gamma**3        # Eq 28
+                kr = (b[0] + b[1]*psi1 + b[2]*psi2) * Gamma            # Eq 29
+                krr = (B[0] + B[1]*psi1 + B[2]*psi2) * Gamma**3        # Eq 30
+                ki = (c[0] + c[1]*psi1 + c[2]*psi2) * Gamma            # Eq 31
+                kii = (C[0] + C[1]*psi1 + C[2]*psi2) * Gamma**3        # Eq 32
+
+                # All parameteres has pressure units of bar
+                Patt = -fase.IntP.bar
                 Prep = T*fase.dpdT_rho.barK
-                Patt = self.P.bar-Prep
                 Pid = rho*self.R*self.T/1e5
                 delPr = Prep-Pid
-                mur = kr*delPr + ka*Patt + krr*delPr**2 + kaa*Patt**2 + ki*Pid + kii*Pid**2 + D[0]*Prep**3*Gamma**2
+
+                # Eq 26
+                mur = ki*Pid + kr*delPr + ka*Patt + kii*Pid**2 + \
+                    krr*delPr**2 + kaa*Patt**2
 
                 mu = (muo+mur*1e3)
-
-            elif self._viscosity["eq"] == 5:
-                a0 = (6.32402, 0.12102e-2, 5.28346, 6.62263, 19.74540,
-                      -1.89992, 24.2745, 0.79716, -0.23816, 0.68629e-1)
-                a1 = (50.4119, -0.11536e-2, 254.209, 38.0957, 7.63034,
-                      -12.5367, 3.44945, 1.11764, 0.67695e-1, 0.34793)
-                a2 = (-51.6801, -0.62571e-2, -168.481, -8.46414, -14.3544,
-                      4.98529, -11.2913, 0.12348e-1, -0.8163, 0.59256)
-                a3 = (1189.02, 0.37283e-1, 3898.27, 31.4178, 31.5267,
-                      -18.1507, 69.3466, -4.11661, 4.02528, -0.72663)
-                A = [None]
-                for i in range(10):
-                    A.append(a0[i]+a1[i]*self._viscosity["w"]+a2[i]*self._viscosity["mur"]**4+a3[i]*self._viscosity["k"])
-
-                muo = self._Visco0()
-                Y = rho/self.rhoc/6
-                T_ = self.T/self._viscosity.get("ek", self.Tc/1.2593)
-                G1 = (1-0.5*Y)/(1-Y)**3
-                G2 = (A[1]*(1-exp(-A[4]*Y))/Y+A[2]*G1*exp(A[5]*Y)+A[3]*G1)/(A[1]*A[4]+A[2]+A[3])
-                muk = muo*(1/G2+A[6]*Y)
-                mup = 36.344e-6*(self.M*self.Tc)**0.5*self.rhoc**(2./3.)*A[7]*Y**2*G2*exp(A[8]+A[9]/T_+A[10]/T_**2)
-                mu = muk+mup
 
             elif self._viscosity["eq"] == "ecs":
 #                rhoc=self._constants.get("rhoref", self.rhoc)

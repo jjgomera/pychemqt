@@ -60,6 +60,7 @@ class Benzene(MEoS):
                              " up to 500 MPa",
                     "ref": "High Temperatures-High Pressures 41 (2012) 81-97",
                     "doi": ""},
+
         "R": 8.314472,
         "cp": Fi1,
         "ref": "NBP",
@@ -162,7 +163,7 @@ class Benzene(MEoS):
     _vapor_Density = {
         "eq": 3,
         "ao": [-3.1147, -4.6689, -16.161, -146.5, 518.87e3, -827.72],
-        "exp": [0.419, 1.12, 2.8, 7.3, 10., 12.]}
+        "exp": [0.419, 1.12, 2.8, 7.3, 10, 12]}
 
     visco0 = {"eq": 5, "omega": 3,
               "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",

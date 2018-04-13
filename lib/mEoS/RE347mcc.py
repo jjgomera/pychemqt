@@ -34,7 +34,7 @@ class RE347mcc(MEoS):
     M = 200.0548424  # g/mol
     Tt = unidades.Temperature(250)
     Tb = unidades.Temperature(307.349)
-    f_acent = 0.403
+    f_acent = 0.411
     momentoDipolar = unidades.DipoleMoment(3.13, "Debye")
 
     CP1 = {"ao": 13.09,

@@ -328,37 +328,18 @@ class N2(MEoS):
                -0.268505381e1],
         "exp": [1.02, 2.5, 3.5, 6.5, 14]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=N2(T=100, rhom=0)
-                    >>> print "%0.5f" % st.mu.muPas
-                    6.90349
-                    >>> st=N2(T=300, rhom=0)
-                    >>> print "%0.4f" % st.mu.muPas
-                    17.8771
-                    >>> st=N2(T=100, rhom=28)
-                    >>> print "%0.3f" % st.mu.muPas
-                    79.7418
-                    >>> st=N2(T=200, rhom=10)
-                    >>> print "%0.4f" % st.mu.muPas
-                    21.0810
-                    >>> st=N2(T=300, rhom=5)
-                    >>> print "%0.4f" % st.mu.muPas
-                    20.7430
-                    >>> st=N2(T=132.64, rhom=10.4)
-                    >>> print "%0.4f" % st.mu.muPas
-                    18.2978
-                    """, # Table V, Pag 28
+    visco0 = {"__name__": "Lemmon (2004)",
+              "__doi__": {
+                  "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                  "title": "Viscosity and Thermal Conductivity Equations for "
+                           "Nitrogen, Oxygen, Argon, and Air",
+                  "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                  "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-              "Tref": 1., "etaref": 1, "rhoref": 1.*M,
+              "eq": 1, "omega": 1,
               "ek": 98.94, "sigma": 0.3656,
 
-              "Tref_res": 126.192, "rhoref_res": 11.1839*M, "etaref_res": 1,
+              "Tref_res": 126.192, "rhoref_res": 11.1839*M,
               "n_poly": [10.72, 0.03989, 0.001208, -7.402, 4.62],
               "t_poly": [.1, .25, 3.2, .9, 0.3],
               "d_poly": [2, 10, 12, 2, 1],

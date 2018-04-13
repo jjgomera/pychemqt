@@ -380,24 +380,25 @@ class nC4(MEoS):
                     0.9849317662e4],
               "rhoc": 3.920}
 
-    visco2 = {"eq": 4, "omega": 1,
-              "__name__": "Quiñones-Cisneros (2006)",
-              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
-                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"},
+    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
+              "__doi__": {
+                  "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
+                  "title": "Generalization of the Friction Theory for "
+                           "Viscosity Modeling",
+                  "ref": "J. Phys. Chem. B, 110(25) (2006) 12820-12834",
+                  "doi": "10.1021/jp0618577"},
 
-              "Tref": 425.125, "muref": 1.0,
-              "ek": 440., "sigma": 0.503103, "n_chapman": 0,
-              "n_ideal": [18.3983, -57.1255, 49.3197],
-              "t_ideal": [0, 0.25, 0.5],
+              "eq": 4, "omega": 0,
+              "Toref": 425.125,
+              "no": [18.3983, -57.1255, 49.3197],
+              "to": [0, 0.25, 0.5],
+
               "a": [-1.34110938674421e-5, -8.56587924603951e-5, -6.45720639242339e-13],
               "b": [1.49859653515567e-4, -1.71133855507542e-4, 7.37953726544736e-13],
               "c": [3.53018109777015e-7, -1.93040375218067e-5, -1.26469933968355e-14],
               "A": [-3.63389393526204e-9, -7.73717469888952e-10, 0.0],
               "B": [3.70980259815724e-8, 2.07658634467549e-9, 0.0],
-              "C": [-1.12495594619911e-7, 7.66906137372152e-8, 0.0],
-              "D": [0.0, 0.0, 0.0]}
+              "C": [-1.12495594619911e-7, 7.66906137372152e-8, 0.0]}
 
     _viscosity = visco0, visco1, visco2
 

@@ -39,7 +39,7 @@ class pH2(MEoS):
     Tt = unidades.Temperature(13.8033)
     Tb = unidades.Temperature(20.271)
     f_acent = -0.219
-    momentoipolar = unidades.DipoleMoment(0.0, "Debye")
+    momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 1
 
     Fi1 = {"ao_log": [1, 1.5],

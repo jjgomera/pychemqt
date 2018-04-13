@@ -335,26 +335,26 @@ class CO2(MEoS):
               "g_poly": [0, 0, 0, 0, 0],
               "c_poly": [0, 0, 0, 0, 0]}
 
-    visco1 = {"eq": 4, "omega": 1,
-              "__name__": u"Quiñones-Cisneros (2006)",
-              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
-                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"},
+    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+              "__doi__": {
+                  "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
+                  "title": "Generalization of the Friction Theory for "
+                           "Viscosity Modeling",
+                  "ref": "J. Phys. Chem. B, 110(25) (2006) 12820-12834",
+                  "doi": "10.1021/jp0618577"},
 
-              "ek": 251.196, "sigma": 0.3751, "n_chapman": 0,
-              "Tref": 304.1282, "muref": 1.0,
+              "eq": 4, "omega": 0,
 
-              "n_ideal": [69.18424, -215.8618, 210.94362, -49.0494],
-              "t_ideal": [0, 0.25, 0.5, 0.75],
+              "Toref": 304.1282,
+              "no": [69.18424, -215.8618, 210.94362, -49.0494],
+              "to": [0, 0.25, 0.5, 0.75],
 
               "a": [1.19805e-4,  -1.25861e-4, 5.48871e-5],
               "b": [3.15921e-5, -2.60469e-5, 7.09199e-6],
               "c": [1.80689e-5, -7.41742e-6, 0.0],
               "A": [-2.31066e-9, 0.0, 5.42486e-10],
               "B": [1.04558e-8, -2.20758e-9, 0.0],
-              "C": [1.03255e-6, -8.56207e-7, 3.84384e-7],
-              "D": [0.0, 0.0, 0.0]}
+              "C": [1.03255e-6, -8.56207e-7, 3.84384e-7]}
 
     # TODO: Add visco correlation from vesovic
 
