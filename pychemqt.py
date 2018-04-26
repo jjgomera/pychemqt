@@ -100,10 +100,11 @@ except ImportError as err:
     raise err
 else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
-    if minor < 14:
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt",
-            "Your version of scipy is too old, you must update it.")
+    if mayor < 1:    
+        if minor < 14:
+            msg = QtWidgets.QApplication.translate(
+                "pychemqt",
+                "Your version of scipy is too old, you must update it.")
         raise ImportError(msg)
 
 # numpy
