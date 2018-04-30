@@ -111,7 +111,7 @@ except ImportError as err:
     raise err
 else:
     mayor, minor, corr = map(int, scipy.version.version.split("."))
-    if minor < 14:
+    if mayor == 0 and minor < 14:
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
             "Your version of scipy is too old, you must update it.")
@@ -159,7 +159,7 @@ except ImportError as err:
     print(msg)
     raise err
 else:
-    if iapws.__version__ != "1.2":
+    if iapws.__version__ != "1.3":
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
             "Your version of iapws is too old, you must update it.")
