@@ -18,6 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
+from scipy.constants import Avogadro as Na
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -31,7 +35,7 @@ class Benzene(MEoS):
     rhoc = unidades.Density(304.7922436)
     Tc = unidades.Temperature(562.02)
     Pc = unidades.Pressure(4894, "kPa")
-    M = 78.1118  # g/mol
+    M = 78.11184  # g/mol
     Tt = unidades.Temperature(278.674)
     Tb = unidades.Temperature(353.22)
     f_acent = 0.211
@@ -160,18 +164,53 @@ class Benzene(MEoS):
         "eq": 1,
         "ao": [0.18160e2, -0.56879e2, 0.87478e2, -0.64365e2, 0.18500e2],
         "exp": [0.534, 0.686, 0.84, 1.0, 1.2]}
+
+    # _vapor_Density = {
+        # "eq": 3,
+        # "ao": [-3.1147, -4.6689, -16.161, -146.5, 518.87e3, -827.72],
+        # "exp": [0.419, 1.12, 2.8, 7.3, 10, 12]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-3.1147, -4.6689, -16.161, -146.5, 518.87e3, -827.72],
-        "exp": [0.419, 1.12, 2.8, 7.3, 10, 12]}
+        "ao": [0.016427739193323233, -2.618439385733185, -2.5904375872364365,
+               23.553523125085235, -27.279655904334827, -452.1839777043696],
+        "exp": [0.067, 0.387, 0.865, 2.692, 2.792, 15.611]}
 
-    visco0 = {"eq": 5, "omega": 3,
-              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
-                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"},
-              "__name__": "Chung (1988)",
-              "w": 0.5693, "mur": 0.3209, "k": 0.0642}
+    visco0 = {"__name__": "Avgeri (2014)",
+              "__doi__": {
+                  "autor": "Avgeri, S., Assael, M.J., Huber, M.L., Perkins, "
+                           "R.A",
+                  "title": "Reference Correlation of the Viscosity of Benzene "
+                           "from the Triple Point to 675K and up to 300MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 43 (2014) 033103",
+                  "doi": "10.1063/1.4892935"},
+
+              "eq": 1, "omega": 1,
+
+              "n_chapman": 0.021357,
+              "ek": 412,
+              "sigma": 0.54,
+              "collision": [0.234018, -0.476136, 0, -0.015269],
+
+              "Tref_virial": 412,
+              "muref_virial": Na*0.54e-9**3,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special form for residual term of Avgeri viscosity correlation, eq 8
+        in paper"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+        c = [-9.98945, 86.0626, 2.74872, 1.11130, -1, -134.133, -352.473,
+             6.60989, 88.4174]
+        F = c[0]*rhor**2 + c[1]*rhor/(c[2]+c[3]*Tr+c[4]*rhor) + \
+            (c[5]*rhor+c[6]*rhor**2)/(c[7]+c[8]*rhor**2)
+        mur = rhor**(2/3)*Tr**0.5*F
+        return mur
 
     _viscosity = visco0,
 
@@ -201,3 +240,34 @@ class Benzene(MEoS):
                "Xio": 0.216-9, "gam0": 0.0569, "qd": 0.62e-9, "Tcref": 843}
 
     # _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_viscoAvgeri(self):
+        # Table 8, pag 11
+        self.assertEqual(round(Benzene(T=300, rho=0).mu.muPas, 3), 7.625)
+        self.assertEqual(round(Benzene(T=400, rho=0).mu.muPas, 3), 10.102)
+        self.assertEqual(round(Benzene(T=550, rho=0).mu.muPas, 3), 13.790)
+        self.assertEqual(round(Benzene(T=300, rho=875).mu.muPas, 2), 608.53)
+        self.assertEqual(round(Benzene(T=400, rho=760).mu.muPas, 2), 211.74)
+        self.assertEqual(round(Benzene(T=550, rho=500).mu.muPas, 3), 60.511)
+
+        # Table 5, Saturation line, give too liquid density values to check
+        # Thol mEoS
+        # FIXME: Strange saturation returned values for density
+        # st = Benzene(T=280, x=0)
+        # self.assertEqual(round(st.Liquido.rho, 3), 892.701)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.3)
+
+        # st = Benzene(T=400, x=0)
+        # self.assertEqual(round(st.Liquido.rho, 3), 758.650)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 209.9)
+
+        st = Benzene(T=540, x=0)
+        self.assertEqual(round(st.Liquido.rho, 3), 508.838)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 62.26)
+
+
+# if __name__ == "__main__":
+    # st = Benzene(T=400, rho=758.650)
