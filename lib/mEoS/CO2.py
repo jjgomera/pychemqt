@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -312,28 +314,27 @@ class CO2(MEoS):
         "ao": [-1.7074879, -0.8227467, -4.6008549, -10.111178, -29.742252],
         "exp": [1.02, 1.5, 3.0, 7.0, 14.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
-                            -1.537102e-2],
-              "__name__": "Fenghour (1998)",
-              "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
-                          "title": "The Viscosity of Carbon Dioxide",
-                          "ref": "J. Phys. Chem. Ref. Data 27, 31 (1998)",
-                          "doi": "10.1063/1.556013"},
+    visco0 = {"__name__": "Fenghour (1998)",
+              "__doi__": {
+                  "autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
+                  "title": "The Viscosity of Carbon Dioxide",
+                  "ref": "J. Phys. Chem. Ref. Data 27(1) (1998) 31-44",
+                  "doi": "10.1063/1.556013"},
 
-              "bmega_b": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
-                          -1.537102e-2],
+              "eq": 1, "omega": 1,
+
               "ek": 251.196, "sigma": 1.,
               "n_chapman": 1.00697/M**0.5,
-              "Tref": 1.,
+              "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
+                            -1.537102e-2],
 
-              "Tref_res": 251.196, "rhoref": 0.0227222*M,
-              "n_poly": [0.4071119e-2, 0.7198037e-4, 0.2411697e-16,
-                         0.2971072e-22, -0.1627888e-22],
-              "t_poly": [0, 0, -3, 0, -1],
-              "d_poly": [1, 2, 6, 8, 8],
-              "g_poly": [0, 0, 0, 0, 0],
-              "c_poly": [0, 0, 0, 0, 0]}
+              "Tref_res": 251.196, "rhoref_res": 1,
+              "nr": [0.4071119e-2, 0.7198037e-4, 0.2411697e-16, 0.2971072e-22,
+                     -0.1627888e-22],
+              "tr": [0, 0, 3, 0, 1],
+              "dr": [1, 2, 6, 8, 8],
+              "gr": [0, 0, 0, 0, 0],
+              "cr": [0, 0, 0, 0, 0]}
 
     visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
@@ -356,16 +357,66 @@ class CO2(MEoS):
               "B": [1.04558e-8, -2.20758e-9, 0.0],
               "C": [1.03255e-6, -8.56207e-7, 3.84384e-7]}
 
-    # TODO: Add visco correlation from vesovic
+    visco2 = {"eq": 0,
+              "method": "_visco2",
+              "__name__": "Vesovic (1990)",
+              "__doi__": {
+                  "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
+                           "Sengers, J.V., Watson, J.T.R., Millat, J.",
+                  "title": "The Transport Properties of Carbon Dioxide",
+                  "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
+                  "doi": "10.1063/1.555875"},
 
-    _viscosity = visco0, visco1
+              "omega": 1,
+              "ek": 251.196, "sigma": 0.3751,
+              "n_chapman": 1.00697/M**0.5*0.3751**2,
+              "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
+                            -1.537102e-2]}
+
+    def _visco2(self, rho, T, fase=None):
+
+        # Zero-Density viscosity
+        muo = self._Visco0()
+
+        # Gas-phase viscosity
+        # Table 8
+        ti = [1, 2, 7]
+        ei = [3.6350734e-3, 7.209997e-5, 3.00306e-20]
+        mug = 0
+        for t, e in zip(ti, ei):
+            mug += e*rho**t                                             # Eq 67
+
+        # Liquid-phase viscosity
+        B = 18.56+0.014*T                                               # Eq 71
+        Vo = 7.41e-4-3.3e-7*T                                           # Eq 72
+        mul = 1/B/(1/rho-Vo)                                            # Eq 70
+
+        # Critical enhancement
+        # TODO: Not implemented
+        muc = 0
+
+        # Eq 74, parameters
+        rhos = 467.689
+        Ts = 302
+        Z = 1
+
+        # Eq 76
+        mu = muo + mug/(1+exp(-Z*(T-Ts))) + \
+            mug/(1+exp(Z*(T-Ts)))/(1+exp(Z*(rho-rhos))) + \
+            (mul-muo)/(1+exp(Z*(T-Ts)))/(1+exp(-Z*(rho-rhos))) + muc
+
+        return unidades.Viscosity(mu, "muPas")
+
+    _viscosity = visco0, visco1, visco2
 
     thermo0 = {"eq": 1,
                "__name__": "Vesovic (1990)",
-               "__doi__": {"autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., Sengers, J.V., Watson, J.T.R., and Millat, J.",
-                           "title": "The transport properties of carbon dioxide",
-                           "ref": "J. Phys. Chem. Ref. Data 19, 763 (1990)",
-                           "doi": "10.1063/1.555875"},
+               "__doi__": {
+                  "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
+                           "Sengers, J.V., Watson, J.T.R., Millat, J.",
+                  "title": "The Transport Properties of Carbon Dioxide",
+                  "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
+                  "doi": "10.1063/1.555875"},
                "__test__": """
                    >>> st=CO2(T=222, P=1e5)
                    >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
@@ -596,3 +647,37 @@ class Test(TestCase):
         st2 = CO2(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 191.33)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60315)
+
+    def test_fenghour(self):
+        # Table 13, Pag 44
+        self.assertEqual(round(CO2(T=220, rho=2.440).mu.muPas, 2), 11.06)
+        self.assertEqual(round(CO2(T=300, rho=1.773).mu.muPas, 2), 15.02)
+        self.assertEqual(round(CO2(T=800, rho=0.662).mu.muPas, 2), 35.09)
+        self.assertEqual(round(CO2(T=304, rho=254.320).mu.muPas, 2), 20.90)
+        self.assertEqual(round(CO2(T=220, rho=1194.86).mu.muPas, 2), 269.37)
+        self.assertEqual(round(CO2(T=300, rho=1029.27).mu.muPas, 2), 132.55)
+        self.assertEqual(round(CO2(T=800, rho=407.828).mu.muPas, 2), 48.74)
+
+    def test_vesovic(self):
+        # Appendix IV, Pag 808
+        st = CO2(T=220, rho=2.440, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 10.90)
+        self.assertEqual(round(st.mu.muPas, 2), 11.06)
+        st = CO2(T=300, rho=1.773, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 16.77)
+        self.assertEqual(round(st.mu.muPas, 2), 15.02)
+        st = CO2(T=800, rho=0.662, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 56.65)
+        self.assertEqual(round(st.mu.muPas, 2), 35.09)
+        st = CO2(T=304, rho=254.3205, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 42.52)
+        self.assertEqual(round(st.mu.muPas, 2), 20.80)
+        st = CO2(T=220, rho=1194.86, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 187.50)
+        self.assertEqual(round(st.mu.muPas, 2), 274.22)
+        st = CO2(T=300, rho=1029.27, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 137.61)
+        self.assertEqual(round(st.mu.muPas, 2), 133.15)
+        st = CO2(T=800, rho=407.828, visco=2)
+        # self.assertEqual(round(st.k.mWmK, 2), 78.47)
+        self.assertEqual(round(st.mu.muPas, 2), 48.62)
