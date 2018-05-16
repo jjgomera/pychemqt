@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -208,6 +210,54 @@ class Cyclohexane(MEoS):
         "ao": [-3.69006, -41.4239, 220.914, -443.72, 491.49, -296.373],
         "exp": [0.446, 1.98, 2.75, 3.3, 4.1, 4.8]}
 
+    visco0 = {"__name__": "Tariq (2014)",
+              "__doi__": {
+                  "autor": "Tariq, U., Jusoh, A.R.B., Riesco, N., Vesovic, V.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "Cyclohexane from the Triple Point to 700K and up "
+                           "to 110 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 43(3) (2014) 033101",
+                  "doi": "10.1063/1.4891103"},
+
+              "eq": 1, "omega": 1,
+
+              "sigma": 1,
+              "n_chapman": 0.19592/M**0.5,
+
+              "Tref_res": 553.6, "rhoref_res": 3.224*M,
+              "nr": [335.234, 7.8494803, -687.3976, 362.0868, -10.4793856,
+                     2.5521774, 17.2734993, -5.9372242, -10.6186149, 4.3982781,
+                     2.8894928, -1.3468174, -0.2938491, 0.1487134],
+              "dr": [2.2, 2.5, 2.5, 2.8, 10, 10, 11, 11, 12, 12, 13, 13, 14,
+                     14],
+              "tr": [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+              "gr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "cr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        # The initial density dependence has a different expresion, without muo
+        # and other normal method calculation so hardcoded here
+        muB = 0
+        if rho:
+            for i, n in enumerate([5.09643, -3387.21, 337477]):
+                muB += n/T**i
+        return muB*rho/self.M
+
+    def _Omega(self):
+        """Custom collision integral calculations
+
+        .. math::
+            \Omega = A_o+\frac{B_o}{T}+\frac{C_o}{T^2}
+        """
+        bi = [-1.5093, 364.87, -39537]
+        omega = 0
+        for i, b in enumerate(bi):
+            omega += b/self.T**i
+        return exp(omega)
+
+    _viscosity = visco0,
+
 
 class Test(TestCase):
 
@@ -289,3 +339,34 @@ class Test(TestCase):
         st2 = Cyclohexane(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 206.82)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31449)
+
+    def test_tariq(self):
+        # Table 8, pag 11
+        st = Cyclohexane(T=300, rhom=0)
+        self.assertEqual(round(st.mu.muPas, 3), 7.058)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = Cyclohexane(T=300, rhom=0.0430)
+        mu = st._Viscosity(0.0430*st.M, 300, None)
+        self.assertEqual(round(mu.muPas, 3), 6.977)
+
+        st = Cyclohexane(T=300, rhom=9.1756)
+        self.assertEqual(round(st.mu.muPas, 2), 863.66)
+        st = Cyclohexane(T=300, rhom=9.9508)
+        self.assertEqual(round(st.mu.muPas, 2), 2850.18)
+        st = Cyclohexane(T=500, rhom=0)
+        self.assertEqual(round(st.mu.muPas, 3), 11.189)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = Cyclohexane(T=500, rhom=6.0213)
+        mu = st._Viscosity(6.0213*st.M, 500, None)
+        self.assertEqual(round(mu.muPas, 3), 94.842)
+
+        st = Cyclohexane(T=500, rhom=8.5915)
+        self.assertEqual(round(st.mu.muPas, 2), 380.04)
+        st = Cyclohexane(T=700, rhom=0)
+        self.assertEqual(round(st.mu.muPas, 3), 15.093)
+        st = Cyclohexane(T=700, rhom=7.4765)
+        self.assertEqual(round(st.mu.muPas, 3), 176.749)
