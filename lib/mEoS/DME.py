@@ -40,6 +40,13 @@ class DME(MEoS):
 
     Fi1 = {"ao_log": [1, 3.039],
            "pow": [0, 1],
+           "ao_pow": [-1.980976, 3.171218],
+           "ao_exp": [2.641, 2.123, 8.992, 6.191],
+           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
+           "ao_hyp": [], "hyp": []}
+
+    Fi2 = {"ao_log": [1, 3.039],
+           "pow": [0, 1],
            "ao_pow": [-1.928925, 3.150284],
            "ao_exp": [2.641, 2.123, 8.992, 6.191],
            "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
@@ -48,13 +55,15 @@ class DME(MEoS):
     wu = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DME of Wu et al. (2011).",
-        "__doi__": {"autor": "Wu, J., Zhou, Y., and Lemmon, E.W.",
-                    "title": "An Equation of State for the Thermodynamic Properties of Dimethyl Ether",
-                    "ref": "J. Phys. Chem. Ref. Data 40, 023104 (2011)",
+        "__doi__": {"autor": "Wu, J., Zhou, Y., Lemmon, E.W.",
+                    "title": "An Equation of State for the Thermodynamic "
+                             "Properties of Dimethyl Ether",
+                    "ref": "J. Phys. Chem. Ref. Data 40(2) (2011) 023104",
                     "doi":  "10.1063/1.3582533"},
+
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883},
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15,
         "Pmin": 0.0022, "rhomin": 19.15,
@@ -82,14 +91,18 @@ class DME(MEoS):
 
     ihmels = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for DME of Ihmels and Lemmon (2007)",
-        "__doi__": {"autor": "Ihmels, E.C. and Lemmon, E.W.",
-                    "title": "Experimental densities, vapor pressures, and critical point, and a fundamental equation of state for dimethyl ether",
-                    "ref": "Fluid Phase Equilibria. 10/2007; 260(1):36-48",
-                    "doi":  "10.1016/j.fluid.2006.09.016"},
+        "__name__": "Helmholtz equation of state for DME of Ihmels (2007)",
+        "__doi__": {
+            "autor": "Ihmels, E.C., Lemmon, E.W.",
+            "title": "Experimental densities, vapor pressures, and critical "
+                     "point, and a fundamental equation of state for dimethyl "
+                     "ether",
+            "ref": "Fluid Phase Equilibria 260(1) (2007) 36-48",
+            "doi":  "10.1016/j.fluid.2006.09.016"},
+
         "R": 8.314472,
-        "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1.0, "ho": 23242, "so": 131.3883},
+        "cp": Fi2,
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
         "Pmin": 0.61166, "rhomin": 55.497,
@@ -98,7 +111,7 @@ class DME(MEoS):
         "d1": [1, 1, 3, 8],
         "t1": [0.21, 1.0, 0.5, 1.0],
 
-        "nr2": [0.567139, 0.166649, -0.078412, -0.289066, -0.031272, -0.065607],
+        "nr2": [0.567139, 0.166649, -0.078412, -0.289066, -0.031272, -.065607],
         "d2": [2, 1, 5, 1, 4, 3],
         "t2": [1.4, 3.1, 1.5, 5.0, 5.9, 3.7],
         "c2": [1, 1, 1, 2, 2, 2],
@@ -120,28 +133,27 @@ class DME(MEoS):
         "ao": [-4.136444, -4.302025, -12.03214, -39.527936, -89.4768],
         "exp": [1.467, 4.2, 8.0, 17.0, 36.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "__name__": "Meng (2012)",
-              "__doi__": {"autor": "Meng, X., Zhang, J., Wu, J., Liu, Z.",
-                          "title": "Experimental Measurement and Modeling of the Viscosity of Dimethyl Ether",
-                          "ref": "J. Chem. Eng. Data, 2012, 57 (3), pp 988–993",
-                          "doi":  "10.1021/je201297j"},
+    visco0 = {"__name__": "Meng (2012)",
+              "__doi__": {
+                  "autor": "Meng, X., Zhang, J., Wu, J., Liu, Z.",
+                  "title": "Experimental Measurement and Modeling of the "
+                           "Viscosity of Dimethyl Ether",
+                  "ref": "J. Chem. Eng. Data 57(3) (2012) 988-993",
+                  "doi": "10.1021/je201297j"},
+
+              "eq": 1, "omega": 1,
 
               "ek": 317.937, "sigma": 0.446704,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0.14508011,
-              "n_ideal": [0.294261, -0.377826, -0.491673],
-              "t_ideal": [0, 1, 2],
+              "n_chapman": 0.021375,
+              "collision": [0.294261, -0.377826, -0.491673],
 
-              "Tref_res": 400.378, "rhoref_res": 5.94*M, "etaref_res": 1,
-              "n_packed": [],
-              "t_packed": [],
-              "n_poly": [-2.70002, 4.44583, -104.998, 78.27474, 41.3751,
-                         -175.055, 62.81975, 0.21302, 112.3219, 6.50681],
-              "t_poly": [-5.92, -4.36, -2.93, -1.64, -7.86, -4.25, -4.79,
-                         -5.87, -3.11, -0.45],
-              "d_poly": [3, 3, 3, 4, 5, 2, 2, 5, 2, 1],
-              "g_poly": [0]*10,
-              "c_poly": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
+              "Tref_res": 400.378, "rhoref_res": 5.94*M,
+              "nr": [-2.70002, 4.44583, -104.998, 78.27474, 41.3751,
+                     -175.055, 62.81975, 0.21302, 112.3219, 6.50681],
+              "tr": [-5.92, -4.36, -2.93, -1.64, -7.86, -4.25, -4.79, -5.87,
+                     -3.11, -0.45],
+              "dr": [3, 3, 3, 4, 5, 2, 2, 5, 2, 1],
+              "gr": [0, 0, 1, 1, 1, 1, 1, 0, 1, 0],
+              "cr": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
 
     _viscosity = visco0,
