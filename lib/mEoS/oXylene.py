@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -95,3 +97,104 @@ class oXylene(MEoS):
         "ao": [-1.29038, -33.3428, 142.046, -292.211, 293.950, -159.504,
                -88.2170],
         "exp": [0.32, 1.14, 1.7, 2.2, 2.8, 3.5, 9.8]}
+
+    visco0 = {"__name__": "Cao (2016)",
+              "__doi__": {
+                  "autor": "Cao, F.L., Meng, X.Y., Wu, J.T., Vesovic, V.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "ortho-Xylene from 273 to 673 K and up to 110 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 45(2) (2016) 023102",
+                  "doi": "10.1063/1.4945663"},
+
+              "eq": 1, "omega": 3,
+              "collision": [-1.4933, 473.2, -57033],
+
+              "sigma": 1,
+              "n_chapman": 0.22225/M**0.5,
+
+              "Tref_res": 630.259, "rhoref_res": 2.6845*M,
+              "nr": [-2.05581e-3, 2.65651e-3, 2.38762, 1.77616e-12, 10.4497,
+                     -18.2446, 15.9587],
+              "dr": [329/30, 329/30, 119/30, 77/3, 71/30, 41/30, 16/15],
+              "tr": [-0.5, 0.3, -0.5, 3.9, -0.5, -1.5, -0.5],
+
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        # The initial density dependence has a different expresion, without muo
+        # and other normal method calculation so hardcoded here
+        muB = 0
+        if rho:
+            for i, n in enumerate([13.2814, -10862.4, 1664060]):
+                muB += n/T**i
+        return muB*rho/self.M
+
+    _viscosity = visco0,
+
+
+class Test(TestCase):
+
+    def test_Cao(self):
+        # Table 5, saturation state properties, include basic test for Zhou EoS
+        st = oXylene(T=273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0002)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0001)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 8.4485)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 1107.7)
+
+        st = oXylene(T=333.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0055)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.002)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 7.9701)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 499.8)
+
+        st = oXylene(T=393.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0507)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0160)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 8.50)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 7.4658)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 294.5)
+
+        st = oXylene(T=453.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.2389)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0692)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.81)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 6.9087)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 195.6)
+
+        st = oXylene(T=553.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.3884)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.4174)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.53)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 5.6991)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 103.8)
+
+        # Table 6, Pag 9
+        self.assertEqual(round(oXylene(T=300, rhom=0).mu.muPas, 3), 6.670)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = oXylene(T=300, rhom=0.04)
+        mu = st._Viscosity(0.04*st.M, 300, None)
+        self.assertEqual(round(mu.muPas, 3), 6.598)
+
+        self.assertEqual(round(
+            oXylene(T=300, rhom=8.2369).mu.muPas, 3), 738.286)
+        self.assertEqual(round(
+            oXylene(T=300, rhom=8.7845).mu.muPas, 3), 1645.436)
+        self.assertEqual(round(oXylene(T=400, rhom=0).mu.muPas, 3), 8.658)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = oXylene(T=400, rhom=0.04)
+        mu = st._Viscosity(0.04*st.M, 400, None)
+        self.assertEqual(round(mu.muPas, 3), 8.634)
+
+        self.assertEqual(round(
+            oXylene(T=400, rhom=7.4060).mu.muPas, 3), 279.954)
+        self.assertEqual(round(
+            oXylene(T=400, rhom=8.2291).mu.muPas, 3), 595.652)
+        self.assertEqual(round(oXylene(T=600, rhom=0).mu.muPas, 3), 12.904)
+        self.assertEqual(round(oXylene(T=600, rhom=0.04).mu.muPas, 3), 13.018)
+        self.assertEqual(round(
+            oXylene(T=600, rhom=7.2408).mu.muPas, 3), 253.530)
