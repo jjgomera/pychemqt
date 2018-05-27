@@ -35,7 +35,7 @@ class ShowReference(QtWidgets.QDialog):
             os.environ["pychemqt"]+"/images/button/help.png")))
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Reference Paper Show Dialog"))
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = QtWidgets.QGridLayout(self)
 
         self.tree = QtWidgets.QTreeWidget()
         header = QtWidgets.QTreeWidgetItem(
@@ -45,11 +45,46 @@ class ShowReference(QtWidgets.QDialog):
              QtWidgets.QApplication.translate("pychemqt", "Reference"),
              QtWidgets.QApplication.translate("pychemqt", "doi")])
         self.tree.setHeaderItem(header)
-        layout.addWidget(self.tree)
+        layout.addWidget(self.tree, 1, 1, 2, 2)
+
+        self.searchWidget = QtWidgets.QWidget()
+        self.searchWidget.setMaximumSize(200, 25)
+        searchlayout = QtWidgets.QHBoxLayout(self.searchWidget)
+        searchlayout.setSpacing(0)
+        searchlayout.setContentsMargins(0, 0, 0, 0)
+        self.searchTxt = QtWidgets.QLineEdit()
+        self.searchTxt.textChanged.connect(self.search)
+        searchlayout.addWidget(self.searchTxt)
+        self.btnPrevious = QtWidgets.QToolButton()
+        self.btnPrevious.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "arrow-left.png"))))
+        self.btnPrevious.setEnabled(False)
+        self.btnPrevious.clicked.connect(self.searchPrevious)
+        searchlayout.addWidget(self.btnPrevious)
+        self.btnNext = QtWidgets.QToolButton()
+        self.btnNext.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "arrow-right.png"))))
+        self.btnNext.setEnabled(False)
+        self.btnNext.clicked.connect(self.searchNext)
+        searchlayout.addWidget(self.btnNext)
+        self.searchWidget.hide()
+        layout.addWidget(self.searchWidget, 2, 2)
 
         bttBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
         bttBox.rejected.connect(self.reject)
-        layout.addWidget(bttBox)
+        layout.addWidget(bttBox, 3, 1, 1, 2)
+
+        shSearch = QtWidgets.QShortcut(QtGui.QKeySequence.Find, self)
+        shSearch.activated.connect(self.enableSearch)
+        shHide = QtWidgets.QShortcut(QtGui.QKeySequence.Cancel, self)
+        shHide.activated.connect(self.disableSearch)
+        self.shNext = QtWidgets.QShortcut(QtGui.QKeySequence.FindNext, self)
+        self.shNext.activated.connect(self.searchNext)
+        self.shNext.setEnabled(False)
+        self.shPrevious = QtWidgets.QShortcut(
+            QtGui.QKeySequence.FindPrevious, self)
+        self.shPrevious.activated.connect(self.searchPrevious)
+        self.shPrevious.setEnabled(False)
 
         self.fill()
         self.tree.sortItems(0, QtCore.Qt.AscendingOrder)
@@ -58,6 +93,58 @@ class ShowReference(QtWidgets.QDialog):
         self.tree.setColumnWidth(1, 200)
         self.tree.setColumnWidth(2, 200)
         self.tree.setColumnWidth(3, 200)
+
+    # Search functionality
+    def enableSearch(self):
+        """Show search widgets"""
+        self.searchWidget.show()
+        self.searchTxt.setFocus(QtCore.Qt.ShortcutFocusReason)
+
+    def disableSearch(self):
+        """Hide search widgets"""
+        self.searchWidget.hide()
+        self.searchIndex = -1
+        self.searchResults = []
+        self.shNext.setEnabled(False)
+        self.shPrevious.setEnabled(False)
+
+    def search(self, txt):
+        """Search txt in tree widget contents"""
+        self.searchIndex = -1
+        self.searchResults = []
+        for col in range(3):
+            self.searchResults += self.tree.findItems(
+                txt, QtCore.Qt.MatchContains | QtCore.Qt.MatchRecursive, col)
+
+        # Enable navitation in search results if search if successful
+        if self.searchResults:
+            self.searchNext()
+
+        if len(self.searchResults) > 1:
+            self.shNext.setEnabled(True)
+            self.shPrevious.setEnabled(True)
+            self.searchNext()
+            self.btnPrevious.setEnabled(True)
+            self.btnNext.setEnabled(True)
+        else:
+            self.shNext.setEnabled(False)
+            self.shPrevious.setEnabled(False)
+            self.btnPrevious.setEnabled(False)
+            self.btnNext.setEnabled(False)
+
+    def searchPrevious(self):
+        """Set previous result in search"""
+        self.searchIndex -= 1
+        if self.searchIndex < 0:
+            self.searchIndex = len(self.searchResults)-1
+        self.tree.setCurrentItem(self.searchResults[self.searchIndex])
+
+    def searchNext(self):
+        """Set next result in search"""
+        self.searchIndex += 1
+        if self.searchIndex >= len(self.searchResults):
+            self.searchIndex = 0
+        self.tree.setCurrentItem(self.searchResults[self.searchIndex])
 
     def fill(self):
         """Fill tree with documentation entries"""
