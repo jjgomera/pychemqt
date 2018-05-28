@@ -234,6 +234,33 @@ class SF6(MEoS):
                -6.65585369],
         "exp": [1.044, 0.5, 1.0, 2.0, 8.0, 17.]}
 
+    visco0 = {"__name__": u"Quiñones-Cisneros (2012)",
+              "__doi__": {
+                  "autor": "Quiñones-Cisneros, S.E., Huber, M.L., Deiters, "
+                           "U.K.",
+                  "title": "Correlation for the Viscosity of Sulfur "
+                           "Hexafluoride (SF6) from the Triple Point to 1000 K"
+                           " and Pressures to 50 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 41(2) (2012) 023102",
+                  "doi": "10.1063/1.3702441"},
+
+              "eq": 4, "omega": 0,
+
+              "Toref": 318.7232,
+              "no": [118.561, -378.103, 416.428, -165.295, 24.5381],
+              "to": [0, 0.25, 0.5, 0.75, 1],
+
+              "a": [-6.87811e-4, 8.22661e-4, -3.54867e-4],
+              "b": [1.72737e-4, -2.02448e-4, 1.95952e-4],
+              "c": [5.38783e-5, 1.63805e-6, -2.08160e-5],
+              "A": [9.99563e-8, -9.64167e-9, -7.54196e-9],
+              "B": [-8.98256e-8, -8.49428e-8, 0],
+              "C": [-8.53432e-6, 1.14404e-5, -5.65762e-6],
+              "D": [0, 0, 2.2798e-11],
+              "E": [0, -5.69402e-11, 2.92190e-11]}
+
+    _viscosity = visco0,
+
 
 class Test(TestCase):
 
@@ -428,3 +455,14 @@ class Test(TestCase):
         st2 = SF6(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 52.80)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.10913)
+
+    def test_Quinones(self):
+        # Table 8, pag 10
+        # The dilute-gas limit differ in 6th figure
+        # 0.0006 μPa·s at 300 and 400K
+        self.assertEqual(round(SF6(T=300, rho=0).mu.muPas, 4), 15.2881)
+        self.assertEqual(round(SF6(T=300, rho=5.92).mu.muPas, 4), 15.3037)
+        self.assertEqual(round(SF6(T=300, rho=1345.1).mu.muPas, 3), 117.419)
+        self.assertEqual(round(SF6(T=400, rho=0).mu.muPas, 4), 19.6790)
+        self.assertEqual(round(SF6(T=400, rho=278.47).mu.muPas, 4), 24.4266)
+        self.assertEqual(round(SF6(T=400, rho=1123.8).mu.muPas, 4), 84.7838)
