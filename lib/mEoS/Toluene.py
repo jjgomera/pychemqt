@@ -162,23 +162,38 @@ class Toluene(MEoS):
         "ao": [-2.97587, -5.34939, -19.1781, -24.0058, -32.4034, -140.645],
         "exp": [0.425, 1.06, 3.0, 6.3, 7.0, 15.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "__name__": "Lemmon (2010",
-              "__doc__": """Lemmon, E.W. and Laesecke, A., 2010. Unpublished preliminary equation for the viscosity of toluene.""",
-              "ek": 469.90, "sigma": 0.5507,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 9.598876,
+    visco0 = {"__name__": "Avgeri (2015)",
+              "__doi__": {
+                  "autor": "Avgeri, S., Assael, M.J., Huber, M.L., Perkins, "
+                           "R.A.",
+                  "title": "Reference Correlation of the Viscosity of Toluene "
+                           "from the Triple Point to 675 K and up to 500 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033101",
+                  "doi": "10.1063/1.4926955"},
 
-              "Tref_res": 591.75, "rhoref_res": 3.169*M,
-              "n_poly": [0.157560701809e2, 0.658234203776e2, -0.909162962259e2,
-                         -0.806740654754e2, 0.395093273404e1, 0.867277691823e-1,
-                         -0.928414042924e-2, 0.982264892850e-5,
-                         -0.785434913708e-3, 0.169683455336e-7],
-              "t_poly": [-0.2843, -2.4238, -2.7667, -3.0019, -3.2869, -6.0789,
-                         -6.1564, -6.8541, -5.5123, -4.1175],
-              "d_poly": [1, 2, 2, 4, 6, 9, 11, 12, 17, 19],
-              "g_poly": [0, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-              "c_poly": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
+              "eq": 1, "omega": 1,
+
+              "ek": 472, "sigma": 0.524,
+              "n_chapman": 0.021357,
+              "collision": [0.401080, -0.476409, 0, 0.069442],
+
+              "Tref_virial": 472,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 591.75, "rhoref_res": 291.987,
+              "nr": [19.919216, -2.6557905, -10.113817],
+              "tr": [0.5, 0.5, -0.5],
+              "dr": [5/3, 14/3, 5/3],
+
+              "nr_num": [-135.904211],
+              "tr_num": [-0.5],
+              "dr_num": [11/3],
+              "nr_den": [1, -7.9962719, -11.014795],
+              "tr_den": [0, 0, -1],
+              "dr_den": [2, 0, 0]}
 
     _viscosity = visco0,
 
@@ -215,3 +230,48 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 214.488)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 7705.724)
         self.assertEqual(round(st.w, 3), 89.464)
+
+    def test_Avgeri(self):
+        # Table 5, pag 11, Saturation state
+        st = Toluene(T=200, x=0.5)
+        self.assertEqual(round(st.P.MPa, 10), 0.0000010833)
+        self.assertEqual(round(st.Liquido.rho, 2), 953.54)
+        self.assertEqual(round(st.Liquido.mu.muPas, 0), 4583)
+        self.assertEqual(round(st.Gas.rho, 9), 0.000060025)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 4.91)
+
+        st = Toluene(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 7), 0.0041774)
+        self.assertEqual(round(st.Liquido.rho, 2), 860.44)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 539.7)
+        self.assertEqual(round(st.Gas.rho, 5), 0.15493)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 7.01)
+
+        st = Toluene(T=400, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.15731)
+        self.assertEqual(round(st.Liquido.rho, 2), 762.19)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 221.3)
+        self.assertEqual(round(st.Gas.rho, 4), 4.6125)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.14)
+
+        st = Toluene(T=500, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.1766)
+        self.assertEqual(round(st.Liquido.rho, 2), 638.14)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 116.0)
+        self.assertEqual(round(st.Gas.rho, 3), 33.644)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 11.55)
+
+        st = Toluene(T=580, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 3.5688)
+        self.assertEqual(round(st.Liquido.rho, 2), 446.99)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 53.0)
+        self.assertEqual(round(st.Gas.rho, 2), 153.00)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 17.17)
+
+        # Table 8, pag 13
+        self.assertEqual(round(Toluene(T=300, rho=0).mu.muPas, 3), 7.023)
+        self.assertEqual(round(Toluene(T=400, rho=0).mu.muPas, 3), 9.243)
+        self.assertEqual(round(Toluene(T=550, rho=0).mu.muPas, 3), 12.607)
+        self.assertEqual(round(Toluene(T=300, rho=865).mu.muPas, 2), 566.78)
+        self.assertEqual(round(Toluene(T=400, rho=770).mu.muPas, 2), 232.75)
+        self.assertEqual(round(Toluene(T=550, rho=550).mu.muPas, 3), 80.267)
