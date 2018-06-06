@@ -182,44 +182,39 @@ class Ethanol(MEoS):
                -0.10732e3],
         "exp": [0.18, 0.44, 0.68, 0.95, 4.0, 10.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "__name__": "Kiselev (2005)",
-              "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
-                          "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols",
-                          "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
-                          "doi": "10.1021/ie050010e"},
+    visco0 = {"__name__": "Kiselev (2005)",
+              "__doi__": {
+                  "autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., "
+                           "Huber, M. L.",
+                  "title": "Generalized SAFT-DFT/DMT Model for the "
+                           "Thermodynamic, Interfacial, and Transport "
+                           "Properties of Associating Fluids: Application for "
+                           "n-Alkanols",
+                  "ref": "Ind. Eng. Chem. Res. 44(17) (2005) 6916-6927",
+                  "doi": "10.1021/ie050010e"},
+
+              "eq": 1, "omega": 0,
 
               "ek": 362.6, "sigma": 0.453,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0,
-              "n_ideal": [-1.03116, 3.48379e-2, -6.50264e-6],
-              "t_ideal": [0, 1, 2],
+              "no": [-1.03116, 3.48379e-2, -6.50264e-6],
+              "to": [0, 1, 2],
 
-              "n_virial": [-0.19572881e2, 0.21973999e3, -0.10153226e4,
-                           0.24710125e4, -0.33751717e4, 0.24916597e4,
-                           -0.78726086e3, 0.14085455e2, -0.34664158],
+              "Tref_virial": 362.6,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 362.6, "etaref_virial": 0.0559816,
 
-              "Tref_res": 513.9, "rhoref_res": 5.991*M, "etaref_res": 1000,
-              "n_packed": [-3.38264465, 1.27568864e1],
-              "t_packed": [0, 0.5],
-              "n_poly": [1.31194057e-1, -8.05700894e-2, -3.82240694e-1,
-                         1.53811778e-1, 0.0, -1.10578307e-1, -2.37222995e1],
-              "t_poly": [0, 0, -1, -1, -2, -2, 0],
-              "d_poly": [2, 3, 2, 3, 2, 3, 1],
-              "g_poly": [0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 1],
-              "n_num": [2.37222995e1],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
+              "Tref_res": 513.9, "rhoref_res": 5.991*M, "muref_res": 1e-3,
+              "nr": [0.131194057, -0.0805700894, -0.382240694, 0.153811778,
+                     0.0, -0.110578307],
+              "tr": [0, 0, 1, 1, 2, 2],
+              "dr": [2, 3, 2, 3, 2, 3],
+
+              "CPf": 23.7222995,
+              "CPg1": -3.38264465,
+              "CPgi": [12.7568864/-3.38264465],
+              "CPti": [-0.5]}
 
     _viscosity = visco0,
 
@@ -393,3 +388,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 4), 2.7296)
         self.assertEqual(round(st.cp.kJkgK, 4), 3.5932)
         self.assertEqual(round(st.w, 1), 1015.1)
+
+
+if __name__ == "__main__":
+    from CoolProp.CoolProp import PropsSI
+    st = Ethanol(T=300, P=1e5)
+    print(st.mu.mPas)
+    print(PropsSI("V", "T", 300, "P", 1e5, "Ethanol")*1e6)

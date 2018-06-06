@@ -172,15 +172,16 @@ class R23(MEoS):
         "ao": [-3.5136, -7.7491, -24.871, -65.637],
         "exp": [0.43, 1.4, 3.7, 8]}
 
-    visco0 = {"eq": 0, "omega": 1,
-              "method": "_visco0",
-              "__name__": "Shan (2000)",
+    visco0 = {"__name__": "Shan (2000)",
               "__doi__": {
                   "autor": "Shan, Z., Penoncello, S.G., Jacobsen, R.T.",
                   "title": "A Generalized Model for Viscosity and Thermal "
                            "Conductivity of Trifluoromethane (R-23)",
                   "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
                   "doi": ""},
+
+              "eq": 0, "omega": 1,
+              "method": "_visco0",
 
               "ek": 243.91, "sigma": 0.4278,
               "n_chapman": 0.2233755/M**0.5,
@@ -226,7 +227,6 @@ class R23(MEoS):
         C2 = 0.14914
         deltaG = 2508.58
         lmax = 25.
-        R = 8.31451/self.M
 
         Drho = rhol-rho/self.M
         delta = rho/self.M-7.5114
