@@ -242,48 +242,36 @@ class nC8(MEoS):
         "ao": [-0.16556, -5.9337, -18.915, -0.36484e3, 0.72686e3, -0.50392e3],
         "exp": [0.09, 0.59, 2.4, 7.0, 8.0, 9.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.335103, -0.467898],
-              "__name__": "Huber (2004)",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Xiang, H.W.",
-                          "title": "Viscosity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                          "ref": "Fluid Phase Equilibria 224(2004)263-270.",
-                          "doi": "10.1016/j.fluid.2004.07.012"},
-              "__test__": """
-                  >>> st=nC8(T=300, rhom=6.1772)
-                  >>> print "%0.2f" % st.mu.muPas
-                  553.60
-                  """, # Section 3.1 pag 265
+    visco0 = {"__name__": "Huber (2004)",
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A. Xiang, H.W.",
+                  "title": "Viscosity correlations for minor constituent "
+                           "fluids in natural gas: n-octane, n-nonane and "
+                           "n-decane",
+                  "ref": "Fluid Phase Equilibria 224 (2004) 263-270",
+                  "doi": "10.1016/j.fluid.2004.07.012"},
+
+              "eq": 1, "omega": 1,
 
               "ek": 452.09, "sigma": 0.63617,
-              "Tref": 1, "rhoref": 1.*M,
-              "n_chapman": 0.228258776/M**0.5,
+              "n_chapman": 0.021357,
+              "collision": [0.335103, -0.467898],
 
-              "n_virial": [-0.19572881e2, 0.21973999e3, -0.10153226e4,
-                           0.24710125e4, -0.33751717e4, 0.24916597e4,
-                           -0.78726086e3, 0.14085455e2, -0.34664158],
-              "t_virial": [0.0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 452.09, "etaref_virial": 0.1550494,
+              "Tref_virial": 452.09,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 569.32, "rhoref_res": 2.0564*M, "etaref_res": 1000,
-              "n_packed": [0.20651e1, 0.307843e1, -0.879088],
-              "t_packed": [0, 0.5, 1],
-              "n_poly": [-0.103924, 0.113327e-1, 0.992302e-1, -0.322455e-1,
-                         -0.606122],
-              "t_poly": [-1, -1, -2, -2, 0],
-              "d_poly": [2, 3, 2, 3, 1],
-              "g_poly": [0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0],
-              "n_num": [0.606122],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
+              "Tref_res": 569.32, "rhoref_res": 2.0564*M, "muref_res": 1000,
+              "nr": [-0.103924, 0.113327e-1, 0.992302e-1, -0.322455e-1],
+              "tr": [1, 1, 2, 2],
+              "dr": [2, 3, 2, 3],
+
+              "CPf": 606.122,
+              "CPg1": 2.0651,
+              "CPgi": [3.07843/2.0651, -0.879088/2.0651],
+              "CPti": [-0.5, -1]}
 
     visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
@@ -350,3 +338,9 @@ class Test(TestCase):
         st2 = nC8(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 211.79)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31183)
+
+    def test_viscoHuber(self):
+        # Section 3.1 pag 265
+        # Tiny desviation from value in paper, the value returned is equal to
+        # refprop returned value
+        self.assertEqual(round(nC8(T=300, rhom=6.1772).mu.muPas, 2), 553.68)
