@@ -201,104 +201,34 @@ class NH3(MEoS):
         "ao": [-0.38435, -4.0846, -6.6634, -31.881, 213.06, -246.48],
         "exp": [0.218, 0.55, 1.5, 3.7, 5.5, 5.8]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [4.99318220, -0.61122364, 0.0, 0.18535124, -0.11160946],
-              "__name__": "Fenghour (1995)",
-              "__doi__": {"autor": "Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, J.T.R., Millat, J., and Vogel, E.",
-                          "title": "The viscosity of ammonia",
-                          "ref": "J. Phys. Chem. Ref. Data 24, 1649 (1995)",
-                          "doi": "10.1063/1.555961"},
-              "__test__":
-                    # Appendix II, pag 1664
-                    """
-                    >>> st=NH3(T=200, P=1e5)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    507.47
-                    >>> st=NH3(T=290, P=1e6)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    142.93
-                    >>> st=NH3(T=250, P=1e7)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    233.81
-                    >>> st=NH3(T=300, P=1e5)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    10.16
-                    >>> st=NH3(T=350, P=1.8e7)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    91.36
-                    >>> st=NH3(T=400, P=5e7)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    77.29
-                    >>> st=NH3(T=490, P=1e6)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    17.49
-                    >>> st=NH3(T=550, P=1e5)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    19.79
-                    >>> st=NH3(T=680, P=5e7)
-                    >>> print("%0.2f" % st.mu.muPas)
-                    31.90
-                    """
-                    # Appendix III, pag 1667
-                    """
-                    >>> st=NH3(T=196, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    196 0.0063 0.0039 6.85 43.0041 553.31
-                    >>> st=NH3(T=240, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    240 0.1022 0.0527 8.06 40.0318 254.85
-                    >>> st=NH3(T=280, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    280 0.5509 0.2573 9.27 36.9389 158.12
-                    >>> st=NH3(T=300, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    300 1.0617 0.4845 9.89 35.2298 129.33
-                    >>> st=NH3(T=340, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    340 3.0803 1.4325 11.33 31.2641 88.55
-                    >>> st=NH3(T=360, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    360 4.7929 2.3598 12.35 28.7879 65.49
-                    >>> st=NH3(T=380, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    380 7.1403 3.9558 14.02 25.6059 58.31
-                    >>> st=NH3(T=398, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    398 9.9436 7.0447 17.67 21.0667 43.95
-                    >>> st=NH3(T=402, x=0.5)
-                    >>> print "%0.0f %0.4f %0.4f %0.2f %0.4f %0.2f " % ( \
-                        st.T, st.P.MPa, st.Gas.rhoM, st.Gas.mu.muPas, st.Liquido.rhoM, st.Liquido.mu.muPas)
-                    402 10.6777 8.5479 19.69 19.0642 39.20
-                    """
-                    ,
+    visco0 = {"__name__": "Fenghour (1995)",
+              "__doi__": {
+                  "autor": "Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, "
+                           "J.T.R., Millat, J., Vogel, E.",
+                  "title": "The Viscosity of Ammonia",
+                  "ref": "J. Phys. Chem. Ref. Data 24(5) (1995) 1649-1667",
+                  "doi": "10.1063/1.555961"},
 
-              "ek": 386., "sigma": 0.2957,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 8.8135503/M**0.5,
+              "eq": 1, "omega": 1,
 
-              "n_virial": [-0.17999496e1, 0.46692621e2, -0.53460794e3,
-                           0.33604074e4, -0.13019164e5, 0.33414230e5,
-                           -0.58711743e5, 0.71426686e5, -0.59834012e5,
-                           0.33652741e5, -0.1202735e5, 0.24348205e4, -0.20807957e3],
+              "ek": 386, "sigma": 0.2957,
+              # Missing parameter of 100 in Chapman-Enskog term
+              "n_chapman": 0.021357*100,
+              "collision": [4.9931822, -0.61122364, 0, .18535124, -0.11160946],
+
+              "Tref_virial": 386,
+              "n_virial": [-1.7999496, 46.692621, -534.60794, 3360.4074,
+                           -13019.164, 33414.230, -58711.743, 71426.686,
+                           -59834.012, 33652.741, -12027.35, 2434.8205,
+                           -208.07957],
               "t_virial": [0, -0.5, -1, -1.5, -2, -2.5, -3, -3.5, -4, -4.5, -5,
                            -5.5, -6],
-              "Tref_virial": 386., "etaref_virial": 0.015570557,
 
-              "Tref_res": 386., "rhoref_res": 1.*M, "etaref_res": 1,
-              "n_poly": [2.19664285e-1, -0.83651107e-1, 0.17366936e-2,
-                         -0.64250359e-2, 1.67668649e-4, -1.49710093e-4, 0.77012274e-4],
-              "t_poly": [-2, -4, -0, -1, -2, -3, -4],
-              "d_poly": [2, 2, 3, 3, 4, 4, 4],
-              "g_poly": [0, 0, 0, 0, 0, 0, 0],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0]}
+              "Tref_res": 386., "rhoref_res": M,
+              "nr": [0.219664285, -0.083651107, 0.0017366936, -0.0064250359,
+                     1.67668649e-4, -1.49710093e-4, 7.7012274e-5],
+              "tr": [2, 4, 0, 1, 2, 3, 4],
+              "dr": [2, 2, 3, 3, 4, 4, 4]}
 
     _viscosity = visco0,
 
@@ -513,3 +443,51 @@ class Test(TestCase):
         st2 = NH3(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 776.68)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 2.07031)
+
+    def test_fenghour(self):
+        # Appendix II, pag 1664
+        self.assertEqual(round(NH3(T=200, P=1e5).mu.muPas, 2), 507.47)
+        self.assertEqual(round(NH3(T=290, P=1e6).mu.muPas, 2), 142.93)
+        self.assertEqual(round(NH3(T=250, P=1e7).mu.muPas, 2), 233.81)
+        self.assertEqual(round(NH3(T=300, P=1e5).mu.muPas, 2), 10.16)
+        self.assertEqual(round(NH3(T=350, P=1.8e7).mu.muPas, 2), 91.36)
+        self.assertEqual(round(NH3(T=400, P=5e7).mu.muPas, 2), 77.29)
+        self.assertEqual(round(NH3(T=490, P=1e6).mu.muPas, 2), 17.49)
+        self.assertEqual(round(NH3(T=550, P=1e5).mu.muPas, 2), 19.79)
+        self.assertEqual(round(NH3(T=680, P=5e7).mu.muPas, 2), 31.90)
+
+        # Appendix III, pag 1667, saturation state
+        st = NH3(T=196, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0063)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0039)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 6.85)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 43.0041)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 553.31)
+
+        st = NH3(T=240, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.1022)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0527)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 8.06)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 40.0318)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 254.85)
+
+        st = NH3(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.0617)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.4845)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.89)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 35.2298)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 129.33)
+
+        st = NH3(T=350, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 3.8660)
+        self.assertEqual(round(st.Gas.rhoM, 4), 1.8399)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 11.79)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 30.0867)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 80.43)
+
+        st = NH3(T=402, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 10.6777)
+        self.assertEqual(round(st.Gas.rhoM, 4), 8.5479)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 19.69)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 19.1642)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 39.20)
