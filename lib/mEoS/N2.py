@@ -340,84 +340,61 @@ class N2(MEoS):
               "ek": 98.94, "sigma": 0.3656,
 
               "Tref_res": 126.192, "rhoref_res": 11.1839*M,
-              "n_poly": [10.72, 0.03989, 0.001208, -7.402, 4.62],
-              "t_poly": [.1, .25, 3.2, .9, 0.3],
-              "d_poly": [2, 10, 12, 2, 1],
-              "g_poly": [0, 1, 1, 1, 1],
-              "c_poly": [0, 1, 1, 2, 3]}
+              "nr": [10.72, 0.03989, 0.001208, -7.402, 4.62],
+              "tr": [.1, .25, 3.2, .9, 0.3],
+              "dr": [2, 10, 12, 2, 1],
+              "gr": [0, 1, 1, 1, 1],
+              "cr": [0, 1, 1, 2, 3]}
 
-    visco1 = {"eq": 2, "omega": 2,
-              "collision": [-136.985150760851, 734.241371453542, -1655.39131952744,
-                            2062.67809686969, -1579.52439123889, 777.942880032361,
-                            -232.996787901831, 40.0691427576552, -2.99482706239363],
-              "__name__": "Younglove (1982)",
-              "__doi__": {"autor": "Younglove, B.A.",
-                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                          "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                          "doi": ""},
+    visco1 = {"__name__": "Younglove (1982)",
+              "__doi__": {
+                  "autor": "Younglove, B.A.",
+                  "title": "Thermophysical Properties of Fluids. I. Argon, "
+                           "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                           "Trifluoride, and Oxygen",
+                  "ref": "J. Phys. Chem. Ref. Data, 11 (Suppl. 1) (1982)",
+                  "doi": ""},
 
-              "ek": 118., "sigma": 0.354,
-              "n_chapman": 0.141286429751707,
-              "t_chapman": 0.0,
-              "F": [-3.14276193277e-3, 9.22071479907e-4, 1.4, 118],
-              "E": [-12.128154129, 68.46443564, 11.2569594404402, -565.76279020055,
-                    9.56677570672e-2, -.355533724265011, 618.536783201947],
-              "rhoc": 11.2435750999429}
+              "eq": 2, "omega": 0,
 
-    visco2 = {"eq": 1, "omega": 1,
-              "collision": [0.46649, -0.57015,  0.19164, -0.03708,  0.00241],
-              "__name__": "Stephan (1987)",
-              "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
-                          "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States",
-                          "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
-                          "doi": "10.1063/1.555798"},
-               "__test__": """
-                    >>> st=N2(T=80, P=1e5, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    5.24
-                    >>> st=N2(T=80, P=1e7, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    153.45
-                    >>> st=N2(T=300, P=1e6, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    18.03
-                    >>> st=N2(T=1100, P=1e7, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    44.67
-                    >>> st=N2(T=100, P=4.5e7, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    155.58
-                    >>> st=N2(T=80, P=2e7, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    28.37
-                    >>> st=N2(T=200, P=5e7, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    49.34
-                    >>> st=N2(T=1100, P=1e8, visco=2)
-                    >>> print "%0.2f" % st.mu.muPas
-                    50.20
-                    """, # Table A1, Pag 1013
+              "no": [-0.1822424e5, 0.19915327374e5, -0.91542324494e4,
+                     0.23255484059e4, -0.36307214228e3, 0.36457506811e2,
+                     -0.22261880817e1, 0.78053904895e-1, -0.11894029104e-2],
+              "to": [-1, -2/3, -1/3, 0, 1/3, 2/3, 1, 4/3, 5/3],
 
-              "Tref": 1., "etaref": 1,
+              "mod": True,
+              "F": [-0.11217739623, 0.32912317244e-1, 1.4, 118],
+              "E": [-12.128154129, 0.57156092139, 16.094611148, 3.6954086158e3,
+                    -8.088980118e2, 68.46443564, -2.1241135912],
+              "rhoc": 0.315}
+              # "E": [-12.128154129, 68.46443564, 11.2569594404402, -565.76279020055,
+                    # 9.56677570672e-2, -.355533724265011, 618.536783201947],
+              # "rhoc": 11.2435750999429}
+
+    visco2 = {"__name__": "Stephan (1987)",
+              "__doi__": {
+                  "autor": "Stephan, K., Krauss, R., Laesecke, A.",
+                  "title": "Viscosity and Thermal Conductivity of Nitrogen "
+                           "for a Wide Range of Fluid States",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 993-1023",
+                  "doi": "10.1063/1.555798"},
+
+              "eq": 1, "omega": 1,
+
               "ek": 100.01654, "sigma": 0.36502496,
               "n_chapman": 0.141290/M**0.5,
+              "collision": [0.46649, -0.57015, 0.19164, -0.03708,  0.00241],
 
-              "Tref_res": 1, "rhoref_res": 11.2088889*M, "etaref_res": 14.,
-              "n_poly": [-5.8470232, -1.4470051, -0.27766561e-1, -0.21662362],
-              "t_poly": [0, 0, 0, 0],
-              "d_poly": [0, 1, 2, 3],
-              "g_poly": [0, 0, 0, 0],
-              "c_poly": [0, 0, 0, 0],
-              "n_num": [-20.09997],
-              "t_num": [0],
-              "d_num": [0],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1.0, -3.4376416],
-              "t_den": [0, 0],
-              "d_den": [1, 0],
-              "g_den": [0, 0],
-              "c_den": [0, 0]}
+              "rhoref_res": 314, "muref_res": 14.,
+              "nr": [-5.8470232, -1.4470051, -0.027766561, -0.21662362],
+              "tr": [0, 0, 0, 0],
+              "dr": [0, 1, 2, 3],
+              "nr_num": [-20.09997],
+              "tr_num": [0],
+              "dr_num": [0],
+              "nr_den": [1.0, -3.4376416],
+              "tr_den": [0, 0],
+              "dr_den": [1, 0]}
 
     _viscosity = visco0, visco1, visco2
 
@@ -836,3 +813,36 @@ class Test(TestCase):
         # # self.assertEqual(round(Air(rho=10*28.9586, T=200).k.mWmK, 4), 35.3186)
         # self.assertEqual(round(Air(rho=5*28.9586, T=300).k.mWmK, 4), 32.6062)
         # # self.assertEqual(round(Air(rho=10.4*28.9586, T=132.64).k.mWmK, 4), 75.6231)
+
+    def test_stephan(self):
+        # The paper use a old Jacobsen EoS
+        # Jacobsen, R.T., Stewart, R.B.
+        # Thermodynamic Properties of Nitrogen Including Liquid and Vapor
+        # Phases from 63K to 2000K with Pressures to 10000Bar
+        # J. Phys. Chem. Ref. Data 2(4) (1973) 757-922
+        # doi: 10.1063/1.3253132
+
+        # So using TP as input parameter may differ, specially in region near
+        # critical point
+
+        # Table A1, Pag 1013
+        self.assertEqual(round(N2(T=80, P=1e5, visco=2).mu.muPas, 2), 5.24)
+        self.assertEqual(round(N2(T=300, P=1e6, visco=2).mu.muPas, 2), 18.03)
+        self.assertEqual(round(N2(T=1100, P=1e7, visco=2).mu.muPas, 2), 44.67)
+        self.assertEqual(round(N2(T=500, P=2e7, visco=2).mu.muPas, 2), 28.37)
+        self.assertEqual(round(N2(T=200, P=5e7, visco=2).mu.muPas, 2), 49.40)
+        self.assertEqual(round(N2(T=1100, P=1e8, visco=2).mu.muPas, 2), 50.22)
+
+        # Table A2, Pag 1016
+        st = N2(T=100, x=0.5, visco=2)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 7.08)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 72.88)
+
+
+
+if __name__ == "__main__":
+    st1 = N2(T=75, x=0.5, visco=0)
+    st2 = N2(T=75, x=0.5, visco=1)
+    print(st2.Liquido.mu.muPas, st2.Gas.mu.muPas)
+    print(st1.Liquido.mu.muPas, st1.Gas.mu.muPas)
+
