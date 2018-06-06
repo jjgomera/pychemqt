@@ -89,59 +89,45 @@ class nC12(MEoS):
         "ao": [-1.7859, -7.5436, -22.848, -81.355, 92.283, -217.25],
         "exp": [0.298, 0.91, 2.8, 6., 9., 11.]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.382987, -0.561050, 0.313962e-1],
-              "__name__": "Huber (2004)",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
-                          "title": "Transport Properties of n-Dodecane",
-                          "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
-                          "doi": "10.1021/ef034109e"},
-              "__test__": """
-                  >>> st=nC12(T=300, rhom=4.4115)
-                  >>> print "%0.1f" % st.mu.muPas
-                  1484.8
-                  >>> st=nC12(T=500, rhom=3.4447)
-                  >>> print "%0.1f" % st.mu.muPas
-                  183.76
-                  """, # Pag 972
+    visco0 = {"__name__": "Huber (2004)",
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Transport Properties of n-Dodecane",
+                  "ref": "Energy & Fuels 18(4) (2004) 968-975.",
+                  "doi": "10.1021/ef034109e"},
+
+              "eq": 1, "omega": 1,
 
               "ek": 522.592, "sigma": 0.735639,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0.2787353/M**0.5,
-              "n_virial": [-0.19572881e2, 0.21973999e3, -0.10153226e4,
-                           0.24710125e4, -0.33751717e4, 0.24916597e4,
-                           -0.78726086e3, 0.14085455e2, -0.34664158],
-              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 522.592, "etaref_virial": 0.2397238,
+              "n_chapman": 0.021357,
+              "collision": [0.382987, -0.561050, 0.0313962],
 
-              "Tref_res": 658.1, "rhoref_res": 1.33*M, "etaref_res": 1000,
-              "n_packed": [0.232661e1, 0.223089e1],
-              "t_packed": [0, 0.5],
-              "n_poly": [-0.471703e-1, 0.827816e-2, 0.298429e-1, -0.134156e-1,
-                         -0.503109],
-              "t_poly": [-1, -1, -2, -2, 0],
-              "d_poly": [2, 3, 2, 3, 1],
-              "g_poly": [0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 1],
-              "n_num": [0.503109],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [1, 0]}
+              "Tref_virial": 522.592,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 658.1, "rhoref_res": 1.33*M, "muref_res": 1000,
+              "nr": [-0.0471703, 0.00827816, 0.0298429, -0.0134156],
+              "tr": [1, 1, 2, 2],
+              "dr": [2, 3, 2, 3],
+
+              "CPf": 503.109,
+              "CPg1": 2.32661,
+              "CPgi": [2.23089/2.32661],
+              "CPti": [-0.5]}
 
     _viscosity = visco0,
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2004)",
-               "__doi__": {"autor": "Huber, M.L., Laesecke, A. and Perkins, R.A.",
-                           "title": "Transport Properties of n-Dodecane",
-                           "ref": "Energy Fuels, 2004, 18 (4), pp 968–975.",
-                           "doi": "10.1021/ef034109e"},
+               "__doi__": {
+                   "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                   "title": "Transport Properties of n-Dodecane",
+                   "ref": "Energy & Fuels 18(4) (2004) 968-975.",
+                   "doi": "10.1021/ef034109e"},
+
                "__test__": """
                    >>> st=nC12(T=300, rhom=4.4115)
                    >>> print "%0.2f" % st.k.mWmK
@@ -205,3 +191,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 4), 547.6852)
         self.assertEqual(round(st.cpM.JmolK, 1), 128753.9)
         self.assertEqual(round(st.w, 5), 49.76424)
+
+    def test_Huber(self):
+        # Viscosity test point, Pag 972
+        self.assertEqual(round(nC12(T=300, rhom=4.4115).mu.muPas, 1), 1484.8)
+        self.assertEqual(round(nC12(T=500, rhom=3.4447).mu.muPas, 2), 183.76)
+
+        # Thermal conductivity test point, Pag 974
