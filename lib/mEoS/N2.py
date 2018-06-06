@@ -228,10 +228,7 @@ class N2(MEoS):
         "d2": [1, 4, 1, 2, 4, 2, 4, 4, 2, 3],
         "t2": [3, 4, 4, 5, 6, 8, 14, 18, 20, 22],
         "c2": [3, 2, 3, 2, 2, 4, 4, 4, 4, 3],
-        "gamma2": [1]*10,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*10}
 
     shortSpan = {
         "__type__": "Helmholtz",
@@ -795,15 +792,15 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 41.82)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31053)
 
-    def test_Transport(self):
-        """Table V, pag 28"""
-        self.assertEqual(round(N2(rho=0, T=100).mu.muPas, 5), 6.90349)
-        self.assertEqual(round(N2(rho=0, T=300).mu.muPas, 4), 17.8771)
-        self.assertEqual(round(N2(rho=25*N2.M, T=100).mu.muPas, 4), 79.7418)
-        self.assertEqual(round(N2(rho=10*N2.M, T=200).mu.muPas, 4), 21.0810)
-        self.assertEqual(round(N2(rho=5*N2.M, T=300).mu.muPas, 4), 20.7430)
-        self.assertEqual(round(
-            N2(rho=11.18*N2.M, T=126.195).mu.muPas, 4), 18.2978)
+    def test_LemmonTransport(self):
+        # Table V, pag 28
+        # Viscosity
+        self.assertEqual(round(N2(rhom=0, T=100).mu.muPas, 5), 6.90349)
+        self.assertEqual(round(N2(rhom=0, T=300).mu.muPas, 4), 17.8771)
+        self.assertEqual(round(N2(rhom=25, T=100).mu.muPas, 4), 79.7418)
+        self.assertEqual(round(N2(rhom=10, T=200).mu.muPas, 4), 21.0810)
+        self.assertEqual(round(N2(rhom=5, T=300).mu.muPas, 4), 20.7430)
+        self.assertEqual(round(N2(rhom=11.18, T=126.195).mu.muPas, 4), 18.2978)
 
         # self.assertEqual(round(N2(rho=0, T=100).k.mWmK, 3), 9.27749)
         # self.assertEqual(round(N2(rho=10*N2.M, T=200).k.mWmK, 3), 103.834)

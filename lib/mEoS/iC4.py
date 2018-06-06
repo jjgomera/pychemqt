@@ -331,56 +331,51 @@ class iC4(MEoS):
         "ao": [-2.12933323, -2.93790085, -0.89441086, -3.46343707],
         "exp": [1.065, 2.5, 9.5, 13]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.53583008, -0.45629630, 0.049911282],
-              "__name__": "Vogel (2000)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
-                          "title": "Viscosity Correlation for Isobutane over Wide Ranges of the Fluid Region",
-                          "ref": "Int. J. Thermophys, 21(2):343-356, 2000.",
-                          "doi": "10.1023/A:1006623310780"},
+    visco0 = {"__name__": "Vogel (2000)",
+              "__doi__": {
+                  "autor": "Vogel, E., Küchenmeister, C., Bich, E.",
+                  "title": "Viscosity Correlation for Isobutane over Wide "
+                           "Ranges of the Fluid Region",
+                  "ref": "Int. J. Thermophys 21(2) (2000) 343-356",
+                  "doi": "10.1023/A:1006623310780"},
 
+              "eq": 1, "omega": 1,
               "ek": 307.55, "sigma": 0.46445,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0.1628213/M**0.5,
+              "n_chapman": 0.021357,
+              "collision": [0.53583008, -0.45629630, 0.049911282],
 
+              "Tref_virial": 307.55,
               "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
                            -3375.1717, 2491.6597, -787.26086, 14.085455,
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 307.55, "etaref_virial": 0.0603345,
 
               "Tref_res": 407.817, "rhoref_res": 3.86*M, "etaref_res": 1,
-              "n_packed": [0.233859774637e1, 0.235255150838e1],
-              "t_packed": [0, 0.5],
-              "n_poly": [0.103511763411e3, -0.312670896234e3, 0.145253750239e3,
-                         -0.210649894193e3, 0.386269696509e3, -0.214963015527e3,
-                         0.112580360920e3, -0.223242033154e3, 0.119114788598e3,
-                         -0.181909745900e2, 0.360438957232e2, -0.213960184050e2,
-                         -0.194037606990e4],
-              "t_poly": [0, -1, -2, -0, -1, -2, 0, -1, -2, 0-1, -2, 0],
-              "d_poly": [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 1],
-              "g_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "n_num": [0.194037606990e4],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
+              "nr": [103.511763411, -312.670896234, 145.253750239,
+                     -210.649894193, 386.269696509, -214.963015527,
+                     112.58036092, -223.242033154, 119.114788598, -18.19097459,
+                     36.0438957232, -21.3960184050],
+              "tr": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+              "dr": [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5],
 
-    visco1 = {"eq": 2, "omega": 2,
-              "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"},
+              "CPf": 1940.3760699,
+              "CPg1": 2.33859774637,
+              "CPgi": [1.00596672174],
+              "CPti": [-0.5]}
+
+    visco1 = {"__name__": "Younglove (1987)",
+              "__doi__": {
+                  "autor": "Younglove, B.A., Ely, J.F.",
+                  "title": "Thermophysical Properties of Fluids. II. Methane, "
+                           "Ethane, Propane, Isobutane, and Normal Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                  "doi": "10.1063/1.555785"},
+
+              "eq": 2, "omega": 2,
 
               "ek": 418.0, "sigma": 0.509217,
               "n_chapman": 0.203525266/M**0.5,
+
               "F": [1.687838652, 0.0, 1.40, 407.85],
               "E": [-0.2055498053e2, 0.1357076181e4, 0.1893774336e2,
                     -0.1822277344e5, -0.4599387773e-2, 0.6305247065e2,

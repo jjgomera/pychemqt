@@ -94,36 +94,6 @@ class C1Cyclohexane(MEoS):
         "ao": [-0.52572e1, -0.13417e2, -0.24271e1, -0.54482e2, -0.15791e3],
         "exp": [0.544, 2.3, 2.5, 6.1, 15.0]}
 
-    visco0 = {"eq": 4, "omega": 1,
-              "__name__": "Quiñones-Cisneros (2006)",
-              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
-                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"},
-
-              "Tref": 572.2, "muref": 1.0,
-              "ek": 454.3, "sigma": 0.5801,
-              "n_ideal": [32.8082, -104.308, 98.4289, -13.7085],
-              "t_ideal": [0, 0.25, 0.5, 0.75],
-
-              "a": [-0.464134e-5, 0.0, 0.397245e-6],
-              "b": [-0.381691e-4, 0.866218e-4, 0.414300e-6],
-              "c": [0.389947e-3, -0.194159e-3, 0.0],
-              "A": [-0.297679e-7, 0.223799e-9, 0.0],
-              "B": [0.384063e-8, 0.0, 0.0],
-              "C": [0.0, 0.0, 0.0],
-              "D": [0.0, 0.0, 0.0]}
-
-    visco1 = {"eq": 5, "omega": 3,
-              "__name__": "Chung (1988)",
-              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E.",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
-                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"},
-             "w": 0.885, "mur": 0.0, "k": 0.0}
-
-    _viscosity = visco0, visco1
-
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2008)",
                "__doi__": {"autor": "Perkins, R.A. Hammerschmidt, U. and Huber, M.L.",

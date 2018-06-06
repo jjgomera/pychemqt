@@ -34,7 +34,7 @@ class Air(MEoSBlend):
     rhoc = unidades.Density(342.60456)
     Tc = unidades.Temperature(132.6306)
     Pc = unidades.Pressure(3786.0, "kPa")
-    M = 28.96546  # g/mol
+    M = 28.9586  # g/mol
     Tt = unidades.Temperature(59.75)
     Tb = unidades.Temperature(78.903)
     f_acent = 0.0335
@@ -153,274 +153,36 @@ class Air(MEoSBlend):
                 "a1": [1, 0.354935e5, -0.354935e5],
                 "exp1": [0, 0.178963e1, 0],
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.20466e1, -0.4752e1, -0.13259e2, -0.47652e2],
-        "exp": [0.41, 1, 2.8, 6.5]}
-    _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.1567266, -0.5539635e1, 0.7567212, -0.3514322e1],
-        "exp": [0.5, 1, 2.5, 4]}
 
-    visco0 = {"eq": 0,
-              "method": "_visco0",
-              "__name__": "Lemmon (2004)",
-              "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                          "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-              "__test__": """
-                  >>> st=Air(T=100, rhom=0)
-                  >>> print("%0.5f" % st.mu.muPas)
-                  7.09559
-                  >>> st=Air(T=300, rhom=0)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  18.5230
-                  >>> st=Air(T=100, rhom=28)
-                  >>> print("%0.3f" % st.mu.muPas)
-                  107.923
-                  >>> st=Air(T=200, rhom=10)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  21.1392
-                  >>> st=Air(T=300, rhom=5)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  21.3241
-                  >>> st=Air(T=132.64, rhom=10.4)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  17.7623
-                  """,  # Table V, Pag 28
-              }
+    visco0 = {"__name__": "Lemmon (2004)",
+              "__doi__": {
+                  "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                  "title": "Viscosity and Thermal Conductivity Equations for "
+                           "Nitrogen, Oxygen, Argon, and Air",
+                  "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                  "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-    def _visco0(self, rho, T, fase=None):
-        """Equation for the Viscosity
+              "eq": 1,
+              "omega": 1,
+              "ek": 103.3, "sigma": 0.36,
 
-        Parameters
-        ----------
-        rho : float
-            Density [kg/m³]
-        T : float
-            Temperature [K]
+              "Tref_res": 132.6312, "rhoref_res": 10.4477*28.9586,
+              "nr": [10.72, 1.122, 0.002019, -8.876, -0.02916],
+              "tr": [.2, .05, 2.4, .6, 3.6],
+              "dr": [1, 4, 9, 1, 8],
+              "gr": [0, 0, 0, 1, 1],
+              "cr": [0, 0, 0, 1, 1]}
 
-        Returns
-        -------
-        mu : float
-            Viscosity [Pa·s]
-        """
-        ek = 103.3
-        sigma = 0.36
-        M = 28.9586
-        rhoc = 10.4477*M
-        tau = 132.6312/T
-        delta = rho/rhoc
+    _viscosity = visco0,
 
-        b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
-        T_ = log(T/ek)
-        suma = 0
-        for i, bi in enumerate(b):
-            suma += bi*T_**i
-        omega = exp(suma)
-
-        # Eq 2
-        muo = 0.0266958*(M*T)**0.5/(sigma**2*omega)
-
-        n_poly = [10.72, 1.122, 0.002019, -8.876, -0.02916]
-        t_poly = [.2, .05, 2.4, .6, 3.6]
-        d_poly = [1, 4, 9, 1, 8]
-        l_poly = [0, 0, 0, 1, 1]
-        g_poly = [0, 0, 0, 1, 1]
-
-        # Eq 3
-        mur = 0
-        for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
-            mur += n*tau**t*delta**d*exp(-g*delta**l)
-
-        # Eq 1
-        mu = muo+mur
-        return unidades.Viscosity(mu, "muPas")
-
-    visco1 = {"eq": 1, "omega": 1,
-              "__name__": "Lemmon (2004)",
-              "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                          "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                          "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                          "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-              "__test__": """
-                  >>> st=Air(T=100, rhom=0)
-                  >>> print("%0.5f" % st.mu.muPas)
-                  7.09559
-                  >>> st=Air(T=300, rhom=0)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  18.5230
-                  >>> st=Air(T=100, rhom=28)
-                  >>> print("%0.3f" % st.mu.muPas)
-                  107.923
-                  >>> st=Air(T=200, rhom=10)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  21.1392
-                  >>> st=Air(T=300, rhom=5)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  21.3241
-                  >>> st=Air(T=132.64, rhom=10.4)
-                  >>> print("%0.4f" % st.mu.muPas)
-                  17.7623
-                  """, # Table V, Pag 28
-
-            "ek": 103.3, "sigma": 0.36,
-            "Tref": 1, "rhoref": 1.*M,
-
-            "Tref_res": 132.6312, "rhoref_res": 10.4477*M,
-            "n_poly": [10.72, 1.122, 0.002019, -8.876, -0.02916],
-            "t_poly": [.2, .05, 2.4, .6, 3.6],
-            "d_poly": [1, 4, 9, 1, 8],
-            "g_poly": [0, 0, 0, 1, 1],
-            "c_poly": [0, 0, 0, 1, 1]}
-
-    _viscosity = visco0, visco1
-
-    thermo0 = {"eq": 0,
-               "method": "_thermo0",
+    thermo0 = {"eq": 1,
                "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                           "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                           "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                           "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=Air(T=100, rhom=0)
-                    >>> print("%0.5f" % st.k.mWmK)
-                    9.35902
-                    >>> st=Air(T=300, rhom=0)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    26.3529
-                    >>> st=Air(T=100, rhom=28)
-                    >>> print("%0.3f" % st.k.mWmK)
-                    119.221
-                    >>> st=Air(T=200, rhom=10)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    35.3185
-                    >>> st=Air(T=300, rhom=5)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    32.6062
-                    >>> st=Air(T=132.64, rhom=10.4)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    75.6231
-                    """,  # Table V, Pag 28
-               }
-
-    def _thermo0(self, rho, T, fase=None):
-        """Equation for the thermal conductivity
-
-        Parameters
-        ----------
-        rho : float
-            Density [kg/m³]
-        T : float
-            Temperature [K]
-        fase: dict
-            phase properties
-
-        Returns
-        -------
-        k : float
-            Thermal conductivity [W/mK]
-        """
-        ek = 103.3
-        sigma = 0.36
-        M = 28.9586
-        rhoc = 10.4477*M
-        tau = 132.6312/T
-        delta = rho/rhoc
-
-        b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
-        T_ = log(T/ek)
-        suma = 0
-        for i, bi in enumerate(b):
-            suma += bi*T_**i
-        omega = exp(suma)
-
-        # Eq 2
-        muo = 0.0266958*(M*T)**0.5/(sigma**2*omega)
-
-        # Eq 5
-        N = [1.308, 1.405, -1.036]
-        t = [-1.1, -0.3]
-        lo = N[0]*muo+N[1]*tau**t[0]+N[2]*tau**t[1]
-
-        n_poly = [8.743, 14.76, -16.62, 3.793, -6.142, -0.3778]
-        t_poly = [0.1, 0, 0.5, 2.7, 0.3, 1.3]
-        d_poly = [1, 2, 3, 7, 7, 11]
-        g_poly = [0, 0, 1, 1, 1, 1]
-        l_poly = [0, 0, 2, 2, 2, 2]
-
-        # Eq 6
-        lr = 0
-        for n, t, d, l, g in zip(n_poly, t_poly, d_poly, l_poly, g_poly):
-            lr += n*tau**t*delta**d*exp(-g*delta**l)
-
-        lc = 0
-        # FIXME: Tiny desviation in the test in paper, 0.06% at critical point
-        if fase:
-            qd = 0.31
-            Gamma = 0.055
-            Xio = 0.11
-            Tref = 265.262
-            k = 1.380658e-23  # J/K
-
-            # Eq 11
-            X = self.Pc*1e-3*rho/rhoc**2*fase.drhodP_T
-
-            ref = Air()
-            st = ref._Helmholtz(rho, Tref)
-            drho = 1e3/self.R/Tref/(1+2*delta*st["fird"]+delta**2*st["firdd"])
-
-            Xref = self.Pc*1e-3*rho/rhoc**2*drho
-
-            # Eq 10
-            bracket = X-Xref*Tref/T
-            if bracket > 0:
-                Xi = Xio*(bracket/Gamma)**(0.63/1.2415)
-
-                Xq = Xi/qd
-                # Eq 8
-                Omega = 2/pi*((fase.cp-fase.cv)/fase.cp*atan(Xq) +
-                              fase.cv/fase.cp*(Xq))
-                # Eq 9
-                Omega0 = 2/pi*(1-exp(-1/(1/Xq+Xq**2/3*rhoc**2/rho**2)))
-
-                # Eq 7
-                lc = rho*fase.cp*k*1.01*T/6/pi/Xi/fase.mu*(Omega-Omega0)*1e15
-            else:
-                lc = 0
-
-        # Eq 4
-        k = lo+lr+lc
-        return unidades.ThermalConductivity(k, "mWmK")
-
-    thermo1 = {"eq": 1,
-               "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=Air(T=100, rhom=0)
-                    >>> print("%0.5f" % st.k.mWmK)
-                    9.35902
-                    >>> st=Air(T=300, rhom=0)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    26.3529
-                    >>> st=Air(T=100, rhom=28)
-                    >>> print("%0.3f" % st.k.mWmK)
-                    119.221
-                    >>> st=Air(T=200, rhom=10)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    35.3185
-                    >>> st=Air(T=300, rhom=5)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    32.6062
-                    >>> st=Air(T=132.64, rhom=10.4)
-                    >>> print("%0.4f" % st.k.mWmK)
-                    75.6231
-                    """,  # Table V, Pag 28
+               "__doi__": {
+                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                   "title": "Viscosity and Thermal Conductivity Equations for "
+                            "Nitrogen, Oxygen, Argon, and Air",
+                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
                "Tref": 132.6312, "kref": 1e-3,
                "no": [1.308, 1.405, -1.036],
@@ -434,10 +196,10 @@ class Air(MEoSBlend):
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.11e-9, "gam0": 0.55e-1, "qd": 0.31,
+               "Xio": 0.11, "gam0": 0.055, "qd": 0.31,
                "Tcref": 265.262}
 
-    _thermal = thermo0, thermo1
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -510,28 +272,30 @@ class Test(TestCase):
         self.assertEqual(round(f_prho.P-P, 6), 0)
         self.assertEqual(round(f_prho.T-T, 6), 0)
 
-    def test_Transport(self):
-        """Table V, pag 28"""
-        st = Air()
-        self.assertEqual(round(st._visco0(0, 100), 11), 7.09559e-6)
-        self.assertEqual(round(st._visco0(0, 300), 10), 18.523e-6)
-        self.assertEqual(round(Air._visco0(28*28.9586, 100), 9), 107.923e-6)
-        self.assertEqual(round(Air._visco0(10*28.9586, 200), 10), 21.1392e-6)
-        self.assertEqual(round(Air._visco0(5*28.9586, 300), 10), 21.3241e-6)
-        self.assertEqual(round(
-            Air._visco0(10.4*28.9586, 132.64), 10), 17.7623e-6)
+    def test_LemmonTransport(self):
+        # Table V, pag 28
+        # Viscosity
+        self.assertEqual(round(Air(T=100, rhom=0).mu.muPas, 5), 7.09559)
+        self.assertEqual(round(Air(T=300, rhom=0).mu.muPas, 4), 18.5230)
+        self.assertEqual(round(Air(T=100, rhom=28).mu.muPas, 3), 107.923)
+        self.assertEqual(round(Air(T=200, rhom=10).mu.muPas, 4), 21.1392)
+        self.assertEqual(round(Air(T=300, rhom=5).mu.muPas, 4), 21.3241)
+        self.assertEqual(round(Air(T=132.64, rhom=10.4).mu.muPas, 4), 17.7623)
 
-        st = Air()
-        self.assertEqual(round(st._thermo0(0, 100), 8), 9.35902e-3)
-        self.assertEqual(round(st._thermo0(0, 300), 7), 26.3529e-3)
-        # self.assertEqual(round(Air(rho=28*28.9586, T=100).k.mWmK, 3), 119.222)
-        # self.assertEqual(round(Air(rho=10*28.9586, T=200).k.mWmK, 4), 35.3186)
-        self.assertEqual(round(Air(rho=5*28.9586, T=300).k.mWmK, 4), 32.6062)
-        # self.assertEqual(round(Air(rho=10.4*28.9586, T=132.64).k.mWmK, 4), 75.6231)
+        # Thermal Conductivity
+        self.assertEqual(round(Air(rhom=0, T=100).k.mWmK, 5), 9.35902)
+        self.assertEqual(round(Air(rhom=0, T=300).k.mWmK, 4), 26.3529)
+        # self.assertEqual(round(Air(rhom=28, T=100).k.mWmK, 3), 119.222)
+        # self.assertEqual(round(Air(rhom=10, T=200).k.mWmK, 4), 35.386)
+        self.assertEqual(round(Air(rhom=5, T=300).k.mWmK, 4), 32.6062)
+        # self.assertEqual(round(Air(rhom=10.4, T=132.64).k.mWmK, 4), 75.6231)
 
 
 if __name__ == "__main__":
-    st = Air(T=132.4, rho=10.4*28.9586, thermal=0)
-    print(st.k.mWmK)
-    st2 = Air(T=132.4, rho=10.4*28.9586, visco=1, thermal=1)
-    print(st2.k.mWmK)
+    # st = Air(T=132.4, rho=10.4*28.9586, thermal=0)
+    # print(st.k.mWmK)
+    # st2 = Air(T=132.4, rho=10.4*28.9586, visco=1, thermal=1)
+    # print(st2.k.mWmK)
+    # print(Air(T=132.64, rhom=10.4, thermal=0).k.mWmK)
+    # print(Air(T=132.64, rhom=10.4, thermal=1).k.mWmK)
+    st = Air(T=500, P=2e5)

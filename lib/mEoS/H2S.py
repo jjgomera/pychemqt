@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -236,39 +238,77 @@ class H2S(MEoS):
         "ao": [-3.9156, -7.7093, -19.543, -49.418],
         "exp": [0.49, 1.69, 4, 8]}
 
-    visco0 = {"eq": 2, "omega": 1,
-              "__name__": "NIST",
-              "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08",
-                          "ref": "",
-                          "doi": ""},
+    visco0 = {"__name__": "Quiñones-Cisneros (2012)",
+              "__doi__": {
+                  "autor": "Quinones-Cisneros, S.E., Schmidt, K.A.G., Giri, B."
+                           "R, Blais, P., Marriott, R.A.,",
+                  "title": "Reference Correlation for the Viscosity Surface "
+                           "of Hydrogen Sulfide",
+                  "ref": "J. Chem. Eng. Data 57(11) (2012) 3014-3018",
+                  "doi": "10.1021/je300601h"},
 
-              "ek": 301.1, "sigma": 0.36237,
-              "n_chapman": 0.1558117/M**0.5,
-              "F": [0, 0, 0, 100.],
-              "E": [-12.328630418994, 782.29421491, 11.840322553,
-                    -10401.582791, -0.0482407464, 69.709031672, 256.31792390],
-              "rhoc": 10.2}
+              "eq": 1, "omega": 4,
 
-    visco1 = {"eq": 4, "omega": 1,
-              "__name__": "Schmidt (2007)",
-              "__doi__": {"autor": "Schmidt, K.A.G., Carroll, J.J., Quinones-Cisneros, S.E., and Kvamme, B.",
-                          "title": "Hydrogen Sulfide Viscosity Modeling",
-                          "ref": "Energy Fuels, 2008, 22 (5), pp 3424–3434",
-                          "doi": "10.1021/ef700701h"},
+              "ek": 276, "sigma": 0.3565,
+              "n_chapman": 0.87721/M**0.5*0.3565**2,
+              "collision": [0.53242, 0.93715, -0.69339, 1.16432, -0.84306,
+                            0.20534],
 
-              "Tref": 373.1, "muref": 1.0,
-              "ek": 301.1, "sigma": 0.36237, "n_chapman": 0,
-              "n_ideal": [4.36694e1, -12.1530e1, 9.35279e1],
-              "t_ideal": [0, 0.25, 0.5],
+              "Tref_virial": 355.8,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        # Modified friction theory for residual viscosity contribution
+
+        Gamma = self.Tc/T
+        psi1 = exp(Gamma)                                               # Eq 15
+        psi2 = exp(Gamma**2)                                            # Eq 16
+
+        a = [68.9659e-6, -22.0494e-6, -42.6126e-6]
+        b = [153.406e-6, 8.45198e-6, -113.967e-6]
+        A = [0.78238e-9, -0.64717e-9, 1.39066e-9]
+        B = [-9.75792e-9, -3.19303e-9, 12.4263e-9]
+
+        ka = (a[0] + a[1]*psi1 + a[2]*psi2) * Gamma                     # Eq 11
+        kr = (b[0] + b[1]*psi1 + b[2]*psi2) * Gamma                     # Eq 12
+        kaa = (A[0] + A[1]*psi1 + A[2]*psi2) * Gamma                    # Eq 13
+        krr = (B[0] + B[1]*psi1 + B[2]*psi2) * Gamma                    # Eq 14
+
+        # All parameteres has pressure units of bar
+        Patt = -fase.IntP.bar
+        Prep = T*fase.dpdT_rho.barK
+        Pid = rho*self.R*self.T/1e5
+        delPr = Prep-Pid
+
+        # Eq 5
+        mur = kr*delPr + ka*Patt + krr*Prep**2 + kaa*Patt**2
+        return mur*1e3
+
+    visco1 = {"__name__": "Schmidt (2007)",
+              "__doi__": {
+                  "autor": "Schmidt, K.A.G., Carroll, J.J., Quinones-Cisneros,"
+                           " S.E., Kvamme, B.",
+                  "title": "Hydrogen Sulfide Viscosity Modeling",
+                  "ref": "Energy & Fuels 22(5) (2008) 3424-3434",
+                  "doi": "10.1021/ef700701h"},
+
+              "eq": 4, "omega": 0,
+
+              "Toref": 373.1,
+              "no": [43.6694, -121.530, 93.5279],
+              "to": [0, 0.25, 0.5],
 
               "a": [5.46919e-5, -7.32295e-6, -7.35622e-6],
               "b": [4.56159e-5, -1.82572e-5, -6.59654e-6],
               "c": [-4.33882e-6, 6.13716e-6, 0.0],
               "A": [6.67324e-9, -2.16365e-9, 0.0],
               "B": [-1.53973e-9, 2.17652e-9, 0.0],
-              "C": [3.54228e-7, -4.76258e-8, 0.0],
-              "D": [0.0, 0.0, 0.0]}
+              "C": [3.54228e-7, -4.76258e-8, 0.0]}
 
     _viscosity = visco0, visco1
 

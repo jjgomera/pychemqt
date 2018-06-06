@@ -332,6 +332,20 @@ class H2O(MEoS):
                   "doi": "10.1063/1.3088050"},
               "__code__": (_Viscosity, )}
 
+    def _visco0(self, rho, T, fase):
+        ref = H2O()
+        ref._ref("OTO")
+        estado = ref._Helmholtz(rho, 1.5*self.Tc)
+        drho = 1/estado["dpdrho"]*1e6
+
+        # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
+        if fase:
+            fase = copy(fase)
+            fase.drhodP_T *= 1e6
+
+        mu = _Viscosity(rho, T, fase=fase, drho=drho)
+        return unidades.Viscosity(mu)
+
     visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
@@ -346,31 +360,14 @@ class H2O(MEoS):
               "no": [151.138, -444.318, 398.262, -81.7008],
               "to": [0, 0.25, 0.5, 0.75],
 
-              "a": [-1.17407105202836e-5, -3.78854818708520e-7,
-                    3.56742875797909e-8],
-              "b": [1.62216397984014e-6, -8.36595322447571e-6,
-                    9.10862531286788e-8],
-              "c": [1.92706925578893e-5, -1.28679815491711e-5, 0.0],
-              "A": [-3.30144899918610e-10, 0.0, 1.02931444103415e-11],
-              "B": [5.03139997945133e-10, 1.82304182380560e-10, 0.0],
-              "C": [8.01449084635477e-10, 5.65613687804585e-9,
-                    1.10163426018591e-10]}
+              "a": [-1.17407e-5, -3.78855e-7, 3.56743e-8],
+              "b": [1.62216e-6, -8.36595e-6, 9.10863e-8],
+              "c": [1.92707e-5, -1.2868e-5, 0.0],
+              "A": [-3.30145e-10, 0.0, 1.02931e-11],
+              "B": [5.03139997945133e-10, 1.82304e-10, 0.0],
+              "C": [8.01449e-10, 5.65614e-9, 1.10163e-10]}
 
     _viscosity = visco0, visco1
-
-    def _visco0(self, rho, T, fase):
-        ref = H2O()
-        ref._ref("OTO")
-        estado = ref._Helmholtz(rho, 1.5*self.Tc)
-        drho = 1/estado["dpdrho"]*1e6
-
-        # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
-        if fase:
-            fase = copy(fase)
-            fase.drhodP_T *= 1e6
-
-        mu = _Viscosity(rho, T, fase=fase, drho=drho)
-        return unidades.Viscosity(mu)
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",

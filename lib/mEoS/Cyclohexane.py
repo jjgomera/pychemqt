@@ -219,7 +219,8 @@ class Cyclohexane(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 43(3) (2014) 033101",
                   "doi": "10.1063/1.4891103"},
 
-              "eq": 1, "omega": 1,
+              "eq": 1, "omega": 3,
+              "collision": [-1.5093, 364.87, -39537],
 
               "sigma": 1,
               "n_chapman": 0.19592/M**0.5,
@@ -243,18 +244,6 @@ class Cyclohexane(MEoS):
             for i, n in enumerate([5.09643, -3387.21, 337477]):
                 muB += n/T**i
         return muB*rho/self.M
-
-    def _Omega(self):
-        """Custom collision integral calculations
-
-        .. math::
-            \Omega = A_o+\frac{B_o}{T}+\frac{C_o}{T^2}
-        """
-        bi = [-1.5093, 364.87, -39537]
-        omega = 0
-        for i, b in enumerate(bi):
-            omega += b/self.T**i
-        return exp(omega)
 
     _viscosity = visco0,
 

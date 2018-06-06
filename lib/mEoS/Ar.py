@@ -147,7 +147,7 @@ class Ar(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for argon of Stewart and "
                     "Jacobsen (1989).",
-        "__doi__": {"autor": "Stewart, R.B. and Jacobsen, R.T.",
+        "__doi__": {"autor": "Stewart, R.B., Jacobsen, R.T.",
                     "title": "Thermodynamic Properties of Argon from the "
                              "Triple Point to 1200 K at Pressures to 1000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data, 18(2):639-798, 1989",
@@ -273,81 +273,73 @@ class Ar(MEoS):
         "ao": [-0.29182e1, 0.97930e-1, -0.13721e1, -0.22898e1],
         "exp": [0.72, 1.25, 0.32, 4.34]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=Ar(T=100, rhom=0)
-                    >>> print "%0.5f" % st.mu.muPas
-                    8.18940
-                    >>> st=Ar(T=300, rhom=0)
-                    >>> print "%0.4f" % st.mu.muPas
-                    22.7241
-                    >>> st=Ar(T=100, rhom=33)
-                    >>> print "%0.3f" % st.mu.muPas
-                    184.232
-                    >>> st=Ar(T=200, rhom=10)
-                    >>> print "%0.4f" % st.mu.muPas
-                    25.5662
-                    >>> st=Ar(T=300, rhom=5)
-                    >>> print "%0.4f" % st.mu.muPas
-                    26.3706
-                    >>> st=Ar(T=150.69, rhom=13.4)
-                    >>> print "%0.4f" % st.mu.muPas
-                    27.6101
-                    """, # Table V, Pag 28
+    visco0 = {"__name__": "Lemmon (2004)",
+              "__doi__": {
+                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                   "title": "Viscosity and Thermal Conductivity Equations for "
+                            "Nitrogen, Oxygen, Argon, and Air",
+                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
+              "eq": 1, "omega": 1,
               "ek": 143.2, "sigma": 0.335,
-              "n_poly": [12.19, 13.99, 0.005027, -18.93, -6.698, -3.827],
-              "t_poly": [0.42, 0.0, 0.95, 0.5, 0.9, 0.8],
-              "d_poly": [1, 2, 10, 5, 1, 2],
-              "g_poly": [0, 0, 0, 1, 1, 1],
-              "c_poly": [0, 0, 0, 2, 4, 4]}
 
-    visco1 = {"eq": 3,
-              "__name__": "Younglove (1986)",
-              "__doi__": {"autor": "Younglove, B.A. and Hanley, H.J.M.",
-                           "title": "The Viscosity and Thermal Conductivity Coefficients of Gaseous and Liquid Argon",
-                           "ref": "J. Phys. Chem. Ref. Data 15, 1323 (1986)",
-                           "doi": "10.1063/1.555765"},
-              "__test__": """
-                   >>> st=Ar(T=86, P=1e5, visco=1)
-                   >>> print "%0.1f" % st.mu.muPas
-                   270.0
-                   """, # Table V, Pag 28
+              "nr": [12.19, 13.99, 0.005027, -18.93, -6.698, -3.827],
+              "tr": [0.42, 0.0, 0.95, 0.5, 0.9, 0.8],
+              "dr": [1, 2, 10, 5, 1, 2],
+              "gr": [0, 0, 0, 1, 1, 1],
+              "cr": [0, 0, 0, 2, 4, 4]}
 
-              "Tref": 1, "muref": 1.0,
-              "n_poly": [-0.8973188257e5, 0.8259113473e5, -0.2766475915e5,
-                         0.3068539784e4, 0.4553103615e3, -0.1793443839e3,
-                         0.2272225106e2, -0.1350672796e1, 0.3183693230e-1],
-              "t_poly": [-1., -2./3, -1./3, 0, 1./3, 2./3, 1., 4./3, 5./3],
-              "n_num": [0.5927733783, -0.4251221169e2, -0.2698477165e-1,
-                        0.3727762288e2, -0.3958508720e4, 0.3636730841e-2,
-                        -0.2633471347e1, 0.2936563322e3, -0.3811869019e-4,
-                        0.4451947464e-1, -0.5385874487e1, 1, -0.1115054926e-1,
-                        -0.1328893444e1],
-              "t_num": [0, -1, 0, -1, -2, 0, -1, -2, 0, -1, -2, 0, 0, -1],
-              "d_num": [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 0, 1, 1],
-              "n_den": [1.0, -0.1115054926e-1, -0.1328893444e1],
-              "t_den": [0, 0, -1],
-              "d_den": [0, 1, 1]}
+    visco1 = {"__name__": "Younglove (1986)",
+              "__doi__": {
+                  "autor": "Younglove, B.A., Hanley, H.J.M.",
+                  "title": "The Viscosity and Thermal Conductivity "
+                           "Coefficients of Gaseous and Liquid Argon",
+                  "ref": "J. Phys. Chem. Ref. Data 15(4) (1986) 1323-1337",
+                  "doi": "10.1063/1.555765"},
 
-    visco2 = {"eq": 2, "omega": 2,
-              "collision": [25.7830291943396, -234.320222858983, 814.636688705024,
-                            -1452.04353466585, 1467.17535558104, -870.164951237067,
-                            313.024934147423, -61.2072628957372, 5.07700488990665],
-              "__name__": "Younglove (1982)",
-              "__doi__": {"autor": "Younglove, B.A.",
-                          "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                          "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                          "doi": ""},
+              "eq": 1, "omega": 0,
 
-              "ek": 152.8, "sigma": 0.3297,
-              "n_chapman": 0.16871158559818,
-              "t_chapman": 0,
+              "Toref": 1,
+              "no": [-0.8973188257e5, 0.8259113473e5, -0.2766475915e5,
+                     0.3068539784e4, 0.4553103615e3, -0.1793443839e3,
+                     0.2272225106e2, -0.1350672796e1, 0.3183693230e-1],
+              "to": [-1., -2/3, -1/3, 0, 1/3, 2/3, 1., 4/3, 5/3],
+
+              "nr_num": [0.5927733783, -0.4251221169e2, -0.2698477165e-1,
+                         0.3727762288e2, -0.3958508720e4, 0.3636730841e-2,
+                         -0.2633471347e1, 0.2936563322e3, -0.3811869019e-4,
+                         0.4451947464e-1, -0.5385874487e1, 1, -0.1115054926e-1,
+                         -0.1328893444e1],
+              "tr_num": [0, -1, 0, -1, -2, 0, -1, -2, 0, -1, -2, 0, 0, -1],
+              "dr_num": [1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 0, 1, 1],
+              "nr_den": [1.0, -0.1115054926e-1, -0.1328893444e1],
+              "tr_den": [0, 0, -1],
+              "dr_den": [0, 1, 1]}
+
+    visco2 = {"__name__": "Younglove (1982)",
+              "__doi__": {
+                  "autor": "Younglove, B.A.",
+                  "title": "Thermophysical Properties of Fluids. I. Argon, "
+                           "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                           "Trifluoride, and Oxygen",
+                  "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
+                  "doi": ""},
+
+              "eq": 2, "omega": 0,
+
+              "no": [0.61145472787e4, -0.10394390312e5, 0.67594614619e4,
+                     -0.22536509380e4, 0.42593950138e3, -0.47252671093e2,
+                     0.31795275425e1, -0.11629083780, 0.18043010592e-2],
+              "to": [1, 2/3, 1/3, 0, -1/3, -2/3, -1, -4/3, -5/3],
+
+              # "collision": [25.7830291943396, -234.320222858983, 814.636688705024,
+                            # -1452.04353466585, 1467.17535558104, -870.164951237067,
+                            # 313.024934147423, -61.2072628957372, 5.07700488990665],
+              # "ek": 152.8, "sigma": 0.3297,
+              # "n_chapman": 0.16871158559818,
+              # "t_chapman": 0,
+
               "F": [5.85384107393e-3, -3.09546765250e-3, 1.4, 152.8],
               "E": [-12.313579086, 40.136071933, 11.6160872385243,
                     -413.04094973717, 4.13624595833e-2, 7.96883967907912,
@@ -843,3 +835,32 @@ class Test(TestCase):
         st2 = Ar(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 25.97)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.18479)
+
+    def test_LemmonTransport(self):
+        # Table V, pag 28
+        # Viscosity
+        self.assertEqual(round(Ar(T=100, rhom=0).mu.muPas, 5), 8.18940)
+        self.assertEqual(round(Ar(T=300, rhom=0).mu.muPas, 4), 22.7241)
+        self.assertEqual(round(Ar(T=100, rhom=33).mu.muPas, 3), 184.232)
+        self.assertEqual(round(Ar(T=200, rhom=10).mu.muPas, 4), 25.5662)
+        self.assertEqual(round(Ar(T=300, rhom=5).mu.muPas, 4), 26.3706)
+        self.assertEqual(round(Ar(T=150.69, rhom=13.4).mu.muPas, 4), 27.6101)
+
+    # def test_YoungloveHanley(self):
+        # st = Ar(T=90, rhom=34.455)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 238.7)
+
+
+# TODO: Add test for MBWR eos when fix
+              # "__test__": """
+                   # >>> st=Ar(T=86, P=1e5, visco=1)
+                   # >>> print "%0.1f" % st.mu.muPas
+                   # 270.0
+                   # """, # Table V, Pag 28
+
+
+if __name__ == "__main__":
+    st = Ar(T=190, rhom=8.494, visco=2)
+    print(st.mu.muPas)  # 22.6
+    st = Ar(T=500, P=1e5, visco=1)
+    print(st.mu.muPas)  # 34.2

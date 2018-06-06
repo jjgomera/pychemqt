@@ -327,53 +327,49 @@ class nC4(MEoS):
         "ao": [-0.27390e1, -0.57347e1, -0.16408e2, -0.46986e2, -0.10090e3],
         "exp": [0.39, 1.14, 3.0, 6.5, 14.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.17067154, -0.48879666, 0.039038856],
-              "__name__": "Vogel (1999)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., and Bich, E.",
-                          "title": "Viscosity for n-Butane in the Fluid Region",
-                          "ref": "High Temp. - High Pressures, 31(2):173-186, 1999.",
-                          "doi": "10.1068/htrt154"},
+    visco0 = {"__name__": "Vogel (1999)",
+              "__doi__": {
+                  "autor": "Vogel, E., Küchenmeister, C., Bich, E.",
+                  "title": "Viscosity correlation for n-Butane in the Fluid "
+                           "Region",
+                  "ref": "High Temp. - High Pressures 31(2) (1999) 173-186",
+                  "doi": "10.1068/htrt154"},
+
+              "eq": 1, "omega": 1,
 
               "ek": 280.51, "sigma": 0.57335,
-              "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
-              "n_chapman": 0.1628213/M**0.5,
+              "n_chapman": 0.021357,
+              "collision": [0.17067154, -0.48879666, 0.039038856],
 
+              "Tref_virial": 280.51,
               "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
-                           -3375.1717, 2491.6597, -787.26086, 14.085455, -0.34664158],
-              "t_virial": [0.0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 280.51, "etaref_virial": 0.1135034,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 425.125, "rhoref_res": 3.92*M, "etaref_res": 1,
-              "n_packed": [2.30873963359, 2.03404037254],
-              "t_packed": [0, 0.5],
-              "n_poly": [-54.7737770846, 58.0898623034, 0, 35.2658446259,
-                         -39.6682203832, 0, -1.83729542151, 0, 0,
-                         -0.833262985358, 1.93837020663, 0, -188.075903903],
-              "t_poly": [0, -1, -2, 0, -1, -2, 0, -1, -2, 0, -1, -2, 0],
-              "d_poly": [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 1],
-              "g_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-              "n_num": [188.075903903],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [1, 0]}
+              "Tref_res": 425.125, "rhoref_res": 3.92*M,
+              "nr": [-54.7737770846, 58.0898623034, 35.2658446259,
+                     -39.6682203832, -1.83729542151, -0.833262985358,
+                     1.93837020663],
+              "tr": [0, 1, 0, 1, 0, 0, 1],
+              "dr": [2, 2, 3, 3, 4, 5, 5],
+
+              "CPf": 188.075903903,
+              "CPg1": 2.30873963359,
+              "CPgi": [0.88101765264], "CPti": [-0.5]}
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane",
-                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"},
+              "__doi__": {
+                  "autor": "Younglove, B.A., Ely, J.F.",
+                  "title": "Thermophysical Properties of Fluids. II. Methane, "
+                           "Ethane, Propane, Isobutane, and Normal Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                  "doi": "10.1063/1.555785"},
 
               "ek": 440., "sigma": 0.503103,
               "n_chapman": 0.20352457/M**0.5,
+
               "F": [0.1630521851e1, 0.0, 1.40, 425.16],
               "E": [-0.2724386845e2, 0.8012766611e3, 0.2503978646e2,
                     -0.1309704275e5, -0.8313305258e-1, 0.6636975027e2,

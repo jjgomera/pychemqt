@@ -341,64 +341,52 @@ class C3(MEoS):
         "ao": [-2.4887, -5.1069, -12.174, -30.495, -52.192, -134.89],
         "exp": [0.3785, 1.07, 2.7, 5.5, 10., 20.]}
 
-    visco0 = {"eq": 1, "omega": 1,
+    visco0 = {"__name__": "Vogel (1998)",
+              "__doi__": {
+                  "autor": "Vogel, E., Küchenmeister, C., Bich, E., Laesecke, "
+                           "A.",
+                  "title": "Reference Correlation of the Viscosity of Propane",
+                  "ref": "J. Phys. Chem. Ref. Data 27(5) (1998) 947-970",
+                  "doi": "10.1063/1.556025"},
+
+              "eq": 1, "omega": 1,
+
+              "M": 44.0956, "ek": 263.88, "sigma": 0.49748,
+              "n_chapman": 0.021357,
               "collision": [0.25104574, -0.47271238, 0, 0.060836515],
-              "__name__": "Vogel (1998)",
-              "__doi__": {"autor": "Vogel, E., Kuechenmeister, C., Bich, E., and Laesecke, A.",
-                          "title": "Reference Correlation of the Viscosity of Propane",
-                          "ref": "J. Phys. Chem. Ref. Data 27, 947 (1998)",
-                          "doi": "10.1063/1.556025"},
-              "__test__":
 
-                  # Table 4, pag 961
-                  """
-                  >>> st=C3(T=90, P=1e4, eq=1)
-                  >>> print "%0.4f %0.3f %0.4f" % (st.cp0.kJkgK, st.P.MPa, st.cp.kJkgK)
-                  3.2350 21.175 3.5658
-                  """,
-
-              "ek": 263.88, "sigma": 0.49748,
-              "Tref": 1, "rhoref": 1.*M, "etaref": 1.,
-              "n_chapman": 0.141824/M**0.5,
-
+              "Tref_virial": 263.88,
               "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
                            -3375.1717, 2491.6597, -787.26086, 14.085455,
                            -0.34664158],
-              "t_virial": [0.0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 263.88, "etaref_virial": 0.0741445,
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 369.82, "rhoref_res": 5.*M, "etaref_res": 1,
-              "n_packed": [0.250053938863e1, 0.215175430074e1],
-              "t_packed": [0, 0.5],
-              "n_poly": [0.359873030195e2, -0.180512188564e3, 0.877124888223e2,
-                         -0.105773052525e3, 0.205319740877e3, -0.129210932610e3,
-                         0.589491587759e2, -0.129740033100e3, 0.766280419971e2,
-                         -0.959407868475e1, 0.210726986598e2,
-                         -0.143971968187e2, -0.161688405374e4, ],
-              "t_poly": [0, -1, -2, 0, -1, -2, 0, -1, -2, 0, -1, -2, 0],
-              "d_poly": [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 1],
-              "g_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-              "n_num": [0.161688405374e4],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [1, 0]}
+              "Tref_res": 369.825, "rhoref_res": 5*44.0956,
+              "nr": [35.9873030195, -180.512188564, 87.7124888223,
+                     -105.773052525, 205.319740877, -129.210932610,
+                     58.9491587759, -129.7400331, 76.6280419971,
+                     -9.59407868475, 21.0726986598, -14.3971968187],
+              "dr": [2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5],
+              "tr": [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2],
+              "gr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "cr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+
+              "CPf": 1616.88405374,
+              "CPg1": 2.50053938863,
+              "CPgi": [0.860516059264], "CPti": [-0.5]}
 
     visco1 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"},
+              "__doi__": {
+                  "autor": "Younglove, B.A., Ely, J.F.",
+                  "title": "Thermophysical Properties of Fluids. II. Methane, "
+                           "Ethane, Propane, Isobutane, and Normal Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                  "doi": "10.1063/1.555785"},
 
               "ek": 358.9, "sigma": 0.47,
               "n_chapman": 0.177273976/M**0.5,
+
               "F": [0, 0, 1.12, 359.],
               "E": [-14.113294896, 968.22940153, 13.686545032, -12511.628378,
                     0.0168910864, 43.527109444, 7659.45434720],
@@ -553,3 +541,12 @@ class Test(TestCase):
         st = C3(T=273.15, x=0.0, eq="miyamoto")
         self.assertEqual(round(st.h.kJkg, 0), 200)
         self.assertEqual(round(st.s.kJkgK, 2), 1)
+
+    def test_Vogel(self):
+        # TODO: Input density calcualte from MBWR equation, do when fix
+        # The method give good values, but the density input values are
+        # unreproducibles while MBWR don't work
+
+        # Table 4, pag 961
+        # self.assertEqual(round(C3(T=90, P=1e4).mu.muPas, 1), 7388.0)
+        pass
