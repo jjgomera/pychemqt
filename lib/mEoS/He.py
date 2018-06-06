@@ -222,42 +222,56 @@ class He(MEoS):
         "ao": [-1.5789, -10.749, 17.711, -15.413, -14.352],
         "exp": [0.333, 1.5, 2.1, 2.7, 9.0]}
 
-    visco0 = {"eq": 0,
+    visco0 = {"__name__": "Arp,V.D (1998)",
+              "__doi__": {
+                  "autor": "Arp, V.D. McCarty, R.D., Friend, D.G.",
+                  "title": "Thermophysical Properties of Helium-4 from 0.8 to "
+                           "1500 K with Pressures to 2000 MPa",
+                  "ref": "NIST Technical Note 1334",
+                  "doi": ""},
+
+              "eq": 0,
               "method": "_visco0",
-              "__name__": "Arp,V.D (1998)",
-              "__doi__": {"autor": "Arp, V.D. McCarty, R.D., and Friend, D.G.",
-                          "title": "Thermophysical properties of Helium-4 from 0.8 to 1500 K with pressures to 2000 Mpa",
-                          "ref": "NIST Technical Note 1334",
-                          "doi": ""}}
+              }
 
     def _visco0(self, rho, T, fase=None, coef=False):
+        """coef: Special parameter for get only the excess viscosity for
+        thermal conductivity calculation method"""
 
-        Visco0 = lambda T: -0.135311743/log(T) + 1.00347841 + \
-            1.20654649*log(T) - 0.149564551*log(T)**2 + 0.0125208416*log(T)**3
-
-        def ViscoE(T, rho):
+        def muo(T):
+            # Eq 2
             x = log(T)
-            B = -47.5295259/x+87.6799309-42.0741589*x+8.33128289*x**2-0.589252385*x**3
-            C = 547.309267/x-904.870586+431.404928*x-81.4504854*x**2+5.37005733*x**3
-            D = -1684.39324/x+3331.08630-1632.19172*x+308.804413*x**2-20.2936367*x**3
-            return rho.gcc*B+rho.gcc**2*C+rho.gcc**3*D
+            muo = -0.135311743/x + 1.00347841 + 1.20654649*x - \
+                0.149564551*x**2 + 0.0125208416*x**3
+            return muo
 
+        def mue(T, rho):
+            # Eq 3
+            rho_gcc = rho*1e-3
+            x = log(T)
+            B = -47.5295259/x + 87.6799309 - 42.0741589*x + 8.33128289*x**2 - \
+                0.589252385*x**3
+            C = 547.309267/x - 904.870586 + 431.404928*x - 81.4504854*x**2 + \
+                5.37005733*x**3
+            D = -1684.39324/x + 3331.08630 - 1632.19172*x + 308.804413*x**2 - \
+                20.2936367*x**3
+            return rho_gcc*B + rho_gcc**2*C + rho_gcc**3*D
 
         if T < 100:
             # Section 4.2.1 for 3.5 < T < 100
-            no = Visco0(T)
-            ne = ViscoE(T, rho)
-            n = exp(no+ne)
+            no = muo(T)
+            ne = mue(T, rho)
+            mu = exp(no+ne)                                              # Eq 1
         else:
             # Section 4.2.1 for T > 100
-            no = 196*T**0.71938*exp(12.451/T-295.67/T**2-4.1249)
-            ne = exp(Visco0(T)+ViscoE(T, rho))-exp(Visco0(T)+ViscoE(T, unidades.Density(0)))
-            n = no+ne
+            no = 196*T**0.71938*exp(12.451/T-295.67/T**2-4.1249)         # Eq 8
+            ne = exp(muo(T)+mue(T, rho)) - exp(muo(T)+mue(T, 0))         # Eq 9
+            mu = no+ne                                                   # Eq 7
 
         if coef:
             return ne
         else:
-            return unidades.Viscosity(n*1e-6, "P")
+            return unidades.Viscosity(mu, "microP")
 
     _viscosity = visco0,
 
@@ -272,11 +286,11 @@ class He(MEoS):
     def _thermo0(self, rho, T, fase=None):
         bkt = 0.0
         n0 = [3.739232544, -26.20316969, 59.82252246, -49.26397634]
-        suma = sum([ni*self.T**(-i-1) for i, ni in enumerate(n0)])
-        lg = 2.7870034e-3*self.T**0.7034007057*exp(suma)
+        suma = sum([ni*T**(-i-1) for i, ni in enumerate(n0)])
+        lg = 2.7870034e-3*T**0.7034007057*exp(suma)
 
-        tau = self.T**(1.0/3.0)
-        delta = self.rho/self.M/0.2498376
+        tau = T**(1.0/3.0)
+        delta = rho/self.M/0.2498376
         t = [0, 3, 1, 2, 0, 1, 2, 0, 1, 2, -3, 0, 1, 2, -3]
         d = [1, 1, 1, 1, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2]
         c = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0]
@@ -293,18 +307,18 @@ class He(MEoS):
                 lk += ni*tau**ti*delta**di*log(delta**ci)
 
         lc = 0
-        if 3.5 <= self.T <= 12:
+        if 3.5 <= T <= 12:
             e1 = 2.8461
             e2 = .27156
             delta = 4.304
 #            pcc = 227460.
 
-            if self.rho > 0.0:
-                bkt = 1.0/self.derivative("P", "rho", "T")/self.rho/1000.
-            deld = abs((self.rho-69.158)/69.158)
-            delt = abs((self.T-5.18992)/5.18992)
+            if rho > 0.0:
+                bkt = 1.0/self.derivative("P", "rho", "T")/rho/1000.
+            deld = abs((rho-69.158)/69.158)
+            delt = abs((T-5.18992)/5.18992)
             r2 = (delt/0.2)**2+(deld/0.25)**2
-            if r2 < 1.0 and self.rho > 0.0:
+            if r2 < 1.0 and rho > 0.0:
                 xx = delt/deld**(1.0/.3554)
                 x1 = (xx+.392)/.392
                 x2b = x1**(2.0*.3554)
@@ -312,13 +326,13 @@ class He(MEoS):
                 hh = e1*x1*x2be
                 dhdx = e1*x2be/.392+e1*e2/.392*x2b*x2be/(1.0+e2*x2b)*(1.1743-1.0)
                 d2kt = (delta*hh-xx*dhdx/.3554)*deld**(delta-1.0)
-                bkt1 = (69.158/self.rho)**2/d2kt/227460.
+                bkt1 = (69.158/rho)**2/d2kt/227460.
                 bkt = r2*bkt+(1.0-r2)*bkt1
 
             eta = self._visco0(coef=True)
             bkcrit = 0
-            if bkt >= 0 and self.rho > 0.0:
-                bkcrit = 3.4685233e-17*self.T**2*bkt**0.5/self.rho/eta*self.dpdT**2*exp(-18.66*delt**2-4.25*deld**4)
+            if bkt >= 0 and rho > 0.0:
+                bkcrit = 3.4685233e-17*T**2*bkt**0.5/rho/eta*self.dpdT**2*exp(-18.66*delt**2-4.25*deld**4)
             lc = 3.726229668*bkcrit
 
         return unidades.ThermalConductivity(lg+lk+lc)
