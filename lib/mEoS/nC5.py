@@ -309,7 +309,7 @@ class nC5(MEoS):
               "B": [1.98521e-8, 2.05972e-9, 0.0],
               "C": [-1.18487e-7, 1.69571e-7, 0.0]}
 
-    _viscosity = visco0, visco1
+    _viscosity = visco1,
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
