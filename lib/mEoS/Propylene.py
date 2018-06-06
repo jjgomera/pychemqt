@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -52,19 +54,23 @@ class Propylene(MEoS):
                      11.68984352477]}
 
     CP1 = {"ao": 0.65591381,
-           "an": [0.44359641e-1, -.36650786e-4, 0.16822223e-7, -.32651013e-11,
-                  0.33747826e4],
+           "an": [0.44359641e-1, -.36650786e-4, 0.16822223e-7,
+                  -.32651013e-11, 0.33747826e4],
            "pow": [1, 2, 3, 4, -2],
            "ao_exp": [-4.7032420], "exp": [615.8],
            "ao_hyp": [], "hyp": []}
 
-    helmholtz1 = {
+    lemmon = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propylene of Lemmon et al. (2013).",
-        "__doi__": {"autor": "Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W.",
-                    "title": "A reference equation of state for the thermodynamic properties of propene for temperatures from the melting line to 575 K and pressures up to 1000 MPa",
-                    "ref": "to be submitted to J. Phys. Chem. Ref. Data",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for propylene of Lemmon et "
+                    "al. (2013)",
+        "__doi__": {
+            "autor": "Lemmon, E.W., Overhoff, U., McLinden, M.O., Wagner, W.",
+            "title": "A Reference Equation of State for the Thermodynamic "
+                     "Properties of Propene for Temperatures from the Melting "
+                     "Line to 575 K and Pressures up to 1000 MPa",
+            "ref": "to be submitted to J. Phys. Chem. Ref. Data",
+            "doi": ""},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -94,13 +100,19 @@ class Propylene(MEoS):
         "gamma3": [1.21, 1.08, 0.83, 0.56, 1.22, 1.81, 1.54, 1.12, 1.4],
         "epsilon3": [0.78, 0.82, 1.94, 0.69, 1.96, 1.3, 0.38, 0.91, 0.7]}
 
-    helmholtz2 = {
+    overhoff = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propylene of Overhoff (2006).",
-        "__doi__": {"autor": "Overhoff, U.",
-                    "title": "Development of a new equation of state for the fluid region of propene for temperatures from the melting line to 575 K with pressures to 1000 MPa as well as software for the computation of thermodynamic properties of fluids",
-                    "ref": "Ph.D. Dissertation, Ruhr University, Bochum, Germany, 2006.",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for propylene of Overhoff "
+                    "(2006).",
+        "__doi__": {
+            "autor": "Overhoff, U.",
+            "title": "Development of a New Equation of State for the Fluid "
+                     "Region of Propene for Temperatures from the Melting "
+                     "Line to 575 K with Pressures to 1000 MPa as well as "
+                     "Software for the computation of thermodynamic "
+                     "properties of fluids",
+            "ref": "PhD. Dissertation, Ruhr University, Bochum Germany, 2006",
+            "doi": ""},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -137,39 +149,44 @@ class Propylene(MEoS):
         "gamma3": [1.13, 1.13, 1.19, 1.19, 1.19, 1.19, 1.19],
         "epsilon3": [0.85, 0.85, 1, 1, 1, 1, 1]}
 
-    helmholtz3 = {
+    angus = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for propylene of Angus et al. (1980)",
-        "__doi__": {"autor": "Angus, S., Armstrong, B., and de Reuck, K.M.",
-                    "title": "International Thermodynamic Tables of the Fluid State-7 Propylene",
-                    "ref": "International Union of Pure and Applied Chemistry, Pergamon Press, Oxford, 1980.",
+        "__name__": "Helmholtz equation of state for propene of Angus (1980)",
+        "__doi__": {"autor": "Angus, S., Armstrong, B., de Reuck, K.M.",
+                    "title": "International Thermodynamic Tables of the Fluid "
+                             "State-7: Propylene (Propene)",
+                    "ref": "IUPAC Chemical Data Series nº25, Pergamon Press, "
+                           "1980",
                     "doi": ""},
 
         "R": 8.31434,
         "cp": CP1,
         "ref": "IIR",
+        "M": 45.0804, "Tc": 365.57, "Pc": 4664.6, "rhoc": 5.3086,
 
         "Tmin": 100.0, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 9.73,
         "Pmin": 0.48475e-4, "rhomin": 17.938,
 
         "nr1": [0.631922681460, 0.102655250604, -0.70798923e-2, 0.18624829,
-                -0.1292611017e1, -0.5410160974e-1, 0.5069017035, -0.10606146125e1,
-                0.763136083, -0.850733053e-1, 0.438262575, 0.2316495716e-1,
-                0.25503741325e-1, -0.57327581, -0.1141334722e-1, 0.2502895522,
-                -0.468392547833e-1, 0.325228355714e-2],
+                -0.1292611017e1, -0.5410160974e-1, 0.5069017035,
+                -0.10606146125e1, 0.763136083, -0.850733053e-1, 0.438262575,
+                0.2316495716e-1, 0.25503741325e-1, -0.57327581,
+                -0.1141334722e-1, 0.2502895522, -0.468392547833e-1,
+                0.325228355714e-2],
         "d1": [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 5, 6, 7],
         "t1": [3, 4, 5, 1, 2, 3, 0, 1, 2, 2, 3, 0, 1, 3, -1, 3, 3, 3],
 
         "nr2": [-0.63192268146, -0.102655250604, 0.70798923e-2, -0.63192268146,
-                -0.102655250604, -0.11049992895, -0.31596134073, -0.51327625302e-1,
-                -0.4918627871e-1, -0.17109208434e-1, -0.1492467645e-1,
-                -0.42773021085e-2, -0.8554604217e-3, -0.14257673695e-3],
+                -0.102655250604, -0.11049992895, -0.31596134073,
+                -0.51327625302e-1, -0.4918627871e-1, -0.17109208434e-1,
+                -0.1492467645e-1, -0.42773021085e-2, -0.8554604217e-3,
+                -0.14257673695e-3],
         "d2": [0, 0, 0, 2, 2, 2, 4, 4, 6, 6, 8, 8, 10, 12],
         "t2": [3, 4, 5, 3, 4, 5, 3, 4, 3, 4, 3, 4, 4, 4],
         "c2": [2]*14,
         "gamma2": [1]*14}
 
-    eq = helmholtz1, helmholtz2, helmholtz3
+    eq = lemmon, overhoff, angus
 
     _surface = {"sigma": [0.05268], "exp": [1.186]}
     _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
@@ -188,3 +205,12 @@ class Propylene(MEoS):
         "eq": 3,
         "ao": [-1.59841, -4.73840, -10.8886, -31.0312, -56.9431, -143.544],
         "exp": [0.309, 0.853, 2.37, 5.2, 10., 20.]}
+
+    # TODO: Add viscosity correlation from Huber, ecs correlation
+
+# class Test(TestCase):
+
+    # def test_angus(self):
+        # # Table 1, pag 60, ideal gas properties
+        # st = Propylene(T=100, x=0.5, eq="angus")
+        # self.assertEqual(round(st.cpM0.JmolK, 2), 39.08)
