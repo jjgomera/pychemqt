@@ -45,9 +45,9 @@ class Ne(MEoS):
            "an": [], "pow": [],
            "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
 
-    katti= {
+    katti = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for neon of Katti (1986)",
+        "__name__": "Helmholtz equation of state for neon of Katti (1986)",
         "__doi__": {"autor": "Katti, R.S., Jacobsen, R.T, Stewart, R.B., "
                              "Jahangiri, M.",
                     "title": "Thermodynamic Properties of Neon for "
@@ -114,28 +114,35 @@ class Ne(MEoS):
         "ao": [-0.23338e1, -0.36834e1, -0.85368e2, 0.22769e3, -0.17290e3],
         "exp": [0.444, 0.95, 3.5, 4.1, 4.5]}
 
-    visco0 = {"eq": 0,
-              "method": "_visco0",
-              "__name__": "Rabinovich (1988)",
-              "__doi__": {"autor": "Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I. and Veksler, L.S.",
-                          "title": "Thermophysical Properties of Neon, Argon, Krypton, and Xenon",
-                          "ref": "Hemisphere Publishing Corp., 1988.",
-                          "doi": ""}}
+    visco0 = {"__name__": "Rabinovich (1988)",
+              "__doi__": {
+                  "autor": "Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I.,"
+                           " Veksler, L.S.",
+                  "title": "Thermophysical Properties of Neon, Argon, "
+                           "Krypton, and Xenon",
+                  "ref": "Hemisphere Publishing Corp., 1988.",
+                  "doi": ""},
+
+              "eq": 0,
+              "method": "_visco0"}
 
     _viscosity = visco0,
 
-    def _visco0(self):
-        # FIXME: Da buenos resultados, pero los resultados difierente en la tercera cifra significativa.
-        a = [17.67484, -2.78751, 311498.7, -48826500, 3938774000, -1.654629e11, 2.86561e12]
-        Tr = self.T/0.29944
-        y = 0.68321*(a[0]+a[1]*log10(Tr)+a[2]/Tr**2+a[3]/Tr**3+a[4]/Tr**4+a[5]/Tr**5+a[6]/Tr**6)
-        nt = 266.93*(self.T*self.M)**0.5/y
-        om = self.rho/1673.0
+    def _visco0(self, rho, T, fase=None):
+        a = [17.67484, -2.78751, 311498.7, -48826500, 3938774000, -1.654629e11,
+             2.86561e12]
+        Tr = T/0.29944
+        y = 0.68321*(a[0] + a[1]*log10(Tr) + a[2]/Tr**2 + a[3]/Tr**3 +
+                     a[4]/Tr**4 + a[5]/Tr**5 + a[6]/Tr**6)
+        nt = 266.93*(T*self.M)**0.5/y
+        om = rho/1673.0
         c = [1.03010, -0.99175, 2.47127, -3.11864, 1.57066]
         b = [0.48148, -1.18732, 2.80277, -5.41058, 7.04779, -3.76608]
-        sigma = 0.000000000305*(sum([ci*om**i for i, ci in enumerate(c)])-sum([bi*om**i for i, bi in enumerate(b)])*log10(self.T/122.1))
+        sum1 = sum([ci*om**i for i, ci in enumerate(c)])
+        sum2 = sum([bi*om**i for i, bi in enumerate(b)])
+        sigma = 3.05e-10*(sum1-sum2*log10(T/122.1))
         br = 2.0/3.0*pi*Avogadro*sigma**3
-        brho = self.rho/self.M*1000*br
+        brho = rho/self.M*1000*br
         d = [1, 0.27676, 0.014355, 2.6480, -1.9643, 0.89161]
         nd = sum([di*brho**i for i, di in enumerate(d)])
         return unidades.Viscosity(nd*nt/100, "muPas")
