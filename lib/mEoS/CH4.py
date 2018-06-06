@@ -324,94 +324,94 @@ class CH4(MEoS):
               "eq": 4, "omega": 0,
 
               "Toref": 190.564,
-              "no": [2.60536, 18.5247, 23.4216],
+              "no": [2.60536, -18.5247, 23.4216],
               "to": [0, 0.25, 0.5],
 
-              "a": [3.12118e-5, 1.99422e-7, 0],
+              "a": [-3.12118e-5, 1.99422e-7, 0],
               "b": [5.98858e-5, -4.91143e-5, 0],
               "c": [3.49668e-5, -1.73176e-5, 0],
               "A": [-8.52992e-10, -3.58009e-10, 0],
               "B": [1.60099e-8, 8.50221e-10, 0],
-              "C": [3.55631e-7, 2.80326e-7, 0]}
+              "C": [-3.55631e-7, 2.80326e-7, 0]}
 
-    visco1 = {"eq": 1, "omega": 1,
-              "collision": [0.215309028, -0.46256942, 0.051313823,
-                            0.030320660, -0.0070047029],
-              "__name__": "Vogel (2000)",
-              "__doi__": {"autor": "Vogel, E., Wilhelm, J., Kuechenmeister, C., and Jaesche, M.",
+    visco1 = {"__name__": "Vogel (2000)",
+              "__doi__": {
+                  "autor": "Vogel, E., Wilhelm, J., Küchenmeister, C., "
+                           "Jaesche, M.",
                   "title": "High-precision viscosity measurements on methane",
-                  "ref": "High Temperatures - High Pressures 32(1) 73 – 81",
+                  "ref": "High Temperatures-High Pressures 32(1) (2000) 73-81",
                   "doi": "10.1068/htwu359"},
 
-              "ek": 160.78, "sigma": 0.37333,
-              "n_chapman": 0.0855422/M**0.5,
+              "eq": 1, "omega": 1,
 
+              "ek": 160.78, "sigma": 0.37333,
+              "n_chapman": 0.021357,
+              "collision": [0.215309028, -0.46256942, 0.051313823,
+                            0.030320660, -0.0070047029],
+
+              "Tref_virial": 159.7,
               "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
                            -3375.1717, 2491.6597, -787.26086, 14.085455,
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 159.7, "etaref_virial": 0.0306525,
 
-              "Tref_res": 190.564, "rhoref_res": 10.139*M, "etaref_res": 1,
-              "n_packed": [3.10860501398],
-              "t_packed": [0],
-              "n_poly": [-3.02256904347, 17.6965130175, 3.11150846518,
-                         -21.5685107769, 0.672852409238, 10.2387524315,
-                         -1.09330775541, -1.20030749419, -21.1009923406],
-              "t_poly": [0, -1, 0, -1, 0, -1, 0, -1, 0],
-              "d_poly": [2, 2, 3, 3, 4, 4, 5, 5, 1],
-              "g_poly": [0, 0, 0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "n_num": [21.1009923406],
-              "t_num": [0],
-              "d_num": [1],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
+              "Tref_res": 190.564, "rhoref_res": 10.139*M,
+              "nr": [-3.02256904347, 17.6965130175, 3.11150846518,
+                     -21.5685107769, 0.672852409238, 10.2387524315,
+                     -1.09330775541, -1.20030749419],
+              "tr": [0, 1, 0, 1, 0, 1, 0, 1],
+              "dr": [2, 2, 3, 3, 4, 4, 5, 5],
+              "gr": [0, 0, 0, 0, 0, 0, 0, 0],
+              "cr": [0, 0, 0, 0, 0, 0, 0, 0],
+
+              "CPf": -21.1009923406,
+              "CPg1": 5.10860501398,
+              "CPgi": [], "CPti": []}
 
     visco2 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"},
+              "__doi__": {
+                  "autor": "Younglove, B.A., Ely, J.F.",
+                  "title": "Thermophysical Properties of Fluids. II. Methane, "
+                           "Ethane, Propane, Isobutane, and Normal Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                  "doi": "10.1063/1.555785"},
 
               "ek": 168., "sigma": 0.368,
-              "n_chapman": 0.1069188/M**0.5,
-              "F": [0.16969859271, -0.13337234608e-1, 0.140e1, 0.168e3],
+              # "n_chapman": 0.1069188/M**0.5,
+
+              "F": [0.16969859271, -0.13337234608e-1, 1.4, 168],
               "E": [-0.1620427429e2, 0.4270589027e3, 0.1402596278e2,
                     -0.3916837745e4, -0.347709909e-1, 0.2136542674e2,
                     0.1436802482e4],
               "rhoc": 10.15}
 
-    visco3 = {"eq": 1, "omega": 2,
-              "__name__": "Friend (1989)",
-              "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
-                          "title": "Thermophysical Properties of Methane",
-                          "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
-                          "doi": "10.1063/1.555828"},
+    visco3 = {"__name__": "Friend (1989)",
+              "__doi__": {
+                  "autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+                  "title": "Thermophysical Properties of Methane",
+                  "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
+                  "doi": "10.1063/1.555828"},
+
+              "eq": 1, "omega": 2,
 
               "Tref": 174., "etaref": 10.0,
               "ek": 174., "sigma": 0.36652,
-              "n_chapman": 0.14105376/M**0.5,
+              "n_chapman": 10.50/M**0.5*0.36652**2,
 
-              "Tref_res": 190.551, "rhoref_res": 10.139*M, "etaref_res": 12.149,
-              "n_num": [0.41250137, -0.14390912, 0.10366993, 0.40287464,
-                        -0.24903524, -0.12953131, 0.06575776, 0.02566628,
-                        -0.03716526],
-              "t_num": [0, -1, 0, -1, -1.5, 0, -2, 0, -1],
-              "d_num": [1, 1, 2, 2, 2, 3, 3, 4, 4],
-              "g_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "c_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "n_den": [1.0, -0.38798341, 0.03533815],
-              "t_den": [0, 0, -1.0],
-              "d_den": [0, 1, 1],
-              "g_den": [0, 0, 0],
-              "c_den": [0, 0, 0]}
+              "Tref_res": 190.551, "rhoref_res": 10.139*M, "muref_res": 12.149,
+              "nr_num": [0.41250137, -0.14390912, 0.10366993, 0.40287464,
+                         -0.24903524, -0.12953131, 0.06575776, 0.02566628,
+                         -0.03716526],
+              "tr_num": [0, 1, 0, 1, 1.5, 0, 2, 0, 1],
+              "dr_num": [1, 1, 2, 2, 2, 3, 3, 4, 4],
+              "gr_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "cr_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "nr_den": [1.0, -0.38798341, 0.03533815],
+              "tr_den": [0, 0, 1],
+              "dr_den": [0, 1, 1],
+              "gr_den": [0, 0, 0],
+              "cr_den": [0, 0, 0]}
 
     _viscosity = visco0, visco1, visco2, visco3
 
@@ -674,103 +674,115 @@ class Test(TestCase):
         return
 
         # Selected point from Table A1, Pag 630, ideal gas
-        st = CH4(T=100, P=1e5, eq="friend")
-        self.assertEqual(round(st.aM0.kJmol, 3), -12.479)
-        self.assertEqual(round(st.hM0.kJmol, 3), 3.311)
-        self.assertEqual(round(st.sM0.JmolK, 2), 149.58)
-        self.assertEqual(round(st.cpM0.JmolK, 3), 33.277)
+        st = CH4(T=100, rho=0, eq="friend", visco=3)
+        # self.assertEqual(round(st.aM0.kJmol, 3), -12.479)
+        # self.assertEqual(round(st.hM0.kJmol, 3), 3.311)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 149.58)
+        # self.assertEqual(round(st.cpM0.JmolK, 3), 33.277)
+        self.assertEqual(round(st.mu.muPas, 2), 3.95)
+        # self.assertEqual(round(st.k.mWmK, 2), 9.83)
 
-        st = CH4(T=400, P=1e5, eq="friend")
-        self.assertEqual(round(st.aM0.kJmol, 3), -68.440)
-        self.assertEqual(round(st.hM0.kJmol, 3), 13.888)
-        self.assertEqual(round(st.sM0.JmolK, 2), 197.51)
-        self.assertEqual(round(st.cpM0.JmolK, 5), 40.613)
+        st = CH4(T=400, rho=0, eq="friend", visco=3)
+        # self.assertEqual(round(st.aM0.kJmol, 3), -68.440)
+        # self.assertEqual(round(st.hM0.kJmol, 3), 13.888)
+        # self.assertEqual(round(st.sM0.JmolK, 2), 197.51)
+        # self.assertEqual(round(st.cpM0.JmolK, 5), 40.613)
+        self.assertEqual(round(st.mu.muPas, 2), 14.23)
+        # self.assertEqual(round(st.k.mWmK, 2), 49.96)
 
         # Selected point from Table A2, Pag 631, saturation state
-        st = CH4(T=92, x=0.5, eq="friend")
-        self.assertEqual(round(st.P.MPa, 6), 0.014)
-        self.assertEqual(round(st.Liquido.rhoM, 2), 28.04)
-        self.assertEqual(round(st.Gas.rhoM, 8), 0.018)
-        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 53.37)
-        self.assertEqual(round(st.Liquido.w, 2), 1532.7)
+        st = CH4(T=92, x=0.5, eq="friend", visco=3)
+        # self.assertEqual(round(st.P.MPa, 3), 0.014)
+        # self.assertEqual(round(st.Liquido.rhoM, 2), 28.04)
+        # self.assertEqual(round(st.Gas.rhoM, 3), 0.018)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 53.37)
+        # self.assertEqual(round(st.Liquido.w, 1), 1532.7)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 194.92)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 209.7)
 
-        st = CH4(T=120, x=0.5, eq="friend")
-        self.assertEqual(round(st.P.MPa, 6), 0.192)
-        self.assertEqual(round(st.Liquido.rhoM, 2), 25.55)
-        self.assertEqual(round(st.Gas.rhoM, 8), 0.204)
-        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 56.68)
-        self.assertEqual(round(st.Liquido.w, 2), 1245.3)
+        st = CH4(T=120, x=0.5, eq="friend", visco=3)
+        # self.assertEqual(round(st.P.MPa, 3), 0.192)
+        # self.assertEqual(round(st.Liquido.rhoM, 2), 25.55)
+        # self.assertEqual(round(st.Gas.rhoM, 3), 0.204)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 56.68)
+        # self.assertEqual(round(st.Liquido.w, 1), 1245.3)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 97.85)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 172.0)
 
-        st = CH4(T=160, x=0.5, eq="friend")
-        self.assertEqual(round(st.P.MPa, 6), 1.593)
-        self.assertEqual(round(st.Liquido.rhoM, 2), 20.96)
-        self.assertEqual(round(st.Gas.rhoM, 8), 1.584)
-        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 67.42)
-        self.assertEqual(round(st.Liquido.w, 2), 791.5)
+        st = CH4(T=160, x=0.5, eq="friend", visco=3)
+        # self.assertEqual(round(st.P.MPa, 3), 1.593)
+        # self.assertEqual(round(st.Liquido.rhoM, 2), 20.96)
+        # self.assertEqual(round(st.Gas.rhoM, 3), 1.584)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 67.42)
+        # self.assertEqual(round(st.Liquido.w, 1), 791.5)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 46.70)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 115.0)
 
-        st = CH4(T=190, x=0.5, eq="friend")
-        self.assertEqual(round(st.P.MPa, 6), 4.521)
-        self.assertEqual(round(st.Liquido.rhoM, 2), 12.50)
-        self.assertEqual(round(st.Gas.rhoM, 8), 7.827)
-        self.assertEqual(round(st.Liquido.cpM.JmolK, 3), 389.90)
-        self.assertEqual(round(st.Liquido.w, 2), 264.3)
+        st = CH4(T=190, x=0.5, eq="friend", visco=3)
+        # self.assertEqual(round(st.P.MPa, 3), 4.521)
+        # self.assertEqual(round(st.Liquido.rhoM, 2), 12.50)
+        # self.assertEqual(round(st.Gas.rhoM, 3), 7.827)
+        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 389.90)
+        # self.assertEqual(round(st.Liquido.w, 1), 264.3)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 19.75)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 100.3)
 
         # Selected point from Table A3, Pag 632
-        st = CH4(T=100, P=1e5, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 27.37)
-        self.assertEqual(round(st.hM.kJmol, 3), -5.242)
-        self.assertEqual(round(st.sM.JmolK, 2), 73.05)
-        self.assertEqual(round(st.cvM.JmolK, 2), 34.08)
-        self.assertEqual(round(st.cpM.JmolK, 2), 54.64)
-        self.assertEqual(round(st.w, 1), 1446.8)
+        # st = CH4(T=100, P=1e5, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 27.37)
+        # self.assertEqual(round(st.hM.kJmol, 3), -5.242)
+        # self.assertEqual(round(st.sM.JmolK, 2), 73.05)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 34.08)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 54.64)
+        # self.assertEqual(round(st.w, 1), 1446.8)
 
-        st = CH4(T=150, P=5e6, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 22.86)
-        self.assertEqual(round(st.hM.kJmol, 3), -2.274)
-        self.assertEqual(round(st.sM.JmolK, 2), 95.48)
-        self.assertEqual(round(st.cvM.JmolK, 2), 30.84)
-        self.assertEqual(round(st.cpM.JmolK, 2), 61.25)
-        self.assertEqual(round(st.w, 1), 996.2)
+        # st = CH4(T=150, P=5e6, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 22.86)
+        # self.assertEqual(round(st.hM.kJmol, 3), -2.274)
+        # self.assertEqual(round(st.sM.JmolK, 2), 95.48)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 30.84)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 61.25)
+        # self.assertEqual(round(st.w, 1), 996.2)
 
-        st = CH4(T=200, P=2e6, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 1.40)
-        self.assertEqual(round(st.hM.kJmol, 3), 5.939)
-        self.assertEqual(round(st.sM.JmolK, 2), 145.34)
-        self.assertEqual(round(st.cvM.JmolK, 2), 26.77)
-        self.assertEqual(round(st.cpM.JmolK, 2), 41.60)
-        self.assertEqual(round(st.w, 1), 343.0)
+        # st = CH4(T=200, P=2e6, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 1.40)
+        # self.assertEqual(round(st.hM.kJmol, 3), 5.939)
+        # self.assertEqual(round(st.sM.JmolK, 2), 145.34)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 26.77)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 41.60)
+        # self.assertEqual(round(st.w, 1), 343.0)
 
-        st = CH4(T=250, P=5e7, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 19.80)
-        self.assertEqual(round(st.hM.kJmol, 3), 3.809)
-        self.assertEqual(round(st.sM.JmolK, 2), 115.82)
-        self.assertEqual(round(st.cvM.JmolK, 2), 30.25)
-        self.assertEqual(round(st.cpM.JmolK, 2), 51.95)
-        self.assertEqual(round(st.w, 1), 999.3)
+        # st = CH4(T=250, P=5e7, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 19.80)
+        # self.assertEqual(round(st.hM.kJmol, 3), 3.809)
+        # self.assertEqual(round(st.sM.JmolK, 2), 115.82)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 30.25)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 51.95)
+        # self.assertEqual(round(st.w, 1), 999.3)
 
-        st = CH4(T=300, P=1e5, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 0.04)
-        self.assertEqual(round(st.hM.kJmol, 3), 10.068)
-        self.assertEqual(round(st.sM.JmolK, 2), 186.56)
-        self.assertEqual(round(st.cvM.JmolK, 2), 27.47)
-        self.assertEqual(round(st.cpM.JmolK, 2), 35.86)
-        self.assertEqual(round(st.w, 1), 449.7)
+        # st = CH4(T=300, P=1e5, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 0.04)
+        # self.assertEqual(round(st.hM.kJmol, 3), 10.068)
+        # self.assertEqual(round(st.sM.JmolK, 2), 186.56)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 27.47)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 35.86)
+        # self.assertEqual(round(st.w, 1), 449.7)
 
-        st = CH4(T=350, P=1e6, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 0.35)
-        self.assertEqual(round(st.hM.kJmol, 3), 11.807)
-        self.assertEqual(round(st.sM.JmolK, 2), 172.86)
-        self.assertEqual(round(st.cvM.JmolK, 2), 29.75)
-        self.assertEqual(round(st.cpM.JmolK, 2), 38.60)
-        self.assertEqual(round(st.w, 1), 480.8)
+        # st = CH4(T=350, P=1e6, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 0.35)
+        # self.assertEqual(round(st.hM.kJmol, 3), 11.807)
+        # self.assertEqual(round(st.sM.JmolK, 2), 172.86)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 29.75)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 38.60)
+        # self.assertEqual(round(st.w, 1), 480.8)
 
-        st = CH4(T=400, P=5e7, eq="friend")
-        self.assertEqual(round(st.rhoM, 2), 12.68)
-        self.assertEqual(round(st.hM.kJmol, 3), 11.583)
-        self.assertEqual(round(st.sM.JmolK, 2), 140.19)
-        self.assertEqual(round(st.cvM.JmolK, 2), 34.25)
-        self.assertEqual(round(st.cpM.JmolK, 2), 51.82)
-        self.assertEqual(round(st.w, 2), 778.9)
+        # st = CH4(T=400, P=5e7, eq="friend", visco=3)
+        # self.assertEqual(round(st.rhoM, 2), 12.68)
+        # self.assertEqual(round(st.hM.kJmol, 3), 11.583)
+        # self.assertEqual(round(st.sM.JmolK, 2), 140.19)
+        # self.assertEqual(round(st.cvM.JmolK, 2), 34.25)
+        # self.assertEqual(round(st.cpM.JmolK, 2), 51.82)
+        # self.assertEqual(round(st.w, 2), 778.9)
 
     def test_shortSpan(self):
         # Table III, Pag 46
