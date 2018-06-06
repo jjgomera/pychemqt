@@ -310,46 +310,52 @@ class C2(MEoS):
                -2.26690389],
         "exp": [1.038, 2.5, 3, 6, 9, 15]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.17067154, -0.48879666, 0.039038856],
-              "__name__": "Friend (1991)",
-              "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
-                          "title": "Thermophysical Properties of Ethane",
-                          "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
-                          "doi": "10.1063/1.555881"},
+    visco0 = {"__name__": "Friend (1991)",
+              "__doi__": {
+                  "autor": "Friend, D.G., Ingham, H., Ely, J.F.",
+                  "title": "Thermophysical Properties of Ethane",
+                  "ref": "J. Phys. Chem. Ref. Data 20(2) (1991) 275-347",
+                  "doi": "10.1063/1.555881"},
+
+              "eq": 1, "omega": 2,
 
               "ek": 245.0, "sigma": 0.43682,
-              "Tref": 1, "rhoref": 1.*M,
-              "n_chapman": 0.1463897/M**0.5,
+              "Tref": 245.0,
+              "n_chapman": 12.0085/M**0.5*0.43682**2,
 
-              "Tref_res": 305.33, "rhoref_res": 6.87*M, "etaref_res": 15.977,
-              "n_num": [0.47177003, -0.23950311, 0.39808301, -0.27343335,
-                        0.35192260, -0.21101308, -0.00478579, 0.07378129,
-                        -0.030425255],
-              "t_num": [0, -1, 0, -1, -1.5, 0, -2, 0, -1],
-              "d_num": [1, 1, 2, 2, 2, 3, 3, 4, 4],
-              "g_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "c_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "n_den": [1., -0.30435286, 0.001215675],
-              "t_den": [0, 0, -1],
-              "d_den": [0, 1, 1],
-              "g_den": [0, 0, 0],
-              "c_den": [0, 0, 0]}
+              "muref_res": 15.977,
+              "nr_num": [0.47177003, -0.23950311, 0.39808301, -0.27343335,
+                         0.35192260, -0.21101308, -0.00478579, 0.07378129,
+                         -0.030425255],
+              "tr_num": [0, 1, 0, 1, 1.5, 0, 2, 0, 1],
+              "dr_num": [1, 1, 2, 2, 2, 3, 3, 4, 4],
+              "gr_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "cr_num": [0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "nr_den": [1., -0.30435286, 0.001215675],
+              "tr_den": [0, 0, 1],
+              "dr_den": [0, 1, 1],
+              "gr_den": [0, 0, 0],
+              "cr_den": [0, 0, 0]
+              }
 
-    visco1 = {"eq": 2, "omega": 2,
-              "__name__": "Younglove (1987)",
-              "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                          "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                          "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                          "doi": "10.1063/1.555785"},
+    visco1 = {"__name__": "Younglove (1987)",
+              "__doi__": {
+                  "autor": "Younglove, B.A., Ely, J.F.",
+                  "title": "Thermophysical Properties of Fluids. II. Methane, "
+                           "Ethane, Propane, Isobutane, and Normal Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                  "doi": "10.1063/1.555785"},
 
+              "eq": 2, "omega": 2,
               "ek": 240.0, "sigma": 0.440110,
               "n_chapman": 0.146388493/M**0.5,
+
               "F": [0.2102436247e1, -0.1065920192e1, 1.4, 305.33],
               "E": [-0.1903481042e2, 0.1799260494e4, 0.1561316986e2,
                     -0.1497221136e5, 0.1130374601, -0.2186440756e2,
                     0.8235954037e4],
               "rhoc": 6.875}
+    # TODO: Add testing when fix MBWR equation
 
     visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
@@ -811,3 +817,64 @@ class Test(TestCase):
         st2 = C2(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 209.07)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.50714)
+
+    def test_friendThermo(self):
+        # Selected point from Table A1, Pag 336, ideal gas
+        st = C2(T=100, rho=0, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 3.32)
+        # self.assertEqual(round(st.k.mWmK, 2), 3.46)
+
+        st = C2(T=200, rho=0, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 6.35)
+        # self.assertEqual(round(st.k.mWmK, 2), 10.49)
+
+        st = C2(T=300, rho=0, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 9.39)
+        # self.assertEqual(round(st.k.mWmK, 2), 21.13)
+
+        st = C2(T=400, rho=0, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 12.19)
+        # self.assertEqual(round(st.k.mWmK, 2), 35.95)
+
+        st = C2(T=500, rho=0, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 14.76)
+        # self.assertEqual(round(st.k.mWmK, 2), 53.78)
+
+        # Selected point from Table A2, Pag 337, saturation state
+        # This table has tiny desviation in saturation calculation
+        # st = C2(T=304, x=0.5, eq="friend")
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 28.97)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 79.0)
+
+        # Selected point from Table A3, Pag 339, single phase region
+        st = C2(T=100, P=1e5, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 878.69)
+        # self.assertEqual(round(st.k.mWmK, 1), 248.2)
+
+        st = C2(T=170, P=6e7, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 301.71)
+        # self.assertEqual(round(st.k.mWmK, 1), 221.8)
+
+        st = C2(T=260, P=5e6, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 74.61)
+        # self.assertEqual(round(st.k.mWmK, 1), 106.5)
+
+        st = C2(T=330, P=5e5, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 10.37)
+        # self.assertEqual(round(st.k.mWmK, 1), 25.6)
+
+        st = C2(T=380, P=1e6, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 11.88)
+        # self.assertEqual(round(st.k.mWmK, 1), 33.3)
+
+        st = C2(T=420, P=4e7, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 46.86)
+        # self.assertEqual(round(st.k.mWmK, 1), 89.7)
+
+        st = C2(T=480, P=1e5, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 14.28)
+        # self.assertEqual(round(st.k.mWmK, 1), 50.1)
+
+        st = C2(T=500, P=6e7, eq="friend")
+        self.assertEqual(round(st.mu.muPas, 2), 48.34)
+        # self.assertEqual(round(st.k.mWmK, 1), 101.4)
