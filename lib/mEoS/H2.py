@@ -238,62 +238,53 @@ class H2(MEoS):
         "ao": [-2.9962, -16.724, 15.819, -16.852, 34.586, -53.754],
         "exp": [0.466, 2, 2.4, 4., 7., 8.]}
 
-    visco0 = {"eq": 0,
-             "method": "_visco0",
-             "__name__": "Muzny (2013)",
-             "__doi__": {"autor": "Muzny, C.D., Huber, M.L., and Kazakov, A.F.",
-                         "title": "Correlation for the Viscosity of Normal Hydrogen Obtained from Symbolic Regression",
-                         "ref": "J. Chem. Eng. Data, 2013, 58 (4), pp 969–979",
-                         "doi": "10.1021/je301273j"}}
+    visco0 = {"__name__": "Muzny (2013)",
+              "__doi__": {
+                  "autor": "Muzny, C.D., Huber, M.L., Kazakov, A.F.",
+                  "title": "Correlation for the Viscosity of Normal Hydrogen "
+                           "Obtained from Symbolic Regression",
+                  "ref": "J. Chem. Eng. Data 58(4) (2013) 969-979",
+                  "doi": "10.1021/je301273j"},
 
-    def _visco0(self, rho, T, fase):
-        sigma = 0.297
-        ek = 30.41
+              "eq": 1, "omega": 1,
+              "ek": 30.41, "sigma": 0.297,
+              "n_chapman": 0.021357,
+              "collision": [0.20963, -0.455274, 0.143602, -0.0335325,
+                            0.00276981],
 
-        # Zero-Density Limit, Eq. 3-4
-        T_ = T/ek
-        ai = [2.0963e-1, -4.55274e-1, 1.43602e-1, -3.35325e-2, 2.76981e-3]
-        suma = 0
-        for i, a in enumerate(ai):
-            suma += a*log(T_)**i
-        S = exp(suma)
-        no=0.021357*(self.M*T)**0.5/sigma/S
+              "Tref_virial": 30.41,
+              "n_virial": [-0.187, 2.4871, 3.7151, -11.0972, 9.0965, -3.8292,
+                           0.5166],
+              "t_virial": [0, -1, -2, -3, -4, -5, -6],
 
-        # Excess Contribution, Eq. 5-7
-        bi = [-0.187, 2.4871, 3.7151, -11.0972, 9.0965, -3.8292, 0.5166]
-        B_ = 0
-        for i, b in enumerate(bi):
-            B_ += b/T**i
-        B = B_*sigma**3
-        n1=B*no
+              "special": "_mur",
+              }
 
+    def _mur(self, rho, T, fase):
         # Simbolic Regression, Eq. 9
         rhor = rho/90.5
         Tr = T/self.Tc
         c = [6.43449673, 4.56334068e-2, 2.32797868e-1, 9.5832612e-1,
              1.27941189e-1, 3.63576595e-1]
-        nc=c[0]*rhor**2*exp(c[1]*Tr+c[2]/Tr+c[3]*rhor**2/(c[4]+Tr)+c[5]*rhor**6)
+        nr = c[0]*rhor**2*exp(c[1]*Tr + c[2]/Tr + c[3]*rhor**2/(c[4]+Tr) +
+                              c[5]*rhor**6)
 
-        return unidades.Viscosity(no+n1+nc, "muPas")
+        return nr
 
-    visco1 = {"eq": 0,
-             "method": "_visco1",
-             "__name__": "McCarty (1972)",
-             "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                         "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 Psia",
-                         "ref": "NBS Technical Note 617",
-                         "doi": ""}}
+    visco1 = {"__name__": "McCarty (1972)",
+              "__doi__": {
+                  "autor": "McCarty, R.D. and Weber, L.A.",
+                  "title": "Thermophysical Properties of Parahydrogen from "
+                           "the Freezing Liquid Line to 5000 R for Pressures "
+                           "to 10000 psia",
+                  "ref": "NBS Technical Note 617",
+                  "doi": ""},
+
+              "eq": 0,
+              "method": "_visco1"}
 
     def _visco1(self, rho, T, fase):
-        DELV = lambda rho1, T1, rho2, T2: DILV(T1) + EXCESV(rho1, T2) \
-            - DILV(T2)-EXCESV(rho2, T2)
-
-        def EXVDIL(rho, T):
-            A = exp(5.7694+log(rho.gcc)+0.65e2*rho.gcc**1.5-6e-6*exp(127.2*rho.gcc))
-            B = 10+7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5)-17.63*exp(-58.75*(rho.gcc/0.07)**3)
-            return A*exp(B/T)*0.1
-
-        def DILV(T):
+        def muo(T):
             b = [-0.1841091042788e2, 0.3185762039455e2, -0.2308233586574e2,
                  0.9129812714730e1, -0.2163626387630e1, 0.3175128582601,
                  -0.2773173035271e-1, 0.1347359367871e-2, -0.2775671778154e-4]
@@ -302,88 +293,56 @@ class H2(MEoS):
                 suma += b*T**((-3.+i)/3)
             return suma*100
 
-        def EXCESV(rho, T):
+        def mu1(rho, T):
+            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5 -
+                    6e-6*exp(127.2*rho.gcc))
+            B = 10 + 7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5) - \
+                17.63*exp(-58.75*(rho.gcc/0.07)**3)
+            return A*exp(B/T)*0.1
+
+        def mu2(rho, T):
             c = [-0.1324266117873e2, 0.1895048470537e2, 0.2184151514282e2,
                  0.9771827164811e5, -0.1157010275059e4, 0.1911147702539e3,
                  -0.3186427506942e4, 0.0705565000000]
             R2 = rho.gcc**0.5*(rho.gcc-c[7])/c[7]
-            A = c[0]+c[1]*R2+c[2]*rho.gcc**0.1+c[3]*R2/T**2+c[4]*rho.gcc**0.1/T**1.5+c[5]/T+c[6]*R2/T
+            A = c[0] + c[1]*R2 + c[2]*rho.gcc**0.1 + c[3]*R2/T**2 + \
+                c[4]*rho.gcc**0.1/T**1.5 + c[5]/T + c[6]*R2/T
             B = c[0]+c[5]/T
             return 0.1*(exp(A)-exp(B))
 
-        if T > 100:
-            n = DILV(100) + EXVDIL(rho, 100) \
-                + DELV(rho, T, rho, 100)
-        else:
-            n = DILV(T)+EXVDIL(rho, T)
-        return unidades.Viscosity(n, "muPas")
+        def mur(rho1, T1, rho2, T2):
+            return muo(T1) + mu2(rho1, T2) - muo(T2) - mu2(rho2, T2)
 
-    visco2 = {"eq": 4, "omega": 1,
-              "__name__": "Quiñones-Cisneros (2011)",
-              "__doi__": {"autor": "S.E.Quinones-Cisneros, M.L. Huber and U.K. Deiters",
-                  "title": "model of 1-march-2011",
-                  "ref": "unpublished",
+        if T > 100:
+            mu = muo(100) + mu1(rho, 100) + mur(rho, T, rho, 100)
+        else:
+            mu = muo(T)+mu1(rho, T)
+        return unidades.Viscosity(mu, "muPas")
+
+    visco2 = {"__name__": "Vargaftik (1996)",
+              "__doi__": {
+                  "autor": "Vargaftik, N.B., Vinogradov, Y.K., Yargin, V.S.",
+                  "title": "Handbook of Physical Properties of Liquids and "
+                           "Gases",
+                  "ref": "Begell House, New York, 1996",
                   "doi": ""},
 
-              "Tref": 33.145, "muref": 1.0,
-              "ek": 59.7, "sigma": 0.2827, "n_chapman": 0,
-              "n_ideal": [72.46400680522131e-1, -352.3929484813708e-1,
-                          664.5332385860778e-1, -566.74979475607415e-1,
-                          265.66570031561248e-1, -54.81307488054635e-1,
-                          4.595978383724549e-1],
-              "t_ideal": [0, 0.5, 0.75, 1, 1.25, 1.5],
-              "n_poly": [1],
-              "t_poly": [0.75],
-              "n_polyden": [1, 1],
-              "t_polyden": [0, 1],
-
-              "nb": [1.0, -0.187, 75.6327, 3435.61, -312078, 7.77929e6,
-                    -9.95841e7, 4.08557e8],
-              "tb": [0.0157768, 0, -1, -2, -3, -4, -5, -6],
-
-              "a": [-0.00002348389676311179e3, 0.00002197232806029717e3,
-                    2.4547322430816313e-3, 3.9791170684039065e-8,
-                    4.581319859008102e-3],
-              "b": [0.000026869839733943842e3, 0.000027387647542474032e3,
-                    0.000013065230652860072e3, 3.0723581102227345e-7,
-                    -0.00007033089468735152e3],
-              "c": [0, 0, 0, 0, 0],
-              "A": [-3.912305916140789e-5, -2.1198288980972056e-6,
-                    4.690087618888682e-6, 1.6938783854559677e-11,
-                    9.39021777998824e-5],
-              "B": [-6.381148168720446e-5, 5.178086941554603e-4,
-                    -4.5508093750991845e-5 -1.3780811004280076e-9
-                    -3.7679840470735697e-4],
-              "C": [0, 0, 0, 0, 0],
-              "D": [4.3699367404316626e-7, 0.0, -1.1321685281996792e-8, 0, 0]}
-
-    visco3 = {"eq": 1, "omega": 1,
-              "__name__": "Vargaftik (1996)",
-              "__doi__": {"autor": "Vargaftik, N.B., Vinogradov, Y.K. and Yargin, V.S.",
-                          "title": "Handbook of Physical Properties of Liquids and Gases",
-                          "ref": "Hemisphere Publishing Corporation,New York, NY",
-                          "doi": ""},
+              "eq": 1, "omega": 1,
 
               "ek": 59.7, "sigma": 0.2827,
-              "Tref": 32.938, "rhoref": 1.*M,
+              "Tref_virial": 32.938, "etaref_virial": 1.*M,
               "n_virial": [-2.1505e-1, 10.727e-1, -16.935e-1, 0.0, 22.702e-1,
                            2.2123e-1, 0.34163e-1, -0.043206e-1],
               "t_virial": [-1.5, -1, -0.5, 0, 0.5, 1.5, 2.],
-              "Tref_virial": 32.938, "etaref_virial": 1.*M,
 
-              "Tref_res": 32.938, "rhoref_res": 15.556*M, "etaref_res": 1.,
-              "n_packed": [], "t_packed": [],
-              "n_poly": [-9.22703e-1, 6.41602, -5.98018, 2.89715e-1, 2.36429,
-                         -2.78870e-1, -1.10595e1, 1.11582e1, 7.18928,
-                         -7.76971, -1.21827,  1.47193],
-              "t_poly": [0, -1, -2, -3, 0, 0, -1, -2, -1, -2, -1, -2],
-              "d_poly": [1, 1, 1, 1, 2, 3, 3, 3, 4, 4, 5, 5],
-              "g_poly": [0]*12,
-              "c_poly": [0]*12,
-              "n_num": [], "t_num": [], "d_num": [], "g_num": [], "c_num": [],
-              "n_den": [], "t_den": [], "d_den": [], "g_den": [], "c_den": []}
+              "Tref_res": 32.938, "rhoref_res": 15.556*M,
+              "nr": [-0.922703, 6.41602, -5.98018, 0.289715, 2.36429,
+                     -0.27887, -11.0595, 11.1582, 7.18928, -7.76971, -1.21827,
+                     1.47193],
+              "tr": [0, -1, -2, -3, 0, 0, -1, -2, -1, -2, -1, -2],
+              "dr": [1, 1, 1, 1, 2, 3, 3, 3, 4, 4, 5, 5]}
 
-    _viscosity = visco0, visco1, visco2, visco3
+    _viscosity = visco0, visco1, visco2
 
     thermo0 = {"eq": 1,
                "__name__": "Assael (2011)",
