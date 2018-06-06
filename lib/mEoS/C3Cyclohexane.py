@@ -86,27 +86,6 @@ class C3Cyclohexane(MEoS):
         "ao": [-0.64572e1, 0.91228e1, -0.25806e2, -0.59044e2, -0.14709e3],
         "exp": [0.6, 1.8, 2.2, 6.0, 14.0]}
 
-    visco0 = {"eq": 4, "omega": 1,
-              "__name__": "Quiñones-Cisneros (2006)",
-              "__doi__": {"autor": "S.E.Quiñones-Cisneros and U.K. Deiters",
-                          "title": "Generalization of the Friction Theory for Viscosity Modeling",
-                          "ref": "J. Phys. Chem. B, 2006, 110 (25), pp 12820–12834",
-                          "doi": "10.1021/jp0618577"},
-
-              "Tref": 630.8, "muref": 1.0,
-              "ek": 507.54, "sigma": 0.6321,
-              "n_ideal": [0.528175e2, -0.170572e3,  0.171218e3, -0.402745e2],
-              "t_ideal": [0, 0.25, 0.5, 0.75],
-
-              "a": [-0.132691e-3, 0.0, 0.469322e-6],
-              "b": [-0.121616e-3, 0.157511e-4, 0.487973e-6],
-              "c": [0.160622e-2, -0.500143e-3, 0.0],
-              "A": [-0.158302e-7, 0.223800e-9, 0.0],
-              "B": [0.252822e-7, 0.0, 0.0],
-              "C": [0.0, 0.0, 0.0],
-              "D": [0.0, 0.0, 0.0]}
-
-    _viscosity = visco0,
 
     thermo0 = {"eq": 1,
                "__name__": "Perkins (2008)",

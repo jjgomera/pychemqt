@@ -138,17 +138,6 @@ class D4(MEoS):
                -0.10976e4],
         "exp": [0.31, 0.78, 2.5, 4.4, 5.0, 15.0]}
 
-    visco0 = {"eq": 5, "omega": 3,
-              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
-                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"},
-              "__name__": "Chung (1988)",
-              "w": 0.592, "mur": 0.0, "k": 0.0}
-
-    _viscosity = visco0,
-#    _thermal=visco0,
-
 
 class Test(TestCase):
 

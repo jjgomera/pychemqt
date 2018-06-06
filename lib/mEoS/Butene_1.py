@@ -22,7 +22,6 @@ from unittest import TestCase
 
 from lib.meos import MEoS
 from lib import unidades
-from lib.mEoS.C3 import C3
 
 
 class Butene_1(MEoS):
@@ -87,28 +86,8 @@ class Butene_1(MEoS):
         "exp": [0.547, 0.73, 0.92, 1.14, 2.1]}
     _vapor_Density = {
         "eq": 3,
-        "ao": [-0.31106e1, -0.63103e1, -0.19272e2, -0.48739e2, -0.99898e2, -0.19001e3],
+        "ao": [-3.1106, -6.3103, -19.272, -48.739, -99.898, -190.01],
         "exp": [0.415, 1.27, 3.34, 7.0, 14.5, 28.0]}
-
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
-                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"},
-
-              "ref": C3,
-              "ref_eq": "lemmon",
-              "eq_visco": "visco1",
-              "eq_thermo": "thermo0",
-
-              "sigma": 0.4998, "ek": 332.95,
-              "fint": [1.32e-3], "fint_t": [0],
-              "psi": [1.0], "psi_t": [0], "psi_d": [0],
-              "phi": [1.0], "phi_t": [0], "phi_d": [0]}
-
-    _viscosity = trnECS,
-    _thermal = trnECS,
 
 
 class Test(TestCase):
@@ -144,8 +123,3 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 2), 124.13)
         self.assertEqual(round(st.cpM.kJkmolK, 2), 416.03)
         self.assertEqual(round(st.w, 2), 151.49)
-
-
-if __name__ == "__main__":
-    st = Butene_1(T=300, P=1e5, )
-    print("%0.6g %0.6g" % (st.mu.muPas, st.k.mWmK))

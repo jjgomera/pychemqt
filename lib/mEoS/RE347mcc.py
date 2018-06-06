@@ -102,4 +102,4 @@ class RE347mcc(MEoS):
               "__name__": "Chung (1988)",
               "w": 0.411, "mur": 0.0, "k": 0.0}
 
-    _viscosity = visco0,
+    # _viscosity = visco0,

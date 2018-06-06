@@ -103,7 +103,7 @@ class iC6(MEoS):
                     -3363.2028894, -0.11398677788, 171.32077134, 2849.7100897],
               "rhoc": 2.727}
 
-    _viscosity = visco0,
+    # _viscosity = visco0,
 
     thermo0 = {"eq": 1, "critical": 0,
                "__name__": "NIST14",
@@ -123,7 +123,7 @@ class iC6(MEoS):
                "db": [1, 3, 4, 4, 5, 5],
                "cb": [0]*6}
 
-    _thermal = thermo0,
+    # _thermal = thermo0,
 
 
 class Test(TestCase):

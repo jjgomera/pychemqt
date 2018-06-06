@@ -94,13 +94,3 @@ class RE245fa2(MEoS):
         "eq": 3,
         "ao": [-0.667, -5.8238, -26.927, 21.574, -65.645],
         "exp": [0.28, 0.66, 2.6, 3.5, 5.2]}
-
-    visco0 = {"eq": 5, "omega": 3,
-              "__doi__": {"autor": "T-H. Chung, Ajlan, M., Lee, L.L. and Starling, K.E",
-                          "title": "Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties",
-                          "ref": "Ind. Eng. Chem. Res., 1988, 27 (4), pp 671–679",
-                          "doi": "10.1021/ie00076a024"},
-              "__name__": "Chung (1988)",
-              "w": 0.387, "mur": 0.0, "k": 0.0}
-
-    _viscosity = visco0,

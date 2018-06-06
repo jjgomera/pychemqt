@@ -81,38 +81,16 @@ class DMC(MEoS):
 
     eq = zhou,
 
-    _vapor_Pressure={
+    _vapor_Pressure = {
         "eq": 5,
         "ao": [-8.3197, 3.4260, -3.5905, -3.3194],
         "exp": [1.0, 1.5, 2.3, 4.7]}
-    _liquid_Density={
+    _liquid_Density = {
         "eq": 1,
         "ao": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526],
         "exp": [0.27, 0.77, 1.29, 1.85, 2.46, 3.16]}
-    _vapor_Density={
+    _vapor_Density = {
         "eq": 3,
-        "ao": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072, -379.799],
+        "ao": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072,
+               -379.799],
         "exp": [0.197, 0.6, 2.86, 3.65, 4.5, 5.4, 6.4]}
-
-    visco0 = {"eq": 1, "omega": 3,
-              "__name__": "Zhou (2010)",
-              "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
-                          "title": "Equations for the Thermophysical Properties of Dimethyl Carbonate",
-                          "ref": "AICHE Proceedings, 2009 Annual Meeting",
-                          "doi": ""},
-
-              "ek": 442.3, "sigma": 0.510747,
-              "Tref": 557.376, "rhoref": 3.9749*M,
-              "n_chapman": 0.20555,
-              "n_ideal": [],
-              "t_ideal": [],
-
-              "Tref_res": 557.376, "rhoref_res": 3.9749*M, "etaref_res": 1,
-              "n_poly": [5.07808, -0.056734, 0.00832177, 35.459838, 0.0513528],
-              "t_poly": [-0.1, -3.0968, -2.8945, 0.0731, -3.9871],
-              "d_poly": [4, 10, 12, 2, 0],
-              "g_poly": [0, 0, 0, 0, 0, 0],
-              "c_poly": [0, 1, 1, 2, 3]}
-
-    _viscosity = visco0,
-

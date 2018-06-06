@@ -224,7 +224,7 @@ class iC5(MEoS):
                     0.15624235969, 122.90017543, -20914.795166],
               "rhoc": 3.24}
 
-    _viscosity = visco0,
+    # _viscosity = visco0,
 
     thermo0 = {"eq": 1,
                "__name__": "NIST14",
@@ -248,7 +248,7 @@ class iC5(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.9316e-9, "Tcref": 690.525}
 
-    _thermal = thermo0,
+    # _thermal = thermo0,
 
 
 class Test(TestCase):
