@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-from math import log, exp, pi, atan
 from unittest import TestCase
 
 from lib.meos import MEoSBlend
@@ -65,7 +64,7 @@ class Air(MEoSBlend):
             "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
             "doi":  "10.1063/1.1285884"},
 
-        "R": 8.31451, "M": 28.9586,
+        "R": 8.31451,
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.},
 
@@ -166,7 +165,7 @@ class Air(MEoSBlend):
               "omega": 1,
               "ek": 103.3, "sigma": 0.36,
 
-              "Tref_res": 132.6312, "rhoref_res": 10.4477*28.9586,
+              "Tref_res": 132.6312, "rhoref_res": 10.4477*M,
               "nr": [10.72, 1.122, 0.002019, -8.876, -0.02916],
               "tr": [.2, .05, 2.4, .6, 3.6],
               "dr": [1, 4, 9, 1, 8],
@@ -175,8 +174,7 @@ class Air(MEoSBlend):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Lemmon (2004)",
+    thermo0 = {"__name__": "Lemmon (2004)",
                "__doi__": {
                    "autor": "Lemmon, E.W., Jacobsen, R.T.",
                    "title": "Viscosity and Thermal Conductivity Equations for "
@@ -184,20 +182,24 @@ class Air(MEoSBlend):
                    "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
                    "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-               "Tref": 132.6312, "kref": 1e-3,
-               "no": [1.308, 1.405, -1.036],
-               "co": [-97, -1.1, -0.3],
+               "eq": 1,
+               "Pc": 3.78502e6,
 
-               "Trefb": 132.6312, "rhorefb": 10.4477, "krefb": 1e-3,
-               "nb": [8.743, 14.76, -16.62, 3.793, -6.142, -0.3778],
-               "tb": [0.1, 0, 0.5, 2.7, 0.3, 1.3],
-               "db": [1, 2, 3, 7, 7, 11],
-               "cb": [0, 0, 2, 2, 2, 2],
+               "Toref": 132.6312, "koref": 1e-3,
+               "no_visco": 1.308,
+               "no": [1.405, -1.036],
+               "to": [1.1, 0.3],
+
+               "Tref_res": 132.6312, "rhoref_res": 10.4477*M, "kref_res": 1e-3,
+               "nr": [8.743, 14.76, -16.62, 3.793, -6.142, -0.3778],
+               "tr": [0.1, 0, 0.5, 2.7, 0.3, 1.3],
+               "dr": [1, 2, 3, 7, 7, 11],
+               "cr": [0, 0, 2, 2, 2, 2],
+               "gr": [0, 0, 1, 1, 1, 1],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.11, "gam0": 0.055, "qd": 0.31,
-               "Tcref": 265.262}
+               "Xio": 0.11e-9, "gam0": 0.055, "qd": 0.31e-9, "Tcref": 265.262}
 
     _thermal = thermo0,
 
@@ -285,17 +287,14 @@ class Test(TestCase):
         # Thermal Conductivity
         self.assertEqual(round(Air(rhom=0, T=100).k.mWmK, 5), 9.35902)
         self.assertEqual(round(Air(rhom=0, T=300).k.mWmK, 4), 26.3529)
-        # self.assertEqual(round(Air(rhom=28, T=100).k.mWmK, 3), 119.222)
-        # self.assertEqual(round(Air(rhom=10, T=200).k.mWmK, 4), 35.386)
+        self.assertEqual(round(Air(rhom=28, T=100).k.mWmK, 3), 119.221)
+        self.assertEqual(round(Air(rhom=10, T=200).k.mWmK, 4), 35.3185)
         self.assertEqual(round(Air(rhom=5, T=300).k.mWmK, 4), 32.6062)
-        # self.assertEqual(round(Air(rhom=10.4, T=132.64).k.mWmK, 4), 75.6231)
+        self.assertEqual(round(Air(rhom=10.4, T=132.64).k.mWmK, 4), 75.6231)
 
 
 if __name__ == "__main__":
-    # st = Air(T=132.4, rho=10.4*28.9586, thermal=0)
-    # print(st.k.mWmK)
-    # st2 = Air(T=132.4, rho=10.4*28.9586, visco=1, thermal=1)
-    # print(st2.k.mWmK)
-    # print(Air(T=132.64, rhom=10.4, thermal=0).k.mWmK)
-    # print(Air(T=132.64, rhom=10.4, thermal=1).k.mWmK)
-    st = Air(T=500, P=2e5)
+    from iapws.humidAir import Air as Air2
+    st = Air(rhom=28, T=100)
+    st1 = Air2(rhom=28, T=100)
+    print(st.k.mWmK, st1.k)

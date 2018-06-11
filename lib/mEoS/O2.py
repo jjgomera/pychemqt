@@ -290,8 +290,7 @@ class O2(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Lemmon (2004)",
+    thermo0 = {"__name__": "Lemmon (2004)",
                "__doi__": {
                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
                   "title": "Viscosity and Thermal Conductivity Equations for "
@@ -299,19 +298,23 @@ class O2(MEoS):
                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-               "Tref": 154.581, "kref": 1e-3,
-               "no": [1.036, 6.283, -4.262],
-               "co": [-97, 0.9, 0.6],
+               "eq": 1,
 
-               "Trefb": 154.581, "rhorefb": 13.63, "krefb": 1e-3,
-               "nb": [15.31, 8.898, -0.7336, 6.728, -4.374, -0.4747],
-               "tb": [0, 0, 0.3, 4.3, 0.5, 1.8],
-               "db": [1, 3, 4, 5, 7, 10],
-               "cb": [0, 0, 0, 2, 2, 2],
+               "Toref": 154.581, "koref": 1e-3,
+               "no_visco": 1.036,
+               "no": [6.283, -4.262],
+               "to": [0.9, 0.6],
+
+               "Tref_res": 154.581, "rhoref_res": 13.63*M, "kref_res": 1e-3,
+               "nr": [15.31, 8.898, -0.7336, 6.728, -4.374, -0.4747],
+               "tr": [0, 0, 0.3, 4.3, 0.5, 1.8],
+               "dr": [1, 3, 4, 5, 7, 10],
+               "cr": [0, 0, 0, 2, 2, 2],
+               "gr": [0, 0, 0, 1, 1, 1],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.24, "gam0": 0.055, "qd": 0.51, "Tcref": 309.162}
+               "Xio": 0.24e-9, "gam0": 0.055, "qd": 0.51e-9, "Tcref": 309.162}
 
     thermo1 = {"eq": 3,
                "__name__": "Younglove (1982)",
@@ -606,12 +609,12 @@ class Test(TestCase):
         self.assertEqual(round(O2(T=154.6, rhom=13.6).mu.muPas, 4), 24.7898)
 
         # Thermal Conductivity
-        # self.assertEqual(round(O2(rhom=0, T=100).k.mWmK, 5), 8.94334)
-        # self.assertEqual(round(O2(rhom=0, T=300).k.mWmK, 4), 26.4403)
-        # self.assertEqual(round(O2(rhom=35, T=100).k.mWmK, 3), 146.044)
-        # self.assertEqual(round(O2(rhom=10, T=200).k.mWmK, 4), 34.6124)
-        # self.assertEqual(round(O2(rhom=5, T=300).k.mWmK, 4), 32.5491)
-        # self.assertEqual(round(O2(rhom=13.6, T=154.6).k.mWmK, 4), 377.476)
+        self.assertEqual(round(O2(rhom=0, T=100).k.mWmK, 5), 8.94334)
+        self.assertEqual(round(O2(rhom=0, T=300).k.mWmK, 4), 26.4403)
+        self.assertEqual(round(O2(rhom=35, T=100).k.mWmK, 3), 146.044)
+        self.assertEqual(round(O2(rhom=10, T=200).k.mWmK, 4), 34.6125)
+        self.assertEqual(round(O2(rhom=5, T=300).k.mWmK, 4), 32.5491)
+        self.assertEqual(round(O2(rhom=13.6, T=154.6).k.mWmK, 1), 377.5)
 
     def test_Laesecke(self):
         kw = {"visco": 2, "thermal": 2}

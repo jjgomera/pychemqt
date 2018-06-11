@@ -395,42 +395,27 @@ class N2(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=N2(T=100, rhom=0)
-                    >>> print "%0.5f" % st.k.mWmK
-                    9.27749
-                    >>> st=N2(T=300, rhom=0)
-                    >>> print "%0.4f" % st.k.mWmK
-                    25.9361
-                    >>> st=N2(T=100, rhom=25)
-                    >>> print "%0.3f" % st.k.mWmK
-                    103.834
-                    >>> st=N2(T=200, rhom=10)
-                    >>> print "%0.4f" % st.k.mWmK
-                    36.0099
-                    >>> st=N2(T=300, rhom=5)
-                    >>> print "%0.4f" % st.k.mWmK
-                    32.7694
-                    >>> st=N2(T=126.195, rhom=11.18)
-                    >>> print "%0.4f" % st.k.mWmK
-                    675.8
-                    """, # Table V, Pag 28
+    thermo0 = {"__name__": "Lemmon (2004)",
+               "__doi__": {
+                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                   "title": "Viscosity and Thermal Conductivity Equations for "
+                            "Nitrogen, Oxygen, Argon, and Air",
+                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-               "Tref": 126.192, "kref": 1e-3,
-               "no": [1.511, 2.117, -3.332],
-               "co": [-97, -1, -0.7],
+               "eq": 1,
 
-               "Trefb": 126.192, "rhorefb": 11.1839, "krefb": 1e-3,
-               "nb": [8.862, 31.11, -73.13, 20.03, -0.7096, 0.2672],
-               "tb": [0, 0.03, 0.2, 0.8, 0.6, 1.9],
-               "db": [1, 2, 3, 4, 8, 10],
-               "cb": [0, 0, 1, 2, 2, 2],
+               "Toref": 126.192, "koref": 1e-3,
+               "no_visco": 1.511,
+               "no": [2.117, -3.332],
+               "to": [1, 0.7],
+
+               "Tref_res": 126.192, "rhoref_res": 11.1839*M, "kref_res": 1e-3,
+               "nr": [8.862, 31.11, -73.13, 20.03, -0.7096, 0.2672],
+               "tr": [0, 0.03, 0.2, 0.8, 0.6, 1.9],
+               "dr": [1, 2, 3, 4, 8, 10],
+               "cr": [0, 0, 1, 2, 2, 2],
+               "gr": [0, 0, 1, 1, 1, 1],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
@@ -802,14 +787,13 @@ class Test(TestCase):
         self.assertEqual(round(N2(rhom=5, T=300).mu.muPas, 4), 20.7430)
         self.assertEqual(round(N2(rhom=11.18, T=126.195).mu.muPas, 4), 18.2978)
 
-        # self.assertEqual(round(N2(rho=0, T=100).k.mWmK, 3), 9.27749)
-        # self.assertEqual(round(N2(rho=10*N2.M, T=200).k.mWmK, 3), 103.834)
-        # self.assertEqual(round(st._thermo0(0, 100), 8), 9.35902e-3)
-        # self.assertEqual(round(st._thermo0(0, 300), 7), 26.3529e-3)
-        # self.assertEqual(round(Air(rho=28*28.9586, T=100).k.mWmK, 3), 119.222)
-        # # self.assertEqual(round(Air(rho=10*28.9586, T=200).k.mWmK, 4), 35.3186)
-        # self.assertEqual(round(Air(rho=5*28.9586, T=300).k.mWmK, 4), 32.6062)
-        # # self.assertEqual(round(Air(rho=10.4*28.9586, T=132.64).k.mWmK, 4), 75.6231)
+        # Thermal Condcutivity
+        self.assertEqual(round(N2(rhom=0, T=100).k.mWmK, 5), 9.27749)
+        self.assertEqual(round(N2(rhom=0, T=300).k.mWmK, 4), 25.9361)
+        self.assertEqual(round(N2(rhom=25, T=100).k.mWmK, 3), 103.834)
+        self.assertEqual(round(N2(rhom=10, T=200).k.mWmK, 4), 36.0099)
+        self.assertEqual(round(N2(rhom=5, T=300).k.mWmK, 4), 32.7694)
+        self.assertEqual(round(N2(rhom=11.18, T=126.195).k.mWmK, 1), 675.8)
 
     def test_stephan(self):
         # The paper use a old Jacobsen EoS
@@ -836,10 +820,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 72.88)
 
 
-
 if __name__ == "__main__":
-    st1 = N2(T=75, x=0.5, visco=0)
-    st2 = N2(T=75, x=0.5, visco=1)
-    print(st2.Liquido.mu.muPas, st2.Gas.mu.muPas)
-    print(st1.Liquido.mu.muPas, st1.Gas.mu.muPas)
+    st = N2(rhom=25, T=100)
+    print(st.rho, st.mu.muPas, st.k.mWmK)
 

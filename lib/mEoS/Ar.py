@@ -348,53 +348,43 @@ class Ar(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Lemmon (2004)",
-               "__doi__": {"autor": "Lemmon, E.W. and Jacobsen, R.T.",
-                            "title": "Viscosity and Thermal Conductivity Equations for Nitrogen, Oxygen, Argon, and Air",
-                            "ref": "Int. J. Thermophys., 25:21-69, 2004.",
-                            "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
-               "__test__": """
-                    >>> st=Ar(T=100, rhom=0)
-                    >>> print "%0.5f" % st.k.mWmK
-                    6.36587
-                    >>> st=Ar(T=300, rhom=0)
-                    >>> print "%0.4f" % st.k.mWmK
-                    17.8042
-                    >>> st=Ar(T=100, rhom=33)
-                    >>> print "%0.3f" % st.k.mWmK
-                    111.266
-                    >>> st=Ar(T=200, rhom=10)
-                    >>> print "%0.4f" % st.k.mWmK
-                    26.1377
-                    >>> st=Ar(T=300, rhom=5)
-                    >>> print "%0.4f" % st.k.mWmK
-                    23.2302
-                    >>> st=Ar(T=150.69, rhom=13.4)
-                    >>> print "%0.4f" % st.k.mWmK
-                    856.793
-                    """, # Table V, Pag 28
+    thermo0 = {"__name__": "Lemmon (2004)",
+               "__doi__": {
+                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                   "title": "Viscosity and Thermal Conductivity Equations for "
+                            "Nitrogen, Oxygen, Argon, and Air",
+                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
-               "Tref": 150.687, "kref": 1e-3,
-               "no": [0.8158, -0.432],
-               "co": [-97, -0.77],
+               "eq": 1,
 
-               "Trefb": 150.687, "rhorefb": 13.40742965, "krefb": 1e-3,
-               "nb": [13.73, 10.07, 0.7375, -33.96, 20.47, -2.274, -3.973],
-               "tb": [0.0, 0.0, 0.0, 0.8, 1.2, 0.8, 0.5],
-               "db": [1, 2, 4, 5, 6, 9, 1],
-               "cb": [0, 0, 0, 2, 2, 2, 4],
+               "Toref": 150.687, "koref": 1e-3,
+               "no_visco": 0.8158,
+               "no": [-0.432],
+               "to": [0.77],
+
+               "Tref_res": 150.687, "rhoref_res": 13.40743*M, "kref_res": 1e-3,
+               "nr": [13.73, 10.07, 0.7375, -33.96, 20.47, -2.274, -3.973],
+               "tr": [0.0, 0.0, 0.0, 0.8, 1.2, 0.8, 0.5],
+               "dr": [1, 2, 4, 5, 6, 9, 1],
+               "cr": [0, 0, 0, 2, 2, 2, 4],
+               "gr": [0, 0, 0, 1, 1, 1, 1],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.13e-9, "gam0": 0.55e-1, "qd": 0.32e-9, "Tcref": 301.374}
+               "Xio": 0.13e-9, "gam0": 0.055, "qd": 0.32e-9, "Tcref": 301.374}
 
-    thermo1 = {"eq": 3,
-               "__name__": "Younglove (1982)",
-               "__doi__": {"autor": "Younglove, B.A.",
-                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                           "doi": ""},
+    thermo1 = {"__name__": "Younglove (1982)",
+
+               "__doi__": {
+                   "autor": "Younglove, B.A.",
+                   "title": "Thermophysical Properties of Fluids. I. Argon, "
+                            "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                            "Trifluoride, and Oxygen",
+                   "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
+                   "doi": ""},
+
+               "eq": 3,
 
                "ek": 152.8, "sigma": 0.3297,
                "Nchapman": 0.16871158559818,
@@ -846,6 +836,14 @@ class Test(TestCase):
         self.assertEqual(round(Ar(T=300, rhom=5).mu.muPas, 4), 26.3706)
         self.assertEqual(round(Ar(T=150.69, rhom=13.4).mu.muPas, 4), 27.6101)
 
+        # Thermal Conductivity
+        self.assertEqual(round(Ar(rhom=0, T=100).k.mWmK, 5), 6.36587)
+        self.assertEqual(round(Ar(rhom=0, T=300).k.mWmK, 4), 17.8042)
+        self.assertEqual(round(Ar(rhom=33, T=100).k.mWmK, 3), 111.266)
+        self.assertEqual(round(Ar(rhom=10, T=200).k.mWmK, 4), 26.1377)
+        self.assertEqual(round(Ar(rhom=5, T=300).k.mWmK, 4), 23.2302)
+        self.assertEqual(round(Ar(rhom=13.4, T=150.69).k.mWmK, 1), 856.8)
+
     # def test_YoungloveHanley(self):
         # st = Ar(T=90, rhom=34.455)
         # self.assertEqual(round(st.Liquido.mu.muPas, 1), 238.7)
@@ -860,7 +858,6 @@ class Test(TestCase):
 
 
 if __name__ == "__main__":
-    st = Ar(T=190, rhom=8.494, visco=2)
-    print(st.mu.muPas)  # 22.6
-    st = Ar(T=500, P=1e5, visco=1)
-    print(st.mu.muPas)  # 34.2
+    st = Ar(T=Ar.Tc, P=Ar.Pc, thermal=0)
+    st1 = Ar(T=Ar.Tc, P=Ar.Pc, thermal=2)
+    print(st.k.mWmK, st1.k.mWmK)
