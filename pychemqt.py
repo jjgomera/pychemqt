@@ -90,6 +90,7 @@ if not settings.contains("LastFile"):
     settings.setValue("Geometry", QtCore.QVariant())
     settings.setValue("MainWindow/State", QtCore.QVariant())
 
+
 # Translation
 locale = QtCore.QLocale.system().name()
 myTranslator = QtCore.QTranslator()

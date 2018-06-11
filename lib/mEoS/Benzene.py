@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy.constants import Avogadro as Na
-
 from lib.meos import MEoS
 from lib import unidades
 
@@ -192,7 +190,6 @@ class Benzene(MEoS):
               "collision": [0.234018, -0.476136, 0, -0.015269],
 
               "Tref_virial": 412,
-              "muref_virial": Na*0.54e-9**3,
               "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
                            -3375.1717, 2491.6597, -787.26086, 14.085455,
                            -0.34664158],
@@ -214,32 +211,36 @@ class Benzene(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Assael (2012)",
-               "__doi__": {"autor": "Assael, M.J., Mihailidou, E., Huber, M.L. and Perkins, R.A.",
-                           "title": "Reference Correlation of the Thermal Conductivity of Benzene from the Triple Point to 725 K and up to 500 MPa",
-                           "ref": "J. Phys. Chem. Ref. Data 41, 043102 (2012)",
-                           "doi": "10.1063/1.4755781"},
+    thermo0 = {"__name__": "Assael (2012)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Mihailidou, E., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal "
+                            "Conductivity of Benzene from the Triple Point to "
+                            "725 K and up to 500 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 41(4) (2012) 043102",
+                   "doi": "10.1063/1.4755781"},
 
-               "Tref": 1., "kref": 1e-3,
-               "no": [56991.07, -521.44, 1.5449],
-               "co": [0, 1, 2],
-               "noden": [562.02, 9.714, 0.0026102],
-               "coden": [0, 1, 2],
+               "eq": 1,
 
-               "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
-               "nb": [.282489e-1, -.773415e-1, .714001e-1, -.236798e-1,
-                      .300875e-2, -.119268e-1, .833389e-1, -.898176e-1,
-                      .363025e-1, -.490052e-2],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
+               "Toref": 562.02, "koref": 1e-3,
+               "no_num": [101.404, -521.44, 868.266],
+               "to_num": [0, 1, 2],
+               "no_den": [1, 9.714, 1.467],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 562.02, "rhoref_res": 304.792, "kref_res": 1,
+               "nr": [2.82489e-2, -7.73415e-2, 7.14001e-2, -2.36798e-2,
+                      3.00875e-3, -1.19268e-2, 8.33389e-2, -8.98176e-2,
+                      3.63025e-2, -4.90052e-3],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
-               "Xio": 0.216-9, "gam0": 0.0569, "qd": 0.62e-9, "Tcref": 843}
+               "Xio": 2.16e-10, "gam0": 0.0569, "qd": 6.2e-10, "Tcref": 843}
 
-    # _thermal = thermo0,
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -268,6 +269,17 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.rho, 3), 508.838)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 62.26)
 
+    def test_thermoAssael(self):
+        # Table 4, pag 8
+        # The viscosity correlation used in the paper is different to Avgeri
+        # visco0 correlation, so tiny desviations are for that cause
+        self.assertEqual(round(Benzene(T=290, rho=890).k.mWmK, 2), 147.65)
+        self.assertEqual(round(Benzene(T=500, rho=2).k.mWmK, 3), 30.174)
+        # self.assertEqual(round(Benzene(T=500, rho=32).k.mWmK, 3), 32.175)
+        # self.assertEqual(round(Benzene(T=500, rho=800).k.mWmK, 2), 141.24)
+        self.assertEqual(round(Benzene(T=570, rho=1.7).k.mWmK, 3), 37.763)
 
-# if __name__ == "__main__":
-    # st = Benzene(T=400, rho=758.650)
+
+if __name__ == "__main__":
+    st = Benzene(T=500, rho=32)
+    print(st.k.mWmK)
