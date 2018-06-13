@@ -95,27 +95,3 @@ class C1Palmitate(MEoS):
         "eq": 3,
         "ao": [-11.612, 1.63e2, -4.7913e2, 7.2986e2, -4.8202e2, -1.8198e2],
         "exp": [0.65, 1.78, 2.15, 2.7, 3.1, 9.8]}
-
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2010)",
-               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate",
-                           "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
-                           "doi": "10.1021/ef200417x"},
-
-               "Tref": 755.0, "kref": 1,
-               "no": [-0.27125e-3, 0.259365e-2, 0.350241e-1, -0.902273e-2],
-               "co": [0, 1, 2, 3],
-
-               "Trefb": 755.0, "rhorefb": 0.897*M, "krefb": 1.,
-               "nb": [-0.410106e-1, 0.328443e-1, -0.418506e-2, 0.0, 0.0,
-                      0.606657e-1, -0.498407e-1, 0.121752e-1, 0.0, 0.0],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1132.5}
-
-    _thermal = thermo0,

@@ -94,27 +94,3 @@ class C1Linolenate(MEoS):
         "eq": 3,
         "ao": [-11.463, 45.192, -65.779, -0.18386e4, 0.40689e4, -0.25124e4],
         "exp": [0.65, 1.55, 1.8, 6.6, 7.2, 7.8]}
-
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2010)",
-               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivities of Biodiesel Constituent Fluids: Methyl Oleate and Methyl Linoleate",
-                           "ref": "Energy Fuels, 2011, 25 (5), pp 2383–2388",
-                           "doi": "10.1021/ef200417x"},
-
-               "Tref": 772.0, "kref": 1,
-               "no": [-0.27125000e-3, 0.25936500e-2, 0.35024100e-1, -0.90227300e-2],
-               "co": [0, 1, 2, 3],
-
-               "Trefb": 772.0, "rhorefb": 0.8473*M, "krefb": 1.,
-               "nb": [-0.41010600e-1, 0.32844300e-1, -0.41850600e-2, 0.0, 0.0,
-                      0.60665700e-1, -0.49840700e-1, 0.12175200e-1, 0.0, 0.0],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1158.0}
-
-    _thermal = thermo0,

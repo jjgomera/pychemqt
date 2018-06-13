@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from lib.meos import MEoS
 from lib import unidades
 
-# FIXME: Don't work
-
 
 class Cyclopropane(MEoS):
     """Multiparameter equation of state for cyclopropane"""
