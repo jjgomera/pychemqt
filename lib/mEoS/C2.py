@@ -284,7 +284,8 @@ class C2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = buecker, MBWR, GERG, friend, shortSpan, sun
+    # eq = buecker, MBWR, GERG, friend, shortSpan, sun
+    eq = buecker, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -380,27 +381,29 @@ class C2(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Friend (1991)",
-               "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
-                           "title": "Thermophysical Properties of Ethane",
-                           "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
-                           "doi": "10.1063/1.555881"},
+    thermo0 = {"__name__": "Friend (1991)",
+               "__doi__": {
+                   "autor": "Friend, D.G., Ingham, H., Ely, J.F.",
+                   "title": "Thermophysical Properties of Ethane",
+                   "ref": "J. Phys. Chem. Ref. Data 20(2) (1991) 275-347",
+                   "doi": "10.1063/1.555881"},
 
-               "Tref": 245.0, "kref": 1e-3,
-               "no": [1.7104147, -0.6936482, 0],
-               "co": [0, -1, -96],
+               "eq": 1,
 
-               "Trefb": 305.33, "rhorefb": 6.87, "krefb": 4.41786e-3,
-               "nb": [0.96084322, 2.7500235, -0.026609289, -0.078146729,
+               "Toref": 245.0, "koref": 1e-3,
+               "no_viscoCp": [1.7104147, -0.6936482],
+               "to_viscoCp": [0, -1],
+
+               "Tref_res": 305.33, "rhoref_res": 6.87*30.07,
+               "kref_res": 4.41786e-3,
+               "nr": [0.96084322, 2.7500235, -0.026609289, -0.078146729,
                       0.21881339, 2.3849563, -0.75113971],
-               "tb": [0, 0, 0, 0, 0, -1.5, -1],
-               "db": [1, 2, 3, 4, 5, 1, 3],
-               "cb": [0]*7,
+               "tr": [0, 0, 0, 0, 0, 1.5, 1],
+               "dr": [1, 2, 3, 4, 5, 1, 3],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.242, "R0": 1.01,
-               "Xio": 0.19e-9, "gam0": 0.0563, "qd": -0.545e-9, "Tcref": 610.66}
+               "Xio": 0.19e-9, "gam0": 0.0563, "qd": 0.545e-9, "Tcref": 610.66}
 
     _thermal = thermo0,
 
@@ -822,23 +825,23 @@ class Test(TestCase):
         # Selected point from Table A1, Pag 336, ideal gas
         st = C2(T=100, rho=0, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 3.32)
-        # self.assertEqual(round(st.k.mWmK, 2), 3.46)
+        self.assertEqual(round(st.k.mWmK, 2), 3.46)
 
         st = C2(T=200, rho=0, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 6.35)
-        # self.assertEqual(round(st.k.mWmK, 2), 10.49)
+        self.assertEqual(round(st.k.mWmK, 2), 10.49)
 
         st = C2(T=300, rho=0, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 9.39)
-        # self.assertEqual(round(st.k.mWmK, 2), 21.13)
+        self.assertEqual(round(st.k.mWmK, 2), 21.13)
 
         st = C2(T=400, rho=0, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 12.19)
-        # self.assertEqual(round(st.k.mWmK, 2), 35.95)
+        self.assertEqual(round(st.k.mWmK, 2), 35.95)
 
         st = C2(T=500, rho=0, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 14.76)
-        # self.assertEqual(round(st.k.mWmK, 2), 53.78)
+        self.assertEqual(round(st.k.mWmK, 2), 53.78)
 
         # Selected point from Table A2, Pag 337, saturation state
         # This table has tiny desviation in saturation calculation
@@ -849,32 +852,32 @@ class Test(TestCase):
         # Selected point from Table A3, Pag 339, single phase region
         st = C2(T=100, P=1e5, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 878.69)
-        # self.assertEqual(round(st.k.mWmK, 1), 248.2)
+        self.assertEqual(round(st.k.mWmK, 1), 248.2)
 
         st = C2(T=170, P=6e7, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 301.71)
-        # self.assertEqual(round(st.k.mWmK, 1), 221.8)
+        self.assertEqual(round(st.k.mWmK, 1), 221.8)
 
         st = C2(T=260, P=5e6, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 74.61)
-        # self.assertEqual(round(st.k.mWmK, 1), 106.5)
+        self.assertEqual(round(st.k.mWmK, 1), 106.5)
 
         st = C2(T=330, P=5e5, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 10.37)
-        # self.assertEqual(round(st.k.mWmK, 1), 25.6)
+        self.assertEqual(round(st.k.mWmK, 1), 25.6)
 
         st = C2(T=380, P=1e6, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 11.88)
-        # self.assertEqual(round(st.k.mWmK, 1), 33.3)
+        self.assertEqual(round(st.k.mWmK, 1), 33.3)
 
         st = C2(T=420, P=4e7, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 46.86)
-        # self.assertEqual(round(st.k.mWmK, 1), 89.7)
+        self.assertEqual(round(st.k.mWmK, 1), 89.7)
 
         st = C2(T=480, P=1e5, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 14.28)
-        # self.assertEqual(round(st.k.mWmK, 1), 50.1)
+        self.assertEqual(round(st.k.mWmK, 1), 50.1)
 
         st = C2(T=500, P=6e7, eq="friend")
         self.assertEqual(round(st.mu.muPas, 2), 48.34)
-        # self.assertEqual(round(st.k.mWmK, 1), 101.4)
+        self.assertEqual(round(st.k.mWmK, 1), 101.4)

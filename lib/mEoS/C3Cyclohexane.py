@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -86,54 +88,62 @@ class C3Cyclohexane(MEoS):
         "ao": [-0.64572e1, 0.91228e1, -0.25806e2, -0.59044e2, -0.14709e3],
         "exp": [0.6, 1.8, 2.2, 6.0, 14.0]}
 
+    thermo0 = {"__name__": "Perkins (2008)",
+               "__doi__": {
+                   "autor": "Perkins, R.A. Hammerschmidt, U., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of Methylcyclohexane and "
+                            "Propylcyclohexane from 300 to 600 K at Pressures "
+                            "to 60 MPa",
+                   "ref": "J. Chem. Eng. Data 53(9) (2008) 2120-2127",
+                   "doi": "10.1021/je800255r"},
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2008)",
-               "__doi__": {"autor": "Perkins, R.A. Hammerschmidt, U. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Methylcyclohexane and Propylcyclohexane from 300 K to 600 K at Pressures to 60 MPa",
-                           "ref": "J. Chem. Eng. Data, 2008, 53 (9), pp 2120–2127",
-                           "doi": "10.1021/je800255r"},
-               "__test__":
-                    """
-                    >>> st=C3Cyclohexane(T=300, P=1e5)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    300.00 0.100 788.480445 0.110772385
-                    >>> st=C3Cyclohexane(T=450, P=1e5)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    450.00 0.100 3.52727123 0.0243185705
-                    >>> st=C3Cyclohexane(T=450, P=5e7)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    450.00 50.000 729.367278 0.105375558
-                    >>> st=C3Cyclohexane(T=600, P=1e5)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    600.00 0.100 2.56885356 0.0451537166
-                    >>> st=C3Cyclohexane(T=600, P=4.744e6)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    600.00 4.744 501.697589 0.0743155503
-                    >>> st=C3Cyclohexane(T=600, P=5e7)
-                    >>> print "%0.2f %0.3f %0.9g %0.9g " % ( \
-                        st.T, st.P.MPa, st.rho, st.k.WmK)
-                    300.00 50.000 644.863706 0.0976809646
-                    """, # Table 5, pag 2125
+               "eq": 1,
 
-               "Tref": 630.8, "kref": 1,
-               "no": [0.107402e-1, -0.609829e-1, 0.138204, -0.381213e-1],
-               "co": [0, 1, 2, 3],
+               "Toref": 630.8, "koref": 1,
+               "no": [1.07402e-2, -6.09829e-2, 1.38204e-1, -3.81213e-2],
+               "to": [0, 1, 2, 3],
 
-               "Trefb": 630.8, "rhorefb": 2.06, "krefb": 1.,
-               "nb": [0.116524, -0.102821, -0.113871, 0.126431, 0.445827e-1,
-                      -0.5946e-1, -0.54573600e-2, 0.98936000e-2, 0.0, 0.0],
-               "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Tref_res": 630.8, "rhoref_res": 260.05, "kref_res": 1.,
+               "nr": [0.116524, -0.102821, -0.113871, 0.126431, 0.0445827,
+                      -0.05946, -0.00545736, 0.0098936],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 6.24e-10, "Tcref": 958.725}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_Perkins(self):
+        # TODO: Add viscosity ecs correlation, used in paper for calculation
+        # of critical enhancement
+
+        # Table 5, pag 2125
+        st = C3Cyclohexane(T=300, P=1e5)
+        self.assertEqual(round(st.rho, 6), 788.480445)
+        # self.assertEqual(round(st.k, 9), 0.110772385)
+
+        st = C3Cyclohexane(T=450, P=1e5)
+        self.assertEqual(round(st.rho, 8), 3.52727123)
+        # self.assertEqual(round(st.k, 9), 0.0243185905)
+
+        st = C3Cyclohexane(T=450, P=5e7)
+        self.assertEqual(round(st.rho, 6), 729.367278)
+        # self.assertEqual(round(st.k, 9), 0.105375558)
+
+        st = C3Cyclohexane(T=600, P=1e5)
+        self.assertEqual(round(st.rho, 8), 2.56885356)
+        # self.assertEqual(round(st.k, 9), 0.0451537166)
+
+        st = C3Cyclohexane(T=600, P=4.744e6)
+        self.assertEqual(round(st.rho, 6), 501.697589)
+        # self.assertEqual(round(st.k, 9), 0.0743155503)
+
+        st = C3Cyclohexane(T=600, P=5e7)
+        self.assertEqual(round(st.rho, 6), 644.863706)
+        # self.assertEqual(round(st.k, 9), 0.0976809646)
