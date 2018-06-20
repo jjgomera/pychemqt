@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy import exp
+from scipy import exp, arccosh
 
 from lib.meos import MEoS
 from lib import unidades
@@ -282,7 +282,8 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = span, MBWR, GERG, ely, shortSpan, sun
+    # eq = span, MBWR, GERG, ely, shortSpan, sun
+    eq = span, GERG, ely, shortSpan, sun
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
@@ -409,56 +410,78 @@ class CO2(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Vesovic (1990)",
+    thermo0 = {"__name__": "Scalabrin (2006)",
+               "__doi__": {
+                  "autor": "Scalabrin, G., Marchi, P., Finezzo, F.",
+                  "title": "A Reference Multiparameter Thermal Conductivity "
+                           "Equation for Carbon Dioxide with an Optimized "
+                           "Functional Form",
+                  "ref": "J. Phys. Chem. Ref. Data 35(4) (2006) 1549-1575",
+                  "doi": "10.1063/1.2213631"},
+
+               "eq": 1,
+
+               "Tref_res": 304.1282, "rhoref_res": 467.6,
+               "kref_res": 4.81384e-3,
+               "nr": [7.69857587, 0.159885811, 1.56918621, -6.73400790,
+                      16.3890156, 3.69415242, 22.3205514, 66.1420950,
+                      -0.171779133, 0.00433043347],
+               "tr": [0, 0, -1.5, 0, -1, -1.5, -1.5, -1.5, -3.5, -5.5],
+               "dr": [1, 5, 1, 1, 2, 0, 5, 9, 0, 0],
+               "cr": [0, 0, 0, 2, 2, 2, 2, 2, 2, 2],
+               "gr": [0, 0, 0, 5, 5, 5, 5, 5, 5, 5],
+
+               "critical": "_tc"}
+
+    def _tc(self, rho, T, fase):
+        """Custom method for critical enhancement"""
+
+        Tr = T/304.1282
+        rhor = rho/467.6
+        nc = 0.775547504
+
+        # Table 4
+        a = [0, 3, 6.70697, 0.94604, 0.3, 0.3, 0.39751, 0.33791, 0.77963,
+             0.79857, 0.9, 0.02, 0.2]
+
+        # Eq 6
+        alfa = 1-a[10]*arccosh(1+a[11]*((1-Tr)**2)**a[12])
+
+        # Eq 5
+        num = rhor*exp(-rhor**a[1]/a[1]-(a[2]*(Tr-1))**2-(a[3]*(rhor-1))**2)
+        den1 = pow(pow(1-1/Tr+a[4]*pow(pow(rhor-1, 2), 0.5/a[5]), 2), a[6])
+        den2 = pow(pow(a[7]*(rhor-alfa), 2), a[8])
+        lc = num / (den1+den2)**a[9]
+
+        return lc*nc*4.81384e-3
+
+    thermo1 = {"__name__": "Vesovic (1990)",
                "__doi__": {
                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
                   "title": "The Transport Properties of Carbon Dioxide",
                   "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
                   "doi": "10.1063/1.555875"},
-               "__test__": """
-                   >>> st=CO2(T=222, P=1e5)
-                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   220 0.1 2.440 10.90
-                   >>> st=CO2(T=300, P=1e5)
-                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   300 0.1 1.773 16.77
-                   >>> st=CO2(T=800, P=1e5)
-                   >>> print "%0.0f %0.1f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   800 0.1 0.662 56.65
-                   >>> st=CO2(T=304, P=7e6)
-                   >>> print "%0.0f %0.0f %0.4f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   304 7 254.3205 42.52
-                   >>> st=CO2(T=220, P=1.5e6)
-                   >>> print "%0.0f %0.0f %0.2f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   220 15 1194.86 187.50
-                   >>> st=CO2(T=300, P=5e7)
-                   >>> print "%0.0f %0.0f %0.2f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   300 50 1029.27 137.61
-                   >>> st=CO2(T=800, P=7.5e7)
-                   >>> print "%0.0f %0.0f %0.3f %0.2f" % (st.T, st.P.kPa, st.rho, st.k.mWmK)
-                   800 75 407.828 78.47
-                   """, # Appendix IV, Pag 808
 
-               "Tref": 251.196, "kref": 1e-3,
-               "no": [7.5378307, 4.8109652e-2],
-               "co": [0.5, -99],
-               "noden": [0.4226159, 0.6280115, -0.5387661, 0.6735941,
-                         -0.4362677, 0.2255388],
-               "toden": [0, -1, -2, -3, -6, -7],
+               "eq": 1,
 
-               "Trefb": 1., "rhorefb": 2.272221e-2, "krefb": 1e-3,
-               "nb": [2.447164e-2, 8.705605e-5, -6.547950e-8, 6.594919e-11],
-               "tb": [0, 0, 0, 0],
-               "db": [1, 2, 3, 4],
-               "cb": [0, 0, 0, 0],
+               "Toref": 251.196, "koref": 1e-3,
+               "no_num": [7.5378307, 4.8109652e-2],
+               "to_num": [0.5, -99],
+               "no_den": [0.4226159, 0.6280115, -0.5387661, 0.6735941,
+                          -0.4362677, 0.2255388],
+               "to_den": [0, 1, 2, 3, 6, 7],
+
+               "Tref_res": 1., "rhoref_res": 2.272221e-2, "kref_res": 1e-3,
+               "nr": [2.447164e-2, 8.705605e-5, -6.547950e-8, 6.594919e-11],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
 
-    _thermal = thermo0,
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
@@ -658,7 +681,39 @@ class Test(TestCase):
         self.assertEqual(round(CO2(T=300, rho=1029.27).mu.muPas, 2), 132.55)
         self.assertEqual(round(CO2(T=800, rho=407.828).mu.muPas, 2), 48.74)
 
+    def test_Scalabrin(self):
+        # Selected values from Table 10, Pag 1568, saturation states
+        st = CO2(T=218, x=0.5)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 181.09)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 10.837)
+
+        st = CO2(T=250, x=0.5)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 138.61)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 14.227)
+
+        st = CO2(T=274, x=0.5)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 109.11)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 19.417)
+
+        st = CO2(T=284, x=0.5)
+        self.assertEqual(round(st.Liquido.k.mWmK, 3), 96.920)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 24.059)
+
+        st = CO2(T=304, x=0.5)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 140.30)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 217.95)
+
+        # Selected values from Table 11, pag 1569, single phase states
+        self.assertEqual(round(CO2(T=225, P=1e4).k.mWmK, 3), 11.037)
+        self.assertEqual(round(CO2(T=300, P=1e6).k.mWmK, 3), 17.248)
+        self.assertEqual(round(CO2(T=300, P=2e8).k.mWmK, 2), 219.64)
+        self.assertEqual(round(CO2(T=400, P=1e7).k.mWmK, 3), 31.504)
+        self.assertEqual(round(CO2(T=500, P=1e5).k.mWmK, 3), 33.143)
+        self.assertEqual(round(CO2(T=700, P=8e6).k.mWmK, 3), 52.078)
+        self.assertEqual(round(CO2(T=1000, P=2e8).k.mWmK, 2), 116.65)
+
     def test_vesovic(self):
+        # FIXME: Vesovic thermal conductivity correlation dont work
         # Appendix IV, Pag 808
         st = CO2(T=220, rho=2.440, visco=2)
         # self.assertEqual(round(st.k.mWmK, 2), 10.90)
