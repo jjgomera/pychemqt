@@ -205,85 +205,78 @@ class Ethanol(MEoS):
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 513.9, "rhoref_res": 5.991*M, "muref_res": 1e-3,
+              "Tref_res": 513.9, "rhoref_res": 5.991*M, "muref_res": 1e3,
               "nr": [0.131194057, -0.0805700894, -0.382240694, 0.153811778,
                      0.0, -0.110578307],
               "tr": [0, 0, 1, 1, 2, 2],
               "dr": [2, 3, 2, 3, 2, 3],
 
-              "CPf": 23.7222995,
+              "CPf": 23.7222995e3,
               "CPg1": -3.38264465,
               "CPgi": [12.7568864/-3.38264465],
               "CPti": [-0.5]}
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Assael (2013)",
-               "__doi__": {"autor": "M. J. Assael, E. A. Sykioti, M. L. Huber, and R. A. Perkins",
-                           "title": "Reference Correlation of the Thermal Conductivity of Ethanol from the Triple Point to 600 K and up to 245 MPa",
-                           "ref": "J. Phys. Chem. Ref. Data 42, 023102 (2013)",
-                           "doi": "10.1063/1.4797368"},
-               "__test__": """
-                   >>> st=Ethanol(T=300, rho=850)
-                   >>> print "%0.5g" % st.k.mWmK
-                   209.68
-                   >>> st=Ethanol(T=400, rho=2)
-                   >>> print "%0.5g" % st.k.mWmK
-                   26.108
-                   >>> st=Ethanol(T=400, rho=690)
-                   >>> print "%0.5g" % st.k.mWmK
-                   149.21
-                   >>> st=Ethanol(T=500, rho=10)
-                   >>> print "%0.5g" % st.k.mWmK
-                   39.594
-                   >>> st=Ethanol(T=500, rho=10)
-                   >>> print "%0.5g" % st.k.mWmK
-                   40.755
-                   """, # Table 4, Pag 8
+    thermo0 = {"__name__": "Assael (2013)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Sykioti, E.A., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal Conductivity"
+                            " of Ethanol from the Triple Point to 600 K and "
+                            "up to 245 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 42(2) (2013) 023102",
+                   "doi": "10.1063/1.4797368"},
 
-               "Tref": 514.71, "kref": 1e-3,
-               "no": [-2.09575, 1.99045e1, -5.39640e1, 8.21223e1, -1.98864, -0.495513],
-               "co": [0, 1, 2, 3, 4, 5],
-               "noden": [0.17223, -0.078273, 1.0],
-               "coden": [0, 1, 2],
+               "eq": 1,
 
-               "Trefb": 514.71, "rhorefb": 5.93, "krefb": 1.,
-               "nb": [.267222E-01, .148279, -.130429, .346232E-01,
+               "Toref": 514.71, "koref": 1e-3,
+               "no_num": [-2.09575, 19.9045, -53.964, 82.1223, -1.98864,
+                          -0.495513],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [0.17223, -0.078273, 1.0],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 514.71, "rhoref_res": 273.186, "kref_res": 1.,
+               "nr": [.267222E-01, .148279, -.130429, .346232E-01,
                       -.244293E-02, .0, .177166E-01, -.893088E-01,
                       .684664E-01, -.145702E-01, .809189E-03, .0],
-               "tb": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
-               "cb": [0]*12,
+               "tr": [0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
-               "Xio": 0.164296e-9, "gam0": 0.05885, "qd": 0.53e-9, "Tcref": 770.85}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.164296e-9,
+               "gam0": 0.05885, "qd": 0.53e-9, "Tcref": 770.85}
 
-    thermo1 = {"eq": 1,
-               "__name__": "Kiselev (2005)",
-               "__doi__": {"autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., Huber, M. L.",
-                           "title": "Generalized SAFT-DFT/DMT Model for the Thermodynamic, Interfacial, and Transport Properties of Associating Fluids: Application for n-Alkanols",
-                           "ref": "Ind. Eng. Chem. Res., 2005, 44 (17), pp 6916–6927",
-                           "doi": "10.1021/ie050010e"},
+    thermo1 = {"__name__": "Kiselev (2005)",
+               "__doi__": {
+                   "autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., "
+                            "Huber, M. L.",
+                   "title": "Generalized SAFT-DFT/DMT Model for the "
+                            "Thermodynamic, Interfacial, and Transport "
+                            "Properties of Associating Fluids: Application for"
+                            " n-Alkanols",
+                   "ref": "Ind. Eng. Chem. Res. 44(17) (2005) 6916-6927",
+                   "doi": "10.1021/ie050010e"},
 
-               "Tref": 1, "kref": 1,
-               "no": [-10.109e-3],
-               "co": [0.6475],
-               "noden": [1.0, -7.332e3, -2.68e5],
-               "coden": [0, -1, -2],
+               "eq": 1,
 
-               "Trefb": 513.9, "rhorefb": 5.991, "krefb": 1.,
-               "nb": [1.06917458e-1, -5.95897870e-2, -8.65012441e-2,
-                      6.14073818e-2, 2.12220237e-2, -1.00317135e-2, 0, 0, 0, 0],
-               "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Toref": 1, "koref": 1,
+               "no_num": [-10.109e-3],
+               "to_num": [0.6475],
+               "no_den": [1.0, -7332, -2.68e5],
+               "to_den": [0, -1, -2],
+
+               "Tref_res": 514.45, "rhoref_res": 5.988*M, "kref_res": 1.,
+               "nr": [1.06917458e-1, -5.95897870e-2, -8.65012441e-2,
+                      6.14073818e-2, 2.12220237e-2, -1.00317135e-2],
+               "tr": [0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3],
 
                # TODO: Add critical crossover model from paper
                "critical": 0}
 
-    # _thermal = thermo0, thermo
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
@@ -389,9 +382,9 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 4), 3.5932)
         self.assertEqual(round(st.w, 1), 1015.1)
 
-
-if __name__ == "__main__":
-    from CoolProp.CoolProp import PropsSI
-    st = Ethanol(T=300, P=1e5)
-    print(st.mu.mPas)
-    print(PropsSI("V", "T", 300, "P", 1e5, "Ethanol")*1e6)
+    def test_assael(self):
+        # Table 4, Pag 8
+        self.assertEqual(round(Ethanol(T=300, rho=850).k.mWmK, 2), 209.68)
+        self.assertEqual(round(Ethanol(T=400, rho=2).k.mWmK, 3), 26.108)
+        self.assertEqual(round(Ethanol(T=400, rho=690).k.mWmK, 2), 149.21)
+        self.assertEqual(round(Ethanol(T=500, rho=10).k.mWmK, 3), 39.594)
