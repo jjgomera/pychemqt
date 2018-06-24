@@ -302,7 +302,8 @@ class nC4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
+    # eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
+    eq = buecker, GERG, miyamoto, shortSpan, polt, sun
 
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.0557549],  "expt0": [-1.], "expd0": [1.],
@@ -399,38 +400,42 @@ class nC4(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2002)",
-               "__doi__": {"autor": "Perkins, R.A, Ramires, M.L.V., Nieto de Castro, C.A. and Cusco, L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Butane from 135 K to 600 K at Pressures to 70 MPa",
-                           "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1263–1271",
-                           "doi": "10.1021/je0101202"},
+    thermo0 = {"__name__": "Perkins (2002)",
+               "__doi__": {
+                   "autor": "Perkins, R.A, Ramires, M.L.V., Nieto de Castro, "
+                            "C.A., Cusco, L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of Butane from 135 K to 600 K at "
+                            "Pressures to 70 MPa",
+                   "ref": "J. Chem. Eng. Data 47(5) (2002) 1263-1271",
+                   "doi": "10.1021/je0101202"},
 
-               "Tref": 425.16, "kref": 1.,
+               "eq": 1,
+
+               "Toref": 425.16, "koref": 1.,
                "no": [1.62676e-3, 9.75703e-4, 2.89887e-2],
-               "co": [0, 1, 2],
+               "to": [0, 1, 2],
 
-               "Trefb": 425.16, "rhorefb": 3.92, "krefb": 1.,
-               "nb": [-3.04337e-2, 4.18357e-2, 1.65820e-1, -1.47163e-1,
+               "Tref_res": 425.16, "rhoref_res": 3.92*M, "kref_res": 1.,
+               "nr": [-3.04337e-2, 4.18357e-2, 1.65820e-1, -1.47163e-1,
                       -1.48144e-1, 1.33542e-1, 5.25500e-2, -4.85489e-2,
                       -6.29367e-3, 6.44307e-3],
-               "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.875350e-9, "Tcref": 637.68}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 0.875350e-9, "Tcref": 637.68}
 
-    thermo1 = {"eq": 2, "omega": 2,
-               "__name__": "Younglove (1987)",
+    thermo1 = {"__name__": "Younglove (1987)",
                "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
                            "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane",
                            "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
                            "doi": "10.1063/1.555785"},
 
+               "eq": 2,
+
                "visco": visco1,
-               "n_chapman": 2.0352526600e-1,
                "G": [0.1530992335e1, -0.2114511021],
                "E": [0.4024170074e-2, 0.1561435847e1, -0.6004381127e3,
                      -0.7547260841e-3, -0.2069676662e-1, 0.9382534978e2,
