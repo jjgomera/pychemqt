@@ -162,28 +162,26 @@ class nC10(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Huber (2005)",
-               "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                           "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                           "doi": "10.1016/j.fluid.2004.10.031"},
-               "__test__": """
-                   >>> st=nC10(T=300, rhom=5.1504)
-                   >>> print "%0.2f" % st.k
-                   132.80
-                   """,  # Section 3.3 pag 54
+    thermo0 = {"__name__": "Huber (2005)",
+               "__doi__": {
+                   "autor": "Huber, M.L., Perkins, R.A.",
+                   "title": "Thermal conductivity correlations for minor "
+                            "constituent fluids in natural gas: n-octane, "
+                            "n-nonane and n-decane",
+                   "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                   "doi": "10.1016/j.fluid.2004.10.031"},
 
-               "Tref": 617.7, "kref": 1,
+               "eq": 1,
+
+               "Toref": 617.7, "koref": 1,
                "no": [0.105543e-1, -0.514530e-1, 0.118979, -0.372442e-1],
-               "co": [0, 1, 2, 3],
+               "to": [0, 1, 2, 3],
 
-               "Trefb": 617.7, "rhorefb": 1.64, "krefb": 1,
-               "nb": [-.294394e-1, .150509e-1, .499245e-1, 0., -.142700e-1,
-                      -0.138857e-1, 0.150828e-2, 0.433326e-2, 0.0, 0.0],
-               "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Tref_res": 617.7, "rhoref_res": 1.64*M, "kref_res": 1,
+               "nr": [-.294394e-1, .150509e-1, .499245e-1, -.142700e-1,
+                      -0.138857e-1, 0.150828e-2, 0.433326e-2],
+               "tr": [0, -1, 0, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 3, 3, 4, 4],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
@@ -205,4 +203,8 @@ class Test(TestCase):
 
     def test_viscoHuber(self):
         # Section 3.3 pag 269
-        self.assertEqual(round(nC10(T=300, rhom=5.1504).mu.muPas, 2), 926.44)
+        self.assertEqual(round(nC10(T=300, P=1e7).mu.muPas, 2), 926.37)
+
+    def test_thermoHuber(self):
+        # Section 3.3 pag 54
+        self.assertEqual(round(nC10(T=300, P=1e7).k.mWmK, 2), 132.80)

@@ -65,7 +65,8 @@ class nC8(MEoS):
     CP4 = {"ao": 34.0847/8.3159524*4.184,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.603664e8/8.3159524*4.184, 4.1241363e7/8.3159524*4.184, 0, 0],
+           "ao_hyp": [2.603664e8/8.3159524*4.184, 4.1241363e7/8.3159524*4.184,
+                      0, 0],
            "hyp": [1.6115500e3, 7.6884700e2, 0, 0]}
 
     shortSpan = {
@@ -263,7 +264,7 @@ class nC8(MEoS):
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 569.32, "rhoref_res": 2.0564*M, "muref_res": 1000,
+              "Tref_res": 569.32, "rhoref_res": 234.9, "muref_res": 1000,
               "nr": [-0.103924, 0.113327e-1, 0.992302e-1, -0.322455e-1],
               "tr": [1, 1, 2, 2],
               "dr": [2, 3, 2, 3],
@@ -296,32 +297,30 @@ class nC8(MEoS):
 
     _viscosity = visco0, visco1
 
-    thermo0 = {"eq": 1,
-               "__name__": "Huber (2005)",
-               "__doi__": {"autor": "Huber, M.L. and Perkins, R.A.",
-                           "title": "Thermal conductivity correlations for minor constituent fluids in natural gas: n-octane, n-nonane and n-decane",
-                           "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
-                           "doi": "10.1016/j.fluid.2004.10.031"},
-               "__test__": """
-                   >>> st=nC8(T=300, rhom=6.1772)
-                   >>> print "%0.2f" % st.k
-                   128.36
-                   """, # Section 3.1 pag 50
+    thermo0 = {"__name__": "Huber (2005)",
+               "__doi__": {
+                   "autor": "Huber, M.L., Perkins, R.A.",
+                   "title": "Thermal conductivity correlations for minor "
+                            "constituent fluids in natural gas: n-octane, "
+                            "n-nonane and n-decane",
+                   "ref": "Fluid Phase Equilibria 227 (2005) 47-55",
+                   "doi": "10.1016/j.fluid.2004.10.031"},
 
-               "Tref": 569.32, "kref": 1,
+               "eq": 1,
+
+               "Toref": 569.32, "koref": 1,
                "no": [0.772930e-2, -0.371138e-1, 0.977580e-1, -0.288707e-1],
-               "co": [0, 1, 2, 3],
+               "to": [0, 1, 2, 3],
 
-               "Trefb": 569.32, "rhorefb": 2.0564, "krefb": 1,
-               "nb": [0.285553e-1, -0.926155e-2, -0.171398e-1, 0.0,
-                      0.659971e-2, 0.153496e-2, 0.0, 0.0, 0.0, 0.0],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Tref_res": 569.32, "rhoref_res": 234.9, "kref_res": 1,
+               "nr": [0.285553e-1, -0.926155e-2, -0.171398e-1, 0.659971e-2,
+                      0.153496e-2],
+               "tr": [0, -1, 0, 0, -1],
+               "dr": [1, 1, 2, 3, 3],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.68628e-9, "Tcref": 853.98}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 0.68628e-9, "Tcref": 853.98}
 
     _thermal = thermo0,
 
@@ -341,6 +340,8 @@ class Test(TestCase):
 
     def test_viscoHuber(self):
         # Section 3.1 pag 265
-        # Tiny desviation from value in paper, the value returned is equal to
-        # refprop returned value
-        self.assertEqual(round(nC8(T=300, rhom=6.1772).mu.muPas, 2), 553.68)
+        self.assertEqual(round(nC8(T=300, P=1e7).mu.muPas, 2), 553.60)
+
+    def test_thermoHuber(self):
+        # Section 3.1 pag 04
+        self.assertEqual(round(nC8(T=300, P=1e7).k.mWmK, 2), 128.36)
