@@ -128,28 +128,15 @@ class nC12(MEoS):
                    "ref": "Energy & Fuels 18(4) (2004) 968-975.",
                    "doi": "10.1021/ef034109e"},
 
-               "__test__": """
-                   >>> st=nC12(T=300, rhom=4.4115)
-                   >>> print "%0.2f" % st.k.mWmK
-                   138.29
-                   >>> st=nC12(T=500, rhom=3.4447)
-                   >>> print "%0.2f" % st.k.mWmK
-                   93.84
-                   >>> st=nC12(T=660, rhom=1.50098)
-                   >>> print "%0.3f" % st.k.mWmK
-                   90.346
-                   """,  # Pag 974
-
-               "Tref": 658.1, "kref": 1.,
+               "Toref": 658.1, "koref": 1.,
                "no": [0.436343e-2, -0.264054e-1, 0.922394e-1, -0.291756e-1],
-               "co": [0, 1, 2, 3],
+               "to": [0, 1, 2, 3],
 
-               "Trefb": 658.1, "rhorefb": 1.33, "krefb": 1.,
-               "nb": [0.693347e-1, -0.280792e-1, -0.331695e-1, 0.173922e-2,
-                      0.676165e-2, 0.309558e-2, 0.0, 0.0, 0.0, 0.0],
-               "tb": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Tref_res": 658.1, "rhoref_res": 1.33*M, "kref_res": 1.,
+               "nr": [0.693347e-1, -0.280792e-1, -0.331695e-1, 0.173922e-2,
+                      0.676165e-2, 0.309558e-2],
+               "tr": [0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
@@ -195,6 +182,9 @@ class Test(TestCase):
     def test_Huber(self):
         # Viscosity test point, Pag 972
         self.assertEqual(round(nC12(T=300, rhom=4.4115).mu.muPas, 1), 1484.8)
-        self.assertEqual(round(nC12(T=500, rhom=3.4447).mu.muPas, 2), 183.76)
+        self.assertEqual(round(nC12(T=500, P=1e6).mu.muPas, 2), 183.76)
 
         # Thermal conductivity test point, Pag 974
+        self.assertEqual(round(nC12(T=300, P=1e7).k.mWmK, 2), 138.29)
+        self.assertEqual(round(nC12(T=500, P=1e6).k.mWmK, 2), 93.84)
+        self.assertEqual(round(nC12(T=660, P=1.8714e6).k.mWmK, 3), 90.346)
