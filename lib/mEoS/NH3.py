@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import exp, log, pi
+from scipy.constants import Boltzmann
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -232,22 +235,55 @@ class NH3(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1, "critical": "NH3",
-               "__name__": "Tufeu (1984)",
-               "__doi__": {"autor": "Tufeu, R., Ivanov, D.Y., Garrabos, Y., and Le Neindre, B.",
-                            "title": "Thermal conductivity of ammonia in a large temperature and pressure range including the critical region",
-                            "ref": "Ber. Bunsenges. Phys. Chem., 88:422-427, 1984",
-                            "doi": "10.1002/bbpc.19840880421"},
+    thermo0 = {"__name__": "Tufeu (1984)",
+               "__doi__": {
+                   "autor": "Tufeu, R., Ivanov, D.Y., Garrabos, Y., Le "
+                            "Neindre, B.",
+                   "title": "Thermal Conductivity of Ammonia in a Large "
+                            "Temperature and Pressure Range Including the "
+                            "Critical Region",
+                   "ref": "Ber. Bunsenges. Phys. Chem. 88 (1984) 422-427",
+                   "doi": "10.1002/bbpc.19840880421"},
+
+               "eq": 1,
 
                "Tref": 1., "kref": 1.,
-               "no": [0.3589e-1, -0.1750e-3, 0.4551e-6, 0.1685e-9, -0.4828e-12],
-               "co": [0, 1, 2, 3, 4],
+               "no": [0.03589, -1.750e-4, 4.551e-7, 1.685e-10, -4.828e-13],
+               "to": [0, 1, 2, 3, 4],
 
-               "Trefb": 1., "rhorefb": 0.05871901, "krefb": 1.,
-               "nb": [0.16207e-3, 0.12038e-5, -0.23139e-8, 0.32749e-11],
-               "tb": [0, 0, 0, 0],
-               "db": [1, 2, 3, 4],
-               "cb": [0, 0, 0, 0]}
+               "rhoref_res": 1, "kref_res": 1.,
+               "nr": [0.16207e-3, 0.12038e-5, -0.23139e-8, 0.32749e-11],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4],
+
+               "critical": "_ThCondCritical"}
+
+    def _ThCondCritical(self, rho, T, fase):
+        # Custom Critical enhancement
+
+        # The paper use a diferent rhoc value to the EoS
+        rhoc = 235
+
+        t = abs(T-405.4)/405.4
+        dPT = 1e5*(2.18-0.12/exp(17.8*t))
+        nb = 1e-5*(2.6+1.6*t)
+
+        DL = 1.2*Boltzmann*T**2/6/pi/nb/(1.34e-10/t**0.63*(1+t**0.5)) * \
+            dPT**2 * 0.423e-8/t**1.24*(1+t**0.5/0.7)
+
+        # Add correction for entire range of temperature, Eq 10
+        DL *= exp(-36*t**2)
+
+        X = 0.61*rhoc+16.5*log(t)
+        if rho > 0.6*rhoc:
+            # Eq 11
+            DL *= X**2/(X**2+(rho-0.96*rhoc)**2)
+        else:
+            # Eq 14
+            DL = X**2/(X**2+(0.6*rhoc-0.96*rhoc)**2)
+            DL *= rho**2/(0.6*rhoc)**2
+
+        return DL
 
     _thermal = thermo0,
 
