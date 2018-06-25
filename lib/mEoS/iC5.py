@@ -210,45 +210,51 @@ class iC5(MEoS):
         "ao": [-38.825, 79.040, -48.791, -21.603, -57.218, -151.64],
         "exp": [0.565, 0.66, 0.77, 3.25, 7.3, 16.6]}
 
-    visco0 = {"eq": 2, "omega": 3,
-              "__name__": "NIST",
-              "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08",
-                          "ref": "",
-                          "doi": ""},
+   # visco0 = {"eq": 2, "omega": 3,
+              # "__name__": "NIST",
+              # "__doi__": {"autor": "",
+                          # "title": "Coefficients are taken from NIST14, Version 9.08",
+                          # "ref": "",
+                          # "doi": ""},
 
-              "ek": 341.06, "sigma": 0.56232,
-              "n_chapman": 0.2267237/M**0.5,
-              "F": [0, 0, 0, 100.],
-              "E": [-4.57981980159405, -3393.5243856, 9.3806654324, 33641.3512,
-                    0.15624235969, 122.90017543, -20914.795166],
-              "rhoc": 3.24}
+              # "ek": 341.06, "sigma": 0.56232,
+              # "n_chapman": 0.2267237/M**0.5,
+              # "F": [0, 0, 0, 100.],
+              # "E": [-4.57981980159405, -3393.5243856, 9.3806654324, 33641.3512,
+                    # 0.15624235969, 122.90017543, -20914.795166],
+              # "rhoc": 3.24}
 
     # _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
-                           "ref": "",
-                           "doi": ""},
+    thermo0 = {"__name__": "Vassiliou (2015)",
+               "__doi__": {
+                   "autor": "Vassiliou, C.-M., Assael, M.J., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal Conductivity"
+                            " of Cyclopentane, iso-pentane, and n-Pentane",
+                   "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033102",
+                   "doi": "10.1063/1.4927095"},
 
-               "Tref": 341.06, "kref": 1e-3,
-               "no": [1.35558587, -0.152666315743857, 1],
-               "co": [0, -1, -96],
+               "eq": 1,
 
-               "Trefb": 460.51, "rhorefb": 3.24, "krefb": 1e-3,
-               "nb": [18.6089331038, -5.836570612990, 3.489871005290,
-                      0.704467355508, -0.206501417728, -0.223070394020],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6,
+               "Toref": 460.35, "koref": 1e-3,
+               "no_num": [0.773049, -15.9754, 218.987, -329.556, 281.075,
+                          53.326],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [5.10467, -8.12044, 8.11607, -0.294969, 1],
+               "to_den": [0, 1, 2, 3, 4],
+
+               "Tref_res": 460.35, "rhoref_res": 236, "kref_res": 1e-3,
+               "nr": [-1.17507e1, -1.61346e1, 5.27254e1, -2.7494e1, 4.54817,
+                      5.14003, 5.58445e1, -9.51474e1, 4.75268e1, -7.29296],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.9316e-9, "Tcref": 690.525}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.227e-9, "gam0": 0.058, "qd": 0.664e-9, "Tcref": 690.53}
 
-    # _thermal = thermo0,
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -261,3 +267,9 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 190.631)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 4660.943)
         self.assertEqual(round(st.w, 3), 96.324)
+
+    def test_Vassiliou(self):
+        # Section 3.2.2, Pag 11
+        # Viscosity value different to used in paper
+        # self.assertEqual(round(iC5(T=460, P=3.5e6).k.mWmK, 3), 59.649)
+        self.assertEqual(round(iC5(T=460, P=3.5e6).k.mWmK, 3), 59.388)

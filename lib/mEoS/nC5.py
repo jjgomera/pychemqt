@@ -65,7 +65,8 @@ class nC5(MEoS):
     CP2 = {"ao": 22.5012/8.3159524*4.184,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.057417e8/8.3159524*4.184, 2.972927e7/8.3159524*4.184, 0, 0],
+           "ao_hyp": [2.057417e8/8.3159524*4.184, 2.972927e7/8.3159524*4.184,
+                      0, 0],
            "hyp": [1.71958e3, 8.02069e2, 0, 0]}
 
     shortSpan = {
@@ -274,21 +275,7 @@ class nC5(MEoS):
         "ao": [-2.9389, -6.2784, -19.941, -16.709, -36.543, -127.99],
         "exp": [0.4, 1.18, 3.2, 6.6, 7.0, 15.0]}
 
-    visco0 = {"eq": 2, "omega": 3,
-              "__name__": "NIST14",
-              "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14, Version 9.08",
-                          "ref": "",
-                          "doi": ""},
-
-              "ek": 341.10, "sigma": 0.5784,
-              "n_chapman": 0.226720214/M**0.5,
-              "F": [0, 0, 0, 100],
-              "E": [-13.47938293, 1176.6275165, 14.2278439927, -21951.0293411,
-                    0.03766867689, 70.1529173825, 21435.7720323],
-              "rhoc": 3.215}
-
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -309,29 +296,35 @@ class nC5(MEoS):
               "B": [1.98521e-8, 2.05972e-9, 0.0],
               "C": [-1.18487e-7, 1.69571e-7, 0.0]}
 
-    _viscosity = visco1,
+    _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
-                           "ref": "",
-                           "doi": ""},
+    thermo0 = {"__name__": "Vassiliou (2015)",
+               "__doi__": {
+                   "autor": "Vassiliou, C.-M., Assael, M.J., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal Conductivity"
+                            " of Cyclopentane, iso-pentane, and n-Pentane",
+                   "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033102",
+                   "doi": "10.1063/1.4927095"},
 
-               "Tref": 341.1, "kref": 1e-3,
-               "no": [1.35558587, -0.15569137, 1],
-               "co": [0, -1, -96],
+               "eq": 1,
 
-               "Trefb": 469.69, "rhorefb": 3.215, "krefb": 1e-3,
-               "nb": [18.6089331038, -5.83657061299, 3.48987100529,
-                      0.704467355508, -0.206501417728, -0.22307039402],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6,
+               "Toref": 469.7, "koref": 1e-3,
+               "no_num": [-3.96685, 35.3805, 5.11554, -108.585, 179.573,
+                          39.2128],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [2.71636, -5.76265, 6.77885, -0.59135, 1],
+               "to_den": [0, 1, 2, 3, 4],
+
+               "Tref_res": 469.7, "rhoref_res": 232, "kref_res": 1e-3,
+               "nr": [7.76054e-1, 1.17655e2, -1.33101e2, 5.34026e1, -6.8793,
+                      7.97696, -7.85888e1, 9.16089e1, -3.70431e1, 5.0962],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.9345e-9, "Tcref": 704.55}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.227e-9, "gam0": 0.058, "qd": 0.668e-9, "Tcref": 704.55}
 
     _thermal = thermo0,
 
@@ -348,3 +341,9 @@ class Test(TestCase):
         st2 = nC5(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.42)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.34915)
+
+    def test_Vassiliou(self):
+        # Section 3.3.2, Pag 14
+        # Viscosity value different to used in paper
+        # self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.300)
+        self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.413)

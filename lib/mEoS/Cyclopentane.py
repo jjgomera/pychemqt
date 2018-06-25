@@ -97,6 +97,35 @@ class Cyclopentane(MEoS):
         "ao": [-0.0559, -6.4211, -46.926, 28.082, -70.838],
         "exp": [0.1, 0.65, 3.2, 3.55, 7.5]}
 
+    thermo0 = {"__name__": "Vassiliou (2015)",
+               "__doi__": {
+                   "autor": "Vassiliou, C.-M., Assael, M.J., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal Conductivity"
+                            " of Cyclopentane, iso-pentane, and n-Pentane",
+                   "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033102",
+                   "doi": "10.1063/1.4927095"},
+
+               "eq": 1,
+
+               "Toref": 511.72, "koref": 1e-3,
+               "no_num": [-8.2523346, 76.33654, -217.6154, 312.29877],
+               "to_num": [0, 1, 2, 3],
+               "no_den": [1, 0.28341478, 2.7890541, 0.32645005],
+               "to_den": [0, 1, 2, 3],
+
+               "Tref_res": 511.72, "rhoref_res": 274.921, "kref_res": 1,
+               "nr": [0.0920536, -0.172699, 0.126557, -0.0362296, 0.00388718,
+                      -0.0435129, 0.112636, -0.0908663, 0.028095, -0.00280368],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.216e-9, "gam0": 0.058, "qd": 0.624e-9, "Tcref": 767.58}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -131,3 +160,8 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 4), 159.2304)
         self.assertEqual(round(st.cpM.JmolK, 4), 276.7530)
         self.assertEqual(round(st.w, 4), 234.2660)
+
+    def test_Vassiliou(self):
+        # Section 3.1.2, Pag 7
+        # Viscosity value different to used in paper
+        self.assertEqual(round(Cyclopentane(T=512, rho=400).k.mWmK, 3), 68.661)
