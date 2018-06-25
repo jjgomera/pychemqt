@@ -57,7 +57,7 @@ class nC6(MEoS):
            "hyp": [182.326, 859.207, 1826.59, 0]}
 
     CP3 = {"ao": 2.5200507,
-           "an": [0.52806530e-1, -0.57861557e-5, -0.10899040e-7, -0.18988742e-12],
+           "an": [0.05280653, -5.7861557e-6, -1.0899040e-8, -1.8988742e-13],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
@@ -65,7 +65,8 @@ class nC6(MEoS):
     CP4 = {"ao": 26.6225/8.3159524*4.184,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.3738446e8/8.3159524*4.184, 3.5806766e7/8.3159524*4.184, 0, 0],
+           "ao_hyp": [2.3738446e8/8.3159524*4.184, 3.5806766e7/8.3159524*4.184,
+                      0, 0],
            "hyp": [1.71849e3, 8.02069e2, 0, 0]}
 
     shortSpan = {
@@ -264,68 +265,34 @@ class nC6(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Assael (2013)",
-               "__doi__": {"autor": "M. J. Assael, S. K. Mylona, Ch. A. Tsiglifisi, M. L. Huber, and R. A. Perkins",
-                           "title": "Reference Correlation of the Thermal Conductivity of n-Hexane from the Triple Point to 600 K and up to 500 MPa",
-                           "ref": "J. Phys. Chem. Ref. Data 42, 013106 (2013)",
-                           "doi": "10.1063/1.4793335"},
-               "__test__": """
-                   >>> st=nC6(T=250, rho=700)
-                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
-                   250.00 700.00 137.62
-                   >>> st=nC6(T=400, rho=2)
-                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
-                   400.00 2.00 23.558
-                   >>> st=nC6(T=400, rho=650)
-                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
-                   400.00 650.00 129.28
-                   >>> st=nC6(T=510, rho=2)
-                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
-                   510.00 2.00 36.772
-                   >>> st=nC6(T=510, rho=2)
-                   >>> print "%0.2f %0.2f %0.5g" % (st.T, st.rho, st.k.mWmK)
-                   510.00 2.00 37.105
-                   """, # Table 4, Pag 8
+    thermo0 = {"__name__": "Assael (2013)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Mylona, S.K., Tsiglifisi, Ch.A., "
+                            "Huber, M.L., Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal "
+                            "Conductivity of n-Hexane from the Triple Point "
+                            "to 600 K and up to 500 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 42(1) (2013) 013106",
+                   "doi": "10.1063/1.4793335"},
 
-               "Tref": Tc, "kref": 1e-3,
+               "eq": 1,
+
+               "Toref": Tc, "koref": 1e-3,
                "no": [6.6742, -23.7619, 72.0155, -18.3714],
-               "co": [0, 1, 2, 3],
+               "to": [0, 1, 2, 3],
 
-               "Trefb": Tc, "rhorefb": 2.3153, "krefb": 1e-3,
-               "nb": [-.301408e-1, .167975, -.129739, .382833e-1, -.370294e-2,
-                      .218208e-1, -.100833, .77418e-1, -.215945e-1, .212487e-2],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
-               "Xio": 0.2364e-9, "gam0": 0.05803, "qd": 0.737e-9, "Tcref": 761.73}
-
-    thermo1 = {"eq": 1,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
-                           "ref": "",
-                           "doi": ""},
-
-               "Tref": 399.3, "kref": 1e-3,
-               "no": [1.35558587, -0.143662461021788, 1],
-               "co": [0, -1, -96],
-
-               "Trefb": 507.35, "rhorefb": 2.704, "krefb": 1e-3,
-               "nb": [15.275017704, 11.2896277792, -8.61369853497,
-                      0.697714450907, 2.1687378215, -0.326193379046],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6,
+               "Tref_res": Tc, "rhoref_res": 233.182, "kref_res": 1,
+               "nr": [-3.01408e-2, 1.67975e-1, -1.29739e-1, 3.82833e-2,
+                      -3.70294e-3, 2.18208e-2, -1.00833e-1, 7.7418e-2,
+                      -2.15945e-2, 2.12487e-3],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.0327e-9, "Tcref": 761.73}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.2364e-9,
+               "gam0": 0.05803, "qd": 0.737e-9, "Tcref": 761.7}
 
-    _thermal = thermo0, thermo1
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -340,3 +307,10 @@ class Test(TestCase):
         st2 = nC6(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.09)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.33219)
+
+    def test_Assael(self):
+        # Table 4, Pag 8
+        self.assertEqual(round(nC6(T=250, rho=700).k.mWmK, 2), 137.62)
+        self.assertEqual(round(nC6(T=400, rho=2).k.mWmK, 3), 23.558)
+        self.assertEqual(round(nC6(T=400, rho=650).k.mWmK, 2), 129.28)
+        self.assertEqual(round(nC6(T=510, rho=2).k.mWmK, 3), 36.772)
