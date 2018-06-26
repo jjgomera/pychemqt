@@ -38,7 +38,7 @@ class R125(MEoS):
     Tb = unidades.Temperature(225.06)
     f_acent = 0.3052
     momentoDipolar = unidades.DipoleMoment(1.563, "Debye")
-    # id = 1231
+    id = 1231
 
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, -0.1],
@@ -296,7 +296,8 @@ class R125(MEoS):
         "gamma2": [1]*8}
 
     # TODO: Add Vasserman meos, file in meos todo database
-    eq = lemmon, MBWR, sunaga, piao, shortSpan, astina, sun
+    # eq = lemmon, MBWR, sunaga, piao, shortSpan, astina, sun
+    eq = lemmon, sunaga, piao, shortSpan, astina, sun
     _PR = -0.00247
 
     _surface = {"sigma": [0.05252], "exp": [1.237]}
@@ -344,28 +345,31 @@ class R125(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2006)",
-               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Pentafluoroethane (R125)from 190 K to 512 K at pressures to 70 MPa",
-                           "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 898–904",
-                           "doi": "10.1021/je050372t"},
+    thermo0 = {"__name__": "Perkins (2006)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of Pentafluoroethane (R125) from "
+                            "190 K to 512 K at Pressures to 70 MPa",
+                   "ref": "J. Chem. Eng. Data 51(3) (2006) 898-904",
+                   "doi": "10.1021/je050372t"},
 
-               "Tref": 339.173, "kref": 1.,
+               "eq": 1,
+
+               "Toref": 339.17, "koref": 1.,
                "no": [-0.460820e-2, 0.168688e-1, 0.488345e-2],
-               "co": [0, 1, 2],
+               "to": [0, 1, 2],
 
-               "Trefb": 339.173, "rhorefb": 4.779, "krefb": 1.,
-               "nb": [-0.729410e-2, 0.110497e-1, 0.416339e-1, -0.289236e-1,
-                      -0.311487e-1, 0.278399e-1, 0.112682e-1, -0.121100e-1,
-                      -0.138322e-2, 0.211196e-2],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "Tref_res": 339.17, "rhoref_res": 4.779*M, "kref_res": 1.,
+               "nr": [-7.29410e-3, 1.10497e-2, 4.16339e-2, -2.89236e-2,
+                      -3.11487e-2, 2.78399e-2, 1.12682e-2, -1.21100e-2,
+                      -1.38322e-3, 2.11196e-3],
+               "tr": [0, -1]*5,
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.834646e-10, "Tcref": 508.7475}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 5.834646e-10, "Tcref": 508.755}
 
     _thermal = thermo0,
 
