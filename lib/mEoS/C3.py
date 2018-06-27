@@ -30,6 +30,7 @@ class C3(MEoS):
     CASNumber = "74-98-6"
     formula = "CH3CH2CH3"
     synonym = "R-290"
+    _refPropName = "PROPANE"
     rhoc = unidades.Density(220.4781)
     Tc = unidades.Temperature(369.89)
     Pc = unidades.Pressure(4251.2, "kPa")

@@ -30,6 +30,7 @@ class mXylene(MEoS):
     CASNumber = "108-38-3"
     formula = "C8H10"
     synonym = "1,3-dimethylbenzene"
+    _refPropName = "MXYLENE"
     rhoc = unidades.Density(282.929725)
     Tc = unidades.Temperature(616.89)
     Pc = unidades.Pressure(3534.6, "kPa")

@@ -32,6 +32,7 @@ class H2(MEoS):
     CASNumber = "1333-74-0"
     formula = "H2"
     synonym = "R-702"
+    _refPropName = "HYDROGEN"
     rhoc = unidades.Density(31.26226704)
     Tc = unidades.Temperature(33.145)
     Pc = unidades.Pressure(1296.4, "kPa")

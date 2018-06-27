@@ -30,6 +30,7 @@ class nC7(MEoS):
     CASNumber = "142-82-5"
     formula = "CH3-(CH2)5-CH3"
     synonym = ""
+    _refPropName = "HEPTANE"
     rhoc = unidades.Density(231.9977)
     Tc = unidades.Temperature(540.13)
     Pc = unidades.Pressure(2736.0, "kPa")

@@ -161,8 +161,8 @@ from lib.mEoS.R407c import R407c
 from lib.mEoS.R410a import R410a
 from lib.mEoS.R507a import R507a
 
-# TODO: Add Novec 649 from REFPROP
 
+# Component grouping by chemical class
 Nobles = [He, Ne, Ar, Kr, Xe]
 Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, H2O, D2O, CO2, CO, N2O, SO2,
          COS, NH3, H2S]
@@ -186,10 +186,12 @@ PseudoCompounds = [Air, R404a, R407c, R410a, R507a]
 __all__ = Nobles + Gases + Alkanes + Naphthenes + Alkenes + Heteroatom + \
     CFCs + Siloxanes + PseudoCompounds
 
+
+# Id of compound supported for meos library
 id_mEoS = [i.id for i in __all__ if i.id]
 
 
-# Add references
+# Add references from equation hardcoded in __doi__ property
 __doi__ = {}
 for obj in __all__:
     subdict = {}
@@ -200,34 +202,13 @@ for obj in __all__:
             if eq and "__doi__" in eq:
                 key = "%s_%i" % (prop.replace("_", ""), i)
                 subdict[key] = eq["__doi__"]
+    if obj._surface and "__doi__" in obj._surface:
+        subdict["surface"] = obj._surface["__doi__"]
+
     __doi__[obj.__name__] = subdict
 
 
-
-
-# if __name__ == "__main__":
-    # import doctest
-# #    import timeit
-# #    def test():
-    # for module in __all__:
-        # if "D2O" not in module.__module__:
-            # continue
-        # print(module.__module__)
-        # inst = module()
-        # for eq in inst.eq[0:1]:
-            # if "__test__" in eq:
-                # inst.__doc__ += eq["__test__"]
-        # if inst._viscosity is not None:
-            # for eq in inst._viscosity:
-                # if "__test__" in eq:
-                    # inst.__doc__ += eq["__test__"]
-        # if inst._thermal is not None:
-            # for eq in inst._thermal:
-                # if "__test__" in eq:
-                    # inst.__doc__ += eq["__test__"]
-        # doctest.run_docstring_examples(inst, globs={module.__name__: module})
-# #    timeit.timeit("test()", setup="from __main__ import test", number=3)
-
+# TODO: Add Novec 649 from 10.1021/acs.jced.5b00623
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 # TODO: Add ethylene oxide and 1,2-dichloroethane from Thol thesis

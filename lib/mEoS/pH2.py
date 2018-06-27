@@ -32,6 +32,7 @@ class pH2(MEoS):
     CASNumber = "1333-74-0p"
     formula = "H2"
     synonym = "R-702p"
+    _refPropName = "PARAHYD"
     rhoc = unidades.Density(31.32274344)
     Tc = unidades.Temperature(32.938)
     Pc = unidades.Pressure(1285.8, "kPa")

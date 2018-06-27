@@ -30,6 +30,7 @@ class iC5(MEoS):
     CASNumber = "78-78-4"
     formula = "(CH3)2-CH-CH2-CH3"
     synonym = "R-601a"
+    _refPropName = "IPENTANE"
     rhoc = unidades.Density(235.99865938)
     Tc = unidades.Temperature(460.35)
     Pc = unidades.Pressure(3378.0, "kPa")

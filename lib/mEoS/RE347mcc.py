@@ -28,6 +28,7 @@ class RE347mcc(MEoS):
     CASNumber = "375-03-1"
     formula = "CF3CF2CF2OCH3"
     synonym = "HFE-7000"
+    _refPropName = "RE347MCC"
     rhoc = unidades.Density(524.143687088)
     Tc = unidades.Temperature(437.7)
     Pc = unidades.Pressure(2476.2, "kPa")

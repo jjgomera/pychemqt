@@ -28,6 +28,7 @@ class Propyne(MEoS):
     CASNumber = "74-99-7"
     formula = "CH3-C≡CH"
     synonym = ""
+    _refPropName = "PROPYNE"
     rhoc = unidades.Density(244.898798)
     Tc = unidades.Temperature(402.38)
     Pc = unidades.Pressure(5626.0, "kPa")

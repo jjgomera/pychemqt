@@ -34,6 +34,7 @@ class Methanol(MEoS):
     CASNumber = "67-56-1"
     formula = "CH3OH"
     synonym = ""
+    _refPropName = "METHANOL"
     rhoc = unidades.Density(275.5626)
     Tc = unidades.Temperature(512.6)
     Pc = unidades.Pressure(8103.5, "kPa")

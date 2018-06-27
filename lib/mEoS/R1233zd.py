@@ -28,6 +28,7 @@ class R1233zd(MEoS):
     CASNumber = "102687-65-0"
     formula = "CHCl=CH-CF3"
     synonym = "R1233zd"
+    _refPropName = "R1233ZD"
     rhoc = unidades.Density(480.219392)
     Tc = unidades.Temperature(439.6)
     Pc = unidades.Pressure(3623.7, "kPa")

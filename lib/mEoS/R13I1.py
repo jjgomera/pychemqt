@@ -30,6 +30,7 @@ class R13I1(MEoS):
     CASNumber = "2314-97-8"
     formula = "CF3I"
     synonym = "R13I1"
+    _refPropName = "CF3I"
     rhoc = unidades.Density(868.00061824)
     Tc = unidades.Temperature(396.44)
     Pc = unidades.Pressure(3953., "kPa")

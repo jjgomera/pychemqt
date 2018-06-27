@@ -30,6 +30,7 @@ class R12(MEoS):
     CASNumber = "75-69-4"
     formula = "CCl2F2"
     synonym = "R12"
+    _refPropName = "R12"
     rhoc = unidades.Density(565.)
     Tc = unidades.Temperature(385.12)
     Pc = unidades.Pressure(4136.1, "kPa")

@@ -29,6 +29,7 @@ class R13(MEoS):
     CASNumber = "75-72-9"
     formula = "CClF3"
     synonym = "R13"
+    _refPropName = "R13"
     rhoc = unidades.Density(582.88)
     Tc = unidades.Temperature(302.0)
     Pc = unidades.Pressure(3879.0, "kPa")

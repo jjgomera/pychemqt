@@ -32,6 +32,7 @@ class R407c(MEoSBlend):
     CASNumber = ""
     formula = "R32+R125+R134a"
     synonym = "R407C"
+    _refPropName = "R407C"
     rhoc = unidades.Density(453.430936)
     Tc = unidades.Temperature(359.345)
     Pc = unidades.Pressure(4631.7, "kPa")

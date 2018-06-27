@@ -30,6 +30,7 @@ class iC4(MEoS):
     CASNumber = "75-28-5"
     formula = "CH(CH3)3"
     synonym = "R-600a"
+    _refPropName = "ISOBUTAN"
     rhoc = unidades.Density(225.5)
     Tc = unidades.Temperature(407.81)
     Pc = unidades.Pressure(3629.0, "kPa")

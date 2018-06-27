@@ -28,6 +28,7 @@ class C1Stearate(MEoS):
     CASNumber = "112-61-8"
     formula = "C19H38O2"
     synonym = ""
+    _refPropName = "MSTEARAT"
     rhoc = unidades.Density(237.101584226)
     Tc = unidades.Temperature(775.0)
     Pc = unidades.Pressure(1239.0, "kPa")

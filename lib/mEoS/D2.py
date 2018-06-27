@@ -30,6 +30,7 @@ class D2(MEoS):
     CASNumber = "7782-39-0"
     formula = "D2"
     synonym = ""
+    _refPropName = "D2"
     rhoc = unidades.Density(69.405886)
     Tc = unidades.Temperature(38.34)
     Pc = unidades.Pressure(1665, "kPa")
@@ -143,6 +144,7 @@ class pD2(D2):
     """Multiparameter equation of state for paradeuterium"""
     name = "paradeuterium"
     formula = "pD2"
+    _refPropName = ""
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
@@ -162,6 +164,7 @@ class oD2(D2):
     """Multiparameter equation of state for orthodeuterium"""
     name = "orthodeuterium"
     formula = "oD2"
+    _refPropName = ""
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],

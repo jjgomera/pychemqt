@@ -28,6 +28,7 @@ class EthylBenzene(MEoS):
     CASNumber = "100-41-4"
     formula = "C8H10"
     synonym = ""
+    _refPropName = "EBENZENE"
     rhoc = unidades.Density(291.)
     Tc = unidades.Temperature(617.12)
     Pc = unidades.Pressure(3622.4, "kPa")

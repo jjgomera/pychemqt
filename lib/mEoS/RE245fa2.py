@@ -28,6 +28,7 @@ class RE245fa2(MEoS):
     CASNumber = "1885-48-9"
     formula = "CHF2OCH2CF3"
     synonym = "HFE-245fa2"
+    _refPropName = "RE245FA2"
     rhoc = unidades.Density(515.001169364688)
     Tc = unidades.Temperature(444.88)
     Pc = unidades.Pressure(3433., "kPa")

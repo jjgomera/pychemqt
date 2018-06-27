@@ -30,6 +30,7 @@ class R507a(MEoSBlend):
     CASNumber = ""
     formula = "R125+R143a"
     synonym = "R507A"
+    _refPropName = "R507A"
     rhoc = unidades.Density(490.7370688)
     Tc = unidades.Temperature(343.765)
     Pc = unidades.Pressure(3704.9, "kPa")

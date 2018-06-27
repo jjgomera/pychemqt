@@ -30,6 +30,7 @@ class CO(MEoS):
     CASNumber = "630-08-0"
     formula = "CO"
     synonym = ""
+    _refPropName = "CO"
     rhoc = unidades.Density(303.909585)
     Tc = unidades.Temperature(132.86)
     Pc = unidades.Pressure(3494.0, "kPa")

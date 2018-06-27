@@ -30,6 +30,7 @@ class pXylene(MEoS):
     CASNumber = "106-42-3"
     formula = "C8H10"
     synonym = "1,4-dimethylbenzene"
+    _refPropName = "PXYLENE"
     rhoc = unidades.Density(286)
     Tc = unidades.Temperature(616.168)
     Pc = unidades.Pressure(3531.5, "kPa")

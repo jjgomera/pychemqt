@@ -22,99 +22,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # Library to multiparameter equation of state calculation using refprop
 # https://github.com/BenThelen/python-refprop
 # refprop dll must be installed from NIST package, license requered
-# optional method to meos tools calculations and to stream
+# optional method to meos tools calculations
 ###############################################################################
 
+
+import sys
 
 try:
     import refprop
 except:
     pass
 
-from lib import unidades
+from lib import unidades, mEoS
 # from lib.config import Preferences
 from lib.mezcla import mix_unitmassflow, mix_unitmolarflow
 from lib.thermo import ThermoRefProp
 
 
-__all__ = {212: "helium",
-           107: "neon",
-           98: "argon",
-           1: "hydrogen",
-           46: "nitrogen",
-           47: "oxygen",
-           208: "fluorine",
-           62: "water",
-           49: "co2",
-           48: "co",
-           110: "n2o",
-           51: "so2",
-           219: "cos",
-           63: "ammonia",
-           50: "h2s",
-           2: "methane",
-           3: "ethane",
-           4: "propane",
-           6: "butane",
-           5: "isobutan",
-           8: "pentane",
-           9: "neopentn",
-           7: "ipentane",
-           10: "hexane",
-           52: "ihexane",
-           11: "heptane",
-           12: "octane",
-           13: "nonane",
-           14: "decane",
-           16: "c12",
-           258: "cyclopro",
-           38: "cyclohex",
-           40: "benzene",
-           41: "toluene",
-           22: "ethylene",
-           23: "propylen",
-           24: "1butene",
-           27: "ibutene",
-           25: "c2butene",
-           26: "t2butene",
-           66: "propyne",
-           117: "methanol",
-           134: "ethanol",
-           140: "acetone",
-           133: "dme",
-           951: "nf3",
-           971: "krypton",
-           994: "xenon",
-           953: "sf6",
-           217: "r11",
-           216: "r12",
-           215: "r13",
-           218: "r14",
-           642: "r21",
-           220: "r22",
-           643: "r23",
-           645: "r32",
-           225: "r41",
-           232: "r113",
-           231: "r114",
-           229: "r115",
-           236: "r116",
-           1631: "r123",
-           1629: "r124",
-           1231: "r125",
-           1235: "r134a",
-           1633: "r141b",
-           241: "r142b",
-           243: "r143a",
-           245: "r152a",
-           671: "r218",
-           1872: "r227ea",
-           1873: "r236fa",
-           1817: "r245fa",
-           692: "rc318",
-           475: "air"}
-
-noIds = ["d2", "parahyd", "d2o", "r365mfc", "r404a", "r410a", "r407c", "r507a"]
+# Automatic loading of refprop name from meos subclass _refPropName property
+__all__ = {}
+noIds = []
+for cmp in mEoS.__all__:
+    if cmp.id and cmp._refPropName:
+        __all__[cmp.id] = cmp._refPropName
+    elif cmp._refPropName:
+        noIds.append(cmp._refPropName)
 
 
 class RefProp(ThermoRefProp):
@@ -713,7 +645,6 @@ class RefProp(ThermoRefProp):
 
 
 if __name__ == '__main__':
-    import sys
     from PyQt5 import QtWidgets
     app = QtWidgets.QApplication(sys.argv)
 

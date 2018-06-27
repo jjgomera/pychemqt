@@ -33,6 +33,7 @@ class NH3(MEoS):
     CASNumber = "7664-41-7"
     formula = "NH3"
     synonym = "R-717"
+    _refPropName = "AMMONIA"
     rhoc = unidades.Density(225.)
     Tc = unidades.Temperature(405.40)
     Pc = unidades.Pressure(11333.0, "kPa")

@@ -30,6 +30,7 @@ class R134a(MEoS):
     CASNumber = "811-97-2"
     formula = "CF3CH2F"
     synonym = "R134a"
+    _refPropName = "R134A"
     rhoc = unidades.Density(511.9)
     Tc = unidades.Temperature(374.21)
     Pc = unidades.Pressure(4059.28, "kPa")
@@ -38,7 +39,7 @@ class R134a(MEoS):
     Tb = unidades.Temperature(247.076)
     f_acent = 0.32684
     momentoDipolar = unidades.DipoleMoment(2.058, "Debye")
-    # id = 1235
+    id = 1235
 
     Fi1 = {"R": 8.314471,
            "ao_log": [1, -1.629789],

@@ -28,6 +28,7 @@ class MD3M(MEoS):
     CASNumber = "141-63-9"
     formula = "C12H36Si5O4"
     synonym = "MD3M"
+    _refPropName = "MD3M"
     rhoc = unidades.Density(263.9218791237794)
     Tc = unidades.Temperature(628.36)
     Pc = unidades.Pressure(945.0, "kPa")

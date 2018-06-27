@@ -28,6 +28,7 @@ class C1Palmitate(MEoS):
     CASNumber = "112-39-0"
     formula = "C17H34O2"
     synonym = ""
+    _refPropName = "MPALMITA"
     rhoc = unidades.Density(242.59424202)
     Tc = unidades.Temperature(755.0)
     Pc = unidades.Pressure(1350.0, "kPa")

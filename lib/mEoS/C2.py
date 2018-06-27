@@ -30,6 +30,7 @@ class C2(MEoS):
     CASNumber = "74-84-0"
     formula = "CH3CH3"
     synonym = "R-170"
+    _refPropName = "ETHANE"
     rhoc = unidades.Density(206.18)
     Tc = unidades.Temperature(305.322)
     Pc = unidades.Pressure(4872.2, "kPa")

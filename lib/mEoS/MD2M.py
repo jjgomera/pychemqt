@@ -28,6 +28,7 @@ class MD2M(MEoS):
     CASNumber = "141-62-8"
     formula = "C10H30Si4O3"
     synonym = "MD2M"
+    _refPropName = "MD2M"
     rhoc = unidades.Density(284.1716396703609)
     Tc = unidades.Temperature(599.40)
     Pc = unidades.Pressure(1227.0, "kPa")

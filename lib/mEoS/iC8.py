@@ -28,6 +28,7 @@ class iC8(MEoS):
     CASNumber = "540-84-1"
     formula = "(CH3)2CHCH2C(CH3)3"
     synonym = ""
+    _refPropName = "IOCTANE"
     rhoc = unidades.Density(242.1644624)
     Tc = unidades.Temperature(544)
     Pc = unidades.Pressure(2572.0, "kPa")

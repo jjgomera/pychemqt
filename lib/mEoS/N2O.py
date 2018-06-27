@@ -30,6 +30,7 @@ class N2O(MEoS):
     CASNumber = "10024-97-2"
     formula = "N2O"
     synonym = "R-744A"
+    _refPropName = "N2O"
     rhoc = unidades.Density(452.011456)
     Tc = unidades.Temperature(309.52)
     Pc = unidades.Pressure(7245.0, "kPa")

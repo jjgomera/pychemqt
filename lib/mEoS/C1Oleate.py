@@ -30,6 +30,7 @@ class C1Oleate(MEoS):
     CASNumber = "112-62-9"
     formula = "C19H36O2"
     synonym = ""
+    _refPropName = "MOLEATE"
     rhoc = unidades.Density(241.000222029)
     Tc = unidades.Temperature(782.0)
     Pc = unidades.Pressure(1246.0, "kPa")

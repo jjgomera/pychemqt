@@ -30,6 +30,7 @@ class N2(MEoS):
     CASNumber = "7727-37-9"
     formula = "N2"
     synonym = "R-728"
+    _refPropName = "NITROGEN"
     rhoc = unidades.Density(313.299958972)
     Tc = unidades.Temperature(126.192)
     Pc = unidades.Pressure(3395.8, "kPa")

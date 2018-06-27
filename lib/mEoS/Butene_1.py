@@ -30,6 +30,7 @@ class Butene_1(MEoS):
     CASNumber = "106-98-9"
     formula = "CH3-CH2-CH=CH2"
     synonym = ""
+    _refPropName = "1BUTENE"
     rhoc = unidades.Density(237.8907968)
     Tc = unidades.Temperature(419.29)
     Pc = unidades.Pressure(4005.1, "kPa")

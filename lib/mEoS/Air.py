@@ -30,6 +30,7 @@ class Air(MEoSBlend):
     CASNumber = "1"
     formula = "N2+Ar+O2"
     synonym = "R-729"
+    _refPropName = "AIR"
     rhoc = unidades.Density(342.60456)
     Tc = unidades.Temperature(132.6306)
     Pc = unidades.Pressure(3786.0, "kPa")

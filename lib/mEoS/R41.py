@@ -30,6 +30,7 @@ class R41(MEoS):
     CASNumber = "593-53-3"
     formula = "CH3F"
     synonym = "R41"
+    _refPropName = "R41"
     rhoc = unidades.Density(316.506156)
     Tc = unidades.Temperature(317.28)
     Pc = unidades.Pressure(5897.0, "kPa")

@@ -28,6 +28,7 @@ class R14(MEoS):
     CASNumber = "75-73-0"
     formula = "CF4"
     synonym = "R14"
+    _refPropName = "R14"
     rhoc = unidades.Density(625.66)
     Tc = unidades.Temperature(227.51)
     Pc = unidades.Pressure(3750.0, "kPa")

@@ -32,6 +32,7 @@ class H2S(MEoS):
     CASNumber = "7783-06-4"
     formula = "H2S"
     synonym = ""
+    _refPropName = "H2S"
     rhoc = unidades.Density(347.2841672)
     Tc = unidades.Temperature(373.1)
     Pc = unidades.Pressure(9000.0, "kPa")

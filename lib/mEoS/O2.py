@@ -30,6 +30,7 @@ class O2(MEoS):
     CASNumber = "7782-44-7"
     formula = "O2"
     synonym = "R-732"
+    _refPropName = "OXYGEN"
     rhoc = unidades.Density(436.143644)
     Tc = unidades.Temperature(154.581)
     Pc = unidades.Pressure(5043.0, "kPa")

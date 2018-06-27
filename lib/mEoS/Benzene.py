@@ -30,6 +30,7 @@ class Benzene(MEoS):
     CASNumber = "71-43-2"
     formula = "C6H6"
     synonym = ""
+    _refPropName = "BENZENE"
     rhoc = unidades.Density(304.7922436)
     Tc = unidades.Temperature(562.02)
     Pc = unidades.Pressure(4894, "kPa")

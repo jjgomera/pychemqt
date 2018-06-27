@@ -30,6 +30,7 @@ class Cyclopentane(MEoS):
     CASNumber = "287-92-3"
     formula = "C5H10"
     synonym = ""
+    _refPropName = "CYCLOPEN"
     rhoc = unidades.Density(274.920968)
     Tc = unidades.Temperature(511.72)
     Pc = unidades.Pressure(4571.2, "kPa")

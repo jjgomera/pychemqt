@@ -30,6 +30,7 @@ class Acetone(MEoS):
     CASNumber = "67-64-1"
     formula = "CH3COCH3"
     synonym = ""
+    _refPropName = "ACETONE"
     rhoc = unidades.Density(272.971958)
     Tc = unidades.Temperature(508.1)
     Pc = unidades.Pressure(4700.0, "kPa")

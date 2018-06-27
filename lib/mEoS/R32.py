@@ -30,6 +30,7 @@ class R32(MEoS):
     CASNumber = "75-10-5"
     formula = "CH2F2"
     synonym = "R32"
+    _refPropName = "R32"
     rhoc = unidades.Density(424.)
     Tc = unidades.Temperature(351.255)
     Pc = unidades.Pressure(5782., "kPa")

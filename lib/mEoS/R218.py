@@ -30,6 +30,7 @@ class R218(MEoS):
     CASNumber = "76-19-7"
     formula = "CF3CF2CF3"
     synonym = "R218"
+    _refPropName = "R218"
     rhoc = unidades.Density(627.9845622)
     Tc = unidades.Temperature(345.02)
     Pc = unidades.Pressure(2640.0, "kPa")

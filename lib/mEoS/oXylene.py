@@ -30,6 +30,7 @@ class oXylene(MEoS):
     CASNumber = "95-47-6"
     formula = "C8H10"
     synonym = "1,2-dimethylbenzene"
+    _refPropName = "OXYLENE"
     rhoc = unidades.Density(285)
     Tc = unidades.Temperature(630.259)
     Pc = unidades.Pressure(3737.5, "kPa")

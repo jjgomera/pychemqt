@@ -30,6 +30,7 @@ class R116(MEoS):
     CASNumber = "76-16-4"
     formula = "CF3CF3"
     synonym = "R116"
+    _refPropName = "R116"
     rhoc = unidades.Density(613.3245)
     Tc = unidades.Temperature(293.03)
     Pc = unidades.Pressure(3048.0, "kPa")

@@ -30,6 +30,7 @@ class R115(MEoS):
     CASNumber = "76-15-3"
     formula = "CClF2CF3"
     synonym = "R115"
+    _refPropName = "R115"
     rhoc = unidades.Density(614.77633568)
     Tc = unidades.Temperature(353.1)
     Pc = unidades.Pressure(3129.0, "kPa")

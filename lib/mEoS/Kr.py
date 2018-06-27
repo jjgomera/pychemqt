@@ -30,6 +30,7 @@ class Kr(MEoS):
     CASNumber = "7439-90-9"
     formula = "Kr"
     synonym = "R-784"
+    _refPropName = "KRYPTON"
     rhoc = unidades.Density(909.2083)
     Tc = unidades.Temperature(209.48)
     Pc = unidades.Pressure(5525.0, "kPa")

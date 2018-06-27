@@ -30,6 +30,7 @@ class Ar(MEoS):
     CASNumber = "7440-37-1"
     formula = "Ar"
     synonym = "R-740"
+    _refPropName = "ARGON"
     rhoc = unidades.Density(535.6)
     Tc = unidades.Temperature(150.687)
     Pc = unidades.Pressure(4863, "kPa")

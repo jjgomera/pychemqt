@@ -30,6 +30,7 @@ class nC8(MEoS):
     CASNumber = "111-65-9"
     formula = "CH3-(CH2)6-CH3"
     synonym = ""
+    _refPropName = "OCTANE"
     rhoc = unidades.Density(234.9)
     Tc = unidades.Temperature(569.32)
     Pc = unidades.Pressure(2497.0, "kPa")

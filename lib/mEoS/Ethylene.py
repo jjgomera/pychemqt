@@ -32,6 +32,7 @@ class Ethylene(MEoS):
     CASNumber = "74-85-1"
     formula = "CH2=CH2"
     synonym = "R-1150"
+    _refPropName = "ETHYLENE"
     rhoc = unidades.Density(214.24)
     Tc = unidades.Temperature(282.35)
     Pc = unidades.Pressure(5041.8, "kPa")

@@ -28,6 +28,7 @@ class D6(MEoS):
     CASNumber = "540-97-6"
     formula = "C12H36Si6O6"
     synonym = "D6"
+    _refPropName = "D6"
     rhoc = unidades.Density(279.09572983533354)
     Tc = unidades.Temperature(645.78)
     Pc = unidades.Pressure(961.0, "kPa")

@@ -28,6 +28,7 @@ class R114(MEoS):
     CASNumber = "76-14-2"
     formula = "CClF2CClF2"
     synonym = "R114"
+    _refPropName = "R114"
     rhoc = unidades.Density(579.969)
     Tc = unidades.Temperature(418.83)
     Pc = unidades.Pressure(3257.0, "kPa")

@@ -30,6 +30,7 @@ class SF6(MEoS):
     CASNumber = "2551-62-4"
     formula = "SF6"
     synonym = ""
+    _refPropName = "SF6"
     rhoc = unidades.Density(742.3)
     Tc = unidades.Temperature(318.7232)
     Pc = unidades.Pressure(3754.983, "kPa")

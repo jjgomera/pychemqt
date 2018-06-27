@@ -30,6 +30,7 @@ class Xe(MEoS):
     CASNumber = "7440-63-3"
     formula = "Xe"
     synonym = ""
+    _refPropName = "XENON"
     rhoc = unidades.Density(1102.8612)
     Tc = unidades.Temperature(289.733)
     Pc = unidades.Pressure(5842.0, "kPa")

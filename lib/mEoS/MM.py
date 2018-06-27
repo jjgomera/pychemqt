@@ -30,6 +30,7 @@ class MM(MEoS):
     CASNumber = "107-46-0"
     formula = "C6H18OSi2"
     synonym = "MM"
+    _refPropName = "MM"
     rhoc = unidades.Density(304.4043888253152)
     Tc = unidades.Temperature(518.69997204)
     Pc = unidades.Pressure(1939.39, "kPa")

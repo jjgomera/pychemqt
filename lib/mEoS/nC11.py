@@ -28,6 +28,7 @@ class nC11(MEoS):
     CASNumber = "1120-21-4"
     formula = "CH3-9(CH2)-CH3"
     synonym = ""
+    _refPropName = "C11"
     rhoc = unidades.Density(236.791383074)
     Tc = unidades.Temperature(638.8)
     Pc = unidades.Pressure(1990.4, "kPa")

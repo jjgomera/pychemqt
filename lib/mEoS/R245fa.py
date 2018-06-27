@@ -30,6 +30,7 @@ class R245fa(MEoS):
     CASNumber = "460-73-1"
     formula = "CF3CH2CHF2"
     synonym = "R245fa"
+    _refPropName = "R245FA"
     rhoc = unidades.Density(519.4357675)
     Tc = unidades.Temperature(427.01)
     Pc = unidades.Pressure(3651.0, "kPa")

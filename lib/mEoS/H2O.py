@@ -35,6 +35,7 @@ class H2O(MEoS):
     CASNumber = "7732-18-5"
     formula = "H2O"
     synonym = "R-718"
+    _refPropName = "WATER"
     Tc = unidades.Temperature(647.096)
     rhoc = unidades.Density(322.)
     Pc = unidades.Pressure(22064.0, "kPa")

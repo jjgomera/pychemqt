@@ -28,6 +28,7 @@ class Cyclopropane(MEoS):
     CASNumber = "75-19-4"
     formula = "cyclo(CH2)3"
     synonym = ""
+    _refPropName = "CYCLOPRO"
     rhoc = unidades.Density(258.5)
     Tc = unidades.Temperature(398.3)
     Pc = unidades.Pressure(5579.7, "kPa")

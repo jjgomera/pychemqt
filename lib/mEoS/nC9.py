@@ -30,6 +30,7 @@ class nC9(MEoS):
     CASNumber = "111-84-2"
     formula = "CH3-(CH2)7-CH3"
     synonym = ""
+    _refPropName = "NONANE"
     rhoc = unidades.Density(232.1417)
     Tc = unidades.Temperature(594.55)
     Pc = unidades.Pressure(2281.0, "kPa")

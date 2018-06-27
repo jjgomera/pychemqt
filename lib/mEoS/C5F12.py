@@ -29,6 +29,7 @@ class C5F12(MEoS):
     CASNumber = "678-26-2"
     formula = "678-26-2"
     synonym = ""
+    _refPropName = "C5F12"
     rhoc = unidades.Density(609.47148)
     Tc = unidades.Temperature(420.555)
     Pc = unidades.Pressure(2045.0, "kPa")

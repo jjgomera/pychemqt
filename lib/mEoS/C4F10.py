@@ -29,6 +29,7 @@ class C4F10(MEoS):
     CASNumber = "355-25-9"
     formula = "C4F10"
     synonym = ""
+    _refPropName = "C4F10"
     rhoc = unidades.Density(599.8356)
     Tc = unidades.Temperature(386.326)
     Pc = unidades.Pressure(2323.4, "kPa")

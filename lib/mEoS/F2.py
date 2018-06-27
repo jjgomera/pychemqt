@@ -28,6 +28,7 @@ class F2(MEoS):
     CASNumber = "7782-41-4"
     formula = "F2"
     synonym = ""
+    _refPropName = "FLUORINE"
     rhoc = unidades.Density(592.864)
     Tc = unidades.Temperature(144.414)
     Pc = unidades.Pressure(5172.4, "kPa")

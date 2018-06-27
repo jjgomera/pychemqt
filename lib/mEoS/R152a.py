@@ -30,6 +30,7 @@ class R152a(MEoS):
     CASNumber = "75-37-6"
     formula = "CHF2CH3"
     synonym = "R152a"
+    _refPropName = "R152A"
     rhoc = unidades.Density(368.)
     Tc = unidades.Temperature(386.411)
     Pc = unidades.Pressure(4516.75, "kPa")

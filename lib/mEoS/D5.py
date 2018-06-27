@@ -28,6 +28,7 @@ class D5(MEoS):
     CASNumber = "541-02-6"
     formula = "C10H30O5Si5"
     synonym = "D5"
+    _refPropName = "D5"
     rhoc = unidades.Density(292.570762680819)
     Tc = unidades.Temperature(619.23462341)
     Pc = unidades.Pressure(1161.46, "kPa")

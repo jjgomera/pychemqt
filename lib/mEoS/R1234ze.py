@@ -30,6 +30,7 @@ class R1234ze(MEoS):
     CASNumber = "29118-24-9"
     formula = "CHF=CHCF3"
     synonym = "R-1234ze"
+    _refPropName = "R1234ZE"
     rhoc = unidades.Density(489.238464)
     Tc = unidades.Temperature(382.513)
     Pc = unidades.Pressure(3634.9, "kPa")

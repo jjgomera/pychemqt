@@ -30,6 +30,7 @@ class DEE(MEoS):
     CASNumber = "60-29-7"
     formula = "C4H10O"
     synonym = ""
+    _refPropName = "DEE"
     rhoc = unidades.Density(264)
     Tc = unidades.Temperature(466.7)
     Pc = unidades.Pressure(3720.238, "kPa")

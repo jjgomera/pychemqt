@@ -32,6 +32,7 @@ class Cyclohexane(MEoS):
     CASNumber = "110-82-7"
     formula = "cyclo(CH2)6"
     synonym = ""
+    _refPropName = "CYCLOHEX"
     rhoc = unidades.Density(271.33016352)
     Tc = unidades.Temperature(553.6)
     Pc = unidades.Pressure(4080.5, "kPa")

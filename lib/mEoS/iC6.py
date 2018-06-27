@@ -30,6 +30,7 @@ class iC6(MEoS):
     CASNumber = "107-83-5"
     formula = "(CH3)2-CH-(CH2)2-CH3"
     synonym = ""
+    _refPropName = "IHEXANE"
     rhoc = unidades.Density(233.966)
     Tc = unidades.Temperature(497.7)
     Pc = unidades.Pressure(3040.0, "kPa")

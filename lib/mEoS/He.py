@@ -30,6 +30,7 @@ class He(MEoS):
     CASNumber = "7440-59-7"
     formula = "He"
     synonym = "R-704"
+    _refPropName = "HELIUM"
     rhoc = unidades.Density(69.6000453974)
     Tc = unidades.Temperature(5.1953)
     Pc = unidades.Pressure(227.61, "kPa")

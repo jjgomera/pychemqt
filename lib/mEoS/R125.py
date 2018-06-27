@@ -30,6 +30,7 @@ class R125(MEoS):
     CASNumber = "354-33-6"
     formula = "CHF2CF3"
     synonym = "R125"
+    _refPropName = "R125"
     rhoc = unidades.Density(573.5822706)
     Tc = unidades.Temperature(339.173)
     Pc = unidades.Pressure(3617.7, "kPa")

@@ -30,6 +30,7 @@ class CH4(MEoS):
     CASNumber = "74-82-8"
     formula = "CH4"
     synonym = "R-50"
+    _refPropName = "METHANE"
     rhoc = unidades.Density(162.66)
     Tc = unidades.Temperature(190.564)
     Pc = unidades.Pressure(4599.2, "kPa")

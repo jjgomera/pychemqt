@@ -28,6 +28,7 @@ class R124(MEoS):
     CASNumber = "2837-89-0"
     formula = "CHClFCF3"
     synonym = "R124"
+    _refPropName = "R124"
     rhoc = unidades.Density(560.)
     Tc = unidades.Temperature(395.425)
     Pc = unidades.Pressure(3624.295, "kPa")

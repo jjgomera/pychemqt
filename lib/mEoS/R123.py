@@ -30,6 +30,8 @@ class R123(MEoS):
     CASNumber = "306-83-2"
     formula = "CHCl2CF3"
     synonym = "R123"
+    _refPropName = "R123"
+    _coolPropName = "R123"
     rhoc = unidades.Density(550.)
     Tc = unidades.Temperature(456.831)
     Pc = unidades.Pressure(3661.8, "kPa")
@@ -38,7 +40,7 @@ class R123(MEoS):
     Tb = unidades.Temperature(300.973)
     f_acent = 0.28192
     momentoDipolar = unidades.DipoleMoment(1.356, "Debye")
-    # id = 1631
+    id = 1631
 
     CP1 = {"ao": 17.01154/8.31451,
            "an": [0.4046308/8.31451, -4.644803e-4/8.31451,

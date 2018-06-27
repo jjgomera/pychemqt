@@ -32,6 +32,7 @@ class D2O(MEoS):
     CASNumber = "7789-20-0"
     formula = "D2O"
     synonym = "deuterium oxide"
+    _refPropName = "D2O"
     Tc = unidades.Temperature(643.847)
     rhoc = unidades.Density(358)
     Pc = unidades.Pressure(21671.0, "kPa")

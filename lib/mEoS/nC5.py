@@ -30,6 +30,7 @@ class nC5(MEoS):
     CASNumber = "109-66-0"
     formula = "CH3-(CH2)3-CH3"
     synonym = "R-601"
+    _refPropName = "PENTANE"
     rhoc = unidades.Density(232.)
     Tc = unidades.Temperature(469.7)
     Pc = unidades.Pressure(3370.0, "kPa")

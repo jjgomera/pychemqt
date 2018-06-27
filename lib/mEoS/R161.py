@@ -28,6 +28,7 @@ class R161(MEoS):
     CASNumber = "353-36-6"
     formula = "C2H5F"
     synonym = "R161"
+    _refPropName = "R161"
     rhoc = unidades.Density(301.81366)
     Tc = unidades.Temperature(375.25)
     Pc = unidades.Pressure(5010.0, "kPa")

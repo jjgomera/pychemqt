@@ -30,6 +30,7 @@ class R22(MEoS):
     CASNumber = "75-45-6"
     formula = "CHClF2"
     synonym = "R22"
+    _refPropName = "R22"
     rhoc = unidades.Density(523.8422)
     Tc = unidades.Temperature(369.295)
     Pc = unidades.Pressure(4990., "kPa")

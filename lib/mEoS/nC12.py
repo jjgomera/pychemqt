@@ -30,6 +30,7 @@ class nC12(MEoS):
     CASNumber = "112-40-3"
     formula = "CH3-(CH2)10-CH3"
     synonym = ""
+    _refPropName = "C12"
     rhoc = unidades.Density(226.5453372)
     Tc = unidades.Temperature(658.1)
     Pc = unidades.Pressure(1817.0, "kPa")

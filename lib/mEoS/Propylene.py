@@ -30,6 +30,7 @@ class Propylene(MEoS):
     CASNumber = "115-07-1"
     formula = "CH2=CH-CH3"
     synonym = "R-1270"
+    _refPropName = "PROPYLEN"
     rhoc = unidades.Density(230.08)
     Tc = unidades.Temperature(364.211)
     Pc = unidades.Pressure(4555.0, "kPa")

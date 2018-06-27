@@ -28,6 +28,7 @@ class R1216(MEoS):
     CASNumber = "116-15-4"
     formula = "C3F6"
     synonym = "R1216"
+    _refPropName = "R1216"
     rhoc = unidades.Density(583.40757266496)
     Tc = unidades.Temperature(358.9)
     Pc = unidades.Pressure(3149.528, "kPa")

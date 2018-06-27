@@ -31,6 +31,7 @@ class Ne(MEoS):
     CASNumber = "7440-01-9"
     formula = "Ne"
     synonym = "R-720"
+    _refPropName = "NEON"
     rhoc = unidades.Density(481.914888)
     Tc = unidades.Temperature(44.4918)
     Pc = unidades.Pressure(2678.6, "kPa")

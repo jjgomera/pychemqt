@@ -30,6 +30,7 @@ class Ethanol(MEoS):
     CASNumber = "64-17-5"
     formula = "C2H6O"
     synonym = ""
+    _refPropName = "ETHANOL"
     rhoc = unidades.Density(273.1858492)
     Tc = unidades.Temperature(514.71)
     Pc = unidades.Pressure(6268., "kPa")

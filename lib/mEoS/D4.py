@@ -30,6 +30,7 @@ class D4(MEoS):
     CASNumber = "556-67-2"
     formula = "C8H24O4Si4"
     synonym = "D4"
+    _refPropName = "D4"
     rhoc = unidades.Density(307.0335906736056)
     Tc = unidades.Temperature(586.49127187)
     Pc = unidades.Pressure(1332.0, "kPa")

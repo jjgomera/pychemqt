@@ -28,6 +28,7 @@ class NF3(MEoS):
     CASNumber = "7783-54-2"
     formula = "NF3"
     synonym = ""
+    _refPropName = "NF3"
     rhoc = unidades.Density(562.47)
     Tc = unidades.Temperature(234.0)
     Pc = unidades.Pressure(4460.7, "kPa")

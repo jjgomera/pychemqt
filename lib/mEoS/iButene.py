@@ -30,6 +30,7 @@ class iButene(MEoS):
     CASNumber = "115-11-7"
     formula = "CH2=C(CH3)2"
     synonym = ""
+    _refPropName = "IBUTENE"
     rhoc = unidades.Density(233.9633544)
     Tc = unidades.Temperature(418.09)
     Pc = unidades.Pressure(4009.8, "kPa")

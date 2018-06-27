@@ -30,6 +30,7 @@ class nC10(MEoS):
     CASNumber = "124-18-5"
     formula = "CH3-(CH2)8-CH3"
     synonym = ""
+    _refPropName = "DECANE"
     rhoc = unidades.Density(233.342)
     Tc = unidades.Temperature(617.7)
     Pc = unidades.Pressure(2103.0, "kPa")

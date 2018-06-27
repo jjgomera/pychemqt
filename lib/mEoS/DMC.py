@@ -28,6 +28,7 @@ class DMC(MEoS):
     CASNumber = "616-38-6"
     formula = "C3H6O3"
     synonym = ""
+    _refPropName = "DMC"
     rhoc = unidades.Density(360.3116)
     Tc = unidades.Temperature(557.)
     Pc = unidades.Pressure(4908.8, "kPa")
