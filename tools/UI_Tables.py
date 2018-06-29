@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   Dialogs for configuration:
 #   - Ui_ChooseFluid: Dialog to choose fluid for calculations
 #   - Ui_ReferenceState: Dialog to select reference state
+#   - DialogFilterFluid: Dialog for filter compounds family to show
 #   - Dialog_InfoFluid: Dialog to show parameter of element with meos
 #       - Widget_MEoS_Data: Widget to show meos data
 #   - transportDialog: Dialog for transport and ancillary equations
@@ -226,7 +227,7 @@ class plugin(object):
             # Update configuration
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
-            self.config.set("MEoS", "fluid", str(dlg.lista.currentRow()))
+            self.config.set("MEoS", "fluid", str(dlg.id()))
             self.config.set("MEoS", "eq", str(dlg.eq.currentIndex()))
             self.config.set("MEoS", "PR", str(dlg.radioPR.isChecked()))
             self.config.set("MEoS", "Generalized",
@@ -958,6 +959,9 @@ class Dialog(QtWidgets.QDialog, plugin):
 # Dialogs for configuration:
 class Ui_ChooseFluid(QtWidgets.QDialog):
     """Dialog to choose fluid for meos plugins calculations"""
+    all = True
+    group = None
+
     def __init__(self, config=None, parent=None):
         """config: instance with project config to set initial values"""
         super(Ui_ChooseFluid, self).__init__(parent)
@@ -966,21 +970,13 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         layout = QtWidgets.QGridLayout(self)
 
         self.lista = QtWidgets.QListWidget()
-        for fluido in mEoS.__all__:
-            txt = fluido.name
-            if fluido.synonym:
-                txt += " ("+fluido.synonym+")"
-            self.lista.addItem(txt)
+        self.fill(mEoS.__all__)
         self.lista.itemDoubleClicked.connect(self.accept)
-        layout.addWidget(self.lista, 1, 1, 3, 1)
+        layout.addWidget(self.lista, 1, 1, 5, 1)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
             QtCore.Qt.Vertical)
-        botonInfo = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "Info"))
-        self.buttonBox.addButton(
-            botonInfo, QtWidgets.QDialogButtonBox.HelpRole)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.helpRequested.connect(self.info)
@@ -988,7 +984,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 
         self.widget = QtWidgets.QWidget(self)
         self.widget.setVisible(False)
-        layout.addWidget(self.widget, 4, 1, 1, 2)
+        layout.addWidget(self.widget, 6, 1, 1, 2)
         gridLayout = QtWidgets.QGridLayout(self.widget)
         self.radioMEoS = QtWidgets.QRadioButton(
             QtWidgets.QApplication.translate("pychemqt", "Use MEoS equation"))
@@ -1021,11 +1017,23 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
             0, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Maximum), 8, 2)
 
+        botonFilter = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "filter.png"))),
+            QtWidgets.QApplication.translate("pychemqt", "Filter"))
+        botonFilter.clicked.connect(self.filter)
+        layout.addWidget(botonFilter, 3, 2, 1, 1)
+        botonInfo = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.environ["pychemqt"] +
+            os.path.join("images", "button", "helpAbout.png"))),
+            QtWidgets.QApplication.translate("pychemqt", "Info"))
+        botonInfo.clicked.connect(self.info)
+        layout.addWidget(botonInfo, 4, 2, 1, 1)
         self.botonMore = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "More..."))
         self.botonMore.setCheckable(True)
         self.botonMore.clicked.connect(self.widget.setVisible)
-        layout.addWidget(self.botonMore, 3, 2, 1, 1)
+        layout.addWidget(self.botonMore, 5, 2, 1, 1)
 
         self.lista.currentRowChanged.connect(self.update)
         self.radioMEoS.toggled.connect(self.eq.setEnabled)
@@ -1038,6 +1046,56 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
                 config.getboolean("MEoS", "Generalized"))
             self.visco.setCurrentIndex(config.getint("MEoS", "visco"))
             self.thermal.setCurrentIndex(config.getint("MEoS", "thermal"))
+
+    def id(self):
+        """Return correct id of selected fluid in mEoS.__all__ list"""
+        id = self.lista.currentRow()
+
+        # Correct id for hidden classes
+        if not self.all:
+            hiden = 0
+            visible = 0
+            for grp, boolean in zip(DialogFilterFluid.classOrder, self.group):
+                module = mEoS.__getattribute__(grp)
+                if boolean:
+                    visible += len(module)
+                else:
+                    hiden += len(module)
+
+                if visible >= id:
+                    break
+            # Add the element hidden above the selected one
+            id += hiden
+        return id
+
+    def fill(self, compounds):
+        """Fill list fluid
+        compounds: List of MEoS subclasses to show"""
+        self.lista.clear()
+        for fluido in compounds:
+            txt = fluido.name
+            if fluido.synonym:
+                txt += " ("+fluido.synonym+")"
+            self.lista.addItem(txt)
+
+    def filter(self):
+        """Show dialog with group compound filter"""
+        dlg = DialogFilterFluid(self.all, self.group)
+        if dlg.exec_():
+            if dlg.showAll.isChecked():
+                cmps = mEoS.__all__
+                self.all = True
+            else:
+                self.all = False
+                self.group = []
+                cmps = []
+                for i, key in enumerate(dlg.classOrder):
+                    if dlg.groups[i].isChecked():
+                        cmps += mEoS.__getattribute__(key)
+                        self.group.append(True)
+                    else:
+                        self.group.append(False)
+            self.fill(cmps)
 
     def info(self):
         """Show info dialog for fluid"""
@@ -1070,6 +1128,56 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
             self.thermal.addItem(
                 QtWidgets.QApplication.translate("pychemqt", "Undefined"))
             self.thermal.setEnabled(False)
+
+
+class DialogFilterFluid(QtWidgets.QDialog):
+    """Dialog for filter compounds family to show"""
+    text = {
+        "Nobles": QtWidgets.QApplication.translate("pychemqt", "Noble gases"),
+        "Gases": QtWidgets.QApplication.translate("pychemqt", "Gases"),
+        "Alkanes": QtWidgets.QApplication.translate("pychemqt", "Alkanes"),
+        "Naphthenes": QtWidgets.QApplication.translate(
+            "pychemqt", "Naphthenes"),
+        "Alkenes": QtWidgets.QApplication.translate("pychemqt", "Alkenes"),
+        "Heteroatom": QtWidgets.QApplication.translate(
+            "pychemqt", "Heteroatom"),
+        "CFCs": QtWidgets.QApplication.translate("pychemqt", "CFCs"),
+        "Siloxanes": QtWidgets.QApplication.translate("pychemqt", "Siloxanes"),
+        "PseudoCompounds": QtWidgets.QApplication.translate(
+            "pychemqt", "Pseudo Compounds")}
+    classOrder = ["Nobles", "Gases", "Alkanes", "Naphthenes", "Alkenes",
+                  "Heteroatom", "CFCs", "Siloxanes", "PseudoCompounds"]
+
+    def __init__(self, all=True, group=None, parent=None):
+        super(DialogFilterFluid, self).__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Filter fluids families to show"))
+        layout = QtWidgets.QGridLayout(self)
+        self.showAll = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Show All"))
+        layout.addWidget(self.showAll, 1, 1)
+
+        widget = QtWidgets.QWidget()
+        layout.addWidget(widget, 2, 1)
+        lyt = QtWidgets.QVBoxLayout(widget)
+        self.groups = []
+        for name in self.classOrder:
+            checkBox = QtWidgets.QCheckBox(self.text[name])
+            lyt.addWidget(checkBox)
+            self.groups.append(checkBox)
+
+        self.showAll.toggled.connect(widget.setDisabled)
+
+        self.showAll.setChecked(all)
+        if group is not None:
+            for boolean, checkBox in zip(group, self.groups):
+                checkBox.setChecked(boolean)
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox, 3, 1)
 
 
 class Ui_ReferenceState(QtWidgets.QDialog):
@@ -4851,12 +4959,13 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     conf = config.getMainWindowConfig()
+
+    SteamTables = Ui_ChooseFluid()
     # SteamTables = AddPoint(conf)
     # SteamTables=AddLine(None)
     # SteamTables=transportDialog(mEoS.__all__[2])
     # SteamTables = Dialog(conf)
-    SteamTables = Plot3D()
+    # SteamTables = Plot3D()
 
     SteamTables.show()
     sys.exit(app.exec_())
-
