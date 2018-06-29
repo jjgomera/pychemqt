@@ -79,6 +79,10 @@ if args.style is not None:
         print("Undefined style option, the available options are: %s" %
               QtWidgets.QStyleFactory.keys())
 
+# Add style options
+app.setStyleSheet(
+    "QDialogButtonBox {dialogbuttonbox-buttons-have-icons: true;}")
+
 
 # Check qt configuration file
 settings = QtCore.QSettings()
