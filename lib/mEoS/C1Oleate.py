@@ -31,6 +31,7 @@ class C1Oleate(MEoS):
     formula = "C19H36O2"
     synonym = ""
     _refPropName = "MOLEATE"
+    _coolPropName = "MethylOleate"
     rhoc = unidades.Density(241.000222029)
     Tc = unidades.Temperature(782.0)
     Pc = unidades.Pressure(1246.0, "kPa")

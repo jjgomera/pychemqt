@@ -33,6 +33,7 @@ class H2(MEoS):
     formula = "H2"
     synonym = "R-702"
     _refPropName = "HYDROGEN"
+    _coolPropName = "Hydrogen"
     rhoc = unidades.Density(31.26226704)
     Tc = unidades.Temperature(33.145)
     Pc = unidades.Pressure(1296.4, "kPa")
@@ -206,7 +207,8 @@ class H2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = leachman, MBWR, GERG, bender
+    # eq = leachman, MBWR, GERG, bender
+    eq = leachman, GERG, bender
     _PR = -0.004803
 
     _surface = {"sigma": [-1.4165, 0.746383, 0.675625],

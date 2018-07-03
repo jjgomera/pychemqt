@@ -31,6 +31,7 @@ class R227ea(MEoS):
     formula = "CF3CHFCF3"
     synonym = "R227ea"
     _refPropName = "R227EA"
+    _coolPropName = "R227EA"
     rhoc = unidades.Density(594.2508657)
     Tc = unidades.Temperature(374.9)
     Pc = unidades.Pressure(2925.0, "kPa")

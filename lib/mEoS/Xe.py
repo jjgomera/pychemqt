@@ -31,6 +31,7 @@ class Xe(MEoS):
     formula = "Xe"
     synonym = ""
     _refPropName = "XENON"
+    _coolPropName = "Xenon"
     rhoc = unidades.Density(1102.8612)
     Tc = unidades.Temperature(289.733)
     Pc = unidades.Pressure(5842.0, "kPa")

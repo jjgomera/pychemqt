@@ -31,6 +31,7 @@ class O2(MEoS):
     formula = "O2"
     synonym = "R-732"
     _refPropName = "OXYGEN"
+    _coolPropName = "Oxygen"
     rhoc = unidades.Density(436.143644)
     Tc = unidades.Temperature(154.581)
     Pc = unidades.Pressure(5043.0, "kPa")
@@ -190,7 +191,8 @@ class O2(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = schmidt, MBWR, GERG, shortSpan
+    # eq = schmidt, MBWR, GERG, shortSpan
+    eq = schmidt, GERG, shortSpan
     _PR = -0.003157
 
     _surface = {"sigma": [0.03843], "exp": [1.225]}

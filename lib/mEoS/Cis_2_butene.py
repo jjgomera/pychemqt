@@ -31,6 +31,7 @@ class Cis_2_butene(MEoS):
     formula = "CH3-CH=CH-CH3"
     synonym = ""
     _refPropName = "C2BUTENE"
+    _coolPropName = "cis-2-Butene"
     rhoc = unidades.Density(238.11522208)
     Tc = unidades.Temperature(435.75)
     Pc = unidades.Pressure(4225.5, "kPa")

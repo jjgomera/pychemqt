@@ -31,6 +31,7 @@ class CH4(MEoS):
     formula = "CH4"
     synonym = "R-50"
     _refPropName = "METHANE"
+    _coolPropName = "Methane"
     rhoc = unidades.Density(162.66)
     Tc = unidades.Temperature(190.564)
     Pc = unidades.Pressure(4599.2, "kPa")
@@ -281,7 +282,8 @@ class CH4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = setzmann, MBWR, GERG, friend, shortSpan, sun
+    # eq = setzmann, MBWR, GERG, friend, shortSpan, sun
+    eq = setzmann, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
                 "exp": [1.191, 5.422, 0.6161]}

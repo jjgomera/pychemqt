@@ -30,6 +30,7 @@ class C5F12(MEoS):
     formula = "678-26-2"
     synonym = ""
     _refPropName = "C5F12"
+    _coolPropName = ""
     rhoc = unidades.Density(609.47148)
     Tc = unidades.Temperature(420.555)
     Pc = unidades.Pressure(2045.0, "kPa")

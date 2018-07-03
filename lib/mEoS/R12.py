@@ -31,6 +31,7 @@ class R12(MEoS):
     formula = "CCl2F2"
     synonym = "R12"
     _refPropName = "R12"
+    _coolPropName = "R12"
     rhoc = unidades.Density(565.)
     Tc = unidades.Temperature(385.12)
     Pc = unidades.Pressure(4136.1, "kPa")

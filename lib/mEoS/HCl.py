@@ -31,6 +31,7 @@ class HCl(MEoS):
     formula = "HCl"
     synonym = ""
     _refPropName = "HCL"
+    _coolPropName = "HydrogenChloride"
     rhoc = unidades.Density(410.96998439164605)
     Tc = unidades.Temperature(324.55)
     Pc = unidades.Pressure(8263.00, "kPa")

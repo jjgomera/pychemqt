@@ -31,6 +31,7 @@ class Cyclopentane(MEoS):
     formula = "C5H10"
     synonym = ""
     _refPropName = "CYCLOPEN"
+    _coolPropName = "Cyclopentane"
     rhoc = unidades.Density(274.920968)
     Tc = unidades.Temperature(511.72)
     Pc = unidades.Pressure(4571.2, "kPa")

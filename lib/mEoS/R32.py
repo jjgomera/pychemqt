@@ -31,6 +31,7 @@ class R32(MEoS):
     formula = "CH2F2"
     synonym = "R32"
     _refPropName = "R32"
+    _coolPropName = "R32"
     rhoc = unidades.Density(424.)
     Tc = unidades.Temperature(351.255)
     Pc = unidades.Pressure(5782., "kPa")
@@ -212,7 +213,8 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = tillner, MBWR, shortSpan, astina, sun
+    # eq = tillner, MBWR, shortSpan, astina, sun
+    eq = tillner, shortSpan, astina, sun
     _PR = 0.00585
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}

@@ -29,6 +29,7 @@ class R1233zd(MEoS):
     formula = "CHCl=CH-CF3"
     synonym = "R1233zd"
     _refPropName = "R1233ZD"
+    _coolPropName = "R1233zd(E)"
     rhoc = unidades.Density(480.219392)
     Tc = unidades.Temperature(439.6)
     Pc = unidades.Pressure(3623.7, "kPa")

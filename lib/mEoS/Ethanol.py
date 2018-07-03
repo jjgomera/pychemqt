@@ -31,6 +31,7 @@ class Ethanol(MEoS):
     formula = "C2H6O"
     synonym = ""
     _refPropName = "ETHANOL"
+    _coolPropName = "Ethanol"
     rhoc = unidades.Density(273.1858492)
     Tc = unidades.Temperature(514.71)
     Pc = unidades.Pressure(6268., "kPa")

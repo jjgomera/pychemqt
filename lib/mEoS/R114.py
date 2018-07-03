@@ -29,6 +29,7 @@ class R114(MEoS):
     formula = "CClF2CClF2"
     synonym = "R114"
     _refPropName = "R114"
+    _coolPropName = "R114"
     rhoc = unidades.Density(579.969)
     Tc = unidades.Temperature(418.83)
     Pc = unidades.Pressure(3257.0, "kPa")

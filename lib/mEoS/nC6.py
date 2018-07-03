@@ -31,6 +31,7 @@ class nC6(MEoS):
     formula = "CH3-(CH2)4-CH3"
     synonym = ""
     _refPropName = "HEXANE"
+    _coolPropName = "n-Hexane"
     rhoc = unidades.Density(233.1819)
     Tc = unidades.Temperature(507.82)
     Pc = unidades.Pressure(3034.0, "kPa")

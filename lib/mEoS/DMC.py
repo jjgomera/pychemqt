@@ -29,6 +29,7 @@ class DMC(MEoS):
     formula = "C3H6O3"
     synonym = ""
     _refPropName = "DMC"
+    _coolPropName = "DimethylCarbonate"
     rhoc = unidades.Density(360.3116)
     Tc = unidades.Temperature(557.)
     Pc = unidades.Pressure(4908.8, "kPa")

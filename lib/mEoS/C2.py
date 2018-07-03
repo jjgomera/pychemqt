@@ -31,6 +31,7 @@ class C2(MEoS):
     formula = "CH3CH3"
     synonym = "R-170"
     _refPropName = "ETHANE"
+    _coolPropName = "Ethane"
     rhoc = unidades.Density(206.18)
     Tc = unidades.Temperature(305.322)
     Pc = unidades.Pressure(4872.2, "kPa")

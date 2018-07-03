@@ -31,6 +31,7 @@ class C1Cyclohexane(MEoS):
     formula = "C6H11-CH3"
     synonym = ""
     _refPropName = "C1CC6"
+    _coolPropName = ""
     rhoc = unidades.Density(267.0660832)
     Tc = unidades.Temperature(572.2)
     Pc = unidades.Pressure(3470.0, "kPa")

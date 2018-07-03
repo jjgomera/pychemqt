@@ -33,6 +33,7 @@ class R23(MEoS):
     formula = "CHF3"
     synonym = "R23"
     _refPropName = "R23"
+    _coolPropName = "R23"
     rhoc = unidades.Density(526.504152)
     Tc = unidades.Temperature(299.293)
     Pc = unidades.Pressure(4832.0, "kPa")

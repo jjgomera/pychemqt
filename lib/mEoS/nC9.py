@@ -31,6 +31,7 @@ class nC9(MEoS):
     formula = "CH3-(CH2)7-CH3"
     synonym = ""
     _refPropName = "NONANE"
+    _coolPropName = "n-Nonane"
     rhoc = unidades.Density(232.1417)
     Tc = unidades.Temperature(594.55)
     Pc = unidades.Pressure(2281.0, "kPa")

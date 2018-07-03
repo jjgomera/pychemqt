@@ -33,6 +33,7 @@ class CO2(MEoS):
     formula = "CO2"
     synonym = "R-744"
     _refPropName = "CO2"
+    _coolPropName = "CarbonDioxide"
     rhoc = unidades.Density(467.6)
     Tc = unidades.Temperature(304.1282)
     Pc = unidades.Pressure(7.3773, "MPa")

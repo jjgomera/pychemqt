@@ -31,6 +31,7 @@ class R40(MEoS):
     formula = "CH3Cl"
     synonym = "R40"
     _refPropName = "R40"
+    _coolPropName = "R40"
     rhoc = unidades.Density(363.219)
     Tc = unidades.Temperature(416.3)
     Pc = unidades.Pressure(6677.3, "kPa")

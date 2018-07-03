@@ -31,6 +31,7 @@ class R236fa(MEoS):
     formula = "CF3CH2CF3"
     synonym = "R236fa"
     _refPropName = "R236FA"
+    _coolPropName = "R236FA"
     rhoc = unidades.Density(551.2912384)
     Tc = unidades.Temperature(398.07)
     Pc = unidades.Pressure(3200.0, "kPa")
@@ -117,7 +118,8 @@ class R236fa(MEoS):
               0.110600369167e1, 0.953714711849e2, -0.881815206562e-2,
               0.973194908842e1, -0.935516922205e3]}
 
-    eq = pan, MBWR
+    # eq = pan, MBWR
+    eq = pan,
 
     _surface = {"sigma": [0.05389], "exp": [1.249]}
     _vapor_Pressure = {

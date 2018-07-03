@@ -35,6 +35,7 @@ class Methanol(MEoS):
     formula = "CH3OH"
     synonym = ""
     _refPropName = "METHANOL"
+    _coolPropName = "Methanol"
     rhoc = unidades.Density(275.5626)
     Tc = unidades.Temperature(512.6)
     Pc = unidades.Pressure(8103.5, "kPa")

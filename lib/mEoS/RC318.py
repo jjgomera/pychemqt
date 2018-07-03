@@ -29,6 +29,7 @@ class RC318(MEoS):
     formula = "cyclo-C4F8"
     synonym = "RC318"
     _refPropName = "RC318"
+    _coolPropName = "RC318"
     rhoc = unidades.Density(619.973)
     Tc = unidades.Temperature(388.38)
     Pc = unidades.Pressure(2777.5, "kPa")

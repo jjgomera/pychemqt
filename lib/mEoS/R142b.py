@@ -31,6 +31,7 @@ class R142b(MEoS):
     formula = "CClF2CH3"
     synonym = "R142b"
     _refPropName = "R142B"
+    _coolPropName = "R142b"
     rhoc = unidades.Density(445.997)
     Tc = unidades.Temperature(410.26)
     Pc = unidades.Pressure(4055.0, "kPa")

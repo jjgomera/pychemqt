@@ -31,6 +31,7 @@ class R113(MEoS):
     formula = "CCl2FCClF2"
     synonym = "R113"
     _refPropName = "R113"
+    _coolPropName = "R113"
     rhoc = unidades.Density(560.)
     Tc = unidades.Temperature(487.21)
     Pc = unidades.Pressure(3392.2, "kPa")

@@ -31,6 +31,7 @@ class R218(MEoS):
     formula = "CF3CF2CF3"
     synonym = "R218"
     _refPropName = "R218"
+    _coolPropName = "R218"
     rhoc = unidades.Density(627.9845622)
     Tc = unidades.Temperature(345.02)
     Pc = unidades.Pressure(2640.0, "kPa")

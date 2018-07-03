@@ -31,6 +31,7 @@ class iC4(MEoS):
     formula = "CH(CH3)3"
     synonym = "R-600a"
     _refPropName = "ISOBUTAN"
+    _coolPropName = "IsoButane"
     rhoc = unidades.Density(225.5)
     Tc = unidades.Temperature(407.81)
     Pc = unidades.Pressure(3629.0, "kPa")
@@ -291,6 +292,7 @@ class iC4(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
+        "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
         "Pmin": 0.1, "rhomin": 40.,
@@ -307,7 +309,8 @@ class iC4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
+    # eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
+    eq = buecker, GERG, miyamoto, shortSpan, polt, sun
 
     _surface = {"sigma": [-0.01639, 0.06121], "exp": [2.102, 1.304]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

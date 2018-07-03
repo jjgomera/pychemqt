@@ -31,6 +31,7 @@ class N2O(MEoS):
     formula = "N2O"
     synonym = "R-744A"
     _refPropName = "N2O"
+    _coolPropName = "NitrousOxide"
     rhoc = unidades.Density(452.011456)
     Tc = unidades.Temperature(309.52)
     Pc = unidades.Pressure(7245.0, "kPa")

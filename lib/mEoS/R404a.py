@@ -33,6 +33,7 @@ class R404a(MEoSBlend):
     formula = "R125+R134a+R143a"
     synonym = "R404A"
     _refPropName = "R404A"
+    _coolPropName = "R404A"
     rhoc = unidades.Density(482.162772)
     Tc = unidades.Temperature(345.27)
     Pc = unidades.Pressure(3734.8, "kPa")

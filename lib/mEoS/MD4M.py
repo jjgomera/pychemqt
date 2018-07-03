@@ -29,6 +29,7 @@ class MD4M(MEoS):
     formula = "C14H42O5Si6"
     synonym = "MD4M"
     _refPropName = "MD4M"
+    _coolPropName = "MD4M"
     rhoc = unidades.Density(285.6576532213632)
     Tc = unidades.Temperature(653.2)
     Pc = unidades.Pressure(877.47, "kPa")

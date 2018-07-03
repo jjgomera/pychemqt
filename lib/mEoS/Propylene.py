@@ -31,6 +31,7 @@ class Propylene(MEoS):
     formula = "CH2=CH-CH3"
     synonym = "R-1270"
     _refPropName = "PROPYLEN"
+    _coolPropName = "Propylene"
     rhoc = unidades.Density(230.08)
     Tc = unidades.Temperature(364.211)
     Pc = unidades.Pressure(4555.0, "kPa")

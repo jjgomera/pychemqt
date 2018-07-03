@@ -31,6 +31,7 @@ class D2(MEoS):
     formula = "D2"
     synonym = ""
     _refPropName = "D2"
+    _coolPropName = "Deuterium"
     rhoc = unidades.Density(69.405886)
     Tc = unidades.Temperature(38.34)
     Pc = unidades.Pressure(1665, "kPa")
@@ -123,7 +124,8 @@ class D2(MEoS):
               -0.8834384656760e-8, -0.1081622159862e-8, -0.1478159334303e-10,
               0.7926922356112e-11, 0.5721547329378e-11]}
 
-    eq = richardson, MBWR
+    # eq = richardson, MBWR
+    eq = richardson,
 
     _surface = {"sigma": [0.009376], "exp": [1.258]}
     _vapor_Pressure = {
@@ -145,6 +147,7 @@ class pD2(D2):
     name = "paradeuterium"
     formula = "pD2"
     _refPropName = ""
+    _coolPropName = "ParaDeuterium"
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
@@ -165,6 +168,7 @@ class oD2(D2):
     name = "orthodeuterium"
     formula = "oD2"
     _refPropName = ""
+    _coolPropName = "OrthoDeuterium"
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],

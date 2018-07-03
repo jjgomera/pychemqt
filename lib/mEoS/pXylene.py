@@ -31,6 +31,7 @@ class pXylene(MEoS):
     formula = "C8H10"
     synonym = "1,4-dimethylbenzene"
     _refPropName = "PXYLENE"
+    _coolPropName = "p-Xylene"
     rhoc = unidades.Density(286)
     Tc = unidades.Temperature(616.168)
     Pc = unidades.Pressure(3531.5, "kPa")

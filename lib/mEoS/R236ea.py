@@ -30,6 +30,7 @@ class R236ea(MEoS):
     formula = "CF3CHFCHF2"
     synonym = "R236ea"
     _refPropName = "R236EA"
+    _coolPropName = "R236EA"
     rhoc = unidades.Density(565.)
     Tc = unidades.Temperature(412.44)
     Pc = unidades.Pressure(3420.0, "kPa")
@@ -106,7 +107,8 @@ class R236ea(MEoS):
            "ht_add": [0.195298641e-1], "ht_add_exp": [1],
            "hd": [], "hd_exp": []}
 
-    eq = rui, ecs
+    # eq = rui, ecs
+    eq = rui,
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}
     _vapor_Pressure = {

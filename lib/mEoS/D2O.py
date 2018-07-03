@@ -33,6 +33,7 @@ class D2O(MEoS):
     formula = "D2O"
     synonym = "deuterium oxide"
     _refPropName = "D2O"
+    _coolPropName = "HeavyWater"
     Tc = unidades.Temperature(643.847)
     rhoc = unidades.Density(358)
     Pc = unidades.Pressure(21671.0, "kPa")

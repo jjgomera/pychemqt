@@ -227,7 +227,8 @@ class R152a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*9}
 
-    eq = MBWR, outcalt, tillner, shortSpan, astina
+    # eq = MBWR, outcalt, tillner, shortSpan, astina
+    eq = outcalt, tillner, shortSpan, astina
 
     _surface = {"sigma": [0.05808], "exp": [1.2115]}
     _vapor_Pressure = {

@@ -29,6 +29,7 @@ class R1216(MEoS):
     formula = "C3F6"
     synonym = "R1216"
     _refPropName = "R1216"
+    _coolPropName = ""
     rhoc = unidades.Density(583.40757266496)
     Tc = unidades.Temperature(358.9)
     Pc = unidades.Pressure(3149.528, "kPa")
@@ -55,6 +56,7 @@ class R1216(MEoS):
 
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 12000.0, "rhomax": 12.89,
         "Pmin": 0.0000936, "rhomin": 12.88,

@@ -31,6 +31,7 @@ class R141b(MEoS):
     formula = "CCl2FCH3"
     synonym = "R141b"
     _refPropName = "R141B"
+    _coolPropName = "R141b"
     rhoc = unidades.Density(458.55946)
     Tc = unidades.Temperature(477.5)
     Pc = unidades.Pressure(4212.0, "kPa")

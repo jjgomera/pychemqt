@@ -32,6 +32,7 @@ class Toluene(MEoS):
     formula = "C6H5-CH3"
     synonym = ""
     _refPropName = "TOLUENE"
+    _coolPropName = "Toluene"
     rhoc = unidades.Density(291.98665)
     Tc = unidades.Temperature(591.75)
     Pc = unidades.Pressure(4126.3, "kPa")

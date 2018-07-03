@@ -31,6 +31,7 @@ class N2(MEoS):
     formula = "N2"
     synonym = "R-728"
     _refPropName = "NITROGEN"
+    _coolPropName = "Nitrogen"
     rhoc = unidades.Density(313.299958972)
     Tc = unidades.Temperature(126.192)
     Pc = unidades.Pressure(3395.8, "kPa")
@@ -294,7 +295,8 @@ class N2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = span, MBWR, GERG, jacobsen, shortSpan, sun
+    # eq = span, MBWR, GERG, jacobsen, shortSpan, sun
+    eq = span, GERG, jacobsen, shortSpan, sun
     _PR = -0.004032
 
     _surface = {"sigma": [0.02898], "exp": [1.246]}

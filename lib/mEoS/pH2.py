@@ -33,6 +33,7 @@ class pH2(MEoS):
     formula = "H2"
     synonym = "R-702p"
     _refPropName = "PARAHYD"
+    _coolPropName = "ParaHydrogen"
     rhoc = unidades.Density(31.32274344)
     Tc = unidades.Temperature(32.938)
     Pc = unidades.Pressure(1285.8, "kPa")
@@ -128,7 +129,8 @@ class pH2(MEoS):
               -0.1250868123513e-9, 0.1976107321888e-8, -0.2411883474011e-12,
               -0.4127551498251e-12, 0.8917972883610e-11]}
 
-    eq = leachman, MBWR
+    # eq = leachman, MBWR
+    eq = leachman,
 
     _surface = {"sigma": [0.005314], "exp": [1.06]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

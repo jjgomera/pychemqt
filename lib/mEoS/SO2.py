@@ -31,6 +31,7 @@ class SO2(MEoS):
     formula = "SO2"
     synonym = "R-764"
     _refPropName = "SO2"
+    _coolPropName = "SulfurDioxide"
     rhoc = unidades.Density(525.002841)
     Tc = unidades.Temperature(430.64)
     Pc = unidades.Pressure(7884.0, "kPa")

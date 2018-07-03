@@ -29,6 +29,7 @@ class NF3(MEoS):
     formula = "NF3"
     synonym = ""
     _refPropName = "NF3"
+    _coolPropName = ""
     rhoc = unidades.Density(562.47)
     Tc = unidades.Temperature(234.0)
     Pc = unidades.Pressure(4460.7, "kPa")

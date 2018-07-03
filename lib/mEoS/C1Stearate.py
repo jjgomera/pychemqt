@@ -29,6 +29,7 @@ class C1Stearate(MEoS):
     formula = "C19H38O2"
     synonym = ""
     _refPropName = "MSTEARAT"
+    _coolPropName = "MethylStearate"
     rhoc = unidades.Density(237.101584226)
     Tc = unidades.Temperature(775.0)
     Pc = unidades.Pressure(1239.0, "kPa")

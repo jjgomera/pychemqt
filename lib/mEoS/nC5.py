@@ -31,6 +31,7 @@ class nC5(MEoS):
     formula = "CH3-(CH2)3-CH3"
     synonym = "R-601"
     _refPropName = "PENTANE"
+    _coolPropName = "n-Pentane"
     rhoc = unidades.Density(232.)
     Tc = unidades.Temperature(469.7)
     Pc = unidades.Pressure(3370.0, "kPa")
@@ -250,7 +251,8 @@ class nC5(MEoS):
               -3.85316416299, 2.65416349789e3, 4.76643876980e-3,
               -8.37595968663, -1.35160880503e3]}
 
-    eq = shortSpan, GERG, polt, starling, sun, MBWR
+    # eq = shortSpan, GERG, polt, starling, sun, MBWR
+    eq = shortSpan, GERG, polt, starling, sun
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}

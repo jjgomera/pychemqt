@@ -28,10 +28,11 @@ class R1234yf(MEoS):
     CASNumber = "754-12-1"
     formula = "CF3CF=CH2"
     synonym = "R-1234yf"
+    _refPropName = "R1234YF"
     rhoc = unidades.Density(475.553441976)
     Tc = unidades.Temperature(367.85)
     Pc = unidades.Pressure(3382.2, "kPa")
-    M = 114.0415928  # g/mol
+    M = 114.04159  # g/mol
     Tt = unidades.Temperature(220.)
     Tb = unidades.Temperature(243.7)
     f_acent = 0.276

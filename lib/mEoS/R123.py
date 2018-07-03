@@ -161,7 +161,8 @@ class R123(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = MBWR, tillner, shortSpan
+    # eq = MBWR, tillner, shortSpan
+    eq = tillner, shortSpan
 
     _surface = {"sigma": [0.056151], "exp": [1.2367]}
     _vapor_Pressure = {

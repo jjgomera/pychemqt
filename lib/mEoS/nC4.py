@@ -31,6 +31,7 @@ class nC4(MEoS):
     formula = "CH3-(CH2)2-CH3"
     synonym = "R-600"
     _refPropName = "BUTANE"
+    _coolPropName = "n-Butane"
     rhoc = unidades.Density(228.)
     Tc = unidades.Temperature(425.125)
     Pc = unidades.Pressure(3796.0, "kPa")

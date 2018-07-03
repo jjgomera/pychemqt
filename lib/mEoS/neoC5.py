@@ -31,6 +31,7 @@ class neoC5(MEoS):
     formula = "C(CH3)4"
     synonym = ""
     _refPropName = "NEOPENTN"
+    _coolPropName = "Neopentane"
     rhoc = unidades.Density(235.9265106)
     Tc = unidades.Temperature(433.74)
     Pc = unidades.Pressure(3196.0, "kPa")

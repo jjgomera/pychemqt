@@ -29,6 +29,7 @@ class Cyclopropane(MEoS):
     formula = "cyclo(CH2)3"
     synonym = ""
     _refPropName = "CYCLOPRO"
+    _coolPropName = "CycloPropane"
     rhoc = unidades.Density(258.5)
     Tc = unidades.Temperature(398.3)
     Pc = unidades.Pressure(5579.7, "kPa")

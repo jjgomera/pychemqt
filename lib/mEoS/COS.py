@@ -31,6 +31,7 @@ class COS(MEoS):
     formula = "COS"
     synonym = ""
     _refPropName = "COS"
+    _coolPropName = "CarbonylSulfide"
     rhoc = unidades.Density(445.1565)
     Tc = unidades.Temperature(378.77)
     Pc = unidades.Pressure(6370.0, "kPa")

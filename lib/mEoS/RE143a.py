@@ -29,6 +29,7 @@ class RE143a(MEoS):
     formula = "CH3-O-CF3"
     synonym = "HFE-143a"
     _refPropName = "RE143A"
+    _coolPropName = ""
     rhoc = unidades.Density(465)
     Tc = unidades.Temperature(377.921)
     Pc = unidades.Pressure(3635., "kPa")

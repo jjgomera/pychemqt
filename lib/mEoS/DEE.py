@@ -31,6 +31,7 @@ class DEE(MEoS):
     formula = "C4H10O"
     synonym = ""
     _refPropName = "DEE"
+    _coolPropName = "DiethylEther"
     rhoc = unidades.Density(264)
     Tc = unidades.Temperature(466.7)
     Pc = unidades.Pressure(3720.238, "kPa")

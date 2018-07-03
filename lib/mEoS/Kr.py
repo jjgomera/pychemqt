@@ -31,6 +31,7 @@ class Kr(MEoS):
     formula = "Kr"
     synonym = "R-784"
     _refPropName = "KRYPTON"
+    _coolPropName = "Krypton"
     rhoc = unidades.Density(909.2083)
     Tc = unidades.Temperature(209.48)
     Pc = unidades.Pressure(5525.0, "kPa")

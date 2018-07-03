@@ -31,6 +31,7 @@ class R245fa(MEoS):
     formula = "CF3CH2CHF2"
     synonym = "R245fa"
     _refPropName = "R245FA"
+    _coolPropName = "R245fa"
     rhoc = unidades.Density(519.4357675)
     Tc = unidades.Temperature(427.01)
     Pc = unidades.Pressure(3651.0, "kPa")

@@ -30,6 +30,7 @@ class R13(MEoS):
     formula = "CClF3"
     synonym = "R13"
     _refPropName = "R13"
+    _coolPropName = "R13"
     rhoc = unidades.Density(582.88)
     Tc = unidades.Temperature(302.0)
     Pc = unidades.Pressure(3879.0, "kPa")
@@ -111,7 +112,8 @@ class R13(MEoS):
         "c2": [2]*6,
         "gamma2": [0.98230055]*6}
 
-    eq = MBWR, helmholtz1,
+    # eq = MBWR, helmholtz1,
+    eq = helmholtz1,
 
     _surface = {"sigma": [0.05045], "exp": [1.269]}
     _vapor_Pressure = {

@@ -33,6 +33,7 @@ class H2S(MEoS):
     formula = "H2S"
     synonym = ""
     _refPropName = "H2S"
+    _coolPropName = "HydrogenSulfide"
     rhoc = unidades.Density(347.2841672)
     Tc = unidades.Temperature(373.1)
     Pc = unidades.Pressure(9000.0, "kPa")

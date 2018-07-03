@@ -31,6 +31,7 @@ class C3(MEoS):
     formula = "CH3CH2CH3"
     synonym = "R-290"
     _refPropName = "PROPANE"
+    _coolPropName = "n-Propane"
     rhoc = unidades.Density(220.4781)
     Tc = unidades.Temperature(369.89)
     Pc = unidades.Pressure(4251.2, "kPa")

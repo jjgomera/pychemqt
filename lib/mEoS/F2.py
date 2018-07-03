@@ -29,6 +29,7 @@ class F2(MEoS):
     formula = "F2"
     synonym = ""
     _refPropName = "FLUORINE"
+    _coolPropName = "Fluorine"
     rhoc = unidades.Density(592.864)
     Tc = unidades.Temperature(144.414)
     Pc = unidades.Pressure(5172.4, "kPa")

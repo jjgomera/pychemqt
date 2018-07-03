@@ -254,7 +254,8 @@ class R134a(MEoS):
         "c2": [2]*11+[4]*8,
         "gamma2": [1]*19}
 
-    eq = tillner, MBWR, shortSpan, astina, sun, huber
+    # eq = tillner, MBWR, shortSpan, astina, sun, huber
+    eq = tillner, shortSpan, astina, sun, huber
     _PR = 0.001032
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}

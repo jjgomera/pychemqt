@@ -36,6 +36,7 @@ class H2O(MEoS):
     formula = "H2O"
     synonym = "R-718"
     _refPropName = "WATER"
+    _coolPropName = "Water"
     Tc = unidades.Temperature(647.096)
     rhoc = unidades.Density(322.)
     Pc = unidades.Pressure(22064.0, "kPa")

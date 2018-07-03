@@ -31,6 +31,7 @@ class Ar(MEoS):
     formula = "Ar"
     synonym = "R-740"
     _refPropName = "ARGON"
+    _coolPropName = "Argon"
     rhoc = unidades.Density(535.6)
     Tc = unidades.Temperature(150.687)
     Pc = unidades.Pressure(4863, "kPa")
@@ -240,7 +241,8 @@ class Ar(MEoS):
               -0.7038944136, -0.1154324539e-6, 0.1555990117e-4,
               -0.1492178536e-9, -0.1001356071e-7, 0.2933963216e-6]}
 
-    eq = tegeler, MBWR, GERG, stewart, shortSpan
+    # eq = tegeler, MBWR, GERG, stewart, shortSpan
+    eq = tegeler, GERG, stewart, shortSpan
     _PR = -0.0034
 
     _dielectric = {

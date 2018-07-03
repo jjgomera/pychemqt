@@ -31,6 +31,7 @@ class Trans_2_butene(MEoS):
     formula = "CH3-CH=CH-CH3"
     synonym = ""
     _refPropName = "T2BUTENE"
+    _coolPropName = "trans-2-Butene"
     rhoc = unidades.Density(236.37592616)
     Tc = unidades.Temperature(428.61)
     Pc = unidades.Pressure(4027.3, "kPa")

@@ -31,6 +31,7 @@ class CO(MEoS):
     formula = "CO"
     synonym = ""
     _refPropName = "CO"
+    _coolPropName = "CarbonMonoxide"
     rhoc = unidades.Density(303.909585)
     Tc = unidades.Temperature(132.86)
     Pc = unidades.Pressure(3494.0, "kPa")
@@ -146,7 +147,8 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon, MBWR, GERG
+    # eq = lemmon, MBWR, GERG
+    eq = lemmon, GERG
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}

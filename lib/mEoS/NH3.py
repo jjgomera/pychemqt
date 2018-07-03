@@ -34,6 +34,7 @@ class NH3(MEoS):
     formula = "NH3"
     synonym = "R-717"
     _refPropName = "AMMONIA"
+    _coolPropName = "Ammonia"
     rhoc = unidades.Density(225.)
     Tc = unidades.Temperature(405.40)
     Pc = unidades.Pressure(11333.0, "kPa")

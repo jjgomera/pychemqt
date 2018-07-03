@@ -29,6 +29,7 @@ class MDM(MEoS):
     formula = "C8H24O2Si3"
     synonym = "MDM"
     _refPropName = "MDM"
+    _coolPropName = "MDM"
     rhoc = unidades.Density(256.73940949935815)
     Tc = unidades.Temperature(564.09)
     Pc = unidades.Pressure(1415.0, "kPa")

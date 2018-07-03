@@ -31,6 +31,7 @@ class Benzene(MEoS):
     formula = "C6H6"
     synonym = ""
     _refPropName = "BENZENE"
+    _coolPropName = "Benzene"
     rhoc = unidades.Density(304.7922436)
     Tc = unidades.Temperature(562.02)
     Pc = unidades.Pressure(4894, "kPa")

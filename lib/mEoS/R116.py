@@ -31,6 +31,7 @@ class R116(MEoS):
     formula = "CF3CF3"
     synonym = "R116"
     _refPropName = "R116"
+    _coolPropName = "R116"
     rhoc = unidades.Density(613.3245)
     Tc = unidades.Temperature(293.03)
     Pc = unidades.Pressure(3048.0, "kPa")
@@ -100,6 +101,7 @@ class R116(MEoS):
 
         "R": 8.31451,
         "cp": CP2,
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23,
         "Pmin": 32.09, "rhomin": 12.231,
@@ -119,7 +121,7 @@ class R116(MEoS):
         "c2": [1, 2, 2, 2, 3, 3, 3, 4],
         "gamma2": [1]*8}
 
-    eq = lemmon,kozlov 
+    eq = lemmon, kozlov
 
     _surface = {"sigma": [0.047593, -0.0073402], "exp": [1.2666, 1.9892]}
     _vapor_Pressure = {

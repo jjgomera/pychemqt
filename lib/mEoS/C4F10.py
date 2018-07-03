@@ -30,6 +30,7 @@ class C4F10(MEoS):
     formula = "C4F10"
     synonym = ""
     _refPropName = "C4F10"
+    _coolPropName = ""
     rhoc = unidades.Density(599.8356)
     Tc = unidades.Temperature(386.326)
     Pc = unidades.Pressure(2323.4, "kPa")

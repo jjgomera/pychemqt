@@ -31,6 +31,7 @@ class R365mfc(MEoS):
     formula = "CF3CH2CF2CH3"
     synonym = "R365mfc"
     _refPropName = "R365MFC"
+    _coolPropName = "R365mfc"
     rhoc = unidades.Density(473.838464)
     Tc = unidades.Temperature(460.0)
     Pc = unidades.Pressure(3266.0, "kPa")

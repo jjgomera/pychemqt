@@ -35,137 +35,19 @@ try:
 except ImportError as e:
     pass
 
-from lib import unidades
+from lib import unidades, mEoS
 from lib.thermo import ThermoAdvanced
 from lib.compuestos import Componente
 
 
-noIds = {
-    'Deuterium',
-    'HeavyWater',
-    'ParaDeuterium',
-    'ParaHydrogen',
-    'OrthoDeuterium',
-    'OrthoHydrogen',
-    'D4',
-    'D5',
-    'D6',
-    'MD2M',
-    'MD3M',
-    'MD4M',
-    'MDM',
-    'MM',
-    'HFE143m',
-    'Novec649',
-    'Krypton',
-    'Xenon',
-    'MethylLinoleate',
-    'MethylLinolenate',
-    'MethylOleate',
-    'MethylPalmitate',
-    'MethylStearate',
-    'DimethylCarbonate',
-    'R1233zd(E)',
-    'R1234yf',
-    'R1234ze(Z)',
-    'R13I1',
-    'R365MFC',
-    'R404A',
-    'R407C',
-    'R410A',
-    'R507A',
-    'SES36'}
-
-
-__all__ = {
-    24: '1-Butene',
-    140: 'Acetone',
-    475: 'Air',
-    63: 'Ammonia',
-    98: 'Argon',
-    40: 'Benzene',
-    49: 'CarbonDioxide',
-    48: 'CarbonMonoxide',
-    219: 'CarbonylSulfide',
-    25: 'cis-2-Butene',
-    38: 'CycloHexane',
-    36: 'Cyclopentane',
-    258: 'CycloPropane',
-    126: 'Dichloroethane',  # or maybe 127, 1,2 dichloro
-    162: 'DiethylEther',
-    162: 'DimethylEther',
-    3: 'Ethane',
-    134: 'Ethanol',
-    45: 'EthylBenzene',
-    22: 'Ethylene',
-    129: 'EthyleneOxide',
-    208: 'Fluorine',
-    212: 'Helium',
-    1: 'Hydrogen',
-    104: 'HydrogenChloride',
-    50: 'HydrogenSulfide',
-    5: 'IsoButane',
-    27: 'IsoButene',
-    52: 'Isohexane',
-    7: 'Isopentane',
-    43: 'm-Xylene',
-    2: 'Methane',
-    117: 'Methanol',
-    6: 'n-Butane',
-    14: 'n-Decane',
-    16: 'n-Dodecane',
-    11: 'n-Heptane',
-    10: 'n-Hexane',
-    13: 'n-Nonane',
-    12: 'n-Octane',
-    8: 'n-Pentane',
-    4: 'n-Propane',
-    15: 'n-Undecane',
-    107: 'Neon',
-    9: 'Neopentane',
-    46: 'Nitrogen',
-    110: 'NitrousOxide',
-    42: 'o-Xylene',
-    47: 'Oxygen',
-    44: 'p-Xylene',
-    23: 'Propylene',
-    66: 'Propyne',
-    217: 'R11',
-    232: 'R113',
-    231: 'R114',
-    229: 'R115',
-    236: 'R116',
-    216: 'R12',
-    1631: 'R123',
-    671: 'R1234ze(E)',
-    1629: 'R124',
-    1231: 'R125',
-    215: 'R13',
-    1235: 'R134a',
-    218: 'R14',
-    1633: 'R141b',
-    241: 'R142b',
-    243: 'R143a',
-    245: 'R152A',
-    247: 'R161',
-    642: 'R21',
-    671: 'R218',
-    220: 'R22',
-    1872: 'R227EA',
-    643: 'R23',
-    693: 'R236EA',
-    1873: 'R236FA',
-    1817: 'R245fa',
-    645: 'R32',
-    115: 'R40',
-    225: 'R41',
-    692: 'RC318',
-    51: 'SulfurDioxide',
-    953: 'SulfurHexafluoride',
-    41: 'Toluene',
-    26: 'trans-2-Butene',
-    62: 'Water'
-}
+# Automatic loading of coolProp name from meos subclass _coolPropName property
+__all__ = {}
+noIds = []
+for cmp in mEoS.__all__:
+    if cmp.id and cmp._coolPropName:
+        __all__[cmp.id] = cmp._coolPropName
+    elif cmp._coolPropName:
+        noIds.append(cmp._coolPropName)
 
 
 class CoolProp(ThermoAdvanced):
@@ -212,12 +94,12 @@ class CoolProp(ThermoAdvanced):
         self.kwargs.update(kwargs)
 
         if self.calculable:
-            try:
+            # try:
                 self.calculo()
-            except ValueError as e:
-                self.msg = e
-                self.status = 0
-            else:
+            # except ValueError as e:
+                # self.msg = e
+                # self.status = 0
+            # else:
                 self.status = 1
                 self.msg = "Solved"
 
@@ -397,11 +279,19 @@ class CoolProp(ThermoAdvanced):
 
         self.R = unidades.SpecificHeat(estado.gas_constant()/self.M)
         self.Tt = unidades.Temperature(estado.Ttriple())
-        estado2 = CP.AbstractState("HEOS", fluido)
+
         if self._multicomponent:
+            estado2 = CP.AbstractState("HEOS", fluido)
             estado2.set_mole_fractions(self.kwargs["fraccionMolar"])
-        estado2.update(CP.PQ_INPUTS, 101325, 1)
-        self.Tb = unidades.Temperature(estado2.T())
+            estado2.update(CP.PQ_INPUTS, 101325, 1)
+            self.Tb = unidades.Temperature(estado2.T())
+        else:
+            Pt = estado.trivial_keyed_output(CP.iP_triple)
+            if Pt < 101325:
+                estado2 = CP.AbstractState("HEOS", fluido)
+                estado2.update(CP.PQ_INPUTS, 101325, 1)
+                self.Tb = unidades.Temperature(estado2.T())
+
         self.f_accent = unidades.Dimensionless(estado.acentric_factor())
 
         # Dipole moment only available for REFPROP backend
@@ -467,7 +357,10 @@ class CoolProp(ThermoAdvanced):
         if self._multicomponent:
             self.sigma = unidades.Tension(None)
         elif x < 1 and self.Tt <= self.T <= self.Tc:
-            self.sigma = unidades.Tension(estado.surface_tension())
+            try:
+                self.sigma = unidades.Tension(estado.surface_tension())
+            except ValueError:
+                self.sigma = unidades.Tension(None)
         else:
             self.sigma = unidades.Tension(None)
 
@@ -595,11 +488,19 @@ class CoolProp(ThermoAdvanced):
         fase.virialC = unidades.SpecificVolume_square(estado.Cvirial())
         fase.invT = unidades.InvTemperature(-1/self.T)
 
-        fase.mu = unidades.Viscosity(estado.viscosity())
+        try:
+            fase.mu = unidades.Viscosity(estado.viscosity())
+        except ValueError:
+            fase.mu = unidades.Viscosity(None)
+            fase.Prandt = unidades.Dimensionless(None)
+
+        try:
+            fase.k = unidades.ThermalConductivity(estado.conductivity())
+        except ValueError:
+            fase.k = unidades.ThermalConductivity(None)
+
         fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
-        fase.k = unidades.ThermalConductivity(estado.conductivity())
         fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
-        fase.Prandt = unidades.Dimensionless(estado.Prandtl())
         fase.fraccion = estado.get_mole_fractions()
         fase.fraccion_masica = estado.get_mass_fractions()
         fase.epsilon = unidades.Dimensionless(None)
@@ -632,10 +533,7 @@ class CoolProp(ThermoAdvanced):
         return msg, x
 
 
-if __name__ == '__main__':
-    fluido = CoolProp(ids=[62])
-    # fluido(T=300)
-    # fluido(x=.5)
-    fluido(T=300)
-    fluido(h=2e7)
-    print(fluido.Liquido.rho, fluido.Gas.rho)
+# if __name__ == '__main__':
+    # fluido = CoolProp(ids=[107], T=300, P=1e5)
+    # print(fluido.status, fluido.msg)
+    # print(fluido.rho, fluido.msg)

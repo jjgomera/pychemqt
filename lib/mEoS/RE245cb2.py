@@ -29,6 +29,7 @@ class RE245cb2(MEoS):
     formula = "CF3CF2OCH3"
     synonym = "HFE-245cb2"
     _refPropName = "RE245CB2"
+    _coolPropName = ""
     rhoc = unidades.Density(499.507581544)
     Tc = unidades.Temperature(406.813)
     Pc = unidades.Pressure(2886.4, "kPa")

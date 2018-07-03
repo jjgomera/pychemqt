@@ -31,6 +31,7 @@ class R41(MEoS):
     formula = "CH3F"
     synonym = "R41"
     _refPropName = "R41"
+    _coolPropName = "R41"
     rhoc = unidades.Density(316.506156)
     Tc = unidades.Temperature(317.28)
     Pc = unidades.Pressure(5897.0, "kPa")
@@ -143,7 +144,8 @@ class R41(MEoS):
               -0.600934897964e-4, 0.145050417148e-1, 0.222324172533e-7,
               -0.204419971811e-4, 0.245556593457e-3]}
 
-    eq = lemmon, lemmon2, MBWR
+    # eq = lemmon, lemmon2, MBWR
+    eq = lemmon, lemmon2
 
     _surface = {"sigma": [0.05049], "exp": [1.242]}
     _vapor_Pressure = {

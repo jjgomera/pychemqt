@@ -31,6 +31,7 @@ class oH2(MEoS):
     formula = "H2"
     synonym = "R-702o"
     _refPropName = "ORTHOHYD"
+    _coolPropName = "OrthoHydrogen"
     rhoc = unidades.Density(31.1361933)
     Tc = unidades.Temperature(33.22)
     Pc = unidades.Pressure(1310.65, "kPa")

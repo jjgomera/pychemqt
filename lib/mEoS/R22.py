@@ -31,6 +31,7 @@ class R22(MEoS):
     formula = "CHClF2"
     synonym = "R22"
     _refPropName = "R22"
+    _coolPropName = "R22"
     rhoc = unidades.Density(523.8422)
     Tc = unidades.Temperature(369.295)
     Pc = unidades.Pressure(4990., "kPa")

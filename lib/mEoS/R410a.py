@@ -31,6 +31,7 @@ class R410a(MEoSBlend):
     formula = "R32+R125"
     synonym = "R410A"
     _refPropName = "R410A"
+    _coolPropName = "R410A"
     rhoc = unidades.Density(459.0300696)
     Tc = unidades.Temperature(344.494)
     Pc = unidades.Pressure(4901.2, "kPa")

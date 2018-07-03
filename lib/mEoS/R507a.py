@@ -31,6 +31,7 @@ class R507a(MEoSBlend):
     formula = "R125+R143a"
     synonym = "R507A"
     _refPropName = "R507A"
+    _coolPropName = "R507A"
     rhoc = unidades.Density(490.7370688)
     Tc = unidades.Temperature(343.765)
     Pc = unidades.Pressure(3704.9, "kPa")
@@ -39,8 +40,6 @@ class R507a(MEoSBlend):
     Tb = unidades.Temperature(226.41)
     f_acent = 0.286
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 62
-    # id = None
 
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, -0.25],

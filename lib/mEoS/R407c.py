@@ -33,6 +33,7 @@ class R407c(MEoSBlend):
     formula = "R32+R125+R134a"
     synonym = "R407C"
     _refPropName = "R407C"
+    _coolPropName = "R407C"
     rhoc = unidades.Density(453.430936)
     Tc = unidades.Temperature(359.345)
     Pc = unidades.Pressure(4631.7, "kPa")
@@ -41,7 +42,6 @@ class R407c(MEoSBlend):
     Tb = unidades.Temperature(229.52)
     f_acent = 0.363
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    id = 62
 
     Fi1 = {"ao_log": [1, -1],
            "pow": [0, 1, -0.4],

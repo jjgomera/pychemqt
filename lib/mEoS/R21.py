@@ -29,6 +29,7 @@ class R21(MEoS):
     formula = "CHCl2F"
     synonym = "R21"
     _refPropName = "R21"
+    _coolPropName = "R21"
     rhoc = unidades.Density(526.0138)
     Tc = unidades.Temperature(451.48)
     Pc = unidades.Pressure(5181.2, "kPa")

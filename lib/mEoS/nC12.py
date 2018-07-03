@@ -31,6 +31,7 @@ class nC12(MEoS):
     formula = "CH3-(CH2)10-CH3"
     synonym = ""
     _refPropName = "C12"
+    _coolPropName = "n-Dodecane"
     rhoc = unidades.Density(226.5453372)
     Tc = unidades.Temperature(658.1)
     Pc = unidades.Pressure(1817.0, "kPa")

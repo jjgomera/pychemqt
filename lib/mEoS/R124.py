@@ -29,6 +29,7 @@ class R124(MEoS):
     formula = "CHClFCF3"
     synonym = "R124"
     _refPropName = "R124"
+    _coolPropName = "R124"
     rhoc = unidades.Density(560.)
     Tc = unidades.Temperature(395.425)
     Pc = unidades.Pressure(3624.295, "kPa")
@@ -114,7 +115,8 @@ class R124(MEoS):
               -0.564677367857, 0.175581172016e3, -0.762146322899e-3,
               -0.210617958917e1, 0.319236066221e2]}
 
-    eq = vries, MBWR
+    # eq = vries, MBWR
+    eq = vries,
 
     _surface = {"sigma": [0.05175], "exp": [1.197]}
     _vapor_Pressure = {

@@ -29,6 +29,7 @@ class DME(MEoS):
     formula = "CH3-O-CH3"
     synonym = "R-170"
     _refPropName = "DME"
+    _coolPropName = "DimethylEther"
     rhoc = unidades.Density(273.6465336)
     Tc = unidades.Temperature(400.378)
     Pc = unidades.Pressure(5336.8, "kPa")

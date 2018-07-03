@@ -29,6 +29,7 @@ class R161(MEoS):
     formula = "C2H5F"
     synonym = "R161"
     _refPropName = "R161"
+    _coolPropName = "R161"
     rhoc = unidades.Density(301.81366)
     Tc = unidades.Temperature(375.25)
     Pc = unidades.Pressure(5010.0, "kPa")
@@ -95,6 +96,7 @@ class R161(MEoS):
 
         "R": 8.314472,
         "cp": CP1,
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 50000.0, "rhomax": 20.0,
         "Pmin": 0.006, "rhomin": 19.95,

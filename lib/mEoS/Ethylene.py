@@ -33,6 +33,7 @@ class Ethylene(MEoS):
     formula = "CH2=CH2"
     synonym = "R-1150"
     _refPropName = "ETHYLENE"
+    _coolPropName = "Ethylene"
     rhoc = unidades.Density(214.24)
     Tc = unidades.Temperature(282.35)
     Pc = unidades.Pressure(5041.8, "kPa")
@@ -277,7 +278,8 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = smukala, MBWR, jahangiri, shortSpan, sun
+    # eq = smukala, MBWR, jahangiri, shortSpan, sun
+    eq = smukala, jahangiri, shortSpan, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

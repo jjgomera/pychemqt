@@ -31,6 +31,7 @@ class R143a(MEoS):
     formula = "CF3CH3"
     synonym = "R143a"
     _refPropName = "R143A"
+    _coolPropName = "R143a"
     rhoc = unidades.Density(431.00006645)
     Tc = unidades.Temperature(345.857)
     Pc = unidades.Pressure(3761.0, "kPa")

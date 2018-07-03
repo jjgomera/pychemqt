@@ -29,6 +29,7 @@ class C1Linolenate(MEoS):
     formula = "C19H32O2"
     synonym = ""
     _refPropName = "MLINOLEN"
+    _coolPropName = "MethylLinolenate"
     rhoc = unidades.Density(247.798121314)
     Tc = unidades.Temperature(772.0)
     Pc = unidades.Pressure(1369.0, "kPa")

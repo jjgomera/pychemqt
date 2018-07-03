@@ -29,6 +29,7 @@ class Propyne(MEoS):
     formula = "CH3-C≡CH"
     synonym = ""
     _refPropName = "PROPYNE"
+    _coolPropName = "Propyne"
     rhoc = unidades.Density(244.898798)
     Tc = unidades.Temperature(402.38)
     Pc = unidades.Pressure(5626.0, "kPa")

@@ -31,6 +31,7 @@ class nC8(MEoS):
     formula = "CH3-(CH2)6-CH3"
     synonym = ""
     _refPropName = "OCTANE"
+    _coolPropName = "n-Octane"
     rhoc = unidades.Density(234.9)
     Tc = unidades.Temperature(569.32)
     Pc = unidades.Pressure(2497.0, "kPa")
