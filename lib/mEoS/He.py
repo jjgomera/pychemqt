@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from scipy import exp, log
+from scipy.constants import Avogadro, Boltzmann, pi
 
 from lib.meos import MEoS
 from lib import unidades
@@ -197,7 +200,8 @@ class He(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = ortiz, mccarty, MBWR, GERG
+    # eq = ortiz, mccarty, MBWR, GERG
+    eq = ortiz, mccarty, GERG
     _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
@@ -217,138 +221,183 @@ class He(MEoS):
         "exp": [1, 1.5, 1.25, 2.8]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [-1.5789, -10.749, 17.711, -15.413, -14.352],
-        "exp": [0.333, 1.5, 2.1, 2.7, 9.0]}
+        "ao": [1, 1.0929, 1.6584, -3.6477, 2.7440, -2.3859],
+        "exp": [0, 0.286, 1.2, 2, 2.8, 6.5]}
     _vapor_Density = {
         "eq": 3,
         "ao": [-1.5789, -10.749, 17.711, -15.413, -14.352],
         "exp": [0.333, 1.5, 2.1, 2.7, 9.0]}
 
-    visco0 = {"__name__": "Arp,V.D (1998)",
+    visco0 = {"__name__": "McCarty (1981)",
               "__doi__": {
-                  "autor": "Arp, V.D. McCarty, R.D., Friend, D.G.",
-                  "title": "Thermophysical Properties of Helium-4 from 0.8 to "
-                           "1500 K with Pressures to 2000 MPa",
-                  "ref": "NIST Technical Note 1334",
+                  "autor": "McCarty, R.D.",
+                  "title": "Thermophysical Properties of Helium-4 from 2 to "
+                           "1500 K with Pressures to 1000 MPa",
+                  "ref": "NIST Technical Note 631 (1981)",
                   "doi": ""},
 
               "eq": 0,
               "method": "_visco0",
               }
 
-    def _visco0(self, rho, T, fase=None, coef=False):
-        """coef: Special parameter for get only the excess viscosity for
-        thermal conductivity calculation method"""
+    def _visco0(self, rho, T, fase=None):
+        """Hardcoded method for viscosity correlation by McCarty"""
 
         def muo(T):
-            # Eq 2
+            # Eq 16
             x = log(T)
             muo = -0.135311743/x + 1.00347841 + 1.20654649*x - \
                 0.149564551*x**2 + 0.0125208416*x**3
             return muo
 
         def mue(T, rho):
-            # Eq 3
+            # Section 3.5, for T > 300 evaluate at T = 300
+            if T > 300:
+                T = 300
+
+            # Density g/cm³
             rho_gcc = rho*1e-3
+
             x = log(T)
+            # Eq 18
             B = -47.5295259/x + 87.6799309 - 42.0741589*x + 8.33128289*x**2 - \
                 0.589252385*x**3
+            # Eq 19
             C = 547.309267/x - 904.870586 + 431.404928*x - 81.4504854*x**2 + \
                 5.37005733*x**3
+            # Eq 20
             D = -1684.39324/x + 3331.08630 - 1632.19172*x + 308.804413*x**2 - \
                 20.2936367*x**3
-            return rho_gcc*B + rho_gcc**2*C + rho_gcc**3*D
+            return rho_gcc*B + rho_gcc**2*C + rho_gcc**3*D              # Eq 17
 
         if T < 100:
-            # Section 4.2.1 for 3.5 < T < 100
+            # Section 3.5 for 3.5 < T < 100
             no = muo(T)
             ne = mue(T, rho)
-            mu = exp(no+ne)                                              # Eq 1
+            mu = exp(no+ne)                                             # Eq 15
         else:
-            # Section 4.2.1 for T > 100
-            no = 196*T**0.71938*exp(12.451/T-295.67/T**2-4.1249)         # Eq 8
-            ne = exp(muo(T)+mue(T, rho)) - exp(muo(T)+mue(T, 0))         # Eq 9
-            mu = no+ne                                                   # Eq 7
+            # Section 3.4 for T > 100
+            no = 196*T**0.71938*exp(12.451/T-295.67/T**2-4.1249)        # Eq 22
+            ne = exp(muo(T)+mue(T, rho)) - exp(muo(T)+mue(T, 0))        # Eq 23
+            mu = no+ne                                                  # Eq 21
 
-        if coef:
-            return ne
-        else:
-            return unidades.Viscosity(mu, "microP")
+        return unidades.Viscosity(mu, "microP")
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 0,
-               "method": "_thermo0",
-               "__name__": "Hands (1981)",
-               "__doi__": {"autor": "Hands, B.A. and Arp, V.D.",
-                           "title": "A Correlation of Thermal Conductivity Data for Helium",
-                           "ref": "Cryogenics, 21(12):697-703, 1981",
-                           "doi": "10.1016/0011-2275(81)90211-3"}}
+    thermo0 = {"__name__": "Hands (1981)",
+               "__doi__": {
+                   "autor": "Hands, B.A., Arp, V.D.",
+                   "title": "A Correlation of Thermal Conductivity Data for "
+                            "Helium",
+                   "ref": "Cryogenics, 21(12) (1981) 697-703",
+                   "doi": "10.1016/0011-2275(81)90211-3"},
+
+               "eq": 0,
+               "method": "_thermo0"}
 
     def _thermo0(self, rho, T, fase=None):
-        bkt = 0.0
-        n0 = [3.739232544, -26.20316969, 59.82252246, -49.26397634]
-        suma = sum([ni*T**(-i-1) for i, ni in enumerate(n0)])
-        lg = 2.7870034e-3*T**0.7034007057*exp(suma)
+        """Hardcoded method for Hands thermal conductivity correlation"""
+        # Dilute-gas contribution
+        # Table 1, Using fit parameter excluding Golubev and Shpagina's data
+        Ci = [3.739232544, -26.20316969, 59.82252246, -49.26397634]
 
-        tau = T**(1.0/3.0)
-        delta = rho/self.M/0.2498376
-        t = [0, 3, 1, 2, 0, 1, 2, 0, 1, 2, -3, 0, 1, 2, -3]
-        d = [1, 1, 1, 1, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2]
-        c = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0]
-        n = [0.186297053e-3, -0.7275964435e-6, -0.1427549651e-3,
-             0.3290833592e-4, -0.5213335363e-7, 0.4492659933e-7,
-             -0.5924416513e-8, 0.7087321137e-5, -0.6013335678e-5,
-             0.8067145814e-6, 0.3995125013e-6, -2.99050061466e-5,
-             2.53733162271e-5, -3.40393839209e-6, -1.68574607754e-6]
-        lk = 0
-        for ti, di, ni, ci in zip(t, d, n, c):
-            if ci == 0 or delta == 0:
-                lk += ni*tau**ti*delta**di
+        # Eq 3
+        lnLo = 0
+        for i, C in enumerate(Ci):
+            lnLo += C/T**(i+1)
+        lo = 2.7870034e-3*T**0.7034007057*exp(lnLo)
+
+        # Special case for zero density
+        if not rho:
+            return unidades.ThermalConductivity(lo)
+
+        # Excess conductivity
+        # Table 3, Parameters
+        tau = T**(1/3)
+        ti = [0, 3, 1, 2, 0, 1, 2, 0, 1, 2, -3]
+        di = [1, 1, 1, 1, 3, 3, 3, 2, 2, 2, 2]
+        ci = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
+        ni = [1.86297053e-4, -7.275964435e-7, -1.427549651e-4, 3.290833592e-5,
+              -5.213335363e-8, 4.492659933e-8, -5.924416513e-9, 7.087321137e-6,
+              -6.013335678e-6, 8.067145814e-7, 3.995125013e-7]
+
+        # Eq 17
+        lr = 0
+        for t, d, n, c in zip(ti, di, ni, ci):
+            if c:
+                lr += n*tau**t*rho**d*log(rho/68)
             else:
-                lk += ni*tau**ti*delta**di*log(delta**ci)
+                lr += n*tau**t*rho**d
+
+        # Critical enhancement
+        # Constants, Table 2
+        Xo = 0.392
+        E1 = 2.8461
+        E2 = 0.27156
+        beta = 0.3554
+        gamma = 1.1743
+        delta = 4.304
+        rhoc = 69.158
+        Tc = 5.18992
+        Pc = 2.2746e5
+        # R = 4.633e-10
 
         lc = 0
-        if 3.5 <= T <= 12:
-            e1 = 2.8461
-            e2 = .27156
-            delta = 4.304
-#            pcc = 227460.
+        if 3.5 < T < 12:
+            # Eq 8
+            DeltaT = abs(1-T/Tc)
+            Deltarho = abs(1-rho/rhoc)
 
-            if rho > 0.0:
-                bkt = 1.0/self.derivative("P", "rho", "T")/rho/1000.
-            deld = abs((rho-69.158)/69.158)
-            delt = abs((T-5.18992)/5.18992)
-            r2 = (delt/0.2)**2+(deld/0.25)**2
-            if r2 < 1.0 and rho > 0.0:
-                xx = delt/deld**(1.0/.3554)
-                x1 = (xx+.392)/.392
-                x2b = x1**(2.0*.3554)
-                x2be = (1.0+e2*x2b)**((1.1743-1.0)/2.0/.3554)
-                hh = e1*x1*x2be
-                dhdx = e1*x2be/.392+e1*e2/.392*x2b*x2be/(1.0+e2*x2b)*(1.1743-1.0)
-                d2kt = (delta*hh-xx*dhdx/.3554)*deld**(delta-1.0)
-                bkt1 = (69.158/rho)**2/d2kt/227460.
-                bkt = r2*bkt+(1.0-r2)*bkt1
+            kt = fase.kappa
+            W = (DeltaT/0.2)**2 + (Deltarho/0.25)**2                    # Eq 10
+            if W <= 1:
+                x = DeltaT/Deltarho**(1/beta)
+                x1 = 1+x/Xo
+                x2 = x1**(2*beta)
+                x2be = (1+E2*x2)**((gamma-1)/2/beta)
+                h = E1*x1*x2be
 
-            eta = self._visco0(coef=True)
-            bkcrit = 0
-            if bkt >= 0 and rho > 0.0:
-                bkcrit = 3.4685233e-17*T**2*bkt**0.5/rho/eta*self.dpdT**2*exp(-18.66*delt**2-4.25*deld**4)
-            lc = 3.726229668*bkcrit
+                # dh/dx using cadena rule
+                dhdx = E1*x2be/Xo + E1*E2/Xo*x2*x2be/(1+E2*x2)*(gamma-1)
 
-        return unidades.ThermalConductivity(lg+lk+lc)
+                # Right hand of Eq 9
+                z = Deltarho**(delta-1)*(delta*h-x/beta*dhdx)
+                kt_ = (rhoc/rho)**2/z/Pc                                # Eq 9
+                kt = W*kt+(1-W)*kt_                                     # Eq 11
 
-    thermo1 = {"eq": 0,
-               "method": "_thermo1",
-               "__name__": "Peterser (1970)",
-               "__doi__": {"autor": "Peterser, H.",
-                           "title": "The Properties of Helium: Density, Specific Heats. Viscosity, and Thermal Conductivity at Pressures from 1 to 100 bar and from Room Temperature to about 1800 K",
-                           "ref": "Denmark. Forskningscenter Risoe. Risoe-R; No. 224",
-                           "doi": ""}}
+            # Eq 7
+            # REFPROP use another expression
+            # c = (self.M/Avogadro*kt*Boltzmann*T**4/rho**2)**0.5
+            # lc = c/6/pi/fase.mu/R*fase.dpdT_rho**2 * \
+                # exp(-18.66*DeltaT**2-4.25*Deltarho**4)
 
-    def _thermo1(self, rho, T, fase=None):
-        k = 2.682e-3*(1+1.123e-3*self.P.bar)*T**(0.71*(1-2e-4*self.P.bar))
-        return unidades.ThermalConductivity(k)
+            lc = kt**0.5*T**2/rho/fase.mu*fase.dpdT_rho**2 * \
+                exp(-18.66*DeltaT**2-4.25*Deltarho**4)
+            lc = 3.4685233e-17*3.726229668*lc
 
-    _thermal = thermo0, thermo1
+        return unidades.ThermalConductivity(lo+lr+lc)
+
+    _thermal = thermo0,
+
+
+class Test(TestCase):
+    def test_Hands(self):
+        # Table 4
+        self.assertEqual(round(He(P=1e5, T=800, eq="mccarty").k, 4), 0.3085)
+        self.assertEqual(round(He(P=1e5, T=300, eq="mccarty").k, 4), 0.1560)
+        self.assertEqual(round(He(P=1e5, T=20, eq="mccarty").k, 4), 0.0262)
+        self.assertEqual(round(He(P=1e5, T=8, eq="mccarty").k, 4), 0.0145)
+        self.assertEqual(round(He(P=2e6, T=4, eq="mccarty").k, 4), 0.0255)
+        self.assertEqual(round(He(P=2e6, T=8, eq="mccarty").k, 4), 0.0307)
+        self.assertEqual(round(He(P=2e6, T=20, eq="mccarty").k, 4), 0.0327)
+        self.assertEqual(round(He(P=1e7, T=4, eq="mccarty").k, 4), 0.0384)
+        self.assertEqual(round(He(P=1e7, T=8, eq="mccarty").k, 4), 0.0575)
+        self.assertEqual(round(He(P=1e7, T=20, eq="mccarty").k, 4), 0.0587)
+        self.assertEqual(round(He(P=1e5, T=4, eq="mccarty").k, 4), 0.0186)
+        self.assertEqual(round(He(P=2e5, T=4, eq="mccarty").k, 4), 0.0193)
+        self.assertEqual(round(He(P=2.3e5, T=5.18, eq="mccarty").k, 4), 0.0199)
+        self.assertEqual(round(He(P=2.3e5, T=5.2, eq="mccarty").k, 4), 0.0205)
+        self.assertEqual(round(He(P=2.3e5, T=5.23, eq="mccarty").k, 4), 0.0182)
+        self.assertEqual(round(He(P=2.3e5, T=5.26, eq="mccarty").k, 4), 0.0159)
+        self.assertEqual(round(He(P=2.3e5, T=5.3, eq="mccarty").k, 4), 0.0149)
