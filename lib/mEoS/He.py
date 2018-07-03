@@ -64,6 +64,7 @@ class He(MEoS):
         "R": 8.314472,
         "cp": CP1,
         "ref": "NBP",
+        "rhoc": 17.3837,
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22,
         "Pmin": 5.0335, "rhomin": 36.48,
