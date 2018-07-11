@@ -48,7 +48,7 @@ References
 .. [46] Lucas, K.; Die Druckabhängigheit der Viskosität von Flüssigkeiten, eine Einfache Abschätzung. Chem. Ing. Tech. 46(4) (1981) 959-960
 .. [47] Riazi, M. R.; Characterization and Properties of Petroleum Fractions.. ASTM manual series MNL50, 2005
 .. [48] Brokaw, R.S.; Predicting Transport Properties of Dilute Gases. I&EC Process Design and Development 8(22) (1969) 240-253
-.. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.; Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
+.. [49] Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.; Generalized Multiparameter Correlation for Nonpolar and Polar Fluid Transport Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
 .. [50] Chung, T.H., Lee, L.L., Starling, K.E.; Applications of Kinetic Gas Theories and Multiparameter Correlation for Prediction of Dilute Gas Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13
 .. [51] Jossi, J.A., Stiel, L.I., Thodos, G.; The Viscosity of Pure Substances in the Dense Gaseous and Liquid Phases. AIChE Journal 8(1) (1962) 59-63
 .. [52] Stiel, L.I., Thodos, G.; The Viscosity of Polar Substances in the Dense Gaseous and Liquid Regions. AIChE Journal 10(2) (1964) 275-277

@@ -14,11 +14,9 @@
 
 # Added initialization code for pychemqt config files initialization
 from configparser import ConfigParser
-import json
 import os
 import shutil
 import sys
-import urllib.error
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -137,7 +135,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pychemqt'
-copyright = u'2017, Juan José Gómez Romera'
+copyright = u'2018, Juan José Gómez Romera'
 author = u'Juan José Gómez Romera'
 
 # The version info for the project you're documenting, acts as replacement for

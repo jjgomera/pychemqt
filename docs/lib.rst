@@ -16,6 +16,8 @@ Submodules
    lib.friction
    lib.gerg
    lib.iapws97
+   lib.meos
+   lib.mEoS
    lib.mezcla
    lib.newComponent
    lib.petro
