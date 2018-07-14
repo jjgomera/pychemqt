@@ -176,13 +176,13 @@ class H2O(MEoS):
 
     saul = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for water of Saul and"
+        "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-58 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
+                    "ref": "J. Phys. Chem. Ref. Data 18(4) (1989) 1537-1564",
                     "doi": "10.1063/1.555836"},
 
         "R": 8.31434,
@@ -229,13 +229,13 @@ class H2O(MEoS):
 
     saul2 = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for water of Saul and"
+        "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-38 coeff (1989).",
         "__doi__": {"autor": "Saul, A. and Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 18, 1537 (1989)",
+                    "ref": "J. Phys. Chem. Ref. Data 18(4) (1989) 1537-1564",
                     "doi":  "10.1063/1.555836"},
 
         "R": 8.31434,
@@ -306,20 +306,20 @@ class H2O(MEoS):
     _sublimation = {"Tmin": 50.0, "Tmax": Tt}
 
     _vapor_Pressure = {
-        "eq": 6,
-        "ao": [-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719,
-               1.80122502],
-        "exp": [2, 3, 6, 7, 8, 15]}
+        "eq": 3,
+        "n": [-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719,
+              1.80122502],
+        "t": [1, 1.5, 3, 3.5, 4, 7.5]}
     _liquid_Density = {
-        "eq": 2,
-        "ao": [1.99274064, 1.09965342, -0.510839303, -1.75493479, -45.5170352,
-               -6.74694450e5],
-        "exp": [1, 2, 5, 16, 43, 110]}
+        "eq": 1,
+        "n": [1.99274064, 1.09965342, -0.510839303, -1.75493479, -45.5170352,
+              -6.74694450e5],
+        "t": [1/3, 2/3, 5/3, 16/3, 43/3, 110/3]}
     _vapor_Density = {
-        "eq": 4,
-        "ao": [-2.0315024, -2.6830294, -5.38626492, -17.2991605, -44.7586581,
-               -63.9201063],
-        "exp": [1, 2, 4, 9, 18.5, 35.5]}
+        "eq": 2,
+        "n": [-2.0315024, -2.6830294, -5.38626492, -17.2991605, -44.7586581,
+              -63.9201063],
+        "t": [2/6, 4/6, 8/6, 18/6, 37/6, 71/6]}
 
     visco0 = {"eq": 0,
               "method": "_visco0",

@@ -189,7 +189,7 @@ class CH4(MEoS):
     friend = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Friend (1989)",
-        "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+        "__doi__": {"autor": "Friend, D.G., Ely, J.F., Ingham, H.",
                     "title": "Thermophysical Properties of Methane",
                     "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
                     "doi": "10.1063/1.555828"},
@@ -303,18 +303,18 @@ class CH4(MEoS):
                     "a2": [-12.84], "exp2": [1],
                     "a3": [], "exp3": []}
     _vapor_Pressure = {
-        "eq": 6,
-        "ao": [-6.036219, 1.409353, -0.4945199, -1.443048],
-        "exp": [2, 3, 4, 9]}
-    _liquid_Density = {
         "eq": 3,
-        "ao": [1.9906389, -0.78756197, 0.036976723],
-        "exp": [0.354, 0.5, 2.5]}
+        "n": [-6.036219, 1.409353, -0.4945199, -1.443048],
+        "t": [1, 1.5, 2, 4.5]}
+    _liquid_Density = {
+        "eq": 2,
+        "n": [1.9906389, -0.78756197, 0.036976723],
+        "t": [0.354, 0.5, 2.5]}
     _vapor_Density = {
-        "eq": 4,
-        "ao": [-1.880284, -2.8526531, -3.000648, -5.251169, -13.191859,
-               -37.553961],
-        "exp": [1.062, 2.5, 4.5, 7.5, 12.5, 23.5]}
+        "eq": 2,
+        "n": [-1.880284, -2.8526531, -3.000648, -5.251169, -13.191859,
+              -37.553961],
+        "t": [0.354, 5/6, 3/2, 5/2, 25/6, 47/6]}
 
     visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {

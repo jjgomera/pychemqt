@@ -1951,39 +1951,82 @@ class MEoS(ThermoAdvanced):
         else:
             return None
 
+    def _SimpleEq(self, T, coef):
+        r"""Common procedure for calculation of simple properties like the
+        ancillary equation for vapor pressure, saturated densities of liquid
+        and vapor
+
+        The procedure define several equations:
+
+        .. math::
+            \frac{x}{x_r} = 1 + \sum_i N_i\theta^{t_i}
+
+        .. math::
+            \ln\left(\frac{x}{x_r}\right) = \sum_i N_i\theta^{t_i}
+
+        .. math::
+            \ln\left(\frac{x}{x_r}\right) = \frac{T_c}{T}\sum_i N_i\theta^{t_i}
+
+        The coef must define the parameters:
+
+            * eq: Index of equation to use
+            * n: Polinomial parameter
+            * t: Exponent of tita
+
+
+        Parameters
+        ----------
+        T : float
+            Temperature [K]
+        coef: dict
+            Coefficient for correlation
+        """
+
+        Tita = 1-T/self.Tc
+
+        pr = 0
+        for n, t in zip(coef["n"], coef["t"]):
+            pr += n*Tita**t
+
+        if coef["eq"] == 1:
+            pr += 1
+
+        if coef["eq"] == 3:
+            pr *= self.Tc/T
+
+        if coef["eq"] in [2, 3]:
+            pr = exp(pr)
+
+        # TODO: Delete when finish ancillary update
+        # Old eq value change:
+        # 1-2 -------> 1
+        # 3-4 -------> 2
+        # 5-6 -------> 3
+
+        # Furthermore the coef change if eq is odd (2-4-6)
+        # t value * 0.5
+
+        if "ao" in coef:
+            raise ValueError("Correct ancillary equation")
+
+        return pr
+
     def _Vapor_Pressure(self, T):
         if self._vapor_Pressure:
-            eq = self._vapor_Pressure["eq"]
-            Tita = 1-T/self.Tc
-            if eq in [2, 4, 6]:
-                Tita = Tita**0.5
-            suma = sum([n*Tita**x for n, x in zip(
-                self._vapor_Pressure["ao"], self._vapor_Pressure["exp"])])
-            if eq in [1, 2]:
-                Pr = suma+1
-            elif eq in [3, 4]:
-                Pr = exp(suma)
-            else:
-                Pr = exp(self.Tc/T*suma)
+            Pr = self._SimpleEq(T, self._vapor_Pressure)
             Pv = unidades.Pressure(Pr*self.Pc)
         else:
-            Pv = unidades.Pressure(0)
+            Pv = Pv_Lee_Kesler(T, self.Tc, self.Pc, self.f_acent)
         return Pv
 
     def _Liquid_Density(self, T):
         if self._liquid_Density:
-            eq = self._liquid_Density["eq"]
-            Tita = 1-T/self.Tc
-            if eq in [2, 4, 6]:
-                Tita = Tita**(1./3)
-            suma = sum([n*Tita**x for n, x in zip(
-                self._liquid_Density["ao"], self._liquid_Density["exp"])])
-            if eq in [1, 2]:
-                Pr = suma+1
-            elif eq in [3, 4]:
-                Pr = exp(suma)
-            else:
-                Pr = exp(self.Tc/T*suma)
+            if T < self.Tt:
+                T = self.Tt
+            if T > self.Tc:
+                T = self.Tc
+
+            Pr = self._SimpleEq(T, self._liquid_Density)
             rho = unidades.Density(Pr*self.rhoc)
         else:
             # Use the Costald method to calculate saturated liquid density

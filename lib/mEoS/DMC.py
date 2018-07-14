@@ -49,7 +49,7 @@ class DMC(MEoS):
 
     zhou = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for DMC of Zhou et al. (2011).",
+        "__name__": "Helmholtz equation of state for DMC of Zhou (2011).",
         "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
                     "title": "Thermodynamic Properties of Dimethyl Carbonate",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
@@ -84,15 +84,15 @@ class DMC(MEoS):
     eq = zhou,
 
     _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-8.3197, 3.4260, -3.5905, -3.3194],
-        "exp": [1.0, 1.5, 2.3, 4.7]}
+        "eq": 3,
+        "n": [-8.3197, 3.4260, -3.5905, -3.3194],
+        "t": [1.0, 1.5, 2.3, 4.7]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526],
-        "exp": [0.27, 0.77, 1.29, 1.85, 2.46, 3.16]}
+        "n": [1.1572, 4.969, -14.451, 27.569, -26.223, 10.526],
+        "t": [0.27, 0.77, 1.29, 1.85, 2.46, 3.16]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072,
-               -379.799],
-        "exp": [0.197, 0.6, 2.86, 3.65, 4.5, 5.4, 6.4]}
+        "eq": 2,
+        "n": [-0.54715, -5.19277, -94.048, 327.21, -676.871, 716.072,
+              -379.799],
+        "t": [0.197, 0.6, 2.86, 3.65, 4.5, 5.4, 6.4]}
