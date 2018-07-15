@@ -34,15 +34,21 @@ class SO2(MEoS):
     _coolPropName = "SulfurDioxide"
     rhoc = unidades.Density(525.002841)
     Tc = unidades.Temperature(430.64)
-    Pc = unidades.Pressure(7884.0, "kPa")
+    Pc = unidades.Pressure(7886.6, "kPa")
     M = 64.0638  # g/mol
     Tt = unidades.Temperature(197.7)
     Tb = unidades.Temperature(263.13)
-    f_acent = 0.2557
+    f_acent = 0.256
     momentoDipolar = unidades.DipoleMoment(1.6, "Debye")
     id = 51
 
     Fi1 = {"ao_log": [1, 3.],
+           "pow": [0, 1, -1],
+           "ao_pow": [-4.5414235721, 4.4732289572, -0.0159272204],
+           "ao_exp": [1.0875, 1.916],
+           "titao": [783/Tc, 1864/Tc]}
+
+    Fi2 = {"ao_log": [1, 3.],
            "pow": [0, 1, -1],
            "ao_pow": [-4.5328346436, 4.4777967379, -0.01560057996],
            "ao_exp": [1.062, 1.9401],
@@ -55,6 +61,44 @@ class SO2(MEoS):
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
+    gao = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for sulfur dioxide of Gao "
+                    "(2016).",
+        "__doi__": {
+            "autor": "Gao, K., Wu, J., Zhang, P., Lemmon, E.W.",
+            "title": "A Helmholtz Energy Equation of State for Sulfur Dioxide",
+            "ref": "J. Chem. Eng. Data, ",
+            # TODO: Complete reference when find internet
+            "doi":  "10.1021/acs.jced.6b00195"},
+
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "NBP",
+
+        "rhoc": 8.078,
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.40,
+        "Pmin": 1.666, "rhomin": 22.815,
+
+        "nr1": [0.01744413, 1.814878, -2.246338, -0.4602906, 0.1097049],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.45, 0.9994, 1, 0.45],
+
+        "nr2": [-0.9485769, -0.8751541, 0.4228777, -0.4174962, -0.002903451],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.907, 2.992, 0.87, 3.302, 1.002],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [1.64041, -0.4103535, -0.08316597, -0.2728126, -0.1075782,
+                -0.4348434],
+        "d3": [1, 1, 3, 2, 2, 1],
+        "t3": [1.15, 0.997, 1.36, 2.086, 0.855, 0.785],
+        "alfa3": [1.061, 0.945, 1.741, 1.139, 1.644, 0.647],
+        "beta3": [0.967, 2.538, 2.758, 1.062, 1.039, 0.41],
+        "gamma3": [1.276, 0.738, 0.71, 0.997, 1.35, 0.919],
+        "epsilon3": [0.832, 0.69, 0.35, 0.961, 0.981, 0.333]}
+
     lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for sulfur dioxide of "
@@ -66,7 +110,7 @@ class SO2(MEoS):
                     "doi":  "10.1021/je050186n"},
 
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30,
@@ -115,28 +159,67 @@ class SO2(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = lemmon, polt
+    eq = gao, lemmon, polt
 
     _surface = {"sigma": [0.0803, 0.0139, -0.0114],
                 "exp": [0.928, 1.57, 0.364]}
+
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.73845e1, 0.22867e1, -0.24669e1, -0.32217e1, 0.23109],
-        "t": [1.0, 1.5, 2.2, 4.8, 6.2]}
+        "n": [-7.303, 1.9794, -2.078, -3.5446, 0.51776],
+        "t": [1, 1.5, 2.2, 4.7, 6]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.17156e2, -0.60441e2, 0.81407e2, -0.51871e2, 0.16754e2],
-        "t": [0.57, 0.8, 1.0, 1.3, 1.6]}
+        "n": [7.2296, -16.928, 29.832, -27.901, 11.085],
+        "t": [0.54, 0.88, 1.23, 1.6, 2]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-3.3832, -7.6873, -23.614, -137.20, 1866.4, -2446.9],
-        "t": [0.424, 1.4, 3.6, 8.5, 13.0, 14.0]}
+        "n": [-7.487, 10.118, -13.608, -25.408, -42.04, -38.668],
+        "t": [0.545,  0.85, 1.2, 3.7, 7.5, 10]}
 
 
 class Test(TestCase):
+    def test_gao(self):
+        # Table 6, Pag M
+        st = SO2(T=250, rhom=23.6)
+        self.assertEqual(round(st.P.MPa, 7), 12.2955804)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 53.1514)
+        self.assertEqual(round(st.cpM.kJkmolK, 4), 86.0982)
+        self.assertEqual(round(st.w, 2), 1130.24)
+
+        st = SO2(T=400, rhom=16)
+        self.assertEqual(round(st.P.MPa, 7), 8.0793790)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 51.8705)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 117.691)
+        self.assertEqual(round(st.w, 3), 449.618)
+
+        st = SO2(T=431, rhom=8.078)
+        self.assertEqual(round(st.P.MPa, 7), 7.9343772)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 64.5073)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 19127.4)
+        self.assertEqual(round(st.w, 3), 168.147)
+
+        st = SO2(T=250, rhom=0)
+        self.assertEqual(round(st.P.MPa, 7), 0)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 29.8406)
+        self.assertEqual(round(st.cpM.kJkmolK, 4), 38.1551)
+        self.assertEqual(round(st.w, 3), 203.682)
+
+        st = SO2(T=420, rhom=1)
+        self.assertEqual(round(st.P.MPa, 7), 2.9365903)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 40.8928)
+        self.assertEqual(round(st.cpM.kJkmolK, 4), 59.5297)
+        self.assertEqual(round(st.w, 3), 234.103)
+
+        st = SO2(T=450, rhom=11)
+        self.assertEqual(round(st.P.MPa, 7), 12.1084452)
+        self.assertEqual(round(st.cvM.kJkmolK, 4), 54.7870)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 222.083)
+        self.assertEqual(round(st.w, 3), 250.095)
+
     def test_shortLemmon(self):
         # Table 10, Pag 842
-        st = SO2(T=432, rhom=8)
+        st = SO2(T=432, rhom=8, eq="lemmon")
         self.assertEqual(round(st.P.kPa, 3), 8052.256)
         self.assertEqual(round(st.hM.kJkmol, 3), 20821.200)
         self.assertEqual(round(st.sM.kJkmolK, 3), 56.819)
