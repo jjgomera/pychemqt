@@ -263,6 +263,39 @@ class SF6(MEoS):
 
     _viscosity = visco0,
 
+    thermo0 = {"__name__": "Assael (2012)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Koini, I.A., Anoniadis, K.D., "
+                            "Huber, M.L., Abdulagatov, I.M., Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal "
+                            "Conductivity of Sulfur Hexafluoride from the "
+                            "Triple Point to 1000 K and up to 150 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 41(2) (2012) 023104",
+                   "doi": "10.1063/1.4708620"},
+
+               "eq": 1,
+
+               "Toref": 1, "koref": 1e-3,
+               "no_num": [1461860, -18539.4, 77.7891, 0.0241059],
+               "to_num": [0, 1, 2, 3],
+               "no_den": [29661.7, 505.67, 1],
+               "to_den": [0, 1, 2],
+
+               # The critical density cited in paper don't work, using value
+               # from REFPROP
+               "Tref_res": 318.7232, "rhoref_res": 5.046*M, "kref_res": 1,
+               "nr": [-2.83746e-2, 2.07472e-2, -5.57180e-3, 5.32890e-3,
+                      -1.61688e-3, 3.52768e-2, -4.33053e-2, 5.12084e-2,
+                      -2.90262e-2, 5.98438e-3],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
+               "Xio": 0.19e-9, "gam0": 0.052, "qd": 0.35e-9, "Tcref": 478.0848}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -468,3 +501,12 @@ class Test(TestCase):
         self.assertEqual(round(SF6(T=400, rho=0).mu.muPas, 4), 19.6790)
         self.assertEqual(round(SF6(T=400, rho=278.47).mu.muPas, 4), 24.4266)
         self.assertEqual(round(SF6(T=400, rho=1123.8).mu.muPas, 4), 84.7838)
+
+    def test_Assael(self):
+        # Table 5, pag 8
+        self.assertEqual(round(SF6(T=298.15, rho=0).k.mWmK, 3), 12.952)
+        self.assertEqual(round(SF6(T=298.15, rho=100).k.mWmK, 3), 14.127)
+        self.assertEqual(round(SF6(T=298.15, rho=1600).k.mWmK, 3), 70.747)
+        self.assertEqual(round(SF6(T=310, rho=0).k.mWmK, 3), 13.834)
+        self.assertEqual(round(SF6(T=310, rho=1200).k.mWmK, 3), 49.173)
+        self.assertEqual(round(SF6(T=480, rho=100).k.mWmK, 3), 28.863)
