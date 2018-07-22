@@ -33,7 +33,7 @@ class Toluene(MEoS):
     synonym = ""
     _refPropName = "TOLUENE"
     _coolPropName = "Toluene"
-    rhoc = unidades.Density(291.98665)
+    rhoc = unidades.Density(291.98665298)
     Tc = unidades.Temperature(591.75)
     Pc = unidades.Pressure(4126.3, "kPa")
     M = 92.13842  # g/mol
@@ -199,25 +199,33 @@ class Toluene(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Lemmon (2010)",
-               "__doc__": """Lemmon, E.W. and Laesecke, A., 2010. Unpublished preliminary equation for the thermal conductivity of toluene.""",
+    thermo0 = {"__name__": "Assael (2012)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Milona, S.K., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal "
+                            "Conductivity of Toluene from the Triple Point to "
+                            "1000 K and up to 1000 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 41(2) (2012) 023101",
+                   "doi": "10.1063/1.3700155"},
 
-               "Tref": 591.75, "kref": 1e-3,
-               "no": [28.96745197, -167.24996945, 180.04690463],
-               "co": [1.20532335, 1.58866032, 1.71267964],
+               "eq": 1,
 
-               "Trefb": 591.75, "rhorefb": 3.169, "krefb": 1e-3,
-               "nb": [-0.318905053658e1, 0.258544682121e2, -0.263059677817e2,
-                      -0.691196173614, 0.542428651638e-1, -0.326501347819],
-               "tb": [-0.53316, -0.27224, -0.09974, -5.53274, -6.84315, -0.39659],
-               "db": [4, 3, 5, 7, 8, 3],
-               "cb": [0, 0, 1, 2, 2, 2],
+               "Toref": 1, "koref": 1e-3,
+               "no": [5.8808, -6.1693e-2, 3.4151e-4, -3.042e-7, 1.2868e-10,
+                      -2.1303e-14],
+               "to": [0, 1, 2, 3, 4, 5],
+
+               "Tref_res": 591.75, "rhoref_res": 291.992, "kref_res": 1,
+               "nr": [-5.18530e-2, 1.33846e-1, -1.20446e-1, 5.30211e-2,
+                      -1.00604e-2, 6.33457e-4, 5.17449e-2, -1.21902e-1,
+                      1.37748e-1, -7.32792e-2, 1.72914e-2, -1.38585e-3],
+               "tr": [0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.33442441e-9, "gam0": 0.55e-1, "qd": 0.71763799e-9,
-               "Tcref": 1183.5}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.22e-9, "gam0": 0.05, "qd": 0.62e-9, "Tcref": 887.625}
 
     _thermal = thermo0,
 
@@ -230,7 +238,7 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.kJkmol, 3), 52937.550)
         self.assertEqual(round(st.sM.kJkmolK, 3), 105.422)
         self.assertEqual(round(st.cvM.kJkmolK, 3), 214.488)
-        self.assertEqual(round(st.cpM.kJkmolK, 3), 7705.724)
+        self.assertEqual(round(st.cpM.kJkmolK, 3), 7705.723)
         self.assertEqual(round(st.w, 3), 89.464)
 
     def test_Avgeri(self):
@@ -277,3 +285,17 @@ class Test(TestCase):
         self.assertEqual(round(Toluene(T=300, rho=865).mu.muPas, 2), 566.78)
         self.assertEqual(round(Toluene(T=400, rho=770).mu.muPas, 2), 232.75)
         self.assertEqual(round(Toluene(T=550, rho=550).mu.muPas, 3), 80.267)
+
+    def test_Assael(self):
+        # Table 6, pag 11
+        # Tiny desviation in critical enchancement, the paper use a old
+        # unreferenced viscosity correlation used in REFPROP
+        self.assertEqual(round(Toluene(T=298.15, rho=0).k.mWmK, 3), 10.749)
+        self.assertEqual(
+            round(Toluene(T=298.15, rho=862.948).k.mWmK, 2), 130.65)
+        self.assertEqual(
+            round(Toluene(T=298.15, rho=876.804).k.mWmK, 2), 136.69)
+        self.assertEqual(round(Toluene(T=595, rho=0).k.mWmK, 3), 40.538)
+        self.assertEqual(round(Toluene(T=595, rho=46.512).k.mWmK, 3), 41.619)
+        self.assertEqual(round(Toluene(T=185, rho=0).k.mWmK, 4), 4.3758)
+        self.assertEqual(round(Toluene(T=185, rho=968.821).k.mWmK, 2), 158.23)
