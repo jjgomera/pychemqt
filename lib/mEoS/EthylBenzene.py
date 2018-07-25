@@ -18,6 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
+from scipy import exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -97,7 +101,115 @@ class EthylBenzene(MEoS):
         "n": [-3.2877, -3.6071, -15.878, -53.363, -128.57],
         "t": [0.42, 0.98, 2.48, 5.9, 13.4]}
 
+    visco0 = {"__name__": "Meng (2017)",
+              "__doi__": {
+                  "autor": "Meng, X.Y., Cao, F.L., Wu, J.T., Vesovic, V.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "Ethylbenzene from the Triple Point to 673 K and "
+                           "up to 110 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013101",
+                  "doi": "10.1063/1.4973501"},
 
-if __name__ == "__main__":
-    st = EthylBenzene(T=600, P=1e5)
-    print(st.status, st.msg)
+              "eq": 1, "omega": 3,
+              "collision": [-1.4933, 473.2, -57033],
+
+              "sigma": 1,
+              "n_chapman": 0.22115/M**0.5,
+
+              "Tref_res": 617.12, "rhoref_res": 2.741016*M,
+              "nr": [-0.0376893, 0.168877, 17.9684, 3.57702e-11, 29.996,
+                     -8.00082, -25.7468],
+              "dr": [209/30, 209/30, 29/30, 731/30, 59/30, 29/30, 455/300],
+              "tr": [-0.5, 0.6, -0.5, 2.9, -0.5, -1.5, -0.5],
+
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        # The initial density dependence has a different expresion, without muo
+        # and other normal method calculation so hardcoded here
+        muB = 0
+        if rho:
+            for i, n in enumerate([13.2814, -10862.4, 1664060]):
+                muB += n/T**i
+
+        # Special exponential term for residual viscosity, Eq 5
+        Ei = [-3.29316e-13, -2.92665e-13, 2.97768e-13, 1.76186e-18]
+        ni = [4.6, 11.1, 5.6, 12.4]
+        ki = [20.8, 10.6, 19.7, 21.9]
+        Tr = T/617.12
+        rhor = rho/self.M/2.741016
+
+        # Eq 7
+        g = 0
+        for E, n, k in zip(Ei, ni, ki):
+            g += E*rhor**n/Tr**k
+
+        mur = g*exp(rhor**2)
+
+        return muB*rho/self.M + mur
+
+    _viscosity = visco0,
+
+
+class Test(TestCase):
+
+    def test_Meng(self):
+        # Table 5, saturation state properties, include basic test for Zhou EoS
+        st = EthylBenzene(T=273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0003)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0001)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 8.3287)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 879.4)
+
+        st = EthylBenzene(T=333.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0074)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0027)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 7.8329)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 435.1)
+
+        st = EthylBenzene(T=393.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.0643)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0203)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 8.48)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 7.3104)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 263.5)
+
+        st = EthylBenzene(T=453.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.2884)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0842)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.79)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 6.7317)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 171.0)
+
+        st = EthylBenzene(T=553.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.5899)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.4922)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.52)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 5.4711)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 85.66)
+
+        # Table 6, Pag 9
+        self.assertEqual(round(
+            EthylBenzene(T=250, rhom=8.9814).mu.muPas, 3), 2948.109)
+        self.assertEqual(round(
+            EthylBenzene(T=300, rhom=8.1093).mu.muPas, 3), 616.814)
+        self.assertEqual(round(
+            EthylBenzene(T=300, rhom=8.4082).mu.muPas, 3), 875.361)
+        self.assertEqual(round(
+            EthylBenzene(T=300, rhom=8.6762).mu.muPas, 3), 1262.986)
+        self.assertEqual(round(EthylBenzene(T=350, rhom=0).mu.muPas, 3), 7.591)
+        self.assertEqual(round(EthylBenzene(T=400, rhom=0).mu.muPas, 3), 8.616)
+        self.assertEqual(round(
+            EthylBenzene(T=400, rhom=7.2481).mu.muPas, 3), 250.283)
+        self.assertEqual(round(
+            EthylBenzene(T=400, rhom=8.1196).mu.muPas, 3), 509.868)
+        self.assertEqual(round(
+            EthylBenzene(T=500, rhom=0).mu.muPas, 3), 10.734)
+        self.assertEqual(round(
+            EthylBenzene(T=500, rhom=0.02).mu.muPas, 3), 10.776)
+        self.assertEqual(round(
+            EthylBenzene(T=600, rhom=0).mu.muPas, 3), 12.841)
+        self.assertEqual(round(
+            EthylBenzene(T=600, rhom=6.4831).mu.muPas, 3), 155.940)
+        self.assertEqual(round(
+            EthylBenzene(T=600, rhom=7.1427).mu.muPas, 3), 229.686)
