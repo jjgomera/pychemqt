@@ -132,7 +132,30 @@ class pXylene(MEoS):
                 muB += n/T**i
         return muB*rho/self.M
 
-    _viscosity = visco0,
+    visco1 = {"__name__": "Meng (2017)",
+              "__doi__": {
+                  "autor": "Meng, X.Y., Cao, F.L., Wu, J.T., Vesovic, V.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "Ethylbenzene from the Triple Point to 673 K and "
+                           "up to 110 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013101",
+                  "doi": "10.1063/1.4973501"},
+
+              "eq": 1, "omega": 3,
+              "collision": [-1.4933, 473.2, -57033],
+
+              "sigma": 1,
+              "n_chapman": 0.22005/M**0.5,
+
+              "Tref_res": 616.168, "rhoref_res": 2.69392*M,
+              "nr": [-0.0258436, 0.0323284, 15.4854, 4.30133e-11, 13.8162,
+                     -19.9037, -0.000112615],
+              "dr": [269/30, 269/30, 19/15, 145/6, 43/15, 28/15, 35/3],
+              "tr": [-0.5, 0.2, -0.5, 2.5, -0.5, -1.5, -0.5],
+
+              "special": "_vir"}
+
+    _viscosity = visco0, visco1
 
 
 class Test(TestCase):
@@ -193,3 +216,29 @@ class Test(TestCase):
         self.assertEqual(round(pXylene(T=600, rhom=0).mu.muPas, 3), 12.777)
         self.assertEqual(round(pXylene(
             T=600, rhom=7.0985).mu.muPas, 3), 209.151)
+
+    def test_meng(self):
+        # Table 8, Pag 9
+        self.assertEqual(round(
+            pXylene(T=300, rhom=0, visco=1).mu.muPas, 3), 6.604)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = pXylene(T=300, rhom=0.0490, visco=1)
+        mu = st._Viscosity(0.0490*st.M, 300, None)
+        self.assertEqual(round(mu.muPas, 3), 6.450)
+
+        self.assertEqual(round(
+            pXylene(T=300, rhom=8.0548, visco=1).mu.muPas, 3), 593.513)
+        self.assertEqual(round(
+            pXylene(T=300, rhom=8.6309, visco=1).mu.muPas, 3), 1257.494)
+        self.assertEqual(round(
+            pXylene(T=400, rhom=0, visco=1).mu.muPas, 3), 8.573)
+        self.assertEqual(round(
+            pXylene(T=400, rhom=7.1995, visco=1).mu.muPas, 3), 239.081)
+        self.assertEqual(round(
+            pXylene(T=400, rhom=8.0735, visco=1).mu.muPas, 3), 488.777)
+        self.assertEqual(round(
+            pXylene(T=600, rhom=0, visco=1).mu.muPas, 3), 12.777)
+        self.assertEqual(round(
+            pXylene(T=600, rhom=7.0985, visco=1).mu.muPas, 3), 199.160)
