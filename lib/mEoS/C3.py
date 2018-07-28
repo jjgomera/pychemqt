@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -345,7 +347,48 @@ class C3(MEoS):
         "n": [-2.4887, -5.1069, -12.174, -30.495, -52.192, -134.89],
         "t": [0.3785, 1.07, 2.7, 5.5, 10., 20.]}
 
-    visco0 = {"__name__": "Vogel (1998)",
+    visco0 = {"__name__": "Vogel (2016)",
+              "__doi__": {
+                  "autor": "Vogel, E., Herrmann, S.",
+                  "title": "New Formulation for the Viscosity of Propane",
+                  "ref": "J. Phys. Chem. Ref. Data 45(4) (2016) 043103",
+                  "doi": "10.1063/1.4966928"},
+
+              "eq": 1, "omega": 0,
+
+              "Toref": 369.89,
+              "no": [9.9301297115406, 7.2658798096248e-1,
+                     -7.4692506744427e-1, 1.0156334572774e-1],
+              "to": [1, 2, 3, 4],
+
+              "Tref_res": 369.89, "rhoref_res": 220.478,
+              "nr": [1.2514603628320e1, 1.5922183980545, -1.7976570855233e-2,
+                     9.9769818327437e-2, 1.0361434810683e-5,
+                     -1.4863884140117e-9, 4.8405686431740e-10,
+                     -1.3029665878806e1, 1.8734125698089, 2.3303894474483,
+                     3.4631192496757],
+              "dr": [1, 2, 4, 7, 14, 19, 20, 1, 1, 4, 5],
+              "tr": [0, 0, 3, 0, 2, 6, 6, 1, 2, 1, 0],
+              "gr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+              "cr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        # Gaussian terms
+        tau = 369.89/T
+        delta = rho/220.478
+
+        ni = [3.2587396573174, 2.1724931048783e-1]
+        beta = [20, 100]
+        epsilon = [250, 100]
+        mu = 0
+        for n, b, e in zip(ni, beta, epsilon):
+            mu += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
+
+        return mu
+
+    visco1 = {"__name__": "Vogel (1998)",
               "__doi__": {
                   "autor": "Vogel, E., Küchenmeister, C., Bich, E., Laesecke, "
                            "A.",
@@ -379,7 +422,7 @@ class C3(MEoS):
               "CPg1": 2.50053938863,
               "CPgi": [0.860516059264], "CPti": [-0.5]}
 
-    visco1 = {"eq": 2, "omega": 2,
+    visco2 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
@@ -396,7 +439,7 @@ class C3(MEoS):
                     0.0168910864, 43.527109444, 7659.45434720],
               "rhoc": 5.0}
 
-    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco3 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -417,7 +460,7 @@ class C3(MEoS):
               "B": [2.08795e-8, 9.21785e-10, 0],
               "C": [-4.05944e-7, 1.31731e-7, 0]}
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Marsh (2002)",
                "__doi__": {
@@ -552,10 +595,29 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 2), 1)
 
     def test_Vogel(self):
+        # Table 6, Pag 16
+        self.assertEqual(round(C3(T=90, rho=730).mu.muPas, 3), 8010.968)
+        self.assertEqual(round(C3(T=300, rho=1).mu.muPas, 6), 8.174374)
+        self.assertEqual(round(C3(T=300, rho=20).mu.muPas, 6), 8.230795)
+        self.assertEqual(round(C3(T=300, rho=490).mu.muPas, 5), 95.63100)
+        self.assertEqual(round(C3(T=300, rho=600).mu.muPas, 4), 223.6002)
+        self.assertEqual(round(
+            C3(T=369.89, rho=220.478).mu.muPas, 5), 25.70313)
+        self.assertEqual(round(C3(T=375, rho=1).mu.muPas, 5), 10.15009)
+        self.assertEqual(round(C3(T=375, rho=100).mu.muPas, 5), 13.07220)
+        self.assertEqual(round(C3(T=375, rho=550).mu.muPas, 4), 146.8987)
+        self.assertEqual(round(C3(T=500, rho=1).mu.muPas, 5), 13.26285)
+        self.assertEqual(round(C3(T=500, rho=100).mu.muPas, 5), 16.85501)
+        self.assertEqual(round(C3(T=500, rho=450).mu.muPas, 5), 77.67365)
+        self.assertEqual(round(C3(T=650, rho=1).mu.muPas, 5), 16.63508)
+        self.assertEqual(round(C3(T=650, rho=100).mu.muPas, 5), 20.72894)
+        self.assertEqual(round(C3(T=650, rho=400).mu.muPas, 5), 62.40780)
+
+    def test_Vogel2(self):
         # TODO: Input density calcualte from MBWR equation, do when fix
         # The method give good values, but the density input values are
         # unreproducibles while MBWR don't work
 
         # Table 4, pag 961
-        # self.assertEqual(round(C3(T=90, P=1e4).mu.muPas, 1), 7388.0)
+        # self.assertEqual(round(C3(T=90, P=1e4, visco=1).mu.muPas, 1), 7388.0)
         pass
