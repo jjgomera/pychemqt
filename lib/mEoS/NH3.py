@@ -206,7 +206,32 @@ class NH3(MEoS):
         "n": [-0.38435, -4.0846, -6.6634, -31.881, 213.06, -246.48],
         "t": [0.218, 0.55, 1.5, 3.7, 5.5, 5.8]}
 
-    visco0 = {"__name__": "Fenghour (1995)",
+    visco0 = {"__name__": "Monogenidou (2018)",
+              "__doi__": {
+                  "autor": "Monogenidou, S.A., Assael, M.J., Huber, M.L.",
+                  "title": "Reference Correlation for the Viscosity of Ammonia"
+                           " from the Triple Point to 725K and up to 50 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 47(2) (2018) 023102",
+                  "doi": "10.1063/1.5036724"},
+
+              "eq": 1, "omega": 1,
+
+              "ek": 386, "sigma": 0.2957, "M": 17.03052,
+              "n_chapman": 0.021357,
+              "collision": [0.39175, -0.59918, -0.00022, 0.19871, -0.06942],
+
+              "Tref_virial": 386,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 405.56, "rhoref_res": 233.25,
+              "nr": [0.0393308, 16.724735, 1.1975934, 0.0016995, -4.2399794],
+              "tr": [-0.5, -0.5, -0.5, 3.5, -1.5],
+              "dr": [2/3, 5/3, 14/3, 26/3, 8/3]}
+
+    visco1 = {"__name__": "Fenghour (1995)",
               "__doi__": {
                   "autor": "Fenghour, A., Wakeham, W.A., Vesovic, V., Watson, "
                            "J.T.R., Millat, J., Vogel, E.",
@@ -235,7 +260,7 @@ class NH3(MEoS):
               "tr": [2, 4, 0, 1, 2, 3, 4],
               "dr": [2, 2, 3, 3, 4, 4, 4]}
 
-    _viscosity = visco0,
+    _viscosity = visco0, visco1
 
     thermo0 = {"__name__": "Tufeu (1984)",
                "__doi__": {
@@ -482,48 +507,56 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 776.68)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 2.07031)
 
+    def test_monogenidou(self):
+        # Values cited in section 3, pag 7
+        self.assertEqual(round(NH3(T=300, rho=0).mu.muPas, 4), 10.1812)
+        self.assertEqual(round(NH3(T=300, rho=8).mu.muPas, 4), 9.9219)
+        self.assertEqual(round(NH3(T=300, rho=609).mu.muPas, 4), 133.3937)
+
     def test_fenghour(self):
+        kw = {"visco": 1}
+
         # Appendix II, pag 1664
-        self.assertEqual(round(NH3(T=200, P=1e5).mu.muPas, 2), 507.47)
-        self.assertEqual(round(NH3(T=290, P=1e6).mu.muPas, 2), 142.93)
-        self.assertEqual(round(NH3(T=250, P=1e7).mu.muPas, 2), 233.81)
-        self.assertEqual(round(NH3(T=300, P=1e5).mu.muPas, 2), 10.16)
-        self.assertEqual(round(NH3(T=350, P=1.8e7).mu.muPas, 2), 91.36)
-        self.assertEqual(round(NH3(T=400, P=5e7).mu.muPas, 2), 77.29)
-        self.assertEqual(round(NH3(T=490, P=1e6).mu.muPas, 2), 17.49)
-        self.assertEqual(round(NH3(T=550, P=1e5).mu.muPas, 2), 19.79)
-        self.assertEqual(round(NH3(T=680, P=5e7).mu.muPas, 2), 31.90)
+        self.assertEqual(round(NH3(T=200, P=1e5, **kw).mu.muPas, 2), 507.47)
+        self.assertEqual(round(NH3(T=290, P=1e6, **kw).mu.muPas, 2), 142.93)
+        self.assertEqual(round(NH3(T=250, P=1e7, **kw).mu.muPas, 2), 233.81)
+        self.assertEqual(round(NH3(T=300, P=1e5, **kw).mu.muPas, 2), 10.16)
+        self.assertEqual(round(NH3(T=350, P=1.8e7, **kw).mu.muPas, 2), 91.36)
+        self.assertEqual(round(NH3(T=400, P=5e7, **kw).mu.muPas, 2), 77.29)
+        self.assertEqual(round(NH3(T=490, P=1e6, **kw).mu.muPas, 2), 17.49)
+        self.assertEqual(round(NH3(T=550, P=1e5, **kw).mu.muPas, 2), 19.79)
+        self.assertEqual(round(NH3(T=680, P=5e7, **kw).mu.muPas, 2), 31.90)
 
         # Appendix III, pag 1667, saturation state
-        st = NH3(T=196, x=0.5)
+        st = NH3(T=196, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 4), 0.0063)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.0039)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 6.85)
         self.assertEqual(round(st.Liquido.rhoM, 4), 43.0041)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 553.31)
 
-        st = NH3(T=240, x=0.5)
+        st = NH3(T=240, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 4), 0.1022)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.0527)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 8.06)
         self.assertEqual(round(st.Liquido.rhoM, 4), 40.0318)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 254.85)
 
-        st = NH3(T=300, x=0.5)
+        st = NH3(T=300, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 4), 1.0617)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.4845)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 9.89)
         self.assertEqual(round(st.Liquido.rhoM, 4), 35.2298)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 129.33)
 
-        st = NH3(T=350, x=0.5)
+        st = NH3(T=350, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 4), 3.8660)
         self.assertEqual(round(st.Gas.rhoM, 4), 1.8399)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 11.79)
         self.assertEqual(round(st.Liquido.rhoM, 4), 30.0867)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 80.43)
 
-        st = NH3(T=402, x=0.5)
+        st = NH3(T=402, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 4), 10.6777)
         self.assertEqual(round(st.Gas.rhoM, 4), 8.5479)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 19.69)
