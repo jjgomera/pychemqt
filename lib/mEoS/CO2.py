@@ -412,7 +412,42 @@ class CO2(MEoS):
 
     _viscosity = visco0, visco1, visco2
 
-    thermo0 = {"__name__": "Scalabrin (2006)",
+    thermo0 = {"__name__": "Huber (2016)",
+               "__doi__": {
+                  "autor": "Huber, M.L., Sykioti, E.A., Assael, M.J., "
+                           "Perkins, R.A.",
+                  "title": "Reference Correlation of the Thermal Conductivity "
+                           "of Carbon Dioxide from the Triple Point to 1100 K "
+                           "and up to 200 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 45(1) (2016) 013102",
+                  "doi": "10.1063/1.4940892"},
+
+               "eq": 1,
+
+               "special": "_Thermo0",
+
+               "Tref_res": 304.1282, "rhoref_res": 467.6, "kref_res": 1,
+               "nr": [1.00128e-2, 5.60488e-2, -8.11620e-2, 6.24337e-2,
+                      -2.06336e-2, 2.53248e-3, 4.30829e-3, -3.58563e-2,
+                      6.71480e-2, -5.22855e-2, 1.74571e-2, -1.96414e-3],
+               "tr": [0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 456.19}
+
+    def _Thermo0(self, rho, T, fase):
+        """Special zero density thermal conductivity for Huber correlation"""
+        Tr = T/304.1282
+        no = [1.51874307e-2, 2.80674040e-2, 2.28564190e-2, -7.41624210e-3]
+
+        # Eq 3
+        ko = Tr**0.5/sum([n/Tr**i for i, n in enumerate(no)])
+
+        return ko*1e-3
+
+    thermo1 = {"__name__": "Scalabrin (2006)",
                "__doi__": {
                   "autor": "Scalabrin, G., Marchi, P., Finezzo, F.",
                   "title": "A Reference Multiparameter Thermal Conductivity "
@@ -457,7 +492,7 @@ class CO2(MEoS):
 
         return lc*nc*4.81384e-3
 
-    thermo1 = {"__name__": "Vesovic (1990)",
+    thermo2 = {"__name__": "Vesovic (1990)",
                "__doi__": {
                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
@@ -483,7 +518,7 @@ class CO2(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
 
-    _thermal = thermo0, thermo1
+    _thermal = thermo0, thermo1, thermo2
 
 
 class Test(TestCase):
@@ -683,36 +718,51 @@ class Test(TestCase):
         self.assertEqual(round(CO2(T=300, rho=1029.27).mu.muPas, 2), 132.55)
         self.assertEqual(round(CO2(T=800, rho=407.828).mu.muPas, 2), 48.74)
 
+    def test_Huber(self):
+        # Table 7, Pag 15
+        self.assertEqual(round(CO2(T=250, rho=0).k.mWmK, 2), 12.99)
+        self.assertEqual(round(CO2(T=250, rho=2).k.mWmK, 2), 13.05)
+        self.assertEqual(round(CO2(T=250, rho=1058).k.mWmK, 2), 140.00)
+
+        # TODO: Add visco correlation
+        # A. Laesecke and C. D. Muzny
+        # Reference Correlation of the Viscosity of CO2
+        # J. Phys. Chem. Ref. Data
+        # self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 73.04)
+
+        self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 72.28)
+
     def test_Scalabrin(self):
         # Selected values from Table 10, Pag 1568, saturation states
-        st = CO2(T=218, x=0.5)
+        st = CO2(T=218, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 181.09)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 10.837)
 
-        st = CO2(T=250, x=0.5)
+        st = CO2(T=250, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 138.61)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 14.227)
 
-        st = CO2(T=274, x=0.5)
+        st = CO2(T=274, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 109.11)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 19.417)
 
-        st = CO2(T=284, x=0.5)
+        st = CO2(T=284, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 3), 96.920)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 24.059)
 
-        st = CO2(T=304, x=0.5)
+        st = CO2(T=304, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 140.30)
         self.assertEqual(round(st.Gas.k.mWmK, 2), 217.95)
 
         # Selected values from Table 11, pag 1569, single phase states
-        self.assertEqual(round(CO2(T=225, P=1e4).k.mWmK, 3), 11.037)
-        self.assertEqual(round(CO2(T=300, P=1e6).k.mWmK, 3), 17.248)
-        self.assertEqual(round(CO2(T=300, P=2e8).k.mWmK, 2), 219.64)
-        self.assertEqual(round(CO2(T=400, P=1e7).k.mWmK, 3), 31.504)
-        self.assertEqual(round(CO2(T=500, P=1e5).k.mWmK, 3), 33.143)
-        self.assertEqual(round(CO2(T=700, P=8e6).k.mWmK, 3), 52.078)
-        self.assertEqual(round(CO2(T=1000, P=2e8).k.mWmK, 2), 116.65)
+        self.assertEqual(round(CO2(T=225, P=1e4, thermal=1).k.mWmK, 3), 11.037)
+        self.assertEqual(round(CO2(T=300, P=1e6, thermal=1).k.mWmK, 3), 17.248)
+        self.assertEqual(round(CO2(T=300, P=2e8, thermal=1).k.mWmK, 2), 219.64)
+        self.assertEqual(round(CO2(T=400, P=1e7, thermal=1).k.mWmK, 3), 31.504)
+        self.assertEqual(round(CO2(T=500, P=1e5, thermal=1).k.mWmK, 3), 33.143)
+        self.assertEqual(round(CO2(T=700, P=8e6, thermal=1).k.mWmK, 3), 52.078)
+        self.assertEqual(round(
+            CO2(T=1000, P=2e8, thermal=1).k.mWmK, 2), 116.65)
 
     def test_vesovic(self):
         # FIXME: Vesovic thermal conductivity correlation dont work
