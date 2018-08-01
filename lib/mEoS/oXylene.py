@@ -97,7 +97,7 @@ class oXylene(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-1.29038, -33.3428, 142.046, -292.211, 293.950, -159.504,
-               -88.2170],
+              -88.2170],
         "t": [0.32, 1.14, 1.7, 2.2, 2.8, 3.5, 9.8]}
 
     visco0 = {"__name__": "Cao (2016)",
@@ -132,6 +132,36 @@ class oXylene(MEoS):
         return muB*rho/self.M
 
     _viscosity = visco0,
+
+    thermo0 = {"__name__": "Mylona (2014)",
+               "__doi__": {
+                   "autor": "Mylona, S.K., Antoniadis, K.D., Assael, M.J., "
+                            "Huber, M.L., Perkins, R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of o-Xylene, m-Xylene, p-Xylene, "
+                            "and Moderate Pressures",
+                   "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043104",
+                   "doi": "10.1063/1.4901166"},
+
+               "eq": 1,
+
+               "Toref": 630.259, "koref": 1e-3,
+               "no_num": [-0.837488, 12.7856, -37.1925, 63.9548, -4.43443],
+               "to_num": [0, 1, 2, 3, 4],
+               "no_den": [0.262226, -0.490519, 1],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 630.259, "rhoref_res": 285, "kref_res": 1e-3,
+               "nr": [-3.46292e1, 7.57735e1, -6.74378e1, 2.76950e1, -3.74238,
+                      4.55879e1, -5.94473e1, 5.50012e1, -2.55522e1, 4.18805],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.236e-9,
+               "gam0": 0.058, "qd": 0.711e-9, "Tcref": 945.4}
+
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -200,3 +230,25 @@ class Test(TestCase):
         self.assertEqual(round(oXylene(T=600, rhom=0.04).mu.muPas, 3), 13.018)
         self.assertEqual(round(
             oXylene(T=600, rhom=7.2408).mu.muPas, 3), 253.530)
+
+    def test_Mylona(self):
+        # The critical enchancement use a innacurate ecs viscosity correlation
+        # This viscosity with that correlation is fairly diferent of Cao
+        # correlation, this is the cause of testing error
+
+        # Table 6, the point with critical enhancement differ
+        self.assertEqual(round(oXylene(T=250, rho=0).k.mWmK, 2), 10.06)
+        self.assertEqual(round(oXylene(T=300, rho=0).k.mWmK, 2), 13.67)
+        self.assertEqual(round(oXylene(T=400, rho=0).k.mWmK, 1), 22.4)
+        self.assertEqual(round(oXylene(T=500, rho=0).k.mWmK, 1), 32.0)
+        self.assertEqual(round(oXylene(T=600, rho=0).k.mWmK, 1), 41.6)
+        self.assertEqual(round(oXylene(T=700, rho=0).k.mWmK, 1), 50.9)
+        self.assertEqual(round(oXylene(T=250, P=1e5).k.mWmK, 1), 141.5)
+        self.assertEqual(round(oXylene(T=300, P=1e5).k.mWmK, 1), 130.2)
+        self.assertEqual(round(oXylene(T=400, P=1e5).k.mWmK, 1), 104.9)
+        self.assertEqual(round(oXylene(T=500, P=1e5).k.mWmK, 1), 32.0)
+        self.assertEqual(round(oXylene(T=600, P=1e5).k.mWmK, 1), 41.6)
+        self.assertEqual(round(oXylene(T=700, P=1e5).k.mWmK, 1), 51.0)
+
+        # Critical enhancement point
+        self.assertEqual(round(oXylene(T=635, rho=270).k.mWmK, 2), 101.76)

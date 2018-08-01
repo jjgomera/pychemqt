@@ -150,6 +150,37 @@ class EthylBenzene(MEoS):
 
     _viscosity = visco0,
 
+    thermo0 = {"__name__": "Mylona (2014)",
+               "__doi__": {
+                   "autor": "Mylona, S.K., Antoniadis, K.D., Assael, M.J., "
+                            "Huber, M.L., Perkins, R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of o-Xylene, m-Xylene, p-Xylene, "
+                            "and Moderate Pressures",
+                   "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043104",
+                   "doi": "10.1063/1.4901166"},
+
+               "eq": 1,
+
+               "Toref": 617.12, "koref": 1e-3,
+               "no_num": [-1.10708, 10.8026, -28.9015, 41.9227, 20.9133,
+                          -4.01492],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [0.259475, -0.343879, 1],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 617.12, "rhoref_res": 291, "kref_res": 1e-3,
+               "nr": [-4.97837e1, 1.06739e2, -6.85137e1, 2.26133e1, -2.79455,
+                      6.63073e1, -1.46279e2, 1.21439e2, -4.62245e1, 6.58554],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.235e-9,
+               "gam0": 0.056, "qd": 0.706e-9, "Tcref": 925.7}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -213,3 +244,30 @@ class Test(TestCase):
             EthylBenzene(T=600, rhom=6.4831).mu.muPas, 3), 155.940)
         self.assertEqual(round(
             EthylBenzene(T=600, rhom=7.1427).mu.muPas, 3), 229.686)
+
+    def test_Mylona(self):
+        # The critical enchancement use a innacurate ecs viscosity correlation
+        # This viscosity with that correlation is fairly diferent of Meng
+        # correlation, this is the cause of testing error
+
+        # Table 21, the point with critical enhancement differ
+        self.assertEqual(round(EthylBenzene(T=200, rho=0).k.mWmK, 2), 3.96)
+        self.assertEqual(round(EthylBenzene(T=300, rho=0).k.mWmK, 2), 9.71)
+        self.assertEqual(round(EthylBenzene(T=400, rho=0).k.mWmK, 2), 18.39)
+        self.assertEqual(round(EthylBenzene(T=500, rho=0).k.mWmK, 2), 29.15)
+        self.assertEqual(round(EthylBenzene(T=600, rho=0).k.mWmK, 2), 41.13)
+        self.assertEqual(round(EthylBenzene(T=700, rho=0).k.mWmK, 2), 53.83)
+        self.assertEqual(round(EthylBenzene(T=200, P=1e5).k.mWmK, 1), 151.0)
+        self.assertEqual(round(EthylBenzene(T=300, P=1e5).k.mWmK, 1), 127.3)
+        self.assertEqual(round(EthylBenzene(T=400, P=1e5).k.mWmK, 1), 103.8)
+        self.assertEqual(round(EthylBenzene(T=500, P=1e5).k.mWmK, 2), 29.19)
+        self.assertEqual(round(EthylBenzene(T=600, P=1e5).k.mWmK, 2), 41.24)
+        self.assertEqual(round(EthylBenzene(T=700, P=1e5).k.mWmK, 2), 53.98)
+        self.assertEqual(round(EthylBenzene(T=200, P=2e7).k.mWmK, 1), 154.4)
+        self.assertEqual(round(EthylBenzene(T=300, P=2e7).k.mWmK, 1), 133.0)
+        self.assertEqual(round(EthylBenzene(T=400, P=2e7).k.mWmK, 1), 111.8)
+        self.assertEqual(round(EthylBenzene(T=500, P=2e7).k.mWmK, 2), 96.94)
+        self.assertEqual(round(EthylBenzene(T=300, P=6e7).k.mWmK, 1), 143.0)
+
+        # Critical enhancement point
+        self.assertEqual(round(EthylBenzene(T=617, rho=316).k.mWmK, 1), 147.9)

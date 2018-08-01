@@ -157,6 +157,37 @@ class pXylene(MEoS):
 
     _viscosity = visco0, visco1
 
+    thermo0 = {"__name__": "Mylona (2014)",
+               "__doi__": {
+                   "autor": "Mylona, S.K., Antoniadis, K.D., Assael, M.J., "
+                            "Huber, M.L., Perkins, R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of o-Xylene, m-Xylene, p-Xylene, "
+                            "and Moderate Pressures",
+                   "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043104",
+                   "doi": "10.1063/1.4901166"},
+
+               "eq": 1,
+
+               "Toref": 616.168, "koref": 1e-3,
+               "no_num": [-3.88568, 29.4648, -81.5299, 77.1534, 7.55487,
+                          -3.8897, 0.406892],
+               "to_num": [0, 1, 2, 3, 4, 5, 6],
+               "no_den": [0.00404188, -0.424893, 1],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 616.168, "rhoref_res": 286, "kref_res": 1e-3,
+               "nr": [-1.01022e2, 2.24828e2, -1.59100e2, 4.99490e1, -5.62422,
+                      1.07531e2, -2.05499e2, 1.50348e2, -5.02584e1, 6.44051],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.235e-9,
+               "gam0": 0.056, "qd": 0.71e-9, "Tcref": 924.3}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -242,3 +273,24 @@ class Test(TestCase):
             pXylene(T=600, rhom=0, visco=1).mu.muPas, 3), 12.777)
         self.assertEqual(round(
             pXylene(T=600, rhom=7.0985, visco=1).mu.muPas, 3), 199.160)
+
+    def test_Mylona(self):
+        # The critical enchancement use a innacurate ecs viscosity correlation
+        # This viscosity with that correlation is fairly diferent of Balogun
+        # or Meng correlations, this is the cause of testing error
+
+        # Table 16, the point with critical enhancement differ
+        self.assertEqual(round(pXylene(T=300, rho=0).k.mWmK, 2), 10.57)
+        self.assertEqual(round(pXylene(T=400, rho=0).k.mWmK, 2), 19.48)
+        self.assertEqual(round(pXylene(T=500, rho=0).k.mWmK, 2), 30.17)
+        self.assertEqual(round(pXylene(T=600, rho=0).k.mWmK, 2), 41.73)
+        self.assertEqual(round(pXylene(T=700, rho=0).k.mWmK, 2), 53.68)
+        self.assertEqual(round(pXylene(T=300, P=1e5).k.mWmK, 1), 126.1)
+        self.assertEqual(round(pXylene(T=400, P=1e5).k.mWmK, 1), 102.2)
+        self.assertEqual(round(pXylene(T=500, P=1e5).k.mWmK, 2), 30.06)
+        self.assertEqual(round(pXylene(T=600, P=1e5).k.mWmK, 2), 41.76)
+        self.assertEqual(round(pXylene(T=700, P=1e5).k.mWmK, 2), 53.82)
+        self.assertEqual(round(pXylene(T=700, P=2e8).k.mWmK, 1), 143.2)
+
+        # Critical enhancement point
+        self.assertEqual(round(pXylene(T=620, rho=287).k.mWmK, 2), 98.04)
