@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from unittest import TestCase
 
 from scipy import exp
+from scipy.constants import Boltzmann, Avogadro, pi
 
 from lib.meos import MEoS
 from lib import unidades
@@ -376,36 +377,12 @@ class Ethylene(MEoS):
                    "ref": "J. Phys. Chem. Ref. Data 12(4) (1983) 917-932",
                    "doi": "10.1063/1.555701"},
 
-               "__test__":
-                   # Table 6, pag 927
-                   """
-                   >>> st=Ethylene(T=110, P=1e5)
-                   >>> print "%0.2f" % st.k.mWmK
-                   261.77
-                   >>> st=Ethylene(T=140, P=1e6)
-                   >>> print "%0.2f" % st.k.mWmK
-                   223.14
-                   >>> st=Ethylene(T=200, P=5e6)
-                   >>> print "%0.2f" % st.k.mWmK
-                   158.50
-                   >>> st=Ethylene(T=300, P=1e5)
-                   >>> print "%0.2f" % st.k.mWmK
-                   20.56
-                   >>> st=Ethylene(T=130, P=1e7)
-                   >>> print "%0.2f" % st.k.mWmK
-                   244.97
-                   >>> st=Ethylene(T=300, P=5e7)
-                   >>> print "%0.2f" % st.k.mWmK
-                   129.32
-                   >>> st=Ethylene(T=500, P=1e5)
-                   >>> print "%0.2f" % st.k.mWmK
-                   49.95
-                   >>> st=Ethylene(T=500, P=5e7)
-                   >>> print "%0.2f" % st.k.mWmK
-                   93.57
-                   """}
+               "eq": 0,
+               "method": "_thermo0"}
 
     def _thermo0(self, rho, T, fase):
+        # λ1 in Eq 3 is always 0
+
         GT = [-2.903423528e5, 4.680624952e5, -1.8954783215e5, -4.8262235392e3,
               2.243409372e4, -6.6206354818e3, 8.9937717078e2, -6.0559143718e1,
               1.6370306422]
@@ -413,46 +390,33 @@ class Ethylene(MEoS):
         for i in range(-3, 6):
             lo += GT[i+3]*T**(i/3.)
 
-        tita = (rho.gcc-0.221)/0.221
-        j = [0, -1.304503323e1, 1.8214616599e1, 9.903022496e3, 7.420521631e2,
+        tita = (rho-221)/221
+        k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
              -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
-        l1 = exp(j[1]+j[4]/T)*(exp(rho.gcc**0.1*(j[2]+j[3]/self.T**1.5)+tita*rho.gcc**0.5*(j[5]+j[6]/T+j[7]/T**2))-1.)
+        l2 = exp(k[0]+k[3]/T) * (exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
+                                 tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
 
-        lc = 0
-        # FIXME: no sale
-#        deltarho=(self.rho/self.M-0.221)/0.221
-#        deltaT=(self.T-282.34)/282.34
-#        xkt=(1.0/self.rho/self.M/self.derivative("P", "rho", "T")*1e3)**0.5
-#        b=abs(deltarho)/abs(deltaT)**1.19
-#        xts=(self.rho/self.M)**2*xkt*5.039/.221**2
-#        g=xts*abs(deltaT)**1.19
-#        xi=0.69/(b**2*5.039/g/Boltzmann/282.34)**0.5
-#        f=exp(-18.66*deltaT**2-4.25*deltarho**4)
-#        c=(self.M/self.rho.gcc/Avogadro/Boltzmann/self.T)**0.5
-#        lc=c*Boltzmann*self.T**2/6.0/pi/self.mu.muPas/xi*self.dpdT**2*self.kappa**0.5*f
-#        print lo, l1
-        return unidades.ThermalConductivity(lo+l1+lc, "mWmK")
+        # Critical enhancement
+        deltarho = (rho-221)/221
+        deltaT = (T-282.34)/282.34
 
+        xt = rho**2*fase.kappa*5.039/221**2
+        B = abs(deltarho)/abs(deltaT)**1.19                             # Eq 11
+        Gamma = xt*abs(deltaT)**1.19                                    # Eq 12
+        xi = 0.69/(B**2*5.039/Gamma/Boltzmann/282.34)**0.5              # Eq 14
 
-    thermo1 = {"eq": 1, "critical": 0,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14, Version 9.08",
-                           "ref": "",
-                           "doi": ""},
+        # Eq 19
+        F = exp(-18.66*deltaT**2) * exp(-4.25*deltarho**4)
 
-               "Tref": 224.7, "kref": 1e-3,
-               "no": [1.35558587, -0.14207565869509, 1],
-               "co": [0, -1, -96],
+        # Eq 18
+        c = (self.M/rho.gcc/Avogadro/Boltzmann/T)**0.5
+        d = Boltzmann*T**2/6/pi/fase.mu.muPas/xi
+        lc = c*d*fase.dpdT_rho**2*fase.kappa**0.5*F
 
-               "Trefb": 282.350007277, "rhorefb": 7.63299886259, "krefb": 1e-3,
-               "nb": [15.3064493136, 25.0280721432, -15.4526955192,
-                      0.8590418672, 3.32700049633, -0.333048907849],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6}
+        return unidades.ThermalConductivity(lo+l2+lc, "mWmK")
 
     _thermal = thermo0, thermo1
+
 
 # TODO: Add MBWR equation of Younglove
 
@@ -666,25 +630,83 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 174.10)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.47681)
 
+    def test_Assael(self):
+        # Table 5, pag 8
+        self.assertEqual(round(Ethylene(T=200, rho=0).k.mWmK, 2), 10.39)
+        self.assertEqual(round(Ethylene(T=300, rho=0).k.mWmK, 2), 21.01)
+        self.assertEqual(round(Ethylene(T=400, rho=0).k.mWmK, 2), 36.36)
+        self.assertEqual(round(Ethylene(T=500, rho=0).k.mWmK, 2), 55.05)
+        self.assertEqual(round(Ethylene(T=200, P=1e5).k.mWmK, 2), 10.54)
+        self.assertEqual(round(Ethylene(T=300, P=1e5).k.mWmK, 2), 21.09)
+        self.assertEqual(round(Ethylene(T=400, P=1e5).k.mWmK, 2), 36.40)
+        self.assertEqual(round(Ethylene(T=500, P=1e5).k.mWmK, 2), 55.07)
+        self.assertEqual(round(Ethylene(T=200, P=5e7).k.mWmK, 1), 190.4)
+        self.assertEqual(round(Ethylene(T=300, P=5e7).k.mWmK, 1), 126.9)
+        self.assertEqual(round(Ethylene(T=400, P=5e7).k.mWmK, 2), 98.08)
+        self.assertEqual(round(Ethylene(T=500, P=5e7).k.mWmK, 2), 94.57)
+        self.assertEqual(round(Ethylene(T=200, P=1e8).k.mWmK, 1), 223.5)
+        self.assertEqual(round(Ethylene(T=300, P=1e8).k.mWmK, 1), 164.3)
+        self.assertEqual(round(Ethylene(T=400, P=1e8).k.mWmK, 1), 132.0)
+        self.assertEqual(round(Ethylene(T=500, P=1e8).k.mWmK, 1), 121.3)
+        self.assertEqual(round(Ethylene(T=200, P=1.5e8).k.mWmK, 1), 252.9)
+        self.assertEqual(round(Ethylene(T=300, P=1.5e8).k.mWmK, 1), 196.4)
+        self.assertEqual(round(Ethylene(T=400, P=1.5e8).k.mWmK, 1), 161.7)
+        self.assertEqual(round(Ethylene(T=500, P=1.5e8).k.mWmK, 1), 145.8)
+        self.assertEqual(round(Ethylene(T=200, P=2e8).k.mWmK, 1), 280.5)
+        self.assertEqual(round(Ethylene(T=300, P=2e8).k.mWmK, 1), 226.5)
+        self.assertEqual(round(Ethylene(T=400, P=2e8).k.mWmK, 1), 190.3)
+        self.assertEqual(round(Ethylene(T=500, P=2e8).k.mWmK, 1), 170.6)
+
+        # Critical enhancement point
+        self.assertEqual(round(Ethylene(T=300, rho=300).k.mWmK, 2), 69.62)
+
     def test_Holland(self):
-        # Table 5, pag 924
+        # Viscosity, Table 5, pag 924
+        # Viscosity, Table 6, pag 924
 
         # FIXME: The state point use MBWR mEoS
         return
 
-        # st = Ethylene(T=110, P=1e5, eq="MBWR")
+        # st = Ethylene(T=110, P=1e5, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 5660.5)
-        # st = Ethylene(T=140, P=1e6, eq="MBWR")
+        # self.assertEqual(round(st.k.mWmK, 2), 261.77)
+        # st = Ethylene(T=140, P=1e6, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 2769.8)
-        # st = Ethylene(T=200, P=5e6, eq="MBWR")
+        # st = Ethylene(T=200, P=5e6, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 1223.7)
-        # st = Ethylene(T=300, P=1e5, eq="MBWR")
+        # st = Ethylene(T=300, P=1e5, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 103.8)
-        # st = Ethylene(T=130, P=1e7, eq="MBWR")
+        # st = Ethylene(T=130, P=1e7, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 3278.5)
-        # st = Ethylene(T=300, P=5e7, eq="MBWR")
+        # st = Ethylene(T=300, P=5e7, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 759.0)
-        # st = Ethylene(T=500, P=1e5, eq="MBWR")
+        # st = Ethylene(T=500, P=1e5, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 165.1)
-        # st = Ethylene(T=500, P=5e7, eq="MBWR")
+        # st = Ethylene(T=500, P=5e7, eq="MBWR", thermal=1)
         # self.assertEqual(round(st.mu.microP, 1), 394.1)
+
+        # Table 6, pag 927
+        # >>> st=Ethylene(T=110, P=1e5)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 261.77
+        # >>> st=Ethylene(T=140, P=1e6)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 223.14
+        # >>> st=Ethylene(T=200, P=5e6)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 158.50
+        # >>> st=Ethylene(T=300, P=1e5)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 20.56
+        # >>> st=Ethylene(T=130, P=1e7)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 244.97
+        # >>> st=Ethylene(T=300, P=5e7)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 129.32
+        # >>> st=Ethylene(T=500, P=1e5)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 49.95
+        # >>> st=Ethylene(T=500, P=5e7)
+        # >>> print "%0.2f" % st.k.mWmK
+        # 93.57
