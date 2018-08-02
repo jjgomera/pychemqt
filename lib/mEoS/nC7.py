@@ -242,7 +242,41 @@ class nC7(MEoS):
         "n": [-0.24571, -6.3004, -19.144, -96.97, 216.43, -279.53],
         "t": [0.097, 0.646, 2.56, 6.6, 9.3, 10.7]}
 
-    visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco0 = {"__name__": "Michailidou (2014)",
+              "__doi__": {
+                  "autor": "Michailidou, E.K., Assael, M.J., Huber, M.L., "
+                           "Abdulagatov, I.M., Perkins, R.A.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "n-Heptane from the Triple Point to 600 K and up "
+                           "to 248 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023103",
+                  "doi": "10.1063/1.4875930"},
+
+              "eq": 1, "omega": 1,
+
+              "ek": 426.118, "sigma": 0.61362,
+              "n_chapman": 0.021357, "M": 100.202,
+              "collision": [0.33974, -0.49396, 0, 0.0805],
+
+              "Tref_virial": 426.118,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 540.13, "rhoref_res": 232,
+              "nr": [22.15, -15.0087, 3.71791],
+              "tr": [-0.5, -0.5, -0.5],
+              "dr": [5/3, 8/3, 11/3],
+
+              "nr_num": [77.72818],
+              "tr_num": [-0.5],
+              "dr_num": [5/3],
+              "nr_den": [9.73449, 9.519, -6.34076, 1, -2.51909],
+              "tr_den": [0, -1, 0, 0, -1],
+              "dr_den": [0, 0, 1, 2, 1]}
+
+    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -263,7 +297,7 @@ class nC7(MEoS):
               "B": [0.0, 9.75463e-9, 2.71874e-9],
               "C": [-1.24466e-6, 8.83261e-7, 0.0]}
 
-    _viscosity = visco0,
+    _viscosity = visco0, visco1
 
     thermo0 = {"__name__": "Assael (2013)",
                "__doi__": {
@@ -311,6 +345,15 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 211.90)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31964)
 
+    def test_Michailidou(self):
+        # Table 7, Pag 10
+        self.assertEqual(round(nC7(T=250, rho=0).mu.muPas, 4), 4.9717)
+        self.assertEqual(round(nC7(T=400, rho=0).mu.muPas, 4), 7.8361)
+        self.assertEqual(round(nC7(T=550, rho=0).mu.muPas, 4), 10.7394)
+        # self.assertEqual(round(nC7(T=250, rho=720).mu.muPas, 2), 725.61)
+        self.assertEqual(round(nC7(T=400, rho=600).mu.muPas, 2), 175.94)
+        self.assertEqual(round(nC7(T=550, rho=500).mu.muPas, 3), 95.102)
+
     def test_Assael(self):
         # Table 4, Pag 8
         self.assertEqual(round(nC7(T=250, rho=720).k.mWmK, 2), 137.08)
@@ -318,4 +361,4 @@ class Test(TestCase):
         self.assertEqual(round(nC7(T=400, rho=650).k.mWmK, 2), 120.74)
         # Using viscosity value given in paper work
         # self.assertEqual(round(nC7(T=535, rho=100).k.mWmK, 3), 51.655)
-        self.assertEqual(round(nC7(T=535, rho=100).k.mWmK, 3), 51.266)
+        self.assertEqual(round(nC7(T=535, rho=100).k.mWmK, 3), 51.503)
