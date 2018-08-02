@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #       · f_manadilli (1997)
 #       · f_romeo (2002)
 #       · f_goudar (2008)
-#       · f_goudar2006 (2006)
+#       · f_goudar2007 (2007)
 #       · f_buzzelli (2008)
 #       · f_Vatankhah (2008)
 #       · f_avci (2009)
@@ -161,11 +161,11 @@ __doi__ = {
          "ref": "Chem. Eng. J. 86 (3), 369–374. (2002)",
          "doi": "10.1016/S1385-8947(01)00254-6"},
     19:
-        {"autor": "Goudar, C.T., Sonnad, J.R.",
-         "title": "Comparison of the iterative approximations of the "
-                  "Colebrook-White equation.",
-         "ref": "Hydrocarb Process 87 (2008), 79-83",
-         "doi": ""},
+        {"autor": "Sonnad, J.R., Goudar, C.T.",
+         "title": "Explicit Reformulation of the Colebrook-White Equation for "
+                  "Turbulent Flow Frcition Factor Calculation",
+         "ref": "Ind. Eng. Chem. Res. 46(8) (2007) 2593-2600",
+         "doi": "10.1021/ie0340241"},
     20:
         {"autor": "Buzzelli, D.",
          "title": "Calculating friction in one step",
@@ -206,7 +206,7 @@ __doi__ = {
     26:
         {"autor": "Ghanbari, A., Farshad, F., Rieke, H.H.",
          "title": "Newly developed friction factor correlation for pipe flow "
-                  "and flow assurance.",
+                  "and flow assurance",
          "ref": "J Chem Eng Mat Sci 2 (2011), 83-86.",
          "doi": ""},
 
@@ -905,9 +905,9 @@ def f_romeo(Re, eD):
     return Dimensionless(f)
 
 
-def f_goudar2006(Re, eD):
+def f_goudar2007(Re, eD):
     """
-    Calculates friction factor `f` with Goudar-Sonnad correlation (2006)
+    Calculates friction factor `f` with Goudar-Sonnad correlation (2007)
 
     .. math::
         \frac{1}{\sqrt{f}} = 0.8686\ln\left(\frac{0.4587Re}{S^{S/(S+1)}}\right)
@@ -934,8 +934,9 @@ def f_goudar2006(Re, eD):
 
     References
     ----------
-    .. [19] Goudar, C.T. Sonnad J.R. Comparison of the iterative approximations
-        of the Colebrook-White equation. Hydrocarb Process 87 (2008), 79-83
+    .. [19] Sonnad, J.R., Goudar, C.T. Explicit Reformulation of the Colebrook-
+        White Equation for Turbulent Flow Frcition Factor Calculation. Ind.
+        Eng. Chem. Res. 46(8) (2007) 2593-2600
     """
     C = 0.124*Re*eD+log(0.4587*Re)
     f = 1/(0.8686*log(0.4587*Re/(C-0.31)**(C/(C+1))))**2
@@ -1103,6 +1104,7 @@ def f_papaevangelou(Re, eD):
         Proceedings of the Tenth Conference on Protection and Restoration of
         the Environment 166,1-7pp, PRE10 July 6-09 2010 Corfu, Greece.
     """
+    # Eq 12
     f = (0.2479-9.47e-5*(7-log10(Re))**4)/log10(eD/3.615+7.366/Re**0.9142)**2
     return Dimensionless(f)
 
@@ -1123,7 +1125,7 @@ def f_brkic(Re, eD, alternate=False):
     eD : float
         Relative roughness of a pipe, [-]
     alternate : boolean
-        Choose the alternate correlation fron the paper
+        Choose the alternate correlation from the paper
 
     Returns
     -------
@@ -1208,13 +1210,14 @@ def f_ghanbari(Re, eD):
         factor correlation for pipe flow and flow assurance. J Chem Eng Mat
         Sci 2 (2011), 83-86.
     """
+    # Eq 10
     return (-1.52*log10((eD/7.21)**1.042+(2.731/Re)**0.9152))**-2.169
 
 
 f_list = (f_colebrook, f_chen, f_chen1979, f_moody, f_wood, f_eck, f_altshul,
           f_churchill, f_haaland, f_serghides, f_round, f_swamee, f_jain,
           f_barr, f_zigrang, f_shacham, f_tsal, f_manadilli, f_romeo,
-          f_goudar, f_goudar2006, f_buzzelli, f_Vatankhah, f_avci,
+          f_goudar, f_goudar2007, f_buzzelli, f_Vatankhah, f_avci,
           f_papaevangelou, f_brkic, f_fang, f_ghanbari)
 
 
