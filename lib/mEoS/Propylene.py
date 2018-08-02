@@ -208,11 +208,67 @@ class Propylene(MEoS):
         "n": [-1.59841, -4.73840, -10.8886, -31.0312, -56.9431, -143.544],
         "t": [0.309, 0.853, 2.37, 5.2, 10., 20.]}
 
-    # TODO: Add viscosity correlation from Huber, ecs correlation
+    thermo0 = {"__name__": "Assael (2016)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Koutian, A., Huber, M.L., Perkins, "
+                            "R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of Ethene and Propene",
+                   "ref": "J. Phys. Chem. Ref. Data 45(3) (2016) 033104",
+                   "doi": "10.1063/1.4958984"},
 
-# class Test(TestCase):
+               "eq": 1,
+
+               "Toref": 364.211, "koref": 1e-3,
+               "no_num": [-1.37218, 17.3386, -3.27682, 9.34452, 12.88,
+                          -1.5705],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [1.39367, -1.04648, 1],
+               "to_den": [0, 1, 2],
+
+               "Tref_res": 364.211, "rhoref_res": 229.63, "kref_res": 1e-3,
+               "nr": [0.271511e1, -0.363839e2, 0.106159e3, -0.616755e2,
+                      0.105424e2, 0.994697e1, 0.242705e2, -0.659429e2,
+                      0.379916e2, -0.569120e1],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.198e-9,
+               "gam0": 0.057, "qd": 0.43e-9, "Tcref": 546.32}
+
+    _thermal = thermo0,
+
+
+# TODO: Add viscosity correlation from Huber, ecs correlation
+
+
+class Test(TestCase):
 
     # def test_angus(self):
         # # Table 1, pag 60, ideal gas properties
         # st = Propylene(T=100, x=0.5, eq="angus")
         # self.assertEqual(round(st.cpM0.JmolK, 2), 39.08)
+
+    def test_Assael(self):
+        # Table 9, pag 12
+        self.assertEqual(round(Propylene(T=200, rho=0).k.mWmK, 2), 8.75)
+        self.assertEqual(round(Propylene(T=300, rho=0).k.mWmK, 2), 17.55)
+        self.assertEqual(round(Propylene(T=400, rho=0).k.mWmK, 2), 29.18)
+        self.assertEqual(round(Propylene(T=500, rho=0).k.mWmK, 2), 42.64)
+        # Enable critical enhancement point when add Huber viscosity correlation
+        # self.assertEqual(round(Propylene(T=200, P=1e5).k.mWmK, 2), 152.3)
+        # self.assertEqual(round(Propylene(T=300, P=1e5).k.mWmK, 2), 17.64)
+        # self.assertEqual(round(Propylene(T=400, P=1e5).k.mWmK, 2), 29.25)
+        # self.assertEqual(round(Propylene(T=500, P=1e5).k.mWmK, 2), 42.71)
+        # self.assertEqual(round(Propylene(T=200, P=2.5e7).k.mWmK, 1), 171.9)
+        # self.assertEqual(round(Propylene(T=300, P=2.5e7).k.mWmK, 1), 126.8)
+        # self.assertEqual(round(Propylene(T=400, P=2.5e7).k.mWmK, 2), 99.09)
+        # self.assertEqual(round(Propylene(T=500, P=2.5e7).k.mWmK, 2), 80.66)
+        # self.assertEqual(round(Propylene(T=200, P=5e7).k.mWmK, 1), 191.0)
+        # self.assertEqual(round(Propylene(T=300, P=5e7).k.mWmK, 1), 145.5)
+        # self.assertEqual(round(Propylene(T=400, P=5e7).k.mWmK, 1), 122.6)
+        # self.assertEqual(round(Propylene(T=500, P=5e7).k.mWmK, 1), 107.2)
+
+        # Critical enhancement point
+        # self.assertEqual(round(Propylene(T=350, rho=385).k.mWmK, 2), 81.47)

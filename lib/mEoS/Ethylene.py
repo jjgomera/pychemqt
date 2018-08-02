@@ -337,27 +337,38 @@ class Ethylene(MEoS):
         # The reurned values is in microP, convert to μPas
         return mu2/10
 
-    visco1 = {"__name__": "NIST",
-              "__doi__": {
-                  "autor": "",
-                  "title": "Coefficients are taken from NIST14, Version 9.08",
-                  "ref": "",
-                  "doi": ""},
+    _viscosity = visco0,
 
-              "eq": 2, "omega": 2,
+    thermo0 = {"__name__": "Assael (2016)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Koutian, A., Huber, M.L., Perkins, "
+                            "R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of Ethene and Propene",
+                   "ref": "J. Phys. Chem. Ref. Data 45(3) (2016) 033104",
+                   "doi": "10.1063/1.4958984"},
 
-              "ek": 224.7, "sigma": 0.4163,
-              "n_chapman": 0.141374566253583/M**0.5,
-              "F": [0, 0, 0, 100.],
-              "E": [-8.03553028329404, -439.8962514, 8.69536237617,
-                    5773.08496161, .267589139152, -34.39391627, 66.4795135739],
-              "rhoc": 7.63299886259}
+               "eq": 1,
 
-    _viscosity = visco0, visco1
+               "Toref": 282.35, "koref": 1e-3,
+               "no_num": [-54.1761, 541.904, -656.108, 667.048, -109.992,
+                          60.6511, -1.01377],
+               "to_num": [0, 1, 2, 3, 4, 5, 6],
+               "no_den": [26.5363, -20.1401, 19.4152, -2.92695, 1],
+               "to_den": [0, 1, 2, 3, 4],
 
-    thermo0 = {"eq": 0,
-               "method": "_thermo0",
-               "__name__": "Holland (1983)",
+               "Tref_res": 282.35, "rhoref_res": 214.24, "kref_res": 1e-3,
+               "nr": [0.261453e2, -0.218619e2, 0.362068e2, -0.136642e2,
+                      0.184752e1, -0.113225e2, 0.269282e2, -0.223164e2,
+                      0.390241e1, 0.668286],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.181e-9,
+               "gam0": 0.058, "qd": 0.49e-9, "Tcref": 423.53}
+
+    thermo1 = {"__name__": "Holland (1983)",
                "__doi__": {
                    "autor": "Holland, P.M., Eaton, B.E., Hanley, H.J.M.",
                    "title": "A Correlation of the Viscosity and Thermal "
