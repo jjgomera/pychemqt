@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -97,3 +99,60 @@ class R1233zd(MEoS):
         "eq": 2,
         "n": [-3.0152, -6.5621, -19.427, -62.650, -181.64],
         "t": [0.397, 1.2, 3.1, 6.6, 15.0]}
+
+    thermo0 = {"__name__": "Perkins (2017)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of trans-1-Chloro-3,3,3-"
+                            "trifluoropropene (R1233zd(E))",
+                   # TODO Fix reference
+                   "ref": "J. Chem. Eng. Data XX(X) (2017)",
+                   "doi": "10.1021/acs.jced.7b00106"},
+
+               "eq": 1,
+
+               "Toref": 439.6, "koref": 1,
+               "no": [-0.140033e-1, 0.378160e-1, -0.245832e-2],
+               "to": [0, 1, 2],
+
+               "Tref_res": 439.6, "rhoref_res": 480.219, "kref_res": 1,
+               "nr": [0.862816e-2, 0.914709e-3, -0.208988e-1, -0.407914e-2,
+                      0.511968e-1, 0.845668e-2, -0.349076e-1, -0.108985e-1,
+                      0.975727e-2, 0.538262e-2, -0.926484e-3, -0.806009e-3],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.213e-9,
+               "gam0": 0.059, "qd": 0.598e-9, "Tcref": 1.5*439.6}
+
+    _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_Perkins(self):
+        # Table 2, pag E
+        # Include basic testing for Mondejar mEoS
+        # The paper use a undocumented ecs viscosity correlation, so critical
+        # enhancement differ
+        st = R1233zd(T=300, rho=0)
+        self.assertEqual(round(st.P.MPa, 2), 0)
+        self.assertEqual(round(st.k.WmK, 6), 0.010659)
+
+        st = R1233zd(T=300, rho=5.4411)
+        self.assertEqual(round(st.P.MPa, 2), 0.10)
+        self.assertEqual(round(st.k.WmK, 6), 0.010766)
+
+        st = R1233zd(T=300, rho=1308.8)
+        self.assertEqual(round(st.P.MPa, 2), 20.02)
+        self.assertEqual(round(st.k.WmK, 6), 0.091409)
+
+        st = R1233zd(T=445, rho=0)
+        self.assertEqual(round(st.P.MPa, 2), 0)
+        self.assertEqual(round(st.k.WmK, 6), 0.021758)
+
+        st = R1233zd(T=445, rho=168.52)
+        self.assertEqual(round(st.P.MPa, 2), 3.00)
+        self.assertEqual(round(st.k.WmK, 6), 0.026044)
