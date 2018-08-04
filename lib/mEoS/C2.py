@@ -313,7 +313,36 @@ class C2(MEoS):
               -2.26690389],
         "t": [0.346, 5/6, 1, 2, 3, 5]}
 
-    visco0 = {"__name__": "Friend (1991)",
+    visco0 = {"__name__": "Vogel (2015)",
+              "__doi__": {
+                  "autor": "Vogel, E., Span, R., Herrmann, S.",
+                  "title": "Reference Correlation for the Viscosity of Ethane",
+                  "ref": "J. Phys. Chem. Ref. Data 44(4) (2015) 043101",
+                  "doi": "10.1063/1.4930838"},
+
+              "eq": 1, "omega": 0,
+
+              "ek": 245.0, "sigma": 0.43682,
+              "Toref": 305.322,
+              "no": [9.6634694892149, -2.2985582151676e-1],
+              "to": [1, 3],
+
+              "Tref_res": 305.322,
+              "rhoref_res": 206.18,
+              "nr": [6.6687966976352, -4.6983342709702, 1.9688847427047e1,
+                     -9.5399537393789, 6.3640646131666e-2, 7.9981217444542e-3,
+                     7.0489675750657e-8, -2.2734655865556e1, 2.2124096051632e1,
+                     -3.0986358885564e-1],
+              "tr": [0, 1, 0, 1, 0, 1, 3, 0, 2, 5],
+              "dr": [1, 1, 2, 2, 7, 8, 17, 3, 3, 3],
+              "gr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+              "cr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+
+              "nr_gaus": [6.4034200732045e-1, 7.0437620805249e-1],
+              "br_gaus": [90, 50],
+              "er_gaus": [100, 250]}
+
+    visco1 = {"__name__": "Friend (1991)",
               "__doi__": {
                   "autor": "Friend, D.G., Ingham, H., Ely, J.F.",
                   "title": "Thermophysical Properties of Ethane",
@@ -341,7 +370,7 @@ class C2(MEoS):
               "cr_den": [0, 0, 0]
               }
 
-    visco1 = {"__name__": "Younglove (1987)",
+    visco2 = {"__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
                   "title": "Thermophysical Properties of Fluids. II. Methane, "
@@ -360,7 +389,7 @@ class C2(MEoS):
               "rhoc": 6.875}
     # TODO: Add testing when fix MBWR equation
 
-    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco3 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -381,7 +410,7 @@ class C2(MEoS):
               "B": [9.15407e-9, 4.13028e-10, 0.0],
               "C": [-1.45842e-7, 2.39764e-7, 0.0]}
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Friend (1991)",
                "__doi__": {
@@ -823,63 +852,94 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 209.07)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.50714)
 
+    def test_Vogel(self):
+        # Table 6, Pag 22
+        self.assertEqual(round(
+            C2(T=100, rho=650, visco=0).mu.muPas, 9), 1058.240219296)
+        self.assertEqual(round(
+            C2(T=300, rho=1, visco=0).mu.muPas, 9), 9.286370770)
+        self.assertEqual(round(
+            C2(T=300, rho=100, visco=0).mu.muPas, 9), 12.529249197)
+        self.assertEqual(round(
+            C2(T=300, rho=500, visco=0).mu.muPas, 9), 113.730164659)
+        self.assertEqual(round(
+            C2(T=305.322, rho=206.18, visco=0).mu.muPas, 9), 22.630721989)
+        self.assertEqual(round(
+            C2(T=310, rho=1, visco=0).mu.muPas, 9), 9.581087691)
+        self.assertEqual(round(
+            C2(T=310, rho=100, visco=0).mu.muPas, 9), 12.873112150)
+        self.assertEqual(round(
+            C2(T=310, rho=500, visco=0).mu.muPas, 9), 114.131039291)
+        self.assertEqual(round(
+            C2(T=500, rho=1, visco=0).mu.muPas, 9), 14.834335193)
+        self.assertEqual(round(
+            C2(T=500, rho=100, visco=0).mu.muPas, 9), 18.900768605)
+        self.assertEqual(round(
+            C2(T=500, rho=400, visco=0).mu.muPas, 9), 66.704548052)
+        self.assertEqual(round(
+            C2(T=675, rho=1, visco=0).mu.muPas, 9), 18.902546759)
+        self.assertEqual(round(
+            C2(T=675, rho=100, visco=0).mu.muPas, 9), 23.421278317)
+        self.assertEqual(round(
+            C2(T=675, rho=300, visco=0).mu.muPas, 9), 45.895671715)
+
     def test_friendThermo(self):
         # Selected point from Table A1, Pag 336, ideal gas
-        st = C2(T=100, rho=0, eq="friend")
+        st = C2(T=100, rho=0, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 3.32)
         self.assertEqual(round(st.k.mWmK, 2), 3.46)
 
-        st = C2(T=200, rho=0, eq="friend")
+        st = C2(T=200, rho=0, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 6.35)
         self.assertEqual(round(st.k.mWmK, 2), 10.49)
 
-        st = C2(T=300, rho=0, eq="friend")
+        st = C2(T=300, rho=0, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 9.39)
         self.assertEqual(round(st.k.mWmK, 2), 21.13)
 
-        st = C2(T=400, rho=0, eq="friend")
+        st = C2(T=400, rho=0, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 12.19)
         self.assertEqual(round(st.k.mWmK, 2), 35.95)
 
-        st = C2(T=500, rho=0, eq="friend")
+        st = C2(T=500, rho=0, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 14.76)
         self.assertEqual(round(st.k.mWmK, 2), 53.78)
 
         # Selected point from Table A2, Pag 337, saturation state
         # This table has tiny desviation in saturation calculation
-        # st = C2(T=304, x=0.5, eq="friend")
+        # st = C2(T=304, x=0.5, eq="friend", visco=1)
         # self.assertEqual(round(st.Liquido.mu.muPas, 2), 28.97)
         # self.assertEqual(round(st.Liquido.k.mWmK, 1), 79.0)
 
         # Selected point from Table A3, Pag 339, single phase region
-        st = C2(T=100, P=1e5, eq="friend")
+        st = C2(T=100, P=1e5, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 878.69)
         self.assertEqual(round(st.k.mWmK, 1), 248.2)
 
-        st = C2(T=170, P=6e7, eq="friend")
+        st = C2(T=170, P=6e7, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 301.71)
         self.assertEqual(round(st.k.mWmK, 1), 221.8)
 
-        st = C2(T=260, P=5e6, eq="friend")
+        st = C2(T=260, P=5e6, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 74.61)
         self.assertEqual(round(st.k.mWmK, 1), 106.5)
 
-        st = C2(T=330, P=5e5, eq="friend")
+        st = C2(T=330, P=5e5, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 10.37)
         self.assertEqual(round(st.k.mWmK, 1), 25.6)
 
-        st = C2(T=380, P=1e6, eq="friend")
+        st = C2(T=380, P=1e6, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 11.88)
         self.assertEqual(round(st.k.mWmK, 1), 33.3)
 
-        st = C2(T=420, P=4e7, eq="friend")
+        st = C2(T=420, P=4e7, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 46.86)
         self.assertEqual(round(st.k.mWmK, 1), 89.7)
 
-        st = C2(T=480, P=1e5, eq="friend")
+        st = C2(T=480, P=1e5, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 14.28)
         self.assertEqual(round(st.k.mWmK, 1), 50.1)
 
-        st = C2(T=500, P=6e7, eq="friend")
+        st = C2(T=500, P=6e7, eq="friend", visco=1)
         self.assertEqual(round(st.mu.muPas, 2), 48.34)
         self.assertEqual(round(st.k.mWmK, 1), 101.4)

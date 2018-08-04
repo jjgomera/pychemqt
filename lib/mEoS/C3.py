@@ -372,21 +372,9 @@ class C3(MEoS):
               "gr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
               "cr": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
 
-              "special": "_vir"}
-
-    def _vir(self, rho, T, fase):
-        # Gaussian terms
-        tau = 369.89/T
-        delta = rho/220.478
-
-        ni = [3.2587396573174, 2.1724931048783e-1]
-        beta = [20, 100]
-        epsilon = [250, 100]
-        mu = 0
-        for n, b, e in zip(ni, beta, epsilon):
-            mu += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
-
-        return mu
+              "nr_gaus": [3.2587396573174, 2.1724931048783e-1],
+              "br_gaus": [20, 100],
+              "er_gaus": [250, 100]}
 
     visco1 = {"__name__": "Vogel (1998)",
               "__doi__": {
