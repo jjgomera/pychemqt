@@ -24,6 +24,9 @@ os.environ["PyQt5.Qsci"] = "False"
 from numpy import seterr
 seterr("ignore")
 
+import warnings
+warnings.simplefilter("ignore")
+
 from unittest import TextTestRunner, TestSuite
 from test_lib import TestLib
 
