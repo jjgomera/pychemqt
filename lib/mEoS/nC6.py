@@ -244,7 +244,44 @@ class nC6(MEoS):
         "n": [-0.13309, -5.0653, -11.602, -28.530, -51.731, -134.82],
         "t": [0.107, 0.553, 2.006, 4.46, 8.0, 16.]}
 
-    visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco0 = {"__name__": "Michailidou (2013)",
+              "__doi__": {
+                  "autor": "Michailidou, E.K., Assael, M.J., Huber, M.L., "
+                           "Perkins, R.A.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "n-Hexane from the Triple Point to 600 K and up "
+                           "to 100 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 42(3) (2013) 033104",
+                  "doi": "10.1063/1.4818980"},
+
+              "eq": 1, "omega": 1,
+
+              "ek": 378.4, "sigma": 0.6334,
+              "n_chapman": 0.021357,
+              "collision": [0.1876, -0.4843, 0.04477],
+
+              "Tref_virial": 378.4,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        """Special residual term for Michailidou viscosity correlation"""
+        Tr = T/507.82
+        rhor = rho/233.182
+
+        # Eq 8
+        vir = 2.53402335/Tr - \
+            9.724061002/(0.469437316+Tr+158.5571631*rhor**2) + \
+            72.42916856*(1+rhor)/(10.60751253+8.628373915*Tr-6.61346441*rhor +
+                                  rhor**2-2.212724566*rhor*Tr)
+        vir *= rhor**(2/3)*Tr**0.5
+        return vir
+
+    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -265,7 +302,7 @@ class nC6(MEoS):
               "B": [2.59524e-8, 1.69362e-9, 0.0],
               "C": [-2.29226e-6, 1.18011e-6, 0.0]}
 
-    _viscosity = visco0,
+    _viscosity = visco0, visco1
 
     thermo0 = {"__name__": "Assael (2013)",
                "__doi__": {
@@ -309,6 +346,15 @@ class Test(TestCase):
         st2 = nC6(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.09)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.33219)
+
+    def test_Michailidou(self):
+        # Table 6, Pag 10
+        self.assertEqual(round(nC6(T=250, rho=0).mu.muPas, 4), 5.2584)
+        self.assertEqual(round(nC6(T=400, rho=0).mu.muPas, 4), 8.4150)
+        self.assertEqual(round(nC6(T=550, rho=0).mu.muPas, 3), 11.443)
+        self.assertEqual(round(nC6(T=250, rho=700).mu.muPas, 2), 528.20)
+        self.assertEqual(round(nC6(T=400, rho=600).mu.muPas, 2), 177.62)
+        self.assertEqual(round(nC6(T=550, rho=500).mu.muPas, 3), 95.002)
 
     def test_Assael(self):
         # Table 4, Pag 8
