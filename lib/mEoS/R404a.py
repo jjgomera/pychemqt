@@ -90,6 +90,29 @@ class R404a(MEoSBlend):
 
     _surface = {"sigma": [0.06868, -0.04576], "exp": [1.3142, 2.3084]}
 
+    thermo0 = {"__name__": "Geller (2001)",
+               "__doi__": {
+                   "autor": "Geller, V.Z., Nemzer, B.V., Cheremnykh, U.V.",
+                   "title": "Thermal  Conductivity of the Refrigerant "
+                            "Mixtures R404A, R407C, R410A and R507A",
+                   "ref": "Int. J. Termophysics 22(4) (2001) 1035-1043",
+                   "doi": "10.1023/a_1010691504352"},
+
+               "eq": 1,
+
+               "Toref": 1, "koref": 1e-3,
+               "no": [-8.624, 7.36e-2],
+               "to": [0, 1],
+
+               "rhoref_res": 1, "kref_res": 1e-3,
+               "nr": [3.222e-2, 2.569e-5, -2.693e-8, 2.007e-11],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4],
+
+               "critical": 0}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
