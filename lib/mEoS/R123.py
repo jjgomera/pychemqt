@@ -236,9 +236,28 @@ class R123(MEoS):
                "betac": [0, -1],
                "dc": [0, 2]}
 
-    _thermal = thermo0,
+    thermo1 = {"__name__": "Tanaka (1996)",
+               "__doi__": {
+                   "autor": "Tanaka, Y., Sotani, T.",
+                   "title": "Thermal Conductivity and Viscosity of 2,2-"
+                            "Dichioro-1,1,1-Trifluoroethane (HCFC-123)",
+                   "ref": "Int. J. Thermophys. 17(2) (1996) 293-328",
+                   "doi":  "10.1007/BF01443394"},
 
-# TODO: Add thermal conductivity correlation from Tanaka
+               "eq": 1,
+
+               "Toref": 1., "koref": 1e-3,
+               "no": [-4.646772, 5.006573e-2],
+               "to": [0, 1],
+
+               "rhoref_res": 1, "kref_res": 1e-3,
+               "nr": [2.722289e-2, -2.581605e-5, 2.626926e-8],
+               "tr": [0, 0, 0],
+               "dr": [1, 2, 3],
+
+               "critical": 0}
+
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
@@ -462,12 +481,12 @@ class Test(TestCase):
 
     def test_tanaka(self):
         # Table VII, Pag 316
-        # TODO: The paper use the Younglove equation so add when fix MBWR
+        # TODO: The paper use the Younglove equation so recheck when fix MBWR
         pass
 
-        # st = R123(T=260, x=0.5, eq="shortSpan")
+        # st = R123(T=260, x=0.5, eq="tillner", thermal=1)
         # self.assertEqual(round(st.P.MPa, 3), 0.017)
-        # self.assertEqual(round(st.Liquido.rho, 1), 1557.7)
+        # self.assertEqual(round(st.Liquido.rho, 1), 1557.6)
         # self.assertEqual(round(st.Gas.rho, 3), 1.286)
         # self.assertEqual(round(st.Liquido.k.mWmK, 2), 87.42)
         # self.assertEqual(round(st.Gas.k.mWmK, 2), 8.405)
@@ -483,42 +502,18 @@ class Test(TestCase):
         # self.assertEqual(round(st.Liquido.mu.muPas, 1), )
         # self.assertEqual(round(st.Gas.mu.muPas, 2), )
 
-        # Table IX, Pag 320
-        # """
-        # >>> st=R123(T=260, P=1e5, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 670.6
-        # >>> st=R123(T=280, P=1e6, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 524.5
-        # >>> st=R123(T=300, P=2e6, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 419.3
-        # >>> st=R123(T=320, P=1e5, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 11.54
-        # >>> st=R123(T=360, P=5e5, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 12.87
-        # >>> st=R123(T=420, P=1.5e6, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 15.40
-        # >>> st=R123(T=400, P=6e6, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 165.0
-        # >>> st=R123(T=300, P=5e6, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 435.9
-        # >>> st=R123(T=260, P=1e7, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 747.7
-        # >>> st=R123(T=420, P=2e7, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 188.7
-        # >>> st=R123(T=300, P=1.5e7, eq=2)
-        # >>> print "%0.4g" % st.mu.muPas
-        # 491.8
-        # """,
+        # st = R123(T=420, x=0.5, eq="tillner", thermal=1)
+        # self.assertEqual(round(st.Liquido.rho, 1), 1054.0)
+        # self.assertEqual(round(st.Gas.rho, 3), 132.9)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 47.15)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 19.60)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 114.5)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 16.33)
+
+        # Table VIII, Pag 318, Table IX, Pag 320
+        # st = R123(T=260, P=1e5, eq="tillner", thermal=1)
+        # self.assertEqual(round(st.k.mWmK, 2), 87.44)
+        # self.assertEqual(round(st.mu.muPas, 2), 670.6)
 
     def test_Laesecke(self):
         # Table 2, Pag 237
