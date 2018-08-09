@@ -206,70 +206,35 @@ class R123(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Laesecke (1996)",
-               "__doi__": {"autor": "Laesecke, A., Perkins, R.A., and Howley, J.B.",
-                           "title": "An improved correlation for the thermal conductivity of HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)",
-                           "ref": "Int. J. Refrigeration, 19:231-238, 1996",
-                           "doi":  "10.1016/0140-7007(96)00019-9"},
-               "__test__": """
-                   >>> st=R123(T=180, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   180 0.00002812 1739.0 0.002873 110.9 1.473
-                   >>> st=R123(T=200, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   200 0.0002494 1694.4 0.02295 105.6 3.610
-                   >>> st=R123(T=250, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   250 0.01007 1581.1 0.7467 90.84 6.437
-                   >>> st=R123(T=300, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   300 0.09778 1458.2 6.258 75.91 9.293
-                   >>> st=R123(T=350, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   350 0.4514 1320.8 26.97 63.34 12.50
-                   >>> st=R123(T=400, x=0.5, eq=2)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   400 1.372 1146.9 85.31 52.41 16.87
-                   >>> st=R123(T=440, x=0.5, eq=1)
-                   >>> print "%0.0f %0.4g %0.5g %0.4g %0.4g %0.4g" % (st.T, st.P.MPa,\
-                    st.Liquido.rho, st.Gas.rho, st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                   440 2.790 924.64 215.3 43.11 23.18
-                   """, # Table 2, Pag 237
+    thermo0 = {"__name__": "Laesecke (1996)",
+               "__doi__": {
+                   "autor": "Laesecke, A., Perkins, R.A., Howley, J.B.",
+                   "title": "An improved correlation for the thermal "
+                            "conductivity of HCFC123 (2,2-dichloro-1,1,1-"
+                            "trifluoroethane)",
+                   "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
+                   "doi":  "10.1016/0140-7007(96)00019-9"},
 
-               "Tref": 1., "kref": 1,
+               "eq": 1,
+
+               "Toref": 1., "koref": 1,
                "no": [-0.00778, 5.695e-5],
-               "co": [0, 1],
+               "to": [0, 1],
 
-               "Trefb": 456.831, "rhorefb": 3.596417, "krefb": 1,
-               "nb": [0.642894e-1, -0.530474e-1, 0.453522e-4, -0.139928,
+               "Tref_res": 456.831, "rhoref_res": 550, "kref_res": 1,
+               "nr": [0.642894e-1, -0.530474e-1, 0.453522e-4, -0.139928,
                       0.16654, -0.162656e-1, 0.136819, -0.183291, 0.357146e-1,
                       -0.231210e-1, 0.341945e-1, -0.757341e-2],
-               "tb": [-1.5, -2, -6, 0, -0.5, -1.5, 0, -0.5, -1.5, 0, -0.5, -1.5],
-               "db": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
-               "cb": [0]*12,
+               "tr": [1.5, 2, 6, 0, 0.5, 1.5, 0, 0.5, 1.5, 0, 0.5, 1.5],
+               "dr": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
 
                "critical": 1,
-               "crit_num_Tref": -456.831, "crit_num_rhoref": 3.596417,
-               "crit_num_k": 1.,
-               "crit_num_n": [0.486742e-2],
-               "crit_num_alfa": [0],
-               "crit_num_t": [0],
-               "crit_num_beta": [0],
-               "crit_num_d": [0],
-               "crit_num_c": [0],
-               "crit_den_n": [-100.0, -7.08535],
-               "crit_den_alfa": [-1, 0],
-               "crit_den_t": [4, 0],
-               "crit_den_beta": [0, -1],
-               "crit_den_d": [0, 2],
-               "crit_den_c": [0, 0]}
+               "Trefc": -456.831, "rhorefc": 3.596417, "krefc": 0.486742e-2,
+               "nc": [-100.0, -7.08535],
+               "alfac": [-1, 0],
+               "tc": [4, 0],
+               "betac": [0, -1],
+               "dc": [0, 2]}
 
     _thermal = thermo0,
 
@@ -554,3 +519,56 @@ class Test(TestCase):
         # >>> print "%0.4g" % st.mu.muPas
         # 491.8
         # """,
+
+    def test_Laesecke(self):
+        # Table 2, Pag 237
+        # TODO: The paper use the original Younglove MBWR eos
+        # so recheck value when fix MBWR
+        st = R123(T=180, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 8), 0.00002814)
+        self.assertEqual(round(st.Liquido.rho, 0), 1739.0)
+        self.assertEqual(round(st.Gas.rho, 6), 0.002876)
+        self.assertEqual(round(st.Liquido.k.mWmK, 1), 110.9)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 2.471)
+
+        st = R123(T=200, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 7), 0.0002495)
+        self.assertEqual(round(st.Liquido.rho, 1), 1694.4)
+        self.assertEqual(round(st.Gas.rho, 5), 0.02296)
+        self.assertEqual(round(st.Liquido.k.mWmK, 1), 105.6)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 3.608)
+
+        st = R123(T=250, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.01007)
+        self.assertEqual(round(st.Liquido.rho, 1), 1581.1)
+        self.assertEqual(round(st.Gas.rho, 4), 0.7469)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 90.83)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 6.435)
+
+        st = R123(T=300, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 5), 0.09780)
+        self.assertEqual(round(st.Liquido.rho, 1), 1459.1)
+        self.assertEqual(round(st.Gas.rho, 3), 6.259)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 75.90)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 9.291)
+
+        st = R123(T=350, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 4), 0.4515)
+        self.assertEqual(round(st.Liquido.rho, 1), 1320.8)
+        self.assertEqual(round(st.Gas.rho, 2), 26.98)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 63.34)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 12.49)
+
+        st = R123(T=400, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 3), 1.372)
+        self.assertEqual(round(st.Liquido.rho, 1), 1146.8)
+        self.assertEqual(round(st.Gas.rho, 2), 85.32)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 52.41)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 16.84)
+
+        st = R123(T=440, x=0.5, eq="tillner")
+        self.assertEqual(round(st.P.MPa, 3), 2.790)
+        self.assertEqual(round(st.Liquido.rho, 2), 924.57)
+        self.assertEqual(round(st.Gas.rho, 1), 215.3)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 42.92)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 22.82)
