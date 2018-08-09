@@ -388,38 +388,43 @@ class iC4(MEoS):
 
     _viscosity = visco0, visco1
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2002)",
-               "__doi__": {"autor": "Perkins, R.A.",
-                           "title": "Measurement and Correlation of the Thermal Conductivity of Isobutane from 114 K to 600 K at Pressures to 70 MPa",
-                           "ref": "J. Chem. Eng. Data, 2002, 47 (5), pp 1272–1279",
-                           "doi": "10.1021/je010121u"},
+    thermo0 = {"__name__": "Perkins (2002)",
+               "__doi__": {
+                   "autor": "Perkins, R.A.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of Isobutane from 114 K to 600 K at "
+                            "Pressures to 70 MPa",
+                   "ref": "J. Chem. Eng. Data 47(5) (2002) 1272-1279",
+                   "doi": "10.1021/je010121u"},
 
-               "Tref": 407.85, "kref": 1,
+               "eq": 1,
+
+               "Toref": 407.82, "koref": 1,
                "no": [-2.37901e-3, 1.06601e-2, 2.15811e-2],
-               "co": [0, 1, 2],
+               "to": [0, 1, 2],
 
-               "Trefb": 407.85, "rhorefb": 3.86, "krefb": 1,
-               "nb": [-4.11789e-2, 4.76346e-2, 1.46805e-1, -1.28445e-1,
+               "Tref_res": 407.82, "rhoref_res": 3.86*M, "kref_res": 1,
+               "nr": [-4.11789e-2, 4.76346e-2, 1.46805e-1, -1.28445e-1,
                       -1.19190e-1, 1.07565e-1, 4.10226e-2, -3.85968e-2,
                       -4.88704e-3, 5.20901e-3],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+               "tr": [0, -1]*5,
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.657661e-9, "Tcref": 611.73}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 0.657661e-9, "Tcref": 611.73}
 
-    thermo1 = {"eq": 2, "omega": 2,
-               "__name__": "Younglove (1987)",
-               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"},
+    thermo1 = {"__name__": "Younglove (1987)",
+               "__doi__": {
+                   "autor": "Younglove, B.A., Ely, J.F.",
+                   "title": "Thermophysical Properties of Fluids. II. Methane,"
+                            " Ethane, Propane, Isobutane, and Normal Butane",
+                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                   "doi": "10.1063/1.555785"},
+
+               "eq": 2,
 
                "visco": visco1,
-               "n_chapman": 2.0352526600e-1,
                "G": [0.1449797353e1, -0.1685643887],
                "E": [0.4307008989e-2, -0.1509010974e1, 0.4693712392e3,
                      -0.3554280979e-3, 0.1841552874, -0.3892338766e2,

@@ -153,50 +153,9 @@ class pH2(MEoS):
         "t": [0.15, 0.44, 0.7, 0.99, 1.31]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.57545e1, 0.38153e1, -0.12293e2, 0.15095e2, -0.17295e2, -0.34190e2],
+        "n": [-0.57545e1, 0.38153e1, -0.12293e2, 0.15095e2, -0.17295e2,
+              -0.34190e2],
         "t": [0.53, 0.7, 1.7, 2.4, 3.3, 10]}
-
-    visco0 = {"eq": 0,
-              "method": "_visco0",
-              "__name__": "McCarty (1972)",
-              "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                          "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia",
-                          "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
-                          "doi": ""}}
-
-    _viscosity = visco0,
-
-    def _visco0(self, rho, T, fase):
-        DELV = lambda rho1, T1, rho2, T2: DILV(T1)+EXCESV(rho1, T2)-DILV(T2)-EXCESV(rho2, T2)
-
-        def EXVDIL(rho, T):
-            A = exp(5.7694+log(rho.gcc)+0.65e2*rho.gcc**1.5-6e-6*exp(127.2*rho.gcc))
-            B = 10+7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5)-17.63*exp(-58.75*(rho.gcc/0.07)**3)
-            return A*exp(B/T)*0.1
-
-        def DILV(T):
-            b = [-0.1841091042788e2, 0.3185762039455e2, -0.2308233586574e2,
-                 0.9129812714730e1, -0.2163626387630e1, 0.3175128582601,
-                 -0.2773173035271e-1, 0.1347359367871e-2, -0.2775671778154e-4]
-            suma = 0
-            for i, b in enumerate(b):
-                suma += b*T**((-3.+i)/3)
-            return suma*100
-
-        def EXCESV(rho, T):
-            c = [-0.1099981128e2, 0.1895876508e2, -0.3813005056e3,
-                 0.5950473265e2, 0.1099399458e1, 0.8987269839e1,
-                 0.1231422148e4, 0.311]
-            R2 = rho.gcc**0.5*(rho.gcc-c[7])/c[7]
-            A = c[0]+c[1]*R2+c[2]*rho.gcc**0.1+c[3]*R2/T**2+c[4]*rho.gcc**0.1/T**1.5+c[5]/T+c[6]*R2/T
-            B = c[0]+c[5]/T
-            return 0.1*(exp(A)-exp(B))
-
-        if T > 100:
-            n = DILV(100)+EXVDIL(rho, 100)+DELV(rho, T, rho, 100)
-        else:
-            n = DILV(T)+EXVDIL(rho, T)
-        return unidades.Viscosity(n, "muPas")
 
     @classmethod
     def _Melting_Pressure(cls, T=None):
@@ -212,72 +171,88 @@ class pH2(MEoS):
 
         return unidades.Pressure(suma*Pref, "kPa")
 
-    thermo0 = {"eq": 1,
-               "__name__": "Assael (2011)",
-               "__doi__": {"autor": " Assael, M.J., Assael. J.-A.M., Huber, M.L., Perkins, R.A. and Takata, Y.",
-                           "title": "Correlation of the Thermal Conductivity of Normal and Parahydrogen from the Triple Point to 1000 K and up to 100 MPa",
-                           "ref": "J. Phys. Chem. Ref. Data 40, 033101 (2011)",
-                           "doi": "10.1063/1.3606499"},
-               "__test__": """
-                   >>> st=pH2(T=298.15, rho=0)
-                   >>> print "%0.5g" % st.k.mWmK
-                   192.38
-                   >>> st=pH2(T=298.15, rho=0.80844)
-                   >>> print "%0.5g" % st.k.mWmK
-                   192.81
-                   >>> st=pH2(T=298.15, rho=14.4813)
-                   >>> print "%0.5g" % st.k.mWmK
-                   207.85
-                   >>> st=pH2(T=35, rho=0)
-                   >>> print "%0.5g" % st.k.mWmK
-                   27.222
-                   >>> st=pH2(T=35, rho=30)
-                   >>> print "%0.5g" % st.k.mWmK
-                   70.335
-                   >>> st=pH2(T=35, rho=30)
-                   >>> print "%0.5g" % st.k.mWmK
-                   68.611
-                   >>> st=pH2(T=18, rho=0)
-                   >>> print "%0.5g" % st.k.mWmK
-                   13.643
-                   >>> st=pH2(T=18, rho=75)
-                   >>> print "%0.5g" % st.k.mWmK
-                   100.52
-                   """, # Table 4, Pag 8
+    visco0 = {"__name__": "McCarty (1972)",
+              "__doi__": {
+                  "autor": "McCarty, R.D. and Weber, L.A.",
+                  "title": "Thermophysical Properties of Parahydrogen from "
+                           "the Freezing Liquid Line to 5000 R for Pressures "
+                           "to 10000 psia",
+                  "ref": "NBS Technical Note 617",
+                  "doi": ""},
 
-               "Tref": 1.0, "kref": 1e-3,
-               "no": [-1.24500e3, 9.41806e3, -3.05098e2, 6.88449,
-                      -5.58871e-2, 2.79243e-4, -4.06944e-7, 3.42309e-10],
-               "co": [0, 1, 2, 3, 4, 5, 6, 7],
-               "noden": [1.42304e4, -5.88749e2, 1.45983e1, -1.34830e-1,
-                         6.19047e-4, -9.21777e-7, 7.83099e-10],
-               "coden": [0, 1, 2, 3, 4, 5, 6],
+              "eq": 0,
+              "method": "_visco0"}
 
-               "Trefb": 32.938, "rhorefb": 15.538, "krefb": 1.,
-               "nb": [0.265975e-1, -0.133826e-2, 0.130219e-1, -0.567678e-2,
-                      -0.92338e-4, -0.121727e-2, 0.366663e-2, 0.388715e-2,
-                      -0.921055e-2, 0.400723e-2],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
+    def _visco0(self, rho, T, fase):
+        def muo(T):
+            b = [-0.1841091042788e2, 0.3185762039455e2, -0.2308233586574e2,
+                 0.9129812714730e1, -0.2163626387630e1, 0.3175128582601,
+                 -0.2773173035271e-1, 0.1347359367871e-2, -0.2775671778154e-4]
+            suma = 0
+            for i, b in enumerate(b):
+                suma += b*T**((-3.+i)/3)
+            return suma*100
+
+        def mu1(rho, T):
+            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5 -
+                    6e-6*exp(127.2*rho.gcc))
+            B = 10 + 7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5) - \
+                17.63*exp(-58.75*(rho.gcc/0.07)**3)
+            return A*exp(B/T)*0.1
+
+        def mu2(rho, T):
+            c = [-0.1324266117873e2, 0.1895048470537e2, 0.2184151514282e2,
+                 0.9771827164811e5, -0.1157010275059e4, 0.1911147702539e3,
+                 -0.3186427506942e4, 0.0705565000000]
+            R2 = rho.gcc**0.5*(rho.gcc-c[7])/c[7]
+            A = c[0] + c[1]*R2 + c[2]*rho.gcc**0.1 + c[3]*R2/T**2 + \
+                c[4]*rho.gcc**0.1/T**1.5 + c[5]/T + c[6]*R2/T
+            B = c[0]+c[5]/T
+            return 0.1*(exp(A)-exp(B))
+
+        def mur(rho1, T1, rho2, T2):
+            return muo(T1) + mu2(rho1, T2) - muo(T2) - mu2(rho2, T2)
+
+        if T > 100:
+            mu = muo(100) + mu1(rho, 100) + mur(rho, T, rho, 100)
+        else:
+            mu = muo(T)+mu1(rho, T)
+        return unidades.Viscosity(mu, "muPas")
+
+    _viscosity = visco0,
+
+    thermo0 = {"__name__": "Assael (2011)",
+               "__doi__": {
+                   "autor": "Assael, M.J., Assael. J.-A.M., Huber, M.L., "
+                            "Perkins, R.A., Takata, Y.",
+                   "title": "Correlation of the Thermal Conductivity of "
+                            "Normal and Parahydrogen from the Triple Point to "
+                            "1000 K and up to 100 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 40(3) (2011) 033101",
+                   "doi": "10.1063/1.3606499"},
+
+               "eq": 1,
+
+               "Toref": 32.938, "koref": 1,
+               "no_num": [-1.245, 3.10212e2, -3.31004e2, 2.46016e2, -6.57810e1,
+                          1.08260e1, -5.19659e-1, 1.43979e-2],
+               "to_num": [0, 1, 2, 3, 4, 5, 6, 7],
+               "no_den": [1.42304e4, -1.93922e4, 1.58379e4, -4.81812e3,
+                          7.28639e2, -3.57365e1, 1],
+               "to_den": [0, 1, 2, 3, 4, 5, 6],
+
+               "Tref_res": 32.938, "rhoref_res": 31.323, "kref_res": 1.,
+               "nr": [2.65975e-2, -1.33826e-3, 1.30219e-2, -5.67678e-3,
+                      -9.2338e-5, -1.21727e-3, 3.66663e-3, 3.88715e-3,
+                      -9.21055e-3, 4.00723e-3],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.5e-9, "Tcref": 49.407}
 
-    thermo1 = {"eq": 0,
-               "method": "_thermo1",
-               "__name__": "McCarty (1972)",
-               "__doi__": {"autor": "McCarty, R.D. and Weber, L.A.",
-                           "title": "Thermophysical properties of parahydrogen from the freezing liquid line to 5000 R for pressures to 10,000 psia",
-                           "ref": "Natl. Bur. Stand., Tech. Note 617, 1972.",
-                           "doi": ""}}
-
-    def _thermo1(self, rho, T, fase):
-        # TODO:
-        return unidades.ThermalConductivity(0)
-
-    # _thermal = thermo0, thermo1
+    _thermal = thermo0,
 
 
 class Test(TestCase):
@@ -343,3 +318,13 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.cp.kJkgK, 3), 92.392)
         self.assertEqual(round(st.Liquido.w, 2), 522.59)
         self.assertEqual(round(st.Gas.w, 2), 372.03)
+
+    def test_Assael(self):
+        # Table 7, Pag 11
+        self.assertEqual(round(pH2(T=298.15, rho=0).k.mWmK, 2), 192.38)
+        self.assertEqual(round(pH2(T=298.15, rho=0.80844).k.mWmK, 2), 192.80)
+        self.assertEqual(round(pH2(T=298.15, rho=14.4813).k.mWmK, 2), 207.85)
+        self.assertEqual(round(pH2(T=35, rho=0).k.mWmK, 3), 27.222)
+        self.assertEqual(round(pH2(T=35, rho=30).k.mWmK, 3), 70.334)
+        self.assertEqual(round(pH2(T=18, rho=0).k.mWmK, 3), 13.643)
+        self.assertEqual(round(pH2(T=18, rho=75).k.mWmK, 2), 100.52)

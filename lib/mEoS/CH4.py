@@ -391,14 +391,14 @@ class CH4(MEoS):
 
     visco3 = {"__name__": "Friend (1989)",
               "__doi__": {
-                  "autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
+                  "autor": "Friend, D.G., Ely, J.F., Ingham, H.",
                   "title": "Thermophysical Properties of Methane",
                   "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
                   "doi": "10.1063/1.555828"},
 
               "eq": 1, "omega": 2,
 
-              "Tref": 174., "etaref": 10.0,
+              "Tref": 174., "muref": 10.0,
               "ek": 174., "sigma": 0.36652,
               "n_chapman": 10.50/M**0.5*0.36652**2,
 

@@ -314,30 +314,6 @@ class H2S(MEoS):
 
     _viscosity = visco0, visco1
 
-    thermo0 = {"eq": 1,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14 V9.08",
-                           "ref": "",
-                           "doi": ""},
-
-               "Tref": 301.1, "kref": 1e-3,
-               "no": [1.35558587, -0.1402163, 1],
-               "co": [0, -1, -96],
-
-               "Trefb": 373.4, "rhorefb": 10.2, "krefb": 1e-3,
-               "nb": [21.7827447865, 10.8880930411, -7.45794247629,
-                      3.65609005216, 1.89362258187, -1.10975687736],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
-               "gam0": 0.0496, "qd": 0.3211e-9, "Tcref": 559.65}
-
-    _thermal = thermo0,
-
 
 class Test(TestCase):
     def test_shortLemmon(self):
