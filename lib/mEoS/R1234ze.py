@@ -48,19 +48,13 @@ class R1234ze(MEoS):
            "titao": [513/Tc, 1972/Tc],
            "ao_hyp": [], "hyp": []}
 
-    CP2 = {"ao": 6.259,
-           "an": [], "pow": [],
-           "ao_exp": [7.303, 8.597, 2.333],
-           "exp": [691, 1705, 4216],
-           "ao_hyp": [], "hyp": []}
-
-    CP3 = {"ao": 5.8887,
-           "an": [], "pow": [],
+    Fi2 = {"ao_log": [1, 5.8887],
+           "pow": [], "ao_pow": [],
            "ao_exp": [7.0804, 9.3371, 2.5577],
-           "exp": [620, 1570, 3953],
+           "titao": [620/Tc, 1570/Tc, 3953/Tc],
            "ao_hyp": [], "hyp": []}
 
-    Fi2 = {"ao_log": [1, 3],
+    Fi3 = {"ao_log": [1, 3],
            "pow": [0, 1],
            "ao_pow": [-10.8724711, -30.1326538],
            "ao_exp": [6.07536, 9.95795],
@@ -118,8 +112,9 @@ class R1234ze(MEoS):
                     "doi": "10.0000_docs.lib.purdue.edu_generic-99DA7EA2C877"},
 
         "R": 8.314472,
-        "cp": CP2,
+        "cp": Fi2,
         "ref": "IIR",
+        "Tc": 382.52, "rhoc": 4.29, "M": 114.0415928,
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20,
         "Pmin": 0.23, "rhomin": 13.19,
@@ -140,8 +135,7 @@ class R1234ze(MEoS):
         "alfa3": [1.02, 1.34, 1.08, 6.41],
         "beta3": [1.19, 2.29, 1.15, 131.8],
         "gamma3": [1.14, 0.667, 0.505, 1.22],
-        "epsilon3": [0.711, 0.914, 0.694, 0.731],
-        "nr4": []}
+        "epsilon3": [0.711, 0.914, 0.694, 0.731]}
 
     akasaka = {
         "__type__": "Helmholtz",
@@ -156,7 +150,7 @@ class R1234ze(MEoS):
                     "doi": "10.1007/s10765-011-0992-0"},
 
         "R": 8.314472,
-        "cp": Fi2,
+        "cp": Fi3,
         "ref": "IIR",
 
         "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20,
@@ -177,61 +171,56 @@ class R1234ze(MEoS):
 
     eq = thol, mclinden, akasaka
 
-    _surface = {"__doi__":
-                    {"autor": "Tanaka, K., Higashi, Y.",
-                     "title": "Surface Tension of trans-1,3,3,3-Tetrafluoropropene and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane Mixture",
-                     "ref": "J. Chem. Eng. Japan, 2013",
-                     "doi": "10.1252/jcej.13we021"},
-                "sigma": [0.05681], "exp": [1.23]}
+    _surface = {
+        "__doi__": {
+            "autor": "Tanaka, K., Higashi, Y.",
+            "title": "Surface Tensions of trans-1,3,3,3-Tetrafluoropropene "
+                     "and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane "
+                     "Mixture",
+            "ref": "J. Chem. Eng. Japan 46(6) (2013) 371-375",
+            "doi": "10.1252/jcej.13we021"},
+        "sigma": [0.05681], "exp": [1.23]}
+
     _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-7.5888, 1.9696, -2.0827, -4.1238],
-        "exp": [1.0, 1.5, 2.2, 4.6]}
+        "eq": 3,
+        "n": [-7.5888, 1.9696, -2.0827, -4.1238],
+        "t": [1.0, 1.5, 2.2, 4.6]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [1.1913, 2.2456, -1.7747, 1.3096],
-        "exp": [0.27, 0.7, 1.25, 1.9]}
+        "n": [1.1913, 2.2456, -1.7747, 1.3096],
+        "t": [0.27, 0.7, 1.25, 1.9]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-1.0308, -5.0422, -11.5, -37.499, -77.945],
-        "exp": [0.24, 0.72, 2.1, 4.8, 9.5]}
+        "eq": 2,
+        "n": [-1.0308, -5.0422, -11.5, -37.499, -77.945],
+        "t": [0.24, 0.72, 2.1, 4.8, 9.5]}
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2011)",
-               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))",
-                            "ref": "J. Chem. Eng. Data, 2011, 56 (12), pp 4868–4874",
-                            "doi": "10.1021/je200811n"},
-               "__test__": """
-                    >>> st=R1234ze(T=250, P=5e4, eq=1)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    2.80451 0.0098503
-                    >>> st=R1234ze(T=300, P=1e5, eq=1)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    4.67948 0.013933
-                    >>> st=R1234ze(T=250, P=2e7, eq=1)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    1349.37 0.100066
-                    >>> st=R1234ze(T=300, P=2e7, eq=1)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    1233.82 0.085389
-                    """, # Table 2, Pag 4872
+    thermo0 = {"__name__": "Perkins (2011)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene "
+                            "(R1234yf) and trans-1,3,3,3-Tetrafluoropropene "
+                            "(R1234ze(E))",
+                   "ref": "J. Chem. Eng. Data 56(12) (2011) 4868-4874",
+                   "doi": "10.1021/je200811n"},
 
-               "Tref": 382.52, "kref": 1,
+               "eq": 1,
+               "Pc": 3.6363e6,
+
+               "Toref": 382.52, "koref": 1,
                "no": [-0.0103589, 0.0308929, 0.000230348],
-               "co": [0, 1, 2],
+               "to": [0, 1, 2],
 
-               "Trefb": 382.52, "rhorefb": 4.29, "krefb": 1.,
-               "nb": [-0.428296e-1, 0.927099e-1, -0.702107e-1, 0.249708e-1,
-                      -0.301838e-2, 0.434288e-1, -0.605844e-1, 0.440187e-1,
-                      -0.155082e-1, 0.210190e-2],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
+               "Tref_res": 382.52, "rhoref_res": 489.24, "kref_res": 1.,
+               "nr": [-0.0428296, 0.0927099, -0.0702107, 0.0249708,
+                      -0.00301838, 0.0434288, -0.0605844, 0.0440187,
+                      -0.0155082, 0.0021019],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 573.78}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 573.78}
 
     _thermal = thermo0,
 
@@ -275,3 +264,22 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 120.029)
         self.assertEqual(round(st.cpM.JmolK, 3), 169.513)
         self.assertEqual(round(st.w, 3), 371.320)
+
+    def test_Perkins(self):
+        # Table 2, Pag 4872
+        # The used EoS is other version of mclinden referenced in REFPROP
+        st = R1234ze(T=250, P=5e4, eq="mclinden")
+        # self.assertEqual(round(st.rho, 5), 2.80451)
+        self.assertEqual(round(st.k, 7), 0.0098506)
+
+        st = R1234ze(T=300, P=1e5, eq="mclinden")
+        # self.assertEqual(round(st.rho, 5), 4.67948)
+        self.assertEqual(round(st.k, 6), 0.013934)
+
+        st = R1234ze(T=250, P=2e7, eq="mclinden")
+        # self.assertEqual(round(st.rho, 2), 1349.37)
+        self.assertEqual(round(st.k, 5), 0.10068)
+
+        st = R1234ze(T=300, P=2e7, eq="mclinden")
+        # self.assertEqual(round(st.rho, 2), 1233.82)
+        self.assertEqual(round(st.k, 6), 0.085574)

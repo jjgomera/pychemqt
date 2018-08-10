@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -86,8 +88,7 @@ class R1234yf(MEoS):
         "alfa3": [1.02, 1.336, 1.055, 5.84, 16.2],
         "beta3": [1.42, 2.31, 0.89, 80., 108.],
         "gamma3": [1.13, 0.67, 0.46, 1.28, 1.2],
-        "epsilon3": [0.712, 0.910, 0.677, 0.718, 1.64],
-        "nr4": []}
+        "epsilon3": [0.712, 0.910, 0.677, 0.718, 1.64]}
 
     akasaka = {
         "__type__": "Helmholtz",
@@ -126,54 +127,66 @@ class R1234yf(MEoS):
 
     _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.74697e1, 0.27915e1, -0.21312e1, -0.29531e1],
-        "exp": [1.0, 1.5, 1.8, 3.8]}
+        "eq": 3,
+        "n": [-0.74697e1, 0.27915e1, -0.21312e1, -0.29531e1],
+        "t": [1.0, 1.5, 1.8, 3.8]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.19083e1, -0.21383e1, 0.93653e1, -0.98659e1, 0.35859e1],
-        "exp": [0.32, 0.56, 0.8, 1.0, 1.3]}
+        "n": [0.19083e1, -0.21383e1, 0.93653e1, -0.98659e1, 0.35859e1],
+        "t": [0.32, 0.56, 0.8, 1.0, 1.3]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.23511e1, -0.11515e2, -0.53984e1, -0.37937e2],
-        "exp": [0.355, 2.45, 1.0, 5.1]}
+        "eq": 2,
+        "n": [-0.23511e1, -0.11515e2, -0.53984e1, -0.37937e2],
+        "t": [0.355, 2.45, 1.0, 5.1]}
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2011)",
-               "__doi__": {"autor": "Perkins, R.A. and Huber, M.L.",
-                            "title": "Measurement and Correlation of the Thermal Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) and trans-1,3,3,3-Tetrafluoropropene (R1234ze(E))",
-                            "ref": "J. Chem. Eng. Data, 2011, 56 (12), pp 4868–4874",
-                            "doi": "10.1021/je200811n"},
-               "__test__": """
-                    >>> st=R1234yf(T=250, P=5e4)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    2.80006 0.0098481
-                    >>> st=R1234yf(T=300, P=1e5)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    4.671556 0.013996
-                    >>> st=R1234yf(T=250, P=2e7)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    1299.5 0.088574
-                    >>> st=R1234yf(T=300, P=2e7)
-                    >>> print "%0.6g %0.5g" % (st.rho, st.k)
-                    1182.05 0.075245
-                    """, # Table 2, Pag 4872
+    thermo0 = {"__name__": "Perkins (2011)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of 2,3,3,3-Tetrafluoroprop-1-ene "
+                            "(R1234yf) and trans-1,3,3,3-Tetrafluoropropene "
+                            "(R1234ze(E))",
+                   "ref": "J. Chem. Eng. Data 56(12) (2011) 4868-4874",
+                   "doi": "10.1021/je200811n"},
 
-               "Tref": 367.85, "kref": 1,
+               "eq": 1,
+               "Pc": 3.3822e6, "rhoc": 475.55,
+
+               "Toref": 367.85, "koref": 1,
                "no": [-0.0102778, 0.0291098, 0.000860643],
-               "co": [0, 1, 2],
+               "to": [0, 1, 2],
 
 
-               "Trefb": 367.85, "rhorefb": 4.17, "krefb": 1.,
-               "nb": [-0.368219e-1, 0.883226e-1, -0.705909e-1, 0.259026e-1,
-                      -0.32295e-2, 0.397166e-1, -0.772390e-1, 0.664707e-1,
-                      -0.249071e-1, 0.336228e-2],
-               "tb": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
-               "db": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-               "cb": [0]*10,
+               "Tref_res": 367.85, "rhoref_res": 475.55, "kref_res": 1.,
+               "nr": [-0.0368219, 0.0883226, -0.0705909, 0.0259026, -0.0032295,
+                      0.0397166, -0.077239, 0.0664707, -0.0249071, 0.00336228],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 551.775}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 551.775}
 
     _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_Perkins(self):
+        # Table 2, Pag 4872
+        # Critical enhancement fail because viscosity correlation
+        st = R1234yf(T=250, P=5e4)
+        self.assertEqual(round(st.rho, 5), 2.80006)
+        self.assertEqual(round(st.k, 7), 0.0098480)
+
+        st = R1234yf(T=300, P=1e5)
+        self.assertEqual(round(st.rho, 6), 4.671553)
+        self.assertEqual(round(st.k, 6), 0.013996)
+
+        st = R1234yf(T=250, P=2e7)
+        self.assertEqual(round(st.rho, 2), 1299.50)
+        self.assertEqual(round(st.k, 6), 0.088620)
+
+        st = R1234yf(T=300, P=2e7)
+        self.assertEqual(round(st.rho, 2), 1182.05)
+        self.assertEqual(round(st.k, 6), 0.075360)
