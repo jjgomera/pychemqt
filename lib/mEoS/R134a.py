@@ -337,26 +337,30 @@ class R134a(MEoS):
 
     _viscosity = visco0, visco1,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2000)",
-               "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
-                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)",
-                           "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                           "doi": ""},
+    thermo0 = {"__name__": "Perkins (2000)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires,"
+                            " M.L.V., Gurova, A.N., Cusco, L.",
+                   "title": "Experimental Thermal conductivity Values for the "
+                            "IUPAC Round-Robin Sample of 1,1,1,2-"
+                            "tetrafluoroethane (R134a)",
+                   "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
+                   "doi": ""},
 
-               "Tref": 1., "kref": 1.,
+               "eq": 1,
+
+               "Toref": 1., "koref": 1.,
                "no": [-1.05248e-2, 8.00982e-5],
-               "co": [0, 1],
+               "to": [0, 1],
 
-               "Trefb": 339.173, "rhorefb": 5.049886, "krefb": 2.055e-3,
-               "nb": [1.836526, 5.126143, -1.436883, 6.261441e-1],
-               "tb": [0]*4,
-               "db": [1, 2, 3, 4],
-               "cb": [0]*4,
+               "rhoref_res": 5.049886*M, "kref_res": 2.055e-3,
+               "nr": [1.836526, 5.126143, -1.436883, 6.261441e-1],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.285356e-10, "Tcref": 561.411}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 5.285356e-10, "Tcref": 561.411}
 
     _thermal = thermo0,
 

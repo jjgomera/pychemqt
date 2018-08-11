@@ -136,29 +136,6 @@ class R245fa(MEoS):
         "n": [-0.99583, -2.6109, -4.4141, -18.573, -55.961],
         "t": [0.24, 0.61, 1, 2.7, 5.95]}
 
-    thermo0 = {"eq": 1,
-               "__name__": "Marsh (2002)",
-               "__doc__": """Marsh, K., Perkins, R., and Ramires, M.L.V., "
-               Measurement and Correlation of the Thermal Conductivity of Propane
-               from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data (2002)47(4):932-940""",
-
-               "Tref": 427.16, "kref": 1,
-               "no": [0.300728e-1, -0.102742, 0.145703, -0.483106e-1],
-               "co": [0, 1, 2, 3],
-
-               "Trefb": 427.16, "rhorefb": 3.85, "krefb": 1,
-               "nb": [-0.7391e-2, 0.887221e-2, -0.195198, 0.173498, 0.289485,
-                      -.23028, -.126956, .892151e-1, .172567e-1, -.93749e-2],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.5e-9, "Tcref": 640.80}
-
-    _thermal = thermo0,
-
 
 class Test(TestCase):
 
