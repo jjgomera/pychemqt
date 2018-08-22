@@ -465,9 +465,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             icon="button/image",
             parent=self)
         actionAyuda = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Help"),
+            QtWidgets.QApplication.translate("pychemqt", "Ayuda"),
             slot=self.help,
             icon="button/help",
+            parent=self)
+        actionDocum = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "References"),
+            slot=self.documentation,
             parent=self)
         actionLog = createAction(
             QtWidgets.QApplication.translate("pychemqt", "View Log"),
@@ -987,6 +991,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuAyuda = QtWidgets.QMenu(
             QtWidgets.QApplication.translate("pychemqt", "&Help"))
         self.menuAyuda.addAction(actionAyuda)
+        self.menuAyuda.addAction(actionDocum)
         self.menuAyuda.addAction(actionLog)
         self.menuAyuda.addSeparator()
         self.menuAyuda.addAction(actionAcerca_de)
@@ -1583,11 +1588,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dialog.exec_()
 
     def Preferencias(self):
+        global Preferences
         dialog = UI_Preferences.Preferences(Preferences)
         if dialog.exec_():
             preferences = dialog.value()
             preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            global Preferences
             Preferences = ConfigParser()
             Preferences.read(conf_dir+"pychemqtrc")
             self.updateStatus(QtWidgets.QApplication.translate(
@@ -1659,6 +1664,17 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     # Help
     def help(self):
+        # First search for a local documentation build
+        # By default in docs/_build/html/
+        path = os.path.join(os.environ["pychemqt"], "docs") + os.sep
+        if os.path.isdir(path):
+            indexpath = os.path.join(path, "_build", "html", "index.html")
+            url = QtCore.QUrl(indexpath)
+        else:
+            url = QtCore.QUrl("http://pychemqt.readthedocs.io/")
+        QtGui.QDesktopServices.openUrl(url)
+
+    def documentation(self):
         dialog = doi.ShowReference()
         dialog.exec_()
 
