@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -30,9 +32,9 @@ class R161(MEoS):
     synonym = "R161"
     _refPropName = "R161"
     _coolPropName = "R161"
-    rhoc = unidades.Density(301.81366)
+    rhoc = unidades.Density(302.0010921)
     Tc = unidades.Temperature(375.25)
-    Pc = unidades.Pressure(5010.0, "kPa")
+    Pc = unidades.Pressure(5046.0, "kPa")
     M = 48.0595  # g/mol
     Tt = unidades.Temperature(130.0)
     Tb = unidades.Temperature(235.6)
@@ -42,6 +44,12 @@ class R161(MEoS):
 
     Fi1 = {"ao_log": [1, 3],
            "pow": [0, 1],
+           "ao_pow": [-6.9170707460, 5.4837900434],
+           "ao_exp": [1.08888, 1.80842, 8.72417, 5.67715],
+           "titao": [329/Tc, 742/Tc, 1644/Tc, 3922/Tc]}
+
+    Fi2 = {"ao_log": [1, 3],
+           "pow": [0, 1],
            "ao_pow": [-6.9187, 5.4788],
            "ao_exp": [2.059, 9.253, 6.088],
            "titao": [420/Tc, 1548/Tc, 3882/Tc]}
@@ -50,6 +58,45 @@ class R161(MEoS):
            "an": [], "pow": [],
            "ao_exp": [2.077, 9.265, 6.054], "exp": [420, 1548, 3882],
            "ao_hyp": [], "hyp": []}
+
+    qi = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-161 of Qi (2012)",
+        "__doi__": {"autor": "Qi, H., Fang, D., Gao, K., Meng, X., Wu, J.",
+                    "title": "Compressed Liquid Densities and Helmholtz Energy"
+                             " Equation of State for Fluoroethane (R161)",
+                    "ref": "Int. J. Thermophys. 37(3) (2016) 55",
+                    "doi": "10.1007/s10765-016-2061-1"},
+
+        "R": 8.3144621,
+        "cp": Fi1,
+        "ref": "IIR",
+
+        # "rhoc": 6.2839,
+
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 100000.0, "rhomax": 18,
+        # "Pmin": 0.005512, "rhomin": 19.91,
+
+        "nr1": [0.005145283, -0.001882274, 1.884722, -3.1819965, -0.24432415,
+                0.27792467],
+        "d1": [5, 4, 1, 1, 2, 3],
+        "t1": [1, 0.68, 0.32, 0.92, 1.23, 0.846],
+
+        "nr2": [-0.4414064, -0.402065, 0.24171113, -0.16603585, -0.03440867,
+                -0.000099185],
+        "d2": [1, 3, 2, 2, 7, 5],
+        "t2": [4.208, 3.06, 1.85, 4.28, 1.003, 1.12],
+        "c2": [2, 2, 1, 2, 1, 1],
+        "gamma2": [1]*6,
+
+        "nr3": [1.0146668, -0.03542609, -0.006038245, -0.025437558,
+                -0.00515678, 0.006396804],
+        "d3": [1, 1, 3, 3, 2, 2],
+        "t3": [1.055, 0.8, 4.08, 1.6, 3.85, 0.57],
+        "alfa3": [0.96212, 3.2147, 2.6288, 0.8657, 2.3839, 1.7814],
+        "beta3": [0.62848, 4.5968, 4.9696, 0.239, 0.788, 7.0874],
+        "gamma3": [1.9363, 1.5054, 1.3691, 2.3594, 0.5581, 0.6326],
+        "epsilon3": [0.70192, 1.23824, 0.73324, 0.6258, 1.564, 1.4861]}
 
     wu = {
         "__type__": "Helmholtz",
@@ -61,7 +108,7 @@ class R161(MEoS):
                     "doi": "10.1007/s10765-011-1151-3"},
 
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205},
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0,
