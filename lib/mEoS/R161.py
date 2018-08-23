@@ -158,18 +158,235 @@ class R161(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 2],
         "gamma2": [1]*7}
 
-    eq = wu, refprop
+    eq = qi, wu, refprop
 
     _surface = {"sigma": [0.05385], "exp": [1.111]}
+
     _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.75224e1, 0.29140e1, -0.30129e1, -0.44497e1, 0.24207e1],
-        "exp": [1.0, 1.5, 2.3, 6.0, 7.0]}
+        "eq": 3,
+        "n": [-8.977955, 25.64713, -80.33162, 89.22478, -34.33593],
+        "t": [1.0, 1.5, 1.84, 2.11, 2.47]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [-.22587e2, .13424e3, -.2671e3, .3389e3, -.31059e3, .13009e3],
-        "exp": [0.56, 0.7, 0.9, 1.2, 1.5, 1.7]}
+        "n": [2.11404, 6.25555, -16.12805, 116.00294, -233.6455, 149.54793],
+        "t": [0.46, 1.08, 1.71, 3.56, 4.44, 5.51]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.62548e1, 0.10499e2, -0.20353e2, -0.36709e2, -0.86781e2],
-        "exp": [0.56, 1.3, 1.7, 5.0, 11.0]}
+        "eq": 2,
+        "n": [-2.26823, 1.39859, -27.93344, 49.91536, -50.51966],
+        "t": [0.3, 0.88, 1.46, 2.1, 2.82]}
+
+    visco0 = {"__name__": "Tsolakidou (2017)",
+              "__doi__": {
+                  "autor": "Tsolakidou, C.M., Assael, M.J., Huber, M.L.,"
+                           "Perkins, R.A.",
+                  "title": "Correlations for the Viscosity and Thermal "
+                           "Conductivity of Ethyl Fluoride (R161)",
+                  "ref": "J. Phys. Chem. Ref. Data 46(2) (2017) 023103",
+                  "doi": "10.1063/1.4983027"},
+
+              "eq": 1, "omega": 1,
+
+              "n_chapman": 0.021357,
+              "ek": 320.39, "sigma": 0.4457,
+              "collision": [0.24130, -0.45],
+
+              "Tref_virial": 320.39,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              # "Tref_res": Tc, "rhoref_res": 302.001,
+              # "nr": [-10.28373, 7.65563, 4.842, 0.42223],
+              # "tr": [-0.5, -0.5, -2.5, -0.5],
+              # "dr": [2/3, 5/3, 2/3, 14/3],
+
+              # "nr_num": [64.34983, 64.34983],
+              # "tr_num": [-1.5, -0.5],
+              # "dr_num": [2/3, 5/3],
+              # "nr_den": [10.99213, 1],
+              # "tr_den": [-2, -2],
+              # "dr_den": [0, 2],
+
+              "special": "_mur",
+              }
+
+    # FIXME: The viscosity residual term don't work, I can find the error,
+    # maybe a typo in paper
+
+    def _mur(self, rho, T, fase):
+        rhor = rho/302.001
+        Tr = T/375.25
+        mur = -10.28373 + 7.65563*rhor + 4.842*Tr**2 + 0.42223*rhor**4
+        mur += 64.34983*(Tr+rhor)/(10.99213*Tr**2+Tr**2*rhor**2)
+        mur *= rhor**(2/3)*Tr**0.5
+        return mur
+
+    _viscosity = visco0,
+
+    thermo0 = {"__name__": "Tsolakidou (2017)",
+               "__doi__": {
+                   "autor": "Tsolakidou, C.M., Assael, M.J., Huber, M.L.,"
+                            "Perkins, R.A.",
+                   "title": "Correlations for the Viscosity and Thermal "
+                            "Conductivity of Ethyl Fluoride (R161)",
+                   "ref": "J. Phys. Chem. Ref. Data 46(2) (2017) 023103",
+                   "doi": "10.1063/1.4983027"},
+
+               "eq": 1,
+
+               "Toref": Tc, "koref": 1e-3,
+               "no_num": [7.96804, -12.5874, -26.3743, 16.9894, 127.545,
+                          -32.548],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [5.406, -18.8331, 24.868, -9.14139, 1],
+               "to_den": [0, 1, 2, 3, 4],
+
+               "Tref_res": Tc, "rhoref_res": 302.001, "kref_res": 1e-3,
+               "nr": [-8.41553, 7.41456, -39.7744, 44.0586, 106.179, -81.9833,
+                      -53.2351, 37.6052e2, 8.23094, -4.90293],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.183e-9,
+               "gam0": 0.055, "qd": 3.104e-10, "Tcref": 562.88}
+
+    _thermal = thermo0,
+
+
+class Test(TestCase):
+
+    def test_Tsolakidou(self):
+        # Table 9, pag 10, saturation state for mEoS testing
+        st = R161(T=250, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.1880)
+        self.assertEqual(round(st.Liquido.rho, 2), 789.54)
+        self.assertEqual(round(st.Gas.rho, 2), 4.63)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 204.34)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 8.15)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 140.98)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 9.92)
+
+        st = R161(T=275, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.4639)
+        self.assertEqual(round(st.Liquido.rho, 2), 745.02)
+        self.assertEqual(round(st.Gas.rho, 2), 10.96)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 152.87)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 8.86)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 125.46)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 13.03)
+
+        st = R161(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 0.9716)
+        self.assertEqual(round(st.Liquido.rho, 2), 693.43)
+        self.assertEqual(round(st.Gas.rho, 2), 22.76)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 115.89)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 9.64)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 110.40)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 16.56)
+
+        st = R161(T=325, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.8072)
+        self.assertEqual(round(st.Liquido.rho, 2), 631.73)
+        self.assertEqual(round(st.Gas.rho, 2), 43.92)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 87.59)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 10.68)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 95.79)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 21.36)
+
+        st = R161(T=350, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 3.0880)
+        self.assertEqual(round(st.Liquido.rho, 2), 551.03)
+        self.assertEqual(round(st.Gas.rho, 2), 84.51)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 63.78)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 12.54)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 81.95)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 30.41)
+
+        # st = R161(T=375, x=0.5)
+        # self.assertEqual(round(st.P.MPa, 4), 5.0211)
+        # self.assertEqual(round(st.Liquido.rho, 2), 335.05)
+        # self.assertEqual(round(st.Gas.rho, 2), 267.62)
+        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 29.92)
+        # self.assertEqual(round(st.Gas.mu.muPas, 2), 23.73)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 134.27)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 146.46)
+
+        # # Table 10, pag 10, basic ρ,P,T point for mEoS testing
+        st = R161(T=250, P=1e7)
+        self.assertEqual(round(st.rho, 1), 803.6)
+        # self.assertEqual(round(st.mu.muPas, 1), 223.3)
+        # self.assertEqual(round(st.k.mWmK, 1), 147.9)
+
+        st = R161(T=275, P=1e7)
+        self.assertEqual(round(st.rho, 1), 764.0)
+        # self.assertEqual(round(st.mu.muPas, 1), 169.7)
+        # self.assertEqual(round(st.k.mWmK, 1), 133.1)
+
+        st = R161(T=300, P=1e7)
+        self.assertEqual(round(st.rho, 1), 719.8)
+        # self.assertEqual(round(st.mu.muPas, 1), 131.8)
+        # self.assertEqual(round(st.k.mWmK, 1), 118.9)
+
+        st = R161(T=325, P=1e7)
+        self.assertEqual(round(st.rho, 1), 670.0)
+        # self.assertEqual(round(st.mu.muPas, 1), 103.7)
+        # self.assertEqual(round(st.k.mWmK, 1), 105.4)
+
+        st = R161(T=350, P=1e7)
+        self.assertEqual(round(st.rho, 1), 612.6)
+        # self.assertEqual(round(st.mu.muPas, 1), 81.80)
+        # self.assertEqual(round(st.k.mWmK, 1), 92.7)
+
+        st = R161(T=250, P=2e7)
+        self.assertEqual(round(st.rho, 1), 815.9)
+        # self.assertEqual(round(st.mu.muPas, 1), 242.0)
+        # self.assertEqual(round(st.k.mWmK, 1), 154.3)
+
+        st = R161(T=275, P=2e7)
+        self.assertEqual(round(st.rho, 1), 780.1)
+        # self.assertEqual(round(st.mu.muPas, 1), 185.9)
+        # self.assertEqual(round(st.k.mWmK, 1), 140.2)
+
+        st = R161(T=300, P=2e7)
+        self.assertEqual(round(st.rho, 1), 741.5)
+        # self.assertEqual(round(st.mu.muPas, 1), 147.1)
+        # self.assertEqual(round(st.k.mWmK, 1), 126.9)
+
+        # st = R161(T=350, P=2e7)
+        # self.assertEqual(round(st.rho, 1), 699.9)
+        # self.assertEqual(round(st.mu.muPas, 1), 118.9)
+        # self.assertEqual(round(st.k.mWmK, 1), 114.5)
+
+        # Table 11, pag 11
+        st = R161(T=250, rho=0)
+        self.assertEqual(round(st.mu.muPas, 3), 8.280)
+        self.assertEqual(round(st.k.mWmK, 3), 9.892)
+
+        st = R161(T=250, rho=1)
+        self.assertEqual(round(st.mu.muPas, 3), 8.255)
+        self.assertEqual(round(st.k.mWmK, 3), 9.884)
+
+        # st = R161(T=250, rho=850)
+        # self.assertEqual(round(st.mu.muPas, 3), 308.22)
+        # self.assertEqual(round(st.k.mWmK, 3), 175.48)
+
+        st = R161(T=375, rho=0)
+        self.assertEqual(round(st.mu.muPas, 3), 12.171)
+        self.assertEqual(round(st.k.mWmK, 3), 24.517)
+
+        # st = R161(T=375, rho=229)
+        # self.assertEqual(round(st.mu.muPas, 3), 20.859)
+        # self.assertEqual(round(st.k.mWmK, 3), 81.297)
+
+
+if __name__ == "__main__":
+    # st = R161(T=250, rho=850)
+    # print(st.mu.muPas, st.k.mWmK)
+
+    st = R161(T=375, x=0.5)
+    print(st.P.MPa)
+    print(st.Liquido.rho, st.Gas.rho)
+    print(st.Liquido.mu.muPas, st.Gas.mu.muPas)
+    print(st.Liquido.k.mWmK, st.Gas.k.mWmK)
