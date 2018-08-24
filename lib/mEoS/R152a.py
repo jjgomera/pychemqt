@@ -273,26 +273,30 @@ class R152a(MEoS):
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Krauss (1996)",
-               "__doi__": {"autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., and Stephan, K.",
-                           "title": "Transport properties of 1,1-Difluoroethane (R152a)",
-                           "ref": "Int. J. Thermophysics 17:731-757, 1996.",
-                           "doi": "10.1007/BF01439187"},
+    thermo0 = {"__name__": "Krauss (1996)",
+               "__doi__": {
+                   "autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, "
+                            "J.V., Stephan, K.",
+                   "title": "Transport Properties of 1,1-Difluoroethane "
+                            "(R152a)",
+                   "ref": "Int. J. Thermophysics 17:731-757, 1996.",
+                   "doi": "10.1007/BF01439187"},
 
-               "Tref": 1., "kref": 1e-3,
-               "no": [-1.49420e1, 9.73283-2],
-               "co": [0, 1],
+               "eq": 1,
+               "M": 66.05, "Tc": 386.411, "Pc": 4520,
 
-               "Trefb": 1., "rhorefb": 5.57145, "krefb": 1.115e-3,
-               "nb": [9.1809, 1.18577e1, -5.44730, 1.71379],
-               "tb": [0]*4,
-               "db": [1, 2, 3, 4],
-               "cb": [0]*4,
+               "Toref": 1., "koref": 1e-3,
+               "no": [-14.942, 0.0973283],
+               "to": [0, 1],
+
+               "Tref_res": 1., "rhoref_res": 368, "kref_res": 1.155e-3,
+               "nr": [9.1809, 11.8577, -5.4473, 1.71379],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 1.894e-10, "gam0": 0.0487, "qd": 4.37e-10, "Tcref": 579.617}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 1.894e-10,
+               "gam0": 0.0487, "qd": 4.37e-10, "Tcref": 579.6165}
 
     _thermal = thermo0,
 
@@ -472,7 +476,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.h.kJkg, 3), 542.188)
         self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.02940)
 
-    def xest_Krauss(self):
+    def test_Krauss(self):
         # Table VI, pag 750, saturation state and 0.1MPa
         st = R152a(T=240, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.066420)
@@ -480,12 +484,8 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rho, 4), 2.2736)
         self.assertEqual(round(st.Liquido.mu.muPas, 1), 364.8)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 8.09)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 128.9)
-        # self.assertEqual(round(st.Gas.k.mWmK, 1), 8.417)
-
-        st = R152a(T=240, P=1e5, eq="tillner")
-        self.assertEqual(round(st.mu.muPas, 1), 365.1)
-        # self.assertEqual(round(st.k.mWmK, 1), 128.9)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 128.8)
+        # self.assertEqual(round(st.Gas.k.mWmK, 3), 8.417)
 
         st = R152a(T=280, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.33558)
@@ -493,12 +493,8 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rho, 3), 10.550)
         self.assertEqual(round(st.Liquido.mu.muPas, 1), 198.1)
         self.assertEqual(round(st.Gas.mu.muPas, 3), 9.606)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 109.2)
-        # self.assertEqual(round(st.Gas.k.mWmK, 1), 12.65)
-
-        st = R152a(T=280, P=1e5, eq="tillner")
-        self.assertEqual(round(st.mu.muPas, 3), 9.613)
-        # self.assertEqual(round(st.k.mWmK, 1), 12.31)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 109.3)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 12.65)
 
         st = R152a(T=320, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 4), 1.0883)
@@ -506,47 +502,40 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rho, 3), 34.202)
         self.assertEqual(round(st.Liquido.mu.muPas, 1), 128.3)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 11.20)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 91.34)
-        # self.assertEqual(round(st.Gas.k.mWmK, 1), 17.52)
-
-        st = R152a(T=320, P=1e5, eq="tillner")
-        self.assertEqual(round(st.mu.muPas, 2), 11.10)
-        # self.assertEqual(round(st.k.mWmK, 1), 16.20)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 91.34)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 17.52)
 
         st = R152a(T=360, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 4), 2.7024)
         self.assertEqual(round(st.Liquido.rho, 2), 694.46)
         self.assertEqual(round(st.Gas.rho, 3), 98.845)
-        self.assertEqual(round(st.Liquido.mu.muPas, 2), 76.75)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 76.74)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 13.87)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 73.43)
-        # self.assertEqual(round(st.Gas.k.mWmK, 1), 25.70)
-
-        st = R152a(T=360, P=1e5, eq="tillner")
-        self.assertEqual(round(st.mu.muPas, 2), 12.53)
-        # self.assertEqual(round(st.k.mWmK, 1), 20.10)
-
-        st = R152a(T=386, x=0.5, eq="tillner")
-        self.assertEqual(round(st.P.MPa, 4), 4.4846)
-        self.assertEqual(round(st.Liquido.rho, 2), 441.81)
-        self.assertEqual(round(st.Gas.rho, 2), 296.01)
-        self.assertEqual(round(st.Liquido.mu.muPas, 2), 36.91)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 25.20)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 85.58)
-        # self.assertEqual(round(st.Gas.k.mWmK, 1), 98.39)
-
-        st = R152a(T=386, P=1e5, eq="tillner")
-        self.assertEqual(round(st.mu.muPas, 2), 13.43)
-        # self.assertEqual(round(st.k.mWmK, 1), 22.63)
+        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 73.43)
+        # self.assertEqual(round(st.Gas.k.mWmK, 2), 25.70)
 
         # Table VII, Pag 753, Single phase point Viscosity
+        # Table VIII, Pag 754, Single phase point thermal conductivity
+        st = R152a(T=240, P=1e5, eq="tillner")
+        self.assertEqual(round(st.mu.muPas, 1), 365.1)
+        # self.assertEqual(round(st.k.mWmK, 1), 128.9)
+
+        st = R152a(T=360, P=1e5, eq="tillner")
+        self.assertEqual(round(st.mu.muPas, 2), 12.52)
+        # self.assertEqual(round(st.k.mWmK, 2), 20.10)
+
+        st = R152a(T=430, P=1e5, eq="tillner")
+        self.assertEqual(round(st.mu.muPas, 2), 14.91)
+        # self.assertEqual(round(st.k.mWmK, 2), 26.91)
+
+# TODO: See critical enhancement extension of Polt Sengers for R152a Tillner-
+# Roth EoS
+
+# FIXME: The Krauss thermal conductivity correlation dont work, tiny desviation
+# possibly by polt-Sengers eos modification
 
 
 if __name__ == "__main__":
-        # st0 = R152a(T=320, P=1e5, eq=0)
-        st1 = R152a(T=320, P=1e5, eq=1)
-        st2 = R152a(T=320, P=1e5, eq=2)
-        st3 = R152a(T=320, P=1e5, eq=3)
-        st4 = R152a(T=320, P=1e5, eq=4)
-        print(st1.rho, st2.rho, st3.rho, st4.rho)
-        # print(st.x, st.mu)
+        st = R152a(T=240, P=1e5)
+        print(st.status, st.msg)
+        print(st.mu.muPas, st.k.mWmK)
