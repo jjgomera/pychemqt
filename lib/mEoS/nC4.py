@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from scipy import log, exp
+
 from lib.meos import MEoS
 from lib import unidades
 
@@ -96,7 +98,7 @@ class nC4(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575., "Pmax": 200000.0, "rhomax": 13.86,
+        "Tmin": Tt, "Tmax": 750., "Pmax": 200000.0, "rhomax": 13.86,
         "Pmin": 0.000653, "rhomin": 12.645,
 
         "nr1": [0.25536998241635e1, -0.44585951806696e1, 0.82425886369063,
@@ -318,19 +320,72 @@ class nC4(MEoS):
                 "a2": [], "exp2": [], "a3": [], "exp3": []}
     _surface = {"sigma": [0.05138], "exp": [1.209]}
     _vapor_Pressure = {
-        "eq": 5,
-        "ao": [-0.71897e1, 0.26122e1, -0.21729e1, -0.27230e1],
-        "exp": [1, 1.5, 2., 4.5]}
+        "eq": 3,
+        "n": [-0.71897e1, 0.26122e1, -0.21729e1, -0.27230e1],
+        "t": [1, 1.5, 2., 4.5]}
     _liquid_Density = {
         "eq": 1,
-        "ao": [0.52341e1, -0.62011e1, 0.36063e1, 0.22137],
-        "exp": [0.44, 0.6, 0.76, 5.0]}
+        "n": [0.52341e1, -0.62011e1, 0.36063e1, 0.22137],
+        "t": [0.44, 0.6, 0.76, 5.0]}
     _vapor_Density = {
-        "eq": 3,
-        "ao": [-0.27390e1, -0.57347e1, -0.16408e2, -0.46986e2, -0.10090e3],
-        "exp": [0.39, 1.14, 3.0, 6.5, 14.0]}
+        "eq": 2,
+        "n": [-0.27390e1, -0.57347e1, -0.16408e2, -0.46986e2, -0.10090e3],
+        "t": [0.39, 1.14, 3.0, 6.5, 14.0]}
 
-    visco0 = {"__name__": "Vogel (1999)",
+    visco0 = {"__name__": "Herrmann (2018)",
+              "__doi__": {
+                  "autor": "Herrmann, S., Vogel, E.",
+                  "title": "New Formulation for the Viscosity of n-Butane",
+                  "ref": "J. Phys. Chem. Ref. Data 47(1) (2018) 013104",
+                  "doi": "10.1063/1.5020802"},
+
+              "eq": 1, "omega": 0,
+
+              "special0": "_mu0",
+
+              "Tref_virial": 425.125,
+              # Special term of virial coefficient, with δ term and μPa·s
+              "muref_virial": 4.89736312734e-1/228*M/1e3,
+              "n_virial": [-1.9572881000e1, 1.98887362343e2, -8.3176420912e2,
+                           1.83218450345e3, -2.26510439059e3, 1.51348864395e3,
+                           -4.32819866497e2, 5.19698852489, -3.86579291550e-2],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 425.125, "rhoref_res": 228,
+              "nr": [2.3460864383872, 7.8632175809804e-1, 1.5823593499816e1,
+                     -9.4670516989296, 1.0511496276340, -1.9355799491084e-2,
+                     1.4895031937816e-4],
+              "tr": [2, 5, 0, 0, 0, 4, 5],
+              "dr": [2, 2, 2.5, 3, 5, 7.5, 10],
+
+              "nr_gaus": [1.2790911462043, 2.5581822924086e-1],
+              "br_gaus": [30, 5],
+              "er_gaus": [220, 400],
+
+              "special": "_mur"}
+
+    def _mu0(self):
+        """Special term for zero-density viscosity for Herrmann correlation"""
+        tau = self.Tc/self.T
+
+        # Eq 8
+        no = [4.6147656002208, 4.574318591039e-1, 3.0851104723224e-2]
+        suma = 0
+        for i, n in enumerate(no):
+            suma += n*log(tau)**i
+
+        muo = 1.0546549635209e3/tau**0.5/exp(suma)
+        return muo
+
+    def _mur(self, rho, T, fase):
+        """Special exponential term of residual viscosity for Herrmann
+        correlation"""
+        tau = self.Tc/T
+        delta = rho/self.rhoc
+        mur = tau**0.5/delta**(2/3)*1.2280342363570e-3*(delta**5.7*tau)**2
+        return mur
+
+    visco1 = {"__name__": "Vogel (1999)",
               "__doi__": {
                   "autor": "Vogel, E., Küchenmeister, C., Bich, E.",
                   "title": "Viscosity correlation for n-Butane in the Fluid "
@@ -361,7 +416,7 @@ class nC4(MEoS):
               "CPg1": 2.30873963359,
               "CPgi": [0.88101765264], "CPti": [-0.5]}
 
-    visco1 = {"eq": 2, "omega": 2,
+    visco2 = {"eq": 2, "omega": 2,
               "__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
@@ -379,7 +434,7 @@ class nC4(MEoS):
                     0.9849317662e4],
               "rhoc": 3.920}
 
-    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco3 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -400,7 +455,7 @@ class nC4(MEoS):
               "B": [3.70980e-8, 2.07659e-9, 0],
               "C": [-1.12496e-7, 7.66906e-8, 0]}
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Perkins (2002)",
                "__doi__": {
@@ -430,10 +485,12 @@ class nC4(MEoS):
                "gam0": 0.0496, "qd": 0.875350e-9, "Tcref": 637.68}
 
     thermo1 = {"__name__": "Younglove (1987)",
-               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane",
-                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"},
+               "__doi__": {
+                   "autor": "Younglove, B.A., Ely, J.F.",
+                   "title": "Thermophysical Properties of Fluids. II. Methane,"
+                            " Ethane, Propane, Isobutane, and Normal Butane ",
+                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                   "doi": "10.1063/1.555785"},
 
                "eq": 2,
 
@@ -610,3 +667,22 @@ class Test(TestCase):
         st = nC4(T=273.15, x=0.0, eq="miyamoto")
         self.assertEqual(round(st.h.kJkg, 0), 200)
         self.assertEqual(round(st.s.kJkgK, 2), 1)
+
+    def test_herrmann(self):
+        # Table 6, Pag 18
+        self.assertEqual(round(nC4(T=136, rho=735).mu.muPas, 3), 2310.306)
+        self.assertEqual(round(nC4(T=300, rho=1).mu.muPas, 6), 7.440574)
+        self.assertEqual(round(nC4(T=300, rho=6).mu.muPas, 6), 7.382406)
+        self.assertEqual(round(nC4(T=300, rho=575).mu.muPas, 4), 162.2565)
+        self.assertEqual(round(nC4(T=300, rho=640).mu.muPas, 4), 290.5562)
+        self.assertEqual(round(nC4(T=400, rho=1).mu.muPas, 6), 9.860115)
+        self.assertEqual(round(nC4(T=400, rho=70).mu.muPas, 5), 11.25890)
+        self.assertEqual(round(nC4(T=400, rho=410).mu.muPas, 5), 56.96791)
+        self.assertEqual(round(nC4(T=400, rho=570).mu.muPas, 4), 153.0508)
+        self.assertEqual(round(nC4(T=425.125, rho=228).mu.muPas, 5), 24.84327)
+        self.assertEqual(round(nC4(T=500, rho=1).mu.muPas, 5), 12.20820)
+        self.assertEqual(round(nC4(T=500, rho=100).mu.muPas, 5), 15.51795)
+        self.assertEqual(round(nC4(T=500, rho=500).mu.muPas, 5), 96.94796)
+        self.assertEqual(round(nC4(T=650, rho=1).mu.muPas, 5), 15.62218)
+        self.assertEqual(round(nC4(T=650, rho=100).mu.muPas, 5), 19.43536)
+        self.assertEqual(round(nC4(T=650, rho=475).mu.muPas, 5), 86.78013)
