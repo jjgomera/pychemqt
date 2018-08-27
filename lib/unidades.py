@@ -160,6 +160,8 @@ class unidad(float):
     def _getBaseValue(cls, data, unit, magnitud):
         if data is None:
             data = 0
+        else:
+            data = float(data)
 
         if unit == "conf":
             Config = getMainWindowConfig()

@@ -30,7 +30,7 @@ from configparser import ConfigParser
 from functools import partial
 import logging
 import os
-import pickle
+import json
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from scipy import pi, arctan
@@ -279,7 +279,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.showMaximized()
 
         layout = QtWidgets.QGridLayout(self)
-        self.plt = PsychroPlot(self, dpi=90)
+        self.plt = PsychroPlot(self, width=100, height=1, dpi=90)
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         layout.addWidget(self.plt, 1, 3, 2, 2)
 
@@ -393,11 +393,11 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.plt.ax.clear()
         chart = self.Preferences.getboolean("Psychr", "chart")
         self.plt.config(self.Preferences)
-        filename = conf_dir+"%s_%i.pkl" % (
+        filename = conf_dir+"%s_%i.json" % (
             PsychroState().__class__.__name__, self.inputs.P.value)
         if os.path.isfile(filename):
-            with open(filename, "rb") as archivo:
-                data = pickle.load(archivo)
+            with open(filename, "r") as archivo:
+                data = json.load(archivo)
                 self.status.setText(QtWidgets.QApplication.translate(
                     "pychemqt", "Loading cached data..."))
                 QtWidgets.QApplication.processEvents()
@@ -407,7 +407,9 @@ class UI_Psychrometry(QtWidgets.QDialog):
                 "pychemqt", "Calculating data..."))
             QtWidgets.QApplication.processEvents()
             data = PsychroState.calculatePlot(self)
-            pickle.dump(data, open(filename, "wb"))
+            with open(filename, "w") as file:
+                json.dump(data, file, indent=4)
+
             self.progressBar.setVisible(False)
         self.status.setText(
             QtWidgets.QApplication.translate("pychemqt", "Plotting..."))

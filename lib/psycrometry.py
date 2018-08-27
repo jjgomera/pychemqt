@@ -495,7 +495,7 @@ class PsyState(object):
             start = Preferences.getfloat("Psychr", name+"Start")
             end = Preferences.getfloat("Psychr", name+"End")
             step = Preferences.getfloat("Psychr", name+"Step")
-            t = arange(start, end, step)
+            t = list(arange(start, end, step))
         return t
 
 
@@ -652,7 +652,7 @@ class PsyIdeal(PsyState):
                 Tw.append(Temperature(_Tdb(T, h, P)).config())
             cont += 1
             parent.setProgressValue(15+75*cont/len(lines))
-            Twb[T] = (H, Tw)
+            Twb[T] = (list(H), Tw)
         data["Twb"] = Twb
 
         # v
