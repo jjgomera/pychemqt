@@ -48,7 +48,7 @@ class PsychroPlot(mpl):
     """
     Plot widget for psychrometric chart
         Add custom margins
-        Define a pointer to text state properties, to remove and redraw
+        Define a point for text state properties, to easy remove and redraw
     """
     def __init__(self, *args, **kwargs):
         mpl.__init__(self, *args, **kwargs)
@@ -65,8 +65,8 @@ class PsychroPlot(mpl):
 
         tmin = Temperature(config.getfloat("Psychr", "isotdbStart")).config()
         tmax = Temperature(config.getfloat("Psychr", "isotdbEnd")).config()
-        wmin = Temperature(config.getfloat("Psychr", "isowStart")).config()
-        wmax = Temperature(config.getfloat("Psychr", "isowEnd")).config()
+        wmin = config.getfloat("Psychr", "isowStart")
+        wmax = config.getfloat("Psychr", "isowEnd")
 
         if chart:
             self.ax.set_xlabel(xlabel, size="large")
@@ -318,9 +318,9 @@ class UI_Psychrometry(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Configure"))
         butonConfig.clicked.connect(self.configure)
         btBox.rejected.connect(self.reject)
+        layout.addWidget(btBox, 3, 4)
         btBox.layout().insertWidget(0, butonPNG)
         btBox.layout().insertWidget(0, butonConfig)
-        layout.addWidget(btBox, 3, 4)
 
         self.showToolBar(False)
         self.Preferences = ConfigParser()
@@ -440,10 +440,11 @@ class UI_Psychrometry(QtWidgets.QDialog):
         tm = Temperature(self.Preferences.getfloat("Psychr", "isotdbEnd"))
         format = formatLine(self.Preferences, "Psychr", "isow")
         for i, H in enumerate(H):
+            ts = Temperature(th[i]).config()
             if chart:
-                self.plt.plot([th[i], tm.config()], [H, H], **format)
+                self.plt.plot([ts, tm.config()], [H, H], **format)
             else:
-                self.plt.plot([H, H], [th[i], tm.config()], **format)
+                self.plt.plot([H, H], [ts, tm.config()], **format)
 
         # Iso relative humidity lines
         format = formatLine(self.Preferences, "Psychr", "isohr")
@@ -459,25 +460,27 @@ class UI_Psychrometry(QtWidgets.QDialog):
         format = formatLine(self.Preferences, "Psychr", "isotwb")
         for T, (H, Tw) in list(data["Twb"].items()):
             value = Temperature(T).config()
+            Tw_conf = [Temperature(Twi).config() for Twi in Tw]
             txt = Temperature.text()
             if chart:
-                self.plt.plot(Tw, H, **format)
-                self.drawlabel("isotwb", Tw, H, value, txt)
+                self.plt.plot(Tw_conf, H, **format)
+                self.drawlabel("isotwb", Tw_conf, H, value, txt)
             else:
-                self.plt.plot(H, Tw, **format)
-                self.drawlabel("isotwb", H, Tw, value, txt)
+                self.plt.plot(H, Tw_conf, **format)
+                self.drawlabel("isotwb", H, Tw_conf, value, txt)
 
         # Isochor lines
         format = formatLine(self.Preferences, "Psychr", "isochor")
         for v, (Td, H) in list(data["v"].items()):
             value = SpecificVolume(v).config()
+            Td_conf = [Temperature(Tdi).config() for Tdi in Td]
             txt = SpecificVolume.text()
             if chart:
-                self.plt.plot(Td, H, **format)
-                self.drawlabel("isochor", Td, H, value, txt)
+                self.plt.plot(Td_conf, H, **format)
+                self.drawlabel("isochor", Td_conf, H, value, txt)
             else:
-                self.plt.plot(H, Td, **format)
-                self.drawlabel("isochor", H, Td, value, txt)
+                self.plt.plot(H, Td_conf, **format)
+                self.drawlabel("isochor", H, Td_conf, value, txt)
 
         if self.plt.state:
             self.plt.createCrux(self.plt.state, chart)
@@ -515,5 +518,4 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     aireHumedo = UI_Psychrometry()
-    aireHumedo.show()
     sys.exit(app.exec_())

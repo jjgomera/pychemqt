@@ -43,7 +43,7 @@ class Widget(QtWidgets.QWidget):
         ("IsoW", float,
          QtWidgets.QApplication.translate(
              "pychemqt", "Iso absolute humidity")),
-        ("IsoHR", unidades.SpecificHeat,
+        ("IsoHR", float,
          QtWidgets.QApplication.translate(
              "pychemqt", "Iso relative humidity")),
         ("IsoTwb", unidades.Temperature,

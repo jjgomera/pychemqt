@@ -621,10 +621,10 @@ class PsyIdeal(PsyState):
         for w in H:
             if w:
                 Pv = w*P/(0.62198+w)
-                th.append(Temperature(_tdp(Pv)).config())
+                th.append(Temperature(_tdp(Pv)))
             else:
                 tmin = Preferences.getfloat("Psychr", "isotdbStart")
-                th.append(Temperature(tmin).config())
+                th.append(Temperature(tmin))
         data["H"] = H
         data["th"] = th
 
@@ -649,7 +649,7 @@ class PsyIdeal(PsyState):
             H = concatenate((arange(_W(P, T), 0, -0.001), [0.]))
             Tw = []
             for h in H:
-                Tw.append(Temperature(_Tdb(T, h, P)).config())
+                Tw.append(Temperature(_Tdb(T, h, P)))
             cont += 1
             parent.setProgressValue(15+75*cont/len(lines))
             Twb[T] = (list(H), Tw)
@@ -661,7 +661,7 @@ class PsyIdeal(PsyState):
         for cont, v in enumerate(lines):
             ts = _Tdb_V(v, P)
             T = linspace(ts, v*P/287.055, 50)
-            Td = [Temperature(ti).config() for ti in T]
+            Td = [Temperature(ti) for ti in T]
             _W_V
             H = [_W_V(ti, P, v) for ti in T]
             parent.setProgressValue(90+10*cont/len(lines))
@@ -853,10 +853,10 @@ class PsyCoolprop(PsyState):
         for w in H:
             if w:
                 tdp = HAProps("Tdp", "P", 101.325, "W", w, "RH", 1)
-                th.append(Temperature(tdp).config())
+                th.append(Temperature(tdp))
             else:
                 tmin = Preferences.getfloat("Psychr", "isotdbStart")
-                th.append(Temperature(tmin).config())
+                th.append(Temperature(tmin))
         data["H"] = H
         data["th"] = th
 
@@ -880,7 +880,7 @@ class PsyCoolprop(PsyState):
             ws = HAProps("W", "P", P_kPa, "RH", 1, "Tdb", T)
             H = [ws, 0]
             _td = HAProps("Tdb", "P", P_kPa, "Twb", T, "RH", 0)
-            Tw = [Temperature(T).config(), Temperature(_td).config()]
+            Tw = [Temperature(T), Temperature(_td)]
             cont += 1
             parent.progressBar.setValue(15+75*cont/len(lines))
             Twb[T] = (H, Tw)
@@ -898,7 +898,7 @@ class PsyCoolprop(PsyState):
                 try:
                     w.append(HAProps("W", "P", P_kPa, "RH", r, "V", v))
                     _td = HAProps("Tdb", "P", P_kPa, "RH", r, "V", v)
-                    Td.append(Temperature(_td).config())
+                    Td.append(Temperature(_td))
                 except ValueError:
                     pass
             parent.progressBar.setValue(90+10*cont/len(lines))
