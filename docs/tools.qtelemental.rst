@@ -48,14 +48,3 @@ Other properties can be shown clicking in the desired element. The properties av
     * Notes
 
 Furthermore the element name is available in several languages: English, Spanish, German, French, Portuguese, Italian, Chinese
-
-
-Module contents
----------------
-
-.. toctree::
-   :maxdepth: 4
-
-.. automodule:: tools.qtelemental
-    :members:
-    :show-inheritance:

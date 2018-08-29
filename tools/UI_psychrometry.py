@@ -100,6 +100,10 @@ class PsychroPlot(mpl):
             self.ly.set_xdata(state.w)
         self.showPointData(state, chart)
 
+    def clearCrux(self):
+        self.lx.set_ydata(0)
+        self.ly.set_xdata(0)
+
     def showPointData(self, state, chart=True):
         """Update data of current cursor point in plot annotates"""
         self.clearPointData()
@@ -501,6 +505,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
                 self.inputs.setState(state)
                 self.plt.createCrux(state, chart)
             else:
+                self.plt.clearCrux()
                 self.plt.clearPointData()
 
     def createState(self, x, y):

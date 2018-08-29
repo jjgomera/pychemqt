@@ -85,14 +85,12 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* Baghouse
 	* Spreadsheet equipment (ods,xlsx)
 * Tools
-	* Periodic table of elements
-	* Steam Tables
-	* Psychometric chart
 	* Units converter 
 	* Currency converter
+	* `Periodic table of elements <tools.qtelemental.html>`__
+	* `Psychometric chart <tools.UI_psychrometry.html>`__
+	* `High quality calculation of properties using multi-parameter equations <tools.UITables.html>`__
 	* Introspection support with a python shell (Linux only)
-	* High quality calculation of properties using multi-parameter equations
-
 
 * Configurable: Units system, property correlation, EoS to use...
 * Internationalization support: english, spanish.
@@ -105,6 +103,7 @@ TODO
 * Improve the gui
 * Add more equipment: complete heat exchanger, distillation columns, reactors...
 * Clean code and debug bugs
+* Add testing of libraries
 * Improve documentation
 
 For any suggestions, comments, bugs ... you can contact me at `email <jjgomera@gmail.com>`__.
