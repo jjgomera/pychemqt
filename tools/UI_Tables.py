@@ -1778,12 +1778,12 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_liquid_density.addWidget(label, 1, 1)
 
             self.Table_Liquid_Density = Tabla(
-                2, horizontalHeader=["ao", "n"],
+                2, horizontalHeader=["n", "t"],
                 verticalHeader=True, stretch=False, readOnly=True)
             self.Table_Liquid_Density.setColumn(
-                0, element._liquid_Density["ao"])
+                0, element._liquid_Density["n"])
             self.Table_Liquid_Density.setColumn(
-                1, element._liquid_Density["exp"])
+                1, element._liquid_Density["t"])
             gridLayout_liquid_density.addWidget(
                 self.Table_Liquid_Density, 2, 1)
             self.Table_Liquid_Density.resizeColumnsToContents()
@@ -1816,11 +1816,11 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_vapor_density.addWidget(label, 1, 1)
 
             self.Table_Vapor_Density = Tabla(
-                2, horizontalHeader=["ao", "n"], verticalHeader=True,
+                2, horizontalHeader=["n", "t"], verticalHeader=True,
                 stretch=False, readOnly=True)
-            self.Table_Vapor_Density.setColumn(0, element._vapor_Density["ao"])
+            self.Table_Vapor_Density.setColumn(0, element._vapor_Density["n"])
             self.Table_Vapor_Density.setColumn(
-                1, element._vapor_Density["exp"])
+                1, element._vapor_Density["t"])
             gridLayout_vapor_density.addWidget(self.Table_Vapor_Density, 2, 1)
             self.Table_Vapor_Density.resizeColumnsToContents()
         else:
@@ -1853,12 +1853,12 @@ class transportDialog(QtWidgets.QDialog):
             gridLayout_vapor_pressure.addWidget(label, 1, 1)
 
             self.Table_Vapor_Pressure = Tabla(
-                2, horizontalHeader=["ao", "n"], verticalHeader=True,
+                2, horizontalHeader=["n", "t"], verticalHeader=True,
                 stretch=False, readOnly=True)
             self.Table_Vapor_Pressure.setColumn(
-                0, element._vapor_Pressure["ao"])
+                0, element._vapor_Pressure["n"])
             self.Table_Vapor_Pressure.setColumn(
-                1, element._vapor_Pressure["exp"])
+                1, element._vapor_Pressure["t"])
             gridLayout_vapor_pressure.addWidget(
                 self.Table_Vapor_Pressure, 2, 1)
             self.Table_Vapor_Pressure.resizeColumnsToContents()
@@ -2171,11 +2171,11 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
         elif eq["eq"] == 4:
             gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
             self.ek = Entrada_con_unidades(
-                float, value=eq["ek"], readOnly=True)
+                float, value=eq.get("ek", None), readOnly=True)
             gridLayout.addWidget(self.ek, 4, 2)
             gridLayout.addWidget(QtWidgets.QLabel("σ"), 5, 1)
             self.sigma = Entrada_con_unidades(
-                float, value=eq["sigma"], readOnly=True)
+                float, value=eq.get("sigma", None), readOnly=True)
             gridLayout.addWidget(self.sigma, 5, 2)
             self.Tabla_Visco4 = Tabla(
                 7, stretch=False, readOnly=True,
@@ -2187,7 +2187,7 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
             self.Tabla_Visco4.setColumn(3, eq["A"], **format)
             self.Tabla_Visco4.setColumn(4, eq["B"], **format)
             self.Tabla_Visco4.setColumn(5, eq["C"], **format)
-            self.Tabla_Visco4.setColumn(6, eq["D"], **format)
+            # self.Tabla_Visco4.setColumn(6, eq["D"], **format)
             self.Tabla_Visco4.resizeColumnsToContents()
             gridLayout.addWidget(self.Tabla_Visco4, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(

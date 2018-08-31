@@ -85,7 +85,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* Baghouse
 	* Spreadsheet equipment (ods,xlsx)
 * Tools
-	* Units converter 
+	* `Units converter <tools.UI_unitConverter.html>`__
 	* Currency converter
 	* `Periodic table of elements <tools.qtelemental.html>`__
 	* `Psychometric chart <tools.UI_psychrometry.html>`__
