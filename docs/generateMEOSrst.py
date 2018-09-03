@@ -12,7 +12,7 @@ import lib
 txt = "lib.mEoS"
 txt += os.linesep + "========" + os.linesep + os.linesep
 txt += "The list of available fluid with high quality multiparameter equations"
-txt += "is automatically updated here:" + os.linesep + os.linesep
+txt += " is automatically updated here:" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep + os.linesep
 for mod in lib.mEoS.__all__:
     txt += "    lib.mEoS.%s" % mod.__name__

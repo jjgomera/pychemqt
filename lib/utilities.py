@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import random
 
+from scipy import exp
 from PyQt5.QtWidgets import QApplication
 
 
@@ -259,6 +260,60 @@ def formatLine(config, section, name):
     format["mec"] = config.get(section, name+"markeredgecolor")
 
     return format
+
+
+def SimpleEq(Tc, T, coef):
+    r"""Common procedure for calculation of simple properties like the
+    ancillary equation for vapor pressure, saturated densities of liquid
+    and vapor
+
+    The procedure define several equations:
+
+    .. math::
+        \frac{x}{x_r} = 1 + \sum_i N_i\theta^{t_i}
+
+    .. math::
+        \ln\left(\frac{x}{x_r}\right) = \sum_i N_i\theta^{t_i}
+
+    .. math::
+        \ln\left(\frac{x}{x_r}\right) = \frac{T_c}{T}\sum_i N_i\theta^{t_i}
+
+    .. math::
+        \theta = 1 - \frac{T}{Tc}
+
+    The coef must define the parameters:
+
+        * eq: Index of equation to use
+        * n: Polinomial parameter
+        * t: Exponent of tita
+
+
+    Parameters
+    ----------
+    Tc : float
+        Critical Temperature, [K]
+    T : float
+        Temperature, [K]
+    coef: dict
+        Coefficient for correlation
+    """
+
+    Tita = 1-T/Tc
+
+    pr = 0
+    for n, t in zip(coef["n"], coef["t"]):
+        pr += n*Tita**t
+
+    if coef["eq"] == 1:
+        pr += 1
+
+    if coef["eq"] == 3:
+        pr *= Tc/T
+
+    if coef["eq"] in [2, 3]:
+        pr = exp(pr)
+
+    return pr
 
 
 if __name__ == "__main__":
