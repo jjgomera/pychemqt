@@ -62,7 +62,7 @@ class nC16(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": 298, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 10,
+        "Tmin": 298, "Tmax": 700.0, "Pmax": 200000.0, "rhomax": 10,
         # "Pmin": 0.580, "rhomin": 8.165,
 
         "nr1": [0.03965879, 1.945813, -3.738575, -0.3428167, 0.3427022],
@@ -100,3 +100,100 @@ class nC16(MEoS):
         "eq": 2,
         "n": [-5.0096, 0.9061, -61.4138, -143.5222, -369.0229],
         "t": [0.44, 2.32, 1.75, 4.4, 9.97, 20.9]}
+
+    visco0 = {"__name__": "Meng (2018)",
+              "__doi__": {
+                  "autor": "Meng, X.Y., Sun, Y.K., Cao, F.L., Wu, J.T., "
+                           "Vesovic, V.",
+                  "title": "Reference Correlation of the Viscosity of "
+                           "n-Hexadecane from the Triple Point to 673 K and "
+                           "up to 425 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 47(3) (2018) 033102",
+                  "doi": "10.1063/1.5039595"},
+
+              "eq": 1, "omega": 3,
+              "collision": [-0.6131, 414.4, -39759],
+
+              "sigma": 1,
+              "n_chapman": 0.32137/M**0.5,
+
+              "Tref_res": 722.1, "rhoref_res": M,
+              "nr": [0.000692129, 0.00645721, -0.000305913, 1.26656e-12,
+                     21.851, -30.2533, 21.0853],
+              "dr": [9+2/3, 9+2/3, 11+2/3, 24+2/3, 1.6+2/3, 0.6+2/3, 2/3],
+              "tr": [-0.5, 0.8, -0.5, 5, -0.5, -1.5, -0.5],
+
+              "special": "_vir"}
+
+    def _vir(self, rho, T, fase):
+        # The initial density dependence has a different expresion, without muo
+        muB = 0
+        if rho:
+            for i, n in enumerate([7.4345, -739.4, -2255587]):
+                muB += n/T**i
+        return muB*rho/self.M
+
+    _viscosity = visco0,
+
+class Test(TestCase):
+
+    def test_meng(self):
+        # Table 5, saturation states, include basic test for Romeo EoS
+        st = nC16(T=293.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 10), 1.157e-7)
+        self.assertEqual(round(st.Gas.rhoM, 11), 4.747e-8)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 3.93)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 3.4168)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 3468.0)
+
+        st = nC16(T=383.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 7), 1.828e-4)
+        self.assertEqual(round(st.Gas.rhoM, 8), 5.740e-5)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 5.18)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 3.1384)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.7)
+
+        st = nC16(T=473.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 9.779e-3)
+        self.assertEqual(round(st.Gas.rhoM, 6), 2.521e-3)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 6.72)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 2.8521)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 351.2)
+
+        st = nC16(T=563.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 1.087e-1)
+        self.assertEqual(round(st.Gas.rhoM, 5), 2.528e-2)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.03)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 2.5309)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 184.0)
+
+        st = nC16(T=653.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 5.507e-1)
+        self.assertEqual(round(st.Gas.rhoM, 4), 1.381e-1)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.44)
+        self.assertEqual(round(st.Liquido.rhoM, 4), 2.1011)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 97.4)
+
+        # Table 8, Pag 9
+        self.assertEqual(round(nC16(T=300, rhom=0).mu.muPas, 3), 4.016)
+        self.assertEqual(round(nC16(T=300, rhom=3.3958).mu.muPas, 3), 2952.344)
+        self.assertEqual(round(nC16(T=300, rhom=3.5204).mu.muPas, 3), 5399.826)
+        self.assertEqual(round(nC16(T=300, rhom=3.9643).mu.muPas, 2), 64703.41)
+        self.assertEqual(round(nC16(T=400, rhom=0).mu.muPas, 3), 5.399)
+        self.assertEqual(round(nC16(T=400, rhom=3.0865).mu.muPas, 3), 667.473)
+        self.assertEqual(round(nC16(T=400, rhom=3.2773).mu.muPas, 3), 1133.060)
+        self.assertEqual(round(nC16(T=400, rhom=3.8145).mu.muPas, 3), 8775.901)
+        self.assertEqual(round(nC16(T=600, rhom=0).mu.muPas, 3), 8.135)
+        self.assertEqual(round(nC16(T=600, rhom=2.8585).mu.muPas, 3), 325.831)
+        self.assertEqual(round(nC16(T=600, rhom=3.578).mu.muPas, 3), 1463.805)
+        self.assertEqual(round(nC16(T=700, rhom=0).mu.muPas, 3), 9.418)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = nC16(T=700, rhom=2.6752)
+        mu = st._Viscosity(2.6752*st.M, 700, None)
+        self.assertEqual(round(mu.muPas, 3), 223.559)
+
+        self.assertEqual(round(nC16(T=700, rhom=3.4806).mu.muPas, 3), 949.425)
+
+ 
