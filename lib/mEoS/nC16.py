@@ -135,6 +135,40 @@ class nC16(MEoS):
 
     _viscosity = visco0,
 
+    thermo0 = {"__name__": "Monogenidou (2018)",
+               "__doi__": {
+                   "autor": "Monogenidou, S.A., Assael, M.J., Huber, M.L.",
+                   "title": "Reference Correlations for the Thermal "
+                            "Conductivity of n-Hexadecane from the Triple "
+                            "Point to 700K and up to 50MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 47(1) (2018) 013103",
+                   "doi": "10.1063/1.5021459"},
+
+               "eq": 1,
+
+               "Toref": 722.1, "koref": 1e-3,
+               "no_num": [4.25547, -39.3553, 140.965, -244.669, 143.418,
+                          -48.4488, 6.8884],
+               "to_num": [0, 1, 2, 3, 4, 5, 6],
+               "no_den": [0.152925, -1],
+               "to_den": [0, 1],
+
+               # The table 2 in paper report values as mW/mK, it's a typo,
+               # really is in W/mK
+               "Tref_res": 722.1, "rhoref_res": 226.441, "kref_res": 1,
+               "nr": [-0.372089e-1, 0.935694e-1, -0.313826e-1, 0.201863e-2,
+                      0.255103e-3, 0.409813e-1, -0.101536, 0.574353e-1,
+                      -0.153161e-1, 0.197462e-2],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.291e-9,
+               "gam0": 0.063, "qd": 0.998e-9, "Tcref": 1083.2}
+
+    _thermal = thermo0,
+
+
 class Test(TestCase):
 
     def test_meng(self):
@@ -196,4 +230,52 @@ class Test(TestCase):
 
         self.assertEqual(round(nC16(T=700, rhom=3.4806).mu.muPas, 3), 949.425)
 
- 
+    def test_Monogenidou(self):
+        # Table 6, Pag 7, single phase states
+        st = nC16(T=300, P=1e5)
+        self.assertEqual(round(st.rho, 2), 768.94)
+        self.assertEqual(round(st.k.mWmK, 2), 143.52)
+
+        st = nC16(T=500, P=1e5)
+        self.assertEqual(round(st.rho, 2), 625.54)
+        self.assertEqual(round(st.k.mWmK, 2), 110.68)
+
+        st = nC16(T=700, P=1e5)
+        self.assertEqual(round(st.rho, 3), 4.010)
+        self.assertEqual(round(st.k.mWmK, 3), 40.981)
+
+        st = nC16(T=300, P=1e7)
+        self.assertEqual(round(st.rho, 2), 775.36)
+        self.assertEqual(round(st.k.mWmK, 2), 146.53)
+
+        st = nC16(T=500, P=1e7)
+        self.assertEqual(round(st.rho, 2), 644.98)
+        self.assertEqual(round(st.k.mWmK, 2), 116.13)
+
+        st = nC16(T=700, P=1e7)
+        self.assertEqual(round(st.rho, 2), 505.43)
+        self.assertEqual(round(st.k.mWmK, 2), 94.80)
+
+        st = nC16(T=300, P=2.5e7)
+        self.assertEqual(round(st.rho, 2), 784.21)
+        self.assertEqual(round(st.k.mWmK, 2), 150.94)
+
+        st = nC16(T=500, P=2.5e7)
+        self.assertEqual(round(st.rho, 2), 666.49)
+        self.assertEqual(round(st.k.mWmK, 2), 123.07)
+
+        st = nC16(T=700, P=2.5e7)
+        self.assertEqual(round(st.rho, 2), 559.38)
+        self.assertEqual(round(st.k.mWmK, 2), 105.81)
+
+        st = nC16(T=300, P=5e7)
+        self.assertEqual(round(st.rho, 2), 797.17)
+        self.assertEqual(round(st.k.mWmK, 2), 157.98)
+
+        st = nC16(T=500, P=5e7)
+        self.assertEqual(round(st.rho, 2), 692.52)
+        self.assertEqual(round(st.k.mWmK, 2), 133.07)
+
+        st = nC16(T=700, P=5e7)
+        self.assertEqual(round(st.rho, 2), 605.77)
+        self.assertEqual(round(st.k.mWmK, 2), 118.31)

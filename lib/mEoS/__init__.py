@@ -214,7 +214,3 @@ for obj in __all__:
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 # TODO: Add ethylene oxide and 1,2-dichloroethane from Thol thesis
-# TODO: Add hexadecane
-#    Romeo, Lemmon: Helmholtz equation of state for hexadecane
-#    Thermal conductivity from Monogenidou et al.
-#    X. Meng, X. Yang, F. Cao, J. Wu, and V. Vesovic, Viscosity of n-hexadecane
