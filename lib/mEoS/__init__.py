@@ -95,6 +95,7 @@ from lib.mEoS.C1Stearate import C1Stearate
 from lib.mEoS.Methanol import Methanol
 from lib.mEoS.Ethanol import Ethanol
 from lib.mEoS.Acetone import Acetone
+from lib.mEoS.EthyOxide import EthyOxide
 from lib.mEoS.DME import DME
 from lib.mEoS.DEE import DEE
 from lib.mEoS.DMC import DMC
@@ -177,7 +178,8 @@ Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
            Ethylene, Propylene, Butene_1, iButene, Cis_2_butene,
            Trans_2_butene, Propyne, C1Oleate, C1Linolenate, C1Linoleate,
            C1Palmitate, C1Stearate]
-Heteroatom = [Methanol, Ethanol, Acetone, DME, DEE, DMC, NF3, SF6, HCl]
+Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, DME, DEE, DMC, NF3, SF6,
+              HCl]
 CFCs = [R13I1, C4F10, C5F12, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41,
         R113, R114, R115, R116, R123, R124, R125, R134a, R141b, R142b, R143a,
         R152a, R161, R218, R227ea, R236ea, R236fa, R245ca, R245fa, R365mfc,
@@ -211,7 +213,6 @@ for obj in __all__:
     __doi__[obj.__name__] = subdict
 
 
-# TODO: Add Novec 649 from 10.1021/acs.jced.5b00623
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
-# TODO: Add ethylene oxide and 1,2-dichloroethane from Thol thesis
+# TODO: Add 1,2-dichloroethane from Thol thesis
