@@ -209,6 +209,10 @@ for obj in __all__:
                 subdict[key] = eq["__doi__"]
     if obj._surface and "__doi__" in obj._surface:
         subdict["surface"] = obj._surface["__doi__"]
+    if obj._melting and "__doi__" in obj._melting:
+        subdict["melting"] = obj._melting["__doi__"]
+    if obj._sublimation and "__doi__" in obj._sublimation:
+        subdict["sublimation"] = obj._sublimation["__doi__"]
 
     __doi__[obj.__name__] = subdict
 

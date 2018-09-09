@@ -213,15 +213,23 @@ class SF6(MEoS):
     eq = guder, reuck, shortSpan, polt
 
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
-                "Tmin": Tt, "Tmax": 800.0,
-                "a1": [1., -30.0468473, 30.0468473, 359.771253, -359.771253],
-                "exp1": [0, -20., 0, 3.25, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 2, "Tref": Tt, "Pref": 231.429,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [-11.6942141, 11.6942141], "exp1": [-1.07, 0],
-                    "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _melting = {
+        "__doi__": {
+            "autor": "Harvey, A.H.",
+            "title": "On the Melting Curve of Sulfur Hexafluoride",
+            "ref": "J. Phys. Chem. Ref. Data 46(4) (2017) 043102",
+            "doi": "10.1063/1.5005537"},
+
+        "eq": 1, "Tref": Tt, "Pref": 1,
+        "a1": [231.429, 223.7e3, -223.7e3],
+        "exp1": [0, 1.555, 0],
+        "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _sublimation = {
+        "eq": 2, "Tref": Tt, "Pref": 231.429,
+        "Tmin": Tt, "Tmax": Tt,
+        "a1": [-11.6942141, 11.6942141], "exp1": [-1.07, 0],
+        "a2": [], "exp2": [], "a3": [], "exp3": []}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.09634642, 1.676662, -2.3921599, 5.86078302, -9.02978735],
