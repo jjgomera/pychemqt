@@ -23,10 +23,10 @@ import sys
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.abspath('./'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # Define pychemqt environment
-os.environ["pychemqt"] = os.path.abspath('./')
+os.environ["pychemqt"] = os.path.abspath('..')
 os.environ["freesteam"] = "False"
 os.environ["pybel"] = "False"
 os.environ["CoolProp"] = "False"
@@ -37,6 +37,8 @@ os.environ["xlwt"] = "False"
 os.environ["icu"] = "False"
 os.environ["reportlab"] = "False"
 os.environ["PyQt5.Qsci"] = "False"
+
+print(os.environ["pychemqt"])
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
