@@ -5,6 +5,21 @@
 
 import os
 
+# Define the pychemqt environment
+
+os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
+os.environ["freesteam"] = "False"
+os.environ["pybel"] = "False"
+os.environ["CoolProp"] = "False"
+os.environ["refprop"] = "False"
+os.environ["ezodf"] = "False"
+os.environ["openpyxl"] = "False"
+os.environ["xlwt"] = "False"
+os.environ["icu"] = "False"
+os.environ["reportlab"] = "False"
+os.environ["PyQt5.Qsci"] = "False"
+
+
 import lib
 
 

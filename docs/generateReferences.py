@@ -1,14 +1,29 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Generate the *-ref.rst files with list of references
+# Define the pychemqt environmentl
+import os
 
+os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
+os.environ["freesteam"] = "False"
+os.environ["pybel"] = "False"
+os.environ["CoolProp"] = "False"
+os.environ["refprop"] = "False"
+os.environ["ezodf"] = "False"
+os.environ["openpyxl"] = "False"
+os.environ["xlwt"] = "False"
+os.environ["icu"] = "False"
+os.environ["reportlab"] = "False"
+os.environ["PyQt5.Qsci"] = "False"
+
+# Generate the *-ref.rst files with list of references
 import lib
 
 all = lib.__all__ 
 for mod in lib.EoS.__all__:
     all.append(".".join(mod.__name__.split(".")[1:]))
 
+total = []
 for library in all:
     if library in ["EoS", "mEoS"]:
         continue
