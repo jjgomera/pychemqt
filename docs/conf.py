@@ -26,6 +26,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.append(os.path.join(os.path.abspath(os.pardir)))
+sys.path.insert(0, os.path.abspath('../lib'))
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
