@@ -41,6 +41,8 @@ os.environ["reportlab"] = "False"
 os.environ["PyQt5.Qsci"] = "False"
 
 print(os.environ["pychemqt"])
+import glob
+print(glob.glob(os.environ["pychemqt"]+"/*", recursive=True))
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
