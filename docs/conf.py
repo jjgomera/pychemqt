@@ -26,7 +26,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
 # Define pychemqt environment
-os.environ["pychemqt"] = os.path.abspath('../..')
+os.environ["pychemqt"] = os.path.abspath('../')
 os.environ["freesteam"] = "False"
 os.environ["pybel"] = "False"
 os.environ["CoolProp"] = "False"
