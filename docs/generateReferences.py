@@ -1,22 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# Define the pychemqt environmentl
-import os
-
-os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
-os.environ["freesteam"] = "False"
-os.environ["pybel"] = "False"
-os.environ["CoolProp"] = "False"
-os.environ["refprop"] = "False"
-os.environ["ezodf"] = "False"
-os.environ["openpyxl"] = "False"
-os.environ["xlwt"] = "False"
-os.environ["icu"] = "False"
-os.environ["reportlab"] = "False"
-os.environ["PyQt5.Qsci"] = "False"
-
 # Generate the *-ref.rst files with list of references
+
 import lib
 
 all = lib.__all__ 
