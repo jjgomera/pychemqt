@@ -20,7 +20,8 @@ setup(
     license="gpl v3",
     version=__version__,
 
-    packages=find_packages(exclude=["iapws"]),
+    # packages=find_packages(exclude=["iapws"]),
+    packages=["pychemqt." + pkg for pkg in find_packages(exclude=["iapws"])],
     package_data={'': ['../README.rst', '../LICENSE'],
                   'images': ["*.png", "*/*.png", "*.jpg", "*/*.jpg",
                              "*/*.svg", "*/*.gif"],
