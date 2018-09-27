@@ -4,9 +4,3 @@ numpydoc
 pyqt5
 matplotlib
 iapws
-
-equipment/
-lib/
-plots/
-tools/
-UI/
