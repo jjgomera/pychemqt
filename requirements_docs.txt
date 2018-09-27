@@ -5,8 +5,4 @@ pyqt5
 matplotlib
 iapws
 
-pychemqt.equipment/
-pychemqt.lib/
-pychemqt.plots/
-pychemqt.tools/
-pychemqt.UI/
+pychemqt
