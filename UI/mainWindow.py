@@ -465,7 +465,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             icon="button/image",
             parent=self)
         actionAyuda = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Ayuda"),
+            QtWidgets.QApplication.translate("pychemqt", "Help"),
             slot=self.help,
             icon="button/help",
             parent=self)
