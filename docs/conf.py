@@ -25,6 +25,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../lib'))
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
@@ -41,7 +42,7 @@ os.environ["PyQt5.Qsci"] = "False"
 
 print(os.environ["pychemqt"])
 import glob
-print(glob.glob(os.environ["pychemqt"]+"/*", recursive=True))
+print(glob.glob(os.environ["pychemqt"]+"/lib/*", recursive=True))
 print(sys.path)
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
