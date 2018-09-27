@@ -25,7 +25,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath('../'))
 
-import tools
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
@@ -56,6 +55,8 @@ try:
 except FileExistsError:  # noqa
     pass
 
+
+import lib
 
 # Checking config files
 from tools import firstrun  # noqa
