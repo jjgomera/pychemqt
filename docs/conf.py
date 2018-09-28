@@ -67,8 +67,6 @@ except FileExistsError:  # noqa
     pass
 
 
-import lib
-
 # Checking config files
 from tools import firstrun  # noqa
 
@@ -117,6 +115,8 @@ shutil.copy(origen, conf_dir + "moneda.dat")
 # Checking database with custom components
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
+
+import lib
 
 # -- General configuration ------------------------------------------------
 
