@@ -32,7 +32,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['PyQt5', 'PyQt5.QtWidgets', 'PyQt5.QtCore']
+MOCK_MODULES = ['PyQt5', 'PyQt5.QtWidgets', 'PyQt5.QtCore', "scipy"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Define pychemqt environment
