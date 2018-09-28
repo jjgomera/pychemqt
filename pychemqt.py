@@ -339,7 +339,7 @@ if currency:
     # Try to retrieve exchange rates from yahoo
     try:
         firstrun.getrates(conf_dir + "moneda.dat")
-    except urllib.error.URLError:
+    except urllib.error.URLError, urllib.error.HTTPError:
         # Internet error, get hardcoded exchanges from pychemqt distribution
         # Possible outdated file, try to update each some commits
         origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
