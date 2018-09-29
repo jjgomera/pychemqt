@@ -1,7 +1,7 @@
 lib.adimensional module
 =======================
 
-.. automodule:: pychemqt.lib.adimensional
+.. automodule:: lib.adimensional
     :members:
     :undoc-members:
     :show-inheritance:

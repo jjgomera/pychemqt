@@ -1,7 +1,7 @@
 lib.compuestos module
 =====================
 
-.. automodule:: compuestos
+.. automodule:: lib.compuestos
     :members:
     :undoc-members:
     :show-inheritance:

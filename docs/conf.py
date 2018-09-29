@@ -27,15 +27,30 @@ sys.path.insert(0, os.path.abspath('../'))
 
 from unittest.mock import MagicMock
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
+# class Mock(MagicMock):
+    # @classmethod
+    # def __getattr__(cls, name):
+        # return MagicMock()
 
-MOCK_MODULES = [
-    'PyQt5', 'PyQt5.QtWidgets', 'PyQt5.QtCore',
-    'scipy', 'scipy.optimize', 'scipy.constants']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# MOCK_MODULES = [
+    # 'PyQt5', 'PyQt5.QtWidgets', 'PyQt5.QtCore',
+    # 'scipy', 'scipy.optimize', 'scipy.constants', 'scipy.special',
+    # 'scipy.interpolate', 'scipy.misc']
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+# class PyQt5:
+    # class QtCore:
+        # @staticmethod
+        # def qVersion():
+            # return '5.0.0'
+        # class QObject:
+            # pass
+    # class QtWidgets:
+        # @staticmethod
+        # def qVersion():
+            # return '5.0.0'
+
+# sys.modules['PyQt5'] = PyQt5
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
@@ -66,6 +81,7 @@ try:
 except FileExistsError:  # noqa
     pass
 
+autodoc_mock_imports = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore', 'PyQt5.QtWidgets']
 
 # Checking config files
 from tools import firstrun  # noqa
@@ -116,6 +132,7 @@ shutil.copy(origen, conf_dir + "moneda.dat")
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
+import equipment
 import lib
 
 # -- General configuration ------------------------------------------------

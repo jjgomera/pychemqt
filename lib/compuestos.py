@@ -423,7 +423,7 @@ __doi__ = {
     49:
         {"autor": "Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.",
          "title": "Generalized Multiparameter Correlation for Nonpolar and "
-                  "Polar Fluid Trnasport Properties",
+                  "Polar Fluid Transport Properties",
          "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
          "doi": "10.1021/ie00076a024"},
     50:
@@ -2296,11 +2296,11 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     Selected value from Table 1 in [46]_, hydrogen
 
     >>> from lib.mEoS import H2
-    >>> young = H2(eq="MBWR")  # Using the ancient critical constant
-    >>> T = 0.904*young.Tc
-    >>> P = 7.71*young.Pc
-    >>> Ps = young._Vapor_Pressure(T)
-    >>> "%0.2f" % MuL_Lucas(T, P, young.Tc, young.Pc, young.f_acent, Ps, 1)
+    >>> y = H2.MBWR
+    >>> T = 0.904*y["Tc"]
+    >>> P = 7.71*y["Pc"]*1e3
+    >>> Ps = H2()._Vapor_Pressure(T)
+    >>> "%0.2f" % MuL_Lucas(T, P, y["Tc"], y["Pc"]*1e3, H2.f_acent, Ps, 1)
     '1.92'
 
     References
@@ -2736,8 +2736,8 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
         Temperature, [K]
     Tc : float
         Critical temperature, [K]
-    Pc : float
-        Critical pressure, [Pa]
+    Vc : float
+        Critical volume, [m³/kg]
     M : float
         Molecular weight, [g/mol]
     w : float
