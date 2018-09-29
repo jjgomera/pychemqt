@@ -3,5 +3,3 @@ numpy
 numpydoc
 matplotlib
 iapws
-
-pychemqt
