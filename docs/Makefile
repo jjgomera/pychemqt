@@ -54,8 +54,6 @@ clean:
 	rm -rf $(BUILDDIR)/*
 
 html:
-	cd .. && python3 docs/generateReferences.py
-	cd .. && python3 docs/generateMEOSrst.py
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
