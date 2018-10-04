@@ -1206,19 +1206,47 @@ def f_ghanbari(Re, eD):
 
     References
     ----------
-    .. [26] Ghanbari, A., Farshad, F., Rieke, H.H. Newly developed friction
-        factor correlation for pipe flow and flow assurance. J Chem Eng Mat
-        Sci 2 (2011), 83-86.
+    [26]_ Ghanbari, A., Farshad, F., Rieke, H.H. Newly developed friction
+    factor correlation for pipe flow and flow assurance. J. Chem. Eng. Mat.
+    Sci. 2 (2011) 83-86.
     """
     # Eq 10
     return (-1.52*log10((eD/7.21)**1.042+(2.731/Re)**0.9152))**-2.169
 
 
-f_list = (f_colebrook, f_chen, f_chen1979, f_moody, f_wood, f_eck, f_altshul,
-          f_churchill, f_haaland, f_serghides, f_round, f_swamee, f_jain,
-          f_barr, f_zigrang, f_shacham, f_tsal, f_manadilli, f_romeo,
-          f_goudar, f_goudar2007, f_buzzelli, f_Vatankhah, f_avci,
-          f_papaevangelou, f_brkic, f_fang, f_ghanbari)
+def f_Samadianfard(Re, eD):
+    r"""Calculates friction factor `f` with Samadianfard correlation (2012)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    eD : float
+        Relative roughness of a pipe, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    References
+    ----------
+    [28]_ Samadianfard, S. Gene expression programming analysis of implicit
+    Colebrook-White equation in turbulent flow friction factor calculation. J.
+    Pet. Sci. Eng. 92-93 (2012) 48-55
+    """
+    # Eq 29
+    f = (Re**eD-0.6315093)/(Re**(1/3)+Re*eD) + \
+        0.0275308*(6.929841/Re+eD)**(1/9) + \
+        10**eD/(eD+4.481616)*(eD**0.5+9.99701/Re)
+    return f
+
+
+f_list = (f_colebrook, f_chen, f_Vatankhah, f_buzzelli, f_romeo, f_serghides,
+          f_zigrang, f_Samadianfard, f_brkic, f_fang, f_ghanbari, f_haaland,
+          f_round, f_swamee, f_jain, f_barr, f_shacham, f_tsal, f_manadilli,
+          f_goudar, f_goudar2007, f_avci, f_papaevangelou, f_churchill,
+          f_chen1979, f_moody, f_wood, f_eck, f_altshul)
 
 
 def f_blasius(Re):
