@@ -2120,9 +2120,9 @@ class Currency(unidad):
     __units__ = []
     __tooltip__ = []
     for unit, tip, txt in _uTotal:
-        __text__.append(txt)
         __units__.append(unit)
         __tooltip__.append(tip)
+        __text__.append(txt)
 
     __units_set__ = {"altsi": "usd", "si": "usd", "metric": "usd",
                      "cgs": "usd", "english": "usd"}

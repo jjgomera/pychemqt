@@ -41,7 +41,7 @@ class Widget(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
         self.metodos = QtWidgets.QComboBox()
         for f in f_list:
-            line = f.__doc__.split("\n")[1]
+            line = f.__doc__.split("\n")[0]
             year = line.split(" ")[-1]
             name = line.split(" ")[-3]
             doc = name + " " + year

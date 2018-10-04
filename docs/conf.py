@@ -124,6 +124,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
     'numpydoc',
 ]
 
@@ -395,6 +396,13 @@ numpydoc_class_members_toctree = False
 
 # Autosummary configuration
 autosummary_generate = True
+
+# Autodoc configuration
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'undoc-members': None,
+}
 
 
 def setup(app):

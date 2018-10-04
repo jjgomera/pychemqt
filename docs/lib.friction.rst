@@ -5,3 +5,6 @@ lib.friction module
     :members:
     :undoc-members:
     :show-inheritance:
+    :member-order: bysource
+
+.. include:: lib.friction_ref.rst
