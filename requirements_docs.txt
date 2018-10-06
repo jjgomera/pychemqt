@@ -4,3 +4,4 @@ numpydoc
 pyqt5
 matplotlib
 iapws
+sphinx_rtd_theme
