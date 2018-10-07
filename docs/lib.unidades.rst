@@ -3,5 +3,6 @@ lib.unidades module
 
 .. automodule:: lib.unidades
     :members:
-    :undoc-members:
-    :show-inheritance:
+    :private-members:
+    :special-members:
+    :member-order: bysource

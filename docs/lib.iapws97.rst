@@ -5,3 +5,5 @@ lib.iapws97 module
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. include:: lib.iapws97_ref.rst

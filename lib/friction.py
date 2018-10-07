@@ -22,40 +22,40 @@ Module for implement friction factor related functionality
 
 **Friction factor**
 
-Global function with all functionality, :func:`lib.friction.f_friccion`
+Global function with all functionality, :func:`f_friccion`
 
 Friction factor for rough pipes, Colebrook-White intrinsic equation is solved
 by iteration so so many method have been implement to get direct equations:
 
-    * :func:`lib.friction.f_colebrook`
-    * :func:`lib.friction.f_chen`
-    * :func:`lib.friction.f_Vatankhah`
-    * :func:`lib.friction.f_buzzelli`
-    * :func:`lib.friction.f_romeo`
-    * :func:`lib.friction.f_serghides`
-    * :func:`lib.friction.f_zigrang`
-    * :func:`lib.friction.f_Samadianfard`
-    * :func:`lib.friction.f_brkic`
-    * :func:`lib.friction.f_fang`
-    * :func:`lib.friction.f_ghanbari`
-    * :func:`lib.friction.f_haaland`
-    * :func:`lib.friction.f_round`
-    * :func:`lib.friction.f_swamee`
-    * :func:`lib.friction.f_jain`
-    * :func:`lib.friction.f_barr`
-    * :func:`lib.friction.f_shacham`
-    * :func:`lib.friction.f_tsal`
-    * :func:`lib.friction.f_manadilli`
-    * :func:`lib.friction.f_goudar`
-    * :func:`lib.friction.f_goudar2007`
-    * :func:`lib.friction.f_avci`
-    * :func:`lib.friction.f_papaevangelou`
-    * :func:`lib.friction.f_churchill`
-    * :func:`lib.friction.f_chen1979`
-    * :func:`lib.friction.f_moody`
-    * :func:`lib.friction.f_wood`
-    * :func:`lib.friction.f_eck`
-    * :func:`lib.friction.f_altshul`
+    * :func:`f_colebrook`
+    * :func:`f_chen`
+    * :func:`f_Vatankhah`
+    * :func:`f_buzzelli`
+    * :func:`f_romeo`
+    * :func:`f_serghides`
+    * :func:`f_zigrang`
+    * :func:`f_Samadianfard`
+    * :func:`f_brkic`
+    * :func:`f_fang`
+    * :func:`f_ghanbari`
+    * :func:`f_haaland`
+    * :func:`f_round`
+    * :func:`f_swamee`
+    * :func:`f_jain`
+    * :func:`f_barr`
+    * :func:`f_shacham`
+    * :func:`f_tsal`
+    * :func:`f_manadilli`
+    * :func:`f_goudar`
+    * :func:`f_goudar2007`
+    * :func:`f_avci`
+    * :func:`f_papaevangelou`
+    * :func:`f_churchill`
+    * :func:`f_chen1979`
+    * :func:`f_moody`
+    * :func:`f_wood`
+    * :func:`f_eck`
+    * :func:`f_altshul`
 
 
 **Fitting accesories K**

@@ -795,7 +795,7 @@ class Hairpin(equipment):
         dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
         self.deltaPTube = unidades.DeltaP(dp_tube)
 
-        f_a = f_friccion(self.ReAnnulli, geometria=6)
+        f_a = f_friccion(self.ReAnnulli, geometry=6)
         dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
         self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
 

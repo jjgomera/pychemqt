@@ -11,8 +11,8 @@ Second virial coefficient correlations:
     * :func:`lib.EoS.virial.B_Meng`
 
 Third virial coefficient correlations:
-    * :func:`lib.EoS.virial.C_Orbey_Vera`
-    * :func:`lib.EoS.virial.C_Liu_Xiang`
+    * :func:`lib.EoS.virial.C_OrbeyVera`
+    * :func:`lib.EoS.virial.C_LiuXiang`
     * :func:`lib.EoS.virial.C_Meng`
 
 Example code of usage, plot the correlations for R32 and compare with some

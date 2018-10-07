@@ -5,5 +5,6 @@ lib.petro module
     :members:
     :undoc-members:
     :show-inheritance:
+    :member-order: bysource
 
 .. include:: lib.petro_ref.rst

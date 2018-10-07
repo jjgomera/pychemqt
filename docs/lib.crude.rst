@@ -5,3 +5,5 @@ lib.crude module
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. include:: lib.crude_ref.rst

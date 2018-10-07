@@ -203,11 +203,12 @@ def Z_Papay(Tr, Pr):
 
     References
     ----------
-    .. [30] Papay, J.A. Termelestechnologiai Parameterek Valtozasa a Gazlelepk
-        Muvelese Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.
-    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
-        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-        2016, ISBN 9780128015704
+    [30]_ Papay, J.A. Termelestechnologiai Parameterek Valtozasa a Gazlelepk
+    Muvelese Soran. OGIL MUSZ, Tud, Kuzl. [Budapest], 1985. pp. 267–273.
+
+    [9]_ Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+    2016, ISBN 9780128015704
     """
     Z = 1 - 3.53*Pr/10**(0.9813*Tr) + 0.274*Pr**2/10**(0.8157*Tr)
     return unidades.Dimensionless(Z)
@@ -231,11 +232,12 @@ def Z_Hall_Yarborough(Tr, Pr):
 
     References
     ----------
-    .. [31] Hall, K. R., and L. Yarborough. A New Equation of State for
-        Z-factor Calculations. Oil and Gas Journal (June 18, 1973): 82–92.
-    .. [9] Tarek Ahmed. Equations of State and PVT Analysis: Applications for
-        Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-        2016, ISBN 9780128015704
+    [31]_ Hall, K. R., and L. Yarborough. A New Equation of State for
+    Z-factor Calculations. Oil and Gas Journal (June 18, 1973): 82–92.
+
+    [9]_ Tarek Ahmed. Equations of State and PVT Analysis: Applications for
+    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
+    2016, ISBN 9780128015704
     """
     # Check input in range of validity
     if Tr <= 1:
@@ -283,9 +285,9 @@ def Z_Dranchuk_Abu_Kassem(Tr, Pr):
 
     References
     ----------
-    .. [32] Dranchuk, P. M., and J. H. Abu-Kassem. Calculate of Z-factors for
-        Natural Gases Using Equations-of-State. Journal of Canadian Petroleum
-        Technology (July–September 1975): 34–36
+    [32]_ Dranchuk, P. M., and J. H. Abu-Kassem. Calculate of Z-factors for
+    Natural Gases Using Equations-of-State. Journal of Canadian Petroleum
+    Technology (July–September 1975): 34–36
     """
     # Check input in range of validity
     if Tr < 1 or Tr > 3 or Pr < 0.2 or Pr > 30:
@@ -335,10 +337,10 @@ def Z_Dranchuk_Purvis_Robinson(Tr, Pr):
 
     References
     ----------
-    .. [33] Dranchuk, P.M., Purvis, R.A., Robinson, D.B. Computer Calculations
-        of Natural Gas Compressibility Factors Using the Standing and Katz
-        Correlation. Technical Series, no. IP 74–008. Institute of Petroleum,
-        Alberta, Canada, 1974.
+    [33]_ Dranchuk, P.M., Purvis, R.A., Robinson, D.B. Computer Calculations
+    of Natural Gas Compressibility Factors Using the Standing and Katz
+    Correlation. Technical Series, no. IP 74–008. Institute of Petroleum,
+    Alberta, Canada, 1974.
     """
     # Check input in range of validity
     if Tr < 1.05 or Tr > 3 or Pr < 0.2 or Pr > 30:
@@ -389,11 +391,12 @@ def Z_Brill_Beggs(Tr, Pr):
 
     References
     ----------
-    .. [34] Brill, J .P. and Beggs, H .D. Two-Phase Flow in Pipes. University
-        of Tulsa, INTERCOMP Course, The Hague, 1974
-    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
-        gases by correlations and cubic equations of state. Thesis of master
-        of science in Petroleum Engineering, 2004, Texas Tech University.
+    [34]_ Brill, J .P. and Beggs, H .D. Two-Phase Flow in Pipes. University
+    of Tulsa, INTERCOMP Course, The Hague, 1974
+
+    [35]_ Kumar, N. Compressibility factors for natural and sour reservoir
+    gases by correlations and cubic equations of state. Thesis of master
+    of science in Petroleum Engineering, 2004, Texas Tech University.
     """
     # Check input in range of validity
     if Tr < 1.15 or Tr > 2.4 or Pr < 0.2 or Pr > 15:
@@ -432,11 +435,12 @@ def Z_Gopal(Tr, Pr):
 
     References
     ----------
-    .. [36] Gopal, V.N. Gas Z-Factor Equations Developed for Computer. Oil and
-        Gas J. (Aug. 8, 1977) 58-60
-    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
-        gases by correlations and cubic equations of state. Thesis of master
-        of science in Petroleum Engineering, 2004, Texas Tech University.
+    [36]_ Gopal, V.N. Gas Z-Factor Equations Developed for Computer. Oil and
+    Gas J. (Aug. 8, 1977) 58-60
+
+    [35]_ Kumar, N. Compressibility factors for natural and sour reservoir
+    gases by correlations and cubic equations of state. Thesis of master
+    of science in Petroleum Engineering, 2004, Texas Tech University.
     """
     if Pr <= 1.2 and Tr <= 3:
         if Tr <= 1.2:
@@ -494,9 +498,9 @@ def Z_ShellOil(Tr, Pr):
 
     References
     ----------
-    .. [35] Kumar, N. Compressibility factors for natural and sour reservoir
-        gases by correlations and cubic equations of state. Thesis of master
-        of science in Petroleum Engineering, 2004, Texas Tech University.
+    [35]_ Kumar, N. Compressibility factors for natural and sour reservoir
+    gases by correlations and cubic equations of state. Thesis of master
+    of science in Petroleum Engineering, 2004, Texas Tech University.
     """
     A = -0.101 - 0.36*Tr + 1.3868*(Tr-0.919)**0.5
     B = 0.021 + 0.04275/(Tr-0.65)
@@ -532,8 +536,8 @@ def Z_Sarem(Tr, Pr):
 
     References
     ----------
-    .. [37] Sarem, A.M. Z-Factor Equation Developed for Use in Digital
-        Computers. Oil and Gas J. (Sept. 18, 1961) 118
+    [37]_ Sarem, A.M. Z-Factor Equation Developed for Use in Digital
+    Computers. Oil and Gas J. (Sept. 18, 1961) 118
     """
     # Check input in range of validity
     if Tr < 1.05 or Tr > 2.95 or Pr < 0.1 or Pr > 14.9:
@@ -591,9 +595,9 @@ def Z_Leung(Tr, Pr):
 
     References
     ----------
-    .. [38] Dranckuk, P.M., Quon, D. A General Solution of the Equations
-        Describing Steady State Turbulent Compressible Flow in Circular
-        Conduits. Journal of Canadian Petroleum Technology 3(2):60-65, 1964
+    [38]_ Dranckuk, P.M., Quon, D. A General Solution of the Equations
+    Describing Steady State Turbulent Compressible Flow in Circular
+    Conduits. Journal of Canadian Petroleum Technology 3(2):60-65, 1964
     """
     # Check input in range of validity
     if Tr < 1.1 or Tr > 2.6 or Pr < 0.5 or Pr > 11:
@@ -641,10 +645,11 @@ def Z_Burnett(Tr, Pr):
 
     References
     ----------
-    .. [39] Burnett, R.R. Calculator gives compressibility factors. Oil & Gas
-        Journal, June 11, 1979, pp. 70-74.
-    .. [40] Takacs., G. Comparing Methods for Calculating Z-factor. Oil & Gas
-        Journal, May 15, 1989, pp. 43-46.
+    [39]_ Burnett, R.R. Calculator gives compressibility factors. Oil & Gas
+    Journal, June 11, 1979, pp. 70-74.
+
+    [40]_ Takacs., G. Comparing Methods for Calculating Z-factor. Oil & Gas
+    Journal, May 15, 1989, pp. 43-46.
     """
     # FIXME: Don't work
     # Check input in range of validity
@@ -682,9 +687,9 @@ def Z_Sanjari_Lay(Tr, Pr):
 
     References
     ----------
-    .. [41] Sanjari E, Lay E.N. An accurate empirical correlation for
-        predicting natural gas compressibility factors. Journal of Natural Gas
-        Chemistry 21(2012):184-188.
+    [41]_ Sanjari E, Lay E.N. An accurate empirical correlation for
+    predicting natural gas compressibility factors. Journal of Natural Gas
+    Chemistry 21(2012):184-188.
     """
     # Check input in range of validity
     if Tr < 1.01 or Tr > 3 or Pr < 0.01 or Pr > 15:
@@ -728,9 +733,9 @@ def Z_Heidaryan_Salarabadi(Tr, Pr):
 
     References
     ----------
-    .. [43] Heidaryan, E., Salarabadi, A., Moghadasi, J. A novel correlation
-        approach for prediction of natural gas compressibility factor. J. Nat.
-        Gas Chem. 19 (2) 2010, 189–192.
+    [43]_ Heidaryan, E., Salarabadi, A., Moghadasi, J. A novel correlation
+    approach for prediction of natural gas compressibility factor. J. Nat.
+    Gas Chem. 19 (2) 2010, 189–192.
     """
     # Check input in range of validity
     if Tr < 1.2 or Tr > 3 or Pr < 0.2 or Pr > 15:
@@ -773,9 +778,9 @@ def Z_Heidaryan_Moghadasi(Tr, Pr):
 
     References
     ----------
-    .. [42] Heidaryan E, Moghadasi J, Rahimi M. New correlations to predict
-        natural gas viscosity and compressibility factor. Journal of Petroleum
-        Science and Engineering 73 (2010):67-72
+    [42]_ Heidaryan E, Moghadasi J, Rahimi M. New correlations to predict
+    natural gas viscosity and compressibility factor. Journal of Petroleum
+    Science and Engineering 73 (2010):67-72
     """
     # Check input in range of validity
     if Tr < 1.2 or Tr > 3 or Pr < 0.2 or Pr > 15:
@@ -824,9 +829,9 @@ def Z_Azizi(Tr, Pr):
 
     References
     ----------
-    .. [44] Azizi N, Behbahani R, Isazadeh M A. An efficient correlation for
-        calculating compressibility factor of natural gases. Journal of Natural
-        Gas Chemistry 19 (2010) 642-645
+    [44]_ Azizi N, Behbahani R, Isazadeh M A. An efficient correlation for
+    calculating compressibility factor of natural gases. Journal of Natural
+    Gas Chemistry 19 (2010) 642-645
     """
     # Check input in range of validity
     if Tr < 1.1 or Tr > 2 or Pr < 0.2 or Pr > 11:
@@ -883,10 +888,10 @@ def Z_Shokir(Tr, Pr):
 
     References
     ----------
-    .. [46] Shokir, Eissa M.El-M., El-Awad, Musaed N., Al-Quraishi,
-        Adulhrahman A., Al-Mahdy, Osama A. Compressibility factor model of
-        sweet, sour, and condensate gases using genetic programming. Chem. Eng.
-        Res. Des. 90 (2012), 785-792.
+    [46]_ Shokir, Eissa M.El-M., El-Awad, Musaed N., Al-Quraishi, Adulhrahman
+    A., Al-Mahdy, Osama A. Compressibility factor model of sweet, sour, and
+    condensate gases using genetic programming. Chem. Eng. Res. Des. 90 (2012),
+    785-792.
     """
     # Eq 8
     A = 2.679562*(2*Tr-Pr-1)/((Pr**2+Tr**3)/Pr)
@@ -929,8 +934,8 @@ def Z_Bahadori(Tr, Pr):
 
     References
     ----------
-    .. [47] Bahadori, A., Mokhatab, S., Towler, B.F. Rapidly estimating natural
-        gas compressibility factor. J. Nat. Gas Chem. 16 (4) 2007, 349-353
+    [47]_ Bahadori, A., Mokhatab, S., Towler, B.F. Rapidly estimating natural
+    gas compressibility factor. J. Nat. Gas Chem. 16 (4) 2007, 349-353
     """
     # Check input in range of validity
     if Tr < 1.05 or Tr > 2.4 or Pr < 0.2 or Pr > 16:
@@ -965,10 +970,10 @@ def Z_Londono_DAK(Tr, Pr, pure=False):
 
     References
     ----------
-    .. [48] Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
-        hydrocarbon-gas viscosity and gas density-validation and correlation
-        of behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6)
-        2005, 561–572.
+    [48]_ Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
+    hydrocarbon-gas viscosity and gas density-validation and correlation of
+    behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6) 2005,
+    561–572.
     """
     if pure:
         # Eq 34b
@@ -1025,10 +1030,10 @@ def Z_Londono_NS(Tr, Pr, pure=False):
 
     References
     ----------
-    .. [48] Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
-        hydrocarbon-gas viscosity and gas density-validation and correlation
-        of behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6)
-        2005, 561–572.
+    [48]_ Londono, F.E., Archer, R.A., Blasingame, T.A. Correlations for
+    hydrocarbon-gas viscosity and gas density-validation and correlation of
+    behavior using a large-scale database. SPE Reserv. Evalu. Eng. 8 (6) 2005,
+    561–572.
     """
     if pure:
         # Eq 37b
@@ -1104,12 +1109,13 @@ def Z_Hall_Iglesias(Tr, Pr):
 
     References
     ----------
-    .. [45] Hall, K.R., Iglesias-Silva, G.A.. Improved equations for the
-        Standing-Katz tables. Hydrocarb. Process 86 (4) 2007, 107-110.
-    .. [49] Chankalani, A., Mae'soumi, A., Sameni, A. An Intelligent Approach
-        for Optimal Prediction of Gas Deviation Factor Using Particle Swarm
-        Optimization and Genetic Algorithm. Journal of Natural Gas Science and
-        Engineering 14 (2013) 132-143
+    [45]_ Hall, K.R., Iglesias-Silva, G.A.. Improved equations for the
+    Standing-Katz tables. Hydrocarb. Process 86 (4) 2007, 107-110.
+
+    [49]_ Chankalani, A., Mae'soumi, A., Sameni, A. An Intelligent Approach
+    for Optimal Prediction of Gas Deviation Factor Using Particle Swarm
+    Optimization and Genetic Algorithm. Journal of Natural Gas Science and
+    Engineering 14 (2013) 132-143
     """
     X1 = 14.54/Tr-8.23/Tr**2+3.39*Tr**3.5
     X2 = 90.7/Tr-242.2/Tr**2+42.4/Tr**3
@@ -1148,9 +1154,9 @@ def Z_Elsharkawy(Tr, Pr):
 
     References
     ----------
-    .. [50] Elsharkawy, A.M. Efficient methods for calculations of
-        compressibility, density and viscosity of natural gases. Fluid Phase
-        Equilibria 218:1 (2004) 1-13
+    [50]_ Elsharkawy, A.M. Efficient methods for calculations of
+    compressibility, density and viscosity of natural gases. Fluid Phase
+    Equilibria 218:1 (2004) 1-13
     """
     C1 = 0.3265 - 1.07/Tr - 0.5339/Tr**3 + 0.01569/Tr**4 - 0.05165/Tr**5
     C2 = 0.5475 - 0.7361/Tr + 0.1844/Tr**2

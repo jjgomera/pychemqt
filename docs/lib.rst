@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 2
 
    lib.adimensional
    lib.compuestos

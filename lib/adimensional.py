@@ -108,7 +108,7 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -158,7 +158,7 @@ def Bi(h, L, k):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(h*L/k)
 
@@ -188,7 +188,7 @@ def Bo(rhol, rhog, sigma, L):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     return (g*(rhol-rhog)*L**2/sigma)
 
@@ -224,7 +224,7 @@ def Eu(dP, rho, V):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     Eu = dP/(rho*V**2)
     return Eu
@@ -263,7 +263,7 @@ def Fo(k, L, t):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(k*t/L**2)
 
@@ -308,7 +308,7 @@ def Fr(V, L, g=g):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(V**2/(L*g))
 
@@ -350,7 +350,7 @@ def Ga(L, rho=None, mu=None, nu=None, g=g):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -415,7 +415,7 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -464,7 +464,7 @@ def Gz(k, D, t=None, L=None, V=None):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if V and L:
         t = L/V
@@ -501,7 +501,7 @@ def Kn(path, L):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     Kn = path/L
     return Kn
@@ -547,7 +547,7 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     if k and Cp and rho:
         alpha = k/(rho*Cp)
@@ -587,7 +587,7 @@ def Ma(V, c):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     return V/c
 
@@ -626,7 +626,7 @@ def Nu(alfa, L, k):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(alfa*L/k)
 
@@ -672,7 +672,7 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     if rho and Cp and k:
         alpha = k/(rho*Cp)
@@ -731,7 +731,7 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if k and cp and mu:
         Pr = cp*mu/k
@@ -772,7 +772,7 @@ def Ra(Pr, Gr):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(Pr*Gr)
 
@@ -821,7 +821,7 @@ def Re(D, V, rho=None, mu=None, nu=None):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -860,7 +860,7 @@ def Sh(K, L, D):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     Sh = K*L/D
     return Sh
@@ -904,7 +904,7 @@ def Sc(D, mu=None, nu=None, rho=None):
     References
     ----------
     [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-        McGraw-Hill Professional, 2008.
+    McGraw-Hill Professional, 2008.
     """
     if rho and mu:
         Sc = mu/(rho*D)
@@ -990,7 +990,7 @@ def We(V, L, rho, sigma):
     References
     ----------
     [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-        Springer 2010.
+    Springer 2010.
     """
     return Dimensionless(V**2*L*rho/sigma)
 

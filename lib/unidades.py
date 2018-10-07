@@ -15,7 +15,83 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+Phisics quantities module with support for unit conversion.
+
+:func:`unidad`: Base class with all functionality
+
+Using the dimension symbol for define the SI base units:
+
+    * Length: L
+    * Mass: M
+    * Time: T
+    * Temperature: Θ
+    * Amount of substance: N
+    * Electric current: I
+
+The list of supported unit are:
+
+    * :func:`Acceleration`, LT⁻²
+    * :func:`Angle`
+    * :func:`Area`, L²
+    * :func:`CakeResistance`, LM⁻¹
+    * :func:`Currency`
+    * :func:`Density`, ML⁻³
+    * :func:`DensityPressure`, T²L⁻²
+    * :func:`DensityTemperature`, ML⁻³Θ⁻¹
+    * :func:`Diffusivity`, L²T⁻¹
+    * :func:`DipoleMoment`, IL
+    * :func:`PotencialElectric`, ML³T⁻³I⁻¹
+    * :func:`Energy`, ML²T⁻²
+    * :func:`Enthalpy`, L²T⁻²
+    * :func:`EnthalpyDensity`, L⁵MT⁻²
+    * :func:`EnthalpyPressure`, L³M⁻¹
+    * :func:`Pressure`, ML⁻¹T⁻²
+    * :func:`Entropy`, ML²T⁻²Θ
+    * :func:`Force`, MLT⁻²
+    * :func:`Fouling`
+    * :func:`Frequency`, T⁻¹
+    * :func:`V2V`
+    * :func:`HeatFlux`, MT⁻³
+    * :func:`HeatTransfCoef`, MT⁻⁴
+    * :func:`Length`, L
+    * :func:`Mass`, M
+    * :func:`MassFlow`, MT⁻¹
+    * :func:`Mol`, N
+    * :func:`MolarDensity`, NL⁻³
+    * :func:`MolarEnthalpy`
+    * :func:`MolarFlow`, NT⁻¹
+    * :func:`MolarSpecificHeat`
+    * :func:`MolarVolume`, L⁻³N
+    * :func:`PackingDP`, ML⁻²T⁻²
+    * :func:`Power`, ML²T⁻³
+    * :func:`Pressure`, ML⁻¹T⁻²
+    * :func:`DeltaP`, ML⁻¹T⁻²
+    * :func:`InvPressure`, LT²M⁻¹
+    * :func:`PressureTemperature`, ML⁻¹T⁻²Θ⁻¹
+    * :func:`PressureDensity`, L²T⁻²
+    * :func:`SolubilityParameter`, M⁰⁵L⁻⁰⁵T⁻¹
+    * :func:`SpecificHeat`, L²T⁻²Θ
+    * :func:`SpecificVolume`, L³M⁻¹
+    * :func:`Speed`, LT⁻¹
+    * :func:`Tension`, MT⁻²
+    * :func:`Temperature`, Θ
+    * :func:`DeltaT`, Θ
+    * :func:`InvTemperature`, Θ⁻¹
+    * :func:`TemperaturePressure`, ΘLT²M⁻¹
+    * :func:`ThermalConductivity`, ML¹T⁻³Θ⁻¹
+    * :func:`SpecificVolume_square`, L⁶M⁻²
+    * :func:`Time`, T
+    * :func:`UA`, ML²T⁻³Θ⁻¹
+    * :func:`Viscosity`, ML⁻¹T⁻¹
+    * :func:`Volume`, L³
+    * :func:`VolFlow`, L³T⁻¹
+    * :func:`Dimensionless`: Null unit
+
+'''
 
 
 from configparser import ConfigParser
@@ -101,17 +177,18 @@ def K2Re(K):
 
 class unidad(float):
     """
-    Generic class to model units
+    Generic class to model units.
+
     Each child class must define the following parameters:
-        __title__: Title or name of class
-        rates: Dict with conversion rates
-        __text__: List with units title
-        __units__: List with units properties names
-        __tooltip__: List with help string for units
-        _magnitudes: Opcional to units with several magnituds
-            Each magnitud is a tuple with format (Name, title)
-        __units_set__: Dict with standart unit for units system,
-            altsi, si, metric, cgs, english
+        * __title__: Title or name of class
+        * rates: Dict with conversion rates
+        * __text__: List with units title
+        * __units__: List with units properties names
+        * __tooltip__: List with help string for units
+        * _magnitudes: Opcional to units with several magnituds. Each magnitud
+        is a tuple with format (Name, title)
+        * __units_set__: Dict with standart unit for units system (*altsi*,
+        *si*, *metric*, *cgs*, *english*)
     """
     __title__ = ""
     rates = {}
@@ -122,8 +199,22 @@ class unidad(float):
     __units_set__ = []
 
     def __init__(self, data, unit="", magnitud=""):
-        """Non proportional magnitudes (Temperature, Pressure)
-        must rewrite this method"""
+        """Constructor
+
+        Parameters
+        ----------
+        data : float
+            Value of initial entity
+        unit : str
+            String with unit of data value input
+        magnitud : str, optional
+            Name of magnitud (i.e. PipeDiameter or Head for length unit)
+
+        Notes
+        -----
+        Non proportional magnitudes (Temperature, Pressure) must rewrite this
+        method
+        """
         if not magnitud:
             magnitud = self.__class__.__name__
         self.magnitud = magnitud
@@ -147,6 +238,7 @@ class unidad(float):
         logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
     def __new__(cls, data, unit="", magnitud=""):
+        """Constructor to let multiple paramter input in float"""
         if not magnitud:
             magnitud = cls.__name__
         if data is None:
@@ -158,6 +250,7 @@ class unidad(float):
 
     @classmethod
     def _getBaseValue(cls, data, unit, magnitud):
+        """Convert input data to the base unit"""
         if data is None:
             data = 0
         else:
@@ -2180,7 +2273,7 @@ for _clas in _all:
         doc += os.linesep + os.linesep
 
     # Add doctest example
-    doc += "Examples" + os.linesep
+    doc += "Example" + os.linesep
     doc += "--------" + os.linesep + os.linesep
     title = _clas.__name__
     for test in _clas.__test__:
