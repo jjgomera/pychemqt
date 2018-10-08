@@ -5172,19 +5172,19 @@ class Componente(object):
 
     Notes
     -----
-    Additionally can define custom calculation method with the parameters::
+    Additionally can define custom calculation method with the parameters:
 
-        rhoL: Liquid density correlation index
-        RhoLP: Compressed liquid density correlation index
-        MuL: Liquid viscosity correlation index
-        MuG: Gas viscosity correlation index
-        MuGP: Compressed gas viscosity correlation index
-        ThCondL: Liquid thermal conductivity correlation index
-        ThCondG: Gas thermal conductivity correlation index
-        ThCondPG: Compressed gas thermal conductivity correlation index
-        Tension: Surface tension correlation index
-        facent: Acentric factor correlation index for missing cases
-        Pv: Vapor pressure correlation index
+        * *rhoL*: Liquid density correlation index
+        * *RhoLP*: Compressed liquid density correlation index
+        * *MuL*: Liquid viscosity correlation index
+        * *MuG*: Gas viscosity correlation index
+        * *MuGP*: Compressed gas viscosity correlation index
+        * *ThCondL*: Liquid thermal conductivity correlation index
+        * *ThCondG*: Gas thermal conductivity correlation index
+        * *ThCondPG*: Compressed gas thermal conductivity correlation index
+        * *Tension*: Surface tension correlation index
+        * *facent*: Acentric factor correlation index for missing cases
+        * *Pv*: Vapor pressure correlation index
 
     This option overwrite the project configuration and the user configuration,
     for now only in API usage. Not custom stream property definition in main

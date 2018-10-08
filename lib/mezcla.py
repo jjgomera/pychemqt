@@ -164,7 +164,7 @@ __doi__ = {
     15:
         {"autor": "Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.",
          "title": "Generalized Multiparameter Correlation for Nonpolar and "
-                  "Polar Fluid Trnasport Properties",
+                  "Polar Fluid Transport Properties",
          "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
          "doi": "10.1021/ie00076a024"},
     16:

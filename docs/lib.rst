@@ -10,20 +10,26 @@ Submodules
     lib.adimensional
     lib.bip
     lib.compuestos
+    lib.corriente
     lib.config
     lib.coolProp
+    lib.crude
     lib.datasheet
     lib.elemental
     lib.eos
+    lib.EoS
     lib.freeSteam
     lib.friction
     lib.gerg
+    lib.heatTransfer
     lib.iapws97
     lib.meos
     lib.mEoS
+    lib.mezcla
     lib.newComponent
     lib.petro
     lib.physics
+    lib.pipeDatabase
     lib.plot
     lib.project
     lib.psycrometry
