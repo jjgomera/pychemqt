@@ -104,6 +104,7 @@ from lib.physics import R_atml, R_Btu
 from lib.newComponent import newComponente
 from lib.config import conf_dir
 from lib.compuestos import prop_Edmister
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -251,7 +252,7 @@ __doi__ = {
          "doi": "10.1021/i100007a023"},
     25:
         {"autor": "Lee, B.I., Kesler, M.G.",
-         "title": "A Generalized Thermodynamic Correlation Based on"
+         "title": "A Generalized Thermodynamic Correlation Based on "
                   "Three-Parameter Corresponding States",
          "ref": "AIChE J. 21(3) (1975) 510-527",
          "doi": "10.1002/aic.690210313"},
@@ -426,6 +427,7 @@ def _unit(key, val, unit=None):
 
 
 # Generalized Correlations
+@refDoc(__doi__, [1, 2])
 def prop_Ahmed(Nc):
     """Calculate petroleum fractions properties with the carbon atom number as
     the only known property
@@ -454,17 +456,6 @@ def prop_Ahmed(Nc):
     '604'
     >>> "%0.5f" % prop_Ahmed(45)["Vc"].ft3lb
     '0.06549'
-
-    References
-    ----------
-    [1]_ Katz, D.L., Firoozabadi, A. Predicting Phase Behavior of
-    Condensate/Crude-oil Systems Using Methane Interaction Coefficients.
-    Journal of Petroleum Technology 30(11) (1978) 1649-1655
-
-    [2]_ Ahmed, T., Cady, G., Story, A. A Generalized Correlation for
-    Characterizing the Hydrocarbon Heavy Fractions. Paper SPE 14266,
-    presented at the 60th Annual Technical Conference of the Society of
-    Petroleum Engineers, Las Vegas, September 22–25, 1985.
     """
     a1 = [-131.11375, 915.53747, 275.56275, 434.38878, -0.50862704,
           0.86714949, 5.223458e-2]
@@ -485,6 +476,7 @@ def prop_Ahmed(Nc):
     return prop
 
 
+@refDoc(__doi__, [4, 9])
 def prop_Riazi_Daubert_1980(Tb, SG):
     """Calculate petroleum fractions properties with the Riazi (1980)
     correlation with the boiling temperature and specific gravity as input
@@ -515,15 +507,6 @@ def prop_Riazi_Daubert_1980(Tb, SG):
     >>> p = prop_Riazi_Daubert_1980(T, 0.7365)
     >>> "%.0f %.0f %.0f %.4f" % (p["M"], p["Tc"].R, p["Pc"].psi, p["Vc"].ft3lb)
     '96 990 467 0.0623'
-
-    References
-    ----------
-    [4]_ Riazi, M.R., Daubert, T.E. Simplify Property Predictions.
-    Hydrocarbon Processing (March 1980): 115–116.
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -544,6 +527,7 @@ def prop_Riazi_Daubert_1980(Tb, SG):
     return prop
 
 
+@refDoc(__doi__, [3, 9])
 def prop_Riazi_Daubert(tita1, val1, tita2, val2):
     """Calculate petroleum fractions properties known two properties
 
@@ -605,15 +589,6 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
     '97 986 466 0.0626'
     >>> "%.3f" % prop_Edmister(Tc=p["Tc"], Pc=p["Pc"], Tb=p["Tb"])["w"]
     '0.287'
-
-    References
-    ----------
-    [3]_ Riazi, M.R., Daubert, T.E. Characterization Parameters for
-    Petroleum Fractions. Ind. Eng. Chem. Res. 26(4) (1987) 755-759
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     # Check correct input parameter
     p1 = ("Tb", "M", "v1")
@@ -747,6 +722,7 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
     return prop
 
 
+@refDoc(__doi__, [7, 9])
 def prop_Cavett(Tb, API):
     """Calculate petroleum fractions properties with the Cavett (1980)
     correlation. Use API as a alternate input parameter to specific gravity
@@ -775,16 +751,6 @@ def prop_Cavett(Tb, API):
     >>> p = prop_Cavett(T, API)
     >>> "%.1f %.0f" % (p["Tc"].R, p["Pc"].psi)
     '978.1 466'
-
-    References
-    ----------
-    [7]_ Cavett, R.H., 1962. Physical data for distillation calculations,
-    vapor-liquid equilibrium. Proceedings of the 27th Meeting, API, San
-    Francisco, 1962, Issue 3, pp. 351–366.
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -807,6 +773,7 @@ def prop_Cavett(Tb, API):
     return prop
 
 
+@refDoc(__doi__, [8, 9])
 def prop_Lee_Kesler(Tb, SG):
     """Calculate petroleum fractions properties with the Lee-Kesker (1976)
     correlation. Use API as a alternate input parameter to specific gravity
@@ -836,15 +803,6 @@ def prop_Lee_Kesler(Tb, SG):
     >>> p = prop_Lee_Kesler(T, 0.7365)
     >>> "%.0f %.0f %.1f %.3f" % (p["Tc"].R, p["Pc"].psi, p["M"], p["w"])
     '981 470 98.6 0.306'
-
-    References
-    ----------
-    [8]_ Kesler, M.G., Lee, B.I. Improve Prediction of Enthalpy of
-    Fractions. Hydrocarbon Processing 55(3) (1976) 153-158
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -875,6 +833,7 @@ def prop_Lee_Kesler(Tb, SG):
     return prop
 
 
+@refDoc(__doi__, [6, 9])
 def prop_Sim_Daubert(Tb, SG):
     """Calculate petroleum fractions properties with the Sim-Daubert (1980)
     computerized version of Winn (1957) graphical correlations
@@ -903,16 +862,6 @@ def prop_Sim_Daubert(Tb, SG):
     >>> p = prop_Sim_Daubert(T, 0.7365)
     >>> "%.0f %.0f %.0f" % (p["Tc"].R, p["Pc"].psi, p["M"])
     '979 479 96'
-
-    References
-    ----------
-    [6]_ Sim, W.J., Daubert, T.E. Prediction of vapor-liquid
-    equilibria of undefined mixtures. Ind. Eng. Chem. Process Des. Dev. 19(3)
-    (1980) 386-393
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
 
     M = 5.805e-5*Tb**2.3776/SG**0.9371                                   # Eq 3
@@ -928,6 +877,7 @@ def prop_Sim_Daubert(Tb, SG):
     return prop
 
 
+@refDoc(__doi__, [10, 9])
 def prop_Watansiri_Owens_Starling(Tb, SG, M):
     """Calculate petroleum fractions properties with the Watansiri-Owens-
     Starling (1985) correlation using boiling temperature and molecular weight
@@ -961,17 +911,6 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
     >>> p = prop_Watansiri_Owens_Starling(T, 0.7365, 96)
     >>> "%.0f %.5f" % (p["Tc"].R, p["Vc"].ft3lb)
     '980 0.06548'
-
-    References
-    ----------
-    [10]_ Watansiri, S., Owens, V.H., Starling, K.E., 1985. Correlations for
-    estimating critical constants, acentric factor, and dipole moment for
-    undefined coal-fluid fractions. Ind. Eng. Chem. Process. Des. Dev. 24(2)
-    (1985) 294-296
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
 
     Tc = exp(-0.00093906*Tb + 0.03095*log(M) + 1.11067*log(Tb) +
@@ -1002,6 +941,7 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
     return prop
 
 
+@refDoc(__doi__, [11, 9])
 def prop_Rowe(M):
     """Calculate petroleum fractions properties with the Rowe
     correlations (1978) using only the molecular weight as input parameter
@@ -1028,17 +968,6 @@ def prop_Rowe(M):
     >>> "%.1f" % p["Tc"].R
     '1279.8'
 
-    References
-    ----------
-    [11]_ Rowe, A.M. Internally consistent correlations for predicting phase
-    compositions for use in reservoir compositional simulators. Paper SPE
-    7475, In: Presented at the 53rd Annual Society of Petroleum Engineers
-    Fall Technical Conference and Exhibition, 1978.
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
-
     Notes
     -----
     Critical pressure examples in [9]_ don't get result, the equations isn't
@@ -1059,6 +988,7 @@ def prop_Rowe(M):
     return prop
 
 
+@refDoc(__doi__, [12, 9])
 def prop_Standing(M, SG):
     """Calculate petroleum fractions properties with the Standing (1977)
     correlations based in the graphical plot of Mathews et al. (1942) using
@@ -1075,6 +1005,7 @@ def prop_Standing(M, SG):
     -------
     prop : dict
         A dict with the calculated properties:
+
             * Tc: Critic temperature, [K]
             * Pc: Critic pressure, [atm]
 
@@ -1085,15 +1016,6 @@ def prop_Standing(M, SG):
     >>> p = prop_Standing(216, 0.8605)
     >>> "%.1f %.0f" % (p["Tc"].R, p["Pc"].psi)
     '1269.3 270'
-
-    References
-    ----------
-    [12]_ Standing, M.B., Volumetric and Phase Behavior of Oil Field
-    Hydrocarbon Systems. Society of Petroleum Engineers, Dallas, TX. 1977
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     Tc = 608 + 364*log10(M-71.2) + (2450*log10(M)-3800)*log10(SG)       # Eq 25
     Pc = 1188 - 431*log10(M-61.1) + (2319-852*log10(M-53.7))*(SG-0.8)   # Eq 26
@@ -1106,6 +1028,7 @@ def prop_Standing(M, SG):
     return prop
 
 
+@refDoc(__doi__, [13, 9])
 def prop_Willman_Teja(Tb):
     """Calculate petroleum fractions properties with the Willman-Teja (1987)
     correlations using only the boiling temperature as input parameter
@@ -1132,17 +1055,6 @@ def prop_Willman_Teja(Tb):
     >>> p = prop_Willman_Teja(Tb)
     >>> "%.0f %.0f" % (p["Tc"].R, p["Pc"].psi)
     '977 442'
-
-    References
-    ----------
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
-
-    [13]_ Willman, B., Teja, A. Prediction of dew points of semicontinuous
-    natural gas and petroleum mixtures. 1. Characterization by use of an
-    effective carbon number and ideal solution predictions. Ind. Eng. Chem.
-    Res. 26(5) (1987) 948-952
     """
     # Eq 11
     A = [95.50441892007, 3.742203001499, 2295.53031513, -1042.57256080,
@@ -1165,6 +1077,7 @@ def prop_Willman_Teja(Tb):
     return prop
 
 
+@refDoc(__doi__, [9, 14])
 def prop_Magoulas_Tassios(M, SG):
     """Calculate petroleum fractions properties with the Magoulas-Tassios(1990)
     correlations using molecular weight and specific gravity as input parameter
@@ -1192,16 +1105,6 @@ def prop_Magoulas_Tassios(M, SG):
     >>> p = prop_Magoulas_Tassios(216, 0.8605)
     >>> "%.0f %.0f" % (p["Tc"].R, p["Pc"].psi)
     '1317 273'
-
-    References
-    ----------
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
-
-    [14]_ Magoulas, S., Tassios, D., Predictions of phase behavior of HT-HP
-    reservoir fluids. Paper SPE 37294, Society of Petroleum Engineers,
-    Richardson, TX, 1990.
     """
     Tc = -1247.4 + 0.792*M + 1971*SG - 27000./M + 707.4/SG
     Pc = exp(0.01901 - 0.0048442*M + 0.13239*SG + 227./M - 1.1663/SG +
@@ -1217,6 +1120,7 @@ def prop_Magoulas_Tassios(M, SG):
     return prop
 
 
+@refDoc(__doi__, [65])
 def prop_Tsonopoulos(SG, Tb):
     """Calculate petroleum fractions properties with the Tsonopoulos (1990)
     correlations using molecular weight and specific gravity as input parameter
@@ -1235,12 +1139,6 @@ def prop_Tsonopoulos(SG, Tb):
 
             * Tc: Critic temperature, [K]
             * Pc: Critic pressure, [MPa]
-
-    References
-    ----------
-    [65]_ Tsonopoulos, C., Heidman, J.L., Hwang, S.C. Thermodynamic and
-    Transport Properties of Coal Liquids. An Exxon Monograph, Wiley, New
-    York, 1986
     """
     # TODO: Search reference
     Tc = 10**(1.20016 - 0.61954*log10(Tb) + 0.48262*log10(SG) +
@@ -1256,6 +1154,7 @@ def prop_Tsonopoulos(SG, Tb):
     return prop
 
 
+@refDoc(__doi__, [5])
 def prop_Twu(Tb, SG):
     """Calculate petroleum fractions properties with the Two (1983)
     correlation with the boiling temperature and specific gravity as input
@@ -1283,12 +1182,6 @@ def prop_Twu(Tb, SG):
     >>> crit = prop_Twu(510, 1.097)
     >>> "%.1f %.1f %.1f" % (crit["Tc"].R, crit["Pc"].psi, crit["M"])
     '1380.3 556.8 130.4'
-
-    References
-    ----------
-    [5]_ Twu, C.H. An internally consistent correlation for predicting the
-    critical properties and molecular weights of petroleum and coal-tar
-    liquids. Fluid Phase Equilbria 16 (1984) 137-150
     """
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
@@ -1340,6 +1233,7 @@ def prop_Twu(Tb, SG):
     return prop
 
 
+@refDoc(__doi__, [5, 9])
 def prop_Sancet(M):
     """Calculate petroleum fractions properties with the Sancet (2007)
     correlations using only the molecular weight as input parameter
@@ -1365,16 +1259,6 @@ def prop_Sancet(M):
     >>> p = prop_Sancet(150)
     >>> "%.0f %.0f %.0f" % (p["Tc"].R, p["Pc"].psi, p["Tb"].R)
     '1133 297 828'
-
-    References
-    ----------
-    [5]_ Sancet, J., Heavy Faction  :math:`C_{7+}` Characterization for
-    PR-EOS. In: SPE 113026, 2007 SPE Annual Conference, November 11–14,
-    Anaheim, CA 2007.
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     Pc = 82.82 + 653*exp(-0.007427*M)                                   # Eq 16
     Tc = -778.5 + 383.5*log(M-4.075)                                    # Eq 17
@@ -1388,6 +1272,7 @@ def prop_Sancet(M):
     return prop
 
 
+@refDoc(__doi__, [16, 9])
 def prop_Silva_Rodriguez(M):
     """Calculate petroleum fractions properties with the Silva-Rodriguez
     (1992) correlations
@@ -1412,16 +1297,6 @@ def prop_Silva_Rodriguez(M):
     >>> p = prop_Silva_Rodriguez(150)
     >>> "%.0f %.4f" % (p["Tb"].R, p["SG"])
     '839 0.7982'
-
-    References
-    ----------
-    [16]_ Silva, M.B., Rodriguez, F. Automatic fitting of equations of state
-    for phase behavior matching. Paper SPE 23703, Society of Petroleum
-    Engineers, Richardson, TX, 1992.
-
-    [9]_ Ahmed, T. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     Tb = 447.08725*log(M/64.2576)                                       # Eq A4
     SG = 0.132467*log(Tb)+0.0116483                                     # Eq A5
@@ -1433,6 +1308,7 @@ def prop_Silva_Rodriguez(M):
     return prop
 
 
+@refDoc(__doi__, [17])
 def Tb_Soreide(M, SG):
     """Calculate petroleum fractions boiling temperature with the Soreide
     (1989) correlations
@@ -1448,18 +1324,13 @@ def Tb_Soreide(M, SG):
     -------
     Tb : float
         Boiling temperature, [K]
-
-    References
-    ----------
-    [17]_ Soreide, I. Improved Phase Behavior Predictions of Petroleum
-    Reservoir Fluids From a Cubic Equation of State. Doctor of engineering
-    dissertation. Norwegian Institute of Technology, Trondheim, 1989.
     """
     Tb = 1928.3 - 1.695e5*SG**3.266/M**0.03522*exp(
         -4.922e-3*M-4.7685*SG+3.462e-3*M*SG)                          # Eq 3.59
     return {"Tb": unidades.Temperature(Tb, "R")}
 
 
+@refDoc(__doi__, [18])
 def vc_Hall_Yarborough(M, SG):
     """Calculate petroleum fractions critic volume with the Hall-Yarborough
     (1971) correlation
@@ -1475,16 +1346,12 @@ def vc_Hall_Yarborough(M, SG):
     -------
     vc : float
         Boiling temperature, [K]
-
-    References
-    ----------
-    [18]_ Hall, K.R., Yarborough, L. New Simple Correlation for Predicting
-    Critical Volume. Chemical Engineering (November 1971): 76.
     """
     Vc = 0.025*M**1.15/SG**0.7985
     return {"Vc": unidades.SpecificVolume(Vc/M, "ft3lb")}
 
 
+@refDoc(__doi__, [63])
 def M_Goossens(Tb, d20):
     """Calculate petroleum fractions molecular weight with the Goossens
     (1971) correlation
@@ -1505,17 +1372,13 @@ def M_Goossens(Tb, d20):
     --------
     >>> "%.1f" % M_Goossens(306, 0.6258)["M"]
     '77.0'
-
-    References
-    ----------
-    [63]_ Goossens, A.G. Prediction of Molecular Weight of Petroleum
-    Fractions. Ind. Eng. Chem. Res. 35(3) (1996) 985-988
     """
     b = 1.52869 + 0.06486*log(Tb/(1078-Tb))
     M = 0.01077*Tb**b/d20
     return {"M": unidades.Dimensionless(M)}
 
 
+@refDoc(__doi__, [64])
 def w_Korsten(Tb, Tc, Pc):
     """Calculate petroleum fractions acentric factor with the Korsten (2000)
     correlation
@@ -1533,11 +1396,6 @@ def w_Korsten(Tb, Tc, Pc):
     -------
     w: float
         Acentric factor, [-]
-
-    References
-    ----------
-    [64]_ Korsten, H. Internally Consistent Prediction of Vapor Pressure and
-    Related Properties. Ind. Eng. Chem. Res. 39(3) (2000) 813-820
     """
     tbr = Tb/Tc
     # Eq 29
@@ -1545,6 +1403,7 @@ def w_Korsten(Tb, Tc, Pc):
     return {"w": unidades.Dimensionless(w)}
 
 
+@refDoc(__doi__, [29])
 def prop_Riazi(SG, tita, val):
     """Calculate petroleum fractions properties using the Riazi correlation.
     This correlation is recommendated for heavy weight fractions C20-C50.
@@ -1579,11 +1438,6 @@ def prop_Riazi(SG, tita, val):
 
     The critic volume is calculate in mole base, so be careful to correct with
     molecular weight
-
-    References
-    ----------
-    [29]_ Riazi, M. R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
 
     if tita not in ["M", "Tb"]:
@@ -1637,6 +1491,7 @@ def prop_Riazi(SG, tita, val):
     return prop
 
 
+@refDoc(__doi__, [26])
 def prop_Riazi_Alsahhaf(Tb, M, d20):
     """Calculate petroleum fractions properties with the Riazi-AlSahhaf (1998)
     correlation with the boiling temperature and liquid density at 20ºC as
@@ -1664,11 +1519,6 @@ def prop_Riazi_Alsahhaf(Tb, M, d20):
     -----
     This correlation generalized the Riazi-Daubert method to non-polar
     compounds and gases.
-
-    References
-    ----------
-    [26]_ Riazi, M.R., Al-Sahhaf, T.A., Sl-Shammari M.A. A Generalized Method
-    for Estimation of Critical Constants. Fluid Phase Equilibria 147 (1998) 1-6
     """
     a = [1.60193, 10.74145, -8.84800]
     b = [0.00558, 0.07434, -0.03632]
@@ -1693,6 +1543,7 @@ def prop_Riazi_Alsahhaf(Tb, M, d20):
     return prop
 
 
+@refDoc(__doi__, [27, 28])
 def prop_Riazi_Alsahhaf_PNA(M, cmp):
     """Calculate petroleum fractions properties with the Riazi-AlSahhaf PNA
     correlation with the molecular weight as input parameter.
@@ -1721,15 +1572,6 @@ def prop_Riazi_Alsahhaf_PNA(M, cmp):
             * w: Acentric factor, [-]
             * I: Refractive index parameter, [-]
             * sigma: Surface tension, [dyn/cm]
-
-    References
-    ----------
-    [27]_ Riazi, M.R., A1-Sahhaf, T.A. Physical Properties of Heavy Petroleum
-    Fractions and Crude Oils. Fluid Phase Equilibria 117 (1996) 217-224.
-
-    [28]_ Riazi, M.R., A1-Sahhaf, T. Physical Properties of n-Alkanes and
-    n-Alkyl Hydrocarbons: Application to Petroleum Mixtures. Ind. Eng. Chem.
-    Res. 34(11) (1995) 4145-4148
     """
     if cmp == "P":
         tita = [397, 1070, 0.85, 0.859, 0.2833, 1.15, 0, 0.26, 0.3, 33.2]
@@ -1784,6 +1626,7 @@ def prop_Riazi_Alsahhaf_PNA(M, cmp):
 
 
 # Zc Methods
+@refDoc(__doi__, [22])
 def Zc_Hougen(w):
     """Calculate the critical compressibility factdor Zc using the Hougen
     correlation (1959)
@@ -1797,17 +1640,13 @@ def Zc_Hougen(w):
     -------
     Zc : float
         Critical compressibility factor, [-]
-
-    References
-    ----------
-    [22]_ Hougen, O.A., Watson, K.M., Ragatz, R.A. Chemical Process Principles,
-    2nd ed. New York: Wiley, 1959, p. 577.
     """
     Zc = 1/(1.28*w+3.41)
 
     return unidades.Dimensionless(Zc)
 
 
+@refDoc(__doi__, [23])
 def Zc_Reid(w):
     """Calculate the critical compressibility factdor Zc using the Reid
     Prausnith and Sherwood (1977) correlation
@@ -1821,17 +1660,13 @@ def Zc_Reid(w):
     -------
     Zc : float
         Critical compressibility factor, [-]
-
-    References
-    ----------
-    [23]_ Reid, R., Prausnitz, J.M., Sherwood, T. The Properties of Gases and
-    Liquids, 3rd ed. New York: McGraw-Hill, 1977, p. 21.
     """
     Zc = 0.2918 - 0.0928*w
 
     return unidades.Dimensionless(Zc)
 
 
+@refDoc(__doi__, [21])
 def Zc_Salerno(w):
     """Calculate the critical compressibility factdor Zc using the Salerno
     correlation (1985)
@@ -1845,19 +1680,13 @@ def Zc_Salerno(w):
     -------
     Zc : float
         Critical compressibility factor, [-]
-
-    References
-    ----------
-    [21]_ Salerno, S., Cascella, M., May, D., Watson, P., Tassios, D.
-    Prediction of Vapor Pressures and Saturated Volumes with a Simple Cubic
-    Equation of State: Part I. A Reliable Data Base. Fluid Phase Equilibria 27
-    (1986) 15-34
     """
     Zc = 0.291 - 0.08*w - 0.016*w**2                                     # Eq 3
 
     return unidades.Dimensionless(Zc)
 
 
+@refDoc(__doi__, [24])
 def Zc_Nath(w):
     """Calculate the critical compressibility factdor Zc using the Nath
     correlation (1985)
@@ -1871,17 +1700,13 @@ def Zc_Nath(w):
     -------
     Zc : float
         Critical compressibility factor, [-]
-
-    References
-    ----------
-    [24]_ Nath, J. Acentric Factor and the Critical Volumes for Normal Fluids.
-    Ind. Eng. Chem. Fundam. 21(3) (1985) 325-326
     """
     Zc = 0.2908 - 0.0825*w                                              # Eq 1
 
     return unidades.Dimensionless(Zc)
 
 
+@refDoc(__doi__, [25])
 def Zc_Lee_Kesler(w):
     """Calculate the critical compressibility factdor Zc using the Lee-Kesler
     correlation (1975)
@@ -1895,11 +1720,6 @@ def Zc_Lee_Kesler(w):
     -------
     Zc : float
         Critical compressibility factor, [-]
-
-    References
-    ----------
-    [25]_ Lee, B.I., Kesler, M.G. A Generalized Thermodynamic Correlation Based
-    on Three-Parameter Corresponding States. AIChE J. 21(3) (1975) 510-527
     """
     Zc = 0.2905 - 0.085*w                                               # Eq 21
 
@@ -1907,6 +1727,7 @@ def Zc_Lee_Kesler(w):
 
 
 # Distillation curves interconversion methods Ref. [29] Pag 117
+@refDoc(__doi__, [51, 29])
 def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
     """Interconversion between D86 and TBP at atmospheric pressure using the
     Riazi correlation
@@ -1946,14 +1767,6 @@ def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
     >>> TDB_C = [t-273.15 for t in TDB]
     >>> "%.1f %.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
     '134.2 157.4 190.3 209.0 230.2 254.7'
-
-    References
-    ----------
-    [51]_ Riazi, M.R., Daubert, T.E. Analytical Correlations
-    Interconvert Distillation Curve Types. Oil & Gas Journal 84 (1986) 50-57
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Define the default value for volumetric volume
     if Xi is None:
@@ -1985,6 +1798,7 @@ def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
     return TBP
 
 
+@refDoc(__doi__, [52, 20, 29])
 def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
     """Interconversion between D86 and TBP at atmospheric pressure using the
     Daubert correlation, API procedure 3A1.1
@@ -2036,16 +1850,6 @@ def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
     >>> TDB_C = [t-273.15 for t in TDB]
     >>> "%.1f %.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
     '133.5 154.2 189.2 210.7 232.9 258.2'
-
-    References
-    ----------
-    [52]_ Daubert, T.E. Petroleum Fraction Distillation Interconversion.
-    Hydrocarbon Processing 73(9) (1994) 75-78
-
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Convert to Fahrenheit the input distillation temperature
     Ti = [unidades.K2F(t) for t in Ti]
@@ -2095,6 +1899,7 @@ def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
     return [unidades.Temperature(t, "F") for t in TBP]
 
 
+@refDoc(__doi__, [51, 29])
 def SD_D86_Riazi(Ti, Xi=None, F=None):
     """Interconversion between SD and D86
 
@@ -2124,14 +1929,6 @@ def SD_D86_Riazi(Ti, Xi=None, F=None):
     >>> D86_C = [t-273.15 for t in D86]
     >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(D86_C)
     '53.2 70.9 96.0 131.3 168.3'
-
-    References
-    ----------
-    [51]_ Riazi, M.R., Daubert, T.E. Analytical Correlations
-    Interconvert Distillation Curve Types. Oil & Gas Journal 84 (1986) 50-57
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Define the default value for volumetric volume
     if Xi is None:
@@ -2165,6 +1962,7 @@ def SD_D86_Riazi(Ti, Xi=None, F=None):
     return D86
 
 
+@refDoc(__doi__, [52, 20, 29])
 def SD_D86_Daubert(Ti, Xi=None, SD50=None):
     """Interconversion between gas chromatography (ASTM D2887) and ASTM D86 at
     atmospheric pressure using the Daubert correlation, API procedure 3A3.2
@@ -2204,16 +2002,6 @@ def SD_D86_Daubert(Ti, Xi=None, SD50=None):
     >>> D86_C = [t-273.15 for t in D86]
     >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(D86_C)
     '53.5 68.2 96.9 132.6 167.8'
-
-    References
-    ----------
-    [52]_ Daubert, T.E. Petroleum Fraction Distillation Interconversion.
-    Hydrocarbon Processing 73(9) (1994) 75-78
-
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Convert to Fahrenheit the input distillation temperature
     Ti = [unidades.K2F(t) for t in Ti]
@@ -2259,6 +2047,7 @@ def SD_D86_Daubert(Ti, Xi=None, SD50=None):
     return [unidades.Temperature(t, "F") for t in D86]
 
 
+@refDoc(__doi__, [51, 29])
 def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
     """Interconversion between D86 and EFV
 
@@ -2290,14 +2079,6 @@ def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
     >>> EFV_C = [t-273.15 for t in EFV]
     >>> "%.0f" % EFV_C[0]
     '68'
-
-    References
-    ----------
-    [51]_ Riazi, M.R., Daubert, T.E. Analytical Correlations
-    Interconvert Distillation Curve Types. Oil & Gas Journal 84 (1986) 50-57
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Define the default value for volumetric volume
     if Xi is None:
@@ -2335,6 +2116,7 @@ def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
     return EFV
 
 
+@refDoc(__doi__, [52, 20, 29])
 def SD_TBP(Ti, Xi=None, SD50=None):
     """Interconversion between gas chromatography (ASTM D2887) and TBP at
     atmospheric pressure using the Daubert correlation, API procedure 3A3.1
@@ -2374,16 +2156,6 @@ def SD_TBP(Ti, Xi=None, SD50=None):
     >>> TDB_C = [t-273.15 for t in TDB]
     >>> "%.1f %.1f %.1f %.1f %.1f" % tuple(TDB_C)
     '164.3 166.9 168.9 170.9 176.8'
-
-    References
-    ----------
-    [52]_ Daubert, T.E. Petroleum Fraction Distillation Interconversion.
-    Hydrocarbon Processing 73(9) (1994) 75-78
-
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Convert to Fahrenheit the input distillation temperature
     Ti = [unidades.K2F(t) for t in Ti]
@@ -2428,6 +2200,7 @@ def SD_TBP(Ti, Xi=None, SD50=None):
     return [unidades.Temperature(t, "F") for t in TBP]
 
 
+@refDoc(__doi__, [53, 29])
 def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
     """Interconversion between ASTM D1160 and TBP distillation curve at 10 mmHg
 
@@ -2454,15 +2227,6 @@ def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
     >>> TDB_C = [t-273.15 for t in TDB]
     >>> "%.1f %.1f %.0f %.0f %.0f" % tuple(TDB_C)
     '146.6 200.9 250 290 350'
-
-    References
-    ----------
-    [53]_ Edmister, W.C., Okamoto, K.K. Applied Hydrocarbon Thermodynamics,
-    Part 13: Equilibrium Flash Vaporization Correlations for Heavy Oils Under
-    Subatmospheric Pressures. Petroleum Refiner 38(9) (1959) 271-288
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     # Define the default value for volumetric volume
     if Xi is None:
@@ -2483,6 +2247,7 @@ def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
     return [unidades.Temperature(t) for t in TBP]
 
 
+@refDoc(__doi__, [20, 29])
 def Tb_Pressure(T, P, Kw=None, reverse=False):
     """Conversion of boiling point at Sub or super atmospheric pressure to the
     normal boiling point, API Procedure 5A1.19
@@ -2512,13 +2277,6 @@ def Tb_Pressure(T, P, Kw=None, reverse=False):
     >>> TDB = Tb_Pressure(T, P, 12.5)
     >>> "%.0f" % TDB
     '602'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     p = unidades.Pressure(P, "Pa")
     if p.mmHg < 2:
@@ -2550,6 +2308,7 @@ def Tb_Pressure(T, P, Kw=None, reverse=False):
     return unidades.Temperature(Tb)
 
 
+@refDoc(__doi__, [54])
 def curve_Predicted(x, T):
     """Fill the missing point of a distillation curve
 
@@ -2576,11 +2335,6 @@ def curve_Predicted(x, T):
     >>> parameter, r = curve_Predicted(x, T)
     >>> "%.0f %.4f %.4f" % tuple(parameter)
     '327 0.2028 1.3802'
-
-    References
-    ----------
-    [54]_ Riazi, M.R. Distribution Model for Properties of Hydrocarbon-Plus
-    Fractions. Ind. Eng. Chem. Res. 28(11) (1989) 1731-1735.
     """
     x = array(x)
     T = array(T)
@@ -2603,6 +2357,7 @@ def _Tb_Predicted(par, x):
 
 
 # Others properties
+@refDoc(__doi__, [20])
 def PourPoint(SG, Tb, v100=None):
     """Calculate the pour point of petroleum fractions using the procedure
     2B8 from API technical databook, pag. 235
@@ -2637,10 +2392,6 @@ def PourPoint(SG, Tb, v100=None):
     >>> v = unidades.Diffusivity(3, "cSt")
     >>> "%0.0f" % PourPoint(0.839, T, v).R
     '458'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2662,6 +2413,7 @@ def PourPoint(SG, Tb, v100=None):
     return unidades.Temperature(PP, "R")
 
 
+@refDoc(__doi__, [20])
 def AnilinePoint(SG, Tb):
     """Calculate the aniline point of petroleum fractions using the procedure
     2B9 from API technical databook, pag. 237
@@ -2692,10 +2444,6 @@ def AnilinePoint(SG, Tb):
     >>> T = unidades.Temperature(570.2, "F")
     >>> "%0.1f" % AnilinePoint(0.8304, T).R
     '635.5'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2712,6 +2460,7 @@ def AnilinePoint(SG, Tb):
     return unidades.Temperature(AP, "R")
 
 
+@refDoc(__doi__, [20])
 def SmokePoint(SG, Tb):
     """Calculate the smoke point of petroleum fractions using the procedure 2B10
     from API technical databook, pag. 239
@@ -2742,10 +2491,6 @@ def SmokePoint(SG, Tb):
     >>> T = unidades.Temperature(414.5, "F")
     >>> "%0.1f" % SmokePoint(0.853, T).mm
     '16.7'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2762,6 +2507,7 @@ def SmokePoint(SG, Tb):
     return unidades.Length(SP, "mm")
 
 
+@refDoc(__doi__, [20])
 def FreezingPoint(SG, Tb):
     """Calculate freezing point of petroleum fractions using the procedure 2B11
     from API technical databook, pag. 241
@@ -2792,10 +2538,6 @@ def FreezingPoint(SG, Tb):
     >>> T = unidades.Temperature(874.5, "R")
     >>> "%0.0f" % CloudPoint(0.799, T).R
     '417'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2811,6 +2553,7 @@ def FreezingPoint(SG, Tb):
     return unidades.Temperature(FP, "R")
 
 
+@refDoc(__doi__, [20])
 def CloudPoint(SG, Tb):
     """Calculate cloud point of petroleum fractions using the procedure 2B12
     from API technical databook, pag. 243
@@ -2842,10 +2585,6 @@ def CloudPoint(SG, Tb):
     >>> T = unidades.Temperature(811.5, "R")
     >>> "%0.1f" % CloudPoint(0.787, T).R
     '383.4'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -2860,6 +2599,7 @@ def CloudPoint(SG, Tb):
     return unidades.Temperature(CP, "R")
 
 
+@refDoc(__doi__, [20])
 def CetaneIndex(API, Tb):
     """Calculate cetane index of petroleum fractions using the procedure 2B13
     from API technical databook, pag. 245
@@ -2891,10 +2631,6 @@ def CetaneIndex(API, Tb):
     >>> T = unidades.Temperature(617, "F")
     >>> "%0.1f" % CetaneIndex(32.3, T)
     '57.1'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2911,6 +2647,7 @@ def CetaneIndex(API, Tb):
 
 
 # PNA composition procedures
+@refDoc(__doi__, [20])
 def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
     """Calculate fractional compositon of paraffins, naphthenes and aromatics
     contained in petroleum fractions using the procedure 2B4.1 from API
@@ -2952,10 +2689,6 @@ def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
     --------
     >>> "%0.3f %0.3f %0.3f" % PNA_Riazi(378, 0.9046, 1.5002, 0.9, VGC=0.8485)
     '0.606 0.275 0.118'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     if d20 is None:
         d20 = SG-4.5e-3*(2.34-1.9*SG)
@@ -2985,6 +2718,7 @@ def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
     return xp, xn, xa
 
 
+@refDoc(__doi__, [56, 58])
 def PNA_Peng_Robinson(Nc, M, WABP):
     """Calculate fractional compositon of paraffins, naphthenes and aromatics
     contained in petroleum fractions using the Peng-Robinson procedure
@@ -3010,14 +2744,6 @@ def PNA_Peng_Robinson(Nc, M, WABP):
     Notes
     -----
     This method can too calculate the critical properties of fraction
-
-    References
-    ----------
-    [56]_ Ahmed, T. Hydrocarbon Phase Behavior. Gulf Publishing, Houston, TX,
-    1989.
-
-    [58]_ Robinson, D.B., Peng, D.Y. The characterization of the heptanes and
-    heavier fractions. Research Report 28. GPA, 1978. Tulsa, OK.
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     WABP_R = unidades.K2R(WABP)
@@ -3060,6 +2786,7 @@ def PNA_Peng_Robinson(Nc, M, WABP):
     return Xp, Xn, Xa
 
 
+@refDoc(__doi__, [56, 57])
 def PNA_Bergman(Tb, SG, Kw):
     """Calculate fractional compositon of paraffins, naphthenes and aromatics
     contained in petroleum fractions using the Bergman procedure
@@ -3085,15 +2812,6 @@ def PNA_Bergman(Tb, SG, Kw):
     Notes
     -----
     This method can too calculate the critical properties of fraction
-
-    References
-    ----------
-    [56]_ Ahmed, T. Hydrocarbon Phase Behavior. Gulf Publishing, Houston, TX,
-    1989.
-
-    [57]_ Bergman, D.F., Tek, M.R., Katz, D.L. Retrograde Condensation in
-    Natural Gas Pipelines. Project PR 2-29 of Pipelines Research Committee,
-    AGA, January 1977
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -3129,6 +2847,7 @@ def PNA_Bergman(Tb, SG, Kw):
     return Xwp, Xwn, Xwa
 
 
+@refDoc(__doi__, [55, 29])
 def PNA_van_Nes(M, n, d20, S):
     """Calculate fractional compositon of paraffins, naphthenes and aromatics
     contained in petroleum fractions using the Van Nes procedure
@@ -3157,14 +2876,6 @@ def PNA_van_Nes(M, n, d20, S):
     -----
     This method can too calculate the total number of rings, the number of
     aromatics rings and the naphthenic rings
-
-    References
-    ----------
-    [55]_ Van Nes, K., Van Western, H.A. Aspects of the Constitution of Mineral
-    Oils. Elsevier, New York, 1951
-
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum
-    Fractions. ASTM manual series MNL50, 2005
     """
     v = 2.51*(n-1.475)-(d20-0.851)
     w = (d20-0.851)-1.11*(n-1.475)
@@ -3183,6 +2894,7 @@ def PNA_van_Nes(M, n, d20, S):
 
 
 # Viscosity correlation
+@refDoc(__doi__, [20])
 def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
     """Calculate viscosity of a petroleum fraction using the API procedure
     11A4.2 and 11A4.4
@@ -3262,10 +2974,6 @@ def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
     >>> mu = viscoAPI(T1=T1, T2=T2, T=T, v100=v100, v210=v210)
     >>> "%0.3f" % mu["vT"].cSt
     '1.201'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     if v100 is None or v210 is None:
         # Convert input Tb in Kelvin to Rankine to use in the correlation
@@ -3313,6 +3021,7 @@ def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
     return vs
 
 
+@refDoc(__doi__, [20, 30])
 def SUS(T, v):
     """Calculate the Saybolt Universal Viscosity in Saybolt Universal Seconds
     (SUS) from kinematic viscosity, also referenced in API Procedure 11A1.1,
@@ -3343,14 +3052,6 @@ def SUS(T, v):
     >>> T = unidades.Temperature(0, "F")
     >>> "%0.0f" % SUS(T, 90)
     '415'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [30]_ ASTM D2161-05. Standard Practice for Conversion of Kinematic
-    Viscosity to Saybolt Universal Viscosity or to Saybolt Furol Viscosity.
-    ASTM International, West Conshohocken, PA, 2005, www.astm.org
     """
     # Convert input temperature to Fahrenheit
     t_F = unidades.K2F(T)
@@ -3363,6 +3064,7 @@ def SUS(T, v):
     return unidades.Time(Ut)
 
 
+@refDoc(__doi__, [20, 30])
 def SFS(T, v):
     """Calculate the Saybolt Furol Viscosity in Saybolt Furol Seconds
     (SFS) from kinematic viscosity, also referenced in API Procedure 11A1.4,
@@ -3390,14 +3092,6 @@ def SFS(T, v):
     >>> T = unidades.Temperature(210, "F")
     >>> "%0.1f" % SFS(T, 100)
     '48.4'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [30]_ ASTM D2161-05. Standard Practice for Conversion of Kinematic
-    Viscosity to Saybolt Universal Viscosity or to Saybolt Furol Viscosity.
-    ASTM International, West Conshohocken, PA, 2005, www.astm.org
     """
     if T == 323.15:
         S = 0.4717*v+13924/(v**2-72.59*v+6816)                         # Eq 7
@@ -3406,6 +3100,7 @@ def SFS(T, v):
     return unidades.Time(S)
 
 
+@refDoc(__doi__, [20, 31])
 def MuL_Singh(T, v100):
     """Calculate kinematic viscosity of liquid petroleum fractions at low
     pressure by Singh correlation, also referenced in API Procedure 11A4.1,
@@ -3430,13 +3125,6 @@ def MuL_Singh(T, v100):
     >>> T = unidades.Temperature(210, "F")
     >>> "%0.3f" % MuL_Singh(T, 1.38).cSt
     '0.705'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [31]_ Singh, B., Mutyala, S.R., Puttagunta, V. Viscosity range from one
-    test. Hydrocarbon Processing 69 (1990) 39-41
     """
     # Convert input temperature to Rankine
     t_R = unidades.K2R(T)
@@ -3447,6 +3135,7 @@ def MuL_Singh(T, v100):
 
 
 # Component predition
+@refDoc(__doi__, [29])
 def H_Riazi(S, CH):
     """Calculate hydrogen content of petroleum fractions
 
@@ -3466,16 +3155,12 @@ def H_Riazi(S, CH):
     -----
     A Simple mass balance discarting other elements composition than hydrogen,
     carbon and sulfur
-
-    References
-    ----------
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
     """
     H = (100-S)/(1+CH)
     return H
 
 
+@refDoc(__doi__, [60])
 def H_Goossens(M, n, d20):
     """Calculate hydrogen content of petroleum fractions using the correlation
     of Goossens
@@ -3500,16 +3185,12 @@ def H_Goossens(M, n, d20):
 
     >>> "%0.2f" % H_Goossens(142, 1.4119, 0.7301)
     '15.45'
-
-    References
-    ----------
-    [60]_ Goossens, A.G. Prediction of the Hydrogen Content of Petroleum
-    Fractions. Ind. Eng. Chem. Res. 36(6) (1997) 2500-2504
     """
     H = 30.346 + (82.952-65.341*n)/d20 - 306/M                           # Eq 3
     return H
 
 
+@refDoc(__doi__, [29, 62])
 def H_ASTM(Tb, SG, xa):
     """Calculate hydrogen content of petroleum fractions
 
@@ -3526,14 +3207,6 @@ def H_ASTM(Tb, SG, xa):
     -------
     H : float
         Hydrogen content, [%]
-
-    References
-    ----------
-    [29]_ Riazi, M.R. Characterization and Properties of Petroleum Fractions.
-    ASTM manual series MNL50, 2005
-
-    [62]_ ASTM, Annual Book of Standards, ASTM International, West
-    Conshohocken, PA, 2002
     """
 
     H = (5.2407 + 0.01448*Tb - 7.018*xa)/SG - 0.901*xa + 0.01298*xa*Tb - \
@@ -3541,6 +3214,7 @@ def H_ASTM(Tb, SG, xa):
     return H
 
 
+@refDoc(__doi__, [61])
 def H_Jenkins_Walsh(SG, anilineP):
     """Calculate hydrogen content of petroleum fractions using the correlation
     of Jenkins-Walsh
@@ -3556,16 +3230,12 @@ def H_Jenkins_Walsh(SG, anilineP):
     -------
     H : float
         Hydrogen content, [%]
-
-    References
-    ----------
-    [61]_ Jenkins, G.I., Walsh, R.E. Quick Measure of Jet Fuel Properties.
-    Hydrocarbon Processing 47(5) (1968) 161-164
     """
     H = 11.17 - 12.89*SG + 0.0389*anilineP
     return H
 
 
+@refDoc(__doi__, [59])
 def S_Riazi(M, SG, Ri, m):
     """Calculate sulfur content of petroleum fractions
 
@@ -3596,12 +3266,6 @@ def S_Riazi(M, SG, Ri, m):
 
     >>> "%0.2f" % S_Riazi(1484, 1.0209, 1.1611, 289.2786)
     '2.85'
-
-    References
-    ----------
-    [59]_ Riazi, M.R., Nasimi, N., Roomi, Y. Estimating Sulfur Content of
-    Petroleum Products and Crude Oils. Ind. Eng. Chem. Res. 38(11) (1999)
-    4507-4512
     """
     if M < 200:
         S = 177.448 - 170.946*Ri + 0.2258*m + 4.054*SG
@@ -3610,6 +3274,7 @@ def S_Riazi(M, SG, Ri, m):
     return S
 
 
+@refDoc(__doi__, [20])
 def CombustionHeat(API, water=0, ash=0, S=0):
     """Calculate gross and net heat of combustion at 60ºF for petroleum
     fractions, referenced in API procedure 14A1.3, pag 1236
@@ -3639,10 +3304,6 @@ def CombustionHeat(API, water=0, ash=0, S=0):
     >>> hg, hn = CombustionHeat(11.3, 0.3, 1.67, 1.49)
     >>> "%0.0f %0.0f" % (hg.Btulb, hn.Btulb)
     '18218 17222'
-
-    References
-    ----------
-    [20]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Interpolation data from Table 14-0.1 for normal sulfur and inert content
     if API < 35:

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This module implement mixture component properties
 
-:func:`Mezcla`: The main class with all integrated functionality. Use the
+:class:`Mezcla`: The main class with all integrated functionality. Use the
 properties in database and calculate state properties with the methods chosen
 in configuration
 
@@ -82,6 +82,7 @@ from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
                             MuG_API, ThG_StielThodos)
 from lib.physics import R_atml, R, Collision_Neufeld
 from lib import unidades, config
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -319,6 +320,7 @@ def mix_molarflow_massfraction(molarFlow, massFraction, cmps):
     return kw
 
 
+@refDoc(__doi__, [18, 2])
 def Vc_ChuehPrausnitz(xi, Vci, Mi, hydrocarbon=None):
     r"""Calculates critic volume of a mixture using the Chueh-Prausnitz
     correlation, also referenced in API procedure 4B3.1 pag 314
@@ -364,13 +366,6 @@ def Vc_ChuehPrausnitz(xi, Vci, Mi, hydrocarbon=None):
     >>> Mm = Mi[0]*0.63+Mi[1]*0.37
     >>> "%0.2f" % (Vc_ChuehPrausnitz([0.63, 0.37], [Vc1, Vc2], Mi).ft3lb*Mm)
     '4.35'
-
-    References
-    ----------
-    [18]_ Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
-        Pressures: Calculation of Critical Temperatures, Volumes and Pressures
-        of Nonpolar Mixtures. AIChE Journal 13(6) (1967) 1107-1113
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Define default C parameters:
     if hydrocarbon is None:
@@ -418,6 +413,7 @@ def Vc_ChuehPrausnitz(xi, Vci, Mi, hydrocarbon=None):
 
 
 # Liquid density correlations
+@refDoc(__doi__, [9, 2, 3])
 def RhoL_RackettMix(T, xi, Tci, Pci, Vci, Zrai, Mi):
     r"""Calculates saturated liquid densities of muxteres using the
     modified Rackett equation by Spencer-Danner, also referenced in API
@@ -494,14 +490,6 @@ def RhoL_RackettMix(T, xi, Tci, Pci, Vci, Zrai, Mi):
     >>> args = (344.26, [0.7, 0.3], Tci, Pci, Vci, Zrai, Mi)
     >>> "%0.1f" % (1/RhoL_RackettMix(*args).gcc)
     '120.0'
-
-    References
-    ----------
-    [9]_ Spencer, C.F., Danner, R.P. Prediction of Bubble-Point Density of
-        Mixtures. J. Chem. Eng. Data 18(2) (1973) 230-234
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -553,6 +541,7 @@ def RhoL_RackettMix(T, xi, Tci, Pci, Vci, Zrai, Mi):
     return unidades.Density(Mm/V)
 
 
+@refDoc(__doi__, [10, 2, 3])
 def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
     r"""Calculates saturated liquid densities of pure components using the
     Corresponding STAtes Liquid Density (COSTALD) method, developed by
@@ -613,16 +602,6 @@ def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
     >>> args = (344.26, [0.7, 0.3], Tci, wi, Vci, Mi)
     >>> "%0.1f" % (1/RhoL_CostaldMix(*args).gcc)
     '119.5'
-
-
-    References
-    ----------
-    [10]_ Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
-        Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
-        653-663
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -657,6 +636,7 @@ def RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi):
     return unidades.Density(rho*Mm)
 
 
+@refDoc(__doi__, [11, 3])
 def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Aalto-Keskinen modification of Chang-Zhao correlation
@@ -715,14 +695,6 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
     >>> args = (344.26, P, xi, Tci, Pci, Vci, wi, Mi, 1/116.43*1000)
     >>> "%0.2f" % (1/RhoL_AaltoKeskinenMix(*args).gcc)
     '99.05'
-
-    References
-    ----------
-    [11]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
-        Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
-        Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -761,6 +733,7 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [12, 2])
 def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Thomson-Brobst-Hankinson modification of Chang-Zhao correlation adapted to
@@ -839,13 +812,6 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     >>> args = (T, P, xi, Tci, Vci, wi, Mi, 1/Vs)
     >>> "%0.3f" % RhoL_TaitCostaldMix(*args).gcc
     '0.698'
-
-    References
-    ----------
-    [12]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
-        Correlation for Densities of Compressed Liquids and Liquid Mixtures.
-        AIChE Journal 28(4) (1982): 671-76
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -884,6 +850,7 @@ def RhoL_TaitCostaldMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [13])
 def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     r"""Calculates compressed-liquid density of a mixture, using the
     Nasrifar correlation
@@ -925,11 +892,6 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     -------
     rho : float
         High-pressure liquid density, [kg/m³]
-
-    References
-    ----------
-    [13]_ Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
-        Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
     """
     # Convert critical volumes to molar base
     Vci = [Vc*M for Vc, M in zip(Vci, Mi)]
@@ -972,6 +934,7 @@ def RhoL_NasrifarMix(T, P, xi, Tci, Vci, wi, Mi, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [14, 2])
 def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     r"""Calculates compressed-liquid density, using the analytical expression
     of Lu Chart referenced in API procedure 6A2.22
@@ -1032,13 +995,6 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     >>> rs = unidades.Density(41.65, "lbft3")
     >>> "%0.1f" % RhoL_APIMix(T, P, x, [Tc1, Tc2], [Pc1, Pc2], rs).lbft3
     '42.6'
-
-    References
-    ----------
-    [14]_ Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
-        Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
-        Data 18(2) (1973) 227-230
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Define reference state
     if To is None:
@@ -1070,6 +1026,7 @@ def RhoL_APIMix(T, P, xi, Tci, Pci, rhos, To=None, Po=None):
     return unidades.Density(d2)
 
 
+@refDoc(__doi__, [11, 12])
 def _Pv(T, Tcm, Pcm, wm):
     """Pseudo vapor presure from pseudocritical properties to use in
     compressed liquid density correlations
@@ -1089,15 +1046,6 @@ def _Pv(T, Tcm, Pcm, wm):
     -------
     Pbp : float
         Boiling point pressure, [Pa]
-
-    References
-    ----------
-    [11]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
-        Correlation for Compressed Liquid Densities of Hydrocarbons. Part 2.
-        Mixtures. Fluid Phase Equilibria 114 (1996) 21-35
-    [12]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
-        Correlation for Densities of Compressed Liquids and Liquid Mixtures.
-        AIChE Journal 28(4) (1982): 671-76
     """
     Trm = T/Tcm
     alpha = 35 - 36/Trm - 96.736*log10(Trm) + Trm**6                   # Eq 22
@@ -1112,6 +1060,7 @@ def _Pv(T, Tcm, Pcm, wm):
 
 
 # Liquid viscosity correlations
+@refDoc(__doi__, [20, 2, 3])
 def MuL_KendallMonroe(xi, mui):
     r"""Calculate viscosity of liquid mixtures using the Kendall-Monroe method,
     also referenced in API procedure 11A3.1, pag 1051
@@ -1145,15 +1094,6 @@ def MuL_KendallMonroe(xi, mui):
     >>> mu = [0.109e-3, 0.218e-3, 0.63e-3]
     >>> "%0.3f" % MuL_KendallMonroe(x, mu).cP
     '0.256'
-
-    References
-    ----------
-    [20]_ Kendall, J., Monroe, P. The Viscosity of Liquids II. The
-        Viscosity-Composition Curve for Ideal Liquid Mixtures. J. Am. Chem.
-        Soc. 39(9) (1917) 1787-1802
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     mum = 0
     for x, mu in zip(xi, mui):
@@ -1208,6 +1148,7 @@ def MuL_Chemcad(xi, Mi, mui):
 
 
 # Gas viscosity correlations
+@refDoc(__doi__, [3])
 def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
     r"""Calculate viscosity of gas mixtures using the Reichenberg method as
     explain in [3]_
@@ -1281,11 +1222,6 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
     >>> D = [0, 1.4]
     >>> "%0.1f" % MuG_Reichenberg(T, x, Tc, Pc, M, mu, D).microP
     '146.2'
-
-    References
-    ----------
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Calculate reduced temperatures
     Tri = [T/Tc for Tc in Tci]
@@ -1361,6 +1297,7 @@ def MuG_Reichenberg(T, xi, Tci, Pci, Mi, mui, Di):
     return unidades.Viscosity(mu)
 
 
+@refDoc(__doi__, [1, 2, 3])
 def MuG_Wilke(xi, Mi, mui):
     r"""Calculate viscosity of gas mixtures using the Wilke mixing rules, also
     referenced in API procedure 11B2.1, pag 1102
@@ -1420,14 +1357,6 @@ def MuG_Wilke(xi, Mi, mui):
     >>> mui = [109.4e-7, 72.74e-7]
     >>> "%0.2f" % MuG_Wilke([0.697, 0.303], [16.043, 58.123], mui).microP
     '92.25'
-
-    References
-    ----------
-    [1]_ Wilke, C.R. A Viscosity Equation for Gas Mixtures. J. Chem. Phys.
-        18(4) (1950) 517-519
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Eq 4
     kij = []
@@ -1457,6 +1386,7 @@ def MuG_Wilke(xi, Mi, mui):
     return unidades.Viscosity(mu)
 
 
+@refDoc(__doi__, [3])
 def MuG_Herning(xi, Mi, mui):
     r"""Calculate viscosity of gas mixtures using the Herning-Zipperer mixing
     rules, as explain in [3]_
@@ -1489,11 +1419,6 @@ def MuG_Herning(xi, Mi, mui):
     >>> mui = [109.4e-7, 72.74e-7]
     >>> "%0.1f" % MuG_Herning([0.697, 0.303], [16.043, 58.123], mui).microP
     '92.8'
-
-    References
-    ----------
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     kij = []
     for i, mi in enumerate(Mi):
@@ -1519,6 +1444,7 @@ def MuG_Herning(xi, Mi, mui):
     return unidades.Viscosity(mu)
 
 
+@refDoc(__doi__, [3])
 def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
     r"""Calculate the viscosity of a gas mixture using the Lucas mixing rules
     as explain in [3]_.
@@ -1580,11 +1506,6 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
     >>> mu = MuG_Lucas(33+273.15, 101325, [0.677, 0.323], Tc, Pc, Vc, Zc, M, D)
     >>> "%0.1f" % mu.microP
     '116.3'
-
-    References
-    ----------
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
@@ -1673,6 +1594,7 @@ def MuG_Lucas(T, P, xi, Tci, Pci, Vci, Zci, Mi, Di):
     return unidades.Viscosity(mu, "microP")
 
 
+@refDoc(__doi__, [15, 3])
 def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
     r"""Calculate the viscosity of a gas mixture using the Chung correlation
 
@@ -1777,14 +1699,6 @@ def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
     >>> k = [0, 0]
     >>> "%0.1f" % MuG_Chung(331, x, Tc, Vc, M, w, mu, k).microP
     '87.6'
-
-    References
-    ----------
-    [15]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
@@ -1885,6 +1799,7 @@ def MuG_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki):
     return unidades.Viscosity(mu, "microP")
 
 
+@refDoc(__doi__, [15, 1])
 def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Chung correlation
 
@@ -1918,14 +1833,6 @@ def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
     -------
     mu : float
         Viscosity of gas mixture, [Pa·s]
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
@@ -2051,6 +1958,7 @@ def MuG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, muo):
     return unidades.Viscosity(muk+mup, "P")
 
 
+@refDoc(__doi__, [1, 21, 16, 17])
 def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the TRAPP (TRAnsport
     Property Prediction) method.
@@ -2167,20 +2075,6 @@ def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
     >>> mu = MuG_TRAPP(377.6, 413.7e5, x, Tc, Vc, Zc, M, w, 448.4, 10.2e-6)
     >>> "%0.1f" % mu.muPas
     '82.6'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    [21]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
-        Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
-        Technical Note 1039 (1981)
-    [16]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
-        Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
-        Ref. Data 16(4) (1987) 577-798
-    [17]_ Ely, J.F. An Enskog Correction for Size and Mass Difference Effects
-        in Mixture Viscosity Prediction. J. Res. Natl. Bur. Stand. 86(6) (1981)
-        597-604
     """
     # Reference fluid properties, propane
     TcR = 369.83
@@ -2366,6 +2260,7 @@ def MuG_TRAPP(T, P, xi, Tci, Vci, Zci, Mi, wi, rho, muo):
     return unidades.Viscosity(Fnm*muR + Dmu + muo*1e6, "muPas")
 
 
+@refDoc(__doi__, [19, 2])
 def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Dean-Stiel
     correlation, also referenced in API databook Procedure 11B4.1, pag 1107
@@ -2410,7 +2305,7 @@ def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
 
     Examples
     --------
-    Example in [5]_, 60% Methane 40% propane at 1500psi and 257ºF
+    Example in [2]_, 60% Methane 40% propane at 1500psi and 257ºF
 
     >>> Tc1 = unidades.Temperature(-116.66, "F")
     >>> Tc2 = unidades.Temperature(206.02, "F")
@@ -2420,12 +2315,6 @@ def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
     >>> args = (x, [Tc1, Tc2], [Pc1, Pc2], [16.04, 44.1], 1, 0.5283, 123e-7)
     >>> "%0.4f" % MuG_DeanStielMix(*args).cP
     '0.0163'
-
-    References
-    ----------
-    [19]_ Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
-        Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculate pseudo critical properties
     Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
@@ -2435,6 +2324,7 @@ def MuG_DeanStielMix(xi, Tci, Pci, Mi, rhoc, rho, muo):
     return MuG_DeanStiel(Tpc, Ppc, rhoc, M, rho, muo)
 
 
+@refDoc(__doi__, [2])
 def MuG_APIMix(T, P, xi, Tci, Pci, muo):
     r"""Calculate the viscosity of nonhydrocarbon gases at high pressure using
     the linearization of Carr figure as give in API Databook procedure 11C1.2,
@@ -2481,10 +2371,6 @@ def MuG_APIMix(T, P, xi, Tci, Pci, muo):
     >>> x = [0.6, 0.4]
     >>> "%0.4f" % MuG_APIMix(T, P, x, [Tc1, Tc2], [Pc1, Pc2], 123e-7).cP
     '0.0173'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculate pseudo critical properties
     Tpc = sum([x*Tc for x, Tc in zip(xi, Tci)])                         # Eq 5
@@ -2494,6 +2380,7 @@ def MuG_APIMix(T, P, xi, Tci, Pci, muo):
 
 
 # Liquid thermal conductivity correlations
+@refDoc(__doi__, [4, 2])
 def ThL_Li(xi, Vi, Mi, ki):
     r"""Calculate thermal conductiviy of liquid nmixtures using the Li method,
     also referenced in API procedure 12A2.1, pag 1145
@@ -2533,12 +2420,6 @@ def ThL_Li(xi, Vi, Mi, ki):
     >>> k2 = unidades.ThermalConductivity(0.08130, "BtuhftF")
     >>> "%0.5f" % ThL_Li([0.68, 0.32], [V1, V2], [1, 1], [k1, k2]).BtuhftF
     '0.07751'
-
-    References
-    ----------
-    [4]_ Li, C.C. Thermal Conductivity of Liquid Mixtures. AIChE Journal
-        22(5) (1976) 927-930
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Use critical volume in molar base
     Vi = [V*M*1000 for V, M in zip(Vi, Mi)]
@@ -2568,6 +2449,7 @@ def ThL_Li(xi, Vi, Mi, ki):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [3])
 def ThL_Power(wi, ki):
     r"""Calculate thermal conductiviy of liquid nmixtures using the power law
     method, as referenced in [3]_
@@ -2591,11 +2473,6 @@ def ThL_Power(wi, ki):
     -----
     This method shold not be used if water is in the mixture or if pure
     component thermal conductivities are very different, ki/kj < 2
-
-    References
-    ----------
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     km = 0
     for w, k in zip(wi, ki):
@@ -2606,6 +2483,7 @@ def ThL_Power(wi, ki):
 
 
 # Gas thermal conductivity correlations
+@refDoc(__doi__, [5, 2])
 def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
     r"""Calculate thermal conductiviy of gas mixtures using the Lindsay-Bromley
     method, also referenced in API procedure 12B2.1, pag 1164
@@ -2657,12 +2535,6 @@ def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
     >>> k = ThG_LindsayBromley(T, x, M, [Tb1, Tb2], [mu1, mu2], [k1, k2])
     >>> "%0.5f" % k.BtuhftF
     '0.01197'
-
-    References
-    ----------
-    [5]_ Lindsay, A.L., Bromley, L.A. Thermal Conductivity of Gas Mixtures.
-        Ind. & Eng. Chem. 42(8) (1950) 1508-1511
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Calculation of Sutherland constants, Eq 14
     S = []
@@ -2703,6 +2575,7 @@ def ThG_LindsayBromley(T, xi, Mi, Tbi, mui, ki):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [6, 3])
 def ThG_MasonSaxena(xi, Mi, mui, ki):
     r"""Calculate thermal conductiviy of gas mixtures using the Mason-Saxena
     method
@@ -2744,13 +2617,6 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
     >>> ki = [0.0166, 0.0214]
     >>> "%0.4f" % ThG_MasonSaxena(xi, Mi, mui, ki)
     '0.0184'
-
-    References
-    ----------
-    [6]_ Mason, E.A., Saxena, S.C. Approximate Formula for the Thermal
-        Conductivity of Gas Mixtures. Fhys. Fluids 1(5) (1958) 361-369
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Aij coefficient with ε=1 as explain in [3]_, Eq 21
     Aij = []
@@ -2775,6 +2641,7 @@ def ThG_MasonSaxena(xi, Mi, mui, ki):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [15, 1])
 def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
     r"""Calculate thermal conductivity of gas mixtures at low pressure using
     the Chung correlation
@@ -2837,14 +2704,6 @@ def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
     '183.3'
     >>> "%0.4f" % ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu)
     '0.0222'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Molar values
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
@@ -2928,6 +2787,7 @@ def ThG_Chung(T, xi, Tci, Vci, Mi, wi, Cvi, mu):
     return unidades.ThermalConductivity(k, "calscmK")
 
 
+@refDoc(__doi__, [15, 1])
 def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
     r"""Calculate the thermal conductivity of a compressed gas mixture using
     the Chung correlation
@@ -2977,14 +2837,6 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
     >>> args = (370.8, x, Tc, Vc, M, w, D, k, 1/159*22.9*1000, 0.0377)
     >>> "%0.3f" % ThG_P_Chung(*args)
     '0.058'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-        Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-        Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Thermal conductivity in procedure in cal/s·cm·K
     ko = unidades.ThermalConductivity(ko).calscmK
@@ -3110,6 +2962,7 @@ def ThG_P_Chung(T, xi, Tci, Vci, Mi, wi, Di, ki, rho, ko):
     return unidades.ThermalConductivity(kk+kp, "calscmK")
 
 
+@refDoc(__doi__, [7, 3])
 def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
     r"""Calculate thermal conductiviy of gas mixtures at high pressure using
     the Stiel-Thodos correlation for pure compound using the mixing rules
@@ -3178,14 +3031,6 @@ def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
     >>> args = (370.8, x, Tc, Pc, Vc, w, M, 159/22.9/1000, 0.0377)
     >>> "%0.4f" % ThG_StielThodosYorizane(*args)
     '0.0527'
-
-    References
-    ----------
-    [7]_ Yorizane, M., Yoshiumra, S., Masuoka, H., Yoshida, H. Thermal
-        Conductivities of Binary Gas Mixtures at High Pressures: N2-O2, N2-Ar,
-        CO2-Ar, CO2-CH4. Ind. Eng. Chem. Fundam. 22(4) (1983) 458-462
-    [3]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
     """
     # Use critical volume in molar base
     Vci = [Vc*M*1000 for Vc, M in zip(Vci, Mi)]
@@ -3226,6 +3071,7 @@ def ThG_StielThodosYorizane(T, xi, Tci, Pci, Vci, wi, Mi, V, ko):
     return unidades.ThermalConductivity(km)
 
 
+@refDoc(__doi__, [1, 21])
 def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
     r"""Calculate the thermal conductivity of gas mixtures at high pressure
     using the TRAPP (TRAnsport Property Prediction) method.
@@ -3305,14 +3151,6 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
     >>> args = (370.8, x, Tc, Vc, Zc, w, M, 1/159*22.9*1000, 0.0377)
     >>> "%0.4f" % ThG_TRAPP(*args)
     '0.0549'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-       New York: McGraw-Hill Professional, 2000.
-    [21]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
-        Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
-        Technical Note 1039 (1981)
     """
     # Reference fluid properties, propane
     TcR = 369.83
@@ -3389,6 +3227,7 @@ def ThG_TRAPP(T, xi, Tci, Vci, Zci, wi, Mi, rho, ko):
     return unidades.ThermalConductivity(Flm*Xlm*lR*1e-3 + ko)
 
 
+@refDoc(__doi__, [8, 2])
 def Tension(xi, sigmai):
     r"""Calculate surface tension of liquid nmixtures using the Morgan-Griggs
     law of mixtures method, also referenced in API procedure 10A2.1, pag 991
@@ -3416,13 +3255,6 @@ def Tension(xi, sigmai):
     >>> s2 = unidades.Tension(24.3, "dyncm")
     >>> "%0.1f" % Tension([0.379, 0.621], [s1, s2]).dyncm
     '25.8'
-
-    References
-    ----------
-    [8]_ Livingston, J.k Morgan, R., Griggs, M.A. The Properties of Mixed
-        Liquids III. The Law of Mixtures I. J. Am. Chem. Soc. 39 (1917)
-        2261-2275
-    [2]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     sigma = 0
     for x, s in zip(xi, sigmai):
@@ -3437,36 +3269,46 @@ class Mezcla(config.Entity):
 
     Parameters
     ----------
-    tipo: kind of mix definition
-        0 - Undefined
-        1 - Unitary Massflow
-        2 - Unitary Molarflow
-        3 - Mass flow and molar fractions
-        4 - Mass flow and mass fractions
-        5 - Molar flow and molar fractions
-        6 - Molar flow and mass fractions
-    kwargs: any of this variable for define mixture
-        fraccionMolar
-        fraccionMasica
-        caudalMasico
-        caudalMolar
-        caudalUnitarioMasico
-        caudalUnitarioMolar
+    tipo: int
+        kind of mix definition:
 
+            * 0 : Undefined
+            * 1 : Unitary Massflow
+            * 2 : Unitary Molarflow
+            * 3 : Mass flow and molar fractions
+            * 4 : Mass flow and mass fractions
+            * 5 : Molar flow and molar fractions
+            * 6 : Molar flow and mass fractions
+    fraccionMolar: list
+        Molar fraccion list of compounds, [-]
+    fraccionMasica: list
+        Mass fraccion list of compounds, [-]
+    caudalMasico: float
+        Total mass flow, [kg/h)
+    caudalMolar: float
+        Total molar flow, [kmol/h)
+    caudalUnitarioMasico: list
+        Mass flow for each compund, [kg/h]
+    caudalUnitarioMolar: list
+        Molar flow for each compund, [kmol/h]
+
+    Notes
+    -----
     Additionally can define custom calculation method with the parameters:
-        ids: List with component index of mixture
-        rhoLMix: Liquid density correlation index
-        Corr_RhoLMix: Compressed liquid density correlation index
-        MuLMix: Liquid viscosity correlation index
-        MuGMix: Gas viscosity correlation index
-        corr_MuGMix: Compressed gas viscosity correlation index
-        ThCondLMix: Liquid thermal conductivity correlation index
-        ThCondGMix: Gas thermal conductivity correlation index
-        corr_ThCondGMix: Compressed gas thermal conductivity correlation
 
-    This option overwrite the project configuration and the user configuration,
-    for now only in API usage. Not custom stream property definition in main
-    program
+        * *ids*: List with component index of mixture
+        * *rhoLMix*: Liquid density correlation index
+        * *Corr_RhoLMix*: Compressed liquid density correlation index
+        * *MuLMix*: Liquid viscosity correlation index
+        * *MuGMix*: Gas viscosity correlation index
+        * *corr_MuGMix*: Compressed gas viscosity correlation index
+        * *ThCondLMix*: Liquid thermal conductivity correlation index
+        * *ThCondGMix*: Gas thermal conductivity correlation index
+        * *corr_ThCondGMix*: Compressed gas thermal conductivity correlation
+
+    These options overwrite the project configuration and the user
+    configuration, for now only in API usage. Not custom stream property
+    definition in main program
 
     Examples
     --------
@@ -3562,9 +3404,10 @@ class Mezcla(config.Entity):
     conductivity of mixture
 
     >>> x = [0.755, 0.245]
-    >>> c0 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=0)  # noqa
-    >>> c1 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=1)
-    >>> c2 = Mezcla(2, ids=[2, 49], caudalUnitarioMolar=x, ThCondGMix=2, ThCondGPMix=2)
+    >>> kw = {"caudalUnitarioMolar": x, "ThCondGMix": 2}
+    >>> c0 = Mezcla(2, ids=[2, 49], ThCondGPMix=0, **kw)
+    >>> c1 = Mezcla(2, ids=[2, 49], ThCondGPMix=1, **kw)
+    >>> c2 = Mezcla(2, ids=[2, 49], ThCondGPMix=2, **kw)
     >>> args = (370.8, 174.8e5, 1/159*22.9*1000)
     >>> "%0.4f %0.4f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
     '0.0526 0.0548'
@@ -3756,8 +3599,10 @@ class Mezcla(config.Entity):
             h += xw*cmp._Ho(T)
         return unidades.Enthalpy(h)
 
+    @refDoc(__doi__, [2], tab=8)
     def _so(self, T):
-        """Ideal gas entropy, referenced in API procedure 7F2.1, pag 741
+        r"""
+        Ideal gas entropy, referenced in API procedure 7F2.1, pag 741
 
         .. math::
             S_m^o = \sum_i x_wS_i^o - \frac{R}{M} x_i\lnx_i
@@ -3766,10 +3611,6 @@ class Mezcla(config.Entity):
         ----------
         T : float
             Temperature, [K]
-
-        References
-        ----------
-        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         s = 0
         for x, xw, cmp in zip(

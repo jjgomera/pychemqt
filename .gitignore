@@ -67,6 +67,40 @@ doc/
 docs/lib.mEoS*
 docs/lib.*_ref.rst
 
+docs/lib.adimensional.rst
+docs/lib.atmosphere.rst
+docs/lib.bip.rst
+docs/lib.compuestos.rst
+docs/lib.config.rst
+docs/lib.coolProp.rst
+docs/lib.corriente.rst
+docs/lib.crude.rst
+docs/lib.datasheet.rst
+docs/lib.elemental.rst
+docs/lib.eos.rst
+docs/lib.freeSteam.rst
+docs/lib.friction.rst
+docs/lib.gerg.rst
+docs/lib.heatTransfer.rst
+docs/lib.iapws97.rst
+docs/lib.meos.rst
+docs/lib.mezcla.rst
+docs/lib.newComponent.rst
+docs/lib.petro.rst
+docs/lib.physics.rst
+docs/lib.pipeDatabase.rst
+docs/lib.plot.rst
+docs/lib.project.rst
+docs/lib.psycrometry.rst
+docs/lib.reaction.rst
+docs/lib.refProp.rst
+docs/lib.rst
+docs/lib.solids.rst
+docs/lib.sql.rst
+docs/lib.thermo.rst
+docs/lib.thread.rst
+docs/lib.unidades.rst
+docs/lib.utilities.rst
 
 # Script propios
 .script/

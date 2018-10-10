@@ -15,23 +15,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module for implement physics correlation
-#   -Constants don't available in scipy.constants
-#   -Particle solid distributions
-#   -Other
-#       root3poly
-#       Cunninghan factor
-#       Neufeld Collision integral
-###############################################################################
+
+Module for implement physics correlation:
+
+  * Constants don't available in scipy.constants
+  * Particle solid distributions
+  * Other
+      * root3poly
+      * Cunninghan factor
+      * :func:`Collision_Neufeld`: Neufeld Collision integral
+
+'''
+
 
 from math import exp, pi, cos, acos, sin
 
 from scipy.constants import R, calorie, liter, atm, Btu, lb
 from scipy.special import cbrt
+
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -125,32 +130,29 @@ def Cunningham(l, Kn, method=0):
     return C
 
 
+@refDoc(__doi__, [1])
 def Collision_Neufeld(T, l=2, s=2):
-    """Calculate the collision integral using the Neufeld correlation
+    r"""Calculate the collision integral using the Neufeld correlation
 
     .. math::
         \varOmega^{(l,s)}=A/T^{B}+C/\exp\left(DT\right)+E/\exp\left(FT\right)+
-            G/\exp\left(HT\right)+RT^{B}\sin\left(ST^{w}-P\right)$
+            G/\exp\left(HT\right)+RT^{B}\sin\left(ST^{w}-P\right)
 
-        A,B,C,D,E,F,G,H,R,S,W,P are constants for each collison order
+    A,B,C,D,E,F,G,H,R,S,W,P are constants for each collison order
 
     Parameters
     ----------
     T : float
         Reduced temperature, [-]
-    l, s : integer, optional
-        Collision integral order, default 2
+    l: int, optional
+        Collision integral first term order, default 2
+    s : int, optional
+        Collision integral second term order, default 2
 
     Returns
     -------
     omega : float
         Transport collision integral, [-]
-
-    References
-    ----------
-    .. [1] Neufeld, P.D., Janzen, A.R., Aziz, R.A. Empirical Equations to
-        Calculate 16 of the Transport Collision Integrals Ω for the
-        Lennard-Jones (12-6) Potential. J. Chem. Phys. 57(3) (1972) 1100-1102
     """
     # Table I
     dat = {

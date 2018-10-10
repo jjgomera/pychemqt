@@ -51,6 +51,7 @@ from lib import unidades
 from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett
 from lib.physics import R_atml, R_cal
 from lib.elemental import databank
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -184,7 +185,7 @@ __doi__ = {
          "title": "A New Method Based on Elements and Chemical Bonds for "
                   "Organic Compounds Critical Properties Estimation",
          "ref": "Fluid Phase Equil. 417 (2016) 1-6",
-         "doi": "10.1016_j.fluid.2016.01.008"},
+         "doi": "10.1016/j.fluid.2016.01.008"},
     22:
         {"autor": "Marrero, J.; Gani, R.",
          "title": "Group-contribution based estimation of pure component "
@@ -552,10 +553,14 @@ class GroupContribution(newComponente):
         return string, formula
 
 
+@refDoc(__doi__, [1, 2, 11])
 class Joback(GroupContribution):
     """
     Group contribution for definition of unknown component using the Joback
     procedure (1987)
+    
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -569,11 +574,6 @@ class Joback(GroupContribution):
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -651,18 +651,6 @@ class Joback(GroupContribution):
     >>> cmp = Joback(group=[0, 1, 2, 19], contribution=[2, 1, 1, 1], Tb=372.7)
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '534.1 44.33 272.5'
-
-    References
-    ----------
-    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
-    Gases and Liquids 5th Edition. McGraw-Hill
-
-    [2]_ Joback, K.G., Reid, R.C. Estimation of Pure-Component Properties
-    from Group-Contributions. Chemical Engineering Communications, 57
-    (1987) 233-243
-
-    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw Hill (2008)
     """
     __title__ = "Joback-Reid (1987)"
     _coeff = {
@@ -886,10 +874,14 @@ class Joback(GroupContribution):
         return unidades.SpecificHeat(cp0/self.M, "JgK")
 
 
+@refDoc(__doi__, [1, 3, 4, 11])
 class Constantinou(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Constantinou-Gani procedure (1994)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -901,11 +893,6 @@ class Constantinou(GroupContribution):
         Molecular weight, [-]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -1048,21 +1035,6 @@ class Constantinou(GroupContribution):
     >>> cmp = Constantinou(group=[0, 36, 86], contribution=[2, 1, 1])
     >>> "%0.0f" % cmp.Tf
     '278'
-
-    References
-    ----------
-    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
-    Gases and Liquids 5th Edition. McGraw-Hill
-
-    [3]_ Constantinou, L., Gani, R. New Group Controbution Method for
-    Estimating Properties of Pure Compounds. AIChE J. 40(10) (1994) 1697-1710
-
-    [4]_ Constantinou, L., Gani, R., O’Connell, J.P. Estimation of the
-    acentric factor and the liquid molar volume at 298K using a new group
-    contribution method. Fluid Phase Equilibria 103 (1995) 11-22
-
-    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw Hill (2008)
     """
     __title__ = "Constantinou-Gani (1995)"
     _coeff = {
@@ -1473,10 +1445,14 @@ class Constantinou(GroupContribution):
         return unidades.SpecificHeat(cp0/self.M, "JgK")
 
 
+@refDoc(__doi__, [1, 5])
 class Wilson(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Wilson-Jasperson procedure (1994)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -1492,11 +1468,6 @@ class Wilson(GroupContribution):
         Molecular weight, [-]
     SG : float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -1514,16 +1485,6 @@ class Wilson(GroupContribution):
     '702.9 37.94 693.6'
     >>> c1.formula
     'C8H10O'
-
-    References
-    ----------
-    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
-    Gases and Liquids 5th Edition. McGraw-Hill
-
-    [5]_ Wilson, G.M. Jasperson, L.V. Critical constants Tc and Pc,
-    estimation based on zero, first and second order methods. Paper given
-    at AIChE Spring National Meeting, New Orleans, LA, USA, February 25-29,
-    1996.
     """
     __title__ = "Wilson-Jasperson (1996)"
     kwargs = GroupContribution.kwargs.copy()
@@ -1636,10 +1597,14 @@ class Wilson(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [1, 6, 7])
 class Marrero(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Marrero-Pardillo procedure (1999)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -1653,11 +1618,6 @@ class Marrero(GroupContribution):
         Molecular weight, [-]
     SG : float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -1742,20 +1702,6 @@ class Marrero(GroupContribution):
     ... contribution=[2, 1, 2, 1, 2, 2, 4, 2])
     >>> "%0.2f" % cmp.mu.muPas
     '18.58'
-
-    References
-    ----------
-    [1]_ Poling, B.E, Prausnitz, J.M, O'Connell, J.P. The Properties of
-    Gases and Liquids 5th Edition. McGraw-Hill
-
-    [6]_ Marrero-Morejon, J., Pardillo-Fontdevila, F. Estimation of Pure
-    Compound Properties Using Group-Interaction Contributions. AIChE J. 45(3)
-    (1999) 615-621
-
-    [7]_ Marrero-Morejon, J., Pardillo-Fontdevila, E. Estimation of Liquid
-    Viscosity at Ambient Temperature of Pure Organic Compounds by Using
-    Group-Interaction Contributions. Chemical Engineering Journal 79
-    (2000) 69-72
     """
     __title__ = "Marrero-Pardillo (1999)"
 
@@ -2393,11 +2339,15 @@ class Elliott(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [8, 9, 10, 11])
 class Ambrose(GroupContribution):
     """
     Group contribution for definition of unknown component using the Ambrose
     procedure as use in API Technical Databook, procedure 4A1.1 with aditional
     term from Perry's Handbook
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -2413,11 +2363,6 @@ class Ambrose(GroupContribution):
         Molecular weight, [-]
     SG : float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -2476,22 +2421,6 @@ class Ambrose(GroupContribution):
     ... Tb=372.39, platt=0)
     >>> "%0.1f %0.2f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '543.0 25.63 455.8'
-
-    References
-    ----------
-    [8]_ Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
-    Properties: I. Critical Temperatures of Organic Compounds. National
-    Physical Laboratory, Teddington, NPL Rep. Chern.  92, 1978,
-    corrected 1980.
-
-    [9]_ Ambrose, D. Correlation and Estimation of Vapor-Liquid Critical
-    Properties: II. Critical Pressures and Volumes of Organic Compounds.
-    National Physical Laboratory, Teddington, NPL Rep. 98, 1979
-
-    [10]_ API. Technical Data book: Petroleum Refining 6th Edition 1997
-
-    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw Hill (2008)
     """
     __title__ = "Ambrose (1980)"
     kwargs = GroupContribution.kwargs.copy()
@@ -2644,10 +2573,14 @@ class Ambrose(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [12])
 class Klincewicz(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Klincewicz-Reid procedure (1984)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -2665,11 +2598,6 @@ class Klincewicz(GroupContribution):
         Specific gravity, [-]
     atoms : int, optional
         Atoms count, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -2690,11 +2618,6 @@ class Klincewicz(GroupContribution):
     >>> cmp = Klincewicz(Tb=329.25, M=58.08, atoms=10, nogroup=True)
     >>> "%0.2f %0.4f %0.1f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '505.15 52.9098 205.2'
-
-    References
-    ----------
-    [12]_ Klincewicz, K.M., Reid, R.C. Estimation of Critical Properties
-    with Group Contribution Methods. AIChE J. 30(1) (1984) 137-142
     """
     __title__ = "Klincewicz (1984)"
     kwargs = GroupContribution.kwargs.copy()
@@ -2822,10 +2745,14 @@ class Klincewicz(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [11, 13])
 class Lydersen(GroupContribution):
     """
     Group contribution for definition of unknown component using the Lydersen
     procedure (1955)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -2839,11 +2766,6 @@ class Lydersen(GroupContribution):
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -2865,15 +2787,6 @@ class Lydersen(GroupContribution):
     >>> cmp = Lydersen(Tb=329.25, group=[0, 22], contribution=[2, 1])
     >>> "%0.0f" % (cmp.Vc.ccg*cmp.M)
     '210'
-
-    References
-    ----------
-    [11]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw Hill (2008)
-
-    [13]_ Lydersen, A. L. Estimation of Critical Properties of Organic
-    Compounds. Coll. Eng. Univ. Wisconsin, Engineering Experimental
-    Station Rept. 3, Madison, WI (1955).
     """
     __title__ = "Lydersen (1955)"
     _coeff = {
@@ -2982,10 +2895,14 @@ class Lydersen(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [14])
 class Valderrama(GroupContribution):
     """
     Group contribution for definition of unknown component using the Valderrama
     procedure (2006)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -2999,11 +2916,6 @@ class Valderrama(GroupContribution):
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -3023,13 +2935,6 @@ class Valderrama(GroupContribution):
     ... group=[0, 1, 2, 10], contribution=[2, 3, 1, 1])
     >>> "%0.0f %0.1f %0.2f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '602 33.5 381.53'
-
-    References
-    ----------
-    [14]_ Valderrama, J.O., Álvarez, V.H. A New Group Contribution Method
-    Based on Equation of State Parameters to Evaluate the Critical
-    Properties of Simple and Complex Molecules. Can. J. Chem. Eng. 84(4) (2006)
-    431-446
     """
     __title__ = "Valderrama (2006)"
     _coeff = {
@@ -3122,10 +3027,14 @@ class Valderrama(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [15, 16, 17, 18])
 class Nannoolal(GroupContribution):
     """
     Group contribution for definition of unknown component using the Nannoolal
     procedure (2007)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -3139,11 +3048,6 @@ class Nannoolal(GroupContribution):
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -3293,27 +3197,6 @@ class Nannoolal(GroupContribution):
     '12.3872997 382.275'
     >>> "%0.4f" % cmp._Visco(363.15).mPas
     '2.6135'
-
-    References
-    ----------
-    [15]_ Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W. Estimation
-    of Pure Component Properties 1. Estimation of the Normal Boiling Point
-    of Non-electrolyte Organic Compounds Via Group Contributions and Group
-    Interactions. Fluid Phase Equilib., 226 (2004) 45-63
-
-    [16]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
-    Component Properties 2. Estimation of Critical Property Data by Group
-    Contribution. Fluid Phase Equilib., 252 (2007) 1-27
-
-    [17]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
-    Component Properties 3. Estimation of the Vapor Pressure of
-    Non-Electrolyte Organic Compounds Via Group Contributions and Group
-    Interactions. Fluid Phase Equilib., 269 (2008) 117-133
-
-    [18]_ Nannoolal, Y., Rarey, J., Ramjugernath, D. Estimation of Pure
-    Properties 4. Estimation of the Saturted Liquid Viscosity of
-    Non-Electrolyte Organic Compounds Via Group Contributions and Group
-    Interactions. Fluid Phase Equilib., 281 (2009) 97-119
     """
     __title__ = "Nannoolal (2007)"
     _coeff = {
@@ -3818,10 +3701,14 @@ class Nannoolal(GroupContribution):
         return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [19])
 class Wen(GroupContribution):
     """
     Group contribution for definition of unknown component using the Wen-Qiang
     procedure (2001)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -3835,11 +3722,6 @@ class Wen(GroupContribution):
         Normal boiling temperature, [K]
     SG: float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -3871,12 +3753,6 @@ class Wen(GroupContribution):
     '374.6'
     >>> cmp.formula
     'C6F5Cl'
-
-    References
-    ----------
-    [19]_ Wen, X., Quiang, Y. A New Group Contribution Method for Estimating
-    Critical Properties of Orgnic Compounds. Ind. Eng. Chem. Res. 40(26)
-    (2001) 6245-6250.
     """
     __title__ = "Wen-Qiang (2001)"
     _coeff = {
@@ -4183,10 +4059,14 @@ class Wen(GroupContribution):
         return group
 
 
+@refDoc(__doi__, [21])
 class Li(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Li-Xia-Xiang procedure (2016)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -4200,11 +4080,6 @@ class Li(GroupContribution):
         Molecular weight, [-]
     SG : float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -4242,15 +4117,7 @@ class Li(GroupContribution):
     ... contribution=[2, 4, 2, 1, 1, 3, 1])
     >>> "%0.2f" % (cmp.Vc.ccg*cmp.M)
     '180.65'
-
-    References
-    ----------
-    [21]_ Li, J., Xia, L., Xiang, S. A New Method Based on Elements and
-    Chemical Bonds for Organic Compounds Critical Properties Estimation.
-    Fluid Phase Equil., (2016)
     """
-    # TODO: Check final reference in paper, using the manuscript
-
     __title__ = "Li-Xia-Xiang (2016)"
 
     _coeff = {
@@ -4352,10 +4219,14 @@ class Li(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [22])
 class MarreroGani(GroupContribution):
     """
     Group contribution for definition of unknown component using the
     Marrero-Gani procedure (2001)
+
+    The resulting instance has all the necessary properties to use in PFD as a
+    predefined compound.
 
     Parameters
     ----------
@@ -4369,11 +4240,6 @@ class MarreroGani(GroupContribution):
         Molecular weight, [-]
     SG : float, optional
         Specific gravity, [-]
-
-    Return
-    ------
-    A instance of newComponente with all neccessary properties to use in PFD as
-    a predefined component
 
     Notes
     -----
@@ -4437,11 +4303,6 @@ class MarreroGani(GroupContribution):
     >>> c3 = MarreroGani(group=[28, 1, 307], contribution=[2, 9, 1])
     >>> "%0.2f %0.2f" % (c1.Tf, c3.Tf)
     '303.66 315.70'
-
-    References
-    ----------
-    [22]_ Marrero, J.; Gani, R. Group-contribution based estimation of pure
-    component properties. Fluid Phase Equilib. 183-184 (2001), 183-208.
     """
     __title__ = "Marrero-Gani (2001)"
 
@@ -5220,6 +5081,7 @@ class MarreroGani(GroupContribution):
         GroupContribution.calculo(self)
 
 
+@refDoc(__doi__, [20])
 def cpLS_Hurst(group):
     """Calculate liquid and solid heat capacities using the Hurst-Harrison
     method
@@ -5242,11 +5104,6 @@ def cpLS_Hurst(group):
 
     >>> "%0.1f" % cpLS_Hurst(group=[{"Gd": 1, "F": 3}])[0]
     '105.1'
-
-    References
-    ----------
-    [20]_ Hurst, J.E., Harrison, B.K. Estimation of Liquid and Solid Heat
-    Capacities Using a Modified Kopp's Rule. Chem. Eng. Comm. 112 (1992) 21-30
     """
     Solid = {"H": 7.56, "Li": 23.25, "Be": 12.47, "B": 10.10, "C": 10.89,
              "N": 18.74, "O": 13.42, "F": 26.16, "Na": 26.19, "Mg": 22.69,

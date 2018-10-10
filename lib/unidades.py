@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Phisics quantities module with support for unit conversion.
 
-:func:`unidad`: Base class with all functionality
+:class:`unidad`: Base class with all functionality
 
 Using the dimension symbol for define the SI base units:
 
@@ -34,62 +34,62 @@ Using the dimension symbol for define the SI base units:
 
 The list of supported unit are:
 
-    * :func:`Acceleration`, LT⁻²
-    * :func:`Angle`
-    * :func:`Area`, L²
-    * :func:`CakeResistance`, LM⁻¹
-    * :func:`Currency`
-    * :func:`Density`, ML⁻³
-    * :func:`DensityPressure`, T²L⁻²
-    * :func:`DensityTemperature`, ML⁻³Θ⁻¹
-    * :func:`Diffusivity`, L²T⁻¹
-    * :func:`DipoleMoment`, IL
-    * :func:`PotencialElectric`, ML³T⁻³I⁻¹
-    * :func:`Energy`, ML²T⁻²
-    * :func:`Enthalpy`, L²T⁻²
-    * :func:`EnthalpyDensity`, L⁵MT⁻²
-    * :func:`EnthalpyPressure`, L³M⁻¹
-    * :func:`Pressure`, ML⁻¹T⁻²
-    * :func:`Entropy`, ML²T⁻²Θ
-    * :func:`Force`, MLT⁻²
-    * :func:`Fouling`
-    * :func:`Frequency`, T⁻¹
-    * :func:`V2V`
-    * :func:`HeatFlux`, MT⁻³
-    * :func:`HeatTransfCoef`, MT⁻⁴
-    * :func:`Length`, L
-    * :func:`Mass`, M
-    * :func:`MassFlow`, MT⁻¹
-    * :func:`Mol`, N
-    * :func:`MolarDensity`, NL⁻³
-    * :func:`MolarEnthalpy`
-    * :func:`MolarFlow`, NT⁻¹
-    * :func:`MolarSpecificHeat`
-    * :func:`MolarVolume`, L⁻³N
-    * :func:`PackingDP`, ML⁻²T⁻²
-    * :func:`Power`, ML²T⁻³
-    * :func:`Pressure`, ML⁻¹T⁻²
-    * :func:`DeltaP`, ML⁻¹T⁻²
-    * :func:`InvPressure`, LT²M⁻¹
-    * :func:`PressureTemperature`, ML⁻¹T⁻²Θ⁻¹
-    * :func:`PressureDensity`, L²T⁻²
-    * :func:`SolubilityParameter`, M⁰⁵L⁻⁰⁵T⁻¹
-    * :func:`SpecificHeat`, L²T⁻²Θ
-    * :func:`SpecificVolume`, L³M⁻¹
-    * :func:`Speed`, LT⁻¹
-    * :func:`Tension`, MT⁻²
-    * :func:`Temperature`, Θ
-    * :func:`DeltaT`, Θ
-    * :func:`InvTemperature`, Θ⁻¹
-    * :func:`TemperaturePressure`, ΘLT²M⁻¹
-    * :func:`ThermalConductivity`, ML¹T⁻³Θ⁻¹
-    * :func:`SpecificVolume_square`, L⁶M⁻²
-    * :func:`Time`, T
-    * :func:`UA`, ML²T⁻³Θ⁻¹
-    * :func:`Viscosity`, ML⁻¹T⁻¹
-    * :func:`Volume`, L³
-    * :func:`VolFlow`, L³T⁻¹
-    * :func:`Dimensionless`: Null unit
+    * :class:`Acceleration`, LT⁻²
+    * :class:`Angle`
+    * :class:`Area`, L²
+    * :class:`CakeResistance`, LM⁻¹
+    * :class:`Currency`
+    * :class:`Density`, ML⁻³
+    * :class:`DensityPressure`, T²L⁻²
+    * :class:`DensityTemperature`, ML⁻³Θ⁻¹
+    * :class:`Diffusivity`, L²T⁻¹
+    * :class:`DipoleMoment`, IL
+    * :class:`PotencialElectric`, ML³T⁻³I⁻¹
+    * :class:`Energy`, ML²T⁻²
+    * :class:`Enthalpy`, L²T⁻²
+    * :class:`EnthalpyDensity`, L⁵MT⁻²
+    * :class:`EnthalpyPressure`, L³M⁻¹
+    * :class:`Pressure`, ML⁻¹T⁻²
+    * :class:`Entropy`, ML²T⁻²Θ
+    * :class:`Force`, MLT⁻²
+    * :class:`Fouling`
+    * :class:`Frequency`, T⁻¹
+    * :class:`V2V`
+    * :class:`HeatFlux`, MT⁻³
+    * :class:`HeatTransfCoef`, MT⁻⁴
+    * :class:`Length`, L
+    * :class:`Mass`, M
+    * :class:`MassFlow`, MT⁻¹
+    * :class:`Mol`, N
+    * :class:`MolarDensity`, NL⁻³
+    * :class:`MolarEnthalpy`
+    * :class:`MolarFlow`, NT⁻¹
+    * :class:`MolarSpecificHeat`
+    * :class:`MolarVolume`, L⁻³N
+    * :class:`PackingDP`, ML⁻²T⁻²
+    * :class:`Power`, ML²T⁻³
+    * :class:`Pressure`, ML⁻¹T⁻²
+    * :class:`DeltaP`, ML⁻¹T⁻²
+    * :class:`InvPressure`, LT²M⁻¹
+    * :class:`PressureTemperature`, ML⁻¹T⁻²Θ⁻¹
+    * :class:`PressureDensity`, L²T⁻²
+    * :class:`SolubilityParameter`, M⁰⁵L⁻⁰⁵T⁻¹
+    * :class:`SpecificHeat`, L²T⁻²Θ
+    * :class:`SpecificVolume`, L³M⁻¹
+    * :class:`Speed`, LT⁻¹
+    * :class:`Tension`, MT⁻²
+    * :class:`Temperature`, Θ
+    * :class:`DeltaT`, Θ
+    * :class:`InvTemperature`, Θ⁻¹
+    * :class:`TemperaturePressure`, ΘLT²M⁻¹
+    * :class:`ThermalConductivity`, ML¹T⁻³Θ⁻¹
+    * :class:`SpecificVolume_square`, L⁶M⁻²
+    * :class:`Time`, T
+    * :class:`UA`, ML²T⁻³Θ⁻¹
+    * :class:`Viscosity`, ML⁻¹T⁻¹
+    * :class:`Volume`, L³
+    * :class:`VolFlow`, L³T⁻¹
+    * :class:`Dimensionless`: Null unit
 
 '''
 

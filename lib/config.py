@@ -15,23 +15,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with configuration tools
-#   - getComponents: Get component list from project
-#   - getMainWindowConfig: Return config of current project
-#   - setMainWindowConfig: Update currentconfig variable
-#   - Entity: General class for model object
-#
-#   Variables:
-#   - conf_dir: User configuration path
-#   - Preferences: ConfigParser instance with pychemqt preferences
-#   - currentConfig: ConfirParser instance with the current pychemqt open
-#   project or the last open project
-###############################################################################
+Module with global configuration of pychemqt
 
+Variables:
+
+  * :const:`conf_dir`: User configuration path
+  * :const:`Preferences`: ConfigParser instance with pychemqt preferences
+  * :const:`currentConfig`: ConfigParser instance with the configuration of
+    current pychemqt project open or the last open project
+
+Configuration tools
+
+  * :func:`getComponents`: Get component list from project
+  * :func:`getMainWindowConfig`: Return config of current project
+  * :func:`setMainWindowConfig`: Update currentconfig variable
+  * :class:`Entity`: General class for model object
+"""
 
 from configparser import ConfigParser
 import os
@@ -69,10 +71,25 @@ currentConfig.read(conf_dir + "pychemqtrc_temporal")
 
 def getComponents(solidos=False, config=None, name=True):
     """
-    Return components or current project
-        solidos: boolean if return solids components
-        config: we can input the config to extract
-        name: boolean to return too name and molecular weight of component
+    Procedure to get index of component in current project
+
+    Parameters
+    ------------
+    solidos : bool
+        Return too solids components
+    config : ConfigParser
+        It's possible use a custom config instance
+    name : bool
+        Return too the name and molecular weight of components
+
+    Returns
+    -------
+    id : list
+        List of index of components
+    name : list
+        List of name of components
+    M : list
+        List of molecular weight of components
     """
     if not config:
         config = getMainWindowConfig()
@@ -88,9 +105,9 @@ def getComponents(solidos=False, config=None, name=True):
     if name:
         nombres = []
         M = []
-        for componente in indices:
-            databank.execute("select nombre, peso_molecular from compuestos \
-where id == %s" % str(componente))
+        for id in indices:
+            query = "select name, M from compuestos where id == %s" % str(id)
+            databank.execute(query)
             texto = databank.fetchone()
             nombres.append(texto[0])
             M.append(texto[1])
@@ -105,7 +122,7 @@ def getMainWindowConfig():
 
 
 def setMainWindowConfig(config=None):
-    """Return config of current project"""
+    """Set config as current project"""
     global currentConfig
     if config:
         currentConfig = config
@@ -125,18 +142,19 @@ def setMainWindowConfig(config=None):
 
 
 class Entity(object):
-    """
-    General class for model object, with basic functionality:
-        -clear object
-        -definition of boolean characteristic of object
-        -input used for definition
-        -note properties with description
-        -save/load from file
-        -properties for report, tooltip
+    """General class for model object, with basic functionality:
+
+        * clear object
+        * definition of boolean characteristic of object
+        * input used for definition
+        * note properties with description
+        * save/load from file
+        * properties for report, tooltip
 
     Child class include:
-        -Corriente, Mezcla, Solids
-        -equipment
+
+        * Corriente, Mezcla, Solids
+        * equipment
     """
     _bool = False
     kwargs_forbidden = ["entrada"]
@@ -145,10 +163,8 @@ class Entity(object):
     _dependence = ""
 
     def __init__(self, **kwargs):
-        """
-        Class constructor, copy kwargs for child class, it can be customize
-        for child class to add functionality
-        """
+        """Class constructor, copy kwargs for child class, it can be customize
+        for child class to add functionality"""
         self.kwargs = self.__class__.kwargs.copy()
 
         # Values defined as integer Entrada_con_unidades return as float
@@ -162,8 +178,7 @@ class Entity(object):
             self.__call__(**kwargs)
 
     def __call__(self, **kwargs):
-        """
-        Add callable functionality, so it can be possible add kwargs,
+        """Add callable functionality, so it can be possible add kwargs,
         advanced functionality can be added in subclass"""
         self._oldkwargs = self.kwargs.copy()
         self.cleanOldValues(**kwargs)

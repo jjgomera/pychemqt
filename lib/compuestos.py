@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This module implement pure component properties
 
-:func:`Componente`: The main class with all integrated functionality. Use the
+:class:`Componente`: The main class with all integrated functionality. Use the
 properties in database and calculate state properties with the methods chossen
 in configuration
 
@@ -135,6 +135,7 @@ from scipy.interpolate import interp1d, interp2d
 
 from lib.physics import R_atml, Collision_Neufeld
 from lib import unidades, config, sql
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -144,7 +145,7 @@ __doi__ = {
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
     2:
-        {"autor": "Tarek Ahmed",
+        {"autor": "Ahmed, T.",
          "title": "Equations of State and PVT Analysis: Applications for"
                   "Improved Reservoir Modeling, 2nd Edition",
          "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
@@ -156,8 +157,8 @@ __doi__ = {
          "ref": "Compt.Rend. 107:681-684 (1888)",
          "doi": ""},
     4:
-        {"autor": "Lee, B. I. and Kesler, M. G.",
-         "title": "A Generalized Thermodynamic Correlation Based on"
+        {"autor": "Lee, B.I., Kesler, M.G.",
+         "title": "A Generalized Thermodynamic Correlation Based on "
                   "Three-Parameter Corresponding States",
          "ref": "AIChE Journal 21(3) (1975) 510-527",
          "doi": "10.1002/aic.690210313"},
@@ -277,7 +278,7 @@ __doi__ = {
          "ref": "Journal of Chemical Engineering Data 18(2) (1973): 234–236",
          "doi": "10.1021/je60057a006"},
     24:
-        {"autor": "Stiel, L. I., Thodos, G.",
+        {"autor": "Stiel, L.I., Thodos, G.",
          "title": "The Viscosity of Nonpolar Gases at Normal Pressures",
          "ref": "AIChE J. 7(4) (1961) 611-615",
          "doi": "10.1002/aic.690070416"},
@@ -643,6 +644,7 @@ def DIPPR(prop, T, args, Tc=None, M=None):
 
 
 # Liquid density correlations
+@refDoc(__doi__, [21, 35, 5])
 def RhoL_Rackett(T, Tc, Pc, Zra, M):
     r"""Calculates saturated liquid densities of pure components using the
     modified Rackett equation by Spencer-Danner
@@ -677,16 +679,6 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
     >>> Pc = unidades.Pressure(616, "psi")
     >>> "%0.3f" % RhoL_Rackett(T, Tc, Pc, 0.2763, 44.1).kgl
     '0.531'
-
-    References
-    ----------
-    [21]_ Rackett, H.G. Equation of State for Saturated Liquids. J. Chem.
-    Eng. Data 15(4) (1970) 514-517
-
-    [35]_ Spencer, C.F., Danner, R.P. Improved Equation for Prediction of
-    Saturated Liquid Density. J. Chem. Eng. Data 17(2) (1972) 236-241
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -694,6 +686,7 @@ def RhoL_Rackett(T, Tc, Pc, Zra, M):
     return unidades.Density(M/V)
 
 
+@refDoc(__doi__, [20, 5])
 def RhoL_Costald(T, Tc, w, Vc):
     r"""Calculates saturated liquid densities of pure components using the
     Corresponding STAtes Liquid Density (COSTALD) method, developed by
@@ -734,14 +727,6 @@ def RhoL_Costald(T, Tc, w, Vc):
     >>> Vc = unidades.SpecificVolume(3.205/44.097, "ft3lb")
     >>> "%0.3f" % RhoL_Costald(T, Tc, 0.1532, Vc).kgl
     '0.530'
-
-    References
-    ----------
-    [20]_ Hankinson, R.W., Thomson, G.H. A New Correlation for Saturated
-    Densities of Liquids and Their Mixtures. AIChE Journal 25(4) (1979)
-    653-663
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     a = -1.52816
     b = 1.43907
@@ -792,6 +777,7 @@ def RhoL_Cavett(T, Tc, M, Vliq):
     return unidades.Density(1/V, "gcc")
 
 
+@refDoc(__doi__, [26])
 def RhoL_YenWoods(T, Tc, Vc, Zc):
     r"""Calculates saturation liquid density using the Yen-Woods correlation
 
@@ -827,11 +813,6 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     -------
     rhos : float
         Liquid density, [kg/m³]
-
-    References
-    ----------
-    [26]_ Yen, L.C., Woods, S.S. A Generalized Equation for Computer
-    Calculation of Liquid Densities. AIChE Journal 12(1) (1966) 95-99
     """
     Tr = T/Tc
     A = 17.4425 - 214.578*Zc + 989.625*Zc**2 - 1522.06*Zc**3           # Eq 4
@@ -846,6 +827,7 @@ def RhoL_YenWoods(T, Tc, Vc, Zc):
     return unidades.Density(rhos)
 
 
+@refDoc(__doi__, [23, 27])
 def RhoL_YamadaGunn(T, Tc, Pc, w, M):
     r"""Calculates saturation liquid volume, using Gunn-Yamada correlation
 
@@ -873,14 +855,6 @@ def RhoL_YamadaGunn(T, Tc, Pc, w, M):
     Notes
     -----
     The equation is defined in [27]_ in volumen terms.
-
-    References
-    ----------
-    [23]_ Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
-    Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
-
-    [27]_ Gunn, R.D., Yamada, T. A Corresponding States Correlation of
-    Saturated Liquid Volumes. AIChE Journal 17(6) (1971) 1341-1345
     """
     Tr = T/Tc
 
@@ -903,6 +877,7 @@ def RhoL_YamadaGunn(T, Tc, Pc, w, M):
     return unidades.Density(M/V, "gm3")
 
 
+@refDoc(__doi__, [28])
 def RhoL_Bhirud(T, Tc, Pc, w, M):
     r"""Calculates saturation liquid density using the Bhirud correlation
 
@@ -935,14 +910,9 @@ def RhoL_Bhirud(T, Tc, Pc, w, M):
     rhos : float
         Liquid density, [kg/m³]
 
-    Raises
-    ------
-    NotImplementedError : If Tr is > 1
-
-    References
-    ----------
-    [28]_ Bhirud, V.L. Saturated Liquid Densities of Normal Fluids. AIChE
-    Journal 24(6) (1978) 1127-1131
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Tr is > 1
     """
     Tr = T/Tc
     if Tr <= 0.98:
@@ -970,6 +940,7 @@ def RhoL_Bhirud(T, Tc, Pc, w, M):
     return unidades.Density(M/Vs, "gm3")
 
 
+@refDoc(__doi__, [29])
 def RhoL_Mchaweh(T, Tc, Vc, w, delta):
     r"""Calculates saturated liquid density using the Mchaweh correlation
 
@@ -1006,12 +977,6 @@ def RhoL_Mchaweh(T, Tc, Vc, w, delta):
     -------
     rhos : float
         Liquid density, [kg/m³]
-
-    References
-    ----------
-    [29]_ Mchaweh, A., Alsaygh, A., Nasrifar, Kh., Moshfeghian, M. A
-    Simplified Method for Calculating Saturated Liquid Densities. Fluid
-    Phase Equilibria 224 (2004) 157-167
     """
     Tr = T/Tc
 
@@ -1104,6 +1069,7 @@ Mchaweh_d = {28: 0.57510,
              }
 
 
+@refDoc(__doi__, [32])
 def RhoL_Riedel(T, Tc, Vc, w):
     r"""Calculates saturation liquid density using the Riedel correlation
 
@@ -1126,12 +1092,6 @@ def RhoL_Riedel(T, Tc, Vc, w):
     -------
     rhos : float
         Liquid density, [kg/m³]
-
-    References
-    ----------
-    [32]_ Riedel, L. Die Flüssigkeitsdichte im Sättigungszustand.
-    Untersuchungen über eine Erweiterung des Theorems der übereinstimmenden
-    Zustände. Teil II. Chem. Eng. Tech. 26(5) (1954) 259-264
     """
     Tr = T/Tc
 
@@ -1139,6 +1099,7 @@ def RhoL_Riedel(T, Tc, Vc, w):
     return unidades.Density(rhos)
 
 
+@refDoc(__doi__, [33])
 def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
     r"""Calculates saturation liquid density using the Chueh-Prausnitz
     correlation
@@ -1165,12 +1126,6 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
     -------
     rhos : float
         Liquid density, [kg/m³]
-
-    References
-    ----------
-    [33]_ Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at High
-    Pressures: Calculation of Partial Molar Volumes in Nonpolar Liquid
-    Mixtures. AIChE Journal 13(6) (1967) 1099-1107
     """
     # Table 1
     a = (0.11917, 0.98465, -0.55314)
@@ -1192,6 +1147,7 @@ def RhoL_ChuehPrausnitz(T, Tc, Vc, w):
     return unidades.Density(1/Vr/Vc)
 
 
+@refDoc(__doi__, [22, 5])
 def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
     r"""Calculates compressed-liquid density, using the Thomson-Brobst-
     Hankinson generalization of Tait equation, also referenced in API procedure
@@ -1245,14 +1201,6 @@ def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
     '2.874'
     >>> "%0.3f" % RhoL_TaitCostald(T, P, Tc, Pc, 0.3962, Ps, rs).kgl
     '0.676'
-
-    References
-    ----------
-    [22]_ Thomson, G.H., Brobst, K.R., Hankinson, R.W. An Improved
-    Correlation for Densities of Compressed Liquids and Liquid Mixtures.
-    AIChE Journal 28(4) (1982): 671-76
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     C = 0.0861488 + 0.0344483*w                                         # Eq 8
@@ -1265,6 +1213,7 @@ def RhoL_TaitCostald(T, P, Tc, Pc, w, Ps, rhos):
     return unidades.Density(rho, "gl")
 
 
+@refDoc(__doi__, [30])
 def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
     r"""Calculates compressed-liquid density, using the Chang-Zhao correlation
 
@@ -1299,11 +1248,6 @@ def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
     -------
     rho : float
         High-pressure liquid density, [kg/m^3]
-
-    References
-    ----------
-    [30]_ Chang, C.H., Zhao, X.M. A New Generalized Equation for Predicting
-    Volume of Compressed Liquids. Fluid Phase Equilibria, 58 (1990) 231-238
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -1321,6 +1265,7 @@ def RhoL_ChangZhao(T, P, Tc, Pc, w, Ps, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [31, 1])
 def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     r"""Calculates compressed-liquid density, using the Aalto-Keskinen
     modification of Chang-Zhao correlation
@@ -1386,15 +1331,6 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     >>> r = RhoL_AaltoKeskinen(503.15, P, 705.7, Pc, 0.452, Ps, rs)
     >>> "%0.2f" % (1/r.gcc*108.14)
     '112.97'
-
-    References
-    ----------
-    [31]_ Aalto, M., Keskinen, K.I., Aittamaa, J., Liukkonen, S. An Improved
-    Correlation for Compressed Liquid Densities of Hydrocarbons. Part 1.
-    Pure Compounds. Fluid Phase Equilibria 114 (1996) 1-19
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -1413,6 +1349,7 @@ def RhoL_AaltoKeskinen(T, P, Tc, Pc, w, Ps, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [37, 38])
 def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     r"""Calculates compressed-liquid density, using the Aalto-Keskinen
     modification of Chang-Zhao correlation extended to a more high pressure
@@ -1477,15 +1414,6 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     >>> args = (281.789, 8.4e6, C2.Tc, C2.Pc, C2.f_acent, Ps, rhos)
     >>> "%0.2f" % RhoL_AaltoKeskinen2(*args).gcc
     '0.41'
-
-    References
-    ----------
-    [37]_ Aalto, M., Keskinen, K.I. Liquid Densities at High Pressures. Fluid
-    Phase Equilibria 166 (1999) 183-205
-
-    [38]_ Pal, A.K., Pope, G.A., Arai, Y., Carnahan, N.F., Kobayashi, R.
-    Experimental Pressure-Volume-Temperature Relations for Saturated and
-    Compressed Fluid Ethane. J. Chem. Eng. Data 21(4) (1976) 394-397
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -1506,6 +1434,7 @@ def RhoL_AaltoKeskinen2(T, P, Tc, Pc, w, Ps, rhos):
     return unidades.Density(rho)
 
 
+@refDoc(__doi__, [36])
 def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     r"""Calculates compressed liquid density using the Nasrifar correlation
 
@@ -1552,11 +1481,6 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     -------
     rho : float
         Liquid density, [kg/m³]
-
-    References
-    ----------
-    [36]_ Nasrifar, K., Ayatollahi, S., Moshfeghian, M. A Compressed Liquid
-    Density Correlation. Fluid Phase Equilibria 168 (2000) 149-163
     """
     # Table 1
     j = (1.3168e-3, 3.4448e-2, 5.4131e-2)
@@ -1588,6 +1512,7 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     return unidades.Density(1/v)
 
 
+@refDoc(__doi__, [33, 5])
 def RhoL_API(T, P, Tc, Pc, SG, rhos):
     r"""Calculates compressed-liquid density, using the analytical expression
     of Lu Chart referenced in API procedure 6A2.22
@@ -1627,14 +1552,6 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
     >>> rs = unidades.Density(44.94, "lbft3")
     >>> "%0.1f" % RhoL_API(T, P, Tc, Pc, 1.077, rs).lbft3
     '41.7'
-
-    References
-    ----------
-    [33]_ Rea, H.E., Spencer, C.F., Danner, R.P. Effect of Pressure and
-    Temperature on the Liquid Densities of Pure Hydrocarbons. J. Chem. Eng.
-    Data 18(2) (1973) 227-230
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pr = P/Pc
     Tr = T/Tc
@@ -1650,6 +1567,7 @@ def RhoL_API(T, P, Tc, Pc, SG, rhos):
 
 
 # Vapor pressure correlations
+@refDoc(__doi__, [1, 3])
 def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     r"""Vapor Pressure calculation procedure using the Antoine equation
 
@@ -1699,14 +1617,6 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     >>> P = Pv_Antoine(309.429, (4.1199, 1070.2, -44.32), base=10, Punit="bar")
     >>> "%0.4f" % P.bar
     '1.2108'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
-
-    [3]_ Antoine, C. 1888. Tensions des Vapeurs: Nouvelle Relation Entre les
-    Tensions et les Tempé. Compt.Rend. 107:681-684.
     """
     # Clean args input of null values
     if len(args) > 3 and args[3] is None:
@@ -1725,6 +1635,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     return unidades.Pressure(Pv, Punit)
 
 
+@refDoc(__doi__, [4, 2])
 def Pv_Lee_Kesler(T, Tc, Pc, w):
     r"""Calculates vapor pressure of a fluid using the Lee-Kesler correlation
 
@@ -1764,16 +1675,6 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     >>> Pc = unidades.Pressure(616.3, "psi")
     >>> "%0.0f" % Pv_Lee_Kesler(T, Tc, Pc, 0.1522).psi
     '144'
-
-    References
-    ----------
-    [4]_ Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-    Correlation Based on Three-Parameter Corresponding States. American
-    Institute of Chemical Engineers Journal, Vot. 21, 1975
-
-    [2]_ Tarek Ahmed. Equations of State and PVT Analysis: Applications for
-    Improved Reservoir Modeling, 2nd Edition. Gulf Professional Publishing,
-    2016, ISBN 9780128015704
     """
     # Eq 17, pag 525
     Tr = T/Tc
@@ -1782,6 +1683,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
     return unidades.Pressure(exp(f0 + w*f1)*Pc)
 
 
+@refDoc(__doi__, [6, 1, 5, 7])
 def Pv_Wagner(T, args, Tc, Pc):
     r"""Calculates vapor pressure of a fluid using the Wagner correlation
 
@@ -1813,21 +1715,6 @@ def Pv_Wagner(T, args, Tc, Pc):
     Same compound has the parameters of this equations saved in database. This
     method implement the origintal form of Wagner as in 6_, with the
     parameters from McGarry. API use other same different form.
-
-    References
-    ----------
-    [6]_ Wagner, W. New Vapour Pressure Measurements for Argon and Nitrogen
-    and a New Method for Establishing Rational Vapour Pressure Equations.
-    Cryogenics 13, 8 (1973) 470-82.
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
-
-    [7]_ McGarry, J. Correlation and Perediction of the Vapor Pressures of
-    Pure Liquids over Large Pressure Ranges. Ind. Eng. Chem. Process. Des.
-    Dev. 22 (1983) 313-322
     """
     a, b, c, d = args
     Tr = T/Tc
@@ -1836,6 +1723,7 @@ def Pv_Wagner(T, args, Tc, Pc):
     return unidades.Pressure(Pv)
 
 
+@refDoc(__doi__, [8, 1])
 def Pv_AmbroseWalton(T, Tc, Pc, w):
     r"""Calculates vapor pressure of a fluid using the Ambrose-Walton
     corresponding-states correlation
@@ -1882,15 +1770,6 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
     '0.1328'
     >>> "%0.3f" % Pv_AmbroseWalton(460, 617.15, 36.09E5, 0.304).bar
     '3.325'
-
-    References
-    ----------
-    [8]_ Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
-    Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
-    1395-1403 (1989)
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     t = 1 - T/Tc
@@ -1903,6 +1782,7 @@ def Pv_AmbroseWalton(T, Tc, Pc, w):
     return unidades.Pressure(Pv)
 
 
+@refDoc(__doi__, [1])
 def Pv_Riedel(T, Tc, Pc, Tb):
     r"""Calculate vapor pressure of a fluid using the Rieel
     corresponding-states correlation
@@ -1934,11 +1814,6 @@ def Pv_Riedel(T, Tc, Pc, Tb):
     '0.131'
     >>> "%0.2f" % Pv_Riedel(460, 617.15, 36.09E5, 409.36).bar
     '3.35'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Tbr = Tb/Tc
@@ -1953,6 +1828,7 @@ def Pv_Riedel(T, Tc, Pc, Tb):
     return unidades.Pressure(Pv)
 
 
+@refDoc(__doi__, [5])
 def Pv_MaxwellBonnel(T, Tb, Kw):
     r"""Calculates vapor pressure of a fluid using the Maxell-Bonnel
     correlation as explain in 5_, procedure 5A1.18, Pag. 394
@@ -1985,10 +1861,6 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
     >>> Pv = Pv_MaxwellBonnel(T, Tb, 9.78)
     >>> "%0.1f" % Pv.psi
     '3.1'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_F = unidades.K2F(Tb)
@@ -2017,6 +1889,7 @@ def Pv_MaxwellBonnel(T, Tb, Kw):
     return unidades.Pressure(p, "mmHg")
 
 
+@refDoc(__doi__, [9])
 def Pv_Sanjari(T, Tc, Pc, w):
     r"""Calculates vapor pressure of a fluid using the Sanjari correlation
     pressure, and acentric factor.
@@ -2055,12 +1928,6 @@ def Pv_Sanjari(T, Tc, Pc, w):
     -----
     This method have been developed fitting data of refrigerants, be careful
     when use with other type of compound.
-
-    References
-    ----------
-    [9]_ Sanjari, E., Honarmand, M., Badihi, H., Ghaheri, A. An Accurate
-    Generalized Model for Predict Vapor Pressure of Refrigerants
-    International Journal of Refrigeration 36 (2013) 1327-1332
     """
     # Table 2
     a = [None, 6.83377, -5.76051, 0.90654, -1.16906, 5.32034, -28.1460,
@@ -2102,6 +1969,7 @@ def MuL_Parametric(T, args):
     return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [10])
 def MuL_LetsouStiel(T, M, Tc, Pc, w):
     r"""Calculate the viscosity of a liquid using the Letsou-Stiel correlation
 
@@ -2133,11 +2001,6 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
     >>> Vc = 316/92.14/1000
     >>> "%0.3f" % MuL_LetsouStiel(433.2, 60.10, 536.8, 51.7e5, 0.623).cP
     '0.171'
-
-    References
-    ----------
-    [10]_ Letsou, A., Stiel, L.I. Viscosity of Saturated Nonpolar Liquids at
-    Elevated Pressures. AIChE Journal 19(2) (1973) 409-411
     """
     Pc_atm = unidades.Pressure(Pc).atm
     Tr = T/Tc
@@ -2149,6 +2012,7 @@ def MuL_LetsouStiel(T, M, Tc, Pc, w):
     return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [45, 1])
 def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     r"""Calculates the viscosity of a liquid using the Przezdziecki-Sridhar
     correlation
@@ -2205,14 +2069,6 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     >>> args = (383, 591.75, 41.08e5, Vc, 0.264, 92.14, 178, V, 298.15)
     >>> "%0.3f" % MuL_PrzedzieckiSridhar(*args).cP
     '0.223'
-
-    References
-    ----------
-    [45]_ Przedziecki, J.W., Sridhar, T. Prediction of Liquid Viscosities.
-    AIChE Journal 31(2) (1985) 333-335
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     # Define default value por reference state:
     if Vr is None:
@@ -2250,6 +2106,7 @@ def MuL_PrzedzieckiSridhar(T, Tc, Pc, Vc, w, M, Tf, Vr=None, Tv=None):
     return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [46, 1])
 def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     r"""Calculate the viscosity of liquid at high pressure using the Lucas
     correlation
@@ -2317,14 +2174,6 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     >>> Ps = H2()._Vapor_Pressure(T)
     >>> "%0.2f" % MuL_Lucas(T, P, y["Tc"], y["Pc"]*1e3, H2.f_acent, Ps, 1)
     '1.92'
-
-    References
-    ----------
-    [46]_ Lucas, K. Die Druckabhängigheit der Viskosität von Flüssigkeiten,
-    eine Einfache Abschätzung. Chem. Ing. Tech. 46(4) (1981) 959-960
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     # Discard point in gas phase
@@ -2346,6 +2195,7 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     return unidades.Viscosity(mu)
 
 
+@refDoc(__doi__, [5])
 def MuL_API(T, P, Tc, Pc, w, muc):
     """Calculate the viscosity of liquid at high pressure using the API
     correlation, API procedure 11A5.1, pag 1074.
@@ -2388,10 +2238,6 @@ def MuL_API(T, P, Tc, Pc, w, muc):
     >>> Pc = unidades.Pressure(488.8, "psi")
     >>> "%0.3f" % MuL_API(T, P, Tc, Pc, 0.2515, 2.55e-5).cP
     '0.171'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -2426,6 +2272,7 @@ def MuL_API(T, P, Tc, Pc, w, muc):
     return unidades.Viscosity(mur*muc)
 
 
+@refDoc(__doi__, [5])
 def MuL_Kouzel(T, P, muo):
     """Calculate the viscosity of liquid at high pressure using the API
     correlation, API procedure 11A5.5, pag 1081.
@@ -2457,10 +2304,6 @@ def MuL_Kouzel(T, P, muo):
     >>> P = unidades.Pressure(9940, "psi")
     >>> "%0.1f" % MuL_Kouzel(T, P, 0.0527).cP
     '277.2'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Unit conversion
     psig = unidades.Pressure(P).psig
@@ -2473,6 +2316,7 @@ def MuL_Kouzel(T, P, muo):
 
 
 # Vas viscosity correlations
+@refDoc(__doi__, [1])
 def MuG_ChapmanEnskog(T, M, sigma, omega):
     r"""Calculate the viscosity of a gas using the Chapman-Enskog correlation
 
@@ -2494,16 +2338,12 @@ def MuG_ChapmanEnskog(T, M, sigma, omega):
     -------
     mu : float
         Viscosity of gas, [Pa·s]
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     mu = 26.69*M**0.5*T**0.5/sigma**2/omega
     return unidades.Viscosity(mu, "microP")
 
 
+@refDoc(__doi__, [24, 5])
 def MuG_StielThodos(T, Tc, Pc, M):
     r"""Calculate the viscosity of a gas using the Stiel-Thodos correlation,
     also referenced in API procedure 11B1.3, pag 1099
@@ -2553,13 +2393,6 @@ def MuG_StielThodos(T, Tc, Pc, M):
     >>> Pc = unidades.Pressure(667, "psi")
     >>> "%0.4f" % MuG_StielThodos(T, Tc, Pc, 16.04).cP
     '0.0176'
-
-    References
-    ----------
-    [24]_ Stiel, L. I., Thodos, G. The Viscosity of Nonpolar Gases at Normal
-    Pressures. AIChE J. 7(4) (1961) 611-615
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -2581,6 +2414,7 @@ def MuG_StielThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [57])
 def MuG_Gharagheizi(T, Tc, Pc, M):
     r"""Calculates the viscosity of a gas using the Gharagheizi et al.
     correlation
@@ -2617,12 +2451,6 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
 
     >>> "%0.6e" % MuG_Gharagheizi(468.35, 652.5, 27.77e5, 130.22792)
     '8.751141e-06'
-
-    References
-    ----------
-    [57]_ Gharagheizi, F., Eslamimanesh, A., Sattari, M., Mohammadi, A.H.,
-    Richon, D. Corresponding States Method for Determination of the Viscosity
-    of Gases at Atmospheric Pressure. I&EC Research 51(7) (2012) 3179-3185
     """
     Tr = T/Tc
 
@@ -2632,6 +2460,7 @@ def MuG_Gharagheizi(T, Tc, Pc, M):
     return unidades.Viscosity(mu*1e-7)
 
 
+@refDoc(__doi__, [56])
 def MuG_YoonThodos(T, Tc, Pc, M):
     r"""Calculates the viscosity of a gas using an Yoon-Thodos correlation
 
@@ -2657,11 +2486,6 @@ def MuG_YoonThodos(T, Tc, Pc, M):
     Notes
     -----
     This method is valid only for nonpolar gases
-
-    References
-    ----------
-    [56]_ Yoon, P., Thodos, G. Viscosity of Nonpolar Gaseous Mixtures at
-    Normal Pressures. AIChE Journal 16(2) (1970) 300-304
     """
     Pc_atm = Pc/101325
 
@@ -2681,6 +2505,7 @@ def MuG_YoonThodos(T, Tc, Pc, M):
     return unidades.Viscosity(mur*1e-5/x, "cP")
 
 
+@refDoc(__doi__, [49, 50, 1])
 def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     r"""Calculate the viscosity of a gas using the Chung et al. correlation
 
@@ -2716,20 +2541,6 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     >>> T = unidades.Temperature(300, "C")
     >>> "%0.1f" % MuG_Chung(T, 430.8, 122e-3/64.065, 64.065, 0.257, 1.6).microP
     '245.5'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-    Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-    Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-
-    [50]_ Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
-    Theories and Multiparameter Correlation for Prediction of Dilute Gas
-    Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
-    (1984) 8-13
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     # Vc in molar base
     Vc = Vc*M*1000
@@ -2742,6 +2553,7 @@ def MuG_Chung(T, Tc, Vc, M, w, D, k=0):
     return unidades.Viscosity(mu, "microP")
 
 
+@refDoc(__doi__, [49, 50, 1])
 def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Chung correlation
 
@@ -2783,20 +2595,6 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     >>> mu = MuG_P_Chung(520, 405.5, Vc, 17.031, 0.256, 1.47, 0, rho, 182e-7)
     >>> "%0.0f" % mu.microP
     '455'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-    Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-    Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-
-    [50]_ Chung, T.H., Lee, L.L., Starling, K.E. Applications of Kinetic Gas
-    Theories and Multiparameter Correlation for Prediction of Dilute Gas
-    Viscosity and Thermal Conductivity. Ind. Eng. Chem. Fundam. 23(1)
-    (1984) 8-13
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
     Vc = Vc*M*1000
@@ -2834,6 +2632,7 @@ def MuG_P_Chung(T, Tc, Vc, M, w, D, k, rho, muo):
     return unidades.Viscosity(muk+mup, "P")
 
 
+@refDoc(__doi__, [1])
 def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     r"""Calculate the viscosity of a compressed gas using the Reichenberg
     correlation as explain in 1_
@@ -2870,11 +2669,6 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     >>> mu = MuG_Reichenberg(500, 101e5, 469.7, 33.7e5, 0, 0, 0, 114e-7)
     >>> "%0.0f" % mu.microP
     '520'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
     if D:
@@ -2896,6 +2690,7 @@ def MuG_Reichenberg(T, P, Tc, Pc, Vc, M, D, muo):
     return unidades.Viscosity(mur*muo)
 
 
+@refDoc(__doi__, [1])
 def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     """Calculate the viscosity of a gas using the Lucas correlation
     as explain in 1_. This method can calculate the viscosity at any pressure
@@ -2938,11 +2733,6 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     >>> mu = MuG_Lucas(420, 3e7, 405.5, 113.53e5, 0.244, 17.031, 1.47)
     >>> "%0.0f" % mu.microP
     '603'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -3004,6 +2794,7 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     return unidades.Viscosity(mu, "microP")
 
 
+@refDoc(__doi__, [51])
 def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Lucas correlation
 
@@ -3047,11 +2838,6 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     >>> rho = 1/243.8*58.123*1000
     >>> "%0.0f" % MuG_Jossi(407.85, 36.4e5, rhoc, 58.123, rho, 120e-7).microP
     '275'
-
-    References
-    ----------
-    [51]_ Jossi, J.A., Stiel, L.I., Thodos, G. The Viscosity of Pure Substances
-    in the Dense Gaseous and Liquid Phases. AIChE Journal 8(1) (1962) 59-63
     """
     Pc_atm = Pc/101325
 
@@ -3065,6 +2851,7 @@ def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
     return unidades.Viscosity(mu, "cP")
 
 
+@refDoc(__doi__, [52])
 def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Stiel-Thodos
     correlation. This method is valid for polar substances.
@@ -3101,11 +2888,6 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
     -------
     mu : float
         Viscosity of gas, [Pa·s]
-
-    References
-    ----------
-    [52]_ Stiel, L.I., Thodos, G. The Viscosity of Polar Substances in the
-    Dense Gaseous and Liquid Regions. AIChE Journal 10(2) (1964) 275-277
     """
     Pc_atm = Pc/101325
     x = Tc**(1/6)/M**0.5/Pc_atm**(2/3)
@@ -3124,6 +2906,7 @@ def MuG_P_StielThodos(Tc, Pc, rhoc, M, rho, muo):
     return unidades.Viscosity(mur/x+muo*1e7, "microP")
 
 
+@refDoc(__doi__, [1, 61, 53])
 def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     """Calculate the viscosity of a compressed gas using the TRAPP (TRAnsport
     Property Prediction) method.
@@ -3159,19 +2942,6 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     >>> mu = MuG_TRAPP(500, 407.85, Vc, 0.278, 58.124, 0.186, rho, 120e-7)
     >>> "%0.0f" % mu.microP
     '267'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
-
-    [61]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
-    Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
-    Technical Note 1039 (1981)
-
-    [53]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids II:
-    Methane, Ethane, Propne, Isobutane and Normal Butane. J. Phys. Chem.
-    Ref. Data 16(4) (1987) 577-798
     """
     # Reference fluid properties, propane
     TcR = 369.83
@@ -3207,6 +2977,7 @@ def MuG_TRAPP(T, Tc, Vc, Zc, M, w, rho, muo):
     return unidades.Viscosity(Fn*muR*1e-6 + muo)
 
 
+@refDoc(__doi__, [54])
 def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Chung correlation
 
@@ -3234,12 +3005,6 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
     -------
     mu : float
         Viscosity of gas, [Pa·s]
-
-    References
-    ----------
-    [54]_ Brulé, M.R., Starling, K.E. Thermophysical Properties of Complex
-    Systems: Applications of Multiproperty Analysis. Ind. Eng. Chem.
-    Process Dev. 23 (1984) 833-845
     """
     # units in molar base
     Vc = Vc*M*1000
@@ -3277,6 +3042,7 @@ def MuG_Brule(T, Tc, Vc, M, w, rho, muo):
     return unidades.Viscosity(muk+mup, "P")
 
 
+@refDoc(__doi__, [55, 5])
 def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
     r"""Calculate the viscosity of a compressed gas using the Dean-Stiel
     correlation, also referenced in API databook Procedure 11B4.1, pag 1107
@@ -3313,13 +3079,6 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
     >>> Pc = unidades.Pressure(646.68, "psi")
     >>> "%0.4f" % MuG_DeanStiel(Tc, Pc, 1, 27.264, 0.5283, 123e-7).cP
     '0.0163'
-
-    References
-    ----------
-    [55]_ Dean, D.E., Stiel, L.I. The Viscosity of Nonpolar Gas Mixtures at
-    Moderate and High Pressures. AIChE Journal 11(3) (1965) 526-532
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
 
@@ -3331,6 +3090,7 @@ def MuG_DeanStiel(Tc, Pc, rhoc, M, rho, muo):
     return unidades.Viscosity(muo*1e3 + mur/x, "cP")
 
 
+@refDoc(__doi__, [5])
 def MuG_API(T, P, Tc, Pc, muo):
     r"""Calculate the viscosity of nonhydrocarbon gases at high pressure using
     the linearization of Carr figure as give in API Databook procedure 11C1.2,
@@ -3372,10 +3132,6 @@ def MuG_API(T, P, Tc, Pc, muo):
     >>> Pc = unidades.Pressure(493.1, "psi")
     >>> "%0.4f" % MuG_API(T, P, Tc, Pc, 1.44e-5).cP
     '0.0203'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -3388,6 +3144,7 @@ def MuG_API(T, P, Tc, Pc, muo):
 
 
 # Liquid thermal conductivity correlations
+@refDoc(__doi__, [11])
 def ThL_RiaziFaghri(T, Tb, SG):
     r"""Calculates thermal conductivity of liquid hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -3424,12 +3181,6 @@ def ThL_RiaziFaghri(T, Tb, SG):
     -----
     Range of validity:
         0ºF ≤ T ≤ 300ºF
-
-    References
-    ----------
-    [11]_ Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
-    Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
-    Chem. Process Des. Dev. 24 (1985) 398-401
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -3441,6 +3192,7 @@ def ThL_RiaziFaghri(T, Tb, SG):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+@refDoc(__doi__, [12])
 def ThL_Gharagheizi(T, Pc, Tb, M, w):
     r"""Calculates the thermal conductivity of liquid using the Gharagheizi
     correlation.
@@ -3472,13 +3224,6 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
     -------
     k : float
         Thermal conductivity [W/m·k]
-
-    References
-    ----------
-    [12]_ Gharagheizi, F., Ilani-Kashkouli, P., Sattari, M., Mohammadi, A.H.,
-    Ramjugernath, D., Richon, D. Development of a General Model for
-    Determination of Thermal Conductivity of Liquid Chemical Compounds at
-    Atmospheric Pressure. AIChE Journal 59 (2013) 1702-1708
     """
 
     Pc_bar = Pc*1e-5
@@ -3489,6 +3234,7 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [13])
 def ThL_LakshmiPrasad(T, M):
     r"""Calculates the thermal conductivity of liquid using the Lakshmi-Prasad
     correlation.
@@ -3507,18 +3253,13 @@ def ThL_LakshmiPrasad(T, M):
     -------
     k : float
         Thermal conductivity, [W/m/k]
-
-    References
-    ----------
-    [13]_ Lakshmi, D.S., Prasad, D.H.L. A Rapid Estimation Method for Thermal
-    Conductivity of Pure Liquids. The Chemical Engineering Journal 48
-    (1992) 211-14
     """
     # Eq 5
     k = 0.0655 + (1.3855 - 0.00197*T)/M**0.5 - 0.00005*T
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [14])
 def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
     r"""Calculates the thermal conductivity of liquid using the Nicola
     correlation.
@@ -3550,13 +3291,6 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
     -------
     k : float
         Thermal conductivity [W/m·k]
-
-    References
-    ----------
-    [14]_ Di Nicola, G., Ciarrocchi, E., Coccia, G., Pierantozzi, M.
-    Correlations of Thermal Conductivity for Liquid Refrigerants at
-    Atmospheric Pressure or near Saturation. International Journal of
-    Refrigeration, 2014
     """
     Pc_bar = unidades.Pressure(Pc).bar
     if mu:
@@ -3568,6 +3302,7 @@ def ThL_Nicola(T, M, Tc, Pc, w, mu=None):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [1])
 def ThL_SatoRiedel(T, Tc, M, Tb):
     r"""Calculate the thermal conductivity of a liquid using the Sato-Riedel
     correlation, as explain in [1]_.
@@ -3598,11 +3333,6 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
 
     >>> "%0.3f" % ThL_SatoRiedel(293, 556.4, 153.823, 349.9)
     '0.101'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Tbr = Tb/Tc
@@ -3610,6 +3340,7 @@ def ThL_SatoRiedel(T, Tc, M, Tb):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [15, 5])
 def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     r"""Calculates the thermal conductivity of liquid using the Pachaiyappan
     correlation as explain in 5_, procedure 12A1.2, pag 1141
@@ -3646,14 +3377,6 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     >>> k = ThL_Pachaiyappan(T, Tc, 134.22, rho)
     >>> "%0.4f" % k.BtuhftF
     '0.0673'
-
-    References
-    ----------
-    [15]_ Pachaiyappan, V., Ibrahim, S.H., Kuloor, N.R. Thermal
-    Conductivities of Organic Liquids: A New Correlation. J. Chem. Eng.
-    Data, 11 (1966) 73-76
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
 
     if branched:
@@ -3671,6 +3394,7 @@ def ThL_Pachaiyappan(T, Tc, M, rho, branched=True):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+@refDoc(__doi__, [16, 5])
 def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     r"""Calculates the thermal conductivity of liquid using the Kanitkar-Thodos
     correlation as explain in 5_, procedure 12A1.3, pag 1143
@@ -3728,13 +3452,6 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     >>> k = ThL_KanitkarThodos(T, P, Tc, Pc, Vc, 100.2, rho)
     >>> "%0.5f" % k.BtuhftF
     '0.06957'
-
-    References
-    ----------
-    [16]_ Kanitkar, D., Thodos, G. The Thermal Conductivity of Liquid
-    Hydrocarbons. Can. J. Chem. Eng. 47 (1969) 427-430
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
 
     Pc_atm = Pc/101325
@@ -3749,6 +3466,7 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+@refDoc(__doi__, [59, 1, 5])
 def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     r"""Calculates the thermal conductivity of liquid using the Lenoir
     correlation as explain in 5_, procedure 12A4.1, pag 1156
@@ -3781,12 +3499,12 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     k : float
         Thermal conductivity [W/m·k]
 
-    Raises
-    ------
-    Range of validity:
-        0.4 ≤ Tr ≤ 0.8
-        P ≥ 500 psi
-    The procedure raisea a NotImplementedError if that conditions not meet
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if input pair isn't in limit:
+
+        * 0.4 ≤ Tr ≤ 0.8
+        * P ≥ 500 psi
 
     Examples
     --------
@@ -3806,16 +3524,6 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
 
     >>> "%0.2f" % ThL_Lenoir(311, 276e5, 431.35, 101.33e5, 0.124, 311, 2.1e5)
     '0.13'
-
-    References
-    ----------
-    [59]_ Lenoir, J.M. Effect of Pressure on Thermal Conductivity of Liquids.
-    Petroelum Refiner 36(8) 1508
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Definiton of optional values
     if To is None:
@@ -3837,6 +3545,7 @@ def ThL_Lenoir(T, P, Tc, Pc, ko, To=None, Po=None):
     return unidades.ThermalConductivity(ko*C2/C1)
 
 
+@refDoc(__doi__, [1])
 def ThL_Missenard(T, P, Tc, Pc, ko):
     r"""Calculates the thermal conductivity of liquid using the Missenard
     correlation, as explain in 1_
@@ -3862,12 +3571,12 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
     k : float
         Thermal conductivity, [W/m/K]
 
-    Raises
-    ------
-    Range of validity:
-        0.5 ≤ Tr ≤ 0.8
-        1 ≤ Pr ≤ 200
-    The procedure raisea a NotImplementedError if that conditions not meet
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if input pair isn't in limit:
+
+        * 0.5 ≤ Tr ≤ 0.8
+        * 1 ≤ Pr ≤ 200
 
     Examples
     --------
@@ -3875,11 +3584,6 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
 
     >>> "%0.3f" % ThL_Missenard(304, 6330e5, 591.75, 41.08e5, 0.129)
     '0.220'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Pr = P/Pc
@@ -3903,6 +3607,7 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
 
 
 # Gas Thermal conductivity
+@refDoc(__doi__, [25, 5])
 def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     r"""Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Misic-Thodos correlation, also referenced in API Procedure
@@ -3951,13 +3656,6 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     >>> cp = unidades.SpecificHeat(34.49/72.15, "BtulbF")
     >>> "%0.3f" % ThG_MisicThodos(T, Tc, Pc, 72.15, cp).BtuhftF
     '0.013'
-
-    References
-    ----------
-    [25]_ Misic, D., Thodos, G. The Thermal Conductivity of Hydrocarbon
-    Gases at Normal Pressures. AIChE Journal 7(2) (1961) 264-267
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     Pc_atm = Pc/101325
     Tr = T/Tc
@@ -3971,6 +3669,7 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     return unidades.ThermalConductivity(k, "calscmK")
 
 
+@refDoc(__doi__, [11])
 def ThG_RiaziFaghri(T, Tb, SG):
     r"""Calculates thermal conductivity of gas hydrocarbon at low pressure
     using the Riazi-Faghri correlation.
@@ -4008,12 +3707,6 @@ def ThG_RiaziFaghri(T, Tb, SG):
     Range of validity:
         150ºF ≤ T ≤ 550ºF
         0.65 ≤ SG ≤ 0.9
-
-    References
-    ----------
-    [11]_ Riazi, M.R., Faghri, A. Thermal Conductivity of Liquid and Vapor
-    Hydrocarbon Systems: Pentanes and Heavier at Low Pressures. Ind. Eng.
-    Chem. Process Des. Dev. 24 (1985) 398-401
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -4025,6 +3718,7 @@ def ThG_RiaziFaghri(T, Tb, SG):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+@refDoc(__doi__, [1])
 def ThG_Eucken(M, Cv, mu):
     r"""Calculates thermal conductivity of gas al low pressure using the Eucken
     correlation as explain in 1_
@@ -4053,11 +3747,6 @@ def ThG_Eucken(M, Cv, mu):
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Eucken(72.151, cv_mass, 8.72e-6)
     '0.0187'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Cvm = Cv*M/1000
     M = M/1000.
@@ -4065,6 +3754,7 @@ def ThG_Eucken(M, Cv, mu):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [1])
 def ThG_EuckenMod(M, Cv, mu):
     r"""Calculates thermal conductivity of gas al low pressure using the
     modified Eucken correlation as explain in 1_
@@ -4092,11 +3782,6 @@ def ThG_EuckenMod(M, Cv, mu):
 
     >>> "%0.4f" % ThG_EuckenMod(72.151, 135.8/72.151*1000, 8.72e-6)
     '0.0234'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Cvm = Cv*M/1000
     M = M/1000.
@@ -4104,6 +3789,7 @@ def ThG_EuckenMod(M, Cv, mu):
     return unidades.ThermalConductivity(k)
 
 
+@refDoc(__doi__, [49, 1])
 def ThG_Chung(T, Tc, M, w, Cv, mu):
     r"""Calculate thermal conductivity of gas at low pressure using the Chung
     correlation
@@ -4151,15 +3837,6 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
     >>> cv_mass = 135.8/72.151*1000
     >>> "%0.4f" % ThG_Chung(373.15, 460.39, 72.151, 0.272, cv_mass, 8.72e-6)
     '0.0229'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-    Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-    Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Cvm = Cv*M/1000
@@ -4175,6 +3852,7 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
     return unidades.ThermalConductivity(k, "calscmK")
 
 
+@refDoc(__doi__, [5])
 def ThG_NonHydrocarbon(T, P, id):
     r"""Calculates thermal conductivity of selected nonhydrocarbon, referenced
     in API procedure 12C1.1, pag 1174
@@ -4209,11 +3887,12 @@ def ThG_NonHydrocarbon(T, P, id):
         * 51  -   Sulfur dioxide
         * 111 -   Sulfur trioxide
 
-    Raises
-    ------
+    Notes
+    -----
     The range of validity of relation depends of compounds, it's checked in
-    procedure and raise a NotImplementeError when inputs are out of bound or
-    the id of compound isn't supported
+    procedure and raise a :class:`NotImplementedError` when inputs are out of
+    bound or the id of compound isn't supported:
+
         * N2, CO     - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 10000psi
         * O2         - 150ºR ≤ T ≤ 2460ºR, 15psi ≤ P ≤ 15000psi
         * H2         - 260ºR ≤ T ≤ 2260ºR, 15psi ≤ P ≤ 10000psi
@@ -4228,10 +3907,6 @@ def ThG_NonHydrocarbon(T, P, id):
     >>> P = unidades.Pressure(6075, "psi")
     >>> "%0.5f" % ThG_NonHydrocarbon(T, P, 47).BtuhftF
     '0.03265'
-
-    References
-    ----------
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Table 12C1.2
     dat = {
@@ -4285,6 +3960,7 @@ def ThG_NonHydrocarbon(T, P, id):
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
+@refDoc(__doi__, [58, 1])
 def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     """Calculate thermal conductivity of compressed gases using the
     Stiel-Thodos correlation.
@@ -4320,15 +3996,6 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     >>> V = 144/44.013/1000
     >>> "%0.4f" % ThG_StielThodos(T, 309.6, 72.55e5, Vc, 44.013, V, 0.0234)
     '0.0414'
-
-    References
-    ----------
-    [58]_ Stiel, L.I., Thodos, G. The Thermal Conductivity of Nonpolar
-    Substances in the Dense Gaseous and Liquid Regions. AIChE Journal 10(1)
-    (1964) 26-30
-
-    [1]_ Reid, Robert C.; Prausnitz, John M.; Poling, Bruce E.
-    Properties of Gases and Liquids. McGraw-Hill Companies, 1987.
     """
     # Calcualte the Zc internally
     Zc = Pc*1e-3*Vc*M/Tc/R
@@ -4350,6 +4017,7 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     return unidades.ThermalConductivity(k, "calscmK")
 
 
+@refDoc(__doi__, [49, 1])
 def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     r"""Calculate the thermal conductivity of a compressed gas using the Chung
     correlation
@@ -4405,15 +4073,6 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     >>> th = ThG_P_Chung(473, 364.9, Vc, 42.081, 0.142, 0.4, 0, rho, 0.0389)
     >>> "%0.3f" % th
     '0.062'
-
-    References
-    ----------
-    [49]_ Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E. Generalized
-    Multiparameter Correlation for Nonpolar and Polar Fluid Trnasport
-    Properties. Ind. Eng. Chem. Res. 27(4) (1988) 671-679
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     # units in molar base
     Vc = Vc*M*1000
@@ -4452,6 +4111,7 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     return unidades.ThermalConductivity(kk+kp, "calscmK")
 
 
+@refDoc(__doi__, [61, 1])
 def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     """Calculate the thermal conductivity of a compressed gas using the TRAPP
     (TRAnsport Property Prediction) method.
@@ -4488,15 +4148,6 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     >>> rho = 1/172.1*42.081*1000
     >>> "%0.3f" % ThG_TRAPP(473, 364.9, Vc, 0.2798, 42.081, 0.142, rho, 0.0389)
     '0.061'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
-
-    [61]_ Ely, J.F., Hanley, H.J.M. A Computer Program for the Prediction of
-    Viscosity and Thermal Condcutivity in Hydrocarbon Mixtures. NBS
-    Technical Note 1039 (1981)
     """
     # Reference fluid properties, propane
     TcR = 369.83
@@ -4567,6 +4218,7 @@ def Tension_Parametric(T, args, Tc):
     return unidades.Tension(sigma)
 
 
+@refDoc(__doi__, [39, 40, 1])
 def Tension_BlockBird(T, Tc, Pc, Tb):
     r"""Calculates surface tension of liquid using the Block-Bird correlation
     using the Miller expression for α.
@@ -4600,17 +4252,6 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
 
     >>> "%0.1f" % Tension_BlockBird(303, 499, 54.9e5, 308.15).dyncm
     '22.4'
-
-    References
-    ----------
-    [39]_ Brock, J.R., Bird, R.B. Surface Tension and the Principle of
-    Corresponding States. AIChE Journal 1(2) (1955) 174-177
-
-    [40]_ Miller, D.G., Thodos, G. Correspondence. Reduced Frost-Kalkwarf
-    Vapor Pressure Equation. I&EC Fundamentals 2(1) (1963) 78-80
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Trb = Tb/Tc
@@ -4628,6 +4269,7 @@ def Tension_BlockBird(T, Tc, Pc, Tb):
     return unidades.Tension(sigma, "dyncm")
 
 
+@refDoc(__doi__, [1])
 def Tension_Pitzer(T, Tc, Pc, w):
     r"""Calculates surface tension of liquid using the Pitzer correlation as
     explain in 1_
@@ -4659,11 +4301,6 @@ def Tension_Pitzer(T, Tc, Pc, w):
 
     >>> "%0.1f" % Tension_Pitzer(303, 499, 54.9e5, 0.192).dyncm
     '23.5'
-
-    References
-    ----------
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = T/Tc
     Pc_bar = Pc*1e-5
@@ -4673,6 +4310,7 @@ def Tension_Pitzer(T, Tc, Pc, w):
     return unidades.Tension(sigma, "dyncm")
 
 
+@refDoc(__doi__, [41])
 def Tension_ZuoStenby(T, Tc, Pc, w):
     r"""Calculates surface tension of liquid using the Zuo-Stenby correlation
 
@@ -4711,12 +4349,6 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
 
     >>> "%0.0f" % Tension_ZuoStenby(303, 499, 54.9e5, 0.192).dyncm
     '23'
-
-    References
-    ----------
-    [41]_ Zuo, Y., Stenby, E.H. Corresponding-States and Parachor Models for
-    the Calculation of Interfacial Tensions. Can. J. Chem. Eng. 75(6)
-    (1997) 1130-1137
     """
     from lib.mEoS import CH4, nC8
 
@@ -4738,6 +4370,7 @@ def Tension_ZuoStenby(T, Tc, Pc, w):
     return unidades.Tension(sigma, "dyncm")
 
 
+@refDoc(__doi__, [42])
 def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     r"""Calculates surface tension of a liquid using the Sastri-Rao correlation
 
@@ -4776,11 +4409,6 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     >>> from lib.mEoS import Methanol as Met
     >>> "%0.2f" % Tension_SastriRao(333.16, Met.Tc, Met.Pc, Met.Tb, True).dyncm
     '19.34'
-
-    References
-    ----------
-    [42]_ Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
-    Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
     """
     if alcohol:
         K, x, y, z, m = 2.28, 0.175, 0.25, 0, 0.8
@@ -4797,6 +4425,7 @@ def Tension_SastriRao(T, Tc, Pc, Tb, alcohol=False, acid=False):
     return unidades.Tension(sigma, "dyncm")
 
 
+@refDoc(__doi__, [43, 42])
 def Tension_Hakim(T, Tc, Pc, w, X):
     r"""Calculates surface tension of a liquid using the Hakim-Steinberg-Stiel
     correlation
@@ -4837,15 +4466,6 @@ def Tension_Hakim(T, Tc, Pc, w, X):
     >>> from lib.mEoS import Methanol as Me
     >>> "%0.1f" % Tension_Hakim(313.16, Me.Tc, Me.Pc, Me.f_acent, 0.037).dyncm
     '20.4'
-
-    References
-    ----------
-    [43]_ Hakim, D.I., Steinberg, D., Stiel, L.I. Generalized Relationship
-    for the Surface Tension of Polar Fluids I&EC Fundamentals 10(1) (1971)
-    174-75.
-
-    [42]_ Sastri, S.R.S., Rao, K.K. A Simple Method to Predict Surface
-    Tension of Organic Liquids. Chem. Eng. Journal 59(2) (1995) 181-186
     """
     Tr = T/Tc
     Pc_atm = Pc/101325
@@ -4861,6 +4481,7 @@ def Tension_Hakim(T, Tc, Pc, w, X):
     return unidades.Tension(sigma, "dyncm")
 
 
+@refDoc(__doi__, [44])
 def Tension_Miqueu(T, Tc, Vc, M, w):
     r"""Calculates surface tension of a liquid using the Miqueu et al.
     correlation
@@ -4886,13 +4507,6 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
     -------
     sigma : float
         Liquid surface tension, [N/m]
-
-    References
-    ----------
-    [44]_ Miqueu, C., Broseta, D., Satherley, J., Mendiboure, B., Lachaise, J.,
-    Graciaa, A. An Extended Scaled Equation for the Temperature Dependence of
-    the Surface Tension of Pure Compounds Inferred from an Analysis of
-    Experimental Data. Fluid Phase Equilibria 172(2) (2000) 169-182
     """
     t = 1 - T/Tc
 
@@ -4903,6 +4517,7 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
 
 
 # Acentric factor
+@refDoc(__doi__, [4])
 def facent_LeeKesler(Tb, Tc, Pc):
     r"""Calculates acentric factor of a fluid using the Lee-Kesler correlation
 
@@ -4919,12 +4534,6 @@ def facent_LeeKesler(Tb, Tc, Pc):
     -------
     w : float
         Acentric factor [-]
-
-    References
-    ----------
-    [4]_ Lee, B. I. and Kesler, M. G., A Generalized Thermodynamic
-    Correlation Based on Three-Parameter Corresponding States. American
-    Institute of Chemical Engineers Journal, Vot. 21, 1975
     """
     Tr = Tb/Tc
     Pr = 101325/Pc
@@ -4934,6 +4543,7 @@ def facent_LeeKesler(Tb, Tc, Pc):
     return unidades.Dimensionless(w)
 
 
+@refDoc(__doi__, [19])
 def prop_Edmister(**kwargs):
     """Calculate the missing parameters between Tc, Pc, Tb and acentric factor
     from the Edmister (1958) correlations
@@ -4952,12 +4562,6 @@ def prop_Edmister(**kwargs):
     Returns
     -------
     prop : Dict with the input parameter and the missing parameter in input
-
-    References
-    ----------
-    [19]_  Edmister, W. C. Applied Hydrocarbon Thermodynamics, Part 4,
-    Compressibility Factors and Equations of State. Petroleum Refiner 37
-    (April 1958): 173–179.
     """
     count_available = 0
     if "Tc" in kwargs and kwargs["Tc"]:
@@ -5003,6 +4607,7 @@ def prop_Edmister(**kwargs):
     return prop
 
 
+@refDoc(__doi__, [8, 1])
 def facent_AmbroseWalton(Pvr):
     """Calculates acentric factor of a fluid using the Ambrose-Walton
     corresponding-states correlation
@@ -5016,15 +4621,6 @@ def facent_AmbroseWalton(Pvr):
     -------
     w : float
         Acentric factor [-]
-
-    References
-    ----------
-    [8]_ Ambrose, D., Walton, J. Vapour Pressures up to Their Critical
-    Temperatures of Normal Alkanes and 1-Alkanols. Pure & Appl. Chem. 61(8)
-    1395-1403 (1989)
-
-    [1]_ Poling, Bruce E. The Properties of Gases and Liquids. 5th edition.
-    New York: McGraw-Hill Professional, 2000.
     """
     Tr = 0.7
     t = 1-Tr
@@ -5040,6 +4636,7 @@ def facent_AmbroseWalton(Pvr):
 
 
 # Other properties
+@refDoc(__doi__, [17, 18, 5])
 def Vc_Riedel(Tc, Pc, w, M):
     """Calculates critical volume of a fluid using the Riedel correlation
     as explain in 5_, procedure 4A3.1, Pag. 302
@@ -5068,19 +4665,6 @@ def Vc_Riedel(Tc, Pc, w, M):
     >>> Pc = unidades.Pressure(331.8, "psi")
     >>> "%0.3f" % Vc_Riedel(Tc, Pc, 0.4368, 128.2551).ft3lb
     '0.068'
-
-    References
-    ----------
-    [17]_ Riedel, L. Kritischer Koeffizient, Dichte des gesättigten Dampfes
-    und Verdampfungswärme: Untersuchungen über eine Erweiterung des
-    Theorems der übereinstimmenden Zustände. Teil III. Chem. Ingr. Tech.,
-    26(12) (1954) 679-683
-
-    [18]_ Riedel, L. Die Zustandsfunktion des realen Gases: Untersuchungen
-    über eine Erweiterung des Theorems der übereinstimmenden Zustände.
-    Chem. Ings-Tech. 28 (1956) 557-562
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     # Eq 1 in [18]
     alfa = 5.811 + 4.919*w
@@ -5089,6 +4673,7 @@ def Vc_Riedel(Tc, Pc, w, M):
     return unidades.SpecificVolume(Vc, "lg")
 
 
+@refDoc(__doi__, [23])
 def Rackett(w):
     """Calculate the rackett constant using the Yamada-Gunn generalized
     correlation
@@ -5102,16 +4687,12 @@ def Rackett(w):
     -------
     Zra : float
         Rackett compressibility factor, [-]
-
-    References
-    ----------
-    [23]_ Yamada, T., Gunn. R. Saturated Liquid Molar Volumes: The Rackett
-    Equation. Journal of Chemical Engineering Data 18(2) (1973): 234–236
     """
     Zra = 0.29056 - 0.08775*w                                           # Eq 1
     return Zra
 
 
+@refDoc(__doi__, [60, 5])
 def Henry(T, args):
     r"""Calculates Henry constant for gases in liquid at low pressure, also
     referenced in API procedure 9A7.1, pag 927
@@ -5147,14 +4728,6 @@ def Henry(T, args):
     >>> T = unidades.Temperature(77, "F")
     >>> "%0.0f" % Henry(T, [-65864.7, -215.127, 0.185874, 1384.15]).psi
     '8257'
-
-    References
-    ----------
-    [60]_ Edwards, T.J., Newman, J., Prausnitz, J.M. Thermodynamics of
-    Aqueous Solutions Containing Volatile Weak Electrolytes. AIChE Journal
-    21(2) (1975) 248-259
-
-    [5]_ API. Technical Data book: Petroleum Refining 6th Edition
     """
     T_R = unidades.K2R(T)
     B1, B2, B3, B4 = args
@@ -5651,13 +5224,9 @@ class Componente(object):
             Pvr = self.Pv(0.7*self.Tc)/self.Pc
             return facent_AmbroseWalton(Pvr)
 
+    @refDoc(__doi__, [47], tab=8)
     def _MuCritical(self):
         """Critical viscosity calculation procedure
-
-        References
-        ----------
-        [47]_ Riazi, M. R. Characterization and Properties of Petroleum
-        Fractions. ASTM manual series MNL50, 2005. Pag 348, Eq. 8.10
         """
         # Define the critical viscosity, use the Table 11A5.4 in 5_
         if 1 < self.id <= 21 and self.id != 7:
@@ -5677,6 +5246,7 @@ class Componente(object):
         return unidades.Viscosity(muc, "cP")
 
     # Ideal properties
+    @refDoc(__doi__, [5], tab=8)
     def _Cpo(self, T):
         """Ideal gas specific heat calculation procedure from polinomial
         coefficient in database in the form [A,B,C,D,E,F]
@@ -5693,15 +5263,12 @@ class Componente(object):
         Notes
         -----
         The units in the calculate cp is in cal/mol·K
-
-        References
-        ----------
-        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         A, B, C, D, E, F = self.cp
         cp = A + B*T + C*T**2 + D*T**3 + E*T**4 + F*T**5
         return unidades.SpecificHeat(cp/self.M, "calgK")
 
+    @refDoc(__doi__, [5], tab=8)
     def _Ho(self, T):
         """Ideal gas enthalpy calculation from polinomial coefficient of
         specific heat saved in database
@@ -5720,10 +5287,6 @@ class Componente(object):
         -----
         The units in the calculate ideal enthalpy are in cal/mol·K, the
         reference state is set to T=298.15K
-
-        References
-        ----------
-        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         To = 298.15
         A, B, C, D, E, F = self.cp
@@ -5731,6 +5294,7 @@ class Componente(object):
         Ho = B*To + C/2*To**2 + D/3*To**3 + E/4*To**4 + F/5*To**5
         return unidades.Enthalpy((H-Ho)/self.M, "calg")
 
+    @refDoc(__doi__, [5], tab=8)
     def _so(self, T):
         """Ideal gas entropy calculation from polinomial coefficient of
         specific heat saved in database
@@ -5738,7 +5302,7 @@ class Componente(object):
         Explained in procedure 7A1.1, pag 543
 
         .. math::
-            So = A\lnT + BT + C/2T^2 + D/3T^3 + E/4T^4 + F/5T^5
+            So = A \ln T + BT + C/2T^2 + D/3T^3 + E/4T^4 + F/5T^5
 
         Parameters
         ----------
@@ -5749,10 +5313,6 @@ class Componente(object):
         -----
         The units in the calculate ideal enthalpy are in cal/mol·K, the
         reference state is set to T=298.15K
-
-        References
-        ----------
-        [5]_ API. Technical Data book: Petroleum Refining 6th Edition
         """
         A, B, C, D, E, F = self.cp
         so = A*log(T) + B*T + C/2*T**2 + D/3*T**3 + E/4*T**4 + F/5*T**5

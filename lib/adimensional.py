@@ -47,7 +47,7 @@ This module implements physics adimensional groups
 from scipy.constants import g
 
 from lib.unidades import Dimensionless
-
+from lib.utilities import refDoc
 
 __doi__ = {
     1:
@@ -57,11 +57,12 @@ __doi__ = {
          "doi": ""},
     2:
         {"autor": "Maloney, J.O.",
-         "title": "Perry's Chemical Engineers' Handbook 8th Edition ",
+         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw-Hill Professional, 2008.",
          "doi": ""}}
 
 
+@refDoc(__doi__, [1])
 def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     r"""Calculates Archimedes number `Ar` for two phases densities, a
     geometric length `L` or any viscosity definition.
@@ -85,9 +86,9 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     mu : float, optional
         Dynamic viscosity, [Pa*s]
     nu : float, optional
-        Kinematic viscosity, [m^2/s]
+        Kinematic viscosity, [m²/s]
     g : float, optional
-        Acceleration due to gravity, [m/s^2]
+        Acceleration due to gravity, [m/s²]
 
     Returns
     -------
@@ -104,11 +105,6 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     --------
     >>> print("%0.0f" % Ar(5e-4, 2610, 0.6072, nu=48.09e-6))
     2278
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -118,6 +114,7 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     return Dimensionless(g*L**3*deltarho/(rho*nu**2))
 
 
+@refDoc(__doi__, [1])
 def Bi(h, L, k):
     r"""Calculates Biot number `Bi` for heat transfer coefficient `h`,
     geometric length `L`, and thermal conductivity `k`.
@@ -154,15 +151,11 @@ def Bi(h, L, k):
     --------
     >>> Bi(60, 0.02, 0.15)
     8.0
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(h*L/k)
 
 
+@refDoc(__doi__, [2])
 def Bo(rhol, rhog, sigma, L):
     r"""Calculates Bond number, `Bo` also known as Eotvos number.
 
@@ -184,15 +177,11 @@ def Bo(rhol, rhog, sigma, L):
     -------
     Bo : float
         Bond number, [-]
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     return (g*(rhol-rhog)*L**2/sigma)
 
 
+@refDoc(__doi__, [2])
 def Eu(dP, rho, V):
     r"""Calculates Euler number or `Eu` for a fluid of velocity `V` and
     density `rho` experiencing a pressure drop `dP`.
@@ -220,16 +209,12 @@ def Eu(dP, rho, V):
 
     .. math::
         Eu = \frac{\text{Pressure drop}}{2\cdot \text{velocity head}}
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     Eu = dP/(rho*V**2)
     return Eu
 
 
+@refDoc(__doi__, [1])
 def Fo(k, L, t):
     r"""Calculates Fourier number `Fo`.
 
@@ -259,15 +244,11 @@ def Fo(k, L, t):
     --------
     >>> print("%0.1f" % Fo(7e-6, 0.01, 60))
     4.2
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(k*t/L**2)
 
 
+@refDoc(__doi__, [1])
 def Fr(V, L, g=g):
     r"""Calculates Froude number `Fr` for velocity `V` and geometric length
     `L`. If desired, gravity can be specified as well. Normally the function
@@ -304,15 +285,11 @@ def Fr(V, L, g=g):
     --------
     >>> print("%0.0f" % Fr(5, L=0.025))
     102
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(V**2/(L*g))
 
 
+@refDoc(__doi__, [1])
 def Ga(L, rho=None, mu=None, nu=None, g=g):
     r"""Calculates Galilei number `Ga`.
 
@@ -346,11 +323,6 @@ def Ga(L, rho=None, mu=None, nu=None, g=g):
     --------
     >>> print("%0.3f" % Ga(5e-4, nu=48.09e-6))
     0.530
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -359,6 +331,7 @@ def Ga(L, rho=None, mu=None, nu=None, g=g):
     return Dimensionless(g*L**3/nu**2)
 
 
+@refDoc(__doi__, [1])
 def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
     r"""Calculates Grashof number or `Gr` for a fluid with the given
     properties, temperature difference, and characteristic length.
@@ -395,7 +368,7 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
     Returns
     -------
     Gr : float
-        Grashof number []
+        Grashof number, [-]
 
     Notes
     -----
@@ -411,11 +384,6 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
     --------
     >>> print("%0.2e" % Gr(L=0.6, beta=0.0031, T1=60, T2=20, nu=1.692e-5))
     9.17e+08
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -425,6 +393,7 @@ def Gr(L, beta, T1, T2=0, rho=None, mu=None, nu=None, g=g):
     return Dimensionless(Gr)
 
 
+@refDoc(__doi__, [1])
 def Gz(k, D, t=None, L=None, V=None):
     r"""Calculates Graetz number `Gz`.
 
@@ -460,11 +429,6 @@ def Gz(k, D, t=None, L=None, V=None):
     --------
     >>> print("%0.0f" % Gz(1.48e-7, 0.018, V=1.5, L=3))
     1095
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if V and L:
         t = L/V
@@ -473,6 +437,7 @@ def Gz(k, D, t=None, L=None, V=None):
     return Dimensionless(D**2/k/t)
 
 
+@refDoc(__doi__, [2])
 def Kn(path, L):
     r"""Calculates Knudsen number or `Kn`.
 
@@ -497,16 +462,12 @@ def Kn(path, L):
 
     .. math::
         Kn = \frac{\text{Mean free path length}}{\text{Characteristic length}}
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     Kn = path/L
     return Kn
 
 
+@refDoc(__doi__, [2])
 def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
     r"""Calculates Lewis number or `Le`.
 
@@ -543,11 +504,6 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
         \frac{Sc}{Pr}
 
     An error is raised if none of the required input sets are provided.
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     if k and Cp and rho:
         alpha = k/(rho*Cp)
@@ -559,6 +515,7 @@ def Le(D=None, alpha=None, Cp=None, k=None, rho=None):
     return Le
 
 
+@refDoc(__doi__, [2])
 def Ma(V, c):
     r"""Calculates Mach number or `Ma` for a fluid.
 
@@ -583,15 +540,11 @@ def Ma(V, c):
 
     .. math::
         Ma = \frac{\text{fluid velocity}}{\text{sonic velocity}}
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     return V/c
 
 
+@refDoc(__doi__, [1])
 def Nu(alfa, L, k):
     r"""Calculates Nusselt number or `Nu`.
 
@@ -622,15 +575,11 @@ def Nu(alfa, L, k):
     --------
     >>> print("%0.1f" % Nu(102.3, 0.03927, 0.03181))
     126.3
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(alfa*L/k)
 
 
+@refDoc(__doi__, [2])
 def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
     r"""Calculates heat transfer Peclet number or `Pe`
 
@@ -668,11 +617,6 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
         Pe = \frac{\text{Bulk heat transfer}}{\text{Conduction heat transfer}}
 
     An error is raised if none of the required input sets are provided.
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     if rho and Cp and k:
         alpha = k/(rho*Cp)
@@ -682,6 +626,7 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
     return Pe
 
 
+@refDoc(__doi__, [1])
 def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     r"""Calculates Prandtl number or `Pr` for a fluid with the given
     parameters.
@@ -713,7 +658,7 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     Returns
     -------
     Pr : float
-        Prandtl number []
+        Prandtl number, [-]
 
     Notes
     -----
@@ -727,11 +672,6 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     --------
     >>> print("%0.2f" % Pr(cp=1821., k=0.134, mu=43.61e-5))
     5.93
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if k and cp and mu:
         Pr = cp*mu/k
@@ -744,6 +684,7 @@ def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     return Dimensionless(Pr)
 
 
+@refDoc(__doi__, [1])
 def Ra(Pr, Gr):
     r"""Calculates Rayleigh number or `Ra` using Prandtl number `Pr` and
     Grashof number `Gr` for a fluid with the given
@@ -756,27 +697,23 @@ def Ra(Pr, Gr):
     Parameters
     ----------
     Pr : float
-        Prandtl number []
+        Prandtl number, [-]
     Gr : float
-        Grashof number []
+        Grashof number, [-]
 
     Returns
     -------
     Ra : float
-        Rayleigh number []
+        Rayleigh number, [-]
 
     Notes
     -----
     Used in free convection problems only.
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(Pr*Gr)
 
 
+@refDoc(__doi__, [1])
 def Re(D, V, rho=None, mu=None, nu=None):
     r"""Calculates Reynolds number or `Re` for a fluid with the given
     properties for the specified velocity and diameter.
@@ -803,7 +740,7 @@ def Re(D, V, rho=None, mu=None, nu=None):
     Returns
     -------
     Re : float
-        Reynolds number []
+        Reynolds number, [-]
 
     Notes
     -----
@@ -817,11 +754,6 @@ def Re(D, V, rho=None, mu=None, nu=None):
     --------
     >>> Re(0.052, 1.05, rho=999.8, nu=1.3e-6)
     42000.0
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     if rho and mu:
         nu = mu/rho
@@ -830,6 +762,7 @@ def Re(D, V, rho=None, mu=None, nu=None):
     return Dimensionless(V*D/nu)
 
 
+@refDoc(__doi__, [2])
 def Sh(K, L, D):
     r"""Calculates Sherwood number or `Sh`.
 
@@ -856,16 +789,12 @@ def Sh(K, L, D):
     .. math::
         Sh = \frac{\text{Mass transfer by convection}}
         {\text{Mass transfer by diffusion}} = \frac{K}{D/L}
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     Sh = K*L/D
     return Sh
 
 
+@refDoc(__doi__, [2])
 def Sc(D, mu=None, nu=None, rho=None):
     r"""Calculates Schmidt number or `Sc`.
 
@@ -900,11 +829,6 @@ def Sc(D, mu=None, nu=None, rho=None):
         = \frac{\text{viscous diffusivity}}{\text{species diffusivity}}
 
     An error is raised if none of the required input sets are provided.
-
-    References
-    ----------
-    [2]_ Maloney, J.O. Perry's Chemical Engineers' Handbook 8th Edition.
-    McGraw-Hill Professional, 2008.
     """
     if rho and mu:
         Sc = mu/(rho*D)
@@ -915,6 +839,7 @@ def Sc(D, mu=None, nu=None, rho=None):
     return Sc
 
 
+@refDoc(__doi__, [2])
 def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
     r"""Calculate Stanton number `St`
 
@@ -929,9 +854,9 @@ def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
     Parameters
     ----------
     Nu : float, optional
-        Nusselt number []
-    Pe : float, optinal
-        Péclet number []
+        Nusselt number [-]
+    Pe : float, optional
+        Péclet number [-]
     V : float, optional
         Velocity of fluid [m/s]
     alfa : float, optional
@@ -941,6 +866,10 @@ def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
     cp : float, optional
         Constant pressure specific heat [J/kg/K]
 
+    Returns
+    -------
+    St : float
+        Stanton number, [-]
     """
     if Nu and Pe:
         st = Nu/Pe
@@ -951,6 +880,7 @@ def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
     return Dimensionless(st)
 
 
+@refDoc(__doi__, [1])
 def We(V, L, rho, sigma):
     r"""Calculates Weber number, `We`, for a fluid with the given density,
     surface tension, velocity, and geometric parameter (usually diameter
@@ -973,7 +903,7 @@ def We(V, L, rho, sigma):
     Returns
     -------
     We : float
-        Weber number []
+        Weber number, [-]
 
     Notes
     -----
@@ -986,11 +916,6 @@ def We(V, L, rho, sigma):
     --------
     >>> print("%0.2f" % We(V=11, L=0.005, rho=1.188, sigma=0.07278))
     9.88
-
-    References
-    ----------
-    [1]_ VDI-Gesellschaft. VDI Heat Atlas 2nd Edition. Berlin, New York.
-    Springer 2010.
     """
     return Dimensionless(V**2*L*rho/sigma)
 

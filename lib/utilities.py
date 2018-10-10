@@ -316,6 +316,31 @@ def SimpleEq(Tc, T, coef):
     return pr
 
 
+def refDoc(doi, refs, tab=4):
+    """Function decorator used to automatic addiction of References section
+    to documentation of procedures
+
+    Parameters
+    ----------
+    doi : dict
+        Dictionary with library references
+    refs : list
+        List of number to report in References section
+    """
+    def decorator(f):
+        f.__doc__ += os.linesep + os.linesep
+        f.__doc__ += " "*tab + "References" + os.linesep
+        f.__doc__ += " "*tab + "----------" + os.linesep
+        for ref in refs:
+            rf = doi[ref]
+            f.__doc__ += " "*tab + "[%i]_ %s; %s. %s" % (
+                ref, rf["autor"], rf["title"], rf["ref"]) + os.linesep
+            f.__doc__ += os.linesep
+
+        return f
+    return decorator
+
+
 if __name__ == "__main__":
     import math
     print(representacion(math.pi*1000, decimales=6, tol=5))
