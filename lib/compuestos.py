@@ -3705,8 +3705,9 @@ def ThG_RiaziFaghri(T, Tb, SG):
     Notes
     -----
     Range of validity:
-        150ºF ≤ T ≤ 550ºF
-        0.65 ≤ SG ≤ 0.9
+
+        * 150ºF ≤ T ≤ 550ºF
+        * 0.65 ≤ SG ≤ 0.9
     """
     # Convert input Tb in Kelvin to Fahrenheit to use in the correlation
     Tb_R = unidades.K2R(Tb)
@@ -3887,8 +3888,6 @@ def ThG_NonHydrocarbon(T, P, id):
         * 51  -   Sulfur dioxide
         * 111 -   Sulfur trioxide
 
-    Notes
-    -----
     The range of validity of relation depends of compounds, it's checked in
     procedure and raise a :class:`NotImplementedError` when inputs are out of
     bound or the id of compound isn't supported:

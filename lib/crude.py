@@ -539,11 +539,9 @@ def Z_Leung(Tr, Pr):
 
     Notes
     -----
-    The correlation is in cited referencence, the parameters are least square
+    The correlation is in cited reference, the parameters are least square
     fitting by Leung.
 
-    Notes
-    -----
     Raise :class:`NotImplementedError` if input pair isn't in limit:
 
         * 1.1 ≤ Tr ≤ 2.6
@@ -585,11 +583,9 @@ def Z_Burnett(Tr, Pr):
 
     Notes
     -----
-    The correlation is in cited referencence, the parameters are least square
+    The correlation is in cited reference, the parameters are least square
     fitting by Leung.
 
-    Notes
-    -----
     Raise :class:`NotImplementedError` if input pair isn't in limit:
 
         * 1.3 ≤ Tr ≤ 3

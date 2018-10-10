@@ -15,12 +15,53 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to implement a library for chemical elements as mendeleev table
-###############################################################################
+This library implement a chemical element with several properties
+
+   * id: atomic number
+   * name
+   * altname
+   * symbol
+   * serie
+   * group
+   * period
+   * block
+   * density_Solid
+   * density_Liq
+   * density_Gas
+   * appearance
+   * date
+   * country
+   * discover
+   * etymology
+   * atomic_mass
+   * atomic_volume
+   * atomic_radius
+   * covalent_radius
+   * vanderWaals_radius
+   * ionic_radii
+   * lattice_type
+   * space_group
+   * lattice_edges
+   * lattice_angles
+   * electron_configuration
+   * oxidation
+   * electronegativity
+   * electron_affinity
+   * first_ionization
+   * Tf
+   * Tb
+   * Heat_f
+   * Heat_b
+   * Cp
+   * k
+   * T_debye
+   * color
+   * notes
+'''
+
 
 
 import os
@@ -119,54 +160,15 @@ def _configValues(Preferences):
 
 
 class Elemental(object):
-    """Element class with data"""
+    """Chemical element class"""
 
     def __init__(self, id):
-        """@param id atomic number of element
-
-        The class implement this properties
-           id: atomic number
-           name
-           altname
-           symbol
-           serie
-           group
-           period
-           block
-           density_Solid
-           density_Liq
-           density_Gas
-           appearance
-           date
-           country
-           discover
-           etymology
-           atomic_mass
-           atomic_volume
-           atomic_radius
-           covalent_radius
-           vanderWaals_radius
-           ionic_radii
-           lattice_type
-           space_group
-           lattice_edges
-           lattice_angles
-           electron_configuration
-           oxidation
-           electronegativity
-           electron_affinity
-           first_ionization
-           Tf
-           Tb
-           Heat_f
-           Heat_b
-           Cp
-           k
-           T_debye
-           color
-           notes
         """
-
+        Parameters
+        ------------
+        id : int
+            atomic number of element, [-]
+        """
         if id > 118:
             id = 118
         databank.execute("SELECT * FROM ELEMENTS WHERE id=='%i'" % id)
