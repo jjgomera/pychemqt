@@ -5,3 +5,4 @@ API reference
    :maxdepth: 4
 
    lib
+   tools

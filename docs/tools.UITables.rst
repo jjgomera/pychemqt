@@ -10,7 +10,7 @@ The module can use several libraries as calculation procedures:
 
 The fluids availables are:
 
-.. include:: lib.mEoS.rst
+.. include:: lib.mEoSlst.rst
 
 
 All functionality are integrate in pychemqt main program, accesible in main menu Tools/MEoS. Furthermore these equations of state are available to use in process stream properties calculation.
@@ -47,6 +47,5 @@ It can be defined the properties to show, and the order too, Tools/MEoS/Properti
 The properties availables depend of backend used in library.
 
 For configure the library to use and several parameters of generated plot, use the options Tools/MEoS/Configure, or use the tab in main program Preferences dialog.
-
 
 

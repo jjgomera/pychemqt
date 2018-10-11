@@ -24,7 +24,7 @@ from lib import unidades
 
 class RC318(MEoS):
     """Multiparameter equation of state for RC318"""
-    name = "octafluorocyclobutane "
+    name = "octafluorocyclobutane"
     CASNumber = "406-58-6"
     formula = "cyclo-C4F8"
     synonym = "RC318"

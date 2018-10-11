@@ -26,7 +26,7 @@ from lib import unidades
 
 class R143a(MEoS):
     """Multiparameter equation of state for R143a"""
-    name = "1,1,1-trifluoroethane "
+    name = "1,1,1-trifluoroethane"
     CASNumber = "420-46-2"
     formula = "CF3CH3"
     synonym = "R143a"

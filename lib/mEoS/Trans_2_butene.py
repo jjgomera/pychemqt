@@ -26,7 +26,7 @@ from lib import unidades
 
 class Trans_2_butene(MEoS):
     """Multiparameter equations of state for trans-butene"""
-    name = "trans-butene "
+    name = "trans-butene"
     CASNumber = "624-64-6"
     formula = "CH3-CH=CH-CH3"
     synonym = ""

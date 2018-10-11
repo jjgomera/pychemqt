@@ -26,7 +26,7 @@ from lib import unidades
 
 class oXylene(MEoS):
     """Multiparameter equation of state for o-xylene """
-    name = "o-xylene "
+    name = "o-xylene"
     CASNumber = "95-47-6"
     formula = "C8H10"
     synonym = "1,2-dimethylbenzene"

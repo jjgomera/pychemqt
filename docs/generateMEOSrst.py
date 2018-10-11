@@ -9,18 +9,21 @@ import lib
 
 
 # Generate index file
+txt2 = ""
 txt = "lib.mEoS"
 txt += os.linesep + "========" + os.linesep + os.linesep
 txt += "The list of available fluid with high quality multiparameter equations"
 txt += " is automatically updated here:" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep + os.linesep
 for mod in lib.mEoS.__all__:
-    txt += "    lib.mEoS.%s" % mod.__name__
-    txt += os.linesep
+    txt += "    lib.mEoS.%s" % mod.__name__ + os.linesep
+    txt2 += "* :doc:`%s <lib.mEoS.%s>` (%s)" % (mod.__name__, mod.__name__,
+                                                mod.name) + os.linesep
 
 with open("docs/lib.mEoS.rst", "w") as file:
     file.write(txt)
-
+with open("docs/lib.mEoSlst.rst", "w") as file:
+    file.write(txt2)
 
 # Generate the individual compounds files
 for mod in lib.mEoS.__all__:

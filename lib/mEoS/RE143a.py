@@ -24,7 +24,7 @@ from lib import unidades
 
 class RE143a(MEoS):
     """Multiparameter equation of state for RE143a"""
-    name = "methyl trifluoromethyl ether "
+    name = "methyl trifluoromethyl ether"
     CASNumber = "421-14-7"
     formula = "CH3-O-CF3"
     synonym = "HFE-143a"
