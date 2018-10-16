@@ -289,9 +289,7 @@ class SF6(MEoS):
                "no_den": [29661.7, 505.67, 1],
                "to_den": [0, 1, 2],
 
-               # The critical density cited in paper don't work, using value
-               # from REFPROP
-               "Tref_res": 318.7232, "rhoref_res": 5.046*M, "kref_res": 1,
+               "Tref_res": 318.7232, "rhoref_res": 742.297, "kref_res": 1,
                "nr": [-2.83746e-2, 2.07472e-2, -5.57180e-3, 5.32890e-3,
                       -1.61688e-3, 3.52768e-2, -4.33053e-2, 5.12084e-2,
                       -2.90262e-2, 5.98438e-3],
@@ -300,7 +298,16 @@ class SF6(MEoS):
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 0.19e-9, "gam0": 0.052, "qd": 0.35e-9, "Tcref": 478.0848}
+               "Xio": 0.19e-9, "gam0": 0.052, "qd": 0.35e-9,
+
+               # Using the value in Erratum paper
+               # Assael, M.J., Koini, I.A., Anoniadis, K.D., Huber, M.L.,
+               # Abdulagatov, I.M., Perkins, R.A.
+               # Reference Correlation of the Thermal Conductivity of Sulfur
+               # Hexafluoride from the Triple Point to 1000 K and up to 150 MPa
+               # J. Phys. Chem. Ref. Data 43(3) (2014) 039901
+               # 10.1063/1.4885454
+               "Tcref": 478.08}
 
     _thermal = thermo0,
 
@@ -511,10 +518,10 @@ class Test(TestCase):
         self.assertEqual(round(SF6(T=400, rho=1123.8).mu.muPas, 4), 84.7838)
 
     def test_Assael(self):
-        # Table 5, pag 8
-        self.assertEqual(round(SF6(T=298.15, rho=0).k.mWmK, 3), 12.952)
-        self.assertEqual(round(SF6(T=298.15, rho=100).k.mWmK, 3), 14.127)
-        self.assertEqual(round(SF6(T=298.15, rho=1600).k.mWmK, 3), 70.747)
-        self.assertEqual(round(SF6(T=310, rho=0).k.mWmK, 3), 13.834)
-        self.assertEqual(round(SF6(T=310, rho=1200).k.mWmK, 3), 49.173)
-        self.assertEqual(round(SF6(T=480, rho=100).k.mWmK, 3), 28.863)
+        # Table 5, from Erratum article
+        self.assertEqual(round(SF6(T=298.15, rho=0).k.mWmK, 2), 12.95)
+        self.assertEqual(round(SF6(T=298.15, rho=100).k.mWmK, 2), 14.13)
+        self.assertEqual(round(SF6(T=298.15, rho=1600).k.mWmK, 2), 69.73)
+        self.assertEqual(round(SF6(T=310, rho=0).k.mWmK, 2), 13.83)
+        self.assertEqual(round(SF6(T=310, rho=1200).k.mWmK, 2), 48.70)
+        self.assertEqual(round(SF6(T=480, rho=100).k.mWmK, 2), 28.85)
