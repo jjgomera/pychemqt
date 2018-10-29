@@ -262,7 +262,35 @@ class NH3(MEoS):
 
     _viscosity = visco0, visco1
 
-    thermo0 = {"__name__": "Tufeu (1984)",
+    thermo0 = {"__name__": "Monogenidou (2018)",
+               "__doi__": {
+                   "autor": "Monogenidou, S.A., Assael, M.J., Huber, M.L.",
+                   "title": "Reference Correlations for the Thermal "
+                            "Conductivity of Ammonia from the Triple Point to "
+                            "680 K and Pressures up to 80 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 47(4) (2018) 043101",
+                   "doi": "10.1063/1.5053087"},
+
+               "eq": 1,
+
+               "Toref": 405.56, "koref": 1e-3,
+               "no_num": [86.9294, -170.5502, 608.0287, -100.9764, 85.1986],
+               "to_num": [0, 1, 2, 3, 4],
+               "no_den": [4.68994, 9.21307, -1.53637, 1],
+               "to_den": [0, 1, 2, 3],
+
+               "Tref_res": 405.56, "rhoref_res": 233.25, "kref_res": 1,
+               "nr": [0.103432, -0.112597, 0.233301, -0.112536, 0.141129e-1,
+                      -0.283976e-1, 0.482520e-1, -0.644124e-1, 0.529376e-2,
+                      0.891203e-2],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.14e-9,
+               "gam0": 0.053, "qd": 0.4e-9, "Tcref": 608.34}
+
+    thermo1 = {"__name__": "Tufeu (1984)",
                "__doi__": {
                    "autor": "Tufeu, R., Ivanov, D.Y., Garrabos, Y., Le "
                             "Neindre, B.",
@@ -312,7 +340,7 @@ class NH3(MEoS):
 
         return DL
 
-    _thermal = thermo0,
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
@@ -507,11 +535,18 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 776.68)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 2.07031)
 
-    def test_monogenidou(self):
+    def test_monogenidouVisco(self):
         # Values cited in section 3, pag 7
         self.assertEqual(round(NH3(T=300, rho=0).mu.muPas, 4), 10.1812)
         self.assertEqual(round(NH3(T=300, rho=8).mu.muPas, 4), 9.9219)
         self.assertEqual(round(NH3(T=300, rho=609).mu.muPas, 4), 133.3937)
+
+    def test_monogenidouThermo(self):
+        # Values cited in section 3, pag 7
+        # The paper use a undocumented mEoS of Gao so the critical enhancement
+        # dont exactly work
+        self.assertEqual(round(NH3(T=390, rho=0).k.mWmK, 6), 35.969501)
+        self.assertEqual(round(NH3(T=390, rho=415).k.mWmK, 6), 264.145394)
 
     def test_fenghour(self):
         kw = {"visco": 1}
