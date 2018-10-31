@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 # Noble Gases
 from lib.mEoS.He import He
 from lib.mEoS.Ne import Ne
@@ -220,3 +222,85 @@ for obj in __all__:
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 # TODO: Add 1,2-dichloroethane from Thol thesis
+
+
+class Test(TestCase):
+    def test_meos(self):
+        """Cycle input parameter from selected point to check iteration"""
+        # The input pair T-h, P-s, h-u has inconsistency, several point has
+        # equal values so are not good as input definition, they need another
+        # input like saturation state
+
+        # Subcooled liquid region
+        P = 5e7
+        T = 470
+        f_tp = H2O(T=T, P=P)
+        f_trho = H2O(T=f_tp.T, rho=f_tp.rho)
+        f_ts = H2O(T=f_trho.T, s=f_trho.s)
+        f_tu = H2O(T=f_ts.T, u=f_ts.u)
+        f_prho = H2O(P=f_tu.P, rho=f_tu.rho)
+        f_ph = H2O(P=f_prho.P, h=f_prho.h)
+        f_pu = H2O(P=f_ph.P, u=f_ph.u)
+        f_rhoh = H2O(rho=f_pu.rho, h=f_pu.h)
+        f_rhos = H2O(rho=f_rhoh.rho, s=f_rhoh.s)
+        f_rhou = H2O(rho=f_rhos.rho, u=f_rhos.u)
+        f_hs = H2O(h=f_rhou.h, s=f_rhou.s)
+        f_su = H2O(s=f_hs.s, u=f_hs.u)
+        self.assertEqual(round(f_su.P-P, 1), 0)
+        self.assertEqual(round(f_su.T-T, 5), 0)
+
+        # Two phases region
+        T = 470
+        x = 0.3
+        f_tx = H2O(T=T, x=x)
+        f_px = H2O(P=f_tx.P, x=f_tx.x)
+        f_trho = H2O(T=f_px.T, rho=f_px.rho)
+        f_ts = H2O(T=f_trho.T, s=f_trho.s)
+        f_tu = H2O(T=f_ts.T, u=f_ts.u)
+        f_prho = H2O(P=f_tu.P, rho=f_tu.rho)
+        f_ph = H2O(P=f_prho.P, h=f_prho.h)
+        f_pu = H2O(P=f_ph.P, u=f_ph.u)
+        f_rhoh = H2O(rho=f_pu.rho, h=f_pu.h)
+        f_rhos = H2O(rho=f_rhoh.rho, s=f_rhoh.s)
+        f_rhou = H2O(rho=f_rhos.rho, u=f_rhos.u)
+        f_hs = H2O(h=f_rhou.h, s=f_rhou.s)
+        f_su = H2O(s=f_hs.s, u=f_hs.u)
+        self.assertEqual(round(f_su.x-x, 5), 0)
+        self.assertEqual(round(f_su.T-T, 5), 0)
+        self.assertEqual(round(f_su.P-f_tx.P, 1), 0)
+
+        # Superheated gas region
+        P = 5e5
+        T = 470
+        f_tp = H2O(T=T, P=P)
+        f_trho = H2O(T=f_tp.T, rho=f_tp.rho)
+        f_ts = H2O(T=f_trho.T, s=f_trho.s)
+        f_tu = H2O(T=f_ts.T, u=f_ts.u)
+        f_prho = H2O(P=f_tu.P, rho=f_tu.rho)
+        f_ph = H2O(P=f_prho.P, h=f_prho.h)
+        f_pu = H2O(P=f_ph.P, u=f_ph.u)
+        f_rhoh = H2O(rho=f_pu.rho, h=f_pu.h)
+        f_rhos = H2O(rho=f_rhoh.rho, s=f_rhoh.s)
+        f_rhou = H2O(rho=f_rhos.rho, u=f_rhos.u)
+        f_hs = H2O(h=f_rhou.h, s=f_rhou.s)
+        f_su = H2O(s=f_hs.s, u=f_hs.u)
+        self.assertEqual(round(f_su.P-P, 1), 0)
+        self.assertEqual(round(f_su.T-T, 5), 0)
+
+        # Supercritical region
+        P = 8e7
+        T = 800
+        f_tp = H2O(T=T, P=P)
+        f_trho = H2O(T=f_tp.T, rho=f_tp.rho)
+        f_ts = H2O(T=f_trho.T, s=f_trho.s)
+        f_tu = H2O(T=f_ts.T, u=f_ts.u)
+        f_prho = H2O(P=f_tu.P, rho=f_tu.rho)
+        f_ph = H2O(P=f_prho.P, h=f_prho.h)
+        f_pu = H2O(P=f_ph.P, u=f_ph.u)
+        f_rhoh = H2O(rho=f_pu.rho, h=f_pu.h)
+        f_rhos = H2O(rho=f_rhoh.rho, s=f_rhoh.s)
+        f_rhou = H2O(rho=f_rhos.rho, u=f_rhos.u)
+        f_hs = H2O(h=f_rhou.h, s=f_rhou.s)
+        f_su = H2O(s=f_hs.s, u=f_hs.u)
+        self.assertEqual(round(f_su.P-P, 1), 0)
+        self.assertEqual(round(f_su.T-T, 5), 0)

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from itertools import product
+import logging
 
 from PyQt5.QtWidgets import QApplication
 from scipy import exp, log, sinh, cosh, tanh, arctan
@@ -122,6 +123,317 @@ __doi__ = {
          "doi": "10.1021/i100013a002"},
 
         }
+
+
+def _Helmholtz_phir(tau, delta, coef):
+    """Residual contribution to the free Helmholtz energy
+
+    Parameters
+    ----------
+    tau : float
+        Inverse reduced temperature, Tc/T [-]
+    delta : float
+        Reduced density, rho/rhoc [-]
+
+    Returns
+    -------
+    prop : dictionary with residual adimensional helmholtz energy and deriv
+        fir  [-]
+        firt: [∂fir/∂τ]δ,x  [-]
+        fird: [∂fir/∂δ]τ,x  [-]
+        firtt: [∂²fir/∂τ²]δ,x  [-]
+        firdt: [∂²fir/∂τ∂δ]x  [-]
+        firdd: [∂²fir/∂δ²]τ,x  [-]
+    """
+    fir = 0
+
+    if delta:
+        # Polinomial terms
+        nr1 = coef.get("nr1", [])
+        d1 = coef.get("d1", [])
+        t1 = coef.get("t1", [])
+        for n, d, t in zip(nr1, d1, t1):
+            fir += n*delta**d*tau**t
+
+        # Exponential terms
+        nr2 = coef.get("nr2", [])
+        d2 = coef.get("d2", [])
+        g2 = coef.get("gamma2", [])
+        t2 = coef.get("t2", [])
+        c2 = coef.get("c2", [])
+        for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
+            fir += n*delta**d*tau**t*exp(-g*delta**c)
+
+        # Gaussian terms
+        nr3 = coef.get("nr3", [])
+        d3 = coef.get("d3", [])
+        t3 = coef.get("t3", [])
+        a3 = coef.get("alfa3", [])
+        e3 = coef.get("epsilon3", [])
+        b3 = coef.get("beta3", [])
+        g3 = coef.get("gamma3", [])
+        exp1 = coef.get("exp1", [2]*len(nr3))
+        exp2 = coef.get("exp2", [2]*len(nr3))
+        for n, d, t, a, e, b, g, ex1, ex2 in zip(
+                nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
+            expr = exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
+            fir += n*delta**d*tau**t * expr
+
+        # Non analitic terms
+        # FIXME: Invalid value in critical point with this term
+        ni = coef.get("nr4", [])
+        ai = coef.get("a4", [])
+        bi = coef.get("b4", [])
+        Ai = coef.get("A", [])
+        Bi = coef.get("B", [])
+        Ci = coef.get("C", [])
+        Di = coef.get("D", [])
+        b_ = coef.get("beta4", [])
+
+        for n, a, b, A, B, C, D, bt in zip(ni, ai, bi, Ai, Bi, Ci, Di, b_):
+            Tita = (1-tau)+A*((delta-1)**2)**(0.5/bt)
+            F = exp(-C*(delta-1)**2-D*(tau-1)**2)
+            Delta = Tita**2+B*((delta-1)**2)**a
+            fir += n*Delta**b*delta*F
+
+        # Hard sphere term
+        if coef.get("Fi", None):
+            f = coef["Fi"]
+            n = 0.1617
+            a = 0.689
+            g = 0.3674
+            X = n*delta/(a+(1-a)/tau**g)
+
+            fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
+
+        # Special form from Saul-Wagner Water 58 coefficient equation
+        if "nr5" in coef:
+            if delta < 0.2:
+                factor = 1.6*delta**6*(1-1.2*delta**6)
+            else:
+                factor = exp(-0.4*delta**6)-exp(-2*delta**6)
+
+            nr5 = coef.get("nr5", [])
+            d5 = coef.get("d5", [])
+            t5 = coef.get("t5", [])
+            fr = 0
+            for n, d, t in zip(nr5, d5, t5):
+                fr += n*delta**d*tau**t
+            fir += factor*fr
+
+    return fir
+
+
+def _Helmholtz_phird(tau, delta, coef):
+    """Residual contribution to the free Helmholtz energy
+
+    Parameters
+    ----------
+    tau : float
+        Inverse reduced temperature, Tc/T [-]
+    delta : float
+        Reduced density, rho/rhoc [-]
+
+    Returns
+    -------
+    prop : dictionary with residual adimensional helmholtz energy and deriv
+        fir  [-]
+        firt: [∂fir/∂τ]δ,x  [-]
+        fird: [∂fir/∂δ]τ,x  [-]
+        firtt: [∂²fir/∂τ²]δ,x  [-]
+        firdt: [∂²fir/∂τ∂δ]x  [-]
+        firdd: [∂²fir/∂δ²]τ,x  [-]
+    """
+    fird = 0
+
+    if delta:
+        # Polinomial terms
+        nr1 = coef.get("nr1", [])
+        d1 = coef.get("d1", [])
+        t1 = coef.get("t1", [])
+        for n, d, t in zip(nr1, d1, t1):
+            fird += n*d*delta**(d-1)*tau**t
+
+        # Exponential terms
+        nr2 = coef.get("nr2", [])
+        d2 = coef.get("d2", [])
+        g2 = coef.get("gamma2", [])
+        t2 = coef.get("t2", [])
+        c2 = coef.get("c2", [])
+        for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
+            fird += n*exp(-g*delta**c)*delta**(d-1)*tau**t*(d-g*c*delta**c)
+
+        # Gaussian terms
+        nr3 = coef.get("nr3", [])
+        d3 = coef.get("d3", [])
+        t3 = coef.get("t3", [])
+        a3 = coef.get("alfa3", [])
+        e3 = coef.get("epsilon3", [])
+        b3 = coef.get("beta3", [])
+        g3 = coef.get("gamma3", [])
+        exp1 = coef.get("exp1", [2]*len(nr3))
+        exp2 = coef.get("exp2", [2]*len(nr3))
+        for n, d, t, a, e, b, g, ex1, ex2 in zip(
+                nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
+            expr = exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
+            fird += expr * (n*d*delta**(d-1)*tau**t -
+                            n*a*delta**d*(delta-e)**(ex1-1)*ex1*tau**t)
+
+        # Non analitic terms
+        # FIXME: Invalid value in critical point with this term
+        ni = coef.get("nr4", [])
+        ai = coef.get("a4", [])
+        bi = coef.get("b4", [])
+        Ai = coef.get("A", [])
+        Bi = coef.get("B", [])
+        Ci = coef.get("C", [])
+        Di = coef.get("D", [])
+        b_ = coef.get("beta4", [])
+
+        for n, a, b, A, B, C, D, bt in zip(ni, ai, bi, Ai, Bi, Ci, Di, b_):
+            Tita = (1-tau)+A*((delta-1)**2)**(0.5/bt)
+            F = exp(-C*(delta-1)**2-D*(tau-1)**2)
+            Fd = -2*C*F*(delta-1)
+            Delta = Tita**2+B*((delta-1)**2)**a
+            Deltad = (delta-1)*(A*Tita*2/bt*((delta-1)**2)**(0.5/bt-1) +
+                                2*B*a*((delta-1)**2)**(a-1))
+            DeltaBd = b*Delta**(b-1)*Deltad
+
+            fird += n*(Delta**b*(F+delta*Fd)+DeltaBd*delta*F)
+
+        # Hard sphere term
+        if coef.get("Fi", None):
+            f = coef["Fi"]
+            n = 0.1617
+            a = 0.689
+            g = 0.3674
+            X = n*delta/(a+(1-a)/tau**g)
+            Xd = n/(a+(1-a)/tau**g)
+            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
+            fird += ahdX*Xd
+
+        # Special form from Saul-Wagner Water 58 coefficient equation
+        if "nr5" in coef:
+            if delta < 0.2:
+                factor = 1.6*delta**6*(1-1.2*delta**6)
+            else:
+                factor = exp(-0.4*delta**6)-exp(-2*delta**6)
+
+            nr5 = coef.get("nr5", [])
+            d5 = coef.get("d5", [])
+            t5 = coef.get("t5", [])
+            frd1, frd2 = 0, 0
+            for n, d, t in zip(nr5, d5, t5):
+                frd1 += n*delta**(d+5)*tau**t
+                frd2 += n*d*delta**(d-1)*tau**t
+
+            fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
+                factor*frd2
+
+    return fird
+
+
+def _Helmholtz_phirt(tau, delta, coef):
+    """Residual contribution to the free Helmholtz energy
+
+    Parameters
+    ----------
+    tau : float
+        Inverse reduced temperature, Tc/T [-]
+    delta : float
+        Reduced density, rho/rhoc [-]
+
+    Returns
+    -------
+    prop : dictionary with residual adimensional helmholtz energy and deriv
+        fir  [-]
+        firt: [∂fir/∂τ]δ,x  [-]
+        fird: [∂fir/∂δ]τ,x  [-]
+        firtt: [∂²fir/∂τ²]δ,x  [-]
+        firdt: [∂²fir/∂τ∂δ]x  [-]
+        firdd: [∂²fir/∂δ²]τ,x  [-]
+    """
+    firt = 0
+
+    if delta:
+        # Polinomial terms
+        nr1 = coef.get("nr1", [])
+        d1 = coef.get("d1", [])
+        t1 = coef.get("t1", [])
+        for n, d, t in zip(nr1, d1, t1):
+            firt += n*t*delta**d*tau**(t-1)
+
+        # Exponential terms
+        nr2 = coef.get("nr2", [])
+        d2 = coef.get("d2", [])
+        g2 = coef.get("gamma2", [])
+        t2 = coef.get("t2", [])
+        c2 = coef.get("c2", [])
+        for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
+            firt += n*t*delta**d*tau**(t-1)*exp(-g*delta**c)
+
+        # Gaussian terms
+        nr3 = coef.get("nr3", [])
+        d3 = coef.get("d3", [])
+        t3 = coef.get("t3", [])
+        a3 = coef.get("alfa3", [])
+        e3 = coef.get("epsilon3", [])
+        b3 = coef.get("beta3", [])
+        g3 = coef.get("gamma3", [])
+        exp1 = coef.get("exp1", [2]*len(nr3))
+        exp2 = coef.get("exp2", [2]*len(nr3))
+        for n, d, t, a, e, b, g, ex1, ex2 in zip(
+                nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
+            expr = exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
+            firt += expr * (n*delta**d*t*tau**(t-1) -
+                            n*b*delta**d*ex2*tau**t*(tau-g)**(ex2-1))
+
+        # Non analitic terms
+        # FIXME: Invalid value in critical point with this term
+        ni = coef.get("nr4", [])
+        ai = coef.get("a4", [])
+        bi = coef.get("b4", [])
+        Ai = coef.get("A", [])
+        Bi = coef.get("B", [])
+        Ci = coef.get("C", [])
+        Di = coef.get("D", [])
+        b_ = coef.get("beta4", [])
+
+        for n, a, b, A, B, C, D, bt in zip(ni, ai, bi, Ai, Bi, Ci, Di, b_):
+            Tita = (1-tau)+A*((delta-1)**2)**(0.5/bt)
+            F = exp(-C*(delta-1)**2-D*(tau-1)**2)
+            Ft = -2*D*F*(tau-1)
+            Delta = Tita**2+B*((delta-1)**2)**a
+            DeltaBt = -2*Tita*b*Delta**(b-1)
+            firt += n*delta*(DeltaBt*F+Delta**b*Ft)
+
+        # Hard sphere term
+        if coef.get("Fi", None):
+            f = coef["Fi"]
+            n = 0.1617
+            a = 0.689
+            g = 0.3674
+            X = n*delta/(a+(1-a)/tau**g)
+            Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
+            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
+            firt += ahdX*Xt
+
+        # Special form from Saul-Wagner Water 58 coefficient equation
+        if "nr5" in coef:
+            if delta < 0.2:
+                factor = 1.6*delta**6*(1-1.2*delta**6)
+            else:
+                factor = exp(-0.4*delta**6)-exp(-2*delta**6)
+
+            nr5 = coef.get("nr5", [])
+            d5 = coef.get("d5", [])
+            t5 = coef.get("t5", [])
+            frt = 0
+            for n, d, t in zip(nr5, d5, t5):
+                frt += n*delta**d*t*tau**(t-1)
+            firt += factor*frt
+
+    return firt
 
 
 class MEoS(ThermoAdvanced):
@@ -391,7 +703,11 @@ class MEoS(ThermoAdvanced):
                     inp = self.kwargs[input]
                     out = self.__getattribute__(input)._data
 
-                    if abs(inp-out) > 1e-9:
+                    if input in ("P", "h", "u", "s"):
+                        maxError = 1e-1
+                    else:
+                        maxError = 1e-3
+                    if abs(inp-out) > maxError:
                         converge = False
                         break
 
@@ -400,7 +716,9 @@ class MEoS(ThermoAdvanced):
                     self.msg = QApplication.translate(
                             "pychemqt", "Solution don´t converge")
                     err = self.kwargs[input]-self.__getattribute__(input)._data
-                    print("State don't converge for %s by %g" % (input, err))
+                    msg = "%s state don't converge for %s by %g" % (
+                        self.__class__.__name__, input, err)
+                    logging.warning(msg)
 
     def cleanOldValues(self, **kwargs):
         """Convert alternative input parameters"""
@@ -478,300 +796,923 @@ class MEoS(ThermoAdvanced):
         self._ref(ref, refvalues)
 
         propiedades = None
+        vapor = None
+        liquido = None
 
-        if x is None:
-            # Methods with iteration necessary to get x
-            if self._mode == "T-P":
-                rhoo = []
-                if self.kwargs["rho0"]:
-                    rhoo.append(self.kwargs["rho0"])
-                if T < self.Tc:
-                    Pv = self._Vapor_Pressure(T)
-                    rhov = self._Vapor_Density(T)
-                    rhol = self._Liquid_Density(T)
-                    if P > Pv:
-                        rhoo.append(rhol)
-                    else:
-                        rhoo.append(rhov)
-                else:
-                    rhoo.append(self._Liquid_Density(self.Tc))
-
-                rhoo.append(self._constants["rhomax"]*self.M)
-                rhoo.append(self.rhoc)
-                rhoo.append(P/T/self.R)
-
-                def f(rho):
-                    return self._eq(rho, T)["P"]-P
-                rho = self.fsolve(f, False, **{"P": P, "T": T, "rho0": rhoo})
-
-            elif self._mode == "T-h":
-                def f(rho):
-                    return self._eq(rho, T)["h"]*1000-h
-
-                def f2(rho):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vapor["h"]*1000.*x+liquido["h"]*1000.*(1-x)-h
-
-                rho = self.fsolve(f, True, f2, **{"h": h, "T": T})
-
-            elif self._mode == "T-s":
-                def f(rho):
-                    return self._eq(rho, T)["s"]*1000.-s
-
-                def f2(rho):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-
-                rho = self.fsolve(f, True, f2, **{"s": s, "T": T})
-
-            elif self._mode == "T-u":
-                def f(rho):
-                    par = self._eq(rho, T)
-                    return par["h"]-par["P"]/1000.*par["v"]-u/1000.
-
-                def f2(rho):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    vu = vapor["h"]-Ps/rhov
-                    lu = liquido["h"]-Ps/rhol
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vu*x+lu*(1-x)-u
-
-                rho = self.fsolve(f, True, f2, **{"u": u, "T": T})
-
-            elif self._mode == "P-rho":
-                def f(T):
-                    return self._eq(rho, T)["P"]-P
-
-                def f2(T):
-                    rhol, rhov, Ps = self._saturation(T)
-                    return Ps-P
-
-                T = self.fsolve(f, True, f2, **{"P": P, "rho": rho})
-
-            elif self._mode == "P-h":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["P"]-P, par["h"]*1000-h
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return Ps-P, vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h
-
-                rho, T = self.fsolve(f, True, f2, **{"P": P, "h": h})
-
-            elif self._mode == "P-s":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["P"]*1000-P, par["s"]*1000-s
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1./rhol)/(1./rhov-1./rhol)
-                    return Ps-P, vapor["s"]*1000*x+liquido["s"]*1000*(1-x)-s
-
-                rho, T = self.fsolve(f, True, f2, **{"P": P, "s": s})
-
-            elif self._mode == "P-u":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["h"]-par["P"]*par["v"]-u/1000., par["P"]-P
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    vu = vapor["h"]-Ps/rhov
-                    lu = liquido["h"]-Ps/rhol
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return Ps-P, vu*x+lu*(1-x)-u
-
-                rho, T = self.fsolve(f, True, f2, **{"P": P, "u": u})
-
-            elif self._mode == "rho-h":
-                def f(T):
-                    return self._eq(rho, T)["h"]*1000-h
-
-                def f2(T):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vapor["h"]*x+liquido["h"]*(1-x)-h/1000
-
-                T = self.fsolve(f, True, f2, **{"h": h, "rho": rho})
-
-            elif self._mode == "rho-s":
-                def f(T):
-                    return self._eq(rho, T)["s"]*1000.-s
-
-                def f2(T):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vapor["s"]*1000.*x+liquido["s"]*1000.*(1-x)-s
-
-                T = self.fsolve(f, True, f2, **{"s": s, "rho": rho})
-
-            elif self._mode == "rho-u":
-                def f(T):
-                    par = self._eq(rho, T)
-                    return par["h"]-par["P"]/1000*par["v"]-u/1000
-
-                def f2(T):
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    vu = vapor["h"]-Ps/rhov
-                    lu = liquido["h"]-Ps/rhol
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vu*x+lu*(1-x)-u/1000
-
-                T = self.fsolve(f, True, f2, **{"u": u, "rho": rho})
-
-            elif self._mode == "h-s":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["h"]*1000-h, par["s"]*1000.-s
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return (vapor["h"]*1000*x+liquido["h"]*1000*(1-x)-h,
-                            vapor["s"]*1000*x+liquido["s"]*1000*(1-x)-s)
-
-                rho, T = self.fsolve(f, True, f2, **{"s": s, "h": h})
-
-            elif self._mode == "h-u":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["h"]-par["P"]/1000*par["v"]-u, par["h"]-h
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    vu = vapor["h"]-Ps/rhov
-                    lu = liquido["h"]-Ps/rhol
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    return vapor["h"]*x+liquido["h"]*(1-x)-h, vu*x+lu*(1-x)-u
-
-                rho, T = self.fsolve(f, True, f2, **{"u": u, "h": h})
-
-            elif self._mode == "s-u":
-                def f(parr):
-                    par = self._eq(parr[0], parr[1])
-                    return par["h"]-par["P"]*par["v"]-u, par["s"]*1000.-s
-
-                def f2(parr):
-                    rho, T = parr
-                    rhol, rhov, Ps = self._saturation(T)
-                    vapor = self._eq(rhov, T)
-                    liquido = self._eq(rhol, T)
-                    vu = vapor["h"]-Ps/rhov
-                    lu = liquido["h"]-Ps/rhol
-                    x = (1./rho-1/rhol)/(1/rhov-1/rhol)
-                    vs = vapor["s"]*1000.
-                    ls = liquido["s"]*1000.
-                    return vs*x+ls*(1-x)-s, vu*x+lu*(1-x)-u
-
-                rho, T = self.fsolve(f, True, f2, **{"u": u, "s": s})
-
-            if self._mode == "T-rho" and self.kwargs["rho"] == 0:
-                self.status = 3
-                self.msg = QApplication.translate(
-                    "pychemqt", "Ideal condition at zero pressure")
-            elif self._constants["Tmin"] <= T <= self._constants["Tmax"] and \
-                    0 < rho:  # <= self._constants["rhomax"]*self.M:
-                self.status = 1
-                self.msg = ""
-            else:
-                self.status = 5
-                self.msg = QApplication.translate(
-                    "pychemqt", "input out of range")
-                return
-
-            rho = float(rho)
-            T = float(T)
-            propiedades = self._eq(rho, T)
-            if self._mode != "T-P" and T <= self.Tc and rho:
-                rhol = self._Liquid_Density(T)
+        # Procedure for each input option
+        if self._mode == "T-P":
+            tau = self.Tc/T
+            rhoo = []
+            if self.kwargs["rho0"]:
+                rhoo.append(self.kwargs["rho0"])
+            if T < self.Tc:
+                Pv = self._Vapor_Pressure(T)
                 rhov = self._Vapor_Density(T)
-                if rhol > rho > rhov:
-                    rhol, rhov, Ps = self._saturation(T)
-                    x = (1/rho-1/rhol)/(1/rhov-1/rhol)
-                    if x < 0:
-                        x = 0
-                    elif x > 1:
-                        x = 1
-                    if rhol > rho > rhov:
-                        P = Ps
-                elif rho <= rhov:
-                    x = 1
-                elif rho >= rhol:
+                rhol = self._Liquid_Density(T)
+                if P > Pv:
+                    rhoo.append(rhol)
+                else:
+                    rhoo.append(rhov)
+            else:
+                rhoo.append(self._Liquid_Density(self.Tc))
+
+            rhoo.append(self._constants["rhomax"]*self.M)
+            rhoo.append(self.rhoc)
+            rhoo.append(P/T/self.R)
+
+            def f(rho):
+                delta = rho/self.rhoc
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                return (1+delta*fird)*self.R.kJkgK*T*rho - P/1000
+            prop = self.fsolve(f, **{"P": P, "T": T, "rho0": rhoo})
+            rho = prop["rho"]
+
+        elif self._mode == "T-rho":
+            # In this mode only check possible two phases region
+            rhol = self._Liquid_Density(T)
+            rhov = self._Vapor_Density(T)
+
+            if T > self.Tc:
+                x = 1
+            elif rho >= rhol:
+                x = 0
+            elif rho <= rhov:
+                x = 1
+            else:
+                rhoL, rhoG, Ps = self._saturation(T)
+                if rho >= rhoL:
                     x = 0
-
-                vapor = self._eq(rhov, T)
-                liquido = self._eq(rhol, T)
-
-            elif self._mode == "T-P":
-                if T > self.Tc:
+                elif rho <= rhoG:
                     x = 1
                 else:
-                    rhol, rhov, Ps = self._saturation(T)
-                    if Ps > P:
-                        x = 1
+                    x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+
+        elif self._mode == "T-h":
+            tau = self.Tc/T
+
+            def f(rho):
+                if rho < 0:
+                    rho = 0
+                delta = rho/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return ho - h
+
+            if T < self.Tc:
+                rhov = self._Vapor_Density(T)
+                rhol = self._Liquid_Density(T)
+                deltaL = rhol/self.rhoc
+                deltaG = rhov/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                if hoL <= h <= hoG:
+                    rhoL, rhoG, Ps = self._saturation(T)
+                    deltaL = rhoL/self.rhoc
+                    deltaG = rhoG/self.rhoc
+
+                    ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                    fiot = ideal["fiot"]
+                    firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                    firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                    hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                    x = (h-hoL)/(hoG-hoL)
+                    rho = 1/(x/rhoG+(1-x)/rhoL)
+                else:
+                    if h > hoG:
+                        rhoo = rhov
                     else:
-                        x = 0
-
-            elif T > self.Tc:
-                x = 1
-            elif rho == 0:
-                x = 1
+                        rhoo = rhol
+                    rho = fsolve(f, rhoo)[0]
             else:
-                raise NotImplementedError("Incoming out of bound")
+                rho = fsolve(f, self.rhoc)[0]
 
-            if self.kwargs["P"]:
-                P = self.kwargs["P"]/1000
-            elif not P:
-                P = propiedades["P"]/1000.
+        elif self._mode == "T-s":
+            tau = self.Tc/T
+
+            def f(rho):
+                if rho < 0:
+                    rho = 0
+                delta = rho/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fio = ideal["fio"]
+                fiot = ideal["fiot"]
+                fir = _Helmholtz_phir(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                so = self.R*(tau*(fiot+firt)-fio-fir)
+                return so-s
+
+            if T < self.Tc:
+                rhov = self._Vapor_Density(T)
+                rhol = self._Liquid_Density(T)
+                deltaL = rhol/self.rhoc
+                deltaG = rhov/self.rhoc
+
+                idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                fioL = idealL["fio"]
+                fioG = idealG["fio"]
+                fiot = idealL["fiot"]
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                sl = self.R*(tau*(fiot+firtL)-fioL-firL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                sv = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                if sl <= s <= sv:
+                    rhoL, rhoG, Ps = self._saturation(T)
+                    deltaL = rhol/self.rhoc
+                    deltaG = rhov/self.rhoc
+
+                    idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                    idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                    fioL = idealL["fio"]
+                    fioG = idealG["fio"]
+                    fiot = idealL["fiot"]
+                    firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                    sl = self.R*(tau*(fiot+firtL)-fioL-firL)
+                    firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    sv = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                    x = (s-sl)/(sv-sl)
+                    rho = 1/(x/rhoG+(1-x)/rhoL)
+                else:
+                    if s > sv:
+                        rhoo = rhov
+                    else:
+                        rhoo = rhol
+                    rho = fsolve(f, rhoo)[0]
             else:
-                P = P/1000.
+                rho = fsolve(f, self.rhoc)[0]
+
+        elif self._mode == "T-u":
+            tau = self.Tc/T
+
+            def f(rho):
+                if rho < 0:
+                    rho = 0
+                delta = rho/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return ho-Po*1e3/rho - u
+
+            if T < self.Tc:
+                rhov = self._Vapor_Density(T)
+                rhol = self._Liquid_Density(T)
+                deltaL = rhol/self.rhoc
+                deltaG = rhov/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                Po = self.R.kJkgK*T*(1+deltaL*firdL)*rhol
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                lu = hoL-Po*1e3/rhol
+                vu = hoG-Po*1e3/rhov
+
+                if lu <= u <= vu:
+                    rhoL, rhoG, Ps = self._saturation(T)
+                    deltaL = rhoL/self.rhoc
+                    deltaG = rhoG/self.rhoc
+
+                    ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                    fiot = ideal["fiot"]
+                    firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                    firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    Po = self.R.kJkgK*T*(1+deltaL*firdL)*rhoL
+                    hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                    hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                    lu = hoL-Po*1e3/rhoL
+                    vu = hoG-Po*1e3/rhoG
+                    x = (u-lu)/(vu-lu)
+                    rho = 1/(x/rhoG+(1-x)/rhoL)
+                else:
+                    if u > vu:
+                        rhoo = rhov
+                    else:
+                        rhoo = rhol
+                    rho = fsolve(f, rhoo)[0]
+            else:
+                rho = fsolve(f, self.rhoc)[0]
+
+        elif self._mode == "P-rho":
+
+            def f(T):
+                delta = rho/self.rhoc
+                if T < 0:
+                    T = 0
+                tau = self.Tc/T
+
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                return (1+delta*fird)*self.R.kJkgK*T*rho - P/1000
+
+            def f2(parr):
+                T, rhol, rhog = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        Ps - P/1000)
+
+            prop = self.fsolve(f, f2, **{"P": P, "rho": rho})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            elif "rhoG" in prop:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+
+        elif self._mode == "P-h":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 0
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return Po-P/1e3, ho-h
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        hoL*(1-x)+hoG*x - h,
+                        Ps - P/1000)
+
+            prop = self.fsolve(f, f2, **{"P": P, "h": h})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        elif self._mode == "P-s":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 0
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fio = ideal["fio"]
+                fiot = ideal["fiot"]
+                fir = _Helmholtz_phir(tau, delta, self._constants)
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                so = self.R*(tau*(fiot+firt)-fio-fir)
+                return Po-P/1e3, so-s
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                fioL = idealL["fio"]
+                fiot = idealL["fiot"]
+                idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                fioG = idealG["fio"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                soL = self.R*(tau*(fiot+firtL)-fioL-firL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                soG = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        soL*(1-x)+soG*x - s,
+                        Ps - P/1000)
+
+            prop = self.fsolve(f, f2, **{"P": P, "s": s})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        elif self._mode == "P-u":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 0
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return Po-P/1e3, ho-Po*1e3/rho - u
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+                vu = hoG-Ps*1000/rhog
+                lu = hoL-Ps*1000/rhol
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        lu*(1-x)+vu*x - u,
+                        Ps - P/1000)
+
+            prop = self.fsolve(f, f2, **{"P": P, "u": u})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        elif self._mode == "rho-h":
+            delta = rho/self.rhoc
+
+            def f(T):
+                if T < 0:
+                    T = 0
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return ho - h
+
+            def f2(parr):
+                T, rhol, rhog = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                x = (1./rho-1/rhol)/(1/rhog-1/rhol)
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        hoL*(1-x)+hoG*x - h)
+
+            prop = self.fsolve(f, f2, **{"h": h, "rho": rho})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            elif "rhoG" in prop:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+
+        elif self._mode == "rho-s":
+            delta = rho/self.rhoc
+
+            def f(T):
+                if T < 0:
+                    T = 0
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fio = ideal["fio"]
+                fiot = ideal["fiot"]
+                fir = _Helmholtz_phir(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                so = self.R*(tau*(fiot+firt)-fio-fir)
+                return so-s
+
+            def f2(parr):
+                T, rhol, rhog = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                fioL = idealL["fio"]
+                fiot = idealL["fiot"]
+                idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                fioG = idealG["fio"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                soL = self.R*(tau*(fiot+firtL)-fioL-firL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                soG = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                x = (1./rho-1/rhol)/(1/rhog-1/rhol)
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        soL*(1-x)+soG*x - s)
+
+            prop = self.fsolve(f, f2, **{"s": s, "rho": rho})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            elif "rhoG" in prop:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+
+        elif self._mode == "rho-u":
+            delta = rho/self.rhoc
+
+            def f(T):
+                if T < 0:
+                    T = 0
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return ho-Po*1e3/rho - u
+
+            def f2(parr):
+                T, rhol, rhog = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+                x = (1./rho-1/rhol)/(1/rhog-1/rhol)
+                vu = hoG-Ps*1000/rhog
+                lu = hoL-Ps*1000/rhol
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        lu*(1-x)+vu*x - u)
+
+            prop = self.fsolve(f, f2, **{"h": h, "rho": rho})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            elif "rhoG" in prop:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+
+        elif self._mode == "h-s":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 1
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fio = ideal["fio"]
+                fiot = ideal["fiot"]
+                fir = _Helmholtz_phir(tau, delta, self._constants)
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                so = self.R*(tau*(fiot+firt)-fio-fir)
+                return ho-h, so-s
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                fioL = idealL["fio"]
+                fiot = idealL["fiot"]
+                idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                fioG = idealG["fio"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                soL = self.R*(tau*(fiot+firtL)-fioL-firL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+                soG = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        hoL*(1-x)+hoG*x - h,
+                        soL*(1-x)+soG*x - s)
+
+            prop = self.fsolve(f, f2, **{"h": h, "s": s, "To": self.Tt})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        elif self._mode == "h-u":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 0
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fiot = ideal["fiot"]
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                return ho-h, ho-Po*1e3/rho - u
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                ideal = self._phi0(self._constants["cp"], tau, deltaL)
+                fiot = ideal["fiot"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+                vu = hoG-Ps*1000/rhog
+                lu = hoL-Ps*1000/rhol
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        hoL*(1-x)+hoG*x - h,
+                        lu*(1-x)+vu*x - u)
+
+            prop = self.fsolve(f, f2, **{"h": h, "u": u})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        elif self._mode == "s-u":
+
+            def f(parr):
+                rho, T = parr
+                if rho < 0:
+                    rho = 0
+                if T < 0:
+                    T = 0
+                delta = rho/self.rhoc
+                tau = self.Tc/T
+
+                ideal = self._phi0(self._constants["cp"], tau, delta)
+                fio = ideal["fio"]
+                fiot = ideal["fiot"]
+                fir = _Helmholtz_phir(tau, delta, self._constants)
+                fird = _Helmholtz_phird(tau, delta, self._constants)
+                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
+                so = self.R*(tau*(fiot+firt)-fio-fir)
+                Po = self.R.kJkgK*T*(1+delta*fird)*rho
+
+                return so-s, ho-Po*1e3/rho - u
+
+            def f2(parr):
+                T, rhol, rhog, x = parr
+                if T < 0:
+                    T = 0
+                if rhol < 0:
+                    rhol = 0
+                if rhog < 0:
+                    rhog = 0
+                if x < 0:
+                    x = 0
+                if x > 1:
+                    x = 1
+                tau = self.Tc/T
+                deltaL = rhol/self.rhoc
+                deltaG = rhog/self.rhoc
+
+                idealL = self._phi0(self._constants["cp"], tau, deltaL)
+                fioL = idealL["fio"]
+                fiot = idealL["fiot"]
+                idealG = self._phi0(self._constants["cp"], tau, deltaG)
+                fioG = idealG["fio"]
+
+                firL = _Helmholtz_phir(tau, deltaL, self._constants)
+                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
+                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
+                soL = self.R*(tau*(fiot+firtL)-fioL-firL)
+                firG = _Helmholtz_phir(tau, deltaG, self._constants)
+                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
+                soG = self.R*(tau*(fiot+firtG)-fioG-firG)
+
+                Jl = rhol*(1+deltaL*firdL)
+                Jv = rhog*(1+deltaG*firdG)
+                K = firL-firG
+                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+                vu = hoG-Ps*1000/rhog
+                lu = hoL-Ps*1000/rhol
+
+                return (Jl-Jv,
+                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                        soL*(1-x)+soG*x - s,
+                        lu*(1-x)+vu*x - u)
+
+            prop = self.fsolve(f, f2, **{"s": s, "u": u})
+            T = prop["T"]
+            if "rho" in prop:
+                rho = prop["rho"]
+            else:
+                rhoG = prop["rhoG"]
+                rhoL = prop["rhoL"]
+                x = prop["x"]
+
+        # # rho = float(rho)
+        # # T = float(T)
+        # # propiedades = self._eq(rho, T)
+        # if self._mode != "T-P" and T <= self.Tc and rho:
+            # pass
+            # # rhol = self._Liquid_Density(T)
+            # # rhov = self._Vapor_Density(T)
+            # # if rhol > rho > rhov:
+                # # rhol, rhov, Ps = self._saturation(T)
+                # # x = (1/rho-1/rhol)/(1/rhov-1/rhol)
+                # # if x < 0:
+                    # # x = 0
+                # # elif x > 1:
+                    # # x = 1
+                # # if rhol > rho > rhov:
+                    # # P = Ps
+            # # elif rho <= rhov:
+                # # x = 1
+            # # elif rho >= rhol:
+                # # x = 0
+
+            # # vapor = self._eq(rhov, T)
+            # # liquido = self._eq(rhol, T)
+
+        # elif T > self.Tc:
+            # x = 1
+        # elif rho == 0:
+            # x = 1
+        # else:
+            # raise NotImplementedError("Incoming out of bound")
 
         elif self._mode == "T-x":
             # Check input T in saturation range
             if self.Tt > T or self.Tc < T:
                 raise ValueError("Wrong input values")
 
-            rhol, rhov, Ps = self._saturation(T)
-            rho = 1/(1/rhov*x+1/rhol*(1-x))
-            vapor = self._eq(rhov, T)
-            liquido = self._eq(rhol, T)
-            if x == 0:
-                propiedades = liquido
-            elif x == 1:
-                propiedades = vapor
-            P = Ps/1000.
+            rhoL, rhoG, Ps = self._saturation(T)
+            rho = 1/(1/rhoG*x+1/rhoL*(1-x))
+            P = Ps
             self.status = 1
 
         elif self._mode == "P-x":
@@ -781,20 +1722,62 @@ class MEoS(ThermoAdvanced):
                 rhol, rhov, Ps = self._saturation(T)
                 return Ps-P
             T = fsolve(funcion, 0.99*self.Tc)[0]
-            rhol, rhov, Ps = self._saturation(T)
-            rho = 1/(1/rhov*x+1/rhol*(1-x))
-            vapor = self._eq(rhov, T)
-            liquido = self._eq(rhol, T)
-            if x == 0:
-                propiedades = liquido
-            elif x == 1:
-                propiedades = vapor
-            P = P/1000.
+            rhoL, rhoG, Ps = self._saturation(T)
+            rho = 1/(1/rhoG*x+1/rhoL*(1-x))
             self.status = 1
+
+        # Common functionality
+        if x is None:
+            if T > self.Tc:
+                x = 1
+            else:
+                rhol, rhov, Ps = self._saturation(T)
+                if Ps > P:
+                    x = 1
+                else:
+                    x = 0
+        elif 0 < x < 1:
+            rho = 1/(1/rhoG*x+1/rhoL*(1-x))
+
+        if self._mode == "T-rho" and self.kwargs["rho"] == 0:
+            self.status = 3
+            self.msg = QApplication.translate(
+                "pychemqt", "Ideal condition at zero pressure")
+        elif self._constants["Tmin"] <= T <= self._constants["Tmax"] and \
+                0 < rho:  # <= self._constants["rhomax"]*self.M:
+            self.status = 1
+            self.msg = ""
+        else:
+            self.status = 5
+            self.msg = QApplication.translate(
+                "pychemqt", "input out of range")
+            return
+
+        if x == 0:
+            rhoL = rho
+            liquido = self._eq(rhoL, T)
+            propiedades = liquido
+        elif x == 1:
+            rhoG = rho
+            vapor = self._eq(rhoG, T)
+            propiedades = vapor
+        else:
+            liquido = self._eq(rhoL, T)
+            vapor = self._eq(rhoG, T)
+
+        if self.kwargs["P"]:
+            P = self.kwargs["P"]
+        elif 0 < x < 1:
+            P = vapor["P"]
+        elif not P:
+            P = propiedades["P"]
+        # else:
+            # P = P/1000.
+
 
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
-        self.P = unidades.Pressure(P, "kPa")
+        self.P = unidades.Pressure(P)
         self.Pr = unidades.Dimensionless(self.P/self.Pc)
         self.x = unidades.Dimensionless(x)
 
@@ -859,14 +1842,14 @@ class MEoS(ThermoAdvanced):
         else:
             self.sigma = unidades.Tension(None)
 
-        if 0 < x < 1:
-            self.virialB = unidades.SpecificVolume(vapor["B"]/self.rhoc)
-            self.virialC = unidades.SpecificVolume_square(
-                vapor["C"]/self.rhoc**2)
-        else:
-            self.virialB = unidades.SpecificVolume(propiedades["B"]/self.rhoc)
-            self.virialC = unidades.SpecificVolume_square(
-                propiedades["C"]/self.rhoc**2)
+        # if 0 < x < 1:
+            # self.virialB = unidades.SpecificVolume(vapor["B"]/self.rhoc)
+            # self.virialC = unidades.SpecificVolume_square(
+                # vapor["C"]/self.rhoc**2)
+        # else:
+            # self.virialB = unidades.SpecificVolume(propiedades["B"]/self.rhoc)
+            # self.virialC = unidades.SpecificVolume_square(
+                # propiedades["C"]/self.rhoc**2)
 
         if 0 < self.x < 1:
             self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
@@ -876,129 +1859,156 @@ class MEoS(ThermoAdvanced):
             self.Svap = unidades.SpecificHeat(None)
         self.invT = unidades.InvTemperature(-1/self.T)
 
-    def fsolve(self, function, phases=True, function2phase=None, **kwargs):
-        """Iterate to calculate T and rho
-        function: function to iterate
-        phases: calculate two phases region
-        funtion2phase: function to iterate in two phase region"""
+        # Phase identification parameter
+        # PI = 2-rho*(d2PdrhodT/dPdT-d2pdrho2/dPdrho)
+
+    def fsolve(self, f, f2=None, **kwargs):
+        """Procedure to iterate to calculate T and rho in input pair without
+        some of that unknown
+
+        Parameters
+        ----------
+            f : callable
+                function to iterate in single phase region
+            f2 : callable
+                function to iterate in two phases region
+            kwargs : dict
+                Other parameters like:
+
+                    * T : Known temperature,[K]
+                    * P : Known pressure, [Pa]
+                    * rho : Known density, [kg/m³]
+                    * h : Known enthalpy, [kJ/kg]
+                    * s : Known entropy, [kJ/kgK]
+                    * u : Known internal energy, [kJ/kg]
+                    * T0 : initial values for temperature, [K]
+                    * rho0 : initial values for density, [kg/m³]
+        """
+        # Set initial value for iteration
         if "T" not in kwargs:
-            to = [self.Tc, self._constants["Tmin"], self._constants["Tmax"]]
+            to = [self._constants["Tmin"], (self.Tt+self.Tc)/2, self.Tc,
+                  self._constants["Tmax"]]
             if self.kwargs["T0"]:
-                to.insert(0, self.kwargs["T0"])
+                if isinstance(kwargs["T0"], list):
+                    for t in kwargs["T0"][-1::-1]:
+                        to.insert(0, t)
+                else:
+                    to.insert(0, self.kwargs["T0"])
+
         if "rho" not in kwargs:
             rhov = self._Vapor_Density(self.Tt)
-            ro = [rhov, self.rhoc, self._constants["rhomax"]*self.M, 1, 1e-3]
-            if kwargs["rho0"]:
+            rhol = self._Liquid_Density(self.Tt)
+            ro = [rhov, rhol, self.rhoc, self._constants["rhomax"]*self.M]
+
+            if "rho0" in kwargs and kwargs["rho0"]:
                 if isinstance(kwargs["rho0"], list):
                     for rho in kwargs["rho0"][-1::-1]:
                         ro.insert(0, rho)
                 else:
                     ro.insert(0, kwargs["rho0"])
 
+        prop = {}
         rinput = None
         rho, T = 0, 0
+        converge = False
         if "T" in kwargs:
             T = kwargs["T"]
-            if T >= self.Tc:
-                phases = False
             for r in ro:
                 try:
-                    rinput = fsolve(function, r, full_output=True)
+                    rinput = fsolve(f, r, full_output=True)
                     rho = rinput[0][0]
                 except:
                     pass
                 else:
-                    f1 = rinput[1]["fvec"]
+                    f1 = sum(abs(rinput[1]["fvec"]))
                     idx = rinput[2]
-                    if 0 < rho and abs(f1) < 1e-3 and idx == 1:
+                    if 0 < rho < self._constants["rhomax"]*self.M and \
+                            f1 < 1e-5 and idx == 1:
+                        converge = True
                         break
         elif "rho" in kwargs:
             rho = kwargs["rho"]
             for t in to:
                 try:
-                    rinput = fsolve(function, t, full_output=True)
+                    rinput = fsolve(f, t, full_output=True)
                     T = rinput[0][0]
                 except:
                     pass
                 else:
-                    f1 = function(T)
-                    if T != t and abs(f1) < 1e-6:
+                    f1 = sum(abs(rinput[1]["fvec"]))
+                    if self._liquid_Density and self._vapor_Density:
+                        rhol = self._Liquid_Density(T)
+                        rhov = self._Vapor_Density(T)
+                        twophases = self.Tt < T < self.Tc and rhov < rho < rhol
+                    else:
+                        twophases = False
+                    v = self._constants["Tmin"] <= T <= self._constants["Tmax"]
+                    if v and f1 < 1e-5 and not twophases:
+                        converge = True
                         break
         else:
             for r, t in product(ro, to):
                 try:
-                    rinput = fsolve(function, [r, t], full_output=True)
+                    rinput = fsolve(f, [r, t], full_output=True)
                     rho, T = rinput[0]
                 except:
                     pass
                 else:
-                    f1, f2 = function([rho, T])
+                    f1 = sum(abs(rinput[1]["fvec"]))
+                    if self._liquid_Density and self._vapor_Density:
+                        rhol = self._Liquid_Density(T)
+                        rhov = self._Vapor_Density(T)
+                        twophases = self.Tt < T < self.Tc and rhov < rho < rhol
+                    else:
+                        twophases = False
                     if (rho != r or T != t) and \
                             0 < rho < self._constants["rhomax"]*self.M and \
-                            abs(f1) < 1e-6 and abs(f2) < 1e-6:
+                            f1 < 1e-5 and not twophases:
+                        converge = True
                         break
 
-        if phases:
-            if self.Tt <= T < self.Tc:
-                rhol = self._Liquid_Density(T)
-                rhov = self._Vapor_Density(T)
-                if rinput is None or rinput[2] != 1 or rhov <= rho <= rhol:
-                    rhol = self._Liquid_Density(T)
-                    rhov = self._Vapor_Density(T)
-                    rhom = 1/(0.5/rhol+0.5/rhov)
-                    t = (self.Tc+self.Tc)/2
-                    rhol2 = self._Liquid_Density(t)
-                    rhov2 = self._Vapor_Density(t)
-                    rhom2 = 1/(0.5/rhol2+0.5/rhov2)
-                    ro = [rhov, rhol, rhom, rhov2, rhol2, rhom2]
-                    to = [T, T, T, t, t, t]
+        if f2 is not None and not converge:
 
-                    if "T" in kwargs:
-                        for r in ro:
-                            try:
-                                rinput = fsolve(
-                                    function2phase, r, full_output=True)
-                                rho = rinput[0][0]
-                            except:
-                                pass
-                            else:
-                                f1 = function2phase(rho)
-                                if rho != r and abs(f1) < 1e-3:
-                                    break
-                    elif "rho" in kwargs:
-                        for t in to:
-                            try:
-                                rinput = fsolve(
-                                    function2phase, t, full_output=True)
-                                T = rinput[0][0]
-                            except:
-                                pass
-                            else:
-                                f1 = function2phase(T)
-                                if 0 < rho < self._constants["rhomax"]*self.M \
-                                        and T != t and abs(f1) < 1e-3:
-                                    break
+            for to in ((self.Tc+self.Tt)/2, self.Tt, self.Tc):
+                rLo = self._Liquid_Density(to)
+                rGo = self._Vapor_Density(to)
+                if "rho" in kwargs:
+                    try:
+                        rinput = fsolve(f2, [to, rLo, rGo], full_output=True)
+                        T, rhoL, rhoG = rinput[0]
+                    except:
+                        pass
                     else:
-                        for r, t in zip(ro, to):
-                            try:
-                                rinput = fsolve(
-                                    function2phase, [r, t], full_output=True)
-                                rho, T = rinput[0]
-                            except:
-                                pass
-                            else:
-                                f1, f2 = function2phase([rho, T])
-                                if 0 < rho < self._constants["rhomax"]*self.M \
-                                        and (rho != r or T != t) and \
-                                        abs(f1) < 1e-3 and abs(f2) < 1e-3:
-                                    break
+                        if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                            prop["T"] = T
+                            prop["rhoL"] = rhoL
+                            prop["rhoG"] = rhoG
+                            break
+                else:
+                    try:
+                        rinput = fsolve(
+                            f2, [to, rLo, rGo, 0.5], full_output=True)
+                        T, rhoL, rhoG, x = rinput[0]
+                    except:
+                        pass
+                    else:
+                        if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                            prop["T"] = T
+                            prop["rhoL"] = rhoL
+                            prop["rhoG"] = rhoG
+                            prop["x"] = x
+                            break
 
-        if "T" in kwargs:
-            return rho
-        elif "rho" in kwargs:
-            return T
         else:
-            return rho, T
+            if "T" in kwargs:
+                prop["rho"] = rho
+            elif "rho" in kwargs:
+                prop["T"] = T
+            else:
+                prop["rho"] = rho
+                prop["T"] = T
+
+        return prop
 
     def fill(self, fase, estado):
         """Fill phase properties"""
@@ -1089,9 +2099,14 @@ class MEoS(ThermoAdvanced):
             self.derivative("P", "T", "rho", fase))
         fase.IntP = unidades.Pressure(self.derivative("u", "v", "T", fase))
 
-        fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
+        tau = self.Tc/self.T
+        delta = fase.rho/self.rhoc
+        virial = self._special(tau, delta)
+        fase.virialB = unidades.SpecificVolume(virial["B"]/self.rhoc)
         fase.virialC = unidades.SpecificVolume_square(
-            estado["C"]/self.rhoc**2)
+            virial["C"]/self.rhoc**2)
+        fase.virialD = unidades.Dimensionless(
+            virial["D"]/self.rhoc**3)
         fase.invT = unidades.InvTemperature(-1/self.T)
 
         fase.mu = self._Viscosity(fase.rho, self.T, fase)
@@ -1127,12 +2142,14 @@ class MEoS(ThermoAdvanced):
             rhol, rhog = parr
             deltaL = rhol/self.rhoc
             deltaG = rhog/self.rhoc
-            liquido = self._eq(rhol, T)
-            vapor = self._eq(rhog, T)
-            Jl = deltaL*(1+deltaL*liquido["fird"])
-            Jv = deltaG*(1+deltaG*vapor["fird"])
-            Kl = deltaL*liquido["fird"]+liquido["fir"]+log(deltaL)
-            Kv = deltaG*vapor["fird"]+vapor["fir"]+log(deltaG)
+            liquidofird = _Helmholtz_phird(self.Tc/T, deltaL, self._constants)
+            liquidofir = _Helmholtz_phir(self.Tc/T, deltaL, self._constants)
+            vaporfird = _Helmholtz_phird(self.Tc/T, deltaG, self._constants)
+            vaporfir = _Helmholtz_phir(self.Tc/T, deltaG, self._constants)
+            Jl = deltaL*(1+deltaL*liquidofird)
+            Jv = deltaG*(1+deltaG*vaporfird)
+            Kl = deltaL*liquidofird+liquidofir+log(deltaL)
+            Kv = deltaG*vaporfird+vaporfir+log(deltaG)
             return Kv-Kl, Jv-Jl
 
         rhoL, rhoG = fsolve(f, [rhoLo, rhoGo])
@@ -1167,8 +2184,9 @@ class MEoS(ThermoAdvanced):
         fird = res["fird"]
         firdd = res["firdd"]
         firdt = res["firdt"]
-        B = res["B"]
-        C = res["C"]
+        # B = res["B"]
+        # C = res["C"]
+        # D = res["D"]
 
         propiedades = {}
         propiedades["fir"] = fir
@@ -1195,8 +2213,9 @@ class MEoS(ThermoAdvanced):
         propiedades["betap"] = rho*(
             1 + (delta*fird+delta**2*firdd)/(1 + delta*fird))
         propiedades["fugacity"] = exp(fir+delta*fird-log(1+delta*fird))
-        propiedades["B"] = B
-        propiedades["C"] = C
+        # propiedades["B"] = B
+        # propiedades["C"] = C
+        # propiedades["D"] = D
         propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
         propiedades["drhodt"] = -rho*(1+delta*fird-delta*tau*firdt) / \
             (T*(1+2*delta*fird+delta**2*firdd))
@@ -1497,6 +2516,7 @@ class MEoS(ThermoAdvanced):
         propiedades["C"] = C
         propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
         propiedades["dpdT"] = self.R*rho*(1+delta*fird+delta*tau*firdt)
+        propiedades["dhdrho"] = 0
         return propiedades
 
     def _Generalised(self):
@@ -1841,8 +2861,8 @@ class MEoS(ThermoAdvanced):
             firdd: [∂²fir/∂δ²]τ,x  [-]
         """
 
-        delta_0 = 1e-100
-        fir = fird = firdd = firt = firtt = firdt = firdtt = B = C = 0
+        fir = fird = firdd = firt = firtt = firdt = firdtt = 0
+        # firddd = firttt = firddt = 0
 
         if delta:
             # Polinomial terms
@@ -1857,8 +2877,9 @@ class MEoS(ThermoAdvanced):
                 firtt += n*t*(t-1)*delta**d*tau**(t-2)
                 firdt += n*t*d*delta**(d-1)*tau**(t-1)
                 firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
-                B += n*d*delta_0**(d-1)*tau**t
-                C += n*d*(d-1)*delta_0**(d-2)*tau**t
+                # firddd += n*d*(d-1)*(d-2)*delta**(d-3)*tau**t
+                # firddt += n*(d-1)*delta**(d-2)*t*tau**(t-1)
+                # firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)
 
             # Exponential terms
             nr2 = self._constants.get("nr2", [])
@@ -1871,17 +2892,22 @@ class MEoS(ThermoAdvanced):
                 fird += n*exp(-g*delta**c)*delta**(d-1)*tau**t*(d-g*c*delta**c)
                 firdd += n*exp(-g*delta**c)*delta**(d-2)*tau**t * \
                     ((d-g*c*delta**c)*(d-1-g*c*delta**c)-g**2*c**2*delta**c)
+                # firddd -= n*exp(-g*delta**c)*delta**(d-3)*tau**t * \
+                    # (c**3*delta**(3*c)*g**3 - 3*c**2*d*delta**(2*c)*g**2 -
+                     # 3*c**3*delta**(2*c)*g**2 + 3*c**2*delta**(2*c)*g**2 +
+                     # 3*c*d**2*delta**c*g + 3*c**2*d*delta**c*g -
+                     # 6*c*d*delta**c*g + c**3*delta**c*g - 3*c**2*delta**c*g +
+                     # 2*c*delta**c*g - d**3 + 3*d**2 - 2*d)
                 firt += n*t*delta**d*tau**(t-1)*exp(-g*delta**c)
                 firtt += n*t*(t-1)*delta**d*tau**(t-2)*exp(-g*delta**c)
                 firdt += n*t*delta**(d-1)*tau**(t-1)*(d-g*c*delta**c) * \
                     exp(-g*delta**c)
                 firdtt += n*t*(t-1)*delta**(d-1)*tau**(t-2) * \
                     (d-g*c*delta**c) * exp(-g*delta**c)
-                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t * \
-                    (d-g*c*delta_0**c)
-                C += n*exp(-g*delta_0**c) * \
-                    (delta_0**(d-2)*tau**t*((d-g*c*delta_0**c)*(
-                        d-1-g*c*delta_0**c)-g**2*c**2 * delta_0**c))
+                # firddt += n*t*delta**(d-2)*tau**(t-1)*exp(-g*delta**c) * (
+                    # c**2*delta**(2*c)*g**2 - 2*c*d*delta**c*g -
+                    # c**2*delta**c*g + c*delta**c*g + d**2 - d)
+                # firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)*exp(-g*delta**c)
 
             # Gaussian terms
             nr3 = self._constants.get("nr3", [])
@@ -1930,15 +2956,6 @@ class MEoS(ThermoAdvanced):
                     n*b*d*delta**(d-1)*(ex2-1)*ex2*tau**t*(tau-g)**(ex2-2) -
                     n*a*delta**d*(delta-e)**(ex1-1)*ex1*(t-1)*t*tau**(t-2) +
                     n*d*delta**(d-1)*(t-1)*t*tau**(t-2))
-
-                expr_ = exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2)
-                B += expr_ * (n*d*delta_0**(d-1)*tau**t -
-                              n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*tau**t)
-                C += expr_ * (
-                    n*a**2*delta_0**d*(delta_0-e)**(2*ex1-2)*ex1**2*tau**t -
-                    n*a*delta_0**d*(delta_0-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
-                    2*n*a*d*delta_0**(d-1)*(delta_0-e)**(ex1-1)*ex1*tau**t +
-                    n*(d-1)*d*delta_0**(d-2)*tau**t)
 
             # Non analitic terms
             # FIXME: Invalid value in critical point with this term
@@ -1996,25 +3013,6 @@ class MEoS(ThermoAdvanced):
                     delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft +
                            2*DeltaBt*Fdt + DeltaBt*Ftt+Delta**b*Fdtt))
 
-                Tita_ = (1-tau)+A*((delta_0-1)**2)**(0.5/bt)
-                Delta_ = Tita_**2+B*((delta_0-1)**2)**a
-                Deltad_ = (delta_0-1)*(A*Tita_*2/bt*((delta_0-1)**2)**(
-                    0.5/bt-1)+2*B*a*((delta_0-1)**2)**(a-1))
-                Deltadd_ = Deltad_/(delta_0-1) + (delta_0-1)**2*(
-                    4*B*a*(a-1)*((delta_0-1)**2)**(a-2) +
-                    2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2 +
-                    A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
-                DeltaBd_ = b*Delta_**(b-1)*Deltad_
-                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_ +
-                               (b-1)*Delta_**(b-2)*Deltad_**2)
-                F_ = exp(-C*(delta_0-1)**2-D*(tau-1)**2)
-                Fd_ = -2*C*F_*(delta_0-1)
-                Fdd_ = 2*C*F_*(2*C*(delta_0-1)**2-1)
-
-                B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
-                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
-                        (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
-
             # Hard sphere term
             if self._constants.get("Fi", None):
                 f = self._constants["Fi"]
@@ -2044,6 +3042,170 @@ class MEoS(ThermoAdvanced):
                 firdt += ahdXX*Xt*Xd+ahdX*Xdt
                 firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
 
+            # Special form from Saul-Wagner Water 58 coefficient equation
+            if "nr5" in self._constants:
+                if delta < 0.2:
+                    factor = 1.6*delta**6*(1-1.2*delta**6)
+                else:
+                    factor = exp(-0.4*delta**6)-exp(-2*delta**6)
+
+                nr5 = self._constants.get("nr5", [])
+                d5 = self._constants.get("d5", [])
+                t5 = self._constants.get("t5", [])
+                fr, frt, frtt, frdtt1, frdtt2 = 0, 0, 0, 0, 0
+                frd1, frd2 = 0, 0
+                frdd1, frdd2, frdd3 = 0, 0, 0
+                frdt1, frdt2 = 0, 0
+                for n, d, t in zip(nr5, d5, t5):
+                    fr += n*delta**d*tau**t
+                    frd1 += n*delta**(d+5)*tau**t
+                    frd2 += n*d*delta**(d-1)*tau**t
+                    frdd1 += n*delta**(d+10)*tau**t
+                    frdd2 += n*(2*d+5)*delta**(d+4)*tau**t
+                    frdd3 += n*d*(d-1)*delta**(d-2)*tau**t
+                    frt += n*delta**d*t*tau**(t-1)
+                    frtt += n*delta**d*t*(t-1)*tau**(t-2)
+                    frdt1 += n*delta**(d+5)*t*tau**(t-1)
+                    frdt2 += n*d*delta**(d-1)*t*tau**(t-1)
+                    frdtt1 += n*delta**(d+5)*t*(t-1)*tau**(t-2)
+                    frdtt2 += n*d*delta**(d-1)*t*(t-1)*tau**(t-2)
+
+                fir += factor*fr
+                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
+                    factor*frd2
+                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6)) * \
+                    frdd1 + (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdd2 + factor*frdd3
+                firt += factor*frt
+                firtt += factor*frtt
+                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdt1 + factor*frdt2
+                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdtt1 + factor*frdtt2
+
+        prop = {}
+        prop["fir"] = fir
+        prop["firt"] = firt
+        prop["firtt"] = firtt
+        prop["fird"] = fird
+        prop["firdd"] = firdd
+        prop["firdt"] = firdt
+        prop["firdtt"] = firdtt
+        return prop
+
+    def _special(self, tau, delta):
+        """Residual contribution to the free Helmholtz energy
+
+        Parameters
+        ----------
+        tau : float
+            Inverse reduced temperature, Tc/T [-]
+        delta : float
+            Reduced density, rho/rhoc [-]
+
+        Returns
+        -------
+        prop : dictionary with residual adimensional helmholtz energy and deriv
+            fir  [-]
+            firt: [∂fir/∂τ]δ,x  [-]
+            fird: [∂fir/∂δ]τ,x  [-]
+            firtt: [∂²fir/∂τ²]δ,x  [-]
+            firdt: [∂²fir/∂τ∂δ]x  [-]
+            firdd: [∂²fir/∂δ²]τ,x  [-]
+        """
+
+        delta_0 = 1e-100
+        B = C = D = 0
+
+        if delta:
+            # Polinomial terms
+            nr1 = self._constants.get("nr1", [])
+            d1 = self._constants.get("d1", [])
+            t1 = self._constants.get("t1", [])
+            for n, d, t in zip(nr1, d1, t1):
+                B += n*d*delta_0**(d-1)*tau**t
+                C += n*d*(d-1)*delta_0**(d-2)*tau**t
+                # D += n*d*(d-1)*(d-2)*delta_0**(d-3)*tau**t
+
+            # Exponential terms
+            nr2 = self._constants.get("nr2", [])
+            d2 = self._constants.get("d2", [])
+            g2 = self._constants.get("gamma2", [])
+            t2 = self._constants.get("t2", [])
+            c2 = self._constants.get("c2", [])
+            for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
+                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t * \
+                    (d-g*c*delta_0**c)
+                C += n*exp(-g*delta_0**c) * \
+                    (delta_0**(d-2)*tau**t*((d-g*c*delta_0**c)*(
+                        d-1-g*c*delta_0**c)-g**2*c**2 * delta_0**c))
+                # D -= n*exp(-g*delta_0**c)*delta_0**(d-3)*tau**t * \
+                    # (c**3*delta_0**(3*c)*g**3 - 3*c**2*d*delta_0**(2*c)*g**2 -
+                     # 3*c**3*delta_0**(2*c)*g**2 + 3*c**2*delta_0**(2*c)*g**2 +
+                     # 3*c*d**2*delta_0**c*g + 3*c**2*d*delta_0**c*g -
+                     # 6*c*d*delta_0**c*g + c**3*delta_0**c*g -
+                     # 3*c**2*delta_0**c*g + 2*c*delta_0**c*g - d**3+3*d**2-2*d)
+
+            # Gaussian terms
+            nr3 = self._constants.get("nr3", [])
+            d3 = self._constants.get("d3", [])
+            t3 = self._constants.get("t3", [])
+            a3 = self._constants.get("alfa3", [])
+            e3 = self._constants.get("epsilon3", [])
+            b3 = self._constants.get("beta3", [])
+            g3 = self._constants.get("gamma3", [])
+            exp1 = self._constants.get("exp1", [2]*len(nr3))
+            exp2 = self._constants.get("exp2", [2]*len(nr3))
+            for n, d, t, a, e, b, g, ex1, ex2 in zip(
+                    nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
+                expr_ = exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2)
+                B += expr_ * (n*d*delta_0**(d-1)*tau**t -
+                              n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*tau**t)
+                C += expr_ * (
+                    n*a**2*delta_0**d*(delta_0-e)**(2*ex1-2)*ex1**2*tau**t -
+                    n*a*delta_0**d*(delta_0-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
+                    2*n*a*d*delta_0**(d-1)*(delta_0-e)**(ex1-1)*ex1*tau**t +
+                    n*(d-1)*d*delta_0**(d-2)*tau**t)
+
+            # Non analitic terms
+            # FIXME: Invalid value in critical point with this term
+            ni = self._constants.get("nr4", [])
+            ai = self._constants.get("a4", [])
+            bi = self._constants.get("b4", [])
+            Ai = self._constants.get("A", [])
+            Bi = self._constants.get("B", [])
+            Ci = self._constants.get("C", [])
+            Di = self._constants.get("D", [])
+            b_ = self._constants.get("beta4", [])
+
+            for n, a, b, A, B, C, D, bt in zip(ni, ai, bi, Ai, Bi, Ci, Di, b_):
+                Tita_ = (1-tau)+A*((delta_0-1)**2)**(0.5/bt)
+                Delta_ = Tita_**2+B*((delta_0-1)**2)**a
+                Deltad_ = (delta_0-1)*(A*Tita_*2/bt*((delta_0-1)**2)**(
+                    0.5/bt-1)+2*B*a*((delta_0-1)**2)**(a-1))
+                Deltadd_ = Deltad_/(delta_0-1) + (delta_0-1)**2*(
+                    4*B*a*(a-1)*((delta_0-1)**2)**(a-2) +
+                    2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2 +
+                    A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
+                DeltaBd_ = b*Delta_**(b-1)*Deltad_
+                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_ +
+                               (b-1)*Delta_**(b-2)*Deltad_**2)
+                F_ = exp(-C*(delta_0-1)**2-D*(tau-1)**2)
+                Fd_ = -2*C*F_*(delta_0-1)
+                Fdd_ = 2*C*F_*(2*C*(delta_0-1)**2-1)
+
+                B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
+                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
+                        (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
+
+            # Hard sphere term
+            if self._constants.get("Fi", None):
+                f = self._constants["Fi"]
+                n = 0.1617
+                a = 0.689
+                g = 0.3674
+                Xd = n/(a+(1-a)/tau**g)
+
                 X_virial = n*delta_0/(a+(1-a)/tau**g)
                 ahdX_virial = -(f**2-1)/(1-X_virial) + \
                     (f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
@@ -2055,10 +3217,6 @@ class MEoS(ThermoAdvanced):
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr5" in self._constants:
                 delta_0 = 1e-200
-                if delta < 0.2:
-                    factor = 1.6*delta**6*(1-1.2*delta**6)
-                else:
-                    factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
                 nr5 = self._constants.get("nr5", [])
                 d5 = self._constants.get("d5", [])
@@ -2087,18 +3245,6 @@ class MEoS(ThermoAdvanced):
                     Csum2 += n*(2*d+5)*delta_0**(d+4)*tau**t
                     Csum3 += n*d*(d-1)*delta_0**(d-2)*tau**t
 
-                fir += factor*fr
-                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
-                    factor*frd2
-                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6)) * \
-                    frdd1 + (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdd2 + factor*frdd3
-                firt += factor*frt
-                firtt += factor*frtt
-                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdt1 + factor*frdt2
-                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdtt1 + factor*frdtt2
                 B += (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6)) * \
                     Bsum1 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Bsum2
                 C += (5.76*exp(-0.4*delta_0**6)-144*exp(-2*delta_0**6)) * \
@@ -2106,15 +3252,9 @@ class MEoS(ThermoAdvanced):
                     Csum2 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Csum3
 
         prop = {}
-        prop["fir"] = fir
-        prop["firt"] = firt
-        prop["firtt"] = firtt
-        prop["fird"] = fird
-        prop["firdd"] = firdd
-        prop["firdt"] = firdt
-        prop["firdtt"] = firdtt
         prop["B"] = B
         prop["C"] = C
+        prop["D"] = D
         return prop
 
     def derivative(self, z, x, y, fase):
@@ -2152,6 +3292,8 @@ class MEoS(ThermoAdvanced):
 
     def _Liquid_Density(self, T):
         """Saturated liquid density ancillary equation"""
+        if T > self.Tc:
+            T = self.Tc
         if self._liquid_Density:
             if T < self.Tt:
                 T = self.Tt
@@ -3482,7 +4624,15 @@ if __name__ == "__main__":
 #            std[compuesto.__name__]=(0, 0)
 #    cPickle.dump(std, open("/home/jjgomera/Programacion/pychemqt/ASHRAE.pkl", "w"))
 
-    from lib.mEoS import Ethylene
-    st = Ethylene(T=105, P=1e5, eq="jahangiri")
-    print(st.x, st.h.kJkg, st.s.kJkgK, st.msg)
-    print(st._Cp0()*st.M)
+    # from lib.mEoS import Ethylene
+    # st = Ethylene(T=105, P=1e5, eq="jahangiri")
+    # st2 = Ethylene(T=105, P=1e5, eq="PR")
+    # print(st.x, st.h.kJkg, st.s.kJkgK, st.msg)
+    # print(st2.x, st2.h.kJkg, st2.s.kJkgK, st2.msg)
+    # print(st._Cp0()*st.M)
+
+    from lib.mEoS import H2O
+    st = H2O(T=300, P=1e5)
+    print(st.rho, st.s)
+    st1 = H2O(T=300, s=st.s)
+    print(st.s, st1.s)

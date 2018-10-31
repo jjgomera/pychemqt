@@ -197,7 +197,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.cvM.JmolK, 9), 62.639070990)
         self.assertEqual(round(st.Gas.cpM.JmolK, 9), 93.32073484)
         self.assertEqual(round(st.Gas.w, 9), 238.903280941)
-        self.assertEqual(round(st.Gas.aM.Jmol, 8), 6405.79274305)
+        self.assertEqual(round(st.Gas.aM.Jmol, 8), 6405.79274306)
 
         st = EthyOxide(T=500, P=1e6, eq=1)
         self.assertEqual(round(st.rhoM, 10), 0.2509683066)

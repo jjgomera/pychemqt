@@ -35,7 +35,7 @@ class MM(MEoS):
     rhoc = unidades.Density(304.4043888253152)
     Tc = unidades.Temperature(518.69997204)
     Pc = unidades.Pressure(1939.39, "kPa")
-    M = 162.37752  # g/mol
+    M = 162.3768  # g/mol
     Tt = unidades.Temperature(204.93)
     Tb = unidades.Temperature(373.401)
     f_acent = 0.418
@@ -57,20 +57,21 @@ class MM(MEoS):
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
-                    "Thol (2006).",
-        "__doi__": {"autor": "Thol, M.",
-                    "title": "Empirical Multiparameter Equations of State "
-                             "Based on Molecular Simulation and Hybrid Data "
-                             "Sets",
-                    "ref": "PhD thesis, Ruhr-Universität Bochum, 2015.",
-                    "doi":  ""},
+                    "Thol (2015).",
+        "__doi__": {"autor": "Thol, M., Dubberke, F.H., Rutkai, G., Windmann, "
+                             "T., Köster, A., Span, R., Vrabec, J.",
+                    "title": "Fundamental equation of state correlation for "
+                             "hexamethyldisiloxane based on experimental and "
+                             "molecular simulation data",
+                    # TODO: Search reference
+                    "ref": "Fluid Phase Equilibria, ",
+                    "doi":  "10.1016/j.fluid.2015.09.047"},
 
         "R": 8.3144621,
         "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": 220.0, "Tmax": 1200.0, "Pmax": 600000.0, "rhomax": 5.266,
-        # "Pmin": 0.00269, "rhomin": 5.2,
         "M": 162.3768, "Tc": 518.7, "rhoc": 1.653, "Pc": 1931.1,
 
         "nr1": [0.5063651e-1, 0.8604724, -0.9179684, -0.1146325, 0.4878559],
@@ -142,6 +143,12 @@ class MM(MEoS):
 class Test(TestCase):
 
     def test_thol(self):
+        # Test in thesis
+        # Thol, M.
+        # Empirical Multiparameter Equations of State Based on Molecular
+        # Simulation and Hybrid Data Sets
+        # PhD thesis, Ruhr-Universität Bochum, 2015.
+
         # Appendix A, Pag 259
 
         # The values in table are not good, trying to use the values report by

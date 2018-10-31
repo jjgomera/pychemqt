@@ -150,8 +150,8 @@ class Test(TestCase):
         # state don't is OTO, using the custom integration parameters check
         # reference state values.
         st = D4(T=298.15, P=101325, eq="thol")
-        self.assertEqual(round(st.h, 10), 0)
-        self.assertEqual(round(st.s, 10), 0)
+        self.assertEqual(round(st.h, 9), 0)
+        self.assertEqual(round(st.s, 9), 0)
 
         st = D4(T=350, rhom=0.001, eq="thol")
         self.assertEqual(round(st.P.MPa, 10), 2.8952836e-3)

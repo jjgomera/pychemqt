@@ -279,6 +279,8 @@ class NH3(MEoS):
                "no_den": [4.68994, 9.21307, -1.53637, 1],
                "to_den": [0, 1, 2, 3],
 
+               # The table 2 in paper report values as mW/mK, it's a typo,
+               # really is in W/mK
                "Tref_res": 405.56, "rhoref_res": 233.25, "kref_res": 1,
                "nr": [0.103432, -0.112597, 0.233301, -0.112536, 0.141129e-1,
                       -0.283976e-1, 0.482520e-1, -0.644124e-1, 0.529376e-2,
