@@ -26,6 +26,12 @@ from lib import unidades
 
 class D2(MEoS):
     """Multiparameter equation of state for deuterium"""
+    # Using the corrected critical pressure and density from
+    # Richardson, I.A., Leachman, J.W., Lemmon, E.W.",
+    # Erratum: "Fundamental Equation of State for Deuterium" [J. Phys. Chem.
+    # Ref. Data 43, 013103 (2014)",
+    # 10.1063/1.5016519
+
     name = "deuterium"
     CASNumber = "7782-39-0"
     formula = "D2"
@@ -34,7 +40,7 @@ class D2(MEoS):
     _coolPropName = "Deuterium"
     rhoc = unidades.Density(69.405886)
     Tc = unidades.Temperature(38.34)
-    Pc = unidades.Pressure(1665, "kPa")
+    Pc = unidades.Pressure(1679.6, "kPa")
     M = 4.0282  # g/mol
     Tt = unidades.Temperature(18.724)
     Tb = unidades.Temperature(23.661)
