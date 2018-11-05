@@ -337,7 +337,7 @@ class H2O(MEoS):
     def _visco0(self, rho, T, fase):
         ref = H2O()
         ref._ref("OTO")
-        estado = ref._Helmholtz(rho, 1.5*self.Tc)
+        estado = ref._eq(rho, 1.5*self.Tc)
         drho = 1/estado["dpdrho"]*1e6
 
         # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
@@ -389,7 +389,7 @@ class H2O(MEoS):
     def _thermo0(self, rho, T, fase):
         ref = H2O()
         ref._ref("OTO")
-        estado = ref._Helmholtz(rho, 1.5*self.Tc)
+        estado = ref._eq(rho, 1.5*self.Tc)
         drho = 1/estado["dpdrho"]*1e6
 
         # convert values to IAPWS units
@@ -469,7 +469,7 @@ class Test(TestCase):
         self.assertEqual(round(ideal["fiot"], 8), 9.04611106)
         self.assertEqual(round(ideal["fiott"], 8), -1.93249185)
         self.assertEqual(round(ideal["fiodt"], 8), 0.0)
-        res = fluid._phir(tau, delta)
+        res = fluid._Helmholtz(tau, delta)
         self.assertEqual(round(res["fir"], 8), -3.42693206)
         self.assertEqual(round(res["fird"], 9), -0.364366650)
         self.assertEqual(round(res["firdd"], 9), 0.856063701)
@@ -486,7 +486,7 @@ class Test(TestCase):
         self.assertEqual(round(ideal["fiot"], 8), 9.80343918)
         self.assertEqual(round(ideal["fiott"], 8), -3.43316334)
         self.assertEqual(round(ideal["fiodt"], 8), 0.0)
-        res = fluid._phir(tau, delta)
+        res = fluid._Helmholtz(tau, delta)
         self.assertEqual(round(res["fir"], 8), -1.21202657)
         self.assertEqual(round(res["fird"], 9), -0.714012024)
         self.assertEqual(round(res["firdd"], 9), 0.475730696)

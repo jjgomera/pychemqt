@@ -329,7 +329,7 @@ class Test(TestCase):
         self.assertEqual(round(phi0["fiott"], 7), -0.144662979e2)
         self.assertEqual(round(phi0["fiodt"], 7), 0)
 
-        phir = st._phir(tau, delta)
+        phir = st._Helmholtz(tau, delta)
         self.assertEqual(round(phir["fir"], 9), -0.496581463)
         self.assertEqual(round(phir["fird"], 9), -0.723171558)
         self.assertEqual(round(phir["firdd"], 9), 0.405086373)

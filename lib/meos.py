@@ -15,7 +15,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Library to impolement high accuracy multiparameter equation of state based in
+free Helmholtz energy or MBWR
+
+:class:`MEOS`: Main class with all functionality
+
+Other functions used in iteration calculation to try to speed up it:
+
+    * :func:`_Helmholtz_phir`
+    * :func:`_Helmholtz_phird`
+    * :func:`_Helmholtz_phirt`
+'''
 
 
 from itertools import product
@@ -142,7 +155,7 @@ __doi__ = {
 
 
 def _Helmholtz_phir(tau, delta, coef):
-    """Residual contribution to the free Helmholtz energy
+    r"""Residual contribution to the free Helmholtz energy
 
     Parameters
     ----------
@@ -153,13 +166,8 @@ def _Helmholtz_phir(tau, delta, coef):
 
     Returns
     -------
-    prop : dictionary with residual adimensional helmholtz energy and deriv
-        fir  [-]
-        firt: [∂fir/∂τ]δ,x  [-]
-        fird: [∂fir/∂δ]τ,x  [-]
-        firtt: [∂²fir/∂τ²]δ,x  [-]
-        firdt: [∂²fir/∂τ∂δ]x  [-]
-        firdd: [∂²fir/∂δ²]τ,x  [-]
+    fir : float
+        :math:`\phi^r`, adimensional free Helmholtz energy, [-]
     """
     fir = 0
 
@@ -196,7 +204,6 @@ def _Helmholtz_phir(tau, delta, coef):
             fir += n*delta**d*tau**t * expr
 
         # Non analitic terms
-        # FIXME: Invalid value in critical point with this term
         ni = coef.get("nr4", [])
         ai = coef.get("a4", [])
         bi = coef.get("b4", [])
@@ -241,7 +248,7 @@ def _Helmholtz_phir(tau, delta, coef):
 
 
 def _Helmholtz_phird(tau, delta, coef):
-    """Residual contribution to the free Helmholtz energy
+    r"""Residual contribution to the free Helmholtz energy, delta derivative
 
     Parameters
     ----------
@@ -252,13 +259,9 @@ def _Helmholtz_phird(tau, delta, coef):
 
     Returns
     -------
-    prop : dictionary with residual adimensional helmholtz energy and deriv
-        fir  [-]
-        firt: [∂fir/∂τ]δ,x  [-]
-        fird: [∂fir/∂δ]τ,x  [-]
-        firtt: [∂²fir/∂τ²]δ,x  [-]
-        firdt: [∂²fir/∂τ∂δ]x  [-]
-        firdd: [∂²fir/∂δ²]τ,x  [-]
+    fird : float
+        .. math::
+          \left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}
     """
     fird = 0
 
@@ -296,7 +299,6 @@ def _Helmholtz_phird(tau, delta, coef):
                             n*a*delta**d*(delta-e)**(ex1-1)*ex1*tau**t)
 
         # Non analitic terms
-        # FIXME: Invalid value in critical point with this term
         ni = coef.get("nr4", [])
         ai = coef.get("a4", [])
         bi = coef.get("b4", [])
@@ -350,7 +352,7 @@ def _Helmholtz_phird(tau, delta, coef):
 
 
 def _Helmholtz_phirt(tau, delta, coef):
-    """Residual contribution to the free Helmholtz energy
+    r"""Residual contribution to the free Helmholtz energy, tau derivative
 
     Parameters
     ----------
@@ -361,13 +363,9 @@ def _Helmholtz_phirt(tau, delta, coef):
 
     Returns
     -------
-    prop : dictionary with residual adimensional helmholtz energy and deriv
-        fir  [-]
-        firt: [∂fir/∂τ]δ,x  [-]
-        fird: [∂fir/∂δ]τ,x  [-]
-        firtt: [∂²fir/∂τ²]δ,x  [-]
-        firdt: [∂²fir/∂τ∂δ]x  [-]
-        firdd: [∂²fir/∂δ²]τ,x  [-]
+    firt : float
+        .. math::
+            \left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}
     """
     firt = 0
 
@@ -405,7 +403,6 @@ def _Helmholtz_phirt(tau, delta, coef):
                             n*b*delta**d*ex2*tau**t*(tau-g)**(ex2-1))
 
         # Non analitic terms
-        # FIXME: Invalid value in critical point with this term
         ni = coef.get("nr4", [])
         ai = coef.get("a4", [])
         bi = coef.get("b4", [])
@@ -457,6 +454,7 @@ class MEoS(ThermoAdvanced):
     Each child class must define the parameters for the calculations
 
     Compound definition:
+
         * name: Name of component
         * CASNumber: CAS Number of component
         * formula: Empiric formula
@@ -466,6 +464,7 @@ class MEoS(ThermoAdvanced):
         * _coolPropName = Coedename of compound in coolProp
 
     Physical properties:
+
         * rhoc: Critical density, [kg/m³]
         * Tc: Critical temperature, [K]
         * Pc: Critical pressure, [Pa]
@@ -476,11 +475,13 @@ class MEoS(ThermoAdvanced):
         * momentoDipolar: Depole moment, [C·m]
 
     Parameters of mEoS and transport correlation:
+
         * eq: List of pointer for mEoS correlations
         * _viscosity: List of pointer for viscosity correlations
         * _thermal: List of pointer for thermal conductivity correlations
 
     Other properties correlations:
+
         * _vapor_Pressure: Parameters for vapor pressure ancillary equation
         * _liquid_Density: Parameters for liquid density ancillary equation
         * _vapor_Density: Parameters for vapor density ancillary equation
@@ -490,6 +491,7 @@ class MEoS(ThermoAdvanced):
         * _surface: Parameters for surface tension calculation
 
     Parameters necessary only for special EoS:
+
         * _PR: Peneloux volume correction for Peng-Robinson equation of state
         * _Tr: Temperature parameter for generalized equation
         * _rhor: Density parameter for generalized equation
@@ -541,106 +543,178 @@ class MEoS(ThermoAdvanced):
     msg = QApplication.translate("pychemqt", "Unknown Variables")
 
     def __init__(self, **kwargs):
-        """Incoming properties:
-        T   -   Temperature, K
-        P   -   Pressure, MPa
-        rho -   Density, kg/m3
-        v   -   Specific volume, m3/kg
-        h   -   Specific enthalpy, kJ/kg
-        s   -   Specific entropy, kJ/kg·K
-        u   -   Specific internal energy, kJ/kg·K
-        x   -   Quality
-        It needs two incoming properties
+        """
+        Constructor of instance, the definition can be done with any of this
+        input pair:
 
-        eq: Equation to use:
-            number: Indice
-            "PR": Peng Robinson Cubic equation
-            "Generalised": Generalised Multiparameter equation Span and Wagner
-            "GERG": Model for mixtures
+            * T-P : Only for single phase region difinition
+            * T-x : For two phase region definition with known temperature
+            * P-x : For two phase region definition with known pressure
+            * T-rho
+            * T-s
+            * T-u
+            * P-rho
+            * P-h
+            * P-u
+            * rho-h
+            * rho-s
+            * rho-u
+            * h-s
+            * s-u
 
-        visco: Equation for viscosity calculation
-        thermal: Equation for thermal conductivity
-        ref: Código con el estado de referencia
-            OTO:  h,s=0 at 25ºC and 1 atm
-            NBP:  h,s=0 saturated liquid at Tb
-            IIR:  h=200,s=1 saturated liquid 0ºC
-            ASHRAE:  h,s=0 saturated liquid at -40ºC
-            CUSTOM
-        refvalues: array with custom values of reference state
-            [Tref, Pref, ho, so]
-        rho0: Initial value for iteration over density
-        T0: Initial value for iteration over temperature
+        Volume can be used as alternate input for density
 
-    Calculated properties:
-        P         -   Pressure, MPa
-        Pr        -   Reduce pressure
-        T         -   Temperature, K
-        Tr        -   Reduced temperature
-        x         -   Quality
-        v         -   Specific volume, m³/kg
-        rho       -   Density, kg/m³
-        h         -   Specific enthalpy, kJ/kg
-        s         -   Specific entropy, kJ/kg·K
-        u         -   Specific internal energy, kJ/kg
-        g         -   Specific Gibbs free energy, kJ/kg
-        a         -   Specific Helmholtz free energy, kJ/kg
-        cp        -   Specific isobaric heat capacity, kJ/kg·K
-        cv        -   Specific isochoric heat capacity, kJ/kg·K
-        cp_cv     -   Heat capacity ratio
-        w         -   Speed of sound, m/s
-        Z         -   Compression factor
-        fi        -   Fugacity coefficient
-        f         -   Fugacity, MPa
-        gamma     -   Isoentropic exponent
-        Hvap      -   Vaporization heat, kJ/kg
-        alfav     -   Thermal expansion coefficient (Volume expansivity), 1/K
-        kappa     -   Isothermal compressibility, 1/MPa
-        alfap     -   Relative pressure coefficient, 1/K
-        betap     -   Isothermal stress coefficient, kg/m³
-        betas     -   Isoentropic temperature-pressure coefficient
-        joule     -   Joule-Thomson coefficient, K/MPa
-        Gruneisen -   Gruneisen parameter
-        virialB   -   Second virial coefficient, m³/kg
-        virialC   -   Third virial coefficient, m⁶/kg²
-        dpdT_rho  -   Derivatives, dp/dT at constant rho, MPa/K
-        dpdrho_T  -   Derivatives, dp/drho at constant T, MPa·m³/kg
-        drhodT_P  -   Derivatives, drho/dT at constant P, kg/m³·K
-        drhodP_T  -   Derivatives, drho/dP at constant T, kg/m³·MPa
-        dhdT_rho  -   Derivatives, dh/dT at constant rho, kJ/kg·K
-        dhdP_T    -   Isothermal throttling coefficient, kJ/kg·MPa
-        dhdT_P    -   Derivatives, dh/dT at constant P, kJ/kg·K
-        dhdrho_T  -   Derivatives, dh/drho at constant T, kJ·m³/kg²
-        dhdrho_P  -   Derivatives, dh/drho at constant P, kJ·m³/kg²
-        dhdP_rho  -   Derivatives, dh/dP at constant rho, kJ/kg·MPa
-        kt        -   Isothermal Expansion Coefficient
-        ks        -   Adiabatic Expansion Coefficient
-        # ks        -   Adiabatic Compressibility, 1/MPa
-        Ks        -   Adiabatic bulk modulus, MPa
-        Kt        -   Isothermal bulk modulus, MPa
+        Other input pair like T-h, P-s, h-u are supported but it isn't
+        recommended because they are bad state definition, there are
+        several point with same T-h value.
 
-        Z_rho     -   (Z-1) over the density, m³/kg
-        IntP      -   Internal pressure
-        invT      -   Negative reciprocal temperature
-        hInput    -   Specific heat input, kJ/kg
-        mu        -   Dynamic viscosity, Pa·s
-        nu        -   Kinematic viscosity, m²/s
-        k         -   Thermal conductivity, W/m·K
-        sigma     -   Surface tension, N/m
-        alfa      -   Thermal diffusivity, m²/s
-        Pramdt    -   Prandtl number
-        epsilon   -   Dielectric constant
+        >>> from lib.mEoS import H2O
+        >>> st1 = H2O(T=300, P=101325)
+        >>> st2 = H2O(T=300, h=st1.h)
+        >>> print(st1.T, st2.T)
+        300.0 300.0
+        >>> print(st1.x, st2.x)
+        0.0 3.694259929868599e-05
+        >>> print(st1.h, st2.h)
+        112654.89965300939 112654.89965300939
 
-        v0        -   Ideal gas Specific volume, m³/kg
-        rho0      -   Ideal gas Density, kg/m³
-        h0        -   Ideal gas Specific enthalpy, kJ/kg
-        u0        -   Ideal gas Specific internal energy, kJ/kg
-        s0        -   Ideal gas Specific entropy, kJ/kg·K
-        a0        -   Ideal gas Specific Helmholtz free energy, kJ/kg
-        g0        -   Ideal gas Specific Gibbs free energy, kJ/kg
-        cp0       -   Ideal gas Specific isobaric heat capacity, kJ/kg·K
-        cv0       -   Ideal gas Specific isochoric heat capacity, kJ/kg·K
-        cp0_cv    -   Ideal gas Heat capacity ratio
-        gamma0    -   Ideal gas Isoentropic exponent
+        As we can see, there are two point with same T-h values, so as input
+        pair they are not a complete definition of state point.
+
+        The calculated instance has the following properties
+
+            * T: Temperature, [K]
+            * Tr: Reduced temperature, [-]
+            * P: Pressure, [Pa]
+            * Pr: Reduced Pressure, [-]
+            * x: Quality, [-]
+            * rho: Density, [kg/m³]
+            * rhoM: Molar Density, [kmol/m³]
+            * v: Volume, [m³/kg]
+            * h: Enthalpy, [kJ/kg]
+            * hM: Molar Enthalpy, [kJ/kmol]
+            * s: Entropy, [kJ/kg·K]
+            * sM: Molar Entropy, [kJ/kmol·K]
+            * u: Internal Energy, [kJ/kg]
+            * uM: Molar Internal Energy, [kJ/kmol]
+            * a: Helmholtz Free Energy, [kJ/kg]
+            * aM: Molar Helmholtz Free Energy, [kJ/kmol]
+            * g: Gibbs Free Energy, [kJ/kg]
+            * gM: Molar Gibbs Free Energy, [kJ/kmol]
+            * cv: Specific isochoric heat capacity, [kJ/kg·K]
+            * cvM: Molar Specific isochoric heat capacity, [kJ/kmol·K]
+            * cp: Specific isobaric heat capacity, [kJ/kg·K]
+            * cpM: Molar Specific isobaric heat capacity, [kJ/kmol·K]
+            * cp_cv: Heat capacities ratio, [-]
+            * w: Speed sound, [m/s]
+            * Z: Compresibility, [-]
+            * fi: Fugacity coefficient, [-]
+            * f: Fugacity, [Pa]
+            * gamma: Isoentropic exponent, [-]
+            * alfav: Volume Expansivity, [1/K]
+            * kappa: Isothermal compresibility, [1/Pa]
+            * kappas: Adiabatic compresibility, [1/Pa]
+            * alfap: Relative pressure coefficient, [1/K]
+            * batap: Isothermal stress coefficient, [kg/m³]
+            * joule: Joule-Thomson coefficient, [K/Pa]
+            * deltat: Isothermal throttling coefficient, [kJ/kgPa]
+            * Hvap: Vaporization heat, [kJ/kg]
+            * Svap: Vaporization entropy, [kJ/kg·K]
+            * betas: Isentropic temperature-pressure, [K/Pa]
+            * Gruneisen: Gruneisen parameter, [-]
+            * virialB: 2nd virial coefficient, [m³/kg]
+            * virialC: 3er virial coefficient, [m⁶/kg²]
+            * virialD: 4th virial coefficient, [m¹²/kg³]
+            * dpdT_rho: (dp/dT)_rho, [Pa/K]
+            * dpdrho_T: (dp/drho)_T, [Pam³/kg]
+            * drhodT_P: (drho/dT)_P, [kg/m³·K]
+            * drhodP_T: (drho/dP)_T, [kg/Pam³]
+            * dhdT_rho: (dh/dT)_rho, [kJ/kg·K]
+            * dhdP_T: (dh/dP)_T, [kJ/kgPa]
+            * dhdT_P: (dh/dT)_P, [kJ/kg·K]
+            * dhdrho_T: (dh/drho)_T, [kJm³/kg²]
+            * dhdrho_P: (dh/drho)_P, [kJm³/kg²]
+            * dhdP_rho: (dh/dP)_rho, [kJ/kgPa]
+            * kt: Isothermal expansion coefficient, [-]
+            * ks: Isentropic expansion coefficient, [-]
+            * Ks: Adiabatic bulk modulus, [Pa]
+            * Kt: Isothermal bulk modulus, [Pa]
+            * IntP: Internal pressure, [Pa]
+            * invT: Negative reciprocal temperature, [1/K]
+            * hInput: Specific heat input, [kJ/kg]
+            * epsilon: Dielectric constant, [-]
+            * mu: Viscosity, [Pa·s]
+            * k: Thermal conductivity, [W/m·K]
+            * nu: Kinematic viscosity, [m²/s]
+            * alfa: Thermal diffusivity, [m²/s]
+            * sigma: Surface tension, [N/m]
+            * Prandt: Prandtl number, [-]
+            * v0: Ideal gas Specific volume, [m³/kg]
+            * rho0: Ideal gas Density, [kg/m³]
+            * h0: Ideal gas Specific enthalpy, [kJ/kg]
+            * u0: Ideal gas Specific internal energy, [kJ/kg]
+            * s0: Ideal gas Specific entropy, [kJ/kg·K]
+            * a0: Ideal gas Specific Helmholtz free energy, [kJ/kg]
+            * g0: Ideal gas Specific Gibbs free energy, [kJ/kg]
+            * cp0: Ideal gas Specific isobaric heat capacity, [kJ/kg·K]
+            * cv0: Ideal gas Specific isochoric heat capacity, [kJ/kg·K]
+            * cp0_cv: Ideal gas heat capacities ratio, [-]
+            * gamma0: Ideal gas Isoentropic exponent, [-]
+
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+        P : float
+            Pressure, [Pa]
+        rho : float
+            Density, [kg/m³]
+        v : float
+            Specific volume, [m³/kg]
+        h : float
+            Specific enthalpy, [kJ/kg]
+        s : float
+            Specific entropy, [kJ/kg·K]
+        u : float
+            Specific internal energy, [kJ/kg·K]
+        x : float
+            Quality, [-]
+        eq : int, default 0
+            Index of equation to use. This variable can be too string with
+            several option:
+
+                * Codename of equation to use, the name of equation dict
+                * PR: To use the Peng-Robinson cubic equation
+                * Generalised: To use a generalized mEoS
+                * GERG: To use the GERG-2008 equation of Kunz-Wagner
+
+        visco : int, default 0
+            Index of correlation for viscosity calculation
+        thermal : int, default 0
+            Index of correlation for thermal conductivity calculation
+        ref : str
+            Code with enthalpy-entropy reference state:
+
+                * OTO: h,s=0 at 25ºC and 1 atm
+                * NBP: h,s=0 saturated liquid at Tb
+                * IIR: h=200,s=1 saturated liquid 0ºC
+                * ASHRAE: h,s=0 saturated liquid at -40ºC
+                * CUSTOM: custom user defined reference state
+
+        refvalues: list
+            List with custom values of reference state, only necessary if ref
+            has *CUSTOM* value. The list must be the variables in the order:
+
+                * Tref: Reference temperature, [K]
+                * Pref: Reference pressure, [Pa]
+                * ho: Enthalpy in reference state, [kJ/kg]
+                * so: Entropy in reference state, [kJ/kg·K]
+
+        rho0 : float
+            Initial density value for improve iteration convergence, [kg/m³]
+        T0 : float
+            Initial teperature value for improve iteration convergence, [K]
         """
 
         self.kwargs = MEoS.kwargs.copy()
@@ -664,28 +738,19 @@ class MEoS(ThermoAdvanced):
         self.kwargs.update(kwargs)
 
         if eq == "PR":
-            self._eq = self._PengRobinson
             self._constants = self.eq[0]
         elif eq == "Generalised":
-            self._eq = self._Helmholtz
             self._Generalised()
         elif eq == "GERG":
             try:
                 self._constants = self.GERG
             except:
                 self._constants = self.eq[0]
-            if self._constants["__type__"] == "Helmholtz":
-                self._eq = self._Helmholtz
-            else:
-                self._eq = self._MBWR
         elif self.eq[eq]["__type__"] == "Helmholtz":
-            self._eq = self._Helmholtz
             self._constants = self.eq[eq]
         elif self.eq[eq]["__type__"] == "MBWR":
-            self._eq = self._MBWR
             self._constants = self.eq[eq]
         elif self.eq[eq]["__type__"] == "ECS":
-            self._eq = self._ECS
             self._constants = self.eq[eq]
 
         visco = self.kwargs["visco"]
@@ -838,7 +903,7 @@ class MEoS(ThermoAdvanced):
 
             def f(rho):
                 delta = rho/self.rhoc
-                fird = _Helmholtz_phird(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
                 return (1+delta*fird)*self.R.kJkgK*T*rho - P/1000
             prop = self.fsolve(f, **{"P": P, "T": T, "rho0": rhoo})
             rho = prop["rho"]
@@ -873,8 +938,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return ho - h
 
@@ -886,10 +951,10 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
@@ -900,10 +965,10 @@ class MEoS(ThermoAdvanced):
 
                     ideal = self._phi0(self._constants["cp"], tau, deltaL)
                     fiot = ideal["fiot"]
-                    firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
-                    firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    firdL = self._phird(tau, deltaL)
+                    firtL = self._phirt(tau, deltaL)
+                    firdG = self._phird(tau, deltaG)
+                    firtG = self._phirt(tau, deltaG)
                     hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                     hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
@@ -929,8 +994,8 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fio = ideal["fio"]
                 fiot = ideal["fiot"]
-                fir = _Helmholtz_phir(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fir = self._phir(tau, delta)
+                firt = self._phirt(tau, delta)
                 so = self.R*(tau*(fiot+firt)-fio-fir)
                 return so-s
 
@@ -945,11 +1010,11 @@ class MEoS(ThermoAdvanced):
                 fioL = idealL["fio"]
                 fioG = idealG["fio"]
                 fiot = idealL["fiot"]
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 sl = self.R*(tau*(fiot+firtL)-fioL-firL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 sv = self.R*(tau*(fiot+firtG)-fioG-firG)
 
                 if sl <= s <= sv:
@@ -962,11 +1027,11 @@ class MEoS(ThermoAdvanced):
                     fioL = idealL["fio"]
                     fioG = idealG["fio"]
                     fiot = idealL["fiot"]
-                    firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                    firL = self._phir(tau, deltaL)
+                    firtL = self._phirt(tau, deltaL)
                     sl = self.R*(tau*(fiot+firtL)-fioL-firL)
-                    firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    firG = self._phir(tau, deltaG)
+                    firtG = self._phirt(tau, deltaG)
                     sv = self.R*(tau*(fiot+firtG)-fioG-firG)
 
                     x = (s-sl)/(sv-sl)
@@ -990,8 +1055,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return ho-Po*1e3/rho - u
@@ -1004,10 +1069,10 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 Po = self.R.kJkgK*T*(1+deltaL*firdL)*rhol
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
@@ -1022,10 +1087,10 @@ class MEoS(ThermoAdvanced):
 
                     ideal = self._phi0(self._constants["cp"], tau, deltaL)
                     fiot = ideal["fiot"]
-                    firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                    firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
-                    firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                    firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                    firdL = self._phird(tau, deltaL)
+                    firtL = self._phirt(tau, deltaL)
+                    firdG = self._phird(tau, deltaG)
+                    firtG = self._phirt(tau, deltaG)
                     Po = self.R.kJkgK*T*(1+deltaL*firdL)*rhoL
                     hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                     hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
@@ -1051,7 +1116,7 @@ class MEoS(ThermoAdvanced):
                     T = 0
                 tau = self.Tc/T
 
-                fird = _Helmholtz_phird(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
                 return (1+delta*fird)*self.R.kJkgK*T*rho - P/1000
 
             def f2(parr):
@@ -1066,10 +1131,10 @@ class MEoS(ThermoAdvanced):
                 deltaL = rhol/self.rhoc
                 deltaG = rhog/self.rhoc
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
 
                 Jl = rhol*(1+deltaL*firdL)
                 Jv = rhog*(1+deltaG*firdG)
@@ -1102,8 +1167,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return Po-P/1e3, ho-h
@@ -1127,13 +1192,13 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1169,9 +1234,9 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fio = ideal["fio"]
                 fiot = ideal["fiot"]
-                fir = _Helmholtz_phir(tau, delta, self._constants)
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fir = self._phir(tau, delta)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 so = self.R*(tau*(fiot+firt)-fio-fir)
                 return Po-P/1e3, so-s
@@ -1198,13 +1263,13 @@ class MEoS(ThermoAdvanced):
                 idealG = self._phi0(self._constants["cp"], tau, deltaG)
                 fioG = idealG["fio"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 soL = self.R*(tau*(fiot+firtL)-fioL-firL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 soG = self.R*(tau*(fiot+firtG)-fioG-firG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1239,8 +1304,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return Po-P/1e3, ho-Po*1e3/rho - u
@@ -1264,13 +1329,13 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1304,8 +1369,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return ho - h
 
@@ -1324,13 +1389,13 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1362,8 +1427,8 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fio = ideal["fio"]
                 fiot = ideal["fiot"]
-                fir = _Helmholtz_phir(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fir = self._phir(tau, delta)
+                firt = self._phirt(tau, delta)
                 so = self.R*(tau*(fiot+firt)-fio-fir)
                 return so-s
 
@@ -1385,13 +1450,13 @@ class MEoS(ThermoAdvanced):
                 idealG = self._phi0(self._constants["cp"], tau, deltaG)
                 fioG = idealG["fio"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 soL = self.R*(tau*(fiot+firtL)-fioL-firL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 soG = self.R*(tau*(fiot+firtG)-fioG-firG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1422,8 +1487,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return ho-Po*1e3/rho - u
@@ -1443,13 +1508,13 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1487,9 +1552,9 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fio = ideal["fio"]
                 fiot = ideal["fiot"]
-                fir = _Helmholtz_phir(tau, delta, self._constants)
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fir = self._phir(tau, delta)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 so = self.R*(tau*(fiot+firt)-fio-fir)
                 return ho-h, so-s
@@ -1516,14 +1581,14 @@ class MEoS(ThermoAdvanced):
                 idealG = self._phi0(self._constants["cp"], tau, deltaG)
                 fioG = idealG["fio"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                 soL = self.R*(tau*(fiot+firtL)-fioL-firL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
                 soG = self.R*(tau*(fiot+firtG)-fioG-firG)
 
@@ -1558,8 +1623,8 @@ class MEoS(ThermoAdvanced):
 
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fiot = ideal["fiot"]
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 return ho-h, ho-Po*1e3/rho - u
@@ -1583,13 +1648,13 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, deltaL)
                 fiot = ideal["fiot"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
 
                 Jl = rhol*(1+deltaL*firdL)
@@ -1627,9 +1692,9 @@ class MEoS(ThermoAdvanced):
                 ideal = self._phi0(self._constants["cp"], tau, delta)
                 fio = ideal["fio"]
                 fiot = ideal["fiot"]
-                fir = _Helmholtz_phir(tau, delta, self._constants)
-                fird = _Helmholtz_phird(tau, delta, self._constants)
-                firt = _Helmholtz_phirt(tau, delta, self._constants)
+                fir = self._phir(tau, delta)
+                fird = self._phird(tau, delta)
+                firt = self._phirt(tau, delta)
                 ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)
                 so = self.R*(tau*(fiot+firt)-fio-fir)
                 Po = self.R.kJkgK*T*(1+delta*fird)*rho
@@ -1658,14 +1723,14 @@ class MEoS(ThermoAdvanced):
                 idealG = self._phi0(self._constants["cp"], tau, deltaG)
                 fioG = idealG["fio"]
 
-                firL = _Helmholtz_phir(tau, deltaL, self._constants)
-                firdL = _Helmholtz_phird(tau, deltaL, self._constants)
-                firtL = _Helmholtz_phirt(tau, deltaL, self._constants)
+                firL = self._phir(tau, deltaL)
+                firdL = self._phird(tau, deltaL)
+                firtL = self._phirt(tau, deltaL)
                 hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)
                 soL = self.R*(tau*(fiot+firtL)-fioL-firL)
-                firG = _Helmholtz_phir(tau, deltaG, self._constants)
-                firdG = _Helmholtz_phird(tau, deltaG, self._constants)
-                firtG = _Helmholtz_phirt(tau, deltaG, self._constants)
+                firG = self._phir(tau, deltaG)
+                firdG = self._phird(tau, deltaG)
+                firtG = self._phirt(tau, deltaG)
                 hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)
                 soG = self.R*(tau*(fiot+firtG)-fioG-firG)
 
@@ -1689,37 +1754,6 @@ class MEoS(ThermoAdvanced):
                 rhoG = prop["rhoG"]
                 rhoL = prop["rhoL"]
                 x = prop["x"]
-
-        # # rho = float(rho)
-        # # T = float(T)
-        # # propiedades = self._eq(rho, T)
-        # if self._mode != "T-P" and T <= self.Tc and rho:
-            # pass
-            # # rhol = self._Liquid_Density(T)
-            # # rhov = self._Vapor_Density(T)
-            # # if rhol > rho > rhov:
-                # # rhol, rhov, Ps = self._saturation(T)
-                # # x = (1/rho-1/rhol)/(1/rhov-1/rhol)
-                # # if x < 0:
-                    # # x = 0
-                # # elif x > 1:
-                    # # x = 1
-                # # if rhol > rho > rhov:
-                    # # P = Ps
-            # # elif rho <= rhov:
-                # # x = 1
-            # # elif rho >= rhol:
-                # # x = 0
-
-            # # vapor = self._eq(rhov, T)
-            # # liquido = self._eq(rhol, T)
-
-        # elif T > self.Tc:
-            # x = 1
-        # elif rho == 0:
-            # x = 1
-        # else:
-            # raise NotImplementedError("Incoming out of bound")
 
         elif self._mode == "T-x":
             # Check input T in saturation range
@@ -1787,9 +1821,6 @@ class MEoS(ThermoAdvanced):
             P = vapor["P"]
         elif not P:
             P = propiedades["P"]
-        # else:
-            # P = P/1000.
-
 
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
@@ -1858,18 +1889,9 @@ class MEoS(ThermoAdvanced):
         else:
             self.sigma = unidades.Tension(None)
 
-        # if 0 < x < 1:
-            # self.virialB = unidades.SpecificVolume(vapor["B"]/self.rhoc)
-            # self.virialC = unidades.SpecificVolume_square(
-                # vapor["C"]/self.rhoc**2)
-        # else:
-            # self.virialB = unidades.SpecificVolume(propiedades["B"]/self.rhoc)
-            # self.virialC = unidades.SpecificVolume_square(
-                # propiedades["C"]/self.rhoc**2)
-
         if 0 < self.x < 1:
-            self.Hvap = unidades.Enthalpy(vapor["h"]-liquido["h"], "kJkg")
-            self.Svap = unidades.SpecificHeat(vapor["s"]-liquido["s"], "kJkgK")
+            self.Hvap = unidades.Enthalpy(self.Gas.h-self.Liquido.h)
+            self.Svap = unidades.SpecificHeat(self.Gas.s-self.Liquido.s)
         else:
             self.Hvap = unidades.Enthalpy(None)
             self.Svap = unidades.SpecificHeat(None)
@@ -2034,19 +2056,45 @@ class MEoS(ThermoAdvanced):
         fase.rho = unidades.Density(1/fase.v)
         fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
 
-        fase.h = unidades.Enthalpy(estado["h"], "kJkg")
-        fase.s = unidades.SpecificHeat(estado["s"], "kJkgK")
+        tau = estado["tau"]
+        delta = estado["delta"]
+        fio = estado["fio"]
+        fiot = estado["fiot"]
+        fiott = estado["fiott"]
+        fiodt = estado["fiodt"]
+        fir = estado["fir"]
+        firt = estado["firt"]
+        firtt = estado["firtt"]
+        fird = estado["fird"]
+        firdd = estado["firdd"]
+        firdt = estado["firdt"]
+
+        h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird)
+        s = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
+        cv = -self.R.kJkgK*tau**2*(fiott+firtt)
+        cp = self.R.kJkgK*(
+            -tau**2*(fiott+firtt) +
+            (1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
+        w = (self.R*self.T*(
+             1 + 2*delta*fird+delta**2*firdd -
+             (1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
+        fugacity = exp(fir+delta*fird-log(1+delta*fird))
+        alfap = (1-delta*tau*firdt/(1+delta*fird))/self.T
+        betap = fase.rho*(1 + (delta*fird+delta**2*firdd)/(1 + delta*fird))
+
+        fase.h = unidades.Enthalpy(h, "kJkg")
+        fase.s = unidades.SpecificHeat(s, "kJkgK")
         fase.u = unidades.Enthalpy(fase.h-self.P*fase.v)
         fase.a = unidades.Enthalpy(fase.u-self.T*fase.s)
         fase.g = unidades.Enthalpy(fase.h-self.T*fase.s)
-        fase.fi = [unidades.Dimensionless(estado["fugacity"])]
+        fase.fi = [unidades.Dimensionless(fugacity)]
         fase.f = [unidades.Pressure(f*self.P) for f in fase.fi]
 
-        fase.cp = unidades.SpecificHeat(estado["cp"], "kJkgK")
-        fase.cv = unidades.SpecificHeat(estado["cv"], "kJkgK")
+        fase.cp = unidades.SpecificHeat(cp, "kJkgK")
+        fase.cv = unidades.SpecificHeat(cv, "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
 #        fase.cps = estado["cps"]
-        fase.w = unidades.Speed(estado["w"])
+        fase.w = unidades.Speed(w)
 
         fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
         fase.hM = unidades.MolarEnthalpy(fase.h*self.M)
@@ -2057,8 +2105,8 @@ class MEoS(ThermoAdvanced):
         fase.cvM = unidades.MolarSpecificHeat(fase.cv*self.M)
         fase.cpM = unidades.MolarSpecificHeat(fase.cp*self.M)
 
-        fase.alfap = unidades.InvTemperature(estado["alfap"])
-        fase.betap = unidades.Density(estado["betap"])
+        fase.alfap = unidades.InvTemperature(alfap)
+        fase.betap = unidades.Density(betap)
 
         # if fase.rho:
         #    d2Pdvdt = self.derivative("P", "v", "T", fase))
@@ -2100,12 +2148,19 @@ class MEoS(ThermoAdvanced):
             fase.deltat = fase.dhdP_T
             fase.dhdP_rho = unidades.EnthalpyPressure(
                 self.derivative("h", "P", "rho", fase))
-            fase.dhdrho_T = unidades.EnthalpyDensity(estado["dhdrho"])
+
+            dpdrho = self.R*self.T*(1+2*delta*fird+delta**2*firdd)
+            drhodt = -fase.rho*(1+delta*fird-delta*tau*firdt) / \
+                (self.T*(1+2*delta*fird+delta**2*firdd))
+            dhdrho = self.R*self.T/fase.rho * \
+                (tau*delta*(fiodt+firdt)+delta*fird+delta**2*firdd)
+
+            fase.dhdrho_T = unidades.EnthalpyDensity(dhdrho)
             fase.dhdrho_P = unidades.EnthalpyDensity(
-                estado["dhdrho"]+fase.dhdT_rho/estado["drhodt"])
-            fase.dpdrho_T = unidades.PressureDensity(estado["dpdrho"])
-            fase.drhodP_T = unidades.DensityPressure(1/estado["dpdrho"])
-            fase.drhodT_P = unidades.DensityTemperature(estado["drhodt"])
+                dhdrho+fase.dhdT_rho/drhodt)
+            fase.dpdrho_T = unidades.PressureDensity(dpdrho)
+            fase.drhodP_T = unidades.DensityPressure(1/dpdrho)
+            fase.drhodT_P = unidades.DensityTemperature(drhodt)
 
             fase.Z_rho = unidades.SpecificVolume((fase.Z-1)/fase.rho)
             fase.hInput = unidades.Enthalpy(
@@ -2115,14 +2170,11 @@ class MEoS(ThermoAdvanced):
             self.derivative("P", "T", "rho", fase))
         fase.IntP = unidades.Pressure(self.derivative("u", "v", "T", fase))
 
-        tau = self.Tc/self.T
-        delta = fase.rho/self.rhoc
-        virial = self._special(tau, delta)
-        fase.virialB = unidades.SpecificVolume(virial["B"]/self.rhoc)
+        fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
         fase.virialC = unidades.SpecificVolume_square(
-            virial["C"]/self.rhoc**2)
+            estado["C"]/self.rhoc**2)
         fase.virialD = unidades.Dimensionless(
-            virial["D"]/self.rhoc**3)
+            estado["D"]/self.rhoc**3)
         fase.invT = unidades.InvTemperature(-1/self.T)
 
         fase.mu = self._Viscosity(fase.rho, self.T, fase)
@@ -2144,8 +2196,21 @@ class MEoS(ThermoAdvanced):
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
 
+#        dbt=-phi11/rho/t
+#        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau*firdt)*T/rho*propiedades["drhodt"]
+#        propiedades["cps"] = self.R*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)/(1+2*delta*fird+delta**2*firdd)*
+#                                    ((1+delta*fird-delta*tau*firdt)-self.rhoc/self.R/delta*self.derivative("P", "T", "rho", propiedades)))
+#        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
+
     def _saturation(self, T=None):
-        """Saturation calculation for two phase search"""
+        """Saturation calculation for two phase search
+
+        References
+        ----------
+        [9]_ Akasaka, R. A Reliable and Useful Method to Determine the
+            Saturation State from Helmholtz Energy Equations of State. J.
+            Thermal Sci. Tech. 3(3) (2008) 442-451
+        """
         if not T:
             T = self.T
         if T > self.Tc:
@@ -2158,10 +2223,10 @@ class MEoS(ThermoAdvanced):
             rhol, rhog = parr
             deltaL = rhol/self.rhoc
             deltaG = rhog/self.rhoc
-            liquidofird = _Helmholtz_phird(self.Tc/T, deltaL, self._constants)
-            liquidofir = _Helmholtz_phir(self.Tc/T, deltaL, self._constants)
-            vaporfird = _Helmholtz_phird(self.Tc/T, deltaG, self._constants)
-            vaporfir = _Helmholtz_phir(self.Tc/T, deltaG, self._constants)
+            liquidofird = self._phird(self.Tc/T, deltaL)
+            liquidofir = self._phir(self.Tc/T, deltaL)
+            vaporfird = self._phird(self.Tc/T, deltaG)
+            vaporfir = self._phir(self.Tc/T, deltaG)
             Jl = deltaL*(1+deltaL*liquidofird)
             Jv = deltaG*(1+deltaG*vaporfird)
             Kl = deltaL*liquidofird+liquidofir+log(deltaL)
@@ -2181,72 +2246,41 @@ class MEoS(ThermoAdvanced):
                 liquido["fir"] - vapor["fir"] + log(deltaL/deltaG))
         return rhoL, rhoG, Ps
 
-    def _Helmholtz(self, rho, T):
-        """General implementation of Helmholtz free energy multiparameter
-        equation of state"""
+    def _eq(self, rho, T):
         delta = rho/self.rhoc
         tau = self.Tc/T
 
-        ideal = self._phi0(self._constants["cp"], tau, delta)
-        fio = ideal["fio"]
-        fiot = ideal["fiot"]
-        fiott = ideal["fiott"]
-        fiodt = ideal["fiodt"]
+        prop = self._phi0(self._constants["cp"], tau, delta)
 
-        res = self._phir(tau, delta)
-        fir = res["fir"]
-        firt = res["firt"]
-        firtt = res["firtt"]
-        fird = res["fird"]
-        firdd = res["firdd"]
-        firdt = res["firdt"]
-        # B = res["B"]
-        # C = res["C"]
-        # D = res["D"]
-
-        propiedades = {}
-        propiedades["fir"] = fir
-        propiedades["fird"] = fird
-        propiedades["firdd"] = firdd
-
-        propiedades["T"] = T
-        propiedades["P"] = (1+delta*fird)*self.R*T*rho
-        if rho:
-            propiedades["v"] = 1./rho
+        if self._constants["__type__"] == "Helmholtz":
+            res = self._Helmholtz(tau, delta)
         else:
-            propiedades["v"] = float("inf")
+            pass
 
-        propiedades["h"] = self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
-        propiedades["s"] = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
-        propiedades["cv"] = -self.R.kJkgK*tau**2*(fiott+firtt)
-        propiedades["cp"] = self.R.kJkgK*(
-            -tau**2*(fiott+firtt) +
-            (1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
-        propiedades["w"] = (self.R*T*(
-            1 + 2*delta*fird+delta**2*firdd -
-            (1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
-        propiedades["alfap"] = (1-delta*tau*firdt/(1+delta*fird))/T
-        propiedades["betap"] = rho*(
-            1 + (delta*fird+delta**2*firdd)/(1 + delta*fird))
-        propiedades["fugacity"] = exp(fir+delta*fird-log(1+delta*fird))
-        # propiedades["B"] = B
-        # propiedades["C"] = C
-        # propiedades["D"] = D
-        propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
-        propiedades["drhodt"] = -rho*(1+delta*fird-delta*tau*firdt) / \
-            (T*(1+2*delta*fird+delta**2*firdd))
+        prop.update(res)
+
+        prop["tau"] = tau
+        prop["delta"] = delta
+        prop["T"] = T
+        prop["P"] = (1+delta*res["fird"])*self.R*T*rho
         if rho:
-            propiedades["dhdrho"] = self.R*T/rho * \
-                (tau*delta*(fiodt+firdt)+delta*fird+delta**2*firdd)
+            prop["v"] = 1./rho
         else:
-            propiedades["dhdrho"] = 0
-#        dbt=-phi11/rho/t
-#        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau*firdt)*T/rho*propiedades["drhodt"]
-#        propiedades["cps"] = self.R*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)/(1+2*delta*fird+delta**2*firdd)*
-#                                    ((1+delta*fird-delta*tau*firdt)-self.rhoc/self.R/delta*self.derivative("P", "T", "rho", propiedades)))
-#        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
-        return propiedades
+            prop["v"] = float("inf")
 
+        return prop
+
+    def _phir(self, tau, delta):
+        if self._constants["__type__"] == "Helmholtz":
+            return _Helmholtz_phir(tau, delta, self._constants)
+
+    def _phird(self, tau, delta):
+        if self._constants["__type__"] == "Helmholtz":
+            return _Helmholtz_phird(tau, delta, self._constants)
+
+    def _phirt(self, tau, delta):
+        if self._constants["__type__"] == "Helmholtz":
+            return _Helmholtz_phirt(tau, delta, self._constants)
 
     def _ECS(self,  rho, T):
         delta = rho/self.rhoc
@@ -2277,7 +2311,7 @@ class MEoS(ThermoAdvanced):
 
         deltaref = rho0/ref.rhoc
         tauref = ref.Tc/T0
-        res = self._phir(tauref, deltaref)
+        res = self._Helmholtz(tauref, deltaref)
         fir = res["fir"]
         firt = res["firt"]
         firtt = res["firtt"]
@@ -2596,14 +2630,19 @@ class MEoS(ThermoAdvanced):
 
     def _ref(self, ref, refvalues=None):
         """Define reference state
-        Input:
-            ref: name of standard
-                OTO | NBP | IIR | ASHRAE | CUSTOM
-            refvalues: array with custom refvalues
-                Tref
-                Pref in kPa
-                ho in J/mol
-                so in J/mol·K
+
+        Parameters
+        ----------
+        ref: str
+            Name of standard
+            OTO | NBP | IIR | ASHRAE | CUSTOM
+        refvalues: list
+            Only necessary when ref is CUSTOM. List with custom refvalues:
+
+                * Tref: Reference temperature, [K]
+                * Pref: Reference pressure, [kPa]
+                * ho: Enthalpy in reference state, [J/mol]
+                * so: Entropy in reference state, [J/mol·K]
         """
         if ref is None:
             rf = self._constants["ref"]
@@ -2872,7 +2911,7 @@ class MEoS(ThermoAdvanced):
         cpsum = -cp.get("ao", 0)*(1/T-1/Tref)
         return unidades.SpecificHeat(cpsum*self.M*1000)
 
-    def _phir(self, tau, delta):
+    def _Helmholtz(self, tau, delta):
         """Residual contribution to the free Helmholtz energy
 
         Parameters
@@ -2894,7 +2933,9 @@ class MEoS(ThermoAdvanced):
         """
 
         fir = fird = firdd = firt = firtt = firdt = firdtt = 0
-        # firddd = firttt = firddt = 0
+        firddd = firttt = firddt = 0
+        delta_0 = 1e-100
+        B = C = D = 0
 
         if delta:
             # Polinomial terms
@@ -2912,6 +2953,9 @@ class MEoS(ThermoAdvanced):
                 # firddd += n*d*(d-1)*(d-2)*delta**(d-3)*tau**t
                 # firddt += n*(d-1)*delta**(d-2)*t*tau**(t-1)
                 # firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)
+                B += n*d*delta_0**(d-1)*tau**t
+                C += n*d*(d-1)*delta_0**(d-2)*tau**t
+                # D += n*d*(d-1)*(d-2)*delta_0**(d-3)*tau**t
 
             # Exponential terms
             nr2 = self._constants.get("nr2", [])
@@ -2940,6 +2984,17 @@ class MEoS(ThermoAdvanced):
                     # c**2*delta**(2*c)*g**2 - 2*c*d*delta**c*g -
                     # c**2*delta**c*g + c*delta**c*g + d**2 - d)
                 # firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)*exp(-g*delta**c)
+                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t * \
+                    (d-g*c*delta_0**c)
+                C += n*exp(-g*delta_0**c) * \
+                    (delta_0**(d-2)*tau**t*((d-g*c*delta_0**c)*(
+                        d-1-g*c*delta_0**c)-g**2*c**2 * delta_0**c))
+                # D -= n*exp(-g*delta_0**c)*delta_0**(d-3)*tau**t * \
+                    # (c**3*delta_0**(3*c)*g**3 - 3*c**2*d*delta_0**(2*c)*g**2 -
+                     # 3*c**3*delta_0**(2*c)*g**2 + 3*c**2*delta_0**(2*c)*g**2 +
+                     # 3*c*d**2*delta_0**c*g + 3*c**2*d*delta_0**c*g -
+                     # 6*c*d*delta_0**c*g + c**3*delta_0**c*g -
+                     # 3*c**2*delta_0**c*g + 2*c*delta_0**c*g - d**3+3*d**2-2*d)
 
             # Gaussian terms
             nr3 = self._constants.get("nr3", [])
@@ -2988,6 +3043,15 @@ class MEoS(ThermoAdvanced):
                     n*b*d*delta**(d-1)*(ex2-1)*ex2*tau**t*(tau-g)**(ex2-2) -
                     n*a*delta**d*(delta-e)**(ex1-1)*ex1*(t-1)*t*tau**(t-2) +
                     n*d*delta**(d-1)*(t-1)*t*tau**(t-2))
+
+                expr_ = exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2)
+                B += expr_ * (n*d*delta_0**(d-1)*tau**t -
+                              n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*tau**t)
+                C += expr_ * (
+                    n*a**2*delta_0**d*(delta_0-e)**(2*ex1-2)*ex1**2*tau**t -
+                    n*a*delta_0**d*(delta_0-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
+                    2*n*a*d*delta_0**(d-1)*(delta_0-e)**(ex1-1)*ex1*tau**t +
+                    n*(d-1)*d*delta_0**(d-2)*tau**t)
 
             # Non analitic terms
             # FIXME: Invalid value in critical point with this term
@@ -3045,6 +3109,25 @@ class MEoS(ThermoAdvanced):
                     delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft +
                            2*DeltaBt*Fdt + DeltaBt*Ftt+Delta**b*Fdtt))
 
+                Tita_ = (1-tau)+A*((delta_0-1)**2)**(0.5/bt)
+                Delta_ = Tita_**2+B*((delta_0-1)**2)**a
+                Deltad_ = (delta_0-1)*(A*Tita_*2/bt*((delta_0-1)**2)**(
+                    0.5/bt-1)+2*B*a*((delta_0-1)**2)**(a-1))
+                Deltadd_ = Deltad_/(delta_0-1) + (delta_0-1)**2*(
+                    4*B*a*(a-1)*((delta_0-1)**2)**(a-2) +
+                    2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2 +
+                    A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
+                DeltaBd_ = b*Delta_**(b-1)*Deltad_
+                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_ +
+                               (b-1)*Delta_**(b-2)*Deltad_**2)
+                F_ = exp(-C*(delta_0-1)**2-D*(tau-1)**2)
+                Fd_ = -2*C*F_*(delta_0-1)
+                Fdd_ = 2*C*F_*(2*C*(delta_0-1)**2-1)
+
+                B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
+                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
+                        (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
+
             # Hard sphere term
             if self._constants.get("Fi", None):
                 f = self._constants["Fi"]
@@ -3074,170 +3157,6 @@ class MEoS(ThermoAdvanced):
                 firdt += ahdXX*Xt*Xd+ahdX*Xdt
                 firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
 
-            # Special form from Saul-Wagner Water 58 coefficient equation
-            if "nr5" in self._constants:
-                if delta < 0.2:
-                    factor = 1.6*delta**6*(1-1.2*delta**6)
-                else:
-                    factor = exp(-0.4*delta**6)-exp(-2*delta**6)
-
-                nr5 = self._constants.get("nr5", [])
-                d5 = self._constants.get("d5", [])
-                t5 = self._constants.get("t5", [])
-                fr, frt, frtt, frdtt1, frdtt2 = 0, 0, 0, 0, 0
-                frd1, frd2 = 0, 0
-                frdd1, frdd2, frdd3 = 0, 0, 0
-                frdt1, frdt2 = 0, 0
-                for n, d, t in zip(nr5, d5, t5):
-                    fr += n*delta**d*tau**t
-                    frd1 += n*delta**(d+5)*tau**t
-                    frd2 += n*d*delta**(d-1)*tau**t
-                    frdd1 += n*delta**(d+10)*tau**t
-                    frdd2 += n*(2*d+5)*delta**(d+4)*tau**t
-                    frdd3 += n*d*(d-1)*delta**(d-2)*tau**t
-                    frt += n*delta**d*t*tau**(t-1)
-                    frtt += n*delta**d*t*(t-1)*tau**(t-2)
-                    frdt1 += n*delta**(d+5)*t*tau**(t-1)
-                    frdt2 += n*d*delta**(d-1)*t*tau**(t-1)
-                    frdtt1 += n*delta**(d+5)*t*(t-1)*tau**(t-2)
-                    frdtt2 += n*d*delta**(d-1)*t*(t-1)*tau**(t-2)
-
-                fir += factor*fr
-                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
-                    factor*frd2
-                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6)) * \
-                    frdd1 + (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdd2 + factor*frdd3
-                firt += factor*frt
-                firtt += factor*frtt
-                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdt1 + factor*frdt2
-                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdtt1 + factor*frdtt2
-
-        prop = {}
-        prop["fir"] = fir
-        prop["firt"] = firt
-        prop["firtt"] = firtt
-        prop["fird"] = fird
-        prop["firdd"] = firdd
-        prop["firdt"] = firdt
-        prop["firdtt"] = firdtt
-        return prop
-
-    def _special(self, tau, delta):
-        """Residual contribution to the free Helmholtz energy
-
-        Parameters
-        ----------
-        tau : float
-            Inverse reduced temperature, Tc/T [-]
-        delta : float
-            Reduced density, rho/rhoc [-]
-
-        Returns
-        -------
-        prop : dictionary with residual adimensional helmholtz energy and deriv
-            fir  [-]
-            firt: [∂fir/∂τ]δ,x  [-]
-            fird: [∂fir/∂δ]τ,x  [-]
-            firtt: [∂²fir/∂τ²]δ,x  [-]
-            firdt: [∂²fir/∂τ∂δ]x  [-]
-            firdd: [∂²fir/∂δ²]τ,x  [-]
-        """
-
-        delta_0 = 1e-100
-        B = C = D = 0
-
-        if delta:
-            # Polinomial terms
-            nr1 = self._constants.get("nr1", [])
-            d1 = self._constants.get("d1", [])
-            t1 = self._constants.get("t1", [])
-            for n, d, t in zip(nr1, d1, t1):
-                B += n*d*delta_0**(d-1)*tau**t
-                C += n*d*(d-1)*delta_0**(d-2)*tau**t
-                # D += n*d*(d-1)*(d-2)*delta_0**(d-3)*tau**t
-
-            # Exponential terms
-            nr2 = self._constants.get("nr2", [])
-            d2 = self._constants.get("d2", [])
-            g2 = self._constants.get("gamma2", [])
-            t2 = self._constants.get("t2", [])
-            c2 = self._constants.get("c2", [])
-            for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
-                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t * \
-                    (d-g*c*delta_0**c)
-                C += n*exp(-g*delta_0**c) * \
-                    (delta_0**(d-2)*tau**t*((d-g*c*delta_0**c)*(
-                        d-1-g*c*delta_0**c)-g**2*c**2 * delta_0**c))
-                # D -= n*exp(-g*delta_0**c)*delta_0**(d-3)*tau**t * \
-                    # (c**3*delta_0**(3*c)*g**3 - 3*c**2*d*delta_0**(2*c)*g**2 -
-                     # 3*c**3*delta_0**(2*c)*g**2 + 3*c**2*delta_0**(2*c)*g**2 +
-                     # 3*c*d**2*delta_0**c*g + 3*c**2*d*delta_0**c*g -
-                     # 6*c*d*delta_0**c*g + c**3*delta_0**c*g -
-                     # 3*c**2*delta_0**c*g + 2*c*delta_0**c*g - d**3+3*d**2-2*d)
-
-            # Gaussian terms
-            nr3 = self._constants.get("nr3", [])
-            d3 = self._constants.get("d3", [])
-            t3 = self._constants.get("t3", [])
-            a3 = self._constants.get("alfa3", [])
-            e3 = self._constants.get("epsilon3", [])
-            b3 = self._constants.get("beta3", [])
-            g3 = self._constants.get("gamma3", [])
-            exp1 = self._constants.get("exp1", [2]*len(nr3))
-            exp2 = self._constants.get("exp2", [2]*len(nr3))
-            for n, d, t, a, e, b, g, ex1, ex2 in zip(
-                    nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
-                expr_ = exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2)
-                B += expr_ * (n*d*delta_0**(d-1)*tau**t -
-                              n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*tau**t)
-                C += expr_ * (
-                    n*a**2*delta_0**d*(delta_0-e)**(2*ex1-2)*ex1**2*tau**t -
-                    n*a*delta_0**d*(delta_0-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
-                    2*n*a*d*delta_0**(d-1)*(delta_0-e)**(ex1-1)*ex1*tau**t +
-                    n*(d-1)*d*delta_0**(d-2)*tau**t)
-
-            # Non analitic terms
-            # FIXME: Invalid value in critical point with this term
-            ni = self._constants.get("nr4", [])
-            ai = self._constants.get("a4", [])
-            bi = self._constants.get("b4", [])
-            Ai = self._constants.get("A", [])
-            Bi = self._constants.get("B", [])
-            Ci = self._constants.get("C", [])
-            Di = self._constants.get("D", [])
-            b_ = self._constants.get("beta4", [])
-
-            for n, a, b, A, B, C, D, bt in zip(ni, ai, bi, Ai, Bi, Ci, Di, b_):
-                Tita_ = (1-tau)+A*((delta_0-1)**2)**(0.5/bt)
-                Delta_ = Tita_**2+B*((delta_0-1)**2)**a
-                Deltad_ = (delta_0-1)*(A*Tita_*2/bt*((delta_0-1)**2)**(
-                    0.5/bt-1)+2*B*a*((delta_0-1)**2)**(a-1))
-                Deltadd_ = Deltad_/(delta_0-1) + (delta_0-1)**2*(
-                    4*B*a*(a-1)*((delta_0-1)**2)**(a-2) +
-                    2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2 +
-                    A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
-                DeltaBd_ = b*Delta_**(b-1)*Deltad_
-                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_ +
-                               (b-1)*Delta_**(b-2)*Deltad_**2)
-                F_ = exp(-C*(delta_0-1)**2-D*(tau-1)**2)
-                Fd_ = -2*C*F_*(delta_0-1)
-                Fdd_ = 2*C*F_*(2*C*(delta_0-1)**2-1)
-
-                B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
-                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
-                        (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
-
-            # Hard sphere term
-            if self._constants.get("Fi", None):
-                f = self._constants["Fi"]
-                n = 0.1617
-                a = 0.689
-                g = 0.3674
-                Xd = n/(a+(1-a)/tau**g)
-
                 X_virial = n*delta_0/(a+(1-a)/tau**g)
                 ahdX_virial = -(f**2-1)/(1-X_virial) + \
                     (f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
@@ -3248,7 +3167,10 @@ class MEoS(ThermoAdvanced):
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr5" in self._constants:
-                delta_0 = 1e-200
+                if delta < 0.2:
+                    factor = 1.6*delta**6*(1-1.2*delta**6)
+                else:
+                    factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
                 nr5 = self._constants.get("nr5", [])
                 d5 = self._constants.get("d5", [])
@@ -3277,6 +3199,19 @@ class MEoS(ThermoAdvanced):
                     Csum2 += n*(2*d+5)*delta_0**(d+4)*tau**t
                     Csum3 += n*d*(d-1)*delta_0**(d-2)*tau**t
 
+                fir += factor*fr
+                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
+                    factor*frd2
+                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6)) * \
+                    frdd1 + (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdd2 + factor*frdd3
+                firt += factor*frt
+                firtt += factor*frtt
+                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdt1 + factor*frdt2
+                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
+                    frdtt1 + factor*frdtt2
+
                 B += (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6)) * \
                     Bsum1 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Bsum2
                 C += (5.76*exp(-0.4*delta_0**6)-144*exp(-2*delta_0**6)) * \
@@ -3284,6 +3219,16 @@ class MEoS(ThermoAdvanced):
                     Csum2 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Csum3
 
         prop = {}
+        prop["fir"] = fir
+        prop["firt"] = firt
+        prop["firtt"] = firtt
+        prop["fird"] = fird
+        prop["firdd"] = firdd
+        prop["firdt"] = firdt
+        prop["firddd"] = firddd
+        prop["firddt"] = firddt
+        prop["firdtt"] = firdtt
+        prop["firttt"] = firttt
         prop["B"] = B
         prop["C"] = C
         prop["D"] = D
@@ -4503,8 +4448,14 @@ class MEoS(ThermoAdvanced):
 
             Xi = Pc*rho/rhoc**2*fase.drhodP_T
 
-            st = self._Helmholtz(rho, Tref)
-            drho = 1/st["dpdrho"]
+            st = self._eq(rho, Tref)
+
+            delta = st["delta"]
+            fird = st["fird"]
+            firdd = st["firdd"]
+            dpdrho = self.R*Tref*(1+2*delta*fird+delta**2*firdd)
+            drho = 1/dpdrho
+
             Xi_Tr = Pc*rho/rhoc**2*drho
 
             delchi = Xi-Xi_Tr*Tref/T                                    # Eq 10

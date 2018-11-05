@@ -540,7 +540,7 @@ class GERG(object):
             deltai = delta*self.rhoc/componente.rhoc
             taui = componente.Tc*tau/self.Tc
             fir_, firt_, firtt_, fird_, firdd_, firdt_, firdtt_, B_, C_ = \
-                componente._phir(taui, deltai)
+                componente._Helmholtz(taui, deltai)
             fir += self.xi[i]*fir_
             firt += self.xi[i]*firt_
             firtt += self.xi[i]*firtt_
