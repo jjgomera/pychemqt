@@ -83,12 +83,28 @@ __doi__ = {
                   "Collision Integrals Ω for the Lennard-Jones Potential",
          "ref": "J. Chem. Phys. 57(3) (1972) 1100-1102",
          "doi": "10.1063/1.1678363"},
-
     9:
+        {"autor": "Akasaka, R.",
+         "title": "A Reliable and Useful Method to Determine the Saturation "
+                  "State from Helmholtz Energy Equations of State",
+         "ref": "J. Thermal Sci. Tech. 3(3) (2008) 442-451",
+         "doi": "10.1299/jtst.3.442"},
+    10:
+        {"autor": "Span, R.",
+         "title": "Multiparameter Equations of State: An Accurate Source of "
+                  "Thermodynamic Property Data",
+         "ref": "Springer, 2000",
+         "doi": ""},
+
+
+    11:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
+
+
+
     # 1:
         # {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
          # "title": "Melting Curves of Pressure‐Transmitting Fluids ",
@@ -2520,20 +2536,33 @@ class MEoS(ThermoAdvanced):
         return propiedades
 
     def _Generalised(self):
-        """Span R., Wagner W., "An accurate empirical three parameter equation of state for nonpolar fluids". To be submitted to Fluid Phase Equilibria. 2000 """
+        """
+        Generalised mEoS based in Helmholtz free energy. Referenced in [10]_,
+        section 7.2.2, pag. 300
+
+        References
+        ----------
+        [10]_ Span, R. Multiparameter Equations of State: An Accurate Source of
+            Thermodynamic Property Data. Springer, 2000
+        """
+        # It use the specific critical values cited in Table 7.6, if this
+        # values are not available use the normal critical properties
         if self._Tr:
             Tref = self._Tr
         else:
             Tref = self.Tc
+
         if self._rhor:
             rhoref = self._rhor
         else:
             rhoref = self.rhoc
+
         if self._w:
             w = self._w
         else:
             w = self.f_acent
 
+        # Define the general dict with mEoS generalized parameter, Eq 7.20
         helmholtz = {
             "R": 8.31451,
             "Tc": Tref,
@@ -2548,6 +2577,7 @@ class MEoS(ThermoAdvanced):
             "c2": [1, 1, 2, 2, 3],
             "gamma2": [1]*5}
 
+        # Table 7.2
         c1 = [0.636479524, -0.174667493e1, -0.144442644e-1, 0.6799731e-1,
               0.767320032e-4, 0.218194143, 0.810318494e-1, -0.907368899e-1,
               0.25312225e-1, -0.209937023e-1]
@@ -2557,6 +2587,8 @@ class MEoS(ThermoAdvanced):
         c3 = [-0.186193063e1, 0.105083555e2, 0.16403233e1, -0.613747797,
               -0.69318829e-3, -0.705727791e1, -0.290006245e1, -0.232497527,
               -0.282346515, 0.254250643e1]
+
+        # Define generalized compound specific parameters
         nr = [c1[i]+c2[i]*w+c3[i]*w**4 for i in range(10)]
         helmholtz["nr1"] = nr[:5]
         helmholtz["nr2"] = nr[5:]
