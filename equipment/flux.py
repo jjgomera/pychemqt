@@ -15,16 +15,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-#   Library for flux equipment definition
-#   * Divider: Simple divider equipment
-#   * Mixer: Simple mixer equipment
-#   * Valve: Simple valve equipment
-###############################################################################
+Library for flux equipment definition:
 
+    * :class:`Divider`: Simple divider equipment
+    * :class:`Mixer`: Simple mixer equipment
+    * :class:`Valve`: Simple valve equipment
+"""
 
 import os
 
@@ -39,23 +38,32 @@ from equipment.parents import equipment
 class Divider(equipment):
     """Class to define a simple divider equipment, only splliting input stream
 
-    Parameters:
-        entrada: Corriente instance to define de input stream
-        salidas: Number of output streams
-        criterio: split ratio
-            0   -   fractions, ratio of input stream in each output stream
-            1   -   molar flow. Overwrite the input stream molar flow.
-        fracciones: array with the split values, it depend of criterio,
-                fractions of input stream or molar flow in output streams
-        deltaP: Pressure loss in equipment, optional
+    Parameters
+    ----------
+    entrada : :class:`lib.corriente.Corriente`
+        Input stream to equipment
+    salidas : int
+        Number of output streams
+    criterio : int, (default 0)
+        Split ratio definition:
 
-    >>> agua=Corriente(T=300, P=101325, caudalMasico=1, ids=[62],
-                       fraccionMasica=[1])
-    >>> divisor=Divider(entrada=agua, criterio=0, salidas=3,
-                        split=[0.7, 0.2, 0.1])
+            * 0 : Fractions, ratio of input stream in each output stream
+            * 1 : Molar flow. Overwrite the input stream molar flow.
+
+    fracciones : list
+        Split values of output stream. It depend of choosen criterio (fractions
+        of input stream or molar flow in output streams)
+    deltaP : float, optional
+        Pressure loss in equipment, [Pa]
+
+    Examples
+    --------
+    >>> flx = {"caudalMasico": 1, "ids": [62], "fraccionMasica": [1])
+    >>> st = Corriente(T=300, P=101325, **flx)
+    >>> eq = Divider(entrada=st, criterio=0, salidas=3, split=[0.7, 0.2, 0.1])
     >>> print(divisor.entrada.caudalmasico.kgh)
     3600.0
-    >>> for salida in divisor.salida: print("%0.1f" % salida.caudalmasico.kgh)
+    >>> for salida in eq.salida: print("%0.1f" % salida.caudalmasico.kgh)
     2520.0
     720.0
     360.0
@@ -168,7 +176,7 @@ class Divider(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Feed Molar Flow"),
+        p = [(QApplication.translate("pychemqt", "Feed Molar Flow"),
               "inputMolarFlow", unidades.MolarFlow),
              (QApplication.translate("pychemqt", "Feed Mass Flow"),
               "inputMassFlow", unidades.MassFlow),
@@ -184,7 +192,7 @@ class Divider(equipment):
               unidades.Dimensionless),
              (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
               unidades.DeltaP)]
-        return l
+        return p
 
     def propertiesListTitle(self, index):
         """Titles of properties of type list"""
@@ -399,7 +407,7 @@ class Mixer(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Output Temperature"),
+        p = [(QApplication.translate("pychemqt", "Output Temperature"),
               "outT", unidades.Temperature),
              (QApplication.translate("pychemqt", "Output Pressure"),
               "Pout", unidades.Pressure),
@@ -411,7 +419,7 @@ class Mixer(equipment):
               "outMassFlow", unidades.MassFlow),
              (QApplication.translate("pychemqt", "Output Volumetric Flow"),
               "outVolFlow", unidades.VolFlow)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -580,7 +588,7 @@ class Valve(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Output Temperature"),
+        p = [(QApplication.translate("pychemqt", "Output Temperature"),
               "outT", unidades.Temperature),
              (QApplication.translate("pychemqt", "Output Pressure"),
               "Pout", unidades.Pressure),
@@ -588,7 +596,7 @@ class Valve(equipment):
               "outX", unidades.Dimensionless),
              (QApplication.translate("pychemqt", "Working Condition"),
               ("TEXT_WORKING", "off"), str)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""

@@ -15,15 +15,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Library for equipment common widget
+    * :class:`FoulingWidgetl`: Pipe fouling input data
+    * :class:`Dialog_Finned`: Finned tube definition
+'''
 
-###############################################################################
-# Library for equipment common widget
-#   * FoulingWidget: pipe fouling input data
-#   * Dialog_Finned: Finned tube definition
-###############################################################################
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -268,8 +267,9 @@ class Dialog_Finned(QtWidgets.QDialog):
         self.listTube.addItem("")
         layout.addWidget(self.listTube, 0, 1, 1, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 1, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            1, 1, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Material")), 2, 1)
         self.listMaterial = QtWidgets.QComboBox()
@@ -281,8 +281,9 @@ class Dialog_Finned(QtWidgets.QDialog):
             "pychemqt", "Thermal Conductivity")), 3, 1)
         self.kFin = Entrada_con_unidades(ThermalConductivity)
         layout.addWidget(self.kFin, 3, 2)
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 4, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            4, 1, 1, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Root diameter")), 5, 1)
@@ -305,8 +306,8 @@ class Dialog_Finned(QtWidgets.QDialog):
         self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
         layout.addWidget(self.Nfin, 9, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
@@ -353,7 +354,7 @@ class Dialog_Finned(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    #dialogo = Dialog_Finned()
+    # dialogo = Dialog_Finned()
     dialogo = FoulingWidget()
     dialogo.show()
     sys.exit(app.exec_())

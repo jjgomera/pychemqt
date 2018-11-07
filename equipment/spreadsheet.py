@@ -15,12 +15,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# library for spreadsheet equipment integration
-###############################################################################
+Library with spreadsheet support as external equipment:
+
+    * :class:`Spreadsheet`: Spreadsheet equipment integration
+'''
 
 
 import os
@@ -29,7 +30,7 @@ import string
 try:
     import ezodf
     import openpyxl
-except:
+except ImportError:
     pass
 
 from PyQt5.QtWidgets import QApplication

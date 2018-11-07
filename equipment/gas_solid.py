@@ -15,11 +15,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+ Library with gas-solid separation equipment
+
+    * :class:`GravityChamber`: Gravity chamber gas-solid separation equipment
+    * :class:`Ciclon`: Cyclone gas-solid separation equipment
+    * :class:`Baghouse`: Baghouse gas-solid separation equipment
+    * :class:`ElectricPrecipitator`: Elecrostatic precipitator gas-solid
+    separation equipment
+"""
 
 
 ###############################################################################
-# Library with gas-solid separation equipment
 #  - Gravty settling chamber
 #  - Cyclon
 #  - Baghouse
@@ -102,7 +111,7 @@ class Separador_SolidGas(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Pressure"), "Pin",
+        p = [(QApplication.translate("pychemqt", "Input Pressure"), "Pin",
               Pressure),
              (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
               Pressure),
@@ -124,7 +133,7 @@ class Separador_SolidGas(equipment):
               "Ms", MassFlow),
              (QApplication.translate("pychemqt", "Solid Output Mean Diameter"),
               "Dms", Length)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -324,7 +333,7 @@ class GravityChamber(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        p = [(QApplication.translate("pychemqt", "Mode"),
               ("TEXT_TIPO", "metodo"), str),
              (QApplication.translate("pychemqt", "Model"),
               ("TEXT_MODEL", "modelo"), str),
@@ -337,9 +346,9 @@ class GravityChamber(Separador_SolidGas):
              ]
 
         for prop in Separador_SolidGas.propertiesEquipment():
-            l.append(prop)
+            p.append(prop)
 
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -787,7 +796,7 @@ class Ciclon(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        p = [(QApplication.translate("pychemqt", "Mode"),
               ("TEXT_TIPO", "tipo_calculo"), str),
              (QApplication.translate("pychemqt", "Model"),
               ("TEXT_MODEL", "modelo_rendimiento"), str),
@@ -833,9 +842,9 @@ class Ciclon(Separador_SolidGas):
               Currency)]
 
         for prop in Separador_SolidGas.propertiesEquipment()[-1::-1]:
-            l.insert(17, prop)
+            p.insert(17, prop)
 
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -1107,7 +1116,7 @@ class Baghouse(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        p = [(QApplication.translate("pychemqt", "Mode"),
               ("TEXT_TIPO", "metodo"), str),
              (QApplication.translate("pychemqt", "Filter Number"),
               "num_filtros", int),
@@ -1130,9 +1139,9 @@ class Baghouse(Separador_SolidGas):
               Area)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
-            l.append(prop)
+            p.append(prop)
 
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -1316,7 +1325,7 @@ class ElectricPrecipitator(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        p = [(QApplication.translate("pychemqt", "Mode"),
               ("TEXT_TIPO", "metodo"), str),
              (QApplication.translate("pychemqt", "Charging field"),
               "potencialCarga", PotencialElectric),
@@ -1328,9 +1337,9 @@ class ElectricPrecipitator(Separador_SolidGas):
               Area)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
-            l.append(prop)
+            p.append(prop)
 
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""

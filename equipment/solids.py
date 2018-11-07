@@ -15,20 +15,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Library to implement solid only related equipment
 
-###Modulo que define los equipos de tratamiento de sólidos
-#######################################################################
-###librería de definición de equipos de tratamiento de sólidos:
-###     -Tamices
-###     -Molinos
-#######################################################################
+    * :class:`Screen`: Screen solid separation equipment
+    * :class:`Grinder`: Solid grinder equipment
+'''
 
-from lib import unidades
-from lib.corriente import Corriente
+
+from lib.unidades import Currency
 from .parents import equipment
+
 
 class Screen(equipment):
     """Clase que define los tamices"""
@@ -39,8 +38,8 @@ class Screen(equipment):
         self._indicesCoste(*args)
 
         C = 3.1*self.area.ft2**0.59*1000
-        self.C_adq = unidades.Currency(C*self.Current_index/self.Base_index)
-        self.C_inst = unidades.Currency(self.C_adq*self.f_install)
+        self.C_adq = Currency(C*self.Current_index/self.Base_index)
+        self.C_inst = Currency(self.C_adq*self.f_install)
 
 
 class Grinder(equipment):
@@ -75,5 +74,5 @@ class Grinder(equipment):
         else:
             C = 22.6 * W**0.39 * 1000
 
-        self.C_adq = unidades.Currency(C*self.Current_index/self.Base_index)
-        self.C_inst = unidades.Currency(self.C_adq*self.f_install)
+        self.C_adq = Currency(C*self.Current_index/self.Base_index)
+        self.C_inst = Currency(self.C_adq*self.f_install)

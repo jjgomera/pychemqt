@@ -15,7 +15,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Library for compressor and expander equipment definition:
+
+    * :class:`Compressor`: Gas compressor equipment
+    * :class:`Turbine`: Gas expander, turbine equipment
+"""
 
 
 ###############################################################################
@@ -379,7 +386,7 @@ class Compressor(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"), "Tin",
+        p = [(QApplication.translate("pychemqt", "Input Temperature"), "Tin",
               Temperature),
              (QApplication.translate("pychemqt", "Input Pressure"), "Pin",
               Pressure),
@@ -424,7 +431,7 @@ class Compressor(equipment):
               Currency),
              (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
               Currency)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -688,7 +695,7 @@ class Turbine(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"),
+        p = [(QApplication.translate("pychemqt", "Input Temperature"),
               "Tin", Temperature),
              (QApplication.translate("pychemqt", "Output Temperature"),
               "Tout", Temperature),
@@ -718,7 +725,7 @@ class Turbine(equipment):
               Currency),
              (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
               Currency)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""

@@ -15,12 +15,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Library for pump equipment definition:
 
-###############################################################################
-#   Library for pump equipment definition
-###############################################################################
+    * :class:`Pump`: Liquid pump equipment
+"""
 
 
 import os
@@ -458,7 +458,7 @@ class Pump(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Pressure"),
+        p = [(QApplication.translate("pychemqt", "Input Pressure"),
               "Pin", Pressure),
              (QApplication.translate("pychemqt", "Output Pressure"),
               "PoutCalculada", Pressure),
@@ -496,7 +496,7 @@ class Pump(equipment):
               "C_adq", Currency),
              (QApplication.translate("pychemqt", "Installed Cost"),
               "C_inst", Currency)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -579,6 +579,7 @@ class Pump(equipment):
 
         wb.save('datasheet.xls')
         os.system("gnumeric datasheet.xls")
+
 
 if __name__ == '__main__':
     import doctest

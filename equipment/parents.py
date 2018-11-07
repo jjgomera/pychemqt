@@ -15,14 +15,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library for equipment common functionality
-#   * equipment: Base class of equipment library
-#   * UI_equip: Base class of equipment UI functionality
-###############################################################################
+
+Library for equipment common functionality:
+
+    * :class:`equipment`: Base class of equipment library
+    * :class:`UI_equip`: Base class of equipment UI functionality
+'''
 
 
 from functools import partial
@@ -41,38 +42,50 @@ from UI.widgets import Status
 
 class equipment(Entity):
     """General structure for equipment, each child class must define the
-    properties and procedures
-        status: equipment estatus
-            0: undefined
-            1: solved
-            2: error
-            3: solved but with warning
-        msg: status message of equipment
-        title: string title of equipment
-        help: help file its available
-        kwargs: dict with incomming variables and a undefined (nul) value. Its
-         important define fine the initial value because it used to detect
-         type to save to file
-            - Streams: None
-            - List options and integer: 0
-            - values: 0.0
-        kwargsInput: Inputs of stream type
-        kwargsValue: Inputs of value string
-        kwargsList: Inputs of combobox (option of a list)
-        kwargsCheck: Inputs of checkbox (True/False)
-        calculateValue: Results values
-        statusCoste: Cost section status
-        indiceCostos: Index of equipment in costindex
-        calculateCostos: Results values in cost section
-        __doi__: Bibliography in array of dict format
+    following properties and procedures:
 
-        isCalculable: procedure to define solvable status of equipment, use too
-         to define cost status and other definition options
-        calculo: procedure to calculation
-        coste: procedure to cost calculation
-        cleanOldValues: procedure to update kwargs values its neccessary
-        propTxt: procedure to define text format for simple text report
-        propertiesEquipment: procedure to define output values in a list
+        * status: Equipment status. A integer with the status code after
+        calculation:
+
+            * 0: undefined
+            * 1: solved
+            * 2: error
+            * 3: solved but with warning
+
+        * msg: Status message of equipment, a explanation of calculation error
+        or some relevant warning
+        * title: string title of equipment
+        * help: Help file if it's available
+
+        * kwargs: dict with incomming variables and a undefined (nul) value.
+        It's important to define fine the initial value because it used to
+        detect type to save to file
+
+            * Streams: None
+            * List options and integer: 0
+            * values: 0.0
+
+        * kwargsInput: Inputs of type :class:`corriente.Corriente`
+        * kwargsValue: Inputs of type float or :class:`unidades.unidad`
+        subclass
+        * kwargsList: Inputs of combobox (option of a list)
+        * kwargsCheck: Inputs of checkbox (True/False)
+        * calculateValue: List of calculated variables
+        (used in autofiling of UI)
+
+        * statusCoste: Cost section status
+        * indiceCostos: Index of equipment in costindex
+        * calculateCostos: Results values in cost section
+
+        * __doi__: Bibliography as a list of dict format
+
+        * isCalculable: Procedure to define solvable status of equipment, used
+        too to define cost status and other definition options
+        * calculo: Procedure to calculation
+        * coste: Procedure to cost calculation
+        * cleanOldValues: Procedure to update kwargs values if it's neccessary
+        * propTxt: procedure to define text format for simple text report
+        * propertiesEquipment: procedure to define output values in a list
          with format (Name, kwargs name, units)
     """
     status = 0
@@ -202,18 +215,21 @@ class equipment(Entity):
 
 
 class UI_equip(QtWidgets.QDialog):
-    """UI general for equipments, each child class must define specifics"""
+    """General UI for equipments, each child class must define specifics input
+    output, results..."""
     def __init__(self, equipment, entrada=True, salida=True, calculo=True,
                  parent=None):
         """
         equipment: name of equipment to model
         entrada: boolean to create or not the input tab
         salida: boolean to create or not the input tab
-            - True para equipos con varias entradas/salidas, create de tab,
+
+            * True para equipos con varias entradas/salidas, create de tab,
               the child must define the UI_corriente
-            - False para equipos con una, create UI_corriente
-            - None: Not create nothing
-        calculo: boolean to create or not the calcule tab
+            * False para equipos con una, create UI_corriente
+            * None: Not create nothing
+
+        calculo: boolean to create or not the calculate tab
         """
         super(UI_equip, self).__init__(parent)
         self.setWindowTitle(equipment.title)

@@ -15,13 +15,51 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Module with equipment related content, libraries and graphical interfaces.
+Nowday the list of supported equipment are:
 
-###Modulo de equipos
+    * :class:`flux.Divider`: Flux divider for stream splitter
+    * :class:`flux.Mixer`: Flux mixer for stream mixer
+    * :class:`flux.Valve`: Valve for control stream flux
+    * :class:`compressor.Compressor`: Gas compressor equipment
+    * :class:`compressor.Turbine`: Gas expander, turbine equipment
+    * :class:`pump.Pump`: Liquid pump equipment
+    * :class:`pipe.Pipe`: Pipe segment equipment
 
-#Inicializa importando las interfaces gráficas de los equipos
+    * :class:`distillation.Flash`: Flash separator equipment
+    * :class:`distillation.ColumnFUG`: Simple distillation column using the
+      simplified Fenske-Underwood-Gilliland method
+    * :class:`distillation.Tower`: Complete distillation tower definition
+
+    * :class:`heatExchanger.Heat_Exchanger`: Simple heat exchanger equipment
+    * :class:`heatExchanger.Fired_Heater`: Fire heater heat exchanger
+    * :class:`heatExchanger.Hairpin`: Double pipe heat exchanger
+    * :class:`heatExchanger.Shell_Tube`: Shell-Tube heat exchanger
+
+    * :class:`reactor.Reactor`: Reactor equipment
+
+    * :class:`solids.Screen`: Screen solid separation equipment
+    * :class:`solids.Grinder`: Solid grinder equipment
+    * :class:`gas_solid.GravityChamber`: Gravity chamber gas-solid separation
+      equipment
+    * :class:`gas_solid.Ciclon`: Cyclone gas-solid separation equipment
+    * :class:`gas_solid.Baghouse`: Baghouse gas-solid separation equipment
+    * :class:`gas_solid.ElectricPrecipitator`: Elecrostatic precipitator
+      gas-solid separation equipment
+    * :class:`gas_solid_liquid.Scrubber`: Scrubber equipment
+    * :class:`gas_solid_liquid.Dryer`: Solid dryer equipment
+
+    * :class:`liquid_solid.Centrifuge`: Centrifuge separator equipment
+    * :class:`liquid_solid.Crystallizer`: Crystallizer separator equipment
+    * :class:`liquid_solid.Filter`:  Filter liquid-solid equipment
+
+    * :class:`spreadsheet.Spreadsheet`: Spreadsheet equipment integration
+'''
+
+# Import all graphical interfaces availables
 
 # flow
 from . import UI_divider
@@ -32,7 +70,7 @@ from . import UI_turbine
 from . import UI_pump
 from . import UI_pipe
 
-# Operaciones
+# Main Operations
 from . import UI_flash
 from . import UI_columnFUG
 from . import UI_heatExchanger
@@ -40,7 +78,7 @@ from . import UI_hairpin
 from . import UI_shellTube
 from . import UI_fireHeater
 
-# solids
+# Solids
 from . import UI_ciclon
 from . import UI_gravityChamber
 from . import UI_baghouse
@@ -51,7 +89,7 @@ from . import UI_scrubber
 # Tools
 from . import UI_spreadsheet
 
-# No funcionales
+# Don't implemented
 from . import UI_centrifuge
 from . import UI_crystallizer
 from . import UI_filter
@@ -71,10 +109,11 @@ UI_equipments = [UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor,
                  UI_dryer, UI_scrubber, UI_spreadsheet, UI_reactor]
 # UI_tower, UI_reactor, UI_centrifuge, UI_grinder, UI_solidWasher, UI_vacuum, ]
 
-equipments=[ui.UI_equipment.Equipment.__class__ for ui in UI_equipments]
+# Autogenerate the equipment library list from graphical interfaces list
+equipments = [ui.UI_equipment.Equipment.__class__ for ui in UI_equipments]
 
-#__all__ = [equip.__name__ for equip in UI_equipments]
-#print(__all__)
+# __all__ = [equip.__name__ for equip in UI_equipments]
+# print(__all__)
 
 # To get a list of equipment available to add to lib/firstrun.py file:
 # equipos=[equipment.__name__ for equipment in equipments]

@@ -15,16 +15,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# library for heat exchanger equipment calculation
-# - Heat_Exchanger
-# - Fired_Heater
-# - Shell_Tube
-# - Hairpin
-###############################################################################
+This library define the heat exchanger equipments
+
+    * :class:`Heat_Exchanger`: Simple heat exchanger equipment
+    * :class:`Fired_Heater`: Fire heater heat exchanger
+    * :class:`Hairpin`: Double pipe heat exchanger
+    * :class:`Shell_Tube`: Shell-Tube heat exchanger
+"""
 
 
 import os
@@ -37,7 +37,7 @@ from scipy.optimize import fsolve
 from lib import unidades
 from lib.adimensional import Re, Pr, Gr, Gz
 from lib.friction import f_friccion
-from lib.heatTransfer import *  # noqa
+from lib import heatTransfer
 from equipment.parents import equipment
 
 
@@ -172,7 +172,7 @@ class Heat_Exchanger(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"),
+        p = [(QApplication.translate("pychemqt", "Input Temperature"),
               "Tin", unidades.Temperature),
              (QApplication.translate("pychemqt", "Output Temperature"),
               "ToutCalc", unidades.Temperature),
@@ -182,7 +182,7 @@ class Heat_Exchanger(equipment):
               "deltaP", unidades.DeltaP),
              (QApplication.translate("pychemqt", "Heat"), "HeatCalc",
               unidades.Power)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -447,7 +447,7 @@ class Fired_Heater(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Temperature"),
+        p = [(QApplication.translate("pychemqt", "Input Temperature"),
               "Tin", unidades.Temperature),
              (QApplication.translate("pychemqt", "Output Temperature"),
               "Tout", unidades.Temperature),
@@ -483,7 +483,7 @@ class Fired_Heater(equipment):
               "C_adq", unidades.Currency),
              (QApplication.translate("pychemqt", "Installed Cost"),
               "C_inst", unidades.Currency)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -767,18 +767,18 @@ class Hairpin(equipment):
             self.De = unidades.Length(self.kwargs["DeTube"])
             self.Di = unidades.Length(self.kwargs["DiTube"])
             self.w = unidades.Length((self.De-self.Di)/2)
-            if self.kwargs["wTube"] and w != self.kwargs["wTube"]:
+            if self.kwargs["wTube"] and self.w != self.kwargs["wTube"]:
                 self.msg = QApplication.translate(
                     "pychemqt", "Pipe thickness discard")
                 self.status = 3
         elif self.statusPipe == 2:
             self.De = unidades.Length(self.kwargs["DeTube"])
             self.w = unidades.Length(self.kwargs["wTube"])
-            self.Di = unidades.Length(self.De-w*2)
+            self.Di = unidades.Length(self.De-self.w*2)
         else:
             self.Di = unidades.Length(self.kwargs["DiTube"])
             self.w = unidades.Length(self.kwargs["wTube"])
-            self.De = unidades.Length(self.Di+w*2)
+            self.De = unidades.Length(self.Di+self.w*2)
         self.Dee = unidades.Length(self.kwargs["DeeTube"])
         self.rugosidad = unidades.Length(self.kwargs["rTube"])
         self.k = unidades.ThermalConductivity(self.kwargs["kTube"])
@@ -837,7 +837,8 @@ class Hairpin(equipment):
             self.Ug(hi, ni, ho, no)
 
             NTU = self.A*self.U/Cmin
-            ep = efectividad(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
+            ep = heatTransfer.efectividad(
+                NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
             self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
 
             if inTube.T > inAnnulli.T:
@@ -969,7 +970,8 @@ class Hairpin(equipment):
     def rendimientoAletas(self, hi, ho):
         """Calculate thermal efficiency of fins"""
         self.hFin = unidades.Length(self.kwargs["hFin"])
-        self.thicknessBaseFin = unidades.Length(self.kwargs["thicknessBaseFin"])
+        self.thicknessBaseFin = unidades.Length(
+            self.kwargs["thicknessBaseFin"])
         self.thicknessTopFin = unidades.Length(self.kwargs["thicknessTopFin"])
         self.rootDoFin = unidades.Length(self.kwargs["rootDoFin"])
         self.kFin = unidades.ThermalConductivity(self.kwargs["kFin"])
@@ -1028,32 +1030,36 @@ class Hairpin(equipment):
                 beta = fluido.alfav
                 gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
                 if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(
+                    Nu = heatTransfer.h_tubeside_laminar_Eubank_Proctor(
                         Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
+                    Nu = heatTransfer.h_tubeside_laminar_VDI(
+                        Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
+                    Nu = heatTransfer.h_tubeside_laminar_Hausen(Gz=gz)
                 elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                    Nu = heatTransfer.h_tubeside_laminar_Sieder_Tate(
+                        Gz=gz, Gr=gr)
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_Sieder_Tate(
+                        Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 1:
-                    Nu = h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_Colburn(
+                        Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 2:
                     frio = self.kwargs["entradaCarcasa"].T > fluidTube.T
-                    Nu = h_tubeside_turbulent_Dittus_Boelter(
+                    Nu = heatTransfer.h_tubeside_turbulent_Dittus_Boelter(
                         Re=re_i, Pr=pr, calentamiento=frio)
                 elif self.kwargs["tubesideTurbulent"] == 3:
-                    Nu = h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 4:
-                    Nu = h_tubeside_turbulent_Gnielinski(
+                    Nu = heatTransfer.h_tubeside_turbulent_Gnielinski(
                         Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideTurbulent"] == 5:
                     line = self.kwargs["distribucionTube"] == 3
                     filas = self.kwargs["NTube"]**0.5
-                    Nu = h_tubeside_turbulent_VDI(
+                    Nu = heatTransfer.h_tubeside_turbulent_VDI(
                         Re=re_i, Pr=pr, filas_tubos=filas, alineados=line)
 
         if self.phaseTube == "Condenser":
@@ -1091,11 +1097,11 @@ class Hairpin(equipment):
         pr = fluidAnnulli.Liquido.Prandt
 
         if re <= 2300:
-            Nu = h_anulli_Laminar(re, pr, a)
+            Nu = heatTransfer.h_anulli_Laminar(re, pr, a)
         elif re >= 1e4:
-            Nu = h_anulli_Turbulent(re, pr, a)
+            Nu = heatTransfer.h_anulli_Turbulent(re, pr, a)
         else:
-            Nu = h_anulli_Transition(re, pr, a)
+            Nu = heatTransfer.h_anulli_Transition(re, pr, a)
 
         return unidades.HeatTransfCoef(Nu*k/self.Di)
 
@@ -1152,7 +1158,7 @@ class Hairpin(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Length"), "L",
+        p = [(QApplication.translate("pychemqt", "Length"), "L",
               unidades.Length),
              (QApplication.translate("pychemqt", "Pipe Internal Diameter"),
               "Di", unidades.Length),
@@ -1249,7 +1255,7 @@ class Hairpin(equipment):
               unidades.Currency),
              (QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
               unidades.Currency)]
-        return l
+        return p
 
     def writeStatetoJSON(self, state):
         """Write instance parameter to file"""
@@ -1615,11 +1621,13 @@ class Shell_Tube(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entradaTubo"]:
-            self.msg = QApplication.translate("pychemqt", "undefined tubeside input")
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined tubeside input")
             self.status = 0
             return
         if not self.kwargs["entradaCarcasa"]:
-            self.msg = QApplication.translate("pychemqt", "undefined shellside input")
+            self.msg = QApplication.translate(
+                "pychemqt", "undefined shellside input")
             self.status = 0
             return
 
@@ -1627,7 +1635,7 @@ class Shell_Tube(equipment):
 
     def calculo(self):
         if self.kwargs["modo"]:
-            #Diseño
+            # Diseño
             pass
 
         else:  # Evaluación
@@ -1636,7 +1644,7 @@ class Shell_Tube(equipment):
             Di = unidades.Length(De-2*self.kwargs["wTube"])
             L = unidades.Length(self.kwargs["LTube"])
 
-            #TubeSide
+            # TubeSide
             rho = self.kwargs["entradaTubo"].Liquido.rho
             mu = self.kwargs["entradaTubo"].Liquido.mu
             cp = self.kwargs["entradaTubo"].Liquido.cp
@@ -1647,33 +1655,41 @@ class Shell_Tube(equipment):
             re = Re(D=Di, V=v, rho=rho, mu=mu)
             pr = self.kwargs["entradaTubo"].Liquido.Pr
             gz = Gz(w=w, cp=cp, k=k, L=L)
-            gr = Gr(beta=beta, T=self.kwargs["entradaTubo"].T, To=self.kwargs["entradaTubo"].T, L=L, mu=mu)
+            gr = Gr(beta=beta, T=self.kwargs["entradaTubo"].T,
+                    To=self.kwargs["entradaTubo"].T, L=L, mu=mu)
 
             if re < 2300:
                 if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(Pr=pr, Gz=gz, Gr=gr, D=Di, L=L)
+                    Nu = heatTransfer.h_tubeside_laminar_Eubank_Proctor(
+                        Pr=pr, Gz=gz, Gr=gr, D=Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re, Pr=pr, D=Di, L=L)
+                    Nu = heatTransfer.h_tubeside_laminar_VDI(
+                        Re=re, Pr=pr, D=Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
+                    Nu = heatTransfer.h_tubeside_laminar_Hausen(Gz=gz)
                 elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                    Nu = heatTransfer.h_tubeside_laminar_Sieder_Tate(
+                        Gz=gz, Gr=gr)
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_Sieder_Tate(
+                        Re=re, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 1:
-                    Nu = h_tubeside_turbulent_Colburn(Re=re, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_Colburn(Re=re, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 2:
                     frio = self.kwargs["entradaCarcasa"] > self.kwargs["entradaTubo"]
-                    Nu = h_tubeside_turbulent_Dittus_Boelter(Re=re, Pr=pr, calentamiento=frio)
+                    Nu = heatTransfer.h_tubeside_turbulent_Dittus_Boelter(
+                        Re=re, Pr=pr, calentamiento=frio)
                 elif self.kwargs["tubesideTurbulent"] == 3:
-                    Nu = h_tubeside_turbulent_ESDU(Re=re, Pr=pr)
+                    Nu = heatTransfer.h_tubeside_turbulent_ESDU(Re=re, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 4:
-                    Nu = h_tubeside_turbulent_Gnielinski(Re=re, Pr=pr, D=Di, L=L)
+                    Nu = heatTransfer.h_tubeside_turbulent_Gnielinski(
+                        Re=re, Pr=pr, D=Di, L=L)
                 elif self.kwargs["tubesideTurbulent"] == 5:
                     line = self.kwargs["distribucionTube"] == 3
                     filas = self.kwargs["NTube"]**0.5
-                    Nu = h_tubeside_turbulent_VDI(Re=re, Pr=pr, filas_tubos=filas, alineados=line)
+                    Nu = heatTransfer.h_tubeside_turbulent_VDI(
+                        Re=re, Pr=pr, filas_tubos=filas, alineados=line)
 
             hi = unidades.HeatTransfCoef(Nu*k/Di)
 
