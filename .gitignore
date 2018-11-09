@@ -102,6 +102,8 @@ docs/lib.thread.rst
 docs/lib.unidades.rst
 docs/lib.utilities.rst
 
+docs/equipment.*.rst
+
 # Script propios
 .script/
 iapws
