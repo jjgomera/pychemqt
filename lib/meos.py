@@ -111,12 +111,20 @@ __doi__ = {
 
 
     11:
+        {"autor": "Younglove, B.A., McLinden, M.O.",
+         "title": "An International Standard Equation of State for the "
+                  "Thermodynamic Properties of Refrigerant 123 "
+                  "(2,2-Dichloro-1,1,1-trifluoroethane)",
+         "ref": "J. Phys. Chem. Ref. Data, 23(5) (1994) 731-779",
+         "doi": "10.1063/1.555950"},
+
+
+
+    12:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
-
-
 
     # 1:
         # {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
@@ -163,6 +171,8 @@ def _Helmholtz_phir(tau, delta, coef):
         Inverse reduced temperature, Tc/T [-]
     delta : float
         Reduced density, rho/rhoc [-]
+    coef : dict
+        Parameters of multiparameter equation of state
 
     Returns
     -------
@@ -247,6 +257,72 @@ def _Helmholtz_phir(tau, delta, coef):
     return fir
 
 
+def _MBWR_phir(T, rho, rhoc, M, coef):
+    r"""Residual contribution to the free Helmholtz energy for MBWR EoS
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    rho : float
+        Density, [kg/m³]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    coef : dict
+        Parameters of MBWR equation of state
+
+    Returns
+    -------
+    fir : float
+        :math:`\phi^r`, adimensional free Helmholtz energy, [-]
+    """
+    rhocm = rhoc/M
+    delta = rho/rhoc
+    rhom = rho/M
+    b = coef["b"]
+    R = coef["R"]
+
+    # Equation B2
+    a = [None]
+    # Use the gas constant in l·bar/mol·K
+    a.append(R/100*T)
+    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+    a.append(b[10]*T + b[11] + b[12]/T)
+    a.append(b[13])
+    a.append(b[14]/T + b[15]/T**2)
+    a.append(b[16]/T)
+    a.append(b[17]/T + b[18]/T**2)
+    a.append(b[19]/T**2)
+    a.append(b[20]/T**2 + b[21]/T**3)
+    a.append(b[22]/T**2 + b[23]/T**4)
+    a.append(b[24]/T**2 + b[25]/T**3)
+    a.append(b[26]/T**2 + b[27]/T**4)
+    a.append(b[28]/T**2 + b[29]/T**3)
+    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+    # Eq B6
+    A = 0
+    for n in range(2, 10):
+        A += a[n]/(n-1)*rhom**(n-1)
+
+    A -= 0.5*a[10]*rhocm**2*(exp(-delta**2)-1)
+    A -= 0.5*a[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+    A -= 0.5*a[12]*rhocm**6*(exp(-delta**2)*(
+        delta**4+2*delta**2+2)-2)
+    A -= 0.5*a[13]*rhocm**8*(exp(-delta**2)*(
+        delta**6+3*delta**4+6*delta**2+6)-6)
+    A -= 0.5*a[14]*rhocm**10*(exp(-delta**2)*(
+        delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+    A -= 0.5*a[15]*rhocm**12*(exp(-delta**2)*(
+        delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+    A = A*100  # Convert from L·bar/mol to J/mol
+
+    return A/R/T
+
+
 def _Helmholtz_phird(tau, delta, coef):
     r"""Residual contribution to the free Helmholtz energy, delta derivative
 
@@ -256,6 +332,8 @@ def _Helmholtz_phird(tau, delta, coef):
         Inverse reduced temperature, Tc/T [-]
     delta : float
         Reduced density, rho/rhoc [-]
+    coef : dict
+        Parameters of multiparameter equation of state
 
     Returns
     -------
@@ -351,6 +429,61 @@ def _Helmholtz_phird(tau, delta, coef):
     return fird
 
 
+def _MBWR_phird(T, rho, rhoc, M, coef):
+    r"""Residual contribution to the free Helmholtz energy for MBWR EoS, delta
+    derivative
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    rho : float
+        Density, [kg/m³]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    coef : dict
+        Parameters of MBWR equation of state
+
+    Returns
+    -------
+    fird : float
+        .. math::
+          \left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}
+    """
+    delta = rho/rhoc
+    rhom = rho/M
+    b = coef["b"]
+    R = coef["R"]
+
+    # Equation B2
+    a = [None]
+    # Use the gas constant in l·bar/mol·K
+    a.append(R/100*T)
+    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+    a.append(b[10]*T + b[11] + b[12]/T)
+    a.append(b[13])
+    a.append(b[14]/T + b[15]/T**2)
+    a.append(b[16]/T)
+    a.append(b[17]/T + b[18]/T**2)
+    a.append(b[19]/T**2)
+    a.append(b[20]/T**2 + b[21]/T**3)
+    a.append(b[22]/T**2 + b[23]/T**4)
+    a.append(b[24]/T**2 + b[25]/T**3)
+    a.append(b[26]/T**2 + b[27]/T**4)
+    a.append(b[28]/T**2 + b[29]/T**3)
+    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+    # Eq B1
+    P = sum([a[n]*rhom**n for n in range(1, 10)])
+    P += exp(-(delta**2))*sum([a[n]*rhom**(2*n-17) for n in range(10, 16)])
+    P *= 100  # Convert from bar to kPa
+
+    return (P/rhom/T/R-1)/delta
+
+
 def _Helmholtz_phirt(tau, delta, coef):
     r"""Residual contribution to the free Helmholtz energy, tau derivative
 
@@ -360,6 +493,8 @@ def _Helmholtz_phirt(tau, delta, coef):
         Inverse reduced temperature, Tc/T [-]
     delta : float
         Reduced density, rho/rhoc [-]
+    coef : dict
+        Parameters of multiparameter equation of state
 
     Returns
     -------
@@ -447,6 +582,111 @@ def _Helmholtz_phirt(tau, delta, coef):
             firt += factor*frt
 
     return firt
+
+
+def _MBWR_phirt(T, Tc, rho, rhoc, M, coef):
+    r"""Residual contribution to the free Helmholtz energy, tau derivative
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    rho : float
+        Density, [kg/m³]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    coef : dict
+        Parameters of MBWR equation of state
+
+    Returns
+    -------
+    firt : float
+        .. math::
+            \left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}
+    """
+    tau = Tc/T
+    delta = rho/rhoc
+    rhom = rho/M
+    rhocm = rhoc/M
+    b = coef["b"]
+    R = coef["R"]
+
+    # Equation B2
+    a = [None]
+    # Use the gas constant in l·bar/mol·K
+    a.append(R/100*T)
+    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+    a.append(b[10]*T + b[11] + b[12]/T)
+    a.append(b[13])
+    a.append(b[14]/T + b[15]/T**2)
+    a.append(b[16]/T)
+    a.append(b[17]/T + b[18]/T**2)
+    a.append(b[19]/T**2)
+    a.append(b[20]/T**2 + b[21]/T**3)
+    a.append(b[22]/T**2 + b[23]/T**4)
+    a.append(b[24]/T**2 + b[25]/T**3)
+    a.append(b[26]/T**2 + b[27]/T**4)
+    a.append(b[28]/T**2 + b[29]/T**3)
+    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+    # Eq B6
+    A = 0
+    for n in range(2, 10):
+        A += a[n]/(n-1)*rhom**(n-1)
+
+    A -= 0.5*a[10]*rhocm**2*(exp(-delta**2)-1)
+    A -= 0.5*a[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+    A -= 0.5*a[12]*rhocm**6*(exp(-delta**2)*(
+        delta**4+2*delta**2+2)-2)
+    A -= 0.5*a[13]*rhocm**8*(exp(-delta**2)*(
+        delta**6+3*delta**4+6*delta**2+6)-6)
+    A -= 0.5*a[14]*rhocm**10*(exp(-delta**2)*(
+        delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+    A -= 0.5*a[15]*rhocm**12*(exp(-delta**2)*(
+        delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+    A = A*100  # Convert from L·bar/mol to J/mol
+
+    # Eq B4
+    # Use the gas constant in l·bar/mol·K
+    adT = [None, R/100]
+    adT.append(b[1] + b[2]/2/T**0.5 - b[4]/T**2 - 2*b[5]/T**3)
+    adT.append(b[6] - b[8]/T**2 - 2*b[9]/T**3)
+    adT.append(b[10] - b[12]/T**2)
+    adT.append(0)
+    adT.append(-b[14]/T**2 - 2*b[15]/T**3)
+    adT.append(-b[16]/T**2)
+    adT.append(-b[17]/T**2 - 2*b[18]/T**3)
+    adT.append(-2*b[19]/T**3)
+    adT.append(-2*b[20]/T**3 - 3*b[21]/T**4)
+    adT.append(-2*b[22]/T**3 - 4*b[23]/T**5)
+    adT.append(-2*b[24]/T**3 - 3*b[25]/T**4)
+    adT.append(-2*b[26]/T**3 - 4*b[27]/T**5)
+    adT.append(-2*b[28]/T**3 - 3*b[29]/T**4)
+    adT.append(-2*b[30]/T**3 - 3*b[31]/T**4 - 4*b[32]/T**5)
+
+    # Eq B7
+    dAT = 0
+    for n in range(2, 10):
+        dAT += adT[n]/(n-1)*rhom**(n-1)
+
+    dAT -= 0.5*adT[10]*rhocm**2*(exp(-delta**2)-1)
+    dAT -= 0.5*adT[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+    dAT -= 0.5*adT[12]*rhocm**6*(exp(-delta**2)*(
+        delta**4+2*delta**2+2)-2)
+    dAT -= 0.5*adT[13]*rhocm**8*(exp(-delta**2)*(
+        delta**6+3*delta**4+6*delta**2+6)-6)
+    dAT -= 0.5*adT[14]*rhocm**10*(exp(-delta**2)*(
+        delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+    dAT -= 0.5*adT[15]*rhocm**12*(exp(-delta**2)*(
+        delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+    dAT = dAT*100  # Convert from L·bar/mol·K to J/mol·K
+
+    return (A/T-dAT)/R/tau
 
 
 class MEoS(ThermoAdvanced):
@@ -707,7 +947,7 @@ class MEoS(ThermoAdvanced):
             has *CUSTOM* value. The list must be the variables in the order:
 
                 * Tref: Reference temperature, [K]
-                * Pref: Reference pressure, [Pa]
+                * Pref: Reference pressure, [kPa]
                 * ho: Enthalpy in reference state, [kJ/kg]
                 * so: Entropy in reference state, [kJ/kg·K]
 
@@ -2254,6 +2494,9 @@ class MEoS(ThermoAdvanced):
 
         if self._constants["__type__"] == "Helmholtz":
             res = self._Helmholtz(tau, delta)
+            prop["P"] = (1+delta*res["fird"])*self.R*T*rho
+        elif self._constants["__type__"] == "MBWR":
+            res = self._MBWR(rho, T)
         else:
             pass
 
@@ -2262,7 +2505,6 @@ class MEoS(ThermoAdvanced):
         prop["tau"] = tau
         prop["delta"] = delta
         prop["T"] = T
-        prop["P"] = (1+delta*res["fird"])*self.R*T*rho
         if rho:
             prop["v"] = 1./rho
         else:
@@ -2272,15 +2514,31 @@ class MEoS(ThermoAdvanced):
 
     def _phir(self, tau, delta):
         if self._constants["__type__"] == "Helmholtz":
-            return _Helmholtz_phir(tau, delta, self._constants)
+            fir = _Helmholtz_phir(tau, delta, self._constants)
+        elif self._constants["__type__"] == "MBWR":
+            T = self.Tc/tau
+            rho = delta*self.rhoc
+            fir = _MBWR_phir(T, rho, self.rhoc, self.M, self._constants)
+        return fir
 
     def _phird(self, tau, delta):
         if self._constants["__type__"] == "Helmholtz":
-            return _Helmholtz_phird(tau, delta, self._constants)
+            fir = _Helmholtz_phird(tau, delta, self._constants)
+        elif self._constants["__type__"] == "MBWR":
+            T = self.Tc/tau
+            rho = delta*self.rhoc
+            fir = _MBWR_phird(T, rho, self.rhoc, self.M, self._constants)
+        return fir
 
     def _phirt(self, tau, delta):
         if self._constants["__type__"] == "Helmholtz":
-            return _Helmholtz_phirt(tau, delta, self._constants)
+            fir = _Helmholtz_phirt(tau, delta, self._constants)
+        elif self._constants["__type__"] == "MBWR":
+            T = self.Tc/tau
+            rho = delta*self.rhoc
+            fir = _MBWR_phirt(
+                T, self.Tc, rho, self.rhoc, self.M, self._constants)
+        return fir
 
     def _ECS(self,  rho, T):
         delta = rho/self.rhoc
@@ -2342,147 +2600,6 @@ class MEoS(ThermoAdvanced):
         propiedades["dpdrho"]=self.R*T*(1+2*delta*fird+delta**2*firdd)
         propiedades["dpdT"]=self.R.kJkgK*rho*(1+delta*fird+delta*tau*firdt)
 #        propiedades["cps"]=propiedades["cv"] Add cps from Argon pag.27
-        return propiedades
-
-    def _MBWR(self, rho, T):
-        """Multiparameter equation of state of Benedict-Webb-Rubin"""
-        rho = rho/self.M
-        delta = rho/self.rhoc
-        tau = self.Tc/T
-        b = self._constants["b"]
-
-        ideal = self._phi0(self._constants["cp"], tau, delta)
-        fio = ideal["fio"]
-        fiot = ideal["fiot"]
-        fiott = ideal["fiott"]
-
-        a = [None]
-        a.append(self.R*T)
-        a.append(b[1]*T+b[2]*T**0.5+b[3]+b[4]/T+b[5]/T**2)
-        a.append(b[6]*T+b[7]+b[8]/T+b[9]/T**2)
-        a.append(b[10]*T+b[11]+b[12]/T)
-        a.append(b[13])
-        a.append(b[14]/T+b[15]/T**2)
-        a.append(b[16]/T)
-        a.append(b[17]/T+b[18]/T**2)
-        a.append(b[19]/T**2)
-        a.append(b[20]/T**2+b[21]/T**3)
-        a.append(b[22]/T**2+b[23]/T**4)
-        a.append(b[24]/T**2+b[25]/T**3)
-        a.append(b[26]/T**2+b[27]/T**4)
-        a.append(b[28]/T**2+b[29]/T**3)
-        a.append(b[30]/T**2+b[31]/T**3+b[32]/T**4)
-
-        P = sum([a[n]*rho**n for n in range(1, 10)])
-        P += exp(-delta**2)*sum([a[n]*rho**(2*n-17) for n in range(10, 16)])
-        P = P*10
-
-        dPdrho = sum([a[n]*n*rho**(n-1) for n in range(1, 10)])
-        dPdrho += exp(-delta**2)*sum([(2*n-17-2*delta**2)*a[n]*rho**(2*n-18) for n in range(10, 16)])
-        dPdrho = dPdrho*100
-
-        d2Prho = sum([a[n]*n*(n-1)*rho**(n-2) for n in range(1, 10)])
-        d2Prho += exp(-delta**2)*sum([(-35*n+2*n**2+153+33*delta**2+2*delta**4-4*n*delta**2)*2*a[n]*rho**(2*n-19) for n in range(10, 16)])
-        d2Prho = d2Prho*100
-
-        A = 0
-        for n in range(2, 10):
-            A += a[n]/(n-1.)*rho**(n-1)
-
-        A -= 0.5*a[10]*self.rhoc**2*(exp(-delta**2)-1)
-        A -= 0.5*a[11]*self.rhoc**4*(exp(-delta**2)*(delta**2+1)-1)
-        A -= 0.5*a[12]*self.rhoc**6*(exp(-delta**2)*(delta**4+2*delta**2+2)-2)
-        A -= 0.5*a[13]*self.rhoc**8*(exp(-delta**2)*(delta**6+3*delta**4+6*delta**2+6)-6)
-        A -= 0.5*a[14]*self.rhoc**10*(exp(-delta**2)*(delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
-        A -= 0.5*a[15]*self.rhoc**12*(exp(-delta**2)*(delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
-        A = A*100
-
-        adT = [None, self.R]
-        adT.append(b[1]+b[2]/2/T**0.5-b[4]/T**2-2*b[5]/T**3)
-        adT.append(b[6]-b[8]/T**2-2*b[9]/T**3)
-        adT.append(b[10]-b[12]/T**2)
-        adT.append(0)
-        adT.append(-b[14]/T**2-2*b[15]/T**3)
-        adT.append(-b[16]/T**2)
-        adT.append(-b[17]/T**2-2*b[18]/T**3)
-        adT.append(-2*b[19]/T**3)
-        adT.append(-2*b[20]/T**3-3*b[21]/T**4)
-        adT.append(-2*b[22]/T**3-4*b[23]/T**5)
-        adT.append(-2*b[24]/T**3-3*b[25]/T**4)
-        adT.append(-2*b[26]/T**3-4*b[27]/T**5)
-        adT.append(-2*b[28]/T**3-3*b[29]/T**4)
-        adT.append(-2*b[30]/T**3-3*b[31]/T**4-4*b[32]/T**5)
-
-        dA = 0
-        for n in range(2, 10):
-            dA += adT[n]/(n-1.)*rho**(n-1)
-
-        dA -= 0.5*adT[10]*self.rhoc**2*(exp(-delta**2)-1)
-        dA -= 0.5*adT[11]*self.rhoc**4*(exp(-delta**2)*(delta**2+1)-1)
-        dA -= 0.5*adT[12]*self.rhoc**6*(exp(-delta**2)*(delta**4+2*delta**2+2)-2)
-        dA -= 0.5*adT[13]*self.rhoc**8*(exp(-delta**2)*(delta**6+3*delta**4+6*delta**2+6)-6)
-        dA -= 0.5*adT[14]*self.rhoc**10*(exp(-delta**2)*(delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
-        dA -= 0.5*adT[15]*self.rhoc**12*(exp(-delta**2)*(delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
-        dA = dA*100
-
-        dPdT = sum([adT[n]*rho**n for n in range(1, 10)])
-        dPdT += exp(-delta**2)*sum([adT[n]*rho**(2*n-17) for n in range(10, 16)])
-        dPdT = dPdT*100
-
-        adTT = [None, 0]
-        adTT.append(-b[2]/4/T**1.5+2*b[4]/T**3+6*b[5]/T**4)
-        adTT.append(2*b[8]/T**3+6*b[9]/T**4)
-        adTT.append(2*b[12]/T**3)
-        adTT.append(0)
-        adTT.append(2*b[14]/T**3+6*b[15]/T**4)
-        adTT.append(2*b[16]/T**3)
-        adTT.append(2*b[17]/T**3+6*b[18]/T**4)
-        adTT.append(6*b[19]/T**4)
-        adTT.append(6*b[20]/T**4+12*b[21]/T**5)
-        adTT.append(6*b[22]/T**4+20*b[23]/T**6)
-        adTT.append(6*b[24]/T**4+12*b[25]/T**5)
-        adTT.append(6*b[26]/T**4+20*b[27]/T**6)
-        adTT.append(6*b[28]/T**4+12*b[29]/T**5)
-        adTT.append(6*b[30]/T**4+12*b[31]/T**5+20*b[32]/T**6)
-
-        d2A = 0
-        for n in range(2, 10):
-            d2A += adTT[n]*rho**(n-1)/(n-1)
-        d2A -= 0.5*adTT[10]*self.rhoc**2*(exp(-delta**2)-1)
-        d2A -= 0.5*adTT[11]*self.rhoc**4*(exp(-delta**2)*(delta**2+1)-1)
-        d2A -= 0.5*adTT[12]*self.rhoc**6*(exp(-delta**2)*(delta**4+2*delta**2+2)-2)
-        d2A -= 0.5*adTT[13]*self.rhoc**8*(exp(-delta**2)*(delta**6+3*delta**4+6*delta**2+6)-6)
-        d2A -= 0.5*adTT[14]*self.rhoc**10*(exp(-delta**2)*(delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
-        d2A -= 0.5*adTT[15]*self.rhoc**12*(exp(-delta**2)*(delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
-        d2A = d2A*100
-
-        # TODO:
-        B, C = 0, 0
-
-        fir = A/self.R/T
-        firdt = P/T-dPdT/self.R/rho
-        firt = A/T-dA/self.R
-        firtt = d2A*T/self.R
-        fird = P/self.R/T/rho-1.
-        firdd = (dPdrho-2*P/rho)/self.R/T+1.
-#        firddd = (d2Prho*rho-4*dPdrho+6*P/rho)/self.R/T-2.
-
-        propiedades = {}
-        propiedades["T"] = T
-        propiedades["P"] = P*0.1  # converted from bar to MPa
-        propiedades["v"] = 1/rho
-        propiedades["h"] = self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
-        propiedades["s"] = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
-        propiedades["cp"] = self.R.kJkgK*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
-        propiedades["cv"] = -self.R.kJkgK*tau**2*(fiott+firtt)
-        propiedades["w"] = (self.R*T*(1+2*delta*fird+delta**2*firdd-(1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
-        propiedades["alfap"] = (1-delta*tau*firdt/(1+delta*fird))/T
-        propiedades["betap"] = rho*(1+(delta*fird+delta**2*firdd)/(1+delta*fird))
-        propiedades["fugacity"] = exp(fir+delta*fird-log(1+delta*fird))
-        propiedades["B"] = B
-        propiedades["C"] = C
-        propiedades["fir"] = fir
-        propiedades["fird"] = fird
         return propiedades
 
     def _PengRobinson(self, rho, T):
@@ -3232,6 +3349,201 @@ class MEoS(ThermoAdvanced):
         prop["B"] = B
         prop["C"] = C
         prop["D"] = D
+        return prop
+
+    @refDoc(__doi__, [11], tab=8)
+    def _MBWR(self, rho, T):
+        r"""Implementation of modified Benedict-Webb-Rubin (mBWR) equation of
+        state
+
+        .. math::
+            P = \sum_{n=1}^9 + \exp\left(-\delta^2\right)
+            \sum_{n=10}^{15}a_n\rho^{2n-17}
+
+        where:
+
+        .. math::
+          \begin{array}[t]{l}
+          a_1 = RT\\
+          a_2 = b_1T + b_2T^{1/2} + b_3 + b_4/T + b_5/T^2\\
+          a_3 = b_6T+b_7+b_8T+b_9/T^2\\
+          a_4 = b_{10}T+b_{11}+b_{12}/T\\
+          a_5 = b_{13}\\
+          a_6 = b_{14}/T+b_{15}/T^2\\
+          a_7 = b_{16}/T\\
+          a_8 = b_{17}/T+b_{18}/T^2\\
+          a_9 = b_{19}/T^2\\
+          a_{10} = b_{20}/T^2+b_{21}/T^3\\
+          a_{11} = b_{22}/T^2+b_{23}/T^4\\
+          a_{12} = b_{24}/T^2+b_{25}/T^3\\
+          a_{13} = b_{26}/T^2+b_{27}/T^4\\
+          a_{14} = b_{28}/T^2+b_{29}/T^3\\
+          a_{15} = b_{30}/T^2+b_{31}/T^3+b_{32}/T^4\\
+          \end{array}
+
+        :math:`b_i` are the coefficient of equation saved in dict
+        """
+        rhom = rho/self.M
+        rhocm = self.rhoc/self.M
+        delta = rho/self.rhoc
+        b = self._constants["b"]
+        R = self._constants["R"]
+
+        # Equation B2
+        a = [None]
+        # Use the gas constant in l·bar/mol·K
+        a.append(R/100*T)
+        a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+        a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+        a.append(b[10]*T + b[11] + b[12]/T)
+        a.append(b[13])
+        a.append(b[14]/T + b[15]/T**2)
+        a.append(b[16]/T)
+        a.append(b[17]/T + b[18]/T**2)
+        a.append(b[19]/T**2)
+        a.append(b[20]/T**2 + b[21]/T**3)
+        a.append(b[22]/T**2 + b[23]/T**4)
+        a.append(b[24]/T**2 + b[25]/T**3)
+        a.append(b[26]/T**2 + b[27]/T**4)
+        a.append(b[28]/T**2 + b[29]/T**3)
+        a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+        # Eq B1
+        P = sum([a[n]*rhom**n for n in range(1, 10)])
+        P += exp(-(delta**2))*sum([a[n]*rhom**(2*n-17) for n in range(10, 16)])
+        P *= 100  # Convert from bar to kPa
+
+        # Eq B6
+        A = 0
+        for n in range(2, 10):
+            A += a[n]/(n-1)*rhom**(n-1)
+
+        A -= 0.5*a[10]*rhocm**2*(exp(-delta**2)-1)
+        A -= 0.5*a[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+        A -= 0.5*a[12]*rhocm**6*(exp(-delta**2)*(
+            delta**4+2*delta**2+2)-2)
+        A -= 0.5*a[13]*rhocm**8*(exp(-delta**2)*(
+            delta**6+3*delta**4+6*delta**2+6)-6)
+        A -= 0.5*a[14]*rhocm**10*(exp(-delta**2)*(
+            delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+        A -= 0.5*a[15]*rhocm**12*(exp(-delta**2)*(
+            delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+        A = A*100  # Convert from L·bar/mol to J/mol
+
+        # Eq B4
+        # Use the gas constant in l·bar/mol·K
+        adT = [None, R/100]
+        adT.append(b[1] + b[2]/2/T**0.5 - b[4]/T**2 - 2*b[5]/T**3)
+        adT.append(b[6] - b[8]/T**2 - 2*b[9]/T**3)
+        adT.append(b[10] - b[12]/T**2)
+        adT.append(0)
+        adT.append(-b[14]/T**2 - 2*b[15]/T**3)
+        adT.append(-b[16]/T**2)
+        adT.append(-b[17]/T**2 - 2*b[18]/T**3)
+        adT.append(-2*b[19]/T**3)
+        adT.append(-2*b[20]/T**3 - 3*b[21]/T**4)
+        adT.append(-2*b[22]/T**3 - 4*b[23]/T**5)
+        adT.append(-2*b[24]/T**3 - 3*b[25]/T**4)
+        adT.append(-2*b[26]/T**3 - 4*b[27]/T**5)
+        adT.append(-2*b[28]/T**3 - 3*b[29]/T**4)
+        adT.append(-2*b[30]/T**3 - 3*b[31]/T**4 - 4*b[32]/T**5)
+
+        # Eq B7
+        dAT = 0
+        for n in range(2, 10):
+            dAT += adT[n]/(n-1)*rhom**(n-1)
+
+        dAT -= 0.5*adT[10]*rhocm**2*(exp(-delta**2)-1)
+        dAT -= 0.5*adT[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+        dAT -= 0.5*adT[12]*rhocm**6*(exp(-delta**2)*(
+            delta**4+2*delta**2+2)-2)
+        dAT -= 0.5*adT[13]*rhocm**8*(exp(-delta**2)*(
+            delta**6+3*delta**4+6*delta**2+6)-6)
+        dAT -= 0.5*adT[14]*rhocm**10*(exp(-delta**2)*(
+            delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+        dAT -= 0.5*adT[15]*rhocm**12*(exp(-delta**2)*(
+            delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+        dAT = dAT*100  # Convert from L·bar/mol·K to J/mol·K
+
+        # Eq B9
+        adTT = [None, 0]
+        adTT.append(-b[2]/4/T**1.5 + 2*b[4]/T**3 + 6*b[5]/T**4)
+        adTT.append(2*b[8]/T**3 + 6*b[9]/T**4)
+        adTT.append(2*b[12]/T**3)
+        adTT.append(0)
+        adTT.append(2*b[14]/T**3 + 6*b[15]/T**4)
+        adTT.append(2*b[16]/T**3)
+        adTT.append(2*b[17]/T**3 + 6*b[18]/T**4)
+        adTT.append(6*b[19]/T**4)
+        adTT.append(6*b[20]/T**4 + 12*b[21]/T**5)
+        adTT.append(6*b[22]/T**4 + 20*b[23]/T**6)
+        adTT.append(6*b[24]/T**4 + 12*b[25]/T**5)
+        adTT.append(6*b[26]/T**4 + 20*b[27]/T**6)
+        adTT.append(6*b[28]/T**4 + 12*b[29]/T**5)
+        adTT.append(6*b[30]/T**4 + 12*b[31]/T**5 + 20*b[32]/T**6)
+
+        # Eq B8
+        d2AT = 0
+        for n in range(2, 10):
+            d2AT += adTT[n]*rhom**(n-1)/(n-1)
+        d2AT -= 0.5*adTT[10]*rhocm**2*(exp(-delta**2)-1)
+        d2AT -= 0.5*adTT[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+        d2AT -= 0.5*adTT[12]*rhocm**6*(exp(-delta**2)*(
+            delta**4+2*delta**2+2)-2)
+        d2AT -= 0.5*adTT[13]*rhocm**8*(exp(-delta**2)*(
+            delta**6+3*delta**4+6*delta**2+6)-6)
+        d2AT -= 0.5*adTT[14]*rhocm**10*(exp(-delta**2)*(
+            delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+        d2AT -= 0.5*adTT[15]*rhocm**12*(exp(-delta**2)*(
+            delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+        d2AT = d2AT*100  # Convert from L·bar/mol·K² to J/mol·K²
+
+        # Eq B5
+        dPdrho = sum([a[n]*n*rhom**(n-1) for n in range(1, 10)])
+        dPdrho += exp(-delta**2)*sum(
+            [(2*n-17-2*delta**2)*a[n]*rhom**(2*n-18) for n in range(10, 16)])
+        dPdrho = dPdrho*100  # Convert L·bar/mol to kPa-L/mol
+
+        d2Prho = sum([a[n]*n*(n-1)*rhom**(n-2) for n in range(1, 10)])
+        d2Prho += exp(-delta**2)*sum(
+            [(-35*n+2*n**2+153+33*delta**2+2*delta**4-4*n*delta**2)*2*a[n] *
+             rhom**(2*n-19) for n in range(10, 16)])
+        d2Prho *= 100
+
+        # Eq B3
+        dPdT = sum([adT[n]*rhom**n for n in range(1, 10)])
+        dPdT += exp(-delta**2)*sum(
+            [adT[n]*rhom**(2*n-17) for n in range(10, 16)])
+        dPdT *= 100
+
+        tau = self.Tc/T
+        prop = {}
+        prop["P"] = P*1e3  # Report value in Pa
+        prop["A"] = A
+        prop["dAT"] = dAT
+        prop["d2AT"] = d2AT
+        prop["dPdrho"] = dPdrho
+        prop["d2Prho"] = d2Prho
+        prop["dPdT"] = dPdT
+        prop["fir"] = A/R/T
+        prop["firt"] = (A/T-dAT)/R/tau
+        prop["firtt"] = d2AT*T/R/tau**2
+        prop["fird"] = (P/rhom/T/R-1)/delta
+        prop["firdd"] = ((dPdrho-2*P/rhom)/R/T+1)/delta**2
+        prop["firdt"] = (P/T-dPdT)/R/rhom/tau/delta
+        prop["firddd"] = (d2Prho*rhom-4*dPdrho+6*P/rhom)/R/T-2
+
+        # TODO:
+        B, C, D = 0, 0, 0
+        firddt, firdtt, firttt = 0, 0, 0
+
+        prop["firddt"] = firddt
+        prop["firdtt"] = firdtt
+        prop["firttt"] = firttt
+        prop["B"] = B
+        prop["C"] = C
+        prop["D"] = D
+
         return prop
 
     def derivative(self, z, x, y, fase):
