@@ -32,7 +32,9 @@ Other functions used in iteration calculation to try to speed up it:
 
 
 from itertools import product
+import json
 import logging
+import os
 
 from PyQt5.QtWidgets import QApplication
 from scipy import exp, log, sinh, cosh, tanh, arctan
@@ -2309,8 +2311,9 @@ class MEoS(ThermoAdvanced):
         firdd = estado["firdd"]
         firdt = estado["firdt"]
 
-        h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird)
-        s = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
+        h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) + \
+            self.href-self.hoffset
+        s = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)+self.sref-self.soffset
         cv = -self.R.kJkgK*tau**2*(fiott+firtt)
         cp = self.R.kJkgK*(
             -tau**2*(fiott+firtt) +
@@ -2437,19 +2440,18 @@ class MEoS(ThermoAdvanced):
         fase.fraccion_masica = [1]
 
 #        dbt=-phi11/rho/t
-#        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau*firdt)*T/rho*propiedades["drhodt"]
-#        propiedades["cps"] = self.R*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)/(1+2*delta*fird+delta**2*firdd)*
-#                                    ((1+delta*fird-delta*tau*firdt)-self.rhoc/self.R/delta*self.derivative("P", "T", "rho", propiedades)))
+#        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau
+#            *firdt)*T/rho*propiedades["drhodt"]
+#        propiedades["cps"] = self.R*(-tau**2*(fiott+firtt)+(1+delta*fird-delta
+#            *tau*firdt)/(1+2*delta*fird+delta**2*firdd)*
+#            ((1+delta*fird-delta*tau*firdt)-self.rhoc/self.R/delta*
+#            self.derivative("P", "T", "rho", propiedades)))
 #        propiedades["cps"] = propiedades["cv"] Add cps from Argon pag.27
 
+    @refDoc(__doi__, [9], tab=8)
     def _saturation(self, T=None):
-        """Saturation calculation for two phase search
-
-        References
-        ----------
-        [9]_ Akasaka, R. A Reliable and Useful Method to Determine the
-            Saturation State from Helmholtz Energy Equations of State. J.
-            Thermal Sci. Tech. 3(3) (2008) 442-451
+        """
+        Saturation calculation for two phase search
         """
         if not T:
             T = self.T
@@ -2753,51 +2755,118 @@ class MEoS(ThermoAdvanced):
         ref: str
             Name of standard
             OTO | NBP | IIR | ASHRAE | CUSTOM
+            None to use the default reference state in EoS
+            False to no use reference state offset
         refvalues: list
             Only necessary when ref is CUSTOM. List with custom refvalues:
 
                 * Tref: Reference temperature, [K]
                 * Pref: Reference pressure, [kPa]
-                * ho: Enthalpy in reference state, [J/mol]
-                * so: Entropy in reference state, [J/mol·K]
+                * ho: Enthalpy in reference state, [kJ/kg]
+                * so: Entropy in reference state, [kJ/kg·K]
         """
+        # Variable to avoid rewrite and save the h-s offset status application
+        applyOffset = "ao" in self._constants["cp"] or ref is not None
+
         if ref is None:
             rf = self._constants["ref"]
             if isinstance(rf, str):
                 ref = rf
             elif isinstance(rf, dict):
                 ref = "CUSTOM"
-                refvalues = [rf["Tref"], rf["Pref"], rf["ho"], rf["so"]]
+                refvalues = (rf["Tref"], rf["Pref"], rf["ho"], rf["so"])
             else:
                 ref = "OTO"
 
-        if ref == "OTO":
-            self.Tref = 298.15
-            self.Pref = 101325.
-            self.ho = 0
-            self.so = 0
-        elif ref == "NBP":
-            self.Tref = self.Tb
-            self.Pref = 101325.
-            self.ho = 0
-            self.so = 0
-        elif ref == "IIR":
-            self.Tref = 273.15
-            self.Pref = self._Vapor_Pressure(273.15)
-            self.ho = 200
-            self.so = 1
-        elif ref == "ASHRAE":
-            self.Tref = 233.15
-            self.Pref = self._Vapor_Pressure(233.15)
-            self.ho = 0
-            self.so = 0
-        elif ref == "CUSTOM":
+        self.href = 0
+        self.sref = 0
+
+        # Apply h-s offset if reference state is same as equation used or if
+        # ideal cp expression is used
+        if applyOffset:
+            if ref == "OTO":
+                self.href = 0
+                self.sref = 0
+            elif ref == "NBP":
+                self.href = 0
+                self.sref = 0
+            elif ref == "IIR":
+                self.href = 200
+                self.sref = 1
+            elif ref == "ASHRAE":
+                self.href = 0
+                self.sref = 0
+            elif refvalues:
+                self.href = refvalues[2]/self.M
+                self.sref = refvalues[3]/self.M
+
+            self._refOffset(ref, refvalues)
+
+        else:
+            self._refOffset(False, refvalues)
+
+    def _refOffset(self, ref, refvalues):
+        name = self.__class__.__name__
+        if ref == "CUSTOM":
             if refvalues is None:
                 refvalues = [298.15, 101325., 0., 0.]
-            self.Tref = unidades.Temperature(refvalues[0])
-            self.Pref = unidades.Pressure(refvalues[1], "kPa")
-            self.ho = unidades.Enthalpy(refvalues[2]/self.M, "Jg")
-            self.so = unidades.SpecificHeat(refvalues[3]/self.M, "JgK")
+            ref = "CUSTOM-%s-%s-%s-%s" % refvalues
+
+        # Skip reference state checking to avoid recursion
+        if ref is False:
+            self.hoffset = 0
+            self.soffset = 0
+            return
+
+        filename = conf_dir+"MEoSref.json"
+        if os.path.isfile(filename):
+            with open(filename, "r") as archivo:
+                dat = json.load(archivo)
+        else:
+            dat = {}
+
+        if name in dat and ref in dat[name]:
+            self.hoffset = dat[name][ref]["h"]
+            self.soffset = dat[name][ref]["s"]
+        else:
+            if name not in dat:
+                dat[name] = {}
+
+            kw = {"ref": False}
+            kw["eq"] = self.kwargs["eq"]
+            kw["visco"] = self.kwargs["visco"]
+            kw["thermal"] = self.kwargs["thermal"]
+            if ref == "OTO":
+                st = self.__class__(T=298.15, P=101325, **kw)
+                self.hoffset = st.h0.kJkg
+                self.soffset = st.s0.kJkgK
+            elif ref == "OTH":
+                st = self.__class__(T=298.15, P=101325, **kw)
+                self.hoffset = st.h.kJkg
+                self.soffset = st.s.kJkgK
+            elif ref == "NBP":
+                st = self.__class__(P=101325, x=0, **kw)
+                self.hoffset = st.h.kJkg
+                self.soffset = st.s.kJkgK
+            elif ref == "IIR":
+                st = self.__class__(T=273.15, x=0, **kw)
+                self.hoffset = st.h.kJkg
+                self.soffset = st.s.kJkgK
+            elif ref == "ASHRAE":
+                st = self.__class__(T=233.15, x=0, **kw)
+                self.hoffset = st.h.kJkg
+                self.soffset = st.s.kJkgK
+            elif ref[:6] == "CUSTOM":
+                # First check if the custum state is in database
+                code = "%s-%s-%s-%s" % refvalues
+                if code not in dat[name]:
+                    st = self.__class__(T=refvalues[0], P=refvalues[1]*1e3, **kw)
+                    self.hoffset = st.h.kJkg
+                    self.soffset = st.s.kJkgK
+
+            dat[name][ref] = {"h": self.hoffset, "s": self.soffset}
+            with open(filename, "w") as archivo:
+                json.dump(dat, archivo)
 
     def _prop0(self, rho, T):
         """Ideal gas properties"""
@@ -2823,32 +2892,17 @@ class MEoS(ThermoAdvanced):
         """Convert cp dict in phi0 dict when the cp expression isn't in
         Helmholtz free energy terms"""
         # TODO: Add support for 1/τ terms, give tau*logtau terms and more
-        R = cp.get("R", self._constants["R"])/self.M*1000
-        rho0 = self.Pref/R/self.Tref
-        tau0 = self.Tc/self.Tref
-        delta0 = rho0/self.rhoc
         co = cp["ao"]-1
         ti = [-x for x in cp["pow"]]
         ci = [-n/(t*(t+1))*self.Tc**t for n, t in zip(cp["an"], cp["pow"])]
         titao = [fi/self.Tc for fi in cp["exp"]]
         hyp = [fi/self.Tc for fi in cp["hyp"]]
-        cI = self.ho/R/self.Tc-cp["ao"]/tau0
-        cII = -1+log(tau0/delta0)+cp["ao"]-cp["ao"]*log(tau0)-self.so/R
-        for c, t in zip(ci, ti):
-            cI -= c*t*tau0**(t-1)
-            cII += c*(t-1)*tau0**t
-        for ao, tita in zip(cp["ao_exp"], titao):
-            cI -= ao*tita/(exp(tita*tau0)-1)
-            cII -= ao*(tita*tau0/(1-exp(tita*tau0))+log(1-exp(-tita*tau0)))
-        if cp["ao_hyp"]:
-            for i in [0, 2]:
-                cI -= cp["ao_hyp"][i]*hyp[i]/(tanh(hyp[i]*tau0))
-                cII += cp["ao_hyp"][i]*(hyp[i]*tau0/tanh(hyp[i]*tau0) -
-                                        log(abs(sinh(hyp[i]*tau0))))
-            for i in [1, 3]:
-                cI += cp["ao_hyp"][i]*hyp[i]*tanh(hyp[i]*tau0)
-                cII -= cp["ao_hyp"][i]*(hyp[i]*tau0*tanh(hyp[i]*tau0) -
-                                        log(abs(cosh(hyp[i]*tau0))))
+
+        # The integration constant are difficult to precalculate as depend of
+        # resitual Helmholtz free energy. It's easier use a offset system
+        # saved the values in database and retrieve for each reference state
+        cI = 0
+        cII = 0
 
         Fi0 = {"ao_log": [1,  co],
                "pow": [0, 1] + ti,
@@ -2885,23 +2939,6 @@ class MEoS(ThermoAdvanced):
         else:
             Fi0 = self._PHIO(cp)
 
-#        T = self._constants.get("Tref", self.Tc)/tau
-#        rho = delta*self.rhoc
-#        rho0 = self.Pref/self.R/self.Tref
-#        delta0=rho0/self.rhoc
-#        tau0=self._constants.get("Tref", self.Tc)/self.Tref
-#
-#        cp0sav = self._Cp0(cp, T)
-#        cpisav = self._dCp(cp, T, self.Tref)
-#        cptsav = self._dCpT(cp, T, self.Tref)
-#        cpt2sav = self._dCpT2(cp, T, self.Tref)
-#
-#        fio = self.ho*tau/self.R/self.Tc-self.so/self.R-1+\
-#            log(delta*tau0/delta0/tau)-tau*cpt2sav/self.R*1000+cptsav/self.R
-#        fiot = (cpisav/self.R*1000/T-1)/tau+self.ho/self.R/self.Tc
-#        fiott = (1-cp0sav/self.R*1000)/tau**2
-
-        # FIXME: Reference estate
         fio = Fi0["ao_log"][1]*log(tau)
         fiot = Fi0["ao_log"][1]/tau
         fiott = -Fi0["ao_log"][1]/tau**2
@@ -2999,34 +3036,7 @@ class MEoS(ThermoAdvanced):
                     cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
                 for i in [1, 3]:
                     cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
-            return unidades.SpecificHeat(cpo*self.R/1000)
-
-    def _dCp(self, cp, T, Tref):
-        """Calcula la integral de Cp0 entre T y Tref, necesario para calcular la entalpia usando estados de referencia"""
-        cpsum = cp.get("ao", 0)*(T-Tref)
-        for n, t in zip(cp["an"], cp["pow"]):
-            t += 1
-            if t == 0:
-                cpsum += n*log(T/Tref)
-            else:
-                cpsum += n*(T**(t+1)-Tref**(t+1))/((t+1)*self.Tc**t)
-#        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
-#            cpsum += -ao*0.5*tita*((1.+exp(tita/T))/(1.-exp(tita/T))-(1.+exp(tita/Tref))/(1.-exp(tita/Tref)))
-        return unidades.Enthalpy(cpsum/self.M/1000)
-
-    def _dCpT(self, cp, T, Tref):
-        """Calcula la integral de Cp0/T entre T y Tref, necesario para calcular la entropia usando estados de referencia"""
-        cpsum = cp.get("ao", 0)*log(T/Tref)
-#        for n, t in zip(cp["an"], cp["pow"]):
-#            cpsum += n*(T**t-Tref**t)/(t*self.Tc**t)
-#        for tita, ao in zip(cp["ao_exp"], cp["exp"]):
-#            cpsum += ao*(log((1.-exp(tita/Tref))/(1.-exp(tita/T)))+tita/T*exp(tita/T)/(exp(tita/T)-1.)-tita/Tref*exp(tita/Tref)/(exp(tita/Tref)-1.))
-        return unidades.SpecificHeat(cpsum*self.R*1000)
-
-    def _dCpT2(self, cp, T, Tref):
-        """Calcula la integral de Cp0/T² entre T y Tref, necesario para calcular la entropia usando estados de referencia"""
-        cpsum = -cp.get("ao", 0)*(1/T-1/Tref)
-        return unidades.SpecificHeat(cpsum*self.M*1000)
+            return unidades.SpecificHeat(cpo*self.R.kJkgK)
 
     def _Helmholtz(self, tau, delta):
         """Residual contribution to the free Helmholtz energy
