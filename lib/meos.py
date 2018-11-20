@@ -42,11 +42,13 @@ from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve
 
 from lib import unidades
+from lib.config import conf_dir
 from lib.utilities import SimpleEq
 from lib.physics import R_atml, Collision_Neufeld
 from lib.thermo import ThermoAdvanced
 from lib.compuestos import RhoL_Costald, Pv_Lee_Kesler, MuG_Chung, MuG_P_Chung
 from lib.compuestos import ThG_Chung, ThG_P_Chung, Tension_Pitzer
+from lib.utilities import refDoc
 
 
 __doi__ = {
@@ -2688,15 +2690,11 @@ class MEoS(ThermoAdvanced):
         propiedades["dhdrho"] = 0
         return propiedades
 
+    @refDoc(__doi__, [10], tab=8)
     def _Generalised(self):
         """
         Generalised mEoS based in Helmholtz free energy. Referenced in [10]_,
         section 7.2.2, pag. 300
-
-        References
-        ----------
-        [10]_ Span, R. Multiparameter Equations of State: An Accurate Source of
-            Thermodynamic Property Data. Springer, 2000
         """
         # It use the specific critical values cited in Table 7.6, if this
         # values are not available use the normal critical properties
@@ -3622,6 +3620,7 @@ class MEoS(ThermoAdvanced):
             rho = P*1e-3/T/R*self.M
         return rho
 
+    @refDoc(__doi__, [1], tab=8)
     def _Surface(self, T):
         r"""Equation for the surface tension
 
@@ -3631,12 +3630,6 @@ class MEoS(ThermoAdvanced):
         The subclass must define the parameters of correlation in _surface::
             * sigma: Coefficient of polynomial term
             * exp: Exponential of polynomial term
-
-        References
-        ----------
-        [1]_ Mulero, A., Cachadiña, I., Parra, M.I. Recommended Correlations
-            for the Surface Tension of Common Fluids. J. Phys. Chem. Ref. Data
-            41(4) (2012) 043105.
         """
         if self.Tt <= self.T <= self.Tc:
             if self._surface:
@@ -3735,6 +3728,7 @@ class MEoS(ThermoAdvanced):
             return None
 
     # Viscosity calculation methods
+    @refDoc(__doi__, [2, 3, 4, 5], tab=8)
     def _Viscosity(self, rho, T, fase):
         r"""Viscosity calculation procedure, implement several general method
 
@@ -3918,22 +3912,6 @@ class MEoS(ThermoAdvanced):
             Temperature [K]
         fase: dict
             phase properties
-
-        References
-        ----------
-        [2]_ Quiñones-Cisneros, S.E., Deiters, U.K. Generalization of the
-            Friction Theory for Viscosity Modeling. J. Phys. Chem. B, 110(25)
-            (2006) 12820-12834
-        [3]_ Quiñones-Cisneros, S.E., Huber, M.L., Deiters, U.K. Correlation
-            for the Viscosity of Sulfur Hexafluoride (SF6) from the Triple
-            Point to 1000 K and Pressures to 50 MPa. J. Phys. Chem. Ref. Data
-            41(2) (2012) 023102
-        [4]_ Younglove, B.A. Thermophysical Properties of Fluids. I. Argon,
-            Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen.
-            J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)
-        [5]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids.
-            II. Methane, Ethane, Propane, Isobutane, and Normal Butane. J.
-            Phys. Chem. Ref. Data 16(4) (1987) 577-798
         """
         coef = self._viscosity
         if coef:
@@ -4222,6 +4200,7 @@ class MEoS(ThermoAdvanced):
 
         return muo
 
+    @refDoc(__doi__, [6, 5, 7, 3, 8], tab=8)
     def _Omega(self, coef):
         r"""Collision integral calculations
 
@@ -4253,27 +4232,6 @@ class MEoS(ThermoAdvanced):
             \Omega_5 = \frac{1.16145}{T_r^{0.14874}} + \frac{0.52487}
             {\exp(0.7732T_r)} + \frac{2.16178}{\exp(2.4378T_r)} - 6.435e^{-4}
             T_r^{0.14874}\sin\left(\frac{18.0323}{T_r^{0.76830}}-7.27371\right)
-
-        References
-        ----------
-        [6]_ Lemmon, E.W., Jacobsen, R.T. Viscosity and Thermal Conductivity
-            Equations for Nitrogen, Oxygen, Argon, and Air. Int. J.
-            Thermophys., 25(1) (2004) 21-69
-        [5]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids.
-            II. Methane, Ethane, Propane, Isobutane, and Normal Butane. J.
-            Phys. Chem. Ref. Data 16(4) (1987) 577-798
-        [7]_ Tariq, U., Jusoh, A.R.B., Rittliesco, N., Vesovic, V. Reference
-            Correlation of the Viscosity of Cyclohexane from the Triple Point
-            to 700K and up to 110 MPa. J. Phys. Chem. Ref. Data 43(3) (2014)
-            033101
-        [3]_ Quiñones-Cisneros, S.E., Huber, M.L., Deiters, U.K. Correlation
-            for the Viscosity of Sulfur Hexafluoride (SF6) from the Triple
-            Point to 1000 K and Pressures to 50 MPa. J. Phys. Chem. Ref. Data
-            41(2) (2012) 023102
-        [8]_ Neufeld, P.D., Janzen, A.R., Aziz, R.A. Empirical Equations to
-            Calculate 16 of the Transport Collision Integrals Ω for the
-            Lennard-Jones (12-6) Potential. J. Chem. Phys. 57(3) (1972)
-            1100-1102
         """
         b = coef.get("collision", None)
         if coef["omega"] == 1:
@@ -4316,6 +4274,7 @@ class MEoS(ThermoAdvanced):
         return omega
 
     # Thermal conductivity methods
+    @refDoc(__doi__, [4, 5], tab=8)
     def _ThCond(self, rho, T, fase):
         r"""Thermal conductivity calculation procedure
 
@@ -4438,15 +4397,6 @@ class MEoS(ThermoAdvanced):
             Temperature [K]
         fase: dict
             phase properties
-
-        References
-        ----------
-        [4]_ Younglove, B.A. Thermophysical Properties of Fluids. I. Argon,
-            Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen.
-            J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)
-        [5]_ Younglove, B.A., Ely, J.F. Thermophysical Properties of Fluids.
-            II. Methane, Ethane, Propane, Isobutane, and Normal Butane. J.
-            Phys. Chem. Ref. Data 16(4) (1987) 577-798
         """
         coef = self._thermal
 
