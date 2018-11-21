@@ -32,7 +32,7 @@ class R123(MEoS):
     synonym = "R123"
     _refPropName = "R123"
     _coolPropName = "R123"
-    rhoc = unidades.Density(550.)
+    rhoc = unidades.Density(550)
     Tc = unidades.Temperature(456.831)
     Pc = unidades.Pressure(3661.8, "kPa")
     M = 152.93  # g/mol
@@ -42,9 +42,8 @@ class R123(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.356, "Debye")
     id = 1631
 
-    CP1 = {"ao": 17.01154/8.31451,
-           "an": [0.4046308/8.31451, -4.644803e-4/8.31451,
-                  2.347418e-7/8.31451],
+    CP1 = {"ao": 2.046009,
+           "an": [22.231991/Tc, -11.658491/Tc**2, 2.691665/Tc**3],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
@@ -56,22 +55,21 @@ class R123(MEoS):
            "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-123 of Younglove and "
                     "McLinden (1994)",
-        "__doi__": {"autor": "Younglove, B.A. and McLinden, M.O.",
+        "__doi__": {"autor": "Younglove, B.A., McLinden, M.O.",
                     "title": "An International Standard Equation of State for "
                              "the Thermodynamic Properties of Refrigerant 123 "
                              "(2,2-Dichloro-1,1,1-trifluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data, 23(5) (1994) 731-779",
                     "doi":  "10.1063/1.555950"},
 
-        # TODO: The paper include heltmholtz expresion from MBWR equation
-
         "R": 8.31451,
         "cp": CP1,
         "ref": "IIR",
+        "rhoc": 3.596417,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
         "Pmin": 0.0042, "rhomin": 11.60,
@@ -103,6 +101,7 @@ class R123(MEoS):
         "R": 8.31451,
         "cp": Fi1,
         "ref": "IIR",
+        "rhoc": 3.596417, "M": 152.931,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
         "Pmin": 0.0042, "rhomin": 11.60,
@@ -161,8 +160,7 @@ class R123(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    # eq = MBWR, tillner, shortSpan
-    eq = tillner, shortSpan
+    eq = younglove, tillner, shortSpan
 
     _surface = {"sigma": [0.056151], "exp": [1.2367]}
     _vapor_Pressure = {
@@ -262,37 +260,241 @@ class R123(MEoS):
 
 class Test(TestCase):
 
-    # def test_younglove(self):
-        # # Selected point from Table C1 pag 759, saturation states
-        # st = R123(T=R123.Tt, x=0.5, eq=1)
-        # self.assertEqual(round(st.P.MPa, 5), 0)
-        # self.assertEqual(round(st.Liquido.rho, 1), 1770.9)
-        # self.assertEqual(round(st.Liquido.h.kJkg, 2), 98.81)
-        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.5311)
-        # self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.630)
-        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 0.929)
-        # self.assertEqual(round(st.Liquido.w, 1), 1243.8)
-        # self.assertEqual(round(st.Gas.rho, 4), 0.0005)
-        # self.assertEqual(round(st.Gas.h.kJkg, 2), 322.50)
-        # self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.8786)
-        # self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.419)
-        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.474)
-        # self.assertEqual(round(st.Gas.w, 1), 101.0)
+    def test_younglove(self):
+        # Selected point from Table C1 pag 759, saturation states
+        st = R123(T=R123.Tt, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0)
+        self.assertEqual(round(st.Liquido.rho, 1), 1770.9)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 98.81)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.5311)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.630)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 0.929)
+        self.assertEqual(round(st.Liquido.w, 1), 1243.8)
+        self.assertEqual(round(st.Gas.rho, 4), 0.0005)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 322.50)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.8786)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.419)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.474)
+        self.assertEqual(round(st.Gas.w, 1), 101.0)
 
-        # st = R123(T=+273.15, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 6), 0)
-        # self.assertEqual(round(st.Liquido.rho, 1), )
-        # self.assertEqual(round(st.Liquido.h.kJkg, 2), )
-        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), )
-        # self.assertEqual(round(st.Liquido.cv.kJkgK, 3), )
-        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), )
-        # self.assertEqual(round(st.Liquido.w, 1), )
-        # self.assertEqual(round(st.Gas.rho, 1), )
-        # self.assertEqual(round(st.Gas.h.kJkg, 2), )
-        # self.assertEqual(round(st.Gas.s.kJkgK, 4), )
-        # self.assertEqual(round(st.Gas.cv.kJkgK, 3), )
-        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), )
-        # self.assertEqual(round(st.Gas.w, 1), )
+        st = R123(T=-50+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.00177)
+        self.assertEqual(round(st.Liquido.rho, 1), 1642.6)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 151.81)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.8054)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.646)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 0.939)
+        self.assertEqual(round(st.Liquido.w, 1), 1006.4)
+        self.assertEqual(round(st.Gas.rho, 4), 0.1461)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 352.21)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7035)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.514)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.569)
+        self.assertEqual(round(st.Gas.w, 1), 115.6)
+
+        st = R123(T=273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.03265)
+        self.assertEqual(round(st.Liquido.rho, 1), 1526.1)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 200.00)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0000)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.684)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 0.990)
+        self.assertEqual(round(st.Liquido.w, 1), 800.7)
+        self.assertEqual(round(st.Gas.rho, 4), 2.2417)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 381.44)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6642)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.590)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.651)
+        self.assertEqual(round(st.Gas.w, 1), 125.4)
+
+        st = R123(T=50+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.21246)
+        self.assertEqual(round(st.Liquido.rho, 1), 1397.8)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 251.06)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.1711)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.727)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.052)
+        self.assertEqual(round(st.Liquido.w, 1), 609.6)
+        self.assertEqual(round(st.Gas.rho, 3), 13.031)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 411.50)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6676)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.666)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.745)
+        self.assertEqual(round(st.Gas.w, 1), 129.7)
+
+        st = R123(T=100+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.78553)
+        self.assertEqual(round(st.Liquido.rho, 1), 1246.9)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 305.77)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3271)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.773)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.143)
+        self.assertEqual(round(st.Liquido.w, 1), 427.5)
+        self.assertEqual(round(st.Gas.rho, 3), 46.996)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 439.77)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6862)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.743)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.878)
+        self.assertEqual(round(st.Gas.w, 1), 125.1)
+
+        st = R123(T=150+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 2.09868)
+        self.assertEqual(round(st.Liquido.rho, 1), 1036.8)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 367.11)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.4782)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.831)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.415)
+        self.assertEqual(round(st.Liquido.w, 1), 239.3)
+        self.assertEqual(round(st.Gas.rho, 2), 142.23)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 461.06)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7003)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.831)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.240)
+        self.assertEqual(round(st.Gas.w, 1), 106.0)
+
+        st = R123(T=182+273.15, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 3.56326)
+        self.assertEqual(round(st.Liquido.rho, 1), 712.6)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 422.28)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.5997)
+        self.assertEqual(round(st.Liquido.cv.kJkgK, 3), 0.915)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 9.130)
+        self.assertEqual(round(st.Liquido.w, 1), 89.8)
+        self.assertEqual(round(st.Gas.rho, 2), 389.79)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 452.66)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6664)
+        self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.931)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 11.857)
+        self.assertEqual(round(st.Gas.w, 1), 78.1)
+
+        # Selected point from Table C2 pag 766, single-phase region
+        st = R123(T=-100+273.15, P=1e4)
+        self.assertEqual(round(st.rho, 1), 1754.5)
+        self.assertEqual(round(st.h.kJkg, 2), 105.44)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.5702)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.632)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.926)
+        self.assertEqual(round(st.w, 1), 1215.3)
+
+        st = R123(T=273.15, P=2e4)
+        self.assertEqual(round(st.rho, 3), 1.363)
+        self.assertEqual(round(st.h.kJkg, 2), 381.86)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.6920)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.588)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.646)
+        self.assertEqual(round(st.w, 1), 126.2)
+
+        st = R123(T=250+273.15, P=4e4)
+        self.assertEqual(round(st.rho, 3), 1.410)
+        self.assertEqual(round(st.h.kJkg, 2), 575.72)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.1500)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.830)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.885)
+        self.assertEqual(round(st.w, 1), 173.8)
+
+        st = R123(T=110+273.15, P=6e4)
+        self.assertEqual(round(st.rho, 3), 2.911)
+        self.assertEqual(round(st.h.kJkg, 2), 459.31)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.8700)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.713)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.771)
+        self.assertEqual(round(st.w, 1), 148.4)
+
+        st = R123(T=273.15, P=1e5)
+        self.assertEqual(round(st.rho, 1), 1526.3)
+        self.assertEqual(round(st.h.kJkg, 2), 200.02)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9999)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.684)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.990)
+        self.assertEqual(round(st.w, 1), 801.0)
+
+        st = R123(T=-50+273.15, P=101325)
+        self.assertEqual(round(st.rho, 1), 1642.7)
+        self.assertEqual(round(st.h.kJkg, 2), 151.85)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.8053)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.646)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.939)
+        self.assertEqual(round(st.w, 1), 1006.7)
+
+        st = R123(T=250+273.15, P=2e5)
+        self.assertEqual(round(st.rho, 3), 7.114)
+        self.assertEqual(round(st.h.kJkg, 2), 574.71)
+        self.assertEqual(round(st.s.kJkgK, 4), 2.0611)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.831)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.889)
+        self.assertEqual(round(st.w, 1), 172.4)
+
+        st = R123(T=70+273.15, P=4e5)
+        self.assertEqual(round(st.rho, 1), 1341.3)
+        self.assertEqual(round(st.h.kJkg, 2), 272.43)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.2348)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.745)
+        self.assertEqual(round(st.cp.kJkgK, 3), 1.082)
+        self.assertEqual(round(st.w, 1), 536.6)
+
+        st = R123(T=90+273.15, P=6e5)
+        self.assertEqual(round(st.rho, 3), 35.482)
+        self.assertEqual(round(st.h.kJkg, 2), 434.92)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.6854)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.725)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.839)
+        self.assertEqual(round(st.w, 1), 127.9)
+
+        st = R123(T=100+273.15, P=1e6)
+        self.assertEqual(round(st.rho, 1), 1248.6)
+        self.assertEqual(round(st.h.kJkg, 2), 305.76)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.3266)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.773)
+        self.assertEqual(round(st.cp.kJkgK, 3), 1.141)
+        self.assertEqual(round(st.w, 1), 430.3)
+
+        st = R123(T=150+273.15, P=2e6)
+        self.assertEqual(round(st.rho, 3), 129.994)
+        self.assertEqual(round(st.h.kJkg, 2), 463.53)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.7078)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.823)
+        self.assertEqual(round(st.cp.kJkgK, 3), 1.160)
+        self.assertEqual(round(st.w, 1), 110.2)
+
+        st = R123(T=250+273.15, P=4e6)
+        self.assertEqual(round(st.rho, 1), 191.2)
+        self.assertEqual(round(st.h.kJkg, 2), 545.96)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.8560)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.868)
+        self.assertEqual(round(st.cp.kJkgK, 3), 1.088)
+        self.assertEqual(round(st.w, 1), 136.5)
+
+        st = R123(T=-100+273.15, P=6e6)
+        self.assertEqual(round(st.rho, 1), 1760.4)
+        self.assertEqual(round(st.h.kJkg, 2), 108.09)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.5658)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.640)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.926)
+        self.assertEqual(round(st.w, 1), 1213.2)
+
+        st = R123(T=273.15, P=1e7)
+        self.assertEqual(round(st.rho, 1), 1547.2)
+        self.assertEqual(round(st.h.kJkg, 2), 203.80)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9902)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.691)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.978)
+        self.assertEqual(round(st.w, 1), 842.5)
+
+        st = R123(T=-90+273.15, P=2e7)
+        self.assertEqual(round(st.rho, 1), 1752.6)
+        self.assertEqual(round(st.h.kJkg, 2), 123.53)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.6078)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.654)
+        self.assertEqual(round(st.cp.kJkgK, 3), 0.921)
+        self.assertEqual(round(st.w, 1), 1183.5)
+
+        st = R123(T=200+273.15, P=4e7)
+        self.assertEqual(round(st.rho, 1), 1227.2)
+        self.assertEqual(round(st.h.kJkg, 1), 420.6)
+        self.assertEqual(round(st.s.kJkgK, 4), 1.5242)
+        self.assertEqual(round(st.cv.kJkgK, 3), 0.840)
+        self.assertEqual(round(st.cp.kJkgK, 3), 1.078)
+        self.assertEqual(round(st.w, 1), 537.5)
 
     def test_tillner(self):
         # Selected point from pag 166, saturation state
@@ -301,7 +503,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.rho, 1), 1653.9)
         self.assertEqual(round(st.Gas.rho, 4), 0.1020)
         self.assertEqual(round(st.Liquido.h.kJkg, 2), 147.12)
-        self.assertEqual(round(st.Hvap.kJkg, 2), 202.30)
+        self.assertEqual(round(st.Hvap.kJkg, 2), 202.29)
         self.assertEqual(round(st.Gas.h.kJkg, 2), 349.42)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.7842)
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.9273)
@@ -313,7 +515,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rho, 4), 2.2417)
         self.assertEqual(round(st.Liquido.h.kJkg, 2), 200.00)
         self.assertEqual(round(st.Hvap.kJkg, 2), 181.44)
-        self.assertEqual(round(st.Gas.h.kJkg, 2), 381.44)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 381.43)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0000)
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.6642)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6642)
@@ -349,7 +551,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.h.kJkg, 2), 461.05)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.4782)
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.2220)
-        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7003)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7002)
 
         st = R123(T=180+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 3.45057)
@@ -365,7 +567,7 @@ class Test(TestCase):
         st = R123(T=183+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 3.62135)
         self.assertEqual(round(st.Liquido.rho, 2), 665.76)
-        self.assertEqual(round(st.Gas.rho, 2), 433.97)
+        self.assertEqual(round(st.Gas.rho, 2), 433.98)
         self.assertEqual(round(st.Liquido.h.kJkg, 2), 426.94)
         self.assertEqual(round(st.Hvap.kJkg, 2), 21.52)
         self.assertEqual(round(st.Gas.h.kJkg, 2), 448.46)
@@ -381,7 +583,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Hvap.kJkg, 2), 203.20)
         self.assertEqual(round(st.Gas.h.kJkg, 2), 348.10)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.7739)
-        self.assertEqual(round(st.Svap.kJkgK, 4), 0.9418)
+        self.assertEqual(round(st.Svap.kJkgK, 4), 0.9417)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7157)
 
         st = R123(P=1e4, x=0.5, eq="tillner")
@@ -401,18 +603,18 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rho, 4), 6.3918)
         self.assertEqual(round(st.Liquido.h.kJkg, 2), 227.65)
         self.assertEqual(round(st.Hvap.kJkg, 2), 170.34)
-        self.assertEqual(round(st.Gas.h.kJkg, 2), 398.00)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 397.99)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0963)
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.5667)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6629)
 
         st = R123(P=1e6, x=0.5, eq="tillner")
         self.assertEqual(round(st.T.C, 2), 111.15)
-        self.assertEqual(round(st.Liquido.rho, 1), 1207.7)
-        self.assertEqual(round(st.Gas.rho, 4), 60.445)
+        self.assertEqual(round(st.Liquido.rho, 1), 1207.8)
+        self.assertEqual(round(st.Gas.rho, 3), 60.445)
         self.assertEqual(round(st.Liquido.h.kJkg, 2), 318.66)
         self.assertEqual(round(st.Hvap.kJkg, 2), 126.78)
-        self.assertEqual(round(st.Gas.h.kJkg, 2), 445.45)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 445.44)
         self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.3607)
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.3299)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6906)
@@ -420,7 +622,7 @@ class Test(TestCase):
         # Selected point from Pag 174, single region states
         st = R123(T=273.15, P=1e4, eq="tillner")
         self.assertEqual(round(st.rho, 4), 0.6773)
-        self.assertEqual(round(st.h.kJkg, 2), 382.19)
+        self.assertEqual(round(st.h.kJkg, 2), 382.18)
         self.assertEqual(round(st.s.kJkgK, 4), 1.7306)
 
         st = R123(T=175+273.15, P=2e4, eq="tillner")
@@ -431,7 +633,7 @@ class Test(TestCase):
         st = R123(T=-5+273.15, P=3e4, eq="tillner")
         self.assertEqual(round(st.rho, 1), 1538.2)
         self.assertEqual(round(st.h.kJkg, 2), 195.06)
-        self.assertEqual(round(st.s.kJkgK, 4), 0.9818)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9817)
 
         st = R123(T=10+273.15, P=5e4, eq="tillner")
         self.assertEqual(round(st.rho, 4), 3.3352)
@@ -439,19 +641,19 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 4), 1.6633)
 
         st = R123(T=100+273.15, P=1e5, eq="tillner")
-        self.assertEqual(round(st.rho, 4), 5.0265)
+        self.assertEqual(round(st.rho, 4), 5.0266)
         self.assertEqual(round(st.h.kJkg, 2), 451.10)
         self.assertEqual(round(st.s.kJkgK, 4), 1.8209)
 
         st = R123(T=45+273.15, P=2e5, eq="tillner")
-        self.assertEqual(round(st.rho, 1), 1411.4)
+        self.assertEqual(round(st.rho, 1), 1411.5)
         self.assertEqual(round(st.h.kJkg, 2), 245.81)
         self.assertEqual(round(st.s.kJkgK, 4), 1.1548)
 
         st = R123(T=-25+273.15, P=3e5, eq="tillner")
-        self.assertEqual(round(st.rho, 1), 1585.9)
+        self.assertEqual(round(st.rho, 1), 1586.0)
         self.assertEqual(round(st.h.kJkg, 2), 175.70)
-        self.assertEqual(round(st.s.kJkgK, 4), 0.9061)
+        self.assertEqual(round(st.s.kJkgK, 4), 0.9060)
 
         st = R123(T=80+273.15, P=5e5, eq="tillner")
         self.assertEqual(round(st.rho, 1), 1311.3)
@@ -459,12 +661,12 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 4), 1.2660)
 
         st = R123(T=120+273.15, P=1e6, eq="tillner")
-        self.assertEqual(round(st.rho, 3), 57.583)
+        self.assertEqual(round(st.rho, 3), 57.584)
         self.assertEqual(round(st.h.kJkg, 2), 453.52)
         self.assertEqual(round(st.s.kJkgK, 4), 1.7114)
 
         st = R123(T=200+273.15, P=2e6, eq="tillner")
-        self.assertEqual(round(st.rho, 3), 95.885)
+        self.assertEqual(round(st.rho, 3), 95.886)
         self.assertEqual(round(st.h.kJkg, 2), 514.78)
         self.assertEqual(round(st.s.kJkgK, 4), 1.8225)
 
@@ -481,87 +683,103 @@ class Test(TestCase):
 
     def test_tanaka(self):
         # Table VII, Pag 316
-        # TODO: The paper use the Younglove equation so recheck when fix MBWR
-        pass
+        # The pressure values are not good, the density differ too so the
+        # resulting values differ in the last digit
 
-        # st = R123(T=260, x=0.5, eq="tillner", thermal=1)
-        # self.assertEqual(round(st.P.MPa, 3), 0.017)
-        # self.assertEqual(round(st.Liquido.rho, 1), 1557.6)
-        # self.assertEqual(round(st.Gas.rho, 3), 1.286)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 87.42)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 8.405)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 670.0)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 9.346)
+        st = R123(T=260, x=0.5, thermal=1)
+        self.assertEqual(round(st.Liquido.rho, 1), 1557.6)
+        self.assertEqual(round(st.Gas.rho, 3), 1.236)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 87.41)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 8.404)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 669.8)
+        self.assertEqual(round(st.Gas.mu.muPas, 3), 9.347)
 
-        # st = R123(T=260, x=0.5, eq="MBWR")
-        # self.assertEqual(round(st.P.MPa, 3), )
-        # self.assertEqual(round(st.Liquido.rho, 1), )
-        # self.assertEqual(round(st.Gas.rho, 3), )
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), )
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), )
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), )
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), )
+        st = R123(T=345, x=0.5, thermal=1)
+        self.assertEqual(round(st.Liquido.rho, 1), 1335.7)
+        self.assertEqual(round(st.Gas.rho, 2), 23.75)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 65.53)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 13.26)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 250.7)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.34)
 
-        # st = R123(T=420, x=0.5, eq="tillner", thermal=1)
-        # self.assertEqual(round(st.Liquido.rho, 1), 1054.0)
-        # self.assertEqual(round(st.Gas.rho, 3), 132.9)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 47.15)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 19.60)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 114.5)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 16.33)
+        st = R123(T=420, x=0.5, thermal=1)
+        self.assertEqual(round(st.Liquido.rho, 1), 1053.9)
+        self.assertEqual(round(st.Gas.rho, 1), 132.4)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 47.14)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 19.59)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 114.5)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 16.31)
 
         # Table VIII, Pag 318, Table IX, Pag 320
-        # st = R123(T=260, P=1e5, eq="tillner", thermal=1)
-        # self.assertEqual(round(st.k.mWmK, 2), 87.44)
-        # self.assertEqual(round(st.mu.muPas, 2), 670.6)
+        st = R123(T=260, P=1e5, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 87.43)
+        self.assertEqual(round(st.mu.muPas, 1), 670.5)
+
+        st = R123(T=300, P=1e6, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 77.06)
+        self.assertEqual(round(st.mu.muPas, 1), 413.8)
+
+        st = R123(T=370, P=1e5, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 14.01)
+        self.assertEqual(round(st.mu.muPas, 2), 13.28)
+
+        st = R123(T=260, P=5e6, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 88.75)
+        self.assertEqual(round(st.mu.muPas, 1), 708.4)
+
+        st = R123(T=340, P=1e7, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 70.94)
+        self.assertEqual(round(st.mu.muPas, 1), 308.6)
+
+        st = R123(T=300, P=2e7, thermal=1)
+        self.assertEqual(round(st.k.mWmK, 2), 82.99)
+        self.assertEqual(round(st.mu.muPas, 1), 521.0)
 
     def test_Laesecke(self):
         # Table 2, Pag 237
-        # TODO: The paper use the original Younglove MBWR eos
-        # so recheck value when fix MBWR
-        st = R123(T=180, x=0.5, eq="tillner")
+        st = R123(T=180, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 0.00002814)
         self.assertEqual(round(st.Liquido.rho, 0), 1739.0)
         self.assertEqual(round(st.Gas.rho, 6), 0.002876)
         self.assertEqual(round(st.Liquido.k.mWmK, 1), 110.9)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 2.471)
 
-        st = R123(T=200, x=0.5, eq="tillner")
+        st = R123(T=200, x=0.5)
         self.assertEqual(round(st.P.MPa, 7), 0.0002495)
         self.assertEqual(round(st.Liquido.rho, 1), 1694.4)
         self.assertEqual(round(st.Gas.rho, 5), 0.02296)
         self.assertEqual(round(st.Liquido.k.mWmK, 1), 105.6)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 3.608)
 
-        st = R123(T=250, x=0.5, eq="tillner")
+        st = R123(T=250, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.01007)
         self.assertEqual(round(st.Liquido.rho, 1), 1581.1)
         self.assertEqual(round(st.Gas.rho, 4), 0.7469)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 90.83)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 6.435)
 
-        st = R123(T=300, x=0.5, eq="tillner")
+        st = R123(T=300, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.09780)
         self.assertEqual(round(st.Liquido.rho, 1), 1459.1)
         self.assertEqual(round(st.Gas.rho, 3), 6.259)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 75.90)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 9.291)
 
-        st = R123(T=350, x=0.5, eq="tillner")
+        st = R123(T=350, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.4515)
         self.assertEqual(round(st.Liquido.rho, 1), 1320.8)
         self.assertEqual(round(st.Gas.rho, 2), 26.98)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 63.34)
         self.assertEqual(round(st.Gas.k.mWmK, 2), 12.49)
 
-        st = R123(T=400, x=0.5, eq="tillner")
+        st = R123(T=400, x=0.5)
         self.assertEqual(round(st.P.MPa, 3), 1.372)
         self.assertEqual(round(st.Liquido.rho, 1), 1146.8)
         self.assertEqual(round(st.Gas.rho, 2), 85.32)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 52.41)
         self.assertEqual(round(st.Gas.k.mWmK, 2), 16.84)
 
-        st = R123(T=440, x=0.5, eq="tillner")
+        st = R123(T=440, x=0.5)
         self.assertEqual(round(st.P.MPa, 3), 2.790)
         self.assertEqual(round(st.Liquido.rho, 2), 924.57)
         self.assertEqual(round(st.Gas.rho, 1), 215.3)
