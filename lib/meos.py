@@ -981,10 +981,13 @@ class MEoS(ThermoAdvanced):
 
         self.kwargs.update(kwargs)
 
+        self._code = ""
         if eq == "PR":
             self._constants = self.eq[0]
+            self._code = "PR"
         elif eq == "Generalised":
             self._Generalised()
+            self._code = "Generalised"
         elif eq == "GERG":
             try:
                 self._constants = self.GERG
@@ -996,6 +999,9 @@ class MEoS(ThermoAdvanced):
             self._constants = self.eq[eq]
         elif self.eq[eq]["__type__"] == "ECS":
             self._constants = self.eq[eq]
+
+        if not self._code:
+            self._code = str(eq)
 
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
@@ -2764,7 +2770,8 @@ class MEoS(ThermoAdvanced):
                 * so: Entropy in reference state, [kJ/kg·K]
         """
         # Variable to avoid rewrite and save the h-s offset status application
-        applyOffset = "ao" in self._constants["cp"] or ref is not None
+        # applyOffset = "ao" in self._constants["cp"] or ref is not None
+        applyOffset = ref is not False
 
         if ref is None:
             rf = self._constants["ref"]
@@ -2782,18 +2789,12 @@ class MEoS(ThermoAdvanced):
         # Apply h-s offset if reference state is same as equation used or if
         # ideal cp expression is used
         if applyOffset:
-            if ref == "OTO":
-                self.href = 0
-                self.sref = 0
-            elif ref == "NBP":
+            if ref in ["OTO", "OTH", "NBP", "ASHRAE"]:
                 self.href = 0
                 self.sref = 0
             elif ref == "IIR":
                 self.href = 200
                 self.sref = 1
-            elif ref == "ASHRAE":
-                self.href = 0
-                self.sref = 0
             elif refvalues:
                 self.href = refvalues[2]/self.M
                 self.sref = refvalues[3]/self.M
@@ -2804,7 +2805,7 @@ class MEoS(ThermoAdvanced):
             self._refOffset(False, refvalues)
 
     def _refOffset(self, ref, refvalues):
-        name = self.__class__.__name__
+        name = "%s-%s" % (self.__class__.__name__, self._code)
         if ref == "CUSTOM":
             if refvalues is None:
                 refvalues = [298.15, 101325., 0., 0.]
