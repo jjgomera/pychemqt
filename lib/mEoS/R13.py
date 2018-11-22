@@ -41,18 +41,20 @@ class R13(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.51, "Debye")
     id = 215
 
+    # Cp⁰ coefficient for Tr term, so divide by Tc
     CP1 = {"ao": 1.86012334,
-           "an": [8.07314520, -1.87713639, 3.17242858e-2], "pow": [1, 2, 3],
+           "an": [8.07314520/Tc, -1.87713639/Tc**2, 3.17242858e-2/Tc**3],
+           "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 2.4766458,
-           "an": [0.18074269e-1, 0.21945535e-4, -0.85810657e-7, 0.63199171e-10],
+           "an": [0.018074269, 2.1945535e-5, -8.5810657e-8, 6.3199171e-11],
            "pow": [1, 2, 3, 4],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
-    MBWR = {
+    magee = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-13 of Magee et al. (2000)",
         "__doi__": {"autor": "Magee, J.W., Outcalt, S.L., Ely, J.F.",
@@ -64,8 +66,9 @@ class R13(MEoS):
                     "doi": "10.1023/A:1026446004383"},
 
         "R": 8.314471,
+        "Tc": 302, "Pc": 3.879, "rhoc": 5.58, "M": 104.459,
         "cp": CP1,
-        "ref": "OTO",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85,
         "Pmin": 0.00033, "rhomin": 17.84,
@@ -82,7 +85,7 @@ class R13(MEoS):
               0.235567665577e-2, 0.131830636112e1, -0.115187941781e-4,
               0.564530387616e-2, 0.336242130107]}
 
-    helmholtz1 = {
+    platzer = {
         "__type__": "Helmholtz",
         "__name__": "Bender equation of state for R-13 of Platzer (1990)",
         "__doi__": {"autor": "Platzer, B., Polt, A., Maurer, G.",
@@ -91,7 +94,7 @@ class R13(MEoS):
                     "doi": ""},
         "R": 8.31451,
         "cp": CP2,
-        "ref": "OTO",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806,
         "Pmin": 0.0009047, "rhomin": 17.6998,
@@ -112,8 +115,7 @@ class R13(MEoS):
         "c2": [2]*6,
         "gamma2": [0.98230055]*6}
 
-    # eq = MBWR, helmholtz1,
-    eq = helmholtz1,
+    eq = magee, platzer
 
     _surface = {"sigma": [0.05045], "exp": [1.269]}
     _vapor_Pressure = {
