@@ -38,18 +38,17 @@ class R124(MEoS):
     Tb = unidades.Temperature(261.187)
     f_acent = 0.28810
     momentoDipolar = unidades.DipoleMoment(1.469, "Debye")
-    id = 236
     # id = 1629
 
     CP1 = {"ao": 3.175638,
-           "an": [14.77947/Tc, -5.2420986/Tc**2, 1.3381596/Tc**3],
+           "an": [14.77947*Tc, -5.2420986*Tc**2, 1.3381596*Tc**3],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
     CP2 = {"ao": 3.20532538,
-           "an": [13.4403357/395.62, -2.32192933/395.62**2,
-                  -0.422826803/395.62**3],
+           "an": [13.4403357*395.62, -2.32192933*395.62**2,
+                  -0.422826803*395.62**3],
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
@@ -64,6 +63,8 @@ class R124(MEoS):
                     "doi":  ""},
 
         "R": 8.314471,
+        "M": 136.475, "rhoc": 4.1033156,
+
         "cp": CP1,
         "ref": "IIR",
 
@@ -84,7 +85,7 @@ class R124(MEoS):
         "c2": [1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4],
         "gamma2": [1]*11}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-124 of Younglove and "
                     "McLinden (1994)",
@@ -97,6 +98,8 @@ class R124(MEoS):
                     "doi": ""},
 
         "R": 8.314471,
+        "M": 136.4762, "Tc": 395.62, "Pc": 3.637, "rhoc": 4.101527,
+
         "cp": CP2,
         "ref": "IIR",
 
@@ -115,8 +118,7 @@ class R124(MEoS):
               -0.564677367857, 0.175581172016e3, -0.762146322899e-3,
               -0.210617958917e1, 0.319236066221e2]}
 
-    # eq = vries, MBWR
-    eq = vries,
+    eq = vries, younglove
 
     _surface = {"sigma": [0.05175], "exp": [1.197]}
     _vapor_Pressure = {

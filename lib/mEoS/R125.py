@@ -280,7 +280,7 @@ class R125(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 41266.39, "so": 236.1195},
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
         "Pmin": 0.1, "rhomin": 40.,

@@ -361,7 +361,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 9.130)
         self.assertEqual(round(st.Liquido.w, 1), 89.8)
         self.assertEqual(round(st.Gas.rho, 2), 389.79)
-        self.assertEqual(round(st.Gas.h.kJkg, 2), 452.66)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 452.67)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6664)
         self.assertEqual(round(st.Gas.cv.kJkgK, 3), 0.931)
         self.assertEqual(round(st.Gas.cp.kJkgK, 3), 11.857)
@@ -418,7 +418,7 @@ class Test(TestCase):
 
         st = R123(T=250+273.15, P=2e5)
         self.assertEqual(round(st.rho, 3), 7.114)
-        self.assertEqual(round(st.h.kJkg, 2), 574.71)
+        self.assertEqual(round(st.h.kJkg, 2), 574.72)
         self.assertEqual(round(st.s.kJkgK, 4), 2.0611)
         self.assertEqual(round(st.cv.kJkgK, 3), 0.831)
         self.assertEqual(round(st.cp.kJkgK, 3), 0.889)
