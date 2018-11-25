@@ -91,7 +91,7 @@ class R143a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    MBWR = {
+    outcalt = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-143a of Outcalt and "
                     "McLinden (1996)",
@@ -102,6 +102,8 @@ class R143a(MEoS):
                     "doi": "10.1007/BF02575344"},
 
         "R": 8.314471,
+        "M": 84.041, "Tc": 346.04, "Pc": 3.7756, "rhoc": 5.151118,
+
         "cp": CP1,
         "ref": "IIR",
 
@@ -179,8 +181,7 @@ class R143a(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    # eq = lemmon, MBWR, li, shortSpan
-    eq = lemmon, li, shortSpan
+    eq = lemmon, outcalt, li, shortSpan
 
     _surface = {"sigma": [0.05416], "exp": [1.255]}
     _vapor_Pressure = {
