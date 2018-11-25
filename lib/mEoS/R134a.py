@@ -53,8 +53,16 @@ class R134a(MEoS):
            "ao_exp": [7.451784998, -4.239239505, 6.445739825],
            "titao": [-4.103830338, -2.561528683, -2.084607363]}
 
-    CP2 = {"ao": 19.4006,
-           "an": [0.258531, -1.29665e-4], "pow": [1, 2],
+    # This ideal gas Cp expression give in
+    # McLinden, M.O., Gallagher, J.S., Weber, L.A., Morrison, G., Ward, D.,
+    # Goodwin., A.R.H., Moldover, M.R., Schmidt, J.W., Chae, H.B., Bruno, T.J.,
+    # Ely, J.F., Huber, M.L.
+    # Measurement and Formulation of the Thermodynamic Properties of
+    # Refrigerants 134a (1,1,1,2-tetrafluoroethane) and 123
+    # (1,1-dichloro-2,2,2-trifluoroethane)
+    # ASHRAE Trans. 95(2):263-283, 1989
+    CP1 = {"ao": 19.4006/8.314471,
+           "an": [0.258531/8.314471, -1.29665e-4/8.314471], "pow": [1, 2],
            "ao_exp": [], "exp": [],
            "ao_hyp": [], "hyp": []}
 
@@ -104,7 +112,9 @@ class R134a(MEoS):
                     "doi": ""},
 
         "R": 8.314471,
-        "cp": CP2,
+        "M": 102.032, "Tc": 374.179, "Pc": 4.056, "rhoc": 5.0308,
+
+        "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 15.60,
@@ -226,9 +236,10 @@ class R134a(MEoS):
                     "doi": "10.1016/0140-7007(92)90024-o"},
 
         "R": 8.314471,
-        "cp": CP2,
-        "ref": "IIR",
         "Tc": 374.179, "rhoc": 5.0308, "Pc": 4058.59,
+
+        "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 465.0, "Pmax": 70000.0, "rhomax": 15.60,
         "Pmin": 0.3896, "rhomin": 15.5942,
@@ -254,8 +265,7 @@ class R134a(MEoS):
         "c2": [2]*11+[4]*8,
         "gamma2": [1]*19}
 
-    # eq = tillner, MBWR, shortSpan, astina, sun, huber
-    eq = tillner, shortSpan, astina, sun, huber
+    eq = tillner, MBWR, shortSpan, astina, sun, huber
     _PR = 0.001032
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}
@@ -575,35 +585,82 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 1208.3)
 
     def test_MBWR(self):
-        # TODO: Add testing when fix MBWR equations
-        pass
-
         # Selected points from Table 9, Pag 459, saturation state
-        # st = R134a(T=-100+273.15, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 5), 0.00056)
-        # self.assertEqual(round(st.Liquido.rho, 1), 1581.9)
-        # self.assertEqual(round(st.Gas.rho, 3), 0.040)
-        # self.assertEqual(round(st.Liquido.h.kJkg, 2), 75.71)
-        # self.assertEqual(round(st.Gas.h.kJkg, 2), 337.00)
-        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.4366)
-        # self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.9456)
-        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.168)
-        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.592)
-        # self.assertEqual(round(st.Liquido.w, 0), 1111)
-        # self.assertEqual(round(st.Gas.w, 0), 128)
+        st = R134a(T=-100+273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 5), 0.00056)
+        self.assertEqual(round(st.Liquido.rho, 1), 1581.9)
+        self.assertEqual(round(st.Gas.rho, 3), 0.040)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 75.71)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 337.00)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.4366)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.9456)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.168)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.592)
+        self.assertEqual(round(st.Liquido.w, 0), 1111)
+        self.assertEqual(round(st.Gas.w, 0), 128)
 
-        # st = R134a(T=+273.15, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 5), )
-        # self.assertEqual(round(st.Liquido.rho, 1), )
-        # self.assertEqual(round(st.Gas.rho, 3), )
-        # self.assertEqual(round(st.Liquido.h.kJkg, 2), )
-        # self.assertEqual(round(st.Gas.h.kJkg, 2), )
-        # self.assertEqual(round(st.Liquido.s.kJkgK, 4), )
-        # self.assertEqual(round(st.Gas.s.kJkgK, 4), )
-        # self.assertEqual(round(st.Liquido.cp.kJkgK, 3), )
-        # self.assertEqual(round(st.Gas.cp.kJkgK, 3), )
-        # self.assertEqual(round(st.Liquido.w, 0), )
-        # self.assertEqual(round(st.Gas.w, 0), )
+        st = R134a(T=-50+273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 5), 0.02948)
+        self.assertEqual(round(st.Liquido.rho, 1), 1443.1)
+        self.assertEqual(round(st.Gas.rho, 3), 1.651)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 136.21)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 367.83)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 0.7432)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7812)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.229)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.712)
+        self.assertEqual(round(st.Liquido.w, 0), 858)
+        self.assertEqual(round(st.Gas.w, 0), 142)
+
+        st = R134a(T=273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 5), 0.29269)
+        self.assertEqual(round(st.Liquido.rho, 1), 1293.7)
+        self.assertEqual(round(st.Gas.rho, 3), 14.420)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 200)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 398.68)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.0000)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7274)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.335)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 0.883)
+        self.assertEqual(round(st.Liquido.w, 0), 626)
+        self.assertEqual(round(st.Gas.w, 0), 147)
+
+        st = R134a(T=50+273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 4), 1.3177)
+        self.assertEqual(round(st.Liquido.rho, 1), 1102.0)
+        self.assertEqual(round(st.Gas.rho, 3), 66.165)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 271.59)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 423.62)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.2373)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.7078)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.569)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 1.218)
+        self.assertEqual(round(st.Liquido.w, 0), 387)
+        self.assertEqual(round(st.Gas.w, 0), 137)
+
+        st = R134a(T=90+273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 4), 3.2445)
+        self.assertEqual(round(st.Liquido.rho, 1), 836.9)
+        self.assertEqual(round(st.Gas.rho, 2), 216.81)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 343.01)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 425.48)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.4392)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6663)
+        self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 2.766)
+        self.assertEqual(round(st.Gas.cp.kJkgK, 3), 3.064)
+        self.assertEqual(round(st.Liquido.w, 0), 178)
+        self.assertEqual(round(st.Gas.w, 0), 108)
+
+        st = R134a(T=100+273.15, x=0.5, eq="MBWR")
+        self.assertEqual(round(st.P.MPa, 4), 3.9721)
+        self.assertEqual(round(st.Liquido.rho, 1), 646.7)
+        self.assertEqual(round(st.Gas.rho, 1), 377.3)
+        self.assertEqual(round(st.Liquido.h.kJkg, 2), 374.02)
+        self.assertEqual(round(st.Gas.h.kJkg, 2), 407.07)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 4), 1.5207)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 1.6093)
+        self.assertEqual(round(st.Liquido.w, 0), 105)
+        self.assertEqual(round(st.Gas.w, 0), 94)
 
     def test_shortSpan(self):
         # Table III, Pag 117
