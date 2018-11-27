@@ -40,8 +40,6 @@ class R236fa(MEoS):
     Tb = unidades.Temperature(271.66)
     f_acent = 0.377
     momentoDipolar = unidades.DipoleMoment(1.982, "Debye")
-    id = 671
-    # id = 1873
 
     Fi1 = {"ao_log": [1, 9.175],
            "pow": [0, 1],
@@ -66,7 +64,7 @@ class R236fa(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": {"Tref": 273.15, "Pref": 1, "ho": 54932.8947, "so": 280.341948},
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 70000.0, "rhomax": 11.235,
         "Pmin": 0.1603, "rhomin": 11.235,
@@ -89,7 +87,7 @@ class R236fa(MEoS):
         "gamma3": [1.13, 0.67, 0.46, 1.28, 1.2],
         "epsilon3": [0.712, 0.91, 0.677, 0.718, 1.64]}
 
-    MBWR = {
+    outcalt = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-236fa of Outcalt and "
                     "McLinden (1995)",
@@ -102,6 +100,7 @@ class R236fa(MEoS):
 
         "R": 8.314471,
         "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 11.30,
         "Pmin": 0.162, "rhomin": 11.29,
@@ -118,8 +117,7 @@ class R236fa(MEoS):
               0.110600369167e1, 0.953714711849e2, -0.881815206562e-2,
               0.973194908842e1, -0.935516922205e3]}
 
-    # eq = pan, MBWR
-    eq = pan,
+    eq = pan, outcalt
 
     _surface = {"sigma": [0.05389], "exp": [1.249]}
     _vapor_Pressure = {

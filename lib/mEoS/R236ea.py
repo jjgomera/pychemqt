@@ -39,7 +39,7 @@ class R236ea(MEoS):
     Tb = unidades.Temperature(279.322)
     f_acent = 0.369
     momentoDipolar = unidades.DipoleMoment(1.129, "Debye")
-    id = 693
+    # id = 1873
 
     Fi1 = {"ao_log": [1, 2.762],
            "pow": [0, 1],
