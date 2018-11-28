@@ -89,7 +89,7 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    MBWR = {
+    mccarty = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon monoxide of McCarty "
                     "(1989)",
@@ -101,6 +101,7 @@ class CO(MEoS):
 
         "R": 8.31434,
         "cp": CP3,
+        "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000., "Pmax": 30000.0, "rhomax": 30.25,
         "Pmin": 15.423, "rhomin": 30.249,
@@ -147,8 +148,7 @@ class CO(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    # eq = lemmon, MBWR, GERG
-    eq = lemmon, GERG
+    eq = lemmon, mccarty, GERG
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}
@@ -167,7 +167,7 @@ class CO(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.25439e1, -0.55601e1, -0.85276e1, -0.51163e1, -0.17701e2,
-               -0.29858e2],
+              -0.29858e2],
         "t": [0.395, 1.21, 3.0, 3.5, 6.0, 8.0]}
 
     # thermo0 = {"eq": 1,
