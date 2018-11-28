@@ -109,6 +109,8 @@ class He(MEoS):
                     "doi": "10.1007/978-1-4613-0639-9_174"},
 
         "R": 8.31431,
+        "M": 4.0026, "Tc": 5.1953, "Pc": 227.46, "rhoc": 17.399,
+
         "cp": CP1,
         "ref": "NBP",
 
@@ -149,6 +151,8 @@ class He(MEoS):
                     "doi": "10.1007/978-1-4613-0639-9_174"},
 
         "R": 8.31431,
+        "M": 4.0026, "Tc": 5.1953, "Pc": 227.46, "rhoc": 17.399,
+
         "cp": CP1,
         "ref": "NBP",
 
@@ -201,8 +205,7 @@ class He(MEoS):
         "nr3": [],
         "nr4": []}
 
-    # eq = ortiz, mccarty, MBWR, GERG
-    eq = ortiz, mccarty, GERG
+    eq = ortiz, mccarty, MBWR, GERG
     _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
