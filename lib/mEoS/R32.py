@@ -153,7 +153,7 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    MBWR = {
+    outcalt = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-32 of Outcalt and McLinden "
                     "(1995)",
@@ -165,6 +165,8 @@ class R32(MEoS):
                     "doi": "10.1007/BF01438959"},
 
         "R": 8.314471,
+        "Tc": 351.35, "Pc": 5795, "rhoc": 8.2078,
+
         "cp": CP2,
         "ref": "IIR",
 
@@ -213,8 +215,7 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = tillner, MBWR, shortSpan, astina, sun
-    eq = tillner, shortSpan, astina, sun
+    eq = tillner, outcalt, shortSpan, astina, sun
     _PR = 0.00585
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}
