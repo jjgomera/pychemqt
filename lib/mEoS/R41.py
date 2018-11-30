@@ -116,7 +116,7 @@ class R41(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    MBWR = {
+    haynes = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for R-41 of Haynes (1996).",
         "__doi__": {"autor": "Haynes, W.M.",
@@ -126,8 +126,10 @@ class R41(MEoS):
                     "doi":  ""},
 
         "R": 8.314471,
+        "Tc": 317.28, "Pc": 5897, "rhoc": 316.51/M,
+
         "cp": CP2,
-        "ref": "IIR",
+        "ref": "NBP",
 
         "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006,
         "Pmin": 0.32, "rhomin": 29.66,
@@ -144,8 +146,7 @@ class R41(MEoS):
               -0.600934897964e-4, 0.145050417148e-1, 0.222324172533e-7,
               -0.204419971811e-4, 0.245556593457e-3]}
 
-    # eq = lemmon, lemmon2, MBWR
-    eq = lemmon, lemmon2
+    eq = lemmon, lemmon2, haynes
 
     _surface = {"sigma": [0.05049], "exp": [1.242]}
     _vapor_Pressure = {
