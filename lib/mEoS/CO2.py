@@ -133,6 +133,8 @@ class CO2(MEoS):
                     "doi": ""},
 
         "R": 8.31434,
+        "Tc": 304.21, "Pc": 7384.325, "rhoc": 10.6,
+
         "cp": CP3,
         "ref": "OTO",
 
@@ -284,8 +286,7 @@ class CO2(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = span, MBWR, GERG, ely, shortSpan, sun
-    eq = span, GERG, ely, shortSpan, sun
+    eq = span, MBWR, GERG, ely, shortSpan, sun
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,

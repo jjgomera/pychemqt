@@ -336,9 +336,13 @@ class H2O(MEoS):
 
     def _visco0(self, rho, T, fase):
         ref = H2O()
-        ref._ref("OTO")
+        ref._ref(False)
         estado = ref._eq(rho, 1.5*self.Tc)
-        drho = 1/estado["dpdrho"]*1e6
+        delta = estado["delta"]
+        fird = estado["fird"]
+        firdd = estado["firdd"]
+        dpdrho = self.R*estado["T"]*(1+2*delta*fird+delta**2*firdd)
+        drho = 1/dpdrho*1e6
 
         # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
         if fase:
@@ -388,9 +392,13 @@ class H2O(MEoS):
 
     def _thermo0(self, rho, T, fase):
         ref = H2O()
-        ref._ref("OTO")
+        ref._ref(False)
         estado = ref._eq(rho, 1.5*self.Tc)
-        drho = 1/estado["dpdrho"]*1e6
+        delta = estado["delta"]
+        fird = estado["fird"]
+        firdd = estado["firdd"]
+        dpdrho = self.R*estado["T"]*(1+2*delta*fird+delta**2*firdd)
+        drho = 1/dpdrho*1e6
 
         # convert values to IAPWS units
         # ∂ρ/∂P]τ, [kg/m³·MPa]
