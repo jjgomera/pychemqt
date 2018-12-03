@@ -464,6 +464,6 @@ class Test(TestCase):
         self.assertEqual(round(He(P=2e5, T=4, eq="mccarty").k, 4), 0.0193)
         self.assertEqual(round(He(P=2.3e5, T=5.18, eq="mccarty").k, 4), 0.0199)
         # self.assertEqual(round(He(P=2.3e5, T=5.2, eq="mccarty").k, 4), .0205)
-        self.assertEqual(round(He(P=2.3e5, T=5.23, eq="mccarty").k, 4), 0.0182)
+        self.assertEqual(round(He(P=2.3e5, T=5.23, eq="mccarty").k, 4), 0.0181)
         self.assertEqual(round(He(P=2.3e5, T=5.26, eq="mccarty").k, 4), 0.0159)
         self.assertEqual(round(He(P=2.3e5, T=5.3, eq="mccarty").k, 4), 0.0149)

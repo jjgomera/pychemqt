@@ -71,6 +71,12 @@ class nC5(MEoS):
                       0, 0],
            "hyp": [1.71958e3, 8.02069e2, 0, 0]}
 
+    CP3 = {"ao": 4,
+           "an": [], "pow": [],
+           "ao_exp": [9.751560716, 22.71445741, 11.65392685],
+           "exp": [404.8796661, 1785.491483, 4504.430788],
+           "ao_hyp": [], "hyp": []}
+
     shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for pentane of Span "
@@ -222,7 +228,7 @@ class nC5(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    MBWR = {
+    ratanapisit = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for pentane of Ratanapisit (1999)",
         "__doi__": {"autor": "Ratanapisit, J., Ely, J.F.",
@@ -232,8 +238,10 @@ class nC5(MEoS):
                     "ref": "Int. J. Thermophys., 20(6) (1999) 1721-1735",
                     "doi": "10.1023/A:1022610013596"},
 
-        "R": 8.31434,
-        "cp": Fi1,
+        "R": 8.31451,
+        "Tc": 469.65, "Pc": 3364.56, "rhoc": 3.2155,
+
+        "cp": CP3,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2,
@@ -251,8 +259,7 @@ class nC5(MEoS):
               -3.85316416299, 2.65416349789e3, 4.76643876980e-3,
               -8.37595968663, -1.35160880503e3]}
 
-    # eq = shortSpan, GERG, polt, starling, sun, MBWR
-    eq = shortSpan, GERG, polt, starling, sun
+    eq = shortSpan, GERG, polt, starling, sun, ratanapisit
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}
