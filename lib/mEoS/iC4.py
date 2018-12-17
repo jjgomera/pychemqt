@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp
 from unittest import TestCase
 
 from lib.meos import MEoS
@@ -101,7 +102,7 @@ class iC4(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 35000.0, "rhomax": 12.9,
         "Pmin": 0.0000219, "rhomin": 12.74,
 
         "nr1":  [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
@@ -335,7 +336,64 @@ class iC4(MEoS):
         "n": [-2.12933323, -2.93790085, -0.89441086, -3.46343707],
         "t": [0.355, 5/6, 19/6, 26/6]}
 
-    visco0 = {"__name__": "Vogel (2000)",
+    visco0 = {"__name__": "Herrmann (2018)",
+              "__doi__": {
+                  "autor": "Herrmann, S., Vogel, E.",
+                  "title": "New Formulation for the Viscosity of Isobutane",
+                  "ref": "J. Phys. Chem. Ref. Data 47(4) (2018) 043103",
+                  "doi": "10.1063/1.5057413"},
+
+              "eq": 1, "omega": 0,
+
+              "special0": "_mu0",
+
+              "Tref_virial": 407.81,
+              # Special term of virial coefficient, with δ term and μPa·s
+              "muref_virial": 2.961503647e-1/225.5*M/1e3,
+              "n_virial": [-1.9572881e1, 2.035770736e2, -8.714522319e2,
+                           1.964871902e3, -2.486422559e3, 1.700542778e3,
+                           -4.9777979e2, 6.560977477, -6.455286496e-2],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 407.81, "rhoref_res": 225.5,
+              "nr": [2.871640981e1, -1.636506531e1, 7.67015053, -5.790243964e1,
+                     3.891832708e1, 2.730660102e1, -1.658899499e1,
+                     2.246568982e-1, -2.343800854e-1, 4.328758428e-2],
+              "tr": [0, 3, 4, 0, 1, 0, 1, 4, 4, 2],
+              "dr": [2, 2, 2, 2.5, 2.5, 3, 3, 3, 5, 8],
+
+              "nr_gaus": [2.75e-1, 5.5e-1],
+              "br_gaus": [5, 50],
+              "er_gaus": [30, 100],
+
+              "special": "_mur"}
+
+    def _mu0(self):
+        """Special term for zero-density viscosity for Herrmann correlation"""
+        Tc = 407.81
+        tau = Tc/self.T
+
+        npf = 1.032954077e3
+        n00 = 1.6520217e3
+        n10 = 1.95822722e1
+        n20 = 2.055051549e3
+
+        # Eq 9
+        muo = npf/tau**0.5/(
+            n00*tau**0.5/Tc**0.5 + n10 + n20*exp(-(Tc/tau)**(1/3)))
+        return muo
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Herrmann correlation"""
+        if rho:
+            tau = 407.81/T
+            delta = rho/225.5
+            mur = tau**0.5/delta**(2/3)*1.693411655e-10*(delta**5.6*tau)**4
+        else:
+            mur = 0
+        return mur
+
+    visco1 = {"__name__": "Vogel (2000)",
               "__doi__": {
                   "autor": "Vogel, E., Küchenmeister, C., Bich, E.",
                   "title": "Viscosity Correlation for Isobutane over Wide "
@@ -367,7 +425,7 @@ class iC4(MEoS):
               "CPgi": [1.00596672174],
               "CPti": [-0.5]}
 
-    visco1 = {"__name__": "Younglove (1987)",
+    visco2 = {"__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
                   "title": "Thermophysical Properties of Fluids. II. Methane, "
@@ -386,7 +444,7 @@ class iC4(MEoS):
                     0.1282253921e5],
               "rhoc": 3.86}
 
-    _viscosity = visco0, visco1
+    _viscosity = visco0, visco1, visco2
 
     thermo0 = {"__name__": "Perkins (2002)",
                "__doi__": {
@@ -612,3 +670,30 @@ class Test(TestCase):
         # st = iC4(T=273.15, x=0.0, eq="miyamoto")
         # self.assertEqual(round(st.h.kJkg, 0), 200)
         # self.assertEqual(round(st.s.kJkgK, 2), 1)
+
+    def test_herrmann(self):
+        # Table 6, Pag 17
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        st = iC4(T=115, rho=739)
+        mu = st._Viscosity(739, 115, None)
+        self.assertEqual(round(mu.muPas, 3), 8255.646)
+
+        self.assertEqual(round(iC4(T=300, rho=0).mu.muPas, 6), 7.539691)
+        self.assertEqual(round(iC4(T=300, rho=1).mu.muPas, 6), 7.528194)
+        self.assertEqual(round(iC4(T=300, rho=9).mu.muPas, 6), 7.454569)
+        self.assertEqual(round(iC4(T=300, rho=550).mu.muPas, 4), 148.1347)
+        self.assertEqual(round(iC4(T=300, rho=625).mu.muPas, 4), 310.3424)
+        self.assertEqual(round(iC4(T=400, rho=1).mu.muPas, 6), 9.889178)
+        self.assertEqual(round(iC4(T=400, rho=118).mu.muPas, 5), 13.52154)
+        self.assertEqual(round(iC4(T=400, rho=345).mu.muPas, 5), 41.45875)
+        self.assertEqual(round(iC4(T=400, rho=560).mu.muPas, 4), 159.6867)
+        self.assertEqual(round(iC4(T=407.81, rho=225.5).mu.muPas, 5), 23.45602)
+        self.assertEqual(round(iC4(T=500, rho=1).mu.muPas, 5), 12.15232)
+        self.assertEqual(round(iC4(T=500, rho=100).mu.muPas, 5), 15.45786)
+        self.assertEqual(round(iC4(T=500, rho=500).mu.muPas, 4), 102.1956)
+        self.assertEqual(round(iC4(T=650, rho=0).mu.muPas, 5), 15.39019)
+        self.assertEqual(round(iC4(T=650, rho=1).mu.muPas, 5), 15.40515)
+        self.assertEqual(round(iC4(T=650, rho=100).mu.muPas, 5), 19.01606)
+        self.assertEqual(round(iC4(T=650, rho=420).mu.muPas, 5), 63.72888)
