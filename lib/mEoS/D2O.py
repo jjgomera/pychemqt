@@ -35,8 +35,8 @@ class D2O(MEoS):
     _refPropName = "D2O"
     _coolPropName = "HeavyWater"
     Tc = unidades.Temperature(643.847)
-    rhoc = unidades.Density(358)
-    Pc = unidades.Pressure(21671.0, "kPa")
+    rhoc = unidades.Density(356)
+    Pc = unidades.Pressure(21661.8, "kPa")
     M = 20.027508  # g/mol
     Tt = unidades.Temperature(276.97)
     Tb = unidades.Temperature(374.563)
@@ -44,11 +44,10 @@ class D2O(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.9, "Debye")
 
     Fi0 = {"ao_log": [1, 3],
-           "pow": [0, 1, 2, 3, 4, 5],
-           "ao_pow": [-8.6739710041, 6.9611755531],
-           "ao_exp": [0.00863, 0.97454, 2.0646, 0.23528, 0.29555],
-           "titao": [0.4255669437, 2.6093155672, 6.0185106089, 11.3380974051,
-                     29.5101165339],
+           "pow": [0, 1],
+           "ao_pow": [-8.670994022646, 6.96033578458778],
+           "ao_exp": [0.010633, 0.99787, 2.1483, 0.3549],
+           "titao": [308/Tc, 1695/Tc, 3949/Tc, 10317/Tc],
            "ao_hyp": [], "hyp": []}
 
     Fi1 = {"ao_log": [0.5399322597e-2, 0],
@@ -60,57 +59,51 @@ class D2O(MEoS):
            "ao_exp": [], "titao": [],
            "ao_hyp": [], "hyp": []}
 
-    CP1 = {"ao": 0.39176485e1,
-           "an": [-0.31123915e-3, 0.41173363e-5, -0.28943955e-8,
-                  0.63278791e-12, 0.78728740],
-           "pow": [1.00, 2.00, 3.00, 4.00, -0.99],
-           "ao_exp": [],
-           "exp": [],
-           "ao_hyp": [], "hyp": []}
-
     herrig = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for heavy water of Herrig"
-        " (2017).",
+        " (2018).",
         "__doi__": {
-            "autor": "Herrig",
-            "title": "Preliminary helmholtz equation of state for Heavy Water",
-            "ref": "",
-            "doi": ""},
+            "autor": "Herrig, S., Thol, M., Harvey, A.H., Lemmon, E.W.",
+            "title": "A Reference Equation of State for Heavy Water",
+            "ref": "J. Phys. Chem. Ref. Data 47(4) (2018) 043102",
+            "doi": "10.1063/1.5053993"},
 
-        "R": 8.3144621, "rhoref": 17.77555*M, "Tref": 643.847,
+        "R": 8.3144598,
+        "rhoc": 17.77555,
         "cp": Fi0,
         "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
         "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65.,
         "Pmin": 0.66103, "rhomin": 55.198,
 
-        "nr1": [0.0105835, 0.99127253, -1.224122, 1.710643, -2.189443,
-                0.1145315],
-        "d1": [4.0, 1.0, 1.0, 2.0, 2.0, 3.0],
-        "t1": [1.0, 0.463, 1.29, 1.307, 1.2165, 0.587],
+        "nr1": [0.122082060e-1, 0.296956870e1, -0.379004540e1, 0.941089600,
+                -0.922466250, -0.139604190e-1],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1.0000, 0.6555, 0.9369, 0.5610, 0.7017, 1.0672],
 
-        "nr2": [-0.89875532, -1.597051, -2.804509, 0.33016885,
-                -3.396526, -0.001881],
-        "c2": [1.0, 2.0, 2.0, 1.0, 2.0, 1.0],
-        "d2": [1.0, 1.0, 3.0, 2.0, 2.0, 8.0],
-        "t2": [2.95, 1.713, 1.929, 0.94, 3.033, 0.765],
+        "nr2": [-0.125203570, -0.555391500e1, -0.493009740e1, -0.359470240e-1,
+                -0.936172870e1, -0.691835150],
+        "c2": [1, 2, 2, 1, 2, 2],
+        "d2": [1, 1, 3, 2, 2, 1],
+        "t2": [3.9515, 4.6000, 5.1590, 0.2000, 5.4644, 2.3660],
         "gamma2": [1]*6,
 
-        "nr3": [-0.70355957, -0.20345481, -0.70691398, 2.094255, 3.042546,
-                0.8010728, 0.213384, 0.32335789, -0.0245055, 0.7380677,
-                -0.21484089],
-        "t3": [1.504, 2.85, 1.96, 0.969, 2.576, 2.79, 3.581, 3.67, 1.7, 1.0,
-               4.1],
-        "d3": [1.0, 2.0, 3.0, 1.0, 3.0, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0],
-        "beta3": [0.907, 0.48, 1.223, 2.61, 4.283, 1.4, 0.735, 0.24, 1067.0,
-                  13.27, 1.48],
-        "alfa3": [0.982, 1.34, 1.658, 1.6235, 1.4, 2.206, 0.84, 1.535, 11.33,
-                  3.86, 7.56],
-        "epsilon3": [2.272, 1.375, 0.648, 0.8925, 0.145, 0.291, 2.01, 1.08,
-                     0.96, 0.181, 0.529],
-        "gamma3": [2.263, 2.343, 0.929, 1.0, 1.383, 0.968, 1.695, 2.23, 1.07,
-                   1.297, 2.41]}
+        "nr3": [-0.456110600e-1, -0.224513300e1, 0.860006070e1, -0.248410420e1,
+                0.164476900e2, 0.270393360e1, 0.375637470e2, -0.177607760e1,
+                0.220924640e1, 0.519652000e1, 0.421097400, -0.391921100],
+        "t3": [3.4553, 1.4150, 1.5745, 3.4540, 3.8106, 4.8950, 1.4300, 1.5870,
+               3.7900, 2.6200, 1.9000, 4.3200],
+        "d3": [1, 3, 1, 3, 1, 1, 2, 2, 2, 1, 1, 1],
+        "alfa3": [0.6014, 1.4723, 1.5305, 2.4297, 1.3086, 1.3528, 3.4456,
+                  1.2645, 2.5547, 1.2148, 18.738, 18.677],
+        "beta3": [0.4200, 2.4318, 1.2888, 8.2710, 0.3673, 0.9504, 7.8318,
+                  3.3281, 7.1753, 0.9465, 1177.0, 1167.0],
+        "epsilon3": [1.8663, 0.2895, 0.5803, 0.2236, 0.6815, 0.9495, 1.1158,
+                     0.1607, 0.4144, 0.9683, 0.9488, 0.9487],
+        "gamma3": [1.5414, 1.3794, 1.7385, 1.3045, 2.7242, 3.5321, 2.4552,
+                   0.8319, 1.3500, 2.5617, 1.0491, 1.0486]
+        }
 
     hill = {
         "__type__": "Helmholtz",
@@ -121,7 +114,7 @@ class D2O(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
                     "doi": "10.1063/1.555661"},
 
-        "R": 8.3143565, "rhoref": 17.875414*M,
+        "R": 8.3143565, "rhoc": 17.875414,
         "cp": Fi1,
         "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
@@ -159,17 +152,19 @@ class D2O(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.80236e1, 0.23957e1, -0.42639e2, 0.99569e2, -0.62135e2],
-        "t": [1.0, 1.5, 2.75, 3.0, 3.2]}
+        "n": [-0.794440e1, 0.194340e1, -0.243530e1, -0.342000e1, 0.355000e2,
+              -0.302000e3],
+        "t": [1.0, 1.5, 2.44, 5.3, 14, 20]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.26406e1, 0.97090e1, -0.18058e2, 0.87202e1, -0.74487e1],
-        "t": [0.3678, 1.9, 2.2, 2.63, 7.3]}
+        "n": [0.166200e1, 0.901130e1, -0.154210e2, 0.115760e2, -0.516940e1,
+              -0.236240e3],
+        "t": [0.29, 1, 1.3, 1.77, 2.5, 16]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.37651e1, -0.38673e2, 0.73024e2, -0.13251e3, 0.75235e2,
-              -0.70412e2],
-        "t": [0.409, 1.766, 2.24, 3.04, 3.42, 6.9]}
+        "n": [-0.247140e1, -0.266744e2, 0.531080e2, -0.480150e2, -0.576230e2,
+              -0.371720e3],
+        "t": [0.33, 1.29, 1.68, 2.09, 6.1, 17]}
 
     visco0 = {"eq": 0,
               "method": "_visco0",
@@ -213,6 +208,122 @@ class D2O(MEoS):
 
 
 class Test(TestCase):
+
+    def test_herrig(self):
+        # Table 6, pag 12"""
+        fluid = D2O()
+
+        delta = 46.26*fluid.M/fluid.rhoc
+        tau = fluid.Tc/500
+        ideal = fluid._phi0(fluid._constants["cp"], tau, delta)
+        self.assertEqual(round(ideal["fio"], 8), 1.96352717)
+        self.assertEqual(round(ideal["fiod"], 9), 0.384253134)
+        self.assertEqual(round(ideal["fiodd"], 9), -0.147650471)
+        self.assertEqual(round(ideal["fiot"], 8), 9.39259413)
+        self.assertEqual(round(ideal["fiott"], 8), -2.09517144)
+        self.assertEqual(round(ideal["fiodt"], 8), 0)
+        res = fluid._Helmholtz(tau, delta)
+        self.assertEqual(round(res["fir"], 8), -3.42291092)
+        self.assertEqual(round(res["fird"], 9), -0.367562780)
+        self.assertEqual(round(res["firdd"], 9), 0.835183806)
+        self.assertEqual(round(res["firt"], 8), -5.89707436)
+        self.assertEqual(round(res["firtt"], 8), -2.45187285)
+        self.assertEqual(round(res["firdt"], 8), -1.13178440)
+
+        # Table 7, Pag 12, Single phase region
+        st = D2O(T=300, rhom=55.126)
+        self.assertEqual(round(st.P.MPa, 10), 0.0529123711)
+        self.assertEqual(round(st.cvM.JmolK, 7), 83.3839128)
+        self.assertEqual(round(st.w, 5), 1403.74625)
+        self.assertEqual(round(st.sM.JmolK, 8), 6.73910582)
+
+        st = D2O(T=300, rhom=60)
+        self.assertEqual(round(st.P.MPa, 6), 238.222326)
+        self.assertEqual(round(st.cvM.JmolK, 7), 73.8561038)
+        self.assertEqual(round(st.w, 5), 1772.79674)
+        self.assertEqual(round(st.sM.JmolK, 8), 5.40117148)
+
+        st = D2O(T=300, rhom=65)
+        self.assertEqual(round(st.P.MPa, 6), 626.176781)
+        self.assertEqual(round(st.cvM.JmolK, 7), 69.9125978)
+        self.assertEqual(round(st.w, 5), 2296.97942)
+        self.assertEqual(round(st.sM.JmolK, 8), 2.71566150)
+
+        st = D2O(T=500, rhom=0.05)
+        self.assertEqual(round(st.P.MPa, 9), 0.206052588)
+        self.assertEqual(round(st.cvM.JmolK, 7), 29.4298102)
+        self.assertEqual(round(st.w, 6), 514.480413)
+        self.assertEqual(round(st.sM.JmolK, 6), 140.879085)
+
+        st = D2O(T=500, rhom=0.5)
+        self.assertEqual(round(st.P.MPa, 8), 1.88967446)
+        self.assertEqual(round(st.cvM.JmolK, 7), 36.6460545)
+        self.assertEqual(round(st.w, 6), 489.633254)
+        self.assertEqual(round(st.sM.JmolK, 6), 120.227024)
+
+        st = D2O(T=500, rhom=46.26)
+        self.assertEqual(round(st.P.MPa, 8), 8.35329492)
+        self.assertEqual(round(st.cvM.JmolK, 7), 62.6885994)
+        self.assertEqual(round(st.w, 5), 1178.88631)
+        self.assertEqual(round(st.sM.JmolK, 7), 49.5587000)
+
+        st = D2O(T=500, rhom=50)
+        self.assertEqual(round(st.P.MPa, 6), 107.462884)
+        self.assertEqual(round(st.cvM.JmolK, 7), 61.7372286)
+        self.assertEqual(round(st.w, 5), 1483.74868)
+        self.assertEqual(round(st.sM.JmolK, 7), 46.9453826)
+
+        st = D2O(T=500, rhom=60)
+        self.assertEqual(round(st.P.MPa, 6), 721.798322)
+        self.assertEqual(round(st.cvM.JmolK, 7), 57.6860681)
+        self.assertEqual(round(st.w, 5), 2413.93520)
+        self.assertEqual(round(st.sM.JmolK, 7), 39.3599094)
+
+        st = D2O(T=643.8, rhom=20)
+        self.assertEqual(round(st.P.MPa, 7), 21.6503820)
+        self.assertEqual(round(st.cvM.JmolK, 7), 99.2661842)
+        self.assertEqual(round(st.w, 6), 256.043612)
+        self.assertEqual(round(st.sM.JmolK, 7), 81.7656125)
+
+        st = D2O(T=800, rhom=0.01)
+        self.assertEqual(round(st.P.MPa, 10), 0.0664864175)
+        self.assertEqual(round(st.cvM.JmolK, 7), 34.0033604)
+        self.assertEqual(round(st.w, 6), 642.794634)
+        self.assertEqual(round(st.sM.JmolK, 6), 169.067586)
+
+        st = D2O(T=800, rhom=0.25)
+        self.assertEqual(round(st.P.MPa, 8), 1.64466177)
+        self.assertEqual(round(st.cvM.JmolK, 7), 34.4327932)
+        self.assertEqual(round(st.w, 6), 639.281410)
+        self.assertEqual(round(st.sM.JmolK, 6), 142.125615)
+
+        # Table 8, Pag 13, Saturation state
+        st = D2O(T=280, x=0.5)
+        self.assertEqual(round(st.P.MPa, 12), 0.000823054058)
+        self.assertEqual(round(st.Liquido.rhoM, 7), 55.2072786)
+        self.assertEqual(round(st.Gas.rhoM, 12), 0.000353747143)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 6), 257.444444)
+        self.assertEqual(round(st.Gas.hM.Jmol, 4), 46610.6716)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 9), 0.924406091)
+        self.assertEqual(round(st.Gas.sM.JmolK, 6), 166.471646)
+
+        st = D2O(T=450, x=0.5)
+        self.assertEqual(round(st.P.MPa, 9), 0.921212105)
+        self.assertEqual(round(st.Liquido.rhoM, 7), 49.2937575)
+        self.assertEqual(round(st.Gas.rhoM, 9), 0.264075691)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 4), 14512.7149)
+        self.assertEqual(round(st.Gas.hM.Jmol, 4), 51501.9146)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 7), 40.6584121)
+        self.assertEqual(round(st.Gas.sM.JmolK, 6), 122.856634)
+
+        st = D2O(T=625, x=0.5)
+        self.assertEqual(round(st.P.MPa, 7), 17.2118129)
+        self.assertEqual(round(st.Liquido.rhoM, 7), 30.6770554)
+        self.assertEqual(round(st.Gas.rhoM, 8), 6.94443339)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 4), 32453.3556)
+        self.assertEqual(round(st.Gas.hM.Jmol, 4), 47246.0343)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 7), 73.1042291)
+        self.assertEqual(round(st.Gas.sM.JmolK, 7), 96.7725149)
 
     def test_D2O(self):
         # Pag 17 of IAPWS 2007 update paper
