@@ -38,8 +38,8 @@ class D2O(MEoS):
     rhoc = unidades.Density(356)
     Pc = unidades.Pressure(21661.8, "kPa")
     M = 20.027508  # g/mol
-    Tt = unidades.Temperature(276.97)
-    Tb = unidades.Temperature(374.563)
+    Tt = unidades.Temperature(276.969)
+    Tb = unidades.Temperature(374.549)
     f_acent = 0.364
     momentoDipolar = unidades.DipoleMoment(1.9, "Debye")
 
@@ -114,7 +114,7 @@ class D2O(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
                     "doi": "10.1063/1.555661"},
 
-        "R": 8.3143565, "rhoc": 17.875414,
+        "R": 8.3143565, "rhoc": 17.875414, "Tt": 276.97,
         "cp": Fi1,
         "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
@@ -150,6 +150,20 @@ class D2O(MEoS):
 
     eq = herrig, hill
 
+    _melting = {
+            "eq": 1,
+            "Tmin": 254.415, "Tmax": 276.969,
+            "Tref": 276.969, "Pref": 0.66159,
+            "a1": [], "exp1": [],
+            "a2": [1, -0.30153e5, 0.692503e6], "exp2": [0, 5.5, 8.2],
+            "a3": [], "exp3": []}
+    _sublimation = {
+            "eq": 2,
+            "Tmin": 210, "Tmax": 276.969,
+            "Tref": 276.969, "Pref": 0.66159,
+            "a1": [], "exp1": [],
+            "a2": [-13.14226, 32.12969], "exp2": [-1.73, -1.42],
+            "a3": [], "exp3": []}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.794440e1, 0.194340e1, -0.243530e1, -0.342000e1, 0.355000e2,
@@ -324,6 +338,16 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.hM.Jmol, 4), 47246.0343)
         self.assertEqual(round(st.Liquido.sM.JmolK, 7), 73.1042291)
         self.assertEqual(round(st.Gas.sM.JmolK, 7), 96.7725149)
+
+        # Sublimation-pressure equation
+        # Inline point in section 3.5, pag 9
+        P = D2O._Sublimation_Pressure(245).MPa
+        self.assertEqual(round(P, 13), 3.27390934e-5)
+
+        # Melting-pressure equation
+        # Inline point in section 3.4, pag 7
+        P = D2O._Melting_Pressure(270).MPa
+        self.assertEqual(round(P, 7), 83.7888413)
 
     def test_D2O(self):
         # Pag 17 of IAPWS 2007 update paper
