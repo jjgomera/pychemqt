@@ -46,6 +46,8 @@ import os
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
@@ -747,7 +749,7 @@ class DragButton(QtWidgets.QToolButton):
 
     # def startDrag(self):
         # if self.icon().isNull():
-            # return
+        #     return
         # data = QtCore.QByteArray()
         # stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
         # stream << self.icon()
@@ -1358,6 +1360,54 @@ def okToContinue(parent, dirty, func, parameters):
     elif dialog == QtWidgets.QMessageBox.Yes:
         func(*parameters)
         return True
+
+
+def mathTex2QPixmap(mathTex, fs):
+    """Convert a latex text to a QPixmap to display in any qt widget. Code
+    snippet from https://stackoverflow.com/questions/32035251
+
+    Parameters
+    ----------
+    mathTex : str
+        Latex text of expression to show
+    fs : int
+        Font size of text to show
+
+    Return
+    ------
+    qpixmap : :class:`QtGui.QPixmap`
+        QPixmap ready to show in any other qt widget
+    """
+
+    # set up a mpl figure instance
+    fig = Figure()
+    fig.patch.set_facecolor('none')
+    fig.set_canvas(FigureCanvasAgg(fig))
+    renderer = fig.canvas.get_renderer()
+
+    # plot the mathTex expression
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis('off')
+    ax.patch.set_facecolor('none')
+    t = ax.text(0, 0, mathTex, ha='left', va='bottom', fontsize=fs)
+
+    # fit figure size to text artist
+    fwidth, fheight = fig.get_size_inches()
+    fig_bbox = fig.get_window_extent(renderer)
+
+    text_bbox = t.get_window_extent(renderer)
+
+    tight_fwidth = text_bbox.width * fwidth / fig_bbox.width
+    tight_fheight = text_bbox.height * fheight / fig_bbox.height
+
+    fig.set_size_inches(tight_fwidth, tight_fheight)
+
+    # convert mpl figure to QPixmap
+    buf, size = fig.canvas.print_to_buffer()
+    qimage = QtGui.QImage(buf, size[0], size[1], QtGui.QImage.Format_ARGB32)
+    qpixmap = QtGui.QPixmap(qimage)
+
+    return qpixmap
 
 
 if __name__ == "__main__":

@@ -32,7 +32,8 @@ from lib import unidades, sql
 from lib.config import IMAGE_PATH
 from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
-from UI.widgets import Entrada_con_unidades, Tabla, okToContinue
+from UI.widgets import (Entrada_con_unidades, Tabla, okToContinue,
+                        mathTex2QPixmap)
 
 
 ###############################################################################
@@ -46,6 +47,30 @@ from UI.widgets import Entrada_con_unidades, Tabla, okToContinue
 class DIPPR_widget(QtWidgets.QGroupBox):
     """Composite widget to edit/view a DIPPR coefficients"""
     valueChanged = QtCore.pyqtSignal()
+    dict_proptex = {
+        "rhoS": r"\rho_s",
+        "rhoL": r"\rho_l",
+        "Hv": r"H_v",
+        "Pv": r"P_v",
+        "cpS": r"Cp_s",
+        "cpL": r"Cp_l",
+        "cpG": r"Cp_g",
+        "muL": r"\mu_l",
+        "muG": r"\mu_g",
+        "kL": r"\lambda_l",
+        "kG": r"\lambda_v",
+        "sigma": r"\sigma"}
+    latex = {
+            1: r"A + BT + CT^2 + DT^3 + ET^4",
+            2: r"e^{A + BT + C\ln(T) + DT^E}",
+            3: r"\frac{AT^B}{1+\frac{C}{T}+\frac{D}{T^2}}",
+            4: r"A+B e^{-\frac{C}{T^D}}",
+            5: r"A + BT + CT^3 + DT^8 + ET^9",
+            6: r"\frac{A}{B^{1+(1-T/C)^D}}",
+            7: r"A(1-T_r)^{B+CT_r+dT_r^2+ET_r^3}",
+            8: r"A+B\frac{C/T}{\sinh(C/T}+D\frac{E/T}{\cosh(E/T)}",
+            9: r"A^2/Tr+B-2ACTr-ADTr^2-C^2Tr^3/3-CDTr^4/2-D^2Tr^5/5"
+            }
 
     def __init__(self, title, unit, id=0, prop="", array=None, parent=None):
         """Constructor of widget
@@ -67,20 +92,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         super(DIPPR_widget, self).__init__(title, parent)
         self.prop = prop
 
-        proptex = {
-            "rhoS": "rho_s",
-            "rhoL": "rho_l",
-            "Hv": "H_v",
-            "Pv": "P_v",
-            "cpS": "Cp_s",
-            "cpL": "Cp_l",
-            "cpG": "Cp_g",
-            "muL": "\mu_l",
-            "muG": "\mu_g",
-            "kL": "\lambda_l",
-            "kG": "\lambda_v",
-            "sigma": "\sigma"}
-        self.proptex = proptex[prop]
+        self.proptex = self.dict_proptex[prop]
 
         self.unit = unit
         self.parent = parent
@@ -132,7 +144,6 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.eqformula = QtWidgets.QLabel()
         self.eqformula.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.eqformula.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.eqformula.setScaledContents(False)
         self.eqformula.setAlignment(QtCore.Qt.AlignCenter)
         lyt.addWidget(self.eqformula, 0, 0, 1, 6)
 
@@ -162,8 +173,10 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.tmin.setValue(array[6])
             self.tmax.setValue(array[7])
             self.eq.setValue(array[0])
-            self.eqformula.setPixmap(QtGui.QPixmap(os.path.join(
-                IMAGE_PATH, "equation", "DIPPR%i.gif" % array[0])))
+            latex = self.latex[array[0]]
+            tex = "$%s = %s$" % (self.proptex, latex)
+            pixmap = mathTex2QPixmap(tex, 12)
+            self.eqformula.setPixmap(pixmap)
             self.eq.setVisible(False)
             self.eqformula.setVisible(True)
             self.btnPlot.setEnabled(True)
@@ -399,6 +412,25 @@ class Parametric_widget(QtWidgets.QGroupBox):
     """Composite widget to edit/view a Parametric equation"""
     valueChanged = QtCore.pyqtSignal()
 
+    dict_latex = {
+        "henry": r"$\lnH = \frac{A}{T}+B\lnT+CT+D$",
+        "tension": r"$\sigma=A(1-T_r)^B$",
+        "antoine": r"$P_v=e^{A-\frac{B}{C+T}}$",
+        "wagner": r"$P_v=\frac{P_c}{Tr}e^{a\tau+b\tau^{1.5}+c\tau^3+d\tau^6}$",
+        "viscosity": r"$\mu=e^{A\left(\frac{1}{T}-\frac{1}{B}\right)}$"}
+    dict_prop = {
+        "henry": "K_H",
+        "tension": "\sigma",
+        "antoine": "P_v",
+        "wagner": "P_v",
+        "viscosity": "\mu_g"}
+    dict_count = {
+        "henry": 4,
+        "tension": 2,
+        "antoine": 3,
+        "wagner": 4,
+        "viscosity": 2}
+
     def __init__(self, title, unit, id=0, prop="", array=None, parent=None):
         """Constructor of widget
 
@@ -424,23 +456,17 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.t = []
         self.data = []
 
-        dict_prop = {"henry": "K_H", "tension": "\sigma", "antoine": "P_v",
-                     "wagner": "P_v", "viscosity": "\mu_g"}
-        self.prop_latex = dict_prop[prop]
-
-        dict_count = {"henry": 4, "tension": 2, "antoine": 3, "wagner": 4,
-                      "viscosity": 2}
-        count = dict_count[prop]
-        self.count = count
+        self.latex = self.dict_latex[prop]
+        self.prop_latex = self.dict_prop[prop]
+        self.count = self.dict_count[prop]
 
         layout = QtWidgets.QGridLayout(self)
         self.formula = QtWidgets.QLabel()
         self.formula.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.formula.setFrameShadow(QtWidgets.QFrame.Plain)
         self.formula.setAlignment(QtCore.Qt.AlignCenter)
-        self.formula.setPixmap(QtGui.QPixmap(os.path.join(
-            IMAGE_PATH, "equation", "%s.gif" % self.prop)))
-        self.formula.setScaledContents(False)
+        pixmap = mathTex2QPixmap(self.latex, 12)
+        self.formula.setPixmap(pixmap)
         layout.addWidget(self.formula, 0, 1, 1, 5)
         self.btnFit = QtWidgets.QToolButton()
         self.btnFit.setToolTip(QtWidgets.QApplication.translate(
@@ -464,7 +490,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
         txt = ["A", "B", "C", "D"]
         self.coeff = []
-        for i in range(count):
+        for i in range(self.count):
             layout.addWidget(QtWidgets.QLabel(txt[i]), 1+i, 4)
             self.coeff.append(Entrada_con_unidades(float))
             self.coeff[-1].valueChanged.connect(self.valueChanged.emit)
@@ -959,9 +985,10 @@ class View_Component(QtWidgets.QDialog):
         self.eqCpGasIdeal = QtWidgets.QLabel()
         self.eqCpGasIdeal.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.eqCpGasIdeal.setFrameStyle(QtWidgets.QFrame.Plain)
-        self.eqCpGasIdeal.setPixmap(QtGui.QPixmap(
-            os.path.join(IMAGE_PATH, "equation", "cp.gif")))
-        self.eqCpGasIdeal.setScaledContents(False)
+        mathTex = "$C_p^o=A+BT+CT^2+DT^3+ET^4+FT^5$"
+        pixmap = mathTex2QPixmap(mathTex, 12)
+        self.eqCpGasIdeal.setPixmap(pixmap)
+        self.eqCpGasIdeal.setAlignment(QtCore.Qt.AlignCenter)
         lytCpIdeal.addWidget(self.eqCpGasIdeal, 0, 1, 1, 5)
         lytCpIdeal.addWidget(QtWidgets.QLabel("A"), 1, 1)
         self.cpa = Entrada_con_unidades(float)

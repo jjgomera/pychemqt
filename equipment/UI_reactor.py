@@ -38,7 +38,7 @@ from UI.widgets import Status
 from equipment.parents import UI_equip
 from equipment.reactor import Reactor
 from UI import UI_corriente, inputTable
-from UI.widgets import Entrada_con_unidades, Tabla
+from UI.widgets import Entrada_con_unidades, Tabla, mathTex2QPixmap
 
 
 class widgetReacciones(QtWidgets.QWidget):
@@ -272,7 +272,9 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Conversion.setFixedWidth(100)
         lyt.addWidget(self.Conversion,2,1,3,1)
         label=QtWidgets.QLabel()
-        label.setPixmap(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equation/reaction_conversion.png"))
+        mathTex = r"$Conversion = C_o + C_1T + C_2T^2 + \cdots + C_nT^n$"
+        pixmap = mathTex2QPixmap(mathTex, 10)
+        label.setPixmap(pixmap)
         lyt.addWidget(label,2,2,1,3)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Temperature unit")),3,2)
         self.unidadesTemperatura=QtWidgets.QComboBox()
@@ -293,7 +295,10 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Keq=Entrada_con_unidades(float)
         lyt.addWidget(self.Keq,1,4)
         label=QtWidgets.QLabel()
-        label.setPixmap(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equation/reaction_equilibrium.png"))
+        mathTex = r"$aA + bB \rightleftharpoons cC + dD \therefore "
+        mathTex += r"K_{eq} = \frac{[C]^c [D]^d}{[A]^a [B]^b}$"
+        pixmap = mathTex2QPixmap(mathTex, 10)
+        label.setPixmap(pixmap)
         lyt.addWidget(label,1,5,1,4)
 
         self.check_KEq=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Equation"))
@@ -323,10 +328,11 @@ class UI_reacciones(QtWidgets.QDialog):
         self.botonTablaClear.clicked.connect(self.KEq_Tab.clear)
         lyt.addWidget(self.botonTablaClear,4,8)
         label=QtWidgets.QLabel()
-        label.setPixmap(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equation/reaction_equilibrium2.png"))
+        mathTex = r"$\lnK_eq = A+B/T+C\lnT+DT+ET^2+FT^3+GT^4+HT^5$"
+        pixmap = mathTex2QPixmap(mathTex, 10)
+        label.setPixmap(pixmap)
         label.setAlignment(QtCore.Qt.AlignCenter)
         lyt.addWidget(label,5,1,1,8)
-
 
         self.checkGibbs=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "From Gibbs free energy minimization"))
         lyt.addWidget(self.checkGibbs,6,1,1,4)

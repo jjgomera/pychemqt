@@ -2168,7 +2168,7 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     Selected value from Table 1 in [46]_, hydrogen
 
     >>> from lib.mEoS import H2
-    >>> y = H2.MBWR
+    >>> y = H2.younglove
     >>> T = 0.904*y["Tc"]
     >>> P = 7.71*y["Pc"]*1e3
     >>> Ps = H2()._Vapor_Pressure(T)
@@ -3252,7 +3252,7 @@ def ThL_LakshmiPrasad(T, M):
     Returns
     -------
     k : float
-        Thermal conductivity, [W/m/k]
+        Thermal conductivity, [W/m·K]
     """
     # Eq 5
     k = 0.0655 + (1.3855 - 0.00197*T)/M**0.5 - 0.00005*T
@@ -3739,7 +3739,7 @@ def ThG_Eucken(M, Cv, mu):
     Returns
     -------
     k : float
-        Thermal conductivity, [W/m/k]
+        Thermal conductivity, [W/m·K]
 
     Examples
     --------
@@ -3775,7 +3775,7 @@ def ThG_EuckenMod(M, Cv, mu):
     Returns
     -------
     k : float
-        Thermal conductivity, [W/m/k]
+        Thermal conductivity, [W/m/K]
 
     Examples
     --------
@@ -3829,7 +3829,7 @@ def ThG_Chung(T, Tc, M, w, Cv, mu):
     Returns
     -------
     k : float
-        Thermal conductivity, [W/m/k]
+        Thermal conductivity, [W/m·K]
 
     Examples
     --------
@@ -3979,12 +3979,12 @@ def ThG_StielThodos(T, Tc, Pc, Vc, M, V, ko):
     Vm : float
         Volume at T and P [m³/kg]
     kg : float
-        Low-pressure gas thermal conductivity [W/m/k]
+        Low-pressure gas thermal conductivity [W/m·K]
 
     Returns
     -------
     ko : float
-        High-pressure gas thermal conductivity [W/m/k]
+        High-pressure gas thermal conductivity [W/m·K]
 
     Examples
     --------
@@ -4061,7 +4061,7 @@ def ThG_P_Chung(T, Tc, Vc, M, w, D, k, rho, ko):
     Returns
     -------
     k : float
-        High-pressure gas thermal conductivity [W/m/k]
+        High-pressure gas thermal conductivity [W/m·K]
 
     Examples
     --------
@@ -4137,7 +4137,7 @@ def ThG_TRAPP(T, Tc, Vc, Zc, M, w, rho, ko):
     Returns
     -------
     k : float
-        High-pressure gas thermal conductivity [W/m/k]
+        High-pressure gas thermal conductivity [W/m·K]
 
     Examples
     --------
