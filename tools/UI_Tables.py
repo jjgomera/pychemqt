@@ -87,7 +87,7 @@ from UI.delegate import CheckEditor
 from UI.prefMEOS import Dialog as ConfDialog
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
                         MarkerCombo, ColorSelector, InputFont, Status, Tabla,
-                        NumericFactor, mathTex2QPixmap)
+                        NumericFactor, QLabelMath)
 
 
 N_PROP = len(ThermoAdvanced.properties())
@@ -1399,8 +1399,6 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             tabWidget.addTab(
                 tab1, QtWidgets.QApplication.translate("pychemqt", "Phi0"))
             gridLayout_Ideal = QtWidgets.QGridLayout(tab1)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\frac{C_p^o}{R}=\sum n_i\tau^{d_i}+"
             mathTex += r"\sum m_j(\theta_j\tau)^2\frac{e^{\theta_j\tau}}"
             mathTex += r"{(e^{\theta_j\tau}-1)^2}"
@@ -1408,8 +1406,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             mathTex += r"{\sinh(\phi_k\tau)}\right)^2"
             mathTex += r"+\sum l_k\left(\frac{\phi_k\tau}"
             mathTex += r"{\cosh(\phi_k\tau)}\right)^2$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_Ideal.addWidget(label, 1, 1, 1, 3)
             self.Tabla_Cp_poly = Tabla(
                 2, horizontalHeader=["n", "d"], stretch=False, readOnly=True)
@@ -1426,8 +1423,6 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             tabWidget.addTab(
                 tab1, QtWidgets.QApplication.translate("pychemqt", "Cp"))
             gridLayout_Ideal = QtWidgets.QGridLayout(tab1)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\frac{C_p^o}{R}=\sum n_i\tau^{d_i}+"
             mathTex += r"\sum m_j(\theta_j\tau)^2\frac{e^{\theta_j\tau}}"
             mathTex += r"{(e^{\theta_j\tau}-1)^2}"
@@ -1435,8 +1430,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             mathTex += r"{\sinh(\phi_k\tau)}\right)^2"
             mathTex += r"+\sum l_k\left(\frac{\phi_k\tau}"
             mathTex += r"{\cosh(\phi_k\tau)}\right)^2$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_Ideal.addWidget(label, 1, 1, 1, 3)
             self.Tabla_Cp_poly = Tabla(
                 2, horizontalHeader=["n", "d"], stretch=False, readOnly=True)
@@ -1449,12 +1443,9 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             gridLayout_Ideal.addWidget(self.Tabla_Cp_hyp, 2, 3)
 
         if eq["__type__"] == "Helmholtz":
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha = \alpha^o+\alpha_{Pol}^r+\alpha_{Exp}^r+"
             mathTex += r"\alpha_{GBS}^r+\alpha_{NA}^r+\alpha_{HE}^r$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout.addWidget(label, 2, 1)
 
             # Polinomial tab
@@ -1463,11 +1454,8 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 tab2,
                 QtWidgets.QApplication.translate("pychemqt", "Polinomial"))
             gridLayout_pol = QtWidgets.QGridLayout(tab2)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha_{Pol}^r=\sum_i n_i\tau^{t_i}\delta^{d_i}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_pol.addWidget(label, 1, 1)
             self.Tabla_lineal = Tabla(
                 3, horizontalHeader=["n", "t", "d"], stretch=False,
@@ -1480,12 +1468,9 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 tab3,
                 QtWidgets.QApplication.translate("pychemqt", "Exponential"))
             gridLayout_Exp = QtWidgets.QGridLayout(tab3)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha_{Exp}^r=\sum_i n_i\tau^{t_i}\delta^{d_i}"
             mathTex += r"e^{-\gamma_i\delta^{c_i}}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_Exp.addWidget(label, 1, 1)
             self.Tabla_exponential = Tabla(
                 5, horizontalHeader=["n", "t", "d", "γ", "c"],
@@ -1497,13 +1482,10 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             tabWidget.addTab(
                 tab4, QtWidgets.QApplication.translate("pychemqt", "Gaussian"))
             gridLayout_gauss = QtWidgets.QGridLayout(tab4)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha_{GBS}^r=\sum_i n_i\tau^{t_i}\delta^{d_i}"
             mathTex += r"e^{-\alpha_i\left(\delta-\epsilon_i\right)^2"
             mathTex += r"-\beta\left(\tau-\gamma_i\right)^2}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_gauss.addWidget(label, 1, 1)
             self.Tabla_gauss = Tabla(
                 7, horizontalHeader=["n", "t", "d", "η", "ε", "β", "γ"],
@@ -1516,21 +1498,15 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 tab5,
                 QtWidgets.QApplication.translate("pychemqt", "Non analytic"))
             gridLayout_NA = QtWidgets.QGridLayout(tab5)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha_{NA}^r=\sum_i n_i\delta\Delta^{b_i}"
             mathTex += r"e^{-C_i\left(\delta-1\right)^2-D_i"
             mathTex += r"\left(\tau-1\right)^2}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_NA.addWidget(label, 1, 1)
-            label2 = QtWidgets.QLabel()
-            label2.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\Delta = \left(1-\tau+A_i\left(\left(\delta-1\right)"
             mathTex += r"^2\right)^{1/2\beta_i}\right)^2+B_i\left(\left(\delta"
             mathTex += r"-1\right)^2\right)^{a_i}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label2.setPixmap(pixmap)
+            label2 = QLabelMath(mathTex)
             gridLayout_NA.addWidget(label2, 2, 1)
             self.Tabla_noanalytic = Tabla(
                 8, horizontalHeader=["n", "a", "b", "A", "B", "C", "D", "β"],
@@ -1543,12 +1519,9 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 tab6,
                 QtWidgets.QApplication.translate("pychemqt", "Hard Sphere"))
             gridLayout_HE = QtWidgets.QGridLayout(tab6)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$\alpha_{HE}^r=(\varphi^2-1)\ln(1-\xi)+\frac"
             mathTex += r"{(\varphi^2+3\varphi)\xi-3\varphi\xi^2}{(1-\xi)^2}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_HE.addWidget(label, 1, 1, 1, 2)
             gridLayout_HE.addWidget(QtWidgets.QLabel("φ:"), 2, 1)
             self.fi = Entrada_con_unidades(float, readOnly=True)
@@ -1563,13 +1536,10 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             tabWidget.addTab(
                 tab2, QtWidgets.QApplication.translate("pychemqt", "MBWR"))
             gridLayout_MBWR = QtWidgets.QGridLayout(tab2)
-            label = QtWidgets.QLabel()
-            label.setAlignment(QtCore.Qt.AlignCenter)
             mathTex = r"$P=\rho RT+\sum_{n=2}^{9}\alpha_n\rho^n + "
             mathTex += r"e^{-\delta^2} \sum_{10}^{15} \alpha_n"
             mathTex += r"\rho^{2n-17}$"
-            pixmap = mathTex2QPixmap(mathTex, 12)
-            label.setPixmap(pixmap)
+            label = QLabelMath(mathTex)
             gridLayout_MBWR.addWidget(label, 1, 1)
             self.Tabla_MBWR = Tabla(
                 1, horizontalHeader=["b"], stretch=False, readOnly=True)

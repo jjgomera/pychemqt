@@ -221,10 +221,9 @@ class ShowReference(QtWidgets.QDialog):
         if item.parent() and not item.icon(0).isNull():
             title = item.text(2)
             text = item.text(4)
-            print(text)
             code = str(text).replace("/", "_").replace(":", "_")
-            file = os.path.join("doc", "doi", code) + ".pdf"
-            file2 = os.path.join("doc", "doi", title) + ".pdf"
+            file = os.path.join("doc", code) + ".pdf"
+            file2 = os.path.join("doc", title) + ".pdf"
             print(file2, os.path.isfile(file2))
             if os.path.isfile(file):
                 subprocess.Popen(['evince', file])
@@ -239,8 +238,8 @@ def findFile(ref):
     """Search reference paper path in documentation forder and return boolean
     if it's available"""
     code = ref["doi"].replace("/", "_").replace(":", "_")
-    file = os.path.join("doc", "doi", code) + ".pdf"
-    file2 = os.path.join("doc", "doi", ref["title"]) + ".pdf"
+    file = os.path.join("doc", code) + ".pdf"
+    file2 = os.path.join("doc", ref["title"]) + ".pdf"
     return os.path.isfile(file) or os.path.isfile(file2)
 
 

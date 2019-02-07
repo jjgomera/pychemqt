@@ -32,8 +32,7 @@ from lib import unidades, sql
 from lib.config import IMAGE_PATH
 from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
-from UI.widgets import (Entrada_con_unidades, Tabla, okToContinue,
-                        mathTex2QPixmap)
+from UI.widgets import Entrada_con_unidades, Tabla, okToContinue, QLabelMath
 
 
 ###############################################################################
@@ -68,7 +67,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             5: r"A + BT + CT^3 + DT^8 + ET^9",
             6: r"\frac{A}{B^{1+(1-T/C)^D}}",
             7: r"A(1-T_r)^{B+CT_r+dT_r^2+ET_r^3}",
-            8: r"A+B\frac{C/T}{\sinh(C/T}+D\frac{E/T}{\cosh(E/T)}",
+            8: r"A+B\frac{C/T}{\sinh(C/T)}+D\frac{E/T}{\cosh(E/T)}",
             9: r"A^2/Tr+B-2ACTr-ADTr^2-C^2Tr^3/3-CDTr^4/2-D^2Tr^5/5"
             }
 
@@ -141,10 +140,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
 
         self.eq = eqDIPPR(1)
         lyt.addWidget(self.eq, 0, 0, 1, 6)
-        self.eqformula = QtWidgets.QLabel()
-        self.eqformula.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.eqformula.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.eqformula.setAlignment(QtCore.Qt.AlignCenter)
+        self.eqformula = QLabelMath("")
         lyt.addWidget(self.eqformula, 0, 0, 1, 6)
 
         self.changeId(id)
@@ -175,8 +171,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.eq.setValue(array[0])
             latex = self.latex[array[0]]
             tex = "$%s = %s$" % (self.proptex, latex)
-            pixmap = mathTex2QPixmap(tex, 12)
-            self.eqformula.setPixmap(pixmap)
+            self.eqformula.setTex(tex)
             self.eq.setVisible(False)
             self.eqformula.setVisible(True)
             self.btnPlot.setEnabled(True)
@@ -462,11 +457,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
         layout = QtWidgets.QGridLayout(self)
         self.formula = QtWidgets.QLabel()
-        self.formula.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.formula.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.formula.setAlignment(QtCore.Qt.AlignCenter)
-        pixmap = mathTex2QPixmap(self.latex, 12)
-        self.formula.setPixmap(pixmap)
+        self.formula = QLabelMath(self.latex)
         layout.addWidget(self.formula, 0, 1, 1, 5)
         self.btnFit = QtWidgets.QToolButton()
         self.btnFit.setToolTip(QtWidgets.QApplication.translate(
@@ -982,13 +973,8 @@ class View_Component(QtWidgets.QDialog):
                 ", cal/mol·K")
         lytCp.addWidget(grpCpIdeal, 1, 1, 1, 1)
         lytCpIdeal = QtWidgets.QGridLayout(grpCpIdeal)
-        self.eqCpGasIdeal = QtWidgets.QLabel()
-        self.eqCpGasIdeal.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.eqCpGasIdeal.setFrameStyle(QtWidgets.QFrame.Plain)
         mathTex = "$C_p^o=A+BT+CT^2+DT^3+ET^4+FT^5$"
-        pixmap = mathTex2QPixmap(mathTex, 12)
-        self.eqCpGasIdeal.setPixmap(pixmap)
-        self.eqCpGasIdeal.setAlignment(QtCore.Qt.AlignCenter)
+        self.eqCpGasIdeal = QLabelMath(mathTex)
         lytCpIdeal.addWidget(self.eqCpGasIdeal, 0, 1, 1, 5)
         lytCpIdeal.addWidget(QtWidgets.QLabel("A"), 1, 1)
         self.cpa = Entrada_con_unidades(float)

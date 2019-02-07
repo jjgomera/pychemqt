@@ -34,9 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - NumericFactor: Numeric format configuration dialog
 #   - InputFont: Custom widget to edit a text input with font and color support
 #   - Table_Graphics: Custom widget to implement a popup in PFD
+#   - QLabelMath: Customized QLabel to show a pixmap from a latex code
 
 #   - createAction
 #   - okToContinue: Function to ask user if any unsaved change
+#   - mathTex2QPixmap: Convert a latex text to a QPixmap
 ###############################################################################
 
 
@@ -1408,6 +1410,30 @@ def mathTex2QPixmap(mathTex, fs):
     qpixmap = QtGui.QPixmap(qimage)
 
     return qpixmap
+
+
+class QLabelMath(QtWidgets.QLabel):
+    """Customized QLabel to show a pixmap with a mathematical formulae"""
+    def __init__(self, tex, fs=12, *args, **kw):
+        """
+        Parameters
+        ----------
+        tex : str
+            Latex code text of mathematical expresion to show
+        fs : int
+            Font size used in image
+        """
+        super(QLabelMath, self).__init__(*args, **kw)
+        self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.setFrameStyle(QtWidgets.QFrame.Plain)
+        pixmap = mathTex2QPixmap(tex, fs)
+        self.setPixmap(pixmap)
+        self.fs = fs
+
+    def setTex(self, tex):
+        pixmap = mathTex2QPixmap(tex, self.fs)
+        self.setPixmap(pixmap)
 
 
 if __name__ == "__main__":

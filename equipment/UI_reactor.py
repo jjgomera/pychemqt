@@ -38,7 +38,7 @@ from UI.widgets import Status
 from equipment.parents import UI_equip
 from equipment.reactor import Reactor
 from UI import UI_corriente, inputTable
-from UI.widgets import Entrada_con_unidades, Tabla, mathTex2QPixmap
+from UI.widgets import Entrada_con_unidades, Tabla, QLabelMath
 
 
 class widgetReacciones(QtWidgets.QWidget):
@@ -271,10 +271,8 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Conversion.setConnected()
         self.Conversion.setFixedWidth(100)
         lyt.addWidget(self.Conversion,2,1,3,1)
-        label=QtWidgets.QLabel()
         mathTex = r"$Conversion = C_o + C_1T + C_2T^2 + \cdots + C_nT^n$"
-        pixmap = mathTex2QPixmap(mathTex, 10)
-        label.setPixmap(pixmap)
+        label = QLabelMath(mathTex)
         lyt.addWidget(label,2,2,1,3)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Temperature unit")),3,2)
         self.unidadesTemperatura=QtWidgets.QComboBox()
@@ -294,11 +292,9 @@ class UI_reacciones(QtWidgets.QDialog):
         lyt.addWidget(QtWidgets.QLabel("K<sub>eq</sub>"),1,3)
         self.Keq=Entrada_con_unidades(float)
         lyt.addWidget(self.Keq,1,4)
-        label=QtWidgets.QLabel()
         mathTex = r"$aA + bB \rightleftharpoons cC + dD \therefore "
         mathTex += r"K_{eq} = \frac{[C]^c [D]^d}{[A]^a [B]^b}$"
-        pixmap = mathTex2QPixmap(mathTex, 10)
-        label.setPixmap(pixmap)
+        label = QLabelMath(mathTex)
         lyt.addWidget(label,1,5,1,4)
 
         self.check_KEq=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "Equation"))
@@ -327,11 +323,8 @@ class UI_reacciones(QtWidgets.QDialog):
         self.botonTablaClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonTablaClear.clicked.connect(self.KEq_Tab.clear)
         lyt.addWidget(self.botonTablaClear,4,8)
-        label=QtWidgets.QLabel()
         mathTex = r"$\lnK_eq = A+B/T+C\lnT+DT+ET^2+FT^3+GT^4+HT^5$"
-        pixmap = mathTex2QPixmap(mathTex, 10)
-        label.setPixmap(pixmap)
-        label.setAlignment(QtCore.Qt.AlignCenter)
+        label=QLabelMath(mathTex)
         lyt.addWidget(label,5,1,1,8)
 
         self.checkGibbs=QtWidgets.QRadioButton(QtWidgets.QApplication.translate("pychemqt", "From Gibbs free energy minimization"))
