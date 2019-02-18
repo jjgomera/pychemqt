@@ -280,7 +280,7 @@ class O2(MEoS):
               "ek": 116.2, "sigma": 0.34318867,
               "collision": [0.46649, -0.57015, 0.19164, -0.03708, 0.00241],
 
-              "Tref_res": 1, "rhoref_res": 13.63*M, "muref_res": 18.8928,
+              "rhoref_res": 13.63*M, "muref_res": 18.8928,
               "nr": [-1.7993647367, -0.397230772, 0.312536267, -0.0615559341],
               "tr": [0, 0, 0, 0],
               "dr": [0, 1, 2, 3],
@@ -347,93 +347,32 @@ class O2(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 19(5) (1990) 1089-1122",
                   "doi": "10.1063/1.555863"},
 
-               "__test__": """
-                    >>> st=O2(T=70, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    181.3 5.981
-                    >>> st=O2(T=80, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    167.2 7.105
-                    >>> st=O2(T=90, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    153.1 8.258
-                    >>> st=O2(T=100, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    139.0 9.477
-                    >>> st=O2(T=110, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    124.8 10.82
-                    >>> st=O2(T=120, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    110.3 12.41
-                    >>> st=O2(T=130, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    95.44 14.44
-                    >>> st=O2(T=140, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    79.48 17.41
-                    >>> st=O2(T=150, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    60.11 23.16
-                    >>> st=O2(T=154.581, x=0.5, thermo=2)
-                    >>> print "%0.4g %0.4g" % (st.Liquido.k.mWmK, st.Gas.k.mWmK)
-                    37.47 37.47
-                    """ # Table 3, Pag 1100
-                    """
-                    >>> st=O2(T=70, P=1e5, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    181.0
-                    >>> st=O2(T=180, P=1e5, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    16.80
-                    >>> st=O2(T=110, P=1e6, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    125.1
-                    >>> st=O2(T=70, P=1e7, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    184.2
-                    >>> st=O2(T=120, P=2e7, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    129.2
-                    >>> st=O2(T=50, P=1e8, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    201.6
-                    >>> st=O2(T=400, P=1e5, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    33.24
-                    >>> st=O2(T=200, P=1e8, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    120.9
-                    >>> st=O2(T=500, P=1e6, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    40.29
-                    >>> st=O2(T=800, P=1e5, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    59.15
-                    >>> st=O2(T=500, P=1e8, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    70.64
-                    >>> st=O2(T=1400, P=1e6, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    90.84
-                    >>> st=O2(T=1000, P=1e7, thermo=2)
-                    >>> print "%0.4g" % st.k.mWmK
-                    71.59
-                    """, # Table 5, Pag 1109
+               "special": "_ThCond0",
 
-               "Tref": 1, "kref": 1e-3,
-               "no": [0.5825413, 0.0321266],
-               "co": [-97, -98],
-
-               "Trefb": 1, "rhorefb": 13.63, "krefb": 4.909e-3,
-               "nb": [2.32825085, 4.23024231, -3.60798307, 2.01675631, -0.289731736],
-               "tb": [0, 0, 0, 0, 0],
-               "db": [1, 2, 3, 4, 5],
-               "cb": [0, 0, 0, 0, 0],
+               "rhoref_res": 13.63*M, "kref_res": 4.909e-3,
+               "nr": [2.32825085, 4.23024231, -3.60798307, 2.01675631,
+                      -0.289731736],
+               "tr": [0, 0, 0, 0, 0],
+               "dr": [1, 2, 3, 4, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
-               "Xio": 1.6e-10, "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
+               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01, "Xio": 1.6e-10,
+               "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
+
+    def _ThCond0(self, rho, T, fase):
+        """Special formulation for thermal Conductivity in the zero-Density
+        limit"""
+        d1 = 1.0245069
+        d2 = 1.0280127
+        muo = self._Visco0()
+        # Eq 8
+        # Typo in paper, 3/2-d1, as see in original kinetic theory work
+        # Maitland, G.C., Mustafa, M., Wakeham, W.A.
+        # Thermal Conductivity of Polyatomic Gases at Low Density
+        # J. Chem. Soc., Faraday Trans. I 79 (1983)  163-172
+        # doi: 10.1039/f19837900163
+        lo = 2.5*self.R*muo*(3/2-d1)+self.R*muo*d2*(self.cv0/self.R+d1)
+        return lo*1e-6
 
     _thermal = thermo0, thermo1, thermo2
 
@@ -615,7 +554,7 @@ class Test(TestCase):
         self.assertEqual(round(O2(rhom=0, T=100).k.mWmK, 5), 8.94334)
         self.assertEqual(round(O2(rhom=0, T=300).k.mWmK, 4), 26.4403)
         self.assertEqual(round(O2(rhom=35, T=100).k.mWmK, 3), 146.044)
-        self.assertEqual(round(O2(rhom=10, T=200).k.mWmK, 4), 34.6125)
+        self.assertEqual(round(O2(rhom=10, T=200).k.mWmK, 4), 34.6124)
         self.assertEqual(round(O2(rhom=5, T=300).k.mWmK, 4), 32.5491)
         self.assertEqual(round(O2(rhom=13.6, T=154.6).k.mWmK, 1), 377.5)
 
@@ -627,14 +566,8 @@ class Test(TestCase):
         st = O2(T=100, x=0.5, **kw)
         self.assertEqual(round(st.Liquido.mu.muPas, 0), 146)
         self.assertEqual(round(st.Gas.mu.muPas, 3), 7.436)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 139.0)
-        # self.assertEqual(round(st.Gas.k.mWmK, 3), 9.477)
-
-        st = O2(T=154, x=0.5, **kw)
-        self.assertEqual(round(st.Liquido.mu.muPas, 2), 32.06)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 19.53)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 46.61)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 30.02)
+        self.assertEqual(round(st.Liquido.k.mWmK, 1), 138.9)
+        self.assertEqual(round(st.Gas.k.mWmK, 3), 9.490)
 
         # Table 4, Pag 1101, Viscosity single phase region
         self.assertEqual(round(O2(T=70, P=1e5, **kw).mu.muPas, 1), 352.1)
@@ -650,3 +583,30 @@ class Test(TestCase):
         self.assertEqual(round(O2(T=500, P=1e8, **kw).mu.muPas, 2), 49.74)
         self.assertEqual(round(O2(T=1400, P=1e6, **kw).mu.muPas, 2), 61.29)
         self.assertEqual(round(O2(T=1000, P=1e7, **kw).mu.muPas, 2), 49.44)
+
+        # Table 5, Pag 1108, Thermal conductivity single phase region
+        self.assertEqual(round(O2(T=70, P=1e5, **kw).k.mWmK, 1), 181.0)
+        self.assertEqual(round(O2(T=180, P=1e5, **kw).k.mWmK, 1), 16.80)
+        self.assertEqual(round(O2(T=110, P=1e6, **kw).k.mWmK, 1), 125.3)
+        self.assertEqual(round(O2(T=70, P=1e7, **kw).k.mWmK, 1), 185.6)
+        self.assertEqual(round(O2(T=120, P=2e7, **kw).k.mWmK, 1), 129.4)
+        self.assertEqual(round(O2(T=150, P=1e8, **kw).k.mWmK, 1), 150.5)
+        self.assertEqual(round(O2(T=400, P=1e5, **kw).k.mWmK, 2), 33.24)
+        self.assertEqual(round(O2(T=200, P=1e8, **kw).k.mWmK, 1), 121.0)
+        self.assertEqual(round(O2(T=500, P=1e6, **kw).k.mWmK, 2), 40.29)
+        self.assertEqual(round(O2(T=800, P=1e5, **kw).k.mWmK, 2), 59.15)
+        self.assertEqual(round(O2(T=500, P=1e8, **kw).k.mWmK, 2), 70.64)
+        self.assertEqual(round(O2(T=1400, P=1e6, **kw).k.mWmK, 2), 90.66)
+        self.assertEqual(round(O2(T=1000, P=1e7, **kw).k.mWmK, 2), 71.58)
+
+
+
+if __name__ == "__main__":
+
+    # self.assertEqual(round(st.rho, 0), 1649)
+    st = O2(T=150, x=0.5, visco=2, thermal=2)
+    print(st.P.MPa)
+    print(st.Liquido.mu.muPas, st.Gas.mu.muPas)
+    print(st.Liquido.k.mWmK, st.Gas.k.mWmK)
+    st = O2(T=180, P=1e5, eq="younglove", visco=2, thermal=2)
+    print(st.k.mWmK)
