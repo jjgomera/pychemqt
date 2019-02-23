@@ -366,35 +366,35 @@ class Ethylene(MEoS):
         for i in range(-3, 6):
             lo += GT[i+3]*T**(i/3.)
 
-        tita = (rho-221)/221
-        k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
-             -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
-        l2 = exp(k[0]+k[3]/T) * (exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
-                                 tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
+        l2, lc = 0, 0
+        if rho:
+            tita = (rho-221)/221
+            k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
+                 -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
+            l2 = exp(k[0]+k[3]/T) * (
+                exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
+                    tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
 
-        # Critical enhancement
-        deltarho = (rho-221)/221
-        deltaT = (T-282.34)/282.34
+            # Critical enhancement
+            deltarho = (rho-221)/221
+            deltaT = (T-282.34)/282.34
 
-        xt = rho**2*fase.kappa*5.039/221**2
-        B = abs(deltarho)/abs(deltaT)**1.19                             # Eq 11
-        Gamma = xt*abs(deltaT)**1.19                                    # Eq 12
-        xi = 0.69/(B**2*5.039/Gamma/Boltzmann/282.34)**0.5              # Eq 14
+            xt = rho**2*fase.kappa*5.039/221**2
+            B = abs(deltarho)/abs(deltaT)**1.19                         # Eq 11
+            Gamma = xt*abs(deltaT)**1.19                                # Eq 12
+            xi = 0.69/(B**2*5.039/Gamma/Boltzmann/282.34)**0.5          # Eq 14
 
-        # Eq 19
-        F = exp(-18.66*deltaT**2) * exp(-4.25*deltarho**4)
+            # Eq 19
+            F = exp(-18.66*deltaT**2) * exp(-4.25*deltarho**4)
 
-        # Eq 18
-        c = (self.M/rho.gcc/Avogadro/Boltzmann/T)**0.5
-        d = Boltzmann*T**2/6/pi/fase.mu.muPas/xi
-        lc = c*d*fase.dpdT_rho**2*fase.kappa**0.5*F
+            # Eq 18
+            c = (self.M/rho.gcc/Avogadro/Boltzmann/T)**0.5
+            d = Boltzmann*T**2/6/pi/fase.mu.muPas/xi
+            lc = c*d*fase.dpdT_rho**2*fase.kappa**0.5*F
 
         return unidades.ThermalConductivity(lo+l2+lc, "mWmK")
 
     _thermal = thermo0, thermo1
-
-
-# TODO: Add MBWR equation of Younglove
 
 
 class Test(TestCase):
@@ -984,52 +984,67 @@ class Test(TestCase):
         self.assertEqual(round(Ethylene(T=300, rho=300).k.mWmK, 2), 69.62)
 
     def test_Holland(self):
+        # Single phase selected point
         # Viscosity, Table 5, pag 924
-        # Viscosity, Table 6, pag 924
+        # Thermal Conductivity, Table 6, pag 927
+        st = Ethylene(T=110, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 5661.4)
+        self.assertEqual(round(st.k.mWmK, 2), 261.74)
 
-        # FIXME: The state point use MBWR mEoS
-        return
+        st = Ethylene(T=140, P=1e6, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 2770.0)
+        self.assertEqual(round(st.k.mWmK, 2), 223.11)
 
-        # st = Ethylene(T=110, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 5660.5)
-        # self.assertEqual(round(st.k.mWmK, 2), 261.77)
-        # st = Ethylene(T=140, P=1e6, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 2769.8)
-        # st = Ethylene(T=200, P=5e6, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 1223.7)
-        # st = Ethylene(T=300, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 103.8)
-        # st = Ethylene(T=130, P=1e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 3278.5)
-        # st = Ethylene(T=300, P=5e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 759.0)
-        # st = Ethylene(T=500, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 165.1)
-        # st = Ethylene(T=500, P=5e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 394.1)
+        st = Ethylene(T=200, P=5e6, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 1223.6)
+        self.assertEqual(round(st.k.mWmK, 1), 158.5)
 
-        # Table 6, pag 927
-        # >>> st=Ethylene(T=110, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 261.77
-        # >>> st=Ethylene(T=140, P=1e6)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 223.14
-        # >>> st=Ethylene(T=200, P=5e6)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 158.50
-        # >>> st=Ethylene(T=300, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 20.56
-        # >>> st=Ethylene(T=130, P=1e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 244.97
-        # >>> st=Ethylene(T=300, P=5e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 129.32
-        # >>> st=Ethylene(T=500, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 49.95
-        # >>> st=Ethylene(T=500, P=5e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 93.57
+        st = Ethylene(T=300, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 103.8)
+        self.assertEqual(round(st.k.mWmK, 2), 20.58)
+
+        st = Ethylene(T=130, P=1e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 3278.7)
+        self.assertEqual(round(st.k.mWmK, 2), 244.95)
+
+        st = Ethylene(T=300, P=5e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 759.1)
+        self.assertEqual(round(st.k.mWmK, 2), 129.40)
+
+        st = Ethylene(T=500, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 165.1)
+        self.assertEqual(round(st.k.mWmK, 2), 49.95)
+
+        st = Ethylene(T=500, P=5e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 394.1)
+        self.assertEqual(round(st.k.mWmK, 2), 93.58)
+
+        # Saturated liquid values, Table 7, pag 930
+        # The density values differ so the calculated transport properties
+        # difffer in that cases, I think the paper use the ancillary equation
+        # for liquid saturated density
+        st = Ethylene(T=200, x=0, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 18.573)
+        self.assertEqual(round(st.mu.microP, 1), 1204.7)
+        self.assertEqual(round(st.k.mWmK, 1), 153.5)
+
+        # Dilute gas values, Table 8, pag 930
+        st = Ethylene(T=180, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 63.6)
+        self.assertEqual(round(st.k.mWmK, 1), 10.0)
+
+        st = Ethylene(T=250, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 86.6)
+        self.assertEqual(round(st.k.mWmK, 1), 14.9)
+
+        st = Ethylene(T=400, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 135.7)
+        self.assertEqual(round(st.k.mWmK, 1), 34.6)
+
+        st = Ethylene(T=500, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 164.8)
+        self.assertEqual(round(st.k.mWmK, 1), 49.9)
+
+        st = Ethylene(T=680, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 211.6)
+        self.assertEqual(round(st.k.mWmK, 1), 91.2)
