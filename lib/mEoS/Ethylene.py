@@ -67,7 +67,7 @@ class Ethylene(MEoS):
     CP2 = {"ao": 3.554495281,
            "an": [0.5603615762e6, -0.2141069802e5, 0.2532008897e3,
                   -0.9951927478e-2, 0.5108931070e-4, -0.1928667482e-7],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
+           "pow": [-3, -2, -1, 1, 2, 3],
            "ao_exp": [-0.2061703241e2],
            "exp": [3000],
            "ao_hyp": [], "hyp": []}
@@ -133,10 +133,10 @@ class Ethylene(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 29645.9, "so": 219.39},
         "M": 28.054, "Tc": 282.3452, "rhoc": 7.634,
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 260000.0, "rhomax": 26.67,
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 260000.0, "rhomax": 26.67,
         "Pmin": 0.1225, "rhomin": 23.348,
 
         "nr1": [3.248937034, -10.17278862, 7.386604053, -1.568916359,
@@ -191,52 +191,29 @@ class Ethylene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    MBWR = {
+    mccarty = {
+        # Also referenced in
+        # Younglove, B.A.",
+        # Thermophysical Properties of Fluids. I. Argon, Ethylene,
+        # Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen
+        # J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)
+        # Younglove use a different rhoc so the tabulated values may differ
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for ethylene of McCarty and Jacobsen (1981)",
+        "__name__": "MBWR equation of state for ethylene of McCarty (1981)",
         "__doi__": {"autor": "McCarty, R.D., Jacobsen, R.T.",
                     "title": "An Equation of State for Fluid Ethylene",
                     "ref": "Natl. Bur. Stand., Tech. Note 1045, 1981.",
                     "doi": ""},
-        "__test__":
-            # Table, Pag 138
-            """
-            >>> st=Ethylene(T=110, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 23.2516 110 7369.71 87.438 43.54 72.05 1706.12
-            >>> st=Ethylene(T=150, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 21.4687 150 10056.28 108.312 40.64 65.72 1507.50
-            >>> st=Ethylene(T=200, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 19.0802 200 13387.64 127.463 37.33 68.11 1172.01
-            >>> st=Ethylene(T=250, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 16.1946 250 16970.99 143.418 38.08 77.31 811.65
-            >>> st=Ethylene(T=300, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 11.5343 300 21586.21 160.141 42.53 118.76 418.90
-            >>> st=Ethylene(T=350, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 5.3640 350 27794.36 179.364 44.3 92.15 309.36
-            >>> st=Ethylene(T=400, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 3.7626 400 31676.15 189.761 46.49 70.37 347.16
-            """,
-        "R": 8.31434,
-        "cp": CP2,
-        "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 23.343,
+        "R": 8.31434, "M": 28.054,
+        "Tt": 103.986, "Tc": 282.3428, "Pc": 5.0403, "rhoc": 7.634,
+        "cp": CP2,
+        "ref": {"Tref": 300, "Pref": 101.325, "so": 219.4, "ho": 29646.46},
+
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 23.343,
         "Pmin": 0.1213, "rhomin": 23.343,
 
+        "gamma": -0.0172,
         "b": [None, -0.2146684366683e-1, 0.1791433722534e1, -0.3675315603930e2,
               0.3707178934669e4, -0.3198282566709e6, 0.5809379774732e-3,
               -0.7895570824899, 0.1148620375835e3, 0.2713774629193e6,
@@ -279,8 +256,7 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = smukala, MBWR, jahangiri, shortSpan, sun
-    eq = smukala, jahangiri, shortSpan, sun
+    eq = smukala, mccarty, jahangiri, shortSpan, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
