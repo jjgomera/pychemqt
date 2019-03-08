@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp
 from unittest import TestCase
+
+from scipy.constants import Boltzmann, Avogadro
 
 from lib.meos import MEoS
 from lib import unidades
@@ -423,68 +426,78 @@ class N2(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.17e-9, "gam0": 0.055, "qd": 0.40e-9, "Tcref": 252.384}
 
-    thermo1 = {"eq": 3,
-               "__name__": "Younglove (1982)",
-               "__doi__": {"autor": "Younglove, B.A.",
-                           "title": "Thermophysical Properties of Fluids. I. Argon, Ethylene, Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen",
-                           "ref": "J. Phys. Chem. Ref. Data, Vol. 11, Suppl. 1, pp. 1-11, 1982.",
-                           "doi": ""},
+    thermo1 = {"__name__": "Younglove (1982)",
+               "__doi__": {
+                   "autor": "Younglove, B.A.",
+                   "title": "Thermophysical Properties of Fluids. I. Argon, "
+                            "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
+                            "Trifluoride, and Oxygen",
+                   "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
+                   "doi": ""},
 
-               "ek": 118, "sigma": 0.354,
-               "Nchapman": 0.141286429751707,
-               "tchapman": 0,
-               "b": [-.15055520615565, 0.183477124982509, 1.45008451566007,
-                     -4.88031780663869, 6.68390592664363, -4.90242883649539,
-                     2.02630917877999, -.439826733340102, 3.91906706514e-2],
-               "F": [1.50938067650e-3, 1.70975795748e-4, 1.2, 118],
-               "E": [-38.613291627, -31.826109485, 26.0197970589236,
-                     -27.2869897441495, 0, 0, 0],
-               "rhoc": 35.6938892061679,
-               "ff": 1.67108,
-               "rm": 0.00000003933}
+               "eq": 3,
 
-    thermo2 = {"eq": 1, "critical": 0,
-               "__name__": "Stephan (1987)",
-               "__doi__": {"autor": "Stephan, K., Krauss, R., and Laesecke, A.",
-                           "title": "Viscosity and Thermal Conductivity of Nitrogen for a Wide Range of Fluid States",
-                           "ref": "J. Phys. Chem. Ref. Data, 16(4):993-1023, 1987.",
-                           "doi": "10.1063/1.555798"},
-               "__test__": """
-                    >>> st=N2(T=80, P=1e5, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    7.73
-                    >>> st=N2(T=80, P=1e7, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    153.7
-                    >>> st=N2(T=300, P=1e6, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    26.51
-                    >>> st=N2(T=1100, P=1e7, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    72.32
-                    >>> st=N2(T=100, P=4.5e7, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    166.13
-                    >>> st=N2(T=80, P=2e7, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    162.75
-                    >>> st=N2(T=200, P=5e7, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    80.58
-                    >>> st=N2(T=1100, P=1e8, thermo=2)
-                    >>> print "%0.2f" % st.k.mWmK
-                    83.68
-                    """, # Table B1, Pag 1018
+               "no": [-0.20029573972e2, 0.49765746684e1, 0.80188959378e1,
+                      -0.55022716888e1, 0.15363738965e1, -0.22974737257,
+                      0.19360547346e-1, -0.85677385768e-3, 0.15564670935e-4],
+               "to": [-1., -2/3, -1/3, 0, 1/3, 2/3, 1., 4/3, 5/3],
 
-               "Tref": 1, "kref": 1e-3,
-               "no": [0.6950401, 0.03643102],
-               "co": [-97, -98],
+               "F": [0.53875666637e-1, 0.61027911104e-2, 0.12e1, 0.118e3],
+               "E": [-0.38613291627e2, 0, 0.37201743333e2, 0, -0.39013509079e2,
+                     -0.31826109485e2, 0, 1],
 
-               "Trefb": 1, "rhorefb": 11.2088889, "krefb": 4.17e-3,
-               "nb": [3.3373542, 0.37098251, 0.89913456, 0.16972505],
-               "tb": [0, 0, 0, 0],
-               "db": [1, 2, 3, 4],
-               "cb": [0, 0, 0, 0]}
+               "critical": 4,
+               "rhoc": 0.3139, "Tc": 126.24,
+               "ek": 118, "f": 1.67108, "gm": 3.933e-10}
+
+    thermo2 = {"__name__": "Stephan (1987)",
+               "__doi__": {
+                   "autor": "Stephan, K., Krauss, R., Laesecke, A.",
+                   "title": "Viscosity and Thermal Conductivity of Nitrogen "
+                            "for a Wide Range of Fluid States",
+                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 993-1023",
+                   "doi": "10.1063/1.555798"},
+
+               "eq": 1, "critical": 0,
+
+               "special": "_thermo0",
+               # "Toref": 1, "koref": 1e-3,
+               # "no": [0.6950401, 0.03643102],
+               # "to": [-97, -98],
+
+               "rhoref_res": 314, "kref_res": 4.17e-3,
+               "nr": [3.3373542, 0.37098251, 0.89913456, 0.16972505],
+               "tr": [0, 0, 0, 0],
+               "dr": [1, 2, 3, 4]}
+
+    def _thermo0(self, rho, T, fase):
+        """Custom dilute-gas limit form of thermal conductivity"""
+        X1 = 0.95185202
+        X2 = 1.0205422
+        M = 28.013
+
+        # Used the ideal isochoric heat capacity of paper because differ in
+        # about a 20% of values using the ideal correlation in meos
+        def cv(T):
+            ni = [-0.837079888737e3, 0.379147114487e2, -0.601737844275,
+                  0.350418363823e1, -0.874955653028e-5, 0.148968607239e-7,
+                  -0.256370354277e-11, 0.100773735767e1, 0.335340610e4]
+            sum1 = 0
+            for i, n in enumerate(ni[:-2]):
+                sum1 += n*T**(i-3)
+
+            u = ni[8]/T
+            eu1 = exp(u)-1
+            sum2 = (ni[7]*u**2*(eu1+1))/eu1**2
+            cv = 8.31434*(sum1+sum2-1)
+            return cv
+
+        muo = self._Visco0(self.visco2)
+        F = Boltzmann*Avogadro*muo/M                                     # Eq 9
+        ltr = 2.5*F*(1.5-X1)                                             # Eq 7
+        lint = F*X2*(cv(T)/Boltzmann/Avogadro+X1)                        # Eq 8
+
+        return (ltr+lint)*1e-3
 
     _thermal = thermo0, thermo1, thermo2
 
@@ -789,7 +802,7 @@ class Test(TestCase):
         self.assertEqual(round(N2(rhom=5, T=300).mu.muPas, 4), 20.7430)
         self.assertEqual(round(N2(rhom=11.18, T=126.195).mu.muPas, 4), 18.2978)
 
-        # Thermal Condcutivity
+        # Thermal Conductivity
         self.assertEqual(round(N2(rhom=0, T=100).k.mWmK, 5), 9.27749)
         self.assertEqual(round(N2(rhom=0, T=300).k.mWmK, 4), 25.9361)
         self.assertEqual(round(N2(rhom=25, T=100).k.mWmK, 3), 103.834)
@@ -808,21 +821,33 @@ class Test(TestCase):
         # So using TP as input parameter may differ, specially in region near
         # critical point
 
+        kw = {"visco": 2, "thermal": 2}
         # Table A1, Pag 1013
-        self.assertEqual(round(N2(T=80, P=1e5, visco=2).mu.muPas, 2), 5.24)
-        self.assertEqual(round(N2(T=300, P=1e6, visco=2).mu.muPas, 2), 18.03)
-        self.assertEqual(round(N2(T=1100, P=1e7, visco=2).mu.muPas, 2), 44.67)
-        self.assertEqual(round(N2(T=500, P=2e7, visco=2).mu.muPas, 2), 28.37)
-        self.assertEqual(round(N2(T=200, P=5e7, visco=2).mu.muPas, 2), 49.40)
-        self.assertEqual(round(N2(T=1100, P=1e8, visco=2).mu.muPas, 2), 50.22)
+        self.assertEqual(round(N2(T=80, P=1e5, **kw).mu.muPas, 2), 5.24)
+        self.assertEqual(round(N2(T=300, P=1e6, **kw).mu.muPas, 2), 18.03)
+        self.assertEqual(round(N2(T=1100, P=1e7, **kw).mu.muPas, 2), 44.67)
+        self.assertEqual(round(N2(T=500, P=2e7, **kw).mu.muPas, 2), 28.37)
+        self.assertEqual(round(N2(T=200, P=5e7, **kw).mu.muPas, 2), 49.40)
+        self.assertEqual(round(N2(T=1100, P=1e8, **kw).mu.muPas, 2), 50.22)
 
         # Table A2, Pag 1016
-        st = N2(T=100, x=0.5, visco=2)
+        st = N2(T=100, x=0.5, **kw)
         self.assertEqual(round(st.Gas.mu.muPas, 2), 7.08)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 72.88)
 
+        # Table B1, Pag 1018
+        self.assertEqual(round(N2(T=80, P=1e5, **kw).k.mWmK, 2), 7.73)
+        self.assertEqual(round(N2(T=300, P=1e6, **kw).k.mWmK, 2), 26.51)
+        self.assertEqual(round(N2(T=1100, P=1e7, **kw).k.mWmK, 2), 72.32)
+        self.assertEqual(round(N2(T=500, P=2e7, **kw).k.mWmK, 2), 44.17)
+        self.assertEqual(round(N2(T=200, P=5e7, **kw).k.mWmK, 2), 80.67)
+        self.assertEqual(round(N2(T=1100, P=1e8, **kw).k.mWmK, 2), 83.72)
+
+        # Table B2, Pag 1021
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 11.10)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 103.78)
+
 
 if __name__ == "__main__":
-    st = N2(rhom=25, T=100)
-    print(st.rho, st.mu.muPas, st.k.mWmK)
-
+    st = N2(T=63.15, x=0.5, eq="jacobsen")
+    print(st.P.MPa, 0.01253)
