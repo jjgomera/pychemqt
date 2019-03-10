@@ -129,7 +129,7 @@ class Ar(MEoS):
         "cp": Fi2,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 50.65,
+        "Tmin": 83.8, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 50.65,
         "Pmin": 68.891, "rhomin": 35.465,
 
         "nr1": [0.85095714803969, -0.24003222943480e1, 0.54127841476466,
@@ -159,7 +159,7 @@ class Ar(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 6227.9, "so": 154.84},
         "Tc": 150.6633, "Pc": 4860, "rhoc": 13.29, "Tt": 83.804,
 
         "Tmin": 83.804, "Tmax": 1200., "Pmax": 1000000.0, "rhomax": 45.814,
@@ -216,7 +216,7 @@ class Ar(MEoS):
         "nr3": [],
         "nr4": []}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for argon of Younglove (1982)",
         "__doi__": {"autor": "Younglove, B.A.",
@@ -228,11 +228,13 @@ class Ar(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6197, "so": 154.732},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 9715.8, "so": 156.65},
+        "Tt": 83.8, "Tc": 150.86, "rhoc": 13.41,
 
-        "Tmin": 83.80, "Tmax": 400., "Pmax": 101000.0, "rhomax": 50.65,
+        "Tmin": 83.80, "Tmax": 500., "Pmax": 101000.0, "rhomax": 50.65,
         "Pmin": 68.906, "rhomin": 35.4,
 
+        "gamma": -0.0055542372,
         "b": [None, -0.6569731294e-3, 0.1822957801, -0.3649470141e1,
               0.1232012107e3, -0.8613578274e4, 0.7978579691e-4, -0.02911489110,
               0.7581821758e1, 0.8780488169e4, 0.1423145989e-6, 0.1674146131e-2,
@@ -243,15 +245,10 @@ class Ar(MEoS):
               -0.7038944136, -0.1154324539e-6, 0.1555990117e-4,
               -0.1492178536e-9, -0.1001356071e-7, 0.2933963216e-6]}
 
-    # eq = tegeler, MBWR, GERG, stewart, shortSpan
-    eq = tegeler, GERG, stewart, shortSpan
+    eq = tegeler, younglove, GERG, stewart, shortSpan
     _PR = -0.0034
 
-    _dielectric = {
-        "eq": 3, "Tref": 273.16, "rhoref": 1000.,
-        "a0": [],  "expt0": [], "expd0": [],
-        "a1": [4.1414], "expt1": [0], "expd1": [1],
-        "a2": [1.597, 0.262, -117.9], "expt2": [0, 1, 0], "expd2": [2, 2, 3.1]}
+    _surface = {"sigma": [0.037], "exp": [1.25]}
     _melting = {
         "eq": 1, "Tref": Tt, "Pref": 68.891,
         "Tmin": 83.8058, "Tmax": 700.0,
@@ -264,7 +261,11 @@ class Ar(MEoS):
         "a1": [], "exp1": [],
         "a2": [-11.1307], "exp2": [1],
         "a3": [], "exp3": []}
-    _surface = {"sigma": [0.037], "exp": [1.25]}
+    _dielectric = {
+        "eq": 3, "Tref": 273.16, "rhoref": 1000.,
+        "a0": [],  "expt0": [], "expd0": [],
+        "a1": [4.1414], "expt1": [0], "expd1": [1],
+        "a2": [1.597, 0.262, -117.9], "expt2": [0, 1, 0], "expd2": [2, 2, 3.1]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -644,6 +645,299 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 5), 0.75591)
         self.assertEqual(round(st.w, 1), 1851.9)
 
+    def test_Younglove(self):
+        # Selected point from Appendix F, Pag 1-12, saturation states
+        # The pressure and density in saturation is calculate in tables using
+        # the ancillary equation used in paper so the calculated point differ
+        # of implement eq
+        st = Ar(T=400, P=8e4, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 4), 0.9610)
+        self.assertEqual(round(st.rhoM, 5), 0.02406)
+        self.assertEqual(round(st.uM.Jmol, 0), 8473)
+        self.assertEqual(round(st.hM.Jmol, -1), 11800)
+        self.assertEqual(round(st.sM.JmolK, 1), 164.6)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.48)
+        self.assertEqual(round(st.cpM.JmolK, 2), 20.81)
+        self.assertEqual(round(st.w, 1), 372.6)
+        self.assertEqual(round(st.mu.muPas, 1), 28.9)
+        self.assertEqual(round(st.k.WmK, 4), 0.0226)
+
+        st = Ar(T=100, P=1e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 3), 4.915)
+        self.assertEqual(round(st.rhoM, 4), 0.1230)
+        self.assertEqual(round(st.uM.Jmol, 0), 4700)
+        self.assertEqual(round(st.hM.Jmol, 0), 5512)
+        self.assertEqual(round(st.sM.JmolK, 1), 133.6)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.87)
+        self.assertEqual(round(st.cpM.JmolK, 2), 21.93)
+        self.assertEqual(round(st.w, 1), 184.0)
+        self.assertEqual(round(st.mu.muPas, 2), 8.24)
+        self.assertEqual(round(st.k.WmK, 5), 0.00663)
+
+        st = Ar(T=300, P=101325, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 3), 1.624)
+        self.assertEqual(round(st.rhoM, 5), 0.04065)
+        self.assertEqual(round(st.uM.Jmol, 0), 7223)
+        self.assertEqual(round(st.hM.Jmol, 0), 9716)
+        self.assertEqual(round(st.sM.JmolK, 1), 156.7)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.48)
+        self.assertEqual(round(st.cpM.JmolK, 2), 20.83)
+        self.assertEqual(round(st.w, 1), 322.7)
+        self.assertEqual(round(st.mu.muPas, 1), 22.9)
+        self.assertEqual(round(st.k.WmK, 4), 0.0179)
+
+        st = Ar(T=90, P=2e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1377)
+        self.assertEqual(round(st.rhoM, 2), 34.48)
+        self.assertEqual(round(st.uM.Jmol, 0), -1100)
+        self.assertEqual(round(st.hM.Jmol, 0), -1094)
+        self.assertEqual(round(st.sM.JmolK, 2), 57.99)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.52)
+        self.assertEqual(round(st.cpM.JmolK, 2), 44.89)
+        self.assertEqual(round(st.w, 1), 805.0)
+        self.assertEqual(round(st.mu.muPas, 0), 241)
+        self.assertEqual(round(st.k.WmK, 3), 0.124)
+
+        st = Ar(T=100, P=3e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 2), 15.52)
+        self.assertEqual(round(st.rhoM, 4), 0.3884)
+        self.assertEqual(round(st.uM.Jmol, 0), 4623)
+        self.assertEqual(round(st.hM.Jmol, 0), 5395)
+        self.assertEqual(round(st.sM.JmolK, 1), 123.7)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.77)
+        self.assertEqual(round(st.cpM.JmolK, 2), 24.78)
+        self.assertEqual(round(st.w, 1), 179.2)
+        self.assertEqual(round(st.mu.muPas, 2), 8.34)
+        self.assertEqual(round(st.k.WmK, 5), 0.00704)
+
+        st = Ar(T=400, P=4e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 3), 4.805)
+        self.assertEqual(round(st.rhoM, 4), 0.1203)
+        self.assertEqual(round(st.uM.Jmol, 0), 8460)
+        self.assertEqual(round(st.hM.Jmol, -1), 11790)
+        self.assertEqual(round(st.sM.JmolK, 1), 151.2)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.49)
+        self.assertEqual(round(st.cpM.JmolK, 2), 20.89)
+        self.assertEqual(round(st.w, 1), 373.1)
+        self.assertEqual(round(st.mu.muPas, 1), 29.0)
+        self.assertEqual(round(st.k.WmK, 4), 0.0227)
+
+        st = Ar(T=90, P=6e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1379)
+        self.assertEqual(round(st.rhoM, 2), 34.51)
+        self.assertEqual(round(st.uM.Jmol, 0), -1104)
+        self.assertEqual(round(st.hM.Jmol, 0), -1087)
+        self.assertEqual(round(st.sM.JmolK, 2), 57.93)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.54)
+        self.assertEqual(round(st.cpM.JmolK, 2), 44.81)
+        self.assertEqual(round(st.w, 1), 806.7)
+        self.assertEqual(round(st.mu.muPas, 0), 242)
+        self.assertEqual(round(st.k.WmK, 3), 0.124)
+
+        st = Ar(T=130, P=8e5, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 2), 32.50)
+        self.assertEqual(round(st.rhoM, 4), 0.8135)
+        self.assertEqual(round(st.uM.Jmol, 0), 4926)
+        self.assertEqual(round(st.hM.Jmol, 0), 5909)
+        self.assertEqual(round(st.sM.JmolK, 1), 120.7)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.61)
+        self.assertEqual(round(st.cpM.JmolK, 2), 25.41)
+        self.assertEqual(round(st.w, 1), 203.7)
+        self.assertEqual(round(st.mu.muPas, 1), 10.9)
+        # self.assertEqual(round(st.k.WmK, 5), 0.00938)
+
+        st = Ar(T=110, P=1e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1242)
+        self.assertEqual(round(st.rhoM, 2), 31.10)
+        self.assertEqual(round(st.uM.Jmol, 1), -183.7)
+        self.assertEqual(round(st.hM.Jmol, 1), -151.6)
+        self.assertEqual(round(st.sM.JmolK, 2), 67.18)
+        self.assertEqual(round(st.cvM.JmolK, 2), 18.89)
+        self.assertEqual(round(st.cpM.JmolK, 2), 48.89)
+        self.assertEqual(round(st.w, 1), 679.0)
+        self.assertEqual(round(st.mu.muPas, 0), 143)
+        self.assertEqual(round(st.k.WmK, 4), 0.0961)
+
+        st = Ar(T=280, P=1.5e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 2), 26.06)
+        self.assertEqual(round(st.rhoM, 4), 0.6523)
+        self.assertEqual(round(st.uM.Jmol, 0), 6878)
+        self.assertEqual(round(st.hM.Jmol, 0), 9177)
+        self.assertEqual(round(st.sM.JmolK, 1), 132.5)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.59)
+        self.assertEqual(round(st.cpM.JmolK, 2), 21.66)
+        self.assertEqual(round(st.w, 1), 312.7)
+        self.assertEqual(round(st.mu.muPas, 1), 21.9)
+        self.assertEqual(round(st.k.WmK, 4), 0.0175)
+
+        st = Ar(T=128, P=2e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1089)
+        self.assertEqual(round(st.rhoM, 2), 27.25)
+        self.assertEqual(round(st.uM.Jmol, 1), 733.7)
+        self.assertEqual(round(st.hM.Jmol, 1), 807.1)
+        self.assertEqual(round(st.sM.JmolK, 2), 74.95)
+        self.assertEqual(round(st.cvM.JmolK, 2), 17.70)
+        self.assertEqual(round(st.cpM.JmolK, 2), 59.76)
+        self.assertEqual(round(st.w, 1), 521.7)
+        self.assertEqual(round(st.mu.muPas, 1), 91.9)
+        self.assertEqual(round(st.k.WmK, 4), 0.0746)
+
+        st = Ar(T=240, P=3e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 2), 62.93)
+        self.assertEqual(round(st.rhoM, 3), 1.575)
+        self.assertEqual(round(st.uM.Jmol, 0), 6224)
+        self.assertEqual(round(st.hM.Jmol, 0), 8128)
+        self.assertEqual(round(st.sM.JmolK, 1), 122.8)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.84)
+        self.assertEqual(round(st.cpM.JmolK, 2), 23.49)
+        self.assertEqual(round(st.w, 1), 288.7)
+        self.assertEqual(round(st.mu.muPas, 1), 19.7)
+        self.assertEqual(round(st.k.WmK, 4), 0.0164)
+
+        st = Ar(T=150, P=4e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 209.7)
+        self.assertEqual(round(st.rhoM, 3), 5.250)
+        self.assertEqual(round(st.uM.Jmol, 0), 4317)
+        self.assertEqual(round(st.hM.Jmol, 0), 5078)
+        self.assertEqual(round(st.sM.JmolK, 1), 104.2)
+        self.assertEqual(round(st.cvM.JmolK, 2), 17.85)
+        self.assertEqual(round(st.cpM.JmolK, 2), 75.22)
+        self.assertEqual(round(st.w, 1), 195.1)
+        self.assertEqual(round(st.mu.muPas, 1), 15.6)
+        self.assertEqual(round(st.k.WmK, 4), 0.0230)
+
+        st = Ar(T=150.3, P=4.8e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 670.6)
+        self.assertEqual(round(st.rhoM, 2), 16.79)
+        self.assertEqual(round(st.uM.Jmol, 0), 2557)
+        self.assertEqual(round(st.hM.Jmol, 0), 2843)
+        self.assertEqual(round(st.sM.JmolK, 2), 88.49)
+        self.assertEqual(round(st.cvM.JmolK, 2), 19.90)
+        self.assertEqual(round(st.cpM.JmolK, 0), 1058)
+        self.assertEqual(round(st.w, 1), 221.6)
+        self.assertEqual(round(st.mu.muPas, 1), 35.8)
+        self.assertEqual(round(st.k.WmK, 4), 0.0538)
+
+        st = Ar(T=151.3, P=5e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 559.0)
+        self.assertEqual(round(st.rhoM, 2), 13.99)
+        self.assertEqual(round(st.uM.Jmol, 0), 2936)
+        self.assertEqual(round(st.hM.Jmol, 0), 3293)
+        self.assertEqual(round(st.sM.JmolK, 2), 91.38)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.18)
+        self.assertEqual(round(st.cpM.JmolK, 0), 4808)
+        self.assertEqual(round(st.w, 1), 195.4)
+        self.assertEqual(round(st.mu.muPas, 1), 28.7)
+        self.assertEqual(round(st.k.WmK, 4), 0.0759)
+
+        st = Ar(T=90, P=6e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1395)
+        self.assertEqual(round(st.rhoM, 2), 34.92)
+        self.assertEqual(round(st.uM.Jmol, 0), -1165)
+        self.assertEqual(round(st.hM.Jmol, 1), -992.7)
+        self.assertEqual(round(st.sM.JmolK, 2), 57.25)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.75)
+        self.assertEqual(round(st.cpM.JmolK, 2), 43.80)
+        self.assertEqual(round(st.w, 1), 829.6)
+        self.assertEqual(round(st.mu.muPas, 0), 255)
+        self.assertEqual(round(st.k.WmK, 3), 0.127)
+
+        st = Ar(T=186, P=7e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 252.0)
+        self.assertEqual(round(st.rhoM, 3), 6.308)
+        self.assertEqual(round(st.uM.Jmol, 0), 4723)
+        self.assertEqual(round(st.hM.Jmol, 0), 5833)
+        self.assertEqual(round(st.sM.JmolK, 1), 105.6)
+        self.assertEqual(round(st.cvM.JmolK, 2), 15.32)
+        self.assertEqual(round(st.cpM.JmolK, 2), 46.31)
+        self.assertEqual(round(st.w, 1), 243.6)
+        self.assertEqual(round(st.mu.muPas, 1), 19.6)
+        self.assertEqual(round(st.k.WmK, 4), 0.0216)
+
+        st = Ar(T=400, P=8e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 2), 95.74)
+        self.assertEqual(round(st.rhoM, 3), 2.397)
+        self.assertEqual(round(st.uM.Jmol, 0), 8152)
+        self.assertEqual(round(st.hM.Jmol, -1), 11490)
+        self.assertEqual(round(st.sM.JmolK, 1), 125.5)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.81)
+        self.assertEqual(round(st.cpM.JmolK, 2), 22.75)
+        self.assertEqual(round(st.w, 1), 386.9)
+        self.assertEqual(round(st.mu.muPas, 1), 30.3)
+        self.assertEqual(round(st.k.WmK, 4), 0.0250)
+
+        st = Ar(T=188, P=9e6, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 351.3)
+        self.assertEqual(round(st.rhoM, 3), 8.795)
+        self.assertEqual(round(st.uM.Jmol, 0), 4365)
+        self.assertEqual(round(st.hM.Jmol, 0), 5389)
+        self.assertEqual(round(st.sM.JmolK, 1), 101.8)
+        self.assertEqual(round(st.cvM.JmolK, 2), 16.06)
+        self.assertEqual(round(st.cpM.JmolK, 2), 58.59)
+        self.assertEqual(round(st.w, 1), 252.1)
+        self.assertEqual(round(st.mu.muPas, 1), 22.8)
+        self.assertEqual(round(st.k.WmK, 4), 0.0255)
+
+        st = Ar(T=145, P=1e7, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1016)
+        self.assertEqual(round(st.rhoM, 2), 25.42)
+        self.assertEqual(round(st.uM.Jmol, 0), 1302)
+        self.assertEqual(round(st.hM.Jmol, 0), 1696)
+        self.assertEqual(round(st.sM.JmolK, 2), 79.24)
+        self.assertEqual(round(st.cvM.JmolK, 2), 17.43)
+        self.assertEqual(round(st.cpM.JmolK, 2), 57.54)
+        self.assertEqual(round(st.w, 1), 486.1)
+        self.assertEqual(round(st.mu.muPas, 1), 76.6)
+        self.assertEqual(round(st.k.WmK, 4), 0.0665)
+
+        st = Ar(T=400, P=1.4e7, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 166.0)
+        self.assertEqual(round(st.rhoM, 3), 4.155)
+        self.assertEqual(round(st.uM.Jmol, 0), 7919)
+        self.assertEqual(round(st.hM.Jmol, -1), 11290)
+        self.assertEqual(round(st.sM.JmolK, 1), 120.3)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.03)
+        self.assertEqual(round(st.cpM.JmolK, 2), 24.07)
+        self.assertEqual(round(st.w, 1), 400.5)
+        self.assertEqual(round(st.mu.muPas, 1), 31.7)
+        self.assertEqual(round(st.k.WmK, 4), 0.0268)
+
+        st = Ar(T=100, P=2e7, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 0), 1379)
+        self.assertEqual(round(st.rhoM, 2), 34.52)
+        self.assertEqual(round(st.uM.Jmol, 1), -894.8)
+        self.assertEqual(round(st.hM.Jmol, 1), -315.4)
+        self.assertEqual(round(st.sM.JmolK, 2), 60.14)
+        self.assertEqual(round(st.cvM.JmolK, 2), 20.78)
+        self.assertEqual(round(st.cpM.JmolK, 2), 42.43)
+        self.assertEqual(round(st.w, 1), 846.3)
+        self.assertEqual(round(st.mu.muPas, 0), 226)
+        self.assertEqual(round(st.k.WmK, 3), 0.121)
+
+        st = Ar(T=310, P=4e7, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 577.0)
+        self.assertEqual(round(st.rhoM, 2), 14.44)
+        self.assertEqual(round(st.uM.Jmol, 0), 5354)
+        self.assertEqual(round(st.hM.Jmol, 0), 8123)
+        self.assertEqual(round(st.sM.JmolK, 1), 102.4)
+        self.assertEqual(round(st.cvM.JmolK, 2), 14.12)
+        self.assertEqual(round(st.cpM.JmolK, 2), 32.18)
+        self.assertEqual(round(st.w, 1), 471.1)
+        self.assertEqual(round(st.mu.muPas, 1), 41.9)
+        self.assertEqual(round(st.k.WmK, 4), 0.0393)
+
+        st = Ar(T=400, P=1e8, eq="younglove", visco=2, thermal=1)
+        self.assertEqual(round(st.rho, 1), 787.4)
+        self.assertEqual(round(st.rhoM, 2), 19.71)
+        self.assertEqual(round(st.uM.Jmol, 0), 5999)
+        self.assertEqual(round(st.hM.Jmol, -1), 11070)
+        self.assertEqual(round(st.sM.JmolK, 1), 100.9)
+        self.assertEqual(round(st.cvM.JmolK, 2), 14.82)
+        self.assertEqual(round(st.cpM.JmolK, 2), 28.48)
+        self.assertEqual(round(st.w, 1), 687.3)
+        self.assertEqual(round(st.mu.muPas, 1), 62.1)
+        self.assertEqual(round(st.k.WmK, 4), 0.0606)
+
     def test_Stewart(self):
         # Saturation pressures from Table 12, pag. 675
         st = Ar(T=84, x=0.5, eq="stewart")
@@ -945,13 +1239,3 @@ class Test(TestCase):
         st = Ar(T=500, P=1e7, eq="younglove", visco=1, thermal=3)
         self.assertEqual(round(st.mu.muPas, 1), 35.6)
         self.assertEqual(round(st.k.mWmK, 1), 29.4)
-
-
-if __name__ == "__main__":
-    st = Ar(T=90, P=5e6, eq="younglove", visco=1, thermal=3)
-    print(st.mu.muPas, 42.9)
-    print(st.k.mWmK, 50.4)
-    st = Ar(T=151.5, rhom=13.41, eq="younglove", visco=2, thermal=3)
-    print(st.k.mWmK, 0.0764)
-
-
