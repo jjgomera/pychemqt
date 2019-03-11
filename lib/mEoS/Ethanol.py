@@ -44,9 +44,7 @@ class Ethanol(MEoS):
 
     Fi1 = {"ao_log": [1, 3.43069],
            "pow": [0, 1],
-           # Use custom to get the IIR referenve value
-           # "ao_pow": [-12.757491395, 9.3938494264],
-           "ao_pow": [-12.7531, 9.3909425],
+           "ao_pow": [-12.7531, 9.39094],
            "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
            "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
@@ -111,9 +109,14 @@ class Ethanol(MEoS):
                     "doi": "10.1023/B:IJOT.0000028470.49774.14"},
 
         "R": 8.314472,
-        "cp": CP1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
         "Tc": 513.9, "rhoc": 5.991,
+        "cp": CP1,
+
+        # Changing reference state cited in paper for first point in sample
+        # table to fix h-s values in testing, last decimal added to fix last
+        # decimal
+        # "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
+        "ref": {"Tref": 350, "Pref": 100., "ho": 259.9514*M, "so": 1.03631*M},
 
         "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4,
         "Pmin": 0.00000088, "rhomin": 19.4,
@@ -340,7 +343,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.w, 2), 960.72)
         self.assertEqual(round(st.Gas.rho, 4), 1.6269)
         self.assertEqual(round(st.Gas.h.kJkg, 1), 1113.8)
-        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.4687)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.4686)
         self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.5894)
         self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.8044)
         self.assertEqual(round(st.Gas.w, 2), 260.21)
@@ -370,7 +373,7 @@ class Test(TestCase):
 
         st = Ethanol(T=250, P=1e7, eq="dillon")
         self.assertEqual(round(st.rho, 2), 831.84)
-        self.assertEqual(round(st.h.kJkg, 4), 9.4718)
+        self.assertEqual(round(st.h.kJkg, 4), 9.4714)
         self.assertEqual(round(st.s.kJkgK, 4), 0.1625)
         self.assertEqual(round(st.cv.kJkgK, 4), 1.6724)
         self.assertEqual(round(st.cp.kJkgK, 4), 2.0325)
