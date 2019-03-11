@@ -107,36 +107,6 @@ class H2(MEoS):
         "epsilon3": [1.506, 0.156, 1.736, 0.67, 1.662],
         "nr4": []}
 
-    MBWR = {
-        "__type__": "MBWR",
-        "__name__": "MBWR equation of state for hydrogen of Younglove (1982)",
-        "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, "
-                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
-                             "Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
-                    "doi": ""},
-
-        "R": 8.31434,
-        "cp": CP1,
-        "ref": "IIR",
-
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
-        "Pmin": 7.70, "rhomin": 38.3,
-        "Tc": 33.19, "Pc": 1.315, "rhoc": 14.94,
-
-        "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
-              0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
-              -0.1339776859288e-2, 0.3056473115421, 0.5161197159532e2,
-              0.1999981550224e-6, 0.2896367059356e-3, -0.2257803939041e-1,
-              -0.2287392761826e-5, 0.2446261478645e-4, -0.1718181601119e-2,
-              -0.5465142603459e-6, 0.4051941401315e-8, 0.1157595123961e-5,
-              -0.1269162728389e-7, -0.4983023605519e2, -0.1606676092098e3,
-              -0.1926799185310, 0.9319894638928e1, -0.3222596554434e-3,
-              0.1206839307669e-2, -0.3841588197470e-6, -0.4036157453608e-4,
-              -0.1250868123513e-9, 0.1976107321888e-8, -0.2411883474011e-12,
-              -0.4127551498251e-12, 0.8917972883610e-11]}
-
     GERG = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen of Kunz and "
@@ -207,7 +177,6 @@ class H2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    # eq = leachman, MBWR, GERG, bender
     eq = leachman, GERG, bender
     _PR = -0.004803
 

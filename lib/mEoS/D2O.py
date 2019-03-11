@@ -151,6 +151,7 @@ class D2O(MEoS):
     eq = herrig, hill
 
     _melting = {
+            # Only added the melting line for Ice Ih
             "eq": 1,
             "Tmin": 254.415, "Tmax": 276.969,
             "Tref": 276.969, "Pref": 0.66159,

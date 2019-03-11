@@ -102,7 +102,7 @@ class D2(MEoS):
         "epsilon3": [1.46, 1.7864, 1.647, 0.541, 0.969, 1.892, 1.076],
         "nr4": []}
 
-    MBWR = {
+    mccarty = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for deuterium of McCarty (1989)",
         "__doi__": {"autor": "McCarty, R.D.",
@@ -130,8 +130,7 @@ class D2(MEoS):
               -0.8834384656760e-8, -0.1081622159862e-8, -0.1478159334303e-10,
               0.7926922356112e-11, 0.5721547329378e-11]}
 
-    # eq = richardson, MBWR
-    eq = richardson,
+    eq = richardson, mccarty
 
     _surface = {"sigma": [0.009376], "exp": [1.258]}
     _vapor_Pressure = {
