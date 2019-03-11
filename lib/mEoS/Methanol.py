@@ -22,7 +22,6 @@ from unittest import TestCase
 
 from scipy import exp
 from scipy.constants import pi, Avogadro
-from scipy.constants import Boltzmann
 
 from lib.meos import MEoS
 from lib import unidades
@@ -75,7 +74,6 @@ class Methanol(MEoS):
         "R": 8.31448,
         "cp": CP1,
         "ref": "NBP",
-        "Tref": 513.38, "rhoref": 8.78517*M,
 
         "Tc": 513.38, "rhoc": 8.78517,
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 35.57,
@@ -132,14 +130,14 @@ class Methanol(MEoS):
                     "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
                     "doi": "10.1016/j.fluid.2004.06.028"},
 
-        "R": 8.3143,
+        "R": 8.314472,
         "cp": CP1,
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
         "Pmin": 0.1, "rhomin": 40.,
 
-        "nr1": [-2.4578394, 1.39060027, 8.56114069e-1, -4.20843418e-2,
+        "nr1": [-5.24578394, 1.39060027, 8.56114069e-1, -4.20843418e-2,
                 3.63682442e-5, 7.05598662e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
@@ -204,7 +202,7 @@ class Methanol(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.81104, -0.55661e1, -0.79326e3, 0.19234e4, -0.29219e4,
-               0.29660e4, -0.13210e4],
+              0.29660e4, -0.13210e4],
         "t": [0.25, 0.6, 3.5, 4.0, 5.0, 6.0, 7.0]}
 
     visco0 = {"__name__": "Xiang (2006)",
@@ -218,12 +216,13 @@ class Methanol(MEoS):
               "eq": 0, "omega": 1,
 
               "ek": 577.87, "sigma": 0.3408,
+
               "method": "_visco0"}
 
-    def _Omega(self):
+    def _Omega(self, coef=None):
         """Custom Collision integral calculation procedure"""
         delta = 0.4575
-        a = [1.16145, -0.14874, 0.52487, -0.7732, 2.16178, -2.43787, .95976e-3,
+        a = [1.16145, -0.14874, 0.52487, -0.7732, 2.16178, -2.43787, 9.5976e-4,
              0.10225, -0.97346, 0.10657, -0.34528, -0.44557, -2.58055]
         T = self.T/self._viscosity["ek"]
 
@@ -234,7 +233,7 @@ class Methanol(MEoS):
         return OmegaSM
 
     def _visco0(self, rho, T, fase):
-        # FIXME: No sale
+        # FIXME: Good values, but tiny desviation
 
         # Correlation parameters, Table 3
         rhoc = 273.
@@ -286,129 +285,117 @@ class Methanol(MEoS):
         # Eq 18
         f = 1/(1+exp(5*(rhor-1)))
         mu = muo*1e-6 * (f*mug + (1-f)*mue)
-        print(muo, mug, mue)
         return unidades.Viscosity(mu, "Pas")
 
     _viscosity = visco0,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2002)",
-               "__doi__": {"autor": "",
-                           "title": "",
-                           "ref": "unpublished preliminary correlation, NIST, MLH, Aug. 2006",
-                           "doi": ""},
+    thermo0 = {"__name__": "Sykioti (2013)",
+               "__doi__": {
+                   "autor": "Sykioti, E.A., Assael, M.J., Huber, M.L.,"
+                            "Perkins, R.A.",
+                   "title": "Reference Correlations of the Thermal "
+                            "Conductivity of Methanol from the Triple Point "
+                            "to 660 K and up to 245 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 42(4) (2013) 043101",
+                   "doi": "10.1063/1.4829449"},
 
-               "Tref": 1., "kref": 1,
-               "no": [5.7992e-7],
-               "co": [1.7862],
+               "eq": 1,
 
-               "Trefb": 513.38, "rhorefb": 8.78517, "krefb": 1.,
-               "nb": [0.405435, -0.293791, -0.289002, 0.226890, 0.579019e-1,
-                      -0.399576e-1],
-               "tb": [0, 1]*3,
-               "db": [1, 1, 2, 2, 3, 3],
-               "cb": [0]*6,
+               "Toref": Tc, "koref": 1e-3,
+               "no_num": [-3.57796, 62.9638, -37.3047, -52.1182, 231.607,
+                          44.1575],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [3.33313, -6.08398, 8.18739, -0.261074, 1],
+               "to_den": [0, 1, 2, 3, 4],
+
+               "Tref_res": Tc, "rhoref_res": 275.563, "kref_res": 1,
+               "nr": [5.56918e-2, 1.04771e-2, 1.12174e-1, -7.45272e-2,
+                      -8.43893e-2, 6.37569e-2, 1.97525e-2, -2.46826e-2,
+                      -1.5253e-3, 4.34656e-3],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.342e-9, "Tcref": 768.9}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.1487e-9,
+               "gam0": 0.05283, "qd": 7.2e-10, "Tcref": 768.9}
 
-    # _thermal = thermo0,
+    _thermal = thermo0,
 
 
 class Test(TestCase):
 
-    def xest_xiang(self):
+    def test_xiang(self):
         # Table 5, Pag 15, saturation state
         # Include too  a basic test for Reuck mEoS
-        # st = Methanol(T=175.63, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 9), 1.87e-7)
-        # self.assertEqual(round(st.Gas.rho, 8), 4.10e-6)
-        # self.assertEqual(round(st.Gas.mu.mPas, 6), 0.005822)
-        # self.assertEqual(round(st.Liquido.rho, 2), 904.56)
-        # self.assertEqual(round(st.Liquido.mu.mPas, 2), 12.80)
+
+        # Tiny desviation
+        st = Methanol(T=175.63, x=0.5)
+        self.assertEqual(round(st.P.MPa, 9), 1.87e-7)
+        self.assertEqual(round(st.Gas.rho, 8), 4.10e-6)
+        self.assertEqual(round(st.Gas.mu.mPas, 6), 0.005822)
+        self.assertEqual(round(st.Liquido.rho, 2), 904.54)
+        self.assertEqual(round(st.Liquido.mu.mPas, 2), 12.91)
 
         st = Methanol(T=200, x=0.5)
         self.assertEqual(round(st.P.MPa, 9), 0.000006096)
         self.assertEqual(round(st.Gas.rho, 8), 0.00011754)
         self.assertEqual(round(st.Gas.mu.mPas, 6), 0.006563)
         self.assertEqual(round(st.Liquido.rho, 2), 880.28)
-        self.assertEqual(round(st.Liquido.mu.mPas, 3), 4.506)
+        self.assertEqual(round(st.Liquido.mu.mPas, 3), 4.544)
 
-        # st = Methanol(T=175.63, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 7), )
-        # self.assertEqual(round(st.Gas.rho, 7), )
-        # self.assertEqual(round(st.Gas.mu.mPas, 7), )
-        # self.assertEqual(round(st.Liquido.rho, 7), )
-        # self.assertEqual(round(st.Liquido.mu.mPas, 7), )
+        st = Methanol(T=300, x=0.5)
+        self.assertEqual(round(st.P.MPa, 6), 0.018682)
+        self.assertEqual(round(st.Gas.rho, 5), 0.24623)
+        self.assertEqual(round(st.Gas.mu.mPas, 6), 0.009678)
+        self.assertEqual(round(st.Liquido.rho, 2), 784.51)
+        self.assertEqual(round(st.Liquido.mu.mPas, 4), 0.532)
 
+        st = Methanol(T=400, x=0.5)
+        self.assertEqual(round(st.P.MPa, 5), 0.77374)
+        self.assertEqual(round(st.Gas.rho, 4), 8.7343)
+        self.assertEqual(round(st.Gas.mu.mPas, 5), 0.01251)
+        self.assertEqual(round(st.Liquido.rho, 2), 678.59)
+        self.assertEqual(round(st.Liquido.mu.mPas, 4), 0.1720)
 
-                  # >>> print "%0.2f %0.3g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 175.63 1.86e-7 4.09e-6 0.005822 904.56 12.80
-                  # >>> st=Methanol(T=200, x=0.5)
-                  # >>> print "%0.0f %0.4g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 200 6.098e-6 1.1754e-4 0.006563 880.28 4.506
-                  # >>> st=Methanol(T=250, x=0.5)
-                  # >>> print "%0.0f %0.4g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 250 0.0008103 0.012577 0.008112 831.52 1.236
-                  # >>> st=Methanol(T=300, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 300 0.018682 0.24623 0.009678 784.51 0.5291
-                  # >>> st=Methanol(T=350, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 350 0.16172 1.9053 0.01118 735.84 0.2838
-                  # >>> st=Methanol(T=400, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 400 0.77374 8.7343 0.01251 678.59 0.1714
-                  # >>> st=Methanol(T=450, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 450 2.5433 30.831 0.01388 600.49 0.1058
-                  # >>> st=Methanol(T=500, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 500 6.5250 109.88 0.01891 451.53 0.05748
-                  # >>> st=Methanol(T=512, x=0.5)
-                  # >>> print "%0.0f %0.5g %0.3g %0.4g %0.5g %0.4g" % (\
-                      # st.T, st.P.MPa, st.Liquido.rho, st.Liquido.mu.muPas, st.Gas.rho, st.Gas.mu.muPas)
-                  # 512 8.0195 202.99 0.02838 341.17 0.04174
-                  # """
-                  # # Table 6, Pag 16
-                  # """
-                  # >>> st=Methanol(T=180, P=1e4)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 0.01 900.27 10.44
-                  # >>> st=Methanol(T=200, P=1e5)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 0.10 880.34 4.510
-                  # >>> st=Methanol(T=220, P=4e5)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 0.40 860.76 2.460
-                  # >>> st=Methanol(T=280, P=1e6)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 1.00 804.12 0.7228
-                  # >>> st=Methanol(T=300, P=1e4)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 0.01 0.12955 0.009696
-                  # >>> st=Methanol(T=400, P=1e8)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 100 784.82 0.2846
-                  # >>> st=Methanol(T=500, P=8e8)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 800 954.52 0.3908
-                  # >>> st=Methanol(T=600, P=3e6)
-                  # >>> print "%0.2f %0.5g %0.4g" % (st.P.MPa, st.rho, st.mu.muPas)
-                  # 3.00 20.717 0.01971
-                  # """
+        st = Methanol(T=500, x=0.5)
+        self.assertEqual(round(st.P.MPa, 4), 6.5250)
+        self.assertEqual(round(st.Gas.rho, 2), 109.88)
+        self.assertEqual(round(st.Gas.mu.mPas, 5), 0.01891)
+        self.assertEqual(round(st.Liquido.rho, 2), 451.53)
+        self.assertEqual(round(st.Liquido.mu.mPas, 5), 0.05757)
 
-if __name__ == "__main__":
-    st = Methanol(T=175.63, x=0.5)
-    print(st.Gas.mu.muPas, st.Liquido.mu.mPas)  # 5.8822, 12.80
-    st = Methanol(T=175.63, rho=904.54)
-    print(st._Viscosity(904.56, 175.63, None))
+        # Table 6, Pag 16
+        st = Methanol(T=180, P=1e4)
+        self.assertEqual(round(st.rho, 2), 900.27)
+        self.assertEqual(round(st.mu.mPas, 2), 10.54)
+
+        st = Methanol(T=200, P=1.5e8)
+        self.assertEqual(round(st.rho, 2), 944.08)
+        self.assertEqual(round(st.mu.mPas, 2), 11.57)
+
+        st = Methanol(T=260, P=1e5)
+        self.assertEqual(round(st.rho, 2), 822.11)
+        self.assertEqual(round(st.mu.mPas, 3), 1.026)
+
+        st = Methanol(T=300, P=1e6)
+        self.assertEqual(round(st.rho, 2), 785.49)
+        self.assertEqual(round(st.mu.mPas, 4), 0.5352)
+
+        st = Methanol(T=400, P=1e5)
+        self.assertEqual(round(st.rho, 5), 0.97575)
+        self.assertEqual(round(st.mu.mPas, 5), 0.01297)
+
+        st = Methanol(T=500, P=1e8)
+        self.assertEqual(round(st.rho, 2), 705.57)
+        self.assertEqual(round(st.mu.mPas, 4), 0.1548)
+
+        st = Methanol(T=600, P=1e4)
+        self.assertEqual(round(st.rho, 6), 0.064244)
+        self.assertEqual(round(st.mu.mPas, 5), 0.01981)
+
+    def test_Sykioti(self):
+        # Table 6, Pag 9
+        self.assertEqual(round(Methanol(T=300, rho=850).k.mWmK, 2), 241.48)
+        self.assertEqual(round(Methanol(T=400, rho=2).k.mWmK, 3), 25.803)
+        self.assertEqual(round(Methanol(T=400, rho=690).k.mWmK, 2), 183.57)
+        self.assertEqual(round(Methanol(T=500, rho=10).k.mWmK, 3), 40.495)
