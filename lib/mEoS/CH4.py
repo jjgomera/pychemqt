@@ -69,7 +69,7 @@ class CH4(MEoS):
     CP4 = {"ao": 0.15438149595e2,
            "an": [-0.18044750507e7, 0.77426666393e5, -0.13241658754e4,
                   -0.51479005257e-1, 0.10809172196e-3, -0.65501783437e-7],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
+           "pow": [-3, -2, -1, 1, 2, 3],
            "ao_exp": [-0.67490056171e1], "exp": [3000],
            "ao_hyp": [], "hyp": []}
 
@@ -124,7 +124,7 @@ class CH4(MEoS):
         "gamma3": [1.07, 1.11, 1.11, 1.11],
         "epsilon3": [1]*4}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely "
                     "(1987)",
@@ -139,8 +139,10 @@ class CH4(MEoS):
         "Pmin": 11.744, "rhomin": 28.147,
 
         "R": 8.31434,
+        "M": 16.043, "Tt": 90.68, "Tc": 190.53, "Pc": 4.59797, "rhoc": 10.15,
+
         "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 10018, "so": 186.266},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 10068.3, "so": 186.447},
 
         "b": [None, 0.9898937956e-4, 0.2199608275, -0.5322788000e1,
               0.2021657962e3, -0.2234398926e5, 0.106794028e-3, 0.1457922469e-2,
@@ -282,8 +284,7 @@ class CH4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = setzmann, MBWR, GERG, friend, shortSpan, sun
-    eq = setzmann, GERG, friend, shortSpan, sun
+    eq = setzmann, younglove, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
                 "exp": [1.191, 5.422, 0.6161]}
@@ -371,8 +372,7 @@ class CH4(MEoS):
               "CPg1": 5.10860501398,
               "CPgi": [], "CPti": []}
 
-    visco2 = {"eq": 2, "omega": 2,
-              "__name__": "Younglove (1987)",
+    visco2 = {"__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
                   "title": "Thermophysical Properties of Fluids. II. Methane, "
@@ -380,8 +380,9 @@ class CH4(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                   "doi": "10.1063/1.555785"},
 
+              "eq": 2, "omega": 2,
+
               "ek": 168., "sigma": 0.368,
-              # "n_chapman": 0.1069188/M**0.5,
 
               "F": [0.16969859271, -0.13337234608e-1, 1.4, 168],
               "E": [-0.1620427429e2, 0.4270589027e3, 0.1402596278e2,
@@ -418,39 +419,50 @@ class CH4(MEoS):
 
     _viscosity = visco0, visco1, visco2, visco3
 
-    thermo0 = {"eq": 1, "critical": "CH4",
-               "__name__": "Friend (1989)",
-               "__doi__": {"autor": "Friend, D.G., Ely, J.F., and Ingham, H.",
-                           "title": "Thermophysical Properties of Methane",
-                           "ref": "J. Phys. Chem. Ref. Data 18, 583 (1989)",
-                           "doi": "10.1063/1.555828"},
+    thermo0 = {"__name__": "Friend (1989)",
+               "__doi__": {
+                   "autor": "Friend, D.G., Ely, J.F., Ingham, H.",
+                   "title": "Thermophysical Properties of Methane",
+                   "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
+                   "doi": "10.1063/1.555828"},
 
-               "Tref": 174., "kref": 1e-3,
-               "no": [1.45885, -0.4377162, 0],
-               "co": [0, -1, -96],
+               "eq": 1, "critical": 0,
 
-               "Trefb": 190.551, "rhorefb": 10.139, "krefb": 6.29638e-3,
-               "nb": [1.5554612, 1., 2.4149207, 0.55166331, -0.52837734,
-                      0.073809553, 0.24465507, -0.047613626],
-               "tb": [0, 0, 0, 0, 0, -1, 0, -1],
-               "db": [2, 0, 1, 3, 4, 4, 5, 5],
-               "cb": [0, -99, 0, 0, 0, 0, 0, 0]}
+               "Toref": 174., "koref": 1e-3,
+               "visco": visco3,
+               "no_viscoCp": [1.45885, -0.4377162],
+               "to_viscoCp": [0, -1],
 
-    thermo1 = {"eq": 2, "omega": 2,
-               "__name__": "Younglove (1987)",
-               "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
-                           "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, Propane, Isobutane, and Normal Butane ",
-                           "ref": "J. Phys. Chem. Ref. Data 16, 577 (1987)",
-                           "doi": "10.1063/1.555785"},
+               "Tref_res": 190.551, "rhoref_res": 10.139*16.043,
+               "kref_res": 6.29638e-3,
+               "nr": [2.4149207, 0.55166331, -0.52837734, 0.073809553,
+                      0.24465507, -0.047613626],
+               "tr": [0, 0, 0, 1, 0, 1],
+               "dr": [1, 3, 4, 4, 5, 5],
 
-               "visco": visco2,
-               "n_chapman": 0.1069188,
-               "G": [0.1346953698e1, -0.3254677753],
+               "nr_s": [1.5554612],
+               "tr_s": [0],
+               "dr_s": [2],
+               }
+
+    thermo1 = {"__name__": "Younglove (1987)",
+               "__doi__": {
+                   "autor": "Younglove, B.A., Ely, J.F.",
+                   "title": "Thermophysical Properties of Fluids. II. Methane,"
+                            " Ethane, Propane, Isobutane, and Normal Butane ",
+                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                   "doi": "10.1063/1.555785"},
+
+               "eq": 3,
+
+               "ek": 168.,
+               "G": [1.346953698, -0.3254677753],
                "E": [0.2325800819e-2, -0.2477927999, 0.3880593713e2,
                      -0.1579519146e-6, 0.3717991328e-2, -0.9616989434,
                      -0.3017352774e-1, 0.4298153386],
 
                "critical": 2,
+               "Tc": 190.53, "rhoc": 10.15*16.043,
                "X": [37.42368, 3.16714, 0.78035, 0.60103],
                "Z": 6.512707e-10}
 
@@ -671,6 +683,277 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 4), 3.2951)
         self.assertEqual(round(st.cp.kJkgK, 4), 3.8115)
         self.assertEqual(round(st.w, 1), 2915.6)
+
+    def test_younglove(self):
+        # The saturation point use the ancillary equation for calculate
+        # pressure and density, so the values differ of values give by mBWR,
+        # so not used for testing
+        kw = {"eq": "younglove", "visco": 2, "thermal": 1}
+
+        # Selected point from Appendix E, Pag 588, single phase region
+        st = CH4(T=360, P=1e4, **kw)
+        self.assertEqual(round(st.rho, 4), 0.05360)
+        self.assertEqual(round(st.rhoM, 6), 0.003341)
+        self.assertEqual(round(st.uM.kJkmol, 0), 9313)
+        self.assertEqual(round(st.hM.kJkmol, -1), 12310)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 212.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 30.15)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 38.47)
+        self.assertEqual(round(st.w, 1), 487.9)
+        self.assertEqual(round(st.mu.muPas, 1), 13.1)
+        self.assertEqual(round(st.k, 4), 0.0427)
+
+        st = CH4(T=100, P=5e4, **kw)
+        self.assertEqual(round(st.rho, 1), 439.1)
+        self.assertEqual(round(st.rhoM, 2), 27.37)
+        self.assertEqual(round(st.uM.kJkmol, 0), -5231)
+        self.assertEqual(round(st.hM.kJkmol, 0), -5229)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 73.16)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 33.40)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 54.13)
+        self.assertEqual(round(st.w, 0), 1450)
+        self.assertEqual(round(st.mu.muPas, 0), 156)
+        self.assertEqual(round(st.k, 3), 0.208)
+
+        st = CH4(T=115, P=1e5, rho0=1, **kw)
+        self.assertEqual(round(st.rho, 3), 1.735)
+        self.assertEqual(round(st.rhoM, 4), 0.1081)
+        self.assertEqual(round(st.uM.kJkmol, 0), 2792)
+        self.assertEqual(round(st.hM.kJkmol, 0), 3717)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 153.7)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 25.65)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 35.14)
+        self.assertEqual(round(st.w, 1), 276.2)
+        self.assertEqual(round(st.mu.muPas, 2), 4.59)
+        self.assertEqual(round(st.k, 4), 0.0123)
+
+        st = CH4(T=300, P=101325, **kw)
+        self.assertEqual(round(st.rho, 4), 0.6528)
+        self.assertEqual(round(st.rhoM, 5), 0.04069)
+        self.assertEqual(round(st.uM.kJkmol, 0), 7578)
+        self.assertEqual(round(st.hM.kJkmol, -1), 10070)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 186.4)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 27.48)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 35.87)
+        self.assertEqual(round(st.w, 1), 449.7)
+        self.assertEqual(round(st.mu.muPas, 1), 11.2)
+        self.assertEqual(round(st.k, 4), 0.0341)
+
+        st = CH4(T=120, P=2e5, **kw)
+        self.assertEqual(round(st.rho, 1), 410.1)
+        self.assertEqual(round(st.rhoM, 2), 25.56)
+        self.assertEqual(round(st.uM.kJkmol, 0), -4126)
+        self.assertEqual(round(st.hM.kJkmol, 0), -4118)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 83.23)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 32.56)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 56.80)
+        self.assertEqual(round(st.w, 0), 1248)
+        self.assertEqual(round(st.mu.muPas, 1), 97.7)
+        self.assertEqual(round(st.k, 3), 0.175)
+
+        st = CH4(T=600, P=3e5, **kw)
+        self.assertEqual(round(st.rho, 4), 0.9643)
+        self.assertEqual(round(st.rhoM, 5), 0.06011)
+        self.assertEqual(round(st.uM.kJkmol, -1), 18130)
+        self.assertEqual(round(st.hM.kJkmol, -1), 23120)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 206.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 42.94)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 51.29)
+        self.assertEqual(round(st.w, 1), 609.8)
+        self.assertEqual(round(st.mu.muPas, 1), 19.4)
+        self.assertEqual(round(st.k, 4), 0.0842)
+
+        st = CH4(T=135, P=4e5, rho0=1, **kw)
+        self.assertEqual(round(st.rho, 3), 6.255)
+        self.assertEqual(round(st.rhoM, 4), 0.3899)
+        self.assertEqual(round(st.uM.kJkmol, 0), 3167)
+        self.assertEqual(round(st.hM.kJkmol, 0), 4193)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 146.6)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 26.53)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 38.29)
+        self.assertEqual(round(st.w, 1), 289.2)
+        self.assertEqual(round(st.mu.muPas, 2), 5.45)
+        self.assertEqual(round(st.k, 4), 0.0153)
+
+        st = CH4(T=350, P=5e5, **kw)
+        self.assertEqual(round(st.rho, 3), 2.769)
+        self.assertEqual(round(st.rhoM, 4), 0.1726)
+        self.assertEqual(round(st.uM.kJkmol, 0), 8969)
+        self.assertEqual(round(st.hM.kJkmol, -1), 11870)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 178.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 29.70)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 38.27)
+        self.assertEqual(round(st.w, 1), 481.3)
+        self.assertEqual(round(st.mu.muPas, 1), 12.8)
+        self.assertEqual(round(st.k, 4), 0.0415)
+
+        st = CH4(T=600, P=6e5, **kw)
+        self.assertEqual(round(st.rho, 3), 1.928)
+        self.assertEqual(round(st.rhoM, 4), 0.1202)
+        self.assertEqual(round(st.uM.kJkmol, -1), 18120)
+        self.assertEqual(round(st.hM.kJkmol, -1), 23110)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 201.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 42.95)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 51.35)
+        self.assertEqual(round(st.w, 1), 610.3)
+        self.assertEqual(round(st.mu.muPas, 1), 19.5)
+        self.assertEqual(round(st.k, 4), 0.0843)
+
+        st = CH4(T=100, P=8e5, **kw)
+        self.assertEqual(round(st.rho, 1), 439.6)
+        self.assertEqual(round(st.rhoM, 2), 27.40)
+        self.assertEqual(round(st.uM.kJkmol, 0), -5239)
+        self.assertEqual(round(st.hM.kJkmol, 0), -5210)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 73.07)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 33.44)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 54.04)
+        self.assertEqual(round(st.w, 0), 1456)
+        self.assertEqual(round(st.mu.muPas, 0), 158)
+        self.assertEqual(round(st.k, 3), 0.209)
+
+        st = CH4(T=150, P=1e6, rho0=1, **kw)
+        self.assertEqual(round(st.rho, 2), 15.54)
+        self.assertEqual(round(st.rhoM, 4), 0.9689)
+        self.assertEqual(round(st.uM.kJkmol, 0), 3309)
+        self.assertEqual(round(st.hM.kJkmol, 0), 4341)
+        self.assertEqual(round(st.sM.kJkmolK, 0), 141)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 27.92)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 45.17)
+        self.assertEqual(round(st.w, 1), 287.8)
+        self.assertEqual(round(st.mu.muPas, 2), 6.24)
+        self.assertEqual(round(st.k, 4), 0.0186)
+
+        st = CH4(T=170, P=2e6, rho0=1, **kw)
+        self.assertEqual(round(st.rho, 2), 30.57)
+        self.assertEqual(round(st.rhoM, 3), 1.905)
+        self.assertEqual(round(st.uM.kJkmol, 0), 3496)
+        self.assertEqual(round(st.hM.kJkmol, 0), 4545)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 137.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 29.07)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 55.44)
+        self.assertEqual(round(st.w, 1), 290.3)
+        self.assertEqual(round(st.mu.muPas, 2), 7.41)
+        self.assertEqual(round(st.k, 4), 0.0241)
+
+        st = CH4(T=196, P=3e6, **kw)
+        self.assertEqual(round(st.rho, 2), 38.88)
+        self.assertEqual(round(st.rhoM, 3), 2.424)
+        self.assertEqual(round(st.uM.kJkmol, 0), 4056)
+        self.assertEqual(round(st.hM.kJkmol, 0), 5294)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 139.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 28.30)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 52.39)
+        self.assertEqual(round(st.w, 1), 319.7)
+        self.assertEqual(round(st.mu.muPas, 2), 8.68)
+        self.assertEqual(round(st.k, 4), 0.0289)
+
+        st = CH4(T=185.5, P=4e6, **kw)
+        self.assertEqual(round(st.rho, 1), 250.9)
+        self.assertEqual(round(st.rhoM, 2), 15.64)
+        self.assertEqual(round(st.uM.kJkmol, 1), 339.4)
+        self.assertEqual(round(st.hM.kJkmol, 1), 595.1)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 112.7)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 31.54)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 176.5)
+        self.assertEqual(round(st.w, 1), 416.7)
+        self.assertEqual(round(st.mu.muPas, 1), 25.7)
+        self.assertEqual(round(st.k, 4), 0.1110)
+
+        st = CH4(T=600, P=5e6, **kw)
+        self.assertEqual(round(st.rho, 2), 15.93)
+        self.assertEqual(round(st.rhoM, 4), 0.9930)
+        self.assertEqual(round(st.uM.kJkmol, -1), 17930)
+        self.assertEqual(round(st.hM.kJkmol, -1), 22970)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 183.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 43.09)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 52.11)
+        self.assertEqual(round(st.w, 1), 619.3)
+        self.assertEqual(round(st.mu.muPas, 1), 19.8)
+        self.assertEqual(round(st.k, 4), 0.0861)
+
+        st = CH4(T=100, P=6e6, **kw)
+        self.assertEqual(round(st.rho, 1), 443.5)
+        self.assertEqual(round(st.rhoM, 2), 27.64)
+        self.assertEqual(round(st.uM.kJkmol, 0), -5296)
+        self.assertEqual(round(st.hM.kJkmol, 0), -5079)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 72.50)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 33.64)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 53.51)
+        self.assertEqual(round(st.w, 0), 1496)
+        self.assertEqual(round(st.mu.muPas, 0), 168)
+        self.assertEqual(round(st.k, 3), 0.213)
+
+        st = CH4(T=410, P=1e7, **kw)
+        self.assertEqual(round(st.rho, 2), 48.25)
+        self.assertEqual(round(st.rhoM, 3), 3.008)
+        self.assertEqual(round(st.uM.kJkmol, -1), 10150)
+        self.assertEqual(round(st.hM.kJkmol, -1), 13480)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 158.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 33.45)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 45.50)
+        self.assertEqual(round(st.w, 1), 529.0)
+        self.assertEqual(round(st.mu.muPas, 1), 16.0)
+        self.assertEqual(round(st.k, 4), 0.0572)
+
+        st = CH4(T=120, P=2e7, **kw)
+        self.assertEqual(round(st.rho, 1), 428.5)
+        self.assertEqual(round(st.rhoM, 2), 26.71)
+        self.assertEqual(round(st.uM.kJkmol, 0), -4405)
+        self.assertEqual(round(st.hM.kJkmol, 0), -3657)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 80.77)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 33.26)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 53.59)
+        self.assertEqual(round(st.w, 0), 1437)
+        self.assertEqual(round(st.mu.muPas, 0), 123)
+        self.assertEqual(round(st.k, 3), 0.196)
+
+        st = CH4(T=540, P=3e7, **kw)
+        self.assertEqual(round(st.rho, 2), 98.78)
+        self.assertEqual(round(st.rhoM, 3), 6.157)
+        self.assertEqual(round(st.uM.kJkmol, -1), 14310)
+        self.assertEqual(round(st.hM.kJkmol, -1), 19180)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 161.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 41.16)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 53.72)
+        self.assertEqual(round(st.w, 1), 675.5)
+        self.assertEqual(round(st.mu.muPas, 1), 21.8)
+        self.assertEqual(round(st.k, 4), 0.0888)
+
+        st = CH4(T=200, P=5e7, **kw)
+        self.assertEqual(round(st.rho, 1), 367.2)
+        self.assertEqual(round(st.rhoM, 2), 22.89)
+        self.assertEqual(round(st.uM.kJkmol, 1), -953.0)
+        self.assertEqual(round(st.hM.kJkmol, 0), 1231)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 104.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 30.40)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 51.46)
+        self.assertEqual(round(st.w, 0), 1208)
+        self.assertEqual(round(st.mu.muPas, 1), 59.1)
+        self.assertEqual(round(st.k, 3), 0.145)
+
+        st = CH4(T=600, P=1e8, **kw)
+        self.assertEqual(round(st.rho, 0), 214)
+        self.assertEqual(round(st.rhoM, 2), 13.34)
+        self.assertEqual(round(st.uM.kJkmol, -1), 15460)
+        self.assertEqual(round(st.hM.kJkmol, -1), 22960)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 155.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 44.99)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 57.65)
+        self.assertEqual(round(st.w, 0), 1023)
+        self.assertEqual(round(st.mu.muPas, 1), 32.1)
+        self.assertEqual(round(st.k, 3), 0.129)
+
+        st = CH4(T=150, P=2e8, **kw)
+        self.assertEqual(round(st.rho, 1), 484.6)
+        self.assertEqual(round(st.rhoM, 2), 30.21)
+        self.assertEqual(round(st.uM.kJkmol, 0), -4018)
+        self.assertEqual(round(st.hM.kJkmol, 0), 2603)
+        self.assertEqual(round(st.sM.kJkmolK, 2), 80.58)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 36.33)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 49.56)
+        self.assertEqual(round(st.w, 0), 2110)
+        self.assertEqual(round(st.mu.muPas, 0), 197)
+        self.assertEqual(round(st.k, 3), 0.336)
 
     def test_friend(self):
         # FIXME: Bad Cp0 values

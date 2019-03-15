@@ -4635,34 +4635,44 @@ class MEoS(ThermoAdvanced):
                * betac: δ term translation
                * dc: δ exponent
 
-        References
-        ----------
-                   "autor": "Laesecke, A., Perkins, R.A., Howley, J.B.",
-                   "title": "An improved correlation for the thermal "
-                            "conductivity of HCFC123 (2,2-dichloro-1,1,1-"
-                            "trifluoroethane)",
-                   "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
-        [] Olchowy, G.A., Sengers, J.V. A Simplified Representation for the
-            Thermal Conductivity of Fluids in the Critical Region. Int. J.
-            Thermophys. 10(2) (1989) 417-426
-
         """
         if self._thermal["critical"] == 0:
             # No critical enhancement
             tc = 0
 
         elif self._thermal["critical"] == 1:
-            # Empirical formulation, referenced in Laesecke for R123
-            tau = self._thermal["Trefc"]/T
-            delta = rho/self._thermal["rhorefc"]
+            # Younglove form for fluids I, Ar, N2, O2, explain without typo in
+            # Hanley H.J.M., McCarty, R.D., Haynes, W.M.
+            # The Viscosity and Thermal Conductivity Coefficient for Dense
+            # Gaseous and Liquid Argon, Krypton, Xenon, Nitrogen and Oxigen
+            # J. Phys. Chem. Ref. Data 3(4) (1974) 979-1018
+            # doi: 10.1063/1.3253152
 
-            expo = 0
-            for n, alfa, t, beta, d in zip(
-                    self._thermal["nc"], self._thermal["alfac"],
-                    self._thermal["tc"], self._thermal["betac"],
-                    self._thermal["dc"]):
-                expo += n*(tau+alfa)**t*(delta+beta)**d
-            tc = self._thermal["krefc"]*exp(expo)
+            # FIXME: Dont work, maybe units, maybe typo in paper. I can't find
+            # the problem
+            rhogcc = rho/1000  # Use the density in g/cm³
+            rhoc = self._thermal["rhoc"]
+            Tc = self._thermal["Tc"]
+            f = self._thermal["f"]
+            gm = self._thermal["gm"]  # length in m
+            ek = self._thermal["ek"]
+            Kt = self.derivative("rho", "P", "T", fase)/fase.rho
+
+            # Eq D4
+            l = f*(gm**5*rho*Avogadro/self.M*ek/T)**0.5
+
+            # Eq D3
+            Y = 6*pi*fase.mu*l*(1e-3*Boltzmann*T*rho*Avogadro/self.M)**0.5
+
+            if Kt > 0:
+                # Eq D2
+                dL = Boltzmann*T**2*fase.dpdT_rho**2*Kt**0.5/Y
+            else:
+                dL = 0.0
+
+            # Eq D1
+            tc = dL*exp(-4.25*(abs(rhogcc-rhoc)/rhoc)**4) * \
+                exp(-18.66*(abs(T-Tc)/Tc)**2)*1e-2
 
         elif self._thermal["critical"] == 2:
             # Younglove form for fluids II, CH4, C2, C3, C4
@@ -4729,39 +4739,18 @@ class MEoS(ThermoAdvanced):
                     (omega-omega0)
 
         elif self._thermal["critical"] == 4:
-            # Younglove form for fluids I, Ar, N2, O2, explain without typo in
-            # Hanley H.J.M., McCarty, R.D., Haynes, W.M.
-            # The Viscosity and Thermal Conductivity Coefficient for Dense
-            # Gaseous and Liquid Argon, Krypton, Xenon, Nitrogen and Oxigen
-            # J. Phys. Chem. Ref. Data 3(4) (1974) 979-1018
-            # doi: 10.1063/1.3253152
+            # Empirical gaussian formulation, referenced in Laesecke for R123
+            tau = self._thermal["Trefc"]/T
+            delta = rho/self._thermal["rhorefc"]
 
-            # FIXME: Dont work, maybe units, maybe typo in paper. I can't find
-            # the problem
-            rhogcc = rho/1000  # Use the density in g/cm³
-            rhoc = self._thermal["rhoc"]
-            Tc = self._thermal["Tc"]
-            f = self._thermal["f"]
-            gm = self._thermal["gm"]  # length in m
-            ek = self._thermal["ek"]
-            Kt = self.derivative("rho", "P", "T", fase)/fase.rho
-
-            # Eq D4
-            l = f*(gm**5*rho*Avogadro/self.M*ek/T)**0.5
-
-            # Eq D3
-            Y = 6*pi*fase.mu*l*(1e-3*Boltzmann*T*rho*Avogadro/self.M)**0.5
-
-            if Kt > 0:
-                # Eq D2
-                dL = Boltzmann*T**2*fase.dpdT_rho**2*Kt**0.5/Y
-            else:
-                dL = 0.0
-
-            # Eq D1
-            tc = dL*exp(-4.25*(abs(rhogcc-rhoc)/rhoc)**4) * \
-                exp(-18.66*(abs(T-Tc)/Tc)**2)*1e-2
-
+            expo = 0
+            for n, alfa, t, beta, d in zip(
+                    self._thermal["nc"], self._thermal["alfac"],
+                    self._thermal["tc"], self._thermal["betac"],
+                    self._thermal["dc"]):
+                expo += n*(tau+alfa)**t*(delta+beta)**d
+            tc = self._thermal["krefc"]*exp(expo)
+ 
         elif isinstance(self._thermal["critical"], str):
             # Hardcoded method
             method = self.__getattribute__(self._thermal["critical"])
