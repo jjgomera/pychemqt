@@ -72,7 +72,7 @@ class nC4(MEoS):
     CP4 = {"ao": -1.3491511376e1,
            "an": [3.8802310194e5, -1.5444296890e5, 2.8455082239e3,
                   6.6142595353e-2, -2.4307965028e-5, 1.5044248429e-10],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
+           "pow": [-3, -2, -1, 1, 2, 3],
            "ao_exp": [-8.3933423467], "exp": [3000],
            "ao_hyp": [], "hyp": []}
 
@@ -126,7 +126,7 @@ class nC4(MEoS):
         "gamma3": [1.16, 1.13],
         "epsilon3": [0.85, 1.]}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for butane of Younglove and Ely "
                     "(1987)",
@@ -138,10 +138,12 @@ class nC4(MEoS):
                     "doi": "10.1063/1.555785"},
 
         "R": 8.31434,
-        "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 19275.7, "so": 309.909},
+        "M": 58.125, "Tt": 134.86, "Tc": 425.16, "Pc": 3796, "rhoc": 3.92,
 
-        "Tmin": 134.86, "Tmax": 500., "Pmax": 70000.0, "rhomax": 13.2,
+        "cp": CP4,
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 19208.9, "so": 309.95},
+
+        "Tmin": 134.86, "Tmax": 600., "Pmax": 70000.0, "rhomax": 13.2,
         "Pmin": 6.736e-4, "rhomin": 12.65,
 
         "b": [None, 0.153740104603e-1, -0.160980034611, -0.979782459010e1,
@@ -306,8 +308,7 @@ class nC4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
-    eq = buecker, GERG, miyamoto, shortSpan, polt, sun
+    eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
 
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.0557549],  "expt0": [-1.], "expd0": [1.],
@@ -650,6 +651,277 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 4), 2.9384)
         self.assertEqual(round(st.w, 2), 826.87)
 
+    def test_younglove(self):
+        # The saturation point use the ancillary equation for calculate
+        # pressure and density, so the values differ of values give by mBWR,
+        # so not used for testing
+        kw = {"eq": "younglove", "visco": 2, "thermal": 1}
+
+        # Selected point from Appendix I, Pag 758, single phase region
+        st = nC4(T=220, P=1e4, **kw)
+        self.assertEqual(round(st.rho, 1), 654.6)
+        self.assertEqual(round(st.rhoM, 2), 11.26)
+        self.assertEqual(round(st.uM.kJkmol, -1), -12630)
+        self.assertEqual(round(st.hM.kJkmol, -1), -12630)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 191.0)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 87.11)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 121.7)
+        self.assertEqual(round(st.w, 0), 1306)
+        self.assertEqual(round(st.mu.muPas, 0), 367)
+        self.assertEqual(round(st.k, 3), 0.141)
+
+        st = nC4(T=260, P=5e4, **kw)
+        self.assertEqual(round(st.rho, 3), 1.377)
+        self.assertEqual(round(st.rhoM, 5), 0.02369)
+        self.assertEqual(round(st.uM.kJkmol, -1), 13410)
+        self.assertEqual(round(st.hM.kJkmol, -1), 15520)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 302.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 81.74)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 91.07)
+        self.assertEqual(round(st.w, 1), 198.7)
+        self.assertEqual(round(st.mu.muPas, 2), 6.56)
+        self.assertEqual(round(st.k, 4), 0.0125)
+
+        st = nC4(T=600, P=1e5, **kw)
+        self.assertEqual(round(st.rho, 3), 1.168)
+        self.assertEqual(round(st.rhoM, 5), 0.02010)
+        self.assertEqual(round(st.uM.kJkmol, -1), 55190)
+        self.assertEqual(round(st.hM.kJkmol, -1), 60160)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 401.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 161.0)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 169.4)
+        self.assertEqual(round(st.w, 1), 299.8)
+        self.assertEqual(round(st.mu.muPas, 1), 14.6)
+        self.assertEqual(round(st.k, 4), 0.0591)
+
+        st = nC4(T=300, P=101325, **kw)
+        self.assertEqual(round(st.rho, 3), 2.433)
+        self.assertEqual(round(st.rhoM, 5), 0.04186)
+        self.assertEqual(round(st.uM.kJkmol, -1), 16790)
+        self.assertEqual(round(st.hM.kJkmol, -1), 19210)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 309.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 91.64)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 101.2)
+        self.assertEqual(round(st.w, 1), 211.2)
+        self.assertEqual(round(st.mu.muPas, 2), 7.55)
+        self.assertEqual(round(st.k, 4), 0.0164)
+
+        st = nC4(T=160, P=2e5, **kw)
+        self.assertEqual(round(st.rho, 1), 711.7)
+        self.assertEqual(round(st.rhoM, 2), 12.24)
+        self.assertEqual(round(st.uM.kJkmol, -1), -19720)
+        self.assertEqual(round(st.hM.kJkmol, -1), -19700)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 153.4)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 87.36)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 116.9)
+        self.assertEqual(round(st.w, 0), 1562)
+        self.assertEqual(round(st.mu.muPas, 0), 1060)
+        self.assertEqual(round(st.k, 3), 0.182)
+
+        st = nC4(T=520, P=3e5, **kw)
+        self.assertEqual(round(st.rho, 3), 4.088)
+        self.assertEqual(round(st.rhoM, 5), 0.07033)
+        self.assertEqual(round(st.uM.kJkmol, -1), 42850)
+        self.assertEqual(round(st.hM.kJkmol, -1), 47110)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 369.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 144.7)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 153.6)
+        self.assertEqual(round(st.w, 1), 277.2)
+        self.assertEqual(round(st.mu.muPas, 1), 12.9)
+        self.assertEqual(round(st.k, 4), 0.0463)
+
+        st = nC4(T=320, P=4e5, **kw)
+        self.assertEqual(round(st.rho, 3), 9.720)
+        self.assertEqual(round(st.rhoM, 4), 0.1672)
+        self.assertEqual(round(st.uM.kJkmol, -1), 18190)
+        self.assertEqual(round(st.hM.kJkmol, -1), 20580)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 303.6)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 98.83)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 112.4)
+        self.assertEqual(round(st.w, 1), 203.9)
+        self.assertEqual(round(st.mu.muPas, 2), 8.24)
+        self.assertEqual(round(st.k, 4), 0.0190)
+
+        st = nC4(T=300, P=5e5, **kw)
+        self.assertEqual(round(st.rho, 1), 570.9)
+        self.assertEqual(round(st.rhoM, 3), 9.822)
+        self.assertEqual(round(st.uM.kJkmol, 0), -2145)
+        self.assertEqual(round(st.hM.kJkmol, 0), -2094)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 231.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 101.3)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 142.9)
+        self.assertEqual(round(st.w, 1), 888.9)
+        self.assertEqual(round(st.mu.muPas, 0), 157)
+        self.assertEqual(round(st.k, 3), 0.106)
+
+        st = nC4(T=160, P=6e5, **kw)
+        self.assertEqual(round(st.rho, 1), 712.0)
+        self.assertEqual(round(st.rhoM, 2), 12.25)
+        self.assertEqual(round(st.uM.kJkmol, -1), -19730)
+        self.assertEqual(round(st.hM.kJkmol, -1), -19680)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 153.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 87.37)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 116.8)
+        self.assertEqual(round(st.w, 0), 1564)
+        self.assertEqual(round(st.mu.muPas, -1), 1060)
+        self.assertEqual(round(st.k, 3), 0.182)
+
+        st = nC4(T=345, P=8e5, **kw)
+        self.assertEqual(round(st.rho, 2), 19.48)
+        self.assertEqual(round(st.rhoM, 4), 0.3351)
+        self.assertEqual(round(st.uM.kJkmol, -1), 20160)
+        self.assertEqual(round(st.hM.kJkmol, -1), 22550)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 304.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 107.1)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 126.0)
+        self.assertEqual(round(st.w, 1), 197.0)
+        self.assertEqual(round(st.mu.muPas, 2), 9.14)
+        self.assertEqual(round(st.k, 4), 0.0225)
+
+        st = nC4(T=340, P=1e6, **kw)
+        self.assertEqual(round(st.rho, 1), 520.3)
+        self.assertEqual(round(st.rhoM, 3), 8.951)
+        self.assertEqual(round(st.uM.kJkmol, 0), 3818)
+        self.assertEqual(round(st.hM.kJkmol, 0), 3930)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 250.1)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 110.6)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 158.6)
+        self.assertEqual(round(st.w, 1), 669.6)
+        self.assertEqual(round(st.mu.muPas, 0), 108)
+        self.assertEqual(round(st.k, 4), 0.0915)
+
+        st = nC4(T=385, P=2e6, **kw)
+        self.assertEqual(round(st.rho, 1), 444.5)
+        self.assertEqual(round(st.rhoM, 3), 7.648)
+        self.assertEqual(round(st.uM.kJkmol, -1), 11390)
+        self.assertEqual(round(st.hM.kJkmol, -1), 11650)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 271.1)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 122.6)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 192.5)
+        self.assertEqual(round(st.w, 1), 410.9)
+        self.assertEqual(round(st.mu.muPas, 1), 67.2)
+        self.assertEqual(round(st.k, 4), 0.0757)
+
+        st = nC4(T=415, P=3e6, **kw)
+        self.assertEqual(round(st.rho, 2), 89.39)
+        self.assertEqual(round(st.rhoM, 3), 1.538)
+        self.assertEqual(round(st.uM.kJkmol, -1), 25160)
+        self.assertEqual(round(st.hM.kJkmol, -1), 27110)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 308.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 132.2)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 231.4)
+        self.assertEqual(round(st.w, 1), 151.2)
+        self.assertEqual(round(st.mu.muPas, 1), 13.2)
+        self.assertEqual(round(st.k, 4), 0.0381)
+
+        st = nC4(T=160, P=4e6, **kw)
+        self.assertEqual(round(st.rho, 1), 713.8)
+        self.assertEqual(round(st.rhoM, 2), 12.28)
+        self.assertEqual(round(st.uM.kJkmol, -1), -19780)
+        self.assertEqual(round(st.hM.kJkmol, -1), -19460)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 153.0)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 87.41)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 116.7)
+        self.assertEqual(round(st.w, 0), 1579)
+        self.assertEqual(round(st.mu.muPas, -1), 1100)
+        self.assertEqual(round(st.k, 3), 0.183)
+
+        st = nC4(T=468, P=5e6, **kw)
+        self.assertEqual(round(st.rho, 1), 130.0)
+        self.assertEqual(round(st.rhoM, 3), 2.237)
+        self.assertEqual(round(st.uM.kJkmol, -1), 31000)
+        self.assertEqual(round(st.hM.kJkmol, -1), 33240)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 320.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 143.3)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 222.4)
+        self.assertEqual(round(st.w, 1), 173.5)
+        self.assertEqual(round(st.mu.muPas, 1), 16.3)
+        self.assertEqual(round(st.k, 4), 0.0525)
+
+        st = nC4(T=600, P=6e6, **kw)
+        self.assertEqual(round(st.rho, 2), 82.44)
+        self.assertEqual(round(st.rhoM, 3), 1.418)
+        self.assertEqual(round(st.uM.kJkmol, -1), 52680)
+        self.assertEqual(round(st.hM.kJkmol, -1), 56910)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 363.7)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 163.8)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 184.0)
+        self.assertEqual(round(st.w, 1), 266.2)
+        self.assertEqual(round(st.mu.muPas, 1), 17.3)
+        self.assertEqual(round(st.k, 4), 0.0664)
+
+        st = nC4(T=400, P=8e6, **kw)
+        self.assertEqual(round(st.rho, 1), 457.7)
+        self.assertEqual(round(st.rhoM, 3), 7.874)
+        self.assertEqual(round(st.uM.kJkmol, -1), 12860)
+        self.assertEqual(round(st.hM.kJkmol, -1), 13870)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 274.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 125.0)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 177.2)
+        self.assertEqual(round(st.w, 1), 506.4)
+        self.assertEqual(round(st.mu.muPas, 1), 73.9)
+        self.assertEqual(round(st.k, 4), 0.0802)
+
+        st = nC4(T=555, P=1e7, **kw)
+        self.assertEqual(round(st.rho, 1), 183.3)
+        self.assertEqual(round(st.rhoM, 3), 3.154)
+        self.assertEqual(round(st.uM.kJkmol, -1), 42540)
+        self.assertEqual(round(st.hM.kJkmol, -1), 45720)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 341.0)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 158.1)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 203.8)
+        self.assertEqual(round(st.w, 1), 244.0)
+        self.assertEqual(round(st.mu.muPas, 1), 21.8)
+        self.assertEqual(round(st.k, 4), 0.0730)
+
+        st = nC4(T=200, P=2e7, **kw)
+        self.assertEqual(round(st.rho, 1), 686.9)
+        self.assertEqual(round(st.rhoM, 2), 11.82)
+        self.assertEqual(round(st.uM.kJkmol, -1), -15470)
+        self.assertEqual(round(st.hM.kJkmol, -1), -13780)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 177.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 86.14)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 117.2)
+        self.assertEqual(round(st.w, 0), 1501)
+        self.assertEqual(round(st.mu.muPas, 0), 578)
+        self.assertEqual(round(st.k, 3), 0.158)
+
+        st = nC4(T=500, P=3e7, **kw)
+        self.assertEqual(round(st.rho, 1), 434.0)
+        self.assertEqual(round(st.rhoM, 3), 7.466)
+        self.assertEqual(round(st.uM.kJkmol, -1), 27120)
+        self.assertEqual(round(st.hM.kJkmol, -1), 31140)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 306.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 145.5)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 181.6)
+        self.assertEqual(round(st.w, 1), 601.2)
+        self.assertEqual(round(st.mu.muPas, 1), 67.5)
+        self.assertEqual(round(st.k, 4), 0.0877)
+
+        st = nC4(T=300, P=5e7, **kw)
+        self.assertEqual(round(st.rho, 1), 627.2)
+        self.assertEqual(round(st.rhoM, 2), 10.79)
+        self.assertEqual(round(st.uM.kJkmol, 0), -4102)
+        self.assertEqual(round(st.hM.kJkmol, 1), 531.8)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 224.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 103.3)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 133.7)
+        self.assertEqual(round(st.w, 0), 1271)
+        self.assertEqual(round(st.mu.muPas, 0), 251)
+        self.assertEqual(round(st.k, 3), 0.130)
+
+        st = nC4(T=600, P=7e7, **kw)
+        self.assertEqual(round(st.rho, 1), 460.9)
+        self.assertEqual(round(st.rhoM, 3), 7.930)
+        self.assertEqual(round(st.uM.kJkmol, -1), 41790)
+        self.assertEqual(round(st.hM.kJkmol, -1), 50620)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 332.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 164.5)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 190.6)
+        self.assertEqual(round(st.w, 1), 823.3)
+        self.assertEqual(round(st.mu.muPas, 1), 79.6)
+        self.assertEqual(round(st.k, 3), 0.108)
+
     def test_shortSpan(self):
         # Table III, Pag 46
         st = nC4(T=700, rho=200, eq="shortSpan")
@@ -660,13 +932,6 @@ class Test(TestCase):
         st2 = nC4(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.78)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37465)
-
-    def test_custom(self):
-        """Test for other model not tested"""
-        # Reference state for Miyamoto correlation
-        st = nC4(T=273.15, x=0.0, eq="miyamoto")
-        self.assertEqual(round(st.h.kJkg, 0), 200)
-        self.assertEqual(round(st.s.kJkgK, 2), 1)
 
     def test_herrmann(self):
         # Table 6, Pag 18
