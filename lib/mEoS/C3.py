@@ -385,7 +385,7 @@ class C3(MEoS):
 
               "eq": 1, "omega": 1,
 
-              "M": 44.0956, "ek": 263.88, "sigma": 0.49748,
+              "M": 44.098, "ek": 263.88, "sigma": 0.49748,
               "n_chapman": 0.021357,
               "collision": [0.25104574, -0.47271238, 0, 0.060836515],
 
@@ -395,7 +395,7 @@ class C3(MEoS):
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 369.825, "rhoref_res": 5*44.0956,
+              "Tref_res": 369.825, "rhoref_res": 5*44.098,
               "nr": [35.9873030195, -180.512188564, 87.7124888223,
                      -105.773052525, 205.319740877, -129.210932610,
                      58.9491587759, -129.7400331, 76.6280419971,
@@ -887,10 +887,19 @@ class Test(TestCase):
         self.assertEqual(round(C3(T=650, rho=400).mu.muPas, 5), 62.40780)
 
     def test_Vogel2(self):
-        # TODO: Input density calcualte from MBWR equation, do when fix
-        # The method give good values, but the density input values are
-        # unreproducibles while MBWR don't work
-
         # Table 4, pag 961
-        # self.assertEqual(round(C3(T=90, P=1e4, visco=1).mu.muPas, 1), 7388.0)
-        pass
+        # Tiny desviation in the last decimal
+        kw = {"eq": "younglove", "visco": 1}
+        self.assertEqual(round(C3(T=90, P=1e4, **kw).mu.muPas, 0), 7386)
+        self.assertEqual(round(C3(T=100, P=1e6, **kw).mu.muPas, 0), 3823)
+        self.assertEqual(round(C3(T=110, P=1e8, **kw).mu.muPas, 0), 5597)
+        self.assertEqual(round(C3(T=140, P=1e6, **kw).mu.muPas, 1), 834.5)
+        self.assertEqual(round(C3(T=160, P=1e4, **kw).mu.muPas, 1), 537.6)
+        self.assertEqual(round(C3(T=200, P=5e5, **kw).mu.muPas, 1), 290.2)
+        self.assertEqual(round(C3(T=260, P=1e4, **kw).mu.muPas, 3), 7.136)
+        self.assertEqual(round(C3(T=300, P=3e6, **kw).mu.muPas, 2), 99.38)
+        self.assertEqual(round(C3(T=340, P=1e6, **kw).mu.muPas, 3), 9.415)
+        self.assertEqual(round(C3(T=400, P=1e8, **kw).mu.muPas, 1), 138.5)
+        self.assertEqual(round(C3(T=440, P=6e5, **kw).mu.muPas, 2), 11.92)
+        self.assertEqual(round(C3(T=500, P=4e6, **kw).mu.muPas, 2), 14.63)
+        self.assertEqual(round(C3(T=600, P=1e8, **kw).mu.muPas, 2), 73.93)
