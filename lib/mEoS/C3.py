@@ -409,8 +409,7 @@ class C3(MEoS):
               "CPg1": 2.50053938863,
               "CPgi": [0.860516059264], "CPti": [-0.5]}
 
-    visco2 = {"eq": 2, "omega": 2,
-              "__name__": "Younglove (1987)",
+    visco2 = {"__name__": "Younglove (1987)",
               "__doi__": {
                   "autor": "Younglove, B.A., Ely, J.F.",
                   "title": "Thermophysical Properties of Fluids. II. Methane, "
@@ -418,8 +417,8 @@ class C3(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                   "doi": "10.1063/1.555785"},
 
+              "eq": 2, "omega": 2,
               "ek": 358.9, "sigma": 0.47,
-              "n_chapman": 0.177273976/M**0.5,
 
               "F": [0, 0, 1.12, 359.],
               "E": [-14.113294896, 968.22940153, 13.686545032, -12511.628378,
@@ -483,15 +482,16 @@ class C3(MEoS):
                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                    "doi": "10.1063/1.555785"},
 
-               "eq": 2, "omega": 2,
+               "eq": 3,
 
-               "visco": visco1,
+               "ek": 358.9,
                "G": [0.1422605e1, -0.179749],
                "E": [0.3113890422e-2, -0.225755973, 0.5674370999e2,
                      -0.7840963643e-4, 0.2291785465e-1, -0.2527939890e1,
                      -0.6265334654e-1, 0.2518064809e1],
 
                "critical": 2,
+               "Tc": 369.85, "rhoc": 5*44.098,
                "X": [3.98, 5.45, 0.468067, 1.08],
                "Z": 8.117e-10}
 
@@ -859,13 +859,6 @@ class Test(TestCase):
         st2 = C3(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 212.66)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41879)
-
-    def test_custom(self):
-        """Test for other model not tested"""
-        # Reference state for Miyamoto correlation
-        st = C3(T=273.15, x=0.0, eq="miyamoto")
-        self.assertEqual(round(st.h.kJkg, 0), 200)
-        self.assertEqual(round(st.s.kJkgK, 2), 1)
 
     def test_Vogel(self):
         # Table 6, Pag 16

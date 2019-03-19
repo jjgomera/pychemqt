@@ -4418,7 +4418,7 @@ class MEoS(ThermoAdvanced):
                     muo = self._Visco0(visco)
                     # 1e-6 factor because viscosity is in μPa·s
                     n = 1e-6*self.R/u/Avogadro
-                    kg += muo*n*(3.75+f*(self.cp0/self.R-2.5))
+                    kg += muo*n*(3.75+f*(self.cp0/self.R-2.5))         # Eq 13a
 
                 # Polynomial terms
                 if "to" in coef:
@@ -4436,30 +4436,17 @@ class MEoS(ThermoAdvanced):
                         den += n*Tr**t
                     kg += num/den
 
-                        # if c == -99:
-                            # cpi = 1.+n*(self.cp0.kJkgK-2.5*self.R.kJkgK)
-                            # kg *= cpi
-                        # elif c == -98:
-                            # muo = self._Visco0()
-                            # cpi = self.cp0-R
-                            # kg += n*cpi*muo
-                        # elif c == -96:
-                            # cpi = self.cp0/self.R-2.5
-                            # muo = self._Visco0()
-                            # kg = (kg*cpi+15./4.)*self.R.kJkgK*muo/self.M
-                        # else:
-
                 kg *= coef.get("koref", 1)
 
                 # Backgraund terms
                 kr = 0
                 kc = 0
                 if rho > 0:
+                    Tr = coef.get("Tref_res", self.Tc)
+                    tau = Tr/T
+                    rhor = coef.get("rhoref_res", self.rhoc)
+                    delta = rho/rhor
                     if "nr" in coef:
-                        Tr = coef.get("Tref_res", self.Tc)
-                        tau = Tr/T
-                        rhor = coef.get("rhoref_res", self.rhoc)
-                        delta = rho/rhor
 
                         if "cr" in coef:
                             for n, t, d, c, g in zip(
@@ -4505,35 +4492,7 @@ class MEoS(ThermoAdvanced):
                 k = kg+kr+kc+ke
 
             elif coef["eq"] == 2:
-                # Younglove #1 form as explain in [5]_
-                muo = self._Visco0(coef["visco"])
-                # print(muo, self.cp0, self.R)
-
-                # Eq 27
-                kg = 1e-6*muo*(self.cp0-2.5*self.R) * \
-                    (coef["G"][0]+coef["G"][1]*coef["visco"]["ek"]/T)
-
-                if rho:
-                    E = coef["E"]
-                    F0 = E[0] + E[1]/T + E[2]/T**2                      # Eq 28
-                    F1 = E[3]/T**3 + E[4]/T**4 + E[5]/T**5              # Eq 29
-                    F2 = E[6]/T**6 + E[7]/T**7                          # Eq 30
-
-                    rhom = rho/self.M
-                    kb = (F0+F1*rhom)*rhom/(1-F2*rhom)
-
-                    # Critical enhancement
-                    kc = self._KCritical(rho, T, fase)
-
-                else:
-                    kb = 0
-                    kc = 0
-
-                # print(kg, kb, kc)
-                k = kg+kb+kc
-
-            elif coef["eq"] == 3:
-                # Younglove #2 form as explain in [4]_
+                # Younglove #1 form as explain in [4]_
                 rhogcc = rho/1000  # Use the density in g/cm³
                 f = coef["F"]
                 e = coef["E"]
@@ -4558,7 +4517,34 @@ class MEoS(ThermoAdvanced):
                 kc = self._KCritical(rho, T, fase)
 
                 k = ko + k1*rhogcc + k2 + kc
-                # print(ko, k1, k2, kc)
+
+            elif coef["eq"] == 3:
+                # Younglove #2 form as explain in [5]_
+                # Several typo in paper
+                muo = self._Visco0()
+
+                # Eq 27
+                kg = 1e-6*muo*(3.75*self.R+(self.cp0-2.5*self.R) * \
+                    (coef["G"][0]+coef["G"][1]*coef["ek"]/T))
+
+                if rho:
+                    E = coef["E"]
+                    F0 = E[0] + E[1]/T + E[2]/T**2                      # Eq 28
+                    F1 = E[3] + E[4]/T + E[5]/T**2                      # Eq 29
+                    F2 = E[6] + E[7]/T                                  # Eq 30
+
+                    rhom = rho/self.M
+                    kb = (F0+F1*rhom)*rhom/(1+F2*rhom)
+
+                    # Critical enhancement
+                    kc = self._KCritical(rho, T, fase)
+
+                else:
+                    kb = 0
+                    kc = 0
+
+                # print(kg, kb, kc)
+                k = kg+kb+kc
 
             elif self._thermal["eq"] == "ecs":
                 # TODO

@@ -424,14 +424,12 @@ class C2(MEoS):
 
               "eq": 2, "omega": 2,
               "ek": 240.0, "sigma": 0.440110,
-              "n_chapman": 0.146388493/M**0.5,
 
               "F": [0.2102436247e1, -0.1065920192e1, 1.4, 305.33],
               "E": [-0.1903481042e2, 0.1799260494e4, 0.1561316986e2,
                     -0.1497221136e5, 0.1130374601, -0.2186440756e2,
                     0.8235954037e4],
               "rhoc": 6.875}
-    # TODO: Add testing when fix MBWR equation
 
     visco4 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
@@ -480,7 +478,28 @@ class C2(MEoS):
                "gnu": 0.63, "gamma": 1.242, "R0": 1.01,
                "Xio": 0.19e-9, "gam0": 0.0563, "qd": 0.545e-9, "Tcref": 610.66}
 
-    _thermal = thermo0,
+    thermo1 = {"__name__": "Younglove (1987)",
+               "__doi__": {
+                   "autor": "Younglove, B.A., Ely, J.F.",
+                   "title": "Thermophysical Properties of Fluids. II. Methane,"
+                            " Ethane, Propane, Isobutane, and Normal Butane ",
+                   "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+                   "doi": "10.1063/1.555785"},
+
+               "eq": 3,
+
+               "ek": 240,
+               "G": [1.545691277, -0.5086287855],
+               "E": [0.2863803648e-2, -0.459858003, 0.7772750057e2,
+                     0.138460594e-5, 0.1874040714e-1, -0.3009947821e1,
+                     -0.4225741011e-1, 0.1028764297e1],
+
+               "critical": 2,
+               "Tc": 305.34, "rhoc": 6.875*30.07,
+               "X": [0.225388, 10.51088, 0.45, 1],
+               "Z": 7.42399e-10}
+
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
