@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-
+from math import exp
 from unittest import TestCase
 
 from lib.meos import MEoS
@@ -426,7 +426,7 @@ class CH4(MEoS):
                    "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
                    "doi": "10.1063/1.555828"},
 
-               "eq": 1, "critical": 0,
+               "eq": 1,
 
                "Toref": 174., "koref": 1e-3,
                "visco": visco3,
@@ -440,10 +440,27 @@ class CH4(MEoS):
                "tr": [0, 0, 0, 1, 0, 1],
                "dr": [1, 3, 4, 4, 5, 5],
 
-               "nr_s": [1.5554612],
-               "tr_s": [0],
-               "dr_s": [2],
-               }
+               "nr_s": [1.5554612], "tr_s": [0], "dr_s": [2],
+
+               "critical": "_ThCritical"}
+
+    def _ThCritical(self, rho, T, fase):
+        """Special critical enhancement for Friend et al. thermal conductivity
+        correlation"""
+        tau = self.Tc/T
+        delta = rho/self.rhoc
+
+        T_ = 1-1/tau                                                    # Eq 21
+        d_ = 1-delta                                                    # Eq 22
+
+        xt = 0.28631*delta*tau/(1 + 2*delta*fase.fird + delta**2*fase.firdd)
+
+        F = exp(-2.646*abs(T_)**0.5 - 2.678*d_**2 + 0.637*d_)           # Eq 20
+
+        # Eq 19
+        tc = 91.855/fase.mu.muPas/tau**2*xt**0.4681*F * \
+            (1 + delta*fase.fird - delta*tau*fase.firdt)**2
+        return tc*1e-3
 
     thermo1 = {"__name__": "Younglove (1987)",
                "__doi__": {
@@ -956,119 +973,129 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 3), 0.336)
 
     def test_friend(self):
-        # FIXME: Bad Cp0 values
-        return
-
         # Selected point from Table A1, Pag 630, ideal gas
+
+        # The point really are not the gas ideal at zero preesure as it's
+        # calculated here, it's the value at 1 bar pressure so the values of
+        # Helmholtz free energy and entropy differ of ideal properties
         st = CH4(T=100, rho=0, eq="friend", visco=3)
-        # self.assertEqual(round(st.aM0.kJmol, 3), -12.479)
-        # self.assertEqual(round(st.hM0.kJmol, 3), 3.311)
-        # self.assertEqual(round(st.sM0.JmolK, 2), 149.58)
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 33.277)
+        self.assertEqual(round(st.hM.kJmol, 3), 3.311)
+        self.assertEqual(round(st.cpM.JmolK, 3), 33.277)
         self.assertEqual(round(st.mu.muPas, 2), 3.95)
-        # self.assertEqual(round(st.k.mWmK, 2), 9.83)
+        self.assertEqual(round(st.k.mWmK, 2), 9.83)
 
         st = CH4(T=400, rho=0, eq="friend", visco=3)
-        # self.assertEqual(round(st.aM0.kJmol, 3), -68.440)
-        # self.assertEqual(round(st.hM0.kJmol, 3), 13.888)
-        # self.assertEqual(round(st.sM0.JmolK, 2), 197.51)
-        # self.assertEqual(round(st.cpM0.JmolK, 5), 40.613)
+        self.assertEqual(round(st.hM.kJmol, 3), 13.888)
+        self.assertEqual(round(st.cpM.JmolK, 3), 40.613)
         self.assertEqual(round(st.mu.muPas, 2), 14.23)
-        # self.assertEqual(round(st.k.mWmK, 2), 49.96)
+        self.assertEqual(round(st.k.mWmK, 2), 49.96)
 
         # Selected point from Table A2, Pag 631, saturation state
+        # This table use ancillary equation for calculate presure and densities
+        # of two phases so the result may differ
         st = CH4(T=92, x=0.5, eq="friend", visco=3)
-        # self.assertEqual(round(st.P.MPa, 3), 0.014)
-        # self.assertEqual(round(st.Liquido.rhoM, 2), 28.04)
-        # self.assertEqual(round(st.Gas.rhoM, 3), 0.018)
-        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 53.37)
-        # self.assertEqual(round(st.Liquido.w, 1), 1532.7)
+        self.assertEqual(round(st.P.MPa, 3), 0.014)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 28.04)
+        self.assertEqual(round(st.Gas.rhoM, 3), 0.018)
+        self.assertEqual(round(st.Liquido.w, 1), 1532.8)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 194.92)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 209.7)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 209.7)
 
         st = CH4(T=120, x=0.5, eq="friend", visco=3)
-        # self.assertEqual(round(st.P.MPa, 3), 0.192)
-        # self.assertEqual(round(st.Liquido.rhoM, 2), 25.55)
-        # self.assertEqual(round(st.Gas.rhoM, 3), 0.204)
-        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 56.68)
-        # self.assertEqual(round(st.Liquido.w, 1), 1245.3)
-        self.assertEqual(round(st.Liquido.mu.muPas, 2), 97.85)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 172.0)
+        self.assertEqual(round(st.P.MPa, 3), 0.192)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 25.56)
+        self.assertEqual(round(st.Gas.rhoM, 3), 0.204)
+        self.assertEqual(round(st.Liquido.w, 1), 1247.5)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 98.09)
+        self.assertEqual(round(st.Liquido.k.mWmK, 1), 172.2)
 
         st = CH4(T=160, x=0.5, eq="friend", visco=3)
-        # self.assertEqual(round(st.P.MPa, 3), 1.593)
-        # self.assertEqual(round(st.Liquido.rhoM, 2), 20.96)
-        # self.assertEqual(round(st.Gas.rhoM, 3), 1.584)
-        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 67.42)
-        # self.assertEqual(round(st.Liquido.w, 1), 791.5)
+        self.assertEqual(round(st.P.MPa, 3), 1.593)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 20.96)
+        self.assertEqual(round(st.Gas.rhoM, 3), 1.584)
+        self.assertEqual(round(st.Liquido.w, 1), 791.5)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 46.70)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 115.0)
+        self.assertEqual(round(st.Liquido.k.mWmK, 1), 115.0)
 
         st = CH4(T=190, x=0.5, eq="friend", visco=3)
-        # self.assertEqual(round(st.P.MPa, 3), 4.521)
-        # self.assertEqual(round(st.Liquido.rhoM, 2), 12.50)
-        # self.assertEqual(round(st.Gas.rhoM, 3), 7.827)
-        # self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 389.90)
-        # self.assertEqual(round(st.Liquido.w, 1), 264.3)
-        self.assertEqual(round(st.Liquido.mu.muPas, 2), 19.75)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 100.3)
+        self.assertEqual(round(st.P.MPa, 3), 4.521)
+        self.assertEqual(round(st.Liquido.rhoM, 2), 12.55)
+        self.assertEqual(round(st.Gas.rhoM, 3), 7.822)
+        self.assertEqual(round(st.Liquido.w, 1), 266.1)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 19.84)
+        # The paper use a scaled equation of state near of critical point
+        # self.assertEqual(round(st.Liquido.k.mWmK, 1), 100.3)
 
         # Selected point from Table A3, Pag 632
-        # st = CH4(T=100, P=1e5, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 27.37)
-        # self.assertEqual(round(st.hM.kJmol, 3), -5.242)
-        # self.assertEqual(round(st.sM.JmolK, 2), 73.05)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 34.08)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 54.64)
-        # self.assertEqual(round(st.w, 1), 1446.8)
+        st = CH4(T=100, P=1e5, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 27.37)
+        self.assertEqual(round(st.hM.kJmol, 3), -5.242)
+        self.assertEqual(round(st.sM.JmolK, 2), 73.05)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.08)
+        self.assertEqual(round(st.cpM.JmolK, 2), 54.64)
+        self.assertEqual(round(st.w, 1), 1446.8)
+        self.assertEqual(round(st.mu.muPas, 2), 157.49)
+        self.assertEqual(round(st.k.mWmK, 1), 199.8)
 
-        # st = CH4(T=150, P=5e6, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 22.86)
-        # self.assertEqual(round(st.hM.kJmol, 3), -2.274)
-        # self.assertEqual(round(st.sM.JmolK, 2), 95.48)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 30.84)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 61.25)
-        # self.assertEqual(round(st.w, 1), 996.2)
+        st = CH4(T=150, P=5e6, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 22.86)
+        self.assertEqual(round(st.hM.kJmol, 3), -2.274)
+        self.assertEqual(round(st.sM.JmolK, 2), 95.48)
+        self.assertEqual(round(st.cvM.JmolK, 2), 30.84)
+        self.assertEqual(round(st.cpM.JmolK, 2), 61.25)
+        self.assertEqual(round(st.w, 1), 996.2)
+        self.assertEqual(round(st.mu.muPas, 2), 60.01)
+        self.assertEqual(round(st.k.mWmK, 1), 136.5)
 
-        # st = CH4(T=200, P=2e6, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 1.40)
-        # self.assertEqual(round(st.hM.kJmol, 3), 5.939)
-        # self.assertEqual(round(st.sM.JmolK, 2), 145.34)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 26.77)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 41.60)
-        # self.assertEqual(round(st.w, 1), 343.0)
+        st = CH4(T=200, P=2e6, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 1.40)
+        self.assertEqual(round(st.hM.kJmol, 3), 5.939)
+        self.assertEqual(round(st.sM.JmolK, 2), 145.34)
+        self.assertEqual(round(st.cvM.JmolK, 2), 26.77)
+        self.assertEqual(round(st.cpM.JmolK, 2), 41.60)
+        self.assertEqual(round(st.w, 1), 343.0)
+        self.assertEqual(round(st.mu.muPas, 2), 8.28)
+        self.assertEqual(round(st.k.mWmK, 1), 24.5)
 
-        # st = CH4(T=250, P=5e7, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 19.80)
-        # self.assertEqual(round(st.hM.kJmol, 3), 3.809)
-        # self.assertEqual(round(st.sM.JmolK, 2), 115.82)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 30.25)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 51.95)
-        # self.assertEqual(round(st.w, 1), 999.3)
+        st = CH4(T=250, P=5e7, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 19.80)
+        self.assertEqual(round(st.hM.kJmol, 3), 3.809)
+        self.assertEqual(round(st.sM.JmolK, 2), 115.82)
+        self.assertEqual(round(st.cvM.JmolK, 2), 30.25)
+        self.assertEqual(round(st.cpM.JmolK, 2), 51.95)
+        self.assertEqual(round(st.w, 1), 999.3)
+        self.assertEqual(round(st.mu.muPas, 2), 42.74)
+        self.assertEqual(round(st.k.mWmK, 1), 114.8)
 
-        # st = CH4(T=300, P=1e5, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 0.04)
-        # self.assertEqual(round(st.hM.kJmol, 3), 10.068)
-        # self.assertEqual(round(st.sM.JmolK, 2), 186.56)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 27.47)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 35.86)
-        # self.assertEqual(round(st.w, 1), 449.7)
+        st = CH4(T=300, P=1e5, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 0.04)
+        self.assertEqual(round(st.hM.kJmol, 3), 10.068)
+        self.assertEqual(round(st.sM.JmolK, 2), 186.56)
+        self.assertEqual(round(st.cvM.JmolK, 2), 27.47)
+        self.assertEqual(round(st.cpM.JmolK, 2), 35.86)
+        self.assertEqual(round(st.w, 1), 449.7)
+        self.assertEqual(round(st.mu.muPas, 2), 11.20)
+        self.assertEqual(round(st.k.mWmK, 1), 34.4)
 
-        # st = CH4(T=350, P=1e6, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 0.35)
-        # self.assertEqual(round(st.hM.kJmol, 3), 11.807)
-        # self.assertEqual(round(st.sM.JmolK, 2), 172.86)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 29.75)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 38.60)
-        # self.assertEqual(round(st.w, 1), 480.8)
+        st = CH4(T=350, P=1e6, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 0.35)
+        self.assertEqual(round(st.hM.kJmol, 3), 11.807)
+        self.assertEqual(round(st.sM.JmolK, 2), 172.86)
+        self.assertEqual(round(st.cvM.JmolK, 2), 29.75)
+        self.assertEqual(round(st.cpM.JmolK, 2), 38.60)
+        self.assertEqual(round(st.w, 1), 480.8)
+        self.assertEqual(round(st.mu.muPas, 2), 12.89)
+        self.assertEqual(round(st.k.mWmK, 1), 42.3)
 
-        # st = CH4(T=400, P=5e7, eq="friend", visco=3)
-        # self.assertEqual(round(st.rhoM, 2), 12.68)
-        # self.assertEqual(round(st.hM.kJmol, 3), 11.583)
-        # self.assertEqual(round(st.sM.JmolK, 2), 140.19)
-        # self.assertEqual(round(st.cvM.JmolK, 2), 34.25)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 51.82)
-        # self.assertEqual(round(st.w, 2), 778.9)
+        st = CH4(T=400, P=5e7, eq="friend", visco=3)
+        self.assertEqual(round(st.rhoM, 2), 12.68)
+        self.assertEqual(round(st.hM.kJmol, 3), 11.583)
+        self.assertEqual(round(st.sM.JmolK, 2), 140.19)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.25)
+        self.assertEqual(round(st.cpM.JmolK, 2), 51.82)
+        self.assertEqual(round(st.w, 1), 778.9)
+        self.assertEqual(round(st.mu.muPas, 2), 26.93)
+        self.assertEqual(round(st.k.mWmK, 1), 88.7)
 
     def test_shortSpan(self):
         # Table III, Pag 46
