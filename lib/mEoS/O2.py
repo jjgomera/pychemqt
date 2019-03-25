@@ -377,7 +377,7 @@ class O2(MEoS):
         limit"""
         d1 = 1.0245069
         d2 = 1.0280127
-        muo = self._Visco0()
+        muo = self._Visco0(T)
         # Eq 8
         # Typo in paper, 3/2-d1, as see in original kinetic theory work
         # Maitland, G.C., Mustafa, M., Wakeham, W.A.

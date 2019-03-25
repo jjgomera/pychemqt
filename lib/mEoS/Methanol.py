@@ -219,12 +219,12 @@ class Methanol(MEoS):
 
               "method": "_visco0"}
 
-    def _Omega(self, coef=None):
+    def _Omega(self, T, coef=None):
         """Custom Collision integral calculation procedure"""
         delta = 0.4575
         a = [1.16145, -0.14874, 0.52487, -0.7732, 2.16178, -2.43787, 9.5976e-4,
              0.10225, -0.97346, 0.10657, -0.34528, -0.44557, -2.58055]
-        T = self.T/self._viscosity["ek"]
+        T = T/self._viscosity["ek"]
 
         OmegaLJ = a[0]*T**a[1] + a[2]*exp(a[3]*T) + a[4]*exp(a[5]*T)     # Eq 4
         OmegaD = a[7]*T**a[8] + a[9]*exp(a[10]*T) + a[11]*exp(a[12]*T)   # Eq 9
@@ -246,7 +246,7 @@ class Methanol(MEoS):
         rhor = rho/rhoc
 
         # Zero-density limit viscosity, Eq 3
-        muo = self._Visco0()
+        muo = self._Visco0(T)
 
         # Second viscosity virial coefficient, Eq 13
         bi = [-19.572881, 219.73999, -1015.3226, 2471.0125, -3375.1717,

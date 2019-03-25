@@ -493,7 +493,7 @@ class N2(MEoS):
             cv = 8.31434*(sum1+sum2-1)
             return cv
 
-        muo = self._Visco0(self.visco2)
+        muo = self._Visco0(T, self.visco2)
         F = Boltzmann*Avogadro*muo/M                                     # Eq 9
         ltr = 2.5*F*(1.5-X1)                                             # Eq 7
         lint = F*X2*(cv(T)/Boltzmann/Avogadro+X1)                        # Eq 8

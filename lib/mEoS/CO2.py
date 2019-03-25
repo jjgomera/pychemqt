@@ -380,7 +380,7 @@ class CO2(MEoS):
     def _visco2(self, rho, T, fase=None):
 
         # Zero-Density viscosity
-        muo = self._Visco0()
+        muo = self._Visco0(T)
 
         # Gas-phase viscosity
         # Table 8

@@ -202,7 +202,7 @@ class R23(MEoS):
         delta = rho/self.M-7.5114
         tau = T-299.28
 
-        muo = self._Visco0()
+        muo = self._Visco0(T)
         mug = muo*(Drho/rhol)**C1
         mur = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
                 rho/self.M/Drho*deltaG/R/self.M/T)

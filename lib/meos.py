@@ -2956,8 +2956,7 @@ class MEoS(ThermoAdvanced):
                 * so: Entropy in reference state, [kJ/kg·K]
         """
         # Variable to avoid rewrite and save the h-s offset status application
-        # applyOffset = "ao" in self._constants["cp"] or ref is not None
-        applyOffset = ref is not False
+        applyOffset = "ao" in self._constants["cp"] or ref is not None
 
         if ref is None:
             rf = self._constants["ref"]
@@ -3045,7 +3044,9 @@ class MEoS(ThermoAdvanced):
                 # First check if the custum state is in database
                 code = "%s-%s-%s-%s" % refvalues
                 if code not in dat[name]:
-                    st = self.__class__(T=refvalues[0], P=refvalues[1]*1e3, **kw)
+                    T = refvalues[0]
+                    P = refvalues[1]*1e3
+                    st = self.__class__(T=T, P=P, **kw)
                     self.hoffset = st.h.kJkg
                     self.soffset = st.s.kJkgK
 
@@ -4138,15 +4139,23 @@ class MEoS(ThermoAdvanced):
             Density [kg/m³]
         T : float
             Temperature [K]
-        fase: dict
+        fase : dict
             phase properties
+        coef : dict
+            dictionary with correlation parameters
+        residual : boolean
+           return only the residual contribution. Used in ecs correlation
 
         Returns
         -------
         mu : float
             Viscosity of fluid, [Pa·s]
+            If residual options is True the returned value would be the
+            residual contribution to viscosity in μPas
         """
-        coef = self._viscosity
+        if coef is False:
+            coef = self._viscosity
+
         if coef:
             M = coef.get("M", self.M)
             if coef["eq"] == 0:
@@ -4155,7 +4164,7 @@ class MEoS(ThermoAdvanced):
                 mu = method(rho, T, fase).muPas
 
             elif coef["eq"] == 1:
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 # Initial-density term, second virial coefficient
                 mud = 0
@@ -4222,6 +4231,13 @@ class MEoS(ThermoAdvanced):
                         den = 1.
 
                     mur += num/den
+
+                # Gaussian terms
+                # Reference: Propane, ethane correlation from Vogel
+                if rho and "nr_gaus" in coef:
+                    for n, b, e in zip(coef["nr_gaus"], coef["br_gaus"],
+                                       coef["er_gaus"]):
+                        mur += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
                 mur *= mured
 
                 # Modified Batschinkski-Hildebrand terms with reduced
@@ -4238,20 +4254,19 @@ class MEoS(ThermoAdvanced):
                     delta0 = g1*(1+rest)
                     muCP = f*(delta/(delta0-delta)-delta/delta0)
 
-                # Gaussian terms
-                # Reference: Propane, ethane correlation from Vogel
-                if rho and "nr_gaus" in coef:
-                    for n, b, e in zip(coef["nr_gaus"], coef["br_gaus"],
-                                       coef["er_gaus"]):
-                        mur += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
-
                 # Special term hardcoded in component class
                 mue = 0
                 if "special" in coef:
                     method = self.__getattribute__(coef["special"])
                     mue = method(rho, T, fase)
 
-                # print(muo, mud, mur, mue)
+                # print("list", muo+mud+mur, muo, mud, mur, mue)
+                # Return the residual contribution if it's requested
+                # i.e. in ecs viscosity correlations
+                if residual:
+                    return mud+mur+muCP+mue
+
+                # print(muo, mud, mur, muCP)
                 mu = muo+mud+mur+muCP+mue
 
             elif coef["eq"] == 2:
@@ -4268,7 +4283,7 @@ class MEoS(ThermoAdvanced):
                     rhoc *= self.M/1000
                 else:
                     rhogcc = rho/self.M
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 mu1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2                   # Eq 21
 
@@ -4400,7 +4415,7 @@ class MEoS(ThermoAdvanced):
                              self.momentoDipolar.Debye, 0, rho, muo).muPas
         return unidades.Viscosity(mu, "muPas")
 
-    def _Visco0(self, coef=None):
+    def _Visco0(self, T, coef=None):
         r"""Dilute gas viscosity calculation
 
         .. math::
@@ -4455,19 +4470,26 @@ class MEoS(ThermoAdvanced):
         if coef is None:
             coef = self._viscosity
 
+        if not coef:
+            # Special case for no available viscosity, i.e. in case thermal
+            # conductivity is available indeep
+            muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
+                            self.momentoDipolar.Debye, 0)
+            return muo
+
         muo = 0
         M = coef.get("M", self.M)
 
         # Collision integral calculation
         if coef["omega"]:
-            omega = self._Omega(coef)
+            omega = self._Omega(T, coef)
             N_chap = coef.get("n_chapman", 0.0266958)
             t_chap = coef.get("t_chapman", 0.5)
             Tr = coef.get("Tref", 1.)
 
-            muo += N_chap*(M*self.T/Tr)**t_chap/(coef["sigma"]**2*omega)
+            muo += N_chap*(M*T/Tr)**t_chap/(coef["sigma"]**2*omega)
 
-        tau = self.T/coef.get("Toref", 1.)
+        tau = T/coef.get("Toref", 1.)
         # other aditional polynomial terms
         if "no" in coef:
             for n, t in zip(coef["no"], coef["to"]):
@@ -4494,7 +4516,7 @@ class MEoS(ThermoAdvanced):
         return muo
 
     @refDoc(__doi__, [6, 5, 7, 3, 8], tab=8)
-    def _Omega(self, coef):
+    def _Omega(self, T, coef):
         r"""Collision integral calculations
 
         The derived class must define a dict object with the parameters for the
@@ -4541,7 +4563,7 @@ class MEoS(ThermoAdvanced):
         if coef["omega"] == 1:
             if not b:
                 b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
-            T_ = log(self.T/coef["ek"])
+            T_ = log(T/coef["ek"])
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi*T_**i
@@ -4761,13 +4783,18 @@ class MEoS(ThermoAdvanced):
             Temperature [K]
         fase: dict
             phase properties
+        coef : dict
+            dictionary with correlation parameters
+        contribution : boolean
+            return the contribution
 
         Returns
         -------
         k : float
             Thermal conductivity, [W/m·K]
         """
-        coef = self._thermal
+        if coef is False:
+            coef = self._thermal
 
         if coef:
             # Let define viscosity coefficient to use in thermal conductivity
@@ -4790,7 +4817,7 @@ class MEoS(ThermoAdvanced):
                 # Special term with dilute-gas limit viscosity value
                 # Reference from Lemmon for Air, N2, O2...
                 if "no_visco" in coef:
-                    muo = self._Visco0(visco)
+                    muo = self._Visco0(T, visco)
                     kg += coef["no_visco"]*muo
 
                 # Special term with dilute-gas viscosity and ideal gas isobaric
@@ -4802,7 +4829,7 @@ class MEoS(ThermoAdvanced):
                     for n, t in zip(coef["no_viscoCp"], coef["to_viscoCp"]):
                         f += n*Tr**t
 
-                    muo = self._Visco0(visco)
+                    muo = self._Visco0(T, visco)
                     # 1e-6 factor because viscosity is in μPa·s
                     n = 1e-6*self.R/u/Avogadro
                     kg += muo*n*(3.75+f*(self.cp0/self.R-2.5))         # Eq 13a
@@ -4905,6 +4932,8 @@ class MEoS(ThermoAdvanced):
                     ke = method(rho, T, fase)
 
                 # print(kg, kr, kc, ke)
+                if contribution:
+                    return kr+ke
                 k = kg+kr+kc+ke
 
             elif coef["eq"] == 2:
@@ -4937,11 +4966,11 @@ class MEoS(ThermoAdvanced):
             elif coef["eq"] == 3:
                 # Younglove #2 form as explain in [5]_
                 # Several typo in paper
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 # Eq 27
-                kg = 1e-6*muo*(3.75*self.R+(self.cp0-2.5*self.R) * \
-                    (coef["G"][0]+coef["G"][1]*coef["ek"]/T))
+                kg = 1e-6*muo*(3.75*self.R+(self.cp0-2.5*self.R) *
+                               (coef["G"][0]+coef["G"][1]*coef["ek"]/T))
 
                 if rho:
                     E = coef["E"]
